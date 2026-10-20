@@ -207,3 +207,109 @@ test( ':empty matches at rest: the resting read holds its look and the resting r
 	assert.equal( res.status, 'written' );
 	assert.ok( res.writes.some( ( w ) => 'colourText' === w.attr ), 'written to the resting colour setting' );
 } );
+
+test( ':link, :any-link and aria-hidden="true" match at rest: the resting read holds their looks; an element without them holds none', async () => {
+	const page = await browser.newPage( { viewport: { width: 800, height: 600 } } );
+	await page.setContent( `${ HTML }<span class="lnk" id="nolink">No link</span><span class="dec" id="shown">y</span>` );
+	const cdp = await openDevtools( page );
+	const link = await declaredValues( cdp, '.lnk', RESOLVE, null );
+	const nolink = await declaredValues( cdp, '#nolink', RESOLVE, null );
+	const hidden = await declaredValues( cdp, '.dec', RESOLVE, null );
+	const shown = await declaredValues( cdp, '#shown', RESOLVE, null );
+	await page.close();
+	assert.equal( link.color, 'rgb(6, 6, 6)', 'an unvisited link matches :link and :any-link at rest; the later rule of equal weight wins' );
+	assert.equal( nolink.color, 'rgb(0, 0, 0)', 'an element that is no link matches neither' );
+	assert.equal( hidden.color, 'rgb(3, 3, 3)', 'a decorative element carries aria-hidden="true" at rest' );
+	assert.equal( shown.color, 'rgb(0, 0, 0)', 'one without the attribute does not match' );
+} );
+
+// The theme-token and surface writers (lib/fill-state-tokens.mjs, lib/fill-state.mjs): each state the next entries cover is
+// read from a planted page in a browser and written by fillStates, so a reference to a writer that writes nothing is found.
+const CSS_TOKENS = [
+	'.fv{color:rgb(0,0,0)} .fv:focus-visible{outline:3px solid rgb(0,9,0);outline-offset:2px}',
+	'.fc{color:rgb(0,0,0)} .fc:focus{outline-width:4px;outline-style:solid;outline-color:rgb(9,0,0)}',
+	'.fw:focus-within{outline-width:5px;outline-style:solid;outline-color:rgb(0,0,9)}',
+	'.press{color:rgb(0,0,0)} .press:active{transform:scale(0.97)}',
+	'.vis{color:rgb(0,0,0)} .vis:visited{color:rgb(85,26,139)}',
+	'#pop2{background-color:rgb(9,9,9)} #pop2:popover-open{background-color:rgb(1,2,3)}',
+	'#dlg2{background-color:rgb(9,9,9)} #dlg2:modal{background-color:rgb(3,2,1)}',
+	'.panel{display:none;background-color:rgb(9,9,9)} .panel:target{display:block;background-color:rgb(4,4,4)}',
+].join( '\n' );
+const HTML_TOKENS = `<!doctype html><html><head><style>${ CSS_TOKENS }</style></head><body>
+<button class="fv">a</button><button class="fc">b</button><div class="fw"><input class="in"></div><button class="press">p</button>
+<a class="vis" href="#v">v</a><div id="pop2" popover>Pop</div><dialog id="dlg2">Dlg</dialog><div id="panel" class="panel">Panel</div></body></html>`;
+
+// [ finder, block, calibration setting that paints the look, attributes ]
+const surfaceCal = ( attr ) => ( { elements: { '': {} }, settings: { [ attr ]: setting( 'background-color', null ) } } );
+const TOKEN_CASES = {
+	'.fv': [ 'sgs/button', { elements: { '': {} }, settings: {} } ], '.fc': [ 'sgs/button', { elements: { '': {} }, settings: {} } ], '.fw': [ 'sgs/button', { elements: { '': {} }, settings: {} } ],
+	'.press': [ 'sgs/button', { elements: { '': {} }, settings: {} } ], '.vis': [ 'sgs/text', { elements: { '': {} }, settings: {} } ],
+	'#pop2': [ 'sgs/nav-drawer', surfaceCal( 'drawerBg' ) ], '#dlg2': [ 'sgs/modal', surfaceCal( 'modalBackground' ) ], '#panel': [ 'sgs/mega-panel', surfaceCal( 'panelBg' ) ],
+};
+
+// Reads the token page with the real state reader, and each target's resting snapshot (tag, href, missing) from the DOM.
+async function readTokens() {
+	const page = await browser.newPage( { viewport: { width: 800, height: 600 } } );
+	await page.setContent( HTML_TOKENS );
+	const cdp = await openDevtools( page );
+	const jobs = Object.keys( TOKEN_CASES ).map( ( f ) => ( { id: f, finder: f } ) );
+	const rest = {};
+	const snap = {};
+	for ( const j of jobs ) {
+		rest[ j.id ] = await declaredValues( cdp, j.finder, RESOLVE, null );
+		snap[ j.id ] = await page.evaluate( ( f ) => {
+			const el = document.querySelector( f );
+			return 'none' === getComputedStyle( el ).display ? { missing: true } : { tag: el.tagName.toLowerCase(), href: el.getAttribute( 'href' ) };
+		}, j.finder );
+	}
+	const result = await readStates( { page, cdp, jobs, rows: VOCAB, rest, resolveSrc: RESOLVE } );
+	await page.close();
+	return { result, snap };
+}
+
+// One target through fillStates alone, so each state's write is attributed to it.
+function fillOne( finder, { result, snap }, attributes = {} ) {
+	const [ block, cal ] = TOKEN_CASES[ finder ];
+	const tree = [ { name: block, attributes: { className: 'cr-ref-x-0', ...attributes }, innerBlocks: [] } ];
+	const reads = { states: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { looks: { [ finder ]: result.looks[ finder ] || [] } } ] ) ), widths: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { [ finder ]: snap[ finder ] } ] ) ) };
+	return { ...fillStates( { tree, nodes: [ { index: 0, name: block, targets: [ { id: finder, slot: '' } ] } ], reads, calFor: () => cal, db, snapshot } ), attrs: tree[ 0 ].attributes };
+}
+
+test( 'MUST FAIL WITHOUT THE TOKEN WRITERS: :focus-visible, :focus and :focus-within looks land in settings.custom.focus, :active in buttonPresets, :visited in the link element', async () => {
+	const read = await readTokens();
+	const fv = fillOne( '.fv', read ).patch.settings?.custom?.focus;
+	assert.deepEqual( [ fv?.width, fv?.ring, fv?.offset, fv?.source ], [ '3px', '#000900', '2px', 'draft' ], ':focus-visible: outline shorthand' );
+	const fc = fillOne( '.fc', read ).patch.settings?.custom?.focus;
+	assert.deepEqual( [ fc?.width, fc?.ring ], [ '4px', '#090000' ], ':focus' );
+	const fw = fillOne( '.fw', read ).patch.settings?.custom?.focus;
+	assert.deepEqual( [ fw?.width, fw?.ring ], [ '5px', '#000009' ], ':focus-within' );
+	const press = fillOne( '.press', read ).patch.settings?.custom?.buttonPresets?.primary;
+	assert.match( press?.[ 'active-transform' ] || '', /^matrix\(0\.97/, ':active' );
+	const vis = fillOne( '.vis', read );
+	assert.deepEqual( vis.patch.styles?.elements?.link?.[ ':visited' ], { color: { text: '#551a8b' } }, ':visited' );
+	assert.equal( vis.writes.length, 0, ':visited is a theme key, not a block setting' );
+} );
+
+test( 'MUST FAIL WITHOUT THE SURFACE RULE: :popover-open, :modal and :target looks of surfaces hidden at rest are written as the surface\'s resting look', async () => {
+	const read = await readTokens();
+	for ( const [ finder, attr ] of [ [ '#pop2', 'drawerBg' ], [ '#dlg2', 'modalBackground' ], [ '#panel', 'panelBg' ] ] ) {
+		assert.ok( read.snap[ finder ].missing, `${ finder } is hidden at rest` );
+		const out = fillOne( finder, read );
+		const w = out.writes.find( ( x ) => x.attr === attr );
+		assert.ok( w, `${ finder } is written to ${ attr }; unmapped: ${ JSON.stringify( out.unmapped ) }` );
+		assert.equal( w.state, 'open' );
+		assert.ok( out.attrs[ attr ], `${ attr } is in the tree` );
+	}
+} );
+
+test( 'the token and surface entries name a recogniser, writer and check, and each is load-bearing for the seen-but-unsupported row', () => {
+	const coverage = loadCoverage();
+	const NEW = [ 'active', 'focus', 'focus-visible', 'focus-within', 'modal', 'popover-open', 'target', 'visited' ].map( ( n ) => `css-pseudo-class:${ n }` );
+	const raised = new Set( rowsFor( coverage ).map( ( r ) => r.construct ) );
+	for ( const id of NEW ) {
+		const e = coverage.entries[ id ];
+		assert.ok( e.recognise && e.write && e.check, `${ id } names recognise, write and check` );
+		assert.ok( ! raised.has( id ), `${ id } raises no row while covered` );
+		assert.ok( rowsFor( { ...coverage, entries: { ...coverage.entries, [ id ]: { ...e, write: null, wave: 'states' } } } ).some( ( r ) => r.construct === id ), `${ id } raises its row again with its write reference removed` );
+	}
+} );

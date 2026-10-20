@@ -18,8 +18,8 @@ export function fillReport( r ) {
 	const counts = handoverCounts( r.handover );
 	const json = {
 		client: r.client, surface: r.surface, draft: r.draft, nodes: r.nodes, targets: r.targets,
-		counts: { writes: r.writes.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, unread: ( r.unread || [] ).length, confirm: ( r.confirm || [] ).length },
-		writes: r.writes, unmapped: unmappedList( r.unmapped ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, unread: r.unread || [], confirm: r.confirm || [],
+		counts: { writes: r.writes.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, patchKeys: ( r.snapshotPatch?.entries || [] ).length, unread: ( r.unread || [] ).length, confirm: ( r.confirm || [] ).length },
+		writes: r.writes, unmapped: unmappedList( r.unmapped ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, snapshotPatch: r.snapshotPatch || { file: null, entries: [] }, unread: r.unread || [], confirm: r.confirm || [],
 	};
 	const L = [
 		`# Fill: ${ r.surface }`, '',
@@ -45,7 +45,10 @@ export function fillReport( r ) {
 		'## Handover', '',
 		...table( [ 'Owner', 'Kind', 'Node', 'Element', 'Evidence', 'Reason' ], r.handover.map( ( h ) => [ h.owner, h.kind, h.node, h.slot, h.evidence, h.reason ] ) ),
 		'## Settings written', '',
-		...table( [ 'Node', 'Block', 'Element', 'Property', 'Setting', 'Before', 'After', 'Tiers', 'How' ], r.writes.map( ( w ) => [ w.node, w.block, w.slot, w.prop, w.attr, w.before, w.after, w.widths.join( ',' ), w.how ] ) ),
+		...table( [ 'Node', 'Block', 'Element', 'Property', 'Setting', 'Before', 'After', 'Tiers', 'How' ], r.writes.map( ( w ) => [ w.node, w.block, w.slot, w.prop, w.attr, w.before, w.after, w.widths.join( ',' ), w.read ? `${ w.how } (read ${ w.read }: the render did not confirm it)` : w.how ] ) ),
+		'## Theme snapshot patch', '',
+		r.snapshotPatch?.file ? `Keys for the client's theme-snapshot.json, written beside this report as \`${ r.snapshotPatch.file }\` (Fill never edits the snapshot): the draft's focus look, button press looks and link-state looks. Merge it with the snapshot, then run the focus-token gate.` : 'The draft sets no focus, press or link-state look the theme holds; no patch file was written.', '',
+		...table( [ 'Key', 'Value', 'State', 'Node', 'Block', 'Element' ], ( r.snapshotPatch?.entries || [] ).map( ( e ) => [ e.path, e.value, e.state, e.node, e.block, e.slot ] ) ),
 		'## Spacing ownership', '',
 		'Decided per tier from the rendered gaps between consecutive children\'s border boxes (equal means within 0.5px). Parent: it holds the gap and the children give up their between-sibling margins. Children: the parent gap is 0 and each child keeps its own margin.', '',
 		...table( [ 'Node', 'Width', 'Owner', 'Rendered children', 'Decisions' ], r.spacing.map( ( s ) => [ s.node, s.width, s.owner, s.count, s.decisions.map( ( d ) => `${ d.prop } ${ d.owner } ${ d.value } (gaps ${ d.gaps.join( ', ' ) })` ).join( '; ' ) ] ) ),

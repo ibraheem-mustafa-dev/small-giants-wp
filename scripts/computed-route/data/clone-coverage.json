@@ -156,11 +156,10 @@
 			"note": "aria-haspopup: an ARIA property (name, description, relationship); SGS blocks render their own"
 		},
 		"aria-attr:aria-hidden": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": "aria-hidden: an ARIA state; SGS blocks manage their own"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "SGS and drafts set aria-hidden=\"true\" on decorative pieces for good, so a [aria-hidden=\"true\"] rule is in the resting read (fill-read readDraft) and written by the resting resolver; a panel toggled open and shut is covered by aria-expanded and [open]; tests/states-planted-draft.test.mjs proves the read"
 		},
 		"aria-attr:aria-invalid": {
 			"recognise": null,
@@ -2044,10 +2043,10 @@
 		},
 		"construct:sc-if": {
 			"recognise": "construct:sc-if",
-			"write": null,
-			"check": null,
+			"write": "scripts/computed-route/lib/fill-logic-state.mjs#readLogicStates",
+			"check": "scripts/computed-route/lib/state-map.mjs#stateMap",
 			"wave": "states",
-			"note": "a condition: read by the inventory as the state that shows its branch (lib/intake-inventory.mjs::readInventory); which state the built block shows it in is the states wave (FR-48-81)"
+			"note": "a condition: read by the inventory as the state that shows its branch (lib/intake-inventory.mjs::readInventory); the state map reaches each one by a walker state, by setting its state keys, or lists it as a gap; the keys are set through the runtime's own setState, the branch's looks read and the state put back, and fillStates writes them into the setting state the map names (lib/fill-logic-state.mjs::readLogicStates). A condition reached only by a walker state or a gap row has no look read here"
 		},
 		"construct:style-hover": {
 			"recognise": "construct:style-hover",
@@ -4453,11 +4452,10 @@
 			}
 		},
 		"css-pseudo-class:active": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":active: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state-tokens.mjs#applyTokenLooks",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": ":active: forced on the host and read as the press look; on a block that reads buttonPresets (sgs/button, sgs/whatsapp-cta) its transform and box-shadow are written to settings.custom.buttonPresets.<variant>.active-transform and .active-shadow of theme-snapshot.patch.json; a pressed colour is a named gap, as is a press look on any other block (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:active-view-transition": {
 			"recognise": null,
@@ -4474,11 +4472,10 @@
 			"note": "page-transition state: SGS page transitions (fx:page-transitions, includes/class-sgs-motion-registry.php) own it"
 		},
 		"css-pseudo-class:any-link": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":any-link: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":any-link matches every link at rest, so its rule is in the resting read (fill-read readDraft) and written by the resting resolver; tests/states-planted-draft.test.mjs proves the read"
 		},
 		"css-pseudo-class:autofill": {
 			"recognise": null,
@@ -4573,25 +4570,22 @@
 			"note": ":first-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:focus": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":focus: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state-tokens.mjs#applyTokenLooks",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": ":focus: forced on the host and read as the focus look; a look that paints like hover is held by the hover write, and an outline or box-shadow look unlike hover is written to settings.custom.focus (source \"draft\") of theme-snapshot.patch.json; any other property of a different focus look stays a named gap (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:focus-visible": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":focus-visible: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state-tokens.mjs#applyTokenLooks",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": ":focus-visible: forced on the host and read as the focus look; SGS paints hover on :hover and :focus-visible together, so a look equal to hover is held, and an outline or box-shadow look unlike hover is written to settings.custom.focus (source \"draft\") of theme-snapshot.patch.json (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:focus-within": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":focus-within: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state-tokens.mjs#applyTokenLooks",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": ":focus-within: forced on the host and read as a focus look; the site has one focus ring, so an outline or box-shadow look unlike hover is written to settings.custom.focus (source \"draft\") of theme-snapshot.patch.json and a second target setting another value is reported as a conflict (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:fullscreen": {
 			"excluded": {
@@ -4699,11 +4693,10 @@
 			"note": ":left: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
 		},
 		"css-pseudo-class:link": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":link: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":link matches every unvisited link at rest, so its rule is in the resting read (fill-read readDraft) and written by the resting resolver (on a theme link, the theme link colour); tests/states-planted-draft.test.mjs proves the read"
 		},
 		"css-pseudo-class:local-link": {
 			"excluded": {
@@ -4713,11 +4706,10 @@
 			}
 		},
 		"css-pseudo-class:modal": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":modal: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": ":modal: the reader opens the dialog modally and reads the open look; on a sgs/modal, sgs/nav-drawer or sgs/mega-panel hidden at rest the look is the surface's own look, written to its resting settings (lib/fill-state.mjs::SURFACE_BLOCKS, hiddenAtRest); a surface shown at rest keeps the state-setting path (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:muted": {
 			"excluded": {
@@ -4831,11 +4823,10 @@
 			}
 		},
 		"css-pseudo-class:popover-open": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":popover-open: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": ":popover-open: the reader opens the popover and reads the open look; on a sgs/modal, sgs/nav-drawer or sgs/mega-panel hidden at rest the look is the surface's own look, written to its resting settings (lib/fill-state.mjs::SURFACE_BLOCKS, hiddenAtRest) (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:read-only": {
 			"recognise": null,
@@ -4899,11 +4890,10 @@
 			}
 		},
 		"css-pseudo-class:target": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":target: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": ":target: forced on the host and read as the open look; on a sgs/modal, sgs/nav-drawer or sgs/mega-panel hidden at rest the look is the surface's own look, written to its resting settings (lib/fill-state.mjs::SURFACE_BLOCKS, hiddenAtRest) (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:target-current": {
 			"recognise": null,
@@ -4941,11 +4931,10 @@
 			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"css-pseudo-class:visited": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":visited: read from the draft's own stylesheet rule (a browser hides the state from scripts, so the render cannot confirm it); written through the client's theme.json link styles (styles.elements.link[':visited'], which WordPress supports); the reader and writer are not built"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state-tokens.mjs#applyTokenLooks",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": ":visited: no browser exposes it to scripts, so its look is read from the draft's own stylesheet rule (read \"code\": the render cannot confirm it) and written to styles.elements.link[':visited'] of theme-snapshot.patch.json when the target is a plain content link (lib/snapshot-tokens.mjs::isThemeLink); a link a block setting owns, or with no href, is a named gap (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:volume-locked": {
 			"excluded": {

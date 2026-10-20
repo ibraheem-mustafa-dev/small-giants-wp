@@ -13,6 +13,7 @@ import { contentType } from './draft.mjs';
 import { FLUID_WIDTHS, SWEEP_WIDTHS, LENGTH_PROPS } from './fill-values.mjs';
 import { extraProps, readExtras, missingExtras } from './fill-declared.mjs';
 import { readStates } from './fill-state-read.mjs';
+import { readLogicStates } from './fill-logic-state.mjs';
 
 const RESOLVE = resolveFinder.toString();
 const COLLECT = collectPair.toString();
@@ -140,10 +141,12 @@ async function openPage( browser, devices, { url, open, width, origin, external,
 //                         PROPS (lib/fill-declared.mjs::extraProps) are read rendered into widths[w][targetId].styles too.
 //   sweep[targetId][prop] [{ width, value }] every 16px from 320 to 1920 (lengths and keywords as read).
 //   states[w]             each target's state looks at READ_WIDTHS (lib/fill-state-read.mjs::readStates), when `states`
-//                         (the state vocabulary, lib/db.mjs::statesVocabulary) is given.
+//                         (the state vocabulary, lib/db.mjs::statesVocabulary) is given; with `logicRows` (the state map's
+//                         `scIf` rows) it also holds the looks behind each set-state sc-if (lib/fill-logic-state.mjs::readLogicStates)
+//                         in the same shape, and `logicGaps`.
 // nodes: lib/fill-skeleton.mjs::skeletonNodes. open: the regex source of the text to click first. external: allow the
 // draft to load anything beyond its own origin (off by default, so a read is the same offline).
-export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, states = [], log = () => {} } ) {
+export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, states = [], logicRows = [], log = () => {} } ) {
 	const { chromium, devices } = await loadChromium();
 	const origin = new URL( url ).origin;
 	const jobs = jobsFor( nodes );
@@ -172,6 +175,13 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 				// Each target's state looks (FR-48-81), every target included: a state often reveals one hidden at rest.
 				if ( states.length ) {
 					result.states[ width ] = await readStates( { page, cdp, jobs, rows: states, rest: result.declared[ width ], resolveSrc: RESOLVE, log } );
+					if ( logicRows.length ) {
+						const logic = await readLogicStates( { page, cdp, jobs, rest: result.declared[ width ], logicRows, vocab: states, resolveSrc: RESOLVE, log } );
+						for ( const [ id, looks ] of Object.entries( logic.looks ) ) {
+							( result.states[ width ].looks[ id ] ??= [] ).push( ...looks );
+						}
+						result.states[ width ].logicGaps = logic.gaps;
+					}
 				}
 			}
 			log( `read ${ width }px: ${ Object.values( result.widths[ width ] ).filter( ( s ) => ! s.missing ).length } of ${ jobs.length } targets` );

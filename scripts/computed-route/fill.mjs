@@ -7,8 +7,9 @@
 //   node scripts/computed-route/fill.mjs --serve <folder> [--draft-index <file>]    serve a draft folder until Ctrl-C
 // Reads sites/<client>/build/surfaces.json (the surface's walker states), sites/<client>/theme-snapshot.json and the
 // divergence ledger; writes only into --out: filled.tree.json, fill-report.md, fill-report.json, unmapped.json,
-// handover.json, breakpoints.json and the generated walker config. It never builds a page and never writes the
-// surface's own tree file. Beside the tree it writes <surface>.origin.json (cr-ref to tpl key and fingerprint) when the
+// handover.json, breakpoints.json, the generated walker config and, when the draft's focus, press or link-state looks
+// live in the theme, theme-snapshot.patch.json (the keys to merge into the client's theme-snapshot.json: Fill never
+// edits it). It never builds a page and never writes the surface's own tree file. Beside the tree it writes <surface>.origin.json (cr-ref to tpl key and fingerprint) when the
 // skeleton names its draft elements by tpl finder.
 import fs from 'fs';
 import path from 'path';
@@ -32,6 +33,7 @@ import { sweepSteps } from './lib/fill-values.mjs';
 import { walkerConfigs } from './lib/fill-config.mjs';
 import { fillReport, unmappedList } from './lib/fill-report.mjs';
 import { calibrationFor } from './solve.mjs';
+import { stateMap } from './lib/state-map.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -130,7 +132,11 @@ export async function fillSurface( o ) {
 		if ( vocab.missing ) {
 			log( vocab.missing );
 		}
-		const reads = await readDraft( { url, nodes, open: o.open || null, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, log } );
+		// FR-48-13: the surface's sc-if rows from its generated state map, so the reader also enters the draft's own logic
+		// states (lib/fill-logic-state.mjs); none when intake has not run.
+		const intakeFile = path.join( buildDir, 'intake', 'intake.json' );
+		const logicRows = fs.existsSync( intakeFile ) && vocab.rows.length ? stateMap( { surfaces, surface: o.surface, intake: JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ), vocab: vocab.rows } ).scIf : [];
+		const reads = await readDraft( { url, nodes, open: o.open || null, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, log } );
 		const calFor = calibrationLoader( entry.site, o.cache );
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
 		const result = fillTree( {
@@ -144,6 +150,7 @@ export async function fillSurface( o ) {
 		const states = fillStates( { tree, nodes, reads, calFor, db, snapshot } );
 		result.writes.push( ...states.writes );
 		result.unmapped.push( ...states.unmapped );
+		const patchFile = states.patchEntries.length ? 'theme-snapshot.patch.json' : null;
 		result.notes.push( ...states.held.map( ( h ) => `${ h.node } (${ h.slot }) ${ h.prop } ${ h.state }: ${ h.reason }` ) );
 		// Motion (Spec 48 FR-48-78): the draft's motion records from intake's re-derived inventory, written as each
 		// node's sgsMotion, with every target's entrance and endless animations sampled at 375, 768 and 1440 as the render
@@ -160,13 +167,17 @@ export async function fillSurface( o ) {
 		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.
 		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => 'motion' !== w.how && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent } );
 		const steps = sweepSteps( reads.sweep, ( id ) => ( { node: refOf( flat[ Number( id.split( ':' )[ 0 ] ) ] ), slot: id.slice( id.indexOf( ':' ) + 1 ) } ) );
-		const report = fillReport( { client: o.client, surface: o.surface, draft: o.draftDir ? `${ o.draftDir } (served locally)` : url, nodes: nodes.length, targets: nodes.reduce( ( t, n ) => t + n.targets.length, 0 ), ...result, steps, entrances, sweepSkipped: false === o.sweep } );
+		const report = fillReport( { client: o.client, surface: o.surface, draft: o.draftDir ? `${ o.draftDir } (served locally)` : url, nodes: nodes.length, targets: nodes.reduce( ( t, n ) => t + n.targets.length, 0 ), ...result, steps, entrances, snapshotPatch: { file: patchFile, entries: states.patchEntries }, sweepSkipped: false === o.sweep } );
 		const divergences = fs.existsSync( ledgerFile ) ? path.relative( outDir, ledgerFile ).split( path.sep ).join( '/' ) : null;
 		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, draftUrl: url, liveUrl: o.liveUrl, open: o.open || null, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening' } );
 		const put = ( name, text ) => fs.writeFileSync( path.join( outDir, name ), text );
 		put( 'filled.tree.json', `${ JSON.stringify( tree, null, 2 ) }\n` );
 		put( 'fill-report.md', report.markdown );
 		put( 'fill-report.json', JSON.stringify( report.json, null, 1 ) );
+		if ( patchFile ) {
+			put( patchFile, `${ JSON.stringify( states.patch, null, 2 ) }
+` );
+		}
 		put( 'unmapped.json', JSON.stringify( unmappedList( result.unmapped ), null, 1 ) );
 		put( 'handover.json', JSON.stringify( result.handover, null, 1 ) );
 		put( 'breakpoints.json', JSON.stringify( steps, null, 1 ) );
