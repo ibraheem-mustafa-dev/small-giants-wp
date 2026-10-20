@@ -12,11 +12,12 @@
  *
  * The CPT is NAV-ONLY (operator decision): a mega panel is never viewable
  * as a standalone web page. `public => false` / `publicly_queryable =>
- * false` mean the panel itself has no permalink; every nav item pointing
- * at a mega panel must resolve via {@see resolve_panel_for_menu_item()} or
- * degrade to `#`/plain-link (FR-36-9a), and links to the panel's Section
- * page ({@see section_url()}) when one is set (FR-36-5). `show_in_nav_menus => true` still works independently of
- * `public` — the "add items" panel reads `get_post_types( array(
+ * false` mean the panel itself has no permalink. Every nav item pointing
+ * at a mega panel opens it through {@see resolve_panel_for_menu_item()}
+ * (a trashed or missing panel degrades to a plain link, FR-36-9a) and
+ * links to the panel's Section page ({@see section_url()}), or to nothing
+ * when it has none (FR-36-5). `show_in_nav_menus => true` still works
+ * independently of `public` — the "add items" panel reads `get_post_types( array(
  * 'show_in_nav_menus' => true ) )`, so Appearance -> Menus is unaffected.
  *
  * That same `show_in_nav_menus => true` does not default the "add items"

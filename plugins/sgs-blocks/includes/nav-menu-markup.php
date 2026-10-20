@@ -152,7 +152,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 							 */
 							$root_class   = 'sgs-nav-bar-menu__mega sgs-nav-bar-menu__mega--split';
 							$trigger_html = sprintf(
-								'<a class="sgs-nav-bar-menu__link" href="%1$s" data-sgs-nav-path="%2$s"><span class="sgs-nav-bar-menu__label sgs-nav-bar-menu__magnet-target">%3$s</span></a>'
+								'<a class="sgs-nav-bar-menu__link" href="%1$s" data-sgs-nav-path="%2$s" data-wp-on--keydown="actions.linkKeydown"><span class="sgs-nav-bar-menu__label sgs-nav-bar-menu__magnet-target">%3$s</span></a>'
 								. '<button type="button" class="sgs-nav-bar-menu__subtoggle sgs-nav-bar-menu__mega-trigger sgs-focus--inset" data-sgs-mega-trigger aria-expanded="false" aria-controls="%4$s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
 								. '<span class="screen-reader-text">%5$s</span>%6$s</button>',
 								esc_url( $item['url'] ),
@@ -313,7 +313,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 						 */
 						if ( ! empty( $item['has_url'] ) ) {
 							$trigger_html = sprintf(
-								'<a class="sgs-nav-bar-menu__link" href="%s" data-sgs-nav-path="%s"><span class="sgs-nav-bar-menu__link-text sgs-nav-bar-menu__magnet-target">%s</span></a>'
+								'<a class="sgs-nav-bar-menu__link" href="%s" data-sgs-nav-path="%s" data-wp-on--keydown="actions.linkKeydown"><span class="sgs-nav-bar-menu__link-text sgs-nav-bar-menu__magnet-target">%s</span></a>'
 								. '<button type="button" class="sgs-nav-bar-menu__subtoggle sgs-focus--inset" data-sgs-mega-trigger aria-expanded="false" aria-controls="%s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
 								. '<span class="screen-reader-text">%s</span>%s</button>',
 								esc_url( $item['url'] ),

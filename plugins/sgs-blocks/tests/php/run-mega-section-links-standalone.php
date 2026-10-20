@@ -192,7 +192,7 @@ $mega_plain  = array(
 
 $GLOBALS['sgs_test_rendering_panel'] = 100;
 $bar = sgs_nav_bar_menu_render_items( array( $mega_linked ), array(), 'sgs-nav-bar-menu-u1', $submenu );
-ok( false !== strpos( $bar, '<a class="sgs-nav-bar-menu__link" href="https://example.test/page-10/" data-sgs-nav-path="/page-10/">' ), 'bar: the label is a link to the section page carrying data-sgs-nav-path' );
+ok( false !== strpos( $bar, '<a class="sgs-nav-bar-menu__link" href="https://example.test/page-10/" data-sgs-nav-path="/page-10/" data-wp-on--keydown="actions.linkKeydown">' ), 'bar: the label is a link to the section page carrying data-sgs-nav-path and the Escape handler' );
 ok( 1 === preg_match( '#<button type="button" class="sgs-nav-bar-menu__subtoggle sgs-nav-bar-menu__mega-trigger sgs-focus--inset" data-sgs-mega-trigger aria-expanded="false" aria-controls="sgs-nav-bar-menu-u1-mega-100"[^>]*><span class="screen-reader-text">Show submenu for About</span><span class="sgs-nav-bar-menu__caret" aria-hidden="true"><svg#', $bar ), 'bar: a separate chevron button keeps __mega-trigger, controls the panel, is named and shows its caret with submenuCaret off' );
 ok( false !== strpos( $bar, 'class="sgs-nav-bar-menu__mega sgs-nav-bar-menu__mega--split"' ), 'bar: the mega root carries the split modifier' );
 ok( 1 === substr_count( $bar, 'View all About' ), 'bar: the panel footer "View all" prints once' );
@@ -200,6 +200,30 @@ ok( 1 === substr_count( $bar, 'View all About' ), 'bar: the panel footer "View a
 $GLOBALS['sgs_test_rendering_panel'] = 101;
 $bar_plain = sgs_nav_bar_menu_render_items( array( $mega_plain ), array(), 'sgs-nav-bar-menu-u1', $submenu );
 ok( false === strpos( $bar_plain, '<a ' ) && false !== strpos( $bar_plain, '<button type="button" class="sgs-nav-bar-menu__link sgs-nav-bar-menu__mega-trigger"' ), 'bar: with no section page the item is the button-only trigger' );
+
+$dropdown_bar = sgs_nav_bar_menu_render_items(
+	array(
+		array(
+			'identifier' => 'id:10',
+			'label'      => 'Shop',
+			'url'        => 'https://example.test/shop/',
+			'has_url'    => true,
+			'type'       => 'page',
+			'object_id'  => 10,
+			'children'   => array(
+				array(
+					'identifier' => 'c1',
+					'label'      => 'Gifts',
+					'url'        => 'https://example.test/gifts/',
+				),
+			),
+		),
+	),
+	array(),
+	'sgs-nav-bar-menu-u1',
+	$submenu
+);
+ok( 1 === preg_match( '#data-wp-on--keydown="actions.linkKeydown">.*?</a><button type="button" class="sgs-nav-bar-menu__subtoggle sgs-focus--inset"[^>]*><span class="screen-reader-text">Show submenu for Shop</span><span class="sgs-nav-bar-menu__caret" aria-hidden="true"><svg#', $dropdown_bar ), 'bar: a dropdown parent with a page carries the Escape handler and its chevron shows the caret with submenuCaret off' );
 
 // The same no-section item through the pre-change markup, in its own process: the whole
 // includes/ folder of PRE_CHANGE_SHA is extracted (its files require each other).

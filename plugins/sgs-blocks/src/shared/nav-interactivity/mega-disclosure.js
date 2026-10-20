@@ -1124,6 +1124,30 @@ const { state } = store( 'sgs/mega', {
 		},
 
 		/**
+		 * Keyboard on a split row's own link (a parent that has a page): Escape
+		 * closes the open panel and leaves focus on the link. Every other key
+		 * keeps its link behaviour, so Enter still navigates. The page-level
+		 * Escape listener skips presses inside a disclosure, so the link needs
+		 * its own.
+		 */
+		linkKeydown( event ) {
+			if ( event.key !== 'Escape' && event.key !== 'Esc' ) {
+				return;
+			}
+			const ctx = getContext();
+			if ( ! ctx.isOpen ) {
+				return;
+			}
+			event.preventDefault();
+			clearOpenTimer( ctx.megaId );
+			clearCloseTimer( ctx.megaId );
+			ctx.isOpen = false;
+			state.openMegaId = null;
+			syncTriangleWatcher();
+			syncOutsideClickWatcher();
+		},
+
+		/**
 		 * Keyboard inside the panel: Escape closes + returns focus; Tab off the
 		 * last (or Shift+Tab off the first) focusable closes and returns focus,
 		 * so the disclosure never traps (FR-36-10 — NOT a modal).
