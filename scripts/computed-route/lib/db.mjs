@@ -98,6 +98,22 @@ export function candidates( db, block, prop, state = null ) {
 		( r.css_state || null ) === ( state || null ) );
 }
 
+// The setting states the framework holds (block_attributes.css_state): a state look is written through one of them.
+export function settingStates( db ) {
+	return new Set( db.prepare( 'SELECT DISTINCT css_state FROM block_attributes WHERE css_state IS NOT NULL' ).all().map( ( r ) => r.css_state ) );
+}
+
+// The state vocabulary (the `states` table, seeded from plugins/sgs-blocks/scripts/data/states.json): every mechanism
+// that expresses a state, its state word and how a reader reaches it. { rows, missing } — missing names why it is
+// empty (a DB seeded before the table existed), so a caller reports it rather than reading nothing silently.
+export function statesVocabulary( db ) {
+	const has = db.prepare( "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'states'" ).get();
+	if ( ! has ) {
+		return { rows: [], missing: 'the framework DB has no states table: reseed it (sgs-update-v2.py) to read state looks' };
+	}
+	return { rows: db.prepare( 'SELECT state, family, kind, token, reach, call, note FROM states ORDER BY id' ).all().map( plain ), missing: null };
+}
+
 // The other rows sharing a flat_sibling base name (backgroundImage, backgroundImageTablet, backgroundImageMobile).
 export function siblings( db, block, attr ) {
 	const base = attr.replace( /(Tablet|Mobile)$/, '' );

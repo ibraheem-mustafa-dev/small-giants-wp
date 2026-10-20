@@ -164,6 +164,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/skeleton-finalise.mjs` | Client decisions and finaliser picks on disk (with the element signature that makes a stale decision visible), the finalise request for the low rows and the validated merge of the picks. |
 | `lib/fill-read.mjs` | Reads the draft in Chromium through the walker's `collectPair` and `resolveFinder` at 375, 768, 1440 and the fluid widths, plus the 16px sweep; blocks or mirrors requests beyond the draft's origin. |
 | `lib/fill-declared.mjs` | FR-48-8: what the draft's code declares on each target beyond Fill's list, read rendered too, and the declared value a used-value property (height, offsets, grid tracks) takes. |
+| `lib/fill-state.mjs` | FR-48-81: Fill's state pass. Each target's state looks are written through the setting that holds that state (`block_attributes.css_state`), a first pass from the code beside the resting pass; focus that paints like hover is left to the hover setting, and every other look (a different focus, a press, a combination, a state no setting holds) is a named gap. |
 | `lib/fill-state-read.mjs` | FR-48-81: each target's state looks. Every draft rule whose selector carries a state the framework vocabulary names (pseudo-class, ARIA or native attribute, state class, data attribute) is entered on the element that carries it, then the target's declared values and their render are read and the page restored; unreachable states (`:visited`) are listed. |
 | `lib/fill-prop.mjs` | One property of one element: which tiers differ from what the node shows, the slots a setting could paint, `clamp()` where a setting accepts one; every write is the resolver's. |
 | `lib/fill-equivalents.mjs` | FR-48-8 step 5: a draft property no setting holds, written through a setting for another property on the element or its parent (the framework DB's `property_equivalents`), only under each row's condition. |
@@ -347,6 +348,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/fill-fixture-preconditions.test.mjs` | The footer social row keeps the 1px solid border and the background switch the social-icons fixture paints in calibration (MUST FAIL); a draft with no border writes no border settings; the fixture's preconditions are its styling settings only, and a words-and-level fixture has none. |
 | `tests/calibrate-size-box.test.mjs` | A per-device `{ width, height }` size setting gets a marker of that shape and Fill writes it in that shape; a setting's slots drop an element that changed in a variant without carrying the marker value (`sgs/icon`'s hugging root). |
 | `tests/fill-surface.test.mjs` | FR-47-4 step 5: `fillSurface` end to end over a local folder and a temp repo; an invalid skeleton is refused and only `--out` is written (MUST FAIL). |
+| `tests/fill-state.test.mjs` | FR-48-81 (MUST FAIL, real framework DB): a hover look writes the hover setting and never the resting one, focus like hover is held, a different focus, a closing look and a combined state are named gaps, the held states come from the DB (negative control without the row), and a missing `states` table is named. |
 | `tests/fill-state-read.test.mjs` | FR-48-81 (MUST FAIL, real browser): token matching, and on one planted page a hover carried by an ancestor, an `aria-expanded` burger, an `is-active` tab, `[open]`, a popover hidden at rest, `:focus-visible`, a whole-compound `[aria-current]` and a negated `:not(.is-active):hover` each read from its host, `:visited` listed, and the page restored; the negative control drops one vocabulary row and its look. |
 | `tests/fill-declared.test.mjs` | FR-48-8 (MUST FAIL): declared extras, the used-value guard, each tolerance and verdict, draft IDs and the defect index, and end to end a code value its render overrides written as rendered and reported, with properties beyond the list named from their declared values. |
 
@@ -359,6 +361,7 @@ Measures a rendered design draft and writes block settings through the framework
 - `openDb(file?)` → a read-only `DatabaseSync`.
 - `attrsFor(db, block)` → the block's `sgs` rows that paint a CSS property.
 - `candidates(db, block, prop, state?)` → rows painting `prop` (shorthand or comma-list member) in `state`.
+- `settingStates(db)` → the setting states the framework holds (distinct `css_state`); `statesVocabulary(db)` → `{ rows, missing }`, the `states` table (the state vocabulary), with `missing` naming why it is empty on a DB seeded before the table existed.
 - `enumSettings(db, block)` → enum settings with no css_property (calibration discovers what each value paints).
 - `siblings(db, block, attr)` → the `flat_sibling` rows sharing `attr`'s base name.
 - `attrRow(db, block, attr)` → one row whatever its source, or null.
@@ -393,6 +396,7 @@ Measures a rendered design draft and writes block settings through the framework
 - `BLOCKS_DIR`: the block sources folder.
 - `GAPS`: gap reasons (`no-setting`, `ambiguous`, `shape`, `uncalibrated`).
 - `blockSchema(slug)` → the block's `block.json` attributes.
+- `blockElements(slug)` → `{ "<element>": "<selector>" }` from the block's `block.json` manifest (`supports.sgs.elements`); calibration hovers or focuses a state marker's element through it (`lib/calibrate-instances.mjs::stateTarget`).
 - `splitProperty(prop)` → `{ short, side }` (a walker longhand as the database shorthand and box side).
 - `tiersOf(perWidth, prop)` → `{ tiers, confirm }` (375 mobile, 768 tablet, 1440 desktop; Spec 48 FR-48-74). 1920 is never a source: `confirm` is `{ at1440, at1920 }` when the 1920 reading differs from 1440, else null.
 - `fluidForm(declared)` → the calibration form a declared value takes (`clamp`, `min`, `max`, `vw`) or null.
@@ -828,6 +832,10 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 ### `lib/fill-declared.mjs`
 - `extraProps(declared, read)` → `{ prop: declared }` the code sets beyond Fill's list (motion timings, CSS-wide keywords and shorthands left out); `readExtras(page, jobs, extras, resolveSrc)` → their rendered values; `missingExtras(result, read, widths)` → the extras declared at some read width but not yet read at another, so readDraft reads them at every width; `isShorthand(prop)` (mdn-data).
 - `usedValueDraft(declared)` → the plain declared length a used-value property takes, or null; `usedValueDrafts(draft, declaredAt)` → `{ draft, notPlain }` (the widths whose code states another form, which Fill names); `USED_VALUE` (height, the offsets, row tracks; width and the column tracks keep their own rules), `CSS_WIDE`.
+
+### `lib/fill-state.mjs`
+- `fillStates({ tree, nodes, reads, calFor, db, snapshot })` → `{ writes, unmapped, held }`, writing into the tree in place through `lib/fill-prop.mjs::resolveProperty` with the look's state.
+- `stateDrafts(reads, id)` → Map `state|prop` → `{ state, prop, perWidth }` (a combination joined by `+`); `stateGap(state, held)` → why a look has no setting state, or null.
 
 ### `lib/fill-state-read.mjs`
 - `readStates({ page, cdp, jobs, rows, rest, resolveSrc, log })` → `{ looks: { targetId: [{ states, family, selector, tokens, declared, rendered }] }, unreached }`: every state look whose declared values differ from rest (`declaredDiff(rest, state)`), at the page's current width. `rows` is the state vocabulary (the framework DB's `states` table).
