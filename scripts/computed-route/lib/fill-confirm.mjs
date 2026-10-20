@@ -144,11 +144,14 @@ export function verdictOf( dr, defect ) {
 export function confirmRecords( { writes, nodes, reads, defects = new Map(), rootComponent } ) {
 	const out = [];
 	for ( const w of writes.filter( ( x ) => x.prop && ! x.prop.startsWith( '(' ) ) ) {
-		const slot = String( w.slot ?? '' );
+		// A write made through another setting (lib/fill-equivalents.mjs) is confirmed on the element whose property it
+		// holds: a parent's Align items against the child that asked align-self.
+		const src = w.from || w;
+		const slot = String( src.slot ?? '' );
 		// A painted pseudo layer (`::before`, `::after`) is its element's: rendered from the layer, with no declared read.
 		const layer = /::(?:before|after)$/.exec( slot )?.[ 0 ] ?? null;
 		const base = layer ? slot.slice( 0, -layer.length ) : slot;
-		const target = nodes[ w.index ]?.targets.find( ( t ) => t.slot === base );
+		const target = nodes[ src.index ]?.targets.find( ( t ) => t.slot === base );
 		const record = { node: w.node, block: w.block, attribute: w.attr, property: w.prop, state: 'default', emitted: w.after ?? null, renderedLive: null };
 		if ( ! target ) {
 			out.push( { ...record, draftId: null, width: null, declared: null, renderedDraft: null, dr: 'no-target', tolerance: null, verdict: 'open' } );

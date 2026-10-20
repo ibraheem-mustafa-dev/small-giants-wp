@@ -11,6 +11,7 @@ import { fillTree } from '../lib/fill-resolve.mjs';
 import { skeletonNodes, cleanTree } from '../lib/fill-skeleton.mjs';
 import { addRefs } from '../lib/tree.mjs';
 import { openDb } from '../lib/db.mjs';
+import { confirmRecords } from '../lib/fill-confirm.mjs';
 
 const SEED = JSON.parse( readFileSync( fileURLToPath( new URL( '../../../plugins/sgs-blocks/scripts/data/property-equivalents.json', import.meta.url ) ), 'utf8' ) ).rows;
 // The framework DB with property_equivalents answered from the seed file (the shared DB gains the table at its reseed).
@@ -55,6 +56,7 @@ function state( childStyles, rect = { h: 400 } ) {
 		calFor: () => ( { settings: { alignItems: { property: 'align-items', slot: '.sgs-container__inner', slots: [ '.sgs-container__inner' ], state: null } } } ),
 		reads: { widths },
 		snaps: [],
+		out: { writes: [] },
 	};
 }
 function hooks() {
@@ -109,6 +111,20 @@ test( 'MUST FAIL: a declared height becomes min-height on the element itself onl
 	assert.equal( g.calls.resolve.length, 0 );
 } );
 
+test( 'MUST FAIL: the parent hop never overrides a setting the parent wrote from its own draft, nor covers a width the child leaves out', () => {
+	const own = state( [ { 'align-self': 'center' }, { 'align-self': 'center' } ] );
+	own.out.writes.push( { index: 0, attr: 'x', prop: 'align-items' } );
+	const o = hooks();
+	assert.equal( fillEquivalent( own, own.nodes[ 1 ], { slot: '', id: '1:' }, 'align-self', { 1440: 'center' }, o.h ), null );
+	assert.equal( o.calls.apply.length, 0 );
+	// Siblings read at 375 and 1440; this child's draft names only 1440, so the parent would paint 375 unasked.
+	const wide = state( [ { 'align-self': 'center' }, { 'align-self': 'center' } ] );
+	wide.reads.widths[ 375 ] = { '1:': { styles: { 'align-self': 'center' } }, '2:': { styles: { 'align-self': 'flex-end' } } };
+	const w = hooks();
+	assert.equal( fillEquivalent( wide, wide.nodes[ 1 ], { slot: '', id: '1:' }, 'align-self', { 1440: 'center' }, w.h ), null );
+	assert.equal( w.calls.resolve.length, 0 );
+} );
+
 test( 'a row whose setting the resolver cannot reach is passed over, not written', () => {
 	const st = state( [ { 'align-self': 'center' } ] );
 	const r = hooks();
@@ -134,8 +150,10 @@ function fillWith( alignments ) {
 	const kid = ( a, i ) => ( { styles: { ...BASE, 'align-self': a }, pseudo: {}, rect: { x: 0, y: i * 40, w: 300, h: 40 }, inFlow: true, words: `T${ i }`, href: null } );
 	const widths = Object.fromEntries( FIVE.map( ( w ) => [ w, { '0:': { styles: BASE, pseudo: {}, rect: { x: 0, y: 0, w: 300, h: 200 }, inFlow: true, words: '', href: null }, ...Object.fromEntries( alignments.map( ( a, i ) => [ `${ i + 1 }:`, kid( a, i ) ] ) ) } ] ) );
 	const declared = Object.fromEntries( FIVE.map( ( w ) => [ w, Object.fromEntries( alignments.map( ( a, i ) => [ `${ i + 1 }:`, { 'align-self': a } ] ) ) ] ) );
-	const out = fillTree( { tree, nodes: skeletonNodes( skeleton ), reads: { widths, declared, sweep: {}, origin: 'http://127.0.0.1:1' }, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, calFor: ( b ) => CAL[ b ] ?? null, ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
-	return { tree, ...out };
+	const nodes = skeletonNodes( skeleton );
+	const reads = { widths, declared, sweep: {}, origin: 'http://127.0.0.1:1' };
+	const out = fillTree( { tree, nodes, reads, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, calFor: ( b ) => CAL[ b ] ?? null, ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
+	return { tree, nodes, reads, ...out };
 }
 
 test( 'MUST FAIL (end to end): children all asking align-self centre write the container\'s Align items once; a dissenting child leaves every row unmapped', () => {
@@ -144,6 +162,9 @@ test( 'MUST FAIL (end to end): children all asking align-self centre write the c
 	assert.deepEqual( writes.map( ( w ) => [ w.block, w.attr, w.how ] ), [ [ 'sgs/container', 'alignItems', 'equivalent:parent' ] ] );
 	assert.equal( agreed.tree[ 0 ].attributes.alignItems, 'center' );
 	assert.equal( agreed.unmapped.filter( ( u ) => 'align-self' === u.property ).length, 0 );
+	// The confirm record reads the child that asked align-self, not the container's inner element (which has no target).
+	const rec = confirmRecords( { writes: writes, nodes: agreed.nodes, reads: agreed.reads } ).filter( ( r ) => 'align-self' === r.property );
+	assert.ok( rec.length > 0 && rec.every( ( r ) => 'center' === r.declared && 'center' === r.renderedDraft && 'open' !== r.verdict ), JSON.stringify( rec ) );
 	const mixed = fillWith( [ 'center', 'flex-end', 'center' ] );
 	assert.equal( mixed.writes.filter( ( w ) => 'align-self' === w.prop ).length, 0 );
 	assert.equal( mixed.tree[ 0 ].attributes.alignItems, undefined );

@@ -2709,7 +2709,15 @@ def _gradient_slot(slug: str, fields: dict) -> tuple:
     return (slug, *(fields.get(k) or None for k in ("css_property", "css_layer", "css_element", "css_state", "css_tier")))
 
 
-def _route_gradient_rows(entries: "list[dict]", attrs_by_block: dict, evicted: "set[tuple]") -> int:
+def _load_override_fields() -> dict:
+    """{(slug, attr): fields} from attr-classification-overrides.json, the layer sgs-update-v2.py applies after this
+    file, so a gradient sibling inherits the base it will finally carry."""
+    path = Path(__file__).resolve().parents[1] / "attr-classification-overrides.json"
+    entries = json.loads(path.read_text(encoding="utf-8")).get("entries", [])
+    return {(e["slug"], e["attr"]): {k: v for k, v in e.get("fields", {}).items() if not k.startswith("_")} for e in entries}
+
+
+def _route_gradient_rows(entries: "list[dict]", attrs_by_block: dict, evicted: "set[tuple]", overrides: "dict | None" = None) -> int:
     """Give a gradient setting with no css_property its base colour setting's context (`xGradient` beside `x`,
     `overlayGradientHover` beside `overlayHover`): it paints the same element in the same state and tier, through the
     gradient key of the base's mechanism. Runs after slot eviction. A base with no css_property proves nothing, so that
@@ -2725,15 +2733,16 @@ def _route_gradient_rows(entries: "list[dict]", attrs_by_block: dict, evicted: "
             own = by_key.get((slug, attr))
             if own and own["fields"].get("css_property"):
                 continue
-            base = by_key.get((slug, attr.replace("Gradient", "", 1)))
-            listed = {p.strip() for p in str((base or {}).get("fields", {}).get("css_property") or "").split(",")}
+            base_attr = attr.replace("Gradient", "", 1)
+            base_fields = {**(by_key.get((slug, base_attr)) or {}).get("fields", {}), **(overrides or {}).get((slug, base_attr), {})}
+            listed = {p.strip() for p in str(base_fields.get("css_property") or "").split(",")}
             key = next((k for p, k in _GRADIENT_KEY_BY_BASE if p in listed), None)
             if not key:
                 continue
             fields = {"css_property": key}
             for inherited_field in ("css_layer", "css_element", "css_state", "css_tier"):
-                if base["fields"].get(inherited_field):
-                    fields[inherited_field] = base["fields"][inherited_field]
+                if base_fields.get(inherited_field):
+                    fields[inherited_field] = base_fields[inherited_field]
             slot = _gradient_slot(slug, fields)
             if slot in taken:
                 continue
@@ -3544,6 +3553,7 @@ def extract_css_property_and_layer() -> dict:
 
     _gradient_inherited = _route_gradient_rows(
         classification_entries, attrs_by_block, {(x["slug"], x["attr"]) for x in _slot_eviction_log},
+        _load_override_fields(),
     )
 
     # Strip the internal bookkeeping key from every entry before it reaches the
@@ -4020,7 +4030,11 @@ def _self_test_gradient_siblings_take_their_base_key() -> bool:
         {"slug": "sgs/f", "attr": "textColour", "fields": {"css_property": "color", "css_element": "title"}},
     ]
     attrs = {"sgs/f": {e["attr"] for e in entries} | {"backgroundColourGradient", "backgroundColourHoverGradient", "linkColourHoverGradient", "starColourGradient", "tileColourGradient", "tileColour", "evictedGradient", "takenColourGradient"}}
-    count = _route_gradient_rows(entries, attrs, {("sgs/f", "evictedGradient")})
+    attrs["sgs/f"] |= {"overriddenColour", "overriddenColourGradient", "linkColour", "linkColourGradient"}
+    entries.append({"slug": "sgs/f", "attr": "linkColour", "fields": {"css_property": "background-image,color", "css_element": "link"}})
+    entries.append({"slug": "sgs/f", "attr": "overriddenColour", "fields": {"css_property": "background-image,color", "css_element": "body"}})
+    overrides = {("sgs/f", "overriddenColour"): {"css_property": "color", "css_element": "body-link"}}
+    count = _route_gradient_rows(entries, attrs, {("sgs/f", "evictedGradient")}, overrides)
     got = {e["attr"]: e["fields"] for e in entries}
     expected = {
         "textColourGradient": {"css_property": "color-gradient", "css_element": "wrapper"},
@@ -4028,9 +4042,11 @@ def _self_test_gradient_siblings_take_their_base_key() -> bool:
         "backgroundColourHoverGradient": {"css_property": "background-color-gradient", "css_element": "card", "css_state": "hover"},
         "linkColourHoverGradient": {"css_property": "color-link-gradient", "css_state": "hover"},
         "starColourGradient": {"css_property": "fill-gradient", "css_element": "star"},
+        "overriddenColourGradient": {"css_property": "color-gradient", "css_element": "body-link"},
+        "linkColourGradient": {"css_property": "color-gradient", "css_element": "link"},
     }
     ok = all(got.get(a) == f for a, f in expected.items())
-    ok = ok and not {"tileColourGradient", "evictedGradient", "takenColourGradient"} & got.keys() and count == 4
+    ok = ok and not {"tileColourGradient", "evictedGradient", "takenColourGradient"} & got.keys() and count == 6
     print(("PASS" if ok else "FAIL") + " gradient siblings take their base key" + ("" if ok else f": {got} {count}"))
     return ok
 

@@ -5,6 +5,7 @@
 // write on the built page (FR-48-76): each carries how 'equivalent:<hop>'.
 import { resolveProperty } from './fill-prop.mjs';
 import { refOf } from './tree.mjs';
+import { READ_WIDTHS } from './fill-read.mjs';
 
 const PX_TOL = 0.5;
 
@@ -60,10 +61,13 @@ export function fillEquivalent( st, rec, target, prop, draft, h ) {
 		}
 		const key = `${ at.index }|${ row.setting_property }`;
 		if ( 'every-child-same' === row.condition ) {
-			if ( ! everyChildSame( at.children, prop, draft, ( c, w ) => {
+			const styleOf = ( c, w ) => {
 				const s = st.reads.widths[ w ]?.[ `${ c }:` ];
 				return s && ! s.missing ? s.styles : null;
-			} ) ) {
+			};
+			// The child's draft must cover every width a sibling was read at: the parent's setting paints them all.
+			const readAt = READ_WIDTHS.filter( ( w ) => at.children.some( ( c ) => styleOf( c, w ) ) );
+			if ( readAt.some( ( w ) => undefined === draft[ w ] ) || ! everyChildSame( at.children, prop, draft, styleOf ) ) {
 				continue;
 			}
 			if ( st.equivalentsDone.has( key ) ) {
@@ -78,9 +82,16 @@ export function fillEquivalent( st, rec, target, prop, draft, h ) {
 		if ( 'gap' === res.status ) {
 			continue;
 		}
+		// The parent's own draft already set this setting: its own value stands, and the child's row stays unmapped.
+		if ( onParent && 'written' === res.status && res.writes.some( ( w ) => st.out.writes.some( ( x ) => x.index === at.index && x.attr === w.attr ) ) ) {
+			continue;
+		}
 		st.equivalentsDone.add( key );
 		if ( 'written' === res.status ) {
+			const before = st.out.writes.length;
 			h.apply( st, at, refOf( st.flat[ at.index ] ), { slot: res.slot }, prop, { ...res, how: `equivalent:${ row.hop }` }, res.slot );
+			// Confirmed on the element that asked for the property (lib/fill-confirm.mjs::confirmRecords).
+			st.out.writes.slice( before ).forEach( ( w ) => Object.assign( w, { from: { index: rec.index, slot: target.slot } } ) );
 		}
 		return res;
 	}

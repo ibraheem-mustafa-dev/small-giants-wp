@@ -957,6 +957,7 @@ const MECHANISM_BY_CSS_PROPERTY = {
 	'color-link-gradient': 'text',
 	'background-color': 'fill',
 	'background-image': 'fill',
+	'background-image-gradient': 'fill',
 	'background-color-gradient': 'fill',
 	'border-color': 'border',
 	'border-color-gradient': 'border',
