@@ -89,7 +89,7 @@ WordPress's own closest structural analogue to this proposal — Synced Patterns
 
 ## 10. Known cross-cutting gap -- not resolved here
 
-**FR-42-10 (shared with Spec 43):** the cloning route does not yet create a saved `sgs_form` / `sgs_choice_flow` post; Spec 48's site-build script will create every target the confirmed page map names, forms and choice flows included (Spec 48 §12, FR-48-55, R-47-11). Until it does, a cloned form or flow is built into an existing post. Tracked in `.claude/plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md` section 1; the narrowing option (mandate for hand-authored content only) is Bean's policy call.
+**FR-42-10 (shared with Spec 43):** Spec 48's site-build script (FR-48-55, built 2026-10-20) creates a saved `sgs_form` / `sgs_choice_flow` post for every form and flow row of the confirmed page map (Spec 48 §12, R-47-11; Indus's four forms exist on indus-test), holding a placeholder. Stage 3 builds the fields into that post and links the page's `sgs/form` to it (Spec 48 FR-48-19, Indus plan step 21); until then a cloned form or flow is built into the page that shows it. Tracked in `.claude/plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md` section 1; the narrowing option (mandate for hand-authored content only) is Bean's policy call.
 
 ## 11. Sequencing
 

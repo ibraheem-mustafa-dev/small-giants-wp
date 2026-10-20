@@ -152,7 +152,7 @@ It sits beside the steps on wide containers (`summaryPosition` start or end) and
 
 ## 7a. Known cross-cutting gap -- shared with Spec 42, not resolved here
 
-**FR-43-14.** Same gap as Spec 42 FR-42-10: the cloning route does not yet create a saved `sgs_choice_flow` (or `sgs_form`) post; Spec 48's site-build script will create it from the confirmed page map (Spec 48 §12, FR-48-55, R-47-11). Until it does, a cloned flow or form is built into an existing post. One change fixes both CPTs. Tracked in `.claude/plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md` section 1.
+**FR-43-14.** Same gap as Spec 42 FR-42-10: Spec 48's site-build script (FR-48-55, built 2026-10-20) creates the saved `sgs_choice_flow` (or `sgs_form`) post for each flow or form row of the confirmed page map (Spec 48 §12, R-47-11), holding a placeholder; stage 3 builds the flow into it and links the page to it (Spec 48 FR-48-19). Until then a cloned flow or form is built into the page that shows it. One change fixes both CPTs. Tracked in `.claude/plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md` section 1.
 
 ## 8. Recommendation matching, and what is deferred
 
