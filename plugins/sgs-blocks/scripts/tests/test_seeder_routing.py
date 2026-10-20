@@ -106,6 +106,15 @@ def test_a_typography_helper_routes_the_vendor_prefixed_text_outline():
     assert elements["titleTextStrokeColour"] == {"title"}
 
 
+def test_a_typography_helper_marks_the_text_outline_hover_colour_as_hover():
+    php = "$css = sgs_typography_css_rule( $attributes, 'title', '.u .sgs-brand-strip__title' );"
+    attrs = {"titleTextStrokeColour", "titleTextStrokeColourHover"}
+    states: dict = {}
+    es._attrs_from_helper_calls(php, attrs, "brand-strip", states)
+    assert states.get("titleTextStrokeColourHover") == {"hover"}, "painted only through sgs_hover_state_rules"
+    assert "titleTextStrokeColour" not in states, "negative control: the resting colour carries no state"
+
+
 def test_a_derived_contracts_cover_every_former_hand_entry():
     former = {
         "sgs_button_element_style_css": {

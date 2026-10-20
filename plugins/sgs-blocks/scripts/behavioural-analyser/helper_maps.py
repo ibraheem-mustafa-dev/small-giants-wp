@@ -515,9 +515,13 @@ def _derive_suffix_states(
         # A value also declared in a statement that neither carries a hover marker
         # nor feeds a variable bound for a hover rule paints at rest too.
         flow = hover_states.hover_flow_vars(body, emitters, constants, es._split_php_statements)
+        # A statement that calls a hover emitter (`$css .= sgs_hover_state_rules( $sel, 'prop:' . $v )`) is the
+        # hover paint itself, so it never counts as a resting paint of the attributes it carries.
+        emitter_call = re.compile(r"\b(?:" + "|".join(re.escape(e) for e in emitters) + r")\s*\(") if emitters else None
         resting = " ".join(
             st for st in es._split_php_statements(body)
             if not hover_states.has_marker(st, constants)
+            and not (emitter_call and emitter_call.search(st))
             and not set(re.findall(r"\$(\w+)\s*(?:\[\])?\s*\.?=(?![=>])", st)) & flow
         )
         hover -= set(open_declaration_pairs(resting, vocab, unambiguous_var_attr(es, body), es._split_php_statements))
