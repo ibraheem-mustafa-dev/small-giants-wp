@@ -654,4 +654,4 @@ Empty: every entry closed on 2026-10-20.
 - `ResponsiveLogoTest`: the test helper hands `render.php` a null `$block`, so it raises no warning.
 - The 59 unrouted text-outline attributes: each is claimed in its block's element manifest, all 408 route after the reseed, and `check-text-stroke-routing.py --check` (fast tier) keeps it so.
 
-Owned elsewhere: the route's writer and detector for the new attributes and the two inline formats (`plans/2026-10-12-clone-coverage-foundation.md`, step 10); the Indus timeline years' outline following the current card (`plans/2026-10-11-spec48-indus-build.md`, step 20b).
+Owned elsewhere: the route's writer and detector for the new attributes and the two inline formats (`plans/2026-10-12-clone-coverage-foundation.md`, "Sequencing with Indus"); the Indus timeline years' outline following the current card (`plans/2026-10-11-spec48-indus-build.md`, step 20b).
