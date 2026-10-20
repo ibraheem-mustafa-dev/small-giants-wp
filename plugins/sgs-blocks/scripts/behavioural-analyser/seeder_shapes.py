@@ -237,6 +237,8 @@ def gather_php_evidence(
         "php_attr_element": php_attr_element,
         "helper_elements": helper_elements,
         "helper_states": helper_states,
+        # Attributes a prefix helper (Shape D) routes; the ambiguity net refuses two of them sharing an unelemented slot.
+        "helper_routed": set(helper_props),
         "state_colour_elements": state_colour_elements,
         "state_colour_states": state_colour_states,
         "value_composer_props": value_composer_props,
