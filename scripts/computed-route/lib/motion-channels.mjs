@@ -318,7 +318,7 @@ export function propertyChannels( property, value ) {
 	}
 }
 
-const IDENTITY = { opacity: 1, translateX: 0, translateY: 0, scale: 1, scaleX: 1, scaleY: 1, rotate: 0, rotateX: 0, rotateY: 0, blur: 0, grayscale: 0, brightness: 1, clip: 0 };
+export const IDENTITY = { opacity: 1, translateX: 0, translateY: 0, scale: 1, scaleX: 1, scaleY: 1, rotate: 0, rotateX: 0, rotateY: 0, blur: 0, grayscale: 0, brightness: 1, clip: 0 };
 
 // The from and to channels of a record's properties: { from, to, unsupported, other }. A channel the from side sets and
 // the to side leaves out (or sets to `none`) goes to its identity.

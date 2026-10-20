@@ -150,7 +150,7 @@ test( 'MUST FAIL: a backwards fill that jumps to the from-pose and holds through
 const LOOP_HTML = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
 body { margin: 0; } .track { width: 3000px; height: 40px; } .ring { width: 40px; height: 40px; animation: pulse 2s linear infinite; }
 @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } } .still { width: 40px; height: 40px; } .wide { width: 40px; height: 40px; } @media (min-width: 1000px) { .wide { animation: pulse 2s linear infinite; } }
-</style></head><body><div class="track"></div><div class="ring"></div><div class="wide"></div><div class="still"><svg width="20" height="20"><circle r="5" cx="10" cy="10"><animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite"/></circle></svg></div>
+</style></head><body><div class="track"></div><div class="ring"></div><div class="wide"></div><div class="still"><svg width="20" height="20"><circle r="5" cx="10" cy="10"><animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite"/></circle></svg></div><div class="gate"><svg width="20" height="20"><g opacity="0"><circle r="5" cx="10" cy="10"/><set attributeName="opacity" to="1" begin="2s" fill="freeze"/></g></svg></div>
 <script>const t = document.querySelector( '.track' ); const dist = 1700; t.animate( [ { transform: 'translateX(0)' }, { transform: 'translateX(-' + dist + 'px)' } ], { duration: dist / 0.045, iterations: Infinity } );</script></body></html>`;
 
 test( 'in a real browser: sampleMotion reads each element\'s endless animations as the code made them, its box and its SVG animation elements', async () => {
@@ -158,7 +158,7 @@ test( 'in a real browser: sampleMotion reads each element\'s endless animations 
 	fs.writeFileSync( path.join( dir, 'index.html' ), LOOP_HTML );
 	const served = await serveDraft( dir );
 	try {
-		const jobs = [ { id: 'track', finder: '.track' }, { id: 'ring', finder: '.ring' }, { id: 'still', finder: '.still' }, { id: 'wide', finder: '.wide' } ];
+		const jobs = [ { id: 'track', finder: '.track' }, { id: 'ring', finder: '.ring' }, { id: 'still', finder: '.still' }, { id: 'wide', finder: '.wide' }, { id: 'gate', finder: '.gate' } ];
 		const { entrances, loops } = await sampleMotion( { url: served.url, jobs, windowMs: 800, sweep: null } );
 		const track = loops.track[ 1440 ];
 		assert.equal( track.loops.length, 1 );
@@ -169,10 +169,13 @@ test( 'in a real browser: sampleMotion reads each element\'s endless animations 
 		assert.deepEqual( [ ring.css, ring.name, ring.duration, ring.frames.map( ( f ) => f.opacity ) ], [ true, 'pulse', 2000, [ '1', '0.4' ] ] );
 		assert.deepEqual( loops.still[ 768 ].loops, [], 'negative control: an element holding an SVG animation runs no endless animation itself' );
 		assert.equal( loops.still[ 768 ].smil[ 0 ].values, '1;0.4;1' );
+		const set = loops.gate[ 1440 ].smil[ 0 ];
+		assert.deepEqual( [ set.tag, set.attributeName, set.to, set.begin, set.fill, set.base ], [ 'set', 'opacity', '1', '2s', 'freeze', '0' ], 'an SVG <set> is sampled with its begin, fill and the value it overrides' );
+		assert.equal( loops.still[ 768 ].smil[ 0 ].begin, null, 'negative control: an <animate> states no begin' );
 		assert.equal( loops.wide[ 1440 ].loops.length, 1 );
 		assert.deepEqual( [ loops.wide[ 375 ].loops, loops.wide[ 768 ].loops ], [ [], [] ], 'a loop the render shows at 1440 only has an empty entry at the other widths' );
 		assert.equal( entrances.track[ 1440 ], null, 'a loop is not an entrance' );
-		for ( const id of [ 'track', 'ring', 'still', 'wide' ] ) {
+		for ( const id of [ 'track', 'ring', 'still', 'wide', 'gate' ] ) {
 			assert.deepEqual( Object.keys( loops[ id ] ).sort(), [ '1440', '375', '768' ], `${ id }: a loop job has an entry at every width the element was found` );
 		}
 	} finally {

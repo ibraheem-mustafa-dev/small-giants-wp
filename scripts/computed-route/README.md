@@ -173,6 +173,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/state-map.mjs` | FR-48-13: the state map generated from the draft. For one surface, every `sc-if` of the draft template is mapped to a way of reaching it (a walker state naming its draft state, the logic's state set directly, or the route, width, props or content that shows it) or listed as a gap row naming the condition; each walker state is listed with its setting state; `diffReasons` compares the map with `scripts/parity/flows/state-map-reasons.json`. Pure functions. |
 | `lib/state-map-io.mjs` | FR-48-13: the files the state map reads: the committed reasons, a client's `surfaces.json` and intake record, and the conflict entries one surface carries (the groups Solve refuses). |
 | `lib/fill-state.mjs` | FR-48-81: Fill's state pass. Each target's state looks are written through the setting that holds that state (`block_attributes.css_state`), a first pass from the code beside the resting pass; focus that paints like hover is left to the hover setting, and every other look (a different focus, a press, a combination, a state no setting holds) is a named gap. |
+| `lib/fill-timing.mjs` | FR-48-81: the transition timings a draft declares (`transition-duration`, `transition-timing-function`) written into the block's role-motion settings with CSS direction semantics: the resting rule times both directions, a state rule times entering that state, closing reverses opening; and the check that the live page times each change as the draft does. |
 | `lib/fill-state-apply.mjs` | FR-48-81: the state reader's in-page helpers: entering and leaving one state token on its host (an attribute, a class, a dialog or popover opened, the page scrolled), restoring what was there (a popover open at rest stays open; one another call light-dismissed is reopened), and reading a target's rendered values. |
 | `lib/snapshot-tokens.mjs` | FR-48-81, FR-32-19: the pure mappers from a draft's theme-level looks to the snapshot keys that carry them. A keyboard-focus look becomes `settings.custom.focus` keys (`width`, `ring`, `offset`, `near`, `far`, `bloom`, and `source: "draft"`, which `check-snapshot-focus-tokens.py` records instead of failing on 3:1); a button's `:active` look becomes `buttonPresets.{variant}.active-transform` and `active-shadow`, the only press roles `includes/helpers-button-press.php` paints. Whatever has no token (a dashed outline, a hard shadow ring, a pressed colour) is a named gap. Not yet wired into `fill.mjs`. |
 | `lib/fill-state-read.mjs` | FR-48-81: each target's state looks. Every draft rule whose selector carries a state the framework vocabulary names (pseudo-class, ARIA or native attribute, state class, data attribute) is entered on the element that carries it, then the target's declared values and their render are read and the page restored; unreachable states (`:visited`) are listed. |
@@ -191,6 +192,8 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/fill-entrance.mjs` | Samples a draft's entrances at 375, 768 and 1440 (delay, duration, first-frame pose, load or scroll trigger), sweeping down the page so scroll reveals play, and each element's endless animations as the code made them (timing, keyframes, box, `<marquee>` attributes, SVG animation elements): the motion writer's render check and the source of the values the code computes at run time. |
 | `lib/fill-motion.mjs` | The motion cloning writer (Spec 48 FR-48-78): each skeleton node's inventory motion records as its `sgsMotion`, on the root or the declared part a slot names, render-checked, token-snapped and validated before it is written. |
 | `lib/motion-layers.mjs` | One element's motion records as `entrance.base` (from and to, or `values.keyframes` for a record with more than two keyframes) and `hover.state` layers, and the match of a run-time-picked entrance to a measured pose. |
+| `lib/motion-states.mjs` | Which published motion state or open part a draft's state-triggered animation or transition plays on (the state's words against the block's `motion_support`, the open words from the `states` table). |
+| `lib/motion-set.mjs` | An SVG `<set>` that switches opacity or visibility once after load as the held entrance it can be, and the reason for any other. |
 | `lib/motion-check.mjs` | The motion writer's render check: a sampled entrance against the draft's code for duration and delay (device overrides) and for the from-pose and easing (reported only). |
 | `lib/motion-sample.mjs` | The sampled-pose check (FR-48-47): the pose the draft's code states at 0, half and all of an entrance's run (its keyframes, easing and direction), against the pose the probe read after pausing and seeking each animation there. |
 | `lib/css-matrix.mjs` | A CSS transform list as the 4x4 matrix a browser draws it with, in the list's own order, so the render check compares the code's from transform with the transform the render drew; a percentage or unknown function is unreadable (null). |
@@ -341,6 +344,8 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/fill-page.test.mjs` | FR-47-4: the theme baseline for the inherited properties calibration does not record. |
 | `tests/fill-entrance.test.mjs` | FR-48-47: entrance timing, distance and scale, a loop is not an entrance, a scroll reveal is timed from when it meets the viewport and a held backwards fill from its second change (MUST FAIL each), in a real browser with the page sweep and a no-sweep negative control. |
 | `tests/fill-motion.test.mjs` | FR-48-78: the motion writer's layers, tokens, presets, run-time pose match, render check and refusals (MUST FAIL each). |
+| `tests/motion-states.test.mjs` | FR-38A-33, FR-38A-53: state and open entrances from the draft's state words, transitions on a published state, the SVG `<set>` entrance, and the presets they name (MUST FAIL each). |
+| `tests/fill-timing.test.mjs` | FR-48-81 (MUST FAIL, real framework DB): a resting timing goes to the setting that times both directions, a state timing to the setting tagged with that state, closing reverses opening, and the timing check. |
 | `tests/motion-effects.test.mjs` | FR-48-78, FR-38A-44: loops as effects (marquee px/s, per-width track, float phase, pulse, gaps), the effect writer's placement and field checks, run-time loop match, `<marquee>` and SVG animation, intensity presets (MUST FAIL each). |
 | `tests/motion-loop-css.test.mjs` | FR-48-78, Spec 32 FR-32-20: an endless keyframe loop no effect draws is written to `sgsCustomCss` as linear sampled stops (the real Mama's A-02 record included), on the block root only, with the part and non-literal cases reported (MUST FAIL each). |
 | `tests/motion-planted-draft.test.mjs` | FR-48-78 done-when: a planted draft using the motion writer's capabilities (a `<marquee>`, an SVG `<animate>`) raises no seen-but-unsupported row through the real usage read and coverage map, raises each again with the writer's entry removed, and its marquee and pulse are written as validated effect layers. |
@@ -877,6 +882,11 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `fillStates({ tree, nodes, reads, calFor, db, snapshot })` → `{ writes, unmapped, held }`, writing into the tree in place through `lib/fill-prop.mjs::resolveProperty` with the look's state.
 - `stateDrafts(reads, id)` → Map `state|prop` → `{ state, prop, perWidth }` (a combination joined by `+`); `stateGap(state, held)` → why a look has no setting state, or null.
 
+### `lib/fill-timing.mjs`
+- `timingFacts(reads, id)` → `{ rest, enter, skipped }`: the resting rule's timings (`rest[prop]`, per width), each state rule's (`enter[state][prop]`) and the lists that name a time per property or compute it (`skipped`). `oneTiming(text)` → the one value a transition list states, or null; `TIMING_PROPS`.
+- `timingWrites({ node, ref, rec, target, cal, db, snapshot, reads, held })` → `{ writes, unmapped }`: the resting timing to the setting with no state, a state's timing to the setting tagged with it (`how: "fill-timing"`), a state timing alone to the setting that times both ways when the block has none for the state (`"fill-timing-reverse"`); a different resting timing with no state setting is `timing-enter-differs`. `fillStates` calls it for every target, and `stateDrafts` leaves these properties to it.
+- `timingCheck({ draft, live, pairs })` → rows `{ direction: "both" | "enter" | "leave", verdict: "match" | "differs" | "unreadable" }`; with only a state timing the live resting timing must equal the enter timing.
+
 ### `lib/fill-state-apply.mjs`
 - `applyToken([hostSel, reach, text, call, on, saved])` (in-page) → what to restore, or null; `renderedOf([finder, resolveSrc, props])` (in-page) → `{ prop: value }`.
 
@@ -964,20 +974,27 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/fill-motion.mjs`
 - `motionWrites(options)` → `{ writes, unmapped, notes }`: every node's `sgsMotion`, validated by `lib/motion-validate.mjs`.
-- `elementMotion(records, options)` → one target's entrance and hover layers. `elementEffects(records, options)` → one target's effects from its loop records, the run-time loop records its measured animation is, its `<marquee>` and its SVG animation elements. `renderRefutes(sampled)` is true when the element was found and played no entrance at any width, so the render wins and nothing is written.
+- `elementMotion(records, options)` → one target's entrance and hover layers; with `options.offers` and `options.target` an animation the draft starts on a state change becomes a `state` or `open` entrance (`lib/motion-states.mjs`), a transition on a published state a state layer, and an SVG `<set>` (`lib/motion-set.mjs`) a held load entrance; none of these is render-checked at load. `elementEffects(records, options)` → one target's effects from its loop records, the run-time loop records its measured animation is, its `<marquee>` and its SVG animation elements. `renderRefutes(sampled)` is true when the element was found and played no entrance at any width, so the render wins and nothing is written.
 - `elementKey(finder, rootComponent)`, `recordsByElement(records)`, `partForSlot(block, slot, targets)`.
 
 ### `lib/motion-layers.mjs`
 - `asPlayed(record)` → a one-shot record as it plays (a reverse run swaps from and to, mirrors its keyframe offsets and its easing; a curve with no mirror is kept as `easingUnmirrored` and named by `entranceLayer`). `mirrorEasing(easing)` → E'(x) = 1 - E(1 - x) as a CSS easing, or null.
-- `classify(record)` → `entrance`, `hover`, `effect` (an endless or repeating animation) or `skip` with the owning wave. `entranceLayer`, `hoverLayer` → layers.
+- `classify(record)` → `entrance`, `hover`, `effect` (an endless or repeating animation) or `skip` with the owning wave. `entranceLayer(record, mdb, measured, named)`, `hoverLayer` → layers; `named` (`lib/motion-states.mjs::stateTrigger`) makes the entrance a `state` (with its state name) or `open` one. `stateTransitionLayer(record, mdb, named)` → the `entrance.base` of a transition on a published state: its poses (none for a stylesheet transition) over its duration, delay and easing.
 - `poseDistance`, `matchByPose`, `delaySteps` (a per-item delay's offset and step), `delayOf`. `entranceLayer` writes `values.keyframes` (one entry per distinct offset, offsets in percent, at most 8) when a property carries more than two keyframes, and refuses a record whose stop value the code computes.
+
+### `lib/motion-states.mjs`
+- `stateTrigger(record, offers, target)` → `{ trigger: "open" }` for a state change whose words are open words on a part the block opens, else `{ trigger: "state", state }` for a state the block publishes (the longest name the words spell, else the one published state ending in an open word), else null. `offers`: `{ names, opens, openWords }` from `lib/motion-db.mjs::statesOf` and `::opensOf`.
+- `openWords(rows)` → the words that mean a disclosure is open: `open` and the last word of each attribute or class token the `states` table lists for it, less any word that names another state.
+
+### `lib/motion-set.mjs`
+- `setRecord(sampledSet, index)` → `{ record }` (an entrance record: opacity from the value before to the value set, duration 0, the begin time as its delay) or `{ reason }` for a `<set>` that begins on an event, reverts, switches another attribute or changes nothing. `lib/fill-entrance.mjs::sampleMotion` samples a `<set>` with its begin, end, fill and the attribute it overrides (`base`).
 
 ### `lib/motion-check.mjs`
 
 - `entranceCheck(layer, record, sampled)` → `{ devices, differences }`: per width the duration and delay (overrides) and the from-pose (translate, scale, rotate, opacity) and easing (reported only), and the pose sampled at 0, half and all of the run (`lib/motion-sample.mjs`, reported only); `tolerance(ms)` (max of 100ms and 10%) is how far a measured time may sit before the render overrides it; `WIDTH_TIER`: 375 mobile, 768 tablet, 1440 desktop.
 
 ### `lib/motion-channels.mjs`
-- `lengthOf`, `angleOf` (a length as px or its unit string, an angle in degrees); `round`; `transformChannels`, `filterChannels`, `propertyChannels`, `poseOf` (the from and to channels of a record's properties).
+- `lengthOf`, `angleOf` (a length as px or its unit string, an angle in degrees); `round`; `transformChannels`, `filterChannels`, `propertyChannels`, `poseOf` (the from and to channels of a record's properties); `IDENTITY` (each channel's resting value).
 - `keyframeStops(properties)` → null when no property has more than two keyframes, else `{ stops: [{ offset (percent), channels }], unsupported, other, computed }`.
 - `transformChannels` also reads a flat `matrix()`/`matrix3d()` (translate, scale, rotate; a skew is reported), `rotate3d()` about one axis, and `perspective()` (returned as `perspective`). `shadowParts(value)` → `{ inset, x, y, blur, spread, colour }` of a single box-shadow; `colourHex(value)` → lowercase hex for a hex or `rgb()` colour.
 
@@ -1008,10 +1025,10 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `shadowParts(value)` → `{ inset, x, y, blur, spread, colour }` of a single box-shadow, or null (its colour is turned to hex by `lib/tokens.mjs::colourHex`).
 
 ### `lib/motion-db.mjs`
-- `motionDb(db)` → `{ targetsOf(block), field(layer, path, effect), presets(panel), effect(slug), effects() }`. `fieldKey(layer, fieldPath)`.
+- `motionDb(db)` → `{ targetsOf(block), statesOf(block), opensOf(block), field(layer, path, effect), presets(panel), effect(slug), effects() }`; `statesOf`/`opensOf` read `motion_targets.motion_support` (the named motion states a block publishes, the parts it opens). `fieldKey(layer, fieldPath)`.
 
 ### `lib/motion-tokens.mjs`
-- `tokenTypes(schema)`, `clientTokens(rawSnapshot)`, `clientPalette(rawSnapshot)` (palette hex to slug, so a palette colour is written by its slug and a one-off colour stays hex), `tokenises(field, fieldType)` (durations, curves and travel only), `snapToken(value, fieldType, ctx)`, `presetFor(layer, presets)`, `effectPresetFor(layer, presets)` (an intensity preset whose stamped values the effect layer holds); `msOf`, `pxOf`, `easingOf`.
+- `tokenTypes(schema)`, `clientTokens(rawSnapshot)`, `clientPalette(rawSnapshot)` (palette hex to slug, so a palette colour is written by its slug and a one-off colour stays hex), `tokenises(field, fieldType)` (durations, curves and travel only), `snapToken(value, fieldType, ctx)`, `presetFor(layer, presets)` (a pose channel at identity counts as absent), `intensityPresetFor(layer, presets)` (an open or state layer that holds the travel an intensity preset stamps), `effectPresetFor(layer, presets)` (an intensity preset whose stamped values the effect layer holds); `msOf`, `pxOf`, `easingOf`.
 
 ### `lib/fill-config.mjs`
 - `walkerPairs(nodes, tree)` → `{ ref, draft }` per node carrying a `draftRef`.

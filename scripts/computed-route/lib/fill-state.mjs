@@ -10,6 +10,7 @@ import { resolveProperty, knownPaths } from './fill-prop.mjs';
 import { LOOSE } from './resolve.mjs';
 import { settingStates } from './db.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
+import { TIMING_PROPS, timingWrites } from './fill-timing.mjs';
 
 const same = ( a, b ) => JSON.stringify( a ) === JSON.stringify( b );
 
@@ -23,7 +24,7 @@ export function stateDrafts( reads, id ) {
 			const state = [ ...look.states ].sort().join( '+' );
 			// The rendered value is what Fill writes (code first, the render confirms): a property with no render read
 			// (an unresolved var() or currentcolor in its declared text) is not written from its declaration.
-			for ( const prop of Object.keys( look.declared ) ) {
+			for ( const prop of Object.keys( look.declared ).filter( ( p ) => ! TIMING_PROPS.includes( p ) ) ) {
 				const value = look.rendered?.[ prop ];
 				if ( ! value ) {
 					continue;
@@ -77,6 +78,10 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 			if ( ! knownPaths( cal ).map( LOOSE ).includes( LOOSE( target.slot ) ) ) {
 				continue;
 			}
+			// Transition timings follow CSS direction semantics (lib/fill-timing.mjs), not the one-look-one-state rule below.
+			const timing = timingWrites( { node, ref, rec, target, cal, db, snapshot, reads, held } );
+			out.writes.push( ...timing.writes );
+			out.unmapped.push( ...timing.unmapped );
 			const drafts = stateDrafts( reads, target.id );
 			for ( const { state, prop, perWidth } of drafts.values() ) {
 				if ( 'focus' === state && same( drafts.get( `hover|${ prop }` )?.perWidth, perWidth ) ) {

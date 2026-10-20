@@ -4,6 +4,8 @@
 // is read from the schema itself (each field type's token branch and its pattern over the `tokenReference` enum), and
 // the token values from the client's snapshot (`settings.custom`), so no family or key is listed in code.
 
+import { IDENTITY } from './motion-channels.mjs';
+
 // The token references each field type accepts, in schema order: { duration: [...], easing: [...], distance: [...] },
 // with a distance's negated references (`-token:distance.sm`) under `negated`.
 export function tokenTypes( schema ) {
@@ -148,9 +150,35 @@ const canon = ( v ) => {
 	return v && 'object' === typeof v ? Object.fromEntries( Object.keys( v ).sort().map( ( k ) => [ k, canon( v[ k ] ) ] ) ) : v;
 };
 
+// A `from` or `to` pose without the channels that stand at identity (opacity 1, no travel, scale 1, no rotation): a pose
+// that states them and one that leaves them out play the same, and an empty pose is no pose.
+const lean = ( values ) => {
+	const out = { ...values };
+	for ( const side of [ 'from', 'to' ] ) {
+		if ( out[ side ] && 'object' === typeof out[ side ] ) {
+			const kept = Object.fromEntries( Object.entries( out[ side ] ).filter( ( [ k, v ] ) => ! ( k in IDENTITY && IDENTITY[ k ] === v ) ) );
+			Object.keys( kept ).length ? ( out[ side ] = kept ) : delete out[ side ];
+		}
+	}
+	return out;
+};
+
 // The slug of the preset (of `presets`, one panel's rows) whose trigger and values equal the layer's, or null.
 export function presetFor( layer, presets ) {
-	const want = JSON.stringify( canon( layer.values ) );
-	const hit = presets.find( ( p ) => ( ! p.trigger || ! layer.trigger || p.trigger === layer.trigger ) && JSON.stringify( canon( p.values ) ) === want );
+	const want = JSON.stringify( canon( lean( layer.values ) ) );
+	const hit = presets.find( ( p ) => ( ! p.trigger || ! layer.trigger || p.trigger === layer.trigger ) && JSON.stringify( canon( lean( p.values ) ) ) === want );
+	return hit ? hit.slug : null;
+}
+
+const holds = ( have, want ) => ( want && 'object' === typeof want && ! Array.isArray( want ) ? have && 'object' === typeof have && Object.entries( want ).every( ( [ k, v ] ) => holds( have[ k ], v ) ) : JSON.stringify( have ) === JSON.stringify( want ) );
+
+// The intensity preset of an open or state entrance: the preset of the layer's trigger that stamps only some values (a
+// nav panel item's travel) and whose stamped values the layer holds unchanged; null when none does. Other triggers
+// name only an exact preset (presetFor).
+export function intensityPresetFor( layer, presets ) {
+	if ( ! [ 'open', 'state' ].includes( layer.trigger ) ) {
+		return null;
+	}
+	const hit = presets.find( ( p ) => 'intensity' === p.kind && p.trigger === layer.trigger && Object.keys( p.values ).length && holds( layer.values, p.values ) );
 	return hit ? hit.slug : null;
 }

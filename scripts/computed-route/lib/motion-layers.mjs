@@ -185,8 +185,9 @@ export function mirrorEasing( easing ) {
 }
 
 // `entrance.base` from one entrance record: { layer, notes } or { unmapped }. `measured` (the sampled entrance at the
-// widest width) supplies a delay the code computes.
-export function entranceLayer( given, mdb, measured = null ) {
+// widest width) supplies a delay the code computes. `named` ({ trigger: 'state', state } or { trigger: 'open' }, from
+// lib/motion-states.mjs::stateTrigger) makes it a state or open entrance.
+export function entranceLayer( given, mdb, measured = null, named = null ) {
 	const record = asPlayed( given );
 	const kf = keyframeStops( record.properties );
 	const pose = poseOf( record.properties );
@@ -237,7 +238,41 @@ export function entranceLayer( given, mdb, measured = null ) {
 	if ( dropped.length ) {
 		notes.push( `no entrance field for ${ [ ...new Set( dropped ) ].join( ', ' ) }` );
 	}
-	return { layer: { trigger: TRIGGER[ record.trigger.type ], values }, notes };
+	return { layer: { trigger: named?.trigger ?? TRIGGER[ record.trigger.type ], ...( named?.state ? { state: named.state } : {} ), values }, notes };
+}
+
+// `entrance.base` for a state or open transition (a css-transition the draft times on a state change): the poses its
+// properties state (a stylesheet transition states none: the layer then holds only its timing) over its duration, delay
+// and easing. { layer, notes } or { unmapped }. `named`: lib/motion-states.mjs::stateTrigger's result.
+export function stateTransitionLayer( record, mdb, named ) {
+	const pose = poseOf( record.properties );
+	if ( pose.unsupported.length ) {
+		return { unmapped: `${ pose.unsupported.join( ', ' ) } has no entrance channel` };
+	}
+	if ( 'number' !== typeof record.duration_ms ) {
+		return { unmapped: `the transition times each property separately or computes its duration ("${ record.duration_ms }")` };
+	}
+	const notes = pose.other.length ? [ `${ pose.other.join( ', ' ) } is not an entrance channel and is left to the block's own settings` ] : [];
+	const dropped = [];
+	const values = {};
+	for ( const side of [ 'from', 'to' ] ) {
+		const kept = keepFields( mdb, 'entrance.base', `values.${ side }`, pose[ side ], dropped );
+		if ( Object.keys( kept ).length ) {
+			values[ side ] = kept;
+		}
+	}
+	values.duration = record.duration_ms;
+	if ( record.delay_ms > 0 ) {
+		values.delay = record.delay_ms;
+	}
+	const easing = easingText( record.easing, notes );
+	if ( easing ) {
+		values.easing = easing;
+	}
+	if ( dropped.length ) {
+		notes.push( `no entrance field for ${ [ ...new Set( dropped ) ].join( ', ' ) }` );
+	}
+	return { layer: { trigger: named.trigger, ...( named.state ? { state: named.state } : {} ), values }, notes };
 }
 
 function easingText( raw, notes ) {

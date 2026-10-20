@@ -6,12 +6,15 @@
 // (lib/fill-entrance.mjs) are the render check: a width whose measured delay or duration differs from the code by more
 // than one sampling step writes that tier's value, and the difference is reported.
 import { validateMotionWrite } from './motion-validate.mjs';
-import { classify, entranceLayer, hoverLayer, matchByPose } from './motion-layers.mjs';
-import { snapToken, presetFor, effectPresetFor, tokenTypes, clientTokens, clientPalette, tokenises } from './motion-tokens.mjs';
+import { classify, entranceLayer, stateTransitionLayer, hoverLayer, matchByPose } from './motion-layers.mjs';
+import { snapToken, presetFor, intensityPresetFor, effectPresetFor, tokenTypes, clientTokens, clientPalette, tokenises } from './motion-tokens.mjs';
 import { writeEffect, loadEffectOffers } from './motion-effects.mjs';
 import { loopEffect, loopCheck, chooseEffect, runtimeLoopsFor, smilLoop, marqueeTag, measuredLoopOf } from './motion-loops.mjs';
 import { loopKeyframesCss, loopName, isLoopRecord } from './motion-loop-css.mjs';
 import { entranceCheck } from './motion-check.mjs';
+import { stateTrigger, openWords } from './motion-states.mjs';
+import { setRecord } from './motion-set.mjs';
+import { stateRows } from './state-vocab.mjs';
 import { setAttr } from './tree.mjs';
 
 // The inventory key of a draft element: the innermost host's name and the element's tpl id, from a tpl finder
@@ -94,21 +97,24 @@ export const renderRefutes = ( sampled ) => {
 };
 
 // One entrance record as a finished `entrance.base`: render-checked, token-snapped, preset-named. { layer, notes } or
-// { unmapped }.
-function finishedEntrance( record, { mdb, ctx, sampled } ) {
-	if ( renderRefutes( sampled ) ) {
+// { unmapped }. `named` makes it a state or open entrance (lib/motion-states.mjs::stateTrigger); a state entrance and an
+// SVG <set> are not played by the load-time render sample, so they are not render-checked. A state transition (a
+// css-transition on a published motion state) is an entrance whose poses and timing are the transition's.
+function finishedEntrance( record, { mdb, ctx, sampled, named = null } ) {
+	const unsampled = named || 'smil-set' === record.mechanism;
+	if ( ! unsampled && renderRefutes( sampled ) ) {
 		return { unmapped: `the code's record names this element, but the render shows no entrance at ${ Object.keys( sampled ).join( ', ' ) }, so the render wins and nothing is written` };
 	}
-	const e = entranceLayer( record, mdb, sampled?.[ 1440 ] || null );
+	const e = 'css-transition' === record.mechanism ? stateTransitionLayer( record, mdb, named ) : entranceLayer( record, mdb, sampled?.[ 1440 ] || null, named );
 	if ( e.unmapped ) {
 		return e;
 	}
-	const check = entranceCheck( e.layer, record, sampled );
+	const check = unsampled ? { devices: {}, differences: [] } : entranceCheck( e.layer, record, sampled );
 	if ( Object.keys( check.devices ).length ) {
 		e.layer.devices = check.devices;
 	}
 	snapLayer( e.layer, ( p ) => mdb.field( 'entrance.base', p ), ctx, [ 'entrance' ] );
-	const preset = presetFor( e.layer, mdb.presets( 'entrance' ) );
+	const preset = presetFor( e.layer, mdb.presets( 'entrance' ) ) ?? intensityPresetFor( e.layer, mdb.presets( 'entrance' ) );
 	if ( preset ) {
 		e.layer.preset = preset;
 	}
@@ -157,16 +163,27 @@ function pickEntrance( own, measured, runtime, others = [] ) {
 }
 
 // The layers one draft element's records make on one target: { element, notes, unmapped: [{ record, reason }] }.
-// `runtime` holds the entrance records whose element the code picks at run time.
-export function elementMotion( records, { mdb, ctx, sampled, runtime = [] } ) {
+// `runtime` holds the entrance records whose element the code picks at run time; `offers` ({ names, opens, openWords },
+// lib/motion-states.mjs::stateTrigger) lets a one-shot animation the draft starts on a state change become a state or
+// open entrance on a block that publishes that state (an animation on either, a transition only on a named state);
+// `target` is the part the element is.
+export function elementMotion( records, { mdb, ctx, sampled, runtime = [], offers = null, target = 'root' } ) {
 	const element = {};
-	const kinds = records.map( ( r ) => ( { r, c: classify( r ) } ) );
+	const named = new Map();
+	const kinds = records.map( ( r ) => {
+		let s = offers && /^(?:waapi|css-animation|css-transition)$/.test( r.mechanism ) && 'active' === r.status ? stateTrigger( r, offers, target ) : null;
+		s = s && ( 'css-transition' !== r.mechanism || 'state' === s.trigger ) ? s : null;
+		if ( s ) {
+			named.set( r.id, s );
+		}
+		return { r, c: s ? { kind: 'entrance' } : classify( r ) };
+	} );
 	const unmapped = kinds.filter( ( x ) => 'skip' === x.c.kind ).map( ( x ) => ( { record: x.r.id, reason: x.c.reason } ) );
 	const pick = pickEntrance( kinds.filter( ( x ) => 'entrance' === x.c.kind ).map( ( x ) => x.r ), sampled?.[ 1440 ] || null, runtime, kinds.filter( ( x ) => 'skip' === x.c.kind ).map( ( x ) => x.r ) );
 	const notes = [ ...pick.notes ];
 	unmapped.push( ...pick.unmapped );
 	if ( pick.record ) {
-		const e = finishedEntrance( pick.record, { mdb, ctx, sampled } );
+		const e = finishedEntrance( pick.record, { mdb, ctx, sampled, named: named.get( pick.record.id ) || null } );
 		if ( e.unmapped ) {
 			unmapped.push( { record: pick.record.id, reason: e.unmapped } );
 		} else {
@@ -290,22 +307,26 @@ function writeLoopCss( n, items, { flat, ref, out } ) {
 // records: the inventory's animation records; sampled: { '<target id>': { 375, 768, 1440: shapeEntrance() result } };
 // mdb: lib/motion-db.mjs::motionDb; schema: the motion schema; rawSnapshot: the client's theme snapshot; rootComponent:
 // the entry draft's component (lib/fill-motion.mjs::elementKey); loops: sampleMotion()'s loops by target id; offers:
-// lib/motion-effects.mjs::loadEffectOffers. Returns { writes, unmapped, notes } in the shapes fill-resolve.mjs uses.
-export function motionWrites( { nodes, flat, refOf, records, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers() } ) {
+// lib/motion-effects.mjs::loadEffectOffers; stateVocab: the `states` table rows that give the words meaning "open"
+// (default: the framework DB's). Returns { writes, unmapped, notes } in the shapes fill-resolve.mjs uses.
+export function motionWrites( { nodes, flat, refOf, records, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null } ) {
 	const out = { writes: [], unmapped: [], notes: [] };
 	const byElement = recordsByElement( records );
 	const unplaced = ( records || [] ).filter( ( r ) => null === ( r.element?.template_tpl_id ?? null ) );
 	const runtime = unplaced.filter( ( r ) => 'entrance' === classify( r ).kind );
 	const runtimeLoops = unplaced.filter( ( r ) => 'effect' === classify( r ).kind );
 	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ), palette: clientPalette( rawSnapshot ) };
+	let words = null;
 	for ( const n of nodes ) {
+		const stateOffers = { names: mdb.statesOf( n.name ), opens: mdb.opensOf( n.name ), openWords: () => ( words ??= openWords( stateVocab || stateRows() ) ) };
 		const ref = refOf( flat[ n.index ] );
 		const targets = mdb.targetsOf( n.name );
 		const doc = { v: 1, elements: {} };
 		const pending = [];
 		const boxes = [];
 		for ( const t of n.targets ) {
-			const own = byElement.get( elementKey( t.finder, rootComponent ) ) || [];
+			const sets = ( loops[ t.id ]?.[ 1440 ]?.smil || [] ).map( ( a, i ) => ( 'set' === a.tag ? setRecord( a, i ) : null ) ).filter( Boolean );
+			const own = [ ...( byElement.get( elementKey( t.finder, rootComponent ) ) || [] ), ...sets.flatMap( ( s ) => ( s.record ? [ s.record ] : [] ) ) ];
 			if ( ! own.length && ! sampled[ t.id ]?.[ 1440 ] && ! loops[ t.id ] ) {
 				continue;
 			}
@@ -320,7 +341,8 @@ export function motionWrites( { nodes, flat, refOf, records, sampled = {}, loops
 				}
 				continue;
 			}
-			const m = elementMotion( own, { mdb, ctx, sampled: sampled[ t.id ], runtime } );
+			const m = elementMotion( own, { mdb, ctx, sampled: sampled[ t.id ], runtime, offers: stateOffers, target } );
+			m.unmapped.push( ...sets.filter( ( s ) => s.reason ).map( ( s ) => ( { record: '<set>', reason: s.reason } ) ) );
 			out.notes.push( ...m.notes.map( ( text ) => ( { ...where, text } ) ) );
 			out.unmapped.push( ...m.unmapped.map( ( u ) => ( { ...where, property: 'motion', value: u.record, reason: u.reason } ) ) );
 			if ( Object.keys( m.element ).length ) {

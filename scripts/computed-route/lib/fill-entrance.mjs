@@ -102,11 +102,11 @@ function startProbe( [ jobs, resolveSrc, windowMs, sweep ] ) {
 				const frames = a.effect.getKeyframes().map( ( k ) => Object.fromEntries( [ [ 'offset', k.computedOffset ], ...KF.filter( ( p ) => undefined !== k[ p ] ).map( ( p ) => [ p, String( k[ p ] ) ] ) ] ) );
 				return { css: 'string' === typeof a.animationName, name: a.animationName ?? null, duration: 'number' === typeof t.duration ? t.duration : null, delay: t.delay || 0, direction: t.direction, easing: t.easing, playbackRate: a.playbackRate, frames };
 			} );
-			const ATTRS = [ 'attributeName', 'type', 'values', 'from', 'to', 'by', 'dur', 'repeatCount', 'keyTimes', 'calcMode' ];
+			const ATTRS = [ 'attributeName', 'type', 'values', 'from', 'to', 'by', 'dur', 'repeatCount', 'keyTimes', 'calcMode', 'begin', 'end', 'fill' ];
 			const mediaOf = ( el ) => ( {
 				box: { width: el.offsetWidth, height: el.offsetHeight, surface: 'IMG' === el.tagName || 'none' !== getComputedStyle( el ).backgroundImage },
 				marquee: 'MARQUEE' === el.tagName ? Object.fromEntries( [ 'direction', 'scrollamount', 'scrolldelay', 'truespeed', 'behavior' ].map( ( k ) => [ k, el.getAttribute( k ) ] ) ) : null,
-				smil: [ ...el.querySelectorAll( 'animate, animateTransform' ) ].map( ( a ) => Object.fromEntries( [ [ 'tag', a.localName ], ...ATTRS.map( ( k ) => [ k, a.getAttribute( k ) ] ) ] ) ),
+				smil: [ ...el.querySelectorAll( 'animate, animateTransform, set' ) ].map( ( a ) => Object.fromEntries( [ [ 'tag', a.localName ], ...ATTRS.map( ( k ) => [ k, a.getAttribute( k ) ] ), [ 'base', a.parentElement?.getAttribute( a.getAttribute( 'attributeName' ) || '' ) ?? null ] ] ) ),
 			} );
 			const strip = ( p ) => p && { opacity: p.opacity, transform: p.transform, translate: p.translate, scale: p.scale, rotate: p.rotate, filter: p.filter, clipPath: p.clipPath };
 			// Sample mode (FR-48-28, FR-48-47): every finite animation the element ran, paused and sought to 0, half and

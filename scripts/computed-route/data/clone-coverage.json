@@ -1635,11 +1635,10 @@
 			"note": "link URLs: Fill reads and writes hrefs; link targets are not handled separately"
 		},
 		"block-setting:motion:motion": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": "the blocks' own transition timings (panelSlideDuration, scrimFadeDuration, submenu and item motion) time open, close and hover states; the states wave (FR-48-81) reads the state transitions (classify names it for every state transition record)"
+			"recognise": "scripts/computed-route/lib/fill-timing.mjs#timingFacts",
+			"write": "scripts/computed-route/lib/fill-timing.mjs#timingWrites",
+			"check": "scripts/computed-route/lib/fill-timing.mjs#timingCheck",
+			"note": "a transition-duration or transition-timing-function the draft declares: the resting rule times both directions (settings with no state), a state rule times entering that state (settings tagged with it), and closing reverses opening, so a draft with only a state timing writes one value; the settings are found by the resolver from the DB (css_property, css_element, css_state); the check compares the live resting and state timings with the draft's"
 		},
 		"block-setting:number-css-percent:styling": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -13968,11 +13967,10 @@
 			"note": "a written entrance whose values equal a keyframe-zoom-in preset names it"
 		},
 		"motion-preset:entrance:nav-panel-item": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-states.mjs#stateTrigger",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
 			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
-			"wave": "states",
-			"note": "nav-panel-item plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
+			"note": "nav-panel-item plays when a panel opens or a state changes: lib/motion-states.mjs::stateTrigger reads the draft animation's state keys and detail, the vocabulary's open words and the block's published motion states (motion_targets.motion_support) and gives an open trigger on a part the block opens or a named state, the layer is written by lib/fill-motion.mjs::elementMotion and names the preset when its values equal it; an intensity preset stamps only the travel, so it is named by lib/motion-tokens.mjs::intensityPresetFor when the layer holds that travel"
 		},
 		"motion-preset:entrance:scramble": {
 			"recognise": null,
@@ -13989,46 +13987,40 @@
 			"note": "split-reveal is a text or SVG entrance effect a draft builds in script; FR-48-77 recognises it and the writer writes it through writeEffect in the entrance panel"
 		},
 		"motion-preset:entrance:state-burger-morph": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-states.mjs#stateTrigger",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
 			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
-			"wave": "states",
-			"note": "state-burger-morph plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
+			"note": "state-burger-morph plays when a panel opens or a state changes: lib/motion-states.mjs::stateTrigger reads the draft animation's state keys and detail, the vocabulary's open words and the block's published motion states (motion_targets.motion_support) and gives an open trigger on a part the block opens or a named state, the layer is written by lib/fill-motion.mjs::elementMotion and names the preset when its values equal it; a transition the draft times on the state (the burger bars on aria-expanded) is a timing-only state layer (lib/motion-layers.mjs::stateTransitionLayer)"
 		},
 		"motion-preset:entrance:state-count-pop": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-states.mjs#stateTrigger",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
 			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
-			"wave": "states",
-			"note": "state-count-pop plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
+			"note": "state-count-pop plays when a panel opens or a state changes: lib/motion-states.mjs::stateTrigger reads the draft animation's state keys and detail, the vocabulary's open words and the block's published motion states (motion_targets.motion_support) and gives an open trigger on a part the block opens or a named state, the layer is written by lib/fill-motion.mjs::elementMotion and names the preset when its values equal it"
 		},
 		"motion-preset:entrance:state-icon-turn": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-states.mjs#stateTrigger",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
 			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
-			"wave": "states",
-			"note": "state-icon-turn plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
+			"note": "state-icon-turn plays when a panel opens or a state changes: lib/motion-states.mjs::stateTrigger reads the draft animation's state keys and detail, the vocabulary's open words and the block's published motion states (motion_targets.motion_support) and gives an open trigger on a part the block opens or a named state, the layer is written by lib/fill-motion.mjs::elementMotion and names the preset when its values equal it; a transition that turns the icon is a state layer holding its pose and timing (lib/motion-layers.mjs::stateTransitionLayer), a pose at identity counting as no pose when the preset is matched"
 		},
 		"motion-preset:entrance:state-result-scale-in": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-states.mjs#stateTrigger",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
 			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
-			"wave": "states",
-			"note": "state-result-scale-in plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
+			"note": "state-result-scale-in plays when a panel opens or a state changes: lib/motion-states.mjs::stateTrigger reads the draft animation's state keys and detail, the vocabulary's open words and the block's published motion states (motion_targets.motion_support) and gives an open trigger on a part the block opens or a named state, the layer is written by lib/fill-motion.mjs::elementMotion and names the preset when its values equal it"
 		},
 		"motion-preset:entrance:state-shake": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-states.mjs#stateTrigger",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
 			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
-			"wave": "states",
-			"note": "state-shake plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
+			"note": "state-shake plays when a panel opens or a state changes: lib/motion-states.mjs::stateTrigger reads the draft animation's state keys and detail, the vocabulary's open words and the block's published motion states (motion_targets.motion_support) and gives an open trigger on a part the block opens or a named state, the layer is written by lib/fill-motion.mjs::elementMotion and names the preset when its values equal it"
 		},
 		"motion-preset:entrance:state-step-slide": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-states.mjs#stateTrigger",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
 			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
-			"wave": "states",
-			"note": "state-step-slide plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
+			"note": "state-step-slide plays when a panel opens or a state changes: lib/motion-states.mjs::stateTrigger reads the draft animation's state keys and detail, the vocabulary's open words and the block's published motion states (motion_targets.motion_support) and gives an open trigger on a part the block opens or a named state, the layer is written by lib/fill-motion.mjs::elementMotion and names the preset when its values equal it"
 		},
 		"motion-preset:hover:follow-pointer": {
 			"recognise": null,
@@ -15659,11 +15651,10 @@
 			}
 		},
 		"svg:set": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": "an SVG <set> switches a value at a moment: a timed state change, not motion"
+			"recognise": "scripts/computed-route/lib/fill-entrance.mjs#sampleMotion",
+			"write": "scripts/computed-route/lib/motion-set.mjs#setRecord",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"note": "an SVG <set> that switches opacity (or visibility) once at a clock time after load and keeps it is the held entrance { from, to, duration 0, delay: begin }; one that begins on an event or another element, reverts, or switches any other attribute is reported with its reason (no entrance channel holds it); SMIL is not an Animation object, so the entrance is checked by the schema, not by the load-time sample"
 		},
 		"svg:stop": {
 			"recognise": null,
