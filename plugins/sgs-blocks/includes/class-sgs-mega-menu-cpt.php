@@ -12,10 +12,10 @@
  *
  * The CPT is NAV-ONLY (operator decision): a mega panel is never viewable
  * as a standalone web page. `public => false` / `publicly_queryable =>
- * false` mean the top-level trigger link never resolves to a permalink;
- * every nav item pointing at a mega panel must resolve via
- * {@see resolve_panel_for_menu_item()} or degrade to `#`/plain-link
- * (FR-36-9a). `show_in_nav_menus => true` still works independently of
+ * false` mean the panel itself has no permalink; every nav item pointing
+ * at a mega panel must resolve via {@see resolve_panel_for_menu_item()} or
+ * degrade to `#`/plain-link (FR-36-9a), and links to the panel's Section
+ * page ({@see section_url()}) when one is set (FR-36-5). `show_in_nav_menus => true` still works independently of
  * `public` — the "add items" panel reads `get_post_types( array(
  * 'show_in_nav_menus' => true ) )`, so Appearance -> Menus is unaffected.
  *
@@ -46,6 +46,12 @@ final class Sgs_Mega_Menu_CPT {
 	/** CPT slug. */
 	public const POST_TYPE = 'sgs_mega_menu';
 
+	/**
+	 * Post meta holding the panel's Section page: the ID of the page every
+	 * menu item that opens this panel links to (FR-36-5 "Section page").
+	 */
+	public const META_SECTION_PAGE = '_sgs_mega_section_page';
+
 	/** Capability required to manage mega panels, mirrored on the nav-menus screen check. */
 	private const MANAGE_CAPABILITY = 'edit_theme_options';
 
@@ -73,6 +79,7 @@ final class Sgs_Mega_Menu_CPT {
 	 */
 	public static function register(): void {
 		\add_action( 'init', array( __CLASS__, 'register_post_type' ) );
+		\add_action( 'init', array( __CLASS__, 'register_meta' ) );
 		// Submenu registration is deliberately NOT hooked here — it must appear
 		// directly below "Menu drawers" in the SGS sidebar, so
 		// {@see Sgs_Block_CPTs::register_submenus()} calls register_submenu()
@@ -151,6 +158,56 @@ final class Sgs_Mega_Menu_CPT {
 				'capabilities'        => $capabilities,
 			)
 		);
+	}
+
+	/**
+	 * Register the Section page meta (FR-36-5). Edited from the panel
+	 * editor's "Section page" sidebar panel
+	 * (`src/blocks/extensions/mega-section-page-panel.js`), so it is exposed
+	 * to REST; the CPT's `custom-fields` support is what lets REST carry it.
+	 * 0 means the panel has no section page.
+	 */
+	public static function register_meta(): void {
+		\register_post_meta(
+			self::POST_TYPE,
+			self::META_SECTION_PAGE,
+			array(
+				'single'            => true,
+				'type'              => 'integer',
+				'default'           => 0,
+				'show_in_rest'      => true,
+				'sanitize_callback' => 'absint',
+				'auth_callback'     => static function (): bool {
+					return \current_user_can( self::MANAGE_CAPABILITY );
+				},
+				'description'       => 'The page every menu item that opens this mega panel links to; 0 for none.',
+			)
+		);
+	}
+
+	/**
+	 * The URL of a panel's Section page (FR-36-5): the permalink of the page
+	 * its `_sgs_mega_section_page` meta names, when that page is published and
+	 * its post type is viewable. '' otherwise (no meta, a draft, a deleted
+	 * page, or a nav-only post type), so the item renders as it does with no
+	 * section page.
+	 *
+	 * @param int $panel_id The `sgs_mega_menu` post ID.
+	 * @return string The section page's permalink, or ''.
+	 */
+	public static function section_url( int $panel_id ): string {
+		$page_id = \absint( \get_post_meta( $panel_id, self::META_SECTION_PAGE, true ) );
+		if ( 0 === $page_id ) {
+			return '';
+		}
+
+		$page = \get_post( $page_id );
+		if ( ! $page instanceof \WP_Post || 'publish' !== $page->post_status || ! \is_post_type_viewable( $page->post_type ) ) {
+			return '';
+		}
+
+		$url = \get_permalink( $page );
+		return \is_string( $url ) ? $url : '';
 	}
 
 	/**

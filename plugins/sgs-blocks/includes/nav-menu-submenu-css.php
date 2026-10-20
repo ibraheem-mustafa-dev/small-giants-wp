@@ -321,6 +321,10 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		}
 		
 		$css .= $uid_sel . ' .' . $bem_root . '__submenu-root{position:relative;display:flex;align-items:center;}';
+		// A mega item with a Section page (FR-36-5) is a link plus a chevron
+		// button on one row, like the dropdown root above. No `position`: the
+		// mega panel keeps anchoring where it does for a button-only trigger.
+		$css .= $uid_sel . ' .' . $bem_root . '__mega--split{display:flex;align-items:center;}';
 		// Same vertical bound as the mega panel above, and for the same reason — see
 		// the VERTICAL BOUND note there. A dropdown is the likelier of the two to run
 		// long, since it has no width:min() forcing a wide multi-column layout.

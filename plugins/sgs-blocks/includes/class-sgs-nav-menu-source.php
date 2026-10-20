@@ -54,6 +54,9 @@ defined( 'ABSPATH' ) || exit;
  */
 class SGS_Nav_Menu_Source {
 
+	/** The mega panel post type (`\SGS\Blocks\Sgs_Mega_Menu_CPT::POST_TYPE`), named here because that class may not be loaded. */
+	private const MEGA_POST_TYPE = 'sgs_mega_menu';
+
 	/**
 	 * Resolve the nav-holding block names searched for in the header, in priority order.
 	 *
@@ -220,10 +223,32 @@ class SGS_Nav_Menu_Source {
 
 		$post = get_post( $ref );
 		if ( $post && 'wp_navigation' === $post->post_type ) {
-			return parse_blocks( $post->post_content );
+			return self::with_mega_section_urls( parse_blocks( $post->post_content ) );
 		}
 
 		return array();
+	}
+
+	/**
+	 * Point every block-menu link that opens a mega panel at the panel's
+	 * Section page (FR-36-5), recursively. The URL a `wp_navigation` link
+	 * stores for a `sgs_mega_menu` post is that nav-only post's permalink,
+	 * which 404s, so it is replaced, with '' when the panel has no section
+	 * page.
+	 *
+	 * @param array $blocks Parsed nav blocks.
+	 * @return array The same blocks with mega links' `url` resolved.
+	 */
+	private static function with_mega_section_urls( array $blocks ): array {
+		foreach ( $blocks as $i => $block ) {
+			if ( self::MEGA_POST_TYPE === ( $block['attrs']['type'] ?? '' ) ) {
+				$blocks[ $i ]['attrs']['url'] = self::mega_section_url( (int) ( $block['attrs']['id'] ?? 0 ) );
+			}
+			if ( ! empty( $block['innerBlocks'] ) ) {
+				$blocks[ $i ]['innerBlocks'] = self::with_mega_section_urls( $block['innerBlocks'] );
+			}
+		}
+		return $blocks;
 	}
 
 	/**
@@ -286,12 +311,17 @@ class SGS_Nav_Menu_Source {
 
 			$children   = self::classic_items_to_blocks( $by_parent, (int) $item->ID );
 			$block_name = empty( $children ) ? 'core/navigation-link' : 'core/navigation-submenu';
+			// An item that opens a mega panel links to the panel's Section page
+			// (FR-36-5), '' when it has none; the panel's own permalink 404s.
+			$url = self::MEGA_POST_TYPE === (string) $item->object
+				? self::mega_section_url( (int) $item->object_id )
+				: (string) $item->url;
 
 			$blocks[] = array(
 				'blockName'    => $block_name,
 				'attrs'        => array(
 					'label'         => $label,
-					'url'           => (string) $item->url,
+					'url'           => $url,
 					'id'            => (int) $item->object_id,
 					'kind'          => self::classic_item_kind( (string) $item->type ),
 					'type'          => (string) $item->object,
@@ -306,6 +336,20 @@ class SGS_Nav_Menu_Source {
 		}
 
 		return $blocks;
+	}
+
+	/**
+	 * A mega panel's Section page URL, '' when it has none or the panel
+	 * class is not loaded.
+	 *
+	 * @param int $panel_id The `sgs_mega_menu` post ID.
+	 * @return string The section page's permalink, or ''.
+	 */
+	private static function mega_section_url( int $panel_id ): string {
+		if ( ! class_exists( '\SGS\Blocks\Sgs_Mega_Menu_CPT' ) ) {
+			return '';
+		}
+		return \SGS\Blocks\Sgs_Mega_Menu_CPT::section_url( $panel_id );
 	}
 
 	/**

@@ -253,6 +253,19 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_accordion_html' ) ) {
 			);
 		}
 
+		// FR-36-6 "A parent with its own page": the opened section starts with
+		// "View all <label>" linking to the parent's page, because a visitor
+		// on a touch screen often misses the split label/chevron targets.
+		if ( $has_url && ! $is_disabled ) {
+			$body_html = sprintf(
+				'<li class="sgs-nav-drawer-menu__subitem sgs-nav-drawer-menu__subitem--viewall"><a class="sgs-nav-drawer-menu__sublink sgs-focus--inset" href="%1$s" data-sgs-nav-path="%2$s">%3$s</a></li>',
+				esc_url( $item['url'] ),
+				esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
+				// translators: %s is the parent menu item's own label (e.g. "Products").
+				esc_html( sprintf( __( 'View all %s', 'sgs-blocks' ), (string) ( $item['label'] ?? '' ) ) )
+			) . $body_html;
+		}
+
 		$details_id    = $uid . '-drill-' . substr( md5( (string) $item['identifier'] ), 0, 8 );
 		$name_attr     = $exclusive ? ' name="sgs-nav-drawer-menu-accordion-' . esc_attr( $uid ) . '"' : '';
 		$label         = (string) ( $item['label'] ?? '' );

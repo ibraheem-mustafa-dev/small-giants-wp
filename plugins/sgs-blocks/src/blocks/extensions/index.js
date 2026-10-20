@@ -29,6 +29,8 @@
  *   cpt-default-panel.js. sgs_header/sgs_footer were removed 2026-09-17,
  *   same day as added, once confirmed duplicate of Sgs_Active_Layout's
  *   existing "Active" admin mechanism for those two CPTs.
+ * - Mega section page panel: adds a Document sidebar "Section page" picker
+ *   on the sgs_mega_menu screen only — see mega-section-page-panel.js.
  * - Product Collection "same term" extension: adds a `sgsSameTermAs`
  *   taxonomy-picker panel to WooCommerce's `woocommerce/product-collection`
  *   block only — see product-collection-same-term.js. The frontend query
@@ -46,6 +48,7 @@ import './image-controls';
 import './responsive-visibility';
 import './media-elements';
 import './cpt-default-panel';
+import './mega-section-page-panel';
 import './product-collection-same-term';
 import './product-filter-chips-gap';
 import './motion';

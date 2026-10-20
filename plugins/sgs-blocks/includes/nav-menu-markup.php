@@ -73,6 +73,22 @@ if ( ! function_exists( 'sgs_nav_shared_badge_html' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_nav_bar_menu_split_caret_html' ) ) {
+	/**
+	 * The caret inside a split row's separate toggle button (a parent that has
+	 * its own link). Always printed, whatever submenuCaret says: the glyph is
+	 * the toggle's only visible content.
+	 *
+	 * @return string The caret span, or '' when the icon library is absent.
+	 */
+	function sgs_nav_bar_menu_split_caret_html(): string {
+		if ( ! function_exists( 'sgs_get_lucide_icon' ) ) {
+			return '';
+		}
+		return '<span class="sgs-nav-bar-menu__caret" aria-hidden="true">' . sgs_get_lucide_icon( 'chevron-down' ) . '</span>';
+	}
+}
+
 if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 		/**
 		 * Render the flat <li><a> list.
@@ -121,15 +137,52 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 						);
 						// The caret honours the block's submenuCaret setting, as the
 						// plain dropdown branch below does.
-						$caret = ( $submenu['caret'] && function_exists( 'sgs_get_lucide_icon' ) )
-							? '<span class="sgs-nav-bar-menu__caret" aria-hidden="true">' . sgs_get_lucide_icon( 'chevron-down' ) . '</span>'
-							: '';
+						$label_html = sgs_label_roll_markup( (string) $item['label'], (string) ( $submenu['label_roll'] ?? '' ) );
+						if ( ! empty( $item['has_url'] ) ) {
+							/*
+							 * FR-36-5 "Section page": the panel has a page of its
+							 * own, so the label is a real link and a separate
+							 * chevron button opens the panel (WAI-ARIA disclosure
+							 * navigation with top-level links), the same pair the
+							 * DROPDOWN branch below renders. The chevron keeps
+							 * `__mega-trigger` (the panel-show rule and caret flip)
+							 * and takes `__subtoggle` (its 44px hit area). It always
+							 * shows its caret: a split toggle with no glyph is an
+							 * invisible control.
+							 */
+							$root_class   = 'sgs-nav-bar-menu__mega sgs-nav-bar-menu__mega--split';
+							$trigger_html = sprintf(
+								'<a class="sgs-nav-bar-menu__link" href="%1$s" data-sgs-nav-path="%2$s"><span class="sgs-nav-bar-menu__label sgs-nav-bar-menu__magnet-target">%3$s</span></a>'
+								. '<button type="button" class="sgs-nav-bar-menu__subtoggle sgs-nav-bar-menu__mega-trigger sgs-focus--inset" data-sgs-mega-trigger aria-expanded="false" aria-controls="%4$s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
+								. '<span class="screen-reader-text">%5$s</span>%6$s</button>',
+								esc_url( $item['url'] ),
+								esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
+								$label_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_label_roll_markup() esc_html's the label.
+								esc_attr( $panel_dom_id ),
+								/* translators: %s is the parent menu item's label. */
+								esc_html( sprintf( __( 'Show submenu for %s', 'sgs-blocks' ), $item['label'] ) ),
+								sgs_nav_bar_menu_split_caret_html() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
+							);
+						} else {
+							// The caret honours the block's submenuCaret setting, as the
+							// plain dropdown branch below does.
+							$caret        = ( $submenu['caret'] && function_exists( 'sgs_get_lucide_icon' ) )
+								? '<span class="sgs-nav-bar-menu__caret" aria-hidden="true">' . sgs_get_lucide_icon( 'chevron-down' ) . '</span>'
+								: '';
+							$root_class   = 'sgs-nav-bar-menu__mega';
+							$trigger_html = sprintf(
+								'<button type="button" class="sgs-nav-bar-menu__link sgs-nav-bar-menu__mega-trigger" data-sgs-mega-trigger aria-expanded="false" aria-controls="%1$s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
+								. '<span class="sgs-nav-bar-menu__label sgs-nav-bar-menu__magnet-target">%2$s</span>%3$s'
+								. '</button>',
+								esc_attr( $panel_dom_id ),
+								$label_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_label_roll_markup() esc_html's the label.
+								$caret // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
+							);
+						}
 						$html .= sprintf(
 							'<li class="%1$s sgs-nav-bar-menu__item--mega">'
-							. '<div class="sgs-nav-bar-menu__mega" data-wp-interactive="sgs/mega" %2$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
-							. '<button type="button" class="sgs-nav-bar-menu__link sgs-nav-bar-menu__mega-trigger" data-sgs-mega-trigger aria-expanded="false" aria-controls="%3$s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
-							. '<span class="sgs-nav-bar-menu__label sgs-nav-bar-menu__magnet-target">%4$s</span>%5$s'
-							. '</button>'
+							. '<div class="%4$s" data-wp-interactive="sgs/mega" %2$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
+							. '%5$s'
 							// `data-lenis-prevent`: the site runs Lenis smooth scrolling
 							// (<html class="lenis">), which intercepts wheel events
 							// document-wide and drives the PAGE. Without the opt-out, a
@@ -147,8 +200,8 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 							esc_attr( $li_class ),
 							$mega_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes.
 							esc_attr( $panel_dom_id ),
-							sgs_label_roll_markup( (string) $item['label'], (string) ( $submenu['label_roll'] ?? '' ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_label_roll_markup() esc_html's the label.
-							$caret, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
+							esc_attr( $root_class ),
+							$trigger_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from esc_url/esc_attr/esc_html parts.
 							$panel_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_blocks() output; already-safe rendered block HTML. The "View all" fallback (when the panel has no CTA of its own) is INSIDE this string, injected via sgs_mega_panel_footer_html.
 						);
 						continue; // Handled this item.
@@ -269,7 +322,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 								esc_attr( $sub_dom_id ),
 								/* translators: %s is the parent menu item's label. */
 								esc_html( sprintf( __( 'Show submenu for %s', 'sgs-blocks' ), $item['label'] ) ),
-								$sub_caret // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
+								sgs_nav_bar_menu_split_caret_html() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
 							);
 						} else {
 							$trigger_html = sprintf(

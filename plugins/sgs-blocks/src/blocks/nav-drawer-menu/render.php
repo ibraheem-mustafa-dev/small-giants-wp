@@ -281,7 +281,11 @@ if ( ! class_exists( 'SGS_Nav_Drawer_Menu_Flattener' ) ) {
 			// non-empty/non-'#' string; see sgs_nav_drawer_menu_has_real_destination()
 			// (includes/nav-drawer-menu-row-extras.php) for the non-publicly-
 			// queryable-post-type check this adds on top of the base rule.
-			$has_url = function_exists( 'sgs_nav_drawer_menu_has_real_destination' )
+			// A mega item's URL is already its panel's Section page (or '')
+			// from SGS_Nav_Menu_Source, and its id names the nav-only panel,
+			// so only the URL is judged.
+			$is_mega = 'sgs_mega_menu' === ( $attrs['type'] ?? '' );
+			$has_url = ! $is_mega && function_exists( 'sgs_nav_drawer_menu_has_real_destination' )
 				? sgs_nav_drawer_menu_has_real_destination( $raw_url, (int) ( $attrs['id'] ?? 0 ) )
 				: SGS_Nav_Menu_Source::is_destination_url( $raw_url );
 			$url     = $has_url ? $raw_url : '#';
