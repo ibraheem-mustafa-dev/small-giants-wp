@@ -237,6 +237,32 @@
     },
     {
       "slug": "sgs/accordion",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform",
@@ -1289,6 +1315,30 @@
     },
     {
       "slug": "sgs/before-after",
+      "attr": "labelTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "labelTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "labelTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
       "attr": "labelTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -1564,6 +1614,30 @@
     },
     {
       "slug": "sgs/brand-strip",
+      "attr": "nameTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "nameTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "nameTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
       "attr": "nameTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -1736,6 +1810,30 @@
       "attr": "titleTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "titleTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "titleTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "titleTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "title"
       }
     },
@@ -1923,6 +2021,27 @@
       "attr": "textDecoration",
       "fields": {
         "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width"
       }
     },
     {
@@ -2183,6 +2302,30 @@
     },
     {
       "slug": "sgs/business-info",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform",
@@ -2373,6 +2516,14 @@
     },
     {
       "slug": "sgs/button",
+      "attr": "inheritStyle",
+      "fields": {
+        "css_property": "box-shadow,transform",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/button",
       "attr": "letterSpacing",
       "fields": {
         "css_property": "letter-spacing",
@@ -2438,6 +2589,30 @@
     },
     {
       "slug": "sgs/button",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform",
@@ -2498,6 +2673,14 @@
       "fields": {
         "css_property": "min-height",
         "css_element": "add-to-cart"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartStyle",
+      "fields": {
+        "css_property": "box-shadow,transform",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -2651,6 +2834,30 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "guidedGroupTitleTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "guidedGroupTitle"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedGroupTitleTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedGroupTitleTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "guidedGroupTitle"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "guidedGroupTitleTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -2743,6 +2950,30 @@
       "attr": "guidedMeterTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "guidedMeter"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedMeterTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "guidedMeter"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedMeterTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedMeterTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "guidedMeter"
       }
     },
@@ -2852,6 +3083,31 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "notifyHeadingTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "notifyHeading"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyHeadingTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "notify-heading"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyHeadingTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "notifyHeading"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "notifyHeadingTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -2943,6 +3199,31 @@
       "attr": "notifyInputTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "notifyInput"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyInputTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "notifyInput"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyInputTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "notify-email"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyInputTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "notifyInput"
       }
     },
@@ -3044,6 +3325,30 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "notifyLabelTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "notifyLabel"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyLabelTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyLabelTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "notifyLabel"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "notifyLabelTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -3140,6 +3445,31 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "notifyStatusTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "notifyStatus"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyStatusTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "notify-status"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyStatusTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "notifyStatus"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "notifyStatusTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -3231,6 +3561,31 @@
       "attr": "notifySubmitTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "notifySubmit"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifySubmitTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "notifySubmit"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifySubmitTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "notify-submit"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifySubmitTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "notifySubmit"
       }
     },
@@ -3418,6 +3773,31 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "savingBadgeTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "savingBadgeTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "saving-badge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "savingBadgeTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "savingBadgeTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -3517,6 +3897,30 @@
       "attr": "stockTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "stock"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "stock"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "stock"
       }
     },
@@ -3683,6 +4087,29 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "valueLadderSavingTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderSavingTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderSavingTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "valueLadderSavingTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -3725,6 +4152,29 @@
       "attr": "valueLadderTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "valueLadder"
       }
     },
@@ -3865,6 +4315,30 @@
       "attr": "badgeTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "badgeTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "badgeTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "badgeTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "badge"
       }
     },
@@ -4104,6 +4578,30 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "glyphInitialTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "glyph-initial"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "glyphInitialTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "glyph-initial"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "glyphInitialTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "glyph-initial"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "glyphInitialTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -4310,6 +4808,30 @@
       "attr": "pageButtonTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "pageButtonTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "pageButtonTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "pageButtonTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "page-btn"
       }
     },
@@ -5462,6 +5984,30 @@
     },
     {
       "slug": "sgs/choice-flow-question",
+      "attr": "optionDescriptionTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "option-description"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionDescriptionTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "option-description"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionDescriptionTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "option-description"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
       "attr": "optionDescriptionTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -5691,6 +6237,30 @@
     },
     {
       "slug": "sgs/collapsible-text",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "body"
+      }
+    },
+    {
+      "slug": "sgs/collapsible-text",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "body"
+      }
+    },
+    {
+      "slug": "sgs/collapsible-text",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "body"
+      }
+    },
+    {
+      "slug": "sgs/collapsible-text",
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform",
@@ -5761,6 +6331,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -6112,6 +6689,27 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform"
@@ -6233,6 +6831,30 @@
       "attr": "expiredTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "expired"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "expiredTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "expired"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "expiredTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "expiredTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "expired"
       }
     },
@@ -6373,6 +6995,30 @@
     },
     {
       "slug": "sgs/countdown-timer",
+      "attr": "labelTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "labelTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "labelTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
       "attr": "labelTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -6492,6 +7138,30 @@
     },
     {
       "slug": "sgs/countdown-timer",
+      "attr": "numberTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "numberTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "numberTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
       "attr": "numberTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -6534,6 +7204,27 @@
       "attr": "textDecoration",
       "fields": {
         "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width"
       }
     },
     {
@@ -6660,6 +7351,30 @@
       "attr": "labelTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "labelTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "labelTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "labelTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "label"
       }
     },
@@ -7136,6 +7851,30 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "consentTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "consent-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "consentTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "consentTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "consent-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "consentTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -7236,6 +7975,30 @@
       "attr": "errorTextTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "error-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "errorTextTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "error-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "errorTextTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "errorTextTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "error-text"
       }
     },
@@ -7373,6 +8136,27 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "fieldTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "fieldTextTransform",
       "fields": {
         "css_property": "text-transform"
@@ -7461,6 +8245,30 @@
       "attr": "fileButtonTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "file-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileButtonTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "file-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileButtonTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileButtonTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "file-button"
       }
     },
@@ -7562,6 +8370,30 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "filePromptTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "file-prompt"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "filePromptTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "filePromptTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "file-prompt"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "filePromptTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -7653,6 +8485,30 @@
       "attr": "fileStatusTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "file-status"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileStatusTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "file-status"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileStatusTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileStatusTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "file-status"
       }
     },
@@ -7824,6 +8680,30 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "gridColHeadingTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "grid-column-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridColHeadingTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridColHeadingTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "grid-column-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "gridColHeadingTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -7915,6 +8795,30 @@
       "attr": "gridRowHeadingTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "grid-row-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridRowHeadingTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "grid-row-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridRowHeadingTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridRowHeadingTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "grid-row-heading"
       }
     },
@@ -8020,6 +8924,30 @@
       "attr": "helpTextTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "help-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "helpTextTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "help-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "helpTextTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "helpTextTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "help-text"
       }
     },
@@ -8134,6 +9062,29 @@
       "attr": "labelTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "field-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "field-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "field-label"
       }
     },
@@ -8263,6 +9214,31 @@
       "attr": "navButtonTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "nav-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "navButtonTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "nav-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "navButtonTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "navButtonTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "nav-button"
       }
     },
@@ -8409,6 +9385,30 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "reviewDetailTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "review-detail"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewDetailTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewDetailTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "review-detail"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "reviewDetailTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -8500,6 +9500,30 @@
       "attr": "reviewHeadingTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "review-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewHeadingTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "review-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewHeadingTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewHeadingTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "review-heading"
       }
     },
@@ -8601,6 +9625,30 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "reviewTermTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "review-term"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewTermTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewTermTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "review-term"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "reviewTermTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -8697,6 +9745,31 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "stepLabelTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "progress-step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "stepLabelTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -8788,6 +9861,31 @@
       "attr": "stepNumberTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "step-number"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "step-number"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "progress-step-number"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "step-number"
       }
     },
@@ -8941,6 +10039,31 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "submitTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "submitTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -8989,6 +10112,27 @@
       "attr": "textIndent",
       "fields": {
         "css_property": "text-indent"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width"
       }
     },
     {
@@ -9074,6 +10218,30 @@
       "attr": "tileIconTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "tile-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileIconTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "tile-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileIconTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileIconTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "tile-icon"
       }
     },
@@ -9170,6 +10338,30 @@
       "attr": "tileLabelTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileLabelTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileLabelTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileLabelTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "tile-label"
       }
     },
@@ -9549,6 +10741,30 @@
     },
     {
       "slug": "sgs/google-rating-badge",
+      "attr": "captionTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "captionTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "captionTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
       "attr": "captionTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -9655,6 +10871,30 @@
       "attr": "scoreTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "scoreTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "scoreTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "scoreTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "score"
       }
     },
@@ -9891,6 +11131,33 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "authorTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "author"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "authorTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "author"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "authorTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_layer": "OUTER",
+        "css_element": "author"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "authorTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -9975,6 +11242,32 @@
       "attr": "avatarTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "avatar-initials"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "avatarTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "avatar-initials"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "avatarTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "avatar-initials"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "avatarTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_layer": "OUTER",
         "css_element": "avatar-initials"
       }
@@ -10083,6 +11376,33 @@
       "attr": "breakdownRowTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "breakdown-row"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "breakdownRowTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "breakdown-row"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "breakdownRowTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "breakdown-row"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "breakdownRowTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_layer": "OUTER",
         "css_element": "breakdown-row"
       }
@@ -10221,6 +11541,33 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "countTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "count"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "countTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "count"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "countTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_layer": "OUTER",
+        "css_element": "count"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "countTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -10305,6 +11652,33 @@
       "attr": "dateTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "dateTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "dateTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "dateTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_layer": "OUTER",
         "css_element": "date"
       }
@@ -10489,6 +11863,33 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "footnoteTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "footnote"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "footnoteTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "footnote"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "footnoteTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_layer": "OUTER",
+        "css_element": "footnote"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "footnoteTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -10652,6 +12053,33 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "mapsLinkTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "maps-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "mapsLinkTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "maps-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "mapsLinkTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_layer": "OUTER",
+        "css_element": "maps-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "mapsLinkTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -10745,6 +12173,33 @@
       "attr": "metaTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "metaTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "metaTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "metaTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_layer": "OUTER",
         "css_element": "meta"
       }
@@ -10850,6 +12305,33 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "reviewLinkTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "review-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "reviewLinkTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "review-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "reviewLinkTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_layer": "OUTER",
+        "css_element": "review-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "reviewLinkTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -10934,6 +12416,32 @@
       "attr": "scoreTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "scoreTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "scoreTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "scoreTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_layer": "OUTER",
         "css_element": "score"
       }
@@ -11157,6 +12665,33 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "seeAllTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "seeAllTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_layer": "OUTER",
+        "css_element": "see-all"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "seeAllTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -11247,6 +12782,33 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "sourceLabelTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "source-label"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "sourceLabelTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "source-label"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "sourceLabelTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_layer": "OUTER",
+        "css_element": "source-label"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "sourceLabelTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -11289,6 +12851,15 @@
         "css_property": "fill",
         "css_layer": "OUTER",
         "css_element": "star-empty"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "textClampLines",
+      "fields": {
+        "css_property": "-webkit-line-clamp",
+        "css_layer": "OUTER",
+        "css_element": "text"
       }
     },
     {
@@ -11359,6 +12930,33 @@
       "attr": "textTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "textTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "textTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "textTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_layer": "OUTER",
         "css_element": "text"
       }
@@ -11567,6 +13165,33 @@
       "attr": "writeReviewTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_layer": "OUTER",
         "css_element": "write-review"
       }
@@ -11796,6 +13421,30 @@
     },
     {
       "slug": "sgs/heading",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform",
@@ -11877,6 +13526,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -12365,6 +14021,27 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform",
@@ -12584,6 +14261,30 @@
     },
     {
       "slug": "sgs/icon",
+      "attr": "labelTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "label-text"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "labelTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "label-text"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "labelTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "label-text"
+      }
+    },
+    {
+      "slug": "sgs/icon",
       "attr": "labelTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -12749,6 +14450,30 @@
     },
     {
       "slug": "sgs/icon-list",
+      "attr": "descriptionTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "descriptionTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "descriptionTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
       "attr": "descriptionTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -12849,6 +14574,30 @@
       "attr": "headingTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "headingTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "headingTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "headingTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "heading"
       }
     },
@@ -12987,6 +14736,30 @@
       "attr": "itemTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "itemTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "itemTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "itemTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "item"
       }
     },
@@ -13181,6 +14954,30 @@
       "attr": "textElTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "textElTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "textElTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "textElTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "text"
       }
     },
@@ -13387,6 +15184,27 @@
       "attr": "textIndent",
       "fields": {
         "css_property": "text-indent"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width"
       }
     },
     {
@@ -13619,6 +15437,27 @@
       "fields": {
         "css_property": "text-decoration",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width"
       }
     },
     {
@@ -13965,6 +15804,30 @@
     },
     {
       "slug": "sgs/measured-diagram",
+      "attr": "captionTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "captionTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "captionTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
       "attr": "captionTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -14104,6 +15967,30 @@
     },
     {
       "slug": "sgs/measured-diagram",
+      "attr": "valueTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "value"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "valueTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "valueTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "value"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
       "attr": "valueTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -14219,6 +16106,30 @@
     },
     {
       "slug": "sgs/media",
+      "attr": "captionTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "captionTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "captionTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/media",
       "attr": "captionTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -14302,6 +16213,27 @@
       "attr": "videoTimeTextDecoration",
       "fields": {
         "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "videoTimeTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "videoTimeTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "videoTimeTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width"
       }
     },
     {
@@ -14942,6 +16874,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -15851,6 +17790,30 @@
     },
     {
       "slug": "sgs/nav-drawer-menu",
+      "attr": "drillBackTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "drill-back-btn"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "drillBackTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "drill-back-btn"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "drillBackTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "drill-back-btn"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
       "attr": "drillBackTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -16388,6 +18351,27 @@
     },
     {
       "slug": "sgs/notice-banner",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform"
@@ -16528,6 +18512,30 @@
       "attr": "labelTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "labelTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "labelTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "labelTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "label"
       }
     },
@@ -16736,6 +18744,30 @@
     },
     {
       "slug": "sgs/option-picker",
+      "attr": "pillTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
       "attr": "pillTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -16813,6 +18845,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -17056,6 +19095,30 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "badgeTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "badgeTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "badgeTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "badgeTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -17207,6 +19270,30 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "categoryTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "category"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categoryTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "category"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categoryTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "category"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "categoryTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -17316,6 +19403,30 @@
       "attr": "excerptTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "excerpt"
       }
     },
@@ -17472,6 +19583,30 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "loadMoreTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "load-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "loadMoreTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "load-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "loadMoreTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "load-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "loadMoreTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -17577,6 +19712,30 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "metaTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "metaTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "metaTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "metaTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -17660,6 +19819,30 @@
       "attr": "pageButtonTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "pageButtonTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "pageButtonTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "pageButtonTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "page-btn"
       }
     },
@@ -17756,6 +19939,30 @@
       "attr": "readMoreTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "readmore"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "readMoreTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "readmore"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "readMoreTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "readmore"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "readMoreTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "readmore"
       }
     },
@@ -17903,6 +20110,30 @@
       "attr": "titleTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "titleTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "titleTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "titleTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "title"
       }
     },
@@ -18084,6 +20315,30 @@
     },
     {
       "slug": "sgs/pricing-table",
+      "attr": "ctaTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "ctaTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "ctaTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
       "attr": "ctaTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -18194,6 +20449,30 @@
       "attr": "featureTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "feature"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "featureTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "feature"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "featureTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "feature"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "featureTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "feature"
       }
     },
@@ -18422,6 +20701,30 @@
     },
     {
       "slug": "sgs/pricing-table",
+      "attr": "priceTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "price"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "priceTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "price"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "priceTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "price"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
       "attr": "priceTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -18532,6 +20835,30 @@
       "attr": "titleTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "titleTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "titleTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "titleTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "name"
       }
     },
@@ -18705,6 +21032,30 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "descriptionTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "descriptionTextStrokeColourHover",
+      "fields": {
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "descriptionTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "descriptionTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -18796,6 +21147,30 @@
       "attr": "iconTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "iconTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "iconTextStrokeColourHover",
+      "fields": {
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "iconTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "icon"
       }
     },
@@ -18943,6 +21318,30 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "numberTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "numberTextStrokeColourHover",
+      "fields": {
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "numberTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "numberTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -19075,6 +21474,30 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "titleTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "titleTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "titleTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "titleTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -19199,6 +21622,31 @@
       "attr": "attributeTagTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "attributeTag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "attributeTag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "attribute-tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "attributeTag"
       }
     },
@@ -19365,6 +21813,30 @@
       "attr": "brandTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "brand"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "brand"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandTextStrokeColourHover",
+      "fields": {
+        "css_element": "brand"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "brand"
       }
     },
@@ -19695,6 +22167,30 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "descTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "descTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -19920,6 +22416,30 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "priceFromLabelTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "priceFromLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceFromLabelTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceFromLabelTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "priceFromLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "priceFromLabelTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -20121,6 +22641,31 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "ratingStarsTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "ratingStars"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingStarsTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "rating-stars"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingStarsTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "ratingStars"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "ratingStarsTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -20164,6 +22709,30 @@
       "attr": "ratingTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "rating"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "rating"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingTextStrokeColourHover",
+      "fields": {
+        "css_element": "rating"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "rating"
       }
     },
@@ -20266,6 +22835,30 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "rrpTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "rrp"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "rrpTextStrokeColourHover",
+      "fields": {
+        "css_element": "rrp"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "rrpTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "rrp"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "rrpTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -20357,6 +22950,31 @@
       "attr": "savingBadgeTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgeTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgeTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "saving-badge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgeTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "savingBadge"
       }
     },
@@ -20463,6 +23081,31 @@
       "attr": "swatchMoreTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "swatchMore"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchMoreTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "swatchMore"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchMoreTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "swatch-more"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchMoreTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "swatchMore"
       }
     },
@@ -20580,6 +23223,30 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "tagTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "tagTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -20679,6 +23346,30 @@
       "attr": "titleTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "title"
       }
     },
@@ -20836,6 +23527,29 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "valueLadderSavingTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderSavingTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderSavingTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "valueLadderSavingTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -20878,6 +23592,29 @@
       "attr": "valueLadderTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "valueLadder"
       }
     },
@@ -21107,6 +23844,30 @@
     },
     {
       "slug": "sgs/product-faq",
+      "attr": "questionTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "question"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "questionTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "questionTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "question"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
       "attr": "questionTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -21174,6 +23935,27 @@
       "attr": "textIndent",
       "fields": {
         "css_property": "text-indent"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width"
       }
     },
     {
@@ -21402,6 +24184,30 @@
       "attr": "attributionTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "attribution"
       }
     },
@@ -21686,6 +24492,30 @@
     },
     {
       "slug": "sgs/separator",
+      "attr": "contentTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "content"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "contentTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "content"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "contentTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "content"
+      }
+    },
+    {
+      "slug": "sgs/separator",
       "attr": "contentTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -21718,6 +24548,14 @@
     },
     {
       "slug": "sgs/separator",
+      "attr": "lineStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/separator",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -21737,6 +24575,14 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "thickness",
+      "fields": {
+        "css_property": "border-width",
         "css_element": "wrapper"
       }
     },
@@ -21790,6 +24636,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -22238,6 +25091,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -22672,6 +25532,29 @@
     },
     {
       "slug": "sgs/social-icons",
+      "attr": "childIconLabelTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconLabelTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconLabelTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
       "attr": "childIconLabelTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -22970,6 +25853,27 @@
     },
     {
       "slug": "sgs/table-of-contents",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform"
@@ -23070,6 +25974,30 @@
       "attr": "titleTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "titleTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "titleTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "titleTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "title"
       }
     },
@@ -23470,6 +26398,30 @@
     },
     {
       "slug": "sgs/team-member",
+      "attr": "bioTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "bio"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "bioTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "bio"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "bioTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "bio"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
       "attr": "bioTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -23677,6 +26629,30 @@
     },
     {
       "slug": "sgs/team-member",
+      "attr": "nameTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "nameTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "nameTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
       "attr": "nameTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -23817,6 +26793,30 @@
     },
     {
       "slug": "sgs/team-member",
+      "attr": "roleTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "role"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "roleTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "role"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "roleTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "role"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
       "attr": "roleTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -23915,6 +26915,31 @@
       "attr": "socialLinkTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "social"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "socialLinkTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "social"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "socialLinkTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "social-link"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "socialLinkTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "social"
       }
     },
@@ -24167,6 +27192,30 @@
     },
     {
       "slug": "sgs/testimonial",
+      "attr": "nameTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "nameTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "nameTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
       "attr": "nameTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -24367,6 +27416,30 @@
       "attr": "quoteTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "quote"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "quote"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "quote"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "quote"
       }
     },
@@ -24664,6 +27737,27 @@
     },
     {
       "slug": "sgs/testimonial-slider",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform"
@@ -24939,6 +28033,30 @@
       "attr": "textIndent",
       "fields": {
         "css_property": "text-indent",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "textStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "textStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "textStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "wrapper"
       }
     },
@@ -25375,6 +28493,30 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "titleTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "titleTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "titleTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "titleTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -25455,6 +28597,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -25841,6 +28990,30 @@
     },
     {
       "slug": "sgs/trust-bar",
+      "attr": "labelTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
       "attr": "labelTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -26014,6 +29187,30 @@
       "attr": "titleTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "title"
       }
     },
@@ -26460,6 +29657,30 @@
       "attr": "labelTextDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "labelTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "labelTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "labelTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "label"
       }
     },
@@ -26945,25 +30166,6 @@
         "css_property": "width",
         "css_layer": "OUTER",
         "css_element": "icon"
-      }
-    },
-    {
-      "slug": "sgs/accordion",
-      "attr": "textStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/accordion",
-      "attr": "textStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
       }
     },
     {
@@ -27736,23 +30938,6 @@
       }
     },
     {
-      "slug": "sgs/business-info",
-      "attr": "textStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/business-info",
-      "attr": "textStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "wrapper"
-      }
-    },
-    {
       "slug": "sgs/button",
       "attr": "borderColourGradient",
       "fields": {
@@ -27852,23 +31037,6 @@
       }
     },
     {
-      "slug": "sgs/button",
-      "attr": "textStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/button",
-      "attr": "textStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "wrapper"
-      }
-    },
-    {
       "slug": "sgs/buybox",
       "attr": "addToCartBackgroundColour",
       "fields": {
@@ -27956,142 +31124,6 @@
     },
     {
       "slug": "sgs/buybox",
-      "attr": "guidedGroupTitleTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "guidedGroupTitle"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "guidedGroupTitleTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "guidedGroupTitle"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "guidedMeterTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "guidedMeter"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "guidedMeterTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "guidedMeter"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "notifyHeadingTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "notifyHeading"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "notifyHeadingTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "notifyHeading"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "notifyInputTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "notifyInput"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "notifyInputTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "notifyInput"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "notifyLabelTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "notifyLabel"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "notifyLabelTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "notifyLabel"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "notifyStatusTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "notifyStatus"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "notifyStatusTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "notifyStatus"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "notifySubmitTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "notifySubmit"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "notifySubmitTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "notifySubmit"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "savingBadgeTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "savingBadge"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "savingBadgeTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "savingBadge"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
       "attr": "stickyBarBackground",
       "fields": {
         "css_property": "background-color",
@@ -28142,23 +31174,6 @@
         "css_property": "color",
         "role": "color",
         "css_element": "stock-out-of-stock"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "stockTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "stock"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "stockTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "stock"
       }
     },
     {
@@ -28962,43 +31977,9 @@
     },
     {
       "slug": "sgs/countdown-timer",
-      "attr": "expiredTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "expired"
-      }
-    },
-    {
-      "slug": "sgs/countdown-timer",
-      "attr": "expiredTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "expired"
-      }
-    },
-    {
-      "slug": "sgs/countdown-timer",
       "attr": "labelColourGradient",
       "fields": {
         "css_property": "color-gradient",
-        "css_element": "label"
-      }
-    },
-    {
-      "slug": "sgs/countdown-timer",
-      "attr": "labelTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "label"
-      }
-    },
-    {
-      "slug": "sgs/countdown-timer",
-      "attr": "labelTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
         "css_element": "label"
       }
     },
@@ -29015,23 +31996,6 @@
       "attr": "numberColourGradient",
       "fields": {
         "css_property": "background-image",
-        "css_element": "number"
-      }
-    },
-    {
-      "slug": "sgs/countdown-timer",
-      "attr": "numberTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "number"
-      }
-    },
-    {
-      "slug": "sgs/countdown-timer",
-      "attr": "numberTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
         "css_element": "number"
       }
     },
@@ -29276,40 +32240,6 @@
     },
     {
       "slug": "sgs/form",
-      "attr": "consentTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "consent-text"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "consentTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "consent-text"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "errorTextTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "error-text"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "errorTextTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "error-text"
-      }
-    },
-    {
-      "slug": "sgs/form",
       "attr": "fieldBackground",
       "fields": {
         "css_property": "background-color",
@@ -29351,130 +32281,11 @@
     },
     {
       "slug": "sgs/form",
-      "attr": "fileButtonTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "file-button"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "fileButtonTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "file-button"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "filePromptTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "file-prompt"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "filePromptTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "file-prompt"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "fileStatusTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "file-status"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "fileStatusTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "file-status"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "gridColHeadingTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "grid-column-heading"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "gridColHeadingTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "grid-column-heading"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "gridRowHeadingTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "grid-row-heading"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "gridRowHeadingTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "grid-row-heading"
-      }
-    },
-    {
-      "slug": "sgs/form",
       "attr": "gridTemplateColumns",
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID",
         "css_element": "inner"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "helpTextTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "help-text"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "helpTextTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "help-text"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "navButtonTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "nav-button"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "navButtonTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "nav-button"
       }
     },
     {
@@ -29511,91 +32322,6 @@
         "css_property": "background-image",
         "css_element": "progress-bar",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "reviewDetailTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "review-detail"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "reviewDetailTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "review-detail"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "reviewHeadingTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "review-heading"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "reviewHeadingTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "review-heading"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "reviewTermTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "review-term"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "reviewTermTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "review-term"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "stepLabelTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "step-label"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "stepLabelTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "step-label"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "stepNumberTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "step-number"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "stepNumberTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "step-number"
       }
     },
     {
@@ -29640,57 +32366,6 @@
         "css_property": "box-shadow",
         "css_element": "submit-button",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "submitTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "submit-button"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "submitTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "submit-button"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "tileIconTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "tile-icon"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "tileIconTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "tile-icon"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "tileLabelTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "tile-label"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "tileLabelTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "tile-label"
       }
     },
     {
@@ -30866,23 +33541,6 @@
       }
     },
     {
-      "slug": "sgs/heading",
-      "attr": "textStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/heading",
-      "attr": "textStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "wrapper"
-      }
-    },
-    {
       "slug": "sgs/hero",
       "attr": "backgroundColour",
       "fields": {
@@ -31512,23 +34170,6 @@
     },
     {
       "slug": "sgs/measured-diagram",
-      "attr": "captionTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "caption"
-      }
-    },
-    {
-      "slug": "sgs/measured-diagram",
-      "attr": "captionTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "caption"
-      }
-    },
-    {
-      "slug": "sgs/measured-diagram",
       "attr": "extensionColourGradient",
       "fields": {
         "css_property": "stroke-gradient",
@@ -31574,23 +34215,6 @@
       "attr": "valueColourGradient",
       "fields": {
         "css_property": "color-gradient",
-        "css_element": "value"
-      }
-    },
-    {
-      "slug": "sgs/measured-diagram",
-      "attr": "valueTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "value"
-      }
-    },
-    {
-      "slug": "sgs/measured-diagram",
-      "attr": "valueTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
         "css_element": "value"
       }
     },
@@ -35116,44 +37740,10 @@
     },
     {
       "slug": "sgs/process-steps",
-      "attr": "descriptionTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "description"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
-      "attr": "descriptionTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "description"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
       "attr": "headingLevel",
       "fields": {
         "css_property": "tag",
         "css_element": "title"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
-      "attr": "iconTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "icon"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
-      "attr": "iconTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "icon"
       }
     },
     {
@@ -35180,23 +37770,6 @@
         "css_property": "color-gradient",
         "css_element": "number",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
-      "attr": "numberTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "number"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
-      "attr": "numberTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "number"
       }
     },
     {
@@ -35279,23 +37852,6 @@
     },
     {
       "slug": "sgs/product-card",
-      "attr": "attributeTagTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "attributeTag"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "attributeTagTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "attributeTag"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -35317,23 +37873,6 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "brandTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "brand"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "brandTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "brand"
       }
     },
     {
@@ -35413,74 +37952,6 @@
     },
     {
       "slug": "sgs/product-card",
-      "attr": "priceFromLabelTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "priceFromLabel"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "priceFromLabelTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "priceFromLabel"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "ratingStarsTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "ratingStars"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "ratingStarsTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "ratingStars"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "ratingTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "rating"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "ratingTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "rating"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "rrpTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "rrp"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "rrpTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "rrp"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
       "attr": "savingBadgeBackgroundColour",
       "fields": {
         "css_property": "background-color",
@@ -35494,40 +37965,6 @@
       "fields": {
         "css_property": "padding",
         "css_element": "savingBadge"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "savingBadgeTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "savingBadge"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "savingBadgeTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "savingBadge"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "swatchMoreTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "swatchMore"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "swatchMoreTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "swatchMore"
       }
     },
     {
@@ -35641,23 +38078,6 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/product-faq",
-      "attr": "questionTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "question"
-      }
-    },
-    {
-      "slug": "sgs/product-faq",
-      "attr": "questionTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "question"
       }
     },
     {
@@ -36155,22 +38575,6 @@
         "css_property": "background-image",
         "css_element": "content",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/separator",
-      "attr": "lineStyle",
-      "fields": {
-        "css_property": "border-style",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/separator",
-      "attr": "thickness",
-      "fields": {
-        "css_property": "border-width",
-        "css_element": "wrapper"
       }
     },
     {
@@ -36994,23 +39398,6 @@
       }
     },
     {
-      "slug": "sgs/table-of-contents",
-      "attr": "titleTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "title"
-      }
-    },
-    {
-      "slug": "sgs/table-of-contents",
-      "attr": "titleTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "title"
-      }
-    },
-    {
       "slug": "sgs/tabs",
       "attr": "borderColour",
       "fields": {
@@ -37189,23 +39576,6 @@
       "fields": {
         "css_property": "background-image",
         "css_element": "role"
-      }
-    },
-    {
-      "slug": "sgs/team-member",
-      "attr": "socialLinkTextStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "social"
-      }
-    },
-    {
-      "slug": "sgs/team-member",
-      "attr": "socialLinkTextStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "social"
       }
     },
     {
@@ -37624,23 +39994,6 @@
         "css_property": "color-gradient",
         "css_element": "wrapper",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/text",
-      "attr": "textStrokeColour",
-      "fields": {
-        "css_property": "-webkit-text-stroke-color",
-        "role": "color",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/text",
-      "attr": "textStrokeWidth",
-      "fields": {
-        "css_property": "-webkit-text-stroke-width",
-        "css_element": "wrapper"
       }
     },
     {
