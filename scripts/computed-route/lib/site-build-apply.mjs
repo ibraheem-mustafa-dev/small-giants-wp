@@ -1,16 +1,16 @@
 // The site build's writer (Spec 48 FR-48-55): runs one phase of a plan (lib/site-build-plan.mjs) against a site.
 // Every post is built through scripts/wp-build-page.js (the editor serialises each block); every other write is a
 // WP-CLI call: `wp post update` and `wp post meta update` (the row key and tree hash the next run compares), `wp menu`
-// and `wp menu item` (part 3), `wp option update` (part 4), `wp rewrite` (part 5) and `wp sgs <area> set-active`
+// and `wp menu item` (part 3; a new menu is marked with its page-map name, and no item is ever deleted), `wp option update` (part 4), `wp rewrite` (part 5) and `wp sgs <area> set-active`
 // (part 7, through Sgs_Active_Layout::set_active, never a raw option write).
 import { execFileSync } from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { ROW_META, TREE_META } from './site-build-state.mjs';
+import { MENU_META, ROW_META, TREE_META } from './site-build-state.mjs';
 
-// How long each editor load and save may take: a shared host stalls an admin page past wp-build-page.js's 60 s
-// default now and then (indus-test, 2026-10-20), and a rerun resumes from the posts already made.
+// How long each editor load and save may take: twice wp-build-page.js's 60 s default, since a shared host can stall an
+// admin page past it; a run stopped by a stall resumes from the posts already made.
 const EDITOR_TIMEOUT = 120000;
 
 // A build runner over wp-build-page.js for one site's secrets file: ({ create, title, slug } | { postId }, tree) -> id.
@@ -70,7 +70,8 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 		}
 		return id;
 	};
-	const fieldArgs = ( fields ) => Object.entries( fields ).map( ( [ k, v ] ) => `--${ k }=${ val( v ) }` );
+	// WordPress ignores an empty page_template, so clearing one sends `default` (get_page_template_slug reads it as '').
+	const fieldArgs = ( fields ) => Object.entries( fields ).map( ( [ k, v ] ) => `--${ k }=${ 'page_template' === k && '' === v ? 'default' : val( v ) }` );
 	let done = 0;
 	for ( const a of actions.filter( ( x ) => x.phase === phase ) ) {
 		log( `  ${ a.say }` );
@@ -98,14 +99,10 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 			build( { postId: a.id }, a.tree );
 			wp( [ 'post', 'meta', 'update', String( a.id ), TREE_META, a.hash ] );
 		} else if ( 'update' === a.type ) {
-			if ( Object.keys( a.fields ).length ) {
-				wp( [ 'post', 'update', String( a.id ), ...fieldArgs( a.fields ) ] );
-			}
-			if ( a.mark ) {
-				wp( [ 'post', 'meta', 'update', String( a.id ), ROW_META, a.key ] );
-			}
+			wp( [ 'post', 'update', String( a.id ), ...fieldArgs( a.fields ) ] );
 		} else if ( 'menu' === a.type ) {
 			refs[ `menu:${ a.name }` ] = porcelain( wp( [ 'menu', 'create', a.name, '--porcelain' ] ) );
+			wp( [ 'term', 'meta', 'update', String( refs[ `menu:${ a.name }` ] ), MENU_META, a.name ] );
 		} else if ( 'item-add' === a.type ) {
 			const parent = val( a.parent );
 			const tail = [ `--position=${ a.position }`, ...( parent ? [ `--parent-id=${ parent }` ] : [] ), '--porcelain' ];
@@ -114,8 +111,6 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 				: wp( [ 'menu', 'item', 'add-custom', String( val( a.menu ) ), a.title, '#', ...tail ] ) );
 		} else if ( 'item-update' === a.type ) {
 			wp( [ 'menu', 'item', 'update', String( a.id ), `--position=${ a.position }`, `--parent-id=${ val( a.parent ) || 0 }`, ...( a.title ? [ `--title=${ a.title }` ] : [] ) ] );
-		} else if ( 'item-delete' === a.type ) {
-			wp( [ 'menu', 'item', 'delete', String( a.id ) ] );
 		} else if ( 'location' === a.type ) {
 			wp( [ 'menu', 'location', 'assign', String( val( a.menu ) ), a.location ] );
 		} else if ( 'option' === a.type ) {

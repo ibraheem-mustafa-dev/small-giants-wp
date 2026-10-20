@@ -3,10 +3,14 @@
 // first, mega-menu panels before the menus that point at them), `menus` (part 3), `layout` (the header, drawer and
 // footer posts, whose trees bind their menus), and `site` (parts 4, 5 and 7). Pure: no site access.
 // A value that names something not built yet is a ref ({ ref: 'post:<row key>' | 'menu:<name>' | 'item:<menu>:<key>' })
-// the executor resolves. A row without an id adopts the one post carrying its row key (a page map an intake rerun
-// reset, FR-48-17), else is created; a stored id the site no longer holds stops the run.
+// the executor resolves. The run only ever changes what it made: a stored id must name a post carrying that row's key
+// (`_sgs_site_build_row`), a menu it reuses must carry its own mark, and an item no row asks for is reported, never
+// deleted. A row without an id adopts the one post carrying its key (a page map an intake rerun reset, FR-48-17), else
+// is created; an unmarked post already holding its type and slug (another author's, or one an interrupted run saved
+// before marking it) stops the run, so it is never duplicated or renamed `<slug>-2`.
 import { LAYOUT_TYPES, SHOP_TYPES, orderRows, parentRow, rowKey, treeFor, treeHash } from './site-build-map.mjs';
 import { desiredMenus, menuLocation } from './site-build-menus.mjs';
+import { MENU_META, ROW_META } from './site-build-state.mjs';
 
 export const PERMALINKS = '/%postname%/';
 export const PHASES = [ 'posts', 'menus', 'layout', 'site' ];
@@ -33,6 +37,8 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home' } ) 
 			const p = state.posts[ String( row.id ) ];
 			if ( ! p || p.type !== row.postType || 'trash' === p.status ) {
 				problems.push( `${ key }: its stored id ${ row.id } ${ p && p.type !== row.postType ? `is a ${ p.type }, not a ${ row.postType }` : 'no longer exists on the site' }; restore the post or clear the row's id` );
+			} else if ( p.rowKey !== key ) {
+				problems.push( `${ key }: its stored id ${ row.id } is a post the site build did not make for this row (${ p.rowKey ? `it carries ${ p.rowKey }` : 'it carries no row key' }); correct the id, or mark the post with "wp post meta update ${ row.id } ${ ROW_META } ${ key }"` );
 			}
 			ids[ key ] = row.id;
 			continue;
@@ -44,6 +50,10 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home' } ) 
 			ids[ key ] = marked[ 0 ];
 			actions.push( { phase: 'posts', type: 'adopt', key, id: marked[ 0 ], say: `${ key }: the page map's id is empty; adopt post ${ marked[ 0 ] }, which carries this row's key` } );
 		} else {
+			const held = ( state.holders?.[ key ] || [] ).filter( ( id ) => ! marked.includes( id ) );
+			if ( held.length ) {
+				problems.push( `${ key }: post ${ held.join( ', ' ) } already holds this ${ row.postType } slug and carries no site-build row key; if an interrupted run made it, mark it with "wp post meta update ${ held[ 0 ] } ${ ROW_META } ${ key }", otherwise rename or delete it` );
+			}
 			ids[ key ] = null;
 		}
 	}
@@ -55,6 +65,10 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home' } ) 
 	}
 	const idOf = ( key ) => ( ids[ key ] ? ids[ key ] : { ref: `post:${ key }` } );
 	const menuOf = ( name ) => state.menus.find( ( m ) => m.slug === name ) || null;
+	Object.keys( wanted.menus ).filter( ( n ) => menuOf( n ) && menuOf( n ).owner !== n ).forEach( ( n ) => problems.push( `menu "${ n }" (${ menuOf( n ).id }) exists but the site build did not make it; rename it, or mark it with "wp term meta update ${ menuOf( n ).id } ${ MENU_META } ${ n }"` ) );
+	if ( problems.length ) {
+		return { actions: [], problems, notes, options };
+	}
 	const menuIds = Object.fromEntries( Object.keys( wanted.menus ).map( ( n ) => [ n, menuOf( n )?.id || 0 ] ) );
 
 	// Posts and layout surfaces (parts 1 and 2).
@@ -66,8 +80,8 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home' } ) 
 			problems.push( `${ key }: its parent "${ row.parent }" is no ${ row.postType } row of the page map` );
 			continue;
 		}
-		if ( row.template && ! ( state.templates || [] ).includes( row.template ) ) {
-			problems.push( `${ key }: template "${ row.template }" is not one the theme registers` );
+		if ( row.template && ! ( state.templates?.[ row.postType ] || [] ).includes( row.template ) ) {
+			problems.push( `${ key }: template "${ row.template }" is not one the theme registers for a ${ row.postType }` );
 			continue;
 		}
 		const { tree, source } = treeFor( repo, client, row, menuIds );
@@ -83,15 +97,17 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home' } ) 
 		if ( p.treeHash !== hash ) {
 			actions.push( { phase, type: 'build', key, id: p.id, tree, hash, say: `${ key }: rebuild post ${ p.id } from the ${ source } tree (it was built from another tree)` } );
 		}
-		const want = { post_title: row.title, post_name: row.slug, post_status: 'publish', ...fields };
-		const have = { post_title: p.title, post_name: p.slug, post_status: p.status, post_parent: p.parent, page_template: p.template };
+		// Status is set once, at creation: a post someone has since drafted or made private stays as they left it.
+		const want = { post_title: row.title, post_name: row.slug, ...fields };
+		const have = { post_title: p.title, post_name: p.slug, post_parent: p.parent, page_template: p.template };
 		const diff = Object.fromEntries( Object.entries( want ).filter( ( [ k, v ] ) => String( v?.ref ? '' : v ) !== String( have[ k ] ) || v?.ref ) );
-		if ( Object.keys( diff ).length || p.rowKey !== key ) {
-			actions.push( { phase, type: 'update', key, id: p.id, fields: diff, mark: p.rowKey !== key, say: `${ key }: post ${ p.id }: ${ [ ...Object.entries( diff ).map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } -> ${ shown( v ) }` ), ...( p.rowKey !== key ? [ 'record its row key' ] : [] ) ].join( '; ' ) }` } );
+		if ( Object.keys( diff ).length ) {
+			actions.push( { phase, type: 'update', key, id: p.id, fields: diff, say: `${ key }: post ${ p.id }: ${ Object.entries( diff ).map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } -> ${ shown( v ) }` ).join( '; ' ) }` } );
 		}
 	}
 
-	// Menus (part 3): matched by (menu, object id) for post items and by title for custom parents.
+	// Menus (part 3): an item is matched by (menu, object id), a custom parent by its title; under the parent the map
+	// gives first, else wherever it now sits (then moved back), so a hand-moved item is never added twice.
 	for ( const [ name, list ] of Object.entries( wanted.menus ) ) {
 		const menu = menuOf( name );
 		const menuRef = menu ? menu.id : { ref: `menu:${ name }` };
@@ -103,9 +119,9 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home' } ) 
 		for ( const it of list ) {
 			const parentId = it.parentKey ? matched[ it.parentKey ] || { ref: `item:${ name }:${ it.parentKey }` } : 0;
 			const objectId = 'post' === it.kind ? ids[ it.rowKey ] : null;
-			const at = existing.findIndex( ( e ) => ( 'post' === it.kind
-				? objectId && e.objectId === objectId && e.object === it.postType
-				: 'custom' === e.type && e.title === it.title ) && e.parent === ( 'number' === typeof parentId ? parentId : -1 ) );
+			const same = ( e ) => ( 'post' === it.kind ? objectId && e.objectId === objectId && e.object === it.postType : 'custom' === e.type && e.title === it.title );
+			const exact = existing.findIndex( ( e ) => same( e ) && e.parent === ( 'number' === typeof parentId ? parentId : -1 ) );
+			const at = exact >= 0 ? exact : existing.findIndex( same );
 			const where = `menu "${ name }" item "${ it.label }"`;
 			if ( at < 0 ) {
 				actions.push( { phase: 'menus', type: 'item-add', menu: menuRef, key: `item:${ name }:${ it.key }`, kind: it.kind, object: 'post' === it.kind ? idOf( it.rowKey ) : null, title: it.title, position: it.order, parent: parentId, say: `${ where }: add at position ${ it.order }${ it.parentKey ? ` under "${ list.find( ( x ) => x.key === it.parentKey ).label }"` : '' }` } );
@@ -114,16 +130,16 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home' } ) 
 			const e = existing.splice( at, 1 )[ 0 ];
 			matched[ it.key ] = e.id;
 			const titleOff = it.title ? e.title !== it.title : '' !== e.title;
-			if ( e.order !== it.order || titleOff ) {
-				if ( titleOff && ! it.title ) {
-					notes.push( `${ where }: item ${ e.id } carries the custom title "${ e.title }"; clear it in Appearance > Menus to show the post's own title` );
-				}
-				if ( e.order !== it.order || it.title ) {
-					actions.push( { phase: 'menus', type: 'item-update', id: e.id, title: titleOff && it.title ? it.title : null, position: it.order, parent: parentId, say: `${ where }: item ${ e.id }: ${ e.order !== it.order ? `position ${ e.order } -> ${ it.order }` : '' }${ titleOff && it.title ? ` title "${ e.title }" -> "${ it.title }"` : '' }` } );
-				}
+			if ( titleOff && ! it.title ) {
+				notes.push( `${ where }: item ${ e.id } carries the custom title "${ e.title }"; clear it in Appearance > Menus to show the post's own title` );
+			}
+			const moved = 'number' !== typeof parentId || e.parent !== parentId;
+			if ( e.order !== it.order || moved || ( titleOff && it.title ) ) {
+				const what = [ e.order !== it.order ? `position ${ e.order } -> ${ it.order }` : '', moved ? `parent ${ e.parent } -> ${ shown( parentId ) }` : '', titleOff && it.title ? `title "${ e.title }" -> "${ it.title }"` : '' ].filter( Boolean ).join( '; ' );
+				actions.push( { phase: 'menus', type: 'item-update', id: e.id, title: titleOff && it.title ? it.title : null, position: it.order, parent: parentId, say: `${ where }: item ${ e.id }: ${ what }` } );
 			}
 		}
-		existing.forEach( ( e ) => actions.push( { phase: 'menus', type: 'item-delete', id: e.id, say: `menu "${ name }": delete item ${ e.id } "${ e.title || `${ e.object } ${ e.objectId }` }", which no page-map row asks for` } ) );
+		existing.forEach( ( e ) => notes.push( `menu "${ name }" item ${ e.id } "${ e.title || `${ e.object } ${ e.objectId }` }" is not one any page-map row asks for; it is left in place` ) );
 		const loc = menuLocation( name, state.registeredLocations || [] );
 		if ( ! loc ) {
 			notes.push( `menu "${ name }" has no theme location; its surface binds it by ref` );
@@ -142,9 +158,11 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home' } ) 
 		}
 	};
 	const front = rows.find( ( r ) => 'page' === r.postType && r.route === frontRoute );
-	const blogs = rows.filter( ( r ) => 'page' === r.postType && 'live' === r.collection );
+	// The posts page: the one page other than the front page whose items are live (FR-48-30: they come from WordPress);
+	// with two such pages the map does not say which, so the option is left and the candidates are named.
+	const blogs = rows.filter( ( r ) => 'page' === r.postType && 'live' === r.collection && r !== front );
 	if ( blogs.length > 1 ) {
-		problems.push( `${ blogs.map( rowKey ).join( ' and ' ) } are all post listings; one page can be the posts page` );
+		notes.push( `${ blogs.map( rowKey ).join( ' and ' ) } all list live items; page_for_posts is left as it is (set it in Settings > Reading)` );
 	}
 	if ( front ) {
 		option( 'show_on_front', 'page' );

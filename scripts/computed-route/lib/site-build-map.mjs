@@ -43,7 +43,9 @@ export function writePageMap( file, original, ids ) {
 		throw new Error( `${ file } changed while the site build ran; its ids so far: ${ JSON.stringify( ids ) }` );
 	}
 	const rows = original.map( ( row ) => ( ids[ rowKey( row ) ] ? { ...row, id: ids[ rowKey( row ) ] } : row ) );
-	fs.writeFileSync( file, format( rows ) );
+	// Written beside the map and renamed over it, so a run stopped mid-write never leaves half a map.
+	fs.writeFileSync( `${ file }.tmp`, format( rows ) );
+	fs.renameSync( `${ file }.tmp`, file );
 	return rows;
 }
 

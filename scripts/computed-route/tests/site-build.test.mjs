@@ -31,7 +31,9 @@ function fakeSite() {
 		const ids = rows.map( ( r ) => r.id ).filter( Number.isInteger );
 		const marked = Object.keys( s.posts ).map( Number ).filter( ( id ) => s.meta[ id ]?.[ ROW_META ] );
 		const view = ( id ) => ( s.posts[ id ] ? { ...s.posts[ id ], rowKey: s.meta[ id ]?.[ ROW_META ] || '', treeHash: s.meta[ id ]?.[ TREE_META ] || '' } : null );
+		const holders = Object.fromEntries( rows.filter( ( r ) => ! Number.isInteger( r.id ) ).map( ( r ) => [ rowKey( r ), Object.values( s.posts ).filter( ( p ) => p.type === r.postType && p.slug === r.slug ).map( ( p ) => p.id ) ] ).filter( ( [ , v ] ) => v.length ) );
 		return {
+			holders,
 			posts: Object.fromEntries( [ ...ids, ...marked ].map( ( id ) => [ String( id ), view( id ) ] ) ),
 			marked: marked.reduce( ( m, id ) => ( { ...m, [ s.meta[ id ][ ROW_META ] ]: [ ...( m[ s.meta[ id ][ ROW_META ] ] || [] ), id ] } ), {} ),
 			menus: s.menus.map( ( m ) => ( { ...m, items: s.items.filter( ( i ) => i.menu === m.id ).map( ( i ) => ( { ...i } ) ) } ) ),
@@ -42,7 +44,9 @@ function fakeSite() {
 	s.wp = ( args ) => {
 		s.calls.push( args.join( ' ' ) );
 		const [ a, b, c ] = args;
-		if ( 'post' === a && 'meta' === b ) {
+		if ( 'term' === a && 'meta' === b ) {
+			s.menus.find( ( m ) => m.id === Number( args[ 3 ] ) ).owner = args[ 5 ];
+		} else if ( 'post' === a && 'meta' === b ) {
 			s.meta[ args[ 3 ] ] = { ...s.meta[ args[ 3 ] ], [ args[ 4 ] ]: args[ 5 ] };
 		} else if ( 'post' === a && 'update' === b ) {
 			const p = s.posts[ c ];
@@ -188,4 +192,70 @@ test( 'the page map keeps every field but id, byte for byte', () => {
 	// A map edited while the run builds is never overwritten.
 	fs.writeFileSync( file, before.replace( '"title": "Home"', '"title": "Start"' ) );
 	assert.throws( () => writePageMap( file, rows, { [ rowKey( rows[ 0 ] ) ]: 1 } ), /changed while the site build ran/ );
+} );
+
+const planOn = ( site, rows ) => planBuild( { rows, state: site.state( rows ), repo: os.tmpdir(), client: 'none' } );
+
+test( 'an unmarked post already holding a row\'s slug stops the run instead of a second post or a renamed slug', () => {
+	const site = fakeSite();
+	site.build( { create: 'page', title: 'About Us', slug: 'about' }, [] );
+	const p = planOn( site, ROWS() );
+	assert.deepEqual( p.actions, [] );
+	assert.equal( p.problems.length, 1 );
+	assert.match( p.problems[ 0 ], /^page:about: post 100 already holds this page slug and carries no site-build row key/ );
+} );
+
+test( 'a stored id naming a post the site build did not make for that row stops the run', () => {
+	const site = fakeSite();
+	const theirs = site.build( { create: 'page', title: 'Fixture', slug: 'fixture' }, [] );
+	const rows = ROWS();
+	rows[ 0 ].id = theirs;
+	const p = planOn( site, rows );
+	assert.deepEqual( p.actions, [] );
+	assert.match( p.problems[ 0 ], /^page:home: its stored id 100 is a post the site build did not make for this row \(it carries no row key\)/ );
+} );
+
+test( 'a same-slug menu the site build did not make stops the run; an unasked item in its own menu is noted, never deleted', () => {
+	const site = fakeSite();
+	site.menus.push( { id: 50, slug: 'footer', name: 'footer' } );
+	const blocked = planOn( site, ROWS() );
+	assert.deepEqual( blocked.actions, [] );
+	assert.match( blocked.problems[ 0 ], /^menu "footer" \(50\) exists but the site build did not make it/ );
+	const ours = fakeSite();
+	const rows = run( ours, tmpMap( ROWS() ) );
+	const footer = ours.menus.find( ( m ) => 'footer' === m.slug ).id;
+	ours.items.push( { id: 999, menu: footer, title: 'Hand-added', object: 'custom', objectId: 999, type: 'custom', parent: 0, order: 9, url: '/x/' } );
+	const again = planOn( ours, rows );
+	assert.deepEqual( again.actions, [] );
+	assert.ok( again.notes.some( ( n ) => /item 999 "Hand-added" is not one any page-map row asks for; it is left in place/.test( n ) ) );
+} );
+
+test( 'a hand-moved menu item is moved back, not added again', () => {
+	const site = fakeSite();
+	const rows = run( site, tmpMap( ROWS() ) );
+	const drawer = site.menus.find( ( m ) => 'drawer' === m.slug ).id;
+	const story = site.items.find( ( i ) => i.menu === drawer && i.objectId === rows.find( ( r ) => 'story' === r.slug ).id );
+	const parent = story.parent;
+	story.parent = 0;
+	const p = planOn( site, rows );
+	assert.deepEqual( p.actions.map( ( a ) => a.type ), [ 'item-update' ] );
+	applyPhase( p.actions, 'menus', { wp: site.wp, build: site.build, onId: () => {} } );
+	assert.equal( story.parent, parent );
+	assert.equal( site.items.filter( ( i ) => i.objectId === story.objectId && i.menu === drawer ).length, 1 );
+} );
+
+test( 'the posts page is the one live page other than the front page; two leave page_for_posts with a note', () => {
+	const site = fakeSite();
+	const rows = ROWS().map( ( r ) => ( 'home' === r.slug ? { ...r, collection: 'live' } : r ) );
+	const one = planOn( site, rows );
+	assert.ok( one.actions.some( ( a ) => 'page_for_posts' === a.name && 'post:page:blog' === a.value.ref ) );
+	const two = planOn( site, [ ...rows, row( { slug: 'news', title: 'News', collection: 'live' } ) ] );
+	assert.ok( ! two.actions.some( ( a ) => 'page_for_posts' === a.name ) );
+	assert.ok( two.notes.some( ( n ) => /page:blog and page:news all list live items; page_for_posts is left/.test( n ) ) );
+} );
+
+test( 'clearing a page template sends "default", which WordPress stores, never an empty value it ignores', () => {
+	const calls = [];
+	applyPhase( [ { phase: 'posts', type: 'update', key: 'page:x', id: 7, fields: { page_template: '' }, say: '' } ], 'posts', { wp: ( a ) => calls.push( a.join( ' ' ) ), build: () => 0, onId: () => {} } );
+	assert.deepEqual( calls, [ 'post update 7 --page_template=default' ] );
 } );
