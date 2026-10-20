@@ -43,8 +43,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": "aria-busy: an ARIA state; SGS blocks manage their own"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"aria-attr:aria-checked": {
 			"recognise": null,
@@ -113,8 +113,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": "aria-disabled: an ARIA state; SGS blocks manage their own"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"aria-attr:aria-dropeffect": {
 			"recognise": null,
@@ -169,8 +169,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": "aria-invalid: an ARIA state; SGS blocks manage their own"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"aria-attr:aria-keyshortcuts": {
 			"recognise": null,
@@ -4470,15 +4470,15 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":active-view-transition: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "site and surfaces",
+			"note": "page-transition state: SGS page transitions (fx:page-transitions, includes/class-sgs-motion-registry.php) own it"
 		},
 		"css-pseudo-class:active-view-transition-type": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":active-view-transition-type: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "site and surfaces",
+			"note": "page-transition state: SGS page transitions (fx:page-transitions, includes/class-sgs-motion-registry.php) own it"
 		},
 		"css-pseudo-class:any-link": {
 			"recognise": null,
@@ -4491,22 +4491,22 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":autofill: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"css-pseudo-class:blank": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":blank: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "supported by no browser",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:buffering": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":buffering: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "media playback state: sgs/media and sgs/audio paint their own player states (is-playing, is-muted, --paused) from fixed styles, and playback options clone from HTML attributes",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:checked": {
 			"recognise": null,
@@ -4516,18 +4516,18 @@
 			"note": ":checked: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
 		},
 		"css-pseudo-class:current": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":current: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "caption-cue timing, which applies only inside ::cue; SGS has no caption styling setting (unrelated to the current-page state)",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:default": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":default: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"css-pseudo-class:defined": {
 			"excluded": {
@@ -4560,8 +4560,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":enabled: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"css-pseudo-class:first": {
 			"recognise": null,
@@ -4604,18 +4604,18 @@
 			"note": ":focus-within: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
 		},
 		"css-pseudo-class:fullscreen": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":fullscreen: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "the browser draws the expanded video view; sgs/media styles fullscreen from fixed styles",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:future": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":future: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "caption-cue timing, which applies only inside ::cue; SGS has no caption styling setting (unrelated to the current-page state)",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:has": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -4624,11 +4624,11 @@
 			"note": ":has: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:has-slotted": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":has-slotted: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "Web Components only (shadow DOM); SGS blocks use none",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:heading": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -4661,22 +4661,22 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":in-range: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"css-pseudo-class:indeterminate": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":indeterminate: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"css-pseudo-class:invalid": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":invalid: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"css-pseudo-class:is": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -4731,18 +4731,18 @@
 			"note": ":modal: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
 		},
 		"css-pseudo-class:muted": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":muted: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "media playback state: sgs/media and sgs/audio paint their own player states (is-playing, is-muted, --paused) from fixed styles, and playback options clone from HTML attributes",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:navigation-source": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":navigation-source: a link state during navigation; walker states are built, the state map that writes them is not (FR-48-46)"
+			"wave": "site and surfaces",
+			"note": "page-transition state: SGS page transitions (fx:page-transitions, includes/class-sgs-motion-registry.php) own it"
 		},
 		"css-pseudo-class:not": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -4797,50 +4797,50 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":optional: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"css-pseudo-class:out-of-range": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":out-of-range: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"css-pseudo-class:past": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":past: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "caption-cue timing, which applies only inside ::cue; SGS has no caption styling setting (unrelated to the current-page state)",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:paused": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":paused: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "media playback state: sgs/media and sgs/audio paint their own player states (is-playing, is-muted, --paused) from fixed styles, and playback options clone from HTML attributes",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:picture-in-picture": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":picture-in-picture: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "the browser draws the expanded video view; sgs/media styles fullscreen from fixed styles",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:placeholder-shown": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":placeholder-shown: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"css-pseudo-class:playing": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":playing: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "media playback state: sgs/media and sgs/audio paint their own player states (is-playing, is-muted, --paused) from fixed styles, and playback options clone from HTML attributes",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:popover-open": {
 			"recognise": null,
@@ -4853,22 +4853,22 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":read-only: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"css-pseudo-class:read-write": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":read-write: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"css-pseudo-class:required": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":required: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"css-pseudo-class:right": {
 			"recognise": null,
@@ -4890,25 +4890,25 @@
 			"note": ":scope: in a stylesheet it matches the document element, so its effect reaches the page's elements through inheritance and is read in their computed style (the page baseline, lib/fill-page.mjs); a custom property it defines is a token (lib/tokens.mjs) (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:seeking": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":seeking: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "media playback state: sgs/media and sgs/audio paint their own player states (is-playing, is-muted, --paused) from fixed styles, and playback options clone from HTML attributes",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:stalled": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":stalled: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "media playback state: sgs/media and sgs/audio paint their own player states (is-playing, is-muted, --paused) from fixed styles, and playback options clone from HTML attributes",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:state": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":state: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "Web Components only (shadow DOM); SGS blocks use none",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:target": {
 			"recognise": null,
@@ -4935,22 +4935,22 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":user-invalid: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"css-pseudo-class:user-valid": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":user-valid: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"css-pseudo-class:valid": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "states",
-			"note": ":valid: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"wave": "shop, forms and data",
+			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"css-pseudo-class:visited": {
 			"recognise": null,
@@ -4960,11 +4960,11 @@
 			"note": ":visited: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
 		},
 		"css-pseudo-class:volume-locked": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":volume-locked: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "media playback state: sgs/media and sgs/audio paint their own player states (is-playing, is-muted, --paused) from fixed styles, and playback options clone from HTML attributes",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:where": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
