@@ -205,12 +205,12 @@
 					"badge": {
 						"type": "string",
 						"default": "",
-						"description": "Spec 43 Phase 3/4 §1/§5: short pill label (up to 20 characters) rendered on the option card, e.g. 'Popular'. Empty string = no badge. Rendering (Wave 2) is not built here — only the stored value."
+						"description": "Spec 43 Phase 3/4 §1/§5: short pill label (up to 20 characters) rendered on the option card, e.g. 'Popular'. Empty string = no badge. Printed by render.php."
 					},
 					"description": {
 						"type": "string",
 						"default": "",
-						"description": "Spec 43 Phase 3/4 §1/§5: one line of explanatory copy (up to 140 characters) rendered under the option's label. Empty string = no description line. Rendering (Wave 2) is not built here — only the stored value."
+						"description": "Spec 43 Phase 3/4 §1/§5: one line of explanatory copy (up to 140 characters) rendered under the option's label. Empty string = no description line. Printed by render.php."
 					}
 				}
 			}
