@@ -62,8 +62,7 @@ A timing on the resting rule times both directions of a state change; one on a s
 
 ## Coordination
 
-The route-calibration session (FR-48-8 step 5, coverage d2) owns `lib/calibrate-read.mjs`, `lib/calibrate-instances.mjs` and `calibration-fixtures.json` until its handoff, and leaves `extract-signatures.py`, `STATE_TRIGGERS`, `READ_KEY`, fixture preconditions and `clone-coverage.json` to this wave. Its reseed landed at 2a4c0d542. `lib/calibrate-read.mjs::readUnderTrigger` now returns `{ read, why }`. The motion-timing DB mismatches are this wave's to fix. It reports when its recalibration finishes and when it hands off. Steps 1 and 4 to 6 (data file and new modules) run now; steps 2 and 3 and every calibration run wait for that handoff.
-
+The route-calibration session (FR-48-8 step 5, coverage d2) has handed off. This wave owns the calibration files (`lib/calibrate-read.mjs`, `lib/calibrate-instances.mjs`, `calibration-fixtures.json`) and the reseed queue. That session's last calibration change: `lib/calibrate-read.mjs::readUnderTrigger` returns `{ read, why }`; `lib/calibrate-instances.mjs::stateTarget` uses the manifest's declared element selector (`lib/resolve.mjs::blockElements`) before the BEM guess; an opacity tier marker follows the setting's scale (e7eafd1f7). The motion-timing DB mismatches are this wave's to fix.
 ## Steps
 
 Every new rule ships a MUST FAIL test and a mutation check.
