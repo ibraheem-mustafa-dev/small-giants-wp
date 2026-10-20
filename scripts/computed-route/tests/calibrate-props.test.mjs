@@ -30,6 +30,12 @@ test( 'MUST FAIL: an inset setting is read on all four sides', () => {
 	assert.deepEqual( longhands( 'inset' ), [ 'top', 'right', 'bottom', 'left' ] );
 } );
 
+test( 'MUST FAIL: a Justify items setting is read, so the justify-self equivalence can reach sgs/container.justifyItems', () => {
+	const rows = db.prepare( "SELECT block_slug, attr_name FROM block_attributes WHERE css_property = 'justify-items'" ).all();
+	assert.ok( rows.some( ( r ) => 'sgs/container' === r.block_slug && 'justifyItems' === r.attr_name ), 'sgs/container.justifyItems paints justify-items in the framework DB' );
+	assert.deepEqual( longhands( 'justify-items' ), [ 'justify-items' ], 'an unread property drops out of longhands(), so the setting reaches neither settings, dead nor noMarker' );
+} );
+
 test( 'cursor, pointer-events, accent-color and white-space are recorded as default paint: a block\'s own stylesheet sets them on its elements', () => {
 	for ( const p of [ 'cursor', 'pointer-events', 'accent-color', 'white-space' ] ) {
 		assert.ok( ! INHERITED.includes( p ), `${ p } would compare with the page and miss the block's own value` );
