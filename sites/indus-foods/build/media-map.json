@@ -105,27 +105,27 @@
 				{
 					"asset": "sites/indus-foods/handoff/assets/about-hero-desktop.svg",
 					"sha256": "fa7ad864f3a488fc566af6920cf06b49a48816c44a9e06dd102a79dd6f3bdcca",
-					"id": 78,
+					"id": 87,
 					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/about-hero-desktop.svg",
-					"storedSha256": "0383c3b10f11fb09ce44b5789d99995b16a4f9239a3fd44dc602008420b79474",
+					"storedSha256": "c9f947dff90bf5f48f053b0ca0d7a3de56b067a80f3ef79fec5c932daa0a3a7b",
 					"stock": false,
 					"sanitised": true
 				},
 				{
 					"asset": "sites/indus-foods/handoff/assets/about-hero-mobile.svg",
 					"sha256": "7bd1a820160ff269be9c4c628fe42e97ba49428c50a40f31900ef5ed98f2da0c",
-					"id": 79,
+					"id": 88,
 					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/about-hero-mobile.svg",
-					"storedSha256": "5dc0ff27f6e79cc3652c62b81d44adbf6a8515b74977ff473cd560e5567d108c",
+					"storedSha256": "95003e8b1e1e7c5f1961ca2157bca769c99b9e349dde88485807a42c2e8476a6",
 					"stock": false,
 					"sanitised": true
 				},
 				{
 					"asset": "sites/indus-foods/handoff/assets/about-hero-tablet.svg",
 					"sha256": "536cef72b4c2b3be178d19a0f6323b29137d112107e70d006fac30403decfb53",
-					"id": 80,
+					"id": 89,
 					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/about-hero-tablet.svg",
-					"storedSha256": "24484a2cde517ee6e3c8ae5848192504fdc44732f0f06eaec91684a9f0bbbee9",
+					"storedSha256": "c1e2945195dce8001c095b7672241be384e8cc24a9cf8697c33072f3d3077ecb",
 					"stock": false,
 					"sanitised": true
 				},

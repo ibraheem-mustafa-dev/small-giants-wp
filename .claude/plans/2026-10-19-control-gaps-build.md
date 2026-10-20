@@ -469,7 +469,7 @@ QA Gate — Wave 3
 ```text
 Step 8 — Deploy to the canary
   Model:       inline
-  Action:      message peers first; `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` (motion QA tier none: no motion change). Push the Indus snapshot (`python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client indus-foods --target indus-test`) only after the Indus review session says go.
+  Action:      message peers first; `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` (motion QA tier none: no motion change). Push the Indus snapshot (`python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client indus-foods --target u945238940@141.136.39.73 --target-domain lavender-dinosaur-183533.hostingersite.com`) only after the Indus review session says go.
   Files:       none
   Inputs:      waves 1 to 3 pushed
   Outcome:     the deploy passes every gate and its verify stage
@@ -644,13 +644,14 @@ Two cold reviewers (Sonnet builder lens, Haiku junior lens, 2026-10-19) read the
 
 ## Parking lot
 
-- A CSS animation eases each keyframe interval, so the sparkle written as 0/50/100% keyframes with `ease-in-out` pauses at its 90deg peak, where the draft's WAAPI easing runs once across the whole cycle; a `linear` timing with more keyframes sampled from the curve matches it.
-- A button preset has one easing for every property it transitions; Mama's draft eases transform on a spring and shadow and background on `ease` (Spec 32 FR-32-19).
-- The sparkle twinkle on Mama's greeting (draft record A-02) is now writable in the icon's Additional CSS box (`7ee561b4a`); the extractor does not yet write a draft's loop into that box (Spec 48).
-- `src/blocks/product-card/style.css`: postcss-calc cannot parse `-1 * max( 4px, ( 24px - var( --sgs-pc-swatch-size, 16px ) ) / 2 )` and prints a build warning on every build; the declaration ships unminified.
-- Live-check items not run (2026-10-20): keyboard use of the highlight and photo popovers, G10's showcase description override from 14px, and an existing image-only Floating layer instance validating.
-- `tests/php/ResponsiveLogoTest.php::test_render_without_draw_layer_has_no_animation_modifier` raises a PHP warning at `src/blocks/responsive-logo/render.php` (the `sgs_stretched_link_handover` call) since the motion hover-model commit `7c9fe9fa9`; a warning, not a failure; the motion track is no longer active, so this plan owns the fix.
-- 59 of the 408 text-outline attributes (`*TextStroke*`) carry no `css_property`: a prefixed outline attribute whose block gives two of them the same property, element, state and tier (or no element) is refused, since the resolver cannot tell them apart (`extract-signatures.py`, the duplicate check before the classifier is written). The blocks: `sgs/form` (22), `sgs/buybox`, `sgs/form-field-tiles`, `sgs/nav-bar-menu`, `sgs/nav-drawer-menu` (6 each), `sgs/countdown-timer` (4), `sgs/product-card` (3), `sgs/measured-diagram`, `sgs/product-faq`, `sgs/table-of-contents` (2 each). Each needs its element declared in `supports.sgs.elements` so the pairs differ; until then a draft's text outline on those elements does not route, because the resolver reads `css_property` only. Their `*Hover` siblings elsewhere carry `css_state` hover.
+Empty: every entry closed on 2026-10-20.
 
-- The route's writer and detector for every new attribute and the two inline formats (Spec 48; recorded in the coverage plan at step 10).
-- The Indus timeline years' outline colour follows the current card (a Current state), owned by the pinned timeline build.
+- The sparkle's easing: the Additional CSS loop runs `linear` over stops sampled from the draft's whole-cycle curve, within 0.67deg of the draft live (Spec 32 FR-32-20 item 7).
+- Per-property button easing: `hover-easing-colour` and `hover-easing-shadow` (Bean chose the two overrides), live on mamas-test with the draft's timing (Spec 32 FR-32-9, FR-32-19).
+- The route writes a draft's endless keyframe loop into the Additional CSS box (Spec 48 FR-48-78).
+- `product-card/style.css`: the swatch hit area holds its `max()` in a custom property, so the build prints no postcss-calc warning.
+- The three live checks: results in `.claude/qa/control-gaps/results-2026-10-20.md` (Lane E, 2026-10-20).
+- `ResponsiveLogoTest`: the test helper hands `render.php` a null `$block`, so it raises no warning.
+- The 59 unrouted text-outline attributes: each is claimed in its block's element manifest, all 408 route after the reseed, and `check-text-stroke-routing.py --check` (fast tier) keeps it so.
+
+Owned elsewhere: the route's writer and detector for the new attributes and the two inline formats (`plans/2026-10-12-clone-coverage-foundation.md`, step 10); the Indus timeline years' outline following the current card (`plans/2026-10-11-spec48-indus-build.md`, step 20b).
