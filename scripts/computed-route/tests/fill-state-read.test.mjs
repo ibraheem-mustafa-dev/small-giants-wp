@@ -60,8 +60,11 @@ const PAGE = `<!doctype html><html><head><style>
 	[hidden] { display: none !important } :disabled { opacity: 0.5 }
 	.duo .t4 { color: rgb(0, 0, 0) } .duo:hover .t4:focus { color: rgb(7, 7, 7) }
 	.hs .t5 { color: rgb(0, 0, 0) } .hs:has(:checked) .t5 { color: rgb(8, 8, 8) }
+	:root { --vc: rgb(10, 20, 30) } a.v2 { color: rgb(0, 0, 0); text-decoration-line: none } .wrap a.v2:visited { color: var(--vc) } a.v2:visited { color: rgb(1, 2, 3) }
+	a.empty { color: rgb(0, 0, 0) } a.empty:visited { }
 	#pop2 { background-color: rgb(9, 9, 9) } #pop2:popover-open { background-color: rgb(3, 3, 3) }
 </style></head><body>
+	<div class="wrap"><a class="v2" href="#v">V2</a></div><a class="empty" href="#e">Empty</a>
 	<div class="nest"><span class="t2">Nested</span></div>
 	<a class="alt" href="#a"><span class="t3">Alt</span></a>
 	<div class="duo"><a class="t4" href="#d">Duo</a></div>
@@ -78,7 +81,7 @@ const PAGE = `<!doctype html><html><head><style>
 	<div id="pop" popover>Pop</div><button popovertarget="pop">Open</button>
 	<a class="item" href="#x">Item</a>
 </body></html>`;
-const JOBS = [ '.title', '.bar', '.tab', '.sum', '.go', '.plain', '#pop', '.item', '.crumb', '.tab2', '.t2', '.t3', '.t4', '.t5', '#pop2' ].map( ( f ) => ( { id: f, finder: f } ) );
+const JOBS = [ '.title', '.bar', '.tab', '.sum', '.go', '.plain', '#pop', '.item', '.crumb', '.tab2', '.t2', '.t3', '.t4', '.t5', '#pop2', '.v2', '.empty' ].map( ( f ) => ( { id: f, finder: f } ) );
 
 async function readPage( rows ) {
 	const page = await browser.newPage( { viewport: { width: 800, height: 600 } } );
@@ -113,7 +116,8 @@ test( 'MUST FAIL WITHOUT THE READER: every state look is read from its host and 
 	const tab2 = result.looks[ '.tab2' ] || [];
 	assert.equal( tab2.length, 1, 'one look: the hover of an inactive tab' );
 	assert.deepEqual( [ tab2[ 0 ].states, tab2[ 0 ].declared.color ], [ [ 'hover' ], 'rgb(0, 99, 0)' ], 'the negated is-active is kept in the selector, not entered' );
-	assert.ok( result.unreached.some( ( u ) => '.plain' === u.id && /visited/.test( u.why ) ), ':visited is listed, never guessed' );
+	assert.deepEqual( [ lookOf( result, '.plain', 'visited' )?.declared.color, lookOf( result, '.plain', 'visited' )?.read, lookOf( result, '.plain', 'visited' )?.rendered ], [ 'rgb(128, 0, 128)', 'code', null ], ':visited is read from its rule, never entered, and the render cannot confirm it' );
+	assert.equal( lookOf( result, '.title', 'hover' )?.read, 'entered' );
 	assert.ok( same, 'every attribute, class, popover and marker is restored' );
 } );
 
@@ -125,7 +129,18 @@ test( 'MUST FAIL (council 2026-10-20): nesting, :is() alternatives, bare resets,
 	assert.ok( ! Object.values( result.looks ).flat().some( ( l ) => l.states.includes( 'hidden' ) || ( l.states.includes( 'disabled' ) && 'opacity' in l.declared ) ), 'a bare [hidden] or :disabled reset is no element\'s look' );
 	assert.deepEqual( lookOf( result, '.t4', 'focus' )?.states, [ 'hover', 'focus' ], 'hover on the ancestor and focus on the target are both entered' );
 	assert.equal( lookOf( result, '.t4', 'focus' )?.declared.color, 'rgb(7, 7, 7)' );
-	assert.ok( result.unreached.some( ( u ) => '.t5' === u.id && /:has\(\)/.test( u.why ) ), 'a state inside :has() is listed with its reason' );
+	assert.deepEqual( [ lookOf( result, '.t5', 'current' )?.declared.color, lookOf( result, '.t5', 'current' )?.read ], [ 'rgb(8, 8, 8)', 'code' ], 'a state inside :has() is read from its rule' );
+} );
+
+test( 'MUST FAIL WITHOUT THE CODE READ: the more specific :visited rule wins, a var() resolves on the target, and a state with no declaration stays unreached with a reason', async () => {
+	const { result } = await readPage( VOCAB );
+	const v2 = lookOf( result, '.v2', 'visited' );
+	assert.equal( v2?.declared.color, 'rgb(10, 20, 30)', '.wrap a.v2:visited (0,3,1) beats the later a.v2:visited (0,2,1), and its var(--vc) is resolved' );
+	assert.equal( v2?.selector, '.wrap a.v2:visited' );
+	assert.equal( v2?.read, 'code' );
+	assert.equal( lookOf( result, '.empty', 'visited' ), undefined, 'a rule that declares nothing is no look' );
+	const gap = result.unreached.find( ( u ) => '.empty' === u.id );
+	assert.match( gap?.why || '', /:visited is never exposed to scripts, and no stylesheet rule declares anything/ );
 } );
 
 test( 'a lone popover opened for its read is closed again (nothing else on the page closes it)', async () => {

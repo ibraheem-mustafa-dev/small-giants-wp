@@ -8,9 +8,10 @@
 
 import { declaredValues, settleAnimations } from '../../parity/lib/devtools.mjs';
 import { applyToken, renderedOf } from './fill-state-apply.mjs';
+import { codeLooks } from './fill-state-code.mjs';
 
 // The reaches the reader can enter in a page; environment states (media emulation) belong to the media-feature
-// entries, and an unreachable one (:visited) is listed, never guessed.
+// entries, and an unreachable one (:visited) is read from its stylesheet rules, never entered.
 export const READABLE = [ 'force-pseudo', 'set-attribute', 'toggle-class', 'call', 'scroll' ];
 const HOST_ATTR = 'data-sgs-state-host';
 const esc = ( s ) => s.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
@@ -54,12 +55,18 @@ export function readableRows( rows ) {
 // with one or more state tokens is a combination; it applies to a target when the part matches it with the tokens taken
 // out. Each token's host is the nearest element (the target or an ancestor) that matches the part cut after the
 // token's compound, tokens taken out; it is marked with a numbered attribute so the node side can reach it.
-// Returns { [targetId]: [{ selector, tokens: [{ i, text, host }] }] }.
+// A combination the page cannot enter (a token whose reach is unreachable, or with no host) also carries `code`: the
+// declarations of every rule that produced its selector part, [{ order, d: [[prop, value, priority]] }], var() resolved
+// on the target (lib/fill-state-code.mjs).
+// Returns { [targetId]: [{ selector, tokens: [{ i, text, host }], code? }] }.
 export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 	// eslint-disable-next-line no-new-func
 	const resolve = new Function( `return (${ resolveSrc });` )();
 	const res = rows.map( ( r ) => ( { i: r.i, re: new RegExp( r.src, 'g' ) } ) );
 	const parts = [];
+	const unreachable = new Set( rows.filter( ( r ) => 'unreachable' === r.reach ).map( ( r ) => r.i ) );
+	const ruleDecls = new Map();
+	let ruleOrder = 0;
 	const splitTop = ( sel ) => {
 		const out = [];
 		let depth = 0;
@@ -119,7 +126,12 @@ export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 			let own = parent;
 			if ( rule.selectorText ) {
 				own = splitTop( rule.selectorText ).map( ( p ) => nest( p, parent ) ).join( ', ' );
-				splitTop( own ).flatMap( ( p ) => alternatives( p ) ).forEach( ( p ) => parts.push( p ) );
+				const d = rule.style ? Array.from( rule.style ).map( ( p ) => [ p, rule.style.getPropertyValue( p ), rule.style.getPropertyPriority( p ) ] ) : [];
+				ruleOrder++;
+				splitTop( own ).flatMap( ( p ) => alternatives( p ) ).forEach( ( p ) => {
+					parts.push( p );
+					ruleDecls.set( p, [ ...( ruleDecls.get( p ) || [] ), { order: ruleOrder, d } ] );
+				} );
 			}
 			if ( rule.cssRules ) {
 				walk( rule.cssRules, own );
@@ -235,7 +247,19 @@ export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 				}
 				return { i: h.i, text: h.text, host: host ? host.getAttribute( hostAttr ) : null, inHas: null === hostOf[ k ] };
 			} );
-			( out[ job.id ] ??= [] ).push( { selector: part, tokens } );
+			const entry = { selector: part, tokens };
+			if ( hits.some( ( h ) => unreachable.has( h.i ) ) || tokens.some( ( t ) => null === t.host ) ) {
+				const style = getComputedStyle( el );
+				const plain = ( v ) => {
+					let text = v;
+					for ( let k = 0; k < 5 && /var\(/.test( text ); k++ ) {
+						text = text.replace( /var\(\s*(--[\w-]+)\s*(?:,\s*([^()]*))?\)/g, ( m, name, fallback ) => style.getPropertyValue( name ).trim() || ( fallback || '' ).trim() );
+					}
+					return text;
+				};
+				entry.code = ( ruleDecls.get( part ) || [] ).map( ( r ) => ( { order: r.order, d: r.d.map( ( [ p, v, i ] ) => [ p, plain( v ), i ] ) } ) );
+			}
+			( out[ job.id ] ??= [] ).push( entry );
 		}
 	}
 	return out;
@@ -247,8 +271,10 @@ export function declaredDiff( rest, state ) {
 }
 
 // Every state look of every target at the page's current width: { [targetId]: [{ states, family, selector, tokens,
-// declared, rendered }] } for each combination whose declared values differ from rest, and `unreached`: the
-// combinations naming a state the browser never exposes (:visited) or whose host was not found. page/cdp: the open
+// declared, rendered, read }] } for each combination whose declared values differ from rest, and `unreached`: the
+// combinations the page cannot enter whose rules declare nothing to read. A state the browser never exposes (:visited)
+// or whose host was not found is read from its stylesheet rules (lib/fill-state-code.mjs, `read: 'code'`, rendered
+// null: the render cannot confirm it); an entered state has `read: 'entered'`. page/cdp: the open
 // draft page and its DevTools session (lib/fill-read.mjs::readDraft); jobs: lib/fill-read.mjs::jobsFor; rows: the
 // state vocabulary; rest: the resting declared read at this width ({ [targetId]: { prop: value } }).
 export async function readStates( { page, cdp, jobs, rows, rest, resolveSrc, log = () => {} } ) {
@@ -258,16 +284,11 @@ export async function readStates( { page, cdp, jobs, rows, rest, resolveSrc, log
 	const out = { looks: {}, unreached: [] };
 	try {
 		for ( const job of jobs ) {
+			const blocked = [];
 			for ( const combo of combos[ job.id ] || [] ) {
 				const tokens = combo.tokens.map( ( t ) => ( { ...t, row: byI.get( t.i ) } ) );
 				if ( tokens.some( ( t ) => 'unreachable' === t.row.reach || null === t.host ) ) {
-					const reason = ( t ) => {
-						if ( t.inHas ) {
-							return `${ t.text } inside :has() is a descendant's state, not one on the target or its ancestors`;
-						}
-						return null === t.host ? `${ t.text } has no host on the target or its ancestors (a sibling combinator)` : `${ t.text } is never exposed to scripts`;
-					};
-					out.unreached.push( { id: job.id, selector: combo.selector, why: reason( tokens.find( ( t ) => 'unreachable' === t.row.reach || null === t.host ) ) } );
+					blocked.push( { combo, tokens } );
 					continue;
 				}
 				const look = await readOne( page, cdp, job, tokens, resolveSrc ).catch( ( e ) => {
@@ -278,14 +299,28 @@ export async function readStates( { page, cdp, jobs, rows, rest, resolveSrc, log
 				if ( look && Object.keys( declared ).length ) {
 					const states = [ ...new Set( tokens.map( ( t ) => t.row.state ) ) ];
 					out.looks[ job.id ] ??= [];
-					out.looks[ job.id ].push( { states, family: tokens[ 0 ].row.family, selector: combo.selector, tokens: tokens.map( ( t ) => t.text ), declared, rendered: look.rendered } );
+					out.looks[ job.id ].push( { states, family: tokens[ 0 ].row.family, selector: combo.selector, tokens: tokens.map( ( t ) => t.text ), declared, rendered: look.rendered, read: 'entered' } );
 				}
 			}
+			const code = codeLooks( { id: job.id, blocked, rest: rest?.[ job.id ], reasonOf } );
+			if ( code.looks.length ) {
+				( out.looks[ job.id ] ??= [] ).push( ...code.looks );
+			}
+			out.unreached.push( ...code.unreached );
 		}
 	} finally {
 		await page.evaluate( ( a ) => document.querySelectorAll( `[${ a }]` ).forEach( ( e ) => e.removeAttribute( a ) ), HOST_ATTR );
 	}
 	return out;
+}
+
+// Why the page cannot be put into a combination's state.
+function reasonOf( tokens ) {
+	const t = tokens.find( ( x ) => 'unreachable' === x.row.reach || null === x.host );
+	if ( t.inHas ) {
+		return `${ t.text } inside :has() is a descendant's state, not one on the target or its ancestors`;
+	}
+	return null === t.host ? `${ t.text } has no host on the target or its ancestors (a sibling combinator)` : `${ t.text } is never exposed to scripts`;
 }
 
 // One combination: enter every token's state on its host, read the target, leave in reverse order.

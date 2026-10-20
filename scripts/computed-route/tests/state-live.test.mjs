@@ -55,3 +55,29 @@ test( 'a live page that paints every draft state look reports no open row', asyn
 	assert.equal( check.summary.unreadable, 0 );
 	assert.equal( stateReport( check ).json.open.length, 0 );
 } );
+
+const TIMED = ( dur ) => page( `.card .title { color: rgb(0, 0, 0) } .go { color: rgb(0, 0, 0); transition-duration: ${ dur } } .go:focus-visible { color: rgb(0, 0, 200) }` );
+
+test( 'MUST FAIL: a live page that times a change differently is reported in the open rows; the same timing is not', async () => {
+	const draft = TIMED( '0.3s' );
+	const wrong = await liveStateCheck( { browser, cfg: { draft: { url: draft }, live: { url: TIMED( '0.9s' ) }, pairs: PAIRS }, rows: VOCAB, widths: [ 1440 ] } );
+	const row = wrong.rows.find( ( r ) => 'transition-duration' === r.prop );
+	assert.ok( row, 'the draft timing is checked' );
+	assert.deepEqual( [ row.pair, row.verdict, row.draftValue, row.liveValue ], [ 'go', 'differs', '0.3s', '0.9s' ] );
+	assert.match( row.state, /^timing /, 'a timing row is told apart from a state row' );
+	const open = stateReport( wrong ).json.open;
+	assert.ok( open.some( ( r ) => 'transition-duration' === r.prop ), 'it reaches the report' );
+	assert.match( stateReport( wrong ).markdown, /\| go \| 1440 \| timing rest \(both\) \| transition-duration \| 0\.3s \| 0\.9s \| differs \|/ );
+	const same = await liveStateCheck( { browser, cfg: { draft: { url: draft }, live: { url: TIMED( '300ms' ) }, pairs: PAIRS }, rows: VOCAB, widths: [ 1440 ] } );
+	assert.equal( same.rows.find( ( r ) => 'transition-duration' === r.prop )?.verdict, 'match', '0.3s and 300ms are the same time' );
+	assert.equal( stateReport( same ).json.open.length, 0 );
+} );
+
+test( 'MUST FAIL: a :visited look the live page lacks is reported as unconfirmed by the render', async () => {
+	const draft = page( '.go { color: rgb(0, 0, 0) } .go:visited { color: rgb(128, 0, 128) }' );
+	const check = await liveStateCheck( { browser, cfg: { draft: { url: draft }, live: { url: page( '.go { color: rgb(0, 0, 0) }' ) }, pairs: PAIRS }, rows: VOCAB, widths: [ 1440 ] } );
+	const row = check.rows.find( ( r ) => 'go' === r.pair && 'visited' === r.state );
+	assert.deepEqual( [ row?.verdict, row?.confirmed, row?.draftValue ], [ 'differs', false, 'rgb(128, 0, 128)' ] );
+	assert.match( stateReport( check ).markdown, /differs \(declared in code, not confirmed by the render\) \|/ );
+	assert.equal( check.summary.unreachedDraft.length, 0, ':visited is read by code, no longer listed as unreachable' );
+} );

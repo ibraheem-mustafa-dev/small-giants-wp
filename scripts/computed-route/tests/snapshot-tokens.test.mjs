@@ -2,7 +2,7 @@
 // buttonPresets.{variant}.active-* keys. MUST FAIL cases: each rule has a case that goes red if the rule is removed.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { focusTokens, pressTokens } from '../lib/snapshot-tokens.mjs';
+import { focusTokens, pressTokens, linkStateTokens, isThemeLink } from '../lib/snapshot-tokens.mjs';
 
 test( 'MUST FAIL: a look that declares no focus property sets nothing, so the derived ring stays', () => {
 	assert.deepEqual( focusTokens( { declared: {} } ), { focus: null, gaps: [] } );
@@ -93,4 +93,49 @@ test( 'MUST FAIL: a pressed colour has no token and is a named gap; the link sty
 	assert.match( link.gaps[ 0 ], /never presses/, 'the link style is named, not reported as an unknown variant' );
 	const odd = pressTokens( { transform: 'scale(0.9)' }, 'ghost' );
 	assert.deepEqual( [ odd.tokens, odd.gaps.length ], [ {}, 1 ] );
+} );
+
+test( 'MUST FAIL: a :visited colour on a plain content link becomes styles.elements.link[\':visited\'].color.text', () => {
+	const link = { tag: 'a', href: '#x' };
+	const r = linkStateTokens( { states: [ 'visited' ], declared: { color: 'rgb(128, 0, 128)' } }, 'visited', link );
+	assert.equal( r.key, "styles.elements.link[':visited']" );
+	assert.deepEqual( r.value, { color: { text: '#800080' } } );
+	assert.deepEqual( r.gaps, [] );
+	assert.equal( linkStateTokens( { states: [ 'visited' ], declared: { color: 'red' } }, undefined, link ).key, "styles.elements.link[':visited']", 'the look\'s own state is used when none is passed' );
+	assert.equal( linkStateTokens( { color: 'blue' }, ':any-link', link ).key, "styles.elements.link[':any-link']" );
+	assert.equal( linkStateTokens( { color: 'blue' }, 'link', link ).key, "styles.elements.link[':link']" );
+} );
+
+test( 'MUST FAIL: text-decoration longhands and typography map to typography, and an unsupported property is a named gap, never dropped', () => {
+	const link = { tag: 'a', href: '#x' };
+	const r = linkStateTokens( { declared: { 'text-decoration-line': 'underline', 'text-decoration-style': 'solid', 'text-decoration-color': 'currentcolor', 'font-weight': '600', 'background-color': 'rgb(255, 255, 0)', 'border-bottom-width': '1px', color: 'var(--x)' } }, 'visited', link );
+	assert.deepEqual( r.value, { typography: { fontWeight: '600', textDecoration: 'underline' }, color: { background: '#ffff00' } } );
+	assert.equal( r.gaps.length, 2 );
+	assert.ok( r.gaps.some( ( g ) => /^border-bottom-width/.test( g ) ) && r.gaps.some( ( g ) => /^color:var\(--x\): not a colour literal/.test( g ) ) );
+	const dashed = linkStateTokens( { declared: { 'text-decoration-line': 'underline', 'text-decoration-style': 'dashed' } }, 'visited', link );
+	assert.equal( dashed.value.typography.textDecoration, 'underline dashed', 'a non-default style travels with the line' );
+	assert.equal( linkStateTokens( { declared: { 'border-top-width': '1px' } }, 'visited', link ).value, null, 'nothing maps, nothing is written' );
+} );
+
+test( 'MUST FAIL: only a plain content link is written; a button-styled link, a block-owned link, a link with no href and a non-link are refused with the reason', () => {
+	const look = { declared: { color: 'red' } };
+	for ( const [ target, why ] of [
+		[ { tag: 'a', href: '#x', className: 'cta btn-primary' }, /button-styled/ ],
+		[ { tag: 'a', href: '#x', role: 'button' }, /button-styled/ ],
+		[ { tag: 'a', href: '#x', ownedBySetting: true }, /block setting owns/ ],
+		[ { tag: 'a' }, /no href/ ],
+		[ { tag: 'span', href: '#x' }, /not a link/ ],
+	] ) {
+		const r = linkStateTokens( look, 'visited', target );
+		assert.equal( r.value, null );
+		assert.match( r.gaps[ 0 ], why );
+	}
+	assert.equal( isThemeLink( { tag: 'A', href: '/x', className: 'nav-link' } ).themed, true, 'a class that merely contains "link" or "btn" inside another word is still a link' );
+	assert.equal( isThemeLink( { tag: 'a', href: '/x', className: 'subtle' } ).themed, true );
+} );
+
+test( 'a state theme.json holds elsewhere is not written by the link-state writer', () => {
+	const r = linkStateTokens( { declared: { color: 'red' } }, 'hover', { tag: 'a', href: '#x' } );
+	assert.deepEqual( [ r.key, r.value ], [ null, null ] );
+	assert.match( r.gaps[ 0 ], /only :link, :any-link and :visited/ );
 } );

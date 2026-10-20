@@ -9,10 +9,13 @@ import { compareDR } from './fill-confirm.mjs';
 
 const keyOf = ( look ) => look.states.join( '+' );
 const valueOf = ( look, prop ) => look?.rendered?.[ prop ] ?? look?.declared?.[ prop ];
+const byCode = ( look ) => 'code' === look?.read;
 
 // rows: one per pair, width, state and property the draft's state changes:
 //   { draft, live, width, state, prop, draftValue, liveValue, liveState (the live page has a look for this state),
-//     verdict: 'match' | 'differs' | 'unreadable', tolerance }
+//     verdict: 'match' | 'differs' | 'unreadable', tolerance, confirmed }
+// `confirmed` is false when a side's look was read by code (`read: 'code'`, a state no browser can enter: :visited): that
+// value is the stylesheet's declared one and the render cannot confirm it, so the row compares declared values.
 // draft, live: { [width]: readStates result }; liveRest: { [width]: { [liveId]: { prop: value } } } (the live element's
 // resting computed styles); pairs: [{ draft: draftTargetId, live: liveTargetId }].
 export function checkStates( { draft, live, liveRest = {}, pairs } ) {
@@ -28,7 +31,7 @@ export function checkStates( { draft, live, liveRest = {}, pairs } ) {
 					const liveValue = valueOf( liveLook, prop ) ?? liveRest[ width ]?.[ pair.live ]?.[ prop ] ?? null;
 					const { dr, tolerance } = null === liveValue ? { dr: 'unreadable', tolerance: null } : compareDR( prop, draftValue, liveValue );
 					const verdict = { agree: 'match', runtime: 'match', disagree: 'differs' }[ dr ] || 'unreadable';
-					rows.push( { draft: pair.draft, live: pair.live, width: Number( width ), state, prop, draftValue, liveValue, liveState: !! liveLook, verdict, tolerance } );
+					rows.push( { draft: pair.draft, live: pair.live, width: Number( width ), state, prop, draftValue, liveValue, liveState: !! liveLook, verdict, tolerance, confirmed: ! ( byCode( look ) || byCode( liveLook ) ) } );
 				}
 			}
 		}

@@ -37,3 +37,16 @@ test( 'no live value at all is unreadable, never a pass; the summary counts by s
 	const s = stateSummary( rows, draft );
 	assert.deepEqual( [ s.unreadable, s.byState.hover.unreadable, s.unreachedDraft.length ], [ 1, 1, 1 ] );
 } );
+
+test( 'MUST FAIL: a look read by code on either side is compared by declared value and marked unconfirmed; an entered look is confirmed', () => {
+	const code = ( states, values ) => ( { states, declared: values, rendered: null, read: 'code' } );
+	const draft = read( { d: [ code( [ 'visited' ], { color: 'rgb(128, 0, 128)' } ) ] } );
+	const both = checkStates( { draft, live: read( { l: [ code( [ 'visited' ], { color: 'rgb(128, 0, 128)' } ) ] } ), pairs } );
+	assert.deepEqual( both.map( ( r ) => [ r.verdict, r.confirmed, r.draftValue, r.liveValue ] ), [ [ 'match', false, 'rgb(128, 0, 128)', 'rgb(128, 0, 128)' ] ] );
+	const wrong = checkStates( { draft, live: read( { l: [ code( [ 'visited' ], { color: 'rgb(0, 0, 0)' } ) ] } ), pairs } );
+	assert.deepEqual( wrong.map( ( r ) => [ r.verdict, r.confirmed ] ), [ [ 'differs', false ] ] );
+	const missing = checkStates( { draft, live: read( {} ), liveRest: { 1440: { l: { color: 'rgb(0, 0, 0)' } } }, pairs } );
+	assert.deepEqual( missing.map( ( r ) => [ r.verdict, r.confirmed ] ), [ [ 'differs', false ] ], 'a draft read by code is never confirmed' );
+	const entered = checkStates( { draft: read( { d: [ look( [ 'hover' ], { color: 'rgb(1, 1, 1)' } ) ] } ), live: read( { l: [ look( [ 'hover' ], { color: 'rgb(1, 1, 1)' } ) ] } ), pairs } );
+	assert.equal( entered[ 0 ].confirmed, true );
+} );

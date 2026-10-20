@@ -10,6 +10,7 @@ import { resolveFinder } from '../../parity/lib/collect.mjs';
 import { readStates } from './fill-state-read.mjs';
 import { renderedOf } from './fill-state-apply.mjs';
 import { checkStates, stateSummary } from './state-check.mjs';
+import { timingCheck } from './fill-timing.mjs';
 import { READ_WIDTHS, loadChromium } from './fill-read.mjs';
 
 const RESOLVE = resolveFinder.toString();
@@ -23,7 +24,7 @@ export function statePairs( cfg ) {
 }
 
 // One side at the page's current width: each job's resting declared values (what a state look is diffed against) and
-// its state looks; with `want` ({ jobId: [prop] }), each job's rendered resting value of those properties too.
+// its state looks (and the resting values, which timingCheck compares); with `want` ({ jobId: [prop] }), each job's rendered resting value of those properties too.
 export async function readSide( page, jobs, rows, want = null, log = () => {} ) {
 	const cdp = await openDevtools( page );
 	const rest = {};
@@ -36,7 +37,7 @@ export async function readSide( page, jobs, rows, want = null, log = () => {} ) 
 		const j = jobs.find( ( x ) => x.id === id );
 		rendered[ id ] = j && props.length ? await page.evaluate( renderedOf, [ j.finder, RESOLVE, props ] ).catch( () => null ) : null;
 	}
-	return { states, rendered };
+	return { states, rendered, rest };
 }
 
 // The properties each live job must be read for: every property any of its draft partner's state looks changes.
@@ -53,11 +54,14 @@ export async function liveStateCheck( { browser, cfg, rows, widths = READ_WIDTHS
 	const liveJobs = pairs.map( ( p ) => ( { id: p.live, finder: p.liveFinder } ) );
 	const draft = {};
 	const live = {};
+	const timing = { draft: {}, live: {} };
 	const liveRest = {};
 	for ( const width of widths ) {
 		const d = await openDraft( browser, cfg, width );
 		try {
-			draft[ width ] = ( await readSide( d, draftJobs, rows, null, log ) ).states;
+			const side = await readSide( d, draftJobs, rows, null, log );
+			draft[ width ] = side.states;
+			timing.draft[ width ] = { rest: side.rest, states: side.states };
 		} finally {
 			await d.close();
 		}
@@ -65,6 +69,7 @@ export async function liveStateCheck( { browser, cfg, rows, widths = READ_WIDTHS
 		try {
 			const side = await readSide( l, liveJobs, rows, wantedProps( draft[ width ], pairs ), log );
 			live[ width ] = side.states;
+			timing.live[ width ] = { rest: side.rest, states: side.states };
 			liveRest[ width ] = side.rendered;
 		} finally {
 			await l.close();
@@ -72,7 +77,11 @@ export async function liveStateCheck( { browser, cfg, rows, widths = READ_WIDTHS
 		log( `state check ${ width }px: ${ Object.keys( draft[ width ].looks ).length } draft and ${ Object.keys( live[ width ].looks ).length } live elements with a state look` );
 	}
 	const names = Object.fromEntries( pairs.map( ( p ) => [ p.draft, p.name ] ) );
-	const checked = checkStates( { draft, live, liveRest, pairs: pairs.map( ( p ) => ( { draft: p.draft, live: p.live } ) ) } ).map( ( r ) => ( { pair: names[ r.draft ], ...r } ) );
+	const idPairs = pairs.map( ( p ) => ( { draft: p.draft, live: p.live } ) );
+	const states = checkStates( { draft, live, liveRest, pairs: idPairs } );
+	// A timing row reads as a state row: its state is the direction it times, its prop the timing property.
+	const timings = timingCheck( { ...timing, pairs: idPairs } ).map( ( r ) => ( { ...r, state: `timing ${ r.state ?? 'rest' } (${ r.direction })`, liveState: true, confirmed: true } ) );
+	const checked = [ ...states, ...timings ].map( ( r ) => ( { pair: names[ r.draft ], ...r } ) );
 	return { rows: checked, summary: stateSummary( checked, draft ), pairs: pairs.length };
 }
 
@@ -99,7 +108,7 @@ export function stateReport( check ) {
 		'',
 		`${ check.pairs } pairs read: ${ check.summary.match } match, ${ check.summary.differs } differ, ${ check.summary.unreadable } unreadable.`,
 		...( check.summary.unreachedDraft.length ? [ '', `Draft states no page can enter: ${ [ ...new Set( check.summary.unreachedDraft.map( ( u ) => u.selector ) ) ].join( ', ' ) }` ] : [] ),
-		...( open.length ? [ '', '| Pair | Width | State | Property | Draft | Live | Verdict |', '|---|---|---|---|---|---|---|', ...open.map( ( r ) => `| ${ r.pair } | ${ r.width } | ${ r.state } | ${ r.prop } | ${ r.draftValue } | ${ r.liveValue ?? '(none)' }${ r.liveState ? '' : ' (no live state look)' } | ${ r.verdict } |` ) ] : [] ),
+		...( open.length ? [ '', '| Pair | Width | State | Property | Draft | Live | Verdict |', '|---|---|---|---|---|---|---|', ...open.map( ( r ) => `| ${ r.pair } | ${ r.width } | ${ r.state } | ${ r.prop } | ${ r.draftValue } | ${ r.liveValue ?? '(none)' }${ r.liveState ? '' : ' (no live state look)' } | ${ r.verdict }${ false === r.confirmed ? ' (declared in code, not confirmed by the render)' : '' } |` ) ] : [] ),
 	];
 	return { json: { summary: check.summary, pairs: check.pairs, open }, markdown: md.join( '\n' ) };
 }

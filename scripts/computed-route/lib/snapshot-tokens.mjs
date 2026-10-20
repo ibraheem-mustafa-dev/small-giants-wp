@@ -7,6 +7,9 @@
 // draft's look wins over the 3:1 contrast rule (owner decision 2026-10-20), so a mapped look carries source "draft"
 // (plugins/sgs-blocks/scripts/snapshot_focus_tokens.py records those values instead of failing them).
 // Press: includes/helpers-button-press.php paints only buttonPresets.{variant}.active-transform and .active-shadow.
+// Link states: WordPress theme.json styles.elements.link takes the pseudo keys :link, :any-link, :visited, :hover,
+// :focus, :focus-visible and :active (WP_Theme_JSON::VALID_ELEMENT_PSEUDO_SELECTORS); :link, :any-link and :visited are
+// read from the draft's code (the browser never exposes :visited to a test, lib/fill-state-code.mjs) and written here.
 
 const LENGTH = /^-?(?:\d*\.)?\d+(?:px|rem|em)$/;
 const LENGTH_ANY = /-?(?:\d*\.)?\d+(?:px|rem|em)?(?![\w.])/g;
@@ -159,4 +162,76 @@ export function pressTokens( look, variant ) {
 		}
 	}
 	return { variant, tokens, gaps };
+}
+
+const LINK_STATES = { link: ':link', 'any-link': ':any-link', visited: ':visited' };
+const LINK_KEY = ( state ) => `styles.elements.link['${ state }']`;
+const TEXT_PROPS = { 'font-weight': 'fontWeight', 'font-style': 'fontStyle', 'letter-spacing': 'letterSpacing', 'text-transform': 'textTransform' };
+const DECORATION_DEFAULTS = { 'text-decoration-style': 'solid', 'text-decoration-color': 'currentcolor', 'text-decoration-thickness': 'auto' };
+
+// Whether a draft element is a plain content link the theme styles: an <a> with an href (a link without one is never
+// :link or :visited), not styled as a button (role="button", or a class naming btn or button), and not owned by a
+// block's link setting (`ownedBySetting`, from Fill's resolver: a block attribute already holds that element's link
+// look). Returns { themed, why }. target: { tag, href, role, className, ownedBySetting }.
+export function isThemeLink( target ) {
+	const t = target || {};
+	if ( 'a' !== String( t.tag || '' ).toLowerCase() ) {
+		return { themed: false, why: `<${ t.tag || '?' }> is not a link` };
+	}
+	if ( ! t.href ) {
+		return { themed: false, why: 'a link with no href is neither :link nor :visited' };
+	}
+	if ( 'button' === t.role || /(?:^|[\s_-])(?:btn|button)(?:$|[\s_-])/i.test( t.className || '' ) ) {
+		return { themed: false, why: 'a button-styled link takes the button element and presets, not the link element' };
+	}
+	if ( t.ownedBySetting ) {
+		return { themed: false, why: 'a block setting owns this link look' };
+	}
+	return { themed: true, why: null };
+}
+
+// A draft look on a plain content link for :link, :any-link or :visited → { key, state, value, gaps }. `look` is a
+// readStates look ({ states, declared }) or its declared map; `state` is 'visited', 'link' or 'any-link' (a leading
+// colon is allowed; a look's own state is used when `state` is omitted). `key` is the snapshot path
+// styles.elements.link['<:state>'] and `value` the theme.json element it sets: color → color.text, background-color →
+// color.background, the text-decoration longhands (or the shorthand) → typography.textDecoration, and font-weight,
+// font-style, letter-spacing and text-transform → typography. Another property has no link-element key and is a named
+// gap, as is a state theme.json does not hold on a link (:hover, :focus and :active are the element's other keys, set
+// by their own writers) and an element isThemeLink refuses. value is null when nothing maps.
+export function linkStateTokens( look, state, target ) {
+	const d = look?.declared ?? look ?? {};
+	const name = String( state ?? look?.states?.[ 0 ] ?? '' ).replace( /^:/, '' );
+	const key = LINK_STATES[ name ];
+	if ( ! key ) {
+		return { key: null, state: name, value: null, gaps: [ `state:${ name || '?' }: only :link, :any-link and :visited are written here` ] };
+	}
+	const fit = isThemeLink( target );
+	if ( ! fit.themed ) {
+		return { key: LINK_KEY( key ), state: key, value: null, gaps: [ `element: ${ fit.why }` ] };
+	}
+	const value = {};
+	const gaps = [];
+	const set = ( group, prop, v ) => {
+		( value[ group ] ??= {} )[ prop ] = v;
+	};
+	for ( const [ prop, raw ] of Object.entries( d ) ) {
+		if ( 'color' === prop || 'background-color' === prop ) {
+			const colour = colourOf( raw );
+			if ( colour ) {
+				set( 'color', 'color' === prop ? 'text' : 'background', colour );
+			} else {
+				gaps.push( `${ prop }:${ raw }: not a colour literal` );
+			}
+		} else if ( TEXT_PROPS[ prop ] ) {
+			set( 'typography', TEXT_PROPS[ prop ], String( raw ).trim() );
+		} else if ( ! prop.startsWith( 'text-decoration' ) ) {
+			gaps.push( `${ prop }: theme.json styles.elements.link has no ${ key } key for it` );
+		}
+	}
+	const line = d[ 'text-decoration-line' ] ?? d[ 'text-decoration' ];
+	if ( 'string' === typeof line && line.trim() ) {
+		const extras = Object.keys( DECORATION_DEFAULTS ).filter( ( p ) => d[ p ] && String( d[ p ] ).trim().toLowerCase() !== DECORATION_DEFAULTS[ p ] ).map( ( p ) => String( d[ p ] ).trim() );
+		set( 'typography', 'textDecoration', [ line.trim(), ...extras ].join( ' ' ) );
+	}
+	return { key: LINK_KEY( key ), state: key, value: Object.keys( value ).length ? value : null, gaps };
 }
