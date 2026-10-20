@@ -11,13 +11,14 @@
 // What to force is read statically (lib/intake-defects-keys.mjs); openForcedPage holds one harness page per width with
 // the probes on it.
 import { openSandbox } from './intake-sandbox.mjs';
+import { forceable } from './state-vocab.mjs';
 import { preparePage, gotoDraft, settleRest, drainTimeouts } from './intake-harness.mjs';
 import { traceInit, collect } from './intake-census-trace.mjs';
 import { setDraftState, snapshotDraftState, restoreDraftState, draftStateChanged, fireTrigger, listenerInit, fireListeners } from './intake-state.mjs';
 import { handlerInit, gestureIn, POINTER_TYPES, DRAG_TYPES } from './intake-defects-gesture.mjs';
 
-// CDP CSS.forcePseudoState's forceable pseudo-classes; pseudo-elements need no forcing (their element renders them).
-export const FORCEABLE = [ 'active', 'focus', 'hover', 'visited', 'focus-within', 'focus-visible', 'target' ];
+// Pseudo-elements need no forcing (their element renders them). The forceable pseudo-classes are the state
+// vocabulary's force-pseudo rows (lib/state-vocab.mjs::forceable), measured on the route's Chromium.
 export const PSEUDO_ELEMENTS = [ 'before', 'after' ];
 
 
@@ -195,7 +196,7 @@ export async function openForcedPage( { folder, entry, harPath, file = entry, ha
 				if ( PSEUDO_ELEMENTS.includes( pseudo ) ) {
 					return true;
 				}
-				if ( ! FORCEABLE.includes( pseudo ) ) {
+				if ( ! forceable().includes( pseudo ) ) {
 					return { gap: `:${ pseudo } cannot be forced through the DevTools protocol` };
 				}
 				for ( let i = 0; i < n; i++ ) {

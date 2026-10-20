@@ -5,10 +5,10 @@
 // RM record per helmet rule inside a reduced-motion @media. Built from the census rows and the stamped template the
 // census read (lib/intake-census-template.mjs), never from the .dc.html text.
 import { cssDecls, parseTransition, parseAnimation, cssBlocks, sameSelector, reducedMotionMedia, matchSelector } from './intake-inventory-css.mjs';
+import { pseudoTrigger } from './state-vocab.mjs';
 
 const nOf = ( id ) => id.slice( id.lastIndexOf( ':' ) + 1 );
 const attr = ( e, name ) => e?.attrs.find( ( [ a ] ) => a === name )?.[ 1 ] ?? null;
-const PSEUDO_TRIGGER = { hover: 'hover', focus: 'focus', 'focus-visible': 'focus', 'focus-within': 'focus', active: 'press' };
 
 // The inline and pseudo declarations of one stamped element: { inline: Map, pseudo: [[pseudo, Map]] }.
 export function elementStyles( e ) {
@@ -105,7 +105,7 @@ export function templateRecords( census, add ) {
 			const one = 1 === props.length || ( uniform( 'duration_ms' ) && uniform( 'delay_ms' ) && uniform( 'easing' ) );
 			const viaVar = props.find( ( x ) => x.viaVar )?.viaVar;
 				props.forEach( ( x ) => delete x.viaVar );
-				const trigger = pseudo ? { type: PSEUDO_TRIGGER[ pseudo ] ?? 'state', detail: `style-${ pseudo } rule on the same element (!important)` }
+				const trigger = pseudo ? { type: pseudoTrigger( pseudo ), detail: `style-${ pseudo } rule on the same element (!important)` }
 				: viaVar ? { type: 'hover', detail: `the parent's style-hover sets ${ viaVar }` }
 				: bound ? { type: 'state', detail: 'state-bound inline value ({{ }})' } : { type: 'state', detail: 'no template trigger: the value is changed by code' };
 			const rec = add( 'TR', {
@@ -127,7 +127,7 @@ export function templateRecords( census, add ) {
 			add( kind, {
 				name: `${ 'PS' === kind ? 'Instant pseudo rule' : 'Transition timing' } on ${ base.description }`, mechanism: 'PS' === kind ? 'css-pseudo' : 'css-transition', element: base,
 				source: source( [ ...pseudoRows.map( ( r ) => `style-${ r.detail.pseudo }="${ r.detail.value }"` ), ...rest.map( ( r ) => `${ r.detail.property }:${ r.detail.value }` ) ].join( ' | ' ) ),
-				trigger: firstPseudo ? { type: PSEUDO_TRIGGER[ firstPseudo ] ?? 'state', detail: `style-${ firstPseudo } rule, no transition (instant)` } : { type: 'state', detail: 'a transition longhand with no transition property' },
+				trigger: firstPseudo ? { type: pseudoTrigger( firstPseudo ), detail: `style-${ firstPseudo } rule, no transition (instant)` } : { type: 'state', detail: 'a transition longhand with no transition property' },
 				properties: props.length ? props : rest.map( ( r ) => ( { property: r.detail.property, from: null, to: r.detail.value } ) ),
 				duration_ms: 0, delay_ms: 0, stagger: null, easing: null, iterations: 1, direction: null, fill: null,
 				reduced_motion: { behaviour: 'unchanged', detail: 'not motion-gated' }, status: pseudoRows.some( ( r ) => r.detail.bound ) ? 'no-op' : 'active',
