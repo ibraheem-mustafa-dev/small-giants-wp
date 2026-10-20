@@ -66,16 +66,14 @@ if ( ! function_exists( 'sgs_preselect_axes_from_url' ) ) {
 				continue;
 			}
 
-			$allowed = array();
+			// The link value is sanitize_title()d, so it is compared with each term slug in that form; the chosen value
+			// is the term's own slug, which a product-local attribute keeps in its original case ('Single').
 			foreach ( (array) ( $axis['terms'] ?? array() ) as $term ) {
 				$slug = (string) ( $term['slug'] ?? '' );
-				if ( '' !== $slug ) {
-					$allowed[] = $slug;
+				if ( '' !== $slug && sanitize_title( $slug ) === $requested ) {
+					$chosen[ $taxonomy ] = $slug;
+					break;
 				}
-			}
-
-			if ( in_array( $requested, $allowed, true ) ) {
-				$chosen[ $taxonomy ] = $requested;
 			}
 		}
 

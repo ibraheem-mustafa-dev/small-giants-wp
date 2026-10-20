@@ -41,6 +41,10 @@ final class Product_Manifest {
 	 * @return string
 	 */
 	public static function axis_key( string $attribute ): string {
+		// A registered taxonomy keeps its own name (a non-Latin 'pa_' name would be percent-encoded by sanitize_title()).
+		if ( \function_exists( 'taxonomy_exists' ) && \taxonomy_exists( $attribute ) ) {
+			return $attribute;
+		}
 		return \sanitize_title( $attribute );
 	}
 
