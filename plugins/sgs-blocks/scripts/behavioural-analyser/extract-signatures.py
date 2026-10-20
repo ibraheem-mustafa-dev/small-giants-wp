@@ -2981,29 +2981,6 @@ def extract_css_property_and_layer() -> dict:
                         f"ambiguous: shares the ({','.join(_slot[0])}, state={_slot[1]}, tier={_slot[2]}) slot "
                         "with another attribute and no css_element tells them apart"
                     )
-        # Text-outline routes (vendor-prefixed properties a prefix helper routes): two attributes of this block on the
-        # same (property, element, state, tier) cannot be told apart by the resolver, so both are refused. Routes that
-        # predate the vendor-prefix fix keep their slots.
-        if only is None:
-            _outline_groups: "dict[tuple, list[str]]" = defaultdict(list)
-            for _attr in ev.get("helper_routed", ()):
-                if _attr in block_attr_names and (slug, _attr) in resolved and any(_p.startswith("-") for _p in resolved[(slug, _attr)]):
-                    _outline_groups[(
-                        tuple(sorted(resolved[(slug, _attr)])),
-                        str(resolved_bem_element.get((slug, _attr))),
-                        resolved_state.get((slug, _attr)),
-                        resolved_tier.get((slug, _attr)),
-                    )].append(_attr)
-            for _slot, _members in _outline_groups.items():
-                if len(_members) < 2:
-                    continue
-                for _attr in _members:
-                    for _store in (resolved, resolved_state, resolved_bem_element, resolved_tier):
-                        _store.pop((slug, _attr), None)
-                    unresolved_reasons[(slug, _attr)] = (
-                        f"ambiguous: shares the ({','.join(_slot[0])}, element={_slot[1]}, state={_slot[2]}, tier={_slot[3]}) slot "
-                        "with another text-outline attribute and no css_element tells them apart"
-                    )
         # A family-composer route (CR6 P2-f) with no element must not land on a slot another shape already routes
         # without an element (sgs/icon `padding` against `backgroundPadding`): refuse it, never the established route.
         _family_new = {a for a in ev.get("family_routed", ()) if a in block_attr_names and (slug, a) in resolved and (slug, a) not in resolved_bem_element}
@@ -3496,6 +3473,20 @@ def extract_css_property_and_layer() -> dict:
             fields.pop("css_property", None)
             fields.pop("css_layer", None)
             _role_guarded += 1
+
+    # Text-outline routes (vendor-prefixed properties, routed since the vendor-prefix fix): two attributes of one block
+    # on the same (property, element, state, tier) cannot be told apart by the resolver (db-consistency F6), so
+    # neither is routed. Routes that predate the fix keep their slots.
+    _outline_slots: "dict[tuple, list[dict]]" = defaultdict(list)
+    for entry in classification_entries:
+        _fields = entry["fields"]
+        if str(_fields.get("css_property") or "").startswith("-"):
+            _outline_slots[(entry["slug"], *_slot_key(_fields))].append(entry)
+    for _members in _outline_slots.values():
+        if len(_members) > 1:
+            for entry in _members:
+                entry["fields"].pop("css_property", None)
+                entry["fields"].pop("css_layer", None)
 
     # Strip the internal bookkeeping key from every entry before it reaches the
     # on-disk truth file — it is provenance for THIS pass only, never a real
