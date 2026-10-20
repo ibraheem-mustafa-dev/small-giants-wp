@@ -30,6 +30,21 @@ defined( 'ABSPATH' ) || exit;
 final class Product_Manifest {
 
 	/**
+	 * The key an axis carries in the manifest: the key WooCommerce gives the variation's own attribute.
+	 *
+	 * `WC_Product_Variable::get_variation_attributes()` keys a product-local attribute by its raw name ("Pack"),
+	 * while every variation's `get_attributes()` (the combo keys and `defaultAxes`) keys it `sanitize_title()`d
+	 * ("pack"). A global taxonomy ('pa_size') is already in that form. The add-to-cart store looks the shopper's
+	 * selection up by this key, so an axis left as "Pack" found no selection and the add sent no variation list.
+	 *
+	 * @param string $attribute The key as get_variation_attributes() returns it.
+	 * @return string
+	 */
+	public static function axis_key( string $attribute ): string {
+		return \sanitize_title( $attribute );
+	}
+
+	/**
 	 * Short fingerprint of the shop's tax configuration.
 	 *
 	 * Folded into the manifest cache key so any tax-config change (enabling VAT,
@@ -158,7 +173,7 @@ final class Product_Manifest {
 		// the parent's WooCommerce gallery; adds hasOwnImage per combo.
 		// v8: hasOwnImage reads the variation image in 'edit' context, so it is
 		// false when WC would have substituted the parent's image.
-		$cache_key = 'sgs_manifest_v8_' . $product_id . '_' . self::tax_fingerprint();
+		$cache_key = 'sgs_manifest_v9_' . $product_id . '_' . self::tax_fingerprint();
 		$cached    = \get_transient( $cache_key );
 
 		global $wpdb;
@@ -232,7 +247,7 @@ final class Product_Manifest {
 
 			if ( ! empty( $terms ) ) {
 				$axes[] = array(
-					'taxonomy' => $taxonomy,                           // e.g. 'pa_size'.
+					'taxonomy' => self::axis_key( (string) $taxonomy ), // e.g. 'pa_size', or 'pack' for a product-local attribute.
 					'label'    => \sanitize_text_field( $axis_label ), // e.g. 'Size'.
 					'variesBy' => $varies_by,                          // Enum value or ''.
 					'terms'    => $terms,

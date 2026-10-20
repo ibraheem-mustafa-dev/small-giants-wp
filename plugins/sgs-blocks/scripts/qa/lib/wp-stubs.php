@@ -1126,7 +1126,8 @@ if ( ! function_exists( 'sanitize_title' ) ) {
 	function sanitize_title( $title ): string {
 		$title = strtolower( wp_strip_all_tags( (string) $title ) );
 		$title = (string) preg_replace( '/[^a-z0-9\s_-]/', '', $title );
-		return trim( (string) preg_replace( '/[\s_-]+/', '-', $title ), '-' );
+		// As WordPress does: whitespace and runs of hyphens collapse to one hyphen; underscores stay ('pa_size').
+		return trim( (string) preg_replace( '/-+/', '-', (string) preg_replace( '/\s+/', '-', $title ) ), '-' );
 	}
 }
 
