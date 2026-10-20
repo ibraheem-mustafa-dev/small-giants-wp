@@ -650,7 +650,7 @@ Empty: every entry closed on 2026-10-20.
 - Per-property button easing: `hover-easing-colour` and `hover-easing-shadow` (Bean chose the two overrides), live on mamas-test with the draft's timing (Spec 32 FR-32-9, FR-32-19).
 - The route writes a draft's endless keyframe loop into the Additional CSS box (Spec 48 FR-48-78).
 - `product-card/style.css`: the swatch hit area holds its `max()` in a custom property, so the build prints no postcss-calc warning.
-- The three live checks: results in `.claude/qa/control-gaps/results-2026-10-20.md` (Lane E, 2026-10-20).
+- The three live checks pass (`.claude/qa/control-gaps/results-2026-10-20.md`, "Parking-lot live checks"); the photo popover, which Escape could not close, was fixed on the way (`532181577`).
 - `ResponsiveLogoTest`: the test helper hands `render.php` a null `$block`, so it raises no warning.
 - The 59 unrouted text-outline attributes: each is claimed in its block's element manifest, all 408 route after the reseed, and `check-text-stroke-routing.py --check` (fast tier) keeps it so.
 

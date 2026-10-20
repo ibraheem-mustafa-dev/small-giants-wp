@@ -1,0 +1,220 @@
+[
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "G9 form file name and G10 option descriptions",
+   "level": "h1"
+  }
+ },
+ {
+  "name": "sgs/form",
+  "attributes": {
+   "formId": "g9-g10-qa",
+   "formName": "Control gaps QA",
+   "submitLabel": "Send",
+   "storeSubmissions": false
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/form-step",
+    "attributes": {
+     "label": "About you"
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/form-field-text",
+      "attributes": {
+       "fieldName": "name",
+       "label": "Your name",
+       "required": true
+      }
+     },
+     {
+      "name": "sgs/form-field-tiles",
+      "attributes": {
+       "fieldName": "topic",
+       "label": "What can we help with?",
+       "tiles": [
+        {
+         "label": "Lactation cookies",
+         "value": "lactation",
+         "description": "Oat-based and made to support milk supply."
+        },
+        {
+         "label": "Gift boxes",
+         "value": "gift",
+         "description": "A boxed set of 12 with a handwritten card, ideal for new mums and baby showers."
+        },
+        {
+         "label": "Something else",
+         "value": "other",
+         "description": ""
+        }
+       ]
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/form-step",
+    "attributes": {
+     "label": "Upload"
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/form-field-file",
+      "attributes": {
+       "fieldName": "attachment",
+       "label": "Attach a file",
+       "helpText": "Use a 120-character file name to test wrapping.",
+       "allowedTypes": [
+        "image/*",
+        "application/pdf"
+       ],
+       "maxSize": 10
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/form-step",
+    "attributes": {
+     "label": "Review"
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/form-review",
+      "attributes": {}
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "G10 choice flow, compact layout",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/choice-flow",
+  "attributes": {
+   "flowId": "g10-compact-qa",
+   "title": "Choose a flavour (compact)",
+   "flowLayout": "compact"
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/form-step",
+    "attributes": {
+     "label": "Flavour"
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/choice-flow-question",
+      "attributes": {
+       "question": "Which flavour?",
+       "options": [
+        {
+         "label": "Chocolate",
+         "value": "chocolate",
+         "description": "Rich dark chocolate chunks."
+        },
+        {
+         "label": "Classic oat",
+         "value": "classic-oat",
+         "description": "Plain, soft and chewy with a hint of cinnamon, baked fresh."
+        },
+        {
+         "label": "No preference",
+         "value": "none"
+        }
+       ]
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/form-step",
+    "attributes": {
+     "label": "Result"
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/choice-flow-result",
+      "attributes": {
+       "heading": "Your pick"
+      }
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "G10 choice flow, showcase layout",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/choice-flow",
+  "attributes": {
+   "flowId": "g10-showcase-qa",
+   "title": "Choose a flavour (showcase)",
+   "flowLayout": "showcase"
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/form-step",
+    "attributes": {
+     "label": "Flavour"
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/choice-flow-question",
+      "attributes": {
+       "question": "Which flavour?",
+       "options": [
+        {
+         "label": "Chocolate",
+         "value": "chocolate",
+         "description": "Rich dark chocolate chunks."
+        },
+        {
+         "label": "Classic oat",
+         "value": "classic-oat",
+         "description": "Plain, soft and chewy with a hint of cinnamon, baked fresh."
+        },
+        {
+         "label": "No preference",
+         "value": "none"
+        }
+       ],
+       "optionDescriptionFontSize": {
+        "desktop": 22,
+        "tablet": 19,
+        "mobile": 17
+       }
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/form-step",
+    "attributes": {
+     "label": "Result"
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/choice-flow-result",
+      "attributes": {
+       "heading": "Your pick"
+      }
+     }
+    ]
+   }
+  ]
+ }
+]

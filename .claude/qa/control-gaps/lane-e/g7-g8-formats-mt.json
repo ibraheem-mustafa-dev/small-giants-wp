@@ -1,0 +1,88 @@
+[
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "Fresh <span class=\"sgs-highlight sgs-highlight--accent\">cookies</span> <img class=\"sgs-inline-photo wp-image-23\" src=\"https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-pair-love.jpg\" alt=\"\"/> baked <span class=\"sgs-highlight\">daily</span> with <img class=\"sgs-inline-photo wp-image-23\" src=\"https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-pair-love.jpg\" alt=\"a stack of cookies\"/> love",
+   "level": "h1"
+  }
+ },
+ {
+  "name": "sgs/text",
+  "attributes": {
+   "text": "Fresh <span class=\"sgs-highlight sgs-highlight--accent\">cookies</span> <img class=\"sgs-inline-photo wp-image-23\" src=\"https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-pair-love.jpg\" alt=\"\"/> baked <span class=\"sgs-highlight\">daily</span> with <img class=\"sgs-inline-photo wp-image-23\" src=\"https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-pair-love.jpg\" alt=\"a stack of cookies\"/> love."
+  }
+ },
+ {
+  "name": "sgs/quote",
+  "attributes": {
+   "attribution": "A happy customer"
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "The <span class=\"sgs-highlight sgs-highlight--primary\">best</span> cookies <img class=\"sgs-inline-photo wp-image-23\" src=\"https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-pair-love.jpg\" alt=\"\"/> I have ever had."
+    }
+   }
+  ]
+ },
+ {
+  "name": "sgs/timeline",
+  "attributes": {
+   "entries": [
+    {
+     "date": "2020-01-01",
+     "title": "Started",
+     "description": "<p>The first <span class=\"sgs-highlight\">batch</span> <img class=\"sgs-inline-photo wp-image-23\" src=\"https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-pair-love.jpg\" alt=\"\"/> went out.</p>",
+     "icon": "",
+     "image": 0
+    },
+    {
+     "date": "2022-06-15",
+     "title": "Grew",
+     "description": "<p>A <span class=\"sgs-highlight sgs-highlight--accent\">bigger</span> kitchen.</p>",
+     "icon": "",
+     "image": 0
+    }
+   ]
+  }
+ },
+ {
+  "name": "sgs/collapsible-text",
+  "attributes": {
+   "text": "<p>Our <span class=\"sgs-highlight\">secret</span> <img class=\"sgs-inline-photo wp-image-23\" src=\"https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-pair-love.jpg\" alt=\"\"/> ingredient is time.</p><p>Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall.</p>",
+   "collapsible": true,
+   "collapsedLines": 2
+  }
+ },
+ {
+  "name": "sgs/product-card",
+  "attributes": {
+   "sourceMode": "typed",
+   "productName": "Lactation cookies",
+   "priceLarge": "12.00",
+   "description": "Soft <span class=\"sgs-highlight sgs-highlight--accent\">chewy</span> <img class=\"sgs-inline-photo wp-image-23\" src=\"https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-pair-love.jpg\" alt=\"\"/> cookies."
+  }
+ },
+ {
+  "name": "sgs/accordion",
+  "attributes": {},
+  "innerBlocks": [
+   {
+    "name": "sgs/accordion-item",
+    "attributes": {
+     "title": "Do you <span class=\"sgs-highlight\">bake</span> <img class=\"sgs-inline-photo wp-image-23\" src=\"https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-pair-love.jpg\" alt=\"\"/> to order?",
+     "isOpen": true
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Yes, every batch."
+      }
+     }
+    ]
+   }
+  ]
+ }
+]

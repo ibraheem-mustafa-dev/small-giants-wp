@@ -6,7 +6,7 @@ Verdicts: setting 25, block-default 21, not-needed 21, motion 6, missing 5, part
 
 ## Real control gaps
 
-Twelve features the drafts use that no SGS control, block default, theme rule or composition of existing blocks reproduces. Each passed five tests: what the draft really does, the block that would hold it, whether it is already built, whether existing blocks compose it, and whether a universal fix serves better. Per-block custom CSS and a heading split into several blocks are not counted as answers. The build plan is .claude/plans/2026-10-19-control-gaps-build.md.
+Twelve features the drafts use that no SGS control, block default, theme rule or composition of existing blocks reproduces. Each passed five tests: what the draft really does, the block that would hold it, whether it is already built, whether existing blocks compose it, and whether a universal fix serves better. Per-block custom CSS and a heading split into several blocks are not counted as answers. The build plan is .claude/plans/archive/2026-10-19-control-gaps-build.md.
 
 | # | What the visitor sees | Draft | Fix and owner |
 |---|---|---|---|

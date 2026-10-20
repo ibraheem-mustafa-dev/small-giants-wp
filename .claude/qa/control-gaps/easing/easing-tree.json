@@ -1,0 +1,8 @@
+[
+ {"name": "sgs/container", "attributes": {"tagName": "section", "layout": "flex", "flexDirection": "row", "gap": {"desktop": "32px"}, "padding": {"desktop": {"top": "48px", "right": "24px", "bottom": "48px", "left": "24px"}}},
+  "innerBlocks": [
+   {"name": "sgs/button", "attributes": {"label": "Order now", "url": "https://example.com/order", "inheritStyle": "primary"}},
+   {"name": "sgs/button", "attributes": {"label": "See the menu", "url": "https://example.com/menu", "inheritStyle": "secondary"}},
+   {"name": "sgs/product-card", "attributes": {"description": "Oat cookies", "ctaText": "Shop", "ctaUrl": "https://example.com/shop", "cta2Text": "Details", "cta2Url": "https://example.com/details"}}
+  ]}
+]
