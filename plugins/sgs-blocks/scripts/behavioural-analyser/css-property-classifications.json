@@ -41076,17 +41076,8 @@
       "slug": "sgs/collapsible-text",
       "attr": "linkColourGradient",
       "fields": {
-        "css_property": "background-image-gradient",
-        "css_element": "body"
-      }
-    },
-    {
-      "slug": "sgs/collapsible-text",
-      "attr": "linkColourHoverGradient",
-      "fields": {
-        "css_property": "background-image-gradient",
-        "css_element": "body",
-        "css_state": "hover"
+        "css_property": "color-gradient",
+        "css_element": "body-link"
       }
     },
     {
@@ -41154,14 +41145,15 @@
       "slug": "sgs/heading",
       "attr": "linkColourGradient",
       "fields": {
-        "css_property": "background-image-gradient"
+        "css_property": "color-gradient",
+        "css_element": "content-link"
       }
     },
     {
       "slug": "sgs/heading",
       "attr": "linkColourHoverGradient",
       "fields": {
-        "css_property": "background-image-gradient",
+        "css_property": "color-gradient",
         "css_state": "hover"
       }
     },
@@ -41200,6 +41192,14 @@
         "css_property": "background-color-gradient",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "childBtnBackgroundGradient",
+      "fields": {
+        "css_property": "background-color-gradient",
+        "css_element": "child-button"
       }
     },
     {
@@ -41244,6 +41244,30 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerLabelColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillBgColourGradient",
+      "fields": {
+        "css_property": "background-color-gradient",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillTextColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "pill"
       }
     },
     {
@@ -41317,15 +41341,15 @@
       "slug": "sgs/timeline",
       "attr": "descriptionLinkColourGradient",
       "fields": {
-        "css_property": "color-link-gradient",
-        "css_element": "entry"
+        "css_property": "color-gradient",
+        "css_element": "entry-link"
       }
     },
     {
       "slug": "sgs/timeline",
       "attr": "descriptionLinkColourHoverGradient",
       "fields": {
-        "css_property": "background-image-gradient",
+        "css_property": "color-gradient",
         "css_element": "description",
         "css_state": "hover"
       }
