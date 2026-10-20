@@ -2560,7 +2560,7 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": "linear-gradient(): Fill reads the computed background-image and writes it as measured to the element's `*Gradient` setting; a gradient never lands in an image setting (tests/css-functions.test.mjs); a block whose background gradient row has no real css_property in the framework DB (sgs/container, sgs/hero and others: NULL or the manifest key background-color-gradient) is not reached until the seeder reads it as background-image (coverage plan Order item 2(d) remaining)"
+			"note": "linear-gradient(): Fill reads the computed background-image and writes it as measured to the element's `*Gradient` setting; a gradient never lands in an image setting (tests/css-functions.test.mjs); every gradient setting's css_property is its paint-mechanism key, read as the property it paints (lib/db.mjs::GRADIENT_PAINTS, plugins/sgs-blocks/scripts/data/gradient-paint-keys.json), so sgs/container, sgs/hero and the other blocks whose gradient row was NULL are reached (coverage plan d1, 2026-10-20)"
 		},
 		"css-function:log": {
 			"recognise": null,
@@ -2687,7 +2687,7 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": "radial-gradient(): written as measured to the element's `*Gradient` setting, as linear-gradient() (tests/css-functions.test.mjs); a block whose background gradient row has no real css_property in the framework DB (sgs/container, sgs/hero and others: NULL or the manifest key background-color-gradient) is not reached until the seeder reads it as background-image (coverage plan Order item 2(d) remaining)"
+			"note": "radial-gradient(): written as measured to the element's `*Gradient` setting, as linear-gradient() (tests/css-functions.test.mjs); every gradient setting's css_property is its paint-mechanism key, read as the property it paints (lib/db.mjs::GRADIENT_PAINTS, plugins/sgs-blocks/scripts/data/gradient-paint-keys.json), so sgs/container, sgs/hero and the other blocks whose gradient row was NULL are reached (coverage plan d1, 2026-10-20)"
 		},
 		"css-function:ray": {
 			"recognise": null,
@@ -2727,7 +2727,7 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": "repeating-linear-gradient(): written as measured, layered with other gradients, to the element's `*Gradient` setting (tests/css-functions.test.mjs); a block whose background gradient row has no real css_property in the framework DB (sgs/container, sgs/hero and others: NULL or the manifest key background-color-gradient) is not reached until the seeder reads it as background-image (coverage plan Order item 2(d) remaining)"
+			"note": "repeating-linear-gradient(): written as measured, layered with other gradients, to the element's `*Gradient` setting (tests/css-functions.test.mjs); every gradient setting's css_property is its paint-mechanism key, read as the property it paints (lib/db.mjs::GRADIENT_PAINTS, plugins/sgs-blocks/scripts/data/gradient-paint-keys.json), so sgs/container, sgs/hero and the other blocks whose gradient row was NULL are reached (coverage plan d1, 2026-10-20)"
 		},
 		"css-function:repeating-radial-gradient": {
 			"recognise": null,
