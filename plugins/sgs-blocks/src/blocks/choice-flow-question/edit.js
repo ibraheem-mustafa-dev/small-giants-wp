@@ -16,7 +16,7 @@ import AddonPricingPanel from './AddonPricingPanel';
 import ProductAttributePanel from './ProductAttributePanel';
 import TitlePanel from './TitlePanel';
 import VariationCoverageNotice from './VariationCoverageNotice';
-import OptionPolishFields, { OptionDescriptionPanel, optionDescriptionColourRows } from './OptionPolishFields';
+import OptionPolishFields, { OptionDescriptionPanel, optionDescriptionColourRows, optionBadgeColourRows } from './OptionPolishFields';
 import { SgsColourPanel } from '../../components';
 
 // Reserved sentinel (FR-43-2 / spec brief) — "jump straight to whichever
@@ -171,7 +171,12 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 
 	return (
 		<>
-			<SgsColourPanel rows={ optionDescriptionColourRows( { attributes, setAttributes } ) } />
+			<SgsColourPanel
+				rows={ [
+					...optionDescriptionColourRows( { attributes, setAttributes } ),
+					...optionBadgeColourRows( { attributes, setAttributes } ),
+				] }
+			/>
 			<InspectorControls group="settings">
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ true }>
 					<SelectControl

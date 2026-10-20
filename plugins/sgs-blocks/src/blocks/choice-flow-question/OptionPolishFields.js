@@ -119,6 +119,33 @@ export function optionDescriptionColourRows( { attributes, setAttributes } ) {
 }
 
 /**
+ * The colour rows for the option badge tag: its fill and its text.
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Block attribute setter.
+ * @return {Array} The rows.
+ */
+export function optionBadgeColourRows( { attributes, setAttributes } ) {
+	return [
+		textRow( {
+			key: 'optionBadgeFill',
+			label: __( 'Option badge fill', 'sgs-blocks' ),
+			attrs: { base: 'optionBadgeColour' },
+			attributes,
+			setAttributes,
+		} ),
+		textRow( {
+			key: 'optionBadgeText',
+			label: __( 'Option badge text', 'sgs-blocks' ),
+			attrs: { base: 'optionBadgeTextColour' },
+			attributes,
+			setAttributes,
+		} ),
+	];
+}
+
+/**
  * The Styles-tab typography panel for the option description line (the `optionDescription*` attributes).
  *
  * @param {Object}   props

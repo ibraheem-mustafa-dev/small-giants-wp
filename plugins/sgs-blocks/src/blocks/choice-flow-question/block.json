@@ -48,6 +48,20 @@
 					},
 					"_note": "The optional line under an option's label (render.php, printed only when the option has a description); scoped CSS from helpers-description-style.php."
 				},
+				"option-badge": {
+					"selector": ".sgs-choice-flow-question__option-badge",
+					"label": "Option badge",
+					"order": 6,
+					"clusters": [
+						"text"
+					],
+					"prefix": "optionBadge",
+					"attrMap": {
+						"css:background-color": "optionBadgeColour",
+						"css:color": "optionBadgeTextColour"
+					},
+					"_note": "The small tag on an option card (a solid tag on picture cards, a soft tag on text cards; render.php prints it only when the option has a badge); scoped CSS from helpers-description-style.php. Empty keeps the stylesheet's own paint for each card kind."
+				},
 				"question": {
 					"selector": ".sgs-choice-flow-question__title",
 					"text": true,
@@ -316,6 +330,16 @@
 		"optionDescriptionColour": {
 			"type": "string",
 			"default": ""
+		},
+		"optionBadgeColour": {
+			"type": "string",
+			"default": "",
+			"description": "Fill of the option badge tag, a palette slug or hex. Empty keeps the stylesheet's paint: accent on a picture card, accent-light on a text card."
+		},
+		"optionBadgeTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of the option badge tag, a palette slug or hex. Empty keeps the stylesheet's paint: inherited on a picture card, accent-text on a text card."
 		}
 	},
 	"render": "file:./render.php",
