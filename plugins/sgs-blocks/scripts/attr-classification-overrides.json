@@ -2501,6 +2501,15 @@
 		},
 		{
 			"slug": "sgs/multi-button",
+			"attr": "childBtnBackgroundGradient",
+			"fields": {
+				"css_property": "background-image",
+				"css_element": "child-button"
+			},
+			"_why": "2026-10-20 (coverage plan d1, gradient seeder fix). The gradient sibling of childBtnBackground above, painted through the same cross-block hand-off into sgs/button's stylesheet (render.php's $mb_child_bg_gradient), so the classifier cannot see it either, and its base gains its route only in this layer, after the classifier's sibling pass has run. A gradient paints background-image; same element as the base."
+		},
+		{
+			"slug": "sgs/multi-button",
 			"attr": "childBtnTextColour",
 			"fields": {
 				"css_property": "color",
