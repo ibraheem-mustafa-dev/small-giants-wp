@@ -3,9 +3,6 @@
         " || .sgs-cart-UID.wp-block-sgs-cart": [
             "--sgs-cart-icon-size:24px"
         ],
-        " || .sgs-cart-UID.wp-block-sgs-cart .sgs-cart__badge": [
-            "color:var(--wp--preset--color--accent-text,currentColor)"
-        ],
         " || .sgs-cart-UID.wp-block-sgs-cart .sgs-cart__badge::after": [
             "background-color:var(--wp--preset--color--accent,currentColor)",
             "border-radius:inherit",
@@ -19,9 +16,6 @@
     "b_equal_sides": {
         " || .sgs-cart-UID.wp-block-sgs-cart": [
             "--sgs-cart-icon-size:24px"
-        ],
-        " || .sgs-cart-UID.wp-block-sgs-cart .sgs-cart__badge": [
-            "color:var(--wp--preset--color--accent-text,currentColor)"
         ],
         " || .sgs-cart-UID.wp-block-sgs-cart .sgs-cart__badge::after": [
             "background-color:var(--wp--preset--color--accent,currentColor)",
@@ -42,9 +36,6 @@
         " || .sgs-cart-UID.wp-block-sgs-cart": [
             "--sgs-cart-icon-size:24px"
         ],
-        " || .sgs-cart-UID.wp-block-sgs-cart .sgs-cart__badge": [
-            "color:var(--wp--preset--color--accent-text,currentColor)"
-        ],
         " || .sgs-cart-UID.wp-block-sgs-cart .sgs-cart__badge::after": [
             "background-color:var(--wp--preset--color--accent,currentColor)",
             "border-radius:inherit",
@@ -64,9 +55,6 @@
         " || .sgs-cart-UID.wp-block-sgs-cart": [
             "--sgs-cart-icon-size:24px"
         ],
-        " || .sgs-cart-UID.wp-block-sgs-cart .sgs-cart__badge": [
-            "color:var(--wp--preset--color--accent-text,currentColor)"
-        ],
         " || .sgs-cart-UID.wp-block-sgs-cart .sgs-cart__badge::after": [
             "background-color:var(--wp--preset--color--accent,currentColor)",
             "border-radius:inherit",
@@ -84,9 +72,6 @@
     "e_widths_no_colour": {
         " || .sgs-cart-UID.wp-block-sgs-cart": [
             "--sgs-cart-icon-size:24px"
-        ],
-        " || .sgs-cart-UID.wp-block-sgs-cart .sgs-cart__badge": [
-            "color:var(--wp--preset--color--accent-text,currentColor)"
         ],
         " || .sgs-cart-UID.wp-block-sgs-cart .sgs-cart__badge::after": [
             "background-color:var(--wp--preset--color--accent,currentColor)",
@@ -106,9 +91,6 @@
         " || .sgs-cart-UID.wp-block-sgs-cart": [
             "--sgs-cart-icon-size:24px"
         ],
-        " || .sgs-cart-UID.wp-block-sgs-cart .sgs-cart__badge": [
-            "color:var(--wp--preset--color--accent-text,currentColor)"
-        ],
         " || .sgs-cart-UID.wp-block-sgs-cart .sgs-cart__badge::after": [
             "background-color:var(--wp--preset--color--accent,currentColor)",
             "border-radius:inherit",
@@ -125,9 +107,6 @@
     "j_radius_uniform": {
         " || .sgs-cart-UID.wp-block-sgs-cart": [
             "--sgs-cart-icon-size:24px"
-        ],
-        " || .sgs-cart-UID.wp-block-sgs-cart .sgs-cart__badge": [
-            "color:var(--wp--preset--color--accent-text,currentColor)"
         ],
         " || .sgs-cart-UID.wp-block-sgs-cart .sgs-cart__badge::after": [
             "background-color:var(--wp--preset--color--accent,currentColor)",
