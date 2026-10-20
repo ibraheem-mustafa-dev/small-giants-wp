@@ -108,7 +108,7 @@ $custom_item = array(
 $GLOBALS['sgs_test_ctx_seen'] = array();
 $html = sgs_nav_drawer_menu_render_items( array( $mega_item ), 'accordion', 'u1', array(), '', array(), true, sgs_nav_drawer_menu_row_options( array() ) );
 ok( false !== strpos( $html, '<details class="sgs-nav-drawer-menu__accordion"' ), 'mega item (default panel mode) renders an accordion row' );
-ok( 1 === preg_match( '#<ul class="sgs-nav-drawer-menu__submenu" data-sgs-drill-panel><li class="sgs-nav-drawer-menu__subitem sgs-nav-drawer-menu__subitem--viewall">.*?</li><li class="sgs-nav-drawer-menu__mega-body"><div class="stub-panel">PANEL</div>#', $html ), 'its body is ul.sgs-nav-drawer-menu__submenu (nav-drilldown.js contract): the parent\'s "View all" row, then li.__mega-body holding the panel' );
+ok( 1 === preg_match( '#<ul class="sgs-nav-drawer-menu__submenu" data-sgs-drill-panel><li class="sgs-nav-drawer-menu__mega-body"><div class="stub-panel">PANEL</div>#', $html ), 'its body is ul.sgs-nav-drawer-menu__submenu > li.__mega-body holding the panel (nav-drilldown.js contract)' );
 ok( false !== strpos( $html, 'sgs-nav-drawer-menu__item--mega' ), 'the row carries the --mega modifier' );
 ok( array( 'drawer' ) === $GLOBALS['sgs_test_ctx_seen'], 'the panel rendered in the drawer context (sgs_mega_render_context() inside do_blocks)' );
 ok( '' === sgs_mega_render_context(), 'the context stack is empty again after the render' );

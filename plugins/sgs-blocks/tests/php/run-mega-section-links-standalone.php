@@ -14,10 +14,10 @@
  *   always shows its caret; without one it renders byte-identical to the pre-change markup
  *   (d003c37aa, run in a separate PHP process because the functions share names); the panel
  *   footer's "View all" prints once in the bar.
- * - the drawer: "View all <label>" is the first sub-row of a mega row, a megaDrawerFallbackIds row
- *   and a dropdown with its own page, exactly once (the footer copy is not printed in the drawer
- *   context), in both the accordion and drill-down models; a parent with no page and a disabled
- *   parent get none.
+ * - the drawer: a split row adds no row of its own (a mega row's section starts with the panel, a
+ *   megaDrawerFallbackIds row with its children, a dropdown with its own page has no "View all"); a
+ *   panel with no button prints its own footer "View all" once, inside the panel, in both the
+ *   accordion and drill-down models; a parent with no page stays a whole-row toggle.
  *
  * Plain PHP, no PHPUnit. Exits non-zero on any failure.
  *   php plugins/sgs-blocks/tests/php/run-mega-section-links-standalone.php
@@ -256,15 +256,17 @@ if ( is_dir( $tmp ) ) {
 }
 
 // ── 4. The drawer. ──────────────────────────────────────────────────────────
+// A split row adds no row of its own: its section holds the panel (or the
+// dropdown's children) as authored; a panel with no button of its own prints
+// its footer "View all" inside the panel, once.
 $options  = sgs_nav_drawer_menu_row_options( array() );
-$viewall  = '<li class="sgs-nav-drawer-menu__subitem sgs-nav-drawer-menu__subitem--viewall"><a class="sgs-nav-drawer-menu__sublink sgs-focus--inset" href="https://example.test/page-10/" data-sgs-nav-path="/page-10/">View all About</a></li>';
 $first_is = static fn( string $html, string $row ): bool => false !== strpos( $html, '<ul class="sgs-nav-drawer-menu__submenu" data-sgs-drill-panel>' . $row );
 
 foreach ( array( 'accordion', 'drill-down' ) as $model ) {
 	$GLOBALS['sgs_test_rendering_panel'] = 100;
 	$drawer = sgs_nav_drawer_menu_render_items( array( $mega_linked ), $model, 'u1', array(), '', array(), true, $options );
-	ok( $first_is( $drawer, $viewall . '<li class="sgs-nav-drawer-menu__mega-body">' ), "drawer ({$model}): a mega row's first sub-row is View all, above the panel" );
-	ok( 1 === substr_count( $drawer, 'View all About' ), "drawer ({$model}): View all appears once (no panel footer copy in the drawer)" );
+	ok( $first_is( $drawer, '<li class="sgs-nav-drawer-menu__mega-body">' ), "drawer ({$model}): a mega row's section starts with the panel, no added row" );
+	ok( false === strpos( $drawer, 'subitem--viewall' ) && 1 === substr_count( $drawer, 'View all About' ) && 1 === preg_match( '#__mega-body"><div class="stub-panel">PANEL<a [^>]*href="https://example.test/page-10/">View all About</a>#', $drawer ), "drawer ({$model}): the panel's own footer \"View all\" prints once, inside the panel, to the section page" );
 	ok( false !== strpos( $drawer, '<a class="sgs-nav-drawer-menu__link" href="https://example.test/page-10/"' ), "drawer ({$model}): the parent label is a link" );
 }
 
@@ -277,9 +279,9 @@ $fallback['children'] = array(
 	),
 );
 $drawer_fb = sgs_nav_drawer_menu_render_items( array( $fallback ), 'accordion', 'u1', array(), '', array( 'id:100' ), true, $options );
-ok( $first_is( $drawer_fb, $viewall . '<li class="sgs-nav-drawer-menu__subitem"><a class="sgs-nav-drawer-menu__sublink sgs-focus--inset" href="https://example.test/story/"' ), 'drawer: a megaDrawerFallbackIds row starts with View all, then its children' );
+ok( $first_is( $drawer_fb, '<li class="sgs-nav-drawer-menu__subitem"><a class="sgs-nav-drawer-menu__sublink sgs-focus--inset" href="https://example.test/story/"' ) && false === strpos( $drawer_fb, 'View all' ), 'drawer: a megaDrawerFallbackIds row starts with its children and adds no View all' );
 
-$dropdown             = array(
+$dropdown  = array(
 	'identifier' => 'id:10',
 	'label'      => 'About',
 	'url'        => 'https://example.test/page-10/',
@@ -289,16 +291,13 @@ $dropdown             = array(
 	'children'   => $fallback['children'],
 );
 $drawer_dd = sgs_nav_drawer_menu_render_items( array( $dropdown ), 'accordion', 'u1', array(), '', array(), true, $options );
-ok( $first_is( $drawer_dd, $viewall ) && 1 === substr_count( $drawer_dd, 'View all' ), 'drawer: a dropdown parent with its own page starts with View all, once' );
+ok( false === strpos( $drawer_dd, 'View all' ) && false !== strpos( $drawer_dd, '<a class="sgs-nav-drawer-menu__link" href="https://example.test/page-10/"' ), 'drawer: a dropdown parent with its own page is a split row with no View all row' );
 
-$no_page             = $dropdown;
-$no_page['has_url']  = false;
-$no_page['url']      = '#';
-$drawer_np           = sgs_nav_drawer_menu_render_items( array( $no_page ), 'accordion', 'u1', array(), '', array(), true, $options );
-ok( false === strpos( $drawer_np, 'View all' ) && false !== strpos( $drawer_np, 'sgs-nav-drawer-menu__accordion-summary--row' ), 'drawer: a parent with no page has no View all and stays a whole-row toggle' );
-
-$drawer_dis = sgs_nav_drawer_menu_render_items( array( $dropdown ), 'accordion', 'u1', array(), '', array(), true, sgs_nav_drawer_menu_row_options( array( 'disabledItemIds' => array( 'id:10' ) ) ), array( 'id:10' ) );
-ok( false === strpos( $drawer_dis, 'View all' ), 'drawer: a disabled parent has no View all' );
+$no_page            = $dropdown;
+$no_page['has_url'] = false;
+$no_page['url']     = '#';
+$drawer_np          = sgs_nav_drawer_menu_render_items( array( $no_page ), 'accordion', 'u1', array(), '', array(), true, $options );
+ok( false !== strpos( $drawer_np, 'sgs-nav-drawer-menu__accordion-summary--row' ), 'drawer: a parent with no page stays a whole-row toggle' );
 
 echo "\n==== {$pass} passed, {$fail} failed ====\n";
 exit( $fail > 0 ? 1 : 0 );

@@ -118,7 +118,7 @@ if ( ! function_exists( 'sgs_mega_render_item_panel' ) ) {
 	 * Render a mega menu item's panel with its "View all" fallback, for either
 	 * menu fork. One path for the bar and the drawer.
 	 *
-	 * In the bar, when the panel post ships no CTA of its own (no `wp:sgs/button` in its
+	 * When the panel post ships no CTA of its own (no `wp:sgs/button` in its
 	 * STORED content, checked before rendering because the answer decides
 	 * whether to register the footer filter), a "View all {label}" link to the
 	 * item's own URL is handed to `sgs/mega-panel`'s footer slot through the
@@ -138,9 +138,7 @@ if ( ! function_exists( 'sgs_mega_render_item_panel' ) ) {
 
 		$url     = (string) ( $item['url'] ?? '' );
 		$viewall = '';
-		// The drawer prints its own "View all" as the section's first row
-		// (sgs_nav_drawer_menu_accordion_html()), so only the bar gets this one.
-		if ( ! $panel_has_cta && 'drawer' !== $context && '#' !== $url && '' !== $url ) {
+		if ( ! $panel_has_cta && '#' !== $url && '' !== $url ) {
 			$viewall = sprintf(
 				'<a class="%s" href="%s">%s</a>',
 				esc_attr( $viewall_class ),
