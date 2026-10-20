@@ -44,11 +44,13 @@ $layout          = sanitize_key( $attributes['layout'] ?? 'grid' );
 // `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11) — read each tier via
 // the normaliser, never the raw attribute (absint() on an unresolved array
 // throws "Array to int conversion" and would emit e.g. `columns:0`, the
-// D569/D570 bug class this normaliser exists to prevent).
+// D569/D570 bug class this normaliser exists to prevent). A tier that is not a
+// positive whole number (0, or a track list such as repeat(3, 1fr)) is one
+// column: style.css divides by --sgs-columns.
 $columns_obj     = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
-$columns         = absint( $columns_obj['desktop'] ?? 3 );
-$columns_tablet  = absint( $columns_obj['tablet'] ?? 2 );
-$columns_mobile  = absint( $columns_obj['mobile'] ?? 1 );
+$columns         = max( 1, absint( $columns_obj['desktop'] ?? 3 ) );
+$columns_tablet  = max( 1, absint( $columns_obj['tablet'] ?? 2 ) );
+$columns_mobile  = max( 1, absint( $columns_obj['mobile'] ?? 1 ) );
 // gap is stored as a string (e.g. "16", "24px", or a WP spacing slug like "40").
 // The shared ContainerWrapperControls Gap control writes slug/raw-CSS strings;
 // the old own RangeControl wrote bare numeric strings like "16".

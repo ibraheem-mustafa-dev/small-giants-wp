@@ -31,7 +31,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // Read via the normaliser, never the raw attribute (absint() on an
 // unresolved array throws "Array to int conversion").
 $columns_obj = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
-$columns     = absint( $columns_obj['desktop'] ?? 3 );
+$columns     = max( 1, absint( $columns_obj['desktop'] ?? 3 ) );
 $plans       = (array) ( $attributes['plans'] ?? array() );
 $style       = sanitize_key( $attributes['pricingTableStyle'] ?? 'card' );
 // Plan-name heading level — an out-of-enum stored value is otherwise

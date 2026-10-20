@@ -114,10 +114,13 @@ if ( ! in_array( $aspect_ratio, $aspect_ratio_allowed, true ) ) {
 // the normaliser, never the raw attribute (absint() on an unresolved array
 // throws "Array to int conversion", the D569/D570 bug class this normaliser
 // exists to prevent).
+// A tier that is not a positive whole number (0, or a track list such as repeat(3, 1fr))
+// is one column: style.css divides by --sgs-columns, and 0 lays a card out at the
+// browser's maximum width.
 $columns_obj    = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
-$columns        = absint( $columns_obj['desktop'] ?? 3 );
-$columns_tablet = absint( $columns_obj['tablet'] ?? 2 );
-$columns_mobile = absint( $columns_obj['mobile'] ?? 1 );
+$columns        = max( 1, absint( $columns_obj['desktop'] ?? 3 ) );
+$columns_tablet = max( 1, absint( $columns_obj['tablet'] ?? 2 ) );
+$columns_mobile = max( 1, absint( $columns_obj['mobile'] ?? 1 ) );
 // Gap: resolved via the shared helper (handles raw CSS lengths + back-compat).
 // Falls back to "30px" matching the block.json default.
 // Back-compat: a bare digit string (e.g. "30") is appended with "px" before the
