@@ -165,7 +165,8 @@
 					"clusters": [
 						"fill",
 						"layout",
-						"animation"
+						"animation",
+						"motion"
 					],
 					"isWrapper": true,
 					"attrMap": {
@@ -189,7 +190,9 @@
 						"css:letter-spacing": "letterSpacing",
 						"css:text-transform": "textTransform",
 						"css:grid-template-columns": "gridTemplateColumns",
-						"css:columns": "columns"
+						"css:columns": "columns",
+						"css:transition-duration": "transitionDuration",
+						"css:transition-timing-function": "transitionEasing"
 					},
 					"states": {
 						"hover": {

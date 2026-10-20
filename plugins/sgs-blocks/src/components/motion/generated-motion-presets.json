@@ -2252,7 +2252,7 @@
 			"panel": "effects",
 			"slug": "ripple-subtle",
 			"target": "part",
-			"trigger": "click",
+			"trigger": "pointerdown",
 			"values": {
 				"sizeFactor": 1.6
 			}
@@ -2267,7 +2267,7 @@
 			"panel": "effects",
 			"slug": "ripple-standard",
 			"target": "part",
-			"trigger": "click",
+			"trigger": "pointerdown",
 			"values": {
 				"sizeFactor": 2.2
 			}
@@ -2282,7 +2282,7 @@
 			"panel": "effects",
 			"slug": "ripple-bold",
 			"target": "part",
-			"trigger": "click",
+			"trigger": "pointerdown",
 			"values": {
 				"sizeFactor": 2.8
 			}

@@ -132,11 +132,14 @@
 						"text",
 						"fill",
 						"layout",
-						"border"
+						"border",
+						"motion"
 					],
 					"prefix": "item",
 					"attrMap": {
 						"css:color": "itemColour",
+						"css:transition-duration": "itemMotionDuration",
+						"css:transition-timing-function": "itemMotionEasing",
 						"css:color-gradient": "itemColourGradient",
 						"css:background-color": "itemBg",
 						"css:background-image": "itemBgGradient",
@@ -309,18 +312,15 @@
 					"label": "Dimmed sibling item",
 					"order": 10,
 					"clusters": [
-						"text",
-						"motion"
+						"text"
 					],
 					"prefix": "",
 					"attrMap": {
 						"css:color": "siblingDimColour",
 						"css:opacity": "siblingDimOpacity",
-						"css:transition-duration": "itemMotionDuration",
-						"css:transition-timing-function": "itemMotionEasing",
 						"css:color-gradient": "siblingDimColourGradient"
 					},
-					"_note": "Wave 3C U-6, M-24: every OTHER item in the same list while one is hovered or keyboard-focused (a list-scoped :has() rule, includes/helpers-item-effects.php::sgs_sibling_dim_css). itemMotionDuration/itemMotionEasing are the ONE shared item-motion pair (sibling dim, label roll, ornament crossfade); explicit because the {prefix}{suffix} convention cannot derive them."
+					"_note": "Wave 3C U-6, M-24: every OTHER item in the same list while one is hovered or keyboard-focused (a list-scoped :has() rule, includes/helpers-item-effects.php::sgs_sibling_dim_css). itemMotionDuration/itemMotionEasing, the ONE shared item-motion pair, also time this crossfade, the label roll and the ornament crossfade; they are declared on `item` because the link's own colour and background transition (includes/nav-menu-item-transition-css.php::sgs_nav_item_transition_css) is their main consumer, as on sgs/nav-bar-menu."
 				},
 				"ornament": {
 					"label": "Row ornament",

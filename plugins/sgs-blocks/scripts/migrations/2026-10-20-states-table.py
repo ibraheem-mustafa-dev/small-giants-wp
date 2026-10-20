@@ -8,13 +8,9 @@ selection or page state (a pseudo-class, an ARIA or native attribute, a state cl
 feature), the state word it maps to and how a reader reaches it. The computed route reads it instead of keeping its own
 lists. Rows are not written here: `dbschema/seed_reference_data.py` seeds them from `scripts/data/states.json`.
 
-Adds `block_attributes.css_state_selector`: the selector fragment a state setting paints under (`[aria-current="page"]`,
-`[open]`, `.is-active`), written by the classifier beside `css_state`, so a reader reaches a setting's state on the
-block's own element.
-
 SAFETY
 ------
-The knowledge base is a gitignored SQLite file that CANNOT BE REBUILT. Idempotent: an existing table or column is
+The knowledge base is a gitignored SQLite file that CANNOT BE REBUILT. Idempotent: an existing table is
 reported and skipped, so a replay is safe. The DB is $SGS_FRAMEWORK_DB when set, else the shared framework DB.
 """
 from __future__ import annotations
@@ -51,12 +47,6 @@ def main() -> int:
         else:
             con.execute(STATES_DDL)
             print("  CREATED  states")
-        cols = {r[1] for r in con.execute("PRAGMA table_info(block_attributes)")}
-        if "css_state_selector" in cols:
-            print("  skipped  block_attributes.css_state_selector (already present)")
-        else:
-            con.execute("ALTER TABLE block_attributes ADD COLUMN css_state_selector TEXT")
-            print("  ADDED    block_attributes.css_state_selector")
         con.commit()
     finally:
         con.close()

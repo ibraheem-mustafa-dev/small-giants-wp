@@ -56,8 +56,7 @@
 					"clusters": [
 						"text",
 						"fill",
-						"layout",
-						"motion"
+						"layout"
 					],
 					"isWrapper": true,
 					"attrMap": {
@@ -73,8 +72,6 @@
 						"css:border-color": "borderColour",
 						"css:border-style": "borderStyle",
 						"css:box-shadow": "native:shadow",
-						"css:transition-duration": "transitionDuration",
-						"css:transition-timing-function": "transitionEasing",
 						"css:border-color-gradient": "borderColourGradient"
 					},
 					"states": {
@@ -228,10 +225,13 @@
 					"label": "Each process step",
 					"order": 1,
 					"clusters": [
-						"layout"
+						"layout",
+						"motion"
 					],
 					"attrMap": {
-						"css:gap": "numberGap"
+						"css:gap": "numberGap",
+						"css:transition-duration": "transitionDuration",
+						"css:transition-timing-function": "transitionEasing"
 					},
 					"_note": "Per-step fields (number/title/description/icon) are plain repeater content from the `steps` array — styled block-wide via the icon/number/title/description elements above, no independent per-step override. Mirrors sgs/accordion's `item` and sgs/timeline's `entry`."
 				}

@@ -215,7 +215,13 @@
     {
       "filename": "2026-10-20-states-table.py",
       "classification": "DB-MIGRATION",
-      "evidence": "sqlite3.connect(DB) then CREATE TABLE states (state, family, kind, token, reach, call, note) and ALTER TABLE block_attributes ADD COLUMN css_state_selector TEXT. Idempotent: skips a table or column already present. DB is $SGS_FRAMEWORK_DB when set.",
+      "evidence": "sqlite3.connect(DB) then CREATE TABLE states (state, family, kind, token, reach, call, note). Idempotent: skips the table when present. DB is $SGS_FRAMEWORK_DB when set.",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-10-20-drop-css-state-selector.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB) then ALTER TABLE block_attributes DROP COLUMN css_state_selector. Idempotent: skips an absent column. DB is $SGS_FRAMEWORK_DB when set.",
       "also_writes_files": false
     },
     {

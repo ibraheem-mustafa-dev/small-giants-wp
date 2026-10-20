@@ -97,10 +97,12 @@
 	/* Idle: text-muted per Group J spec */
 	color: var( --sgs-tab-text, var( --wp--preset--color--text-muted, #555555 ) );
 
+	/* transitionDuration (render.php publishes --sgs-transition-duration on the wrapper) times the
+	 * hover and selected colour change, both directions. */
 	transition:
-		color            var( --wp--custom--duration--fast, 150ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) ),
-		background-color var( --wp--custom--duration--fast, 150ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) ),
-		box-shadow       var( --wp--custom--duration--fast, 150ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) );
+		color            var( --sgs-transition-duration, var( --wp--custom--duration--fast, 150ms ) ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) ),
+		background-color var( --sgs-transition-duration, var( --wp--custom--duration--fast, 150ms ) ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) ),
+		box-shadow       var( --sgs-transition-duration, var( --wp--custom--duration--fast, 150ms ) ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) );
 }
 
 /*
