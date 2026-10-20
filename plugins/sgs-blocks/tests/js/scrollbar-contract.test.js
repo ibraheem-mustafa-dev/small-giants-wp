@@ -6,7 +6,8 @@
  *     bar) takes the brand colours and a scope can override them by setting `--sgs-scrollbar-thumb` / `--sgs-scrollbar-track`;
  *   - the light and dark scopes set the thumb from the snapshot tokens `--wp--custom--scrollbar--thumb` and `--thumb-on-dark`;
  *   - `sgs-scrollbar-native` returns a scroller to the browser's own bar;
- *   - inner scrollers lose their arrow buttons (`:where(body *)::-webkit-scrollbar-button`);
+ *   - inner scrollers (not the page bar, not an opted-out scroller) draw a slim branded thumb with no arrow buttons through
+ *     the webkit parts, with `scrollbar-color` returned to `auto` where those parts exist (Firefox keeps the colour);
  *   - the retired 35% ink mix and its `--sgs-nd-scrollbar-ink` property exist nowhere in the plugin or theme source;
  *   - the nav drawer paints its thumb from `--sgs-scrollbar-thumb` and keeps the arrow-free webkit parts by resetting
  *     `scrollbar-color` to `auto` where `::-webkit-scrollbar` is supported;
@@ -120,8 +121,33 @@ describe( 'scrollbars.css', () => {
 		expect( declarationsOf( css, ':where(.sgs-scrollbar-native *)' )[ 'scrollbar-color' ] ).toBe( 'auto' );
 	} );
 
-	it( 'removes the arrow buttons from inner scrollers only', () => {
-		expect( declarationsOf( css, ':where(body *)::-webkit-scrollbar-button' ).display ).toBe( 'none' );
+	const INNER = ':where(body *:not(.sgs-scrollbar-native, .sgs-scrollbar-native *))';
+
+	it( 'removes the arrow buttons from inner scrollers only, keeping their brand colour on the webkit parts', () => {
+		expect( declarationsOf( css, `${ INNER }::-webkit-scrollbar-button` ).display ).toBe( 'none' );
+		expect( declarationsOf( css, `${ INNER }::-webkit-scrollbar-thumb` )[ 'background-color' ] ).toBe( 'var(--sgs-scrollbar-thumb)' );
+		expect( declarationsOf( css, `${ INNER }::-webkit-scrollbar-track` ).background ).toBe( 'var(--sgs-scrollbar-track)' );
+	} );
+
+	it( 'returns inner scrollers to scrollbar-color auto only where the webkit parts exist, so Chrome draws the parts', () => {
+		let inSupports = false;
+		postcss.parse( css ).walkAtRules( 'supports', ( at ) => {
+			if ( at.params.includes( 'selector(::-webkit-scrollbar)' ) && ! at.params.includes( 'not' ) ) {
+				at.walkRules( ( rule ) => {
+					if ( rule.selector.replace( /\s+/g, ' ' ).trim() === INNER ) {
+						rule.walkDecls( 'scrollbar-color', ( d ) => {
+							inSupports = 'auto' === d.value;
+						} );
+					}
+				} );
+			}
+		} );
+		expect( inSupports ).toBe( true );
+	} );
+
+	it( 'leaves an opted-out scroller out of the webkit parts', () => {
+		expect( INNER ).toContain( ':not(.sgs-scrollbar-native, .sgs-scrollbar-native *)' );
+		expect( declarationsOf( css, ':where(body *)::-webkit-scrollbar-button' ).display ).toBeUndefined();
 	} );
 
 	it( 'negative control: a stylesheet without the rule reports nothing', () => {

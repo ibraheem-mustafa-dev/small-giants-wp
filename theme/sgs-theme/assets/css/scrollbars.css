@@ -36,9 +36,39 @@
 
 /*
  * The page's own bar keeps whatever arrows the visitor's platform draws, recoloured only. Every inner
- * scroller (drawer, menus, sliders, cart, pop-ups, rails) is slim with no arrow buttons (Chromium and
- * WebKit; Firefox draws none).
+ * scroller (menus, sliders, cart, pop-ups, rails, tables) is a slim rounded thumb with no arrow buttons.
+ * Chromium and WebKit draw that only through the ::-webkit-scrollbar parts, which they ignore on an
+ * element whose scrollbar-color is set, so inside body the colour moves onto the parts and
+ * scrollbar-color returns to auto. Firefox has no such parts and draws no arrows: it keeps the
+ * scrollbar-color above. An opted-out scroller (.sgs-scrollbar-native) and a hidden bar
+ * (scrollbar-width: none) are left alone.
  */
-:where(body *)::-webkit-scrollbar-button {
-	display: none;
+@supports selector(::-webkit-scrollbar) {
+	:where(body *:not(.sgs-scrollbar-native, .sgs-scrollbar-native *)) {
+		scrollbar-color: auto;
+	}
+
+	:where(body *:not(.sgs-scrollbar-native, .sgs-scrollbar-native *))::-webkit-scrollbar {
+		width: 10px;
+		height: 10px;
+		background: transparent;
+	}
+
+	:where(body *:not(.sgs-scrollbar-native, .sgs-scrollbar-native *))::-webkit-scrollbar-button {
+		display: none;
+		width: 0;
+		height: 0;
+	}
+
+	:where(body *:not(.sgs-scrollbar-native, .sgs-scrollbar-native *))::-webkit-scrollbar-track,
+	:where(body *:not(.sgs-scrollbar-native, .sgs-scrollbar-native *))::-webkit-scrollbar-corner {
+		background: var(--sgs-scrollbar-track);
+	}
+
+	:where(body *:not(.sgs-scrollbar-native, .sgs-scrollbar-native *))::-webkit-scrollbar-thumb {
+		background-clip: padding-box;
+		background-color: var(--sgs-scrollbar-thumb);
+		border: 2px solid transparent;
+		border-radius: 999px;
+	}
 }
