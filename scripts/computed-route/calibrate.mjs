@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // Block calibration command (FR-47-2).
 //   node scripts/computed-route/calibrate.mjs --site eye-care-test --client eye-care-ward-end --blocks sgs/heading,sgs/text
-//   [--recalibrate] replaces a block's slot map measured on another site and re-measures this site's default paint.
+//   [--recalibrate] re-measures a block's slot map and this site's default paint even when both are current: one
+//   measured on another site is replaced, and a marker or state-target change (which the read key does not cover)
+//   takes effect.
 //   [--slot-map-only] writes no default paint, even when one is due (stage 0, FR-48-3).
 //   [--allow-loss sgs/a:settingX,sgs/b:discovered:layout] accepts a named loss. A new slot map that drops a setting the
 //   existing one reaches is not written (the candidate goes to cache/<block>.refused.json and the block fails) unless the
