@@ -50,6 +50,12 @@
 			"contains": "document.activeElement.matches(",
 			"category": "not-css",
 			"reason": "A runtime query (Element.matches(':focus-visible')) that sets data-sgs-nav-has-focus; it paints nothing."
+		},
+		{
+			"path": "plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js",
+			"contains": "ref.matches(",
+			"category": "not-css",
+			"reason": "A runtime query (Element.matches(':focus-visible')) in actions.linkTriggerFocus: only keyboard focus on a parent link that is its panel's trigger opens the panel; it paints nothing."
 		}
 	]
 }
