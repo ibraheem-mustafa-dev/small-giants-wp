@@ -829,7 +829,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `requestAllowed(url, origin, external)` → whether the draft may load a url.
 - `routeDraft(ctx, { origin, external, mirror })` → routes a context's requests (mirror, allow, abort).
 - `jobsFor(nodes)` → the collection jobs, roots before slots.
-- `readDraft(options)` → `{ origin, widths, declared, sweep }`.
+- `readDraft(options)` → `{ origin, widths, declared, sweep, states }`; `states[w]` is each target's state looks (`readStates`) at the read widths when `options.states` (the vocabulary) is given; `fill.mjs` passes `lib/db.mjs::statesVocabulary` and runs `lib/fill-state.mjs::fillStates` after `fillTree`.
 
 ### `lib/fill-declared.mjs`
 - `extraProps(declared, read)` → `{ prop: declared }` the code sets beyond Fill's list (motion timings, CSS-wide keywords and shorthands left out); `readExtras(page, jobs, extras, resolveSrc)` → their rendered values; `missingExtras(result, read, widths)` → the extras declared at some read width but not yet read at another, so readDraft reads them at every width; `isShorthand(prop)` (mdn-data).

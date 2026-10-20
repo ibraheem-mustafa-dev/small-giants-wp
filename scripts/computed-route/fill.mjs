@@ -13,7 +13,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { openDb } from './lib/db.mjs';
+import { openDb, statesVocabulary } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { readTree, addRefs, refOf, walk } from './lib/tree.mjs';
 import { lintSkeleton } from './lint.mjs';
@@ -22,6 +22,7 @@ import { serveDraft } from './lib/draft.mjs';
 import { skeletonNodes, skeletonProblems, cleanTree, expandSiteInfoRows, originMap } from './lib/fill-skeleton.mjs';
 import { readDraft } from './lib/fill-read.mjs';
 import { fillTree } from './lib/fill-resolve.mjs';
+import { fillStates } from './lib/fill-state.mjs';
 import { sampleMotion } from './lib/fill-entrance.mjs';
 import { confirmRecords, defectIndex } from './lib/fill-confirm.mjs';
 import { motionWrites } from './lib/fill-motion.mjs';
@@ -124,7 +125,12 @@ export async function fillSurface( o ) {
 	const served = o.draftDir ? await serveDraft( o.draftDir, { index: o.draftIndex || null } ) : null;
 	const url = served ? served.url : o.draftUrl;
 	try {
-		const reads = await readDraft( { url, nodes, open: o.open || null, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, log } );
+		// The state vocabulary (FR-48-81): a DB seeded before the states table reads no state looks, and says so.
+		const vocab = statesVocabulary( db );
+		if ( vocab.missing ) {
+			log( vocab.missing );
+		}
+		const reads = await readDraft( { url, nodes, open: o.open || null, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, log } );
 		const calFor = calibrationLoader( entry.site, o.cache );
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
 		const result = fillTree( {
@@ -134,6 +140,11 @@ export async function fillSurface( o ) {
 			ledger: loadLedger( ledgerFile ),
 			ledgerStates: Object.entries( entry.states || {} ).filter( ( [ , v ] ) => null === v ).map( ( [ k ] ) => k ),
 		} );
+		// FR-48-81: each target's state looks, through the settings that hold their states.
+		const states = fillStates( { tree, nodes, reads, calFor, db, snapshot } );
+		result.writes.push( ...states.writes );
+		result.unmapped.push( ...states.unmapped );
+		result.notes.push( ...states.held.map( ( h ) => `${ h.node } (${ h.slot }) ${ h.prop } ${ h.state }: ${ h.reason }` ) );
 		// Motion (Spec 48 FR-48-78): the draft's motion records from intake's re-derived inventory, written as each
 		// node's sgsMotion, with every target's entrance and endless animations sampled at 375, 768 and 1440 as the render
 		// check (and the source of the values the code computes at run time).
@@ -146,7 +157,8 @@ export async function fillSurface( o ) {
 		result.unmapped.push( ...motion.unmapped );
 		result.notes.push( ...motion.notes.map( ( x ) => `${ x.node } ${ x.block }${ x.slot ? ` (${ x.slot })` : '' }: ${ x.text }` ) );
 		// FR-48-8: every written style value against what the draft's code declares, at each read width.
-		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => 'motion' !== w.how ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent } );
+		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.
+		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => 'motion' !== w.how && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent } );
 		const steps = sweepSteps( reads.sweep, ( id ) => ( { node: refOf( flat[ Number( id.split( ':' )[ 0 ] ) ] ), slot: id.slice( id.indexOf( ':' ) + 1 ) } ) );
 		const report = fillReport( { client: o.client, surface: o.surface, draft: o.draftDir ? `${ o.draftDir } (served locally)` : url, nodes: nodes.length, targets: nodes.reduce( ( t, n ) => t + n.targets.length, 0 ), ...result, steps, entrances, sweepSkipped: false === o.sweep } );
 		const divergences = fs.existsSync( ledgerFile ) ? path.relative( outDir, ledgerFile ).split( path.sep ).join( '/' ) : null;

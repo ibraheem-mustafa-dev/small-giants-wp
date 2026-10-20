@@ -12,6 +12,7 @@ import { SCOPE_ATTR, scopeFinder, scopeSelector } from './fill-skeleton.mjs';
 import { contentType } from './draft.mjs';
 import { FLUID_WIDTHS, SWEEP_WIDTHS, LENGTH_PROPS } from './fill-values.mjs';
 import { extraProps, readExtras, missingExtras } from './fill-declared.mjs';
+import { readStates } from './fill-state-read.mjs';
 
 const RESOLVE = resolveFinder.toString();
 const COLLECT = collectPair.toString();
@@ -138,14 +139,16 @@ async function openPage( browser, devices, { url, open, width, origin, external,
 //   declared[w][targetId] every longhand the draft's matched rules declare (FR-48-8), at READ_WIDTHS; the ones beyond
 //                         PROPS (lib/fill-declared.mjs::extraProps) are read rendered into widths[w][targetId].styles too.
 //   sweep[targetId][prop] [{ width, value }] every 16px from 320 to 1920 (lengths and keywords as read).
+//   states[w]             each target's state looks at READ_WIDTHS (lib/fill-state-read.mjs::readStates), when `states`
+//                         (the state vocabulary, lib/db.mjs::statesVocabulary) is given.
 // nodes: lib/fill-skeleton.mjs::skeletonNodes. open: the regex source of the text to click first. external: allow the
 // draft to load anything beyond its own origin (off by default, so a read is the same offline).
-export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, log = () => {} } ) {
+export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, states = [], log = () => {} } ) {
 	const { chromium, devices } = await loadChromium();
 	const origin = new URL( url ).origin;
 	const jobs = jobsFor( nodes );
 	const browser = await chromium.launch( { headless, args: [ '--hide-scrollbars' ] } );
-	const result = { origin, widths: {}, declared: {}, sweep: {} };
+	const result = { origin, widths: {}, declared: {}, sweep: {}, states: {} };
 	try {
 		for ( const width of [ ...new Set( [ ...READ_WIDTHS, ...FLUID_WIDTHS ] ) ] ) {
 			const { ctx, page } = await openPage( browser, devices, { url, open, width, origin, external, mirror } );
@@ -165,6 +168,10 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 				const extras = Object.fromEntries( found.map( ( j ) => [ j.id, extraProps( result.declared[ width ][ j.id ], PROPS ) ] ) );
 				for ( const [ id, styles ] of Object.entries( await readExtras( page, found, extras, RESOLVE ) ) ) {
 					result.widths[ width ][ id ].styles = { ...result.widths[ width ][ id ].styles, ...styles };
+				}
+				// Each target's state looks (FR-48-81), every target included: a state often reveals one hidden at rest.
+				if ( states.length ) {
+					result.states[ width ] = await readStates( { page, cdp, jobs, rows: states, rest: result.declared[ width ], resolveSrc: RESOLVE, log } );
 				}
 			}
 			log( `read ${ width }px: ${ Object.values( result.widths[ width ] ).filter( ( s ) => ! s.missing ).length } of ${ jobs.length } targets` );
