@@ -11043,7 +11043,7 @@
 			"recognise": "scripts/computed-route/lib/intake-head.mjs#readHead",
 			"write": "plugins/sgs-blocks/scripts/theme-extractor/extract.py#_self_host_google_font",
 			"check": "scripts/computed-route/lib/head-check.mjs#fontCheck",
-			"note": "a head link's address: a font stylesheet or a preconnect to a font host in the draft's head (lib/intake-head.mjs::readHead); the families go to the snapshot's self-hosted font faces (the extractor), checked by head-check.mjs::fontCheck; any other link (an icon, a non-font stylesheet, a preconnect elsewhere) is its own missing:head row"
+			"note": "a head link's address: a font stylesheet or a preconnect to a font host in the draft's head (lib/intake-head.mjs::readHead); the families go to the snapshot's self-hosted font faces (the extractor), checked by head-check.mjs::fontCheck; any other link (an icon, a non-font stylesheet, a preconnect elsewhere, a font host whose families are not read, a link in the page markup) is its own missing:head row"
 		},
 		"html-attr:link.hreflang": {
 			"excluded": {
@@ -11091,7 +11091,7 @@
 			"recognise": "scripts/computed-route/lib/intake-head.mjs#readHead",
 			"write": "plugins/sgs-blocks/scripts/theme-extractor/extract.py#_self_host_google_font",
 			"check": "scripts/computed-route/lib/head-check.mjs#fontCheck",
-			"note": "a head link's rel (stylesheet, preconnect, dns-prefetch): a font stylesheet or a preconnect to a font host in the draft's head (lib/intake-head.mjs::readHead); the families go to the snapshot's self-hosted font faces (the extractor), checked by head-check.mjs::fontCheck; any other link (an icon, a non-font stylesheet, a preconnect elsewhere) is its own missing:head row"
+			"note": "a head link's rel (stylesheet, preconnect, dns-prefetch): a font stylesheet or a preconnect to a font host in the draft's head (lib/intake-head.mjs::readHead); the families go to the snapshot's self-hosted font faces (the extractor), checked by head-check.mjs::fontCheck; any other link (an icon, a non-font stylesheet, a preconnect elsewhere, a font host whose families are not read, a link in the page markup) is its own missing:head row"
 		},
 		"html-attr:link.rev": {
 			"excluded": {
@@ -11214,7 +11214,7 @@
 			"recognise": "scripts/computed-route/lib/intake-head.mjs#readHead",
 			"write": "theme/sgs-theme/functions.php#meta_description",
 			"check": "scripts/computed-route/lib/head-check.mjs#headCheck",
-			"note": "a head meta's content: charset and viewport are printed by WordPress (wp-includes/template-canvas.php), a description by the theme from the page excerpt (functions.php::meta_description); the live head is checked by head-check.mjs::headCheck; any other meta (theme-color, Open Graph, robots) is its own missing:head row"
+			"note": "a head meta's content: charset and viewport in the draft's head are printed by WordPress (wp-includes/template-canvas.php) and checked on the live head by head-check.mjs::headCheck; a description (nothing writes it to a page excerpt yet), a meta outside the helmet (page microdata) and any other meta (theme-color, Open Graph, robots) are each their own missing:head row (lib/intake-head.mjs::readHead)"
 		},
 		"html-attr:meta.http-equiv": {
 			"excluded": {
@@ -11234,7 +11234,7 @@
 			"recognise": "scripts/computed-route/lib/intake-head.mjs#readHead",
 			"write": "theme/sgs-theme/functions.php#meta_description",
 			"check": "scripts/computed-route/lib/head-check.mjs#headCheck",
-			"note": "a head meta's name: charset and viewport are printed by WordPress (wp-includes/template-canvas.php), a description by the theme from the page excerpt (functions.php::meta_description); the live head is checked by head-check.mjs::headCheck; any other meta (theme-color, Open Graph, robots) is its own missing:head row"
+			"note": "a head meta's name: charset and viewport in the draft's head are printed by WordPress (wp-includes/template-canvas.php) and checked on the live head by head-check.mjs::headCheck; a description (nothing writes it to a page excerpt yet), a meta outside the helmet (page microdata) and any other meta (theme-color, Open Graph, robots) are each their own missing:head row (lib/intake-head.mjs::readHead)"
 		},
 		"html-attr:meta.scheme": {
 			"excluded": {
@@ -13097,7 +13097,7 @@
 			"recognise": "scripts/computed-route/lib/intake-head.mjs#readHead",
 			"write": "plugins/sgs-blocks/scripts/theme-extractor/extract.py#_self_host_google_font",
 			"check": "scripts/computed-route/lib/head-check.mjs#fontCheck",
-			"note": "<link>: a font stylesheet or a preconnect to a font host in the draft's head (lib/intake-head.mjs::readHead); the families go to the snapshot's self-hosted font faces (the extractor), checked by head-check.mjs::fontCheck; any other link (an icon, a non-font stylesheet, a preconnect elsewhere) is its own missing:head row"
+			"note": "<link>: a font stylesheet or a preconnect to a font host in the draft's head (lib/intake-head.mjs::readHead); the families go to the snapshot's self-hosted font faces (the extractor), checked by head-check.mjs::fontCheck; any other link (an icon, a non-font stylesheet, a preconnect elsewhere, a font host whose families are not read, a link in the page markup) is its own missing:head row"
 		},
 		"html:listing": {
 			"recognise": null,
@@ -13156,7 +13156,7 @@
 			"recognise": "scripts/computed-route/lib/intake-head.mjs#readHead",
 			"write": "theme/sgs-theme/functions.php#meta_description",
 			"check": "scripts/computed-route/lib/head-check.mjs#headCheck",
-			"note": "<meta>: charset and viewport are printed by WordPress (wp-includes/template-canvas.php), a description by the theme from the page excerpt (functions.php::meta_description); the live head is checked by head-check.mjs::headCheck; any other meta (theme-color, Open Graph, robots) is its own missing:head row"
+			"note": "<meta>: charset and viewport in the draft's head are printed by WordPress (wp-includes/template-canvas.php) and checked on the live head by head-check.mjs::headCheck; a description (nothing writes it to a page excerpt yet), a meta outside the helmet (page microdata) and any other meta (theme-color, Open Graph, robots) are each their own missing:head row (lib/intake-head.mjs::readHead)"
 		},
 		"html:meter": {
 			"recognise": null,
@@ -13519,7 +13519,7 @@
 			"recognise": "scripts/computed-route/lib/intake-head.mjs#readHead",
 			"write": "scripts/computed-route/lib/intake-siteinfo.mjs#handoverTargets",
 			"check": "scripts/computed-route/lib/head-check.mjs#headCheck",
-			"note": "the document title: the part every draft title shares is the site title (WordPress blogname) and what follows it on a title that starts with it is the tagline (Site Info tagline and blogdescription), proposed for Bean by lib/intake-siteinfo.mjs::titleCandidates and written by provision-site-info-from-draft.py; the live title is checked by head-check.mjs::headCheck"
+			"note": "the document title (a <title> inside an inline SVG is its accessible name and is raised as missing:head:title:svg): the part every draft title shares is the site title (WordPress blogname) and what follows it on a title that starts with it is the tagline (Site Info tagline and blogdescription), proposed for Bean by lib/intake-siteinfo.mjs::titleCandidates and written by provision-site-info-from-draft.py; the live title is checked by head-check.mjs::headCheck"
 		},
 		"html:tr": {
 			"recognise": null,

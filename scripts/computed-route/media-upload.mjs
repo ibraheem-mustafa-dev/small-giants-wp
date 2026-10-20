@@ -28,6 +28,11 @@ try {
 	r.sanitised.forEach( ( a ) => console.log( `REVIEW ${ a }: the SVG upload sanitiser changed the file (svg-upload.php); compare the stored attachment with the asset` ) );
 	console.log( `${ r.uploaded.length } uploaded, ${ r.skipped.length } already live, ${ r.wouldUpload.length } to upload${ apply ? `; map ${ path.relative( repo, mapFile ) }` : ' (dry run: re-run with --apply)' }` );
 } catch ( e ) {
+	if ( apply && e.map ) {
+		fs.mkdirSync( path.dirname( mapFile ), { recursive: true } );
+		fs.writeFileSync( mapFile, `${ JSON.stringify( e.map, null, '\t' ) }\n` );
+		console.error( `the map holds the files uploaded before the failure: ${ path.relative( repo, mapFile ) }` );
+	}
 	console.error( `FAILED: ${ e.message }` );
 	process.exit( 1 );
 }

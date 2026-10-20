@@ -27,7 +27,7 @@ export function siteCredentials( repo, site ) {
 	if ( ! fs.existsSync( file ) ) {
 		throw new Error( `no secrets file for ${ site } (.claude/secrets/${ site }.env)` );
 	}
-	const env = Object.fromEntries( fs.readFileSync( file, 'utf8' ).split( /\r?\n/ ).map( ( l ) => /^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/.exec( l ) ).filter( Boolean ).map( ( [ , k, v ] ) => [ k, v.replace( /^['"]|['"]$/g, '' ) ] ) );
+	const env = Object.fromEntries( fs.readFileSync( file, 'utf8' ).split( /\r?\n/ ).map( ( l ) => /^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/.exec( l ) ).filter( Boolean ).map( ( [ , k, v ] ) => [ k, v.replace( /^(['"])(.*)\1$/, '$2' ) ] ) );
 	const suffix = site.toUpperCase().replace( /[^A-Z0-9]/g, '' );
 	const [ url, user, pass ] = [ 'WP_URL', 'WP_USER', 'WP_APP_PWD' ].map( ( k ) => env[ `${ k }_${ suffix }` ] );
 	if ( ! url || ! user || ! pass ) {
@@ -35,6 +35,10 @@ export function siteCredentials( repo, site ) {
 	}
 	return { url: url.replace( /\/+$/, '' ), auth: `Basic ${ Buffer.from( `${ user }:${ pass.replace( /\s+/g, '' ) }` ).toString( 'base64' ) }` };
 }
+
+// The upload's Content-Disposition: an ASCII filename (anything else as `_`) plus the UTF-8 name, so a non-ASCII name
+// neither breaks the header nor aborts the run.
+const disposition = ( name ) => `attachment; filename="${ name.replace( /[^\x20-\x7e]|["\\]/g, '_' ) }"; filename*=UTF-8''${ encodeURIComponent( name ) }`;
 
 export const readMap = ( file ) => ( fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : { sites: {} } );
 
@@ -61,53 +65,62 @@ export async function uploadMedia( { repo, client, site, map, creds, fetchImpl =
 	const known = map.sites?.[ site ]?.files || [];
 	const files = [];
 	const report = { uploaded: [], skipped: [], sanitised: [], wouldUpload: [] };
-	for ( const asset of mediaAssets( repo, client ) ) {
-		const bytes = fs.readFileSync( path.join( repo, asset ) );
-		const sum = sha256( bytes );
-		// A file with the same bytes as one this run already handled shares its attachment (no second upload).
-		const twin = files.find( ( e ) => e.sha256 === sum && e.id );
-		if ( twin ) {
-			files.push( { ...twin, asset } );
-			report.skipped.push( asset );
-			continue;
+	// A failure part-way keeps what did upload: the error carries the map of the files handled so far plus the earlier
+	// rows not reached yet, so the caller can save it and a rerun does not upload them twice.
+	try {
+		for ( const asset of mediaAssets( repo, client ) ) {
+			const bytes = fs.readFileSync( path.join( repo, asset ) );
+			const sum = sha256( bytes );
+			// A file with the same bytes as one this run already handled shares its attachment (no second upload).
+			const twin = files.find( ( e ) => e.sha256 === sum && e.id );
+			if ( twin ) {
+				files.push( { ...twin, asset } );
+				report.skipped.push( asset );
+				continue;
+			}
+			const had = known.find( ( e ) => e.sha256 === sum && e.asset === asset ) || known.find( ( e ) => e.sha256 === sum );
+			if ( had && await stillLive( fetchImpl, creds, had ) ) {
+				files.push( { ...had, asset } );
+				report.skipped.push( asset );
+				continue;
+			}
+			if ( ! apply ) {
+				report.wouldUpload.push( asset );
+				continue;
+			}
+			const name = path.basename( asset );
+			const type = IMAGE_TYPES[ path.extname( name ).toLowerCase() ];
+			const res = await fetchImpl( `${ creds.url }/wp-json/wp/v2/media`, { method: 'POST', headers: { Authorization: creds.auth, 'Content-Type': type, 'Content-Disposition': disposition( name ) }, body: bytes } );
+			if ( 201 !== res.status ) {
+				throw new Error( `uploading ${ asset } answered ${ res.status }: ${ ( await res.text() ).slice( 0, 300 ) }` );
+			}
+			const media = await res.json();
+			const kept = await served( fetchImpl, media.source_url );
+			if ( ! kept ) {
+				throw new Error( `attachment ${ media.id } for ${ asset } does not serve ${ media.source_url }` );
+			}
+			const entry = { asset, sha256: sum, id: media.id, url: media.source_url, storedSha256: sha256( kept ), stock: false };
+			if ( 'image/svg+xml' === type && entry.storedSha256 !== sum ) {
+				entry.sanitised = true;
+				report.sanitised.push( asset );
+			}
+			files.push( entry );
+			report.uploaded.push( asset );
+			log( `uploaded ${ asset } as attachment ${ media.id }${ entry.sanitised ? ' (the SVG sanitiser changed it)' : '' }` );
 		}
-		const had = known.find( ( e ) => e.sha256 === sum && e.asset === asset ) || known.find( ( e ) => e.sha256 === sum );
-		if ( had && await stillLive( fetchImpl, creds, had ) ) {
-			files.push( { ...had, asset } );
-			report.skipped.push( asset );
-			continue;
-		}
-		if ( ! apply ) {
-			report.wouldUpload.push( asset );
-			continue;
-		}
-		const name = path.basename( asset );
-		const type = IMAGE_TYPES[ path.extname( name ).toLowerCase() ];
-		const res = await fetchImpl( `${ creds.url }/wp-json/wp/v2/media`, { method: 'POST', headers: { Authorization: creds.auth, 'Content-Type': type, 'Content-Disposition': `attachment; filename="${ name.replace( /"/g, '' ) }"` }, body: bytes } );
-		if ( 201 !== res.status ) {
-			throw new Error( `uploading ${ asset } answered ${ res.status }: ${ ( await res.text() ).slice( 0, 300 ) }` );
-		}
-		const media = await res.json();
-		const kept = await served( fetchImpl, media.source_url );
-		if ( ! kept ) {
-			throw new Error( `attachment ${ media.id } for ${ asset } does not serve ${ media.source_url }` );
-		}
-		const entry = { asset, sha256: sum, id: media.id, url: media.source_url, storedSha256: sha256( kept ), stock: false };
-		if ( 'image/svg+xml' === type && entry.storedSha256 !== sum ) {
-			entry.sanitised = true;
-			report.sanitised.push( asset );
-		}
-		files.push( entry );
-		report.uploaded.push( asset );
-		log( `uploaded ${ asset } as attachment ${ media.id }${ entry.sanitised ? ' (the SVG sanitiser changed it)' : '' }` );
+	} catch ( e ) {
+		e.map = { ...map, sites: { ...( map.sites || {} ), [ site ]: { files: [ ...files, ...known.filter( ( k ) => ! files.some( ( f ) => f.asset === k.asset ) ) ] } } };
+		throw e;
 	}
-	const next = { ...map, sites: { ...( map.sites || {} ), [ site ]: { files } } };
-	return { map: next, ...report };
+	return { map: { ...map, sites: { ...( map.sites || {} ), [ site ]: { files } } }, ...report };
 }
 
 // The asset a painted image URL shows on a site, through the map (FR-48-58's identity check): the attachment whose URL
-// the painted URL is, or a size WordPress made of it (`name-300x200.png`, `name-scaled.png`); null when none.
+// the painted URL is, else one a size WordPress made of it matches (`name-300x200.png`, `name-scaled.png`); null when none.
 export function paintedAsset( map, site, src ) {
-	const bare = ( u ) => String( u ).split( /[?#]/ )[ 0 ].replace( /-(?:\d+x\d+|scaled)(?=\.[a-z0-9]+$)/i, '' );
-	return ( map.sites?.[ site ]?.files || [] ).find( ( e ) => bare( e.url ) === bare( src ) ) || null;
+	const files = map.sites?.[ site ]?.files || [];
+	const plain = ( u ) => String( u ).split( /[?#]/ )[ 0 ];
+	const unsized = ( u ) => plain( u ).replace( /-(?:\d+x\d+|scaled)(?=\.[a-z0-9]+$)/i, '' );
+	// The exact URL first, so an asset whose own name ends like a size (hero-1200x600.png) is never taken for another's.
+	return files.find( ( e ) => plain( e.url ) === plain( src ) ) || files.find( ( e ) => unsized( e.url ) === unsized( src ) ) || null;
 }

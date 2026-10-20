@@ -3,8 +3,8 @@
 //   by tokenFonts, else its head's font loads) has a family in the client's theme snapshot that serves it from the site
 //   (a self-hosted `fontFace` covering each loaded weight and style, or `google: true`, which
 //   includes/class-google-fonts-self-host.php downloads to the server);
-// - headCheck: the live page's head holds what the draft's head asks for: one charset, the draft's viewport, a title
-//   naming the site, and a description when the draft gives one.
+// - headCheck: the live page's head holds what the draft's head asks for: one charset, the draft's viewport and a
+//   title naming the site.
 
 import { fontUrlFamilies } from './intake-head.mjs';
 
@@ -103,9 +103,6 @@ export function headCheck( head, html, { siteTitle = null } = {} ) {
 		if ( ! sameViewport( m.value, live.viewport ) ) {
 			problems.push( `the page's viewport is ${ JSON.stringify( live.viewport ) }, the draft's ${ JSON.stringify( m.value ) } (${ m.draftId })` );
 		}
-	}
-	if ( head.metas.some( ( m ) => 'description' === m.kind ) && ! live.description ) {
-		problems.push( 'the draft gives a description and the page prints none' );
 	}
 	if ( siteTitle && ! decode( live.title ).includes( siteTitle ) ) {
 		problems.push( `the page title ${ JSON.stringify( live.title ) } does not name the site ${ JSON.stringify( siteTitle ) }` );

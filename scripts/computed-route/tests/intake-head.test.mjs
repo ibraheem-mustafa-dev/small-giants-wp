@@ -94,9 +94,6 @@ test( 'MUST FAIL: the live head check refuses a page without the draft\'s viewpo
 	assert.match( headCheck( h, PAGE.replace( /<meta name="viewport"[^>]*>/, '' ) ).join( '\n' ), /viewport is null/ );
 	assert.match( headCheck( h, PAGE.replace( '<title>', '<meta charset="utf-8"><title>' ) ).join( '\n' ), /2 charset declarations/ );
 	assert.match( headCheck( h, PAGE, { siteTitle: 'Mama\'s Munches' } ).join( '\n' ), /does not name the site/ );
-	const described = census( [ ...DRAFT.sources[ 0 ].stamped.elements, el( 10, 'meta', [ [ 'name', 'description' ], [ 'content', 'Fresh bread daily' ] ] ) ] );
-	assert.match( headCheck( readHead( described ), PAGE ).join( '\n' ), /prints none/ );
-	assert.deepEqual( headCheck( readHead( described ), PAGE.replace( '</head>', '<meta name="description" content="Fresh bread daily"></head>' ) ), [] );
 } );
 
 test( 'MUST FAIL: the design system\'s tokens/typography.css is the font declaration: its families and weights, no italic it does not load', () => {
@@ -105,4 +102,17 @@ test( 'MUST FAIL: the design system\'s tokens/typography.css is the font declara
 	assert.deepEqual( declared.fonts[ 0 ].families.map( ( f ) => f.family ), [ 'Montserrat', 'Source Sans 3', 'Geist Mono' ], 'the ";" between weights does not cut the address' );
 	assert.deepEqual( fontCheck( declared, SNAPSHOT ), [ 'Geist Mono (loaded at tokens/typography.css) has no font family in the theme snapshot' ] );
 	assert.deepEqual( tokenFonts( '@import url(https://use.typekit.net/x.css); body{}' ), [] );
+} );
+
+test( 'MUST FAIL: only the helmet is the head: an SVG title, page microdata, a description and an unreadable font host are each raised', () => {
+	const svgTitle = el( 11, 'title', [], { body: 'Phone icon', svg: 'title', inHelmet: false } );
+	const bodyMeta = el( 12, 'meta', [ [ 'itemprop', 'price' ], [ 'content', '4.99' ] ], { inHelmet: false } );
+	const bodyLink = el( 13, 'link', [ [ 'rel', 'stylesheet' ], [ 'href', GOOGLE ] ], { inHelmet: false } );
+	const described = el( 14, 'meta', [ [ 'name', 'description' ], [ 'content', 'Fresh bread daily' ] ] );
+	const typekit = el( 15, 'link', [ [ 'rel', 'stylesheet' ], [ 'href', 'https://use.typekit.net/abc.css' ] ] );
+	const h = readHead( census( [ ...DRAFT.sources[ 0 ].stamped.elements, svgTitle, bodyMeta, bodyLink, described, typekit ] ) );
+	assert.deepEqual( h.titles.map( ( t ) => t.text ), [ 'Acme · Fresh bread' ], 'the SVG title is no document title' );
+	assert.equal( h.fonts.length, 1, 'the body stylesheet is not a head font' );
+	assert.deepEqual( h.unhandled.map( ( u ) => u.what ), [ 'title:svg', 'meta:body', 'link:body', 'meta:description', 'font:use.typekit.net' ] );
+	assert.match( h.unhandled[ 3 ].line, /nothing writes a description/ );
 } );

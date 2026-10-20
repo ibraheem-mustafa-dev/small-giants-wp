@@ -5,8 +5,9 @@
 //   a font stylesheet, @import or @font-face   → the snapshot's self-hosted font families (lib/head-check.mjs::fontCheck)
 //   a preconnect or dns-prefetch to a font host → nothing: the faces are served from the site itself
 //   <meta charset>, <meta name=viewport>       → WordPress prints both (wp-includes/template-canvas.php)
-//   <meta name=description>                    → the page's excerpt, which the theme prints (functions.php::meta_description)
-//   <title>                                    → the site title, tagline and page title (lib/intake-siteinfo.mjs::titleCandidates)
+//   <title>                                    → the site title and tagline (lib/intake-siteinfo.mjs::titleCandidates)
+// A description meta, a font host whose families are not read, and a <title>, <link> or <meta> outside the helmet (an
+// inline SVG's <title>, page microdata) are raised.
 import { FONT_HOSTS, isFontUrl } from './intake-census-template.mjs';
 
 export const HEAD_WAVE = 'site and surfaces';
@@ -67,23 +68,30 @@ export function readHead( census ) {
 	for ( const s of census?.sources || [] ) {
 		for ( const e of s.stamped?.elements || [] ) {
 			const draftId = `${ s.component }:${ e.n }`;
-			if ( 'title' === e.tag ) {
+			// Only the helmet's tags are the document head: an inline SVG's <title> is its accessible name, and a <link>
+			// or <meta> in the page markup (microdata, a stray stylesheet) is page content; each is raised, never read
+			// as the head's.
+			const where = e.svg ? 'svg' : e.inHelmet ? null : 'body';
+			if ( where && [ 'title', 'meta', 'link' ].includes( e.tag ) ) {
+				raise( `${ e.tag }:${ where }`, draftId, `a <${ e.tag }> ${ 'svg' === where ? 'inside an inline SVG (its accessible name)' : 'in the page markup, outside the head' } has no clone path` );
+			} else if ( 'title' === e.tag ) {
 				head.titles.push( { component: s.component, file: s.file, text: String( e.body ?? '' ).replace( /\s+/g, ' ' ).trim(), draftId } );
 			} else if ( 'meta' === e.tag ) {
 				const name = ( attr( e, 'name' ) || '' ).toLowerCase();
-				const content = attr( e, 'content' );
 				if ( null !== attr( e, 'charset' ) ) {
 					head.metas.push( { kind: 'charset', value: attr( e, 'charset' ), draftId } );
-				} else if ( [ 'viewport', 'description' ].includes( name ) ) {
-					head.metas.push( { kind: name, value: content, draftId } );
+				} else if ( 'viewport' === name ) {
+					head.metas.push( { kind: name, value: attr( e, 'content' ), draftId } );
 				} else {
 					const key = name || ( attr( e, 'property' ) || attr( e, 'http-equiv' ) || 'unnamed' ).toLowerCase();
-					raise( `meta:${ key }`, draftId, `<meta ${ name ? 'name' : attr( e, 'property' ) ? 'property' : 'http-equiv' }="${ key }"> has no clone path (charset, viewport and description are cloned)` );
+					raise( `meta:${ key }`, draftId, `<meta ${ name ? 'name' : attr( e, 'property' ) ? 'property' : 'http-equiv' }="${ key }"> has no clone path (charset and viewport are cloned${ 'description' === key ? '; nothing writes a description to a page excerpt yet' : '' })` );
 				}
 			} else if ( 'link' === e.tag ) {
 				const rel = ( attr( e, 'rel' ) || '' ).toLowerCase().trim();
 				const href = attr( e, 'href' ) || '';
-				if ( /\bstylesheet\b/.test( rel ) && isFontUrl( href ) ) {
+				if ( /\bstylesheet\b/.test( rel ) && isFontUrl( href ) && ! fontUrlFamilies( href ).length ) {
+					raise( `font:${ hostOf( href ) || 'file' }`, draftId, `font stylesheet ${ href }: its families are not read (Google Fonts addresses are), so the snapshot cannot self-host them` );
+				} else if ( /\bstylesheet\b/.test( rel ) && isFontUrl( href ) ) {
 					head.fonts.push( { via: 'stylesheet', href, families: fontUrlFamilies( href ), draftId } );
 				} else if ( /^(?:preconnect|dns-prefetch)$/.test( rel ) && FONT_HOSTS.includes( hostOf( href ) ) ) {
 					head.preconnects.push( { host: hostOf( href ), draftId } );
@@ -94,6 +102,8 @@ export function readHead( census ) {
 			for ( const r of e.css || [] ) {
 				if ( 'font-face' === r.type ) {
 					head.fonts.push( { via: '@font-face', family: String( r.name || '' ).replace( /^['"]|['"]$/g, '' ), families: [], draftId } );
+				} else if ( 'import' === r.type && isFontUrl( r.name ) && ! fontUrlFamilies( r.name ).length ) {
+					raise( `font:${ hostOf( r.name ) || 'file' }`, draftId, `font @import ${ r.name }: its families are not read (Google Fonts addresses are), so the snapshot cannot self-host them` );
 				} else if ( 'import' === r.type && isFontUrl( r.name ) ) {
 					head.fonts.push( { via: '@import', href: r.name, families: fontUrlFamilies( r.name ), draftId } );
 				}

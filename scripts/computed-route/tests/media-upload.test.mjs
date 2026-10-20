@@ -110,3 +110,38 @@ test( 'MUST FAIL: paintedAsset maps an attachment URL and its sizes back to the 
 	assert.equal( paintedAsset( map, 'acme-test', 'https://acme.test/wp-content/uploads/2026/10/hero-2.png' ), null );
 	assert.equal( paintedAsset( map, 'other-site', 'https://acme.test/wp-content/uploads/2026/10/hero.png' ), null );
 } );
+
+test( 'MUST FAIL: an upload that fails part-way still returns the map of what did upload', async () => {
+	const repo = fixtureRepo();
+	const wp = fakeWordPress();
+	const failing = async ( url, init = {} ) => ( 'POST' === init.method && /filename="hero\.png"/.test( init.headers[ 'Content-Disposition' ] ) ? { status: 500, text: async () => 'boom' } : wp.fetchImpl( url, init ) );
+	const err = await uploadMedia( { repo, client: 'acme', site: 'acme-test', map: { sites: {} }, creds: siteCredentials( repo, 'acme-test' ), fetchImpl: failing, apply: true } ).catch( ( e ) => e );
+	assert.match( err.message, /hero\.png answered 500/ );
+	assert.deepEqual( err.map.sites[ 'acme-test' ].files.map( ( f ) => path.basename( f.asset ) ), [ 'bread.jpg' ], 'bread.jpg uploaded before the failure and is kept' );
+} );
+
+test( 'MUST FAIL: paintedAsset takes the exact URL before a size-stripped one', () => {
+	const map = { sites: { 'acme-test': { files: [
+		{ asset: 'hero.png', id: 1, url: 'https://acme.test/u/hero.png' },
+		{ asset: 'hero-1200x600.png', id: 2, url: 'https://acme.test/u/hero-1200x600.png' },
+	] } } };
+	assert.equal( paintedAsset( map, 'acme-test', 'https://acme.test/u/hero-1200x600.png' ).id, 2 );
+	assert.equal( paintedAsset( map, 'acme-test', 'https://acme.test/u/hero-300x150.png' ).id, 1 );
+} );
+
+test( 'MUST FAIL: a non-ASCII file name uploads with an ASCII fallback and its UTF-8 name; only a matching quote pair is stripped from a secret', async () => {
+	const repo = fixtureRepo();
+	fs.writeFileSync( path.join( repo, 'sites/acme/handoff/assets/crème-brûlée.png' ), 'PNG-creme' );
+	let header = null;
+	const wp = fakeWordPress();
+	const spy = ( url, init = {} ) => {
+		if ( 'POST' === init.method && init.headers[ 'Content-Disposition' ].includes( 'cr_me' ) ) {
+			header = init.headers[ 'Content-Disposition' ];
+		}
+		return wp.fetchImpl( url, init );
+	};
+	await uploadMedia( { repo, client: 'acme', site: 'acme-test', map: { sites: {} }, creds: siteCredentials( repo, 'acme-test' ), fetchImpl: spy, apply: true } );
+	assert.equal( header, 'attachment; filename="cr_me-br_l_e.png"; filename*=UTF-8\'\'cr%C3%A8me-br%C3%BBl%C3%A9e.png' );
+	fs.writeFileSync( path.join( repo, '.claude/secrets/acme-test.env' ), 'WP_URL_ACMETEST=https://acme.test\nWP_USER_ACMETEST=Claude\nWP_APP_PWD_ACMETEST=abc"\n' );
+	assert.equal( siteCredentials( repo, 'acme-test' ).auth, `Basic ${ Buffer.from( 'Claude:abc"' ).toString( 'base64' ) }`, 'an unpaired quote is part of the secret' );
+} );
