@@ -84,5 +84,5 @@ Governing documents: fix register `plans/2026-10-02-eye-care-fix-register.md` (w
 ## Known failing tests
 
 - `plugins/sgs-blocks/scripts/db-consistency/tests/test_f6_consistency.py::TestCheck5VariantReseed` (4 tests): the fixtures predate the `slot_value` column (2026-09-05) and one assert expects 2-tuples where the code returns 3-tuples. Small fix in the tests.
-- `plugins/sgs-blocks/tests/php/ResponsiveLogoTest.php::test_render_without_draw_layer_has_no_animation_modifier` raises a PHP warning in `responsive-logo/render.php` since `7c9fe9fa9` (a warning, not a failure; owned by the motion work; recorded in `plans/2026-10-19-control-gaps-build.md` Parking lot).
+- `plugins/sgs-blocks/tests/php/ResponsiveLogoTest.php::test_render_without_draw_layer_has_no_animation_modifier` raises a PHP warning in `responsive-logo/render.php` since `7c9fe9fa9` (a warning, not a failure; the motion track is no longer active, so this plan owns the fix; recorded in `plans/2026-10-19-control-gaps-build.md` Parking lot).
 - `node scripts/computed-route/lint.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json`: divergences D-72 to D-91 (except D-87) cite no register decision, and the README does not list the new `lib/motion-validate.mjs`, `lib/motion-refusals.mjs` and their tests.
