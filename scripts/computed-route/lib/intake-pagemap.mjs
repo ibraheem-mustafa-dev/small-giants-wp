@@ -228,6 +228,11 @@ function unique( base, used ) {
 	return s;
 }
 
+// Whether a draft menu is a drawer repeating the header's mega sections: a drawer-region menu whose top-level items
+// are each a header mega item's label. Such a drawer binds the header menu and shows its mega panels (Spec 36
+// FR-36-6), so the page map gives it no menu of its own.
+export const drawerRepeatsHeader = ( menu, megaLabels ) => 'drawer' === menu.region && menu.items.length > 0 && menu.items.every( ( it ) => megaLabels.has( it.label ) );
+
 // FR-48-30: proposes the page map for one export folder. `routing` defaults to readRouting( { folder } );
 // `surfacesHint` is handoff/surfaces.json's parsed object (read from the folder when undefined, none when null).
 // `census` (FR-48-24) is accepted for the intake record's cross-reference and not needed here.
@@ -278,13 +283,17 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 		const k = routeOfHref( href, file, routeSlug, home );
 		return k ? bySlug.get( routeSlug.get( k ) ) : null;
 	};
-	// Menus: each item's first target that reaches a row puts that row in the menu.
+	// Menus: each item's first target that reaches a row puts that row in the menu. A drawer menu whose top-level items
+	// are each a header mega item is those sections again: the drawer binds the header menu and shows its mega panels
+	// (Spec 36 FR-36-6), so it adds no menu entries (its items still inform parents below).
+	const megaLabels = new Set( checked.surfaces.filter( ( s ) => 'menu' === s.kind && s.menuItem ).map( ( s ) => s.label ) );
 	const groups = new Map();
 	for ( const m of code.menus ) {
 		const file = m.draftId.split( ':' )[ 0 ];
+		const listed = ! drawerRepeatsHeader( m, megaLabels );
 		const walk = ( items ) => items.forEach( ( it ) => {
 			const row = it.targets.map( ( t ) => rowOf( t, file ) ).find( Boolean );
-			if ( row && ! row.menus.some( ( x ) => x.menu === m.menu && x.parentItem === it.parentItem ) ) {
+			if ( row && listed && ! row.menus.some( ( x ) => x.menu === m.menu && x.parentItem === it.parentItem ) ) {
 				row.menus.push( { menu: m.menu, position: it.position, parentItem: it.parentItem } );
 			} else if ( ! row && it.targets.some( ( t ) => /^#.|\.dc\.html|^\//.test( t ) ) ) {
 				gaps.push( gap( 'menu', m.draftId, `${ m.menu } item "${ it.label }" links to ${ it.targets.join( ', ' ) }, which no page-map row holds` ) );

@@ -1,5 +1,5 @@
 // What a site holds that the site build compares with the page map (Spec 48 FR-48-55), read in one `wp eval-file`:
-// the posts the rows' ids name, every post carrying a row key, the posts already holding an unbuilt row's type and
+// the posts the rows' ids name (a mega panel's with its section page), every post carrying a row key, the posts already holding an unbuilt row's type and
 // slug, the classic menus with each one's site-build mark and each item's stored title, the theme's menu locations and
 // page templates per post type, the front-page, posts-page and permalink options, and the three
 // active-layout pointers (read only; they are written through `wp sgs <area> set-active`).
@@ -7,6 +7,8 @@ import { rowKey } from './site-build-map.mjs';
 
 export const ROW_META = '_sgs_site_build_row';
 export const TREE_META = '_sgs_site_build_tree';
+// A mega panel's Section page (Sgs_Mega_Menu_CPT::META_SECTION_PAGE): the page id every item opening it links to.
+export const SECTION_META = '_sgs_mega_section_page';
 // The term meta a menu the site build made carries (its page-map menu name); a same-slug menu without it is not reused.
 export const MENU_META = '_sgs_site_build_menu';
 
@@ -32,6 +34,7 @@ $post = function ( $id ) {
 		'id' => (int) $p->ID, 'type' => $p->post_type, 'slug' => $p->post_name, 'title' => $p->post_title,
 		'status' => $p->post_status, 'parent' => (int) $p->post_parent, 'template' => (string) get_page_template_slug( $p ),
 		'rowKey' => (string) get_post_meta( $p->ID, '${ ROW_META }', true ), 'treeHash' => (string) get_post_meta( $p->ID, '${ TREE_META }', true ),
+		'sectionPage' => (int) get_post_meta( $p->ID, '${ SECTION_META }', true ),
 	);
 };
 $out = array( 'posts' => array(), 'marked' => array(), 'menus' => array() );

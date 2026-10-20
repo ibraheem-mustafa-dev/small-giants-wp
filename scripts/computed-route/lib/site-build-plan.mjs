@@ -1,6 +1,6 @@
 // The site build's plan (Spec 48 FR-48-55): the page map compared with a site's state (lib/site-build-state.mjs),
 // as the actions that would make the site match, in four phases run in order: `posts` (every content row, parents
-// first, mega-menu panels before the menus that point at them), `menus` (part 3), `layout` (the header, drawer and
+// first, mega-menu panels before the menus that point at them, then each panel's section page), `menus` (part 3), `layout` (the header, drawer and
 // footer posts, whose trees bind their menus), and `site` (parts 4, 5 and 7). Pure: no site access.
 // A value that names something not built yet is a ref ({ ref: 'post:<row key>' | 'menu:<name>' | 'item:<menu>:<key>' })
 // the executor resolves. The run only ever changes what it made: a stored id must name a post carrying that row's key
@@ -8,7 +8,7 @@
 // deleted. A row without an id adopts the one post carrying its key (a page map an intake rerun reset, FR-48-17), else
 // is created; an unmarked post already holding its type and slug (another author's, or one an interrupted run saved
 // before marking it) stops the run, so it is never duplicated or renamed `<slug>-2`.
-import { LAYOUT_TYPES, SHOP_TYPES, orderRows, parentRow, rowKey, treeFor, treeHash } from './site-build-map.mjs';
+import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, orderRows, parentRow, rowKey, treeFor, treeHash } from './site-build-map.mjs';
 import { desiredMenus, menuLocation } from './site-build-menus.mjs';
 import { MENU_META, ROW_META } from './site-build-state.mjs';
 
@@ -86,7 +86,8 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home' } ) 
 		}
 		const { tree, source } = treeFor( repo, client, row, menuIds );
 		const hash = treeHash( tree );
-		const unbound = 'placeholder' === source && [ 'header', 'drawer' ].includes( LAYOUT_TYPES[ row.postType ] ) && wanted.menus[ LAYOUT_TYPES[ row.postType ] ] && ! menuIds[ LAYOUT_TYPES[ row.postType ] ];
+		const binds = LAYOUT_TYPES[ row.postType ] && boundMenu( LAYOUT_TYPES[ row.postType ], Object.keys( menuIds ) );
+		const unbound = 'placeholder' === source && [ 'header', 'drawer' ].includes( LAYOUT_TYPES[ row.postType ] ) && wanted.menus[ binds ] && ! menuIds[ binds ];
 		const fields = { post_parent: parent ? idOf( rowKey( parent ) ) : 0, page_template: row.template || '' };
 		if ( ! ids[ key ] ) {
 			const after = Object.fromEntries( Object.entries( fields ).filter( ( [ , v ] ) => v ) );
@@ -103,6 +104,18 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home' } ) 
 		const diff = Object.fromEntries( Object.entries( want ).filter( ( [ k, v ] ) => String( v?.ref ? '' : v ) !== String( have[ k ] ) || v?.ref ) );
 		if ( Object.keys( diff ).length ) {
 			actions.push( { phase, type: 'update', key, id: p.id, fields: diff, say: `${ key }: post ${ p.id }: ${ Object.entries( diff ).map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } -> ${ shown( v ) }` ).join( '; ' ) }` } );
+		}
+	}
+
+	// Section pages (Spec 36 FR-36-5): each mega panel links its menu items to the page on its menu slot.
+	for ( const [ mega, page ] of Object.entries( wanted.sections ) ) {
+		const panel = ids[ mega ] ? state.posts[ String( ids[ mega ] ) ] : null;
+		const pagePost = ids[ page ] ? state.posts[ String( ids[ page ] ) ] : null;
+		if ( pagePost && 'publish' !== pagePost.status ) {
+			notes.push( `${ mega }: its section page ${ page } is ${ pagePost.status }; the items opening it stay toggles until the page is published` );
+		}
+		if ( ! panel || ! ids[ page ] || panel.sectionPage !== ids[ page ] ) {
+			actions.push( { phase: 'posts', type: 'section', key: mega, id: idOf( mega ), page: idOf( page ), say: `${ mega }: section page ${ panel?.sectionPage || 'none' } -> ${ shown( idOf( page ) ) } (${ page })` } );
 		}
 	}
 

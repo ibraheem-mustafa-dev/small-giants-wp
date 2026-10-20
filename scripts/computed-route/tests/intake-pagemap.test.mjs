@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { proposePageMap, pageMapProblems, classifyRoute } from '../lib/intake-pagemap.mjs';
+import { proposePageMap, pageMapProblems, classifyRoute, drawerRepeatsHeader } from '../lib/intake-pagemap.mjs';
 import { readRouting } from '../lib/intake-routing.mjs';
 import { loadDraft, evalStr, keyName } from '../lib/intake-ast.mjs';
 import { evalDeep } from '../lib/intake-ast-eval.mjs';
@@ -62,6 +62,7 @@ test( 'rows carry the route data: titles, parents from menu grouping, post rows 
 	assert.equal( bySlug( hashMap, 'about' ).collection, 'static' );
 	assert.deepEqual( bySlug( hashMap, 'contact' ).menus, [ { menu: 'header', position: 4, parentItem: null }, { menu: 'footer', position: 1, parentItem: null } ] );
 	assert.deepEqual( bySlug( hashMap, 'mega-menu-about' ).menus, [ { menu: 'header', position: 2, parentItem: null } ] );
+	assert.deepEqual( hashMap.rows.flatMap( ( r ) => r.menus ).filter( ( m ) => 'drawer' === m.menu ), [], 'the drawer menu repeats the header\'s mega sections, so it adds no entries (the drawer binds the header menu)' );
 	assert.equal( hashMap.rows.filter( ( r ) => 'sgs_form' === r.postType && 'form-contact' === r.slug ).length, 1, 'the formOld block the filter drops is not a form' );
 	assert.ok( hashMap.rows.every( ( r ) => null === r.id && Array.isArray( r.flags ) && 0 === r.flags.length ) );
 } );
@@ -191,14 +192,27 @@ test( 'real exports: Indus, Eye Care and Mama\'s page maps', { skip: ! fs.exists
 	assert.deepEqual( rowProblems( a, routing ), [] );
 	assert.equal( a.rows.find( ( r ) => 'our-story' === r.route ).parent, 'about' );
 	assert.equal( a.rows.find( ( r ) => 'blog' === r.route ).collection, 'live' );
+	const menuNames = ( r ) => [ ...new Set( r.rows.flatMap( ( x ) => x.menus.map( ( m ) => m.menu ) ) ) ].sort();
+	assert.deepEqual( menuNames( a ), [ 'footer', 'header' ], 'Indus\'s drawer repeats its four mega sections: no drawer menu' );
 	assert.deepEqual( pageMapProblems( a.rows, ajv ), [] );
 	const c = proposePageMap( { folder: real( 'eye-care-ward-end' ) } );
 	assert.equal( c.rows.find( ( r ) => 'shop' === r.route ).slug, 'sunglasses', 'Eye Care rows come from its embedded manifest' );
 	assert.equal( c.rows.find( ( r ) => 'lenses' === r.route ).slug, 'prescription-lenses' );
+	assert.deepEqual( menuNames( c ), [ 'drawer-1', 'drawer-2', 'header' ], 'Eye Care\'s drawer menus are not its mega sections, so they stay' );
 	assert.deepEqual( pageMapProblems( c.rows, ajv ), [] );
 	assert.deepEqual( linkProblems( c ), [] );
 	const m = proposePageMap( { folder: real( 'mamas-munches-redesign' ) } );
 	assert.equal( m.rows.filter( ( r ) => r.route ).length, 11 );
+	assert.ok( menuNames( m ).includes( 'drawer-menu-links' ), 'Mama\'s drawer menu stays' );
 	assert.deepEqual( pageMapProblems( m.rows, ajv ), [] );
 	assert.deepEqual( linkProblems( m ), [] );
+} );
+
+test( 'MUST FAIL: only a drawer whose every top-level item is a header mega item repeats the header', () => {
+	const megas = new Set( [ 'About', 'Brands' ] );
+	const menu = ( region, labels ) => ( { region, items: labels.map( ( label ) => ( { label } ) ) } );
+	assert.equal( drawerRepeatsHeader( menu( 'drawer', [ 'About', 'Brands' ] ), megas ), true );
+	assert.equal( drawerRepeatsHeader( menu( 'drawer', [ 'About', 'Contact' ] ), megas ), false, 'a drawer with an item of its own keeps its menu' );
+	assert.equal( drawerRepeatsHeader( menu( 'drawer', [] ), megas ), false );
+	assert.equal( drawerRepeatsHeader( menu( 'header', [ 'About', 'Brands' ] ), megas ), false );
 } );

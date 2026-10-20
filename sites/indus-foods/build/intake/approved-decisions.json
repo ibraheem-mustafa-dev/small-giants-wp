@@ -2238,6 +2238,10 @@
   {
    "rule": "A wrapper that only aligns or pads, or only clips and fades a marquee, is removed (the blocks around it do that).",
    "beanQuote": "Regarding D1: You're accurate on all points aside from 2. 1 needs you to check for more info, the other is just incorrect."
+  },
+  {
+   "rule": "The nav drawer uses the header menu and the same mega panels as the bar (each panel keeps its stacked drawer design); the page map carries no separate drawer menu, and each mega panel links to the page on its header slot as its section page (Spec 36 FR-36-5, FR-36-6; Bean, 2026-10-20).",
+   "beanQuote": "Use the menu for the nav drawer and nav bar with the same mega menus, although their design is very different in the drawer/stacked mode"
   }
  ],
  "unresolved": [

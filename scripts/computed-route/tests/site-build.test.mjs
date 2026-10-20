@@ -7,7 +7,7 @@ import path from 'path';
 import { orderRows, readPageMap, rowKey, writePageMap } from '../lib/site-build-map.mjs';
 import { PHASES, planBuild, tally } from '../lib/site-build-plan.mjs';
 import { applyPhase } from '../lib/site-build-apply.mjs';
-import { ROW_META, TREE_META } from '../lib/site-build-state.mjs';
+import { ROW_META, SECTION_META, TREE_META } from '../lib/site-build-state.mjs';
 import { megaPanelLabel, megaPanelTitle } from '../lib/page-map-names.mjs';
 
 const row = ( o ) => ( { route: o.slug, parent: null, template: null, menus: [], postType: 'page', collection: 'static', flags: [], id: null, ...o } );
@@ -30,7 +30,7 @@ function fakeSite() {
 	s.state = ( rows ) => {
 		const ids = rows.map( ( r ) => r.id ).filter( Number.isInteger );
 		const marked = Object.keys( s.posts ).map( Number ).filter( ( id ) => s.meta[ id ]?.[ ROW_META ] );
-		const view = ( id ) => ( s.posts[ id ] ? { ...s.posts[ id ], rowKey: s.meta[ id ]?.[ ROW_META ] || '', treeHash: s.meta[ id ]?.[ TREE_META ] || '' } : null );
+		const view = ( id ) => ( s.posts[ id ] ? { ...s.posts[ id ], rowKey: s.meta[ id ]?.[ ROW_META ] || '', treeHash: s.meta[ id ]?.[ TREE_META ] || '', sectionPage: Number( s.meta[ id ]?.[ SECTION_META ] || 0 ) } : null );
 		const holders = Object.fromEntries( rows.filter( ( r ) => ! Number.isInteger( r.id ) ).map( ( r ) => [ rowKey( r ), Object.values( s.posts ).filter( ( p ) => p.type === r.postType && p.slug === r.slug ).map( ( p ) => p.id ) ] ).filter( ( [ , v ] ) => v.length ) );
 		return {
 			holders,
@@ -258,4 +258,38 @@ test( 'clearing a page template sends "default", which WordPress stores, never a
 	const calls = [];
 	applyPhase( [ { phase: 'posts', type: 'update', key: 'page:x', id: 7, fields: { page_template: '' }, say: '' } ], 'posts', { wp: ( a ) => calls.push( a.join( ' ' ) ), build: () => 0, onId: () => {} } );
 	assert.deepEqual( calls, [ 'post update 7 --page_template=default' ] );
+} );
+
+test( 'a mega panel\'s section page is the page on its menu slot; a second run leaves it, and a hand change is put back', () => {
+	const site = fakeSite();
+	const rows = run( site, tmpMap( ROWS() ) );
+	const panel = rows.find( ( r ) => 'sgs_mega_menu' === r.postType ).id;
+	const about = rows.find( ( r ) => 'about' === r.slug && 'page' === r.postType ).id;
+	assert.equal( site.meta[ panel ][ SECTION_META ], String( about ) );
+	assert.ok( ! planOn( site, rows ).actions.some( ( a ) => 'section' === a.type ) );
+	site.meta[ panel ][ SECTION_META ] = '0';
+	const p = planOn( site, rows );
+	assert.deepEqual( p.actions.map( ( a ) => [ a.type, a.id, a.page ] ), [ [ 'section', panel, about ] ] );
+	assert.deepEqual( tally( p.actions ), { creates: 0, changes: 1, adopts: 0 } );
+} );
+
+test( 'a section page that is not published is noted; two pages on a mega item\'s slot, or two menus pairing it differently, stop the run', () => {
+	const site = fakeSite();
+	const rows = run( site, tmpMap( ROWS() ) );
+	site.posts[ rows.find( ( r ) => 'about' === r.slug && 'page' === r.postType ).id ].status = 'draft';
+	assert.ok( planOn( site, rows ).notes.some( ( n ) => /^sgs_mega_menu:about: its section page page:about is draft; the items opening it stay toggles/.test( n ) ) );
+	const crowded = [ ...ROWS(), row( { slug: 'team', title: 'Team', menus: [ { menu: 'header', position: 2, parentItem: null } ] } ) ];
+	assert.match( planOn( fakeSite(), crowded ).problems.join( '\n' ), /share the header menu, position 2/ );
+	const split = ROWS().map( ( r ) => ( 'sgs_mega_menu' === r.postType ? { ...r, menus: [ ...r.menus, { menu: 'footer', position: 2, parentItem: null } ] } : r ) );
+	split.push( row( { slug: 'team', title: 'Team', menus: [ { menu: 'footer', position: 2, parentItem: null } ] } ) );
+	assert.match( planOn( fakeSite(), split ).problems.join( '\n' ), /^sgs_mega_menu:about: its menu slots pair it with both page:about and page:team/m );
+} );
+
+test( 'with no drawer menu in the page map the drawer binds the header menu', () => {
+	const site = fakeSite();
+	const rows = run( site, tmpMap( ROWS().map( ( r ) => ( { ...r, menus: r.menus.filter( ( m ) => 'drawer' !== m.menu ) } ) ) ) );
+	assert.equal( site.menus.find( ( m ) => 'drawer' === m.slug ), undefined );
+	const header = site.menus.find( ( m ) => 'header' === m.slug ).id;
+	assert.match( site.posts[ rows.find( ( r ) => 'sgs_drawer' === r.postType ).id ].content, new RegExp( `"sgs/nav-drawer-menu","attributes":\\{"ref":${ header }\\}` ) );
+	assert.deepEqual( tally( planOn( site, rows ).actions ), { creates: 0, changes: 0, adopts: 0 } );
 } );

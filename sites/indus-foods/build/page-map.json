@@ -41,13 +41,7 @@
     "title": "Our Story",
     "parent": "about",
     "template": null,
-    "menus": [
-      {
-        "menu": "drawer",
-        "position": 1,
-        "parentItem": "About"
-      }
-    ],
+    "menus": [],
     "postType": "page",
     "collection": "static",
     "flags": [],
@@ -60,11 +54,6 @@
     "parent": "about",
     "template": null,
     "menus": [
-      {
-        "menu": "drawer",
-        "position": 2,
-        "parentItem": "About"
-      },
       {
         "menu": "footer",
         "position": 1,
@@ -82,13 +71,7 @@
     "title": "Community & Charity",
     "parent": "about",
     "template": null,
-    "menus": [
-      {
-        "menu": "drawer",
-        "position": 3,
-        "parentItem": "About"
-      }
-    ],
+    "menus": [],
     "postType": "page",
     "collection": "static",
     "flags": [],
@@ -100,13 +83,7 @@
     "title": "Sustainability",
     "parent": "about",
     "template": null,
-    "menus": [
-      {
-        "menu": "drawer",
-        "position": 4,
-        "parentItem": "About"
-      }
-    ],
+    "menus": [],
     "postType": "page",
     "collection": "static",
     "flags": [],
@@ -118,13 +95,7 @@
     "title": "Careers",
     "parent": "about",
     "template": null,
-    "menus": [
-      {
-        "menu": "drawer",
-        "position": 5,
-        "parentItem": "About"
-      }
-    ],
+    "menus": [],
     "postType": "page",
     "collection": "static",
     "flags": [],
@@ -141,11 +112,6 @@
         "menu": "header",
         "position": 3,
         "parentItem": null
-      },
-      {
-        "menu": "drawer",
-        "position": 1,
-        "parentItem": "Sectors"
       }
     ],
     "postType": "page",
@@ -159,13 +125,7 @@
     "title": "Manufacturing",
     "parent": null,
     "template": null,
-    "menus": [
-      {
-        "menu": "drawer",
-        "position": 2,
-        "parentItem": "Sectors"
-      }
-    ],
+    "menus": [],
     "postType": "page",
     "collection": "static",
     "flags": [],
@@ -177,13 +137,7 @@
     "title": "Retail",
     "parent": null,
     "template": null,
-    "menus": [
-      {
-        "menu": "drawer",
-        "position": 3,
-        "parentItem": "Sectors"
-      }
-    ],
+    "menus": [],
     "postType": "page",
     "collection": "static",
     "flags": [],
@@ -195,13 +149,7 @@
     "title": "Wholesale",
     "parent": null,
     "template": null,
-    "menus": [
-      {
-        "menu": "drawer",
-        "position": 4,
-        "parentItem": "Sectors"
-      }
-    ],
+    "menus": [],
     "postType": "page",
     "collection": "static",
     "flags": [],
@@ -220,11 +168,6 @@
         "parentItem": null
       },
       {
-        "menu": "drawer",
-        "position": 5,
-        "parentItem": "Brands"
-      },
-      {
         "menu": "footer",
         "position": 3,
         "parentItem": null
@@ -241,13 +184,7 @@
     "title": "Sanam",
     "parent": "brands",
     "template": null,
-    "menus": [
-      {
-        "menu": "drawer",
-        "position": 1,
-        "parentItem": "Brands"
-      }
-    ],
+    "menus": [],
     "postType": "page",
     "collection": "static",
     "flags": [],
@@ -259,13 +196,7 @@
     "title": "Shan",
     "parent": "brands",
     "template": null,
-    "menus": [
-      {
-        "menu": "drawer",
-        "position": 2,
-        "parentItem": "Brands"
-      }
-    ],
+    "menus": [],
     "postType": "page",
     "collection": "static",
     "flags": [],
@@ -277,13 +208,7 @@
     "title": "Green Leaf",
     "parent": "brands",
     "template": null,
-    "menus": [
-      {
-        "menu": "drawer",
-        "position": 3,
-        "parentItem": "Brands"
-      }
-    ],
+    "menus": [],
     "postType": "page",
     "collection": "static",
     "flags": [],
@@ -295,13 +220,7 @@
     "title": "The Lemon Tree",
     "parent": "brands",
     "template": null,
-    "menus": [
-      {
-        "menu": "drawer",
-        "position": 4,
-        "parentItem": "Brands"
-      }
-    ],
+    "menus": [],
     "postType": "page",
     "collection": "static",
     "flags": [],
@@ -320,11 +239,6 @@
         "parentItem": null
       },
       {
-        "menu": "drawer",
-        "position": 1,
-        "parentItem": "Trade"
-      },
-      {
         "menu": "footer",
         "position": 2,
         "parentItem": null
@@ -341,13 +255,7 @@
     "title": "Request Catalogue",
     "parent": null,
     "template": null,
-    "menus": [
-      {
-        "menu": "drawer",
-        "position": 2,
-        "parentItem": "Trade"
-      }
-    ],
+    "menus": [],
     "postType": "page",
     "collection": "static",
     "flags": [],
@@ -360,11 +268,6 @@
     "parent": null,
     "template": null,
     "menus": [
-      {
-        "menu": "drawer",
-        "position": 3,
-        "parentItem": "Trade"
-      },
       {
         "menu": "footer",
         "position": 4,
@@ -384,11 +287,6 @@
     "template": null,
     "menus": [
       {
-        "menu": "drawer",
-        "position": 5,
-        "parentItem": "Trade"
-      },
-      {
         "menu": "footer",
         "position": 5,
         "parentItem": null
@@ -406,11 +304,6 @@
     "parent": null,
     "template": null,
     "menus": [
-      {
-        "menu": "drawer",
-        "position": 6,
-        "parentItem": "About"
-      },
       {
         "menu": "footer",
         "position": 6,
@@ -446,13 +339,7 @@
     "title": "FAQs",
     "parent": null,
     "template": null,
-    "menus": [
-      {
-        "menu": "drawer",
-        "position": 4,
-        "parentItem": "Trade"
-      }
-    ],
+    "menus": [],
     "postType": "page",
     "collection": "static",
     "flags": [],

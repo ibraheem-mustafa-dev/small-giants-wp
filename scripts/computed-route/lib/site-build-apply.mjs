@@ -1,13 +1,14 @@
 // The site build's writer (Spec 48 FR-48-55): runs one phase of a plan (lib/site-build-plan.mjs) against a site.
 // Every post is built through scripts/wp-build-page.js (the editor serialises each block); every other write is a
-// WP-CLI call: `wp post update` and `wp post meta update` (the row key and tree hash the next run compares), `wp menu`
+// WP-CLI call: `wp post update` and `wp post meta update` (the row key and tree hash the next run compares, and a mega
+// panel's section page), `wp menu`
 // and `wp menu item` (part 3; a new menu is marked with its page-map name, and no item is ever deleted), `wp option update` (part 4), `wp rewrite` (part 5) and `wp sgs <area> set-active`
 // (part 7, through Sgs_Active_Layout::set_active, never a raw option write).
 import { execFileSync } from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { MENU_META, ROW_META, TREE_META } from './site-build-state.mjs';
+import { MENU_META, ROW_META, SECTION_META, TREE_META } from './site-build-state.mjs';
 
 // How long each editor load and save may take: twice wp-build-page.js's 60 s default, since a shared host can stall an
 // admin page past it; a run stopped by a stall resumes from the posts already made.
@@ -98,6 +99,8 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 		} else if ( 'build' === a.type ) {
 			build( { postId: a.id }, a.tree );
 			wp( [ 'post', 'meta', 'update', String( a.id ), TREE_META, a.hash ] );
+		} else if ( 'section' === a.type ) {
+			wp( [ 'post', 'meta', 'update', String( val( a.id ) ), SECTION_META, String( val( a.page ) ) ] );
 		} else if ( 'update' === a.type ) {
 			wp( [ 'post', 'update', String( a.id ), ...fieldArgs( a.fields ) ] );
 		} else if ( 'menu' === a.type ) {

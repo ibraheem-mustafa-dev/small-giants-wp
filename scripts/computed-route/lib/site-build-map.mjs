@@ -82,15 +82,20 @@ export function orderRows( rows ) {
 	return out;
 }
 
+// The page-map menu a layout surface binds: its own, except a drawer with no drawer menu, which binds the header menu
+// (the bar and the drawer then share one menu and its mega panels, Spec 36 FR-36-6).
+export const boundMenu = ( kind, menuNames ) => ( 'drawer' === kind && ! menuNames.includes( 'drawer' ) ? 'header' : kind );
+
 // The one-block placeholder tree a row gets until it has a stage 3 tree. A header binds its menu in a bar (whose
-// burger opens the active drawer), a drawer binds its menu inside the drawer dialog; every other row is its title.
+// burger opens the active drawer), a drawer binds its menu (boundMenu) inside the drawer dialog; every other row is
+// its title. `menuIds` holds an entry (0 until made) for every menu the page map names.
 export function placeholderTree( row, menuIds = {} ) {
 	const kind = LAYOUT_TYPES[ row.postType ];
 	if ( 'header' === kind ) {
 		return [ { name: 'sgs/nav-bar-menu', attributes: { ref: menuIds.header || 0 } } ];
 	}
 	if ( 'drawer' === kind ) {
-		return [ { name: 'sgs/nav-drawer', innerBlocks: [ { name: 'sgs/nav-drawer-menu', attributes: { ref: menuIds.drawer || 0 } } ] } ];
+		return [ { name: 'sgs/nav-drawer', innerBlocks: [ { name: 'sgs/nav-drawer-menu', attributes: { ref: menuIds[ boundMenu( kind, Object.keys( menuIds ) ) ] || 0 } } ] } ];
 	}
 	return [ { name: 'sgs/heading', attributes: { content: row.title, level: [ 'page', 'post' ].includes( row.postType ) ? 'h1' : 'h2' } } ];
 }
