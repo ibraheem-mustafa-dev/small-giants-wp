@@ -396,8 +396,11 @@ function recordRowMechanism( ctx, blockSlug, rowKey, attrName, gradientAttrName 
 		gradientAttrName && map[ blockSlug ] ? map[ blockSlug ][ gradientAttrName ] ?? null : null;
 	const base = resolveMechanismFromCssProperty( cssProperty );
 	const grad = resolveMechanismFromCssProperty( gradientCssProperty );
-	const mechanisms = Array.from( new Set( [ ...grad.mechanisms, ...base.mechanisms ] ) );
-	const effectiveMechanisms = grad.mechanisms.length ? grad.mechanisms : base.mechanisms;
+	// A gradient that paints `background-image` names no mechanism of its own: a text gradient (clipped), a fill and
+	// a border ring (a masked ::before) all paint it, so the base attr decides. An SVG `fill`/`stroke` gradient does.
+	const gradNamesMechanism = grad.mechanisms.length && String( gradientCssProperty ).split( ',' ).some( ( p ) => 'background-image' !== p.trim() );
+	const mechanisms = Array.from( new Set( [ ...( gradNamesMechanism ? grad.mechanisms : [] ), ...base.mechanisms ] ) );
+	const effectiveMechanisms = gradNamesMechanism ? grad.mechanisms : base.mechanisms.length ? base.mechanisms : grad.mechanisms;
 
 	const record = {
 		block: blockSlug,

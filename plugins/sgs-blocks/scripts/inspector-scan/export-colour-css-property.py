@@ -23,6 +23,7 @@ import sys
 from pathlib import Path
 
 DB_CANDIDATES = [
+    *([Path(os.environ["SGS_FRAMEWORK_DB"])] if os.environ.get("SGS_FRAMEWORK_DB") else []),
     Path(os.path.expanduser("~/.agents/skills/sgs-wp-engine/sgs-framework.db")),
     Path(__file__).resolve().parents[1] / "sgs-framework.db",
 ]

@@ -24,7 +24,7 @@ import {
 	ToggleControl,
 	BaseControl,
 } from '@wordpress/components';
-import { SpacingControl, ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsColourPanel, DesignTokenPicker, TypographyControls, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
+import { SpacingControl, ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsColourPanel, DesignTokenPicker, GradientCapableColourControl, TypographyControls, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
 import {
 	colourVar,
 	fontSizeVar,
@@ -1248,7 +1248,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						     TIER 1 panel; "quote text" is a declared element
 						     whose attrMap claims quoteColour). Same row shape,
 						     same attributes, just relocated. */ }
-						<DesignTokenPicker
+						<GradientCapableColourControl
 							label={ __( 'Quote colour', 'sgs-blocks' ) }
 							states={ [
 								{
@@ -1272,9 +1272,8 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								},
 							] }
 						/>
-						<DesignTokenPicker
+						<GradientCapableColourControl
 							label={ __( 'Quote link colour', 'sgs-blocks' ) }
-							gradientCapable={ true }
 							states={ [
 								{
 									key: 'normal',

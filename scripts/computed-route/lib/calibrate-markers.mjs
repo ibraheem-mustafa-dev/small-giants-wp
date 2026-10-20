@@ -106,10 +106,13 @@ export function companionWidth( styleAttr, schema ) {
 // for a width. Named from the setting's own stem (cardBorderColour → cardBorderWidth, cardBorderStyle; a bare
 // borderColour → borderWidth, borderStyle). A hover border gradient also needs the resting border gradient: the masked
 // ring is emitted only when a resting paint exists (helpers-tokens.php::sgs_border_gradient_css returns nothing for an
-// empty resting paint), and the hover paint must differ from it.
+// empty resting paint), and the hover paint must differ from it. A border gradient's css_property is the property the
+// ring paints (`background-image`, or `border-image-source` for a native border image), so its name says it is a border.
 export function borderPartners( attr, prop, schema ) {
 	const m = attr.match( /^(.*[bB]order)(Colou?r|Width)(Hover)?(Gradient)?$/ );
-	if ( ! m || ! [ 'border-color', 'border-width' ].some( ( p ) => prop.startsWith( p.split( '-' )[ 0 ] ) && prop.includes( p.split( '-' )[ 1 ] ) ) ) {
+	const borderProp = [ 'border-color', 'border-width' ].some( ( p ) => prop.startsWith( p.split( '-' )[ 0 ] ) && prop.includes( p.split( '-' )[ 1 ] ) );
+	const ringProp = !! m?.[ 4 ] && [ 'background-image', 'border-image-source' ].includes( prop );
+	if ( ! m || ! ( borderProp || ringProp ) ) {
 		return {};
 	}
 	const out = {};

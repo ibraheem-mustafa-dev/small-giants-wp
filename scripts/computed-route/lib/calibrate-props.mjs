@@ -45,13 +45,9 @@ export const READ_KEY = createHash( 'md5' ).update( JSON.stringify( [ READ_PROPS
 
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
 
-// A css_property that names a paint the browser computes under another property: a text gradient is a clipped
-// background-image, a gradient border is a ring layer's background-image (or border-image), a shadow colour lives
-// inside box-shadow.
+// A css_property that names a paint the browser computes under another property: a shadow colour lives inside
+// box-shadow. A gradient row already stores the property it paints (background-image, border-image-source, fill, stroke).
 const ALIASES = {
-	'color-gradient': [ 'background-image' ],
-	'background-color-gradient': [ 'background-image' ],
-	'border-color-gradient': [ 'background-image', 'border-image-source' ],
 	'box-shadow-color': [ 'box-shadow' ],
 	'text-shadow-color': [ 'text-shadow' ],
 	flex: [ 'flex-grow', 'flex-basis' ],

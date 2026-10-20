@@ -43,21 +43,27 @@ test( 'MUST FAIL (14 hover rows read dead): a hover shadow colour needs a shadow
 	assert.equal( instances.find( ( i ) => i.isBase ).attrs.boxShadow, SHADOW_SHAPE );
 } );
 
-test( 'MUST FAIL (border-color-gradient hover reads dead): a hover border gradient needs a resting gradient and a width (helpers-tokens.php::sgs_border_gradient_css returns nothing without the resting paint)', () => {
-	const schema = { borderColourGradient: { type: 'string' }, borderColourHoverGradient: { type: 'string' }, borderStyle: { type: 'string' }, borderWidth: { type: 'object' } };
-	const p = borderPartners( 'borderColourHoverGradient', 'border-color-gradient', schema );
+test( 'MUST FAIL (border gradient hover reads dead): a hover border gradient needs a resting gradient and a width (helpers-tokens.php::sgs_border_gradient_css returns nothing without the resting paint)', () => {
+	const schema = { borderColourGradient: { type: 'string' }, borderColourHoverGradient: { type: 'string' }, borderStyle: { type: 'string' }, borderWidth: { type: 'object' }, backgroundColourGradient: { type: 'string' } };
+	const p = borderPartners( 'borderColourHoverGradient', 'background-image', schema );
 	assert.equal( p.borderColourGradient, MARKER_REST_GRADIENT );
 	assert.equal( p.borderStyle, 'solid' );
 	assert.deepEqual( p.borderWidth, { top: '3px', right: '3px', bottom: '3px', left: '3px' } );
 	assert.notEqual( MARKER_REST_GRADIENT, MARKER_GRADIENT );
 	// The resting gradient itself needs only the width and style; a flat hover colour needs no resting gradient.
-	const rest = borderPartners( 'borderColourGradient', 'border-color-gradient', schema );
+	const rest = borderPartners( 'borderColourGradient', 'background-image', schema );
 	assert.equal( rest.borderColourGradient, undefined );
 	assert.equal( rest.borderStyle, 'solid' );
 	assert.equal( borderPartners( 'borderColourHover', 'border-color', schema ).borderColourGradient, undefined );
+	// A native border image (border-image-source) is a border too and needs the same width and style.
+	assert.equal( borderPartners( 'borderColourGradient', 'border-image-source', schema ).borderStyle, 'solid' );
+	// Only a gradient setting paints the ring: a flat border colour storing background-image is not one.
+	assert.deepEqual( borderPartners( 'borderColour', 'background-image', schema ), {} );
+	// A background gradient paints the same property and is no border: it takes no border partners.
+	assert.deepEqual( borderPartners( 'backgroundColourGradient', 'background-image', schema ), {} );
 	// A prefixed stem (social-icons wrapperBorderColourHoverGradient) names its own partners.
 	const social = { wrapperBorderColourGradient: { type: 'string' }, wrapperBorderStyle: { type: 'string' }, wrapperBorderWidth: { type: 'object' } };
-	const sp = borderPartners( 'wrapperBorderColourHoverGradient', 'border-color-gradient', social );
+	const sp = borderPartners( 'wrapperBorderColourHoverGradient', 'background-image', social );
 	assert.equal( sp.wrapperBorderColourGradient, MARKER_REST_GRADIENT );
 	assert.equal( sp.wrapperBorderStyle, 'solid' );
 } );
