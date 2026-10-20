@@ -353,7 +353,9 @@ function plainMarkers( row, schema, snapshot, current, ctx ) {
 		// A per-device opacity (a scrim's tint strength) and a backdrop blur radius, which helpers-scrim.php paints as
 		// blur(<length>): one value per tier, so a dead tier shows.
 		if ( 'opacity' === prop ) {
-			return [ { label: 'tiers-opacity', attrs: set( { desktop: 0.37, tablet: 0.23, mobile: 0.07 } ), expect: { 1440: '0.37', 768: '0.23', 375: '0.07' } } ];
+			// A default above 1 is a percentage (an overlay's 0-100 opacity); otherwise the value is 0 to 1 (a scrim's tint).
+			const tiers = Number( def.default?.desktop ) > 1 ? { desktop: 37, tablet: 23, mobile: 7 } : { desktop: 0.37, tablet: 0.23, mobile: 0.07 };
+			return [ { label: 'tiers-opacity', attrs: set( tiers ), expect: { 1440: '0.37', 768: '0.23', 375: '0.07' } } ];
 		}
 		// A per-device flex order: a different whole number per tier.
 		if ( 'order' === prop ) {

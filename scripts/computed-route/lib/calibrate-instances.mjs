@@ -4,6 +4,7 @@
 import { markersFor, borderPartners, shadowPartners, defOf, types } from './calibrate-markers.mjs';
 import { modifierOf } from './db.mjs';
 import { blockElements } from './resolve.mjs';
+import { MARKER_HEX } from './calibrate-props.mjs';
 
 // How each setting state is reached before a marker is read (§3.2): 'hover' under a real mouse on the styled element;
 // 'focus' by keyboard-visible focus on it; 'scroll' by scrolling the window past the header offset (the header script
@@ -86,6 +87,12 @@ export function preconditionsFor( row, schema, current = {}, ctx = {} ) {
 		if ( schema[ attr ] && current[ attr ] !== value ) {
 			out[ attr ] = value;
 		}
+	}
+	// An opacity paints nothing until its colour partner holds a colour (an overlay's backgroundOverlayColour is empty by
+	// default; a scrim's colour defaults to black and is left alone).
+	const partner = row.attr_name.replace( /Opacity$/, 'Colour' );
+	if ( partner !== row.attr_name && schema[ partner ] && '' === ( current[ partner ] ?? schema[ partner ].default ?? '' ) ) {
+		out[ partner ] = MARKER_HEX;
 	}
 	Object.assign( out, gatingToggle( row.attr_name, schema, current ) );
 	Object.assign( out, borderPartners( row.attr_name, first, schema ) );

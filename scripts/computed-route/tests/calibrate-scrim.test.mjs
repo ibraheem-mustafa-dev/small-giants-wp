@@ -63,3 +63,15 @@ test( 'a scrim blur marker read on @scrim is that setting\'s slot at every width
 	assert.deepEqual( s.reachedAt, [ ...WIDTHS ].sort( ( a, b ) => a - b ) );
 	assert.equal( s.oneWidth, false );
 } );
+
+test( 'MUST FAIL (opacity scale and partner): a 0-100 overlay opacity takes percent markers and its colour partner', async () => {
+	const { preconditionsFor } = await import( '../lib/calibrate-instances.mjs' );
+	const schema = blockSchema( 'sgs/trust-bar' );
+	const row = { attr_name: 'backgroundOverlayOpacity', css_property: 'opacity', tier_shape: 'tier_object' };
+	const [ m ] = markersFor( row, schema, SNAPSHOT );
+	assert.deepEqual( m?.attrs, { backgroundOverlayOpacity: { desktop: 37, tablet: 23, mobile: 7 } }, 'a default above 1 is a percentage' );
+	assert.deepEqual( m?.expect, { 1440: '0.37', 768: '0.23', 375: '0.07' } );
+	// The overlay paints nothing without its colour, so an empty colour partner is set; the scrim's default colour is kept.
+	assert.equal( typeof preconditionsFor( row, schema, {}, {} ).backgroundOverlayColour, 'string' );
+	assert.equal( preconditionsFor( { attr_name: 'scrimOpacity', css_property: 'opacity', tier_shape: 'tier_object' }, blockSchema( 'sgs/nav-drawer' ), {}, {} ).scrimColour, undefined );
+} );
