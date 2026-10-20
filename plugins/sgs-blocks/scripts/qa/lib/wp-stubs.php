@@ -480,6 +480,17 @@ if ( ! function_exists( 'get_post_type_object' ) ) {
 	}
 }
 
+if ( ! function_exists( 'is_post_type_viewable' ) ) {
+	// Core's rule over the stub type above: a built-in type is viewable when public, any other when publicly queryable.
+	function is_post_type_viewable( $post_type ) {
+		$type = is_object( $post_type ) ? $post_type : get_post_type_object( $post_type );
+		if ( ! $type ) {
+			return false;
+		}
+		return in_array( $type->name, array( 'post', 'page', 'attachment' ), true ) ? (bool) $type->public : (bool) $type->publicly_queryable;
+	}
+}
+
 if ( ! function_exists( 'get_post_mime_type' ) ) {
 	// An attachment's MIME type from its URL's extension in the attachments file; false for an unknown attachment.
 	function get_post_mime_type( $post = null ) {

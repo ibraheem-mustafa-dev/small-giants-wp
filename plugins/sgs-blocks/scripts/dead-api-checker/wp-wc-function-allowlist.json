@@ -172,6 +172,7 @@
     "is_object_in_taxonomy",
     "is_page",
     "is_post_publicly_viewable",
+    "is_post_type_viewable",
     "is_post_type_archive",
     "is_product",
     "is_product_category",
