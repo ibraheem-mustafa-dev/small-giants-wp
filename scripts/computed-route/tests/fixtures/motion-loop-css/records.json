@@ -1,0 +1,17 @@
+{
+	"_note": "Minimal inventory records for tests/motion-loop-css.test.mjs: the shape of a Claude Design animations.json record (Spec 48A), cut to the fields the loop writer reads.",
+	"twinkle": {
+		"id": "A-02", "name": "Hero greeting sparkle twinkle", "group": "loop", "mechanism": "waapi",
+		"element": { "dc": "Site", "template_tpl_id": "10" },
+		"trigger": { "type": "loop", "detail": "Starts in motion()" },
+		"properties": [ { "property": "transform", "from": "scale(1) rotate(0)", "to": "scale(1) rotate(180deg)", "keyframes": [ { "transform": "scale(1) rotate(0)" }, { "transform": "scale(1.35) rotate(90deg)" }, { "transform": "scale(1) rotate(180deg)" } ] } ],
+		"duration_ms": 2400, "delay_ms": 0, "stagger": null, "easing": "ease-in-out", "iterations": "infinite", "direction": "normal", "fill": "none", "status": "active"
+	},
+	"drift": {
+		"id": "B-07", "name": "Badge drift", "group": "loop", "mechanism": "css",
+		"element": { "dc": "Site", "template_tpl_id": "10" },
+		"trigger": { "type": "loop" },
+		"properties": [ { "property": "transform", "keyframes": [ { "offset": 0, "transform": "rotate(-4deg)" }, { "offset": 0.5, "transform": "rotate(4deg)" }, { "offset": 1, "transform": "rotate(-4deg)" } ] } ],
+		"duration_ms": 3000, "delay_ms": 500, "easing": "linear", "iterations": "infinite", "direction": "normal", "fill": "none", "status": "active"
+	}
+}

@@ -10,6 +10,7 @@ import { classify, entranceLayer, hoverLayer, matchByPose } from './motion-layer
 import { snapToken, presetFor, effectPresetFor, tokenTypes, clientTokens, clientPalette, tokenises } from './motion-tokens.mjs';
 import { writeEffect, loadEffectOffers } from './motion-effects.mjs';
 import { loopEffect, loopCheck, chooseEffect, runtimeLoopsFor, smilLoop, marqueeTag, measuredLoopOf } from './motion-loops.mjs';
+import { loopKeyframesCss, loopName, isLoopRecord } from './motion-loop-css.mjs';
 import { entranceCheck } from './motion-check.mjs';
 import { setAttr } from './tree.mjs';
 
@@ -188,9 +189,10 @@ export function elementMotion( records, { mdb, ctx, sampled, runtime = [] } ) {
 // The effects one draft element's endless animations make: its own loop records, else the run-time loop records the
 // animation measured on it is (runtimeLoopsFor), plus a <marquee>'s attributes and its SVG animation elements.
 // `loops` is the element's sampleMotion() loops by width. Returns { effects: [{ record, effect, values, devices,
-// trigger, notes }], unmapped: [{ record, reason }], notes }.
+// trigger, notes }], css: [{ record, name, css }], unmapped: [{ record, reason }], notes }. An endless keyframe animation
+// no effect draws becomes `css` (the block's Additional CSS box, lib/motion-loop-css.mjs) when its values are literal.
 export function elementEffects( records, { mdb, loops = null, runtimeLoops = [] } ) {
-	const out = { effects: [], unmapped: [], notes: [] };
+	const out = { effects: [], css: [], unmapped: [], notes: [] };
 	const wide = loops?.[ 1440 ] || null;
 	let own = records.filter( ( r ) => 'effect' === classify( r ).kind );
 	if ( ! own.length && wide?.loops?.length ) {
@@ -205,6 +207,12 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [] 
 			continue;
 		}
 		const e = loopEffect( r, loops, { mdb } );
+		const boxed = e.unmapped && isLoopRecord( r ) ? loopKeyframesCss( r, loopName( r ) ) : null;
+		if ( boxed?.css ) {
+			out.css.push( { record: r, css: boxed.css } );
+			out.notes.push( `${ r.id }: no motion effect draws this loop (${ e.unmapped }), so it is written to the Additional CSS box: ${ boxed.stops } stops sampled from the ${ r.easing } curve, linear between them` );
+			continue;
+		}
 		keep( r.id, e.unmapped || 'scroll-into-view' !== t ? e : { ...e, trigger: 'visible' } );
 		out.notes.push( ...loopCheck( r, loops ).map( ( d ) => `${ r.id }: render check ${ d }` ) );
 	}
@@ -257,6 +265,20 @@ function writeNode( n, doc, pending, { flat, ref, schema, out } ) {
 	out.writes.push( { node: ref, block: n.name, slot: '', prop: `motion ${ pending.join( ', ' ) }`, attr: 'sgsMotion', before, after, widths: [], how: 'motion' } );
 }
 
+// Writes a node's endless-loop CSS into its Additional CSS box (`sgsCustomCss`, scoped to the block instance by
+// includes/custom-css.php): appended to what the box holds, with the scope key and the note naming each record.
+function writeLoopCss( n, items, { flat, ref, out } ) {
+	const node = flat[ n.index ];
+	const had = ( a ) => node.attributes?.[ a ] || '';
+	const css = [ had( 'sgsCustomCss' ), ...items.map( ( i ) => i.css ) ].filter( Boolean ).join( ' ' );
+	const note = [ had( 'sgsCustomCssNote' ), ...items.map( ( i ) => `Loop ${ i.record.id }: ${ i.record.name }` ) ].filter( Boolean ).join( '; ' );
+	const values = { sgsCustomCss: css, sgsCustomCssId: had( 'sgsCustomCssId' ) || `loop-${ String( items[ 0 ].record.id ).toLowerCase() }`, sgsCustomCssNote: note };
+	for ( const [ attr, value ] of Object.entries( values ) ) {
+		const { before, after } = setAttr( node, { attr, value } );
+		out.writes.push( { node: ref, block: n.name, slot: '', prop: `loop css ${ items.map( ( i ) => i.record.id ).join( ', ' ) }`, attr, before, after, widths: [], how: 'motion-css' } );
+	}
+}
+
 // Writes every node's sgsMotion. nodes: skeletonNodes() records; flat: tree nodes by index; refOf: tree node to ref;
 // records: the inventory's animation records; sampled: { '<target id>': { 375, 768, 1440: shapeEntrance() result } };
 // mdb: lib/motion-db.mjs::motionDb; schema: the motion schema; rawSnapshot: the client's theme snapshot; rootComponent:
@@ -274,6 +296,7 @@ export function motionWrites( { nodes, flat, refOf, records, sampled = {}, loops
 		const targets = mdb.targetsOf( n.name );
 		const doc = { v: 1, elements: {} };
 		const pending = [];
+		const boxes = [];
 		for ( const t of n.targets ) {
 			const own = byElement.get( elementKey( t.finder, rootComponent ) ) || [];
 			if ( ! own.length && ! sampled[ t.id ]?.[ 1440 ] && ! loops[ t.id ] ) {
@@ -300,6 +323,11 @@ export function motionWrites( { nodes, flat, refOf, records, sampled = {}, loops
 			const fx = elementEffects( own, { mdb, loops: loops[ t.id ] || null, runtimeLoops } );
 			out.notes.push( ...fx.notes.map( ( text ) => ( { ...where, text } ) ) );
 			out.unmapped.push( ...fx.unmapped.map( ( u ) => ( { ...where, property: 'motion', value: u.record, reason: u.reason } ) ) );
+			if ( 'root' === target ) {
+				boxes.push( ...fx.css );
+			} else {
+				out.unmapped.push( ...fx.css.map( ( c ) => ( { ...where, property: 'motion', value: c.record.id, reason: `an endless keyframe animation on the ${ target } part: the block's Additional CSS box styles the block itself, not a part` } ) ) );
+			}
 			for ( const e of fx.effects ) {
 				const list = ( at ) => doc.elements[ at ]?.effects || [];
 				const id = `${ e.effect }-${ [ 'root', target ].reduce( ( k, at ) => Math.max( k, list( at ).filter( ( l ) => l.effect === e.effect ).length ), 0 ) + 1 }`;
@@ -312,6 +340,9 @@ export function motionWrites( { nodes, flat, refOf, records, sampled = {}, loops
 				pending.push( w.target );
 				out.notes.push( ...[ ...e.notes, ...( w.dropped.length ? [ `no ${ e.effect } field for ${ w.dropped.join( ', ' ) }` ] : [] ), ...( w.target !== target ? [ `${ e.effect } sits on the block, so the ${ target } loop is written on root` ] : [] ) ].map( ( text ) => ( { ...where, text: `${ e.record }: ${ text }` } ) ) );
 			}
+		}
+		if ( boxes.length ) {
+			writeLoopCss( n, boxes, { flat, ref, out } );
 		}
 		if ( pending.length ) {
 			writeNode( n, doc, [ ...new Set( pending ) ], { flat, ref, schema, out } );
