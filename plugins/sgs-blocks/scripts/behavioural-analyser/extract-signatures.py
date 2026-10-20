@@ -2205,10 +2205,11 @@ def _attr_to_raw_props_php(
                 # missed it entirely. `current_state` is STICKY within a statement —
                 # a fragment expressing no mapped state does not clear a state an
                 # earlier fragment in the SAME statement already established (matches
-                # how PHP concatenation builds one selector piecemeal); it only
-                # updates when a fragment DOES express a mapped state.
+                # how PHP concatenation builds one selector piecemeal), and the FIRST state a
+                # statement expresses wins: `$sel . ':hover,' . $sel . ':focus-visible{'`
+                # is one hover rule (SGS paints hover on both), never a focus one.
                 found_state = _derive_state_from_selector(content_no_media_cond)
-                if found_state:
+                if found_state and current_state is None:
                     current_state = found_state
                 # Same sticky-within-statement rule for BEM element (2026-07-21).
                 if block_short_slug:
@@ -2236,7 +2237,7 @@ def _attr_to_raw_props_php(
                     current_element = found_element
                     element_from_selector_var = True
                 found_state = selector_var_state.get(var_ref)
-                if found_state:
+                if found_state and current_state is None:
                     current_state = found_state
                 continue
             # Cause B robustness guard (2026-08-27, found + fixed via live
@@ -2517,11 +2518,13 @@ def _load_element_manifest_reverse(
                 "source": "attrMap",
             }
 
-        # Base (resting) attrMap — no state.
+        # Base attrMap: no state, unless the element itself is a state of the block (an element modelled as its own
+        # part, such as sgs/nav-drawer-menu's `item-open` or sgs/account's `menuActive`, declares `"state": "<word>"`
+        # with a word from the state vocabulary, scripts/data/states.json).
         for css_key, attr_name in (element_def.get("attrMap") or {}).items():
             if not isinstance(attr_name, str):
                 continue
-            _record(attr_name, css_key, None)
+            _record(attr_name, css_key, element_def.get("state") if isinstance(element_def.get("state"), str) else None)
         # Per-state attrMaps (e.g. states.current.attrMap, states.hover.attrMap).
         for state_name, state_def in (element_def.get("states") or {}).items():
             if not isinstance(state_def, dict):

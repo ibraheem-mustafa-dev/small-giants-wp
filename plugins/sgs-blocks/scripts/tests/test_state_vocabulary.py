@@ -59,6 +59,31 @@ def test_families_another_wave_owns_are_reported_not_tagged():
     assert ".sgs-form__field:user-invalid" in es._UNMAPPED_STATE_SELECTORS_SEEN
 
 
+def test_a_php_statement_keeps_its_first_state():
+    """MUST FAIL with last-wins: SGS builds `:hover` then `:focus-visible` as one hover rule (the label roll)."""
+    php = (
+        "<?php\n$roll = $attributes['labelRoll'];\n"
+        "$css .= $root . ' .sgs-x__link:hover .sgs-roll>span,' . $root . ' .sgs-x__link:focus-visible .sgs-roll>span{transform:' . $roll . ';}';\n"
+    )
+    _props, states, _elements = es._attr_to_raw_props_php(php, frozenset({"transform"}), {"roll": "labelRoll"}, "x")
+    assert states == {"labelRoll": "hover"}
+
+
+def test_an_element_that_is_a_state_tags_its_settings(tmp_path):
+    """MUST FAIL without the element-level `state` key: sgs/nav-drawer-menu's `item-open` part is the open state."""
+    import json
+
+    manifest = {"name": "sgs/x", "supports": {"sgs": {"elements": {
+        "item-open": {"state": "open", "attrMap": {"css:color": "itemColourOpen"}},
+        "item": {"attrMap": {"css:color": "itemColour"}},
+    }}}}
+    (tmp_path / "block.json").write_text(json.dumps(manifest), encoding="utf-8")
+    rev = es._load_element_manifest_reverse(tmp_path, {"itemColourOpen", "itemColour"})
+    assert rev["itemColourOpen"]["css_state"] == "open"
+    assert rev["itemColourOpen"]["css_element"] == "item-open", "the element keeps its name"
+    assert rev["itemColour"]["css_state"] is None
+
+
 def test_no_state_list_left_in_the_classifier():
     src = (BA / "extract-signatures.py").read_text(encoding="utf-8")
     assert "_STATE_SELECTOR_PATTERNS" not in src and "_BEM_CURRENT_MODIFIER_RE" not in src

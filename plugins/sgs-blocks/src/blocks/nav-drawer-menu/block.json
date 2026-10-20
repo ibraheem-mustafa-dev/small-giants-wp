@@ -372,6 +372,7 @@
 					"_note": "The ringed circle round the accordion expander (.sgs-nav-drawer-menu__caret), and round each trailing icon (.sgs-nav-drawer-menu__trailing-icon) when caretBoxOnTrailingIcon is on (includes/nav-drawer-menu-caret-box-css.php). A declared part, so motion (Spec 38A) can target it; its hover glow and turn timing belong to motion, not here."
 				},
 				"caret-box-open": {
+					"state": "open",
 					"motion": false,
 					"label": "Expander circle (open)",
 					"order": 12.2,
@@ -416,6 +417,7 @@
 					"_note": "Wave 3C U-7, M-15/M-22: the per-item featured-image thumbnail (.sgs-nav-drawer-menu__media). itemMediaReveal is per tier: none / always / hover (grows from width 0)."
 				},
 				"item-open": {
+					"state": "open",
 					"motion": false,
 					"label": "Item text (open)",
 					"order": 4,
@@ -448,6 +450,7 @@
 					"_note": "Parity with sgs/nav-bar-menu, 2026-09-28. The optional per-item marker chip (\"SOON\", \"NEW\") rendered after an item's label via the SHARED includes/nav-menu-markup.php::sgs_nav_shared_badge_html() call already present in sgs_nav_drawer_menu_render_items(); this block previously declared no colour attributes for it. Badge COPY is per-item (the operator's classic-menu-item Description field); badge COLOUR is block-level, one Colour-panel row applying to every badge this drawer renders. No hover state — a badge is never itself interactive."
 				},
 				"disabled-item": {
+					"state": "disabled",
 					"motion": false,
 					"label": "Disabled item",
 					"order": 3,

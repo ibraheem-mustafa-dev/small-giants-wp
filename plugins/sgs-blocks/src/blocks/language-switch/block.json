@@ -52,6 +52,7 @@
 					}
 				},
 				"current": {
+					"state": "current",
 					"motion": false,
 					"label": "Current language",
 					"order": 2,

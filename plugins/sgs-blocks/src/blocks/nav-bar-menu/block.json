@@ -455,6 +455,7 @@
 					"_note": "Each direct child of a `sgs/mega-group` column inside a mega panel (its heading, link list or card), which this bar classes `sgs-nav-bar-menu__mega-row` at render when the part holds an entrance (includes/helpers-nav-bar-motion-model.php). A motion target only (Spec 38A FR-38A-51), delayed by its stored index delay, counted from 0 in each column."
 				},
 				"disabled-item": {
+					"state": "disabled",
 					"motion": false,
 					"label": "Disabled item",
 					"order": 3,

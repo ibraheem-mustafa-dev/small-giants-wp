@@ -49,6 +49,7 @@
 					}
 				},
 				"menuActive": {
+					"state": "current",
 					"motion": false,
 					"label": "Active menu item",
 					"order": 2,
@@ -63,6 +64,7 @@
 					}
 				},
 				"menuIndicator": {
+					"state": "current",
 					"motion": false,
 					"label": "Active menu item bar",
 					"order": 3,
