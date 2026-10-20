@@ -8,8 +8,8 @@
 	text-decoration: none;
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	transition-property: all;
-	transition-timing-function: var(--wp--custom--easing--ease, ease);
-	/* The site-wide button hover timing (buttonPresets.default.hover-transition). */
+	/* The site-wide button hover timing (buttonPresets.default.hover-transition and hover-easing). */
+	transition-timing-function: var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease));
 	transition-duration: var(--wp--custom--button-presets--default--hover-transition, 0.3s);
 	cursor: pointer;
 }

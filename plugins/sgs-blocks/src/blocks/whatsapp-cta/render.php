@@ -55,6 +55,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-press.php';
 require_once __DIR__ . '/variant-render.php';
 
 $phone_number    = $attributes['phoneNumber'] ?? '';
@@ -188,6 +189,12 @@ if ( '' !== $bg_gradient_hover ) {
 }
 if ( $btn_hover_decls ) {
 	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $btn_hover_decls ) );
+}
+// Pressed look (helpers-button-press.php): the `default` preset's `active-transform` / `active-shadow`, printed only
+// when the site sets one. The <a> is the button, so the doubled uid class (0,4,0 with :active) outranks the hover rules.
+$press_rule = sgs_button_press_rule_for( '.' . $uid . '.' . $uid . '.sgs-whatsapp-cta__btn', 'default', '', true );
+if ( '' !== $press_rule ) {
+	$scoped_css[] = $press_rule;
 }
 // Space between the icon and the label (iconGap); unset keeps style.css's gap.
 if ( '' !== (string) ( $attributes['iconGap'] ?? '' ) ) {

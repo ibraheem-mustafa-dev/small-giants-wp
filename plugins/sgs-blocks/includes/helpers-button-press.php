@@ -56,21 +56,24 @@ if ( ! function_exists( 'sgs_button_press_token' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_button_press_rule' ) ) {
+if ( ! function_exists( 'sgs_button_press_rule_for' ) ) {
 	/**
-	 * The `:active` rule for one button, or `''` when no preset sets a press role for its style.
+	 * The `:active` rule for one button-shaped element, or `''` when no preset sets a press role for its style.
 	 *
-	 * The selector doubles the instance class (0,4,0 with `:active`), so the press out-ranks the button's own
-	 * per-instance hover and `:focus-visible` rules (0,3,0) and the stylesheet's hover rule (0,2,0) whatever the
-	 * document order. The pressed shadow is also handed to the focus system as `--sgs-focus-under`, so a ring drawn
-	 * while the button is pressed composes over the pressed shadow. The per-instance reduced-motion rule
-	 * (`transform:none !important`) suppresses the pressed transform; the pressed shadow still applies.
+	 * The caller passes a selector that already out-ranks the element's own hover and `:focus-visible` rules and the
+	 * stylesheet's hover rule (double the instance class: `.uid.uid .element`, so the press is 0,4,0 with `:active`),
+	 * whatever the document order. The pressed shadow is also handed to the focus system as `--sgs-focus-under`, so a
+	 * ring drawn while the element is pressed composes over the pressed shadow. Reduced motion suppresses the pressed
+	 * transform and keeps the pressed shadow: sgs/button does it with a per-instance rule (`transform:none !important`),
+	 * every other caller passes `$reduced_motion_twin` so the rule carries its own.
 	 *
-	 * @param string $uid     The button's instance class.
-	 * @param string $variant The button's style (`inheritStyle`).
+	 * @param string $selector            The element's selector, without the `:active` state.
+	 * @param string $variant             The element's style (a preset slug, `link`, or anything else for custom).
+	 * @param string $guard               Pseudo-classes appended after `:active` (for example `:not([disabled])`).
+	 * @param bool   $reduced_motion_twin Append a `prefers-reduced-motion` rule that removes the pressed transform.
 	 * @return string
 	 */
-	function sgs_button_press_rule( string $uid, string $variant ): string {
+	function sgs_button_press_rule_for( string $selector, string $variant, string $guard = '', bool $reduced_motion_twin = false ): string {
 		$decls     = array();
 		$transform = sgs_button_press_token( $variant, 'active-transform' );
 		if ( '' !== $transform ) {
@@ -81,10 +84,51 @@ if ( ! function_exists( 'sgs_button_press_rule' ) ) {
 			// sgs-shadow-fallback: a momentary pressed state; the resting shadow rule (sgs_shadow_decls) carries the forced-colours outline.
 			$decls = array_merge( $decls, sgs_focus_under_decls( array( 'box-shadow:var(' . $shadow . ')' ) ) );
 		}
-		if ( ! $decls ) {
+		if ( ! $decls || '' === trim( $selector ) ) {
 			return '';
 		}
+		$rule = $selector . ':active' . $guard . '{' . implode( ';', $decls ) . ';}';
+		if ( $reduced_motion_twin && '' !== $transform ) {
+			$rule .= '@media(prefers-reduced-motion:reduce){' . $selector . ':active' . $guard . '{transform:none;}}';
+		}
+		return $rule;
+	}
+}
+
+if ( ! function_exists( 'sgs_button_press_rule' ) ) {
+	/**
+	 * The `:active` rule for one sgs/button, or `''` when no preset sets a press role for its style.
+	 *
+	 * The selector doubles the instance class (0,4,0 with `:active`), so the press out-ranks the button's own
+	 * per-instance hover and `:focus-visible` rules (0,3,0) and the stylesheet's hover rule (0,2,0) whatever the
+	 * document order. See sgs_button_press_rule_for() for the pressed shadow and reduced-motion behaviour.
+	 *
+	 * @param string $uid     The button's instance class.
+	 * @param string $variant The button's style (`inheritStyle`).
+	 * @return string
+	 */
+	function sgs_button_press_rule( string $uid, string $variant ): string {
 		$uid = sanitize_html_class( $uid );
-		return ".{$uid}.{$uid}.sgs-button:active{" . implode( ';', $decls ) . ';}';
+		return sgs_button_press_rule_for( ".{$uid}.{$uid}.sgs-button", $variant );
+	}
+}
+
+if ( ! function_exists( 'sgs_button_press_rules_by_variant' ) ) {
+	/**
+	 * The `:active` rules for every `.sgs-button--{variant}` inside a scope, one per variant whose preset sets a press role.
+	 *
+	 * For a block whose CTA variant is chosen by class (product-card's two CTAs carry `sgs-button--primary`,
+	 * `--secondary` or `--outline`), so the render does not need to know which variant each CTA wears.
+	 *
+	 * @param string $scope The instance class (without the dot); the selector doubles it.
+	 * @return string
+	 */
+	function sgs_button_press_rules_by_variant( string $scope ): string {
+		$scope = sanitize_html_class( $scope );
+		$css   = '';
+		foreach ( SGS_BUTTON_PRESS_VARIANTS as $variant ) {
+			$css .= sgs_button_press_rule_for( ".{$scope}.{$scope} .sgs-button--{$variant}", $variant, '', true );
+		}
+		return $css;
 	}
 }

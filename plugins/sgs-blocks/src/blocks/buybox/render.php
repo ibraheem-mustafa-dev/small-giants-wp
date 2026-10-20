@@ -37,6 +37,7 @@ defined( 'ABSPATH' ) || exit;
 // file is required before WooCommerce loads (memory: file-scope-wc-class-extends-must-load-lazily).
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-press.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-product-manifest.php';
 require_once dirname( __DIR__, 3 ) . '/includes/configurator-seed.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-configurator-pricing.php';
@@ -527,6 +528,15 @@ $uid      = 'sgs-bb-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-buybox';
 
 $scoped_css = array();
+
+// Pressed look (helpers-button-press.php): the add-to-cart style's `active-transform` / `active-shadow` preset tokens
+// (the `default` preset's when no style is chosen), printed only when a preset sets one. The doubled uid class
+// (0,4,0 with :active) outranks the hover rules; a disabled button never presses. The sticky bar's button wears the
+// same class, so one rule serves both.
+$press_rule = sgs_button_press_rule_for( '.' . $uid . '.' . $uid . ' .buybox__add-to-cart', $add_to_cart_style_class, ':not([disabled])', true );
+if ( '' !== $press_rule ) {
+	$scoped_css[] = $press_rule;
+}
 
 // --- Base margin — `margin` is a single block-owned TIER-of-BOXES envelope
 // attr {desktop,tablet,mobile} (folded 2026-09-11 from the wrong 3-sibling

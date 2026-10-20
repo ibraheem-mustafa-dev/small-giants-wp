@@ -190,6 +190,7 @@ if ( in_array( $sgs_image_aspect, array( '16 / 9', '21 / 9', '4 / 3', '1 / 1', '
 // (built below). Only the COLOUR vars are emitted here (the helper does not
 // handle colour). A per-instance uid scopes the typography rules.
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-press.php';
 
 $sgs_card_uid          = 'sgs-pc-' . wp_unique_id();
 $sgs_title_colour      = sgs_colour_value( $attributes['titleColour'] ?? '' );
@@ -655,6 +656,10 @@ if ( '' !== $sgs_pc_preset_border ) {
 	$classes[] = 'has-border-color';
 	$classes[] = 'has-' . $sgs_pc_preset_border . '-border-color';
 }
+
+// Pressed look (helpers-button-press.php): each CTA's `sgs-button--{variant}` class selects its preset's
+// `active-transform` / `active-shadow`; a variant whose preset sets neither prints nothing.
+$sgs_card_typo_css .= sgs_button_press_rules_by_variant( $sgs_card_uid );
 
 $sgs_card_typo_tag = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 

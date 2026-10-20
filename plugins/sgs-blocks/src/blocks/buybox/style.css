@@ -170,7 +170,8 @@
 	background: var(--sgs-buybox-cta-bg, var(--wp--preset--color--accent, var(--wp--preset--color--primary, #1e1e1e)));
 	color: var(--sgs-buybox-cta-colour, var(--wp--preset--color--text, #fff));
 	cursor: pointer;
-	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 200ms) var(--wp--custom--easing--ease, ease), border-color var(--wp--custom--button-presets--default--hover-transition, 200ms) var(--wp--custom--easing--ease, ease), color var(--wp--custom--button-presets--default--hover-transition, 200ms) var(--wp--custom--easing--ease, ease), transform var(--wp--custom--button-presets--default--hover-transition, 200ms) var(--wp--custom--easing--ease, ease);
+	/* The button preset's timing for this style (--sgs-btn-transition-* below), else the `default` preset's. */
+	transition: background-color var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 200ms)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), border-color var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 200ms)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), color var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 200ms)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), transform var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 200ms)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), box-shadow var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 200ms)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)));
 }
 
 /* Hover: the style presets below own the colour change; the site-wide button lift
@@ -204,6 +205,8 @@
    Framework fallbacks mirror button/style.css's own preset defaults. ────── */
 
 .sgs-buybox .buybox__add-to-cart--primary {
+	--sgs-btn-transition-duration: var(--wp--custom--button-presets--primary--hover-transition, var(--wp--custom--button-presets--default--hover-transition, 200ms));
+	--sgs-btn-transition-easing: var(--wp--custom--button-presets--primary--hover-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)));
 	border: var(--wp--custom--button-presets--primary--border-width, 2px) solid var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary));
 	border-radius: var(--wp--custom--button-presets--primary--border-radius, 8px);
 	background: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
@@ -217,6 +220,8 @@
 }
 
 .sgs-buybox .buybox__add-to-cart--secondary {
+	--sgs-btn-transition-duration: var(--wp--custom--button-presets--secondary--hover-transition, var(--wp--custom--button-presets--default--hover-transition, 200ms));
+	--sgs-btn-transition-easing: var(--wp--custom--button-presets--secondary--hover-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)));
 	border: var(--wp--custom--button-presets--secondary--border-width, 2px) solid var(--wp--custom--button-presets--secondary--border, var(--wp--preset--color--primary));
 	border-radius: var(--wp--custom--button-presets--secondary--border-radius, 8px);
 	background: var(--wp--custom--button-presets--secondary--background, transparent);
@@ -230,6 +235,8 @@
 }
 
 .sgs-buybox .buybox__add-to-cart--outline {
+	--sgs-btn-transition-duration: var(--wp--custom--button-presets--outline--hover-transition, var(--wp--custom--button-presets--default--hover-transition, 200ms));
+	--sgs-btn-transition-easing: var(--wp--custom--button-presets--outline--hover-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)));
 	border: var(--wp--custom--button-presets--outline--border-width, 2px) solid var(--wp--custom--button-presets--outline--border, var(--wp--preset--color--border));
 	border-radius: var(--wp--custom--button-presets--outline--border-radius, 8px);
 	background: var(--wp--custom--button-presets--outline--background, transparent);
