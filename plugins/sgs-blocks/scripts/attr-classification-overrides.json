@@ -7435,6 +7435,30 @@
 				"css_element": null
 			},
 			"_reason": "2026-10-18 (Spec 38A M6.6). brandName chooses WHICH brand the icon is; the brand's paint (glyph, ring, border, gradient) comes from the brand registry through sgs_brand_paint() and the icon's colour attributes, so the emission scanner's pairing of those declarations with brandName is wrong. Classified with no css_property, as identity, so a skeleton carrying a brand icon is not read as carrying a style value (scripts/computed-route/lint.mjs::lintSkeleton)."
+		},
+		{
+			"slug": "sgs/button",
+			"attr": "inheritStyle",
+			"fields": {
+				"css_property": null
+			},
+			"_reason": "2026-10-20: a style preset that seeds many properties at once (the button's resting look per preset), so it is a discovered enum with no css_property, which calibration records value by value. It reached box-shadow,transform at the 01a804e2d reseed only because includes/helpers-button-press.php::sgs_button_press_rule reads it to pick the :active press, which is one effect among the ~30 the presets paint."
+		},
+		{
+			"slug": "sgs/buybox",
+			"attr": "addToCartStyle",
+			"fields": {
+				"css_property": null
+			},
+			"_reason": "2026-10-20: a style preset that seeds many properties at once (the add-to-cart button's resting look per preset), so it is a discovered enum with no css_property, which calibration records value by value. It reached box-shadow,transform at the 01a804e2d reseed only because includes/helpers-button-press.php::sgs_button_press_rule reads it to pick the :active press, which is one effect among the ~30 the presets paint."
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "submenuCaretSize",
+			"fields": {
+				"css_property": "height,width"
+			},
+			"_reason": "2026-10-20: includes/nav-menu-caret-css.php::sgs_nav_menu_caret_css writes width and height from submenuCaretSize for the drawer menu exactly as for the bar menu (whose row holds height,width); the drawer's classifier entry was dropped at the 54943b0dc reseed when caretBoxSize took the caret-box element's height,width."
 		}
 	]
 }
