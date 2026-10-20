@@ -716,6 +716,15 @@
     "order": 81
   },
   {
+    "id": "check-text-stroke-routing",
+    "cmd": "python scripts/check-text-stroke-routing.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "bbc670de1",
+    "budget_ms": 250,
+    "order": 207
+  },
+  {
     "id": "check-transform-parity",
     "cmd": "node scripts/generative-background/verify-transform.mjs",
     "tier": "fast",
