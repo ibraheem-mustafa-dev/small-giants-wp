@@ -796,6 +796,16 @@ A block change is not done until the inspector has ONE control per setting + zer
 
 HC2 bans a parent PER-ELEMENT typography control, not a wrapper inheritable default. The WordPress-native `supports.typography` declared on the block ROOT is permitted: WP emits it as an inline style on the wrapper that children inherit via normal cascade, and any child's own explicit typography still overrides it. Only the per-element-parent-control form is banned.
 
+
+### 9. States
+
+- **One home.** The framework DB's `states` table (seeded from `plugins/sgs-blocks/scripts/data/states.json`) is the state vocabulary: each state word, its family, every mechanism that expresses it (pseudo-class, ARIA attribute, native attribute, class, data attribute) and how to reach it. `block_attributes.css_state` records which state each setting paints. Neither is hand-written anywhere else (FP-1).
+- **State words:** hover, focus, active (press), current (with pressed, selected and checked), open, disabled, scrolled, shrunk.
+- **Declaring a state.** A block declares a state's settings in `block.json::supports.sgs.elements.<el>.states.<state>.attrMap`. An element that is itself a state (an active menu item, a disabled item, an open caret box) declares `"state"` on the element instead, because its selector lives in a PHP variable the classifier cannot follow.
+- **Close reverses open.** A closing transition runs on the open's timing and curve unless a close override is set. A timing on the resting rule times both directions of a change; one on a state rule times entering that state only.
+- **Behaviour that follows a real state is not a state look.** An icon that turns or swaps when an item opens follows the element's own state (`aria-expanded`, `[open]`); its setting (`sgs/accordion.iconRotation`, degrees) is a resting amount and is never tagged with a state.
+- **Gates.** `plugins/sgs-blocks/scripts/check-state-classification.py` fails a setting painted under a state selector whose `css_state` is NULL (allowlist `plugins/sgs-blocks/scripts/data/state-classification-allowlist.json`). `plugins/sgs-blocks/scripts/behavioural-analyser/check-state-exhaustiveness.py` maps every state-bearing selector, from the source scan and a live CSSOM pass, to a tagged setting, a `states` row or a recorded fixed behaviour (`plugins/sgs-blocks/scripts/behavioural-analyser/data/state-fixed-behaviours.json`).
+
 ---
 
 ## Shared Features Across All Blocks
