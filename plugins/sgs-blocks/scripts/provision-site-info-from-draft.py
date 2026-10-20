@@ -15,7 +15,7 @@ both, and intake's `site_title` and `tagline` rows arrive the same way (the tagl
 
 Handover entries read (extra fields are tolerated):
   { owner: "site-info", kind: "link", key: "socials.instagram", address: "https://...", ref: "..." }
-  { owner: "wp-option", kind: "text", key: "blogname", address: "Eye Care Ward End", ref: "..." }
+  { owner: "wp-option", kind: "text", key: "blogname", address: "Acme Bakery", ref: "..." }
   and the pipeline's evidence shape:
   { owner: "site-info", node: "...", evidence: { key: "...", draft: "https://...", ref: "..." } }
 The file is a JSON list, or an object holding the list under `handover` or `entries`.
