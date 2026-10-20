@@ -2,7 +2,7 @@
 doc_type: plan
 plan_id: 2026-10-20-site-surfaces-wave
 governs: Spec 48 FR-48-84 (the draft-used part), FR-48-82 (media upload), FR-48-58, FR-48-59 (intake handover)
-status: in progress
+status: done
 ---
 
 # Site and surfaces wave, draft-used part, and media upload

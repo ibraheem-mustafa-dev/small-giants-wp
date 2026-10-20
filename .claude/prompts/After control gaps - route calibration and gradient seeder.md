@@ -40,7 +40,7 @@ TASKS, IN ORDER
    - Run node calibrate.mjs --site local-indus --client indus-foods --blocks <every block in cache/indus-test/>.
    - For a refused slot map, check that each named loss is absent from the DB for that block before passing --allow-loss.
    - Done when: every cache/indus-test/*.paint.json and its slot map carry the current readKey. List any audit "setting" verdict still unmatched in the FR-48-8 plan's step 5.
-5. If time remains: d2 (a calibration marker for nav-drawer scrimBlur and scrimOpacity, and the resolver writing blur(2px) as the length), then Order item 3 (FR-48-84, site and surfaces).
+5. If time remains: d2 (a calibration marker for nav-drawer scrimBlur and scrimOpacity, and the resolver writing blur(2px) as the length). Order item 3 (FR-48-84, site and surfaces) is done (2026-10-20); the next item after this prompt's is item 4, states.
 6. Close: /qc-council (three Sonnet raters, one per angle; verify every finding), then /handoff. Delete this prompt file in the handoff commit.
 
 GUARDRAILS
