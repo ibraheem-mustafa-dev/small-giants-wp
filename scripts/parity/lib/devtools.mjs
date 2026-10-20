@@ -114,22 +114,25 @@ export async function triggerArmed( page, { floor = 250, cap = 6000 } = {} ) {
 }
 
 // The DOM nodeIds of a finder's element and its ancestors (nearest first), or null when it resolves to nothing. The
-// remote objects it makes are released before it returns (one object group per call).
+// remote objects it makes are released before it returns (one object group per call). DOM.getDocument renumbers every
+// node, so a caller still holding nodeIds (a read inside forcedPseudo) passes keepDocument and the ids it holds stay valid.
 const GROUP = 'sgs-walk';
-async function nodeChain( cdp, finder, resolveSrc, ancestors ) {
+async function nodeChain( cdp, finder, resolveSrc, ancestors, keepDocument = false ) {
 	try {
-		return await chainOf( cdp, finder, resolveSrc, ancestors );
+		return await chainOf( cdp, finder, resolveSrc, ancestors, keepDocument );
 	} finally {
 		await cdp.send( 'Runtime.releaseObjectGroup', { objectGroup: GROUP } ).catch( () => {} );
 	}
 }
 
-async function chainOf( cdp, finder, resolveSrc, ancestors ) {
+async function chainOf( cdp, finder, resolveSrc, ancestors, keepDocument ) {
 	const { result } = await cdp.send( 'Runtime.evaluate', { expression: `(${ resolveSrc })(${ JSON.stringify( finder ) })`, objectGroup: GROUP } );
 	if ( ! result?.objectId ) {
 		return null;
 	}
-	await cdp.send( 'DOM.getDocument', { depth: 0 } );
+	if ( ! keepDocument ) {
+		await cdp.send( 'DOM.getDocument', { depth: 0 } );
+	}
 	const ids = [];
 	for ( let objectId = result.objectId; objectId; ) {
 		ids.push( ( await cdp.send( 'DOM.requestNode', { objectId } ) ).nodeId );
@@ -208,9 +211,10 @@ export function declaredNames( matched ) {
 }
 
 // The declared values of `props` on a finder's element: { prop: value } for each prop some rule declares; `props`
-// null reads every property an author declaration names (declaredNames).
-export async function declaredValues( cdp, finder, resolveSrc, props = DECLARED_PROPS ) {
-	const ids = await nodeChain( cdp, finder, resolveSrc, false );
+// null reads every property an author declaration names (declaredNames). keepDocument: read without renumbering the
+// document's nodes (inside forcedPseudo's read, whose forced nodes must stay addressable).
+export async function declaredValues( cdp, finder, resolveSrc, props = DECLARED_PROPS, { keepDocument = false } = {} ) {
+	const ids = await nodeChain( cdp, finder, resolveSrc, false, keepDocument );
 	if ( ! ids ) {
 		return null;
 	}
