@@ -56,9 +56,10 @@ Governing documents: fix register `plans/2026-10-02-eye-care-fix-register.md` (w
 
 **State:** Waves 1 to 3C are built and live on sandybrown; Gate 3C items 1, 2, 3 and 5 pass; item 4's last mile is deferred by you. Wave 4 (reference clones) has not started; Wave 5 is header and footer cloning through Spec 48. Proof: `verify/merged-spec36-37-track.md`.
 
-**Resume from:** `plans/2026-10-01-header-nav-thread-plan.md` §2.4 to close Gate 3C, or §4 to prepare Wave 4.
+**Resume from:** `plans/2026-10-20-mega-item-section-links.md` (next); `plans/2026-10-01-header-nav-thread-plan.md` §2.4 to close Gate 3C, or §4 to prepare Wave 4.
 
 **Open (each Spec 36 or 38 Status line holds the detail):**
+- **Mega items link to their section page (planned 2026-10-20, ready to build):** a menu item that opens a mega panel has no page link today; you chose a "Section page" setting on each panel, a split link and chevron in the bar (hover kept) and the drawer (with a "View all" first row), and one menu for both. Plan: `plans/2026-10-20-mega-item-section-links.md`; Spec 36 FR-36-5 "Section page" and FR-36-6 "A parent with its own page".
 - **FR-36-16 (your choice):** the late-CSS A/B fails on the drawer because `nav-drawer/style.css` places the close control and first link; relax the test to the dialog box plus dismissal, or emit the drawer's whole layout in the scoped rules.
 - **FR-38-31 (your eye):** the aurora and ink wave styles painted black in a local Chrome; check them on a real GPU.
 - FR-36-17: the mega pages exceed the 100 KB CSS and 50 KB JS budget. FR-36-11: the active item under forced colours is not confirmed live. The homepage layout shift (0.82 at 375) is untraced.
