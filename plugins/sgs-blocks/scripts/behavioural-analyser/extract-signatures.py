@@ -2933,13 +2933,7 @@ def extract_css_property_and_layer() -> dict:
         # tell them apart cannot be routed (the live resolver would pick one by rowid
         # order), so both are refused. Checked for the attrs Shape F (composer
         # fallback) and Shape G routed, and for every supplementary-pass route.
-        # A prefix helper's route joins the net only for a vendor-prefixed property (the text outline, routed since the
-        # vendor-prefix fix): every other helper route predates the net and keeps its established slot.
-        _helper_vendor = {
-            a for a in ev.get("helper_routed", ())
-            if only is None and any(prop.startswith("-") for prop in resolved.get((slug, a), ()))
-        }
-        _new_shape_attrs = (composer_routed | set(config_map_props) | _helper_vendor) & block_attr_names
+        _new_shape_attrs = (composer_routed | set(config_map_props)) & block_attr_names
         _established_slots: "set[tuple]" = set()
         if only is not None:
             # A supplementary route sharing an unelemented slot with a primary route
@@ -2986,6 +2980,29 @@ def extract_css_property_and_layer() -> dict:
                     unresolved_reasons[(slug, _attr)] = (
                         f"ambiguous: shares the ({','.join(_slot[0])}, state={_slot[1]}, tier={_slot[2]}) slot "
                         "with another attribute and no css_element tells them apart"
+                    )
+        # Text-outline routes (vendor-prefixed properties a prefix helper routes): two attributes of this block on the
+        # same (property, element, state, tier) cannot be told apart by the resolver, so both are refused. Routes that
+        # predate the vendor-prefix fix keep their slots.
+        if only is None:
+            _outline_groups: "dict[tuple, list[str]]" = defaultdict(list)
+            for _attr in ev.get("helper_routed", ()):
+                if _attr in block_attr_names and (slug, _attr) in resolved and any(_p.startswith("-") for _p in resolved[(slug, _attr)]):
+                    _outline_groups[(
+                        tuple(sorted(resolved[(slug, _attr)])),
+                        str(resolved_bem_element.get((slug, _attr))),
+                        resolved_state.get((slug, _attr)),
+                        resolved_tier.get((slug, _attr)),
+                    )].append(_attr)
+            for _slot, _members in _outline_groups.items():
+                if len(_members) < 2:
+                    continue
+                for _attr in _members:
+                    for _store in (resolved, resolved_state, resolved_bem_element, resolved_tier):
+                        _store.pop((slug, _attr), None)
+                    unresolved_reasons[(slug, _attr)] = (
+                        f"ambiguous: shares the ({','.join(_slot[0])}, element={_slot[1]}, state={_slot[2]}, tier={_slot[3]}) slot "
+                        "with another text-outline attribute and no css_element tells them apart"
                     )
         # A family-composer route (CR6 P2-f) with no element must not land on a slot another shape already routes
         # without an element (sgs/icon `padding` against `backgroundPadding`): refuse it, never the established route.
