@@ -39,9 +39,10 @@ const registeredPlugins = new Set();
 
 let defaultsApplied = false;
 
+export { chromeOffsetPx } from '../motion-utils.js';
+
 export {
 	bindHoverReplay,
-	chromeOffsetPx,
 	resolveEase,
 	resolveScrub,
 	resolveStart,
