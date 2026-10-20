@@ -12,9 +12,9 @@ import http from 'http';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { sha256 } from '../lib/handoff.mjs';
-import { recheckManifest, openSandbox, classifyUrl } from '../lib/intake-sandbox.mjs';
+import { recheckManifest, openSandbox, classifyUrl, fetchOrigin } from '../lib/intake-sandbox.mjs';
 import { recordExport } from '../lib/intake-record.mjs';
-import { cleanEnv, secretNames, assertSecretFree, runIsolated } from '../lib/intake-process.mjs';
+import { cleanEnv, secretNames, assertSecretFree, runIsolated, ENV_ALLOW } from '../lib/intake-process.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const FIXTURE = path.join( HERE, 'fixtures', 'intake-sandbox' );
@@ -225,6 +225,23 @@ test( 'MUST FAIL (d): a worker started by runIsolated holds no secret variable',
 	assert.deepEqual( Object.keys( cleanEnv( { Path: 'p', SystemRoot: 's', NODE_OPTIONS: '--require x', WP_USER_A: 'u', DB_KEY: 'k' } ) ).sort(), [ 'Path', 'SystemRoot' ] );
 } );
 
+// Every INTAKE_* switch a library or entry script reads reaches the worker: the stages run in the cleanEnv process, so a
+// switch missing from ENV_ALLOW is silently off there while an in-process test of the same library sees it.
+test( 'MUST FAIL (d2): every INTAKE_* variable the intake code reads is in ENV_ALLOW', () => {
+	const root = path.join( HERE, '..' );
+	const files = [ ...fs.readdirSync( path.join( root, 'lib' ) ).map( ( f ) => path.join( root, 'lib', f ) ), ...fs.readdirSync( root ).map( ( f ) => path.join( root, f ) ) ].filter( ( f ) => f.endsWith( '.mjs' ) );
+	const read = new Set();
+	for ( const f of files ) {
+		for ( const m of fs.readFileSync( f, 'utf8' ).matchAll( /\benv\.(INTAKE_[A-Z_]+)/g ) ) {
+			read.add( m[ 1 ] );
+		}
+	}
+	assert.ok( read.size >= 4, `found only ${ [ ...read ] }` );
+	assert.deepEqual( [ ...read ].filter( ( n ) => ! ENV_ALLOW.includes( n ) ), [] );
+	const env = Object.fromEntries( [ ...read ].map( ( n ) => [ n, '1' ] ) );
+	assert.deepEqual( Object.keys( cleanEnv( env ) ).sort(), [ ...read ].sort() );
+} );
+
 test( 'a worker with the clean environment can still launch Chromium', async () => {
 	const dir = tempDir( 'intake-worker-' );
 	const worker = path.join( dir, 'launch.mjs' );
@@ -257,4 +274,23 @@ test( 'MUST FAIL (f): MANIFEST.json is re-checked before anything runs', async (
 	const extra = copyFixture();
 	fs.writeFileSync( path.join( extra, 'planted.js' ), 'alert(1)\n' );
 	assert.throws( () => recheckManifest( extra ), /planted\.js: in the folder but not listed/ );
+} );
+
+// lib/intake-sandbox.mjs::fetchOrigin: the draft-origin fetch retries a socket ENOBUFS (Windows, many browsers at once)
+// and throws every other failure, and the last ENOBUFS, unchanged.
+test( 'MUST FAIL (g): the origin fetch retries ENOBUFS only', async () => {
+	const noBufs = () => Object.assign( new TypeError( 'fetch failed' ), { cause: Object.assign( new Error( 'write ENOBUFS' ), { code: 'ENOBUFS' } ) } );
+	const flaky = ( fails, err = noBufs ) => {
+		const calls = [];
+		return { calls, fetchImpl: async ( url ) => ( calls.push( url ), calls.length <= fails ? Promise.reject( err() ) : { ok: true, url } ) };
+	};
+	const a = flaky( 2 );
+	assert.deepEqual( await fetchOrigin( 'http://127.0.0.1:1/x', {}, { delayMs: 1, fetchImpl: a.fetchImpl } ), { ok: true, url: 'http://127.0.0.1:1/x' } );
+	assert.equal( a.calls.length, 3 );
+	const b = flaky( 9 );
+	await assert.rejects( fetchOrigin( 'u', {}, { attempts: 3, delayMs: 1, fetchImpl: b.fetchImpl } ), ( e ) => 'ENOBUFS' === e.cause.code );
+	assert.equal( b.calls.length, 3 );
+	const c = flaky( 9, () => Object.assign( new TypeError( 'fetch failed' ), { cause: { code: 'ECONNREFUSED' } } ) );
+	await assert.rejects( fetchOrigin( 'u', {}, { delayMs: 1, fetchImpl: c.fetchImpl } ), ( e ) => 'ECONNREFUSED' === e.cause.code );
+	assert.equal( c.calls.length, 1 );
 } );

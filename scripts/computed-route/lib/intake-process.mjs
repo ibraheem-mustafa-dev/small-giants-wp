@@ -5,11 +5,11 @@ import path from 'path';
 import { spawn } from 'child_process';
 
 // The secret-free process. Only these variables reach an intake worker: what Node, Windows and Playwright need to
-// start Chromium and find its install, plus the three speed switches: INTAKE_POOL (the browser-unit pool size,
-// lib/intake-pool.mjs), INTAKE_SKIP_QUIET (the harness's quiet-step skipping, lib/intake-harness.mjs) and
-// INTAKE_PARALLEL_WIDTHS (test 2's widths side by side, opt-in, lib/intake-defects.mjs::unreachedDefects). NODE_OPTIONS
-// is not passed: it can --require or --import arbitrary code.
-export const ENV_ALLOW = [ 'PATH', 'SYSTEMROOT', 'SYSTEMDRIVE', 'WINDIR', 'TEMP', 'TMP', 'HOME', 'USERPROFILE', 'LOCALAPPDATA', 'APPDATA', 'PLAYWRIGHT_BROWSERS_PATH', 'INTAKE_POOL', 'INTAKE_SKIP_QUIET', 'INTAKE_PARALLEL_WIDTHS' ];
+// start Chromium and find its install, plus the four speed switches: INTAKE_POOL (the browser-unit pool size,
+// lib/intake-pool.mjs), INTAKE_SKIP_QUIET (the harness's quiet-step skipping, lib/intake-harness.mjs),
+// INTAKE_PARALLEL_WIDTHS and INTAKE_PARALLEL_VISITS (test 2's widths and visits side by side,
+// lib/intake-defects.mjs::unreachedDefects). NODE_OPTIONS is not passed: it can --require or --import arbitrary code.
+export const ENV_ALLOW = [ 'PATH', 'SYSTEMROOT', 'SYSTEMDRIVE', 'WINDIR', 'TEMP', 'TMP', 'HOME', 'USERPROFILE', 'LOCALAPPDATA', 'APPDATA', 'PLAYWRIGHT_BROWSERS_PATH', 'INTAKE_POOL', 'INTAKE_SKIP_QUIET', 'INTAKE_PARALLEL_WIDTHS', 'INTAKE_PARALLEL_VISITS' ];
 const SECRET_NAME = /PWD|PASSWORD|TOKEN|SECRET|API_KEY|_KEY$/i;
 // The shell's working-directory variables match /PWD/ but hold a path, not a secret.
 const NOT_SECRET = new Set( [ 'PWD', 'OLDPWD' ] );
