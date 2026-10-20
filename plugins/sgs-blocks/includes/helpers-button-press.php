@@ -22,6 +22,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-global-settings.php';
 require_once __DIR__ . '/helpers-shadow-hover.php';
 
 /** The variants whose own press tokens a button reads (style.css `.sgs-button--{variant}`). */
@@ -38,7 +39,7 @@ if ( ! function_exists( 'sgs_button_press_token' ) ) {
 	function sgs_button_press_token( string $variant, string $role ): string {
 		static $presets = null;
 		if ( null === $presets ) {
-			$presets = function_exists( 'wp_get_global_settings' ) ? wp_get_global_settings( array( 'custom', 'buttonPresets' ) ) : array();
+			$presets = function_exists( 'sgs_global_custom_setting' ) ? sgs_global_custom_setting( 'buttonPresets' ) : array();
 			$presets = is_array( $presets ) ? $presets : array();
 		}
 		if ( 'link' === $variant ) {
