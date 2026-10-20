@@ -327,7 +327,7 @@
 }
 
 .sgs-card-grid__badge--accent {
-	color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--accent-text);
 }
 
 .sgs-card-grid__badge--primary {

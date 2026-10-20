@@ -55,6 +55,25 @@ VARIANT_KEY_TABLE = (
 )
 ACCENT_SLUGS = ("accent", "accent-light", "accent-text")
 
+# --------------------------------------------------------------------------- role defaults
+
+# A framework slug the draft gives no colour follows the client's own colour for a related slug (Spec 32
+# FR-32-14's defaults), never the framework file's hex. (slug, the slug whose client colour it takes),
+# in resolution order: a slug that another follows comes first.
+ROLE_DEFAULT_TABLE = (
+    ("heading", "text"),
+    ("section-text", "text"),
+    ("accent-text", "text"),
+    ("primary-text", "text-inverse"),
+    ("link", "primary"),
+    ("link-hover", "primary-dark"),
+    ("section", "surface-alt"),
+)
+# The ground each followed text slug is read on (Spec 32 section 12.2), traced with the WCAG ratio.
+ROLE_DEFAULT_GROUND = {"heading": "surface", "section-text": "section", "accent-text": "accent-light",
+                       "primary-text": "primary", "link": "surface", "link-hover": "surface"}
+MIN_TEXT_CONTRAST = 4.5
+
 # --------------------------------------------------------------------------- shape
 
 SQUARE_RADIUS_RE = re.compile(r"^0+(?:px|rem|em)?(?![\d.])")

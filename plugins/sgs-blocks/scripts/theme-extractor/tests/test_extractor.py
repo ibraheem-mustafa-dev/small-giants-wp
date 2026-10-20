@@ -339,7 +339,11 @@ def test_fr335_build_snapshot_token_less_uses_advisory_palette():
 
 def test_fr335_mamas_pass_a_full_no_derived():
     pal = _snapshot()["settings"]["color"]["palette"]
-    assert pal and not any(e.get("_source") == "derived" or e.get("advisory") for e in pal)
+    assert pal and not any(e.get("advisory") for e in pal)
+    # The only derived entries are role defaults following the draft's own colours (role_defaults.py).
+    from palette_vocab import ROLE_DEFAULT_TABLE
+    role_slugs = {slug for slug, _follows in ROLE_DEFAULT_TABLE}
+    assert all(e["slug"] in role_slugs for e in pal if e.get("_source") == "derived")
 
 
 def test_fr335_push_strips_advisory_tokens():

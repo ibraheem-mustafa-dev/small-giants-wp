@@ -55,6 +55,7 @@ import heading_weight
 import palette as palette_mod
 import presets as presets_mod
 import palette_refs
+import role_defaults
 import site_palette
 import usage_census
 import used_fonts
@@ -399,6 +400,9 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
         confirmed_palette.apply_confirmed(snap, confirmed, confirmed_palette.framework_slugs(baseline), trace,
                                           draft_slugs)
         pal = snap["settings"]["color"]["palette"]
+    # A framework slug the draft left unset follows the client's related colour, never the framework hex.
+    role_defaults.apply_role_defaults(snap, baseline, trace)
+    pal = ((snap.get("settings", {}).get("color", {}) or {}).get("palette", [])) or pal
     slug_by_hex = palette_refs.slug_by_hex(pal) if design else {
         e["color"].lower(): e["slug"] for e in pal
         if isinstance(e.get("color"), str) and e["color"].startswith("#")}

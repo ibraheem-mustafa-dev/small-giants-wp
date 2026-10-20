@@ -76,12 +76,14 @@ def test_overlay_entries_carry_the_baseline_hex():
     pal = _overlay_snapshot()["settings"]["color"]["palette"]
     base_hex = {e["slug"]: e["color"] for e in BASE_PALETTE}
     overlaid = [e for e in pal if e.get("advisory")]
-    assert sorted(e["slug"] for e in overlaid) == ["surface", "text"]
+    # surface and text are guessed; the role defaults that follow text (role_defaults.py) are guesses too.
+    guessed = {"surface", "text", "heading", "section-text", "accent-text"}
+    assert sorted(e["slug"] for e in overlaid) == sorted(guessed)
     for e in overlaid:
         assert e["_source"] == "derived"
         assert e["_baseline_color"] == base_hex[e["slug"]]
     untouched = [e for e in pal if not e.get("advisory")]
-    assert untouched == [e for e in BASE_PALETTE if e["slug"] not in {"surface", "text"}]
+    assert untouched == [e for e in BASE_PALETTE if e["slug"] not in guessed]
 
 
 def test_overlay_appends_derived_slug_missing_from_baseline():

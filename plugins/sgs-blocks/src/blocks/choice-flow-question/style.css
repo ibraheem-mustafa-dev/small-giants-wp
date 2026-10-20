@@ -240,7 +240,7 @@
 	padding: 2px 10px;
 	border-radius: 999px;
 	background-color: var( --wp--preset--color--accent, #1f7a7a );
-	color: var( --wp--preset--color--accent-text, #fff );
+	color: var( --wp--preset--color--text-inverse );
 	font-size: 0.75em;
 	font-weight: 600;
 	letter-spacing: 0.02em;

@@ -196,7 +196,7 @@
 	justify-content: center;
 	font-size: 0.875rem;
 	font-weight: 700;
-	color: var(--wp--preset--color--accent, #d4a843);
+	color: var(--wp--preset--color--accent-text);
 	background-color: var(--wp--preset--color--accent-light, #f5e6c4);
 	border-radius: 50%;
 }
