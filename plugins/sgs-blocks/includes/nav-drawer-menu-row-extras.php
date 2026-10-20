@@ -18,11 +18,13 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_has_real_destination' ) ) {
 	 * I-D9 (2026-09-28): whether a menu item's URL is a genuine, visitable
 	 * destination — not just a non-empty string. Beyond the existing empty/'#'
 	 * check (SGS_Nav_Menu_Source::is_destination_url()), an item can point at a
-	 * real post whose POST TYPE is not publicly queryable (e.g. an "About"
-	 * pointing at an sgs_mega_menu post — WordPress still generates it a
-	 * permalink, but publicly_queryable=>false means that permalink 404s for a
-	 * visitor). Such an item has no destination of its own; its whole row
-	 * should act as the accordion toggle rather than a dead link.
+	 * real post whose POST TYPE no visitor can view (e.g. an "About" pointing
+	 * at an sgs_mega_menu post — WordPress still generates it a permalink, but
+	 * that permalink 404s for a visitor). Such an item has no destination of
+	 * its own; its whole row should act as the accordion toggle rather than a
+	 * dead link. Viewability is WordPress's own is_post_type_viewable(): a
+	 * built-in type counts when public, so a page (publicly_queryable false,
+	 * reached through its page name) keeps its link.
 	 *
 	 * @param string $raw_url   The item's own URL as authored.
 	 * @param int    $object_id The linked post's ID (0 for a custom link).
@@ -39,8 +41,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_has_real_destination' ) ) {
 		if ( ! $post_type ) {
 			return true;
 		}
-		$post_type_object = get_post_type_object( $post_type );
-		return ! $post_type_object || $post_type_object->publicly_queryable;
+		return ! get_post_type_object( $post_type ) || is_post_type_viewable( $post_type );
 	}
 }
 

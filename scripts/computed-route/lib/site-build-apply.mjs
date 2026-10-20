@@ -9,6 +9,10 @@ import os from 'os';
 import path from 'path';
 import { ROW_META, TREE_META } from './site-build-state.mjs';
 
+// How long each editor load and save may take: a shared host stalls an admin page past wp-build-page.js's 60 s
+// default now and then (indus-test, 2026-10-20), and a rerun resumes from the posts already made.
+const EDITOR_TIMEOUT = 120000;
+
 // A build runner over wp-build-page.js for one site's secrets file: ({ create, title, slug } | { postId }, tree) -> id.
 export function wpBuildPage( repo, site ) {
 	const envKey = site.toUpperCase().replace( /[^A-Z0-9]/g, '' );
@@ -16,7 +20,7 @@ export function wpBuildPage( repo, site ) {
 		const file = path.join( os.tmpdir(), `site-build-${ process.pid }-${ Date.now() }.tree.json` );
 		fs.writeFileSync( file, JSON.stringify( tree ) );
 		const args = [ path.join( repo, 'scripts', 'wp-build-page.js' ), '--env-file', path.join( repo, '.claude', 'secrets', `${ site }.env` ), '--env-key', envKey, '--tree', file,
-			...( target.postId ? [ '--post-id', String( target.postId ) ] : [ '--create', target.create, '--title', target.title, '--slug', target.slug ] ), '--status', 'publish' ];
+			...( target.postId ? [ '--post-id', String( target.postId ) ] : [ '--create', target.create, '--title', target.title, '--slug', target.slug ] ), '--status', 'publish', '--editor-timeout', String( EDITOR_TIMEOUT ) ];
 		let out = '';
 		try {
 			out = execFileSync( process.execPath, args, { encoding: 'utf8', timeout: 600000, stdio: [ 'ignore', 'pipe', 'pipe' ] } );
