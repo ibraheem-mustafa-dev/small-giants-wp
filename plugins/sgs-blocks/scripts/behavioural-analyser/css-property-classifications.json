@@ -2852,6 +2852,9 @@
       "slug": "sgs/buybox",
       "attr": "guidedGroupTitleTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "guidedGroupTitle",
         "css_state": "hover"
       }
     },
@@ -2973,6 +2976,9 @@
       "slug": "sgs/buybox",
       "attr": "guidedMeterTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "guidedMeter",
         "css_state": "hover"
       }
     },
@@ -3345,6 +3351,9 @@
       "slug": "sgs/buybox",
       "attr": "notifyLabelTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "notifyLabel",
         "css_state": "hover"
       }
     },
@@ -3925,6 +3934,9 @@
       "slug": "sgs/buybox",
       "attr": "stockTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "stock",
         "css_state": "hover"
       }
     },
@@ -4102,6 +4114,7 @@
       "attr": "valueLadderSavingTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "valueLadderSaving"
       }
     },
@@ -4109,6 +4122,9 @@
       "slug": "sgs/buybox",
       "attr": "valueLadderSavingTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "valueLadderSaving",
         "css_state": "hover"
       }
     },
@@ -4172,6 +4188,7 @@
       "attr": "valueLadderTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "valueLadder"
       }
     },
@@ -4179,6 +4196,9 @@
       "slug": "sgs/buybox",
       "attr": "valueLadderTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "valueLadder",
         "css_state": "hover"
       }
     },
@@ -5926,6 +5946,24 @@
     },
     {
       "slug": "sgs/choice-flow-question",
+      "attr": "optionBadgeColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "option-badge"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionBadgeTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "option-badge"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
       "attr": "optionDescriptionColour",
       "fields": {
         "css_property": "color",
@@ -6865,6 +6903,9 @@
       "slug": "sgs/countdown-timer",
       "attr": "expiredTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "expired",
         "css_state": "hover"
       }
     },
@@ -7024,6 +7065,9 @@
       "slug": "sgs/countdown-timer",
       "attr": "labelTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "label",
         "css_state": "hover"
       }
     },
@@ -7167,6 +7211,9 @@
       "slug": "sgs/countdown-timer",
       "attr": "numberTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "number",
         "css_state": "hover"
       }
     },
@@ -7228,13 +7275,18 @@
       "slug": "sgs/countdown-timer",
       "attr": "textStrokeColour",
       "fields": {
-        "css_property": "-webkit-text-stroke-color"
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper"
       }
     },
     {
       "slug": "sgs/countdown-timer",
       "attr": "textStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -7242,7 +7294,8 @@
       "slug": "sgs/countdown-timer",
       "attr": "textStrokeWidth",
       "fields": {
-        "css_property": "-webkit-text-stroke-width"
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "wrapper"
       }
     },
     {
@@ -7881,6 +7934,9 @@
       "slug": "sgs/form",
       "attr": "consentTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "consent-text",
         "css_state": "hover"
       }
     },
@@ -8010,6 +8066,9 @@
       "slug": "sgs/form",
       "attr": "errorTextTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "error-text",
         "css_state": "hover"
       }
     },
@@ -8156,19 +8215,29 @@
     {
       "slug": "sgs/form",
       "attr": "fieldTextStrokeColour",
-      "fields": {}
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "field-input"
+      }
     },
     {
       "slug": "sgs/form",
       "attr": "fieldTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "field-input",
         "css_state": "hover"
       }
     },
     {
       "slug": "sgs/form",
       "attr": "fieldTextStrokeWidth",
-      "fields": {}
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "field-input"
+      }
     },
     {
       "slug": "sgs/form",
@@ -8276,6 +8345,9 @@
       "slug": "sgs/form",
       "attr": "fileButtonTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "file-button",
         "css_state": "hover"
       }
     },
@@ -8396,6 +8468,9 @@
       "slug": "sgs/form",
       "attr": "filePromptTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "file-prompt",
         "css_state": "hover"
       }
     },
@@ -8516,6 +8591,9 @@
       "slug": "sgs/form",
       "attr": "fileStatusTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "file-status",
         "css_state": "hover"
       }
     },
@@ -8706,6 +8784,9 @@
       "slug": "sgs/form",
       "attr": "gridColHeadingTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "grid-column-heading",
         "css_state": "hover"
       }
     },
@@ -8826,6 +8907,9 @@
       "slug": "sgs/form",
       "attr": "gridRowHeadingTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "grid-row-heading",
         "css_state": "hover"
       }
     },
@@ -8955,6 +9039,9 @@
       "slug": "sgs/form",
       "attr": "helpTextTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "help-text",
         "css_state": "hover"
       }
     },
@@ -9085,6 +9172,7 @@
       "attr": "labelTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "field-label"
       }
     },
@@ -9092,6 +9180,9 @@
       "slug": "sgs/form",
       "attr": "labelTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "field-label",
         "css_state": "hover"
       }
     },
@@ -9245,7 +9336,9 @@
       "slug": "sgs/form",
       "attr": "navButtonTextStrokeColourHover",
       "fields": {
-        "css_element": "button",
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "nav-button",
         "css_state": "hover"
       }
     },
@@ -9411,6 +9504,9 @@
       "slug": "sgs/form",
       "attr": "reviewDetailTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "review-detail",
         "css_state": "hover"
       }
     },
@@ -9531,6 +9627,9 @@
       "slug": "sgs/form",
       "attr": "reviewHeadingTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "review-heading",
         "css_state": "hover"
       }
     },
@@ -9651,6 +9750,9 @@
       "slug": "sgs/form",
       "attr": "reviewTermTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "review-term",
         "css_state": "hover"
       }
     },
@@ -10067,7 +10169,9 @@
       "slug": "sgs/form",
       "attr": "submitTextStrokeColourHover",
       "fields": {
-        "css_element": "button",
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "submit-button",
         "css_state": "hover"
       }
     },
@@ -10134,19 +10238,32 @@
     {
       "slug": "sgs/form",
       "attr": "textStrokeColour",
-      "fields": {}
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
     },
     {
       "slug": "sgs/form",
       "attr": "textStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
     {
       "slug": "sgs/form",
       "attr": "textStrokeWidth",
-      "fields": {}
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
     },
     {
       "slug": "sgs/form",
@@ -10247,6 +10364,9 @@
       "slug": "sgs/form",
       "attr": "tileIconTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "tile-icon",
         "css_state": "hover"
       }
     },
@@ -10367,6 +10487,9 @@
       "slug": "sgs/form",
       "attr": "tileLabelTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "tile-label",
         "css_state": "hover"
       }
     },
@@ -15853,6 +15976,9 @@
       "slug": "sgs/measured-diagram",
       "attr": "captionTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "caption",
         "css_state": "hover"
       }
     },
@@ -16016,6 +16142,9 @@
       "slug": "sgs/measured-diagram",
       "attr": "valueTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "value",
         "css_state": "hover"
       }
     },
@@ -22494,6 +22623,9 @@
       "slug": "sgs/product-card",
       "attr": "priceFromLabelTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "priceFromLabel",
         "css_state": "hover"
       }
     },
@@ -23606,6 +23738,7 @@
       "attr": "valueLadderSavingTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "valueLadderSaving"
       }
     },
@@ -23613,6 +23746,9 @@
       "slug": "sgs/product-card",
       "attr": "valueLadderSavingTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "valueLadderSaving",
         "css_state": "hover"
       }
     },
@@ -23676,6 +23812,7 @@
       "attr": "valueLadderTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "valueLadder"
       }
     },
@@ -23683,6 +23820,9 @@
       "slug": "sgs/product-card",
       "attr": "valueLadderTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "valueLadder",
         "css_state": "hover"
       }
     },
@@ -23931,6 +24071,9 @@
       "slug": "sgs/product-faq",
       "attr": "questionTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "question",
         "css_state": "hover"
       }
     },
@@ -24017,13 +24160,18 @@
       "slug": "sgs/product-faq",
       "attr": "textStrokeColour",
       "fields": {
-        "css_property": "-webkit-text-stroke-color"
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper"
       }
     },
     {
       "slug": "sgs/product-faq",
       "attr": "textStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -24031,7 +24179,8 @@
       "slug": "sgs/product-faq",
       "attr": "textStrokeWidth",
       "fields": {
-        "css_property": "-webkit-text-stroke-width"
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "wrapper"
       }
     },
     {
@@ -25934,13 +26083,18 @@
       "slug": "sgs/table-of-contents",
       "attr": "textStrokeColour",
       "fields": {
-        "css_property": "-webkit-text-stroke-color"
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper"
       }
     },
     {
       "slug": "sgs/table-of-contents",
       "attr": "textStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -25948,7 +26102,8 @@
       "slug": "sgs/table-of-contents",
       "attr": "textStrokeWidth",
       "fields": {
-        "css_property": "-webkit-text-stroke-width"
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "wrapper"
       }
     },
     {
@@ -26069,6 +26224,9 @@
       "slug": "sgs/table-of-contents",
       "attr": "titleTextStrokeColourHover",
       "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "title",
         "css_state": "hover"
       }
     },
@@ -32698,6 +32856,33 @@
     },
     {
       "slug": "sgs/form-field-tiles",
+      "attr": "tileDescriptionTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "tile-description"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileDescriptionTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "tile-description",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileDescriptionTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "tile-description"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
       "attr": "tileLabelColour",
       "fields": {
         "css_property": "color",
@@ -32726,6 +32911,33 @@
       "attr": "tileLabelLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileLabelTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileLabelTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "tile-label",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileLabelTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
         "css_element": "tile-label"
       }
     },
@@ -35487,6 +35699,33 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "itemTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "itemTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -35865,6 +36104,33 @@
         "css_property": "text-decoration",
         "css_element": "sublink",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "sublink",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "sublink"
       }
     },
     {
@@ -36766,6 +37032,33 @@
     },
     {
       "slug": "sgs/nav-drawer-menu",
+      "attr": "itemTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -37145,6 +37438,33 @@
         "css_property": "text-decoration",
         "css_element": "sublink",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "submenuTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "submenuTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "sublink",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "submenuTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "sublink"
       }
     },
     {
