@@ -1,0 +1,180 @@
+{
+	"sites": {
+		"indus-test": {
+			"files": [
+				{
+					"asset": "sites/indus-foods/assets/decorative-foods/optimised/basmati-rice.png",
+					"sha256": "51fce13e9896815cacf2817f86d7606faeac61d0abf32b5b3acc6e6187701d17",
+					"id": 66,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/basmati-rice.png",
+					"storedSha256": "dabc105ce37644ba11f77ea6d2e7cb729ace50bf0193714434a2483cdc546c8d",
+					"stock": false
+				},
+				{
+					"asset": "sites/indus-foods/assets/decorative-foods/optimised/cardamom-pods.png",
+					"sha256": "6359c527f2a1b45187d84f8febbec3d3d2baed7c7f21c0ba433a1bccad56aa21",
+					"id": 67,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/cardamom-pods-1.png",
+					"storedSha256": "e4400baf7e528466854c66377f307e66d3dfb57dde411ee78eb453dad13813f1",
+					"stock": false
+				},
+				{
+					"asset": "sites/indus-foods/assets/decorative-foods/optimised/chilli-scatter.png",
+					"sha256": "2ee43f4c2e48535a044bc69cea180bf540d400de92d50aa8b2c5ec0e98459a01",
+					"id": 68,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/chilli-scatter.png",
+					"storedSha256": "f07e881951a481f04ca148a168c54f37b849d4a29512a1288bfad80a694f04b6",
+					"stock": false
+				},
+				{
+					"asset": "sites/indus-foods/assets/decorative-foods/optimised/coriander-leaves.png",
+					"sha256": "1517ca9332bdde562e57276898fdb91ee21b2a92e13aaa764d64a8362ff223f7",
+					"id": 69,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/coriander-leaves.png",
+					"storedSha256": "2e43cc70c8fc3d7624cceec75b42c508f0c97f0be9c1c6a9bdb6a14e43b6bf2f",
+					"stock": false
+				},
+				{
+					"asset": "sites/indus-foods/assets/decorative-foods/optimised/cumin-seeds.png",
+					"sha256": "17d7c7be2697e5142edceac26136c0c7202b1db346c96db201b80ce8313a2318",
+					"id": 70,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/cumin-seeds.png",
+					"storedSha256": "866a32739c6bf9addd2ec5094253f09ce82cf3d9d3488c4d4741a0c71d2f7b40",
+					"stock": false
+				},
+				{
+					"asset": "sites/indus-foods/assets/decorative-foods/optimised/curry-splash.png",
+					"sha256": "dc99c092e6c2d9792926e658b4790904001226e5855a1639ae89fb8b52e36fbe",
+					"id": 71,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/curry-splash.png",
+					"storedSha256": "67d918fc9a8b800a1187d1edef0786732253cffd778e4551af3eec0431210d54",
+					"stock": false
+				},
+				{
+					"asset": "sites/indus-foods/assets/decorative-foods/optimised/lentils-pile.png",
+					"sha256": "7b6d74151c37b02abbd944cc1ad21bbca0fbd7199936e2b1dfb0b8853ee14bdd",
+					"id": 72,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/lentils-pile.png",
+					"storedSha256": "cb4ca5c7cbd93ff6ca8cd465145d9d9d865f184fc6df87c9a7249a7b79b79c16",
+					"stock": false
+				},
+				{
+					"asset": "sites/indus-foods/assets/decorative-foods/optimised/turmeric-pile.png",
+					"sha256": "7dfdfa25f7046b7dbfcf64f0cb25270100a2e01accb4d5275d4793e022749586",
+					"id": 73,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/turmeric-pile.png",
+					"storedSha256": "9bb29706d67b1b8d07b044c7078b72b3c31754b06f7fbe7d4e2c85435caf1435",
+					"stock": false
+				},
+				{
+					"asset": "sites/indus-foods/assets/indus-logo-stacked.svg",
+					"sha256": "c610054d3fa3ae8850abfbb369fcdf2ac9e7fb76b85d3dd6ff94ab1e8c40d783",
+					"id": 74,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/indus-logo-stacked.svg",
+					"storedSha256": "8cc7f30ce5be657c19708219bc24a7a2a9536e1ad85a46a5274707aa230c4d61",
+					"stock": false,
+					"sanitised": true
+				},
+				{
+					"asset": "sites/indus-foods/assets/indus-logo.svg",
+					"sha256": "ab2dc5e834ccbf68d037e0cc59c2ca390d0a6c7de04d9b8c8b3608834fdb1add",
+					"id": 75,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/indus-logo.svg",
+					"storedSha256": "2ab73398c4c957b83f415bc02bb4e6ab25fb41619c99ac4da59dea46a12ee5ad",
+					"stock": false,
+					"sanitised": true
+				},
+				{
+					"asset": "sites/indus-foods/assets/logos/indus-logo-horizontal.svg",
+					"sha256": "ab2dc5e834ccbf68d037e0cc59c2ca390d0a6c7de04d9b8c8b3608834fdb1add",
+					"id": 75,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/indus-logo.svg",
+					"storedSha256": "2ab73398c4c957b83f415bc02bb4e6ab25fb41619c99ac4da59dea46a12ee5ad",
+					"stock": false,
+					"sanitised": true
+				},
+				{
+					"asset": "sites/indus-foods/assets/logos/indus-logo-square.svg",
+					"sha256": "6f13f2a29cdec85a34a4794266d68b8c3209dc5513e3433ca877eb5c060beeb0",
+					"id": 77,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/indus-logo-square.svg",
+					"storedSha256": "41631c96cb8749094baa6438052a5c415bb89097dfa38a9eadb92abd8a68d8ef",
+					"stock": false,
+					"sanitised": true
+				},
+				{
+					"asset": "sites/indus-foods/handoff/assets/about-hero-desktop.svg",
+					"sha256": "fa7ad864f3a488fc566af6920cf06b49a48816c44a9e06dd102a79dd6f3bdcca",
+					"id": 78,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/about-hero-desktop.svg",
+					"storedSha256": "0383c3b10f11fb09ce44b5789d99995b16a4f9239a3fd44dc602008420b79474",
+					"stock": false,
+					"sanitised": true
+				},
+				{
+					"asset": "sites/indus-foods/handoff/assets/about-hero-mobile.svg",
+					"sha256": "7bd1a820160ff269be9c4c628fe42e97ba49428c50a40f31900ef5ed98f2da0c",
+					"id": 79,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/about-hero-mobile.svg",
+					"storedSha256": "5dc0ff27f6e79cc3652c62b81d44adbf6a8515b74977ff473cd560e5567d108c",
+					"stock": false,
+					"sanitised": true
+				},
+				{
+					"asset": "sites/indus-foods/handoff/assets/about-hero-tablet.svg",
+					"sha256": "536cef72b4c2b3be178d19a0f6323b29137d112107e70d006fac30403decfb53",
+					"id": 80,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/about-hero-tablet.svg",
+					"storedSha256": "24484a2cde517ee6e3c8ae5848192504fdc44732f0f06eaec91684a9f0bbbee9",
+					"stock": false,
+					"sanitised": true
+				},
+				{
+					"asset": "sites/indus-foods/handoff/assets/logo-horizontal-anim.svg",
+					"sha256": "657e941c14adf091f3fb76840b5881fb46dbfbb5bab8ccf47bccd874f43cf01a",
+					"id": 81,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/logo-horizontal-anim.svg",
+					"storedSha256": "39e2f8cd57b935e06999d9f3a2d0922f6fd8a9f71d5a778a511517ae2f412daa",
+					"stock": false,
+					"sanitised": true
+				},
+				{
+					"asset": "sites/indus-foods/handoff/assets/logo-horizontal.svg",
+					"sha256": "657e941c14adf091f3fb76840b5881fb46dbfbb5bab8ccf47bccd874f43cf01a",
+					"id": 81,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/logo-horizontal-anim.svg",
+					"storedSha256": "39e2f8cd57b935e06999d9f3a2d0922f6fd8a9f71d5a778a511517ae2f412daa",
+					"stock": false,
+					"sanitised": true
+				},
+				{
+					"asset": "sites/indus-foods/handoff/assets/logo-square-anim.svg",
+					"sha256": "bfd601cfa34eb53d8501bcaf73294c765794cfe1b4ebba51d0a6450364c04c88",
+					"id": 83,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/logo-square-anim.svg",
+					"storedSha256": "76752559586524e231e149b9beadbc6a1b1a221afc671aa41bfa1b1f0634cf53",
+					"stock": false,
+					"sanitised": true
+				},
+				{
+					"asset": "sites/indus-foods/handoff/assets/logo-square.svg",
+					"sha256": "bfd601cfa34eb53d8501bcaf73294c765794cfe1b4ebba51d0a6450364c04c88",
+					"id": 83,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/logo-square-anim.svg",
+					"storedSha256": "76752559586524e231e149b9beadbc6a1b1a221afc671aa41bfa1b1f0634cf53",
+					"stock": false,
+					"sanitised": true
+				},
+				{
+					"asset": "sites/indus-foods/handoff/assets/whatsapp-ink.svg",
+					"sha256": "1d98c1896e1bca405c3e152aaec32415c24ef77f83a46450dbebd8f18ffb3d5d",
+					"id": 85,
+					"url": "https://lavender-dinosaur-183533.hostingersite.com/wp-content/uploads/2026/10/whatsapp-ink.svg",
+					"storedSha256": "bd8140c40dc03b374e4e4c5302e63696907bf4adf3db0da63e6723a1b45957ed",
+					"stock": false,
+					"sanitised": true
+				}
+			]
+		}
+	}
+}

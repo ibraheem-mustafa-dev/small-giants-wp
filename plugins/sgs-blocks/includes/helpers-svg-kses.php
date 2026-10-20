@@ -20,40 +20,44 @@
  * @return array<string, array<string, bool>> Tag → allowed attributes map.
  */
 function sgs_svg_kses_allowed_tags(): array {
-	// Shared presentation attributes permitted on most SVG elements.
+	// Shared presentation attributes permitted on most SVG elements. Every key is lowercase: wp_kses lowercases an
+	// attribute's name before it looks it up, so a camelCase key (pathLength) never matches and the attribute is
+	// stripped; svg-upload.php restores the camelCase spelling after kses.
 	$presentation_attrs = array(
-		'id'                  => true,
-		'class'               => true,
-		'style'               => true,
-		'fill'                => true,
-		'fill-opacity'        => true,
-		'fill-rule'           => true,
-		'stroke'              => true,
-		'stroke-dasharray'    => true,
-		'stroke-dashoffset'   => true,
-		'stroke-linecap'      => true,
-		'stroke-linejoin'     => true,
-		'stroke-miterlimit'   => true,
-		'stroke-opacity'      => true,
-		'stroke-width'        => true,
-		'opacity'             => true,
-		'transform'           => true,
-		'clip-path'           => true,
-		'clip-rule'           => true,
-		'marker'              => true,
-		'marker-end'          => true,
-		'marker-mid'          => true,
-		'marker-start'        => true,
-		'filter'              => true,
-		'mask'                => true,
-		'display'             => true,
-		'visibility'          => true,
-		'color'               => true,
-		'color-interpolation' => true,
-		'color-rendering'     => true,
-		'shape-rendering'     => true,
-		'text-rendering'      => true,
-		'image-rendering'     => true,
+		'id'                          => true,
+		'class'                       => true,
+		'style'                       => true,
+		'fill'                        => true,
+		'fill-opacity'                => true,
+		'fill-rule'                   => true,
+		'stroke'                      => true,
+		'stroke-dasharray'            => true,
+		'stroke-dashoffset'           => true,
+		'stroke-linecap'              => true,
+		'stroke-linejoin'             => true,
+		'stroke-miterlimit'           => true,
+		'stroke-opacity'              => true,
+		'stroke-width'                => true,
+		'opacity'                     => true,
+		'transform'                   => true,
+		'clip-path'                   => true,
+		'clip-rule'                   => true,
+		'marker'                      => true,
+		'marker-end'                  => true,
+		'marker-mid'                  => true,
+		'marker-start'                => true,
+		'filter'                      => true,
+		'mask'                        => true,
+		'display'                     => true,
+		'visibility'                  => true,
+		'color'                       => true,
+		'color-interpolation'         => true,
+		'color-interpolation-filters' => true,
+		'color-rendering'             => true,
+		'shape-rendering'             => true,
+		'text-rendering'              => true,
+		'image-rendering'             => true,
+		'pathlength'                  => true,
 	);
 
 	$core_attrs = array_merge(
@@ -112,8 +116,7 @@ function sgs_svg_kses_allowed_tags(): array {
 		'path'              => array_merge(
 			$core_attrs,
 			array(
-				'd'          => true,
-				'pathLength' => true,
+				'd' => true,
 			)
 		),
 		'rect'              => array_merge(

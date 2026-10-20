@@ -64,7 +64,14 @@ export async function uploadMedia( { repo, client, site, map, creds, fetchImpl =
 	for ( const asset of mediaAssets( repo, client ) ) {
 		const bytes = fs.readFileSync( path.join( repo, asset ) );
 		const sum = sha256( bytes );
-		const had = known.find( ( e ) => e.sha256 === sum );
+		// A file with the same bytes as one this run already handled shares its attachment (no second upload).
+		const twin = files.find( ( e ) => e.sha256 === sum && e.id );
+		if ( twin ) {
+			files.push( { ...twin, asset } );
+			report.skipped.push( asset );
+			continue;
+		}
+		const had = known.find( ( e ) => e.sha256 === sum && e.asset === asset ) || known.find( ( e ) => e.sha256 === sum );
 		if ( had && await stillLive( fetchImpl, creds, had ) ) {
 			files.push( { ...had, asset } );
 			report.skipped.push( asset );

@@ -74,6 +74,20 @@ test( 'MUST FAIL: the first run uploads each image once, a second uploads nothin
 	assert.deepEqual( ( await run( third.map ) ).uploaded, [ 'sites/acme/assets/food/bread.jpg' ] );
 } );
 
+test( 'MUST FAIL: two files with the same bytes share one attachment, on the first run and on a rerun', async () => {
+	const repo = fixtureRepo();
+	fs.writeFileSync( path.join( repo, 'sites/acme/handoff/assets/hero-copy.png' ), 'PNG-hero' );
+	const wp = fakeWordPress();
+	const creds = siteCredentials( repo, 'acme-test' );
+	const first = await uploadMedia( { repo, client: 'acme', site: 'acme-test', map: { sites: {} }, creds, fetchImpl: wp.fetchImpl, apply: true } );
+	const ids = ( r ) => Object.fromEntries( r.map.sites[ 'acme-test' ].files.map( ( f ) => [ path.basename( f.asset ), f.id ] ) );
+	assert.equal( wp.calls.uploads, 3, 'hero-copy.png is not uploaded a second time' );
+	assert.equal( ids( first )[ 'hero-copy.png' ], ids( first )[ 'hero.png' ] );
+	const again = await uploadMedia( { repo, client: 'acme', site: 'acme-test', map: first.map, creds, fetchImpl: wp.fetchImpl, apply: true } );
+	assert.deepEqual( [ wp.calls.uploads, again.map.sites[ 'acme-test' ].files.length ], [ 3, 4 ] );
+	assert.deepEqual( again.map.sites[ 'acme-test' ].files.map( ( f ) => f.asset ), first.map.sites[ 'acme-test' ].files.map( ( f ) => f.asset ), 'every asset keeps its own row' );
+} );
+
 test( 'MUST FAIL: an SVG the upload sanitiser changed is marked for review; a raster image never is', async () => {
 	const repo = fixtureRepo();
 	const wp = fakeWordPress();
