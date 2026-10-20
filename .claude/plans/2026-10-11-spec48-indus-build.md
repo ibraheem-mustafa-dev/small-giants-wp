@@ -72,7 +72,7 @@ A fresh intake of each draft lists, in review.md's Missing features section, eve
 
 | Wave (coverage plan Order item) | Indus | Mama's | Unblocks |
 |---|---|---|---|
-| Draft reading, FR-48-85 (item 2; the framework lane) | 30 | 22 | every later wave; its 28 CSS-group rows close with the d1 gradient seeder fix and the full Indus recalibration |
+| Draft reading, FR-48-85 (item 2; the framework lane) | 30 | 22 | every later wave; the d1 gradient seeder fix and the full Indus recalibration its 28 CSS-group rows waited on are done (2026-10-20, coverage plan Order item 2); the next intake re-count shows which close |
 | Site and surfaces, FR-48-84, with media upload from FR-48-82 (item 3, done 2026-10-20) | 0 | 0 | step 18 |
 | States, FR-48-81 (item 4) | 10 | 10 | step 20 (hover, focus, focus-visible, popover-open, aria-expanded/pressed/checked/hidden, `sc-if`, `style-hover`) |
 | Phase 3, then behaviour recognisers, FR-48-80 (item 5) | 11 | 8 | step 20b |

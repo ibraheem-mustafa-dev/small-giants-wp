@@ -1,4 +1,4 @@
-# Clone coverage gap list: 1713 capabilities neither covered nor excluded
+# Clone coverage gap list: 1705 capabilities neither covered nor excluded
 
 | Wave | Gaps |
 |---|---|
@@ -7,7 +7,7 @@
 | shop, forms and data | 179 |
 | modes and values with no CSS property | 175 |
 | behaviour recognisers | 127 |
-| site and surfaces | 113 |
+| site and surfaces | 105 |
 | states | 71 |
 | motion model additions | 6 |
 
@@ -275,7 +275,7 @@
 - `snapshot-key:styles.spacing`: theme-snapshot styles.spacing (1); has nothing; wave site and surfaces
 - `snapshot-key:styles.typography`: theme-snapshot styles.typography (1); has nothing; wave site and surfaces
 
-## html (57)
+## html (54)
 
 - `html:acronym`: <acronym> (1); has nothing; wave content, media and icons
 - `html:area`: <area> (1); has nothing; wave content, media and icons
@@ -302,12 +302,10 @@
 - `html:input`: <input> (1); has nothing; wave shop, forms and data
 - `html:label`: <label> (1); has nothing; wave shop, forms and data
 - `html:legend`: <legend> (1); has nothing; wave shop, forms and data
-- `html:link`: <link> (1); has recognise; wave site and surfaces
 - `html:listing`: <listing> (1); has nothing; wave content, media and icons
 - `html:map`: <map> (1); has nothing; wave content, media and icons
 - `html:math`: <math> (1); has nothing; wave draft reading
 - `html:menu`: <menu> (1); has nothing; wave behaviour recognisers
-- `html:meta`: <meta> (1); has nothing; wave site and surfaces
 - `html:meter`: <meter> (1); has nothing; wave shop, forms and data
 - `html:nobr`: <nobr> (1); has nothing; wave content, media and icons
 - `html:object`: <object> (1); has nothing; wave content, media and icons
@@ -329,13 +327,12 @@
 - `html:tfoot`: <tfoot> (1); has nothing; wave content, media and icons
 - `html:th`: <th> (1); has nothing; wave content, media and icons
 - `html:thead`: <thead> (1); has nothing; wave content, media and icons
-- `html:title`: <title> (1); has nothing; wave site and surfaces
 - `html:tr`: <tr> (1); has nothing; wave content, media and icons
 - `html:track`: <track> (1); has nothing; wave content, media and icons
 - `html:tt`: <tt> (1); has nothing; wave content, media and icons
 - `html:video`: <video> (1); has nothing; wave content, media and icons
 
-## html-attr (323)
+## html-attr (319)
 
 - `html-attr:a.attributionsourceid`: <a attributionsourceid> (1); has nothing; wave content, media and icons
 - `html-attr:a.download`: <a download> (1); has nothing; wave content, media and icons
@@ -538,13 +535,9 @@
 - `html-attr:legend.align`: <legend align> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:li.type`: <li type> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:li.value`: <li value> (1); has nothing; wave modes and values with no CSS property
-- `html-attr:link.href`: <link href> (1); has recognise; wave site and surfaces
-- `html-attr:link.rel`: <link rel> (1); has recognise; wave site and surfaces
 - `html-attr:map.name`: <map name> (1); has nothing; wave content, media and icons
 - `html-attr:marquee.height`: <marquee height> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:menu.compact`: <menu compact> (1); has nothing; wave behaviour recognisers
-- `html-attr:meta.content`: <meta content> (1); has nothing; wave site and surfaces
-- `html-attr:meta.name`: <meta name> (1); has nothing; wave site and surfaces
 - `html-attr:meter.high`: <meter high> (1); has nothing; wave shop, forms and data
 - `html-attr:meter.low`: <meter low> (1); has nothing; wave shop, forms and data
 - `html-attr:meter.max`: <meter max> (1); has nothing; wave shop, forms and data
@@ -1788,11 +1781,10 @@
 - `aria-attr:aria-valuenow`: aria-valuenow (1); has nothing; wave content, media and icons
 - `aria-attr:aria-valuetext`: aria-valuetext (1); has nothing; wave content, media and icons
 
-## construct (8)
+## construct (7)
 
 - `construct:data-hook`: runtime construct data-hook (1); has recognise; wave behaviour recognisers
 - `construct:handler`: runtime construct handler (1); has recognise; wave behaviour recognisers
-- `construct:helmet-font`: runtime construct helmet-font (1); has nothing; wave site and surfaces
 - `construct:observer`: runtime construct observer (1); has recognise; wave behaviour recognisers
 - `construct:ref`: runtime construct ref (1); has recognise; wave behaviour recognisers
 - `construct:sc-if`: runtime construct sc-if (1); has recognise; wave states

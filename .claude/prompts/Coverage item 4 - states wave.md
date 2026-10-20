@@ -4,11 +4,9 @@ CONTEXT (plain English)
 
 SGS clones Claude Design drafts into WordPress through the "computed route" (scripts/computed-route/, Spec 48). The clone coverage plan (.claude/plans/2026-10-12-clone-coverage-foundation.md) makes coverage a machine check. Every framework capability, and everything a draft can hold, is either covered (with recognise, write and check references), excluded by Bean, or a gap in a named wave. This session takes Order item 4, the states wave (Spec 48 FR-48-81): hover, focus, focus-visible, active, checked, open and popover-open, the draft's style-* rules, and ARIA states (aria-expanded, aria-pressed, aria-current, aria-checked, aria-hidden), plus the drawer, modal and mega-menu surfaces they open. Together with the done motion writer (step 4.0), it unblocks Indus step 20, the header slice. The Indus draft has 10 states-wave rows and Mama's redesign 10 (Indus plan, "What the drafts still need").
 
-GATE ON THE RUNNING ROUTE SESSION (check first)
+CALIBRATION STATE
 
-A route session may still be running ".claude/prompts/After control gaps - route calibration and gradient seeder.md". It edits calibration and resolver files (scripts/computed-route/lib/calibrate-markers.mjs, lib/calibrate-props.mjs, lib/resolve.mjs, a new resolver module) and runs the full Indus recalibration. A states change to what calibration reads would change the cache's readKey and make that recalibration stale. So:
-- If that prompt file still exists, or ListAgents shows the session busy: do tasks 1 and 2 only (survey and plan, no code edits in scripts/computed-route/lib/). Message it to say you are planning the states wave and will not edit route lib files until its handoff.
-- Once its handoff has landed (the prompt file is deleted and the FR-48-8 plan's step 5 is updated), build.
+The route calibration session handed off (2026-10-20): the Indus test site is recalibrated on local-indus (every default-paint file at read key cb09db873f6c, `scripts/computed-route/lib/calibrate-props.mjs::READ_KEY`). A states change to what calibration reads changes that key and makes every Indus calibration file due again, so such a change includes a full Indus recalibration (about 50 minutes; the order is in the coverage plan's Order item 2 and `.claude/dev-setup.md` local mirrors). The FR-48-8 plan's Open lists what calibration still misses, among them hover rows it cannot trigger (sgs/post-grid's card hovers), which a states reader meets too.
 
 READ FIRST
 - C:\Users\Bean\Projects\small-giants-wp\.claude\plans\2026-10-12-clone-coverage-foundation.md: "Order (with the Indus build)", Phase 4 and "Sequencing with Indus"
