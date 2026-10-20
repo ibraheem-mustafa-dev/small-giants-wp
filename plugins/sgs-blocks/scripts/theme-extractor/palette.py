@@ -15,7 +15,9 @@ Token-first pipeline (corpus reality: the palette IS the draft's named ``:root``
 """
 from __future__ import annotations
 
+import json
 import re
+from pathlib import Path
 
 from colour import parse_colour, dedupe, delta_e
 from roles import selector_role, _prop_family, infer_role
@@ -25,10 +27,18 @@ _COLOUR_PROPS = {"background", "background-color", "color", "border-color",
                  "border-top-color", "border-bottom-color", "border-left-color",
                  "border-right-color", "outline-color", "fill"}
 
-# The theme's 16 named palette slugs (Appendix B) — the slug vocabulary a token may claim.
-BASELINE_SLUGS = ["primary", "primary-dark", "accent", "accent-text", "accent-light", "success",
-                  "error", "whatsapp", "surface", "surface-alt", "text", "text-muted",
-                  "text-inverse", "border-subtle", "border-light", "footer-bg"]
+_FRAMEWORK_THEME_JSON = Path(__file__).resolve().parents[4] / "theme" / "sgs-theme" / "theme.json"
+
+
+def _framework_slugs() -> list[str]:
+    palette = json.loads(_FRAMEWORK_THEME_JSON.read_text(encoding="utf-8"))["settings"]["color"]["palette"]
+    return [e["slug"] for e in palette]
+
+
+# The slug vocabulary a token may claim by name: the framework palette roster (Spec 32 §12.2), so a draft
+# token named for a status slot (`--info`, `--error-light`) fills it, plus `border-subtle`, the slug
+# `_NAME_ALIASES` maps `--border` to.
+BASELINE_SLUGS = list(dict.fromkeys([*_framework_slugs(), "border-subtle"]))
 
 # HIGH-CONFIDENCE identity roles (placed FIRST by WHERE the colour is used, not its name) → the one
 # slug that role owns. These claim their slug before any name-tiebreak runs, so e.g. the coral

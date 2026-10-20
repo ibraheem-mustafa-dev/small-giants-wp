@@ -650,7 +650,7 @@
 		},
 		"badgeTextColour": {
 			"type": "string",
-			"default": "text-inverse"
+			"default": ""
 		},
 		"badgeTextColourGradient": {
 			"type": "string",

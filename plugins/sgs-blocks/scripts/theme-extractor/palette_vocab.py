@@ -32,6 +32,8 @@ ROLE_TABLE = (
     (r"\bsoft fill\b|\btint(?:ed|s)?\b|\bwash\b", ("accent-light",), ("background", "border", "fill")),
     (r"^accent\b", ("accent",), ALL_FAMILIES),
     (r"\bin stock\b|\bsuccess\b", ("success",), ALL_FAMILIES),
+    (r"\berror\b|\bdanger\b", ("error",), ALL_FAMILIES),
+    (r"\binfo\b", ("info",), ALL_FAMILIES),
     (r"\bink\b|\bprimary text\b", ("text", "primary"), ALL_FAMILIES),
 )
 # A row whose "Use" text also names a place that has its own slot fills that slot too ("Page background:

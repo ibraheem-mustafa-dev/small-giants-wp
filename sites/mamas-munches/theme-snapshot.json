@@ -196,7 +196,8 @@
       "defaultGradients": false,
       "custom": true,
       "customGradient": true,
-      "customDuotone": true
+      "customDuotone": true,
+      "defaultDuotone": false
     },
     "typography": {
       "fluid": {

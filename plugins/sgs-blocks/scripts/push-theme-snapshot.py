@@ -15,7 +15,8 @@ push-time via `wp post list --post_type=wp_global_styles` over the existing SSH
 connection — deterministic and requires no hardcoded constant.
 
 2026-08-07: that user-layer write EXCLUDES the preset arrays the disk push already
-delivers (`spacing.spacingSizes`, `shadow.presets` — see `strip_user_layer_presets`).
+delivers (`spacing.spacingSizes`, `shadow.presets`, `typography.fontSizes`, `color.palette`,
+`color.gradients` — see `strip_user_layer_presets`).
 WP files a posted preset under the `custom` origin and keeps it ALONGSIDE the theme
 origin, so posting an identical ladder into both layers produced a genuine duplicate
 in the editor's spacing/shadow pickers. The two layers are NOT interchangeable:
@@ -523,15 +524,19 @@ def discover_global_styles_state(target: str, port: int, wp_root: str) -> tuple[
 # wp_global_styles held `spacing.spacingSizes.custom` byte-identical to the deployed
 # theme.json's 8 sizes, and `shadow.presets` likewise duplicated the framework's 4.
 #
-# Deliberately NOT stripped -- these are genuinely per-client and the user layer is the
-# only place a Site-Editor edit to them can live:
-#   color.palette / color.gradients   -- per-client brand colours (Spec 33 Pass A/B)
-#   typography.fontFamilies           -- Font Library installs land here
+# Deliberately NOT stripped: typography.fontFamilies -- Font Library installs land here.
 # `color.duotone` is absent from the framework theme.json AND every snapshot, so it is
 # omitted rather than listed inert -- add it here only once something actually emits one.
 _USER_LAYER_PRESET_STRIP = (
     ("spacing", "spacingSizes"),
     ("shadow", "presets"),
+    # color.palette and color.gradients, same mechanism (Bean, 2026-10-20): the snapshot on disk
+    # already carries the client's palette, and a copy posted here showed in the editor's colour
+    # picker as a second, identical "Custom" group (a test site held all 36 colours in both the
+    # theme and custom origins). A Site-Editor palette edit was never safe in this layer anyway:
+    # every push replaced it with the snapshot's copy.
+    ("color", "palette"),
+    ("color", "gradients"),
     # typography.fontSizes joins them 2026-09-08 (D1007), same mechanism, measured live:
     # posting the ladder here files it under the `custom` origin ALONGSIDE the theme origin,
     # and the merged result re-admitted WordPress's core-default `medium` (20px, fluid) even

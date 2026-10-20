@@ -211,7 +211,10 @@
           "name": "Section Text",
           "color": "#1a1a1a"
         }
-      ]
+      ],
+      "defaultPalette": false,
+      "defaultGradients": false,
+      "defaultDuotone": false
     },
     "typography": {
       "fontFamilies": [

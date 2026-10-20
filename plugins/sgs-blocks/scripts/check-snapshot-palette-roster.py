@@ -11,9 +11,13 @@ named or excluded):
   2. Contrast, at least 4.5:1 per snapshot, on that snapshot's own resolved hex values:
      `section-text` on `section`, `link` on `surface`, `link-hover` on `surface`.
      An unresolvable value is reported as a failure, never skipped.
+  3. Only the client's own presets are offered: `settings.color.defaultPalette`, `defaultGradients` and
+     `defaultDuotone` are `false` in every snapshot and in the framework file, so the editor never shows
+     WordPress's demo colours, gradients or duotone filters beside the client's.
 
 USAGE
     python check-snapshot-palette-roster.py --check       exit 1 on any finding
+    python check-snapshot-palette-roster.py --fix         set the three switches to false where they are not
     python check-snapshot-palette-roster.py --survey      the census, always exit 0
     python check-snapshot-palette-roster.py --self-test   negative controls: proves it can fail
 """
@@ -29,28 +33,59 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import snapshot_palette_roster as roster  # noqa: E402
 
 ROOT = roster.REPO_ROOT
+CORE_PRESET_SWITCHES = ("defaultPalette", "defaultGradients", "defaultDuotone")
+
+
+def framework_file(repo: Path) -> Path:
+    return repo / "theme" / "sgs-theme" / "theme.json"
 
 
 def snapshots(repo: Path) -> list[Path]:
     return sorted((repo / "sites").glob("*/theme-snapshot.json"))
 
 
+def core_presets_shown(theme_json: dict) -> list[str]:
+    """The switches of CORE_PRESET_SWITCHES that are not `false` (WordPress then offers its demo presets)."""
+    colour = (theme_json.get("settings") or {}).get("color") or {}
+    return [k for k in CORE_PRESET_SWITCHES if colour.get(k) is not False]
+
+
 def evaluate(snapshot: dict, slugs: list[str]) -> dict:
-    """The findings for one snapshot: missing roster slugs and failing contrast rows."""
+    """The findings for one snapshot: missing roster slugs, failing contrast rows, demo presets shown."""
     missing = roster.missing_roster_slugs(snapshot, slugs)
     rows = roster.contrast_report(snapshot)
     # a pair whose slug is missing is already reported under `missing`
     bad = [r for r in rows if r["status"] in ("low", "unresolvable")]
-    return {"missing": missing, "rows": rows, "bad": bad}
+    return {"missing": missing, "rows": rows, "bad": bad, "shown": core_presets_shown(snapshot)}
 
 
 def scan(repo: Path) -> tuple[list[str], dict[str, dict]]:
-    slugs = roster.framework_roster(repo / "theme" / "sgs-theme" / "theme.json")
+    slugs = roster.framework_roster(framework_file(repo))
     out = {}
     for path in snapshots(repo):
         label = path.parent.name
         out[label] = evaluate(json.loads(path.read_text(encoding="utf-8")), slugs)
+    framework = json.loads(framework_file(repo).read_text(encoding="utf-8"))
+    out["(framework theme.json)"] = {"missing": [], "rows": [], "bad": [], "shown": core_presets_shown(framework)}
     return slugs, out
+
+
+def run_fix(repo: Path) -> int:
+    """Set every CORE_PRESET_SWITCHES key to false in the framework file and each snapshot (JSON, indent 2)."""
+    changed = 0
+    for path in [framework_file(repo), *snapshots(repo)]:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        shown = core_presets_shown(data)
+        if not shown:
+            continue
+        colour = data.setdefault("settings", {}).setdefault("color", {})
+        for key in shown:
+            colour[key] = False
+        path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
+        changed += 1
+        print("  fixed %s: %s" % (path.relative_to(repo).as_posix(), ", ".join(shown)))
+    print("[check-snapshot-palette-roster --fix] %d file(s) changed." % changed)
+    return 0
 
 
 def run_check(repo: Path) -> int:
@@ -62,6 +97,9 @@ def run_check(repo: Path) -> int:
         for s in r["missing"]:
             failures += 1
             print("  %s: missing roster slug `%s`" % (label, s))
+        for key in r["shown"]:
+            failures += 1
+            print("  %s: settings.color.%s is not false, so WordPress's demo presets are offered (run --fix)" % (label, key))
         for row in r["bad"]:
             failures += 1
             if row["status"] == "unresolvable":
@@ -82,7 +120,8 @@ def run_survey(repo: Path) -> int:
     print("[check-snapshot-palette-roster] SURVEY\n")
     print("Framework roster (%d): %s\n" % (len(slugs), ", ".join(slugs)))
     for label, r in result.items():
-        print("%s   missing: %s" % (label, ", ".join(r["missing"]) or "none"))
+        print("%s   missing: %s   demo presets shown: %s" % (label, ", ".join(r["missing"]) or "none",
+                                                          ", ".join(r["shown"]) or "none"))
         for row in r["rows"]:
             print("    %-12s on %-8s %-9s on %-9s %s  %s" % (row["fg"], row["bg"], row["fg_hex"], row["bg_hex"],
                                                          row["ratio"], row["status"]))
@@ -99,7 +138,9 @@ def run_self_test() -> int:
             failures.append(label)
 
     def snap(slug_colours):
-        return {"settings": {"color": {"palette": [{"slug": s, "color": c, "name": s} for s, c in slug_colours]}}}
+        colour = {k: False for k in CORE_PRESET_SWITCHES}
+        colour["palette"] = [{"slug": s, "color": c, "name": s} for s, c in slug_colours]
+        return {"settings": {"color": colour}}
 
     base = [("heading", "#111111"), ("link", "#0000AA"), ("link-hover", "#000066"), ("section", "#EEEEEE"),
             ("section-text", "#111111"), ("surface", "#FFFFFF")]
@@ -126,6 +167,12 @@ def run_self_test() -> int:
                          ("link-hover", "#000066"), ("section", "#EEEEEE"), ("section-text", "#111111"),
                          ("surface", "#FFFFFF")]), slugs)
     assert_("a palette entry that references another slug is resolved", not ref["bad"])
+    duo = snap(base)
+    del duo["settings"]["color"]["defaultDuotone"]
+    assert_("a snapshot that omits defaultDuotone FAILS and names it", evaluate(duo, slugs)["shown"] == ["defaultDuotone"])
+    on = snap(base)
+    on["settings"]["color"]["defaultPalette"] = True
+    assert_("defaultPalette true FAILS", evaluate(on, slugs)["shown"] == ["defaultPalette"])
 
     # end to end on a temp repo: the complete snapshot passes, a broken copy fails
     tmp = Path(tempfile.mkdtemp(prefix="cspr-"))
@@ -158,6 +205,8 @@ def run_check_quiet(repo: Path) -> int:
 def main() -> int:
     if "--self-test" in sys.argv:
         return run_self_test()
+    if "--fix" in sys.argv:
+        return run_fix(ROOT)
     if "--survey" in sys.argv:
         return run_survey(ROOT)
     return run_check(ROOT) if "--check" in sys.argv else run_survey(ROOT)

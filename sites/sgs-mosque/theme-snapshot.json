@@ -306,7 +306,10 @@
           "name": "Section Text",
           "color": "#1A2E22"
         }
-      ]
+      ],
+      "defaultPalette": false,
+      "defaultGradients": false,
+      "defaultDuotone": false
     },
     "typography": {
       "fontFamilies": [

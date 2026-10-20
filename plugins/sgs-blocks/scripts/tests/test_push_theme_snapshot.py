@@ -525,3 +525,18 @@ def test_push_proceeds_with_a_complete_roster(pts, monkeypatch):
 def test_every_committed_snapshot_passes_the_roster_guard(pts):
     for path in sorted((REPO / "sites").glob("*/theme-snapshot.json")):
         assert pts.roster_guard(json.loads(path.read_text(encoding="utf-8"))) == [], path.parent.name
+
+
+def test_user_layer_post_carries_no_palette_or_gradients(pts):
+    """A palette posted to wp_global_styles shows in the colour picker as a second, identical "Custom" group;
+    the disk theme.json already delivers it, so the user-layer body drops it and keeps everything else."""
+    settings = {"color": {"palette": [{"slug": "primary", "color": "#111111", "name": "Primary"}],
+                          "gradients": [{"slug": "g", "gradient": "linear-gradient(#000,#fff)", "name": "G"}],
+                          "custom": True},
+                "typography": {"fontFamilies": [{"slug": "body", "fontFamily": "Inter"}]}}
+    out, stripped = pts.strip_user_layer_presets(settings)
+    assert "palette" not in out["color"] and "gradients" not in out["color"]
+    assert out["color"]["custom"] is True
+    assert out["typography"]["fontFamilies"] == settings["typography"]["fontFamilies"]
+    assert {"settings.color.palette", "settings.color.gradients"} <= set(stripped)
+    assert "palette" in settings["color"], "the snapshot itself is never modified"
