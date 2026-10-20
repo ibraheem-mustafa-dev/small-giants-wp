@@ -2933,7 +2933,13 @@ def extract_css_property_and_layer() -> dict:
         # tell them apart cannot be routed (the live resolver would pick one by rowid
         # order), so both are refused. Checked for the attrs Shape F (composer
         # fallback) and Shape G routed, and for every supplementary-pass route.
-        _new_shape_attrs = (composer_routed | set(config_map_props) | (set(ev.get("helper_routed", ())) if only is None else set())) & block_attr_names
+        # A prefix helper's route joins the net only for a vendor-prefixed property (the text outline, routed since the
+        # vendor-prefix fix): every other helper route predates the net and keeps its established slot.
+        _helper_vendor = {
+            a for a in ev.get("helper_routed", ())
+            if only is None and any(prop.startswith("-") for prop in resolved.get((slug, a), ()))
+        }
+        _new_shape_attrs = (composer_routed | set(config_map_props) | _helper_vendor) & block_attr_names
         _established_slots: "set[tuple]" = set()
         if only is not None:
             # A supplementary route sharing an unelemented slot with a primary route
