@@ -956,11 +956,52 @@ function focusFirstInPanel( root ) {
 	} );
 }
 
-/** Return focus to the disclosure's trigger button. */
+/** True while focusTrigger() hands focus back, so linkTriggerFocus does not reopen. */
+let refocusingTrigger = false;
+
+/** Return focus to the disclosure's trigger (its button, or a link that is the trigger). */
 function focusTrigger( root ) {
 	const trigger = root.querySelector( '[data-sgs-mega-trigger]' );
 	if ( trigger ) {
-		trigger.focus( { preventScroll: prefersReducedMotion() } );
+		refocusingTrigger = true;
+		try {
+			trigger.focus( { preventScroll: prefersReducedMotion() } );
+		} finally {
+			refocusingTrigger = false;
+		}
+	}
+}
+
+/**
+ * Toggle a disclosure from its trigger (the toggle button, or a parent link
+ * that is also the trigger). Opening moves focus into the panel, which on
+ * touch is the only way into it.
+ *
+ * @param {Object}      ctx   The disclosure's context.
+ * @param {HTMLElement} ref   The trigger element.
+ * @param {Event}       event The click, if any.
+ */
+function toggleDisclosure( ctx, ref, event ) {
+	if ( event ) {
+		event.preventDefault();
+	}
+	const root = rootFor( ref );
+	clearOpenTimer( ctx.megaId );
+	clearCloseTimer( ctx.megaId );
+	if ( ctx.isOpen ) {
+		ctx.isOpen = false;
+		if ( state.openMegaId === ctx.megaId ) {
+			state.openMegaId = null;
+			syncTriangleWatcher();
+			syncOutsideClickWatcher();
+		}
+	} else {
+		ctx.isOpen = true;
+		state.openMegaId = ctx.megaId;
+		syncTriangleWatcher();
+		syncOutsideClickWatcher();
+		repositionPanel( root );
+		focusFirstInPanel( root );
 	}
 }
 
@@ -994,29 +1035,96 @@ const { state } = store( 'sgs/mega', {
 
 		/** Toggle on click/tap. On touch (no hover) this is the sole open path. */
 		toggle( event ) {
-			if ( event ) {
-				event.preventDefault();
+			toggleDisclosure( getContext(), getElement().ref, event );
+		},
+
+		/**
+		 * Click on a parent link that is also its panel's trigger (the block's
+		 * caret is off, nav-menu-markup.php::sgs_nav_bar_menu_link_trigger_html).
+		 * A hover-capable pointer in hover mode follows the link, since hover
+		 * already opened the panel. On touch, or in click open mode, the click
+		 * toggles the panel instead.
+		 *
+		 * @param {MouseEvent} event The click.
+		 */
+		linkTriggerClick( event ) {
+			const ctx = getContext();
+			if ( canHover() && 'click' !== ctx.openOn ) {
+				return;
 			}
+			toggleDisclosure( ctx, getElement().ref, event );
+		},
+
+		/**
+		 * Keyboard focus on that link opens its panel, so Tab reaches the panel
+		 * next. Only `:focus-visible` focus counts: a tap or a mouse press also
+		 * focuses the link, and the click that follows would close the panel
+		 * again. Focus handed back by focusTrigger() after Escape does not
+		 * reopen it.
+		 */
+		linkTriggerFocus() {
+			const ctx = getContext();
+			const { ref } = getElement();
+			if (
+				ctx.isOpen ||
+				refocusingTrigger ||
+				! ref.matches( ':focus-visible' )
+			) {
+				return;
+			}
+			clearOpenTimer( ctx.megaId );
+			clearCloseTimer( ctx.megaId );
+			ctx.isOpen = true;
+			state.openMegaId = ctx.megaId;
+			syncTriangleWatcher();
+			syncOutsideClickWatcher();
+			repositionPanel( rootFor( ref ) );
+		},
+
+		/**
+		 * Keyboard on that link: Enter keeps following the link, ArrowDown
+		 * opens the panel and moves into it, Escape closes it, and Shift+Tab
+		 * off the link closes it as focus moves back.
+		 *
+		 * @param {KeyboardEvent} event The key press.
+		 */
+		linkTriggerKeydown( event ) {
 			const ctx = getContext();
 			const { ref } = getElement();
 			const root = rootFor( ref );
-			clearOpenTimer( ctx.megaId );
-			clearCloseTimer( ctx.megaId );
-			if ( ctx.isOpen ) {
-				ctx.isOpen = false;
-				if ( state.openMegaId === ctx.megaId ) {
-					state.openMegaId = null;
+			const key = event.key;
+
+			if ( key === 'ArrowDown' || key === 'Down' ) {
+				event.preventDefault();
+				clearOpenTimer( ctx.megaId );
+				clearCloseTimer( ctx.megaId );
+				if ( ! ctx.isOpen ) {
+					ctx.isOpen = true;
+					state.openMegaId = ctx.megaId;
 					syncTriangleWatcher();
 					syncOutsideClickWatcher();
+					repositionPanel( root );
 				}
-			} else {
-				ctx.isOpen = true;
-				state.openMegaId = ctx.megaId;
-				syncTriangleWatcher();
-				syncOutsideClickWatcher();
-				repositionPanel( root );
 				focusFirstInPanel( root );
+				return;
 			}
+
+			const closes =
+				key === 'Escape' ||
+				key === 'Esc' ||
+				( key === 'Tab' && event.shiftKey );
+			if ( ! closes || ! ctx.isOpen ) {
+				return;
+			}
+			if ( key !== 'Tab' ) {
+				event.preventDefault();
+			}
+			clearOpenTimer( ctx.megaId );
+			clearCloseTimer( ctx.megaId );
+			ctx.isOpen = false;
+			state.openMegaId = null;
+			syncTriangleWatcher();
+			syncOutsideClickWatcher();
 		},
 
 		/**

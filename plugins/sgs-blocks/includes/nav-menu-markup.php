@@ -76,8 +76,8 @@ if ( ! function_exists( 'sgs_nav_shared_badge_html' ) ) {
 if ( ! function_exists( 'sgs_nav_bar_menu_split_caret_html' ) ) {
 	/**
 	 * The caret inside a split row's separate toggle button (a parent that has
-	 * its own link). Always printed, whatever submenuCaret says: the glyph is
-	 * the toggle's only visible content.
+	 * its own link, with the block's caret on). The glyph is the toggle's only
+	 * visible content.
 	 *
 	 * @return string The caret span, or '' when the icon library is absent.
 	 */
@@ -86,6 +86,37 @@ if ( ! function_exists( 'sgs_nav_bar_menu_split_caret_html' ) ) {
 			return '';
 		}
 		return '<span class="sgs-nav-bar-menu__caret" aria-hidden="true">' . sgs_get_lucide_icon( 'chevron-down' ) . '</span>';
+	}
+}
+
+if ( ! function_exists( 'sgs_nav_bar_menu_link_trigger_html' ) ) {
+	/**
+	 * A parent that has its own page, with the block's caret off: the label is
+	 * one link that is also its panel's trigger, with no separate toggle (a
+	 * toggle with no caret would be an invisible control). Hover or keyboard
+	 * focus opens the panel, a click with a hover-capable pointer follows the
+	 * link, and a tap (or any click in click open mode) toggles the panel
+	 * (mega-disclosure.js `linkTriggerClick`, `linkTriggerFocus`,
+	 * `linkTriggerKeydown`). ARIA 1.2 allows `aria-expanded` on a link.
+	 *
+	 * @param string $url          The parent's own URL.
+	 * @param string $label_html   The label markup, already escaped.
+	 * @param string $label_class  The label span's class.
+	 * @param string $panel_dom_id The id of the panel it opens.
+	 * @param string $extra_class  Extra classes for the link ('' for none).
+	 * @return string The link markup.
+	 */
+	function sgs_nav_bar_menu_link_trigger_html( string $url, string $label_html, string $label_class, string $panel_dom_id, string $extra_class = '' ): string {
+		return sprintf(
+			'<a class="sgs-nav-bar-menu__link%1$s" href="%2$s" data-sgs-nav-path="%3$s" data-sgs-mega-trigger aria-expanded="false" aria-controls="%4$s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.linkTriggerClick" data-wp-on--focus="actions.linkTriggerFocus" data-wp-on--keydown="actions.linkTriggerKeydown">'
+			. '<span class="%5$s sgs-nav-bar-menu__magnet-target">%6$s</span></a>',
+			'' !== $extra_class ? ' ' . esc_attr( $extra_class ) : '',
+			esc_url( $url ),
+			esc_attr( wp_parse_url( $url, PHP_URL_PATH ) ?? '' ),
+			esc_attr( $panel_dom_id ),
+			esc_attr( $label_class ),
+			$label_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the caller passes sgs_label_roll_markup() output, which esc_html's the label.
+		);
 	}
 }
 
@@ -138,7 +169,12 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 						// The caret honours the block's submenuCaret setting, as the
 						// plain dropdown branch below does.
 						$label_html = sgs_label_roll_markup( (string) $item['label'], (string) ( $submenu['label_roll'] ?? '' ) );
-						if ( ! empty( $item['has_url'] ) ) {
+						if ( ! empty( $item['has_url'] ) && ! $submenu['caret'] ) {
+							// FR-36-5 "Section page" with the caret off: one link
+							// that is also the trigger.
+							$root_class   = 'sgs-nav-bar-menu__mega';
+							$trigger_html = sgs_nav_bar_menu_link_trigger_html( (string) $item['url'], $label_html, 'sgs-nav-bar-menu__label', $panel_dom_id, 'sgs-nav-bar-menu__mega-trigger' );
+						} elseif ( ! empty( $item['has_url'] ) ) {
 							/*
 							 * FR-36-5 "Section page": the panel has a page of its
 							 * own, so the label is a real link and a separate
@@ -146,9 +182,8 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 							 * navigation with top-level links), the same pair the
 							 * DROPDOWN branch below renders. The chevron keeps
 							 * `__mega-trigger` (the panel-show rule and caret flip)
-							 * and takes `__subtoggle` (its 44px hit area). It always
-							 * shows its caret: a split toggle with no glyph is an
-							 * invisible control.
+							 * and takes `__subtoggle` (its 44px hit area). This
+							 * branch runs only with the caret on.
 							 */
 							$root_class   = 'sgs-nav-bar-menu__mega sgs-nav-bar-menu__mega--split';
 							$trigger_html = sprintf(
@@ -309,9 +344,18 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 						 * <a href="#">. An href="#" trigger jumps the page to the
 						 * top on click and lies to assistive tech about being a
 						 * link. A parent WITH a URL keeps its link (so "Products"
-						 * still navigates) and gets a separate adjacent toggle.
+						 * still navigates) and gets a separate adjacent toggle,
+						 * or, with the caret off, is one link that is also the
+						 * trigger.
 						 */
-						if ( ! empty( $item['has_url'] ) ) {
+						if ( ! empty( $item['has_url'] ) && ! $submenu['caret'] ) {
+							$trigger_html = sgs_nav_bar_menu_link_trigger_html(
+								(string) $item['url'],
+								sgs_label_roll_markup( (string) $item['label'], (string) ( $submenu['label_roll'] ?? '' ) ),
+								'sgs-nav-bar-menu__link-text',
+								$sub_dom_id
+							);
+						} elseif ( ! empty( $item['has_url'] ) ) {
 							$trigger_html = sprintf(
 								'<a class="sgs-nav-bar-menu__link" href="%s" data-sgs-nav-path="%s" data-wp-on--keydown="actions.linkKeydown"><span class="sgs-nav-bar-menu__link-text sgs-nav-bar-menu__magnet-target">%s</span></a>'
 								. '<button type="button" class="sgs-nav-bar-menu__subtoggle sgs-focus--inset" data-sgs-mega-trigger aria-expanded="false" aria-controls="%s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
