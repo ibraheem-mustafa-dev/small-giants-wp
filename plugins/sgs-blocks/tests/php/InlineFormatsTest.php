@@ -218,6 +218,19 @@ final class InlineFormatsTest extends TestCase {
 		);
 	}
 
+	public function test_edge_the_editor_canvas_queue_still_gets_the_sheet_after_the_content_rendered(): void {
+		$GLOBALS['sgs_test_global_settings'] = array( 'color' => array( 'palette' => array( 'theme' => array( array( 'slug' => 'accent', 'color' => '#ffd400' ) ) ) ) );
+		$html = '<h1 class="wp-block-sgs-heading">who needs it <span class="sgs-highlight">most</span></h1>';
+		sgs_inline_formats_maybe_enqueue( $html, array( 'blockName' => 'sgs/heading' ) );
+
+		// The canvas iframe's styles are collected in a fresh queue.
+		$GLOBALS['sgs_test_enqueued_styles'] = array();
+		sgs_inline_formats_enqueue();
+
+		$this->assertContains( 'sgs-inline-formats', $GLOBALS['sgs_test_enqueued_styles'], 'the canvas queue gets the sheet' );
+		$this->assertCount( 1, $GLOBALS['sgs_test_inline_styles']['sgs-inline-formats'] ?? array(), 'the palette rules stay single' );
+	}
+
 	public function test_happy_an_inline_photo_enqueues_the_stylesheet(): void {
 		$html = '<p>a <img class="sgs-inline-photo wp-image-7" src="a.jpg" alt=""> photo</p>';
 		sgs_inline_formats_maybe_enqueue( $html, array( 'blockName' => 'sgs/text' ) );

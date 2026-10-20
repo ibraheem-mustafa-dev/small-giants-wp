@@ -90,18 +90,26 @@ if ( ! function_exists( 'sgs_inline_format_palette_css' ) ) {
 
 if ( ! function_exists( 'sgs_inline_formats_enqueue' ) ) {
 	/**
-	 * Enqueue the `sgs-inline-formats` stylesheet with its palette rules, once per request.
+	 * Enqueue the `sgs-inline-formats` stylesheet with its palette rules.
+	 *
+	 * The guard is the current style queue, not a per-request flag: the editor collects the canvas iframe's styles
+	 * in a fresh queue after the post content has rendered (and enqueued the sheet) in the admin document, so the
+	 * canvas call must still enqueue. The palette rules are added once, because they live on the registration,
+	 * which the canvas queue copies.
 	 *
 	 * @return void
 	 */
 	function sgs_inline_formats_enqueue(): void {
-		static $done = false;
-		if ( $done || ! wp_style_is( 'sgs-inline-formats', 'registered' ) ) {
+		static $palette_added = false;
+		if ( ! wp_style_is( 'sgs-inline-formats', 'registered' ) || wp_style_is( 'sgs-inline-formats', 'enqueued' ) ) {
 			return;
 		}
-		$done = true;
 		wp_enqueue_style( 'sgs-inline-formats' );
-		$css = sgs_inline_format_palette_css();
+		if ( $palette_added ) {
+			return;
+		}
+		$palette_added = true;
+		$css           = sgs_inline_format_palette_css();
 		if ( '' !== $css ) {
 			wp_add_inline_style( 'sgs-inline-formats', $css );
 		}

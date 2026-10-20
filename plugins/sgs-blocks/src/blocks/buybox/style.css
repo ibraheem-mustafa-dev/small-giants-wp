@@ -1213,6 +1213,14 @@
 	display: none;
 }
 
+/* The theme's `.entry-content{position:relative;z-index:1}` is a stacking context the fixed bar cannot leave, so
+   the later footer (its positioned rows at z-index 1) paints over it. While the bar shows, the content is lifted
+   to 2: above the footer, still below the sticky header (100) and the toast (100000). It reverts when the bar
+   goes, as the nav mega panel's lift does (includes/nav-menu-submenu-link-css.php). */
+.entry-content:has(.sgs-buybox__bar.is-on) {
+	z-index: 2;
+}
+
 .sgs-buybox__bar.is-on {
 	transform: none;
 	visibility: visible;

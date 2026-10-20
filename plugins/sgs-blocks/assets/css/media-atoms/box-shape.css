@@ -47,7 +47,10 @@
 .sgs-media-el {
 	height: var( --sgs-media-height, auto );
 	width: var( --sgs-media-width, auto );
-	aspect-ratio: var( --sgs-media-aspect-ratio, auto );
+	/* Unset, the ratio is the element's own width and height attributes (what the browser maps them to):
+	   a lazy image with sizes="auto" is size-contained in Chrome, so a bare `auto` would leave it at
+	   core's 1500px contain-intrinsic-size. An element without the attributes resolves to `auto`. */
+	aspect-ratio: var( --sgs-media-aspect-ratio, auto attr( width type( <number> ) ) / attr( height type( <number> ) ) );
 	max-height: var( --sgs-media-max-height, none );
 	clip-path: var( --sgs-media-clip-path, none );
 	border-top-left-radius: var( --sgs-media-border-top-left-radius, 0 );
