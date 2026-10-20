@@ -2,9 +2,10 @@
 // (lib/calibration-refs.mjs::ROLES), and the plan for one site from what it already holds. Pure: the site is read and
 // written through PHP the caller runs (`wp eval-file -`), so the planner is tested on a fake site state.
 //
-// The calibration menu gives the menu blocks what a real primary menu gives them: six top-level items, one with a
-// two-item submenu and one opening a mega panel, and a plain custom link fourth (the `menuItem` role, which the fixtures
-// split after, disable and feature). That item carries the description "SOON": the menu blocks render a menu item's
+// The calibration menu gives the menu blocks what a real primary menu gives them: seven top-level items, one with a
+// two-item submenu and one opening a mega panel, a plain custom link fourth (the `menuItem` role, which the fixtures
+// split after, disable and feature), and last a link to the target's own calibration page, so on that page the menu
+// renders a current-page item (aria-current) and the *Current settings have an element to paint. That item carries the description "SOON": the menu blocks render a menu item's
 // Description as its badge copy (includes/nav-menu-markup.php::sgs_nav_shared_badge_html), so the itemBadge* settings
 // have an element to paint only when it is set. WordPress stores the description in the item's post_content.
 // The drawer is a minimal sgs/nav-drawer post: a stacked nav of two buttons and a
@@ -19,8 +20,11 @@ export const MENU_ITEMS = [
 	{ key: 'featured', title: 'Featured', url: '#', description: 'SOON' },
 	{ key: 'help', title: 'Help', url: '/help/' },
 	{ key: 'contact', title: 'Contact', url: '/contact/' },
+	{ key: 'current', title: 'Calibration page', page: true },
 ];
 export const MENU_ITEM_ROLE_KEY = 'featured';
+// The item linked to the target's calibration page (calibration-targets.json `postId`).
+export const CURRENT_ITEM_KEY = 'current';
 export const POSTS = {
 	panel: {
 		type: 'sgs_mega_menu',
@@ -86,13 +90,16 @@ function findItem( state, item, itemIds ) {
 
 // The plan for one site. state: statePhp's result. refs: the target's current refs (a role whose object the existence
 // check proved is kept, `kept`). files: { image, logo } local files to import (absent: an image is not imported and a
-// logo reuses the image). Returns { actions: [ text ], refs: { role: id | { id, url } | 'new' | 'same-as-image' },
+// logo reuses the image). page: the target's calibration page id (required: the current-page item links to it). Returns { actions: [ text ], refs: { role: id | { id, url } | 'new' | 'same-as-image' },
 // unsupplied: [ { role, why } ], known: ids for applyPhp }.
-export function planProvision( state, { refs = {}, kept = {}, files = {} } = {} ) {
+export function planProvision( state, { refs = {}, kept = {}, files = {}, page = null } = {} ) {
+	if ( ! page ) {
+		throw new Error( 'planProvision needs the target\'s calibration page id (calibration-targets.json postId) for the current-page item' );
+	}
 	const actions = [];
 	const unsupplied = [];
 	const out = {};
-	const known = { menu: state.menu, items: {}, posts: { ...state.posts }, media: {}, product: state.product };
+	const known = { menu: state.menu, items: {}, posts: { ...state.posts }, media: {}, product: state.product, page };
 	if ( ! state.menu ) {
 		actions.push( `create menu "${ MENU_NAME }"` );
 	}
@@ -103,6 +110,11 @@ export function planProvision( state, { refs = {}, kept = {}, files = {} } = {} 
 			if ( undefined !== item.description && ( have.description ?? '' ) !== item.description ) {
 				actions.push( `set description of menu item "${ item.title }" to "${ item.description }"` );
 			}
+			if ( item.page && have.objectId !== page ) {
+				actions.push( `relink menu item "${ item.title }" to post ${ page } (the calibration page)` );
+			}
+		} else if ( item.page ) {
+			actions.push( `add menu item "${ item.title }" linking to post ${ page } (the calibration page)` );
 		} else {
 			actions.push( `add menu item "${ item.title }"${ item.parent ? ` under "${ MENU_ITEMS.find( ( i ) => i.key === item.parent ).title }"` : '' }${ item.post ? ` opening ${ POSTS[ item.post ].type } "${ POSTS[ item.post ].slug }"` : ` (${ item.url })` }${ item.description ? ` with description "${ item.description }"` : '' }` );
 		}
@@ -165,6 +177,8 @@ if ( empty( $ids['menu'] ) ) {
 	$ids['menu'] = (int) $id;
 }
 $have = wp_get_nav_menu_items( $ids['menu'], array( 'post_status' => 'any' ) ) ?: array();
+if ( ! get_post( $ids['page'] ) ) { $fail( "calibration page {$ids['page']} does not exist" ); }
+$page_args = array( 'menu-item-type' => 'post_type', 'menu-item-object' => get_post_type( $ids['page'] ), 'menu-item-object-id' => $ids['page'] );
 $pos = 0;
 foreach ( $a['items'] as $it ) {
 	$pos++;
@@ -175,7 +189,9 @@ foreach ( $a['items'] as $it ) {
 		if ( $h->title === $it['title'] && (int) $h->menu_item_parent === $parent ) { $ids['items'][ $k ] = (int) $h->ID; continue 2; }
 	}
 	$args = array( 'menu-item-title' => $it['title'], 'menu-item-description' => $it['description'] ?? '', 'menu-item-status' => 'publish', 'menu-item-parent-id' => $parent, 'menu-item-position' => $pos );
-	if ( ! empty( $it['post'] ) ) {
+	if ( ! empty( $it['page'] ) ) {
+		$args += $page_args;
+	} elseif ( ! empty( $it['post'] ) ) {
 		$args += array( 'menu-item-type' => 'post_type', 'menu-item-object' => $a['posts'][ $it['post'] ]['type'], 'menu-item-object-id' => $ids['posts'][ $it['post'] ] );
 	} else {
 		$args += array( 'menu-item-type' => 'custom', 'menu-item-url' => $it['url'] );
@@ -183,6 +199,13 @@ foreach ( $a['items'] as $it ) {
 	$id = wp_update_nav_menu_item( $ids['menu'], 0, $args );
 	if ( is_wp_error( $id ) ) { $fail( "menu item {$it['title']}: " . $id->get_error_message() ); }
 	$ids['items'][ $k ] = (int) $id;
+}
+// An existing current-page item linked to another post is relinked in place.
+foreach ( $a['items'] as $it ) {
+	if ( empty( $it['page'] ) || empty( $ids['items'][ $it['key'] ] ) ) { continue; }
+	if ( (int) get_post_meta( $ids['items'][ $it['key'] ], '_menu_item_object_id', true ) === (int) $ids['page'] ) { continue; }
+	$r = wp_update_nav_menu_item( $ids['menu'], $ids['items'][ $it['key'] ], array( 'menu-item-title' => $it['title'], 'menu-item-status' => 'publish', 'menu-item-parent-id' => 0, 'menu-item-position' => count( $a['items'] ) ) + $page_args );
+	if ( is_wp_error( $r ) ) { $fail( "menu item {$it['title']} relink: " . $r->get_error_message() ); }
 }
 // An item that already existed gets its description set (WordPress keeps it in post_content).
 foreach ( $a['items'] as $it ) {

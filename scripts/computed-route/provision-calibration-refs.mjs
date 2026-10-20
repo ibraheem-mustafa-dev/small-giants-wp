@@ -89,7 +89,7 @@ function run( argv ) {
 	}
 	Object.entries( kept ).filter( ( [ , v ] ) => true !== v ).forEach( ( [ r, why ] ) => console.log( `current ref ${ r } is not kept: ${ why }` ) );
 	const files = Object.fromEntries( Object.entries( o.files ).map( ( [ r, f ] ) => [ r, path.relative( REPO, path.resolve( REPO, f ) ).split( path.sep ).join( '/' ) ] ) );
-	const plan = planProvision( state, { refs, kept, files } );
+	const plan = planProvision( state, { refs, kept, files, page: target.postId } );
 	describePlan( o.site, state, plan ).forEach( ( l ) => console.log( l ) );
 	if ( o.dryRun ) {
 		console.log( 'dry run: nothing was written' );
