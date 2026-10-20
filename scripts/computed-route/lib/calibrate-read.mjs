@@ -5,6 +5,8 @@
 import { WIDTHS, CAL_PREFIX, READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS } from './calibrate-props.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
 import { EDITOR_TIMEOUT_MS } from './calibrate-chunk.mjs';
+import { probeState, probeMechanisms } from './calibrate-probe.mjs';
+import { listedProperties } from './db.mjs';
 
 export const SCROLL_Y = 600;
 
@@ -165,10 +167,24 @@ export async function openToggle( page ) {
 const args = ( count, only ) => [ count, CAL_PREFIX, READ_PROPS, elementPath.toString(), CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, only ];
 
 // One state instance under its trigger: hover or keyboard focus on the styled element (its panel opened first when
-// it is hidden), or the state's ancestor class added. Returns { read }, or { read: null, why } when it could not be read:
+// it is hidden), or the state's ancestor class added. A 'probe' state is entered by the first state-vocabulary
+// mechanism that changes the setting's property (lib/calibrate-probe.mjs). Returns { read }, or { read: null, why } when it could not be read:
 // why is 'hidden', 'no instance' or the error the browser raised.
 async function readUnderTrigger( page, instances, n, inst ) {
 	const one = async () => ( await page.evaluate( readInstancesInPage, args( instances.length, n ) ) )[ n ];
+	if ( 'probe' === inst.trigger ) {
+		const mark = await page.evaluate( markTargetInPage, [ CAL_PREFIX, n, inst.target, inst.companionClass ] );
+		if ( ! mark ) {
+			return { read: null, why: 'no instance' };
+		}
+		const cdp = await page.context().newCDPSession( page );
+		try {
+			const r = await probeState( { page, cdp, read: one, rootSel: `.${ CAL_PREFIX }${ n }`, props: listedProperties( inst.row.css_property ), mechanisms: probeMechanisms( inst.row.css_state ) } );
+			return r.read ? { read: r.read } : { read: null, why: r.why };
+		} finally {
+			await cdp.detach();
+		}
+	}
 	if ( 'class' === inst.trigger ) {
 		await page.evaluate( ( [ sel, cls ] ) => document.querySelector( sel )?.parentElement?.classList.add( cls ), [ `.${ CAL_PREFIX }${ n }`, inst.stateClass ] );
 		await page.waitForTimeout( 400 );
@@ -239,7 +255,7 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 	await page.waitForTimeout( 800 );
 	out[ w ] = await page.evaluate( readInstancesInPage, args( instances.length ) );
 	for ( const [ n, inst ] of instances.entries() ) {
-		if ( ! [ 'hover', 'focus', 'class' ].includes( inst.trigger ) ) {
+		if ( ! [ 'hover', 'focus', 'class', 'probe' ].includes( inst.trigger ) ) {
 			continue;
 		}
 		const { read, why } = await readUnderTrigger( page, instances, n, inst );
