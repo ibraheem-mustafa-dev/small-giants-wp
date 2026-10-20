@@ -37,7 +37,7 @@ last_updated: 2026-10-20
 
 **Control gaps** (the 12 features Mama's and Indus's drafts use that SGS lacked): done (2026-10-20), plan archived (`plans/archive/2026-10-19-control-gaps-build.md`). sandybrown and mamas-test run `main` and indus-test runs `4120ef22a`, all with the whole build; Mama's redesign snapshot is pushed with the two new easing tokens. Live on mamas-test at 375/768/1440: the hero buttons ease the move on the spring and the shadow and background on `ease`, the sparkle is within 0.67deg of the draft, both inline-format popovers work by keyboard (the photo popover's Escape was fixed on the way), the showcase description override paints, and the canary's old image-only Floating layers still validate (`.claude/qa/control-gaps/results-2026-10-20.md`). Owned elsewhere: the route's writer and detector for the new attributes and inline formats (coverage plan, "Sequencing with Indus"); the Indus timeline outline following the current card (Indus plan step 20b).
 
-**Resume from:** the coverage plan's "Order" (`plans/2026-10-12-clone-coverage-foundation.md`): item 2's rest (lane A), then Indus step 20, the header slice, with the states wave's live pairing (`plans/2026-10-20-states-wave.md`, Status).
+**Resume from:** the coverage plan's "Order" (`plans/2026-10-12-clone-coverage-foundation.md`): item 2's rest (lane A), then Indus step 20, the header slice, with the states wave's live pairing (`plans/2026-10-20-states-wave.md`, Status). Also open there: the nav-bar-menu hover calibration regression and account calibration on a WooCommerce site.
 
 ### Front F: Eye Care Birmingham, built by hand (D1149)
 
