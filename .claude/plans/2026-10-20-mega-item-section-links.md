@@ -10,7 +10,7 @@ spec: .claude/specs/36-SGS-NAVIGATION-SYSTEM.md (FR-36-5, FR-36-6); .claude/spec
 
 ## Why now
 - **Problem:** a mega-menu item is a classic menu item whose object is the `sgs_mega_menu` panel post. The panel post type is nav-only (`public => false`), so the item has no page to link to: the bar renders it as a `<button>` only (`plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_bar_menu_render_items`, the `sgs_mega_menu` branch) and the drawer as a whole-row toggle (`plugins/sgs-blocks/includes/nav-drawer-menu-items.php::sgs_nav_drawer_menu_accordion_html`, `$row_toggle`). FR-36-5 still says the trigger "resolves to the mega post's own permalink", which the nav-only decision made a 404.
-- **Effect:** on every client site the top-level items that open mega panels (Indus: About, Sectors, Brands, Trade) cannot take a visitor to the section's own page.
+- **Effect:** on every client site the top-level items that open mega panels (Indus: About, Sectors, Brands, Trade; Eye Care: Sunglasses, Lenses, Help, register row N5.5 in `.claude/plans/2026-10-02-eye-care-fix-register.md`) cannot take a visitor to the section's own page. Eye Care's content step (setting those three panels' Section page) stays on its register row.
 - **Decided (Bean, 2026-10-20), from the research below:**
   1. **Link source:** each panel post carries a "Section page" setting; every menu item that opens the panel links to that page.
   2. **Drawer:** a parent with its own page is a split row (label = link, chevron = a separate 44px toggle), and its opened section starts with a "View all <label>" row.
