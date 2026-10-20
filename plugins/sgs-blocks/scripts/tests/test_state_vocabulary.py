@@ -69,6 +69,21 @@ def test_a_php_statement_keeps_its_first_state():
     assert states == {"labelRoll": "hover"}
 
 
+def test_hover_survives_a_later_focus_statement():
+    """MUST FAIL with last-wins across statements: sgs_label_roll_css writes `:hover` and `:focus-visible` as two
+    statements (includes/helpers-item-effects.php); SGS paints hover on focus too, so the setting stays hover."""
+    php = (
+        "<?php\n$roll = $attributes['labelRoll'];\n"
+        "$css .= $t . ':hover .sgs-roll>span{transform:' . $roll . ';}';\n"
+        "$css .= $t . ':is(:focus-visible, :has(:focus-visible)) .sgs-roll>span{transform:' . $roll . ';}';\n"
+    )
+    _props, states, _elements = es._attr_to_raw_props_php(php, frozenset({"transform"}), {"roll": "labelRoll"}, "x")
+    assert states == {"labelRoll": "hover"}
+    focus_only = "<?php\n$f = $attributes['ringWidth'];\n$css .= $t . ':focus-visible{outline-width:' . $f . ';}';\n"
+    _p, st, _e = es._attr_to_raw_props_php(focus_only, frozenset({"outline-width"}), {"f": "ringWidth"}, "x")
+    assert st == {"ringWidth": "focus"}, "a focus-only setting stays focus"
+
+
 def test_an_element_that_is_a_state_tags_its_settings(tmp_path):
     """MUST FAIL without the element-level `state` key: sgs/nav-drawer-menu's `item-open` part is the open state."""
     import json

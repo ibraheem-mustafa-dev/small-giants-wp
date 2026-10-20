@@ -823,6 +823,14 @@ _GRADIENT_FN_RE = re.compile(r"(?:linear|radial|conic)-gradient\s*\(", re.IGNORE
 _UNMAPPED_STATE_SELECTORS_SEEN: set[str] = set()
 
 
+def _merged_state(seen: "str | None", new: str) -> str:
+    """The state a setting keeps when later statements paint it under another state too: a setting painted on hover
+    keeps hover when a later statement paints it on keyboard focus (SGS paints every hover look on `:focus-visible`,
+    includes/helpers-hover-state.php; the label roll writes the two as separate statements). Otherwise the later
+    statement's state stands, as before."""
+    return seen if seen == "hover" and new == "focus" else new
+
+
 def _derive_state_from_selector(selector: str) -> "str | None":
     """The vocabulary state a CSS selector's own text expresses, or None.
 
@@ -2270,13 +2278,13 @@ def _attr_to_raw_props_php(
             if direct_attr:
                 attr_props[direct_attr].add(current_prop)
                 if current_state:
-                    attr_state[direct_attr] = current_state
+                    attr_state[direct_attr] = _merged_state(attr_state.get(direct_attr), current_state)
                 if current_element:
                     attr_element[direct_attr] = current_element
             elif var_ref and var_ref in var_attr:
                 attr_props[var_attr[var_ref]].add(current_prop)
                 if current_state:
-                    attr_state[var_attr[var_ref]] = current_state
+                    attr_state[var_attr[var_ref]] = _merged_state(attr_state.get(var_attr[var_ref]), current_state)
                 if current_element:
                     attr_element[var_attr[var_ref]] = current_element
 
