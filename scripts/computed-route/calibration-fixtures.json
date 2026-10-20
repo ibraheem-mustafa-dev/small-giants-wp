@@ -2229,7 +2229,21 @@
         "type": "image",
         "mime": "image/jpeg"
       }
-    }
+    },
+    "variants": [
+      {},
+      {
+        "decorMedia": null
+      }
+    ],
+    "inner": [
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "Layer text."
+        }
+      }
+    ]
   },
   "sgs/feature-grid": {
     "attributes": {},
