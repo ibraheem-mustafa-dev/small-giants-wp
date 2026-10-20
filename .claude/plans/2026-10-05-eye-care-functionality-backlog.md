@@ -127,6 +127,6 @@ Each names its evidence; the register stays the source of truth for fixes.
 
 ## Deferred: product-manifest transient is never purged
 
-`includes/class-product-manifest.php` writes the transient `sgs_manifest_v8_<id>_<tax-fingerprint>`, while `includes/class-cart-cache-purge.php::purge_by_product_id` and `seed-48-sku-fixture-v2.php` delete `sgs_manifest_<id>`. The purge key can never match the write key, so a product's manifest is never purged on change and expires only on TTL: an edited product can keep serving its old variations, swatches and availability. It is not the cause of the imageless Eye Care shop cards (those are 12 products carrying `photo-to-come.png`).
+`includes/class-product-manifest.php` writes the transient `sgs_manifest_v9_<id>_<tax-fingerprint>`, while `includes/class-cart-cache-purge.php::purge_by_product_id` and `seed-48-sku-fixture-v2.php` delete `sgs_manifest_<id>`. The purge key can never match the write key, so a product's manifest is never purged on change and expires only on TTL: an edited product can keep serving its old variations, swatches and availability. It is not the cause of the imageless Eye Care shop cards (those are 12 products carrying `photo-to-come.png`).
 
 Fix shape: make the purge delete the versioned key, which needs the tax fingerprint, or delete by prefix. Prove it first with a negative control: edit a variable product's variation, confirm the shop card is stale before the fix and fresh after it.

@@ -108,6 +108,15 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|
 | `sgs_button_note_html` | `function sgs_button_note_html( array $attributes ): string` | The note's markup. |
 
+#### `includes/helpers-button-press.php` — 4 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_button_press_token` | `function sgs_button_press_token( string $variant, string $role ): string` | The custom property that carries one press role for a button style, or `''` when no preset sets it. |
+| `sgs_button_press_rule_for` | `function sgs_button_press_rule_for( string $selector, string $variant, string $guard = '', bool…` | The `:active` rule for one button-shaped element, or `''` when no preset sets a press role for its style. |
+| `sgs_button_press_rule` | `function sgs_button_press_rule( string $uid, string $variant ): string` | The `:active` rule for one sgs/button, or `''` when no preset sets a press role for its style. |
+| `sgs_button_press_rules_by_variant` | `function sgs_button_press_rules_by_variant( string $scope ): string` | The `:active` rules for every `.sgs-button--{variant}` inside a scope, one per variant whose preset sets a press role. |
+
 #### `includes/helpers-button-site-info-label.php` — 3 function(s)
 
 | Function | Signature | Purpose |
@@ -235,6 +244,24 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|
 | `sgs_tab_content_is_empty` | `function sgs_tab_content_is_empty( string $html ): bool` | Whether a rendered tab's HTML carries no visible text and no media. |
 
+#### `includes/helpers-end-shape.php` — 13 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_end_shape_allowed` | `function sgs_end_shape_allowed(): array` | The library shapes an end may take, in menu order. |
+| `sgs_end_shape_normalise` | `function sgs_end_shape_normalise( $shape ): string` | A stored end shape, or '' (Straight) when it is not in the allowed list. |
+| `sgs_end_shape_depth` | `function sgs_end_shape_depth( $depth ): float` | A stored depth clamped to 10 through 150 (percent of the box's height); 45 when unset. |
+| `sgs_end_shape_num` | `function sgs_end_shape_num( float $number ): string` | A number as the tiles print it: four decimals at most, no trailing zeros. |
+| `sgs_end_shape_library_path` | `function sgs_end_shape_library_path( string $shape ): string` | The library path for a shape, or '' when it is not allowed. |
+| `sgs_end_shape_matrix` | `function sgs_end_shape_matrix( string $side, float $depth ): string` | The matrix that rotates a library tile into a depth-wide, 100-tall end tile. |
+| `sgs_end_shape_svg_open` | `function sgs_end_shape_svg_open( float $depth ): string` | The opening of an end tile: depth wide, 100 tall, stretched without keeping its ratio. |
+| `sgs_end_shape_cut_svg` | `function sgs_end_shape_cut_svg( string $shape, string $side, float $depth ): string` | The cut tile for one end: the tile minus the library's painted part. |
+| `sgs_end_shape_url` | `function sgs_end_shape_url( string $svg ): string` | An SVG as a CSS `url()` value: only `%`, `<`, `>`, `#` and `"` are encoded. |
+| `sgs_end_shape_active_ends` | `function sgs_end_shape_active_ends( array $ends ): array` | The shaped ends of a box, right first, as `side => [ shape, depth ]`. |
+| `sgs_end_shape_mask_decls` | `function sgs_end_shape_mask_decls( array $ends ): string` | Mask declarations that cut the shaped ends out of a box. |
+| `sgs_end_shape_border_box_decls` | `function sgs_end_shape_border_box_decls( array $ends, array $border_decls, string $paint ): string` | The layer's inset, border and border colour for one set of border declarations. |
+| `sgs_end_shape_layer_decls` | `function sgs_end_shape_layer_decls( array $ends, array $border_decls, string $paint ): string` | Declarations for a shaped box's `::after` layer: the box's border on the layer, then the cut mask. The caller adds the fill paint. |
+
 #### `includes/helpers-form-submit-motion.php` — 2 function(s)
 
 | Function | Signature | Purpose |
@@ -333,6 +360,15 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|
 | `sgs_render_info_toggle` | `function sgs_render_info_toggle( string $panel_text, string $aria_label = '', string $extra_class = '' )…` | Render an info-toggle button + its (initially hidden) panel. |
 
+#### `includes/helpers-inline-formats.php` — 4 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_rich_text_kses` | `function sgs_rich_text_kses( $html ): string` | Sanitise RichText markup for output: the post allowlist without inline style. |
+| `sgs_inline_format_palette_css` | `function sgs_inline_format_palette_css(): string` | The highlight colour rule for each palette slug that is safe in a selector. |
+| `sgs_inline_formats_enqueue` | `function sgs_inline_formats_enqueue(): void` | Enqueue the `sgs-inline-formats` stylesheet with its palette rules. |
+| `sgs_inline_formats_maybe_enqueue` | `function sgs_inline_formats_maybe_enqueue( $block_content, $block = array() )` | `render_block` filter: load the inline-format stylesheet when the block's markup holds a highlight or a photo. |
+
 #### `includes/helpers-item-effects.php` — 6 function(s)
 
 | Function | Signature | Purpose |
@@ -409,7 +445,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_media_position_focal_to_css` | `function sgs_media_position_focal_to_css( $focal_point )` | FocalPointPicker {x,y} (floats 0-1) -> CSS "X% Y%" object-position value. Clamped 0-1, rounded 2dp. Returns '' when unset or at the CSS… |
 | `sgs_media_position_css` | `function sgs_media_position_css( array $attributes, $prefix, $selector )` | Build a scoped object-fit/object-position CSS rule for one media element. The caller passes its OWN, already-safe selector — this function… |
 
-#### `includes/helpers-media.php` — 5 function(s)
+#### `includes/helpers-media.php` — 7 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
@@ -418,6 +454,8 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_content_image_claims_priority` | `function sgs_content_image_claims_priority( bool $leads_page = false ): bool` | Whether the content image about to print is the page's likely LCP image, so it takes `loading="eager"` and `fetchpriority="high"`; every… |
 | `sgs_render_stars` | `function sgs_render_stars( float $rating, int $best_rating = 5, int $size = 20, string $colour_css =…` | Render inline SVG star icons for a given rating value. |
 | `sgs_render_media` | `function sgs_render_media( $attrs, $context = '' )` | Render an image or video from a unified SGS media-slot attribute. |
+| `sgs_media_cover_crop_widens` | `function sgs_media_cover_crop_widens( array $attributes, string $prefix, string $block_slug, int…` | Whether an image is cover-cropped into a box that draws it wider than the box. |
+| `sgs_media_drop_auto_sizes` | `function sgs_media_drop_auto_sizes( $filtered_image )` | `wp_content_img_tag` filter: take core's `auto` out of `sizes` on an image marked `data-sgs-cover-crop`. |
 
 #### `includes/helpers-mega-render.php` — 3 function(s)
 
@@ -804,7 +842,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). |
 
-**81 files, 384 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**84 files, 407 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
