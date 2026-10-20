@@ -4,7 +4,8 @@ The extractor proposes a slug for each draft token; intake shows those proposals
 each ``palette-role`` row in ``intake.json``'s ``review[]``:
 
   ``accept``        take the row's proposed ``role`` (a ``None`` role means no palette entry)
-  ``role:<slug>``   use that slug instead
+  ``role:<slug>``   use that slug instead; ``role:<slug>,<slug>`` gives the token's colour to each slug
+                    (a draft colour that fills several roles, such as heading and the text on accent)
   ``one-off``       no palette entry; the colour stays a literal hex where it is used
 
 ``confirmed_map`` turns those marks into ``{slug: {"hex", "tokens"}}``. ``apply_confirmed`` then sets
@@ -40,6 +41,17 @@ def _norm_hex(value) -> str | None:
     return value.strip().lower()
 
 
+def _mark_slugs(token: str, mark, row: dict) -> list[str]:
+    """The slugs one palette mark names: none for ``one-off`` or an accepted "no palette entry" proposal."""
+    if mark == "one-off":
+        return []
+    if mark == "accept":
+        return [row["role"]] if row.get("role") else []
+    if isinstance(mark, str) and mark.startswith("role:"):
+        return [part.strip() for part in mark[len("role:"):].split(",")]
+    raise ConfirmError(f"{token}: unrecognised palette mark {mark!r} (accept, role:<slug>[,<slug>...] or one-off)")
+
+
 def confirmed_map(intake: dict, known_slugs) -> tuple[dict[str, dict], list[str]]:
     """Return ``({slug: {"hex": "#rrggbb", "tokens": [...]}}, [unmarked tokens])`` from intake.
 
@@ -64,27 +76,21 @@ def confirmed_map(intake: dict, known_slugs) -> tuple[dict[str, dict], list[str]
         row = rows.get(token)
         if row is None:
             raise ConfirmError(f"review marks {token} but intake.palette.rows has no row for it; re-run intake")
-        if mark == "one-off":
+        slugs = _mark_slugs(token, mark, row)
+        if not slugs:
             continue
-        if mark == "accept":
-            slug = row.get("role")
-            if not slug:
-                continue  # the proposal itself was "no palette entry" (an unused token)
-        elif isinstance(mark, str) and mark.startswith("role:"):
-            slug = mark[len("role:"):].strip()
-        else:
-            raise ConfirmError(f"{token}: unrecognised palette mark {mark!r} (accept, role:<slug> or one-off)")
-        if slug not in known and not _CUSTOM_SLUG.match(slug):
-            raise ConfirmError(f"{token}: confirmed slug {slug!r} is neither a framework palette slug "
-                               "(theme/sgs-theme/theme.json) nor a custom-<name> slug")
         hexv = _norm_hex(row.get("hex"))
         if hexv is None:
             raise ConfirmError(f"{token}: intake row hex {row.get('hex')!r} is not a #rrggbb colour")
-        held = confirmed.get(slug)
-        if held and held["hex"] != hexv:
-            raise ConfirmError(f"slug {slug!r} is claimed by {', '.join(held['tokens'])} ({held['hex']}) and "
-                               f"by {token} ({hexv}); one slug cannot hold two colours")
-        confirmed.setdefault(slug, {"hex": hexv, "tokens": []})["tokens"].append(token)
+        for slug in slugs:
+            if slug not in known and not _CUSTOM_SLUG.match(slug):
+                raise ConfirmError(f"{token}: confirmed slug {slug!r} is neither a framework palette slug "
+                                   "(theme/sgs-theme/theme.json) nor a custom-<name> slug")
+            held = confirmed.get(slug)
+            if held and held["hex"] != hexv:
+                raise ConfirmError(f"slug {slug!r} is claimed by {', '.join(held['tokens'])} ({held['hex']}) "
+                                   f"and by {token} ({hexv}); one slug cannot hold two colours")
+            confirmed.setdefault(slug, {"hex": hexv, "tokens": []})["tokens"].append(token)
     unmarked = sorted(t for t in rows if t not in marks)
     return confirmed, unmarked
 

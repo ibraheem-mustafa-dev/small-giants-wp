@@ -49,6 +49,21 @@ def test_marks_resolve_to_slugs():
     assert unmarked == []
 
 
+def test_one_mark_can_give_a_draft_colour_several_roles():
+    intake = _intake([("--text-heading", "#2C3E50", "heading")],
+                     {"--text-heading": "role:heading, accent-text,section-text"})
+    confirmed, _ = cp.confirmed_map(intake, FRAMEWORK)
+    assert confirmed == {slug: {"hex": "#2c3e50", "tokens": ["--text-heading"]}
+                         for slug in ("heading", "accent-text", "section-text")}
+
+
+@pytest.mark.parametrize("mark", ["role:heading,brand-blue", "role:heading,", "role:,heading"])
+def test_a_bad_slug_anywhere_in_a_several_role_mark_is_refused(mark):
+    intake = _intake([("--text-heading", "#2C3E50", "heading")], {"--text-heading": mark})
+    with pytest.raises(cp.ConfirmError, match="neither a framework palette slug"):
+        cp.confirmed_map(intake, FRAMEWORK)
+
+
 def test_two_hexes_on_one_slug_are_refused():
     intake = _intake([("--a", "#111111", "accent"), ("--b", "#222222", "custom-b")],
                      {"--a": "accept", "--b": "role:accent"})
