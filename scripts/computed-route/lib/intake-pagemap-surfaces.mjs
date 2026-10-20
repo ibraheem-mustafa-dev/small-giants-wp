@@ -6,6 +6,7 @@
 // side that lacks it.
 import { attrOf, readBinding, classMethod, isFn, propName, subtree, keyName, decodeEntities } from './intake-ast.mjs';
 import { ref, resolveRefs, propRefs, elementsOf, evalDeep, oneString, returnsOf } from './intake-ast-eval.mjs';
+import { megaPanelTitle } from './page-map-names.mjs';
 
 const VOID = new Set( [ 'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr' ] );
 
@@ -273,7 +274,7 @@ export function codeSurfaces( exp, routeOf = () => null ) {
 		const withKids = ( label ) => menus.some( ( m ) => ( 'drawer' === m.region || 'header' === m.region ) && m.items.some( ( it ) => it.label === label && it.children.length ) );
 		const panels = headerMenus.flatMap( ( m ) => m.items.filter( ( it ) => withKids( it.label ) ).map( ( it ) => ( { it, m } ) ) );
 		for ( const { it, m } of panels ) {
-			surfaces.push( { kind: 'menu', label: it.label, title: `${ it.label } mega menu`, route: null, dc: stem( d.file ), draftId: `${ m.draftId } item ${ it.position }`, menuItem: { menu: m.menu, position: it.position } } );
+			surfaces.push( { kind: 'menu', label: it.label, title: megaPanelTitle( it.label ), route: null, dc: stem( d.file ), draftId: `${ m.draftId } item ${ it.position }`, menuItem: { menu: m.menu, position: it.position } } );
 		}
 		if ( ! panels.length ) {
 			for ( const h of named( 'header' ) ) {
