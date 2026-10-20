@@ -47,11 +47,10 @@
 			"note": "form-field state: sgs/form draws field validity, required, busy and disabled-field states from its own settings"
 		},
 		"aria-attr:aria-checked": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": "aria-checked: an ARIA state; SGS blocks manage their own"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": "aria-checked: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to the selected-pill settings (sgs/option-picker, sgs/product-card) (tests/states-planted-draft.test.mjs)"
 		},
 		"aria-attr:aria-colcount": {
 			"recognise": null,
@@ -82,11 +81,10 @@
 			"note": "aria-controls: an ARIA property (name, description, relationship); SGS blocks render their own"
 		},
 		"aria-attr:aria-current": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": "aria-current: an ARIA state; SGS blocks manage their own"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": "aria-current: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to sgs/nav-bar-menu, sgs/nav-drawer-menu and sgs/breadcrumbs current settings (tests/states-planted-draft.test.mjs)"
 		},
 		"aria-attr:aria-describedby": {
 			"recognise": null,
@@ -131,11 +129,10 @@
 			"note": "aria-errormessage: an ARIA property (name, description, relationship); SGS blocks render their own"
 		},
 		"aria-attr:aria-expanded": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": "aria-expanded: an ARIA state; SGS blocks manage their own"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": "aria-expanded: the vocabulary row sets the attribute on the host and reads the look as the 'open' state; written to sgs/accordion headerColourOpen, sgs/nav-drawer-menu itemColourOpen (tests/states-planted-draft.test.mjs)"
 		},
 		"aria-attr:aria-flowto": {
 			"recognise": null,
@@ -257,11 +254,10 @@
 			"note": "aria-posinset: an ARIA property (name, description, relationship); SGS blocks render their own"
 		},
 		"aria-attr:aria-pressed": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": "aria-pressed: an ARIA state; SGS blocks manage their own"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": "aria-pressed: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to sgs/theme-toggle textColourPressed (tests/states-planted-draft.test.mjs)"
 		},
 		"aria-attr:aria-readonly": {
 			"recognise": null,
@@ -313,11 +309,10 @@
 			"note": "aria-rowspan: an ARIA property (name, description, relationship); SGS blocks render their own"
 		},
 		"aria-attr:aria-selected": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": "aria-selected: an ARIA state; SGS blocks manage their own"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": "aria-selected: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to sgs/tabs tabActive* settings (tests/states-planted-draft.test.mjs)"
 		},
 		"aria-attr:aria-setsize": {
 			"recognise": null,
@@ -2056,10 +2051,9 @@
 		},
 		"construct:style-hover": {
 			"recognise": "construct:style-hover",
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": "a style-* pseudo rule: read by the inventory as a hover or focus record; its motion is written on hover.state (lib/fill-motion.mjs::motionWrites), its colours and other values wait for the states wave (FR-48-81)"
+			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": "a style-* pseudo rule: the draft runtime compiles it into a stylesheet rule, which the state reader reads as the hover (or focus) look and writes to the setting states; its motion is also written on hover.state (lib/fill-motion.mjs::motionWrites). A bound value ({{ }}) is a draft defect (FR-48-34) (tests/states-planted-draft.test.mjs)"
 		},
 		"construct:template-element": {
 			"recognise": "construct:template-element",
@@ -4508,11 +4502,10 @@
 			}
 		},
 		"css-pseudo-class:checked": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":checked: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": ":checked: a checked input forced and read; its look is the 'current' state, written to the selected-pill settings (sgs/option-picker, sgs/product-card); the target must be the input itself or an ancestor of it, as a sibling combinator has no host (tests/states-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:current": {
 			"excluded": {
@@ -4542,18 +4535,16 @@
 			"note": ":dir: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:disabled": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":disabled: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": ":disabled: forced and read as the 'disabled' state, written to itemDisabledColour (sgs/nav-bar-menu, sgs/nav-drawer-menu); an element already disabled at rest has the look as its resting read, so only a draft control that is not disabled at rest yields a state look (tests/states-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:empty": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":empty: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":empty: matches at rest, so the rule is in the element's resting computed style; Fill reads it on each element the skeleton maps to a block and writes it there, like the structural pseudo-classes (tests/states-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:enabled": {
 			"recognise": null,
@@ -4650,11 +4641,10 @@
 			}
 		},
 		"css-pseudo-class:hover": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":hover: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": ":hover: forced on the host by CSS.forcePseudoState and read as the hover look; written to the setting states 'hover' (678 settings in 77 blocks), and the check compares it with the live page's hover (tests/states-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:in-range": {
 			"recognise": null,
@@ -4786,11 +4776,10 @@
 			"note": ":only-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:open": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":open: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
+			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
+			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
+			"note": ":open: forced on the host (details, dialog, select) and read as the 'open' state; written to the open-state settings (sgs/accordion header colour and background, sgs/nav-drawer-menu item and caret) (tests/states-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:optional": {
 			"recognise": null,
