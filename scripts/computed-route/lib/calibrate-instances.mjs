@@ -3,6 +3,7 @@
 // per enum value of a setting with no css_property (discovery). Pure: no browser, no site.
 import { markersFor, borderPartners, shadowPartners, defOf, types } from './calibrate-markers.mjs';
 import { modifierOf } from './db.mjs';
+import { blockElements } from './resolve.mjs';
 
 // How each setting state is reached before a marker is read (§3.2): 'hover' under a real mouse on the styled element;
 // 'focus' by keyboard-visible focus on it; 'scroll' by scrolling the window past the header offset (the header script
@@ -17,14 +18,15 @@ export const triggerFor = ( state ) => ( state ? STATE_TRIGGERS[ state ] : null 
 
 const kebab = ( s ) => s.replace( /([a-z0-9])([A-Z])/g, '$1-$2' ).toLowerCase();
 
-// The element a hover or focus marker is applied to: the block's BEM element named by css_element, or the instance
-// root (null) for the wrapper. The reader falls back to the root when the selector matches nothing.
+// The element a hover or focus marker is applied to: the selector the block's manifest declares for css_element
+// (post-grid's read-more element is .sgs-post-grid__readmore), else its BEM name, or the instance root (null) for the
+// wrapper. The reader falls back to the root when the selector matches nothing.
 export function stateTarget( block, row ) {
 	const el = row.css_element;
 	if ( ! el || /^(wrapper|root|block)$/.test( el ) ) {
 		return null;
 	}
-	return `.${ block.replace( /^sgs\//, 'sgs-' ) }__${ kebab( el ) }`;
+	return blockElements( block )[ el ] || `.${ block.replace( /^sgs\//, 'sgs-' ) }__${ kebab( el ) }`;
 }
 
 // A boolean "show/enable/has/use X" setting that is off by default and gates the element a setting styles: the

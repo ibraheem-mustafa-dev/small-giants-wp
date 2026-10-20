@@ -36,6 +36,22 @@ export function blockSchema( slug ) {
 	return schemaIndex[ slug ] || null;
 }
 
+let elementsIndex = null;
+// A block's declared elements from its block.json manifest (`supports.sgs.elements`): { "<element>": "<selector>" }.
+export function blockElements( slug ) {
+	if ( ! elementsIndex ) {
+		elementsIndex = {};
+		for ( const dir of fs.readdirSync( BLOCKS_DIR ) ) {
+			const f = path.join( BLOCKS_DIR, dir, 'block.json' );
+			if ( fs.existsSync( f ) ) {
+				const j = JSON.parse( fs.readFileSync( f, 'utf8' ) );
+				elementsIndex[ j.name ] = Object.fromEntries( Object.entries( j.supports?.sgs?.elements || {} ).filter( ( [ , e ] ) => 'string' === typeof e?.selector && e.selector.trim() ).map( ( [ k, e ] ) => [ k, e.selector.trim() ] ) );
+			}
+		}
+	}
+	return elementsIndex[ slug ] || {};
+}
+
 // A path with its :nth-of-type steps dropped: an enclosing block's calibration fixture repeats the child at other
 // positions, so paths from two different trees compare without their indices (the same rule `resolve`'s own `loose`
 // applies under anyIndex).

@@ -73,7 +73,10 @@ export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProp
 // controlled panels, else the root) with data-cr-target, and says whether it is visible and whether the instance has a
 // closed panel toggle it could open.
 export function markTargetInPage( [ prefix, n, selector, companionClass ] ) {
+	// Both marks are cleared: openToggle clicks the first [data-cr-toggle] on the page, so an earlier instance's toggle
+	// left marked would be opened instead of this one's.
 	document.querySelectorAll( '[data-cr-target]' ).forEach( ( e ) => e.removeAttribute( 'data-cr-target' ) );
+	document.querySelectorAll( '[data-cr-toggle]' ).forEach( ( e ) => e.removeAttribute( 'data-cr-toggle' ) );
 	const root = document.querySelector( `.${ prefix }${ n }` );
 	if ( ! root ) {
 		return null;

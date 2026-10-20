@@ -233,3 +233,13 @@ test( 'MUST FAIL (noMarker: per-device order): a flex order setting gets one who
 	assert.deepEqual( m?.attrs, { order: { desktop: 3, tablet: 2, mobile: 1 } } );
 	assert.deepEqual( m?.expect, { 1440: '3', 768: '2', 375: '1' } );
 } );
+
+test( 'MUST FAIL (state target: guessed class): a state marker hovers the element\'s declared manifest selector, else its BEM name', async () => {
+	const { stateTarget } = await import( '../lib/calibrate-instances.mjs' );
+	// post-grid's read-more element is declared as .sgs-post-grid__readmore; .sgs-post-grid__read-more does not exist.
+	assert.equal( stateTarget( 'sgs/post-grid', { css_element: 'read-more' } ), '.sgs-post-grid__readmore' );
+	assert.equal( stateTarget( 'sgs/gallery', { css_element: 'image' } ), '.sgs-gallery__img' );
+	// An element the manifest does not declare keeps its BEM name; the wrapper is the instance root.
+	assert.equal( stateTarget( 'sgs/post-grid', { css_element: 'not-declared' } ), '.sgs-post-grid__not-declared' );
+	assert.equal( stateTarget( 'sgs/post-grid', { css_element: 'wrapper' } ), null );
+} );

@@ -127,3 +127,18 @@ test( 'a missed state names each width\'s real failure; "stays hidden" only when
 	assert.match( err, /^the state could not be triggered: 375px: locator\.hover: Element is outside of the viewport; 768px: hidden$/ );
 	assert.equal( missedReason( [] ), 'the state could not be triggered' );
 } );
+
+test( 'MUST FAIL (stale toggle): marking a second instance leaves only its own panel toggle marked', async () => {
+	const { chromium } = await import( 'playwright' );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage();
+		await page.setContent( [ 0, 1 ].map( ( n ) => `<div class="cr-ref-cal-${ n } sgs-x"><button class="sgs-x__toggle" aria-controls="p-${ n }" aria-expanded="false">Open</button><div id="p-${ n }" hidden><a class="sgs-x__link" href="#">Link</a></div></div>` ).join( '' ) );
+		await page.evaluate( markTargetInPage, [ 'cr-ref-cal-', 0, '.sgs-x__link' ] );
+		await page.evaluate( markTargetInPage, [ 'cr-ref-cal-', 1, '.sgs-x__link' ] );
+		const marked = await page.evaluate( () => [ ...document.querySelectorAll( '[data-cr-toggle]' ) ].map( ( b ) => b.getAttribute( 'aria-controls' ) ) );
+		assert.deepEqual( marked, [ 'p-1' ], 'openToggle clicks the first marked toggle, so an earlier instance\'s mark would open the wrong panel' );
+	} finally {
+		await browser.close();
+	}
+} );
