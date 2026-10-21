@@ -3343,16 +3343,6 @@
 			}
 		},
 		{
-			"slug": "sgs/nav-bar-menu",
-			"attr": "featuredItemIds",
-			"fields": {
-				"role": "styling",
-				"css_property": "display,max-width,min-width",
-				"css_element": "bar",
-				"css_layer": "GRID"
-			}
-		},
-		{
 			"slug": "sgs/nav-drawer-menu",
 			"attr": "featuredItemIds",
 			"fields": {
@@ -7445,6 +7435,60 @@
 				"css_property": "height,width"
 			},
 			"_reason": "2026-10-20: includes/nav-menu-caret-css.php::sgs_nav_menu_caret_css writes width and height from submenuCaretSize for the drawer menu exactly as for the bar menu (whose row holds height,width); the drawer's classifier entry was dropped at the 54943b0dc reseed when caretBoxSize took the caret-box element's height,width."
+		},
+		{
+			"slug": "sgs/responsive-logo",
+			"attr": "logoId",
+			"fields": {
+				"role": "image-object",
+				"css_property": null,
+				"css_element": null
+			},
+			"_why": "2026-10-21: logoId is a media-library attachment ID. src/blocks/responsive-logo/render.php reads it as `$desktop_logo_id = absint( $attributes['logoId'] )` and resolves the image from it; it carries no length, so the max-width the classifier derived (the logo's width comes from the separate `width` attribute through --logo-width) is an emission side effect. Same shape as logoIdTablet and logoIdMobile, whose rows keep their derivation until a separate pass. Spec 48 5.4 Res 7."
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "featuredItemIds",
+			"fields": {
+				"role": "behaviour",
+				"css_property": null,
+				"css_element": null,
+				"css_layer": null
+			},
+			"_why": "2026-10-21: a list of menu-item identifiers. src/blocks/nav-bar-menu/render.php passes `$featured_ids = $attributes['featuredItemIds']` to SGS_Nav_Menu_Bar_Renderer, which matches each flattened item's identifier against it to pick which items print the featured markup and classes; the display, max-width and min-width rules are painted by the stylesheet for those classes, not written from this value. Spec 48 5.4 Res 7."
+		},
+		{
+			"slug": "sgs/nav-drawer",
+			"attr": "closeStyle",
+			"fields": {
+				"role": "enum-mode",
+				"css_property": null,
+				"css_element": null,
+				"css_layer": null
+			},
+			"_why": "2026-10-21: a tier object choosing the close button's form. src/blocks/nav-drawer/render.php validates it against `$sgs_nd_allowed_close_styles` (separate-x, text-swap, burger-morph, icon-and-text, trigger) and picks which close-button markup and modifier class print; the display and min-height rules come from the stylesheet for those modifiers. The sibling closeStyle rows on sgs/choice-flow and sgs/modal already hold no css_property. Spec 48 5.4 Res 7."
+		},
+		{
+			"slug": "sgs/diagram-dimension",
+			"attr": "endX",
+			"fields": {
+				"role": null,
+				"css_property": null,
+				"css_element": null,
+				"css_layer": null
+			},
+			"_why": "2026-10-21: line geometry in percent of the drawing box. src/blocks/diagram-dimension/render.php reads `sgs_measured_diagram_pct( $attributes['endX'] ?? null, 80.0 )` and feeds it to sgs_diagram_dimension_paths(), which builds SVG path data; nothing writes a left value from it (block.json notes: line geometry is drawing content with no CSS property; labelX and labelY carry the left and top). Matches startX, which has no role or css_property. Spec 48 3.6 item 14."
+		},
+		{
+			"slug": "sgs/diagram-dimension",
+			"attr": "endY",
+			"fields": {
+				"role": null,
+				"css_property": null,
+				"css_element": null,
+				"css_layer": null
+			},
+			"_why": "2026-10-21: line geometry in percent of the drawing box. src/blocks/diagram-dimension/render.php reads `sgs_measured_diagram_pct( $attributes['endY'] ?? null, 50.0 )` and feeds it to sgs_diagram_dimension_paths(), which builds SVG path data; nothing writes a top value from it (block.json notes: line geometry is drawing content with no CSS property; labelX and labelY carry the left and top). Matches startY, which has no role or css_property. Spec 48 3.6 item 14."
 		}
 	]
 }
