@@ -1,0 +1,3316 @@
+{
+  "crosscheck_failures": [],
+  "mounts": [
+    {
+      "attr_basis": "none",
+      "attrs": [],
+      "declared_scale": null,
+      "file": "blocks/before-after/edit.js",
+      "generic": false,
+      "label": "(dynamic)",
+      "line": 841,
+      "owners": [
+        "sgs/before-after"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "split-unit storage cannot hold a preset var (attribute not resolved)",
+      "storage": "split-unit"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "maxWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/before-after/edit.js",
+      "generic": false,
+      "label": "(dynamic)",
+      "line": 883,
+      "owners": [
+        "sgs/before-after"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "brandTextMinWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/brand-strip/source-controls.js",
+      "generic": false,
+      "label": "Minimum width per brand",
+      "line": 174,
+      "owners": [
+        "sgs/brand-strip"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "itemGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/breadcrumbs/edit.js",
+      "generic": false,
+      "label": "Space around the separator",
+      "line": 168,
+      "owners": [
+        "sgs/breadcrumbs"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "iconSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/business-info/edit.js",
+      "generic": false,
+      "label": "Icon size",
+      "line": 224,
+      "owners": [
+        "sgs/business-info"
+      ],
+      "presets": true,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "iconGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/business-info/edit.js",
+      "generic": false,
+      "label": "Space between icon and text",
+      "line": 243,
+      "owners": [
+        "sgs/business-info"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "linkMinHeight"
+      ],
+      "declared_scale": null,
+      "file": "blocks/business-info/edit.js",
+      "generic": false,
+      "label": "Link minimum height",
+      "line": 262,
+      "owners": [
+        "sgs/business-info"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "customWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/button/edit.js",
+      "generic": false,
+      "label": "Custom width",
+      "line": 647,
+      "owners": [
+        "sgs/button"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "split-unit"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "minHeight"
+      ],
+      "declared_scale": null,
+      "file": "blocks/button/edit.js",
+      "generic": false,
+      "label": "Min height",
+      "line": 678,
+      "owners": [
+        "sgs/button"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "split-unit"
+    },
+    {
+      "attr_basis": "none",
+      "attrs": [],
+      "declared_scale": null,
+      "file": "blocks/button/edit.js",
+      "generic": false,
+      "label": "Line height",
+      "line": 759,
+      "owners": [
+        "sgs/button"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "split-unit storage cannot hold a preset var (attribute not resolved)",
+      "storage": "split-unit"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "stickyOffset"
+      ],
+      "declared_scale": null,
+      "file": "blocks/buybox/inspector-extra.js",
+      "generic": false,
+      "label": "Top offset",
+      "line": 92,
+      "owners": [
+        "sgs/buybox"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "thumbGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/buybox/inspector-extra.js",
+      "generic": false,
+      "label": "Thumbnail gap",
+      "line": 221,
+      "owners": [
+        "sgs/buybox"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "thumbStripOffset"
+      ],
+      "declared_scale": null,
+      "file": "blocks/buybox/inspector-extra.js",
+      "generic": false,
+      "label": "Space above thumbnails",
+      "line": 233,
+      "owners": [
+        "sgs/buybox"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "titleMarginBottom"
+      ],
+      "declared_scale": null,
+      "file": "blocks/card-grid/components/CardSpacingStylingPanel.js",
+      "generic": false,
+      "label": "Space below title",
+      "line": 17,
+      "owners": [
+        "sgs/card-grid"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "cardRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/card-grid/components/CardStylesPanel.js",
+      "generic": false,
+      "label": "Corner radius",
+      "line": 163,
+      "owners": [
+        "sgs/card-grid"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "glyphSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/card-grid/components/GlyphOverlayPanels.js",
+      "generic": false,
+      "label": "Glyph size",
+      "line": 35,
+      "owners": [
+        "sgs/card-grid"
+      ],
+      "presets": true,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "imageHeight"
+      ],
+      "declared_scale": null,
+      "file": "blocks/card-grid/components/GridSettingsPanel.js",
+      "generic": false,
+      "label": "Image height",
+      "line": 50,
+      "owners": [
+        "sgs/card-grid"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "loop",
+      "attrs": [
+        "panelMaxWidth",
+        "panelCloseSize",
+        "panelBodyGap",
+        "itemThumbSize",
+        "itemGap",
+        "emptyMessageGap",
+        "freeDeliveryTrackHeight",
+        "checkoutMinHeight"
+      ],
+      "declared_scale": null,
+      "file": "blocks/cart/PanelDesignControls.js",
+      "generic": false,
+      "label": "(dynamic)",
+      "line": 106,
+      "owners": [
+        "sgs/cart"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "loop",
+      "attrs": [
+        "itemThumbRadius",
+        "emptyCtaRadius",
+        "checkoutRadius",
+        "freeDeliveryTrackRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/cart/PanelDesignControls.js",
+      "generic": false,
+      "label": "(dynamic)",
+      "line": 141,
+      "owners": [
+        "sgs/cart"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "pillBorderRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/cart/PillBorderControl.js",
+      "generic": false,
+      "label": "Border radius",
+      "line": 67,
+      "owners": [
+        "sgs/cart"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "pillMinHeight"
+      ],
+      "declared_scale": null,
+      "file": "blocks/cart/edit.js",
+      "generic": false,
+      "label": "Minimum height",
+      "line": 233,
+      "owners": [
+        "sgs/cart"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "maxWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/choice-flow/edit.js",
+      "generic": false,
+      "label": "Outer max-width",
+      "line": 481,
+      "owners": [
+        "sgs/choice-flow"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "bgSvgMinHeight"
+      ],
+      "declared_scale": null,
+      "file": "blocks/container/components/BackgroundPanel.js",
+      "generic": false,
+      "label": "Minimum height",
+      "line": 615,
+      "owners": [
+        "sgs/container"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "none",
+      "attrs": [],
+      "declared_scale": null,
+      "file": "blocks/container/components/LayoutPanel.js",
+      "generic": false,
+      "label": "(dynamic)",
+      "line": 418,
+      "owners": [
+        "sgs/container"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "split-unit storage cannot hold a preset var (attribute not resolved)",
+      "storage": "split-unit"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "scrollItemWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/container/components/ScrollSidewaysPanel.js",
+      "generic": false,
+      "label": "Item width",
+      "line": 54,
+      "owners": [
+        "sgs/container"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "maxWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/container/components/WidthPanel.js",
+      "generic": false,
+      "label": "(dynamic)",
+      "line": 158,
+      "owners": [
+        "sgs/container"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "contentWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/container/components/WidthPanel.js",
+      "generic": false,
+      "label": "Custom content band width",
+      "line": 261,
+      "owners": [
+        "sgs/container"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "sgsChildWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/extensions/child-sizing.js",
+      "generic": false,
+      "label": "Width",
+      "line": 110,
+      "owners": [
+        "sgs/extensions"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "extension attribute: a child width",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "sgsChipGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/extensions/product-filter-chips-gap.js",
+      "generic": false,
+      "label": "Gap between chips",
+      "line": 76,
+      "owners": [
+        "sgs/extensions"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "extension attribute: a gap between chips",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "minItemWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/feature-grid/edit.js",
+      "generic": false,
+      "label": "Min item width",
+      "line": 279,
+      "owners": [
+        "sgs/feature-grid"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "split-unit"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "fieldMinHeight"
+      ],
+      "declared_scale": null,
+      "file": "blocks/form/edit.js",
+      "generic": false,
+      "label": "Field minimum height",
+      "line": 896,
+      "owners": [
+        "sgs/form"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "fieldTextareaMinHeight"
+      ],
+      "declared_scale": null,
+      "file": "blocks/form/edit.js",
+      "generic": false,
+      "label": "Textarea minimum height",
+      "line": 913,
+      "owners": [
+        "sgs/form"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "tileMinHeight"
+      ],
+      "declared_scale": null,
+      "file": "blocks/gallery/components/GalleryTilePanel.js",
+      "generic": false,
+      "label": "Tile height",
+      "line": 16,
+      "owners": [
+        "sgs/gallery"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "none",
+      "attrs": [],
+      "declared_scale": null,
+      "file": "blocks/google-rating-badge/edit.js",
+      "generic": true,
+      "label": "(dynamic)",
+      "line": 60,
+      "owners": [
+        "sgs/google-rating-badge"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "generic wrapper: its callers are surveyed as their own mounts",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "floatingOffset"
+      ],
+      "declared_scale": null,
+      "file": "blocks/google-rating-badge/edit.js",
+      "generic": false,
+      "label": "Distance from the corner",
+      "line": 338,
+      "owners": [
+        "sgs/google-rating-badge"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "gap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/google-rating-badge/edit.js",
+      "generic": false,
+      "label": "Gap between the pieces",
+      "line": 360,
+      "owners": [
+        "sgs/google-rating-badge"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "none",
+      "attrs": [],
+      "declared_scale": null,
+      "file": "blocks/google-reviews/components/ButtonsPanel.js",
+      "generic": false,
+      "label": "%s minimum height",
+      "line": 97,
+      "owners": [
+        "sgs/google-reviews"
+      ],
+      "presets": false,
+      "proposed": "unresolved",
+      "reason": "attribute not found in the DB for this block",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "cardGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/google-reviews/components/CardPanel.js",
+      "generic": false,
+      "label": "Space between the parts of a card",
+      "line": 99,
+      "owners": [
+        "sgs/google-reviews"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "cardWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/google-reviews/components/CardPanel.js",
+      "generic": false,
+      "label": "Card width (slider and wall)",
+      "line": 102,
+      "owners": [
+        "sgs/google-reviews"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "aggregateStarSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/google-reviews/components/HeaderPanel.js",
+      "generic": false,
+      "label": "Star size in the rating row",
+      "line": 59,
+      "owners": [
+        "sgs/google-reviews"
+      ],
+      "presets": false,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "headerGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/google-reviews/components/HeaderPanel.js",
+      "generic": false,
+      "label": "Space between header items",
+      "line": 62,
+      "owners": [
+        "sgs/google-reviews"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "headerDividerWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/google-reviews/components/HeaderPanel.js",
+      "generic": false,
+      "label": "Divider line thickness",
+      "line": 72,
+      "owners": [
+        "sgs/google-reviews"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "arrowSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/google-reviews/components/NavigationPanel.js",
+      "generic": false,
+      "label": "Arrow button size",
+      "line": 172,
+      "owners": [
+        "sgs/google-reviews"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "the arrow button is a tap target (a box), not a glyph",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "avatarSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/google-reviews/components/ReviewerPanel.js",
+      "generic": false,
+      "label": "Avatar size",
+      "line": 36,
+      "owners": [
+        "sgs/google-reviews"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "starSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/google-reviews/components/ReviewerPanel.js",
+      "generic": false,
+      "label": "Star size on each review card",
+      "line": 53,
+      "owners": [
+        "sgs/google-reviews"
+      ],
+      "presets": false,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "cardLogoSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/google-reviews/components/ReviewerPanel.js",
+      "generic": false,
+      "label": "Card Google mark size",
+      "line": 66,
+      "owners": [
+        "sgs/google-reviews"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "none",
+      "attrs": [],
+      "declared_scale": null,
+      "file": "blocks/google-reviews/components/panel-fields.js",
+      "generic": true,
+      "label": "(dynamic)",
+      "line": 28,
+      "owners": [
+        "sgs/google-reviews"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "generic wrapper: its callers are surveyed as their own mounts",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "shrunkFontSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/heading/edit.js",
+      "generic": false,
+      "label": "Size when the header shrinks",
+      "line": 519,
+      "owners": [
+        "sgs/heading"
+      ],
+      "presets": true,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "customWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/heading/edit.js",
+      "generic": false,
+      "label": "Custom width",
+      "line": 541,
+      "owners": [
+        "sgs/heading"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "split-unit"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "maxWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/heading/edit.js",
+      "generic": false,
+      "label": "Max width",
+      "line": 554,
+      "owners": [
+        "sgs/heading"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "split-unit"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "numberFontSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/icon-list/edit.js",
+      "generic": false,
+      "label": "Number size",
+      "line": 789,
+      "owners": [
+        "sgs/icon-list"
+      ],
+      "presets": true,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "iconBoxSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/icon-list/edit.js",
+      "generic": false,
+      "label": "Icon circle size",
+      "line": 830,
+      "owners": [
+        "sgs/icon-list"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "the circle behind the icon is a box (its height), not a glyph",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "itemPaddingBlock"
+      ],
+      "declared_scale": null,
+      "file": "blocks/icon-list/edit.js",
+      "generic": false,
+      "label": "Item vertical padding",
+      "line": 992,
+      "owners": [
+        "sgs/icon-list"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "labelGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/icon/inspector-label.js",
+      "generic": false,
+      "label": "Space between icon and label",
+      "line": 79,
+      "owners": [
+        "sgs/icon"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "per-device"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "shapeSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/icon/inspector-shape.js",
+      "generic": false,
+      "label": "Size",
+      "line": 88,
+      "owners": [
+        "sgs/icon"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "per-device"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "shapeSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/icon/inspector-shape.js",
+      "generic": false,
+      "label": "Height",
+      "line": 97,
+      "owners": [
+        "sgs/icon"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "per-device"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "maxWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/info-box/edit.js",
+      "generic": false,
+      "label": "Outer max-width",
+      "line": 547,
+      "owners": [
+        "sgs/info-box"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "width"
+      ],
+      "declared_scale": null,
+      "file": "blocks/info-box/edit.js",
+      "generic": false,
+      "label": "Width",
+      "line": 555,
+      "owners": [
+        "sgs/info-box"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "borderRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/label/edit.js",
+      "generic": false,
+      "label": "Border radius",
+      "line": 344,
+      "owners": [
+        "sgs/label"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "dotSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/label/edit.js",
+      "generic": false,
+      "label": "Dot size",
+      "line": 418,
+      "owners": [
+        "sgs/label"
+      ],
+      "presets": true,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "gap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/language-switch/edit.js",
+      "generic": false,
+      "label": "Gap",
+      "line": 360,
+      "owners": [
+        "sgs/language-switch"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "per-device"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "maxWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/measured-diagram/edit.js",
+      "generic": false,
+      "label": "Maximum width",
+      "line": 176,
+      "owners": [
+        "sgs/measured-diagram"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "lineWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/measured-diagram/edit.js",
+      "generic": false,
+      "label": "Line thickness",
+      "line": 220,
+      "owners": [
+        "sgs/measured-diagram"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "extensionWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/measured-diagram/edit.js",
+      "generic": false,
+      "label": "Extension line thickness",
+      "line": 241,
+      "owners": [
+        "sgs/measured-diagram"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "labelGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/measured-diagram/edit.js",
+      "generic": false,
+      "label": "Gap between caption and value",
+      "line": 262,
+      "owners": [
+        "sgs/measured-diagram"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "asideRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-aside/edit.js",
+      "generic": false,
+      "label": "Corner radius",
+      "line": 334,
+      "owners": [
+        "sgs/mega-aside"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerShellRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/DrawerShellControls.js",
+      "generic": false,
+      "label": "Panel corner radius in the drawer",
+      "line": 32,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerLinkRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/DrawerShellControls.js",
+      "generic": false,
+      "label": "Link row corner radius",
+      "line": 50,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "maxWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Max width",
+      "line": 759,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "per-device"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "groupGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Gap",
+      "line": 803,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "per-device"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "borderRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Border radius",
+      "line": 846,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "itemPaddingShiftHover"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Item padding shift on hover",
+      "line": 918,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "panelCardLift"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Card lift on hover",
+      "line": 943,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "asideWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Aside width",
+      "line": 1030,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "asideSeparator"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Divider width",
+      "line": 1053,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerLinkNumSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Link number size",
+      "line": 1112,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerLinkLabelSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Link label size",
+      "line": 1118,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerLinkDescSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Link description size",
+      "line": 1124,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerLinkMinHeight"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Link row minimum height",
+      "line": 1130,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerLinkPaddingY"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Link row vertical padding",
+      "line": 1136,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerCardSpacing"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Card spacing from links",
+      "line": 1153,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerCardRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Card corner radius",
+      "line": 1159,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerCardPadding"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Card padding",
+      "line": 1165,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerCardGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Card thumbnail gap",
+      "line": 1173,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerCardThumbSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Card thumbnail size",
+      "line": 1179,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerCardTagSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Card tag size",
+      "line": 1185,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerCardTitleSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Card title size",
+      "line": 1205,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerCardTitleLineHeight"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Card title line height",
+      "line": 1211,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "plain",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerCardLinkSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/mega-panel/edit.js",
+      "generic": false,
+      "label": "Card link size",
+      "line": 1217,
+      "owners": [
+        "sgs/mega-panel"
+      ],
+      "presets": true,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "dialogWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/modal/dialog-style-controls.js",
+      "generic": false,
+      "label": "Custom width",
+      "line": 66,
+      "owners": [
+        "sgs/modal"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "split-unit"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "burgerSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-bar-menu/BurgerPanel.js",
+      "generic": false,
+      "label": "Height",
+      "line": 235,
+      "owners": [
+        "sgs/nav-bar-menu"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "burgerWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-bar-menu/BurgerPanel.js",
+      "generic": false,
+      "label": "Width",
+      "line": 257,
+      "owners": [
+        "sgs/nav-bar-menu"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "burgerIconWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-bar-menu/BurgerPanel.js",
+      "generic": false,
+      "label": "Bar length",
+      "line": 280,
+      "owners": [
+        "sgs/nav-bar-menu"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "burgerIconHeight"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-bar-menu/BurgerPanel.js",
+      "generic": false,
+      "label": "Bar stack height",
+      "line": 298,
+      "owners": [
+        "sgs/nav-bar-menu"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "burgerBarThickness"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-bar-menu/BurgerPanel.js",
+      "generic": false,
+      "label": "Bar thickness",
+      "line": 317,
+      "owners": [
+        "sgs/nav-bar-menu"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "burgerTextGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-bar-menu/BurgerPanel.js",
+      "generic": false,
+      "label": "Space between icon and label",
+      "line": 338,
+      "owners": [
+        "sgs/nav-bar-menu"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "burgerBarGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-bar-menu/BurgerPanel.js",
+      "generic": false,
+      "label": "Bar gap",
+      "line": 360,
+      "owners": [
+        "sgs/nav-bar-menu"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "burgerBorderRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-bar-menu/BurgerPanel.js",
+      "generic": false,
+      "label": "Button corner radius",
+      "line": 394,
+      "owners": [
+        "sgs/nav-bar-menu"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "triggerDetachRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-bar-menu/ButtonReachPanel.js",
+      "generic": false,
+      "label": "Corner radius",
+      "line": 166,
+      "owners": [
+        "sgs/nav-bar-menu"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "submenuCaretSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-bar-menu/DropdownSettingsPanel.js",
+      "generic": false,
+      "label": "Arrow size",
+      "line": 282,
+      "owners": [
+        "sgs/nav-bar-menu"
+      ],
+      "presets": true,
+      "proposed": "font-size",
+      "reason": "the caret is a glyph sized like text",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "submenuCaretGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-bar-menu/DropdownSettingsPanel.js",
+      "generic": false,
+      "label": "Gap from the label",
+      "line": 295,
+      "owners": [
+        "sgs/nav-bar-menu"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "collapsePoint"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-bar-menu/MenuSettingsPanel.js",
+      "generic": false,
+      "label": "Switch to burger below",
+      "line": 101,
+      "owners": [
+        "sgs/nav-bar-menu"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "caretBoxSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer-menu/CaretBoxControls.js",
+      "generic": false,
+      "label": "Expander circle size",
+      "line": 27,
+      "owners": [
+        "sgs/nav-drawer-menu"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "submenuCaretSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer-menu/ExpanderCaretControls.js",
+      "generic": false,
+      "label": "Expander size",
+      "line": 34,
+      "owners": [
+        "sgs/nav-drawer-menu"
+      ],
+      "presets": true,
+      "proposed": "font-size",
+      "reason": "the caret is a glyph sized like text",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "submenuCaretGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer-menu/ExpanderCaretControls.js",
+      "generic": false,
+      "label": "Gap from the label",
+      "line": 44,
+      "owners": [
+        "sgs/nav-drawer-menu"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "itemOrnamentSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer-menu/RowExtrasPanel.js",
+      "generic": false,
+      "label": "Ornament size",
+      "line": 84,
+      "owners": [
+        "sgs/nav-drawer-menu"
+      ],
+      "presets": false,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "itemOrnamentGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer-menu/RowExtrasPanel.js",
+      "generic": false,
+      "label": "Space after ornament",
+      "line": 90,
+      "owners": [
+        "sgs/nav-drawer-menu"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "itemMediaWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer-menu/RowExtrasPanel.js",
+      "generic": false,
+      "label": "Image width",
+      "line": 164,
+      "owners": [
+        "sgs/nav-drawer-menu"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "itemMediaHeight"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer-menu/RowExtrasPanel.js",
+      "generic": false,
+      "label": "Image height",
+      "line": 169,
+      "owners": [
+        "sgs/nav-drawer-menu"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "itemMediaRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer-menu/RowExtrasPanel.js",
+      "generic": false,
+      "label": "Image corner radius",
+      "line": 174,
+      "owners": [
+        "sgs/nav-drawer-menu"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "itemTrailingIconSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer-menu/TrailingIconPanel.js",
+      "generic": false,
+      "label": "Icon size",
+      "line": 81,
+      "owners": [
+        "sgs/nav-drawer-menu"
+      ],
+      "presets": true,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "chromeLogoBoxRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer/ChromeLogoBoxControls.js",
+      "generic": false,
+      "label": "Logo box corner radius",
+      "line": 25,
+      "owners": [
+        "sgs/nav-drawer"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "chromeLogoWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer/ChromePanel.js",
+      "generic": false,
+      "label": "Logo width",
+      "line": 114,
+      "owners": [
+        "sgs/nav-drawer"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "chromeRowHeight"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer/ChromePanel.js",
+      "generic": false,
+      "label": "Top row height",
+      "line": 130,
+      "owners": [
+        "sgs/nav-drawer"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "chromeRowGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer/ChromePanel.js",
+      "generic": false,
+      "label": "Space between items",
+      "line": 135,
+      "owners": [
+        "sgs/nav-drawer"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "closeIconSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer/CloseBoxControls.js",
+      "generic": false,
+      "label": "Close icon size",
+      "line": 39,
+      "owners": [
+        "sgs/nav-drawer"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "panelSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer/edit.js",
+      "generic": false,
+      "label": "Panel size",
+      "line": 687,
+      "owners": [
+        "sgs/nav-drawer"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "anchorOffset"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer/edit.js",
+      "generic": false,
+      "label": "Gap above the panel",
+      "line": 713,
+      "owners": [
+        "sgs/nav-drawer"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "drawerGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer/edit.js",
+      "generic": false,
+      "label": "Gap",
+      "line": 971,
+      "owners": [
+        "sgs/nav-drawer"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "per-device"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "closeRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer/edit.js",
+      "generic": false,
+      "label": "Corner radius",
+      "line": 1295,
+      "owners": [
+        "sgs/nav-drawer"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "closeSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/nav-drawer/edit.js",
+      "generic": false,
+      "label": "Size",
+      "line": 1342,
+      "owners": [
+        "sgs/nav-drawer"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "iconCircleBorderRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/notice-banner/edit.js",
+      "generic": false,
+      "label": "Icon badge border radius",
+      "line": 573,
+      "owners": [
+        "sgs/notice-banner"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "maxWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/notice-banner/edit.js",
+      "generic": false,
+      "label": "Outer max-width",
+      "line": 754,
+      "owners": [
+        "sgs/notice-banner"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "tileGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/option-picker/edit.js",
+      "generic": false,
+      "label": "Tile gap",
+      "line": 771,
+      "owners": [
+        "sgs/option-picker"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "pillBorderRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/option-picker/edit.js",
+      "generic": false,
+      "label": "Pill border radius",
+      "line": 807,
+      "owners": [
+        "sgs/option-picker"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "pillSelectedBorderRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/option-picker/edit.js",
+      "generic": false,
+      "label": "Selected pill border radius",
+      "line": 862,
+      "owners": [
+        "sgs/option-picker"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "width"
+      ],
+      "declared_scale": null,
+      "file": "blocks/option-picker/edit.js",
+      "generic": false,
+      "label": "Width",
+      "line": 976,
+      "owners": [
+        "sgs/option-picker"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "maxWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/option-picker/edit.js",
+      "generic": false,
+      "label": "Max-width",
+      "line": 984,
+      "owners": [
+        "sgs/option-picker"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "stepGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/process-steps/edit.js",
+      "generic": false,
+      "label": "Space between steps",
+      "line": 704,
+      "owners": [
+        "sgs/process-steps"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "numberGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/process-steps/edit.js",
+      "generic": false,
+      "label": "Space between number and text",
+      "line": 712,
+      "owners": [
+        "sgs/process-steps"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "savingBadgeBorderRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/product-card/edit.js",
+      "generic": false,
+      "label": "Saving badge border radius",
+      "line": 2197,
+      "owners": [
+        "sgs/product-card"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "attributeTagBorderRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/product-card/edit.js",
+      "generic": false,
+      "label": "Attribute tag border radius",
+      "line": 2338,
+      "owners": [
+        "sgs/product-card"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "tagBorderRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/product-card/edit.js",
+      "generic": false,
+      "label": "Tag border radius",
+      "line": 2710,
+      "owners": [
+        "sgs/product-card"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "pickerPillBorderRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/product-card/edit.js",
+      "generic": false,
+      "label": "Pill border radius",
+      "line": 3386,
+      "owners": [
+        "sgs/product-card"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "pickerPillSelectedBorderRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/product-card/edit.js",
+      "generic": false,
+      "label": "Selected pill border radius",
+      "line": 3402,
+      "owners": [
+        "sgs/product-card"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "priceRowSpaceAbove"
+      ],
+      "declared_scale": null,
+      "file": "blocks/product-card/listing-panels.js",
+      "generic": false,
+      "label": "Space above the price",
+      "line": 169,
+      "owners": [
+        "sgs/product-card"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "maxWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/product-faq/edit.js",
+      "generic": false,
+      "label": "Outer max-width",
+      "line": 306,
+      "owners": [
+        "sgs/product-faq"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "none",
+      "attrs": [],
+      "declared_scale": null,
+      "file": "blocks/quote/edit.js",
+      "generic": false,
+      "label": "Margin-top",
+      "line": 594,
+      "owners": [
+        "sgs/quote"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "split-unit storage cannot hold a preset var (attribute not resolved)",
+      "storage": "split-unit"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "maxWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/quote/edit.js",
+      "generic": false,
+      "label": "Max-width",
+      "line": 755,
+      "owners": [
+        "sgs/quote"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "maxWidthUnit"
+      ],
+      "declared_scale": null,
+      "file": "blocks/responsive-logo/edit.js",
+      "generic": false,
+      "label": "Max width",
+      "line": 494,
+      "owners": [
+        "sgs/responsive-logo"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "maxHeightUnit"
+      ],
+      "declared_scale": null,
+      "file": "blocks/responsive-logo/edit.js",
+      "generic": false,
+      "label": "Max height",
+      "line": 515,
+      "owners": [
+        "sgs/responsive-logo"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "none",
+      "attrs": [],
+      "declared_scale": null,
+      "file": "blocks/separator/edit.js",
+      "generic": false,
+      "label": "Width",
+      "line": 273,
+      "owners": [
+        "sgs/separator"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "split-unit storage cannot hold a preset var (attribute not resolved)",
+      "storage": "split-unit"
+    },
+    {
+      "attr_basis": "none",
+      "attrs": [],
+      "declared_scale": null,
+      "file": "blocks/separator/edit.js",
+      "generic": false,
+      "label": "Thickness",
+      "line": 444,
+      "owners": [
+        "sgs/separator"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "split-unit storage cannot hold a preset var (attribute not resolved)",
+      "storage": "split-unit"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "childIconShapeSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/social-icons/edit.js",
+      "generic": false,
+      "label": "Size",
+      "line": 339,
+      "owners": [
+        "sgs/social-icons"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "per-device"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "childIconShapeSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/social-icons/edit.js",
+      "generic": false,
+      "label": "Height",
+      "line": 348,
+      "owners": [
+        "sgs/social-icons"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "per-device"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "gap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/social-icons/edit.js",
+      "generic": false,
+      "label": "Gap between icons",
+      "line": 399,
+      "owners": [
+        "sgs/social-icons"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "per-device"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "tabMinHeight"
+      ],
+      "declared_scale": null,
+      "file": "blocks/tabs/edit.js",
+      "generic": false,
+      "label": "Tab minimum height",
+      "line": 527,
+      "owners": [
+        "sgs/tabs"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "tabIndicatorThickness"
+      ],
+      "declared_scale": null,
+      "file": "blocks/tabs/edit.js",
+      "generic": false,
+      "label": "Indicator thickness",
+      "line": 534,
+      "owners": [
+        "sgs/tabs"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "maxWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/team-member/edit.js",
+      "generic": false,
+      "label": "Max-width",
+      "line": 781,
+      "owners": [
+        "sgs/team-member"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "maxWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/testimonial/edit.js",
+      "generic": false,
+      "label": "Outer max-width",
+      "line": 1625,
+      "owners": [
+        "sgs/testimonial"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "firstLetterFontSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/text/edit.js",
+      "generic": false,
+      "label": "First-letter size",
+      "line": 633,
+      "owners": [
+        "sgs/text"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "split-unit storage cannot hold a preset var",
+      "storage": "split-unit"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "maxWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/text/edit.js",
+      "generic": false,
+      "label": "Max width",
+      "line": 734,
+      "owners": [
+        "sgs/text"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "split-unit"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "customWidth"
+      ],
+      "declared_scale": null,
+      "file": "blocks/text/edit.js",
+      "generic": false,
+      "label": "Custom width",
+      "line": 750,
+      "owners": [
+        "sgs/text"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "split-unit"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "iconSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/theme-toggle/edit.js",
+      "generic": false,
+      "label": "Icon size",
+      "line": 198,
+      "owners": [
+        "sgs/theme-toggle"
+      ],
+      "presets": true,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "itemGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/trust-bar/edit-panels.js",
+      "generic": false,
+      "label": "Gap between icon and label",
+      "line": 120,
+      "owners": [
+        "sgs/trust-bar"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "iconCircleBorderRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/trust-bar/edit.js",
+      "generic": false,
+      "label": "Icon circle border radius",
+      "line": 1138,
+      "owners": [
+        "sgs/trust-bar"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "badgeImageBorderRadius"
+      ],
+      "declared_scale": null,
+      "file": "blocks/trust-bar/edit.js",
+      "generic": false,
+      "label": "Badge image border radius",
+      "line": 1221,
+      "owners": [
+        "sgs/trust-bar"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "iconGap"
+      ],
+      "declared_scale": null,
+      "file": "blocks/whatsapp-cta/edit.js",
+      "generic": false,
+      "label": "Space between icon and label",
+      "line": 258,
+      "owners": [
+        "sgs/whatsapp-cta"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "iconSize"
+      ],
+      "declared_scale": null,
+      "file": "blocks/whatsapp-cta/edit.js",
+      "generic": false,
+      "label": "Icon size",
+      "line": 265,
+      "owners": [
+        "sgs/whatsapp-cta"
+      ],
+      "presets": true,
+      "proposed": "font-size",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "minHeight"
+      ],
+      "declared_scale": null,
+      "file": "blocks/whatsapp-cta/edit.js",
+      "generic": false,
+      "label": "Minimum height",
+      "line": 272,
+      "owners": [
+        "sgs/whatsapp-cta"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "thickness"
+      ],
+      "declared_scale": null,
+      "file": "components/LinkUnderlineControl.js",
+      "generic": false,
+      "label": "Underline thickness",
+      "line": 72,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "offset"
+      ],
+      "declared_scale": null,
+      "file": "components/LinkUnderlineControl.js",
+      "generic": false,
+      "label": "Underline gap",
+      "line": 103,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "none",
+      "attrs": [],
+      "declared_scale": null,
+      "file": "components/MediaSizingPanel.js",
+      "generic": false,
+      "label": "(dynamic)",
+      "line": 235,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "media height and inset boxes",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "none",
+      "attrs": [],
+      "declared_scale": null,
+      "file": "components/MediaSizingPanel.js",
+      "generic": false,
+      "label": "Inset",
+      "line": 325,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "media height and inset boxes",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "none",
+      "attrs": [],
+      "declared_scale": null,
+      "file": "components/ResponsiveLengthControl.js",
+      "generic": false,
+      "label": "(dynamic)",
+      "line": 46,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "generic wrapper: must forward `scale` from its callers",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "scrimBlur",
+        "value"
+      ],
+      "declared_scale": null,
+      "file": "components/ScrimControls.js",
+      "generic": false,
+      "label": "Backdrop blur",
+      "line": 129,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "per-device"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "width"
+      ],
+      "declared_scale": null,
+      "file": "components/SeparatorAxisRow.js",
+      "generic": false,
+      "label": "Thickness",
+      "line": 46,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "surfaceBlur",
+        "value"
+      ],
+      "declared_scale": null,
+      "file": "components/SurfaceGroundControls.js",
+      "generic": false,
+      "label": "Background blur",
+      "line": 40,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "value"
+      ],
+      "declared_scale": null,
+      "file": "components/media/controls/MediaBoxShapeControls.js",
+      "generic": false,
+      "label": "(dynamic)",
+      "line": 111,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "minHeight"
+      ],
+      "declared_scale": null,
+      "file": "components/media/controls/MediaSvgPresentationControls.js",
+      "generic": false,
+      "label": "Minimum height",
+      "line": 133,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "none",
+      "attrs": [],
+      "declared_scale": null,
+      "file": "components/motion/AngleAtom.js",
+      "generic": false,
+      "label": "(dynamic)",
+      "line": 71,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": false,
+      "proposed": "plain",
+      "reason": "an angle in degrees, not a length: needs its own control, not either scale",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "none",
+      "attrs": [],
+      "declared_scale": null,
+      "file": "components/motion/DistanceAtom.js",
+      "generic": false,
+      "label": "(dynamic)",
+      "line": 81,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "motion distance length",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "submenuTopOffset"
+      ],
+      "declared_scale": null,
+      "file": "shared/nav-menu-panels/DropdownStylePanel.js",
+      "generic": false,
+      "label": "Distance below the bar",
+      "line": 114,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "submenuMinWidth"
+      ],
+      "declared_scale": null,
+      "file": "shared/nav-menu-panels/DropdownStylePanel.js",
+      "generic": false,
+      "label": "Minimum width",
+      "line": 133,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "featuredRadius"
+      ],
+      "declared_scale": null,
+      "file": "shared/nav-menu-panels/FeaturedPanel.js",
+      "generic": false,
+      "label": "Corner radius",
+      "line": 95,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "featuredRadiusHover",
+        "featuredRadius"
+      ],
+      "declared_scale": null,
+      "file": "shared/nav-menu-panels/FeaturedPanel.js",
+      "generic": false,
+      "label": "Corner radius on hover",
+      "line": 104,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "itemPaddingShiftHover"
+      ],
+      "declared_scale": null,
+      "file": "shared/nav-menu-panels/ItemsPanel.js",
+      "generic": false,
+      "label": "Padding shift on hover",
+      "line": 98,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "window",
+      "attrs": [
+        "itemMinHeight"
+      ],
+      "declared_scale": null,
+      "file": "shared/nav-menu-panels/LinkExtrasItems.js",
+      "generic": false,
+      "label": "Link minimum height",
+      "line": 43,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "itemBadgeBorderRadius"
+      ],
+      "declared_scale": null,
+      "file": "shared/nav-menu-panels/LinkExtrasItems.js",
+      "generic": false,
+      "label": "Badge corner radius",
+      "line": 81,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "itemBadgeGap"
+      ],
+      "declared_scale": null,
+      "file": "shared/nav-menu-panels/LinkExtrasItems.js",
+      "generic": false,
+      "label": "Space before badge",
+      "line": 94,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": true,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    },
+    {
+      "attr_basis": "tag",
+      "attrs": [
+        "gap"
+      ],
+      "declared_scale": null,
+      "file": "shared/nav-menu-panels/ListLayoutPanel.js",
+      "generic": false,
+      "label": "Item gap",
+      "line": 88,
+      "owners": [
+        "(shared)"
+      ],
+      "presets": false,
+      "proposed": "spacing",
+      "reason": "DB css_property/css_element",
+      "storage": "string"
+    }
+  ],
+  "raw_unit_controls": [
+    {
+      "file": "blocks/account/edit.js",
+      "label": "Menu width",
+      "line": 150,
+      "size_like": true
+    },
+    {
+      "file": "blocks/account/edit.js",
+      "label": "Content max width",
+      "line": 176,
+      "size_like": true
+    },
+    {
+      "file": "blocks/buybox/inspector-extra-3.js",
+      "label": "Minimum height",
+      "line": 390,
+      "size_like": true
+    },
+    {
+      "file": "blocks/container/components/GridItemDefaultsPanel.js",
+      "label": "Border width",
+      "line": 204,
+      "size_like": true
+    },
+    {
+      "file": "blocks/responsive-logo/edit.js",
+      "label": "Size when header shrinks",
+      "line": 434,
+      "size_like": true
+    },
+    {
+      "file": "blocks/site-footer-row/edit.js",
+      "label": "Max width",
+      "line": 797,
+      "size_like": true
+    },
+    {
+      "file": "blocks/site-header-row/edit.js",
+      "label": "Max width",
+      "line": 823,
+      "size_like": true
+    },
+    {
+      "file": "blocks/wishlist-link/edit.js",
+      "label": "Icon size",
+      "line": 131,
+      "size_like": true
+    },
+    {
+      "file": "components/ResponsiveBoxControls.js",
+      "label": "Max width",
+      "line": 129,
+      "size_like": true
+    },
+    {
+      "file": "components/TypographyControls.js",
+      "label": "Line indent",
+      "line": 1101,
+      "size_like": false
+    },
+    {
+      "file": "components/shadow-control/LayerEditor.js",
+      "label": "(dynamic)",
+      "line": 34,
+      "size_like": false
+    }
+  ]
+}

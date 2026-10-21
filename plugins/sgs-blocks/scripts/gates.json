@@ -1870,5 +1870,23 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 194
+  },
+  {
+    "id": "survey-length-control-scale",
+    "cmd": "python scripts/survey-length-control-scale.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 211
+  },
+  {
+    "id": "survey-length-control-scale-selftest",
+    "cmd": "python scripts/survey-length-control-scale.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 212
   }
 ]

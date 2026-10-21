@@ -1,0 +1,199 @@
+=== SgsLengthControl + ResponsiveLengthControl scale census: 181 mounts in 87 files ===
+By proposed scale: {'spacing': 159, 'font-size': 19, 'unresolved': 1, 'plain': 2}
+
+| proposed | storage | attribute(s) | label | file:line | basis | declared | reason |
+|---|---|---|---|---|---|---|---|
+| font-size | string | submenuCaretSize | Arrow size | blocks/nav-bar-menu/DropdownSettingsPanel.js:282 | tag | - | the caret is a glyph sized like text |
+| font-size | string | drawerCardLinkSize | Card link size | blocks/mega-panel/edit.js:1217 | tag | - | DB css_property/css_element |
+| font-size | string | drawerCardTagSize | Card tag size | blocks/mega-panel/edit.js:1185 | tag | - | DB css_property/css_element |
+| font-size | string | drawerCardTitleSize | Card title size | blocks/mega-panel/edit.js:1205 | tag | - | DB css_property/css_element |
+| font-size | string | dotSize | Dot size | blocks/label/edit.js:418 | tag | - | DB css_property/css_element |
+| font-size | string | submenuCaretSize | Expander size | blocks/nav-drawer-menu/ExpanderCaretControls.js:34 | tag | - | the caret is a glyph sized like text |
+| font-size | string | glyphSize | Glyph size | blocks/card-grid/components/GlyphOverlayPanels.js:35 | tag | - | DB css_property/css_element |
+| font-size | string | iconSize | Icon size | blocks/business-info/edit.js:224 | window | - | DB css_property/css_element |
+| font-size | string | itemTrailingIconSize | Icon size | blocks/nav-drawer-menu/TrailingIconPanel.js:81 | window | - | DB css_property/css_element |
+| font-size | string | iconSize | Icon size | blocks/theme-toggle/edit.js:198 | window | - | DB css_property/css_element |
+| font-size | string | iconSize | Icon size | blocks/whatsapp-cta/edit.js:265 | tag | - | DB css_property/css_element |
+| font-size | string | drawerLinkDescSize | Link description size | blocks/mega-panel/edit.js:1124 | tag | - | DB css_property/css_element |
+| font-size | string | drawerLinkLabelSize | Link label size | blocks/mega-panel/edit.js:1118 | tag | - | DB css_property/css_element |
+| font-size | string | drawerLinkNumSize | Link number size | blocks/mega-panel/edit.js:1112 | tag | - | DB css_property/css_element |
+| font-size | string | numberFontSize | Number size | blocks/icon-list/edit.js:789 | tag | - | DB css_property/css_element |
+| font-size | string | itemOrnamentSize | Ornament size | blocks/nav-drawer-menu/RowExtrasPanel.js:84 | tag | - | DB css_property/css_element |
+| font-size | string | shrunkFontSize | Size when the header shrinks | blocks/heading/edit.js:519 | tag | - | DB css_property/css_element |
+| font-size | string | aggregateStarSize | Star size in the rating row | blocks/google-reviews/components/HeaderPanel.js:59 | tag | - | DB css_property/css_element |
+| font-size | string | starSize | Star size on each review card | blocks/google-reviews/components/ReviewerPanel.js:53 | tag | - | DB css_property/css_element |
+| plain | string | - | (dynamic) | components/motion/AngleAtom.js:71 | none | - | an angle in degrees, not a length: needs its own control, not either scale |
+| plain | string | drawerCardTitleLineHeight | Card title line height | blocks/mega-panel/edit.js:1211 | tag | - | DB css_property/css_element |
+| unresolved | string | - | %s minimum height | blocks/google-reviews/components/ButtonsPanel.js:97 | none | - | attribute not found in the DB for this block |
+| spacing | split-unit | - | (dynamic) | blocks/before-after/edit.js:841 | none | - | split-unit storage cannot hold a preset var (attribute not resolved) |
+| spacing | string | maxWidth | (dynamic) | blocks/before-after/edit.js:883 | window | - | DB css_property/css_element |
+| spacing | string | panelMaxWidth, panelCloseSize, panelBodyGap, itemThumbSize, itemGap, emptyMessageGap, freeDeliveryTrackHeight, checkoutMinHeight | (dynamic) | blocks/cart/PanelDesignControls.js:106 | loop | - | DB css_property/css_element |
+| spacing | string | itemThumbRadius, emptyCtaRadius, checkoutRadius, freeDeliveryTrackRadius | (dynamic) | blocks/cart/PanelDesignControls.js:141 | loop | - | DB css_property/css_element |
+| spacing | split-unit | - | (dynamic) | blocks/container/components/LayoutPanel.js:418 | none | - | split-unit storage cannot hold a preset var (attribute not resolved) |
+| spacing | string | maxWidth | (dynamic) | blocks/container/components/WidthPanel.js:158 | window | - | DB css_property/css_element |
+| spacing | string | - | (dynamic) | blocks/google-rating-badge/edit.js:60 | none | - | generic wrapper: its callers are surveyed as their own mounts |
+| spacing | string | - | (dynamic) | blocks/google-reviews/components/panel-fields.js:28 | none | - | generic wrapper: its callers are surveyed as their own mounts |
+| spacing | string | - | (dynamic) | components/MediaSizingPanel.js:235 | none | - | media height and inset boxes |
+| spacing | string | - | (dynamic) | components/ResponsiveLengthControl.js:46 | none | - | generic wrapper: must forward `scale` from its callers |
+| spacing | string | value | (dynamic) | components/media/controls/MediaBoxShapeControls.js:111 | tag | - | DB css_property/css_element |
+| spacing | string | - | (dynamic) | components/motion/DistanceAtom.js:81 | none | - | motion distance length |
+| spacing | string | arrowSize | Arrow button size | blocks/google-reviews/components/NavigationPanel.js:172 | tag | - | the arrow button is a tap target (a box), not a glyph |
+| spacing | string | asideWidth | Aside width | blocks/mega-panel/edit.js:1030 | tag | - | DB css_property/css_element |
+| spacing | string | attributeTagBorderRadius | Attribute tag border radius | blocks/product-card/edit.js:2338 | tag | - | DB css_property/css_element |
+| spacing | string | avatarSize | Avatar size | blocks/google-reviews/components/ReviewerPanel.js:36 | tag | - | DB css_property/css_element |
+| spacing | per-device | scrimBlur, value | Backdrop blur | components/ScrimControls.js:129 | tag | - | DB css_property/css_element |
+| spacing | string | surfaceBlur, value | Background blur | components/SurfaceGroundControls.js:40 | tag | - | DB css_property/css_element |
+| spacing | string | itemBadgeBorderRadius | Badge corner radius | shared/nav-menu-panels/LinkExtrasItems.js:81 | tag | - | DB css_property/css_element |
+| spacing | string | badgeImageBorderRadius | Badge image border radius | blocks/trust-bar/edit.js:1221 | tag | - | DB css_property/css_element |
+| spacing | string | burgerBarGap | Bar gap | blocks/nav-bar-menu/BurgerPanel.js:360 | window | - | DB css_property/css_element |
+| spacing | string | burgerIconWidth | Bar length | blocks/nav-bar-menu/BurgerPanel.js:280 | window | - | DB css_property/css_element |
+| spacing | string | burgerIconHeight | Bar stack height | blocks/nav-bar-menu/BurgerPanel.js:298 | window | - | DB css_property/css_element |
+| spacing | string | burgerBarThickness | Bar thickness | blocks/nav-bar-menu/BurgerPanel.js:317 | window | - | DB css_property/css_element |
+| spacing | string | pillBorderRadius | Border radius | blocks/cart/PillBorderControl.js:67 | tag | - | DB css_property/css_element |
+| spacing | string | borderRadius | Border radius | blocks/label/edit.js:344 | tag | - | DB css_property/css_element |
+| spacing | string | borderRadius | Border radius | blocks/mega-panel/edit.js:846 | tag | - | DB css_property/css_element |
+| spacing | string | burgerBorderRadius | Button corner radius | blocks/nav-bar-menu/BurgerPanel.js:394 | window | - | DB css_property/css_element |
+| spacing | string | drawerCardRadius | Card corner radius | blocks/mega-panel/edit.js:1159 | tag | - | DB css_property/css_element |
+| spacing | string | cardLogoSize | Card Google mark size | blocks/google-reviews/components/ReviewerPanel.js:66 | tag | - | DB css_property/css_element |
+| spacing | string | panelCardLift | Card lift on hover | blocks/mega-panel/edit.js:943 | tag | - | DB css_property/css_element |
+| spacing | string | drawerCardPadding | Card padding | blocks/mega-panel/edit.js:1165 | tag | - | DB css_property/css_element |
+| spacing | string | drawerCardSpacing | Card spacing from links | blocks/mega-panel/edit.js:1153 | tag | - | DB css_property/css_element |
+| spacing | string | drawerCardGap | Card thumbnail gap | blocks/mega-panel/edit.js:1173 | tag | - | DB css_property/css_element |
+| spacing | string | drawerCardThumbSize | Card thumbnail size | blocks/mega-panel/edit.js:1179 | tag | - | DB css_property/css_element |
+| spacing | string | cardWidth | Card width (slider and wall) | blocks/google-reviews/components/CardPanel.js:102 | tag | - | DB css_property/css_element |
+| spacing | string | closeIconSize | Close icon size | blocks/nav-drawer/CloseBoxControls.js:39 | tag | - | DB css_property/css_element |
+| spacing | string | cardRadius | Corner radius | blocks/card-grid/components/CardStylesPanel.js:163 | tag | - | DB css_property/css_element |
+| spacing | string | asideRadius | Corner radius | blocks/mega-aside/edit.js:334 | tag | - | DB css_property/css_element |
+| spacing | string | triggerDetachRadius | Corner radius | blocks/nav-bar-menu/ButtonReachPanel.js:166 | tag | - | DB css_property/css_element |
+| spacing | string | closeRadius | Corner radius | blocks/nav-drawer/edit.js:1295 | window | - | DB css_property/css_element |
+| spacing | string | featuredRadius | Corner radius | shared/nav-menu-panels/FeaturedPanel.js:95 | tag | - | DB css_property/css_element |
+| spacing | string | featuredRadiusHover, featuredRadius | Corner radius on hover | shared/nav-menu-panels/FeaturedPanel.js:104 | tag | - | DB css_property/css_element |
+| spacing | string | contentWidth | Custom content band width | blocks/container/components/WidthPanel.js:261 | window | - | DB css_property/css_element |
+| spacing | split-unit | customWidth | Custom width | blocks/button/edit.js:647 | tag | - | DB css_property/css_element |
+| spacing | split-unit | customWidth | Custom width | blocks/heading/edit.js:541 | tag | - | DB css_property/css_element |
+| spacing | split-unit | dialogWidth | Custom width | blocks/modal/dialog-style-controls.js:66 | tag | - | DB css_property/css_element |
+| spacing | split-unit | customWidth | Custom width | blocks/text/edit.js:750 | tag | - | DB css_property/css_element |
+| spacing | string | submenuTopOffset | Distance below the bar | shared/nav-menu-panels/DropdownStylePanel.js:114 | tag | - | DB css_property/css_element |
+| spacing | string | floatingOffset | Distance from the corner | blocks/google-rating-badge/edit.js:338 | tag | - | DB css_property/css_element |
+| spacing | string | headerDividerWidth | Divider line thickness | blocks/google-reviews/components/HeaderPanel.js:72 | tag | - | DB css_property/css_element |
+| spacing | string | asideSeparator | Divider width | blocks/mega-panel/edit.js:1053 | tag | - | DB css_property/css_element |
+| spacing | string | caretBoxSize | Expander circle size | blocks/nav-drawer-menu/CaretBoxControls.js:27 | tag | - | DB css_property/css_element |
+| spacing | string | extensionWidth | Extension line thickness | blocks/measured-diagram/edit.js:241 | tag | - | DB css_property/css_element |
+| spacing | string | fieldMinHeight | Field minimum height | blocks/form/edit.js:896 | window | - | DB css_property/css_element |
+| spacing | split-unit | firstLetterFontSize | First-letter size | blocks/text/edit.js:633 | tag | - | split-unit storage cannot hold a preset var |
+| spacing | per-device | gap | Gap | blocks/language-switch/edit.js:360 | tag | - | DB css_property/css_element |
+| spacing | per-device | groupGap | Gap | blocks/mega-panel/edit.js:803 | tag | - | DB css_property/css_element |
+| spacing | per-device | drawerGap | Gap | blocks/nav-drawer/edit.js:971 | tag | - | DB css_property/css_element |
+| spacing | string | anchorOffset | Gap above the panel | blocks/nav-drawer/edit.js:713 | window | - | DB css_property/css_element |
+| spacing | string | labelGap | Gap between caption and value | blocks/measured-diagram/edit.js:262 | tag | - | DB css_property/css_element |
+| spacing | string | sgsChipGap | Gap between chips | blocks/extensions/product-filter-chips-gap.js:76 | tag | - | extension attribute: a gap between chips |
+| spacing | string | itemGap | Gap between icon and label | blocks/trust-bar/edit-panels.js:120 | window | - | DB css_property/css_element |
+| spacing | per-device | gap | Gap between icons | blocks/social-icons/edit.js:399 | tag | - | DB css_property/css_element |
+| spacing | string | gap | Gap between the pieces | blocks/google-rating-badge/edit.js:360 | tag | - | DB css_property/css_element |
+| spacing | string | submenuCaretGap | Gap from the label | blocks/nav-bar-menu/DropdownSettingsPanel.js:295 | tag | - | DB css_property/css_element |
+| spacing | string | submenuCaretGap | Gap from the label | blocks/nav-drawer-menu/ExpanderCaretControls.js:44 | tag | - | DB css_property/css_element |
+| spacing | per-device | shapeSize | Height | blocks/icon/inspector-shape.js:97 | tag | - | DB css_property/css_element |
+| spacing | string | burgerSize | Height | blocks/nav-bar-menu/BurgerPanel.js:235 | tag | - | DB css_property/css_element |
+| spacing | per-device | childIconShapeSize | Height | blocks/social-icons/edit.js:348 | tag | - | DB css_property/css_element |
+| spacing | string | iconCircleBorderRadius | Icon badge border radius | blocks/notice-banner/edit.js:573 | tag | - | DB css_property/css_element |
+| spacing | string | iconCircleBorderRadius | Icon circle border radius | blocks/trust-bar/edit.js:1138 | tag | - | DB css_property/css_element |
+| spacing | string | iconBoxSize | Icon circle size | blocks/icon-list/edit.js:830 | tag | - | the circle behind the icon is a box (its height), not a glyph |
+| spacing | string | itemMediaRadius | Image corner radius | blocks/nav-drawer-menu/RowExtrasPanel.js:174 | tag | - | DB css_property/css_element |
+| spacing | string | imageHeight | Image height | blocks/card-grid/components/GridSettingsPanel.js:50 | window | - | DB css_property/css_element |
+| spacing | string | itemMediaHeight | Image height | blocks/nav-drawer-menu/RowExtrasPanel.js:169 | tag | - | DB css_property/css_element |
+| spacing | string | itemMediaWidth | Image width | blocks/nav-drawer-menu/RowExtrasPanel.js:164 | tag | - | DB css_property/css_element |
+| spacing | string | tabIndicatorThickness | Indicator thickness | blocks/tabs/edit.js:534 | tag | - | DB css_property/css_element |
+| spacing | string | - | Inset | components/MediaSizingPanel.js:325 | none | - | media height and inset boxes |
+| spacing | string | gap | Item gap | shared/nav-menu-panels/ListLayoutPanel.js:88 | tag | - | DB css_property/css_element |
+| spacing | string | itemPaddingShiftHover | Item padding shift on hover | blocks/mega-panel/edit.js:918 | tag | - | DB css_property/css_element |
+| spacing | string | itemPaddingBlock | Item vertical padding | blocks/icon-list/edit.js:992 | tag | - | DB css_property/css_element |
+| spacing | string | scrollItemWidth | Item width | blocks/container/components/ScrollSidewaysPanel.js:54 | window | - | DB css_property/css_element |
+| spacing | split-unit | - | Line height | blocks/button/edit.js:759 | none | - | split-unit storage cannot hold a preset var (attribute not resolved) |
+| spacing | string | lineWidth | Line thickness | blocks/measured-diagram/edit.js:220 | tag | - | DB css_property/css_element |
+| spacing | string | linkMinHeight | Link minimum height | blocks/business-info/edit.js:262 | window | - | DB css_property/css_element |
+| spacing | string | itemMinHeight | Link minimum height | shared/nav-menu-panels/LinkExtrasItems.js:43 | window | - | DB css_property/css_element |
+| spacing | string | drawerLinkRadius | Link row corner radius | blocks/mega-panel/DrawerShellControls.js:50 | tag | - | DB css_property/css_element |
+| spacing | string | drawerLinkMinHeight | Link row minimum height | blocks/mega-panel/edit.js:1130 | tag | - | DB css_property/css_element |
+| spacing | string | drawerLinkPaddingY | Link row vertical padding | blocks/mega-panel/edit.js:1136 | tag | - | DB css_property/css_element |
+| spacing | string | chromeLogoBoxRadius | Logo box corner radius | blocks/nav-drawer/ChromeLogoBoxControls.js:25 | tag | - | DB css_property/css_element |
+| spacing | string | chromeLogoWidth | Logo width | blocks/nav-drawer/ChromePanel.js:114 | tag | - | DB css_property/css_element |
+| spacing | split-unit | - | Margin-top | blocks/quote/edit.js:594 | none | - | split-unit storage cannot hold a preset var (attribute not resolved) |
+| spacing | string | maxHeightUnit | Max height | blocks/responsive-logo/edit.js:515 | tag | - | DB css_property/css_element |
+| spacing | split-unit | maxWidth | Max width | blocks/heading/edit.js:554 | tag | - | DB css_property/css_element |
+| spacing | per-device | maxWidth | Max width | blocks/mega-panel/edit.js:759 | tag | - | DB css_property/css_element |
+| spacing | string | maxWidthUnit | Max width | blocks/responsive-logo/edit.js:494 | tag | - | DB css_property/css_element |
+| spacing | split-unit | maxWidth | Max width | blocks/text/edit.js:734 | tag | - | DB css_property/css_element |
+| spacing | string | maxWidth | Max-width | blocks/option-picker/edit.js:984 | tag | - | DB css_property/css_element |
+| spacing | string | maxWidth | Max-width | blocks/quote/edit.js:755 | window | - | DB css_property/css_element |
+| spacing | string | maxWidth | Max-width | blocks/team-member/edit.js:781 | tag | - | DB css_property/css_element |
+| spacing | string | maxWidth | Maximum width | blocks/measured-diagram/edit.js:176 | tag | - | DB css_property/css_element |
+| spacing | split-unit | minHeight | Min height | blocks/button/edit.js:678 | window | - | DB css_property/css_element |
+| spacing | split-unit | minItemWidth | Min item width | blocks/feature-grid/edit.js:279 | tag | - | DB css_property/css_element |
+| spacing | string | pillMinHeight | Minimum height | blocks/cart/edit.js:233 | window | - | DB css_property/css_element |
+| spacing | string | bgSvgMinHeight | Minimum height | blocks/container/components/BackgroundPanel.js:615 | tag | - | DB css_property/css_element |
+| spacing | string | minHeight | Minimum height | blocks/whatsapp-cta/edit.js:272 | tag | - | DB css_property/css_element |
+| spacing | string | minHeight | Minimum height | components/media/controls/MediaSvgPresentationControls.js:133 | tag | - | DB css_property/css_element |
+| spacing | string | submenuMinWidth | Minimum width | shared/nav-menu-panels/DropdownStylePanel.js:133 | tag | - | DB css_property/css_element |
+| spacing | string | brandTextMinWidth | Minimum width per brand | blocks/brand-strip/source-controls.js:174 | tag | - | DB css_property/css_element |
+| spacing | string | maxWidth | Outer max-width | blocks/choice-flow/edit.js:481 | tag | - | DB css_property/css_element |
+| spacing | string | maxWidth | Outer max-width | blocks/info-box/edit.js:547 | tag | - | DB css_property/css_element |
+| spacing | string | maxWidth | Outer max-width | blocks/notice-banner/edit.js:754 | tag | - | DB css_property/css_element |
+| spacing | string | maxWidth | Outer max-width | blocks/product-faq/edit.js:306 | tag | - | DB css_property/css_element |
+| spacing | string | maxWidth | Outer max-width | blocks/testimonial/edit.js:1625 | tag | - | DB css_property/css_element |
+| spacing | string | itemPaddingShiftHover | Padding shift on hover | shared/nav-menu-panels/ItemsPanel.js:98 | tag | - | DB css_property/css_element |
+| spacing | string | drawerShellRadius | Panel corner radius in the drawer | blocks/mega-panel/DrawerShellControls.js:32 | tag | - | DB css_property/css_element |
+| spacing | string | panelSize | Panel size | blocks/nav-drawer/edit.js:687 | window | - | DB css_property/css_element |
+| spacing | string | pillBorderRadius | Pill border radius | blocks/option-picker/edit.js:807 | tag | - | DB css_property/css_element |
+| spacing | string | pickerPillBorderRadius | Pill border radius | blocks/product-card/edit.js:3386 | tag | - | DB css_property/css_element |
+| spacing | string | savingBadgeBorderRadius | Saving badge border radius | blocks/product-card/edit.js:2197 | tag | - | DB css_property/css_element |
+| spacing | string | pillSelectedBorderRadius | Selected pill border radius | blocks/option-picker/edit.js:862 | tag | - | DB css_property/css_element |
+| spacing | string | pickerPillSelectedBorderRadius | Selected pill border radius | blocks/product-card/edit.js:3402 | tag | - | DB css_property/css_element |
+| spacing | per-device | shapeSize | Size | blocks/icon/inspector-shape.js:88 | tag | - | DB css_property/css_element |
+| spacing | string | closeSize | Size | blocks/nav-drawer/edit.js:1342 | tag | - | DB css_property/css_element |
+| spacing | per-device | childIconShapeSize | Size | blocks/social-icons/edit.js:339 | tag | - | DB css_property/css_element |
+| spacing | string | priceRowSpaceAbove | Space above the price | blocks/product-card/listing-panels.js:169 | tag | - | DB css_property/css_element |
+| spacing | string | thumbStripOffset | Space above thumbnails | blocks/buybox/inspector-extra.js:233 | tag | - | DB css_property/css_element |
+| spacing | string | itemOrnamentGap | Space after ornament | blocks/nav-drawer-menu/RowExtrasPanel.js:90 | tag | - | DB css_property/css_element |
+| spacing | string | itemGap | Space around the separator | blocks/breadcrumbs/edit.js:168 | tag | - | DB css_property/css_element |
+| spacing | string | itemBadgeGap | Space before badge | shared/nav-menu-panels/LinkExtrasItems.js:94 | tag | - | DB css_property/css_element |
+| spacing | string | titleMarginBottom | Space below title | blocks/card-grid/components/CardSpacingStylingPanel.js:17 | tag | - | DB css_property/css_element |
+| spacing | string | headerGap | Space between header items | blocks/google-reviews/components/HeaderPanel.js:62 | tag | - | DB css_property/css_element |
+| spacing | per-device | labelGap | Space between icon and label | blocks/icon/inspector-label.js:79 | tag | - | DB css_property/css_element |
+| spacing | string | burgerTextGap | Space between icon and label | blocks/nav-bar-menu/BurgerPanel.js:338 | window | - | DB css_property/css_element |
+| spacing | string | iconGap | Space between icon and label | blocks/whatsapp-cta/edit.js:258 | tag | - | DB css_property/css_element |
+| spacing | string | iconGap | Space between icon and text | blocks/business-info/edit.js:243 | window | - | DB css_property/css_element |
+| spacing | string | chromeRowGap | Space between items | blocks/nav-drawer/ChromePanel.js:135 | tag | - | DB css_property/css_element |
+| spacing | string | numberGap | Space between number and text | blocks/process-steps/edit.js:712 | tag | - | DB css_property/css_element |
+| spacing | string | stepGap | Space between steps | blocks/process-steps/edit.js:704 | tag | - | DB css_property/css_element |
+| spacing | string | cardGap | Space between the parts of a card | blocks/google-reviews/components/CardPanel.js:99 | tag | - | DB css_property/css_element |
+| spacing | string | collapsePoint | Switch to burger below | blocks/nav-bar-menu/MenuSettingsPanel.js:101 | tag | - | DB css_property/css_element |
+| spacing | string | tabMinHeight | Tab minimum height | blocks/tabs/edit.js:527 | tag | - | DB css_property/css_element |
+| spacing | string | tagBorderRadius | Tag border radius | blocks/product-card/edit.js:2710 | tag | - | DB css_property/css_element |
+| spacing | string | fieldTextareaMinHeight | Textarea minimum height | blocks/form/edit.js:913 | window | - | DB css_property/css_element |
+| spacing | split-unit | - | Thickness | blocks/separator/edit.js:444 | none | - | split-unit storage cannot hold a preset var (attribute not resolved) |
+| spacing | string | width | Thickness | components/SeparatorAxisRow.js:46 | tag | - | DB css_property/css_element |
+| spacing | string | thumbGap | Thumbnail gap | blocks/buybox/inspector-extra.js:221 | tag | - | DB css_property/css_element |
+| spacing | string | tileGap | Tile gap | blocks/option-picker/edit.js:771 | tag | - | DB css_property/css_element |
+| spacing | string | tileMinHeight | Tile height | blocks/gallery/components/GalleryTilePanel.js:16 | tag | - | DB css_property/css_element |
+| spacing | string | stickyOffset | Top offset | blocks/buybox/inspector-extra.js:92 | tag | - | DB css_property/css_element |
+| spacing | string | chromeRowHeight | Top row height | blocks/nav-drawer/ChromePanel.js:130 | tag | - | DB css_property/css_element |
+| spacing | string | offset | Underline gap | components/LinkUnderlineControl.js:103 | tag | - | DB css_property/css_element |
+| spacing | string | thickness | Underline thickness | components/LinkUnderlineControl.js:72 | tag | - | DB css_property/css_element |
+| spacing | string | sgsChildWidth | Width | blocks/extensions/child-sizing.js:110 | tag | - | extension attribute: a child width |
+| spacing | string | width | Width | blocks/info-box/edit.js:555 | tag | - | DB css_property/css_element |
+| spacing | string | burgerWidth | Width | blocks/nav-bar-menu/BurgerPanel.js:257 | window | - | DB css_property/css_element |
+| spacing | string | width | Width | blocks/option-picker/edit.js:976 | tag | - | DB css_property/css_element |
+| spacing | split-unit | - | Width | blocks/separator/edit.js:273 | none | - | split-unit storage cannot hold a preset var (attribute not resolved) |
+
+=== Raw <UnitControl> mounts outside the shared controls: 11 (9 size-like) ===
+  SIZE blocks/account/edit.js:150  Menu width
+  SIZE blocks/account/edit.js:176  Content max width
+  SIZE blocks/buybox/inspector-extra-3.js:390  Minimum height
+  SIZE blocks/container/components/GridItemDefaultsPanel.js:204  Border width
+  SIZE blocks/responsive-logo/edit.js:434  Size when header shrinks
+  SIZE blocks/site-footer-row/edit.js:797  Max width
+  SIZE blocks/site-header-row/edit.js:823  Max width
+  SIZE blocks/wishlist-link/edit.js:131  Icon size
+  SIZE components/ResponsiveBoxControls.js:129  Max width
+       components/TypographyControls.js:1101  Line indent
+       components/shadow-control/LayerEditor.js:34  (dynamic)
