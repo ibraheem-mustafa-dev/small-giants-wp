@@ -14,6 +14,7 @@ import { INHERITED, CARRIED, defaultPaint, knownPaths, resolveProperty, notPaint
 import { pageBaseline } from './fill-page.mjs';
 import { spacingOwnership } from './fill-spacing.mjs';
 import { presenceDecisions, textDecisions, linkDecisions } from './fill-presence.mjs';
+import { linkAttrDecisions, blockSupportsAnchor } from './fill-link-attrs.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { unreadOf } from './fill-unread.mjs';
 import { hasRow } from './fill-skeleton.mjs';
@@ -318,6 +319,7 @@ function fillContent( st, rec, ref, cal ) {
 	const evidence = Object.fromEntries( rec.targets.filter( ( t ) => '' !== t.slot ).map( ( t ) => [ t.slot, !! atDesktop[ t.slot ] && ! atDesktop[ t.slot ].missing ] ) );
 	const words = Object.fromEntries( Object.entries( atDesktop ).filter( ( [ , s ] ) => s && ! s.missing ).map( ( [ slot, s ] ) => [ slot, s.words ] ) );
 	const hrefs = Object.fromEntries( Object.entries( atDesktop ).filter( ( [ , s ] ) => s && ! s.missing ).map( ( [ slot, s ] ) => [ slot, s.href ] ) );
+	const linkFacts = Object.fromEntries( Object.entries( atDesktop ).filter( ( [ , s ] ) => s && ! s.missing && ( s.target || s.rel || s.id || s.ariaLabel ) ).map( ( [ slot, s ] ) => [ slot, { target: s.target, rel: s.rel, id: s.id, ariaLabel: s.ariaLabel } ] ) );
 	const local = [];
 	const take = ( r ) => {
 		for ( const w of r.writes ) {
@@ -341,6 +343,7 @@ function fillContent( st, rec, ref, cal ) {
 	take( presenceDecisions( { calibration: cal, schema: blockSchema( rec.name ), attributes: node.attributes || {}, evidence } ) );
 	take( textDecisions( { calibration: cal, attributes: node.attributes || {}, slots: words, leaf: 0 === rec.children.length } ) );
 	take( linkDecisions( { calibration: cal, attributes: node.attributes || {}, slots: hrefs, origin: st.origin } ) );
+	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts } ) );
 	// A skeleton's own statement that something lives outside the tree turns the matching UNMAPPED row into handover.
 	for ( const h of skeletonNode.handover || [] ) {
 		const slot = h.slot ?? '';

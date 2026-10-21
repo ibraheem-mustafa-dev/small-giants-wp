@@ -171,8 +171,8 @@ export function linkDecisions( { calibration, attributes = {}, slots = {}, origi
 	const claimed = new Set();
 	// A block with one link element (one distinct path) takes the address the draft's root element carries when no slot
 	// names that element: the draft's own anchor IS the element the node copies, while the block nests its anchor.
-	const onlyOnePath = new Set( Object.values( link ).map( ( d ) => d.path ) ).size === 1;
-	for ( const [ attr, def ] of Object.entries( link ) ) {
+	const onlyOnePath = new Set( Object.values( link ).filter( ( d ) => 'target' !== d.attr ).map( ( d ) => d.path ) ).size === 1;
+	for ( const [ attr, def ] of Object.entries( link ).filter( ( [ , d ] ) => 'target' !== d.attr ) ) {
 		const hit = draft.find( ( [ p ] ) => same( p, def.path ) ) || ( onlyOnePath ? draft.find( ( [ p ] ) => '' === p ) : undefined );
 		if ( ! hit ) {
 			continue;

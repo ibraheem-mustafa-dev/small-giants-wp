@@ -190,6 +190,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/fill-spacing.mjs` | Spacing ownership per tier from rendered border-box gaps (equal within 0.5px). |
 | `lib/fill-values.mjs` | Fluid fit and `clamp()`, the 16px breakpoint sweep against the SGS boundaries, and the sweep log. |
 | `lib/fill-presence.mjs` | Visibility and variant settings from calibration `presence`, words from `text`, links from `link`. |
+| `lib/fill-link-attrs.mjs` | A draft link's target, rel, id and aria-label, written to the block's own settings (block.json schema, supports.anchor, calibrated `target` entries) or raised as a named UNMAPPED row. |
 | `lib/fill-fixture.mjs` | A calibration fixture's styling preconditions as Fill sees them: a property a precondition paints in the calibrated rest (the social-icons fixture's 1px border and background switch) is compared with its unstyled value, and a written setting carries the switch the fixture turned on for it. |
 | `lib/fill-row-lift.mjs` | Fill's Site Info row lift: the generated icons' shared look (link box as the row's shape element, svg as its glyph element) written once on the `sgs/social-icons` row when every copy agrees. |
 | `lib/fill-unread.mjs` | What Fill leaves unjudged on a measured node: style settings whose calibrated element no finder read, presence settings with no reading or no read element, text and link settings with no reading, and layout or mode enums calibration reads no presence for; never a setting the skeleton sets or Fill wrote. |
@@ -349,6 +350,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/fill-spacing.test.mjs` | FR-47-4 step 3: one unequal gap hands every gap to the children and writes the parent gap as 0 (MUST FAIL); equal, single, zero, both axes, tolerance, hidden and out-of-flow children. |
 | `tests/fill-values.test.mjs` | FR-47-4: a stepped value is never fluid and a step at 800px is logged against 768 (MUST FAIL); clamp shapes and the sweep log. |
 | `tests/fill-presence.test.mjs` | FR-47-4: a draft showing the badge flips its visibility setting on and a draft without it leaves the default (MUST FAIL); variant, words and links, against fixture calibration keys. |
+| `tests/fill-link-attrs.test.mjs` | A draft link's target _blank, rel, id and aria-label go to the block's own settings and to a named gap where it has none (MUST FAIL), against real block.json schemas. |
 | `tests/fill-page.test.mjs` | FR-47-4: the theme baseline for the inherited properties calibration does not record. |
 | `tests/fill-entrance.test.mjs` | FR-48-47: entrance timing, distance and scale, a loop is not an entrance, a scroll reveal is timed from when it meets the viewport and a held backwards fill from its second change (MUST FAIL each), in a real browser with the page sweep and a no-sweep negative control. |
 | `tests/fill-motion.test.mjs` | FR-48-78: the motion writer's layers, tokens, presets, run-time pose match, render check and refusals (MUST FAIL each). |
@@ -978,6 +980,10 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `presenceDecisions(input)` → `{ writes, unmapped, notes }` for visibility and variant settings, from calibration's `presence`.
 - `textDecisions(input)` → the same for words, from calibration's `text`.
 - `normaliseHref(href, origin)` → the href as WordPress holds it, or null. `linkDecisions(input)` → the same for links, from calibration's `link`; a setting bound to Site Info (`metadata.bindings.<attr>.args.key`) is still written and also returns a `handover` row, which `fill-resolve.mjs::fillContent` records as a `site-info` / `link` handover entry. A block whose `link` names one distinct path (the nested anchor `sgs/icon` calibrates as `.sgs-icon__link`) also takes the address at the draft's root slot when no slot names that path: the draft's own anchor, or the sole anchor inside the copied element, is that block's one link; a block with two link paths takes no root guess.
+
+### `lib/fill-link-attrs.mjs`
+- `blockSupportsAnchor(slug)` → whether block.json declares `supports.anchor`.
+- `linkAttrDecisions(input)` → `{ writes, unmapped, notes }` for a link's `target` (a boolean `...NewTab` or string `...Target` setting, or a calibrated `target` link entry), `rel` (a `rel` or `...Rel` setting; noopener and noreferrer are the block's own for a new tab), `id` (the `anchor` attribute, root element only, when `supports.anchor`) and `aria-label` (an `ariaLabel` or `...AriaLabel` setting). A link's companion setting shares its address setting's prefix; a block with none gets an UNMAPPED row named `target`, `rel`, `id` or `aria-label`. `fill-read.mjs` reads the four from the draft element; `fill-resolve.mjs::fillContent` applies them; `scripts/parity/lib/links.mjs::compareLinkAttributes` compares them on the live render.
 
 ### `lib/brand-registry.mjs`
 

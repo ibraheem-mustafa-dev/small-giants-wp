@@ -23,6 +23,10 @@ function collectLinksIn( [ rootSel, exclude ] ) {
 		text: ( a.innerText.trim() || a.getAttribute( 'aria-label' ) || a.getAttribute( 'title' ) || a.querySelector( 'img' )?.alt || '' ).replace( /\s+/g, ' ' ).trim().toLowerCase(),
 		href: a.getAttribute( 'href' ).trim(),
 		url: a.href,
+		target: a.getAttribute( 'target' ) || '',
+		rel: a.getAttribute( 'rel' ) || '',
+		id: a.getAttribute( 'id' ) || a.closest( '[id]' )?.getAttribute( 'id' ) || '',
+		ariaLabel: a.getAttribute( 'aria-label' ) || '',
 		siteInfoKey: a.closest( '[data-sgs-site-info-key]' )?.getAttribute( 'data-sgs-site-info-key' ) || '',
 	} ) );
 }
@@ -79,6 +83,34 @@ function norm( v, origin ) {
 const realDraftHref = ( l, draftOrigin ) => ! DEAD.test( l.href ) && ! /\{\{/.test( l.href ) && ( /^(tel|mailto):/i.test( l.href ) || ( /^https?:/i.test( l.url ) && new URL( l.url ).origin !== draftOrigin && ! /fonts\.(googleapis|gstatic)\.com/.test( l.url ) ) );
 const sameLabel = ( a, b ) => a && b && ( a === b || a.includes( b ) || b.includes( a ) );
 
+const BLOCK_ADDED_REL = [ 'noopener', 'noreferrer' ];
+const relTokens = ( l ) => String( l.rel || '' ).toLowerCase().split( /\s+/ ).filter( Boolean );
+
+// The attributes beyond the address a draft link carries: where it opens, its rel, its id and its aria-label. A row
+// when no live link of the same text carries the same. rel tokens a new tab adds itself (noopener, noreferrer) are not a difference.
+export function compareLinkAttributes( d, l, add ) {
+	for ( const x of d || [] ) {
+		const mates = ( l || [] ).filter( ( y ) => sameLabel( y.text, x.text ) );
+		if ( ! mates.length ) {
+			continue;
+		}
+		const shown = ( pick ) => mates.map( pick ).filter( Boolean ).join( ' | ' ) || '(none)';
+		if ( '_blank' === x.target && ! mates.some( ( y ) => '_blank' === y.target ) ) {
+			add( `target "${ x.text }"`, '_blank', shown( ( y ) => y.target ) );
+		}
+		const want = relTokens( x ).filter( ( t ) => ! ( '_blank' === x.target && BLOCK_ADDED_REL.includes( t ) ) );
+		if ( want.length && ! mates.some( ( y ) => want.every( ( t ) => relTokens( y ).includes( t ) ) ) ) {
+			add( `rel "${ x.text }"`, want.join( ' ' ), shown( ( y ) => relTokens( y ).join( ' ' ) ) );
+		}
+		if ( x.id && ! mates.some( ( y ) => y.id === x.id ) ) {
+			add( `id "${ x.text }"`, x.id, shown( ( y ) => y.id ) );
+		}
+		if ( x.ariaLabel && ! mates.some( ( y ) => y.ariaLabel === x.ariaLabel ) ) {
+			add( `aria-label "${ x.text }"`, x.ariaLabel, shown( ( y ) => y.ariaLabel ) );
+		}
+	}
+}
+
 // The rows for one state, each reported once per run (`seen` holds the keys already reported).
 export function compareLinks( d, l, cfg, origins, seen ) {
 	const rows = [];
@@ -110,6 +142,7 @@ export function compareLinks( d, l, cfg, origins, seen ) {
 			}
 		}
 	}
+	compareLinkAttributes( d, l, add );
 	// The table states live destinations: a --self run has no live side to hold to it.
 	for ( const [ label, dest ] of Object.entries( origins.draft === origins.live ? {} : cfg.links || {} ) ) {
 		const wants = ( Array.isArray( dest ) ? dest : [ dest ] ).map( ( v ) => norm( v, origins.live ) );

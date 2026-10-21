@@ -96,6 +96,11 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 		const anchors = el.matches( 'a[href]' ) ? [ el ] : [ ...el.querySelectorAll( 'a[href]' ) ];
 		const sole = 1 === anchors.length && ( el === anchors[ 0 ] || anchors[ 0 ].textContent.replace( /\s+/g, ' ' ).trim() === snap.words );
 		snap.href = sole ? anchors[ 0 ].getAttribute( 'href' ) : null;
+		const anchor = sole ? anchors[ 0 ] : null;
+		snap.target = anchor?.getAttribute( 'target' ) || null;
+		snap.rel = anchor?.getAttribute( 'rel' ) || null;
+		snap.id = el.getAttribute( 'id' ) || null;
+		snap.ariaLabel = el.getAttribute( 'aria-label' ) || anchor?.getAttribute( 'aria-label' ) || null;
 		snap.role = el.getAttribute( 'role' );
 		snap.className = String( el.getAttribute( 'class' ) || '' );
 		if ( j.own ) {

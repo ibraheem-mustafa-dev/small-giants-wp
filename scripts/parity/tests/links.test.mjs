@@ -37,3 +37,12 @@ test( 'a marked and an unmarked live link of the same text: the unmarked one dec
 	const rows = run( [ draftLink( 'call', 'tel:+441214440000' ) ], [ liveLink( 'call', 'tel:+441210000000', { siteInfoKey: 'phone' } ), liveLink( 'call', 'tel:+441219999999' ) ] );
 	assert.deepEqual( rows.map( ( r ) => r.key ), [ 'href "call"' ] );
 } );
+
+test( 'MUST FAIL: a draft link opening in a new tab, with a rel, an id and an aria-label, raises a row for each live link that lacks it', () => {
+	const d = [ { ...draftLink( 'book', 'https://x.test/book' ), target: '_blank', rel: 'noopener nofollow', id: 'book', ariaLabel: 'Book a visit' } ];
+	const plain = run( d, [ liveLink( 'book', 'https://x.test/book' ) ] );
+	assert.deepEqual( plain.map( ( r ) => r.key ), [ 'target "book"', 'rel "book"', 'id "book"', 'aria-label "book"' ] );
+	assert.equal( plain.find( ( r ) => r.key === 'rel "book"' ).draft, 'nofollow', 'noopener is the block\'s own for a new tab' );
+	const full = run( d, [ liveLink( 'book', 'https://x.test/book', { target: '_blank', rel: 'noopener nofollow', id: 'book', ariaLabel: 'Book a visit' } ) ] );
+	assert.deepEqual( full, [] );
+} );
