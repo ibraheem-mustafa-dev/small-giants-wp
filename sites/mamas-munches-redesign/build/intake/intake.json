@@ -26951,57 +26951,12 @@
     },
     {
      "id": "K-01",
-     "name": "CSS animation infinite' on code-built animation string",
-     "mechanism": "css-animation",
-     "element": {
-      "dc": "Home",
-      "template_tpl_id": null,
-      "selector": "a style value built in code",
-      "selection_rule": "bound or inserted by trust",
-      "description": "code-built animation string"
-     },
-     "source": {
-      "file": "Home.dc.html",
-      "function": "trust",
-      "ref": null,
-      "line": 409,
-      "code": "animation: 'mmMarquee 24s linear infinite'"
-     },
-     "trigger": {
-      "type": "state",
-      "detail": "a value renderVals passes to the template as trustBar (→ trust)"
-     },
-     "properties": [
-      {
-       "property": "animation-name",
-       "from": null,
-       "to": "infinite'"
-      }
-     ],
-     "duration_ms": 24000,
-     "delay_ms": 0,
-     "stagger": null,
-     "easing": "linear",
-     "iterations": 1,
-     "direction": "normal",
-     "fill": "none",
-     "reduced_motion": {
-      "behaviour": "unchanged",
-      "detail": "no reduced-motion rule"
-     },
-     "status": "active",
-     "trace": {
-      "observed": "yes",
-      "note": "reached in the census runtime pass"
-     }
-    },
-    {
-     "id": "K-02",
-     "name": "CSS animation infinite' on code-built animation string",
+     "name": "CSS animation mmMarquee on code-built animation string",
      "mechanism": "css-animation",
      "element": {
       "dc": "SiteFooter",
       "template_tpl_id": null,
+      "nearest_tpl_id": "18",
       "selector": "a style value built in code",
       "selection_rule": "bound or inserted by tagline",
       "description": "code-built animation string"
@@ -27021,14 +26976,19 @@
       {
        "property": "animation-name",
        "from": null,
-       "to": "infinite'"
+       "to": "mmMarquee"
+      },
+      {
+       "property": "transform",
+       "from": "translateX(0px)",
+       "to": "translateX(-50%)"
       }
      ],
      "duration_ms": 32000,
      "delay_ms": 0,
      "stagger": null,
      "easing": "linear",
-     "iterations": 1,
+     "iterations": "infinite",
      "direction": "normal",
      "fill": "none",
      "reduced_motion": {
@@ -27037,17 +26997,18 @@
      },
      "status": "active",
      "trace": {
-      "observed": "yes",
-      "note": "reached in the census runtime pass"
+      "observed": "not-instrumented",
+      "note": "static census only"
      }
     },
     {
-     "id": "K-03",
+     "id": "K-02",
      "name": "CSS animation this.state.tagHover || this.state.tagFocus ? 'paused' : 'running' on code-built animation-play-state string",
      "mechanism": "css-animation",
      "element": {
       "dc": "SiteFooter",
       "template_tpl_id": null,
+      "nearest_tpl_id": "18",
       "selector": "a style value built in code",
       "selection_rule": "bound or inserted by tagline",
       "description": "code-built animation-play-state string"
@@ -27083,30 +27044,32 @@
      },
      "status": "active",
      "trace": {
-      "observed": "yes",
-      "note": "reached in the census runtime pass"
+      "observed": "not-instrumented",
+      "note": "static census only"
      }
     },
     {
-     "id": "K-04",
-     "name": "CSS animation mmMarquee on keyframes mmMarquee",
+     "id": "K-03",
+     "name": "CSS animation mmMarquee on code-built animation string",
      "mechanism": "css-animation",
      "element": {
       "dc": "Home",
       "template_tpl_id": null,
-      "selector": "@keyframes mmMarquee",
-      "description": "keyframes mmMarquee"
+      "nearest_tpl_id": "42",
+      "selector": "a style value built in code",
+      "selection_rule": "bound or inserted by trust",
+      "description": "code-built animation string"
      },
      "source": {
       "file": "Home.dc.html",
-      "function": "template",
+      "function": "trust",
       "ref": null,
-      "line": null,
-      "code": "@keyframes mmMarquee"
+      "line": 409,
+      "code": "animation: 'mmMarquee 24s linear infinite'"
      },
      "trigger": {
-      "type": "load",
-      "detail": "runs while the declaration applies"
+      "type": "state",
+      "detail": "a value renderVals passes to the template as trustBar (→ trust)"
      },
      "properties": [
       {
@@ -27120,431 +27083,22 @@
        "to": "translateX(-50%)"
       }
      ],
-     "duration_ms": null,
-     "delay_ms": null,
+     "duration_ms": 24000,
+     "delay_ms": 0,
      "stagger": null,
-     "easing": null,
-     "iterations": 1,
-     "direction": null,
-     "fill": null,
+     "easing": "linear",
+     "iterations": "infinite",
+     "direction": "normal",
+     "fill": "none",
      "reduced_motion": {
       "behaviour": "unchanged",
       "detail": "no reduced-motion rule"
      },
-     "status": "dead-code",
-     "trace": {
-      "observed": "yes",
-      "note": "reached in the census runtime pass"
-     },
-     "notes": "no animation declaration names @keyframes mmMarquee"
-    },
-    {
-     "id": "K-05",
-     "name": "CSS animation mmMarquee on keyframes mmMarquee",
-     "mechanism": "css-animation",
-     "element": {
-      "dc": "SiteFooter",
-      "template_tpl_id": null,
-      "selector": "@keyframes mmMarquee",
-      "description": "keyframes mmMarquee"
-     },
-     "source": {
-      "file": "SiteFooter.dc.html",
-      "function": "template",
-      "ref": null,
-      "line": null,
-      "code": "@keyframes mmMarquee"
-     },
-     "trigger": {
-      "type": "load",
-      "detail": "runs while the declaration applies"
-     },
-     "properties": [
-      {
-       "property": "animation-name",
-       "from": null,
-       "to": "mmMarquee"
-      },
-      {
-       "property": "transform",
-       "from": "translateX(0px)",
-       "to": "translateX(-50%)"
-      }
-     ],
-     "duration_ms": null,
-     "delay_ms": null,
-     "stagger": null,
-     "easing": null,
-     "iterations": 1,
-     "direction": null,
-     "fill": null,
-     "reduced_motion": {
-      "behaviour": "unchanged",
-      "detail": "no reduced-motion rule"
-     },
-     "status": "dead-code",
-     "trace": {
-      "observed": "yes",
-      "note": "reached in the census runtime pass"
-     },
-     "notes": "no animation declaration names @keyframes mmMarquee"
-    },
-    {
-     "id": "K-06",
-     "name": "CSS animation mmMarquee on keyframes mmMarquee",
-     "mechanism": "css-animation",
-     "element": {
-      "dc": "Basket",
-      "template_tpl_id": null,
-      "selector": "@keyframes mmMarquee",
-      "description": "keyframes mmMarquee"
-     },
-     "source": {
-      "file": "Basket.dc.html",
-      "function": "template",
-      "ref": null,
-      "line": null,
-      "code": "@keyframes mmMarquee"
-     },
-     "trigger": {
-      "type": "load",
-      "detail": "runs while the declaration applies"
-     },
-     "properties": [
-      {
-       "property": "animation-name",
-       "from": null,
-       "to": "mmMarquee"
-      },
-      {
-       "property": "transform",
-       "from": "translateX(0px)",
-       "to": "translateX(-50%)"
-      }
-     ],
-     "duration_ms": null,
-     "delay_ms": null,
-     "stagger": null,
-     "easing": null,
-     "iterations": 1,
-     "direction": null,
-     "fill": null,
-     "reduced_motion": {
-      "behaviour": "unchanged",
-      "detail": "no reduced-motion rule"
-     },
-     "status": "dead-code",
+     "status": "active",
      "trace": {
       "observed": "not-instrumented",
       "note": "static census only"
-     },
-     "notes": "no animation declaration names @keyframes mmMarquee"
-    },
-    {
-     "id": "K-07",
-     "name": "CSS animation mmMarquee on keyframes mmMarquee",
-     "mechanism": "css-animation",
-     "element": {
-      "dc": "Confirmation",
-      "template_tpl_id": null,
-      "selector": "@keyframes mmMarquee",
-      "description": "keyframes mmMarquee"
-     },
-     "source": {
-      "file": "Confirmation.dc.html",
-      "function": "template",
-      "ref": null,
-      "line": null,
-      "code": "@keyframes mmMarquee"
-     },
-     "trigger": {
-      "type": "load",
-      "detail": "runs while the declaration applies"
-     },
-     "properties": [
-      {
-       "property": "animation-name",
-       "from": null,
-       "to": "mmMarquee"
-      },
-      {
-       "property": "transform",
-       "from": "translateX(0px)",
-       "to": "translateX(-50%)"
-      }
-     ],
-     "duration_ms": null,
-     "delay_ms": null,
-     "stagger": null,
-     "easing": null,
-     "iterations": 1,
-     "direction": null,
-     "fill": null,
-     "reduced_motion": {
-      "behaviour": "unchanged",
-      "detail": "no reduced-motion rule"
-     },
-     "status": "dead-code",
-     "trace": {
-      "observed": "not-instrumented",
-      "note": "static census only"
-     },
-     "notes": "no animation declaration names @keyframes mmMarquee"
-    },
-    {
-     "id": "K-08",
-     "name": "CSS animation mmMarquee on keyframes mmMarquee",
-     "mechanism": "css-animation",
-     "element": {
-      "dc": "Contact",
-      "template_tpl_id": null,
-      "selector": "@keyframes mmMarquee",
-      "description": "keyframes mmMarquee"
-     },
-     "source": {
-      "file": "Contact.dc.html",
-      "function": "template",
-      "ref": null,
-      "line": null,
-      "code": "@keyframes mmMarquee"
-     },
-     "trigger": {
-      "type": "load",
-      "detail": "runs while the declaration applies"
-     },
-     "properties": [
-      {
-       "property": "animation-name",
-       "from": null,
-       "to": "mmMarquee"
-      },
-      {
-       "property": "transform",
-       "from": "translateX(0px)",
-       "to": "translateX(-50%)"
-      }
-     ],
-     "duration_ms": null,
-     "delay_ms": null,
-     "stagger": null,
-     "easing": null,
-     "iterations": 1,
-     "direction": null,
-     "fill": null,
-     "reduced_motion": {
-      "behaviour": "unchanged",
-      "detail": "no reduced-motion rule"
-     },
-     "status": "dead-code",
-     "trace": {
-      "observed": "not-instrumented",
-      "note": "static census only"
-     },
-     "notes": "no animation declaration names @keyframes mmMarquee"
-    },
-    {
-     "id": "K-09",
-     "name": "CSS animation mmMarquee on keyframes mmMarquee",
-     "mechanism": "css-animation",
-     "element": {
-      "dc": "Gifts",
-      "template_tpl_id": null,
-      "selector": "@keyframes mmMarquee",
-      "description": "keyframes mmMarquee"
-     },
-     "source": {
-      "file": "Gifts.dc.html",
-      "function": "template",
-      "ref": null,
-      "line": null,
-      "code": "@keyframes mmMarquee"
-     },
-     "trigger": {
-      "type": "load",
-      "detail": "runs while the declaration applies"
-     },
-     "properties": [
-      {
-       "property": "animation-name",
-       "from": null,
-       "to": "mmMarquee"
-      },
-      {
-       "property": "transform",
-       "from": "translateX(0px)",
-       "to": "translateX(-50%)"
-      }
-     ],
-     "duration_ms": null,
-     "delay_ms": null,
-     "stagger": null,
-     "easing": null,
-     "iterations": 1,
-     "direction": null,
-     "fill": null,
-     "reduced_motion": {
-      "behaviour": "unchanged",
-      "detail": "no reduced-motion rule"
-     },
-     "status": "dead-code",
-     "trace": {
-      "observed": "not-instrumented",
-      "note": "static census only"
-     },
-     "notes": "no animation declaration names @keyframes mmMarquee"
-    },
-    {
-     "id": "K-10",
-     "name": "CSS animation mmMarquee on keyframes mmMarquee",
-     "mechanism": "css-animation",
-     "element": {
-      "dc": "Help",
-      "template_tpl_id": null,
-      "selector": "@keyframes mmMarquee",
-      "description": "keyframes mmMarquee"
-     },
-     "source": {
-      "file": "Help.dc.html",
-      "function": "template",
-      "ref": null,
-      "line": null,
-      "code": "@keyframes mmMarquee"
-     },
-     "trigger": {
-      "type": "load",
-      "detail": "runs while the declaration applies"
-     },
-     "properties": [
-      {
-       "property": "animation-name",
-       "from": null,
-       "to": "mmMarquee"
-      },
-      {
-       "property": "transform",
-       "from": "translateX(0px)",
-       "to": "translateX(-50%)"
-      }
-     ],
-     "duration_ms": null,
-     "delay_ms": null,
-     "stagger": null,
-     "easing": null,
-     "iterations": 1,
-     "direction": null,
-     "fill": null,
-     "reduced_motion": {
-      "behaviour": "unchanged",
-      "detail": "no reduced-motion rule"
-     },
-     "status": "dead-code",
-     "trace": {
-      "observed": "not-instrumented",
-      "note": "static census only"
-     },
-     "notes": "no animation declaration names @keyframes mmMarquee"
-    },
-    {
-     "id": "K-11",
-     "name": "CSS animation mmMarquee on keyframes mmMarquee",
-     "mechanism": "css-animation",
-     "element": {
-      "dc": "Product",
-      "template_tpl_id": null,
-      "selector": "@keyframes mmMarquee",
-      "description": "keyframes mmMarquee"
-     },
-     "source": {
-      "file": "Product.dc.html",
-      "function": "template",
-      "ref": null,
-      "line": null,
-      "code": "@keyframes mmMarquee"
-     },
-     "trigger": {
-      "type": "load",
-      "detail": "runs while the declaration applies"
-     },
-     "properties": [
-      {
-       "property": "animation-name",
-       "from": null,
-       "to": "mmMarquee"
-      },
-      {
-       "property": "transform",
-       "from": "translateX(0px)",
-       "to": "translateX(-50%)"
-      }
-     ],
-     "duration_ms": null,
-     "delay_ms": null,
-     "stagger": null,
-     "easing": null,
-     "iterations": 1,
-     "direction": null,
-     "fill": null,
-     "reduced_motion": {
-      "behaviour": "unchanged",
-      "detail": "no reduced-motion rule"
-     },
-     "status": "dead-code",
-     "trace": {
-      "observed": "not-instrumented",
-      "note": "static census only"
-     },
-     "notes": "no animation declaration names @keyframes mmMarquee"
-    },
-    {
-     "id": "K-12",
-     "name": "CSS animation mmMarquee on keyframes mmMarquee",
-     "mechanism": "css-animation",
-     "element": {
-      "dc": "Shop",
-      "template_tpl_id": null,
-      "selector": "@keyframes mmMarquee",
-      "description": "keyframes mmMarquee"
-     },
-     "source": {
-      "file": "Shop.dc.html",
-      "function": "template",
-      "ref": null,
-      "line": null,
-      "code": "@keyframes mmMarquee"
-     },
-     "trigger": {
-      "type": "load",
-      "detail": "runs while the declaration applies"
-     },
-     "properties": [
-      {
-       "property": "animation-name",
-       "from": null,
-       "to": "mmMarquee"
-      },
-      {
-       "property": "transform",
-       "from": "translateX(0px)",
-       "to": "translateX(-50%)"
-      }
-     ],
-     "duration_ms": null,
-     "delay_ms": null,
-     "stagger": null,
-     "easing": null,
-     "iterations": 1,
-     "direction": null,
-     "fill": null,
-     "reduced_motion": {
-      "behaviour": "unchanged",
-      "detail": "no reduced-motion rule"
-     },
-     "status": "dead-code",
-     "trace": {
-      "observed": "not-instrumented",
-      "note": "static census only"
-     },
-     "notes": "no animation declaration names @keyframes mmMarquee"
+     }
     }
    ],
    "counts": {

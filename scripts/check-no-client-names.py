@@ -121,6 +121,11 @@ ALLOWLIST: Tuple[Tuple[str, str], ...] = (
         "TARGETS keys name each client's own test site; a deploy target is an operational "
         "identifier until the target registry moves into sites/<client>/",
     ),
+    (
+        "scripts/computed-route/data/skeleton-decisions.json",
+        "each ratchet rule's taughtBy and clients records name the client whose export taught the rule and the "
+        "clients it was checked on (Spec 48 FR-48-7); the record is data, not framework logic",
+    ),
 )
 
 # A pointer INTO a client or reference folder is how framework docs legitimately reach that

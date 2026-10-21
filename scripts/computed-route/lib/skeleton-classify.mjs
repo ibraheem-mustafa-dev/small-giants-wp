@@ -67,7 +67,7 @@ export function overrideFor( e, { clientDecisions = {}, picks = {}, facts, surfa
 	return hit ? { block: hit.block || null, remove: 'remove' === hit.action, attributes: hit.attributes, reason: hit.reason, source: `standing decision ${ hit.id }` } : null;
 }
 
-export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey = () => null, motion = new Set() } ) {
+export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey = () => null, motion = new Set(), view = undefined, scope = null } ) {
 	const { composition, capsOf, tagMap, decisions } = facts;
 	const minLinks = decisions.structural?.linkList?.minLinks ?? 2;
 	const textBlock = tagMap.p?.core_block_slug || null;
@@ -114,7 +114,7 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		return !! m.words( e ) && 'a' !== e.tag && ! m.blockKids( e ).length && sibs[ 0 ] === e && sibs.slice( 1 ).filter( m.isTextLink ).length >= minLinks;
 	};
 
-	const rules = makeRules( { m, facts, surface, motion, hooks: { siteInfoKinds, isColumnLabel, blockOfKey, topBlock: ( k ) => classify( k, null ).candidates[ 0 ]?.block } } );
+	const rules = makeRules( { m, facts, surface, motion, view, scope, hooks: { siteInfoKinds, isColumnLabel, blockOfKey, topBlock: ( k ) => classify( k, null ).candidates[ 0 ]?.block } } );
 	// A rule verdict in the classifier's result shape (lib/skeleton-rules.mjs).
 	const fromRule = ( r ) => {
 		const base = { rule: r.rule, source: `rule ${ r.rule }`, reason: r.reason, confidence: 1, ...( r.handover ? { handover: r.handover } : {} ) };
@@ -246,5 +246,5 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		return { ...finish( C ), stale };
 	}
 
-	return { classify: ( ...a ) => sgsOnly( classify( ...a ), facts.replacedBy, facts.decisions.rules?.coreExceptions || [] ), brandFor, siteInfoKinds, isColumnLabel, briefOnly, drawsChildren: rules.drawsChildren };
+	return { classify: ( ...a ) => sgsOnly( classify( ...a ), facts.replacedBy, facts.decisions.rules?.coreExceptions || [] ), brandFor, siteInfoKinds, isColumnLabel, briefOnly, drawsChildren: rules.drawsChildren, iconRun: rules.iconRun, siteInfoBrand: rules.siteInfoBrand };
 }

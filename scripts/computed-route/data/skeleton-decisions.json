@@ -352,7 +352,14 @@
 				"margin-inline",
 				"margin-block"
 			],
-			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)"
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
+			"siblingGap": {
+				"id": "alignWrapper.siblingGap",
+				"taughtBy": { "client": "indus-foods", "key": "Indus Foods Website v2/79#0", "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6" },
+				"scope": "a wrapper that follows a sibling in its parent and declares a margin: the margin is the gap between the two blocks, not spacing inside the wrapper",
+				"clients": [ "indus-foods", "mamas-munches-redesign" ],
+				"reason": "unwrapping a wrapper that declares a margin against its previous sibling would lose the gap between the two blocks, so the wrapper stays (Bean approved the mega aside's text column as sgs/container, 2026-10-21)"
+			}
 		},
 		"cardAction": {
 			"block": "sgs/button",
@@ -405,6 +412,50 @@
 			"maxBarHeightPx": 3,
 			"maxBarWidthPx": 40,
 			"reason": "a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)"
+		},
+		"marqueeCodeItems": {
+			"id": "marqueeCodeItems",
+			"block": "sgs/trust-bar",
+			"handover": "the strip's items are built by the draft's code (its template holds one text binding): add each item to the trust bar",
+			"taughtBy": { "client": "mamas-munches-redesign", "key": "Home/42 and SiteFooter/18", "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe" },
+			"scope": "an element in the motion inventory's looping keys (its own animation is an infinite translate, intake's re-derived record with the strip as nearest_tpl_id) that has no stamped children and whose template holds a text binding the logic builds",
+			"clients": [ "indus-foods", "mamas-munches-redesign" ],
+			"reason": "a strip whose items are created in code and whose own animation loops a translate for ever is a marquee like one with template items: a scrolling sgs/trust-bar (Bean, 2026-10-21)"
+		},
+		"megaGroup": {
+			"id": "megaGroup",
+			"block": "sgs/mega-group",
+			"taughtBy": { "client": "indus-foods", "key": "Indus Foods Website v2/68#0", "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6" },
+			"scope": "a direct child of the root of a surface of kind menu or panel whose parent surface is a header and that something opens (its surfaces.json opened_by, or an aria-expanded control in the header); the panel's declared display is flex or grid; the child shares the free space (a declared flex-grow, or a fractional or minmax(0, ...) grid track) and holds a run of sibling links directly (a loop of links, or two or more static links with one declared style)",
+			"clients": [ "indus-foods", "mamas-munches-redesign" ],
+			"reason": "a growing child of a header's disclosure panel that holds a run of sibling links is a mega group: the panel's column of links (Bean's approved header mega menus, 2026-10-21)"
+		},
+		"megaAside": {
+			"id": "megaAside",
+			"block": "sgs/mega-aside",
+			"taughtBy": { "client": "indus-foods", "key": "Indus Foods Website v2/76#0", "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6" },
+			"scope": "the same panel as megaGroup; the child is a fixed or ratio-sized box (a declared width that does not shrink, a fixed grid track, or an aspect ratio) with paint of its own (a declared background, border or shadow, or a style-bound one) and holds no run of links; a loop's repeated card is never an aside",
+			"clients": [ "indus-foods", "mamas-munches-redesign" ],
+			"reason": "a fixed or ratio-sized painted box beside a header disclosure panel's links, holding no link run, is the panel's aside: its feature or call-to-action card (Bean's approved header mega menus, 2026-10-21)"
+		},
+		"megaContainer": {
+			"id": "megaContainer",
+			"block": "sgs/container",
+			"taughtBy": { "client": "indus-foods", "key": "Indus Foods Website v2/96#0", "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6" },
+			"scope": "the same panel as megaGroup; the child shares the free space, is not a fixed box and holds no run of sibling links directly (its content is a heading and a non-link grid, or links one level down)",
+			"clients": [ "indus-foods", "mamas-munches-redesign" ],
+			"reason": "a growing child of a header disclosure panel with no run of links of its own is a plain container, not a mega group (Bean approved the brands panel's heading and logo grid as sgs/container, 2026-10-21)"
+		},
+		"drawerIconRun": {
+			"id": "drawerIconRun",
+			"block": "sgs/social-icons",
+			"minItems": 2,
+			"slot": { "block": "sgs/nav-drawer", "attribute": "chromeSlotType", "value": "icons" },
+			"handover": "the drawer's top row shows this icon group: set sgs/nav-drawer chromeSlotType to icons and keep the group the first block of the drawer body (includes/nav-drawer-chrome-icons.php lifts it into the top row)",
+			"taughtBy": { "client": "indus-foods", "key": "Indus Foods Website v2/116#0", "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6" },
+			"scope": "two or more consecutive icon-only links, in the top row of a surface of kind drawer (the first child of the drawer root that sits in the flow), whose targets are Site Info kinds the brand registry owns (a tel: or mailto: address, a social profile host)",
+			"clients": [ "indus-foods", "mamas-munches-redesign" ],
+			"reason": "a run of icon-only phone, email and social links in a drawer's top row is one social icons group in the drawer's icons top-row slot, each icon linking its Site Info key (Bean's decision 1, 2026-10-21)"
 		}
 	}
 }

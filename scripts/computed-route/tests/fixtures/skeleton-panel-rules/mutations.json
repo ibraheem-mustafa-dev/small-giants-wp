@@ -1,0 +1,20 @@
+[
+ { "file": "lib/skeleton-panel-rules.mjs", "find": "if ( R.megaGroup && size.grows && run ) {", "replace": "if ( R.megaGroup && size.grows && ! run ) {", "why": "a group needs no link run" },
+ { "file": "lib/skeleton-panel-rules.mjs", "find": "R.megaAside && size.fixed && view.ownPaint( e ) && ! run", "replace": "R.megaAside && size.fixed && ! run", "why": "an aside needs no own paint" },
+ { "file": "lib/skeleton-panel-rules.mjs", "find": "! view.has( e ) || view.repeated( e ) ) {", "replace": "! view.has( e ) ) {", "why": "a loop's repeated card is a panel child" },
+ { "file": "lib/skeleton-panel-rules.mjs", "find": "if ( ! scope?.headerDisclosure ||", "replace": "if ( ! scope ||", "why": "any surface with a record is a header disclosure" },
+ { "file": "lib/skeleton-panel-rules.mjs", "find": "|| ! within( parent, topRow() ) ) {", "replace": ") {", "why": "an icon run outside the top row" },
+ { "file": "lib/skeleton-panel-rules.mjs", "find": "return span.length >= need ? span : [];", "replace": "return span.length >= 1 ? span : [];", "why": "one icon is a run" },
+ { "file": "lib/skeleton-panel-rules.mjs", "find": "brandOwnsAddress( b, k.attrs?.href || '' )", "replace": "true", "why": "any icon link is a Site Info link" },
+ { "file": "lib/skeleton-panel-rules.mjs", "find": "'0' === String( st[ 'flex-shrink' ] ?? '' ).trim()", "replace": "'1' === String( st[ 'flex-shrink' ] ?? '' ).trim()", "why": "a box that shrinks is fixed" },
+ { "file": "lib/skeleton-record.mjs", "find": "[ 'menu', 'panel' ].includes( s.kind )", "replace": "[ 'menu', 'panel', 'accordion' ].includes( s.kind )", "why": "an accordion is a disclosure panel" },
+ { "file": "lib/skeleton-record.mjs", "find": "( !! openedBy || control )", "replace": "true", "why": "a panel with no opener qualifies" },
+ { "file": "lib/skeleton-record.mjs", "find": "return null == text ? null : String( text );", "replace": "return null == rendered ? null : String( rendered );", "why": "attributes read from the render, not the record" },
+ { "file": "lib/skeleton-record.mjs", "find": "length: Number( rep[ 1 ] )", "replace": "length: 1", "why": "repeat() not expanded" },
+ { "file": "lib/skeleton-record.mjs", "find": "if ( bound.some( ( p ) => /^(?:background|border|box-shadow)/.test( p ) ) ) {", "replace": "if ( false ) {", "why": "a style-bound background is not paint" },
+ { "file": "lib/skeleton-rules.mjs", "find": "R.marqueeCodeItems && built && (", "replace": "R.marqueeCodeItems && (", "why": "a strip with no code-built text qualifies" },
+ { "file": "lib/skeleton-rules.mjs", "find": "( loops( e ) || motion.has( `${ e.template }/${ e.tpl }` ) )", "replace": "true", "why": "a strip that does not loop qualifies" },
+ { "file": "lib/skeleton-rules.mjs", "find": ".indexOf( e ) > 0;", "replace": ".indexOf( e ) > -1;", "why": "a first-child wrapper keeps its margin" },
+ { "file": "lib/skeleton-rules.mjs", "find": "String( view.attr( e, 'required' ) ?? 'unset' ).trim()", "replace": "'unset'", "why": "required not read from the record" },
+ { "file": "lib/skeleton-rules.mjs", "find": "const disclosure = ( e ) => null != view.attr( e, 'aria-expanded' ) || null != view.attr( e, 'aria-pressed' ) ||", "replace": "const disclosure = ( e ) => false ||", "why": "aria state not read from the record" }
+]

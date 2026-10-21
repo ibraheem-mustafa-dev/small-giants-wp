@@ -10,20 +10,28 @@ import { inventoryModel } from './skeleton-model.mjs';
 import { makeClassifier, overrideFor, finish, W } from './skeleton-classify.mjs';
 import { isMarker } from './skeleton-rules.mjs';
 import { childSlots, collapsePoint } from './skeleton-child-slots.mjs';
+import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 
 const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks || [] ), 0 );
 
 // o: { inventory, facts, surface, surfaceKind, surfaceName, built (the client's own built post for this surface, from
 // sites/<client>/build/skeleton/built-surfaces.json), motion (template keys whose own animation loops a translate), clientDecisions, picks ({ key: decision }), calKeys (slug ->
 // calibration element keys), calSettings (slug -> the calibration's settings with their slots), states (the surface's handoff
-// record states: name, how_to_reach, sc_if_tpl_ids), thresholds (the width thresholds the draft's code uses), db }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, built = null, motion = new Set(), clientDecisions = {}, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null } ) {
+// record states: name, how_to_reach, sc_if_tpl_ids), thresholds (the width thresholds the draft's code uses), db, openers (surface id to its surfaces.json opened_by words, read from the handoff folder when omitted), factRecord (the
+// client's fact record, lib/fact-record.mjs: loaded from `facts.client` when omitted, none when the client has no record) }.
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, built = null, motion = new Set(), clientDecisions = {}, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined } ) {
 	const m = inventoryModel( inventory );
 	const { composition, capsOf, enumOf } = facts;
 	const minLinks = facts.decisions.structural?.linkList?.minLinks ?? 2;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
 	const rowOf = {};
-	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName }, motion, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
+	// The fact record's reading of the template (lib/skeleton-record.mjs), and the surface it places this proposal in: its
+	// parent, kind and opener from `surfaces.json`, and the records whose parent is this surface (`surfaceParts`).
+	const factRecord = undefined === given ? recordFor( facts ) : given;
+	const view = recordView( factRecord, { openers: openers ?? ( factRecord ? openersFor( facts ) : {} ) } );
+	const scope = factRecord ? surfaceContext( view, { kind: surfaceKind, name: surfaceName } ) : null;
+	m.els.forEach( ( e ) => view.checkParent( e, m.byKey[ e.parentKey ] ) );
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName }, motion, view, scope, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
 	const record = ( e, r, extra = {} ) => {
@@ -80,7 +88,8 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// A bullet row that is not a link: a marker (rules.dotMarker) beside one piece of text and nothing else.
 	const markerRow = ( e ) => {
 		const kids = m.blockKids( e );
-		return 'a' !== e.tag && ! m.words( e ) && kids.some( ( k ) => isMarker( k, m, R.dotMarker ) ) && 1 === kids.filter( ( k ) => ! isMarker( k, m, R.dotMarker ) ).length && kids.every( ( k ) => isMarker( k, m, R.dotMarker ) || ( m.words( k ) && ! m.blockKids( k ).length ) );
+		const marker = ( k ) => isMarker( k, m, R.dotMarker, view );
+		return 'a' !== e.tag && ! m.words( e ) && kids.some( marker ) && 1 === kids.filter( ( k ) => ! marker( k ) ).length && kids.every( ( k ) => marker( k ) || ( m.words( k ) && ! m.blockKids( k ).length ) );
 	};
 	// A run of list links: stacked one above the next, or every child of a grid (a list laid out in columns).
 	const linkRun = ( list, i, parent = null ) => {
@@ -100,10 +109,14 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const out = [];
 		for ( let i = 0; i < list.length; ) {
 			const brand = typedBrandRun( list, i );
-			const run = brand ? [] : linkRun( list, i, e );
+			const icons = brand ? [] : cls.iconRun( list, i, e );
+			const run = brand || icons.length ? [] : linkRun( list, i, e );
 			if ( brand ) {
 				out.push( { type: 'brand', els: brand } );
 				i += brand.length;
+			} else if ( icons.length ) {
+				out.push( { type: 'icons', els: icons, parent: e } );
+				i += icons.length;
 			} else if ( run.length ) {
 				out.push( { type: 'list', els: run } );
 				i += run.length;
@@ -124,6 +137,31 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		node.handover = [ logoHandover ];
 		record( first, r, { unit: 'brand', note: `typed brand name "${ els.map( m.words ).join( ' ' ) }" is the logo block` } );
 		rest.forEach( ( e ) => record( e, { action: 'absorbed', reason: `part of the typed brand name; the logo block carries it`, confidence: r.confidence, candidates: [] }, { into: first.key } ) );
+		return node;
+	}
+
+	// A run of icon-only Site Info links in a drawer's top row (rule drawerIconRun): one social icons group on the first link,
+	// the others absorbed into it. Fill generates the group's icons from the Site Info row; the icons are resolved inside the
+	// links' parent in the root's own template, and the group is the drawer's `icons` top-row slot (chromeSlotType icons).
+	function buildIcons( els, parent ) {
+		const D = R.drawerIconRun;
+		const [ first, ...rest ] = els;
+		const slugs = els.map( ( l ) => cls.siteInfoBrand( l ).slug );
+		const node = base( first, D.block, {} );
+		node.siteInfoRow = slugs;
+		const root = m.root;
+		if ( parent.template === root.template && els.every( ( l ) => l.template === root.template ) ) {
+			const sel = ( x ) => `[data-dc-tpl="${ x.tpl }"]`;
+			node.draftRef = `${ root.tag }${ sel( root ) } ${ sel( parent ) }`;
+			node.childRefs = Object.fromEntries( els.map( ( l, i ) => [ slugs[ i ], sel( l ) ] ) );
+		}
+		const targets = [ ...new Set( els.map( ( l ) => l.attrs?.target ).filter( Boolean ) ) ];
+		1 === targets.length && ( node.childAttributes = { linkTarget: targets[ 0 ] } );
+		node.handover = [ { owner: 'site-info', kind: 'presence', detail: D.handover } ];
+		const why = { rule: 'drawerIconRun', source: 'rule drawerIconRun', reason: D.reason, confidence: 1 };
+		const hit = { block: D.block, score: 1, share: 1, evidence: [ { text: `rule drawerIconRun: ${ D.reason }` } ] };
+		record( first, { ...why, candidates: [ hit ] }, { unit: 'icons', slot: D.slot, rowNote: `icons generated by Fill from siteInfoRow ${ JSON.stringify( slugs ) }; ${ D.slot.attribute } ${ D.slot.value } on ${ D.slot.block }` } );
+		rest.forEach( ( l ) => record( l, { ...why, action: 'absorbed', into: first.key, reason: `part of the drawer's top-row icon group: ${ D.block } draws it from Site Info`, candidates: [] } ) );
 		return node;
 	}
 
@@ -303,7 +341,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	}
 
 	function buildChildren( e, parentBlock ) {
-		return unitsOf( e ).flatMap( ( u ) => ( 'brand' === u.type ? buildBrand( u.els ) : 'list' === u.type ? buildList( u.els ) : buildNode( u.els[ 0 ], parentBlock ) ) ).filter( Boolean );
+		return unitsOf( e ).flatMap( ( u ) => ( 'brand' === u.type ? buildBrand( u.els ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els ) : buildNode( u.els[ 0 ], parentBlock ) ) ).filter( Boolean );
 	}
 
 	const rootNode = buildNode( m.root, null );
@@ -312,7 +350,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	built && R.clientBuiltSurface && rows.forEach( ( x ) => Object.assign( x, { rule: 'clientBuiltSurface', builtPost: built, low: false }, 'unresolved' === x.action ? { action: null } : {} ) );
 	const problems = [ ...skeletonProblems( skeleton ), ...( db ? lintSkeleton( skeleton, db ) : [] ) ];
 	const proposal = {
-		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName,
+		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], recordDisagreements: view.disagreements,
 		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W, ...( built ? { builtPost: built } : {} ),
 		counts: { inventoryElements: m.els.length, parts: m.els.filter( m.isPart ).length, rows: rows.length, skeletonNodes: count( skeleton ), expandedNodes: count( expandSiteInfoRows( skeleton ) ), low: rows.filter( ( r ) => r.low && ! r.action ).length, removed: rows.filter( ( r ) => [ 'remove', 'absorbed', 'unwrap' ].includes( r.action ) ).length, unresolved: rows.filter( ( r ) => 'unresolved' === r.action ).length, byRule: rows.reduce( ( o, r ) => ( r.rule ? { ...o, [ r.rule ]: ( o[ r.rule ] || 0 ) + 1 } : o ), {} ) },
 		problems, rows,
