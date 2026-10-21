@@ -8,7 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openDb } from '../lib/db.mjs';
-import { proposeSurface } from '../skeleton.mjs';
+import { proposeSurface, reviewSurface, main } from '../skeleton.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { servedKey, servedMotion, isServedInventory } from '../lib/key-space.mjs';
 
@@ -73,6 +73,21 @@ test( 'a served inventory applies decisions saved in intake space; an import cha
 	assert.deepEqual( Object.keys( seen[ 0 ].clientDecisions.surfaces[ 'site-footer' ] ), [ 'Root/848#0', chain ] );
 	const real = proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db } );
 	assert.equal( real.proposal.rows.find( ( r ) => 'Root/848#0' === r.key ).source, 'client decision' );
+	f.done();
+} );
+
+test( 'the review shows a decision saved under the intake slug in intake key space, for a served inventory', () => {
+	const marker = 'sgs/review-marker-block';
+	const f = fixture( { decisions: { surfaces: { 'site-footer': { [ `${ ROOT }/848#0` ]: { block: marker } } } } } );
+	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( [] ) } );
+	assert.ok( reviewSurface( { client: CLIENT, surface: 'footer', repo: f.repo } ).includes( marker ) );
+	f.done();
+} );
+
+test( 'decide refuses without an intakeSurface, as propose does', async () => {
+	const f = fixture( { entry: { site: 'x' } } );
+	await assert.rejects( () => main( [ 'decide', '--client', CLIENT, '--surface', 'footer', '--key', 'Root/848#0', '--block', 'sgs/heading' ], { repo: f.repo } ), /no intakeSurface/ );
+	assert.equal( fs.readFileSync( path.join( f.repo, 'sites', CLIENT, 'build', 'skeleton', 'decisions.json' ), 'utf8' ), '{"surfaces":{}}' );
 	f.done();
 } );
 

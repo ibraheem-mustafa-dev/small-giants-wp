@@ -70,16 +70,32 @@ export function intakeContext( { client, surface, repo = REPO } ) {
 	return { slug, kind: entry.kind, name: entry.name, built: built[ entry.id ] || built[ slug ] || null, rootComponent: entry.inventory?.checks?.rootName || null, motion: loopingKeys( intake.inventory?.animations ) };
 }
 
+// The intake context and the saved client decisions of a surface as propose and review read them: decisions under the intake
+// slug, and for a served inventory their root-host keys in the served space.
+export function surfaceDecisions( { client, surface, repo = REPO, inventory, file } ) {
+	const ctx = intakeContext( { client, surface, repo } );
+	const saved = readDecisions( file );
+	const served = isServedInventory( inventory );
+	const clientDecisions = served ? { ...saved, surfaces: { ...saved.surfaces, [ ctx.slug ]: servedDecisions( saved.surfaces?.[ ctx.slug ], ctx.rootComponent ) } } : saved;
+	return { ctx, saved, served, clientDecisions };
+}
+
+// The review table's html for a surface, from the files on disk.
+export function reviewSurface( { client, surface, repo = REPO } ) {
+	const p = skeletonPaths( { client, surface, repo } );
+	const proposal = JSON.parse( fs.readFileSync( p.proposal, 'utf8' ) );
+	const inventory = JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) );
+	const { ctx, clientDecisions } = surfaceDecisions( { client, surface, repo, inventory, file: p.decisions } );
+	return reviewHtml( { inventory, proposal, surface: ctx.slug, clientDecisions, picks: readPicks( p.picks ) } );
+}
+
 // Runs propose from the files on disk and writes <surface>.skeleton.json and <surface>.proposal.json. Returns the result.
 // A served inventory (`Root/…` keys) is proposed with the decisions and motion keys written in intake's space rewritten
 // to its root (lib/key-space.mjs).
 export function proposeSurface( { client, surface, repo = REPO, siteName = null, db = openDb(), propose = proposeSkeleton } ) {
 	const p = skeletonPaths( { client, surface, repo } );
-	const ctx = intakeContext( { client, surface, repo } );
 	const inventory = JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) );
-	const saved = readDecisions( p.decisions );
-	const served = isServedInventory( inventory );
-	const clientDecisions = served ? { ...saved, surfaces: { ...saved.surfaces, [ ctx.slug ]: servedDecisions( saved.surfaces?.[ ctx.slug ], ctx.rootComponent ) } } : saved;
+	const { ctx, saved, served, clientDecisions } = surfaceDecisions( { client, surface, repo, inventory, file: p.decisions } );
 	const facts = loadFacts( { db, client, repo, siteName: siteName || saved.siteName || null } );
 	const bad = decisionsProblems( facts );
 	if ( bad.length ) {
@@ -123,9 +139,7 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 		r.problems.forEach( ( x ) => log( ` - ${ x }` ) );
 		process.exitCode = r.problems.length ? 1 : 0;
 	} else if ( 'review' === cmd ) {
-		const proposal = JSON.parse( fs.readFileSync( p.proposal, 'utf8' ) );
-		const inventory = JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) );
-		write( p.review, reviewHtml( { inventory, proposal, surface, clientDecisions: readDecisions( p.decisions ), picks: readPicks( p.picks ) } ) );
+		write( p.review, reviewSurface( { client, surface, repo } ) );
 		log( `review ${ surface }: ${ p.review }` );
 	} else if ( 'finalise' === cmd ) {
 		const proposal = JSON.parse( fs.readFileSync( p.proposal, 'utf8' ) );
@@ -159,7 +173,7 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 				throw new Error( `${ block } is not in the framework database` );
 			}
 		}
-		recordDecision( { file: p.decisions, surface: readSurface( repo, client, surface ).intakeSurface || surface, element, choice: argv.includes( '--remove' ) ? { remove: true } : { block, attributes: flag( '--attrs' ) ? JSON.parse( flag( '--attrs' ) ) : undefined }, reason: flag( '--reason' ) } );
+		recordDecision( { file: p.decisions, surface: intakeContext( { client, surface, repo } ).slug, element, choice: argv.includes( '--remove' ) ? { remove: true } : { block, attributes: flag( '--attrs' ) ? JSON.parse( flag( '--attrs' ) ) : undefined }, reason: flag( '--reason' ) } );
 		log( `decided ${ key }: ${ argv.includes( '--remove' ) ? 'remove' : block }. Run propose and review again.` );
 	}
 }
