@@ -722,8 +722,8 @@
     "draftElement": "<div> \"Our Brands\"",
     "reviewMdProposed": "block:sgs/label",
     "proposedBlock": "sgs/label",
-    "approvedBlock": "sgs/text (hidden on tablet and mobile)",
-    "correction": "Matches existing build (small grey text hidden below desktop). The drawer-copy content notes in batch 3 later say to un-hide 'Our Brands' on mobile/tablet in post 4440.",
+    "approvedBlock": "sgs/label (hidden on tablet and mobile)",
+    "correction": "Matches existing build (small grey text hidden below desktop). The drawer-copy content notes in batch 3 later say to un-hide 'Our Brands' on mobile/tablet in post 4440. Bean revised it to sgs/label: an eyebrow (small capitals, wide tracking, two words) is a label, as its twin \"Since 1962\" (80#0) is.",
     "beanQuote": "We've already built these mega menus in our CPT mega menu setup. || Tbh, I'm not really sure about the brands logo container being used instead of the sgs gallery block but the gallery block most likely needs updating || Do the gallery block upgrade, get all the builds queued up going",
     "approvalBasis": "inferred: no standalone 'approve batch 2' message. Bean redirected to the existing CPT mega-menu builds (2273), questioned the brand logo container in favour of sgs/gallery (2313), then said 'Do the gallery block upgrade' (2414). Final = the revised table (assistant message 2309) with brand logos on sgs/gallery (assistant message 2342, plan item 5)."
    },
