@@ -10,7 +10,11 @@ const PROVIDES = { sgs_header: () => [ 'core/template-part:header' ], sgs_footer
 const words = ( s ) => String( s ).replace( /([a-z0-9])([A-Z])/g, '$1 $2' ).toLowerCase().split( /[^a-z0-9]+/ ).filter( Boolean );
 const norm = ( s ) => String( s ?? '' ).toLowerCase().trim();
 
+// The manifest key of a row. A slug is lowercase letters, digits and hyphens: it becomes a file name and a path segment.
 export function surfaceKey( row ) {
+	if ( 'string' !== typeof row.slug || ! /^[a-z0-9][a-z0-9-]*$/.test( row.slug ) ) {
+		throw new Error( `page-map row ${ row.postType }:${ row.slug } has no usable slug (lowercase letters, digits and hyphens, starting with a letter or digit)` );
+	}
 	const prefix = PREFIXES[ row.postType ] || '';
 	return row.slug.startsWith( prefix ) ? row.slug : `${ prefix }${ row.slug }`;
 }
@@ -59,6 +63,7 @@ export function matchRecord( row, records ) {
 // with one key kept; no state left gives { resting: null }.
 export function statesOf( record, vocab ) {
 	const out = { states: {}, pointer: [], dropped: [] };
+	const seen = new Map();
 	const openable = OPENABLE.includes( record.kind );
 	for ( const s of record.states || [] ) {
 		const have = new Set( words( s.name ) );
@@ -68,10 +73,14 @@ export function statesOf( record, vocab ) {
 			out.dropped.push( s.name );
 		} else {
 			const key = walkerKey( s.name );
-			key && ! ( key in out.states ) && ( out.states[ key ] = settingState( s, vocab ) );
+			if ( ! key ) {
+				out.dropped.push( s.name );
+			} else if ( ! seen.has( key ) ) {
+				seen.set( key, settingState( s, vocab ) );
+			}
 		}
 	}
-	Object.keys( out.states ).length || ( out.states = { resting: null } );
+	out.states = seen.size ? Object.fromEntries( seen ) : { resting: null };
 	return out;
 }
 
@@ -87,8 +96,12 @@ const nameSet = ( record ) => [ ...new Set( ( record.states || [] ).map( ( s ) =
 // Builds the manifest. `target` is the calibration target ({ envFile, envKey }), `entryFile` the draft's entry file.
 // Returns { entries, unresolved, unmatched, pointer, dropped, disagree, skipped, added }; throws when two rows give one key.
 export function buildManifest( { client, site, rows, records, intake = null, target, entryFile, vocab = [], existing = {} } ) {
+	const isPlain = ( v ) => null !== v && 'object' === typeof v && ! Array.isArray( v );
+	if ( ! isPlain( existing ) || Object.values( existing ).some( ( v ) => ! isPlain( v ) ) ) {
+		throw new Error( 'the existing surfaces.json is not an object of entry objects' );
+	}
 	const entries = {};
-	const owner = {};
+	const owner = new Map();
 	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {} };
 	for ( const row of rows ) {
 		if ( null == row.id ) {
@@ -96,10 +109,14 @@ export function buildManifest( { client, site, rows, records, intake = null, tar
 			continue;
 		}
 		const key = surfaceKey( row );
-		if ( key in owner ) {
-			throw new Error( `page-map rows ${ owner[ key ] } and ${ row.postType }:${ row.slug } both give the key ${ key }` );
+		if ( owner.has( key ) ) {
+			throw new Error( `page-map rows ${ owner.get( key ) } and ${ row.postType }:${ row.slug } both give the key ${ key }` );
 		}
-		owner[ key ] = `${ row.postType }:${ row.slug }`;
+		owner.set( key, `${ row.postType }:${ row.slug }` );
+		const have = Object.hasOwn( existing, key ) ? existing[ key ] : null;
+		// A hand-set `states` is kept as it is, so the generated states' listings stay out of the run.
+		const handSet = !! have && Object.hasOwn( have, 'states' );
+		const mine = { unresolved: [], pointer: [], dropped: [], disagree: [] };
 		const match = matchRecord( row, records );
 		let states = { resting: null };
 		if ( ! KINDS[ row.postType ] ) {
@@ -107,14 +124,14 @@ export function buildManifest( { client, site, rows, records, intake = null, tar
 		} else if ( match.record && ( match.record.states || [] ).length ) {
 			const got = statesOf( match.record, vocab );
 			states = got.states;
-			got.pointer.forEach( ( name ) => out.pointer.push( { key, name } ) );
-			got.dropped.forEach( ( name ) => out.dropped.push( { key, name } ) );
+			got.pointer.forEach( ( name ) => mine.pointer.push( { key, name } ) );
+			got.dropped.forEach( ( name ) => mine.dropped.push( { key, name } ) );
 			const theirs = intakeRecord( row, intake );
 			if ( theirs && nameSet( theirs ).join( '\n' ) !== nameSet( match.record ).join( '\n' ) ) {
-				out.disagree.push( { key, handoff: nameSet( match.record ), intake: nameSet( theirs ) } );
+				mine.disagree.push( { key, handoff: nameSet( match.record ), intake: nameSet( theirs ) } );
 			}
 		} else {
-			out.unresolved.push( { key, reason: 'states-unresolved', why: match.reason || `record ${ match.record.id } has no states` } );
+			mine.unresolved.push( { key, reason: 'states-unresolved', why: match.reason || `record ${ match.record.id } has no states` } );
 		}
 		const entry = {
 			tree: `${ key }.tree.json`,
@@ -130,9 +147,11 @@ export function buildManifest( { client, site, rows, records, intake = null, tar
 			states,
 			...( PROVIDES[ row.postType ] ? { provides: PROVIDES[ row.postType ]( row ) } : {} ),
 		};
-		const have = existing[ key ];
+		if ( ! handSet ) {
+			Object.keys( mine ).forEach( ( list ) => out[ list ].push( ...mine[ list ] ) );
+		}
 		if ( have ) {
-			const added = Object.keys( entry ).filter( ( f ) => ! ( f in have ) );
+			const added = Object.keys( entry ).filter( ( f ) => ! Object.hasOwn( have, f ) );
 			added.length && ( out.added[ key ] = added );
 			entries[ key ] = { ...entry, ...have };
 		} else {

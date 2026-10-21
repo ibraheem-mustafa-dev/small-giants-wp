@@ -6,9 +6,10 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { buildManifest, matchRecord, surfaceKey, walkerKey } from '../lib/manifest-build.mjs';
+import { DatabaseSync } from 'node:sqlite';
+import { buildManifest, matchRecord, statesOf, surfaceKey, walkerKey } from '../lib/manifest-build.mjs';
 
-const vocab = [ { state: 'open', kind: 'class', token: '--open' }, { state: 'current', kind: 'class', token: '--current' }, { state: 'active', kind: 'class', token: '--active' }, { state: 'scrolled', kind: 'class', token: '--scrolled' }, { state: 'hover', kind: 'pseudo-class', token: ':hover' } ];
+const vocab = [ { state: 'open', kind: 'class', token: '--open' }, { state: 'current', kind: 'class', token: '--current' }, { state: 'active', kind: 'class', token: '--active' }, { state: 'scrolled', kind: 'class', token: '--scrolled' }, { state: 'shrunk', kind: 'class', token: '--shrunk' }, { state: 'hover', kind: 'pseudo-class', token: ':hover' } ];
 const target = { envFile: '.claude/secrets/x.env', envKey: 'X' };
 const run = ( rows, records = [], extra = {} ) => buildManifest( { client: 'acme', site: 'x-test', rows, records, target, entryFile: 'Site.dc.html', vocab, ...extra } );
 const row = ( postType, slug, id = 1, extra = {} ) => ( { postType, slug, title: slug, id, route: 'page' === postType ? slug : undefined, ...extra } );
@@ -123,8 +124,8 @@ test( "a drawer's closed and closing states are dropped and listed; none open fa
 } );
 
 test( 'two states with one key keep the first', () => {
-	const records = [ rec( 'S-1', 'header', 'H', [ { name: 'scrolled (a)', state_keys: {} }, { name: 'scrolled (b)', state_keys: {} } ] ) ];
-	assert.deepEqual( run( [ row( 'sgs_header', 'header' ) ], records ).entries.header.states, { scrolled: 'scrolled' } );
+	const records = [ rec( 'S-1', 'header', 'H', [ { name: 'edge', state_keys: {} }, { name: 'edge (scrolled)', state_keys: {} } ] ) ];
+	assert.deepEqual( run( [ row( 'sgs_header', 'header' ) ], records ).entries.header.states, { edge: null } );
 } );
 
 test( 'a record with no states and an unmatched row get resting and are listed', () => {
@@ -144,27 +145,172 @@ test( 'intake with different state names is listed and changes nothing', () => {
 	assert.equal( run( [ row( 'sgs_header', 'header' ) ], records, { intake: same } ).disagree.length, 0 );
 } );
 
-test( 'the command prints without --apply, writes with --apply and keeps a rerun stable', () => {
+
+test( 'focus and active are pointer words; shrunk is a page look; a look absent from the vocabulary gives null', () => {
+	const records = [ rec( 'S-1', 'header', 'H', [ { name: 'field focus', state_keys: {} }, { name: 'pressed active', state_keys: {} }, { name: 'shrunk', state_keys: {} } ] ) ];
+	const out = run( [ row( 'sgs_header', 'header' ) ], records );
+	assert.deepEqual( out.entries.header.states, { shrunk: 'shrunk' } );
+	assert.deepEqual( out.pointer.map( ( p ) => p.name ), [ 'field focus', 'pressed active' ] );
+	const bare = run( [ row( 'sgs_header', 'header' ) ], records, { vocab: vocab.filter( ( v ) => 'shrunk' !== v.state ) } );
+	assert.deepEqual( bare.entries.header.states, { shrunk: null } );
+} );
+
+test( 'an accordion keeps its expanded states only; a state whose key slugs to nothing is listed as dropped', () => {
+	const acc = statesOf( rec( 'S-1', 'accordion', 'A', [ { name: 'collapsed' }, { name: 'expanded' } ] ), vocab );
+	assert.deepEqual( acc.states, { expanded: null } );
+	assert.deepEqual( acc.dropped, [ 'collapsed' ] );
+	const empty = statesOf( rec( 'S-1', 'header', 'H', [ { name: '---' }, { name: 'scrolled' } ] ), vocab );
+	assert.deepEqual( empty.dropped, [ '---' ] );
+	assert.deepEqual( empty.states, { scrolled: 'scrolled' } );
+} );
+
+test( 'prototype-named slugs and states are plain data, not duplicates or existing entries', () => {
+	const records = [ rec( 'S-1', 'header', 'H', [ { name: 'constructor' }, { name: 'toString' } ] ) ];
+	const out = run( [ row( 'page', 'constructor', 1 ), row( 'page', 'valueof', 2 ), row( 'sgs_header', 'header', 3 ) ], records );
+	assert.deepEqual( Object.keys( out.entries ), [ 'constructor', 'valueof', 'header' ] );
+	assert.deepEqual( out.added, {} );
+	assert.deepEqual( Object.keys( out.entries.header.states ), [ 'constructor', 'tostring' ] );
+} );
+
+test( 'a slug that is empty, missing, a path or upper case is a named error', () => {
+	for ( const slug of [ '', undefined, '../x', 'Up', 'a/b', '-x' ] ) {
+		assert.throws( () => run( [ { postType: 'page', slug, id: 1 } ] ), /page-map row page:.* has no usable slug/, String( slug ) );
+	}
+	assert.doesNotThrow( () => run( [ row( 'page', 'ok-1', 1 ) ] ) );
+	assert.doesNotThrow( () => run( [ { postType: 'page', slug: '', id: null } ] ) );
+} );
+
+test( 'a key whose existing entry has states lists none of the generated states and is not counted', () => {
+	const records = [ rec( 'S-1', 'menu', 'M', [ { name: 'link hover' }, { name: 'closed' } ] ), rec( 'S-2', 'menu', 'N', [ { name: 'open' } ] ) ];
+	const rows = [ row( 'sgs_mega_menu', 'm', 1, { title: 'M' } ), row( 'sgs_mega_menu', 'z', 2, { title: 'Z' } ) ];
+	const free = run( rows, records );
+	assert.ok( free.pointer.length && free.dropped.length && free.unresolved.length );
+	const held = run( rows, records, { existing: { 'mega-m': { states: { open: null } }, 'mega-z': { states: { open: null } } } } );
+	assert.deepEqual( [ held.pointer, held.dropped, held.unresolved, held.disagree ], [ [], [], [], [] ] );
+	assert.deepEqual( held.entries[ 'mega-m' ].states, { open: null } );
+} );
+
+test( 'an existing surfaces.json that is not an object of entries is a named error', () => {
+	for ( const existing of [ [], null, 'x', { a: 1 }, { a: [] } ] ) {
+		assert.throws( () => run( [ row( 'page', 'a', 1 ) ], [], { existing } ), /existing surfaces\.json is not an object of entry objects/ );
+	}
+} );
+
+// A temp repo for the command: sites/acme with a page map, handoff surfaces and MANIFEST.json. `go` runs manifest.mjs.
+const CMD = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'manifest.mjs' );
+function fixture( { rows = [ row( 'page', 'home', 4 ) ], records = [ rec( 'S-1', 'page', 'Home', undefined, { page_key: 'home' } ) ], drafts = [ 'Site.dc.html' ], manifest = true, pageMapText = null } = {} ) {
 	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'manifest-' ) );
 	const site = path.join( repo, 'sites', 'acme' );
 	fs.mkdirSync( path.join( site, 'build' ), { recursive: true } );
 	fs.mkdirSync( path.join( site, 'handoff' ), { recursive: true } );
-	fs.writeFileSync( path.join( site, 'build', 'page-map.json' ), `${ JSON.stringify( [ row( 'page', 'home', 4 ) ], null, 2 ) }\n` );
-	fs.writeFileSync( path.join( site, 'handoff', 'surfaces.json' ), JSON.stringify( { records: [ rec( 'S-1', 'page', 'Home', undefined, { page_key: 'home' } ) ] } ) );
-	fs.writeFileSync( path.join( site, 'handoff', 'MANIFEST.json' ), JSON.stringify( { entry_drafts: [ 'Site.dc.html' ] } ) );
-	const cmd = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'manifest.mjs' );
-	const go = ( ...more ) => spawnSync( process.execPath, [ cmd, 'acme', '--site', 'indus-test', '--repo', repo, ...more ], { encoding: 'utf8' } );
-	const out = path.join( site, 'build', 'surfaces.json' );
-	const dry = go();
-	assert.equal( dry.status, 0, dry.stdout + dry.stderr );
-	assert.equal( fs.existsSync( out ), false );
-	assert.equal( go( '--apply' ).status, 0 );
-	const first = fs.readFileSync( out, 'utf8' );
+	fs.writeFileSync( path.join( site, 'build', 'page-map.json' ), pageMapText ?? `${ JSON.stringify( rows, null, 2 ) }\n` );
+	fs.writeFileSync( path.join( site, 'handoff', 'surfaces.json' ), JSON.stringify( { records } ) );
+	manifest && fs.writeFileSync( path.join( site, 'handoff', 'MANIFEST.json' ), JSON.stringify( { entry_drafts: drafts } ) );
+	const go = ( ...more ) => spawnSync( process.execPath, [ CMD, 'acme', '--site', 'indus-test', '--repo', repo, ...more ], { encoding: 'utf8' } );
+	const tree = () => fs.readdirSync( repo, { recursive: true } ).sort();
+	return { repo, site, out: path.join( site, 'build', 'surfaces.json' ), go, tree, done: () => fs.rmSync( repo, { recursive: true, force: true } ) };
+}
+const said = ( r ) => `${ r.stdout }${ r.stderr }`;
+
+test( 'the command prints without --apply, writes with --apply, keeps a rerun stable and leaves nothing else behind', () => {
+	const f = fixture();
+	const before = f.tree();
+	assert.equal( f.go().status, 0 );
+	assert.deepEqual( f.tree(), before, 'a dry run writes nothing' );
+	assert.equal( f.go( '--apply' ).status, 0 );
+	const first = fs.readFileSync( f.out, 'utf8' );
 	assert.equal( JSON.parse( first ).home.target.postId, 4 );
-	assert.equal( go( '--apply' ).status, 0 );
-	assert.equal( fs.readFileSync( out, 'utf8' ), first );
-	assert.equal( spawnSync( process.execPath, [ cmd ], { encoding: 'utf8' } ).status, 2 );
-	fs.rmSync( repo, { recursive: true, force: true } );
+	assert.deepEqual( f.tree(), [ ...before, path.join( 'sites', 'acme', 'build', 'surfaces.json' ) ].sort(), 'no .tmp or other file' );
+	assert.equal( f.go( '--apply' ).status, 0 );
+	assert.equal( fs.readFileSync( f.out, 'utf8' ), first );
+	f.done();
+} );
+
+test( 'exit 1 on an unresolved page, header or mega row; --apply still writes; a matched row exits 0', () => {
+	for ( const [ r, kind ] of [ [ row( 'page', 'home', 4 ), 'page' ], [ row( 'sgs_header', 'header', 4 ), 'header' ], [ row( 'sgs_mega_menu', 'm', 4 ), 'menu' ] ] ) {
+		const bad = fixture( { rows: [ r ], records: [] } );
+		const got = bad.go( '--apply' );
+		assert.equal( got.status, 1, kind + said( got ) );
+		assert.equal( fs.existsSync( bad.out ), true, `${ kind }: entries are still written` );
+		bad.done();
+		const good = fixture( { rows: [ r ], records: [ rec( 'S-1', kind, r.title, undefined, { page_key: 'home' } ) ] } );
+		assert.equal( good.go().status, 0, kind );
+		good.done();
+	}
+} );
+
+test( 'a hand-set field survives a rerun through the command', () => {
+	const f = fixture();
+	f.go( '--apply' );
+	const kept = JSON.parse( fs.readFileSync( f.out, 'utf8' ) );
+	kept.home.tree = 'hand.tree.json';
+	kept.other = { tree: 'other.tree.json' };
+	fs.writeFileSync( f.out, JSON.stringify( kept ) );
+	assert.equal( f.go( '--apply' ).status, 0 );
+	const after = JSON.parse( fs.readFileSync( f.out, 'utf8' ) );
+	assert.equal( after.home.tree, 'hand.tree.json' );
+	assert.equal( after.other.tree, 'other.tree.json', 'an entry outside the page map is kept' );
+	assert.equal( after.home.walker, 'qa/parity/home.mjs' );
+	f.done();
+} );
+
+test( 'the command refuses an input it cannot use with exit 2 and writes nothing', () => {
+	const cases = {
+		'no MANIFEST.json': { manifest: false },
+		'two entry files': { drafts: [ 'a.html', 'b.html' ] },
+		'no entry file': { drafts: [] },
+		'a malformed page-map.json': { pageMapText: '{ not json' },
+	};
+	for ( const [ why, opts ] of Object.entries( cases ) ) {
+		const f = fixture( opts );
+		const got = f.go( '--apply' );
+		assert.equal( got.status, 2, why + said( got ) );
+		assert.equal( fs.existsSync( f.out ), false, why );
+		f.done();
+	}
+	const ok = fixture();
+	assert.equal( ok.go().status, 0, 'control' );
+	const unknown = spawnSync( process.execPath, [ CMD, 'acme', '--site', 'no-such-site', '--repo', ok.repo ], { encoding: 'utf8' } );
+	assert.equal( unknown.status, 2 );
+	assert.match( unknown.stderr, /no envFile and envKey for no-such-site/ );
+	ok.done();
+} );
+
+test( 'an empty states table stops the command; a populated one lets it run', () => {
+	const f = fixture();
+	const db = path.join( f.repo, 'vocab.db' );
+	const make = ( withRow ) => {
+		fs.rmSync( db, { force: true } );
+		const w = new DatabaseSync( db );
+		w.exec( 'CREATE TABLE states (id INTEGER PRIMARY KEY, state TEXT, family TEXT, kind TEXT, token TEXT, reach TEXT, call TEXT, note TEXT)' );
+		withRow && w.exec( "INSERT INTO states (state, kind, token) VALUES ('open', 'class', '--open')" );
+		w.close();
+	};
+	const withDb = () => spawnSync( process.execPath, [ CMD, 'acme', '--site', 'indus-test', '--repo', f.repo, '--db', db ], { encoding: 'utf8' } );
+	make( false );
+	const empty = withDb();
+	assert.equal( empty.status, 2, said( empty ) );
+	assert.match( empty.stderr, /states table of the framework DB has no rows/ );
+	make( true );
+	const full = withDb();
+	assert.equal( full.status, 0, said( full ) );
+	f.done();
+} );
+
+test( 'argument errors are usage errors that name the problem', () => {
+	const f = fixture();
+	const run2 = ( ...a ) => spawnSync( process.execPath, [ CMD, ...a ], { encoding: 'utf8' } );
+	let got = run2( 'acme', '--site', '--apply', '--repo', f.repo );
+	assert.equal( got.status, 2 );
+	assert.match( got.stderr, /--site needs a value/ );
+	got = run2( 'acme', 'extra', '--site', 'indus-test', '--repo', f.repo );
+	assert.equal( got.status, 2 );
+	assert.match( got.stderr, /unexpected argument "extra"/ );
+	got = run2( 'acme', '--site', 'indus-test', '--bogus' );
+	assert.match( got.stderr, /unknown option --bogus/ );
+	assert.equal( run2( '--site', 'indus-test' ).status, 2 );
+	assert.equal( run2( 'acme', '--site', 'indus-test', '--repo', f.repo ).status, 0, 'control' );
+	f.done();
 } );
 
 test( 'a form or post row is unmatched and the command still exits 0', () => {
@@ -172,16 +318,8 @@ test( 'a form or post row is unmatched and the command still exits 0', () => {
 	assert.deepEqual( out.entries[ 'form-enquiry' ].states, { resting: null } );
 	assert.equal( out.unmatched.length, 2 );
 	assert.equal( out.unresolved.length, 0 );
-	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'manifest-' ) );
-	const site = path.join( repo, 'sites', 'acme' );
-	fs.mkdirSync( path.join( site, 'build' ), { recursive: true } );
-	fs.mkdirSync( path.join( site, 'handoff' ), { recursive: true } );
-	fs.writeFileSync( path.join( site, 'build', 'page-map.json' ), `${ JSON.stringify( [ row( 'sgs_form', 'enquiry', 8 ) ], null, 2 ) }
-` );
-	fs.writeFileSync( path.join( site, 'handoff', 'surfaces.json' ), JSON.stringify( { records: [] } ) );
-	fs.writeFileSync( path.join( site, 'handoff', 'MANIFEST.json' ), JSON.stringify( { entry_drafts: [ 'Site.dc.html' ] } ) );
-	const cmd = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'manifest.mjs' );
-	const r = spawnSync( process.execPath, [ cmd, 'acme', '--site', 'indus-test', '--repo', repo ], { encoding: 'utf8' } );
-	assert.equal( r.status, 0, r.stdout + r.stderr );
-	fs.rmSync( repo, { recursive: true, force: true } );
+	const f = fixture( { rows: [ row( 'sgs_form', 'enquiry', 8 ) ], records: [] } );
+	const got = f.go();
+	assert.equal( got.status, 0, said( got ) );
+	f.done();
 } );
