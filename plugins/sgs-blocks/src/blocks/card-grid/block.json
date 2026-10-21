@@ -91,6 +91,26 @@
         "imagePadding": [ "imagePadding" ]
       },
       "elements": {
+        "page-button": {
+          "selector": ".sgs-card-grid__page-btn",
+          "label": "Pagination page button",
+          "order": 10,
+          "clusters": [
+            "text"
+          ],
+          "prefix": "pageButton",
+          "attrMap": {
+            "css:-webkit-text-stroke-width": "pageButtonTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "pageButtonTextStrokeColour"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:-webkit-text-stroke-color": "pageButtonTextStrokeColourHover"
+              }
+            }
+          }
+        },
         "grid": {
           "label": "Grid",
           "layer": "OUTER",

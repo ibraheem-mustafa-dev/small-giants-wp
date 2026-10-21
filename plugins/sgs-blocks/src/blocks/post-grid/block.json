@@ -63,6 +63,66 @@
         }
       ],
       "elements": {
+        "page-button": {
+          "selector": ".sgs-post-grid__page-btn",
+          "label": "Pagination page button",
+          "order": 10,
+          "clusters": [
+            "text"
+          ],
+          "prefix": "pageButton",
+          "attrMap": {
+            "css:-webkit-text-stroke-width": "pageButtonTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "pageButtonTextStrokeColour"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:-webkit-text-stroke-color": "pageButtonTextStrokeColourHover"
+              }
+            }
+          }
+        },
+        "load-more": {
+          "selector": ".sgs-post-grid__load-more",
+          "label": "Load more button",
+          "order": 11,
+          "clusters": [
+            "text"
+          ],
+          "prefix": "loadMore",
+          "attrMap": {
+            "css:-webkit-text-stroke-width": "loadMoreTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "loadMoreTextStrokeColour"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:-webkit-text-stroke-color": "loadMoreTextStrokeColourHover"
+              }
+            }
+          }
+        },
+        "badge": {
+          "selector": ".sgs-post-grid__badge",
+          "label": "Badge",
+          "order": 12,
+          "clusters": [
+            "text"
+          ],
+          "prefix": "badge",
+          "attrMap": {
+            "css:-webkit-text-stroke-width": "badgeTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "badgeTextStrokeColour"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:-webkit-text-stroke-color": "badgeTextStrokeColourHover"
+              }
+            }
+          }
+        },
         "grid": {
           "label": "Grid",
           "layer": "OUTER",

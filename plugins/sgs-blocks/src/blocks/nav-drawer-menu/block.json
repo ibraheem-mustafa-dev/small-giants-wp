@@ -85,6 +85,26 @@
 			"collection": true,
 			"headerEssential": true,
 			"elements": {
+				"drill-back": {
+					"selector": ".sgs-nav-drawer-menu__drill-back-btn",
+					"label": "Drill-down back button",
+					"order": 14.6,
+					"clusters": [
+						"text"
+					],
+					"prefix": "drillBack",
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "drillBackTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "drillBackTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "drillBackTextStrokeColourHover"
+							}
+						}
+					}
+				},
 				"wrapper": {
 					"label": "Nav wrapper",
 					"layer": "OUTER",

@@ -58,6 +58,26 @@
 				]
 			},
 			"elements": {
+				"video-time": {
+					"selector": ".sgs-video__time",
+					"label": "Video time readout",
+					"order": 3,
+					"clusters": [
+						"text"
+					],
+					"prefix": "videoTime",
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "videoTimeTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "videoTimeTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "videoTimeTextStrokeColourHover"
+							}
+						}
+					}
+				},
 				"media": {
 					"label": "Media",
 					"order": 1,
