@@ -476,6 +476,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// the chips' handlers write.
 	const narrowsList = ( chip ) => {
 		const t = view.entry( chip )?.template;
+		if ( ! t ) {
+			return false;
+		}
 		const own = /^\{\{\s*([\w$]+)\s*\}\}$/.exec( t?.membership.scFor[ 0 ]?.list ?? '' )?.[ 1 ];
 		if ( ! facts.repo || ! facts.client ) {
 			return false;

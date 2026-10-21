@@ -115,7 +115,7 @@ function logoRepo( { hashOf = ( s ) => sha( s ), extra = [] } = {} ) {
 	fs.writeFileSync( path.join( repo, 'sites', 'c', 'build', 'media-map.json' ), JSON.stringify( { sites: { t: { files } } } ) );
 	return repo;
 }
-const logoEl = ( variant ) => ( { key: 'Root/1#0', tag: 'x-logo', attrs: { 'aria-label': 'Logo' }, snippet: `<x-logo variant="${ variant }" aria-label="Logo"></x-logo>` } );
+const logoEl = ( variant ) => ( { key: 'Root/1#0', tag: 'x-logo', attrs: { 'aria-label': 'Logo', variant } } );
 
 test( 'MUST FAIL: a custom logo element takes the attachment of the file its script names for its variant, chosen by local sha256', () => {
 	const repo = logoRepo();
@@ -170,13 +170,13 @@ test( 'MUST FAIL: a carried logoId reaches the logo node and the row names where
 	assert.equal( undefined, logoNode( propose() ).attributes.logoId );
 } );
 
-test( 'MUST FAIL: a decision value that differs from the carried one stays and is reported; an equal one is silent', () => {
+test( 'MUST FAIL: a carried id wins over a differing decision value, which is reported and never applied; an equal one is silent', () => {
 	const key = logoRow( propose() ).key;
 	const decide = ( id ) => ( { surfaces: { footer: { [ key ]: { block: 'sgs/responsive-logo', attributes: { logoId: id }, signature: logoRow( propose() ).tag + '|' + logoRow( propose() ).words } } } } );
 	const carried = { logo: () => ( { id: 81, asset: 'a.svg' } ), menu: () => null };
 	const differs = propose( { carried, clientDecisions: decide( 6 ) } );
-	assert.equal( logoNode( differs ).attributes.logoId, 6 );
-	assert.match( logoRow( differs ).stale, /sets logoId 6; the build carries 81/ );
+	assert.equal( logoNode( differs ).attributes.logoId, 81 );
+	assert.match( logoRow( differs ).stale, /sets logoId 6, which is not applied; the build carries 81/ );
 	const same = propose( { carried, clientDecisions: decide( 81 ) } );
 	assert.equal( logoNode( same ).attributes.logoId, 81 );
 	assert.ok( ! logoRow( same ).stale );

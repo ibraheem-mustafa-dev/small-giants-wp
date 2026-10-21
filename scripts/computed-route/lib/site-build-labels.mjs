@@ -17,7 +17,11 @@ const stringValues = ( hole ) => {
 	}
 	return [];
 };
+// A bare "#" is a disclosure, never a route.
 const routeOf = ( href, front ) => {
+	if ( '#' === ( href || '' ).trim() ) {
+		return null;
+	}
 	const m = /^#?\/?([^?#]*)$/.exec( href || '' );
 	return m && ! /^[a-z][a-z0-9+.-]*:/i.test( href ) ? ( m[ 1 ].replace( /\/+$/, '' ) || front ) : null;
 };
@@ -38,17 +42,26 @@ export function labelRoutes( drafts, front = 'home' ) {
 	return out;
 }
 
-// { <surface kind>: { <route>: <link text> } } for one client; empty when the facts or the draft are not there.
-export function readLinkText( { repo, client, front = 'home' } ) {
+// The client's build manifest (sites/<client>/build/surfaces.json); {} when the file is absent, an error when it is unreadable.
+export function readSurfaces( repo, client ) {
+	const file = path.join( repo, 'sites', client, 'build', 'surfaces.json' );
+	return fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : {};
+}
+
+// { text: { <surface kind>: { <route>: <link text> } }, conflicts: [ message ] } for one client; empty when the facts or the
+// draft are not there. Two lists on one surface giving one route different text carry no entry (the page title stands in)
+// and are reported, as labelRoutes reports a label with two routes.
+export function readLinkTextReport( { repo, client, front = 'home' } ) {
 	const facts = path.join( repo, 'sites', client, 'build', 'intake', 'facts.json' );
 	const folder = path.join( repo, 'sites', client, 'handoff' );
 	if ( ! fs.existsSync( facts ) || ! fs.existsSync( folder ) ) {
-		return {};
+		return { text: {}, conflicts: [] };
 	}
 	const { elements } = JSON.parse( fs.readFileSync( facts, 'utf8' ) );
 	const files = fs.readdirSync( folder ).filter( ( f ) => f.endsWith( '.dc.html' ) );
 	const routes = labelRoutes( files.map( ( f ) => loadDraft( folder, f ) ), front );
-	const out = {};
+	const seen = {};
+	const clash = new Map();
 	for ( const e of Object.values( elements ) ) {
 		if ( ! e.template?.inFor ) {
 			continue;
@@ -58,11 +71,32 @@ export function readLinkText( { repo, client, front = 'home' } ) {
 		for ( const kind of new Set( ( e.surfaces || [] ).map( ( s ) => s.kind ) ) ) {
 			for ( const label of labels ) {
 				const route = routes.get( label );
-				if ( route ) {
-					out[ kind ] = { ...out[ kind ], [ route ]: out[ kind ]?.[ route ] ?? label };
+				if ( ! route ) {
+					continue;
 				}
+				seen[ kind ] ??= {};
+				const k = `${ kind }\u0000${ route }`;
+				if ( undefined !== seen[ kind ][ route ] && seen[ kind ][ route ] !== label ) {
+					clash.set( k, [ ...new Set( [ ...( clash.get( k ) || [ seen[ kind ][ route ] ] ), label ] ) ] );
+				}
+				seen[ kind ][ route ] ??= label;
 			}
 		}
 	}
-	return out;
+	const text = {};
+	for ( const [ kind, byRoute ] of Object.entries( seen ) ) {
+		for ( const [ route, label ] of Object.entries( byRoute ) ) {
+			if ( ! clash.has( `${ kind }\u0000${ route }` ) ) {
+				text[ kind ] = { ...text[ kind ], [ route ]: label };
+			}
+		}
+	}
+	const conflicts = [ ...clash ].map( ( [ k, v ] ) => {
+		const [ kind, route ] = k.split( '\u0000' );
+		return `the ${ kind } surface's lists give the route "${ route }" different link text (${ v.map( ( x ) => `"${ x }"` ).join( ' and ' ) }); no draft text is carried for it`;
+	} );
+	return { text, conflicts };
 }
+
+// { <surface kind>: { <route>: <link text> } } (readLinkTextReport's text).
+export const readLinkText = ( args ) => readLinkTextReport( args ).text;

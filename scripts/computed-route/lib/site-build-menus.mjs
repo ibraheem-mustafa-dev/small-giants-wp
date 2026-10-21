@@ -8,18 +8,22 @@
 //     SGS_Nav_Menu_Source::is_destination_url), placed after the positioned top-level items in first-mention order.
 // Items come out in display order (each parent, then its children by position); `order` is the item's menu_order.
 import { megaPanelLabel } from './page-map-names.mjs';
-import { rowKey } from './site-build-map.mjs';
+import { menuSurfaceKind, rowKey } from './site-build-map.mjs';
 
 const labelOf = ( row ) => ( 'sgs_mega_menu' === row.postType ? megaPanelLabel( row.title ) : row.title );
 
-export function desiredMenus( rows, linkText = {} ) {
+export function desiredMenus( rows, linkText = {}, surfaces = {} ) {
 	const problems = [];
 	const notes = [];
 	const menus = {};
 	// Mega row key -> its section page's row key, from every menu that pairs them.
 	const sections = {};
 	const entries = rows.flatMap( ( row ) => ( row.menus || [] ).map( ( m ) => ( { row, menu: m.menu, position: m.position, parentItem: m.parentItem || null } ) ) );
-	for ( const name of [ ...new Set( entries.map( ( e ) => e.menu ) ) ] ) {
+	const names = [ ...new Set( entries.map( ( e ) => e.menu ) ) ];
+	for ( const name of names ) {
+		// The draft's link text for the surface this menu feeds; a header menu a drawer also binds (no drawer menu) falls back to the drawer's.
+		const kind = menuSurfaceKind( name, surfaces );
+		const texts = { ...( 'header' === kind && ! names.some( ( n ) => 'drawer' === menuSurfaceKind( n, surfaces ) ) ? linkText.drawer : {} ), ...( linkText[ kind ] || {} ) };
 		const mine = entries.filter( ( e ) => e.menu === name );
 		const slots = new Map();
 		for ( const e of mine ) {
@@ -46,7 +50,7 @@ export function desiredMenus( rows, linkText = {} ) {
 				notes.push( `${ page }: the ${ where } is the "${ labelOf( megas[ 0 ].row ) }" mega item's; the page is that panel's section page and adds no item of its own` );
 			}
 			// The draft's own link text for the slot's route (a mega slot takes its section page's link), else the row's label.
-			const text = linkText[ name ]?.[ ( others[ 0 ] || megas[ 0 ] ).row.route ] || null;
+			const text = texts[ ( others[ 0 ] || megas[ 0 ] ).row.route ] || null;
 			chosen.push( Object.assign( megas[ 0 ] || others[ 0 ], { text } ) );
 		}
 		const item = ( e ) => ( {

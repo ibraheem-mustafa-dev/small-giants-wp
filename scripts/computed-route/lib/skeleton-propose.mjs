@@ -258,14 +258,16 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 
 	// The ids the build holds for this element's block: a logo block's `logoId` (the attachment of the file the element
 	// draws) and a menu block's `ref` (the menu site-build made for this surface). { attrs, said: { attr: where from } }.
+	const carryProblems = [];
 	function carriedAttrs( block, e ) {
-		const out = { attrs: {}, said: {} };
+		const out = { attrs: {}, said: {}, missing: [] };
 		if ( ! carried ) {
 			return out;
 		}
 		if ( facts.logoBlocks.includes( block ) && attrExists( block, 'logoId' ) ) {
-			const hit = carried.logo( e );
+			const hit = carried.logo( e, view );
 			hit?.id && Object.assign( out.attrs, { logoId: hit.id } ) && ( out.said.logoId = `media-map.json: ${ hit.asset }` );
+			hit?.reason && out.missing.push( `${ e.key }: no logoId is carried: ${ hit.reason }` );
 		}
 		if ( 'nav' === e.tag && attrExists( block, 'ref' ) && surfaceKind ) {
 			const id = carried.menu( surfaceKind );
@@ -310,16 +312,17 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// A navigation block's collapse point is the width the draft shows its navigation at.
 		const collapseAttr = 'nav' === e.tag ? R.navigation?.collapseAttribute?.[ block ] : null;
 		const collapse = collapseAttr ? collapsePoint( { e, states, thresholds } ) : null;
-		// An id the build holds (lib/skeleton-carried.mjs) fills the setting first; a decision's own value for it wins and,
-		// when it differs, the row reports the difference instead of the decision being overwritten.
-		const { attrs: carry, said } = carriedAttrs( block, e );
-		Object.assign( a, carry, null != collapse?.value ? { [ collapseAttr ]: collapse.value } : {}, top.attributes || {} );
+		// An id the build holds (lib/skeleton-carried.mjs) wins over a decision's own value for the setting; a differing
+		// decision value is never applied and the row's stale note reports it. A carry the build could not make is reported.
+		const { attrs: carry, said, missing } = carriedAttrs( block, e );
+		carryProblems.push( ...missing );
+		Object.assign( a, carry, null != collapse?.value ? { [ collapseAttr ]: collapse.value } : {}, top.attributes || {}, carry );
 		const clash = Object.keys( carry ).filter( ( k ) => undefined !== top.attributes?.[ k ] && String( top.attributes[ k ] ) !== String( carry[ k ] ) );
 		r.handover && handover.push( r.handover );
 		const node = base( e, block, a );
 		handover.length && ( node.handover = handover );
-		const clashSaid = clash.map( ( k ) => `the client decision sets ${ k } ${ top.attributes[ k ] }; the build carries ${ carry[ k ] } (${ said[ k ] })` );
-		const row = record( e, r, { attributes: a, ...( Object.keys( carry ).length ? { carried: said } : {} ), ...( clash.length ? { stale: [ r.stale, ...clashSaid ].filter( Boolean ).join( '; ' ) } : {} ) } );
+		const clashSaid = clash.map( ( k ) => `the client decision sets ${ k } ${ top.attributes[ k ] }, which is not applied; the build carries ${ carry[ k ] } (${ said[ k ] })` );
+		const row = record( e, r, { attributes: a, ...( Object.keys( carry ).length ? { carried: said } : {} ), ...( missing.length ? { carriedMissing: missing } : {} ), ...( clash.length ? { stale: [ r.stale, ...clashSaid ].filter( Boolean ).join( '; ' ) } : {} ) } );
 		const slots = {};
 		m.kids( e ).filter( ( k ) => m.isPart( k ) && 'svg' === k.tag && k.visible[ 1440 ] ).forEach( ( k ) => {
 			const key = calKeys( block ).filter( ( c ) => new RegExp( `(^|> )svg$` ).test( c ) ).sort( ( x, y ) => x.length - y.length )[ 0 ];
@@ -371,7 +374,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const skeleton = [].concat( rootNode || [] );
 	// A surface the client already built as a post: that post's block tree is the skeleton, so every row is settled by it.
 	built && R.clientBuiltSurface && rows.forEach( ( x ) => Object.assign( x, { rule: 'clientBuiltSurface', builtPost: built, low: false }, 'unresolved' === x.action ? { action: null } : {} ) );
-	const problems = [ ...skeletonProblems( skeleton ), ...( db ? lintSkeleton( skeleton, db ) : [] ) ];
+	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ) ];
 	const proposal = {
 		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], recordDisagreements: view.disagreements,
 		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W, ...( built ? { builtPost: built } : {} ),

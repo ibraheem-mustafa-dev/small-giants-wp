@@ -86,6 +86,21 @@ export function orderRows( rows ) {
 // (the bar and the drawer then share one menu and its mega panels, Spec 36 FR-36-6).
 export const boundMenu = ( kind, menuNames ) => ( 'drawer' === kind && ! menuNames.includes( 'drawer' ) ? 'header' : kind );
 
+// The layout surface kind a page-map menu feeds: the menu named like a kind, else the build manifest's surface of that
+// name (its tree folder `sgs_<kind>`), else the kind its name starts with (`footer-shop`, `drawer-menu-links`); null when
+// none. `surfaces` is sites/<client>/build/surfaces.json.
+export function menuSurfaceKind( name, surfaces = {} ) {
+	const kinds = Object.values( LAYOUT_TYPES );
+	if ( kinds.includes( name ) ) {
+		return name;
+	}
+	const fromTree = /(?:^|\/)sgs_([a-z]+)\//.exec( surfaces?.[ name ]?.tree || '' )?.[ 1 ];
+	if ( kinds.includes( fromTree ) ) {
+		return fromTree;
+	}
+	return kinds.find( ( k ) => String( name ).split( /[-_\s]+/ )[ 0 ] === k ) || null;
+}
+
 // The one-block placeholder tree a row gets until it has a stage 3 tree. A header binds its menu in a bar (whose
 // burger opens the active drawer), a drawer binds its menu (boundMenu) inside the drawer dialog; every other row is
 // its title. `menuIds` holds an entry (0 until made) for every menu the page map names.

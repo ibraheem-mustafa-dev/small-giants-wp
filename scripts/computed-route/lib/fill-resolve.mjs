@@ -37,9 +37,13 @@ export function valueText( draft ) {
 
 // The settings (other than the slot itself) a carried property could be painted by: the slots of the block's settings for
 // that property, from calibration.
-function alternateSlots( cal, prop ) {
-	// A layout setting calibration discovered painting display sits on the element laying out the children.
+function alternateSlots( cal, prop, draft = {} ) {
+	// A layout setting calibration discovered painting display sits on the element laying out the children. A hide
+	// (display:none at any width) stays on the element's own slot: the layout element is not the one the draft hides.
 	if ( 'display' === prop ) {
+		if ( Object.values( draft ).some( ( v ) => 'none' === String( v ).trim() ) ) {
+			return [];
+		}
 		return Object.values( cal?.discovered || {} ).flatMap( ( d ) => d.display?.slots || [] );
 	}
 	if ( ! CARRIED.includes( prop ) ) {
@@ -209,6 +213,20 @@ function apply( st, rec, ref, target, prop, res, slot ) {
 	return changed;
 }
 
+// The fixed-ratio equivalent for a property whose declared values are not plain. When it lands a write, the not-plain
+// values it replaces stay on that write's `note`; when nothing is written (the result is `equal`, or the setting already
+// holds the value) `landed` is false and the caller keeps the not-plain rows.
+function ratioWrite( st, rec, target, prop, draft, notPlain, ctx ) {
+	const before = st.out.writes.length;
+	const eq = fillEquivalent( st, rec, target, prop, draft, ctx );
+	const landed = 'intrinsic-ratio' === eq?.condition && st.out.writes.length > before;
+	if ( landed && notPlain.length ) {
+		const note = `replaces the not-plain declared values ${ notPlain.map( ( n ) => `${ n.property } ${ n.value }` ).join( '; ' ) }`;
+		st.out.writes.slice( before ).forEach( ( w ) => Object.assign( w, { note } ) );
+	}
+	return { eq, landed };
+}
+
 function unmapped( st, rec, ref, row ) {
 	st.out.unmapped.push( { node: ref, block: rec.name, slot: '', ...row } );
 }
@@ -273,18 +291,19 @@ function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			draft = u.draft;
 			if ( ! Object.keys( draft ).length ) {
 				// Nothing plain to write; an element of fixed ratio still takes its rendered height as a maximum height.
-				const eq = notPlain.length ? fillEquivalent( st, rec, target, prop, draft, { baselineFn, apply, rendered } ) : null;
-				if ( ! ( 'intrinsic-ratio' === eq?.condition && 'gap' !== eq.status ) ) {
+				const { landed } = notPlain.length ? ratioWrite( st, rec, target, prop, draft, notPlain, { baselineFn, apply, rendered } ) : { landed: false };
+				if ( ! landed ) {
 					notPlain.forEach( ( row ) => unmapped( st, rec, ref, row ) );
 				}
 				continue;
 			}
 		}
 		const fluid = fluidSamples( st, target, layer, prop );
-		const res = resolveProperty( { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...( layer ? [] : alternateSlots( cal, prop ).filter( ( s ) => s !== slot ) ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declared: layer ? {} : agreedDeclared( st, target, prop, draft, fontPx ) } );
-		const eq = 'gap' === res.status && 'no-setting' === res.gap && ! layer ? fillEquivalent( st, rec, target, prop, draft, { baselineFn, apply, rendered } ) : null;
-		// A maximum height written from the rendered heights replaces the not-plain rows: each width's height is what it paints.
-		if ( ! ( 'intrinsic-ratio' === eq?.condition && 'gap' !== eq.status ) ) {
+		const res = resolveProperty( { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...( layer ? [] : alternateSlots( cal, prop, draft ).filter( ( s ) => s !== slot ) ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declared: layer ? {} : agreedDeclared( st, target, prop, draft, fontPx ) } );
+		const { eq, landed } = 'gap' === res.status && 'no-setting' === res.gap && ! layer ? ratioWrite( st, rec, target, prop, draft, notPlain, { baselineFn, apply, rendered } ) : { eq: null, landed: false };
+		// A maximum height written from the rendered heights replaces the not-plain rows (each width's height is what it
+		// paints) and carries their values on its note; a result that wrote nothing keeps them as rows.
+		if ( ! landed ) {
 			notPlain.forEach( ( row ) => unmapped( st, rec, ref, row ) );
 		}
 		if ( 'gap' === res.status && ( ! eq || 'gap' === eq.status ) ) {

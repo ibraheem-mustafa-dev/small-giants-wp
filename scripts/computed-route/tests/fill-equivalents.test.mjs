@@ -255,4 +255,24 @@ test( 'MUST FAIL (end to end): a logo of intrinsic ratio takes its rendered heig
 	const mh = tree[ 0 ].attributes.maxHeight;
 	assert.deepEqual( [ mh.mobile, mh.tablet, mh.desktop ].map( Number ), [ 40, 56, 66 ] );
 	assert.equal( out.unmapped.filter( ( u ) => 'height' === u.property ).length, 0, JSON.stringify( out.unmapped ) );
+	assert.match( writes[ 0 ].note, /replaces the not-plain declared values .*height clamp\(54px, 4\.4vw, 66px\)/, 'the not-plain values the write replaces stay on its note' );
+	assert.match( writes[ 0 ].note, /min\(54px, -26\.2443px \+ 22\.6244vw\)/ );
+} );
+
+test( 'MUST FAIL: a ratio element whose maximum height already holds the rendered heights writes nothing, and its not-plain rows stay rows', () => {
+	const skeleton = [ { name: 'sgs/responsive-logo', draftRef: 'main', attributes: {} } ];
+	const tree = cleanTree( skeleton );
+	addRefs( tree, 'eq' );
+	tree[ 0 ].attributes.maxHeight = { mobile: 40, tablet: 56, desktop: 66 };
+	const heights = { 375: 40, 768: 56, 1440: 66, 1920: 66, 1024: 60 };
+	const declaredHeight = { 375: 'min(54px, -26.2443px + 22.6244vw)', 768: '56px', 1440: 'clamp(54px, 4.4vw, 66px)', 1024: '60px', 1920: 'clamp(54px, 4.4vw, 66px)' };
+	const widths = Object.fromEntries( FIVE.map( ( w ) => [ w, { '0:': { styles: { ...BASE, height: `${ heights[ w ] }px` }, pseudo: {}, rect: { x: 0, y: 0, w: heights[ w ] * RATIO, h: heights[ w ] }, inFlow: true, words: '', href: null, intrinsic: { ratio: RATIO } } } ] ) );
+	const declared = Object.fromEntries( FIVE.map( ( w ) => [ w, { '0:': { height: declaredHeight[ w ], 'aspect-ratio': '3741 / 848' } } ] ) );
+	const cal = { block: 'sgs/responsive-logo', elements: { '': tiers( { ...BASE, 'max-height': 'none' } ) }, settings: { maxHeight: setting( 'max-height' ) }, discovered: {} };
+	const reads = { widths, declared, sweep: {}, origin: 'http://127.0.0.1:1' };
+	const out = fillTree( { tree, nodes: skeletonNodes( skeleton ), reads, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, calFor: ( b ) => ( 'sgs/responsive-logo' === b ? cal : null ), ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
+	assert.equal( out.writes.filter( ( w ) => 'height' === w.prop ).length, 0, JSON.stringify( out.writes ) );
+	const rows = out.unmapped.filter( ( u ) => 'height' === u.property );
+	assert.ok( rows.length >= 2 && rows.every( ( u ) => /^not-plain/.test( u.reason ) ), JSON.stringify( out.unmapped ) );
+	assert.ok( rows.some( ( u ) => /clamp\(54px, 4\.4vw, 66px\)/.test( u.value ) ) );
 } );
