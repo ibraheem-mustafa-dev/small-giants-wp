@@ -8,6 +8,8 @@
 // Precedence (lib/skeleton-classify.mjs::makeClassifier): a client decision, then these rules, then a finaliser pick or a
 // standing element decision, then the database scoring.
 import { specHit } from './skeleton-facts.mjs';
+import { recordView } from './skeleton-record.mjs';
+import { makePanelRules } from './skeleton-panel-rules.mjs';
 
 // The element's declared inline style as { property: value } (lower-case property names; values as written, which may
 // hold a draft binding such as {{ R.px }}).
@@ -38,13 +40,13 @@ const DECORATION_TAGS = new Set( [ 'img', 'iframe', 'video', 'input', 'textarea'
 
 // A small marker that holds nothing, in the flow of the text beside it: a dot (both sides at most D.maxDotPx) or a short
 // bar (at most D.maxBarHeightPx tall and D.maxBarWidthPx wide). D is the decisions entry rules.dotMarker; none, never.
-export function isMarker( e, m, D ) {
+export function isMarker( e, m, D, view = recordView( null ) ) {
 	const st = declared( e );
 	if ( ! D || m.words( e ) || m.blockKids( e ).length || m.kids( e ).some( ( k ) => 'svg' === k.tag ) || DECORATION_TAGS.has( e.tag ) || [ 'absolute', 'fixed' ].includes( st.position ) ) {
 		return false;
 	}
 	// A control the visitor operates (a slider's pagination dot, a swatch) is never a marker.
-	if ( [ 'a', 'button' ].includes( e.tag ) || null != e.attrs?.[ 'aria-label' ] || null != e.attrs?.role || null != e.attrs?.tabindex || /\s(?:sc-camel-on-click|onClick)=/.test( e.snippet || '' ) ) {
+	if ( [ 'a', 'button' ].includes( e.tag ) || null != e.attrs?.[ 'aria-label' ] || null != e.attrs?.role || null != view.attr( e, 'tabindex' ) || /\s(?:sc-camel-on-click|onClick)=/.test( e.snippet || '' ) ) {
 		return false;
 	}
 	const w = px( st.width );
@@ -77,9 +79,13 @@ const HEADING = /^h[1-6]$/;
 // o: { m (lib/skeleton-model.mjs), facts (lib/skeleton-facts.mjs), surface: { slug, kind, name }, hooks: { siteInfoKinds,
 // isColumnLabel, topBlock, blockOfKey } (the classifier's own readings: an element's Site Info kinds, whether it heads a
 // column of links, the block its plain scoring proposes, the block already proposed for an ancestor's key), motion (a Set
-// of template keys, `<component>/<tpl>`, whose own animation loops a translate for ever: lib/skeleton-rerun.mjs::loopingKeys) }.
-export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() } ) {
+// of template keys, `<component>/<tpl>`, whose own animation loops a translate for ever: lib/skeleton-rerun.mjs::loopingKeys),
+// view (lib/skeleton-record.mjs::recordView: the fact record's reading of each element's attributes and declarations; an
+// empty view reads the rendered attributes), scope (lib/skeleton-record.mjs::surfaceContext: the surface's parent, kind and
+// opener, or null) }.
+export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), view = recordView( null ), scope = null } ) {
 	const R = facts.decisions.rules || {};
+	const panel = makePanelRules( { m, view, scope, R, facts, surface, declared } );
 	const arrayBlocks = new Set( facts.q( 'SELECT DISTINCT block_slug FROM array_item_schema' ).map( ( r ) => r.block_slug ) );
 	const drawsListed = Object.fromEntries( ( R.drawsChildren?.blocks || [] ).map( ( d ) => [ d.block, d.reason ] ) );
 
@@ -114,9 +120,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 	const handlerOf = ( e ) => /sc-camel-on-click="\{\{\s*([^}\s]+)\s*\}\}"/.exec( e.snippet || '' )?.[ 1 ] || '';
 	// A control the visitor operates: a button, anything with a click handler, a pressed or expanded state. It is never
 	// static text (a label, a heading, a card title).
-	const interactive = ( e ) => 'button' === e.tag || !! handlerOf( e ) || null != e.attrs?.[ 'aria-pressed' ] || null != e.attrs?.[ 'aria-expanded' ];
+	const interactive = ( e ) => 'button' === e.tag || !! handlerOf( e ) || null != view.attr( e, 'aria-pressed' ) || null != view.attr( e, 'aria-expanded' );
 	// A disclosure or slider control (it opens, closes or steps something): never a pill button.
-	const disclosure = ( e ) => null != e.attrs?.[ 'aria-expanded' ] || null != e.attrs?.[ 'aria-pressed' ] || /toggle|prev|next|open|close|expand|collapse/i.test( handlerOf( e ) );
+	const disclosure = ( e ) => null != view.attr( e, 'aria-expanded' ) || null != view.attr( e, 'aria-pressed' ) || /toggle|prev|next|open|close|expand|collapse/i.test( handlerOf( e ) );
 	// Words that are only a number (a count, an index "01"): never a label or a title.
 	const numberOnly = ( e ) => /^\d+$/.test( m.words( e ).trim() );
 	const textLeaves = ( e ) => desc( e ).filter( ( k ) => m.words( k ) && ! m.blockKids( k ).length );
@@ -177,11 +183,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 	// by its rendered input type; null for anything else.
 	const controlBlock = ( e ) => {
 		const F = R.formControl;
-		if ( ! F || ! ( F.tags || [] ).includes( e.tag ) ) {
+		const tag = view.realTag( e );
+		if ( ! F || ! ( F.tags || [] ).includes( tag ) ) {
 			return null;
 		}
-		if ( 'input' !== e.tag ) {
-			return F.byTag?.[ e.tag ] || null;
+		if ( 'input' !== tag ) {
+			return F.byTag?.[ tag ] || null;
 		}
 		const type = String( e.attrs?.type || 'text' ).toLowerCase();
 		// A submit, reset or image input is a button, never a field.
@@ -200,14 +207,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 		const scope = m.byKey[ m.byKey[ e.parentKey ]?.parentKey ] || m.byKey[ e.parentKey ];
 		return !! scope && desc( scope ).some( ( k ) => k !== e && 'input' === k.tag && 'checkbox' === String( k.attrs?.type || '' ).toLowerCase() );
 	};
-	// Whether a control is required: its rendered attribute, else the template's own (a literal or `{{ true }}`, never a
-	// binding that may be false).
+	// Whether a control is required: its rendered attribute, else the template's own in the fact record (a literal or
+	// `{{ true }}`, never a binding that may be false).
 	const required = ( e ) => {
 		if ( null != e.attrs?.required ) {
 			return 'false' !== String( e.attrs.required );
 		}
-		const open = /^<[^>]*>/.exec( e.snippet || '' )?.[ 0 ] || '';
-		return /\srequired(?=[\s>/])/.test( open ) || /\srequired="(?:required|true|\{\{\s*true\s*\}\})?"/.test( open );
+		return /^(?:|required|true|\{\{\s*true\s*\}\})$/.test( String( view.attr( e, 'required' ) ?? 'unset' ).trim() );
 	};
 	// A hidden input is no visible field, so the text beside it is never that field's text.
 	const visibleControl = ( k ) => !! controlBlock( k ) && 'hidden' !== String( k.attrs?.type || '' ).toLowerCase();
@@ -258,7 +264,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 		}
 		return out;
 	};
-	const markerShape = ( e ) => isMarker( e, m, R.dotMarker );
+	const markerShape = ( e ) => isMarker( e, m, R.dotMarker, view );
 	// The first piece of text in a card that is not a bare number, set bold and larger than the next piece of text: the
 	// card's title. The card is the nearest ancestor (two levels up at most) holding two or more pieces of text.
 	const headsCard = ( e, st ) => {
@@ -466,8 +472,23 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 
 	// Composite structures, before the element rules: a marquee, a trust bar, a page's hero and what its hero provides.
 	const STRUCTURES = [
+		// A direct child of a header's disclosure panel, told apart by its declared sizing, own paint and a loop of links:
+		// a growing child holding a run of links is a mega group, a fixed or ratio-sized painted box without links an aside,
+		// and any other growing child a plain container (lib/skeleton-panel-rules.mjs).
+		( { e } ) => {
+			const hit = panel.panelChild( e );
+			return hit ? v( hit.rule, { block: hit.block } ) : null;
+		},
 		// A strip whose own animation loops a translate for ever is a marquee: logos make a brand strip, labels a scrolling
 		// trust bar; the repeated items are its items.
+		// A strip with no stamped children whose template holds one text binding the draft's code fills (its items are built
+		// in code) and whose own animation loops a translate for ever is the same marquee: the items are added in the editor.
+		( { e, kidsB } ) => {
+			const rec = view.entry( e );
+			const built = rec && ! kidsB.length && ! view.childrenOf( e ).length && rec.template.holes.some( ( h ) => 'text' === h.where );
+			// The motion keys name the template element (`<dc file>/<tpl>`), whatever import chain the page stamps it under.
+			return R.marqueeCodeItems && built && ( loops( e ) || motion.has( `${ e.template }/${ e.tpl }` ) ) ? v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: R.marqueeCodeItems.handover } } ) : null;
+		},
 		( { e, kidsB } ) => {
 			if ( ! loops( e ) || ! kidsB.length ) {
 				return null;
@@ -510,7 +531,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 		( { e, st, kidsB, parentBlock } ) => {
 			const props = Object.keys( st );
 			const only = new Set( R.alignWrapper?.properties || [] );
-			return parentBlock && ! m.words( e ) && kidsB.length && props.length && props.every( ( p ) => only.has( p ) ) ? v( 'alignWrapper', { action: 'unwrap' } ) : null;
+			// A margin on a wrapper that follows a sibling is the gap between the two blocks, not spacing inside the wrapper:
+			// unwrapping it would lose that gap, so the wrapper stays.
+			const apart = !! R.alignWrapper?.siblingGap && props.some( ( p ) => p.startsWith( 'margin' ) ) && m.blockKids( m.byKey[ e.parentKey ] || { key: null } ).indexOf( e ) > 0;
+			return parentBlock && ! m.words( e ) && kidsB.length && props.length && props.every( ( p ) => only.has( p ) ) && ! apart ? v( 'alignWrapper', { action: 'unwrap' } ) : null;
 		},
 		// Inside a hero: its image is the hero's own media slot; its layout wrappers go (the hero lays out its content).
 		( { e, kidsB } ) => {
@@ -541,5 +565,5 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 		return null;
 	};
 
-	return { ruleFor, drawsChildren, declared };
+	return { ruleFor, drawsChildren, declared, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand };
 }

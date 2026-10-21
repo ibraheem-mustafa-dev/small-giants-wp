@@ -46,7 +46,7 @@ function inventory( root ) {
 	walk( root, null, 0 );
 	return { checks: {}, source: 'fixture', root: root.tag, generated: 'fixture', elements };
 }
-const run = ( root, o = {} ) => proposeSkeleton( { inventory: inventory( root ), facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', built: o.built || null, motion: o.motion || new Set(), db } );
+const run = ( root, o = {} ) => proposeSkeleton( { inventory: inventory( root ), facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', built: o.built || null, motion: o.motion || new Set(), db, factRecord: o.factRecord } );
 const row = ( r, pred ) => r.proposal.rows.find( pred );
 const byWords = ( r, w ) => row( r, ( x ) => x.words === w );
 const byTag = ( r, t ) => row( r, ( x ) => x.tag === t );
@@ -434,9 +434,11 @@ test( 'formControl: each control is the field block for its rendered type, its l
 	assert.deepEqual( settled( byWords( r, 'Hint for email' ) ), { block: null, action: 'remove', rule: 'formControl' } );
 	assert.equal( byWords( r, 'Business name' ).action, 'remove' );
 	assert.deepEqual( settled( row( r, ( x ) => 'label' === x.tag && ! x.words ) ), { block: null, action: 'unwrap', rule: 'formControl' } );
-	// A consent tick whose required flag is only in the template (`required="{{ true }}"`) is still the consent field.
-	const tick = E( 'label', {}, [ E( 'input', { attrs: { type: 'checkbox' }, snippet: '<input type="checkbox" required="{{ true }}" data-dc-tpl="2">' } ), E( 'span', { words: 'I agree' } ) ] );
-	assert.equal( byTag( run( section( [ tick ] ) ), 'input' ).block, 'sgs/form-field-consent' );
+	// A consent tick whose required flag is only in the template (the fact record holds `required="{{ true }}"`) is still the consent field.
+	const tick = E( 'label', {}, [ E( 'input', { attrs: { type: 'checkbox' } } ), E( 'span', { words: 'I agree' } ) ] );
+	const tpl = ( attrs ) => ( { template: { realTag: 'input', attrs, style: { static: [], holes: [] }, holes: [], membership: { scIf: [], scFor: [], dcImport: [] } } } );
+	assert.equal( byTag( run( section( [ tick ] ), { factRecord: { elements: { 'Root/3': tpl( { type: 'checkbox', required: '{{ true }}' } ) }, surfaces: {} } } ), 'input' ).block, 'sgs/form-field-consent' );
+	assert.notEqual( byTag( run( section( [ tick ] ), { factRecord: { elements: { 'Root/3': tpl( { type: 'checkbox', required: '{{ r.req }}' } ) }, surfaces: {} } } ), 'input' ).block, 'sgs/form-field-consent' );
 	const off = run( section( [ form ] ), { facts: facts( 'formControl' ) } );
 	assert.ok( off.proposal.rows.filter( ( x ) => 'input' === x.tag ).every( ( x ) => 'formControl' !== x.rule && ! /form-field/.test( x.block || '' ) ) );
 	assert.notEqual( byWords( off, 'Hint for email' ).action, 'remove' );
