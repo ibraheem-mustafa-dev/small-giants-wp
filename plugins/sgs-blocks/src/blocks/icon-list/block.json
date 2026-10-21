@@ -129,11 +129,14 @@
 					"label": "Item text",
 					"order": 4,
 					"clusters": [
-						"text"
+						"text",
+						"motion"
 					],
 					"prefix": "textEl",
 					"attrMap": {
 						"css:color": "textColour",
+						"css:transition-duration": "itemMotionDuration",
+						"css:transition-timing-function": "itemMotionEasing",
 						"css:color-gradient": "textColourGradient"
 					},
 					"_note": "Per-item text span (render.php, `.sgs-icon-list__text`). Typography routes through the shared TypographyControls `textEl` target + sgs_typography_css_rule( $attributes, 'textEl', $text_sel ), so `prefix` is `\"textEl\"` and the default `{prefix}{suffix}` convention resolves fontSize/lineHeight/textAlign/etc via textElFontSize/textElLineHeight/textElTextAlign directly, no explicit mapping needed. Colour is its own explicit mapping (textColour, unprefixed — independent of the textEl typography prefix).",
@@ -161,18 +164,15 @@
 					"label": "Dimmed sibling item",
 					"order": 6,
 					"clusters": [
-						"text",
-						"motion"
+						"text"
 					],
 					"prefix": "",
 					"attrMap": {
 						"css:color": "siblingDimColour",
 						"css:opacity": "siblingDimOpacity",
-						"css:transition-duration": "itemMotionDuration",
-						"css:transition-timing-function": "itemMotionEasing",
 						"css:color-gradient": "siblingDimColourGradient"
 					},
-					"_note": "Wave 3C U-6, M-24: every OTHER item in the same list while one is hovered or keyboard-focused (a list-scoped :has() rule, includes/helpers-item-effects.php::sgs_sibling_dim_css). itemMotionDuration/itemMotionEasing are the ONE shared item-motion pair (sibling dim, label roll, ornament crossfade); explicit because the {prefix}{suffix} convention cannot derive them."
+					"_note": "Wave 3C U-6, M-24: every OTHER item in the same list while one is hovered or keyboard-focused (a list-scoped :has() rule, includes/helpers-item-effects.php::sgs_sibling_dim_css). itemMotionDuration/itemMotionEasing, the one shared item-motion pair, also time this crossfade and are declared on item-text because the sibling-dim transition (includes/helpers-item-effects.php::sgs_sibling_dim_css) sits on each item's text and link."
 				},
 				"item-number": {
 					"motion": false,

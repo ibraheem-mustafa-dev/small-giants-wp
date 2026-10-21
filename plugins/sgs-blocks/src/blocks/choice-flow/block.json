@@ -85,6 +85,17 @@
 						}
 					},
 					"_note": "Rendered via the shared sgs_button_element_style_css() helper (includes/helpers-button-style.php), the same mechanism sgs/product-card's built-in CTA uses. Colour defaults deliberately do NOT match the theme's 'primary' button preset: the Back/Close controls use a NEUTRAL ink/paper pair (background:none, border light, hover border darkens to near-black), and the brand accent colour is reserved for progress-fill/price/badge highlights only, never the nav buttons. Defaults here mirror that: transparent background, `text`/`border` at rest, border darkens to `text` on hover, matching this codebase's own theme tokens for the same roles (2026-09-15)."
+				},
+				"progress-fill": {
+					"selector": ".sgs-choice-flow__progress-fill",
+					"label": "Progress bar fill",
+					"layer": "CONTENT",
+					"order": 4,
+					"clusters": [ "fill" ],
+					"attrMap": {
+						"css:background-color": "progressColour",
+						"css:background-image": "progressColourGradient"
+					}
 				}
 			}
 		}
