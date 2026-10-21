@@ -213,6 +213,12 @@
       "also_writes_files": false
     },
     {
+      "filename": "2026-10-21-property-equivalents-intrinsic-ratio.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB) then ALTER TABLE property_equivalents RENAME TO property_equivalents_old, CREATE TABLE property_equivalents with the widened condition CHECK, copy the rows, DROP the old table. Idempotent: skips a table already naming intrinsic-ratio. DB is $SGS_FRAMEWORK_DB when set.",
+      "also_writes_files": false
+    },
+    {
       "filename": "2026-10-20-states-table.py",
       "classification": "DB-MIGRATION",
       "evidence": "sqlite3.connect(DB) then CREATE TABLE states (state, family, kind, token, reach, call, note). Idempotent: skips the table when present. DB is $SGS_FRAMEWORK_DB when set.",

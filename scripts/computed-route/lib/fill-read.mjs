@@ -116,6 +116,18 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 		const imgs = el.matches( 'img' ) ? [ el ] : ( el.matches( 'figure, picture' ) ? [ ...el.querySelectorAll( 'img' ) ] : [] );
 		const cap = el.matches( 'figure' ) ? el.querySelector( 'figcaption' ) : null;
 		snap.img = 1 === imgs.length ? { tag: el.localName, src: imgs[ 0 ].getAttribute( 'src' ) ?? imgs[ 0 ].getAttribute( 'data-src' ) ?? '', alt: imgs[ 0 ].getAttribute( 'alt' ), caption: cap ? ( cap.textContent || '' ).replace( /\s+/g, ' ' ).trim() : null } : null;
+		// The intrinsic ratio of the one image or SVG this element is or holds: an image's natural size, else its width and
+		// height attributes, else an SVG's viewBox; null when there is no such element or none states a ratio.
+		const media = el.matches( 'img, svg' ) ? el : ( 1 === el.querySelectorAll( 'img, svg' ).length ? el.querySelector( 'img, svg' ) : null );
+		let ratio = null;
+		if ( media && 'svg' === media.localName ) {
+			const vb = media.viewBox?.baseVal;
+			ratio = vb && vb.width > 0 && vb.height > 0 ? vb.width / vb.height : null;
+		} else if ( media ) {
+			const attrs = [ 'width', 'height' ].map( ( a ) => parseFloat( media.getAttribute( a ) ) );
+			ratio = media.naturalWidth > 0 && media.naturalHeight > 0 ? media.naturalWidth / media.naturalHeight : ( attrs.every( ( n ) => n > 0 ) ? attrs[ 0 ] / attrs[ 1 ] : null );
+		}
+		snap.intrinsic = ratio ? { tag: media.localName, ratio } : null;
 		snap.role = el.getAttribute( 'role' );
 		snap.className = String( el.getAttribute( 'class' ) || '' );
 		if ( j.own ) {

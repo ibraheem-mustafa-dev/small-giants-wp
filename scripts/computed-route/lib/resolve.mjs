@@ -357,7 +357,7 @@ export function resolve( input, ctx ) {
 	const rows = [ ...candidates( ctx.db, block, short, state ), ...( short !== prop ? candidates( ctx.db, block, prop, state ) : [] ) ]
 		.filter( ( r, i, all ) => all.findIndex( ( x ) => x.attr_name === r.attr_name ) === i );
 	if ( ! rows.length ) {
-		return resolveDiscovered( { ...input, state }, ctx.calibration ) || { gap: 'no-setting', detail: `${ block } has no setting for ${ prop }${ state ? ' (' + state + ')' : '' }` };
+		return resolveDiscovered( { ...input, state }, ctx.calibration ) || { gap: 'no-setting', detail: 'display' === prop && ! state ? `no layout setting holds display:${ [ ...new Set( Object.values( perWidth ) ) ].join( ', ' ) } on ${ block } "${ slot }"` : `${ block } has no setting for ${ prop }${ state ? ' (' + state + ')' : '' }` };
 	}
 	if ( ! ctx.calibration ) {
 		return { gap: 'uncalibrated', detail: `${ block } has no calibration file` };
@@ -376,10 +376,16 @@ export function resolve( input, ctx ) {
 		const paint = defaultPaint( ctx.calibration, slot, prop, ( a, b ) => loose( a ) === b );
 		return [ 375, 768, 1440 ].every( ( w ) => undefined === perWidth[ w ] || c.reachedAt.includes( w ) || undefined === paint[ w ] || sameMeasured( prop, paint[ w ], perWidth[ w ] ) );
 	};
+	// A yes/no setting tied to display is a visibility toggle: it paints the hidden state, so it is a candidate only for a
+	// draft that hides the element at some width; a draft of flex, grid or block at every width is no hide.
+	const holdsDisplay = ( r ) => {
+		const type = [].concat( r.attr_type ?? schemaOf[ r.attr_name ]?.type ?? [] );
+		return 'display' !== prop || ! ( 1 === type.length && 'boolean' === type[ 0 ] ) || Object.values( perWidth ).some( ( v ) => 'none' === v );
+	};
 	// A setting painting the slot itself wins; otherwise one whose inherited value calibration saw reach the slot.
 	const tiedBy = ( paths ) => rows.filter( ( r ) => {
 		const c = ctx.calibration.settings?.[ r.attr_name ];
-		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || c.property === prop ) && canGive( r, c );
+		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || c.property === prop ) && canGive( r, c ) && holdsDisplay( r );
 	} );
 	const direct = tiedBy( ( c ) => c.slots || [ c.slot ] );
 	const tied = direct.length ? direct : tiedBy( ( c ) => c.reaches || [] );
@@ -388,7 +394,8 @@ export function resolve( input, ctx ) {
 		return { gap: 'uncalibrated', detail: `${ block } ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) } (${ state }) not calibrated` };
 	}
 	if ( ! tied.length ) {
-		return resolveDiscovered( { ...input, state }, ctx.calibration ) || { gap: 'no-setting', detail: `no ${ prop } setting on ${ block } paints "${ slot }" (candidates: ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) })` };
+		const named = 'display' === prop ? `no layout setting holds display:${ [ ...new Set( Object.values( perWidth ) ) ].join( ', ' ) } on ${ block } "${ slot }"` : `no ${ prop } setting on ${ block } paints "${ slot }"`;
+		return resolveDiscovered( { ...input, state }, ctx.calibration ) || { gap: 'no-setting', detail: `${ named } (candidates: ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) })` };
 	}
 	const flat = tied.filter( ( r ) => 'flat_sibling' === r.tier_shape );
 	const others = tied.filter( ( r ) => 'flat_sibling' !== r.tier_shape );
