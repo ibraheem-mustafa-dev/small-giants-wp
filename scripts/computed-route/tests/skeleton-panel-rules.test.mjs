@@ -194,6 +194,7 @@ test( 'record reads: aria-expanded, aria-pressed, required and the real tag come
 	// A toggle button the render shows no aria-pressed on: the record's pressed state keeps it from being a pill.
 	const toggle = () => N( 'section', {}, [ N( 'div', { style: 'display:flex' }, [ N( 'button', { attrs: { 'aria-pressed': '{{ on }}' } }, [ N( 'span', { words: 'Vegan' } ) ] ) ] ) ] );
 	const b = build( toggle() );
+	b.recs[ 'Root/3' ].logic.holes = { 'attr:aria-pressed#0': { 375: { v: [ { t: 'boolean', v: true }, { t: 'boolean', v: false } ], n: 2, loop: true } } };
 	const strip = ( rec ) => proposeSkeleton( { inventory: structuredClone( b.inventory ), facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'F', db, factRecord: rec, openers: {} } );
 	b.inventory.elements.forEach( ( e ) => delete e.attrs[ 'aria-pressed' ] );
 	const withRec = strip( record( b.recs ) );
@@ -207,9 +208,28 @@ test( 'record reads: aria-expanded, aria-pressed, required and the real tag come
 	const consent = N( 'section', {}, [ N( 'div', {}, [ N( 'input', { attrs: { type: 'checkbox', required: '{{ true }}' } } ) ] ) ] );
 	const cb = build( consent );
 	cb.inventory.elements.forEach( ( e ) => delete e.attrs.required );
+	cb.recs[ 'Root/3' ].template.holes = [ { id: 'attr:required#0', where: 'attr:required', expr: 'true', path: 'true', whole: true } ];
 	const asConsent = ( rec ) => rows( proposeSkeleton( { inventory: cb.inventory, facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'F', db, factRecord: rec, openers: {} } ) ).find( ( x ) => 'input' === x.tag ).block;
 	assert.equal( asConsent( record( cb.recs ) ), 'sgs/form-field-consent' );
 	assert.notEqual( asConsent( record( Object.fromEntries( Object.entries( cb.recs ).map( ( [ k, v ] ) => [ k, { ...v, template: { ...v.template, attrs: {} } } ] ) ) ) ), 'sgs/form-field-consent' );
+} );
+
+test( 'MUST FAIL an attribute bound to a draft value is present only when the record resolves it or the render shows it', () => {
+	const hole = { id: 'attr:aria-pressed#0', where: 'attr:aria-pressed', expr: 'o.on', path: 'o.on', whole: true };
+	const answers = ( v, err ) => ( { 375: { v, n: v.length, loop: true, ...( err ? { err } : {} ) } } );
+	const viewOf = ( holes, attrs = {} ) => {
+		const rec = entry( 'Root/3', 'button', { 'aria-pressed': '{{ o.on }}' }, [], [], 'Root/2', 'Root/2' );
+		rec.template.holes = [ hole ];
+		rec.logic.holes = holes;
+		const el = { template: 'Root', tpl: 3, tag: 'button', attrs };
+		return { view: recordView( { schema: '1', elements: { 'Root/3': rec }, surfaces: {} } ), el };
+	};
+	const read = ( o ) => o.view.attr( o.el, 'aria-pressed' );
+	assert.equal( read( viewOf( { 'attr:aria-pressed#0': answers( [ { t: 'boolean', v: false } ] ) } ) ), '{{ o.on }}', 'resolved to false is still a set state' );
+	assert.equal( read( viewOf( { 'attr:aria-pressed#0': answers( [ { t: 'undefined' } ] ) } ) ), null, 'resolved to undefined everywhere' );
+	assert.equal( read( viewOf( {} ) ), null, 'the record holds no answer' );
+	assert.equal( read( viewOf( { 'attr:aria-pressed#0': answers( [ { t: 'boolean', v: true } ], 'boom' ) } ) ), null, 'a failed read resolves nothing' );
+	assert.equal( read( viewOf( {}, { 'aria-pressed': 'true' } ) ), '{{ o.on }}', 'the render shows it' );
 } );
 
 test( 'recordView.describe carries every field the rules read; the parent chain sits beside the rendered parent', () => {

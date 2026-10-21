@@ -99,8 +99,16 @@ export function recordView( record, { openers = {} } = {} ) {
 		p && ( children.get( p ) ?? children.set( p, [] ).get( p ) ).push( k );
 	}
 
+	// Whether the record resolves an attribute binding to a value: its answers hold one at any width (not undefined, not a
+	// failed read), or its expression is a constant other than false, null or undefined (`{{ true }}`).
+	const holeResolved = ( rec, name ) => {
+		const mine = ( id ) => id.startsWith( `attr:${ name }#` );
+		const answered = Object.entries( rec.logic?.holes ?? {} ).some( ( [ id, answers ] ) => mine( id ) && Object.values( answers ).some( ( a ) => ! a.err && ( a.v ?? [] ).some( ( x ) => 'undefined' !== x.t ) ) );
+		return answered || ( rec.template.holes ?? [] ).some( ( h ) => mine( h.id ) && /^(?:true|-?\d+(?:\.\d+)?|'[^']*'|"[^"]*")$/.test( String( h.expr ?? '' ).trim() ) );
+	};
 	// An attribute's template text (a literal, or a draft binding such as `{{ open }}`), or null when the template has none.
-	// An element with no entry reads its rendered attribute.
+	// An attribute that is only a binding counts as present when the record's answers for it hold a value, or the render
+	// shows it; a binding that resolves to nothing everywhere is absent. An element with no entry reads its rendered attribute.
 	const attr = ( e, name ) => {
 		const rec = entry( e );
 		const rendered = e.attrs?.[ name ];
@@ -108,8 +116,9 @@ export function recordView( record, { openers = {} } = {} ) {
 			return null == rendered ? null : String( rendered );
 		}
 		const text = rec.template.attrs[ name ];
-		( null != text ) !== ( null != rendered ) && note( e, name, null != text, null != rendered );
-		return null == text ? null : String( text );
+		const present = null != text && ( ! /^\s*\{\{[^}]*\}\}\s*$/.test( String( text ) ) || null != rendered || holeResolved( rec, name ) );
+		present !== ( null != rendered ) && note( e, name, present, null != rendered );
+		return present ? String( text ) : null;
 	};
 	const realTag = ( e ) => entry( e )?.template.realTag ?? e.tag;
 	const declared = ( e ) => {
