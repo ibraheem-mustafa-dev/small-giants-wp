@@ -69,7 +69,7 @@ Bean's request, outside this plan: move Eye Care's Google review block into the 
 
 - [x] 1. Analysis: the register (`7a83c4600`, `51eee8e7b`, `f71ee51a5`, `aa2432fdb`) and its gap analysis (`.claude/gap-analysis/reports/2026-10-21-handoff-data-register.md`).
 - [x] 2. Design: the design council's must-fix items and Bean's decisions recorded above; the readers and fact-record design; Spec 48A §3 and §4, Spec 48 FR-48-7, §3.4, FR-48-6 rule 1, FR-48-33 and FR-48-29 committed before the build (`81262f6f7`), each saying what is not built.
-- [ ] 3. Build: the cross-client freeze is built (wave 1 council item); the fact record's identity and freshness are in progress; wave 2's spacing change is written and tested, uncommitted.
+- [ ] 3. Build. Wave 1: the cross-client freeze (`ecef40764`) and the fact record's identity and freshness (`d25334eb5`: `lib/fact-key.mjs`, full fingerprints and `realign` in `lib/identity.mjs`, `lib/freshness.mjs`, approvals and review marks follow an element or are refused; `check-approved.mjs indus-foods --no-built` unchanged at 133 match, 24 mismatch; the 168 existing approvals carry no fingerprint until intake stamps them) are merged; the readers and fact record (part R) and the small skeleton fixes (part F) are in progress. Wave 2's spacing change is written and tested, uncommitted.
 - [ ] 4. Close.
 
 ## 4. Close
