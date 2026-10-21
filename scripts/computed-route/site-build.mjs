@@ -7,8 +7,9 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
-import { readPageMap, writePageMap } from './lib/site-build-map.mjs';
+import { readPageMap, writeMenuMap, writePageMap } from './lib/site-build-map.mjs';
 import { readState } from './lib/site-build-state.mjs';
+import { readLinkText } from './lib/site-build-labels.mjs';
 import { PHASES, planBuild, tally } from './lib/site-build-plan.mjs';
 import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
 
@@ -46,7 +47,7 @@ try {
 	const ids = {};
 	let rows = original;
 	const plan = () => {
-		const p = planBuild( { rows, state: readState( runPhp, rows ), repo, client } );
+		const p = planBuild( { rows, state: readState( runPhp, rows ), repo, client, linkText: readLinkText( { repo, client } ) } );
 		if ( p.problems.length ) {
 			p.problems.forEach( ( m ) => console.error( `STOP ${ m }` ) );
 			throw new Error( `${ p.problems.length } problem(s); nothing was written` );
@@ -78,6 +79,7 @@ try {
 		throw new Error( `a fresh read still plans ${ left.creates } create(s) and ${ left.changes } change(s)` );
 	}
 	console.log( 'a fresh read plans 0 creates and 0 changes' );
+	writeMenuMap( path.join( repo, 'sites', client, 'build', 'menu-map.json' ), site, readState( runPhp, rows ).menus );
 } catch ( e ) {
 	console.error( `FAILED: ${ e.message }` );
 	process.exit( 1 );

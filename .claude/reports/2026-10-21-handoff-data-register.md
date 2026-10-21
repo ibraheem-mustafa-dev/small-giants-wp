@@ -26,7 +26,7 @@ Stages: (1) handoff check, (2) intake, (3) skeleton, (4) Fill (values, states, m
 | (4) Fill values | declared gap, `justify-content` and margins for spacing ownership; height with a declared `aspect-ratio` as a maximum height; declared `display`; the logic's per-tier values for elements no width renders; token values for snapping | declared values from Chrome's matched styles per rendered target (FR-48-8); spacing ownership from rendered gaps |
 | (4) Fill states and behaviour | `surfaces.json` `state_keys`, `sc_if_tpl_ids`, `animation_ids`; `animations.json` `trigger` (scroll threshold, interval), `breakpoints`, `reduced_motion` | intake's re-derived inventory; behaviour recognisers not built |
 | (4) Fill media and content | `image-slot` placeholder text as alt; the logo's viewBox ratio; logic arrays with counts | `img` alt only; no count check |
-| (6) Site build and snapshot | `_menus` labels; site-build upload and menu IDs into trees; `tokens/*.css` into the snapshot; `store.js` and catalogues into WooCommerce; form schemas into `sgs_form` | page titles as labels; hand-picked IDs; colours and fonts only |
+| (6) Site build and snapshot | `_menus` labels; site-build upload and menu IDs into trees; `tokens/*.css` into the snapshot; `store.js` and catalogues into WooCommerce; form schemas into `sgs_form` | colours and fonts only (menu labels read the draft's link text and the logo and menu ids are carried, 2026-10-21: FR-48-55, FR-48-58) |
 | (8) Solve and live checks | `time_dependent` stubs; effects per state (containment); Mama's `localStorage` keys to clear | the state map from intake |
 | (9) Review and ledger | README judgement calls as difference reasons; C2PA origin; stock maps as placeholder rows; README drift | none |
 

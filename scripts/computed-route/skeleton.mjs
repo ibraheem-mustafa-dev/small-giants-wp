@@ -26,6 +26,7 @@ import { isServedInventory, servedDecisions, servedMotion } from './lib/key-spac
 import { reviewHtml } from './lib/skeleton-review.mjs';
 import { calKeysFor, calSettingsFor, statesOfRecord, thresholdsOf } from './lib/skeleton-context.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
+import { carriedIds } from './lib/skeleton-carried.mjs';
 import { skeletonDir, readDecisions, readPicks, recordDecision, recordSiteName, finaliseRequest, applyPicks } from './lib/skeleton-finalise.mjs';
 
 const FINALISER_PROMPT = 'scripts/computed-route/prompts/skeleton-finaliser.md';
@@ -102,7 +103,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	if ( bad.length ) {
 		throw new Error( `the decisions data is not sound:\n- ${ bad.join( '\n- ' ) }` );
 	}
-	const r = propose( { inventory, facts, surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, built: ctx.built, motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), calSettings: calSettingsFor( readSurface( repo, client, surface ).site ), states: ctx.states, thresholds: ctx.thresholds, db } );
+	const r = propose( { inventory, facts, surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, built: ctx.built, carried: carriedIds( { repo, client, site: readSurface( repo, client, surface ).site } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), calSettings: calSettingsFor( readSurface( repo, client, surface ).site ), states: ctx.states, thresholds: ctx.thresholds, db } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
 	return { ...r, paths: p, facts, inventory, clientDecisions };

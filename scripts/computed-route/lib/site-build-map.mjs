@@ -107,3 +107,15 @@ export function treeFor( repo, client, row, menuIds ) {
 }
 
 export const treeHash = ( tree ) => crypto.createHash( 'sha256' ).update( JSON.stringify( tree ) ).digest( 'hex' );
+
+// The ids of the menus the site build made on a site, by menu name, kept in `sites/<client>/build/menu-map.json`
+// ({ sites: { <site>: { menus: { <name>: <id> } } } }) so a skeleton can carry a navigation block's `ref` (FR-48-58).
+// `menus` is the site state's menu list; only a menu carrying the site build's own mark (owner equal to its slug) counts.
+export function writeMenuMap( file, site, menus ) {
+	const had = fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : { sites: {} };
+	const mine = Object.fromEntries( menus.filter( ( m ) => m.owner === m.slug ).map( ( m ) => [ m.slug, m.id ] ).sort( ( a, b ) => a[ 0 ].localeCompare( b[ 0 ] ) ) );
+	const next = { ...had, sites: { ...had.sites, [ site ]: { ...had.sites?.[ site ], menus: mine } } };
+	fs.writeFileSync( file, `${ JSON.stringify( next, null, '	' ) }
+` );
+	return next;
+}

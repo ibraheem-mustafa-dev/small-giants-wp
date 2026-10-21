@@ -2705,19 +2705,13 @@
 		"sticky-header": {
 			"Root/45#0": {
 				"block": "sgs/nav-bar-menu",
-				"attributes": {
-					"ref": 5
-				},
 				"signature": "nav|",
-				"reason": "the header navigation binds the site's header menu (indus-test term 5, location primary), the binding site-build's placeholder header carries (lib/site-build-map.mjs::placeholderTree); a stage 3 tree must keep it"
+				"reason": "the header navigation is the nav-bar-menu block; its menu ref is carried from build/menu-map.json (the header menu site-build made), not set here"
 			},
 			"Root/43#0": {
 				"block": "sgs/responsive-logo",
-				"attributes": {
-					"logoId": 81
-				},
 				"signature": "indus-logo|",
-				"reason": "the header logo is <indus-logo variant=\"horizontal\"> (Indus Foods Website v2.dc.html line 49), which indus-logo.js draws from assets/logo-horizontal-anim.svg; that export asset is attachment 81 on indus-test (build/media-map.json)"
+				"reason": "the header logo is <indus-logo variant=\"horizontal\">, a custom element; its logoId is carried from build/media-map.json (the file indus-logo.js draws for that variant), not set here"
 			}
 		}
 	}

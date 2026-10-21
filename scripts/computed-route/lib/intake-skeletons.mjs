@@ -28,6 +28,8 @@ import { setDraftState, fireTrigger, snapshotDraftState, restoreDraftState } fro
 import { templateOf } from './intake-run-collapse.mjs';
 import { sourcesOf } from './freshness.mjs';
 import { fingerprintsOf } from './identity.mjs';
+import { carriedIds } from './skeleton-carried.mjs';
+import { siteOf } from './skeleton-context.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const SURFACE_KINDS = [ 'header', 'footer', 'drawer', 'menu', 'form', 'modal', 'global', 'page' ];
@@ -398,7 +400,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 						if ( f.error ) {
 							throw new Error( f.error );
 						}
-						const r = proposeSkeleton( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: builtFor( s ), clientDecisions: f.clientDecisions, calKeys, db: theDb } );
+						const r = proposeSkeleton( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: builtFor( s ), clientDecisions: f.clientDecisions, carried: carriedIds( { repo, client, site: siteOf( { repo, client, slug: s.slug } ) } ), calKeys, db: theDb } );
 						const opened = open && { ...open.opener, at: open.at, readAt: open.readAt, tried: open.tried };
 						u.out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, root: { tpl: s.rootTpl, ...m }, ...( opened ? { opened } : {} ), inventory: summaryOf( inventory ), rows: rowsOf( s.slug, r.proposal, inventory ), counts: r.proposal.counts, problems: r.problems } );
 						log( `${ s.slug }: ${ inventory.elements.length } elements, ${ r.proposal.rows.length } rows` );

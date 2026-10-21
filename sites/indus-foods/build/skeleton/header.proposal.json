@@ -1,9 +1,52 @@
 {
-	"generated": "2026-10-21T05:04:44.966Z",
+	"generated": "2026-10-21T22:10:40.625Z",
 	"inventory": "2026-10-21T03:32:11.794Z",
 	"source": "http://127.0.0.1:63470/",
 	"surface": "sticky-header",
 	"siteName": null,
+	"surfaceParts": [
+		{
+			"id": "S-04",
+			"kind": "menu",
+			"name": "About mega menu",
+			"openedBy": "mouseenter or focus on the \"About\" nav button (openItem(1)); setState({ active: 1 })",
+			"roots": [
+				"Indus Foods Website v2/63",
+				"Indus Foods Website v2/66"
+			]
+		},
+		{
+			"id": "S-05",
+			"kind": "menu",
+			"name": "Sectors mega menu",
+			"openedBy": "mouseenter or focus on the \"Sectors\" nav button (openItem(2)); setState({ active: 2 })",
+			"roots": [
+				"Indus Foods Website v2/63",
+				"Indus Foods Website v2/84"
+			]
+		},
+		{
+			"id": "S-06",
+			"kind": "menu",
+			"name": "Brands mega menu",
+			"openedBy": "mouseenter or focus on the \"Brands\" nav button (openItem(3)); setState({ active: 3 })",
+			"roots": [
+				"Indus Foods Website v2/63",
+				"Indus Foods Website v2/94"
+			]
+		},
+		{
+			"id": "S-07",
+			"kind": "menu",
+			"name": "Trade mega menu",
+			"openedBy": "mouseenter or focus on the \"Trade\" nav button (openItem(4)); setState({ active: 4 })",
+			"roots": [
+				"Indus Foods Website v2/63",
+				"Indus Foods Website v2/66"
+			]
+		}
+	],
+	"recordDisagreements": [],
 	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
 	"weights": {
 		"tag": 0.5,
@@ -206,7 +249,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"client decision: the header logo is <indus-logo variant=\"horizontal\"> (Indus Foods Website v2.dc.html line 49), which indus-logo.js draws from assets/logo-horizontal-anim.svg; that export asset is attachment 81 on indus-test (build/media-map.json)"
+						"client decision: the header logo is <indus-logo variant=\"horizontal\">, a custom element; its logoId is carried from build/media-map.json (the file indus-logo.js draws for that variant), not set here"
 					]
 				}
 			],
@@ -218,6 +261,9 @@
 			"snippet": "<indus-logo variant=\"horizontal\" aria-label=\"Indus Foods Ltd\" style=\"display:block;height:{{ R.logoH }};aspect-ratio:3741 / 848;\" data-dc-tpl=\"43\"></indus-logo>",
 			"attributes": {
 				"logoId": 81
+			},
+			"carried": {
+				"logoId": "media-map.json: sites/indus-foods/handoff/assets/logo-horizontal-anim.svg"
 			},
 			"builtPost": {
 				"site": "sandybrown",
@@ -246,7 +292,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"client decision: the header navigation binds the site's header menu (indus-test term 5, location primary), the binding site-build's placeholder header carries (lib/site-build-map.mjs::placeholderTree); a stage 3 tree must keep it"
+						"client decision: the header navigation is the nav-bar-menu block; its menu ref is carried from build/menu-map.json (the header menu site-build made), not set here"
 					]
 				}
 			],
@@ -256,8 +302,11 @@
 			},
 			"snippet": "<nav style=\"display:flex;align-items:center;gap:2px;height:100%;\" data-dc-tpl=\"45\"> <sc-for list=\"{{ items }}\" as=\"item\" hint-placeholder-count=\"7\" data-dc-tpl=\"46\"> <button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"pos",
 			"attributes": {
-				"collapsePoint": 1024,
-				"ref": 5
+				"ref": 5,
+				"collapsePoint": 1024
+			},
+			"carried": {
+				"ref": "menu-map.json: the header menu"
 			},
 			"slots": {
 				".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": {
