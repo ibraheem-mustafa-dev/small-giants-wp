@@ -89,10 +89,20 @@ const isSet = ( v ) => {
 // Whether a state of an open-able surface sets one of the draft's real state keys. A derived or instance key is not one:
 // `R.*` (the responsive object), a loop item's field (`item.*`), a key starting `_` (a transient flag), and a dotted
 // path whose first segment is not itself a state key of the record (a field of an object the surface does not own).
+// A width state is a breakpoint, read per width by the walker, never a walker state of its own: a key whose value is a
+// width comparison (`{"w": ">= 1060"}`) or a breakpoint token (`{"bp": "m"}`).
+const WIDTH_VALUE = /^\s*(>=|<=|>|<|=)\s*\d/;
+const widthKey = ( key, value ) => ( 'string' === typeof value && WIDTH_VALUE.test( value ) ) || 'bp' === key;
+// A state that sets a transient flag (a key starting `_`, such as a drawer's `_closing`) is a transition between two
+// states, not a look of its own.
+const transient = ( state ) => Object.entries( state.state_keys || {} ).some( ( [ key, value ] ) => key.startsWith( '_' ) && isSet( value ) );
 function setsRealKey( state, stateKeys ) {
+	if ( transient( state ) ) {
+		return false;
+	}
 	return Object.entries( state.state_keys || {} ).some( ( [ key, value ] ) => {
 		const first = key.split( '.' )[ 0 ];
-		const derived = 'R' === first || 'item' === first || key.startsWith( '_' ) || ( key.includes( '.' ) && ! stateKeys.has( first ) );
+		const derived = 'R' === first || 'item' === first || key.startsWith( '_' ) || ( key.includes( '.' ) && ! stateKeys.has( first ) ) || widthKey( key, value );
 		return ! derived && isSet( value );
 	} );
 }

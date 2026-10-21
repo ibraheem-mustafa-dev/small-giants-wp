@@ -457,3 +457,16 @@ test( 'the command accepts several entry drafts', () => {
 	assert.equal( JSON.parse( fs.readFileSync( f.out, 'utf8' ) ).shop.draftIndex, 'Shop.dc.html' );
 	f.done();
 } );
+
+test( 'MUST FAIL: a width state (a width comparison or a breakpoint token) and a transient state are not walker states of an open-able surface', () => {
+	const got = statesOf( rec( 'S-2', 'drawer', 'D', [
+		{ name: 'open', state_keys: { mobileOpen: true } },
+		{ name: 'closing', state_keys: { mobileOpen: true, _closing: true } },
+		{ name: 'wide nav', state_keys: { w: '>= 1060' } },
+		{ name: 'narrow nav', state_keys: { w: '< 1060', menuOpen: false } },
+		{ name: 'collapsed', state_keys: { bp: 'm' } },
+		{ name: 'panel sun', state_keys: { mega: 'sun' } },
+	] ), vocab );
+	assert.deepEqual( Object.keys( got.states ).sort(), [ 'open', 'panel-sun' ].sort() );
+	assert.ok( got.dropped.includes( 'closing' ) && got.dropped.includes( 'wide nav' ) && got.dropped.includes( 'collapsed' ) );
+} );
