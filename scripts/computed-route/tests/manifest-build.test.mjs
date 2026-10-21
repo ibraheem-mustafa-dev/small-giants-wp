@@ -8,7 +8,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { buildManifest, matchRecord, surfaceKey, walkerKey } from '../lib/manifest-build.mjs';
 
-const vocab = [ { state: 'open', kind: 'class', token: '--open' }, { state: 'scrolled', kind: 'class', token: '--scrolled' }, { state: 'hover', kind: 'pseudo-class', token: ':hover' } ];
+const vocab = [ { state: 'open', kind: 'class', token: '--open' }, { state: 'current', kind: 'class', token: '--current' }, { state: 'active', kind: 'class', token: '--active' }, { state: 'scrolled', kind: 'class', token: '--scrolled' }, { state: 'hover', kind: 'pseudo-class', token: ':hover' } ];
 const target = { envFile: '.claude/secrets/x.env', envKey: 'X' };
 const run = ( rows, records = [], extra = {} ) => buildManifest( { client: 'acme', site: 'x-test', rows, records, target, entryFile: 'Site.dc.html', vocab, ...extra } );
 const row = ( postType, slug, id = 1, extra = {} ) => ( { postType, slug, title: slug, id, route: 'page' === postType ? slug : undefined, ...extra } );
@@ -90,14 +90,41 @@ test( 'a trailing parenthesised qualifier is dropped from the walker key and map
 	assert.deepEqual( run( [ row( 'sgs_header', 'header' ) ], records ).entries.header.states, { scrolled: 'scrolled' } );
 } );
 
-test( 'a state with no vocabulary word maps to null; a state key stands for its vocabulary state', () => {
-	const records = [ rec( 'S-1', 'header', 'H', [ { name: 'nav label magnet', state_keys: {} }, { name: 'drawer shown', state_keys: { mobileOpen: true } } ] ) ];
-	assert.deepEqual( run( [ row( 'sgs_header', 'header' ) ], records ).entries.header.states, { 'nav-label-magnet': null, 'drawer-shown': 'open' } );
+test( 'a state with no page-condition word maps to null, and its keys are never read', () => {
+	const records = [ rec( 'S-1', 'header', 'H', [ { name: 'nav label magnet', state_keys: {} }, { name: 'drawer shown', state_keys: { mobileOpen: true, active: true } } ] ) ];
+	assert.deepEqual( run( [ row( 'sgs_header', 'header' ) ], records ).entries.header.states, { 'nav-label-magnet': null, 'drawer-shown': null } );
+} );
+
+test( "'current section' maps to current", () => {
+	const records = [ rec( 'S-1', 'header', 'H', [ { name: 'current section', state_keys: { 'item.current': true } } ] ) ];
+	assert.deepEqual( run( [ row( 'sgs_header', 'header' ) ], records ).entries.header.states, { 'current-section': 'current' } );
+} );
+
+test( 'a mega menu open state keeps setting state null', () => {
+	const records = [ rec( 'S-1', 'menu', 'M', [ { name: 'closed', state_keys: {} }, { name: 'open', state_keys: { active: true, open: true } } ] ) ];
+	assert.deepEqual( run( [ row( 'sgs_mega_menu', 'm', 1, { title: 'M' } ) ], records ).entries[ 'mega-m' ].states, { open: null } );
+} );
+
+test( "'link hover' is dropped and listed as a pointer state", () => {
+	const records = [ rec( 'S-1', 'menu', 'M', [ { name: 'open', state_keys: {} }, { name: 'link hover', state_keys: {} } ] ) ];
+	const out = run( [ row( 'sgs_mega_menu', 'm', 1, { title: 'M' } ) ], records );
+	assert.deepEqual( Object.keys( out.entries[ 'mega-m' ].states ), [ 'open' ] );
+	assert.deepEqual( out.pointer, [ { key: 'mega-m', name: 'link hover' } ] );
+} );
+
+test( "a drawer's closed and closing states are dropped and listed; none open falls back to resting", () => {
+	const records = [ rec( 'S-1', 'drawer', 'D', [ { name: 'closed', state_keys: {} }, { name: 'open', state_keys: {} }, { name: 'closing', state_keys: {} } ] ) ];
+	const out = run( [ row( 'sgs_drawer', 'd' ) ], records );
+	assert.deepEqual( out.entries[ 'drawer-d' ].states, { open: null } );
+	assert.deepEqual( out.dropped.map( ( d ) => d.name ), [ 'closed', 'closing' ] );
+	const none = run( [ row( 'sgs_drawer', 'd' ) ], [ rec( 'S-1', 'drawer', 'D', [ { name: 'closed', state_keys: {} } ] ) ] );
+	assert.deepEqual( none.entries[ 'drawer-d' ].states, { resting: null } );
+	assert.equal( none.unresolved.length, 0 );
 } );
 
 test( 'two states with one key keep the first', () => {
-	const records = [ rec( 'S-1', 'header', 'H', [ { name: 'open (a)', state_keys: {} }, { name: 'open (b)', state_keys: {} } ] ) ];
-	assert.deepEqual( run( [ row( 'sgs_header', 'header' ) ], records ).entries.header.states, { open: 'open' } );
+	const records = [ rec( 'S-1', 'header', 'H', [ { name: 'scrolled (a)', state_keys: {} }, { name: 'scrolled (b)', state_keys: {} } ] ) ];
+	assert.deepEqual( run( [ row( 'sgs_header', 'header' ) ], records ).entries.header.states, { scrolled: 'scrolled' } );
 } );
 
 test( 'a record with no states and an unmatched row get resting and are listed', () => {
@@ -137,5 +164,24 @@ test( 'the command prints without --apply, writes with --apply and keeps a rerun
 	assert.equal( go( '--apply' ).status, 0 );
 	assert.equal( fs.readFileSync( out, 'utf8' ), first );
 	assert.equal( spawnSync( process.execPath, [ cmd ], { encoding: 'utf8' } ).status, 2 );
+	fs.rmSync( repo, { recursive: true, force: true } );
+} );
+
+test( 'a form or post row is unmatched and the command still exits 0', () => {
+	const out = run( [ row( 'sgs_form', 'enquiry', 8 ), row( 'post', 'news', 9 ) ], [ rec( 'S-1', 'form', 'Enquiry Form' ) ] );
+	assert.deepEqual( out.entries[ 'form-enquiry' ].states, { resting: null } );
+	assert.equal( out.unmatched.length, 2 );
+	assert.equal( out.unresolved.length, 0 );
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'manifest-' ) );
+	const site = path.join( repo, 'sites', 'acme' );
+	fs.mkdirSync( path.join( site, 'build' ), { recursive: true } );
+	fs.mkdirSync( path.join( site, 'handoff' ), { recursive: true } );
+	fs.writeFileSync( path.join( site, 'build', 'page-map.json' ), `${ JSON.stringify( [ row( 'sgs_form', 'enquiry', 8 ) ], null, 2 ) }
+` );
+	fs.writeFileSync( path.join( site, 'handoff', 'surfaces.json' ), JSON.stringify( { records: [] } ) );
+	fs.writeFileSync( path.join( site, 'handoff', 'MANIFEST.json' ), JSON.stringify( { entry_drafts: [ 'Site.dc.html' ] } ) );
+	const cmd = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'manifest.mjs' );
+	const r = spawnSync( process.execPath, [ cmd, 'acme', '--site', 'indus-test', '--repo', repo ], { encoding: 'utf8' } );
+	assert.equal( r.status, 0, r.stdout + r.stderr );
 	fs.rmSync( repo, { recursive: true, force: true } );
 } );

@@ -1,8 +1,8 @@
 // The surfaces manifest generator (Spec 48 section 2): sites/<client>/build/surfaces.json from the confirmed page map.
 //   node manifest.mjs <client> --site <secrets name, e.g. indus-test> [--apply] [--repo <root>]
 // Without --apply it prints the entries it would write and every row it could not settle, and writes nothing. With
-// --apply it writes surfaces.json (entries already there keep every field they have). Exit 0 done, 1 a row left
-// unresolved, 2 usage.
+// --apply it writes surfaces.json (entries already there keep every field they have). Exit 0 done, 1 a row with a match rule
+// left unresolved, 2 usage.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -52,6 +52,9 @@ try {
 		console.log( `${ key } | ${ e.target.postId } | ${ e.canvas ? 'yes' : 'no' } | ${ states }` );
 	}
 	Object.entries( result.added ).forEach( ( [ key, f ] ) => console.log( `added to existing ${ key }: ${ f.join( ', ' ) }` ) );
+	result.unmatched.forEach( ( u ) => console.log( `${ u.reason } ${ u.key }: ${ u.why }` ) );
+	result.pointer.forEach( ( d ) => console.log( `states-pointer ${ d.key }: ${ d.name }` ) );
+	result.dropped.forEach( ( d ) => console.log( `states-dropped ${ d.key }: ${ d.name }` ) );
 	result.skipped.forEach( ( s ) => console.log( `skipped ${ s.row }: ${ s.reason }` ) );
 	result.disagree.forEach( ( d ) => console.log( `states-disagree ${ d.key }: handoff [${ d.handoff.join( ' | ' ) }] intake [${ d.intake.join( ' | ' ) }]` ) );
 	result.unresolved.forEach( ( u ) => console.log( `${ u.reason } ${ u.key }: ${ u.why }` ) );
