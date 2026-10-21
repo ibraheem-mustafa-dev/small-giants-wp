@@ -170,14 +170,26 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const glyph = [ ...m.kids( last ), ...( holder && holder !== card ? m.kids( holder ) : [] ) ].some( ( k ) => 'svg' === k.tag || iconOnly( k ) || bindingGlyph( k ) );
 		return glyph || texts.length >= 3 ? last : null;
 	};
-	// The card link an element is the call to action of, or null.
-	const actionOf = ( e ) => {
+	// The card link an element is the call to action of in this copy, or null.
+	const copyActionOf = ( e ) => {
 		for ( let p = m.byKey[ e.parentKey ], i = 0; p && i < 3; p = m.byKey[ p.parentKey ], i++ ) {
 			if ( 'a' === p.tag ) {
 				return cardAction( p ) === e ? p : null;
 			}
 		}
 		return null;
+	};
+	// Every copy of one template element takes one verdict: it is a card's call to action only when every copy of it is.
+	const verdicts = new Map();
+	const actionOf = ( e ) => {
+		const card = copyActionOf( e );
+		if ( ! card ) {
+			return null;
+		}
+		const tk = templateKey( { dc: e.template, tpl: e.tpl } );		if ( ! verdicts.has( tk ) ) {
+			verdicts.set( tk, m.els.filter( ( k ) => k.template === e.template && k.tpl === e.tpl ).every( ( k ) => copyActionOf( k ) ) );
+		}
+		return verdicts.get( tk ) ? card : null;
 	};
 	const realHref = ( e ) => ( e.attrs?.href && '#' !== e.attrs.href && ! /\{\{/.test( e.attrs.href ) ? e.attrs.href : null );
 	// A form control (an <input>, <select>, the draft's <sc-raw-select> or a <textarea>) and the field block it becomes,
@@ -403,7 +415,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 					return null;
 				}
 				// A card that ends in a short call to action is a plain card: the action is the button that holds the link.
-				return R.cardAction && cardAction( e ) ? v( 'wholeCardLink', { block: R.wholeCardLink?.block, attributes: {} } ) : v( 'wholeCardLink', { block: R.wholeCardLink?.block, attributes: linkAttrs( e, lk ) } );
+				return R.cardAction && ( ( a ) => !! a && !! actionOf( a ) )( cardAction( e ) ) ? v( 'wholeCardLink', { block: R.wholeCardLink?.block, attributes: {} } ) : v( 'wholeCardLink', { block: R.wholeCardLink?.block, attributes: linkAttrs( e, lk ) } );
 			}
 			// One action with one label (and a glyph): a pill. A toggle or a slider arrow is not; nor is a link with no words.
 			if ( 1 !== texts.length || disclosure( e ) ) {
