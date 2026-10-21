@@ -126,7 +126,6 @@ CANONICAL_TAGS = {
 # "unwrapped" into BoxControl — that would hide the very distinction this
 # survey exists to draw between canonical and raw usage).
 SHARED_COMPONENT_FILES = {
-    'SpacingControl': 'SpacingControl.js',
 }
 
 JSX_OPEN_TAG_RE = re.compile(r'<\s*([A-Za-z_][A-Za-z0-9_.]*)')
@@ -333,7 +332,7 @@ def _shared_control_files():
     `ResponsiveBorderRadiusControl`, in `GridItemDefaultsPanel`
     (`container/components/ContainerWrapperControls.js:1226-1231`), and all four
     blocks render it. The survey simply could not see across the file boundary —
-    `SHARED_COMPONENT_FILES` mapped one component, `SpacingControl`.
+    `SHARED_COMPONENT_FILES` mapped one component.
     """
     out = []
     for base in (COMPONENTS_SRC, BLOCKS_SRC):

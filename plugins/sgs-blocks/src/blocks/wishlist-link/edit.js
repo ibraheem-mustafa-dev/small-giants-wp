@@ -6,7 +6,11 @@
  * same "renders 0, hydrates client-side" pattern as sgs/cart's badge).
  */
 import { __ } from '@wordpress/i18n';
-import { InspectorControls, useBlockProps, useSettings } from '@wordpress/block-editor';
+import {
+	InspectorControls,
+	useBlockProps,
+	useSettings,
+} from '@wordpress/block-editor';
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import { glyphSizePx } from '../../utils/font-size-preset';
 import {
@@ -19,12 +23,18 @@ import {
 	textRow,
 	SgsLengthControl,
 } from '../../components';
-import { usePreviewTier, resolveTier, backgroundPaintPreview, textPaintPreview } from '../../utils';
+import {
+	usePreviewTier,
+	resolveTier,
+	backgroundPaintPreview,
+	textPaintPreview,
+} from '../../utils';
 
 /**
  * @param {Object}   props               Block props.
  * @param {Object}   props.attributes    Block attributes.
  * @param {Function} props.setAttributes Attribute setter.
+ * @param {string}   props.clientId      Block client ID.
  * @return {JSX.Element} Editor markup.
  */
 export default function Edit( { attributes, setAttributes, clientId } ) {
@@ -42,7 +52,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const previewTier = usePreviewTier();
 	const previewUid = `sgs-wishlist-link-preview-${ clientId }`;
-	const blockProps = useBlockProps( { className: `sgs-wishlist-link ${ previewUid }` } );
+	const blockProps = useBlockProps( {
+		className: `sgs-wishlist-link ${ previewUid }`,
+	} );
 
 	// The icon colour is `color` on the svg (the glyph strokes with
 	// currentColor), the same declaration render.php emits; an svg cannot take a
@@ -53,9 +65,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		? `.${ previewUid } .sgs-wishlist-link__icon svg{color:${ iconPaint.color };}`
 		: '';
 	const [ fontSizes ] = useSettings( 'typography.fontSizes' );
-	const iconSizePreview = glyphSizePx( resolveTier( iconSize, previewTier ).value, fontSizes, 24 );
+	const iconSizePreview = glyphSizePx(
+		resolveTier( iconSize, previewTier ).value,
+		fontSizes,
+		24
+	);
 	const badgeStyle = {
-		...backgroundPaintPreview( attributes.badgeBackgroundColour, attributes.badgeBackgroundColourGradient ),
+		...backgroundPaintPreview(
+			attributes.badgeBackgroundColour,
+			attributes.badgeBackgroundColourGradient
+		),
 		...textPaintPreview( attributes.badgeTextColour, '' ),
 	};
 
@@ -75,7 +94,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		fillRow( {
 			key: 'badgeBackground',
 			label: __( 'Badge background', 'sgs-blocks' ),
-			attrs: { base: 'badgeBackgroundColour', gradient: 'badgeBackgroundColourGradient' },
+			attrs: {
+				base: 'badgeBackgroundColour',
+				gradient: 'badgeBackgroundColourGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
@@ -94,7 +116,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<SgsColourPanel rows={ colourRows } />
 			</InspectorControls>
 			<InspectorControls>
-				<PanelBody title={ __( 'Wishlist link', 'sgs-blocks' ) } initialOpen>
+				<PanelBody
+					title={ __( 'Wishlist link', 'sgs-blocks' ) }
+					initialOpen
+				>
 					<TextControl
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
@@ -104,31 +129,46 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 						value={ wishlistUrl }
-						onChange={ ( value ) => setAttributes( { wishlistUrl: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { wishlistUrl: value } )
+						}
 					/>
 					<TextControl
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
 						label={ __( 'Label', 'sgs-blocks' ) }
 						value={ label }
-						onChange={ ( value ) => setAttributes( { label: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { label: value } )
+						}
 					/>
 					<ToggleControl
 						__nextHasNoMarginBottom
 						label={ __( 'Show saved-item count', 'sgs-blocks' ) }
 						checked={ !! showCount }
-						onChange={ ( value ) => setAttributes( { showCount: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { showCount: value } )
+						}
 					/>
 					<BooleanResponsiveControl
 						label={ __( 'Show text label', 'sgs-blocks' ) }
-						help={ __( 'Off shows the icon only (label stays the accessible name).', 'sgs-blocks' ) }
+						help={ __(
+							'Off shows the icon only (label stays the accessible name).',
+							'sgs-blocks'
+						) }
 						attrBase="showLabel"
 						attrTablet="showLabelTablet"
 						attrMobile="showLabelMobile"
-						attributes={ { showLabel, showLabelTablet, showLabelMobile } }
+						attributes={ {
+							showLabel,
+							showLabelTablet,
+							showLabelMobile,
+						} }
 						setAttributes={ setAttributes }
 					/>
-					<ResponsiveControl label={ __( 'Icon size (px)', 'sgs-blocks' ) }>
+					<ResponsiveControl
+						label={ __( 'Icon size (px)', 'sgs-blocks' ) }
+					>
 						{ ( breakpoint ) => (
 							<SgsLengthControl
 								scale="font-size"
@@ -137,18 +177,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value={ iconSize[ breakpoint ] ?? '' }
 								onChange={ ( value ) =>
 									setAttributes( {
-										iconSize: { ...iconSize, [ breakpoint ]: value },
+										iconSize: {
+											...iconSize,
+											[ breakpoint ]: value,
+										},
 									} )
 								}
 							/>
 						) }
 					</ResponsiveControl>
 				</PanelBody>
-				<PanelBody title={ __( 'Icon', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Icon', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<IconPicker
 						value={ { source: iconSource, name: iconName } }
 						onChange={ ( { source, name } ) =>
-							setAttributes( { iconSource: source, iconName: name } )
+							setAttributes( {
+								iconSource: source,
+								iconName: name,
+							} )
 						}
 					/>
 				</PanelBody>
@@ -174,20 +223,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							true === showLabel
 								? undefined
 								: {
-									position: 'absolute',
-									width: 1,
-									height: 1,
-									overflow: 'hidden',
-									clip: 'rect(0,0,0,0)',
-									whiteSpace: 'nowrap',
-								}
+										position: 'absolute',
+										width: 1,
+										height: 1,
+										overflow: 'hidden',
+										clip: 'rect(0,0,0,0)',
+										whiteSpace: 'nowrap',
+								  }
 						}
 					>
 						{ label }
 					</span>
 				) : null }
 				{ showCount ? (
-					<span className="sgs-wishlist-link__badge" style={ badgeStyle }>0</span>
+					<span
+						className="sgs-wishlist-link__badge"
+						style={ badgeStyle }
+					>
+						0
+					</span>
 				) : null }
 			</div>
 		</>

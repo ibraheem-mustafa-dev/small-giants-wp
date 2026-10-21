@@ -5,7 +5,7 @@
  * (ResponsiveLengthControl, ResponsiveOverride + SgsBoxControl, SgsBorderControl, TypographyControls);
  * nothing here is a new control. The section shell and reset logic are in panel-kit.js.
  *
- * @package SGS\Blocks
+ * @package
  */
 
 import { __ } from '@wordpress/i18n';
@@ -22,8 +22,22 @@ import { spacingDefaultsFor } from '../../../utils/spacing-defaults';
 import { spacingAxesFor } from '../../../utils/spacing-axes';
 import { Row, borderStyleValue, typographyAttrs } from './panel-kit';
 
-/** A tier object of CSS lengths ({desktop, tablet, mobile}), one length per device. */
-export function TierLength( { label, attr, attributes, setAttributes, scale } ) {
+/**
+ * A tier object of CSS lengths ({desktop, tablet, mobile}), one length per device.
+ * @param {Object}   root0               Props.
+ * @param {string}   root0.label         Control label.
+ * @param {string}   root0.attr          Attribute name.
+ * @param {Object}   root0.attributes    Block attributes.
+ * @param {Function} root0.setAttributes Attribute setter.
+ * @param {string}   root0.scale         Length scale.
+ */
+export function TierLength( {
+	label,
+	attr,
+	attributes,
+	setAttributes,
+	scale,
+} ) {
 	return (
 		<ResponsiveLengthControl
 			label={ label }
@@ -41,8 +55,22 @@ export function TierLength( { label, attr, attributes, setAttributes, scale } ) 
  * for the device being edited and the block's settings (`spacingDefaultsFor( blockName, attr, { attributes, tier } )`),
  * for an attribute whose default differs by tier or by a setting; it takes precedence over `defaults`, and with it the
  * block's `supports.sgs.spacingAxes` opts the box into the paired Vertical / Horizontal mode.
+ * @param {Object}   root0               Props.
+ * @param {string}   root0.label         Control label.
+ * @param {string}   root0.attr          Attribute name.
+ * @param {Object}   root0.attributes    Block attributes.
+ * @param {Function} root0.setAttributes Attribute setter.
+ * @param {Object}   root0.defaults      Declared default per side.
+ * @param {string}   root0.blockName     Block name used to resolve defaults.
  */
-export function TierBox( { label, attr, attributes, setAttributes, defaults, blockName } ) {
+export function TierBox( {
+	label,
+	attr,
+	attributes,
+	setAttributes,
+	defaults,
+	blockName,
+} ) {
 	return (
 		<ResponsiveOverride
 			value={ attributes[ attr ] }
@@ -51,12 +79,25 @@ export function TierBox( { label, attr, attributes, setAttributes, defaults, blo
 			{ ( { tier, ownValue, setOwnValue } ) => (
 				<SgsBoxControl
 					label={ label }
-					values={ ownValue && 'object' === typeof ownValue ? ownValue : {} }
+					values={
+						ownValue && 'object' === typeof ownValue ? ownValue : {}
+					}
 					units={ BOX_UNITS }
 					presets
-					defaults={ blockName ? spacingDefaultsFor( blockName, attr, { attributes, tier } ) : defaults }
-					splitOnAxis={ blockName ? spacingAxesFor( blockName, attr ) : false }
-					onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+					defaults={
+						blockName
+							? spacingDefaultsFor( blockName, attr, {
+									attributes,
+									tier,
+							  } )
+							: defaults
+					}
+					splitOnAxis={
+						blockName ? spacingAxesFor( blockName, attr ) : false
+					}
+					onChange={ ( next ) =>
+						setOwnValue( normaliseResponsiveBox( next ) )
+					}
 				/>
 			) }
 		</ResponsiveOverride>
@@ -69,6 +110,18 @@ export function TierBox( { label, attr, attributes, setAttributes, defaults, blo
  * Colour is one solid/gradient state, or Normal + Hover states when a hover attribute exists.
  * `contrastAgainst` names the background actually behind the border so the control can warn
  * below 3:1 (WCAG 1.4.11) — the wire-border-contrast gate requires it on every mount.
+ * @param {Object}   root0                   Props.
+ * @param {string}   root0.label             Control label.
+ * @param {Object}   root0.attributes        Block attributes.
+ * @param {Function} root0.setAttributes     Attribute setter.
+ * @param {string}   root0.widthAttr         Width attribute name.
+ * @param {string}   root0.styleAttr         Style attribute name.
+ * @param {string}   root0.colourAttr        Colour attribute name.
+ * @param {string}   root0.gradientAttr      Gradient attribute name.
+ * @param {string}   root0.hoverAttr         Hover colour attribute name.
+ * @param {string}   root0.hoverGradientAttr Hover gradient attribute name.
+ * @param {string}   root0.radiusAttr        Radius attribute name.
+ * @param {string}   root0.contrastAgainst   Background the border sits against.
  */
 export function BorderField( {
 	label,
@@ -92,23 +145,38 @@ export function BorderField( {
 		...( gradAttr
 			? {
 					gradientValue: attributes[ gradAttr ],
-					onGradientChange: ( val ) => setAttributes( { [ gradAttr ]: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( { [ gradAttr ]: val ?? '' } ),
 			  }
 			: {} ),
 	} );
 	const colourProps = hoverAttr
 		? {
 				colourStates: [
-					state( 'normal', __( 'Normal', 'sgs-blocks' ), colourAttr, gradientAttr ),
-					state( 'hover', __( 'Hover', 'sgs-blocks' ), hoverAttr, hoverGradientAttr ),
+					state(
+						'normal',
+						__( 'Normal', 'sgs-blocks' ),
+						colourAttr,
+						gradientAttr
+					),
+					state(
+						'hover',
+						__( 'Hover', 'sgs-blocks' ),
+						hoverAttr,
+						hoverGradientAttr
+					),
 				],
 		  }
 		: {
 				colourValue: attributes[ colourAttr ],
-				onColourChange: ( val ) => setAttributes( { [ colourAttr ]: val ?? '' } ),
-				colourGradientValue: gradientAttr ? attributes[ gradientAttr ] : undefined,
+				onColourChange: ( val ) =>
+					setAttributes( { [ colourAttr ]: val ?? '' } ),
+				colourGradientValue: gradientAttr
+					? attributes[ gradientAttr ]
+					: undefined,
 				onColourGradientChange: gradientAttr
-					? ( val ) => setAttributes( { [ gradientAttr ]: val ?? '' } )
+					? ( val ) =>
+							setAttributes( { [ gradientAttr ]: val ?? '' } )
 					: undefined,
 				colourLinked: true,
 		  };
@@ -118,10 +186,16 @@ export function BorderField( {
 		<SgsBorderControl
 			label={ label }
 			widthValues={ attributes[ widthAttr ] ?? {} }
-			onWidthChange={ ( next ) => setAttributes( { [ widthAttr ]: next } ) }
+			onWidthChange={ ( next ) =>
+				setAttributes( { [ widthAttr ]: next } )
+			}
 			widthPresets={ [ '10', '20', '30' ] }
 			styleValue={ attributes[ styleAttr ] }
-			onStyleChange={ ( val ) => setAttributes( { [ styleAttr ]: borderStyleValue( styleAttr, val ) } ) }
+			onStyleChange={ ( val ) =>
+				setAttributes( {
+					[ styleAttr ]: borderStyleValue( styleAttr, val ),
+				} )
+			}
 			colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 			{ ...colourProps }
 			contrastAgainst={ contrastAgainst }
@@ -134,7 +208,9 @@ export function BorderField( {
 						},
 						onRadiusChange: ( tier, next ) => {
 							const key = 'base' === tier ? 'desktop' : tier;
-							setAttributes( { [ radiusAttr ]: { ...radius, [ key ]: next } } );
+							setAttributes( {
+								[ radiusAttr ]: { ...radius, [ key ]: next },
+							} );
 						},
 				  }
 				: {} ) }
@@ -142,7 +218,12 @@ export function BorderField( {
 	);
 }
 
-/** One typography target for TypographyControls: the full field set, keyed by its attribute prefix. */
+/**
+ * One typography target for TypographyControls: the full field set, keyed by its attribute prefix.
+ * @param {string} prefix Attribute prefix.
+ * @param {string} label  Target label.
+ * @param {Object} extra  Extra target fields.
+ */
 export function typoTarget( prefix, label, extra = {} ) {
 	return {
 		key: prefix || 'wrapper',
@@ -164,12 +245,28 @@ export function typoTarget( prefix, label, extra = {} ) {
 	};
 }
 
-/** One typography row: a TypographyControls element toggle over the given targets. */
+/**
+ * One typography row: a TypographyControls element toggle over the given targets.
+ * @param {Object}   root0               Props.
+ * @param {string}   root0.label         Control label.
+ * @param {Array}    root0.targets       Typography targets.
+ * @param {Object}   root0.attributes    Block attributes.
+ * @param {Function} root0.setAttributes Attribute setter.
+ */
 export function TypographyRow( { label, targets, attributes, setAttributes } ) {
 	const attrs = typographyAttrs( targets.map( ( target ) => target.prefix ) );
 	return (
-		<Row label={ label } attrs={ attrs } attributes={ attributes } setAttributes={ setAttributes }>
-			<TypographyControls attributes={ attributes } setAttributes={ setAttributes } targets={ targets } />
+		<Row
+			label={ label }
+			attrs={ attrs }
+			attributes={ attributes }
+			setAttributes={ setAttributes }
+		>
+			<TypographyControls
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				targets={ targets }
+			/>
 		</Row>
 	);
 }

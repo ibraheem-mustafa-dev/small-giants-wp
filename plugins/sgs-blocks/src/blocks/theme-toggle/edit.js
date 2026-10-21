@@ -1,6 +1,16 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, useSetting, useSettings } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, TextControl, Notice } from '@wordpress/components';
+import {
+	useBlockProps,
+	InspectorControls,
+	useSetting,
+	useSettings,
+} from '@wordpress/block-editor';
+import {
+	PanelBody,
+	SelectControl,
+	TextControl,
+	Notice,
+} from '@wordpress/components';
 import {
 	SgsColourPanel,
 	fillRow,
@@ -21,7 +31,10 @@ import { themeTogglePreview } from './preview-style';
 
 const TOGGLE_STYLE_OPTIONS = [
 	{ label: __( 'Switch', 'sgs-blocks' ), value: 'switch' },
-	{ label: __( 'Segmented (light / dark / auto)', 'sgs-blocks' ), value: 'segmented' },
+	{
+		label: __( 'Segmented (light / dark / auto)', 'sgs-blocks' ),
+		value: 'segmented',
+	},
 ];
 
 const LABEL_ROLL_OPTIONS = [
@@ -40,13 +53,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconOnlyMobile,
 		lightIcon,
 		darkIcon,
-		textColour,
-		textColourHover,
-		textColourPressed,
-		iconColour,
-		iconColourHover,
-		backgroundColour,
-		backgroundColourHover,
 		borderColour,
 		borderColourGradient,
 		borderWidth,
@@ -59,7 +65,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	// (bar an editor comment) when the site has no derived dark palette — this mirrors
 	// that check here so the notice always matches what the canvas/frontend actually do.
 	const darkPalette = useSetting( 'custom.dark' );
-	const hasDarkPalette = !! ( darkPalette && Object.keys( darkPalette ).length );
+	const hasDarkPalette = !! (
+		darkPalette && Object.keys( darkPalette ).length
+	);
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-theme-toggle-preview',
@@ -115,12 +123,16 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Theme Toggle Settings', 'sgs-blocks' ) }>
+				<PanelBody
+					title={ __( 'Theme Toggle Settings', 'sgs-blocks' ) }
+				>
 					<SelectControl
 						label={ __( 'Style', 'sgs-blocks' ) }
 						value={ toggleStyle }
 						options={ TOGGLE_STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { toggleStyle: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { toggleStyle: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -137,24 +149,34 @@ export default function Edit( { attributes, setAttributes } ) {
 								label={ __( 'Label roll', 'sgs-blocks' ) }
 								value={ labelRoll }
 								options={ LABEL_ROLL_OPTIONS }
-								onChange={ ( val ) => setAttributes( { labelRoll: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { labelRoll: val } )
+								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
 							<IconPicker
 								label={ __( 'Light-mode icon', 'sgs-blocks' ) }
 								value={ lightIcon }
-								onChange={ ( val ) => setAttributes( { lightIcon: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { lightIcon: val } )
+								}
 							/>
 							<IconPicker
 								label={ __( 'Dark-mode icon', 'sgs-blocks' ) }
 								value={ darkIcon }
-								onChange={ ( val ) => setAttributes( { darkIcon: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { darkIcon: val } )
+								}
 							/>
 						</>
 					) }
 					{ ! hasDarkPalette && (
-						<Notice status="warning" isDismissible={ false } className="sgs-theme-toggle-notice">
+						<Notice
+							status="warning"
+							isDismissible={ false }
+							className="sgs-theme-toggle-notice"
+						>
 							{ __(
 								'Dark colours are off for this site — this block will not render on the frontend until an automatic dark palette is enabled for this client (_sgsDark.enabled in the theme snapshot).',
 								'sgs-blocks'
@@ -163,14 +185,27 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				<PanelBody title={ __( 'Icon-only', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Icon-only', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<BooleanResponsiveControl
-						label={ __( 'Icon only (hide the label visually)', 'sgs-blocks' ) }
-						help={ __( 'Off shows the label text (label stays the accessible name either way).', 'sgs-blocks' ) }
+						label={ __(
+							'Icon only (hide the label visually)',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'Off shows the label text (label stays the accessible name either way).',
+							'sgs-blocks'
+						) }
 						attrBase="iconOnly"
 						attrTablet="iconOnlyTablet"
 						attrMobile="iconOnlyMobile"
-						attributes={ { iconOnly, iconOnlyTablet, iconOnlyMobile } }
+						attributes={ {
+							iconOnly,
+							iconOnlyTablet,
+							iconOnlyMobile,
+						} }
 						setAttributes={ setAttributes }
 					/>
 				</PanelBody>
@@ -178,7 +213,10 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* Styles tab (Spec 35 PART O, THE PLACEMENT RULE) */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TypographyControls
 						fontSizePresets
 						showFontFamily
@@ -188,55 +226,94 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Icon', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Icon', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						label={ __( 'Icon size', 'sgs-blocks' ) }
 						value={ attributes.iconSize }
-						onChange={ ( obj ) => setAttributes( { iconSize: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { iconSize: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SgsLengthControl
 								scale="font-size"
 								presets={ false }
 								label={ __( 'Icon size', 'sgs-blocks' ) }
 								hideLabelFromVision
-								help={ __( 'Empty keeps the icons at 20px.', 'sgs-blocks' ) }
+								help={ __(
+									'Empty keeps the icons at 20px.',
+									'sgs-blocks'
+								) }
 								value={ ownValue || '' }
-								placeholder={ inherited ? effectiveValue : '20px' }
+								placeholder={
+									inherited ? effectiveValue : '20px'
+								}
 								onChange={ ( val ) => setOwnValue( val || '' ) }
 							/>
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						value={ padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ borderWidth }
-						onWidthChange={ ( val ) => setAttributes( { borderWidth: val } ) }
+						onWidthChange={ ( val ) =>
+							setAttributes( { borderWidth: val } )
+						}
 						styleValue={ borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourValue={ borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourGradientValue={ borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked
 						contrastAgainst={ themeToggleContrastAgainst }
 					/>
@@ -249,7 +326,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 						onChange={ ( tier, next ) => {
 							const key = 'base' === tier ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -259,24 +341,61 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ 'switch' === toggleStyle ? (
 					<button
 						type="button"
-						className={ [ 'sgs-theme-toggle', 'sgs-dark-mode-toggle', ...preview.iconOnlyClasses ].join( ' ' ) }
+						className={ [
+							'sgs-theme-toggle',
+							'sgs-dark-mode-toggle',
+							...preview.iconOnlyClasses,
+						].join( ' ' ) }
 						style={ preview.buttonStyle }
 						aria-pressed="false"
 						disabled
 					>
-						<span className="sgs-theme-toggle__icon sgs-icon-sun" aria-hidden="true" style={ preview.iconStyle } />
-						<span className="sgs-theme-toggle__icon sgs-icon-moon" aria-hidden="true" style={ preview.iconStyle } />
-						<span className="sgs-theme-toggle__label" style={ preview.labelStyle }>{ label }</span>
+						<span
+							className="sgs-theme-toggle__icon sgs-icon-sun"
+							aria-hidden="true"
+							style={ preview.iconStyle }
+						/>
+						<span
+							className="sgs-theme-toggle__icon sgs-icon-moon"
+							aria-hidden="true"
+							style={ preview.iconStyle }
+						/>
+						<span
+							className="sgs-theme-toggle__label"
+							style={ preview.labelStyle }
+						>
+							{ label }
+						</span>
 					</button>
 				) : (
-					<div className="sgs-theme-toggle sgs-theme-toggle--segmented" style={ preview.buttonStyle } role="radiogroup" aria-label={ __( 'Colour scheme', 'sgs-blocks' ) }>
-						<button type="button" role="radio" aria-checked="false" disabled>
+					<div
+						className="sgs-theme-toggle sgs-theme-toggle--segmented"
+						style={ preview.buttonStyle }
+						role="radiogroup"
+						aria-label={ __( 'Colour scheme', 'sgs-blocks' ) }
+					>
+						<button
+							type="button"
+							role="radio"
+							aria-checked="false"
+							disabled
+						>
 							{ __( 'Light', 'sgs-blocks' ) }
 						</button>
-						<button type="button" role="radio" aria-checked="false" disabled>
+						<button
+							type="button"
+							role="radio"
+							aria-checked="false"
+							disabled
+						>
 							{ __( 'Dark', 'sgs-blocks' ) }
 						</button>
-						<button type="button" role="radio" aria-checked="true" disabled>
+						<button
+							type="button"
+							role="radio"
+							aria-checked="true"
+							disabled
+						>
 							{ __( 'Auto', 'sgs-blocks' ) }
 						</button>
 					</div>

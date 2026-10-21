@@ -11,7 +11,7 @@ import {
 	RangeControl,
 	SelectControl,
 } from '@wordpress/components';
-import { ResponsiveControl, SpacingControl } from '../../../components';
+import { ResponsiveControl, SgsLengthControl } from '../../../components';
 
 /**
  * @param {Object}   props
@@ -46,7 +46,10 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 				options={ [
 					{ label: __( 'Grid', 'sgs-blocks' ), value: 'grid' },
 					{ label: __( 'List', 'sgs-blocks' ), value: 'list' },
-					{ label: __( 'Strip (scrolling row)', 'sgs-blocks' ), value: 'strip' },
+					{
+						label: __( 'Strip (scrolling row)', 'sgs-blocks' ),
+						value: 'strip',
+					},
 				] }
 				onChange={ ( value ) => setAttributes( { layout: value } ) }
 			/>
@@ -72,14 +75,18 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 						min={ 0 }
 						max={ 12 }
 						value={ maxItems }
-						onChange={ ( value ) => setAttributes( { maxItems: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { maxItems: value } )
+						}
 					/>
 					<TextControl
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
 						label={ __( '"View all" link label', 'sgs-blocks' ) }
 						value={ viewAllLabel }
-						onChange={ ( value ) => setAttributes( { viewAllLabel: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { viewAllLabel: value } )
+						}
 					/>
 					<TextControl
 						__next40pxDefaultSize
@@ -90,7 +97,9 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						value={ viewAllUrl }
-						onChange={ ( value ) => setAttributes( { viewAllUrl: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { viewAllUrl: value } )
+						}
 					/>
 				</>
 			) }
@@ -106,17 +115,24 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 				__nextHasNoMarginBottom
 				label={ __( 'Empty-wishlist link label', 'sgs-blocks' ) }
 				value={ emptyLinkLabel }
-				onChange={ ( value ) => setAttributes( { emptyLinkLabel: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { emptyLinkLabel: value } )
+				}
 			/>
 			<ToggleControl
 				__nextHasNoMarginBottom
-				label={ __( 'Show the panel even when the wishlist is empty', 'sgs-blocks' ) }
+				label={ __(
+					'Show the panel even when the wishlist is empty',
+					'sgs-blocks'
+				) }
 				help={ __(
 					'Off by default on the cart page — the panel simply does not render for an empty wishlist.',
 					'sgs-blocks'
 				) }
 				checked={ !! showWhenEmpty }
-				onChange={ ( value ) => setAttributes( { showWhenEmpty: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { showWhenEmpty: value } )
+				}
 			/>
 			<ToggleControl
 				__nextHasNoMarginBottom
@@ -129,7 +145,9 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 					__nextHasNoMarginBottom
 					label={ __( 'Show stock status', 'sgs-blocks' ) }
 					checked={ !! showStock }
-					onChange={ ( value ) => setAttributes( { showStock: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { showStock: value } )
+					}
 				/>
 			) }
 			{ 'strip' !== layout && (
@@ -143,22 +161,32 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 								hideLabelFromVision
 								min={ 1 }
 								max={ 4 }
-								value={ columns[ breakpoint ] ?? ( 'desktop' === breakpoint ? 3 : 1 ) }
+								value={
+									columns[ breakpoint ] ??
+									( 'desktop' === breakpoint ? 3 : 1 )
+								}
 								onChange={ ( value ) =>
-									setAttributes( { columns: { ...columns, [ breakpoint ]: value } } )
+									setAttributes( {
+										columns: {
+											...columns,
+											[ breakpoint ]: value,
+										},
+									} )
 								}
 							/>
 						) }
 					</ResponsiveControl>
 					<ResponsiveControl label={ __( 'Row gap', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => (
-							<SpacingControl
-								custom
+							<SgsLengthControl
+								presets
 								hideLabelFromVision
 								label={ __( 'Row gap', 'sgs-blocks' ) }
 								value={ gap[ breakpoint ] ?? '' }
 								onChange={ ( value ) =>
-									setAttributes( { gap: { ...gap, [ breakpoint ]: value } } )
+									setAttributes( {
+										gap: { ...gap, [ breakpoint ]: value },
+									} )
 								}
 							/>
 						) }

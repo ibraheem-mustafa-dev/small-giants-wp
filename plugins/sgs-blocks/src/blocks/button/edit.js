@@ -21,17 +21,51 @@ import {
 	ToolbarGroup,
 	ToolbarButton,
 } from '@wordpress/components';
-import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl } from '../../components';
-import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { LinkPopoverContent } from '../../components';
+import {
+	IconPicker,
+	TypographyControls,
+	ResponsiveOverride,
+	SgsColourPanel,
+	ShadowControl,
+	shadowAttrKeys,
+	SgsLengthControl,
+	SgsBorderControl,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	LinkPopoverContent,
+} from '../../components';
+import {
+	ToolsPanel,
+	ToolsPanelItem,
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import { usePreviewTier } from '../../utils';
-import { buttonPreviewStyle, labelCollapsedAt, LABEL_CLIP_STYLE } from './preview-style';
-import { parseSvgGradient, SvgGradientDefs } from '../../utils/svg-gradient-preview';
+import {
+	buttonPreviewStyle,
+	labelCollapsedAt,
+	LABEL_CLIP_STYLE,
+} from './preview-style';
+import {
+	parseSvgGradient,
+	SvgGradientDefs,
+} from '../../utils/svg-gradient-preview';
 import { SiteInfoLabelToggle, IconShapeSizeItem } from './ButtonExtraControls';
 import { iconCirclePreviewStyle } from './icon-circle-preview';
 import { siteInfoLabelText } from './site-info-label';
-import { LINK_SOURCE_OPTIONS, FIXED_DESTINATION_LINK_SOURCES, LINK_SOURCE_HELP } from '../../shared/link-source-options';
-import { CUSTOM_WIDTH_UNITS, MIN_HEIGHT_UNITS, LINE_HEIGHT_UNITS, composeUnit, parseUnit } from './units';
+import {
+	LINK_SOURCE_OPTIONS,
+	FIXED_DESTINATION_LINK_SOURCES,
+	LINK_SOURCE_HELP,
+} from '../../shared/link-source-options';
+import {
+	CUSTOM_WIDTH_UNITS,
+	MIN_HEIGHT_UNITS,
+	LINE_HEIGHT_UNITS,
+	composeUnit,
+	parseUnit,
+} from './units';
 import { buttonFocusState, focusHostBorder } from './focus-style';
 import { useFocusPreview } from './components/FocusPreviewToggle';
 import { RICH_TEXT_EMPHASIS } from '../../utils/rich-text-formats';
@@ -67,6 +101,12 @@ const TEXT_TRANSFORM_OPTIONS = [
 	{ label: __( 'Capitalise', 'sgs-blocks' ), value: 'capitalize' },
 ];
 
+const DEVICE_TO_TIER = {
+	Desktop: 'desktop',
+	Tablet: 'tablet',
+	Mobile: 'mobile',
+};
+
 const TEXT_DECORATION_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Underline', 'sgs-blocks' ), value: 'underline' },
@@ -80,9 +120,14 @@ const TEXT_DECORATION_OPTIONS = [
 // panel below reads/writes the three objects directly via the tier a shared
 // <ResponsiveOverride> exposes.
 
-export default function Edit( { attributes, setAttributes, clientId, isSelected } ) {
+export default function Edit( {
+	attributes,
+	setAttributes,
+	clientId,
+	isSelected,
+} ) {
 	const previewTier = usePreviewTier();
-	const { padding, margin,
+	const {
 		label,
 		url,
 		linkId,
@@ -100,9 +145,6 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 		// minHeight is a TIER OBJECT (Spec 35 migration, 2026-08-11) — read via
 		// `attributes.minHeight` at its control below, not destructured with a
 		// bare default, matching the widthType/customWidth objects above.
-		minHeightUnit,
-		minHeightTabletUnit,
-		minHeightMobileUnit,
 		icon,
 		iconPosition,
 		labelCollapse,
@@ -112,12 +154,8 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 		iconColourHover,
 		iconColourHoverGradient,
 		iconTitle,
-		fontWeight,
-		fontStyle,
 		textTransform,
 		textDecoration,
-		fontSize,
-		fontSizeUnit,
 		lineHeight,
 		letterSpacing,
 		colourText,
@@ -137,11 +175,14 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 		borderWidth,
 		contentAlign,
 		iconGap,
-		boxShadow,
-		boxShadowColour,
-		boxShadowHover,
 		focusStyle,
 	} = attributes;
+	let iconPickerValue = null;
+	if ( attributes.iconSvg ) {
+		iconPickerValue = { source: 'custom', svg: attributes.iconSvg };
+	} else if ( icon ) {
+		iconPickerValue = { source: 'lucide', name: icon };
+	}
 	// A Site Info link source renders an <a> from the live Site Info value, so
 	// the no-URL submit-button option does not apply to it.
 	const usesSiteInfoLink = !! linkSource && 'url' !== linkSource;
@@ -182,10 +223,12 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 	// not part of this migration. Need the active tier locally to read/write the
 	// matching unit attr alongside ResponsiveOverride's value. Same device-type
 	// resolution ResponsiveOverride.js itself uses internally.
-	const DEVICE_TO_TIER = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
 	const activeMinHeightTier = useSelect( ( select ) => {
 		const ed = select( 'core/editor' );
-		const device = ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
+		const device =
+			ed && typeof ed.getDeviceType === 'function'
+				? ed.getDeviceType()
+				: null;
 		return DEVICE_TO_TIER[ device ] || 'desktop';
 	}, [] );
 	const minHeightUnitAttr = {
@@ -205,7 +248,11 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 	// nothing" bug). render.php resolves the same slugs via sgs_colour_value().
 	const [ palette ] = useSettings( 'color.palette' );
 
-	const { style: previewStyle, backgroundLayerStyle } = buttonPreviewStyle( attributes, palette, previewTier );
+	const { style: previewStyle, backgroundLayerStyle } = buttonPreviewStyle(
+		attributes,
+		palette,
+		previewTier
+	);
 
 	// Editor-frontend parity (D288): the button element IS the block root (no
 	// wrapper div), matching render.php. Full-width is the `sgs-button--full`
@@ -223,37 +270,85 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 	// ignored every preset while the frontend honoured it. A 'custom'/unknown
 	// value emits NO modifier, exactly as render.php does.
 	const blockClasses = [ 'sgs-button' ];
-	if ( [ 'primary', 'secondary', 'outline', 'link' ].includes( inheritStyle ) ) {
+	if (
+		[ 'primary', 'secondary', 'outline', 'link' ].includes( inheritStyle )
+	) {
 		blockClasses.push( `sgs-button--${ inheritStyle }` );
 	}
-	if ( widthType?.desktop === 'full' ) blockClasses.push( 'sgs-button--full' );
+	if ( widthType?.desktop === 'full' ) {
+		blockClasses.push( 'sgs-button--full' );
+	}
 	// Keyboard focus: render.php's class (none for a refused Signature), and Signature's host border width.
 	const { focusClass, signatureRefused } = buttonFocusState( attributes );
 	const focusPreview = useFocusPreview();
-	blockClasses.push( ...[ focusClass, focusPreview.className ].filter( Boolean ) );
-	const hostBorder = 'sgs-focus--signature' === focusClass ? focusHostBorder( { borderWidth, borderStyle, inheritStyle } ) : '';
+	blockClasses.push(
+		...[ focusClass, focusPreview.className ].filter( Boolean )
+	);
+	const hostBorder =
+		'sgs-focus--signature' === focusClass
+			? focusHostBorder( { borderWidth, borderStyle, inheritStyle } )
+			: '';
 	const blockProps = useBlockProps( {
 		className: blockClasses.join( ' ' ),
-		style: hostBorder ? { ...previewStyle, '--sgs-focus-host-border': hostBorder } : previewStyle,
+		style: hostBorder
+			? { ...previewStyle, '--sgs-focus-host-border': hostBorder }
+			: previewStyle,
 		role: 'presentation',
 	} );
 
 	// Icon placeholder SVG for editor preview. When a gradient is set on
 	// iconColourGradient, inject SVG gradient defs and paint via url() reference;
 	// otherwise fall back to flat colour via currentColor (D938).
-	const iconGradient = iconColourGradient ? parseSvgGradient( iconColourGradient ) : null;
+	const iconGradient = iconColourGradient
+		? parseSvgGradient( iconColourGradient )
+		: null;
 	const iconGradientId = clientId ? `${ clientId }-icon-gradient` : null;
-	const iconCircleStyle = iconCirclePreviewStyle( attributes, palette, previewTier );
+	const iconCircleStyle = iconCirclePreviewStyle(
+		attributes,
+		palette,
+		previewTier
+	);
 	const iconPlaceholder = (
 		<span
 			className="sgs-button__icon"
-			style={ { display: 'inline-flex', alignItems: 'center', width: 'var(--sgs-btn-icon-size, 1em)', height: 'var(--sgs-btn-icon-size, 1em)', color: iconColour || 'currentColor', ...iconCircleStyle } }
+			style={ {
+				display: 'inline-flex',
+				alignItems: 'center',
+				width: 'var(--sgs-btn-icon-size, 1em)',
+				height: 'var(--sgs-btn-icon-size, 1em)',
+				color: iconColour || 'currentColor',
+				...iconCircleStyle,
+			} }
 			aria-hidden="true"
 		>
-			<svg viewBox="0 0 24 24" fill="none" stroke={ iconGradient && iconGradientId ? `url(#${ iconGradientId })` : 'currentColor' } strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="100%" height="100%" style={ iconCircleStyle.borderRadius ? { width: 'var(--sgs-btn-icon-size, 1em)', height: 'var(--sgs-btn-icon-size, 1em)' } : undefined }>
+			<svg
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke={
+					iconGradient && iconGradientId
+						? `url(#${ iconGradientId })`
+						: 'currentColor'
+				}
+				strokeWidth="2"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				width="100%"
+				height="100%"
+				style={
+					iconCircleStyle.borderRadius
+						? {
+								width: 'var(--sgs-btn-icon-size, 1em)',
+								height: 'var(--sgs-btn-icon-size, 1em)',
+						  }
+						: undefined
+				}
+			>
 				{ iconGradient && iconGradientId && (
 					<defs>
-						<SvgGradientDefs id={ iconGradientId } gradient={ iconGradient } />
+						<SvgGradientDefs
+							id={ iconGradientId }
+							gradient={ iconGradient }
+						/>
 					</defs>
 				) }
 				<circle cx="12" cy="12" r="10" />
@@ -282,19 +377,27 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: colourText,
-								onChange: ( val ) => setAttributes( { colourText: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { colourText: val ?? '' } ),
 								gradientValue: colourTextGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { colourTextGradient: val ?? '' } ),
+									setAttributes( {
+										colourTextGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: colourTextHover,
-								onChange: ( val ) => setAttributes( { colourTextHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										colourTextHover: val ?? '',
+									} ),
 								gradientValue: colourTextHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { colourTextHoverGradient: val ?? '' } ),
+									setAttributes( {
+										colourTextHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -306,19 +409,30 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: colourBackground,
-								onChange: ( val ) => setAttributes( { colourBackground: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										colourBackground: val ?? '',
+									} ),
 								gradientValue: colourBackgroundGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { colourBackgroundGradient: val ?? '' } ),
+									setAttributes( {
+										colourBackgroundGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: colourBackgroundHover,
-								onChange: ( val ) => setAttributes( { colourBackgroundHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										colourBackgroundHover: val ?? '',
+									} ),
 								gradientValue: colourBackgroundHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { colourBackgroundHoverGradient: val ?? '' } ),
+									setAttributes( {
+										colourBackgroundHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -330,19 +444,27 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: iconColour,
-								onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { iconColour: val ?? '' } ),
 								gradientValue: iconColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { iconColourGradient: val ?? '' } ),
+									setAttributes( {
+										iconColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: iconColourHover,
-								onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										iconColourHover: val ?? '',
+									} ),
 								gradientValue: iconColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { iconColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										iconColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -354,13 +476,19 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: attributes.iconBackground,
-								onChange: ( val ) => setAttributes( { iconBackground: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										iconBackground: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: attributes.iconBackgroundHover,
-								onChange: ( val ) => setAttributes( { iconBackgroundHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										iconBackgroundHover: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -368,9 +496,11 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 			/>
 			{ /* ── Settings tab (default InspectorControls group) ──────────── */ }
 			<InspectorControls>
-
 				{ /* Content */ }
-				<PanelBody title={ __( 'Content', 'sgs-blocks' ) } initialOpen={ true }>
+				<PanelBody
+					title={ __( 'Content', 'sgs-blocks' ) }
+					initialOpen={ true }
+				>
 					{ /* Link source — 'url' (default) leaves the popover below as the
 					   operator's only input. A Site Info source resolves the href
 					   server-side from Appearance > SGS Site Info at render time
@@ -381,13 +511,22 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 						label={ __( 'Link source', 'sgs-blocks' ) }
 						value={ linkSource || 'url' }
 						options={ LINK_SOURCE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { linkSource: val || 'url' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { linkSource: val || 'url' } )
+						}
 						allowReset={ false }
-						help={ 'url' === ( linkSource || 'url' ) ? undefined : LINK_SOURCE_HELP[ linkSource ] }
+						help={
+							'url' === ( linkSource || 'url' )
+								? undefined
+								: LINK_SOURCE_HELP[ linkSource ]
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SiteInfoLabelToggle attributes={ attributes } setAttributes={ setAttributes } />
+					<SiteInfoLabelToggle
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 					{ /* Text is now edited on-canvas via RichText below, matching
 					   core/button — no sidebar duplicate. Link is the D609
 					   row-opens-popover shape: this compact row and the toolbar
@@ -396,9 +535,17 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 					   inline LinkControl here. */ }
 					{ ! hidesUrlField && (
 						<BaseControl
+							id="sgs-button-link-row"
 							label={ __( 'Link', 'sgs-blocks' ) }
 							__nextHasNoMarginBottom
-							help={ 'url' === ( linkSource || 'url' ) ? undefined : __( 'Used only as a fallback while the Site Info field above is empty.', 'sgs-blocks' ) }
+							help={
+								'url' === ( linkSource || 'url' )
+									? undefined
+									: __(
+											'Used only as a fallback while the Site Info field above is empty.',
+											'sgs-blocks'
+									  )
+							}
 						>
 							{ /* Root cause of the row overflowing the panel (measured
 							   2026-08-13): the URL rendered as one unbroken nowrap
@@ -414,53 +561,82 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 								className="sgs-link-popover__row"
 								icon={ linkIcon }
 								title={ url || undefined }
-								onClick={ () => openLinkPopover( sidebarLinkRef ) }
+								onClick={ () =>
+									openLinkPopover( sidebarLinkRef )
+								}
 							>
 								<span className="sgs-link-popover__row-label">
-									{ url ? url : __( 'Add link', 'sgs-blocks' ) }
+									{ url
+										? url
+										: __( 'Add link', 'sgs-blocks' ) }
 								</span>
 							</Button>
 						</BaseControl>
 					) }
 					{ ! url && ! usesSiteInfoLink && ! hidesUrlField && (
 						<ToggleControl
-							label={ __( 'Submit button (type="submit")', 'sgs-blocks' ) }
+							label={ __(
+								'Submit button (type="submit")',
+								'sgs-blocks'
+							) }
 							checked={ isSubmit }
-							onChange={ ( val ) => setAttributes( { isSubmit: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { isSubmit: val } )
+							}
 							__nextHasNoMarginBottom
-							help={ __( 'No URL set — this renders as a <button>. Enable for form-submit buttons.', 'sgs-blocks' ) }
+							help={ __(
+								'No URL set — this renders as a <button>. Enable for form-submit buttons.',
+								'sgs-blocks'
+							) }
 						/>
 					) }
 					<TextControl
 						label={ __( 'Note', 'sgs-blocks' ) }
 						value={ attributes.note || '' }
 						onChange={ ( val ) => setAttributes( { note: val } ) }
-						help={ __( 'Optional. A short muted line at the far end of the button, e.g. a price hint "from +£59".', 'sgs-blocks' ) }
+						help={ __(
+							'Optional. A short muted line at the far end of the button, e.g. a price hint "from +£59".',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Aria label', 'sgs-blocks' ) }
 						value={ ariaLabel }
-						onChange={ ( val ) => setAttributes( { ariaLabel: val } ) }
-						help={ __( 'Overrides the visible label for screen readers. Required for icon-only buttons.', 'sgs-blocks' ) }
+						onChange={ ( val ) =>
+							setAttributes( { ariaLabel: val } )
+						}
+						help={ __(
+							'Overrides the visible label for screen readers. Required for icon-only buttons.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
 				{ /* Icon */ }
-				<PanelBody title={ __( 'Icon', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Icon', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<IconPicker
 						label={ __( 'Icon', 'sgs-blocks' ) }
 						sources={ [ 'lucide', 'custom' ] }
-						value={ attributes.iconSvg ? { source: 'custom', svg: attributes.iconSvg } : ( icon ? { source: 'lucide', name: icon } : null ) }
+						value={ iconPickerValue }
 						onChange={ ( val ) => {
 							if ( val && 'custom' === val.source ) {
-								setAttributes( { icon: '', iconSvg: val.svg || '' } );
+								setAttributes( {
+									icon: '',
+									iconSvg: val.svg || '',
+								} );
 								return;
 							}
-							setAttributes( { icon: val ? val.name : '', iconSvg: '' } );
+							setAttributes( {
+								icon: val ? val.name : '',
+								iconSvg: '',
+							} );
 						} }
 					/>
 					{ hasIcon && (
@@ -476,37 +652,95 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 								}
 							>
 								<ToolsPanelItem
-									label={ __( 'Icon position', 'sgs-blocks' ) }
+									label={ __(
+										'Icon position',
+										'sgs-blocks'
+									) }
 									hasValue={ () => iconPosition !== 'after' }
-									onDeselect={ () => setAttributes( { iconPosition: 'after' } ) }
+									onDeselect={ () =>
+										setAttributes( {
+											iconPosition: 'after',
+										} )
+									}
 									isShownByDefault
 								>
 									<SelectControl
-										label={ __( 'Icon position', 'sgs-blocks' ) }
+										label={ __(
+											'Icon position',
+											'sgs-blocks'
+										) }
 										value={ iconPosition }
 										options={ ICON_POSITION_OPTIONS }
-										onChange={ ( val ) => setAttributes( { iconPosition: val } ) }
+										onChange={ ( val ) =>
+											setAttributes( {
+												iconPosition: val,
+											} )
+										}
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									/>
 								</ToolsPanelItem>
 								{ iconPosition !== 'only' && (
 									<ToolsPanelItem
-										label={ __( 'Collapse label to icon', 'sgs-blocks' ) }
-										hasValue={ () => ( labelCollapse || 'none' ) !== 'none' }
-										onDeselect={ () => setAttributes( { labelCollapse: 'none' } ) }
+										label={ __(
+											'Collapse label to icon',
+											'sgs-blocks'
+										) }
+										hasValue={ () =>
+											( labelCollapse || 'none' ) !==
+											'none'
+										}
+										onDeselect={ () =>
+											setAttributes( {
+												labelCollapse: 'none',
+											} )
+										}
 									>
 										<SelectControl
-											label={ __( 'Collapse label to icon', 'sgs-blocks' ) }
+											label={ __(
+												'Collapse label to icon',
+												'sgs-blocks'
+											) }
 											value={ labelCollapse || 'none' }
 											options={ [
-												{ label: __( 'Never — always show label', 'sgs-blocks' ), value: 'none' },
-												{ label: __( 'On mobile (below 768px)', 'sgs-blocks' ), value: 'mobile' },
-												{ label: __( 'On tablet & mobile (below 1024px)', 'sgs-blocks' ), value: 'tablet' },
-												{ label: __( 'Always — icon only', 'sgs-blocks' ), value: 'all' },
+												{
+													label: __(
+														'Never — always show label',
+														'sgs-blocks'
+													),
+													value: 'none',
+												},
+												{
+													label: __(
+														'On mobile (below 768px)',
+														'sgs-blocks'
+													),
+													value: 'mobile',
+												},
+												{
+													label: __(
+														'On tablet & mobile (below 1024px)',
+														'sgs-blocks'
+													),
+													value: 'tablet',
+												},
+												{
+													label: __(
+														'Always — icon only',
+														'sgs-blocks'
+													),
+													value: 'all',
+												},
 											] }
-											onChange={ ( val ) => setAttributes( { labelCollapse: val } ) }
-											help={ __( 'Hide the text and show just the icon from the chosen breakpoint down (the button keeps its accessible name). Requires an icon.', 'sgs-blocks' ) }
+											onChange={ ( val ) =>
+												setAttributes( {
+													labelCollapse: val,
+												} )
+											}
+											help={ __(
+												'Hide the text and show just the icon from the chosen breakpoint down (the button keeps its accessible name). Requires an icon.',
+												'sgs-blocks'
+											) }
 											__nextHasNoMarginBottom
 											__next40pxDefaultSize
 										/>
@@ -515,13 +749,23 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 								<ToolsPanelItem
 									label={ __( 'Icon title', 'sgs-blocks' ) }
 									hasValue={ () => !! iconTitle }
-									onDeselect={ () => setAttributes( { iconTitle: '' } ) }
+									onDeselect={ () =>
+										setAttributes( { iconTitle: '' } )
+									}
 								>
 									<TextControl
-										label={ __( 'Icon title (SVG accessible title)', 'sgs-blocks' ) }
+										label={ __(
+											'Icon title (SVG accessible title)',
+											'sgs-blocks'
+										) }
 										value={ iconTitle }
-										onChange={ ( val ) => setAttributes( { iconTitle: val } ) }
-										help={ __( 'Used as the SVG <title> for screen readers when icon-only.', 'sgs-blocks' ) }
+										onChange={ ( val ) =>
+											setAttributes( { iconTitle: val } )
+										}
+										help={ __(
+											'Used as the SVG <title> for screen readers when icon-only.',
+											'sgs-blocks'
+										) }
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									/>
@@ -551,21 +795,47 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 								   one attr holding {desktop,tablet,mobile}. */ }
 								<ToolsPanelItem
 									label={ __( 'Icon size', 'sgs-blocks' ) }
-									hasValue={ () => !! iconSize?.desktop && iconSize.desktop !== 16 }
-									onDeselect={ () => setAttributes( { iconSize: {} } ) }
+									hasValue={ () =>
+										!! iconSize?.desktop &&
+										iconSize.desktop !== 16
+									}
+									onDeselect={ () =>
+										setAttributes( { iconSize: {} } )
+									}
 									isShownByDefault
 								>
 									<ResponsiveOverride
-										label={ __( 'Icon size (px)', 'sgs-blocks' ) }
+										label={ __(
+											'Icon size (px)',
+											'sgs-blocks'
+										) }
 										value={ iconSize }
-										onChange={ ( obj ) => setAttributes( { iconSize: obj } ) }
+										onChange={ ( obj ) =>
+											setAttributes( { iconSize: obj } )
+										}
 									>
-										{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+										{ ( {
+											ownValue,
+											effectiveValue,
+											inherited,
+											setOwnValue,
+										} ) => (
 											<RangeControl
-												label={ __( 'Icon size (px)', 'sgs-blocks' ) }
+												label={ __(
+													'Icon size (px)',
+													'sgs-blocks'
+												) }
 												hideLabelFromVision
-												value={ ownValue || ( inherited ? effectiveValue : 16 ) || 16 }
-												onChange={ ( val ) => setOwnValue( val ) }
+												value={
+													ownValue ||
+													( inherited
+														? effectiveValue
+														: 16 ) ||
+													16
+												}
+												onChange={ ( val ) =>
+													setOwnValue( val )
+												}
 												min={ 8 }
 												max={ 100 }
 												step={ 1 }
@@ -575,24 +845,39 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 										) }
 									</ResponsiveOverride>
 								</ToolsPanelItem>
-								<IconShapeSizeItem attributes={ attributes } setAttributes={ setAttributes } />
+								<IconShapeSizeItem
+									attributes={ attributes }
+									setAttributes={ setAttributes }
+								/>
 								{ /* iconGap is a TIER OBJECT — block.json attributes.iconGap +
 								   render.php (gap on the button root). */ }
 								<ToolsPanelItem
 									label={ __( 'Icon gap', 'sgs-blocks' ) }
 									hasValue={ () => !! iconGap?.desktop }
-									onDeselect={ () => setAttributes( { iconGap: {} } ) }
+									onDeselect={ () =>
+										setAttributes( { iconGap: {} } )
+									}
 								>
 									<ResponsiveOverride
 										label={ __( 'Icon gap', 'sgs-blocks' ) }
 										value={ iconGap }
-										onChange={ ( obj ) => setAttributes( { iconGap: obj } ) }
+										onChange={ ( obj ) =>
+											setAttributes( { iconGap: obj } )
+										}
 									>
-										{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-											<SpacingControl
-												freeInput
+										{ ( {
+											ownValue,
+											effectiveValue,
+											inherited,
+											setOwnValue,
+										} ) => (
+											<SgsLengthControl
 												value={ ownValue }
-												placeholder={ inherited ? effectiveValue : '' }
+												placeholder={
+													inherited
+														? effectiveValue
+														: ''
+												}
 												onChange={ setOwnValue }
 											/>
 										) }
@@ -602,14 +887,15 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 						</>
 					) }
 				</PanelBody>
-
 			</InspectorControls>
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-
 				{ /* Layout */ }
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Layout', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					{ /* Width — widthType / customWidth / customWidthUnit are TIER
 					   OBJECTS (Spec 35 migration, 2026-08-11), each ONE attr
 					   holding {desktop,tablet,mobile}. ResponsiveOverride drives
@@ -623,11 +909,17 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 					<ResponsiveOverride
 						label={ __( 'Width', 'sgs-blocks' ) }
 						value={ widthType }
-						onChange={ ( obj ) => setAttributes( { widthType: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { widthType: obj } )
+						}
 					>
 						{ ( { tier, ownValue, setOwnValue } ) => {
-							const typeVal = ownValue || ( 'desktop' === tier ? 'fit' : '' );
-							const options = 'desktop' === tier ? WIDTH_OPTIONS : WIDTH_OPTIONS_TIER;
+							const typeVal =
+								ownValue || ( 'desktop' === tier ? 'fit' : '' );
+							const options =
+								'desktop' === tier
+									? WIDTH_OPTIONS
+									: WIDTH_OPTIONS_TIER;
 							const widthObj = customWidth || {};
 							const unitObj = customWidthUnit || {};
 							const numVal = widthObj[ tier ];
@@ -639,21 +931,38 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 										hideLabelFromVision
 										value={ typeVal }
 										options={ options }
-										onChange={ ( val ) => setOwnValue( val ) }
+										onChange={ ( val ) =>
+											setOwnValue( val )
+										}
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									/>
 									{ 'custom' === typeVal && (
 										<SgsLengthControl
 											presets={ false }
-											label={ __( 'Custom width', 'sgs-blocks' ) }
-											value={ composeUnit( numVal, unitVal ) }
+											label={ __(
+												'Custom width',
+												'sgs-blocks'
+											) }
+											value={ composeUnit(
+												numVal,
+												unitVal
+											) }
 											units={ CUSTOM_WIDTH_UNITS }
 											onChange={ ( raw ) => {
-												const { num, unit } = parseUnit( raw, unitVal );
+												const { num, unit } = parseUnit(
+													raw,
+													unitVal
+												);
 												setAttributes( {
-													customWidth: { ...widthObj, [ tier ]: num },
-													customWidthUnit: { ...unitObj, [ tier ]: unit },
+													customWidth: {
+														...widthObj,
+														[ tier ]: num,
+													},
+													customWidthUnit: {
+														...unitObj,
+														[ tier ]: unit,
+													},
 												} );
 											} }
 											style={ { marginTop: '8px' } }
@@ -672,24 +981,45 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 					<ResponsiveOverride
 						label={ __( 'Min height', 'sgs-blocks' ) }
 						value={ attributes.minHeight }
-						onChange={ ( obj ) => setAttributes( { minHeight: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { minHeight: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SgsLengthControl
 								presets={ false }
 								label={ __( 'Min height', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ composeUnit(
-									inherited ? ownValue : ( ownValue ?? effectiveValue ),
+									inherited
+										? ownValue
+										: ownValue ?? effectiveValue,
 									activeMinHeightUnit
 								) }
-								placeholder={ inherited ? composeUnit( effectiveValue, activeMinHeightUnit ) : undefined }
+								placeholder={
+									inherited
+										? composeUnit(
+												effectiveValue,
+												activeMinHeightUnit
+										  )
+										: undefined
+								}
 								units={ MIN_HEIGHT_UNITS }
 								onChange={ ( raw ) => {
-									const { num, unit } = parseUnit( raw, activeMinHeightUnit );
+									const { num, unit } = parseUnit(
+										raw,
+										activeMinHeightUnit
+									);
 									setOwnValue( num );
 									if ( unit !== activeMinHeightUnit ) {
-										setAttributes( { [ minHeightUnitAttr ]: unit } );
+										setAttributes( {
+											[ minHeightUnitAttr ]: unit,
+										} );
 									}
 								} }
 							/>
@@ -702,16 +1032,39 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 					<ResponsiveOverride
 						label={ __( 'Content alignment', 'sgs-blocks' ) }
 						value={ contentAlign }
-						onChange={ ( obj ) => setAttributes( { contentAlign: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { contentAlign: obj } )
+						}
 					>
 						{ ( { tier, ownValue, setOwnValue } ) => (
 							<SelectControl
 								value={ ownValue || '' }
 								options={ [
-									{ label: 'desktop' === tier ? __( 'Centre (default)', 'sgs-blocks' ) : __( '— inherit —', 'sgs-blocks' ), value: '' },
-									{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
-									{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-									{ label: __( 'End', 'sgs-blocks' ), value: 'flex-end' },
+									{
+										label:
+											'desktop' === tier
+												? __(
+														'Centre (default)',
+														'sgs-blocks'
+												  )
+												: __(
+														'— inherit —',
+														'sgs-blocks'
+												  ),
+										value: '',
+									},
+									{
+										label: __( 'Start', 'sgs-blocks' ),
+										value: 'flex-start',
+									},
+									{
+										label: __( 'Centre', 'sgs-blocks' ),
+										value: 'center',
+									},
+									{
+										label: __( 'End', 'sgs-blocks' ),
+										value: 'flex-end',
+									},
 								] }
 								onChange={ ( val ) => setOwnValue( val ) }
 								__nextHasNoMarginBottom
@@ -722,25 +1075,37 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 				</PanelBody>
 
 				{ /* Typography — always editable (preset-as-seed) */ }
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-						{ /*
-						 * Font size (responsive) + line height + font weight + font style
-						 * via shared TypographyControls.
-						 * Handles: fontSize/fontSizeUnit/fontSizeTablet/fontSizeMobile
-						 *           lineHeight/lineHeightUnit
-						 *           fontWeight / fontStyle
-						 */ }
-						<TypographyControls fontSizePresets showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextStroke showTextColumns showWritingMode
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							prefix=""
-							showSize={ true }
-							showWeight={ true }
-							showStyle={ true }
-							showFontFamily={ true }
-							showResponsive={ true }
-						/>
-						{ /* Line height — lineHeight is now a TIER OBJECT (Spec 35
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					{ /*
+					 * Font size (responsive) + line height + font weight + font style
+					 * via shared TypographyControls.
+					 * Handles: fontSize/fontSizeUnit/fontSizeTablet/fontSizeMobile
+					 *           lineHeight/lineHeightUnit
+					 *           fontWeight / fontStyle
+					 */ }
+					<TypographyControls
+						fontSizePresets
+						showDecoration
+						showTransform
+						showLetterSpacing
+						showTextAlign
+						showTextWrap
+						showTextStroke
+						showTextColumns
+						showWritingMode
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+						showSize={ true }
+						showWeight={ true }
+						showStyle={ true }
+						showFontFamily={ true }
+						showResponsive={ true }
+					/>
+					{ /* Line height — lineHeight is now a TIER OBJECT (Spec 35
 						   migration, 2026-08-11), so it can no longer go through
 						   TypographyControls' showLineHeight (that prop still
 						   assumes the old flat lineHeight/lineHeightTablet/
@@ -748,160 +1113,223 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 						   same UnitControl UX, driven by <ResponsiveOverride>.
 						   lineHeightUnit is unchanged — a single flat string
 						   shared across tiers ('' = unitless). */ }
-						<ResponsiveOverride
-							label={ __( 'Line height', 'sgs-blocks' ) }
-							value={ lineHeight }
-							onChange={ ( obj ) => setAttributes( { lineHeight: obj } ) }
-						>
-							{ ( { ownValue, setOwnValue } ) => {
-								const lineHeightUnit = attributes.lineHeightUnit !== undefined ? attributes.lineHeightUnit : '';
-								return (
-									<SgsLengthControl
-										presets={ false }
-										label={ __( 'Line height', 'sgs-blocks' ) }
-										hideLabelFromVision
-										value={ composeUnit( ownValue, lineHeightUnit ) }
-										units={ LINE_HEIGHT_UNITS }
-										onChange={ ( raw ) => {
-											const { num, unit } = parseUnit( raw, lineHeightUnit );
-											setOwnValue( num );
-											setAttributes( { lineHeightUnit: unit } );
-										} }
-									/>
-								);
-							} }
-						</ResponsiveOverride>
-						<SelectControl
-							label={ __( 'Text transform', 'sgs-blocks' ) }
-							value={ textTransform }
-							options={ TEXT_TRANSFORM_OPTIONS }
-							onChange={ ( val ) => setAttributes( { textTransform: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-						<SelectControl
-							label={ __( 'Text decoration', 'sgs-blocks' ) }
-							value={ textDecoration }
-							options={ TEXT_DECORATION_OPTIONS }
-							onChange={ ( val ) => setAttributes( { textDecoration: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-						{ /* Letter spacing is now a TIER OBJECT (Spec 35 migration,
+					<ResponsiveOverride
+						label={ __( 'Line height', 'sgs-blocks' ) }
+						value={ lineHeight }
+						onChange={ ( obj ) =>
+							setAttributes( { lineHeight: obj } )
+						}
+					>
+						{ ( { ownValue, setOwnValue } ) => {
+							const lineHeightUnit =
+								attributes.lineHeightUnit !== undefined
+									? attributes.lineHeightUnit
+									: '';
+							return (
+								<SgsLengthControl
+									presets={ false }
+									label={ __( 'Line height', 'sgs-blocks' ) }
+									hideLabelFromVision
+									value={ composeUnit(
+										ownValue,
+										lineHeightUnit
+									) }
+									units={ LINE_HEIGHT_UNITS }
+									onChange={ ( raw ) => {
+										const { num, unit } = parseUnit(
+											raw,
+											lineHeightUnit
+										);
+										setOwnValue( num );
+										setAttributes( {
+											lineHeightUnit: unit,
+										} );
+									} }
+								/>
+							);
+						} }
+					</ResponsiveOverride>
+					<SelectControl
+						label={ __( 'Text transform', 'sgs-blocks' ) }
+						value={ textTransform }
+						options={ TEXT_TRANSFORM_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { textTransform: val } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'Text decoration', 'sgs-blocks' ) }
+						value={ textDecoration }
+						options={ TEXT_DECORATION_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { textDecoration: val } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ /* Letter spacing is now a TIER OBJECT (Spec 35 migration,
 						   2026-08-11) — same RangeControl UX as before, wrapped in
 						   <ResponsiveOverride> so tablet/mobile become editable
 						   (render.php already reads all three tiers). */ }
-						<ResponsiveOverride
-							label={ __( 'Letter spacing (px)', 'sgs-blocks' ) }
-							value={ letterSpacing }
-							onChange={ ( obj ) => setAttributes( { letterSpacing: obj } ) }
-						>
-							{ ( { ownValue, setOwnValue } ) => (
-								<RangeControl
-									label={ __( 'Letter spacing (px)', 'sgs-blocks' ) }
-									hideLabelFromVision
-									value={ ownValue || 0 }
-									onChange={ ( val ) => setOwnValue( val ) }
-									min={ -5 }
-									max={ 20 }
-									step={ 0.5 }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							) }
-						</ResponsiveOverride>
-					</PanelBody>
+					<ResponsiveOverride
+						label={ __( 'Letter spacing (px)', 'sgs-blocks' ) }
+						value={ letterSpacing }
+						onChange={ ( obj ) =>
+							setAttributes( { letterSpacing: obj } )
+						}
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<RangeControl
+								label={ __(
+									'Letter spacing (px)',
+									'sgs-blocks'
+								) }
+								hideLabelFromVision
+								value={ ownValue || 0 }
+								onChange={ ( val ) => setOwnValue( val ) }
+								min={ -5 }
+								max={ 20 }
+								step={ 0.5 }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
+				</PanelBody>
 
 				{ /* Hover effects — D609/D618: colours moved to the top-level
 				   SgsColourPanel (Normal/Hover tabs per swatch). This
 				   ToolsPanel now holds only the one hover behaviour with no
 				   colour of its own. */ }
 				<ToolsPanel
-						label={ __( 'Hover effects', 'sgs-blocks' ) }
-						resetAll={ () =>
+					label={ __( 'Hover effects', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( { textDecorationHover: 'none' } )
+					}
+				>
+					<ToolsPanelItem
+						label={ __( 'Underline on hover', 'sgs-blocks' ) }
+						hasValue={ () =>
+							( textDecorationHover || 'none' ) !== 'none'
+						}
+						onDeselect={ () =>
 							setAttributes( { textDecorationHover: 'none' } )
 						}
+						isShownByDefault
 					>
-						<ToolsPanelItem
+						<SelectControl
 							label={ __( 'Underline on hover', 'sgs-blocks' ) }
-							hasValue={ () => ( textDecorationHover || 'none' ) !== 'none' }
-							onDeselect={ () => setAttributes( { textDecorationHover: 'none' } ) }
-							isShownByDefault
-						>
-							<SelectControl
-								label={ __( 'Underline on hover', 'sgs-blocks' ) }
-								value={ textDecorationHover || 'none' }
-								options={ UNDERLINE_HOVER_OPTIONS }
-								onChange={ ( val ) => setAttributes( { textDecorationHover: val } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-					</ToolsPanel>
+							value={ textDecorationHover || 'none' }
+							options={ UNDERLINE_HOVER_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes( { textDecorationHover: val } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
 
 				{ /* Border — always editable (preset-as-seed). Box-object interface
 				   contract §1/§5: borderWidth is an SGS custom object attr (base only,
 				   no tiers); borderRadius is a single block-owned tier-object attr
 				   { desktop, tablet, mobile }, read directly by render.php. */ }
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-												{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
 						   (width/style/colour) mirroring native's BorderBoxControl layout,
 						   matching sgs/product-card + sgs/quote. Border-radius is unchanged
 						   (stays WP-native). */ }
-						<SgsBorderControl
-							widthValues={ borderWidth ?? {} }
-							onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
-							widthPresets={ [ '10', '20', '30' ] }
-							styleValue={ borderStyle }
-							onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
-							colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
-							colourStates={ [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: borderColour,
-									onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-									gradientValue: borderColourGradient,
-									onGradientChange: ( val ) =>
-									setAttributes( { borderColourGradient: val ?? '' } ),
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourStates={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: borderColour,
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColour: val ?? '',
+									} ),
+								gradientValue: borderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										borderColourGradient: val ?? '',
+									} ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColourHover: val ?? '',
+									} ),
+								gradientValue: borderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										borderColourHoverGradient: val ?? '',
+									} ),
+							},
+						] }
+						radiusValues={ {
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
 								},
-								{
-									key: 'hover',
-									label: __( 'Hover', 'sgs-blocks' ),
-									value: borderColourHover,
-									onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
-									gradientValue: borderColourHoverGradient,
-									onGradientChange: ( val ) =>
-									setAttributes( { borderColourHoverGradient: val ?? '' } ),
-								},
-							] }
-							radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
-							onRadiusChange={ ( tier, next ) => {
-								const key = tier === 'base' ? 'desktop' : tier;
-								setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
-							} }
-						/>
-					</PanelBody>
+							} );
+						} }
+					/>
+				</PanelBody>
 
 				{ /* Spacing — padding/margin are each a single block-owned tier-object
 				   attr { desktop, tablet, mobile }, written via ResponsiveOverride +
 				   SgsBoxControl; read directly by this block's render.php. */ }
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -912,34 +1340,65 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* Effects */ }
-				<PanelBody title={ __( 'Effects', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Effects', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					{ /* Keyboard focus (focusStyle): the stored Default '' reads as "nothing selected", so it shows as 'default';
 					   Signature is disabled with its reason when ::before is taken (focus-style.js::signatureRefusal). */ }
 					<ToggleGroupControl
 						label={ __( 'Keyboard focus', 'sgs-blocks' ) }
 						help={ [
-							__( "Default uses the site's focus style. Contrast always uses the dark-and-light ring (use it on photos or busy grounds). Signature adds a slowly turning border in the site's colours; it stops for visitors who prefer less motion.", 'sgs-blocks' ),
+							__(
+								"Default uses the site's focus style. Contrast always uses the dark-and-light ring (use it on photos or busy grounds). Signature adds a slowly turning border in the site's colours; it stops for visitors who prefer less motion.",
+								'sgs-blocks'
+							),
 							signatureRefused,
-						].filter( Boolean ).join( ' ' ) }
+						]
+							.filter( Boolean )
+							.join( ' ' ) }
 						value={ focusStyle || 'default' }
-						onChange={ ( val ) => setAttributes( { focusStyle: ! val || 'default' === val ? '' : val } ) }
+						onChange={ ( val ) =>
+							setAttributes( {
+								focusStyle:
+									! val || 'default' === val ? '' : val,
+							} )
+						}
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="default" label={ __( 'Default', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="duotone" label={ __( 'Contrast', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="signature" label={ __( 'Signature', 'sgs-blocks' ) } disabled={ !! signatureRefused } />
+						<ToggleGroupControlOption
+							value="default"
+							label={ __( 'Default', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="duotone"
+							label={ __( 'Contrast', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="signature"
+							label={ __( 'Signature', 'sgs-blocks' ) }
+							disabled={ !! signatureRefused }
+						/>
 					</ToggleGroupControl>
 					{ focusPreview.control }
 				</PanelBody>
@@ -949,15 +1408,20 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 				   state axis — the hover half never wrote through the OR-gated dead
 				   Hover tab; both shape AND colour are now per-state via a single
 				   attrNames map, matching sgs/container's tabbed pattern. */ }
-				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Shadow', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						attrNames={ shadowAttrKeys( 'boxShadow', { hover: true, hoverColour: true } ) }
+						attrNames={ shadowAttrKeys( 'boxShadow', {
+							hover: true,
+							hoverColour: true,
+						} ) }
 					/>
 				</PanelBody>
-
 			</InspectorControls>
 
 			{ /* Toolbar link button — the other trigger for the SAME popover as the
@@ -969,7 +1433,11 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 					<ToolbarButton
 						ref={ toolbarLinkRef }
 						icon={ linkIcon }
-						label={ url ? __( 'Edit link', 'sgs-blocks' ) : __( 'Insert link', 'sgs-blocks' ) }
+						label={
+							url
+								? __( 'Edit link', 'sgs-blocks' )
+								: __( 'Insert link', 'sgs-blocks' )
+						}
 						isPressed={ isLinkPopoverOpen }
 						onClick={ () => openLinkPopover( toolbarLinkRef ) }
 					/>
@@ -987,7 +1455,16 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 				{ iconPosition !== 'only' && siteInfoLabel && (
 					<span
 						className="sgs-button__label"
-						style={ ! isSelected && labelCollapsedAt( labelCollapse, hasIcon, previewTier ) ? LABEL_CLIP_STYLE : undefined }
+						style={
+							! isSelected &&
+							labelCollapsedAt(
+								labelCollapse,
+								hasIcon,
+								previewTier
+							)
+								? LABEL_CLIP_STYLE
+								: undefined
+						}
 					>
 						{ siteInfoLabel }
 					</span>
@@ -996,7 +1473,16 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 					<RichText
 						tagName="span"
 						className="sgs-button__label"
-						style={ ! isSelected && labelCollapsedAt( labelCollapse, hasIcon, previewTier ) ? LABEL_CLIP_STYLE : undefined }
+						style={
+							! isSelected &&
+							labelCollapsedAt(
+								labelCollapse,
+								hasIcon,
+								previewTier
+							)
+								? LABEL_CLIP_STYLE
+								: undefined
+						}
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
 						placeholder={ __( 'Click Here', 'sgs-blocks' ) }
@@ -1004,8 +1490,14 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 						withoutInteractiveFormatting
 					/>
 				) }
-				{ attributes.note && <span className="sgs-button__note">{ attributes.note }</span> }
-				{ hasIcon && ( iconPosition === 'after' || iconPosition === 'only' ) && iconPlaceholder }
+				{ attributes.note && (
+					<span className="sgs-button__note">
+						{ attributes.note }
+					</span>
+				) }
+				{ hasIcon &&
+					( iconPosition === 'after' || iconPosition === 'only' ) &&
+					iconPlaceholder }
 			</span>
 
 			{ isLinkPopoverOpen && (
@@ -1021,9 +1513,13 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 					targetMode="enum"
 					enableInternalResolution
 					onChangeLink={ ( next ) => setAttributes( next ) }
-					onChangeTarget={ ( val ) => setAttributes( { linkTarget: val } ) }
+					onChangeTarget={ ( val ) =>
+						setAttributes( { linkTarget: val } )
+					}
 					onChangeRel={ ( val ) => setAttributes( { rel: val } ) }
-					onChangeDownload={ ( val ) => setAttributes( { download: val } ) }
+					onChangeDownload={ ( val ) =>
+						setAttributes( { download: val } )
+					}
 				/>
 			) }
 		</>

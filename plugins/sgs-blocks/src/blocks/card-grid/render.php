@@ -341,7 +341,7 @@ if ( $card_grid_overlay_active ) {
 // var(--wp--preset--spacing--30)) and raw CSS lengths ("16px" → "16px").
 // Back-compat: the old SelectControl only wrote bare numeric slugs, so
 // existing posts are covered by the slug branch. New posts written via the
-// shared ContainerWrapperControls SpacingControl may be raw lengths.
+// shared ContainerWrapperControls length control may be raw lengths.
 $gap_value = sgs_container_gap_value( $gap );
 
 // Build grid CSS custom properties.

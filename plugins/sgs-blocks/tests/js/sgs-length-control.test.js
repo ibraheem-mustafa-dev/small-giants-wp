@@ -41,8 +41,14 @@ jest.mock( '@wordpress/block-editor', () => {
 					'data-testid': 'pick-preset',
 					onClick: () => onChange( '1.5rem', { slug: 'large' } ),
 				} ),
-				R.createElement( 'button', { 'data-testid': 'type-size', onClick: () => onChange( '24px' ) } ),
-				R.createElement( 'button', { 'data-testid': 'clear-size', onClick: () => onChange( undefined ) } )
+				R.createElement( 'button', {
+					'data-testid': 'type-size',
+					onClick: () => onChange( '24px' ),
+				} ),
+				R.createElement( 'button', {
+					'data-testid': 'clear-size',
+					onClick: () => onChange( undefined ),
+				} )
 			),
 	};
 } );
@@ -52,9 +58,14 @@ jest.mock( '@wordpress/components', () => {
 	const box =
 		( name ) =>
 		( { children, className, style } ) =>
-			R.createElement( 'div', { 'data-testid': name, className, style }, children );
+			R.createElement(
+				'div',
+				{ 'data-testid': name, className, style },
+				children
+			);
 	const BaseControl = box( 'BaseControl' );
-	BaseControl.VisualLabel = ( { children } ) => R.createElement( 'span', { 'data-testid': 'label' }, children );
+	BaseControl.VisualLabel = ( { children } ) =>
+		R.createElement( 'span', { 'data-testid': 'label' }, children );
 	return {
 		BaseControl,
 		Flex: box( 'Flex' ),
@@ -64,10 +75,28 @@ jest.mock( '@wordpress/components', () => {
 		SelectControl: ( { label, value, options, onChange, disabled } ) =>
 			R.createElement(
 				'select',
-				{ 'aria-label': label, value, disabled, onChange: ( e ) => onChange( e.target.value ) },
-				options.map( ( o ) => R.createElement( 'option', { key: o.value, value: o.value }, o.label ) )
+				{
+					'aria-label': label,
+					value,
+					disabled,
+					onChange: ( e ) => onChange( e.target.value ),
+				},
+				options.map( ( o ) =>
+					R.createElement(
+						'option',
+						{ key: o.value, value: o.value },
+						o.label
+					)
+				)
 			),
-		__experimentalUnitControl: ( { label, value, placeholder, onChange, units, disabled } ) =>
+		__experimentalUnitControl: ( {
+			label,
+			value,
+			placeholder,
+			onChange,
+			units,
+			disabled,
+		} ) =>
 			R.createElement( 'input', {
 				'data-testid': 'value-box',
 				'aria-label': label,
@@ -90,7 +119,8 @@ jest.mock( '@wordpress/components', () => {
 	};
 } );
 
-const SgsLengthControl = require( '../../src/components/SgsLengthControl' ).default;
+const SgsLengthControl =
+	require( '../../src/components/SgsLengthControl' ).default;
 const { sliderRange } = require( '../../src/components/SgsLengthControl' );
 
 let container;
@@ -106,7 +136,11 @@ afterEach( () => {
 	container.remove();
 } );
 
-/** Renders a controlled length whose stored value follows every onChange; returns the writes. */
+/**
+ * Renders a controlled length whose stored value follows every onChange; returns the writes.
+ * @param initial
+ * @param props
+ */
 function renderControlled( initial = '', props = {} ) {
 	const writes = [];
 	function Harness() {
@@ -131,21 +165,32 @@ const box = () => container.querySelector( '[data-testid="value-box"]' );
 const slider = () => container.querySelector( '[data-testid="slider"]' );
 const click = ( id ) =>
 	act( () => {
-		container.querySelector( `[data-testid="${ id }"]` ).dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) );
+		container
+			.querySelector( `[data-testid="${ id }"]` )
+			.dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) );
 	} );
 
 function change( el, value ) {
-	const setter = Object.getOwnPropertyDescriptor( Object.getPrototypeOf( el ), 'value' ).set;
+	const setter = Object.getOwnPropertyDescriptor(
+		Object.getPrototypeOf( el ),
+		'value'
+	).set;
 	act( () => {
 		setter.call( el, value );
-		el.dispatchEvent( new Event( el.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true } ) );
+		el.dispatchEvent(
+			new Event( el.tagName === 'SELECT' ? 'change' : 'input', {
+				bubbles: true,
+			} )
+		);
 	} );
 }
 
 describe( 'SgsLengthControl spacing scale', () => {
 	test( 'one row: names-only preset select, value box and slider', () => {
 		renderControlled();
-		expect( [ ...select().options ].map( ( o ) => o.textContent ) ).toEqual( [ '— none —', 'S', 'M', 'Custom…' ] );
+		expect( [ ...select().options ].map( ( o ) => o.textContent ) ).toEqual(
+			[ '— none —', 'S', 'M', 'Custom…' ]
+		);
 		expect( box() ).not.toBeNull();
 		expect( slider() ).not.toBeNull();
 	} );
@@ -199,7 +244,11 @@ describe( 'SgsLengthControl spacing scale', () => {
 describe( 'SgsLengthControl core ranges per unit', () => {
 	test( 'sliderRange returns core CUSTOM_VALUE_SETTINGS', () => {
 		expect( sliderRange( 'px' ) ).toEqual( { min: 0, max: 300, step: 1 } );
-		expect( sliderRange( 'rem' ) ).toEqual( { min: 0, max: 10, step: 0.1 } );
+		expect( sliderRange( 'rem' ) ).toEqual( {
+			min: 0,
+			max: 10,
+			step: 0.1,
+		} );
 		expect( sliderRange( 'em' ) ).toEqual( { min: 0, max: 10, step: 0.1 } );
 		expect( sliderRange( '%' ) ).toEqual( { min: 0, max: 100, step: 1 } );
 		expect( sliderRange( 'vw' ) ).toEqual( { min: 0, max: 100, step: 1 } );
@@ -241,25 +290,30 @@ describe( 'SgsLengthControl fallbacks and passthroughs', () => {
 	test( 'an origin-keyed useSettings object still offers the scale', () => {
 		mockSettings.sizes = { default: [], theme: SIZES };
 		renderControlled();
-		expect( [ ...select().options ].map( ( o ) => o.textContent ) ).toContain( 'M' );
+		expect(
+			[ ...select().options ].map( ( o ) => o.textContent )
+		).toContain( 'M' );
 	} );
 
 	test( 'tokenPresets are stored verbatim after the scale', () => {
-		const writes = renderControlled( '', { tokenPresets: [ { label: 'Medium distance', value: 'token:distance.md' } ] } );
-		expect( [ ...select().options ].map( ( o ) => o.textContent ) ).toEqual( [
-			'— none —',
-			'S',
-			'M',
-			'Medium distance',
-			'Custom…',
-		] );
+		const writes = renderControlled( '', {
+			tokenPresets: [
+				{ label: 'Medium distance', value: 'token:distance.md' },
+			],
+		} );
+		expect( [ ...select().options ].map( ( o ) => o.textContent ) ).toEqual(
+			[ '— none —', 'S', 'M', 'Medium distance', 'Custom…' ]
+		);
 		change( select(), 'token:distance.md' );
 		expect( writes.at( -1 ) ).toBe( 'token:distance.md' );
 		expect( select().value ).toBe( 'token:distance.md' );
 	} );
 
 	test( 'hideLabelFromVision drops the visible label; disabled reaches every part', () => {
-		renderControlled( '20px', { hideLabelFromVision: true, disabled: true } );
+		renderControlled( '20px', {
+			hideLabelFromVision: true,
+			disabled: true,
+		} );
 		expect( container.querySelector( '[data-testid="label"]' ) ).toBeNull();
 		expect( select().disabled ).toBe( true );
 		expect( box().disabled ).toBe( true );
@@ -267,25 +321,32 @@ describe( 'SgsLengthControl fallbacks and passthroughs', () => {
 
 	test( 'a visible label and help render', () => {
 		renderControlled( '', { help: 'Some help' } );
-		expect( container.querySelector( '[data-testid="label"]' ).textContent ).toBe( 'Gap' );
+		expect(
+			container.querySelector( '[data-testid="label"]' ).textContent
+		).toBe( 'Gap' );
 		expect( container.textContent ).toContain( 'Some help' );
 	} );
 } );
 
 describe( 'SgsLengthControl font-size scale', () => {
-	const picker = () => container.querySelector( '[data-testid="font-size-picker"]' );
+	const picker = () =>
+		container.querySelector( '[data-testid="font-size-picker"]' );
 
 	test( 'renders core FontSizePicker with the slider and core units, in literal mode for a length', () => {
 		renderControlled( '24px', { scale: 'font-size' } );
 		expect( picker().getAttribute( 'data-mode' ) ).toBe( 'literal' );
 		expect( picker().getAttribute( 'data-value' ) ).toBe( '24px' );
 		expect( picker().getAttribute( 'data-slider' ) ).toBe( 'true' );
-		expect( picker().getAttribute( 'data-units' ) ).toBe( 'px,em,rem,vw,vh' );
+		expect( picker().getAttribute( 'data-units' ) ).toBe(
+			'px,em,rem,vw,vh'
+		);
 		expect( select() ).toBeNull();
 	} );
 
 	test( 'a stored preset var is read back as the slug', () => {
-		renderControlled( 'var(--wp--preset--font-size--large)', { scale: 'font-size' } );
+		renderControlled( 'var(--wp--preset--font-size--large)', {
+			scale: 'font-size',
+		} );
 		expect( picker().getAttribute( 'data-mode' ) ).toBe( 'slug' );
 		expect( picker().getAttribute( 'data-value' ) ).toBe( 'large' );
 	} );

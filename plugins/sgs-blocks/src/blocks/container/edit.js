@@ -1,41 +1,74 @@
-import { __ } from "@wordpress/i18n";
+import { __ } from '@wordpress/i18n';
 import {
-  useBlockProps,
-  useInnerBlocksProps,
-  InspectorControls,
-  useSettings,
-} from "@wordpress/block-editor";
+	useBlockProps,
+	useInnerBlocksProps,
+	InspectorControls,
+	useSettings,
+} from '@wordpress/block-editor';
 import {
-  PanelBody,
-  SelectControl,
-  TextControl,
-  ToggleControl,
-} from "@wordpress/components";
-import { useSelect } from "@wordpress/data";
-import { useRef } from "@wordpress/element";
-import { useMergeRefs } from "@wordpress/compose";
-import { useSeparatorOverlay } from "../../shared/separators/useSeparatorOverlay";
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls, SgsBoxControl, SgsSeparatorControl } from "../../components";
-import ScrollSidewaysPanel from "./components/ScrollSidewaysPanel";
-import PinEdgeControl from "./components/PinEdgeControl";
-import { pinEdgeTopPreview } from "./pin-edge-preview";
-import { hasContentBand, sectionPaddingDefaults } from "../../utils/section-padding";
-import { resolveOnTiers } from "../../utils/responsive";
-import { resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, backgroundPreview, svgBackgroundPreview, tierBoxLonghands, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, flattenPresetSetting, separatorsFlowPreview, typographyPreviewStyle, textIndentPreviewCss, sgsBorderPreview } from "../../utils";
-import ShapeDividerPreview from "../../components/ShapeDividerPreview";
-import { gridItemVars, gridItemStateCss } from "./grid-item-preview";
-import { motionNamesBand } from "../extensions/motion/canvas/resolve-target";
-import { getBlockType } from "@wordpress/blocks";
-import { containerColumnsPreview, containerRowsPreview, bandMarginPreview } from "./layout-preview";
+	PanelBody,
+	SelectControl,
+	TextControl,
+	ToggleControl,
+} from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
+import { useRef } from '@wordpress/element';
+import { useMergeRefs } from '@wordpress/compose';
+import { useSeparatorOverlay } from '../../shared/separators/useSeparatorOverlay';
 import {
-  LayoutPanel,
-  WidthPanel,
-  ContentBandWidthControl,
-  BackgroundPanel,
-  ShapeDividersPanel,
-  GridItemDefaultsPanel,
-  MIN_HEIGHT_OPTIONS,
-} from "./components/ContainerWrapperControls";
+	ResponsiveOverride,
+	ShadowControl,
+	SgsColourPanel,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBorderControl,
+	TypographyControls,
+	SgsBoxControl,
+	SgsSeparatorControl,
+} from '../../components';
+import ScrollSidewaysPanel from './components/ScrollSidewaysPanel';
+import PinEdgeControl from './components/PinEdgeControl';
+import { pinEdgeTopPreview } from './pin-edge-preview';
+import {
+	hasContentBand,
+	sectionPaddingDefaults,
+} from '../../utils/section-padding';
+import { resolveOnTiers } from '../../utils/responsive';
+import {
+	resolveShadowPreviewComposed,
+	resolveResponsiveTier,
+	backgroundPaintPreview,
+	textPaintPreview,
+	backgroundPreview,
+	svgBackgroundPreview,
+	tierBoxLonghands,
+	resolveContentWidthPreview,
+	contentBandPreview,
+	applyGridLayoutPreview,
+	flattenPresetSetting,
+	separatorsFlowPreview,
+	typographyPreviewStyle,
+	textIndentPreviewCss,
+	sgsBorderPreview,
+} from '../../utils';
+import ShapeDividerPreview from '../../components/ShapeDividerPreview';
+import { gridItemVars, gridItemStateCss } from './grid-item-preview';
+import { motionNamesBand } from '../extensions/motion/canvas/resolve-target';
+import { getBlockType } from '@wordpress/blocks';
+import {
+	containerColumnsPreview,
+	containerRowsPreview,
+	bandMarginPreview,
+} from './layout-preview';
+import {
+	LayoutPanel,
+	WidthPanel,
+	ContentBandWidthControl,
+	BackgroundPanel,
+	ShapeDividersPanel,
+	GridItemDefaultsPanel,
+	MIN_HEIGHT_OPTIONS,
+} from './components/ContainerWrapperControls';
 
 /**
  * Resolve a gap attribute value to a CSS string for editor preview.
@@ -59,7 +92,7 @@ import {
  *
  * @param {Object|string} gap  Gap attribute value (tier object, or legacy string).
  * @param {string}        tier Active device tier ('desktop'|'tablet'|'mobile').
- * @returns {string|undefined}
+ * @return {string|undefined} The CSS gap value, or undefined when unset.
  */
 function gapCssValue( gap, tier = 'desktop' ) {
 	const raw =
@@ -70,7 +103,9 @@ function gapCssValue( gap, tier = 'desktop' ) {
 		// non-string style value. Net effect: the canvas showed NO gap at all
 		// while the published page was correct. Line ~321 (minHeight) already
 		// does `?.value` -- this was the odd one out.
-		gap && typeof gap === 'object' ? resolveResponsiveTier( gap, tier )?.value : gap;
+		gap && typeof gap === 'object'
+			? resolveResponsiveTier( gap, tier )?.value
+			: gap;
 
 	if ( ! raw ) {
 		return undefined;
@@ -79,7 +114,7 @@ function gapCssValue( gap, tier = 'desktop' ) {
 	if ( /^\d+(\.\d+)?$/.test( String( raw ) ) ) {
 		return `${ raw }px`;
 	}
-	// Raw CSS length — return as-is (already validated by SpacingControl freeInput).
+	// Raw CSS length — return as-is (already validated by SgsLengthControl).
 	return raw;
 }
 
@@ -87,15 +122,15 @@ function gapCssValue( gap, tier = 'desktop' ) {
 // landmark navigation (WCAG 2.2) and SEO/document structure. Must match the
 // block.json `tagName` enum and the wrapper's allowlist.
 const TAG_NAME_OPTIONS = [
-  { label: __( "Section (default)", "sgs-blocks" ), value: "section" },
-  { label: __( "Div (no semantics)", "sgs-blocks" ), value: "div" },
-  { label: __( "Article (self-contained)", "sgs-blocks" ), value: "article" },
-  { label: __( "Aside (complementary)", "sgs-blocks" ), value: "aside" },
-  { label: __( "Nav (navigation)", "sgs-blocks" ), value: "nav" },
-  { label: __( "Header", "sgs-blocks" ), value: "header" },
-  { label: __( "Footer", "sgs-blocks" ), value: "footer" },
-  { label: __( "Figure", "sgs-blocks" ), value: "figure" },
-  { label: __( "Main (page landmark)", "sgs-blocks" ), value: "main" },
+	{ label: __( 'Section (default)', 'sgs-blocks' ), value: 'section' },
+	{ label: __( 'Div (no semantics)', 'sgs-blocks' ), value: 'div' },
+	{ label: __( 'Article (self-contained)', 'sgs-blocks' ), value: 'article' },
+	{ label: __( 'Aside (complementary)', 'sgs-blocks' ), value: 'aside' },
+	{ label: __( 'Nav (navigation)', 'sgs-blocks' ), value: 'nav' },
+	{ label: __( 'Header', 'sgs-blocks' ), value: 'header' },
+	{ label: __( 'Footer', 'sgs-blocks' ), value: 'footer' },
+	{ label: __( 'Figure', 'sgs-blocks' ), value: 'figure' },
+	{ label: __( 'Main (page landmark)', 'sgs-blocks' ), value: 'main' },
 ];
 
 // TEXT_ALIGN_OPTIONS (the "— inherit —"/Left/Centre/Right/Justify list) was
@@ -104,546 +139,737 @@ const TAG_NAME_OPTIONS = [
 // Typography panel's "Text alignment" ToggleGroupControl (SGS_TEXT_ALIGN_OPTIONS
 // inside TypographyControls.js) is the one surviving control for this attribute.
 
-export default function Edit({ attributes, setAttributes, name, clientId }) {
-  const {
-    layout,
-    gap,
-    shadow,
-    // maxWidth and minHeight are both TIER OBJECTS — read via
-    // `attributes.maxWidth`/`attributes.minHeight` below, not destructured
-    // bare (a bare destructure was a real live bug for maxWidth's editor
-    // preview, fixed below, same class as gridTemplateColumns already
-    // resolving via resolveResponsiveTier rather than being used bare).
-    gridTemplateColumns = "",
-    alignItems,
-    justifyItems = "stretch",
-    alignContent = "stretch",
-    backgroundColour,
-    backgroundColourGradient,
-    backgroundColourHover,
-    backgroundColourHoverGradient,
-    textColour,
-    textColourGradient,
-    textColourHover,
-    textColourHoverGradient,
-    gridAutoRows = "",
-    flexDirection = "",
-    flexWrap = "wrap",
-    justifyContent = "",
-    borderColour,
-    borderColourGradient,
-    borderColourHover,
-    borderColourHoverGradient,
-    borderWidth,
-    borderStyle,
-  } = attributes;
+export default function Edit( { attributes, setAttributes, name, clientId } ) {
+	const {
+		layout,
+		gap,
+		shadow,
+		// maxWidth and minHeight are both TIER OBJECTS — read via
+		// `attributes.maxWidth`/`attributes.minHeight` below, not destructured
+		// bare (a bare destructure was a real live bug for maxWidth's editor
+		// preview, fixed below, same class as gridTemplateColumns already
+		// resolving via resolveResponsiveTier rather than being used bare).
+		gridTemplateColumns = '',
+		alignItems,
+		justifyItems = 'stretch',
+		alignContent = 'stretch',
+		backgroundColour,
+		backgroundColourGradient,
+		backgroundColourHover,
+		backgroundColourHoverGradient,
+		textColour,
+		textColourGradient,
+		textColourHover,
+		textColourHoverGradient,
+		gridAutoRows = '',
+		flexDirection = '',
+		flexWrap = 'wrap',
+		justifyContent = '',
+		borderColour,
+		borderColourGradient,
+		borderColourHover,
+		borderColourHoverGradient,
+		borderWidth,
+		borderStyle,
+	} = attributes;
 
-  // D288/D636: colours are stored as theme-token SLUGS or a custom hex, and
-  // gradients as EITHER a raw CSS gradient string OR a theme gradient-preset
-  // SLUG (e.g. "primary-to-accent") — resolved the same way the button
-  // block's editor preview does (resolveColourToken against the live
-  // palette), so a preset applied in the inspector actually shows on canvas
-  // rather than looking like a no-op.
-  const [ colourPalette, customSettings ] = useSettings( "color.palette", "custom" );
-  // The theme's gradient presets, normalised by flattenPresetSetting() —
-  // useSettings() returns a flat array or an origin-keyed object depending on
-  // the feature — so backgroundPreview() can resolve a preset SLUG to its CSS stops.
-  const [ rawGradientPresets ] = useSettings( "color.gradients" );
-  const gradientPresets = flattenPresetSetting( rawGradientPresets );
+	// D288/D636: colours are stored as theme-token SLUGS or a custom hex, and
+	// gradients as EITHER a raw CSS gradient string OR a theme gradient-preset
+	// SLUG (e.g. "primary-to-accent") — resolved the same way the button
+	// block's editor preview does (resolveColourToken against the live
+	// palette), so a preset applied in the inspector actually shows on canvas
+	// rather than looking like a no-op.
+	const [ colourPalette, customSettings ] = useSettings(
+		'color.palette',
+		'custom'
+	);
+	// The theme's gradient presets, normalised by flattenPresetSetting() —
+	// useSettings() returns a flat array or an origin-keyed object depending on
+	// the feature — so backgroundPreview() can resolve a preset SLUG to its CSS stops.
+	const [ rawGradientPresets ] = useSettings( 'color.gradients' );
+	const gradientPresets = flattenPresetSetting( rawGradientPresets );
 
-  // Active device tier for the preview, read from the SAME source the inspector's
-  // global device toggle writes (`core/editor` getDeviceType) — mirrors
-  // ResponsiveControl.js:103. Without this the preview would always show desktop
-  // while the operator is editing the mobile tier.
-  const previewTier = useSelect( ( select ) => {
-    const ed = select( "core/editor" );
-    const device =
-      ed && typeof ed.getDeviceType === "function" ? ed.getDeviceType() : null;
-    return { Tablet: "tablet", Mobile: "mobile" }[ device ] || "desktop";
-  }, [] );
+	// Active device tier for the preview, read from the SAME source the inspector's
+	// global device toggle writes (`core/editor` getDeviceType) — mirrors
+	// ResponsiveControl.js:103. Without this the preview would always show desktop
+	// while the operator is editing the mobile tier.
+	const previewTier = useSelect( ( select ) => {
+		const ed = select( 'core/editor' );
+		const device =
+			ed && typeof ed.getDeviceType === 'function'
+				? ed.getDeviceType()
+				: null;
+		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
+	}, [] );
 
-  // Editor preview: media (image/video) and overlay —
-  // extracted to the shared `backgroundPreview()` (`src/utils/background-preview.js`,
-  // 2026-08-26) so the same mirror serves every other block mounting
-  // `BackgroundPanel` (composite wrapper rule, CLAUDE.md). `bgPreview.style`
-  // carries the same custom-property set this block used to build inline.
-  // Decorative SVG background layer — editor mirror (2026-09-05). Deliberately
-  // NOT folded into backgroundPreview()'s return: that helper paints via
-  // `--sgs-ed-bg-*` custom properties on a ::before, whereas the SVG layer is a
-  // real element whose painting rules already ship in style.css (loaded in the
-  // canvas via block.json `style`). See svgBackgroundPreview()'s own docblock.
-  // Attributes enumerated EXPLICITLY rather than passing `attributes` wholesale
-  // — the same convention backgroundPreview()'s call site below already uses.
-  // Two reasons, both real: it documents exactly which attrs this mirror reads,
-  // and check-editor-render-parity.js (CHECK A) resolves an attribute as
-  // canvas-reflected only when its NAME appears outside the Inspector panels. A
-  // whole-object hand-off renders correctly but reads to that gate as a desync,
-  // which is precisely the false-negative shape its own header documents.
-  const svgPreview = svgBackgroundPreview( {
-    bgSvgContent: attributes.bgSvgContent,
-    bgSvgPosition: attributes.bgSvgPosition,
-    bgSvgOpacity: attributes.bgSvgOpacity,
-    bgSvgMinHeight: attributes.bgSvgMinHeight,
-    bgSvgTextShadow: attributes.bgSvgTextShadow,
-  } );
+	// Editor preview: media (image/video) and overlay —
+	// extracted to the shared `backgroundPreview()` (`src/utils/background-preview.js`,
+	// 2026-08-26) so the same mirror serves every other block mounting
+	// `BackgroundPanel` (composite wrapper rule, CLAUDE.md). `bgPreview.style`
+	// carries the same custom-property set this block used to build inline.
+	// Decorative SVG background layer — editor mirror (2026-09-05). Deliberately
+	// NOT folded into backgroundPreview()'s return: that helper paints via
+	// `--sgs-ed-bg-*` custom properties on a ::before, whereas the SVG layer is a
+	// real element whose painting rules already ship in style.css (loaded in the
+	// canvas via block.json `style`). See svgBackgroundPreview()'s own docblock.
+	// Attributes enumerated EXPLICITLY rather than passing `attributes` wholesale
+	// — the same convention backgroundPreview()'s call site below already uses.
+	// Two reasons, both real: it documents exactly which attrs this mirror reads,
+	// and check-editor-render-parity.js (CHECK A) resolves an attribute as
+	// canvas-reflected only when its NAME appears outside the Inspector panels. A
+	// whole-object hand-off renders correctly but reads to that gate as a desync,
+	// which is precisely the false-negative shape its own header documents.
+	const svgPreview = svgBackgroundPreview( {
+		bgSvgContent: attributes.bgSvgContent,
+		bgSvgPosition: attributes.bgSvgPosition,
+		bgSvgOpacity: attributes.bgSvgOpacity,
+		bgSvgMinHeight: attributes.bgSvgMinHeight,
+		bgSvgTextShadow: attributes.bgSvgTextShadow,
+	} );
 
-  const bgPreview = backgroundPreview( {
-    backgroundImage: attributes.backgroundImage,
-    backgroundImageTablet: attributes.backgroundImageTablet,
-    backgroundImageMobile: attributes.backgroundImageMobile,
-    surfaceTone: attributes.surfaceTone,
-    bgVideo: attributes.bgVideo,
-    backgroundSize: attributes.backgroundSize,
-    backgroundPosition: attributes.backgroundPosition,
-    backgroundRepeat: attributes.backgroundRepeat,
-    backgroundAttachment: attributes.backgroundAttachment,
-    backgroundOverlayColour: attributes.backgroundOverlayColour,
-    overlayGradient: attributes.overlayGradient,
-    backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
-    backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
-    backgroundColour: attributes.backgroundColour,
-    backgroundColourGradient: attributes.backgroundColourGradient,
-    surfaceBlur: attributes.surfaceBlur,
-    surfaceSaturate: attributes.surfaceSaturate,
-  }, colourPalette, gradientPresets, previewTier );
+	const bgPreview = backgroundPreview(
+		{
+			backgroundImage: attributes.backgroundImage,
+			backgroundImageTablet: attributes.backgroundImageTablet,
+			backgroundImageMobile: attributes.backgroundImageMobile,
+			surfaceTone: attributes.surfaceTone,
+			bgVideo: attributes.bgVideo,
+			backgroundSize: attributes.backgroundSize,
+			backgroundPosition: attributes.backgroundPosition,
+			backgroundRepeat: attributes.backgroundRepeat,
+			backgroundAttachment: attributes.backgroundAttachment,
+			backgroundOverlayColour: attributes.backgroundOverlayColour,
+			overlayGradient: attributes.overlayGradient,
+			backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
+			backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
+			backgroundColour: attributes.backgroundColour,
+			backgroundColourGradient: attributes.backgroundColourGradient,
+			surfaceBlur: attributes.surfaceBlur,
+			surfaceSaturate: attributes.surfaceSaturate,
+		},
+		colourPalette,
+		gradientPresets,
+		previewTier
+	);
 
-  const style = {
-    gap: gapCssValue( gap, previewTier ),
-    ...( ( layout === "grid" || layout === "flex" || layout === "stack" ) && separatorsFlowPreview( attributes.separators, previewTier ) ),
-    minHeight: resolveResponsiveTier( attributes.minHeight, previewTier )?.value || undefined,
-    aspectRatio: /^\s*\d+(\.\d+)?\s*(\/\s*\d+(\.\d+)?\s*)?$/.test( attributes.boxAspectRatio || '' ) ? attributes.boxAspectRatio : undefined,
-    ...(shadow && { boxShadow: resolveShadowPreviewComposed( shadow, attributes.shadowColour ) }),
-    ...bgPreview.style,
-    ...svgPreview.style,
-    // Base (SGS-owned) background paint — the OUTER-most layer, below the
-    // media ::before and the overlay span. Text paint is applied AFTER
-    // background so it wins the shared `backgroundImage` key exactly as the
-    // frontend's decl order does when BOTH a background gradient and a text
-    // gradient are set (helpers-tokens.php's $sgs_container_resting_decls:
-    // background pushed first, text pushed second — same last-wins result).
-    ...backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ),
-    ...textPaintPreview( textColour, textColourGradient, colourPalette ),
-  };
+	const style = {
+		gap: gapCssValue( gap, previewTier ),
+		...( ( layout === 'grid' || layout === 'flex' || layout === 'stack' ) &&
+			separatorsFlowPreview( attributes.separators, previewTier ) ),
+		minHeight:
+			resolveResponsiveTier( attributes.minHeight, previewTier )?.value ||
+			undefined,
+		aspectRatio: /^\s*\d+(\.\d+)?\s*(\/\s*\d+(\.\d+)?\s*)?$/.test(
+			attributes.boxAspectRatio || ''
+		)
+			? attributes.boxAspectRatio
+			: undefined,
+		...( shadow && {
+			boxShadow: resolveShadowPreviewComposed(
+				shadow,
+				attributes.shadowColour
+			),
+		} ),
+		...bgPreview.style,
+		...svgPreview.style,
+		// Base (SGS-owned) background paint — the OUTER-most layer, below the
+		// media ::before and the overlay span. Text paint is applied AFTER
+		// background so it wins the shared `backgroundImage` key exactly as the
+		// frontend's decl order does when BOTH a background gradient and a text
+		// gradient are set (helpers-tokens.php's $sgs_container_resting_decls:
+		// background pushed first, text pushed second — same last-wins result).
+		...backgroundPaintPreview(
+			backgroundColour,
+			backgroundColourGradient,
+			colourPalette
+		),
+		...textPaintPreview( textColour, textColourGradient, colourPalette ),
+	};
 
-  // Responsive padding/margin (Spec 35 / D555) — a flat trio of OWNED box
-  // attrs, not a single tier-object attribute (unlike gap/minHeight/maxWidth
-  // above), so it resolves via resolveBoxTierPreview() rather than
-  // resolveResponsiveTier(). Previously never applied to the canvas at all —
-  // the inspector's ResponsiveBoxControl wrote the attrs correctly but
-  // nothing here read them back.
-  // Set sides only, as longhands: the page prints the same through
-  // wp_style_engine_get_styles(), so an unset side keeps the stylesheet's value.
-  Object.assign( style, tierBoxLonghands( attributes.padding, previewTier, 'padding' ), tierBoxLonghands( attributes.margin, previewTier, 'margin' ) );
+	// Responsive padding/margin (Spec 35 / D555) — a flat trio of OWNED box
+	// attrs, not a single tier-object attribute (unlike gap/minHeight/maxWidth
+	// above), so it resolves via resolveBoxTierPreview() rather than
+	// resolveResponsiveTier(). Previously never applied to the canvas at all —
+	// the inspector's ResponsiveBoxControl wrote the attrs correctly but
+	// nothing here read them back.
+	// Set sides only, as longhands: the page prints the same through
+	// wp_style_engine_get_styles(), so an unset side keeps the stylesheet's value.
+	Object.assign(
+		style,
+		tierBoxLonghands( attributes.padding, previewTier, 'padding' ),
+		tierBoxLonghands( attributes.margin, previewTier, 'margin' )
+	);
 
-  // Border preview — previously entirely absent from the canvas (only wired
-  // into SgsBorderControl's InspectorControls binding, never applied to the
-  // wrapper style), same gap as sgs/hero. borderWidth is a box object
-  // (base-only, no tiers, matching the SgsBorderControl pair standard).
-  Object.assign( style, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, colourPalette ) );
+	// Border preview — previously entirely absent from the canvas (only wired
+	// into SgsBorderControl's InspectorControls binding, never applied to the
+	// wrapper style), same gap as sgs/hero. borderWidth is a box object
+	// (base-only, no tiers, matching the SgsBorderControl pair standard).
+	Object.assign(
+		style,
+		sgsBorderPreview(
+			{
+				widthValues: borderWidth,
+				styleValue: borderStyle,
+				colourValue: borderColour,
+				colourGradientValue: borderColourGradient,
+				radiusValues: attributes.borderRadius,
+			},
+			previewTier,
+			colourPalette
+		)
+	);
 
-  // Grid/flex/stack layout preview — shared with every other block routed through
-  // SGS_Container_Wrapper::render() via `applyGridLayoutPreview()`
-  // (`src/utils/grid-layout-preview.js`, extracted 2026-09-05 from this block, the
-  // only one that had built it). Mutates `style` in place.
-  applyGridLayoutPreview( style, {
-    layout,
-    alignItems,
-    justifyItems,
-    alignContent,
-    gridAutoRows,
-    gridTemplateColumns,
-    columns: attributes.columns,
-    flexDirection,
-    flexWrap,
-    justifyContent,
-  } );
-  if ( layout === "grid" ) {
-    // The column track at the previewed tier: an authored track list, else the
-    // intrinsic track this block opts into (count ceiling, minimum column width).
-    const intrinsicTrack = containerColumnsPreview( attributes, previewTier, gapCssValue( gap, previewTier ) );
-    style.gridTemplateColumns = intrinsicTrack ?? resolveResponsiveTier( gridTemplateColumns, previewTier )?.value ?? style.gridTemplateColumns;
-    style.gridTemplateRows = containerRowsPreview( attributes, previewTier );
-  }
+	// Grid/flex/stack layout preview — shared with every other block routed through
+	// SGS_Container_Wrapper::render() via `applyGridLayoutPreview()`
+	// (`src/utils/grid-layout-preview.js`, extracted 2026-09-05 from this block, the
+	// only one that had built it). Mutates `style` in place.
+	applyGridLayoutPreview( style, {
+		layout,
+		alignItems,
+		justifyItems,
+		alignContent,
+		gridAutoRows,
+		gridTemplateColumns,
+		columns: attributes.columns,
+		flexDirection,
+		flexWrap,
+		justifyContent,
+	} );
+	if ( layout === 'grid' ) {
+		// The column track at the previewed tier: an authored track list, else the
+		// intrinsic track this block opts into (count ceiling, minimum column width).
+		const intrinsicTrack = containerColumnsPreview(
+			attributes,
+			previewTier,
+			gapCssValue( gap, previewTier )
+		);
+		style.gridTemplateColumns =
+			intrinsicTrack ??
+			resolveResponsiveTier( gridTemplateColumns, previewTier )?.value ??
+			style.gridTemplateColumns;
+		style.gridTemplateRows = containerRowsPreview(
+			attributes,
+			previewTier
+		);
+	}
 
-  // Corner radius and root typography at the previewed tier.
-  Object.assign( style, typographyPreviewStyle( attributes, "", previewTier ) );
-  // Pin to edge (pinEdge, includes/container-pin-edge-css.php): the editor canvas scrolls
-  // too, so the previewed device's pin sticks the same way it does on the page.
-  const pinEdgePreview = resolveResponsiveTier( attributes.pinEdge, previewTier )?.value;
-  if ( "top" === pinEdgePreview || "bottom" === pinEdgePreview ) {
-    Object.assign( style, {
-      position: "sticky",
-      [ pinEdgePreview ]: "top" === pinEdgePreview ? pinEdgeTopPreview( attributes, previewTier ) : 0,
-      zIndex: 2,
-    } );
-  }
+	// Corner radius and root typography at the previewed tier.
+	Object.assign(
+		style,
+		typographyPreviewStyle( attributes, '', previewTier )
+	);
+	// Pin to edge (pinEdge, includes/container-pin-edge-css.php): the editor canvas scrolls
+	// too, so the previewed device's pin sticks the same way it does on the page.
+	const pinEdgePreview = resolveResponsiveTier(
+		attributes.pinEdge,
+		previewTier
+	)?.value;
+	if ( 'top' === pinEdgePreview || 'bottom' === pinEdgePreview ) {
+		Object.assign( style, {
+			position: 'sticky',
+			[ pinEdgePreview ]:
+				'top' === pinEdgePreview
+					? pinEdgeTopPreview( attributes, previewTier )
+					: 0,
+			zIndex: 2,
+		} );
+	}
 
-  // Editor preview: when a literal maxWidth is set, apply it as inline max-width.
-  // Breakout (alignwide / alignfull) is driven by WP-native align attr — no inline style needed.
-  // maxWidth is a TIER OBJECT — was destructured and used BARE here (a real live
-  // bug: an object handed to `style.maxWidth` renders nothing useful in the
-  // editor preview), found and fixed alongside minHeight's own migration.
-  const previewMaxWidth = resolveResponsiveTier( attributes.maxWidth, previewTier )?.value;
-  if ( previewMaxWidth ) {
-    style.maxWidth = previewMaxWidth;
-  }
+	// Editor preview: when a literal maxWidth is set, apply it as inline max-width.
+	// Breakout (alignwide / alignfull) is driven by WP-native align attr — no inline style needed.
+	// maxWidth is a TIER OBJECT — was destructured and used BARE here (a real live
+	// bug: an object handed to `style.maxWidth` renders nothing useful in the
+	// editor preview), found and fixed alongside minHeight's own migration.
+	const previewMaxWidth = resolveResponsiveTier(
+		attributes.maxWidth,
+		previewTier
+	)?.value;
+	if ( previewMaxWidth ) {
+		style.maxWidth = previewMaxWidth;
+	}
 
-  // ── CONTENT BAND (L2) — the editor rendered ONE layer until 2026-08-21 ─────
-  // `edit.js` never emitted `.sgs-container__inner`, while `editor.css:13` styled it:
-  // a rule waiting for an element that was never created. So "Content band width" and
-  // "Band padding" wrote to something the canvas did not contain — the client changed
-  // a setting, nothing moved, and the only way to see the result was to publish.
-  //
-  // The gate MUST match the wrapper's `$has_band_props` (~:894): a resolved contentWidth
-  // OR any band-padding side. Not "is contentWidth set" — `full` resolves to '' and must
-  // NOT produce a band, or the canvas would grow a layer the frontend does not have.
-  const bandMaxWidth = resolveContentWidthPreview(
-    resolveResponsiveTier( attributes.contentWidth, previewTier )?.value
-  );
-  const bandPadTier = resolveResponsiveTier( attributes.contentBandPadding, previewTier )?.value;
-  const bandPad = bandPadTier && typeof bandPadTier === "object" ? bandPadTier : {};
+	// ── CONTENT BAND (L2) — the editor rendered ONE layer until 2026-08-21 ─────
+	// `edit.js` never emitted `.sgs-container__inner`, while `editor.css:13` styled it:
+	// a rule waiting for an element that was never created. So "Content band width" and
+	// "Band padding" wrote to something the canvas did not contain — the client changed
+	// a setting, nothing moved, and the only way to see the result was to publish.
+	//
+	// The gate MUST match the wrapper's `$has_band_props` (~:894): a resolved contentWidth
+	// OR any band-padding side. Not "is contentWidth set" — `full` resolves to '' and must
+	// NOT produce a band, or the canvas would grow a layer the frontend does not have.
+	const bandMaxWidth = resolveContentWidthPreview(
+		resolveResponsiveTier( attributes.contentWidth, previewTier )?.value
+	);
+	const bandPadTier = resolveResponsiveTier(
+		attributes.contentBandPadding,
+		previewTier
+	)?.value;
+	const bandPad =
+		bandPadTier && typeof bandPadTier === 'object' ? bandPadTier : {};
 
-  // Content band (Layer 2 / `.sgs-container__inner`) + grid-on-inner migration —
-  // shared with every other block routed through SGS_Container_Wrapper::render() via
-  // `contentBandPreview()` (`src/utils/content-band-preview.js`, extracted 2026-09-05
-  // from this block, the only one that had built it). Mutates `style` in place when a
-  // band exists (grid-on-inner: the frontend moves grid/flex declarations onto the
-  // band, so the canvas must too — a grid container would otherwise preview its
-  // columns on the full-bleed outer while rendering them on the capped band).
-  // The band also renders for a band margin alone ($has_band_props counts it);
-  // that band carries no width cap, so the cap the helper adds is removed again.
-  const bandMargin = bandMarginPreview( attributes, previewTier );
-  const bandForMarginOnly = Object.keys( bandMargin ).length > 0 && "" === bandMaxWidth;
-  const { hasBandProps: bandFromProps, bandStyle } = contentBandPreview( {
-    contentWidth: bandForMarginOnly ? "none" : bandMaxWidth,
-    bandPadding: bandPad,
-    style,
-    layout,
-  } );
-  if ( bandForMarginOnly ) {
-    delete bandStyle.maxWidth;
-    delete bandStyle.marginInline;
-  }
-  // A motion layer on the band part (`content-band`, `inner`; Spec 38A §6.2) needs the band, so it forces it here as
-  // `Sgs_Motion_Targets::names_band()` forces it in the container wrapper on the page.
-  const hasBandProps = bandFromProps || motionNamesBand( attributes, name, getBlockType( name )?.supports?.sgs?.elements || {} );
-  Object.assign( bandStyle, bandMargin );
-  if ( "grid" === layout && hasBandProps && style.gridTemplateRows !== undefined ) {
-    bandStyle.gridTemplateRows = style.gridTemplateRows;
-    delete style.gridTemplateRows;
-  }
+	// Content band (Layer 2 / `.sgs-container__inner`) + grid-on-inner migration —
+	// shared with every other block routed through SGS_Container_Wrapper::render() via
+	// `contentBandPreview()` (`src/utils/content-band-preview.js`, extracted 2026-09-05
+	// from this block, the only one that had built it). Mutates `style` in place when a
+	// band exists (grid-on-inner: the frontend moves grid/flex declarations onto the
+	// band, so the canvas must too — a grid container would otherwise preview its
+	// columns on the full-bleed outer while rendering them on the capped band).
+	// The band also renders for a band margin alone ($has_band_props counts it);
+	// that band carries no width cap, so the cap the helper adds is removed again.
+	const bandMargin = bandMarginPreview( attributes, previewTier );
+	const bandForMarginOnly =
+		Object.keys( bandMargin ).length > 0 && '' === bandMaxWidth;
+	const { hasBandProps: bandFromProps, bandStyle } = contentBandPreview( {
+		contentWidth: bandForMarginOnly ? 'none' : bandMaxWidth,
+		bandPadding: bandPad,
+		style,
+		layout,
+	} );
+	if ( bandForMarginOnly ) {
+		delete bandStyle.maxWidth;
+		delete bandStyle.marginInline;
+	}
+	// A motion layer on the band part (`content-band`, `inner`; Spec 38A §6.2) needs the band, so it forces it here as
+	// `Sgs_Motion_Targets::names_band()` forces it in the container wrapper on the page.
+	const hasBandProps =
+		bandFromProps ||
+		motionNamesBand(
+			attributes,
+			name,
+			getBlockType( name )?.supports?.sgs?.elements || {}
+		);
+	Object.assign( bandStyle, bandMargin );
+	if (
+		'grid' === layout &&
+		hasBandProps &&
+		style.gridTemplateRows !== undefined
+	) {
+		bandStyle.gridTemplateRows = style.gridTemplateRows;
+		delete style.gridTemplateRows;
+	}
 
-  // Grid-item defaults (Spec 32 FR-32-12): the six --sgs-gi-* values on the grid
-  // element itself (the band when one renders), where style.css's consumer
-  // paints every cell; the states a custom property cannot express ride a
-  // <style> scoped to this instance (grid-item-preview.js).
-  let gridItemScopedCss = "";
-  if ( layout === "grid" ) {
-    Object.assign( hasBandProps ? bandStyle : style, gridItemVars( attributes, previewTier, colourPalette ) );
-    gridItemScopedCss = gridItemStateCss( attributes, `#block-${ clientId }`, colourPalette, customSettings?.shadowHover );
-  }
-  gridItemScopedCss += textIndentPreviewCss( attributes, "", `#block-${ clientId }`, previewTier );
+	// Grid-item defaults (Spec 32 FR-32-12): the six --sgs-gi-* values on the grid
+	// element itself (the band when one renders), where style.css's consumer
+	// paints every cell; the states a custom property cannot express ride a
+	// <style> scoped to this instance (grid-item-preview.js).
+	let gridItemScopedCss = '';
+	if ( layout === 'grid' ) {
+		Object.assign(
+			hasBandProps ? bandStyle : style,
+			gridItemVars( attributes, previewTier, colourPalette )
+		);
+		gridItemScopedCss = gridItemStateCss(
+			attributes,
+			`#block-${ clientId }`,
+			colourPalette,
+			customSettings?.shadowHover
+		);
+	}
+	gridItemScopedCss += textIndentPreviewCss(
+		attributes,
+		'',
+		`#block-${ clientId }`,
+		previewTier
+	);
 
-  // "Scroll sideways" at the previewed device: the items' row (the band when one
-  // renders, else the root) previews as the same one-line row the frontend
-  // draws (includes/container-scroll-row-css.php), without snap, which would
-  // fight block selection. editor.css sizes the blocks in the marked row.
-  const scrollRowPreview =
-    "horizontal-panel" !== attributes.fx &&
-    resolveOnTiers( attributes.scrollSideways, "on", "off" ).includes( previewTier );
-  if ( scrollRowPreview ) {
-    Object.assign( hasBandProps ? bandStyle : style, {
-      display: "flex",
-      flexDirection: "row",
-      flexWrap: "nowrap",
-      justifyContent: "flex-start",
-      alignItems: "stretch",
-      overflowX: "auto",
-      overflowY: "hidden",
-      "--sgs-scroll-item-width":
-        resolveResponsiveTier( attributes.scrollItemWidth, previewTier )?.value || undefined,
-    } );
-  }
+	// "Scroll sideways" at the previewed device: the items' row (the band when one
+	// renders, else the root) previews as the same one-line row the frontend
+	// draws (includes/container-scroll-row-css.php), without snap, which would
+	// fight block selection. editor.css sizes the blocks in the marked row.
+	const scrollRowPreview =
+		'horizontal-panel' !== attributes.fx &&
+		resolveOnTiers( attributes.scrollSideways, 'on', 'off' ).includes(
+			previewTier
+		);
+	if ( scrollRowPreview ) {
+		Object.assign( hasBandProps ? bandStyle : style, {
+			display: 'flex',
+			flexDirection: 'row',
+			flexWrap: 'nowrap',
+			justifyContent: 'flex-start',
+			alignItems: 'stretch',
+			overflowX: 'auto',
+			overflowY: 'hidden',
+			'--sgs-scroll-item-width':
+				resolveResponsiveTier( attributes.scrollItemWidth, previewTier )
+					?.value || undefined,
+		} );
+	}
 
-  // Section padding default (Spec 32 FR-32-15): a container with a content band that sits in no other such
-  // container takes the snapshot's per-tier section padding token (theme layout-tokens.css), as on the page.
-  const nestedInBand = useSelect(
-    ( select ) => {
-      const editor = select( "core/block-editor" );
-      return editor
-        .getBlockParentsByBlockName( clientId, "sgs/container" )
-        .some( ( id ) => hasContentBand( editor.getBlockAttributes( id ) ) );
-    },
-    [ clientId ]
-  );
-  const sectionPad = hasContentBand( attributes ) && ! nestedInBand;
+	// Section padding default (Spec 32 FR-32-15): a container with a content band that sits in no other such
+	// container takes the snapshot's per-tier section padding token (theme layout-tokens.css), as on the page.
+	const nestedInBand = useSelect(
+		( select ) => {
+			const editor = select( 'core/block-editor' );
+			return editor
+				.getBlockParentsByBlockName( clientId, 'sgs/container' )
+				.some( ( id ) =>
+					hasContentBand( editor.getBlockAttributes( id ) )
+				);
+		},
+		[ clientId ]
+	);
+	const sectionPad = hasContentBand( attributes ) && ! nestedInBand;
 
-  const className = [
-    "sgs-container",
-    layout && `sgs-container--${layout}`,
-    'section' === attributes.ground && 'sgs-container--ground-section',
-    sectionPad && 'sgs-container--section-pad',
-  ]
-    .filter(Boolean)
-    .join(" ");
+	const className = [
+		'sgs-container',
+		layout && `sgs-container--${ layout }`,
+		'section' === attributes.ground && 'sgs-container--ground-section',
+		sectionPad && 'sgs-container--section-pad',
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
-  // Gate the editor's ::before media / ::after overlay layers on marker
-  // classes so the pseudo-elements exist ONLY on containers
-  // that actually have something to paint — every other container in the
-  // canvas is untouched (mirrors the frontend, where the layer's box
-  // properties are only emitted when there is media/overlay to paint).
-  // `bgPreview.className` is the shared marker set (`src/utils/background-preview.js`,
-  // 2026-08-26) — the same one every other adopting block now applies.
-  // NOTE the SPREAD on svgPreview.className. `backgroundPreview()` returns its
-  // className as a STRING, but `svgBackgroundPreview()` returns a string ARRAY
-  // (see its @return). Passing the array to `.join(' ')` unspread stringifies it
-  // with COMMAS — `[ 'a', [ 'x', 'y' ] ].join(' ')` is `"a x,y"` — which emits
-  // one unusable comma-joined token and silently drops the SVG classes
-  // (has-bg-svg / svg-<position>), so position does nothing on the canvas. Caught 2026-09-05 while
-  // wiring site-header; CHECK A still passed throughout, because it verifies an
-  // attribute NAME is referenced outside the Inspector, not that the CSS it
-  // produces is correct.
-  const editorClassName = [
-    className,
-    bgPreview.className,
-    ...svgPreview.className,
-    scrollRowPreview && ! hasBandProps && "sgs-container--scroll-row",
-    ( attributes.shapeDividerTop || attributes.shapeDividerBottom ) && "sgs-container--has-shape-divider",
-  ]
-    .filter( Boolean )
-    .join( " " );
+	// Gate the editor's ::before media / ::after overlay layers on marker
+	// classes so the pseudo-elements exist ONLY on containers
+	// that actually have something to paint — every other container in the
+	// canvas is untouched (mirrors the frontend, where the layer's box
+	// properties are only emitted when there is media/overlay to paint).
+	// `bgPreview.className` is the shared marker set (`src/utils/background-preview.js`,
+	// 2026-08-26) — the same one every other adopting block now applies.
+	// NOTE the SPREAD on svgPreview.className. `backgroundPreview()` returns its
+	// className as a STRING, but `svgBackgroundPreview()` returns a string ARRAY
+	// (see its @return). Passing the array to `.join(' ')` unspread stringifies it
+	// with COMMAS — `[ 'a', [ 'x', 'y' ] ].join(' ')` is `"a x,y"` — which emits
+	// one unusable comma-joined token and silently drops the SVG classes
+	// (has-bg-svg / svg-<position>), so position does nothing on the canvas. Caught 2026-09-05 while
+	// wiring site-header; CHECK A still passed throughout, because it verifies an
+	// attribute NAME is referenced outside the Inspector, not that the CSS it
+	// produces is correct.
+	const editorClassName = [
+		className,
+		bgPreview.className,
+		...svgPreview.className,
+		scrollRowPreview && ! hasBandProps && 'sgs-container--scroll-row',
+		( attributes.shapeDividerTop || attributes.shapeDividerBottom ) &&
+			'sgs-container--has-shape-divider',
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
-  // Contrast check for border colour against the container's own background.
-  // When the background has a gradient sibling, skip the check (flat colour would be inaccurate).
-  const containerContrastAgainst =
-    backgroundColour && ! backgroundColourGradient
-      ? backgroundColour
-      : '';
+	// Contrast check for border colour against the container's own background.
+	// When the background has a gradient sibling, skip the check (flat colour would be inaccurate).
+	const containerContrastAgainst =
+		backgroundColour && ! backgroundColourGradient ? backgroundColour : '';
 
-  const blockProps = useBlockProps({ className: editorClassName, style });
-  // The list the separators' lines run along: the band when one renders, else the root.
-  const gridRef = useRef( null );
-  const rootRef = useMergeRefs( [ blockProps.ref, gridRef ] );
-  // The children belong to the BAND when one renders, and to the root when one does not.
-  // useInnerBlocksProps is called exactly once either way — branching the ARGUMENT, never
-  // the hook, so this cannot trip the rules of hooks.
-  const innerBlocksProps = useInnerBlocksProps(
-    hasBandProps
-      ? {
-          className: scrollRowPreview
-            ? "sgs-container__inner sgs-container__content-band sgs-container--scroll-row"
-            : "sgs-container__inner sgs-container__content-band",
-          style: bandStyle,
-          ref: gridRef,
-        }
-      : { ...blockProps, ref: rootRef },
-    {
-      orientation: layout === "stack" ? "vertical" : undefined,
-      templateLock: attributes.templateLock || undefined,
-    }
-  );
+	const blockProps = useBlockProps( { className: editorClassName, style } );
+	// The list the separators' lines run along: the band when one renders, else the root.
+	const gridRef = useRef( null );
+	const rootRef = useMergeRefs( [ blockProps.ref, gridRef ] );
+	// The children belong to the BAND when one renders, and to the root when one does not.
+	// useInnerBlocksProps is called exactly once either way — branching the ARGUMENT, never
+	// the hook, so this cannot trip the rules of hooks.
+	const innerBlocksProps = useInnerBlocksProps(
+		hasBandProps
+			? {
+					className: scrollRowPreview
+						? 'sgs-container__inner sgs-container__content-band sgs-container--scroll-row'
+						: 'sgs-container__inner sgs-container__content-band',
+					style: bandStyle,
+					ref: gridRef,
+			  }
+			: { ...blockProps, ref: rootRef },
+		{
+			orientation: layout === 'stack' ? 'vertical' : undefined,
+			templateLock: attributes.templateLock || undefined,
+		}
+	);
 
-  // Lines between the items, in an editor without CSS gap decorations (a no-op in Chrome / Edge).
-  useSeparatorOverlay(
-    gridRef,
-    ( layout === "grid" || layout === "flex" || layout === "stack" ) && Object.keys( separatorsFlowPreview( attributes.separators, previewTier ) ).length
-      ? JSON.stringify( [ attributes.separators, previewTier, layout, attributes.columns, gap, hasBandProps ] )
-      : ""
-  );
+	// Lines between the items, in an editor without CSS gap decorations (a no-op in Chrome / Edge).
+	useSeparatorOverlay(
+		gridRef,
+		( layout === 'grid' || layout === 'flex' || layout === 'stack' ) &&
+			Object.keys(
+				separatorsFlowPreview( attributes.separators, previewTier )
+			).length
+			? JSON.stringify( [
+					attributes.separators,
+					previewTier,
+					layout,
+					attributes.columns,
+					gap,
+					hasBandProps,
+			  ] )
+			: ''
+	);
 
-  // Mirrors class-sgs-container-wrapper.php:2794-2798. `aria-hidden` matches the
-  // server; `pointer-events:none` is editor-only insurance so the decorative
-  // layer can never swallow a click meant for the block or its children.
-  const svgLayer = svgPreview.hasSvg ? (
-    <div
-      className="sgs-container__svg-bg"
-      aria-hidden="true"
-      style={ { pointerEvents: 'none' } }
-      dangerouslySetInnerHTML={ { __html: svgPreview.markup } }
-    />
-  ) : null;
+	// Mirrors class-sgs-container-wrapper.php:2794-2798. `aria-hidden` matches the
+	// server; `pointer-events:none` is editor-only insurance so the decorative
+	// layer can never swallow a click meant for the block or its children.
+	const svgLayer = svgPreview.hasSvg ? (
+		<div
+			className="sgs-container__svg-bg"
+			aria-hidden="true"
+			style={ { pointerEvents: 'none' } }
+			dangerouslySetInnerHTML={ { __html: svgPreview.markup } }
+		/>
+	) : null;
 
-  return (
-    <>
-      {/* Background (image/video/svg tabs + ken-burns/parallax) — the STYLES
+	return (
+		<>
+			{ /* Background (image/video/svg tabs + ken-burns/parallax) — the STYLES
           tab, not Settings. A background image/video/overlay is appearance, so
           it belongs beside colour, which D621/D622 already placed in Styles.
           Standardised 2026-08-16 (Bean-ruled): this panel previously rendered
           in Settings on container/site-header/site-footer/physics-canvas and in
           Styles on hero — the same panel in two different tabs
-          depending on which block the client had selected. */}
-      <InspectorControls group="styles">
-        {/* Section ground: the site's section background and its paired text colour
+          depending on which block the client had selected. */ }
+			<InspectorControls group="styles">
+				{ /* Section ground: the site's section background and its paired text colour
             (palette slugs `section` and `section-text`, Spec 32 FR-32-14). A colour set
-            below on this block still wins; the preview class mirrors the frontend's. */}
-        <PanelBody title={ __( "Section ground", "sgs-blocks" ) } initialOpen={ false }>
-          <ToggleControl
-            __nextHasNoMarginBottom
-            label={ __( "Section ground", "sgs-blocks" ) }
-            help={ __( "Uses the site's section background and text colours.", "sgs-blocks" ) }
-            checked={ "section" === attributes.ground }
-            onChange={ ( on ) => setAttributes( { ground: on ? "section" : "" } ) }
-          />
-        </PanelBody>
-        {/* Base background colour — the OUTER-most paint layer, BELOW the
+            below on this block still wins; the preview class mirrors the frontend's. */ }
+				<PanelBody
+					title={ __( 'Section ground', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ToggleControl
+						__nextHasNoMarginBottom
+						label={ __( 'Section ground', 'sgs-blocks' ) }
+						help={ __(
+							"Uses the site's section background and text colours.",
+							'sgs-blocks'
+						) }
+						checked={ 'section' === attributes.ground }
+						onChange={ ( on ) =>
+							setAttributes( { ground: on ? 'section' : '' } )
+						}
+					/>
+				</PanelBody>
+				{ /* Base background colour — the OUTER-most paint layer, BELOW the
             background image/video/SVG (::before), the overlay colour/gradient
             (backgroundOverlayColour/overlayGradient, painted on the
             .sgs-container__overlay span) and content. Deliberately a
             SEPARATE attribute + control from the overlay pair below — the
             overlay tints/covers media, this paints when there is none.
             Mirrors sgs/site-header's SgsColourPanel pattern (D294/D684):
-            its own panel, not nested inside BackgroundPanel's PanelBody. */}
-        <SgsColourPanel
-          rows={ [
-            {
-              key: 'background',
-              label: __( 'Background colour', 'sgs-blocks' ),
-              states: [
-                {
-                  key: 'normal',
-                  label: __( 'Normal', 'sgs-blocks' ),
-                  value: backgroundColour,
-                  onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
-                  linked: true,
-                  gradientValue: backgroundColourGradient,
-                  onGradientChange: ( val ) =>
-                    setAttributes( { backgroundColourGradient: val ?? '' } ),
-                },
-                {
-                  key: 'hover',
-                  label: __( 'Hover', 'sgs-blocks' ),
-                  value: backgroundColourHover,
-                  onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
-                  gradientValue: backgroundColourHoverGradient,
-                  onGradientChange: ( val ) =>
-                    setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
-                },
-              ],
-            },
-            {
-              /* Root TEXT colour. A section-KIND block can parent any non-section
+            its own panel, not nested inside BackgroundPanel's PanelBody. */ }
+				<SgsColourPanel
+					rows={ [
+						{
+							key: 'background',
+							label: __( 'Background colour', 'sgs-blocks' ),
+							states: [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: backgroundColour,
+									onChange: ( val ) =>
+										setAttributes( {
+											backgroundColour: val ?? '',
+										} ),
+									linked: true,
+									gradientValue: backgroundColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( {
+											backgroundColourGradient: val ?? '',
+										} ),
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: backgroundColourHover,
+									onChange: ( val ) =>
+										setAttributes( {
+											backgroundColourHover: val ?? '',
+										} ),
+									gradientValue:
+										backgroundColourHoverGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( {
+											backgroundColourHoverGradient:
+												val ?? '',
+										} ),
+								},
+							],
+						},
+						{
+							/* Root TEXT colour. A section-KIND block can parent any non-section
                  block without a forced parent, so this is the INHERITABLE cascade
                  default for whatever the client nests inside — NOT a duplicate of a
                  child's own text control (Bean's ruling, 2026-08-21). It replaces a
                  DEAD binding: the wrapper manifest mapped css:color to
                  `native:color.text` while supports.color is false on this block, so
                  there was no reachable text control at all. */
-              key: 'text',
-              label: __( 'Text colour', 'sgs-blocks' ),
-              gradientCapable: true,
-              states: [
-                {
-                  key: 'normal',
-                  label: __( 'Normal', 'sgs-blocks' ),
-                  value: textColour,
-                  onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
-                  linked: true,
-                  gradientValue: textColourGradient,
-                  onGradientChange: ( val ) =>
-                    setAttributes( { textColourGradient: val ?? '' } ),
-                },
-                {
-                  key: 'hover',
-                  label: __( 'Hover', 'sgs-blocks' ),
-                  value: textColourHover,
-                  onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
-                  gradientValue: textColourHoverGradient,
-                  onGradientChange: ( val ) =>
-                    setAttributes( { textColourHoverGradient: val ?? '' } ),
-                },
-              ],
-            },
-          ] }
-        />
-        {/* Typography — replaces the old WP-native supports.typography
+							key: 'text',
+							label: __( 'Text colour', 'sgs-blocks' ),
+							gradientCapable: true,
+							states: [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: textColour,
+									onChange: ( val ) =>
+										setAttributes( {
+											textColour: val ?? '',
+										} ),
+									linked: true,
+									gradientValue: textColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( {
+											textColourGradient: val ?? '',
+										} ),
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: textColourHover,
+									onChange: ( val ) =>
+										setAttributes( {
+											textColourHover: val ?? '',
+										} ),
+									gradientValue: textColourHoverGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( {
+											textColourHoverGradient: val ?? '',
+										} ),
+								},
+							],
+						},
+					] }
+				/>
+				{ /* Typography — replaces the old WP-native supports.typography
             (fontSize/lineHeight/textAlign/letterSpacing/textTransform/
             fontWeight/fontStyle only) with the shared TypographyControls
             component + sgs_typography_css_rule() render.php helper
             (D971/D972 full-replacement track, mirrors sgs/accordion). Root
-            prefix "" since this control targets the wrapper element. */}
-        <PanelBody title={ __( "Typography", "sgs-blocks" ) } initialOpen={ false }>
-          <TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextStroke showTextColumns showTextIndent showWritingMode
-            attributes={ attributes }
-            setAttributes={ setAttributes }
-            prefix=""
-          />
-        </PanelBody>
-        <BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
-      </InspectorControls>
+            prefix "" since this control targets the wrapper element. */ }
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TypographyControls
+						fontSizePresets
+						showFontFamily
+						showDecoration
+						showTransform
+						showLetterSpacing
+						showTextAlign
+						showTextWrap
+						showTextStroke
+						showTextColumns
+						showTextIndent
+						showWritingMode
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+					/>
+				</PanelBody>
+				<BackgroundPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					name={ name }
+				/>
+			</InspectorControls>
 
-      <InspectorControls>
-
-        {/* Layout panel — shared LayoutPanel + WidthPanel + container-specific controls
+			<InspectorControls>
+				{ /* Layout panel — shared LayoutPanel + WidthPanel + container-specific controls
             (HTML tag, min-height ×3). Kept as a single "Layout" PanelBody to preserve
-            the pre-refactor inspector order and label for container users. */}
-        <PanelBody title={ __( "Layout", "sgs-blocks" ) }>
-          <SelectControl
-            label={ __( "HTML tag", "sgs-blocks" ) }
-            value={ attributes.tagName || "section" }
-            options={ TAG_NAME_OPTIONS }
-            onChange={ ( val ) => setAttributes( { tagName: val } ) }
-            help={ __( "Semantic tag for accessibility landmarks and SEO. Use Nav / Aside / Article for their meaning; Div for a plain wrapper.", "sgs-blocks" ) }
-            __nextHasNoMarginBottom
-          	__next40pxDefaultSize
-          />
-          { [ 'nav', 'aside' ].includes( attributes.tagName ) && (
-            <TextControl
-              label={ __( "Landmark label", "sgs-blocks" ) }
-              value={ attributes.ariaLabel || "" }
-              onChange={ ( val ) => setAttributes( { ariaLabel: val } ) }
-              help={ __( "Required when a page has more than one Nav or Aside — lets screen readers tell them apart (e.g. \"Primary\", \"Footer links\", \"Related articles\").", "sgs-blocks" ) }
-              __nextHasNoMarginBottom
-              __next40pxDefaultSize
-            />
-          ) }
-          <hr style={ { margin: "16px 0" } } />
-          <LayoutPanel
-            attributes={ attributes }
-            setAttributes={ setAttributes }
-            enableIntrinsicColumns
-            enableColumnShapePicker
-          />
-          <hr style={ { margin: "16px 0" } } />
-          {/* showContentBand={false} — Bean-reported placement fix, 2026-09-07:
+            the pre-refactor inspector order and label for container users. */ }
+				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'HTML tag', 'sgs-blocks' ) }
+						value={ attributes.tagName || 'section' }
+						options={ TAG_NAME_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { tagName: val } )
+						}
+						help={ __(
+							'Semantic tag for accessibility landmarks and SEO. Use Nav / Aside / Article for their meaning; Div for a plain wrapper.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ [ 'nav', 'aside' ].includes( attributes.tagName ) && (
+						<TextControl
+							label={ __( 'Landmark label', 'sgs-blocks' ) }
+							value={ attributes.ariaLabel || '' }
+							onChange={ ( val ) =>
+								setAttributes( { ariaLabel: val } )
+							}
+							help={ __(
+								'Required when a page has more than one Nav or Aside — lets screen readers tell them apart (e.g. "Primary", "Footer links", "Related articles").',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+					<hr style={ { margin: '16px 0' } } />
+					<LayoutPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						enableIntrinsicColumns
+						enableColumnShapePicker
+					/>
+					<hr style={ { margin: '16px 0' } } />
+					{ /* showContentBand={false} — Bean-reported placement fix, 2026-09-07:
               "Content band width" now mounts inside the "Content band" panel
               below (alongside Band padding/margin), not here under Layout.
               Outer max-width stays here; it's a Layout-panel concern (caps the
               OUTER block, not the inner band). See ContentBandWidthControl's
-              own docblock in WidthPanel.js for the split. */}
-          <WidthPanel attributes={ attributes } setAttributes={ setAttributes } showContentBand={ false } />
-          <hr style={ { margin: "16px 0" } } />
-          <ScrollSidewaysPanel attributes={ attributes } setAttributes={ setAttributes } />
-          <PinEdgeControl attributes={ attributes } setAttributes={ setAttributes } />
-          { /* `minHeight` is a TIER OBJECT — {desktop,tablet,mobile} — so it uses
+              own docblock in WidthPanel.js for the split. */ }
+					<WidthPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						showContentBand={ false }
+					/>
+					<hr style={ { margin: '16px 0' } } />
+					<ScrollSidewaysPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+					<PinEdgeControl
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+					{ /* `minHeight` is a TIER OBJECT — {desktop,tablet,mobile} — so it uses
                ResponsiveOverride. */ }
-          <ResponsiveOverride
-            label={ __( "Min height", "sgs-blocks" ) }
-            value={ attributes.minHeight }
-            onChange={ ( obj ) => setAttributes( { minHeight: obj } ) }
-          >
-            { ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-              <SelectControl
-                value={ ownValue || "" }
-                options={ MIN_HEIGHT_OPTIONS }
-                onChange={ ( val ) => setOwnValue( val || undefined ) }
-                help={ ! inherited
-                  ? __( "Desktop / base. Tablet and mobile override it at narrower widths.", "sgs-blocks" )
-                  : __( "Leave empty to use the tier above.", "sgs-blocks" ) }
-                __nextHasNoMarginBottom
-              	__next40pxDefaultSize
-              />
-            ) }
-          </ResponsiveOverride>
-          <TextControl
-            label={ __( "Shape (width / height)", "sgs-blocks" ) }
-            help={ __( "e.g. 4 / 5 for a portrait box, 16 / 9 for a wide one. The height follows the width. Leave empty to size by the content.", "sgs-blocks" ) }
-            value={ attributes.boxAspectRatio || "" }
-            onChange={ ( val ) => setAttributes( { boxAspectRatio: val } ) }
-            placeholder="4 / 5"
-            __nextHasNoMarginBottom
-            __next40pxDefaultSize
-          />
-          {/* Duplicate "Text align" control REMOVED 2026-09-07 (Bean-reported).
+					<ResponsiveOverride
+						label={ __( 'Min height', 'sgs-blocks' ) }
+						value={ attributes.minHeight }
+						onChange={ ( obj ) =>
+							setAttributes( { minHeight: obj } )
+						}
+					>
+						{ ( { ownValue, inherited, setOwnValue } ) => (
+							<SelectControl
+								value={ ownValue || '' }
+								options={ MIN_HEIGHT_OPTIONS }
+								onChange={ ( val ) =>
+									setOwnValue( val || undefined )
+								}
+								help={
+									! inherited
+										? __(
+												'Desktop / base. Tablet and mobile override it at narrower widths.',
+												'sgs-blocks'
+										  )
+										: __(
+												'Leave empty to use the tier above.',
+												'sgs-blocks'
+										  )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
+					<TextControl
+						label={ __( 'Shape (width / height)', 'sgs-blocks' ) }
+						help={ __(
+							'e.g. 4 / 5 for a portrait box, 16 / 9 for a wide one. The height follows the width. Leave empty to size by the content.',
+							'sgs-blocks'
+						) }
+						value={ attributes.boxAspectRatio || '' }
+						onChange={ ( val ) =>
+							setAttributes( { boxAspectRatio: val } )
+						}
+						placeholder="4 / 5"
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ /* Duplicate "Text align" control REMOVED 2026-09-07 (Bean-reported).
               This SelectControl wrote the SAME `textAlign` attribute as the
               "Text alignment" ToggleGroupControl already rendered by
               <TypographyControls showTextAlign> in the Typography panel above
@@ -651,31 +877,41 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
               -> 'textAlign', the same attribute key. Two controls bound to one
               attribute is the exact silent-confusion shape THE PLACEMENT RULE
               (Spec 35) exists to prevent; the Typography-panel control is kept
-              (correct tab per Spec 35 A3/PART O — typography lives in Styles). */}
-        </PanelBody>
+              (correct tab per Spec 35 A3/PART O — typography lives in Styles). */ }
+				</PanelBody>
 
-        {/* Separators — the lines between the items of a grid or flex layout
+				{ /* Separators — the lines between the items of a grid or flex layout
             (includes/helpers-separators.php). Offered only where there are items
-            side by side or stacked to separate. */}
-        { ( layout === "grid" || layout === "flex" || layout === "stack" ) && (
-          <PanelBody title={ __( "Separators", "sgs-blocks" ) } initialOpen={ false }>
-            <SgsSeparatorControl
-              value={ attributes.separators }
-              onChange={ ( next ) => setAttributes( { separators: next } ) }
-            />
-          </PanelBody>
-        ) }
+            side by side or stacked to separate. */ }
+				{ ( layout === 'grid' ||
+					layout === 'flex' ||
+					layout === 'stack' ) && (
+					<PanelBody
+						title={ __( 'Separators', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<SgsSeparatorControl
+							value={ attributes.separators }
+							onChange={ ( next ) =>
+								setAttributes( { separators: next } )
+							}
+						/>
+					</PanelBody>
+				) }
 
-        {/* Responsive spacing (padding + margin) — Spec 35 / D555 gutter-default
+				{ /* Responsive spacing (padding + margin) — Spec 35 / D555 gutter-default
             migration. `padding`/`margin` are now block-OWNED object attrs (no
             `supports.spacing` — a WP-native support cannot carry a framework
             default, which is exactly why `sgs/container` had no horizontal
             gutter and rendered flush to the viewport edge; see D555). Every tier
             writes into the owned `padding`/`margin` attr directly — one system,
             not a native+SGS split. Mirrors the `sgs/gallery` precedent (its own
-            base tier is likewise owned, not native). */}
-        <PanelBody title={ __( "Padding & margin", "sgs-blocks" ) } initialOpen={ false }>
-          {/* padding/margin are now TIER-of-BOXES object attrs — ONE attribute
+            base tier is likewise owned, not native). */ }
+				<PanelBody
+					title={ __( 'Padding & margin', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					{ /* padding/margin are now TIER-of-BOXES object attrs — ONE attribute
               holding {desktop,tablet,mobile}, each tier a {top,right,bottom,left}
               box (Phase 2 tier-object migration, 2026-09-06) — matching the
               shape already shipped on sgs/site-header-row / sgs/site-footer-row /
@@ -687,40 +923,65 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
               presets — C16 pilot (2026-08-27). sgs/container is the ONE block
               piloting spacing presets on the shared SgsBoxControl before the
               other mounts see them (default stays OFF everywhere else).
-              See .claude/scratch/2026-08-27-c16-spacing-presets-design.md §7. */}
-          <ResponsiveOverride
-            value={ attributes.padding }
-            onChange={ ( obj ) => setAttributes( { padding: obj } ) }
-          >
-            { ( { tier, ownValue, setOwnValue } ) => (
-              <SgsBoxControl
-                label={ __( "Padding", "sgs-blocks" ) }
-                values={ ownValue && typeof ownValue === "object" ? ownValue : {} }
-                units={ BOX_UNITS }
-                presets
-                defaults={ sectionPad ? sectionPaddingDefaults( customSettings, tier ) : undefined }
-                onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-              />
-            ) }
-          </ResponsiveOverride>
-          <hr style={ { margin: "16px 0" } } />
-          <ResponsiveOverride
-            value={ attributes.margin }
-            onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-          >
-            { ( { ownValue, setOwnValue } ) => (
-              <SgsBoxControl
-                label={ __( "Margin", "sgs-blocks" ) }
-                values={ ownValue && typeof ownValue === "object" ? ownValue : {} }
-                units={ BOX_UNITS }
-                presets
-                onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-              />
-            ) }
-          </ResponsiveOverride>
-        </PanelBody>
+              See .claude/scratch/2026-08-27-c16-spacing-presets-design.md §7. */ }
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
+					>
+						{ ( { tier, ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
+								units={ BOX_UNITS }
+								presets
+								defaults={
+									sectionPad
+										? sectionPaddingDefaults(
+												customSettings,
+												tier
+										  )
+										: undefined
+								}
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
+							/>
+						) }
+					</ResponsiveOverride>
+					<hr style={ { margin: '16px 0' } } />
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
+							/>
+						) }
+					</ResponsiveOverride>
+				</PanelBody>
 
-        {/* Content band (Layer 2 __inner) width + padding — per-area object attrs
+				{ /* Content band (Layer 2 __inner) width + padding — per-area object attrs
             (contract §2), not WP-native attrs since the band is an SGS-only inner
             element. Background stays on BackgroundPanel (band-scoped background
             was retired, see the note below); everything else about the band
@@ -730,22 +991,31 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
             separated from Band padding/margin two panels below. Moved here via
             ContentBandWidthControl (WidthPanel.js's own split-out piece; see its
             docblock), so a client styling the band finds every band control in
-            one place instead of hunting across Layout + Content band. */}
-        <PanelBody title={ __( "Content band", "sgs-blocks" ) } initialOpen={ false }>
-          <p className="components-base-control__help">
-            { __( "Styles the inner content band (the max-width wrapper set by Content width). The band exists by default — set Content width to Full to remove it.", "sgs-blocks" ) }
-          </p>
-          <ContentBandWidthControl attributes={ attributes } setAttributes={ setAttributes } />
-          <hr style={ { margin: "16px 0" } } />
-          {/* ⛔ "Band background colour" (contentBandBackground) was REMOVED
+            one place instead of hunting across Layout + Content band. */ }
+				<PanelBody
+					title={ __( 'Content band', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<p className="components-base-control__help">
+						{ __(
+							'Styles the inner content band (the max-width wrapper set by Content width). The band exists by default — set Content width to Full to remove it.',
+							'sgs-blocks'
+						) }
+					</p>
+					<ContentBandWidthControl
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+					<hr style={ { margin: '16px 0' } } />
+					{ /* ⛔ "Band background colour" (contentBandBackground) was REMOVED
               2026-08-12, and the attribute retired framework-wide. Bean's rule:
               a background colour or media fills the max-width of its CONTAINER
               and is never clipped to the inner content layer, so a band-scoped
               background was a design error rather than a capability. Set the
               background on the block itself (BackgroundPanel) instead. Zero
               stored instances existed on the canary at deletion. Do NOT re-add
-              a band-scoped background control here or on any composite. */}
-          {/* contentBandPadding is a TIER OBJECT — ONE attr holding
+              a band-scoped background control here or on any composite. */ }
+					{ /* contentBandPadding is a TIER OBJECT — ONE attr holding
               {desktop,tablet,mobile}, each tier itself a {top,right,bottom,left}
               box (Spec 35 box-shaped pass, 2026-08-11). It therefore uses
               ResponsiveOverride, which reads and writes the object, NOT the
@@ -757,27 +1027,37 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
               tiers would save nothing while the desktop branch wrote a plain
               object into the SAME shape as before by coincidence only — the
               real risk is a stale flat write landing on a deleted attr.
-              Mirrors ResponsiveBoxControls.js's Padding block exactly. */}
-          {/* ⛔ NO `label` on the wrapper, and NO `hideLabelFromVision` on the
+              Mirrors ResponsiveBoxControls.js's Padding block exactly. */ }
+					{ /* ⛔ NO `label` on the wrapper, and NO `hideLabelFromVision` on the
               BoxControl — core's BoxControl ignores that prop and always renders its
               own label, so both painted (sentence case + WP's uppercase). Keep
               BoxControl's; BaseControl associates it with the inputs. Full reasoning
-              at components/ResponsiveBoxControls.js. */}
-          <ResponsiveOverride
-            value={ attributes.contentBandPadding }
-            onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
-          >
-            { ( { ownValue, setOwnValue } ) => (
-              <SgsBoxControl
-                label={ __( "Band padding", "sgs-blocks" ) }
-                values={ ownValue && typeof ownValue === "object" ? ownValue : {} }
-                units={ BOX_UNITS }
-                presets
-                onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-              />
-            ) }
-          </ResponsiveOverride>
-          {/* contentBandMargin — same tier-object shape as contentBandPadding
+              at components/ResponsiveBoxControls.js. */ }
+					<ResponsiveOverride
+						value={ attributes.contentBandPadding }
+						onChange={ ( obj ) =>
+							setAttributes( { contentBandPadding: obj } )
+						}
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Band padding', 'sgs-blocks' ) }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
+							/>
+						) }
+					</ResponsiveOverride>
+					{ /* contentBandMargin — same tier-object shape as contentBandPadding
               immediately above, same ResponsiveOverride wiring. Completes a
               wire-up that was previously write-only: the Universal Cloning
               Pipeline's content_band.py resolver already writes real values
@@ -786,125 +1066,190 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
               editor or the wrapper's CSS emission ever read this attribute —
               a converted page's fold-margin was silently inert on both the
               canvas and the live frontend. Bean-directed completion,
-              2026-09-06: mirrors Band padding's control exactly. */}
-          <ResponsiveOverride
-            value={ attributes.contentBandMargin }
-            onChange={ ( obj ) => setAttributes( { contentBandMargin: obj } ) }
-          >
-            { ( { ownValue, setOwnValue } ) => (
-              <SgsBoxControl
-                label={ __( "Band margin", "sgs-blocks" ) }
-                values={ ownValue && typeof ownValue === "object" ? ownValue : {} }
-                units={ BOX_UNITS }
-                presets
-                onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-              />
-            ) }
-          </ResponsiveOverride>
-        </PanelBody>
+              2026-09-06: mirrors Band padding's control exactly. */ }
+					<ResponsiveOverride
+						value={ attributes.contentBandMargin }
+						onChange={ ( obj ) =>
+							setAttributes( { contentBandMargin: obj } )
+						}
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Band margin', 'sgs-blocks' ) }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
+							/>
+						) }
+					</ResponsiveOverride>
+				</PanelBody>
 
-        {/* Grid item defaults — only shown when layout is grid. */}
-        <GridItemDefaultsPanel attributes={ attributes } setAttributes={ setAttributes } />
+				{ /* Grid item defaults — only shown when layout is grid. */ }
+				<GridItemDefaultsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
-        {/* Wrapper border — R2c pattern (mirrors sgs/product-card's "Card
+				{ /* Wrapper border — R2c pattern (mirrors sgs/product-card's "Card
           border" panel): borderWidth is a block-private base-only box object;
           border colour + style live on the "Wrapper border colour" row in the
           SgsColourPanel above (borderStyle/onBorderStyleChange wired to the
           SAME attribute, one source of truth); border-radius stays WP-native
           (style.border.radius) — the block declares
           __experimentalBorder.__experimentalSkipSerialization so it
-          serialises scoped, not inline. */}
-        <PanelBody title={ __( "Wrapper border", "sgs-blocks" ) } initialOpen={ false }>
-          {/* presets={ [ '10', '20', '30' ] } — restricted to a small end-of-scale
+          serialises scoped, not inline. */ }
+				<PanelBody
+					title={ __( 'Wrapper border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					{ /* presets={ [ '10', '20', '30' ] } — restricted to a small end-of-scale
               subset (Bean's explicit call, 2026-08-27 rollout): the full
               XXS-XXXL spacing ladder is nonsensical for a border stroke width,
-              unlike Padding/Margin above which offer the unrestricted scale. */}
-                    { /* Task 0 codemod (migrate-border-control.js) -- one composite row
+              unlike Padding/Margin above which offer the unrestricted scale. */ }
+					{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
              (width/style/colour) mirroring native's BorderBoxControl layout,
              matching sgs/product-card + sgs/quote. Border-radius is unchanged
              (stays WP-native). */ }
-          <SgsBorderControl
-          	widthValues={ borderWidth ?? {} }
-          	onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
-          	widthPresets={ [ '10', '20', '30' ] }
-          	styleValue={ borderStyle }
-          	onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
-          	colourLabel={ __( 'Wrapper border colour', 'sgs-blocks' ) }
-          	colourStates={ [
-          		{
-          			key: "normal",
-          			label: __( 'Normal', 'sgs-blocks' ),
-          			value: borderColour,
-          			onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-          			linked: true,
-          			gradientValue: borderColourGradient,
-          			onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ),
-          		},
-          		{
-          			key: "hover",
-          			label: __( 'Hover', 'sgs-blocks' ),
-          			value: borderColourHover,
-          			onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
-          			linked: true,
-          			gradientValue: borderColourHoverGradient,
-          			onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ),
-          		},
-          	] }
-          	contrastAgainst={ containerContrastAgainst }
-          	radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
-          	onRadiusChange={ ( tier, next ) => {
-          		const key = tier === 'base' ? 'desktop' : tier;
-          		setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
-          	} }
-          />
-        </PanelBody>
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
+						colourLabel={ __(
+							'Wrapper border colour',
+							'sgs-blocks'
+						) }
+						colourStates={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: borderColour,
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColour: val ?? '',
+									} ),
+								linked: true,
+								gradientValue: borderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										borderColourGradient: val ?? '',
+									} ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColourHover: val ?? '',
+									} ),
+								linked: true,
+								gradientValue: borderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										borderColourHoverGradient: val ?? '',
+									} ),
+							},
+						] }
+						contrastAgainst={ containerContrastAgainst }
+						radiusValues={ {
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
+						} }
+					/>
+				</PanelBody>
 
-        {/* Shadow — legacy string token attr (sm/md/lg/glow OR a raw box-shadow
+				{ /* Shadow — legacy string token attr (sm/md/lg/glow OR a raw box-shadow
           CSS string built by ShadowControl), resolved by sgs_shadow_value()
-          (Spec 35 T2.2b). */}
-        <PanelBody title={ __( "Shadow", "sgs-blocks" ) } initialOpen={ false }>
-          <ShadowControl
-            label={ __( "Shadow", "sgs-blocks" ) }
-            attributes={ attributes }
-            setAttributes={ setAttributes }
-            attrNames={ {
-            	base: 'shadow',
-            	colour: 'shadowColour',
-            	hoverColour: 'shadowColourHover',
-            } }
-           />
-        </PanelBody>
+          (Spec 35 T2.2b). */ }
+				<PanelBody
+					title={ __( 'Shadow', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ShadowControl
+						label={ __( 'Shadow', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'shadow',
+							colour: 'shadowColour',
+							hoverColour: 'shadowColourHover',
+						} }
+					/>
+				</PanelBody>
 
-        {/* Shape Dividers (top + bottom). */}
-        <ShapeDividersPanel attributes={ attributes } setAttributes={ setAttributes } />
+				{ /* Shape Dividers (top + bottom). */ }
+				<ShapeDividersPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+			</InspectorControls>
 
-      </InspectorControls>
-
-      { hasBandProps ? (
-        <div { ...blockProps }>
-          { svgLayer }
-          <ShapeDividerPreview attributes={ attributes } position="top" prefix="shapeDividerTop" />
-          { gridItemScopedCss && <style>{ gridItemScopedCss }</style> }
-          <div { ...innerBlocksProps } />
-          <ShapeDividerPreview attributes={ attributes } position="bottom" prefix="shapeDividerBottom" />
-        </div>
-      ) : (
-        // Spread first, then state children explicitly: innerBlocksProps
-        // CARRIES a `children` prop, so the SVG layer has to be composed with
-        // it rather than added alongside the spread (which React would
-        // silently discard).
-        <div { ...innerBlocksProps }>
-          { svgLayer }
-          <ShapeDividerPreview attributes={ attributes } position="top" prefix="shapeDividerTop" />
-          { gridItemScopedCss && <style>{ gridItemScopedCss }</style> }
-          { innerBlocksProps.children }
-          <ShapeDividerPreview attributes={ attributes } position="bottom" prefix="shapeDividerBottom" />
-        </div>
-      ) }
-    </>
-  );
+			{ hasBandProps ? (
+				<div { ...blockProps }>
+					{ svgLayer }
+					<ShapeDividerPreview
+						attributes={ attributes }
+						position="top"
+						prefix="shapeDividerTop"
+					/>
+					{ gridItemScopedCss && (
+						<style>{ gridItemScopedCss }</style>
+					) }
+					<div { ...innerBlocksProps } />
+					<ShapeDividerPreview
+						attributes={ attributes }
+						position="bottom"
+						prefix="shapeDividerBottom"
+					/>
+				</div>
+			) : (
+				// Spread first, then state children explicitly: innerBlocksProps
+				// CARRIES a `children` prop, so the SVG layer has to be composed with
+				// it rather than added alongside the spread (which React would
+				// silently discard).
+				<div { ...innerBlocksProps }>
+					{ svgLayer }
+					<ShapeDividerPreview
+						attributes={ attributes }
+						position="top"
+						prefix="shapeDividerTop"
+					/>
+					{ gridItemScopedCss && (
+						<style>{ gridItemScopedCss }</style>
+					) }
+					{ innerBlocksProps.children }
+					<ShapeDividerPreview
+						attributes={ attributes }
+						position="bottom"
+						prefix="shapeDividerBottom"
+					/>
+				</div>
+			) }
+		</>
+	);
 }

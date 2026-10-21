@@ -22,7 +22,7 @@
  *     onChange={ ( obj ) => setAttributes( { gap: obj } ) }
  *   >
  *     { ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
- *       <SpacingControl
+ *       <SgsLengthControl
  *         value={ ownValue }
  *         placeholder={ inherited ? effectiveValue : '' }
  *         onChange={ setOwnValue }
@@ -46,14 +46,35 @@ import { InheritedBoxContext } from './InheritedBoxContext';
 // gate; these were checked by hand.
 
 // WP's native device-type names → this component's tier keys.
-const DEVICE_TO_KEY = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
+const DEVICE_TO_KEY = {
+	Desktop: 'desktop',
+	Tablet: 'tablet',
+	Mobile: 'mobile',
+};
 
 // Every side and corner key a box control can show; the box inside this override reads the ones it has.
-const BOX_KEYS = [ 'top', 'right', 'bottom', 'left', 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
+const BOX_KEYS = [
+	'top',
+	'right',
+	'bottom',
+	'left',
+	'topLeft',
+	'topRight',
+	'bottomRight',
+	'bottomLeft',
+];
 
-const TIER_ABOVE = { tablet: __( 'Desktop', 'sgs-blocks' ), mobile: __( 'Tablet', 'sgs-blocks' ) };
+const TIER_ABOVE = {
+	tablet: __( 'Desktop', 'sgs-blocks' ),
+	mobile: __( 'Tablet', 'sgs-blocks' ),
+};
 
-export default function ResponsiveOverride( { label, value, onChange, children } ) {
+export default function ResponsiveOverride( {
+	label,
+	value,
+	onChange,
+	children,
+} ) {
 	// The tier comes from the ONE global toggle docked at the bottom of the
 	// inspector, not from private state. Before Spec 35 Phase 1.3 this component
 	// held its own `useState('desktop')`, so its strip and every
@@ -78,7 +99,11 @@ export default function ResponsiveOverride( { label, value, onChange, children }
 
 	const writeTier = ( tierKey, tierValue ) => {
 		const next = { ...obj };
-		if ( tierValue === undefined || tierValue === null || tierValue === '' ) {
+		if (
+			tierValue === undefined ||
+			tierValue === null ||
+			tierValue === ''
+		) {
 			delete next[ tierKey ];
 		} else {
 			next[ tierKey ] = tierValue;
@@ -97,7 +122,9 @@ export default function ResponsiveOverride( { label, value, onChange, children }
 		<div className="sgs-responsive-override">
 			<div className="sgs-responsive-override__header">
 				{ label && (
-					<span className="sgs-responsive-override__label">{ label }</span>
+					<span className="sgs-responsive-override__label">
+						{ label }
+					</span>
 				) }
 				{ /* ⛔ Per-control <DeviceTabs> deleted (Spec 35 Phase 1.3). The tier
 				     is chosen once, globally.
@@ -117,7 +144,9 @@ export default function ResponsiveOverride( { label, value, onChange, children }
 				className="sgs-responsive-override__field"
 				style={ inherited ? { opacity: 0.6 } : undefined }
 			>
-				<InheritedBoxContext.Provider value={ inheritedBox( obj, active, BOX_KEYS ) }>
+				<InheritedBoxContext.Provider
+					value={ inheritedBox( obj, active, BOX_KEYS ) }
+				>
 					{ children( {
 						tier: active,
 						ownValue: hasOwn ? ownRaw : '',
@@ -132,10 +161,18 @@ export default function ResponsiveOverride( { label, value, onChange, children }
 			{ inherited && (
 				<div
 					className="sgs-responsive-override__inherited"
-					style={ { display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' } }
+					style={ {
+						display: 'flex',
+						alignItems: 'center',
+						gap: '4px',
+						marginTop: '4px',
+					} }
 				>
 					{ /* Non-colour cue: an explicit icon + text, never colour alone (WCAG 1.4.1). */ }
-					<span aria-hidden="true" style={ { display: 'inline-flex' } }>
+					<span
+						aria-hidden="true"
+						style={ { display: 'inline-flex' } }
+					>
 						{ linkIcon }
 					</span>
 					<span
@@ -145,7 +182,8 @@ export default function ResponsiveOverride( { label, value, onChange, children }
 						{ sprintf(
 							/* translators: %s: the tier this value is inherited from. */
 							__( 'Inherited from %s', 'sgs-blocks' ),
-							TIER_ABOVE[ active ] || __( 'Desktop', 'sgs-blocks' )
+							TIER_ABOVE[ active ] ||
+								__( 'Desktop', 'sgs-blocks' )
 						) }
 					</span>
 				</div>

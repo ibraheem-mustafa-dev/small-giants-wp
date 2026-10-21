@@ -21,10 +21,7 @@
  * supplies the inherited-value indicator + keyboard reset (WCAG 2.2, Spec 37 FR-37-16).
  */
 import { __ } from '@wordpress/i18n';
-import {
-	PanelBody,
-	SelectControl,
-} from '@wordpress/components';
+import { PanelBody, SelectControl } from '@wordpress/components';
 import SgsBoxControl from './SgsBoxControl';
 import ResponsiveOverride from './ResponsiveOverride';
 import SgsLengthControl from './SgsLengthControl';
@@ -64,8 +61,8 @@ const normaliseBox = ( box ) => {
 
 /**
  * @param {Object}   props
- * @param {Object}   props.attributes    Block attributes ({ padding, margin, maxWidth, contentWidth }).
- * @param {Function} props.setAttributes Block setAttributes.
+ * @param {Object}   props.attributes          Block attributes ({ padding, margin, maxWidth, contentWidth }).
+ * @param {Function} props.setAttributes       Block setAttributes.
  * @param {boolean}  [props.initialOpen=false] PanelBody initial state.
  * @return {JSX.Element} The inspector panel.
  */
@@ -96,10 +93,16 @@ export default function ResponsiveBoxControls( {
 				{ ( { ownValue, setOwnValue } ) => (
 					<SgsBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+						values={
+							ownValue && typeof ownValue === 'object'
+								? ownValue
+								: {}
+						}
 						units={ LENGTH_UNITS }
 						presets
-						onChange={ ( next ) => setOwnValue( normaliseBox( next ) ) }
+						onChange={ ( next ) =>
+							setOwnValue( normaliseBox( next ) )
+						}
 					/>
 				) }
 			</ResponsiveOverride>
@@ -112,10 +115,16 @@ export default function ResponsiveBoxControls( {
 				{ ( { ownValue, setOwnValue } ) => (
 					<SgsBoxControl
 						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+						values={
+							ownValue && typeof ownValue === 'object'
+								? ownValue
+								: {}
+						}
 						units={ LENGTH_UNITS }
 						presets
-						onChange={ ( next ) => setOwnValue( normaliseBox( next ) ) }
+						onChange={ ( next ) =>
+							setOwnValue( normaliseBox( next ) )
+						}
 					/>
 				) }
 			</ResponsiveOverride>
@@ -151,7 +160,13 @@ export default function ResponsiveBoxControls( {
 							tier === 'desktop'
 								? CONTENT_WIDTH_OPTIONS
 								: [
-										{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+										{
+											label: __(
+												'— inherit —',
+												'sgs-blocks'
+											),
+											value: '',
+										},
 										...CONTENT_WIDTH_OPTIONS,
 								  ]
 						}

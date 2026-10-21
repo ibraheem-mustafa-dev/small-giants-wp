@@ -1,7 +1,10 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 import { SgsLengthControl, TypographyControls } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 
 const PICKER_STYLE_OPTIONS = [
 	{ value: '', label: __( "Picker's own default", 'sgs-blocks' ) },
@@ -60,7 +63,9 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 					label={ __( 'Other axes (e.g. Size)', 'sgs-blocks' ) }
 					value={ pickerStyle || '' }
 					options={ PICKER_STYLE_OPTIONS }
-					onChange={ ( val ) => setAttributes( { pickerStyle: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { pickerStyle: val } )
+					}
 					help={ __(
 						'Pill style for every axis with no colour/image swatch.',
 						'sgs-blocks'
@@ -340,7 +345,9 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 					label={ __( 'Button style', 'sgs-blocks' ) }
 					value={ addToCartStyle || 'default' }
 					onChange={ ( val ) =>
-						setAttributes( { addToCartStyle: 'default' === val ? '' : val } )
+						setAttributes( {
+							addToCartStyle: 'default' === val ? '' : val,
+						} )
 					}
 					isBlock
 					help={ __(
@@ -350,10 +357,22 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				>
-					<ToggleGroupControlOption value="default" label={ __( "Today's look", 'sgs-blocks' ) } />
-					<ToggleGroupControlOption value="primary" label={ __( 'Primary', 'sgs-blocks' ) } />
-					<ToggleGroupControlOption value="secondary" label={ __( 'Secondary', 'sgs-blocks' ) } />
-					<ToggleGroupControlOption value="outline" label={ __( 'Outline', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption
+						value="default"
+						label={ __( "Today's look", 'sgs-blocks' ) }
+					/>
+					<ToggleGroupControlOption
+						value="primary"
+						label={ __( 'Primary', 'sgs-blocks' ) }
+					/>
+					<ToggleGroupControlOption
+						value="secondary"
+						label={ __( 'Secondary', 'sgs-blocks' ) }
+					/>
+					<ToggleGroupControlOption
+						value="outline"
+						label={ __( 'Outline', 'sgs-blocks' ) }
+					/>
 				</ToggleGroupControl>
 				<ToggleControl
 					label={ __( 'Show the price on the button', 'sgs-blocks' ) }
@@ -393,10 +412,7 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 					onChange={ ( val ) =>
 						setAttributes( { addToCartMinHeight: val ?? '' } )
 					}
-					help={ __(
-						"Empty = today's 48px.",
-						'sgs-blocks'
-					) }
+					help={ __( "Empty = today's 48px.", 'sgs-blocks' ) }
 				/>
 			</PanelBody>
 		</>

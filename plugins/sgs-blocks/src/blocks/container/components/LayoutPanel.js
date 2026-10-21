@@ -11,16 +11,20 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { SelectControl, RangeControl, TextControl } from '@wordpress/components';
+import {
+	SelectControl,
+	RangeControl,
+	TextControl,
+} from '@wordpress/components';
 import {
 	ColumnShapePicker,
-	ResponsiveControl,
 	ResponsiveOverride,
 	SgsLengthControl,
-	SpacingControl,
 } from '../../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../../components/primitives';
-import { isExtensionEnabled } from '../../extensions/hide-extensions';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../../components/primitives';
 
 /*
  * 'Default' is the EMPTY value, and it is a real choice, not a placeholder for
@@ -36,6 +40,25 @@ import { isExtensionEnabled } from '../../extensions/hide-extensions';
  * Distinct from 'Stack', which is flex-column: stack gives you `gap` and no
  * margin collapsing, and stretches its children; Default is ordinary block flow.
  */
+/**
+ * Value shown on the Columns control: the tier's own value, else the inherited
+ * one, else the tier default (1 on mobile, 2 elsewhere).
+ *
+ * @param {number|string} ownValue       The value set on this tier.
+ * @param {number|string} effectiveValue The value inherited from a wider tier.
+ * @param {string}        tier           The active responsive tier.
+ * @return {number|string} The value to display.
+ */
+function columnsDisplayValue( ownValue, effectiveValue, tier ) {
+	if ( ownValue !== '' ) {
+		return ownValue;
+	}
+	if ( effectiveValue !== '' ) {
+		return effectiveValue;
+	}
+	return tier === 'mobile' ? 1 : 2;
+}
+
 const LAYOUT_OPTIONS = [
 	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Flex', 'sgs-blocks' ), value: 'flex' },
@@ -159,13 +182,11 @@ export function LayoutPanel( {
 				>
 					{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
 						<RangeControl
-							value={
-								ownValue !== ''
-									? ownValue
-									: ( effectiveValue !== ''
-										? effectiveValue
-										: ( tier === 'mobile' ? 1 : 2 ) )
-							}
+							value={ columnsDisplayValue(
+								ownValue,
+								effectiveValue,
+								tier
+							) }
 							onChange={ setOwnValue }
 							min={ 1 }
 							max={ tier === 'mobile' ? 3 : 6 }
@@ -198,8 +219,7 @@ export function LayoutPanel( {
 				onChange={ ( obj ) => setAttributes( { gap: obj } ) }
 			>
 				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-					<SpacingControl
-						freeInput
+					<SgsLengthControl
 						value={ ownValue }
 						placeholder={ inherited ? effectiveValue : '' }
 						onChange={ setOwnValue }
@@ -217,7 +237,9 @@ export function LayoutPanel( {
 				  outright, so offering either control under Stack would be a dead control
 				  (`check-dead-controls.js`).
 			*/ }
-			{ ( layout === 'flex' || layout === 'stack' || layout === 'grid' ) && (
+			{ ( layout === 'flex' ||
+				layout === 'stack' ||
+				layout === 'grid' ) && (
 				<SelectControl
 					label={ __( 'Align items', 'sgs-blocks' ) }
 					value={ alignItems }
@@ -235,24 +257,43 @@ export function LayoutPanel( {
 						value={ attributes.flexDirection || '' }
 						options={ [
 							{ label: __( 'Row', 'sgs-blocks' ), value: '' },
-							{ label: __( 'Row reverse', 'sgs-blocks' ), value: 'row-reverse' },
-							{ label: __( 'Column', 'sgs-blocks' ), value: 'column' },
-							{ label: __( 'Column reverse', 'sgs-blocks' ), value: 'column-reverse' },
+							{
+								label: __( 'Row reverse', 'sgs-blocks' ),
+								value: 'row-reverse',
+							},
+							{
+								label: __( 'Column', 'sgs-blocks' ),
+								value: 'column',
+							},
+							{
+								label: __( 'Column reverse', 'sgs-blocks' ),
+								value: 'column-reverse',
+							},
 						] }
-						onChange={ ( val ) => setAttributes( { flexDirection: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { flexDirection: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<ToggleGroupControl
 						label={ __( 'Flex wrap', 'sgs-blocks' ) }
 						value={ attributes.flexWrap || 'wrap' }
-						onChange={ ( val ) => setAttributes( { flexWrap: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { flexWrap: val } )
+						}
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="wrap" label={ __( 'Wrap', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="nowrap" label={ __( 'No wrap', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="wrap"
+							label={ __( 'Wrap', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="nowrap"
+							label={ __( 'No wrap', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 				</>
 			) }
@@ -263,14 +304,31 @@ export function LayoutPanel( {
 					value={ attributes.justifyContent || '' }
 					options={ [
 						{ label: __( '— default —', 'sgs-blocks' ), value: '' },
-						{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
-						{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+						{
+							label: __( 'Start', 'sgs-blocks' ),
+							value: 'flex-start',
+						},
+						{
+							label: __( 'Centre', 'sgs-blocks' ),
+							value: 'center',
+						},
 						{ label: __( 'End', 'sgs-blocks' ), value: 'flex-end' },
-						{ label: __( 'Space between', 'sgs-blocks' ), value: 'space-between' },
-						{ label: __( 'Space around', 'sgs-blocks' ), value: 'space-around' },
-						{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
+						{
+							label: __( 'Space between', 'sgs-blocks' ),
+							value: 'space-between',
+						},
+						{
+							label: __( 'Space around', 'sgs-blocks' ),
+							value: 'space-around',
+						},
+						{
+							label: __( 'Space evenly', 'sgs-blocks' ),
+							value: 'space-evenly',
+						},
 					] }
-					onChange={ ( val ) => setAttributes( { justifyContent: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { justifyContent: val } )
+					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
@@ -307,9 +365,17 @@ export function LayoutPanel( {
 					<ResponsiveOverride
 						label={ __( 'Custom column template', 'sgs-blocks' ) }
 						value={ attributes.gridTemplateColumns }
-						onChange={ ( obj ) => setAttributes( { gridTemplateColumns: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { gridTemplateColumns: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue, tier } ) =>
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+							tier,
+						} ) =>
 							enableColumnShapePicker ? (
 								<ColumnShapePicker
 									// The shape list depends on how many columns THIS
@@ -345,7 +411,9 @@ export function LayoutPanel( {
 							) : (
 								<TextControl
 									value={ ownValue || '' }
-									placeholder={ inherited ? effectiveValue || '' : '' }
+									placeholder={
+										inherited ? effectiveValue || '' : ''
+									}
 									onChange={ ( val ) => setOwnValue( val ) }
 									help={ __(
 										"CSS grid-template-columns e.g. '5fr 3fr' or 'repeat(3,minmax(0,1fr))'. Leave empty to use the column count above — on tablet or mobile, empty inherits the tier above.",
@@ -371,12 +439,21 @@ export function LayoutPanel( {
 					<ResponsiveOverride
 						label={ __( 'Row template', 'sgs-blocks' ) }
 						value={ attributes.gridTemplateRows }
-						onChange={ ( obj ) => setAttributes( { gridTemplateRows: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { gridTemplateRows: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<TextControl
 								value={ ownValue || '' }
-								placeholder={ inherited ? effectiveValue || '' : '' }
+								placeholder={
+									inherited ? effectiveValue || '' : ''
+								}
 								onChange={ ( val ) => setOwnValue( val ) }
 								help={ __(
 									"CSS grid-template-rows e.g. 'auto 1fr'. Leave empty to inherit the tier above, or for browser default on desktop.",
@@ -408,47 +485,88 @@ export function LayoutPanel( {
 								  `sgs/container` alone.
 								*/ }
 							<ResponsiveOverride
-								label={ __( 'Minimum column width', 'sgs-blocks' ) }
+								label={ __(
+									'Minimum column width',
+									'sgs-blocks'
+								) }
 								value={ attributes.minColumnWidth }
-								onChange={ ( obj ) => setAttributes( { minColumnWidth: obj } ) }
+								onChange={ ( obj ) =>
+									setAttributes( { minColumnWidth: obj } )
+								}
 							>
-								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => {
-									const minColumnWidthUnit = attributes.minColumnWidthUnit || 'px';
+								{ ( {
+									ownValue,
+									effectiveValue,
+									inherited,
+									setOwnValue,
+								} ) => {
+									const minColumnWidthUnit =
+										attributes.minColumnWidthUnit || 'px';
 									return (
-									<SgsLengthControl
-										presets={ false }
-										value={
-											'' !== ownValue && null != ownValue
-												? `${ ownValue }${ minColumnWidthUnit }`
-												: ''
-										}
-										placeholder={
-											inherited && '' !== effectiveValue && null != effectiveValue
-												? `${ effectiveValue }${ minColumnWidthUnit }`
-												: ''
-										}
-										units={ [
-											{ value: 'px', label: 'px', default: 200 },
-											{ value: 'em', label: 'em', default: 10 },
-											{ value: 'rem', label: 'rem', default: 10 },
-										] }
-										onChange={ ( val ) => {
-											if ( ! val ) {
-												setOwnValue( undefined );
-												return;
+										<SgsLengthControl
+											presets={ false }
+											value={
+												'' !== ownValue &&
+												null !== ownValue &&
+												undefined !== ownValue
+													? `${ ownValue }${ minColumnWidthUnit }`
+													: ''
 											}
-											const unit = val.replace( /[\d.]+/, '' ) || 'px';
-											const num = parseFloat( val );
-											setOwnValue( Number.isNaN( num ) ? undefined : num );
-											if ( unit !== minColumnWidthUnit ) {
-												setAttributes( { minColumnWidthUnit: unit } );
+											placeholder={
+												inherited &&
+												'' !== effectiveValue &&
+												null !== effectiveValue &&
+												undefined !== effectiveValue
+													? `${ effectiveValue }${ minColumnWidthUnit }`
+													: ''
 											}
-										} }
-										help={ __(
-											'The floor a grid column may shrink to before one drops to the next row. Leave empty to use the framework default (16rem).',
-											'sgs-blocks'
-										) }
-									/>
+											units={ [
+												{
+													value: 'px',
+													label: 'px',
+													default: 200,
+												},
+												{
+													value: 'em',
+													label: 'em',
+													default: 10,
+												},
+												{
+													value: 'rem',
+													label: 'rem',
+													default: 10,
+												},
+											] }
+											onChange={ ( val ) => {
+												if ( ! val ) {
+													setOwnValue( undefined );
+													return;
+												}
+												const unit =
+													val.replace(
+														/[\d.]+/,
+														''
+													) || 'px';
+												const num = parseFloat( val );
+												setOwnValue(
+													Number.isNaN( num )
+														? undefined
+														: num
+												);
+												if (
+													unit !== minColumnWidthUnit
+												) {
+													setAttributes( {
+														minColumnWidthUnit:
+															unit,
+													} );
+												}
+											} }
+											help={ __(
+												'The floor a grid column may shrink to before one drops to the next row. Leave empty to use the framework default (16rem).',
+												'sgs-blocks'
+											) }
+										/>
 									);
 								} }
 							</ResponsiveOverride>
@@ -458,7 +576,9 @@ export function LayoutPanel( {
 					<TextControl
 						label={ __( 'Auto rows', 'sgs-blocks' ) }
 						value={ gridAutoRows }
-						onChange={ ( val ) => setAttributes( { gridAutoRows: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { gridAutoRows: val } )
+						}
 						help={ __(
 							"Sets grid-auto-rows e.g. '1fr' for equal-height rows or 'minmax(100px,auto)'.",
 							'sgs-blocks'
@@ -471,7 +591,9 @@ export function LayoutPanel( {
 						label={ __( 'Justify items', 'sgs-blocks' ) }
 						value={ justifyItems }
 						options={ JUSTIFY_ITEMS_OPTIONS }
-						onChange={ ( val ) => setAttributes( { justifyItems: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { justifyItems: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -480,7 +602,9 @@ export function LayoutPanel( {
 						label={ __( 'Align content', 'sgs-blocks' ) }
 						value={ alignContent }
 						options={ ALIGN_CONTENT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { alignContent: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { alignContent: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

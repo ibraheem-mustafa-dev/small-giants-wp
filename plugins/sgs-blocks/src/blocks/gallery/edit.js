@@ -6,7 +6,11 @@
  * and inspector panels covering layout, colours, hover, and carousel options.
  */
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	InspectorControls,
+	useSettings,
+} from '@wordpress/block-editor';
 // Composed named panels, NOT the <ContainerWrapperControls kind="layout"> aggregator.
 // The aggregator renders LayoutPanel's own Layout + Columns controls, which bind to
 // the SAME attributes this block already controls — and with an incompatible option
@@ -29,9 +33,7 @@ import {
 } from '../container/components/ContainerWrapperControls';
 // Spec 37 FR-37-16 object model (Spec 35 Phase 1.4, 2026-08-10). Replaces
 // WidthPanel + ResponsiveSpacingPanel here — see the mount below for why.
-import { ResponsiveBoxControls,
-	scrimColourRow,
-} from '../../components';
+import { ResponsiveBoxControls, scrimColourRow } from '../../components';
 import { PanelBody } from '@wordpress/components';
 import { useEffect, useMemo } from '@wordpress/element';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
@@ -69,30 +71,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		layout,
 		columns,
 		gap,
-		aspectRatio,
 		enableLightbox,
-		showCaptions,
-		captionReveal,
-		captionColour,
-		captionColourGradient,
-		captionColourHover,
-		captionColourHoverGradient,
-		captionBgColour,
-		captionBgColourGradient,
 		overlayColourHover,
 		overlayColourHoverGradient,
 		scaleHover,
-		grayscaleHover,
 		transitionDuration,
 		transitionEasing,
-		carouselAutoplay,
-		carouselSpeed,
-		carouselShowDots,
-		carouselShowArrows,
-		imageSize,
-		dragToScroll,
-		dragMomentum,
-		loopCarousel,
 	} = attributes;
 
 	const set = ( key ) => ( value ) => setAttributes( { [ key ]: value } );
@@ -143,18 +127,35 @@ export default function Edit( { attributes, setAttributes } ) {
 	// or the preview would emit "--sgs-columns-desktop: [object Object]" and
 	// the CSS custom properties would silently fail (same D567 class as gap
 	// above).
-	const columnsDesktop = Math.max( 1, Math.floor( Number( resolveResponsiveTier( columns, 'desktop' )?.value ) ) || 3 );
-	const columnsTabletTier = Math.max( 1, Math.floor( Number( resolveResponsiveTier( columns, 'tablet' )?.value ) ) || 2 );
-	const columnsMobileTier = Math.max( 1, Math.floor( Number( resolveResponsiveTier( columns, 'mobile' )?.value ) ) || 1 );
+	const columnsDesktop = Math.max(
+		1,
+		Math.floor(
+			Number( resolveResponsiveTier( columns, 'desktop' )?.value )
+		) || 3
+	);
+	const columnsTabletTier = Math.max(
+		1,
+		Math.floor(
+			Number( resolveResponsiveTier( columns, 'tablet' )?.value )
+		) || 2
+	);
+	const columnsMobileTier = Math.max(
+		1,
+		Math.floor(
+			Number( resolveResponsiveTier( columns, 'mobile' )?.value )
+		) || 1
+	);
 
 	// Wrapper inline styles — CSS custom properties for layout.
 	const inlineStyles = {
 		'--sgs-columns-desktop': columnsDesktop,
 		'--sgs-columns-tablet': columnsTabletTier,
 		'--sgs-columns-mobile': columnsMobileTier,
-		// gap is now a string from the shared SpacingControl (e.g. "16px", "40").
+		// gap is now a string from the shared SgsLengthControl (e.g. "16px", "40").
 		// Bare numeric strings (legacy format) are suffixed with px for preview.
-		'--sgs-gap': /^\d+$/.test( String( gapDesktop ) ) ? gapDesktop + 'px' : gapDesktop || '16px',
+		'--sgs-gap': /^\d+$/.test( String( gapDesktop ) )
+			? gapDesktop + 'px'
+			: gapDesktop || '16px',
 		'--sgs-transition-duration': transitionDuration + 'ms',
 		'--sgs-transition-easing': transitionEasing,
 	};
@@ -165,9 +166,16 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( overlayColourHover ) {
 		inlineStyles[ '--sgs-hover-overlay' ] = colourVar( overlayColourHover );
 	}
-	Object.assign( inlineStyles, wrapperBorderPreview( attributes, previewTier, colourPalette ) );
+	Object.assign(
+		inlineStyles,
+		wrapperBorderPreview( attributes, previewTier, colourPalette )
+	);
 	const captionStyle = captionPreviewStyle( attributes, colourPalette );
-	const tileStyle = tilePreviewStyle( attributes, previewTier, colourPalette );
+	const tileStyle = tilePreviewStyle(
+		attributes,
+		previewTier,
+		colourPalette
+	);
 
 	// ── Editor-canvas mirror: padding / margin / maxWidth / contentWidth /
 	// grid layout (CHECK A editor-canvas desync fix, 2026-09-05). All 8 are
@@ -184,8 +192,14 @@ export default function Edit( { attributes, setAttributes } ) {
 	// (ResponsiveBoxControls -> BoxControl). resolveBoxTierPreview() does the
 	// per-side merge, fed the three tiers pulled out of this block's single
 	// object.
-	const galleryPaddingObj = attributes.padding && typeof attributes.padding === 'object' ? attributes.padding : {};
-	const galleryMarginObj  = attributes.margin  && typeof attributes.margin  === 'object' ? attributes.margin  : {};
+	const galleryPaddingObj =
+		attributes.padding && typeof attributes.padding === 'object'
+			? attributes.padding
+			: {};
+	const galleryMarginObj =
+		attributes.margin && typeof attributes.margin === 'object'
+			? attributes.margin
+			: {};
 	Object.assign(
 		inlineStyles,
 		tierBoxLonghands( galleryPaddingObj, previewTier, 'padding' ),
@@ -195,8 +209,13 @@ export default function Edit( { attributes, setAttributes } ) {
 	// maxWidth: a plain {desktop,tablet,mobile} scalar tier object — same
 	// shape as sgs/container's own maxWidth, so the same resolver applies
 	// unchanged.
-	const previewMaxWidth = resolveResponsiveTier( attributes.maxWidth, previewTier )?.value;
-	if ( previewMaxWidth ) inlineStyles.maxWidth = previewMaxWidth;
+	const previewMaxWidth = resolveResponsiveTier(
+		attributes.maxWidth,
+		previewTier
+	)?.value;
+	if ( previewMaxWidth ) {
+		inlineStyles.maxWidth = previewMaxWidth;
+	}
 
 	// contentWidth band (Layer 2 / `.sgs-container__inner`) — this block
 	// declares no `contentBandPadding` sibling attribute, so band padding is
@@ -218,7 +237,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	} );
 
 	const blockProps = useBlockProps( {
-		className: `sgs-gallery sgs-gallery--${ layout }${ isTileMode( attributes ) ? ' sgs-gallery--tile' : '' }`,
+		className: `sgs-gallery sgs-gallery--${ layout }${
+			isTileMode( attributes ) ? ' sgs-gallery--tile' : ''
+		}`,
 		style: inlineStyles,
 	} );
 
@@ -230,7 +251,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				? `repeat( ${ columnsDesktop }, 1fr )`
 				: undefined,
 		columnCount: layout === 'masonry' ? columnsDesktop : undefined,
-		gap: /^\d+$/.test( String( gapDesktop ) ) ? gapDesktop + 'px' : gapDesktop || '16px',
+		gap: /^\d+$/.test( String( gapDesktop ) )
+			? gapDesktop + 'px'
+			: gapDesktop || '16px',
 	};
 	// The grid layout's grid settings paint the image grid (render.php:
 	// sgs_gallery_grid_layout_css()), never the outer element.
@@ -244,7 +267,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			gridTemplateColumns: attributes.gridTemplateColumns,
 			columns,
 		} );
-		const previewRows = resolveResponsiveTier( attributes.gridTemplateRows, previewTier )?.value;
+		const previewRows = resolveResponsiveTier(
+			attributes.gridTemplateRows,
+			previewTier
+		)?.value;
 		if ( 'string' === typeof previewRows && previewRows.trim() ) {
 			previewGridStyle.gridTemplateRows = previewRows.trim();
 		}
@@ -278,7 +304,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					// The lightbox scrim's colour row (U-2 Addendum A, 2026-09-24) —
 					// only shown when the lightbox exists at all; its strength/blur
 					// siblings live in their own ToolsPanel further down (ScrimControls.js).
-					enableLightbox && scrimColourRow( { attributes, setAttributes } ),
+					enableLightbox &&
+						scrimColourRow( { attributes, setAttributes } ),
 					tileColourRow( { attributes, setAttributes } ),
 					{
 						key: 'overlay',
@@ -289,10 +316,16 @@ export default function Edit( { attributes, setAttributes } ) {
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: overlayColourHover,
-								onChange: ( val ) => setAttributes( { overlayColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										overlayColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: overlayColourHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { overlayColourHoverGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										overlayColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -312,7 +345,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			   and border/radius (SgsBorderControl) collapse into ONE TIER-2
 			   Layout panel rather than three separate ungrouped panels. */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ true }>
+				<PanelBody
+					title={ __( 'Layout', 'sgs-blocks' ) }
+					initialOpen={ true }
+				>
 					{ /* showLayout={false}: this block owns its own Layout and Columns
 					     controls below — see the import comment. Gap is still wanted. */ }
 					<LayoutPanel
@@ -330,12 +366,24 @@ export default function Edit( { attributes, setAttributes } ) {
 					  object value model, exactly as site-header-row / site-footer-row /
 					  nav-menu do.
 					*/ }
-					<ResponsiveBoxControls attributes={ attributes } setAttributes={ setAttributes } />
-					<GalleryBorderControl attributes={ attributes } setAttributes={ setAttributes } />
+					<ResponsiveBoxControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+					<GalleryBorderControl
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				</PanelBody>
-				<GalleryTilePanel attributes={ attributes } setAttributes={ setAttributes } />
+				<GalleryTilePanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				{ /* Lines between the grid's items (the wrapper draws them for the grid layout). */ }
-				<SeparatorsPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<SeparatorsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ /* ============================================================
@@ -355,13 +403,29 @@ export default function Edit( { attributes, setAttributes } ) {
 					updateItemLink={ updateItemLink }
 				/>
 
-				<LayoutSettingsPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
+				<LayoutSettingsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					set={ set }
+				/>
 
-				<GalleryHoverEffectsPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
+				<GalleryHoverEffectsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					set={ set }
+				/>
 
-				<GalleryContentPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
+				<GalleryContentPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					set={ set }
+				/>
 
-				<GalleryCarouselPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
+				<GalleryCarouselPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					set={ set }
+				/>
 				{ /* Border moved to the "Layout" panel in the Styles tab above
 				   (Spec 35 THE PLACEMENT RULE — border is a box-shape property
 				   of the `grid` wrapper element, grouped with padding/margin/

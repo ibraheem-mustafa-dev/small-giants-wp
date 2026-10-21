@@ -3656,7 +3656,7 @@ _KNOWN_CONTROLS = (
     "ToggleGroupControl", "Button",
     # This framework's own single-attribute controls (src/components/).
     "ResponsiveBoxControl", "ResponsiveBorderRadiusControl", "BorderRadiusControl",
-    "SpacingControl", "ShadowControl", "GradientOverlayControl",
+    "ShadowControl", "GradientOverlayControl",
     "IconPicker", "SgsLinkControl", "StateToggleControl",
     "ResponsiveTriStateControl", "BooleanResponsiveControl",
     "RRangeControl", "RUnitControl",

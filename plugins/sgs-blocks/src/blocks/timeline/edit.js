@@ -15,9 +15,31 @@ import {
 	ToggleControl,
 	RadioControl,
 } from '@wordpress/components';
-import { IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl, ShadowLiftControls, LinkUnderlineControl } from '../../components';
-import { colourVar, linkColourPreviewCss, linkUnderlinePreviewCss, resolveTextColourPreviewStyle,  tierBoxLonghands, usePreviewTier, typographyPreviewStyle, sgsBorderPreview } from '../../utils';
-import { sanitiseSvg, gapVar } from '../../utils';
+import {
+	IconPicker,
+	SgsColourPanel,
+	SgsBorderControl,
+	TypographyControls,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	SgsLengthControl,
+	ShadowLiftControls,
+	LinkUnderlineControl,
+} from '../../components';
+import {
+	colourVar,
+	linkColourPreviewCss,
+	linkUnderlinePreviewCss,
+	resolveTextColourPreviewStyle,
+	tierBoxLonghands,
+	usePreviewTier,
+	typographyPreviewStyle,
+	sgsBorderPreview,
+	sanitiseSvg,
+	gapVar,
+} from '../../utils';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
 // ── Select options ──────────────────────────────────────────────────────────
@@ -91,7 +113,10 @@ function MediaPreview( { entry } ) {
 		// this feature existed. Say so rather than rendering a broken image.
 		return (
 			<span className="sgs-timeline__media sgs-timeline__media--placeholder">
-				{ __( 'Image set — re-select it to preview here', 'sgs-blocks' ) }
+				{ __(
+					'Image set — re-select it to preview here',
+					'sgs-blocks'
+				) }
 			</span>
 		);
 	}
@@ -208,16 +233,35 @@ const CONNECTOR_OPTIONS = [
  * `__experimentalSkipSerialization`, which ALSO suppresses useBlockProps()'s
  * own inline-style generation in the editor — so the canvas needs this
  * manual reconstruction for visual parity, exactly like sgs/quote.
+ * @param {Object} attributes  Block attributes.
+ * @param {string} previewTier Device tier being previewed.
  */
 function buildRootPreviewStyle( attributes, previewTier = 'desktop' ) {
-	const { padding, margin, borderWidth, borderStyle, borderColour, borderColourGradient, borderRadius, textColour, textColourGradient, backgroundColour } = attributes;
+	const {
+		padding,
+		margin,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderColourGradient,
+		borderRadius,
+		textColour,
+		textColourGradient,
+		backgroundColour,
+	} = attributes;
 	const previewStyle = {};
 
 	// Use gradient-aware resolver for text colour + gradient sibling
-	const textColorStyle = resolveTextColourPreviewStyle( textColour, textColourGradient, colourVar );
+	const textColorStyle = resolveTextColourPreviewStyle(
+		textColour,
+		textColourGradient,
+		colourVar
+	);
 	Object.assign( previewStyle, textColorStyle );
 	if ( backgroundColour ) {
-		previewStyle.backgroundColor = /^#|^rgb|^hsl/.test( backgroundColour ) ? backgroundColour : colourVar( backgroundColour );
+		previewStyle.backgroundColor = /^#|^rgb|^hsl/.test( backgroundColour )
+			? backgroundColour
+			: colourVar( backgroundColour );
 	}
 
 	// Border radius is the block's own `borderRadius` tier-object attr
@@ -225,9 +269,26 @@ function buildRootPreviewStyle( attributes, previewTier = 'desktop' ) {
 	// support at all, so WP-native `style.border` is never populated (unlike
 	// `style.color`/`style.shadow` above, which stay live — see this file's
 	// colour panel and the `shadow` support declared in block.json).
-	Object.assign( previewStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius }, previewTier, undefined ) );
+	Object.assign(
+		previewStyle,
+		sgsBorderPreview(
+			{
+				widthValues: borderWidth,
+				styleValue: borderStyle,
+				colourValue: borderColour,
+				colourGradientValue: borderColourGradient,
+				radiusValues: borderRadius,
+			},
+			previewTier,
+			undefined
+		)
+	);
 
-	const paddingLonghands = tierBoxLonghands( padding, previewTier, 'padding' );
+	const paddingLonghands = tierBoxLonghands(
+		padding,
+		previewTier,
+		'padding'
+	);
 	Object.assign( previewStyle, paddingLonghands );
 	const marginLonghands = tierBoxLonghands( margin, previewTier, 'margin' );
 	Object.assign( previewStyle, marginLonghands );
@@ -235,9 +296,18 @@ function buildRootPreviewStyle( attributes, previewTier = 'desktop' ) {
 	return previewStyle;
 }
 
+/**
+ * Resolve a row-stripe colour slug to its preset variable; an empty slug is transparent.
+ * @param {string} slug Colour preset slug, or empty.
+ * @return {string} CSS value for the stripe custom property.
+ */
+function stripeColourVar( slug ) {
+	return slug ? `var(--wp--preset--color--${ slug })` : 'transparent';
+}
+
 // ── Entry editor sub-component ──────────────────────────────────────────────
 
-function EntryEditor( { entry, index, onChange, onRemove } ) {
+function EntryEditor( { entry, onChange, onRemove } ) {
 	const update = ( key, value ) => onChange( { ...entry, [ key ]: value } );
 
 	return (
@@ -254,7 +324,10 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 				value={ entry.date || '' }
 				onChange={ ( val ) => update( 'date', val ) }
 				placeholder="YYYY-MM-DD or e.g. January 2024"
-				help={ __( 'Used as the visible label and the datetime attribute.', 'sgs-blocks' ) }
+				help={ __(
+					'Used as the visible label and the datetime attribute.',
+					'sgs-blocks'
+				) }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
@@ -266,7 +339,7 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 				__next40pxDefaultSize
 			/>
 			<div style={ { marginTop: '8px', marginBottom: '8px' } }>
-				<label
+				<span
 					style={ {
 						display: 'block',
 						marginBottom: '4px',
@@ -276,7 +349,7 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 					} }
 				>
 					{ __( 'Description', 'sgs-blocks' ) }
-				</label>
+				</span>
 				<RichText
 					tagName="div"
 					value={ entry.description || '' }
@@ -332,11 +405,17 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 								<Button
 									variant="secondary"
 									onClick={ open }
-									style={ { marginTop: '8px', marginBottom: '8px' } }
+									style={ {
+										marginTop: '8px',
+										marginBottom: '8px',
+									} }
 								>
 									{ entry.image
 										? __( 'Change image', 'sgs-blocks' )
-										: __( 'Add image (optional)', 'sgs-blocks' ) }
+										: __(
+												'Add image (optional)',
+												'sgs-blocks'
+										  ) }
 								</Button>
 							) }
 						/>
@@ -361,7 +440,10 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 					<MediaUploadCheck>
 						<MediaUpload
 							onSelect={ ( media ) =>
-								update( 'video', { id: media.id, url: media.url } )
+								update( 'video', {
+									id: media.id,
+									url: media.url,
+								} )
 							}
 							allowedTypes={ [ 'video' ] }
 							value={ entry.video?.id || 0 }
@@ -369,7 +451,10 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 								<Button
 									variant="secondary"
 									onClick={ open }
-									style={ { marginTop: '8px', marginBottom: '8px' } }
+									style={ {
+										marginTop: '8px',
+										marginBottom: '8px',
+									} }
 								>
 									{ entry.video?.url
 										? __( 'Change video', 'sgs-blocks' )
@@ -421,7 +506,11 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const previewTier = usePreviewTier();
 	// Title typography: render.php's sgs_typography_css_rule( $attributes, 'title' ).
-	const titlePreviewStyle = typographyPreviewStyle( attributes, 'title', previewTier );
+	const titlePreviewStyle = typographyPreviewStyle(
+		attributes,
+		'title',
+		previewTier
+	);
 	const {
 		orientation,
 		contentLayout,
@@ -489,8 +578,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const previewClasses = [
 		'sgs-timeline',
 		`sgs-timeline--${ orientation }`,
-		orientation === 'vertical' ? `sgs-timeline--content-${ contentLayout }` : '',
-		orientation === 'vertical' && contentLayout === 'same-side' && contentSide === 'start'
+		orientation === 'vertical'
+			? `sgs-timeline--content-${ contentLayout }`
+			: '',
+		orientation === 'vertical' &&
+		contentLayout === 'same-side' &&
+		contentSide === 'start'
 			? 'sgs-timeline--side-start'
 			: '',
 		`sgs-timeline--connector-${ connectorStyle }`,
@@ -498,7 +591,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		'sgs-timeline--media-under',
 		rowStripes ? 'sgs-timeline--row-stripes' : '',
 		'carousel' === mobileLayout ? 'sgs-timeline--mobile-carousel' : '',
-		orientation === 'vertical' && contentLayout === 'single-column' && datePosition === 'own-column'
+		orientation === 'vertical' &&
+		contentLayout === 'single-column' &&
+		datePosition === 'own-column'
 			? 'sgs-timeline--date-gutter'
 			: '',
 		// Task 3 (2026-08-30) — 'full-height' milestones. Was missing from this
@@ -507,20 +602,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// style.scss) could never match on the canvas even once the custom
 		// property below was set — the class is render.php's real gate, the
 		// custom property is unconditional (CHECK A).
-		'full-height' === milestoneSize ? 'sgs-timeline--milestone-full-height' : '',
+		'full-height' === milestoneSize
+			? 'sgs-timeline--milestone-full-height'
+			: '',
 		linkPreviewUid,
-	].filter( Boolean ).join( ' ' );
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
 	// Editor-canvas preview CSS for the per-entry description link colour
 	// (Task 3, 2026-09-07) — applies block-wide, matching the frontend.
 	// Extended with gradient support (CHECK A, 2026-09-07).
-	const linkPreviewCss = linkUnderlinePreviewCss( `.${ linkPreviewUid } .sgs-timeline__description`, { mode: descriptionLinkUnderline, thickness: descriptionLinkUnderlineThickness, colour: descriptionLinkUnderlineColour, colourHover: descriptionLinkUnderlineColourHover, offset: descriptionLinkUnderlineOffset, linkGradient: descriptionLinkColourGradient } ) + linkColourPreviewCss(
-		`.${ linkPreviewUid } .sgs-timeline__description`,
-		descriptionLinkColour,
-		descriptionLinkColourHover,
-		descriptionLinkColourGradient,
-		descriptionLinkColourHoverGradient
-	);
+	const linkPreviewCss =
+		linkUnderlinePreviewCss(
+			`.${ linkPreviewUid } .sgs-timeline__description`,
+			{
+				mode: descriptionLinkUnderline,
+				thickness: descriptionLinkUnderlineThickness,
+				colour: descriptionLinkUnderlineColour,
+				colourHover: descriptionLinkUnderlineColourHover,
+				offset: descriptionLinkUnderlineOffset,
+				linkGradient: descriptionLinkColourGradient,
+			}
+		) +
+		linkColourPreviewCss(
+			`.${ linkPreviewUid } .sgs-timeline__description`,
+			descriptionLinkColour,
+			descriptionLinkColourHover,
+			descriptionLinkColourGradient,
+			descriptionLinkColourHoverGradient
+		);
 
 	// Editor-canvas preview STYLE for the date element's own text colour +
 	// gradient (CHECK A, 2026-09-07; corrected same session). dateColour paints
@@ -531,7 +642,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// text needs resolveTextColourPreviewStyle()'s inline-style object, applied
 	// directly to the <time> element, matching how textColour is previewed on
 	// the root above.
-	const dateColourStyle = resolveTextColourPreviewStyle( dateColour, dateColourGradient, colourVar );
+	const dateColourStyle = resolveTextColourPreviewStyle(
+		dateColour,
+		dateColourGradient,
+		colourVar
+	);
 
 	// Contract §A: the pre-existing --sgs-connector-colour / --sgs-date-colour
 	// custom-property VALUES stay inline (a `--var:value` is not a property
@@ -548,7 +663,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			// closeout) — a raw CSS gradient string, mirrored unwrapped like
 			// every other {attr}Gradient custom-property value (tabs/
 			// option-picker precedent).
-			'--sgs-connector-colour-gradient': connectorColourGradient || undefined,
+			'--sgs-connector-colour-gradient':
+				connectorColourGradient || undefined,
 			// connectorColourHover(Gradient) canvas mirror (CHECK A,
 			// 2026-09-06) — style.scss's `:hover`/`:focus-visible` rules
 			// (e.g. lines 442-446, 890-896) already read
@@ -560,27 +676,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			'--sgs-connector-colour-hover': connectorColourHover
 				? `var(--wp--preset--color--${ connectorColourHover })`
 				: undefined,
-			'--sgs-connector-colour-hover-gradient': connectorColourHoverGradient || undefined,
+			'--sgs-connector-colour-hover-gradient':
+				connectorColourHoverGradient || undefined,
 			'--sgs-timeline-media-width': milestoneMediaWidth || undefined,
 			// Mirrors render.php: an EMPTY stripe A resolves to `transparent`,
 			// so odd rows keep the page/section background and only even rows
 			// band. Emitted only when the feature is on, so a timeline without
 			// stripes carries no stray custom properties on the canvas either.
 			'--sgs-timeline-stripe-a': rowStripes
-				? ( rowStripeColourA
-						? `var(--wp--preset--color--${ rowStripeColourA })`
-						: 'transparent' )
+				? stripeColourVar( rowStripeColourA )
 				: undefined,
 			'--sgs-timeline-stripe-a-gradient': rowStripes
-				? ( rowStripeColourAGradient || undefined )
+				? rowStripeColourAGradient || undefined
 				: undefined,
 			'--sgs-timeline-stripe-b': rowStripes
-				? ( rowStripeColourB
-						? `var(--wp--preset--color--${ rowStripeColourB })`
-						: 'transparent' )
+				? stripeColourVar( rowStripeColourB )
 				: undefined,
 			'--sgs-timeline-stripe-b-gradient': rowStripes
-				? ( rowStripeColourBGradient || undefined )
+				? rowStripeColourBGradient || undefined
 				: undefined,
 			'--sgs-date-colour': dateColour
 				? `var(--wp--preset--color--${ dateColour })`
@@ -588,7 +701,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			'--sgs-timeline-fill-colour': connectorFillColour
 				? `var(--wp--preset--color--${ connectorFillColour })`
 				: undefined,
-			'--sgs-timeline-fill-colour-gradient': connectorFillColourGradient || undefined,
+			'--sgs-timeline-fill-colour-gradient':
+				connectorFillColourGradient || undefined,
 			// connectorFillColourHover(Gradient) canvas mirror (CHECK A,
 			// 2026-09-06) — style.scss's `.is-reached:hover`/`:focus-visible`
 			// rules (lines 921-925, 946-950) already read
@@ -598,7 +712,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			'--sgs-timeline-fill-colour-hover': connectorFillColourHover
 				? `var(--wp--preset--color--${ connectorFillColourHover })`
 				: undefined,
-			'--sgs-timeline-fill-colour-hover-gradient': connectorFillColourHoverGradient || undefined,
+			'--sgs-timeline-fill-colour-hover-gradient':
+				connectorFillColourHoverGradient || undefined,
 			// Task 3 (2026-08-30) — milestoneMinHeight/entryGap. Mirrors
 			// render.php exactly: BOTH custom-property values are emitted
 			// unconditionally (unset -> undefined -> no declaration, matching
@@ -607,7 +722,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			// (`.sgs-timeline--milestone-full-height .sgs-timeline__entry`),
 			// not the custom property itself — see the class added to
 			// `previewClasses` above.
-			'--sgs-timeline-milestone-min-height': milestoneMinHeight || undefined,
+			'--sgs-timeline-milestone-min-height':
+				milestoneMinHeight || undefined,
 			'--sgs-timeline-entry-gap': gapVar( entryGap ),
 			...buildRootPreviewStyle( attributes, previewTier ),
 		},
@@ -680,20 +796,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: textColour,
-								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
 								gradientValue: textColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { textColourGradient: val ?? '' } ),
+									setAttributes( {
+										textColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										textColourHover: val ?? '',
+									} ),
 								gradientValue: textColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { textColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										textColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -705,7 +829,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: backgroundColour,
-								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColour: val ?? '',
+									} ),
 								linked: true,
 							},
 						],
@@ -726,7 +853,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						? [
 								{
 									key: 'rowStripeA',
-									label: __( 'Row colour A (odd rows)', 'sgs-blocks' ),
+									label: __(
+										'Row colour A (odd rows)',
+										'sgs-blocks'
+									),
 									gradientCapable: true,
 									states: [
 										{
@@ -734,27 +864,43 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 											label: __( 'Normal', 'sgs-blocks' ),
 											value: rowStripeColourA,
 											onChange: ( val ) =>
-												setAttributes( { rowStripeColourA: val ?? '' } ),
+												setAttributes( {
+													rowStripeColourA: val ?? '',
+												} ),
 											linked: true,
-											gradientValue: rowStripeColourAGradient,
+											gradientValue:
+												rowStripeColourAGradient,
 											onGradientChange: ( val ) =>
-												setAttributes( { rowStripeColourAGradient: val ?? '' } ),
+												setAttributes( {
+													rowStripeColourAGradient:
+														val ?? '',
+												} ),
 										},
 										{
 											key: 'hover',
 											label: __( 'Hover', 'sgs-blocks' ),
 											value: rowStripeColourAHover,
 											onChange: ( val ) =>
-												setAttributes( { rowStripeColourAHover: val ?? '' } ),
-											gradientValue: rowStripeColourAHoverGradient,
+												setAttributes( {
+													rowStripeColourAHover:
+														val ?? '',
+												} ),
+											gradientValue:
+												rowStripeColourAHoverGradient,
 											onGradientChange: ( val ) =>
-												setAttributes( { rowStripeColourAHoverGradient: val ?? '' } ),
+												setAttributes( {
+													rowStripeColourAHoverGradient:
+														val ?? '',
+												} ),
 										},
 									],
 								},
 								{
 									key: 'rowStripeB',
-									label: __( 'Row colour B (even rows)', 'sgs-blocks' ),
+									label: __(
+										'Row colour B (even rows)',
+										'sgs-blocks'
+									),
 									gradientCapable: true,
 									states: [
 										{
@@ -762,21 +908,34 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 											label: __( 'Normal', 'sgs-blocks' ),
 											value: rowStripeColourB,
 											onChange: ( val ) =>
-												setAttributes( { rowStripeColourB: val ?? '' } ),
+												setAttributes( {
+													rowStripeColourB: val ?? '',
+												} ),
 											linked: true,
-											gradientValue: rowStripeColourBGradient,
+											gradientValue:
+												rowStripeColourBGradient,
 											onGradientChange: ( val ) =>
-												setAttributes( { rowStripeColourBGradient: val ?? '' } ),
+												setAttributes( {
+													rowStripeColourBGradient:
+														val ?? '',
+												} ),
 										},
 										{
 											key: 'hover',
 											label: __( 'Hover', 'sgs-blocks' ),
 											value: rowStripeColourBHover,
 											onChange: ( val ) =>
-												setAttributes( { rowStripeColourBHover: val ?? '' } ),
-											gradientValue: rowStripeColourBHoverGradient,
+												setAttributes( {
+													rowStripeColourBHover:
+														val ?? '',
+												} ),
+											gradientValue:
+												rowStripeColourBHoverGradient,
 											onGradientChange: ( val ) =>
-												setAttributes( { rowStripeColourBHoverGradient: val ?? '' } ),
+												setAttributes( {
+													rowStripeColourBHoverGradient:
+														val ?? '',
+												} ),
 										},
 									],
 								},
@@ -803,21 +962,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: connectorColour,
-								onChange: ( val ) => setAttributes( { connectorColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										connectorColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: connectorColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { connectorColourGradient: val ?? '' } ),
+									setAttributes( {
+										connectorColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: connectorColourHover,
-								onChange: ( val ) => setAttributes( { connectorColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										connectorColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: connectorColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { connectorColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										connectorColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -831,9 +1000,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: connectorFillColour,
 								onChange: ( val ) =>
-									setAttributes( { connectorFillColour: val ?? '' } ),
+									setAttributes( {
+										connectorFillColour: val ?? '',
+									} ),
 								gradientValue: connectorFillColourGradient,
-								onGradientChange: ( val ) => setAttributes( { connectorFillColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										connectorFillColourGradient: val ?? '',
+									} ),
 								linked: true,
 							},
 							{
@@ -841,10 +1015,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: connectorFillColourHover,
 								onChange: ( val ) =>
-									setAttributes( { connectorFillColourHover: val ?? '' } ),
+									setAttributes( {
+										connectorFillColourHover: val ?? '',
+									} ),
 								gradientValue: connectorFillColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { connectorFillColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										connectorFillColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -857,26 +1036,37 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: dateColour,
-								onChange: ( val ) => setAttributes( { dateColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { dateColour: val ?? '' } ),
 								linked: true,
 								gradientValue: dateColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { dateColourGradient: val ?? '' } ),
+									setAttributes( {
+										dateColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: dateColourHover,
-								onChange: ( val ) => setAttributes( { dateColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										dateColourHover: val ?? '',
+									} ),
 								gradientValue: dateColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { dateColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										dateColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
 					{
 						key: 'descriptionLink',
-						label: __( 'Entry description link colour', 'sgs-blocks' ),
+						label: __(
+							'Entry description link colour',
+							'sgs-blocks'
+						),
 						gradientCapable: true,
 						states: [
 							{
@@ -884,21 +1074,32 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: descriptionLinkColour,
 								onChange: ( val ) =>
-									setAttributes( { descriptionLinkColour: val ?? '' } ),
+									setAttributes( {
+										descriptionLinkColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: descriptionLinkColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { descriptionLinkColourGradient: val ?? '' } ),
+									setAttributes( {
+										descriptionLinkColourGradient:
+											val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: descriptionLinkColourHover,
 								onChange: ( val ) =>
-									setAttributes( { descriptionLinkColourHover: val ?? '' } ),
-								gradientValue: descriptionLinkColourHoverGradient,
+									setAttributes( {
+										descriptionLinkColourHover: val ?? '',
+									} ),
+								gradientValue:
+									descriptionLinkColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { descriptionLinkColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										descriptionLinkColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 						after: (
@@ -906,21 +1107,50 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								mode={ descriptionLinkUnderline }
 								thickness={ descriptionLinkUnderlineThickness }
 								colour={ descriptionLinkUnderlineColour }
-								colourHover={ descriptionLinkUnderlineColourHover }
+								colourHover={
+									descriptionLinkUnderlineColourHover
+								}
 								offset={ descriptionLinkUnderlineOffset }
-								onModeChange={ ( val ) => setAttributes( { descriptionLinkUnderline: val } ) }
-								onThicknessChange={ ( val ) => setAttributes( { descriptionLinkUnderlineThickness: val } ) }
-								onColourChange={ ( val ) => setAttributes( { descriptionLinkUnderlineColour: val } ) }
-								onColourHoverChange={ ( val ) => setAttributes( { descriptionLinkUnderlineColourHover: val } ) }
-								onOffsetChange={ ( val ) => setAttributes( { descriptionLinkUnderlineOffset: val } ) }
+								onModeChange={ ( val ) =>
+									setAttributes( {
+										descriptionLinkUnderline: val,
+									} )
+								}
+								onThicknessChange={ ( val ) =>
+									setAttributes( {
+										descriptionLinkUnderlineThickness: val,
+									} )
+								}
+								onColourChange={ ( val ) =>
+									setAttributes( {
+										descriptionLinkUnderlineColour: val,
+									} )
+								}
+								onColourHoverChange={ ( val ) =>
+									setAttributes( {
+										descriptionLinkUnderlineColourHover:
+											val,
+									} )
+								}
+								onOffsetChange={ ( val ) =>
+									setAttributes( {
+										descriptionLinkUnderlineOffset: val,
+									} )
+								}
 							/>
 						),
 					},
 				] }
 			/>
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Shadow on hover', 'sgs-blocks' ) } initialOpen={ false }>
-					<ShadowLiftControls attributes={ attributes } setAttributes={ setAttributes } />
+				<PanelBody
+					title={ __( 'Shadow on hover', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ShadowLiftControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				</PanelBody>
 			</InspectorControls>
 
@@ -938,7 +1168,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Heading level', 'sgs-blocks' ) }
 						value={ headingLevel || 'h3' }
 						options={ HEADING_LEVEL_OPTIONS }
-						onChange={ ( val ) => setAttributes( { headingLevel: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { headingLevel: val } )
+						}
 						help={ __(
 							'Pick the level that fits your page outline — usually H3 under a page-level H2.',
 							'sgs-blocks'
@@ -947,14 +1179,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
-				{/* ── Entries ── */}
+				{ /* ── Entries ── */ }
 				<PanelBody title={ __( 'Timeline entries', 'sgs-blocks' ) }>
 					{ entries.map( ( entry, index ) => (
 						<EntryEditor
 							key={ index }
 							entry={ entry }
-							index={ index }
-							onChange={ ( updated ) => updateEntry( index, updated ) }
+							onChange={ ( updated ) =>
+								updateEntry( index, updated )
+							}
 							onRemove={ () => removeEntry( index ) }
 						/>
 					) ) }
@@ -963,13 +1196,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</Button>
 				</PanelBody>
 
-				{/* ── Layout ── */}
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+				{ /* ── Layout ── */ }
+				<PanelBody
+					title={ __( 'Layout', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SelectControl
 						label={ __( 'Orientation', 'sgs-blocks' ) }
 						value={ orientation }
 						options={ ORIENTATION_OPTIONS }
-						onChange={ ( val ) => setAttributes( { orientation: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { orientation: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -978,8 +1216,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							label={ __( 'How entries line up', 'sgs-blocks' ) }
 							value={ contentLayout }
 							options={ CONTENT_LAYOUT_OPTIONS }
-							onChange={ ( val ) => setAttributes( { contentLayout: val } ) }
-							help={ __( 'Alternating flips content left/right on each entry.', 'sgs-blocks' ) }
+							onChange={ ( val ) =>
+								setAttributes( { contentLayout: val } )
+							}
+							help={ __(
+								'Alternating flips content left/right on each entry.',
+								'sgs-blocks'
+							) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -988,20 +1231,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					     (alternating flips by definition; single-column is
 					     one-sided), so it is hidden rather than disabled for the
 					     other two layouts, per the brief. */ }
-					{ orientation === 'vertical' && contentLayout === 'same-side' && (
-						<SelectControl
-							label={ __( 'Which side of the line', 'sgs-blocks' ) }
-							value={ contentSide }
-							options={ CONTENT_SIDE_OPTIONS }
-							onChange={ ( val ) => setAttributes( { contentSide: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
+					{ orientation === 'vertical' &&
+						contentLayout === 'same-side' && (
+							<SelectControl
+								label={ __(
+									'Which side of the line',
+									'sgs-blocks'
+								) }
+								value={ contentSide }
+								options={ CONTENT_SIDE_OPTIONS }
+								onChange={ ( val ) =>
+									setAttributes( { contentSide: val } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
 					<ToggleControl
 						label={ __( 'Alternating row colours', 'sgs-blocks' ) }
 						checked={ rowStripes }
-						onChange={ ( val ) => setAttributes( { rowStripes: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { rowStripes: val } )
+						}
 						help={ __(
 							'Bands each milestone row in one of two colours, so the rows read as distinct blocks.',
 							'sgs-blocks'
@@ -1016,7 +1267,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Mobile layout', 'sgs-blocks' ) }
 						selected={ mobileLayout || 'stacked' }
 						options={ MOBILE_LAYOUT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { mobileLayout: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { mobileLayout: val } )
+						}
 						help={ __(
 							'Stacked: today’s single-column layout. Swipeable cards: a horizontal scroll-snap row of cards, phones only (767px and below) — layout above that width is unaffected.',
 							'sgs-blocks'
@@ -1024,13 +1277,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				{/* ── Connector ── */}
-				<PanelBody title={ __( 'Connector', 'sgs-blocks' ) } initialOpen={ false }>
+				{ /* ── Connector ── */ }
+				<PanelBody
+					title={ __( 'Connector', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SelectControl
 						label={ __( 'Connector style', 'sgs-blocks' ) }
 						value={ connectorStyle }
 						options={ CONNECTOR_OPTIONS }
-						onChange={ ( val ) => setAttributes( { connectorStyle: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { connectorStyle: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -1058,26 +1316,32 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				     order: date=4 must render before entry=5, and Milestone
 				     size & media owns entry's milestoneMinHeight/entryGap
 				     attrs. */ }
-				<PanelBody title={ __( 'Entry date', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Entry date', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					{ /* Date position is an AXIS OF ITS OWN, not a content-layout
 					     value. MUI, Ant Design, PrimeReact and Vuetify all model it
 					     as a separate slot/prop — none forces a gutter when you pick
 					     "Single column". Shown only for Single column, because
 					     Alternating/Same side are inherently two-sided. */ }
-					{ orientation === 'vertical' && contentLayout === 'single-column' && (
-						<SelectControl
-							label={ __( 'Date position', 'sgs-blocks' ) }
-							value={ datePosition }
-							options={ DATE_POSITION_OPTIONS }
-							onChange={ ( val ) => setAttributes( { datePosition: val } ) }
-							help={ __(
-								"On phones the date always sits above the title, so there's room for it.",
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
+					{ orientation === 'vertical' &&
+						contentLayout === 'single-column' && (
+							<SelectControl
+								label={ __( 'Date position', 'sgs-blocks' ) }
+								value={ datePosition }
+								options={ DATE_POSITION_OPTIONS }
+								onChange={ ( val ) =>
+									setAttributes( { datePosition: val } )
+								}
+								help={ __(
+									"On phones the date always sits above the title, so there's room for it.",
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
 				</PanelBody>
 
 				{ /* ── Milestone size & media ──
@@ -1110,7 +1374,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Milestone size', 'sgs-blocks' ) }
 						value={ milestoneSize || 'compact' }
 						options={ MILESTONE_SIZE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { milestoneSize: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { milestoneSize: val } )
+						}
 						help={ __(
 							"On phones this always shows as the compact size — full-height only applies from tablet width up, so there's room for it. Four milestones with a real image and a paragraph look superb; eight sparse ones are a long scroll through whitespace.",
 							'sgs-blocks'
@@ -1127,7 +1393,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					     broken layout with no feedback. */ }
 					{ 'full-height' === milestoneSize && (
 						<SelectControl
-							label={ __( 'Milestone minimum height', 'sgs-blocks' ) }
+							label={ __(
+								'Milestone minimum height',
+								'sgs-blocks'
+							) }
 							value={ milestoneMinHeight || '' }
 							options={ MILESTONE_MIN_HEIGHT_OPTIONS }
 							onChange={ ( val ) =>
@@ -1141,11 +1410,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							__next40pxDefaultSize
 						/>
 					) }
-					<SpacingControl
-						custom
+					<SgsLengthControl
+						presets
 						label={ __( 'Space between milestones', 'sgs-blocks' ) }
 						value={ entryGap }
-						onChange={ ( val ) => setAttributes( { entryGap: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { entryGap: val } )
+						}
 					/>
 					<TextControl
 						label={ __( 'Milestone media width', 'sgs-blocks' ) }
@@ -1161,7 +1432,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 					<ToggleControl
-						label={ __( 'Milestone media is decorative', 'sgs-blocks' ) }
+						label={ __(
+							'Milestone media is decorative',
+							'sgs-blocks'
+						) }
 						checked={ milestoneMediaDecorative }
 						onChange={ ( val ) =>
 							setAttributes( { milestoneMediaDecorative: val } )
@@ -1173,10 +1447,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
+			</InspectorControls>
 
-				</InspectorControls>
-
-				{ /* ── Styles tab — property-family panel, mirrors sgs/icon's
+			{ /* ── Styles tab — property-family panel, mirrors sgs/icon's
 				     own Layout/Spacing panels (both under group="styles")
 				     ── Padding, margin & border (wrapper TIER 2 — property-family
 				   "layout" cluster per cluster-member-sets.json; padding/
@@ -1197,34 +1470,60 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   Box-object interface contract §1/§5: borderWidth is an SGS
 				   custom object attr (base only, no tiers — no WP-native
 				   per-side width support); borderRadius is a single
-				   block-owned tier-object attr { desktop, tablet, mobile }. */}
-				<InspectorControls group="styles">
-				{/* Typography — replaces the old WP-native supports.typography
+				   block-owned tier-object attr { desktop, tablet, mobile }. */ }
+			<InspectorControls group="styles">
+				{ /* Typography — replaces the old WP-native supports.typography
 				    (fontSize/lineHeight/fontWeight/fontStyle only) with the shared
 				    TypographyControls component + sgs_typography_css_rule()
 				    render.php helper (D971/D972 full-replacement track). Prefix
 				    "title" matches the `title` element's own `attrMap` (block.json)
 				    and the selector this paints — `.sgs-timeline__title` — mirroring
-				    the pre-migration `selectors.typography` declaration exactly. */}
-				<PanelBody title={ __( 'Entry title typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextStroke showTextColumns showWritingMode
+				    the pre-migration `selectors.typography` declaration exactly. */ }
+				<PanelBody
+					title={ __( 'Entry title typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TypographyControls
+						fontSizePresets
+						showFontFamily
+						showDecoration
+						showTransform
+						showLetterSpacing
+						showTextAlign
+						showTextWrap
+						showTextStroke
+						showTextColumns
+						showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="title"
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Padding, margin & border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Padding, margin & border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -1235,10 +1534,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -1248,57 +1555,72 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					   (stays WP-native). */ }
 					<SgsBorderControl
 						widthValues={ borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ borderColourGradient }
 						onColourGradientChange={ ( val ) =>
-									setAttributes( { borderColourGradient: val ?? '' } ) }
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ timelineContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
-				</InspectorControls>
+			</InspectorControls>
 
-				<InspectorControls>
-				{/* ── Animation ── */}
-				<PanelBody title={ __( 'Scroll reveal', 'sgs-blocks' ) } initialOpen={ false }>
+			<InspectorControls>
+				{ /* ── Animation ── */ }
+				<PanelBody
+					title={ __( 'Scroll reveal', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SelectControl
 						label={ __( 'Scroll effect', 'sgs-blocks' ) }
 						value={ scrollEffect }
 						options={ getScrollEffectOptions( orientation ) }
-						onChange={ ( val ) => setAttributes( { scrollEffect: val } ) }
-						help={
-							sprintf(
-								/* translators: 1: extra context shown only for "Move with the scroll", 2: current mobile-layout label ("Stacked" or "Swipeable cards") */
-								__(
-									'%1$sOn phones this always shows as %2$s instead — the pinning effect needs a full screen to work. All options stay available whatever you choose for phones.',
-									'sgs-blocks'
-								),
-								'scrub' === scrollEffect
-									? __(
-											'Motion tracks your scroll position directly — scroll back up and it reverses. The standard option fades each milestone in once. ',
-											'sgs-blocks'
-									  )
-									: '',
-								'carousel' === mobileLayout
-									? __( 'Swipeable cards', 'sgs-blocks' )
-									: __( 'Stacked', 'sgs-blocks' )
-							)
+						onChange={ ( val ) =>
+							setAttributes( { scrollEffect: val } )
 						}
+						help={ sprintf(
+							/* translators: 1: extra context shown only for "Move with the scroll", 2: current mobile-layout label ("Stacked" or "Swipeable cards") */
+							__(
+								'%1$sOn phones this always shows as %2$s instead — the pinning effect needs a full screen to work. All options stay available whatever you choose for phones.',
+								'sgs-blocks'
+							),
+							'scrub' === scrollEffect
+								? __(
+										'Motion tracks your scroll position directly — scroll back up and it reverses. The standard option fades each milestone in once.',
+										'sgs-blocks'
+								  )
+								: '',
+							'carousel' === mobileLayout
+								? __( 'Swipeable cards', 'sgs-blocks' )
+								: __( 'Stacked', 'sgs-blocks' )
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -1312,12 +1634,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						key={ index }
 						className={ [
 							'sgs-timeline__entry',
-							entryHasMedia( entry ) ? 'sgs-timeline__entry--has-media' : '',
+							entryHasMedia( entry )
+								? 'sgs-timeline__entry--has-media'
+								: '',
 						]
 							.filter( Boolean )
 							.join( ' ' ) }
 					>
-						<time className="sgs-timeline__date" style={ dateColourStyle }>
+						<time
+							className="sgs-timeline__date"
+							style={ dateColourStyle }
+						>
 							{ entry.date || __( 'Date', 'sgs-blocks' ) }
 						</time>
 						{ /* The canvas has NEVER rendered milestone media — not
@@ -1336,7 +1663,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								   page — an inspector control the preview
 								   ignores is exactly the desync CHECK A exists
 								   to catch, and it caught this one. */
-								aria-hidden={ milestoneMediaDecorative || undefined }
+								aria-hidden={
+									milestoneMediaDecorative || undefined
+								}
 							>
 								{ 'svg' === entry.mediaType ? (
 									<div
@@ -1346,20 +1675,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										   matters for safety and it runs the same
 										   wp_kses() allowlist as every other SGS
 										   SVG surface (helpers-tier-media.php). */
-										dangerouslySetInnerHTML={ { __html: sanitiseSvg( entry.svg ) } }
+										dangerouslySetInnerHTML={ {
+											__html: sanitiseSvg( entry.svg ),
+										} }
 									/>
 								) : (
 									<MediaPreview entry={ entry } />
 								) }
 							</div>
 						) }
-						<div className="sgs-timeline__node" aria-hidden="true" />
+						<div
+							className="sgs-timeline__node"
+							aria-hidden="true"
+						/>
 						<div className="sgs-timeline__content">
 							<RichText.Content
 								tagName={ HeadingTag }
 								className="sgs-timeline__title"
 								style={ titlePreviewStyle }
-								value={ entry.title || __( 'Entry title', 'sgs-blocks' ) }
+								value={
+									entry.title ||
+									__( 'Entry title', 'sgs-blocks' )
+								}
 							/>
 							{ entry.description && (
 								<RichText.Content

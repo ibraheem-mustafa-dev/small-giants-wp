@@ -30,7 +30,11 @@ export {
 // collapse) but stayed listed here, so the barrel advertised two bindings that resolve
 // to `undefined` at runtime — a webpack WARNING, not an error, which is why a green
 // build never caught it. Removed 2026-08-16 (D643).
-export { default as GradientOverlayControl, gradientOverlayAttrName, gradientOverlayAttrKeys } from './GradientOverlayControl';
+export {
+	default as GradientOverlayControl,
+	gradientOverlayAttrName,
+	gradientOverlayAttrKeys,
+} from './GradientOverlayControl';
 // Exported 2026-08-16 (D643). Previously reachable only via a deep import from
 // GradientOverlayControl; the universal gradient rollout needs it as a first-class
 // control (Spec 35 control-type contract field 8 — SgsGradientPicker REPLACES the
@@ -58,8 +62,11 @@ export { default as SgsMultiSelectField } from './SgsMultiSelectField';
 export { default as ColumnShapePicker } from './ColumnShapePicker';
 export { activeShapeKey, weightsToTrack } from './ColumnShapePicker';
 export { default as ScaleAxisControl } from './ScaleAxisControl';
-export { default as ShadowControl, shadowAttrName, shadowAttrKeys } from './ShadowControl';
-export { default as SpacingControl } from './SpacingControl';
+export {
+	default as ShadowControl,
+	shadowAttrName,
+	shadowAttrKeys,
+} from './ShadowControl';
 export { IconPicker, IconPreview } from './IconPicker';
 export { default as RowQuickInsertAppender } from './RowQuickInsertAppender';
 export { default as RowScrollBehaviourControls } from './RowScrollBehaviourControls';
@@ -74,12 +81,18 @@ export {
 // length-unit rebuild — see each file's own docblock for the evidence).
 export { default as SgsBoxControl } from './SgsBoxControl';
 export { default as BorderStyleControl } from './BorderStyleControl';
-export { default as LogicalAlignControl, LogicalAlignToolbar } from './LogicalAlignControl';
+export {
+	default as LogicalAlignControl,
+	LogicalAlignToolbar,
+} from './LogicalAlignControl';
 export { default as SgsBorderControl } from './SgsBorderControl';
 export { default as SgsLengthControl } from './SgsLengthControl';
 // Shared media size & crop panel (C19, 2026-08-27) — piloted on sgs/media only.
 // See the component's own docblock for the mode picker + grey-out contract.
-export { default as MediaSizingPanel, RATIO_OPTIONS as MEDIA_SIZING_RATIO_OPTIONS } from './MediaSizingPanel';
+export {
+	default as MediaSizingPanel,
+	RATIO_OPTIONS as MEDIA_SIZING_RATIO_OPTIONS,
+} from './MediaSizingPanel';
 // FR-37-47 (2026-09-17) — starter-look preset control shared by the 3
 // template-locked CPT root blocks (site-header, site-footer, nav-drawer).
 export { default as StarterLookPresetControl } from './StarterLookPresetControl';

@@ -397,7 +397,7 @@ if ( ! function_exists( 'sgs_label_box_css_rule' ) ) {
 		// NUMBER (e.g. 16). A bare number is not a valid CSS length, so it gets
 		// `px` appended — identical output to the old intval path, which is what
 		// keeps every existing instance rendering unchanged. Same rule as
-		// SpacingControl.js's normaliseFreeInput(), deliberately.
+		// the free-length editor controls' bare-number rule, deliberately.
 		if ( isset( $box['radius'] ) && '' !== $box['radius'] && null !== $box['radius'] ) {
 			$radius = sgs_css_length_value( $box['radius'] );
 			if ( '' !== $radius ) {

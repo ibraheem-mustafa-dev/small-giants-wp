@@ -26,14 +26,26 @@ import {
 	InspectorControls,
 	useSettings,
 } from '@wordpress/block-editor';
+import { PanelBody, SelectControl } from '@wordpress/components';
 import {
-	PanelBody,
-	SelectControl,
-} from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveOverride, SpacingControl, resolveColourToken, SgsColourPanel, SgsLengthControl } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+	ResponsiveBoxControl,
+	ResponsiveOverride,
+	resolveColourToken,
+	SgsColourPanel,
+	SgsLengthControl,
+} from '../../components';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 
-import { tierBoxLonghands, usePreviewTier, resolveResponsiveTier, isCssGradient, sgsBorderPreview } from '../../utils';
+import {
+	tierBoxLonghands,
+	usePreviewTier,
+	resolveResponsiveTier,
+	isCssGradient,
+	sgsBorderPreview,
+} from '../../utils';
 
 const JUSTIFY_OPTIONS = [
 	{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
@@ -107,17 +119,42 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	if ( isCssGradient( asideBgGradient ) ) {
 		previewStyle.backgroundImage = asideBgGradient;
 	}
-	Object.assign( previewStyle, sgsBorderPreview( { widthValues: asideBorderWidth, styleValue: 'solid', colourValue: asideBorderColour, colourGradientValue: asideBorderColourGradient, radiusValues: asideRadius }, previewTier, palette, { fallbackColour: 'var(--sgs-mm-panel-border, rgba(0,0,0,.12))' } ) );
+	Object.assign(
+		previewStyle,
+		sgsBorderPreview(
+			{
+				widthValues: asideBorderWidth,
+				styleValue: 'solid',
+				colourValue: asideBorderColour,
+				colourGradientValue: asideBorderColourGradient,
+				radiusValues: asideRadius,
+			},
+			previewTier,
+			palette,
+			{ fallbackColour: 'var(--sgs-mm-panel-border, rgba(0,0,0,.12))' }
+		)
+	);
 	// Stack gap + vertical alignment at the previewed tier (render.php's sgs_emit_responsive_css; a bare number is px).
-	const gapAtTier = resolveResponsiveTier( asideGap || {}, previewTier )?.value;
+	const gapAtTier = resolveResponsiveTier(
+		asideGap || {},
+		previewTier
+	)?.value;
 	if ( gapAtTier ) {
-		previewStyle.gap = /^\d+(\.\d+)?$/.test( String( gapAtTier ) ) ? `${ gapAtTier }px` : gapAtTier;
+		previewStyle.gap = /^\d+(\.\d+)?$/.test( String( gapAtTier ) )
+			? `${ gapAtTier }px`
+			: gapAtTier;
 	}
-	const justifyAtTier = resolveResponsiveTier( asideJustify || {}, previewTier )?.value;
+	const justifyAtTier = resolveResponsiveTier(
+		asideJustify || {},
+		previewTier
+	)?.value;
 	if ( justifyAtTier ) {
 		previewStyle.justifyContent = justifyAtTier;
 	}
-	Object.assign( previewStyle, tierBoxLonghands( asidePadding, previewTier, 'padding' ) );
+	Object.assign(
+		previewStyle,
+		tierBoxLonghands( asidePadding, previewTier, 'padding' )
+	);
 
 	/*
 	 * asideBgHover(Gradient) canvas mirror. render.php
@@ -138,12 +175,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	 * background is also set (the common case).
 	 */
 	const megaAsidePreviewScope = `sgs-mega-aside-preview-${ clientId }`;
-	const asideBgHoverDecl =
-		isCssGradient( asideBgHoverGradient )
-			? `background-image:${ asideBgHoverGradient } !important;background-color:transparent !important;`
-			: asideBgHover
-				? `background-color:${ resolveColourToken( asideBgHover, palette ) } !important;`
-				: '';
+	let asideBgHoverDecl = '';
+	if ( isCssGradient( asideBgHoverGradient ) ) {
+		asideBgHoverDecl = `background-image:${ asideBgHoverGradient } !important;background-color:transparent !important;`;
+	} else if ( asideBgHover ) {
+		asideBgHoverDecl = `background-color:${ resolveColourToken(
+			asideBgHover,
+			palette
+		) } !important;`;
+	}
 	/*
 	 * asideBorderColourHover(Gradient) canvas mirror. render.php emits both via
 	 * sgs_border_states_css(); the editor canvas needs its own rule to show it.
@@ -153,16 +193,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	 * as the resting-state gradient preview above (not the real masked
 	 * ::before ring — a `<style>` tag can't reach ::before content).
 	 */
-	const asideBorderHoverDecl = previewStyle.borderWidth
-		? isCssGradient( asideBorderColourHoverGradient )
-			? `border-image:${ asideBorderColourHoverGradient } 1 !important;`
-			: asideBorderColourHover
-				? `border-color:${ resolveColourToken( asideBorderColourHover, palette ) } !important;`
-				: ''
-		: '';
-	const megaAsideHoverPreviewCss = ( asideBgHoverDecl || asideBorderHoverDecl )
-		? `.${ megaAsidePreviewScope }:hover,.${ megaAsidePreviewScope }:focus-within{${ asideBgHoverDecl }${ asideBorderHoverDecl }}`
-		: '';
+	let asideBorderHoverDecl = '';
+	if ( previewStyle.borderWidth ) {
+		if ( isCssGradient( asideBorderColourHoverGradient ) ) {
+			asideBorderHoverDecl = `border-image:${ asideBorderColourHoverGradient } 1 !important;`;
+		} else if ( asideBorderColourHover ) {
+			asideBorderHoverDecl = `border-color:${ resolveColourToken(
+				asideBorderColourHover,
+				palette
+			) } !important;`;
+		}
+	}
+	const megaAsideHoverPreviewCss =
+		asideBgHoverDecl || asideBorderHoverDecl
+			? `.${ megaAsidePreviewScope }:hover,.${ megaAsidePreviewScope }:focus-within{${ asideBgHoverDecl }${ asideBorderHoverDecl }}`
+			: '';
 
 	const blockProps = useBlockProps( {
 		className: `sgs-mega-aside ${ megaAsidePreviewScope }`,
@@ -195,21 +240,29 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: asideBg,
-								onChange: ( val ) => setAttributes( { asideBg: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { asideBg: val ?? '' } ),
 								linked: true,
 								gradientValue: asideBgGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { asideBgGradient: val ?? '' } ),
+									setAttributes( {
+										asideBgGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: asideBgHover,
-								onChange: ( val ) => setAttributes( { asideBgHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										asideBgHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: asideBgHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { asideBgHoverGradient: val ?? '' } ),
+									setAttributes( {
+										asideBgHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -221,21 +274,32 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: asideBorderColour,
-								onChange: ( val ) => setAttributes( { asideBorderColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										asideBorderColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: asideBorderColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { asideBorderColourGradient: val ?? '' } ),
+									setAttributes( {
+										asideBorderColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: asideBorderColourHover,
-								onChange: ( val ) => setAttributes( { asideBorderColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										asideBorderColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: asideBorderColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { asideBorderColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										asideBorderColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -295,13 +359,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ResponsiveOverride
 						label={ __( 'Content gap', 'sgs-blocks' ) }
 						value={ asideGap }
-						onChange={ ( obj ) => setAttributes( { asideGap: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { asideGap: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<SpacingControl
-								freeInput
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
+							<SgsLengthControl
 								value={ ownValue }
-								placeholder={ inherited ? effectiveValue : '16px' }
+								placeholder={
+									inherited ? effectiveValue : '16px'
+								}
 								onChange={ setOwnValue }
 							/>
 						) }
@@ -310,15 +382,35 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ResponsiveOverride
 						label={ __( 'Vertical alignment', 'sgs-blocks' ) }
 						value={ asideJustify }
-						onChange={ ( obj ) => setAttributes( { asideJustify: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { asideJustify: obj } )
+						}
 					>
 						{ ( { tier, ownValue, setOwnValue } ) => (
 							<SelectControl
 								value={ ownValue || '' }
 								options={
 									'desktop' === tier
-										? [ { label: __( 'Default (start)', 'sgs-blocks' ), value: '' }, ...JUSTIFY_OPTIONS ]
-										: [ { label: __( '— inherit —', 'sgs-blocks' ), value: '' }, ...JUSTIFY_OPTIONS ]
+										? [
+												{
+													label: __(
+														'Default (start)',
+														'sgs-blocks'
+													),
+													value: '',
+												},
+												...JUSTIFY_OPTIONS,
+										  ]
+										: [
+												{
+													label: __(
+														'— inherit —',
+														'sgs-blocks'
+													),
+													value: '',
+												},
+												...JUSTIFY_OPTIONS,
+										  ]
 								}
 								onChange={ ( val ) => setOwnValue( val ) }
 								__nextHasNoMarginBottom
@@ -358,7 +450,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				</PanelBody>
 			</InspectorControls>
 
-			{ megaAsideHoverPreviewCss && <style>{ megaAsideHoverPreviewCss }</style> }
+			{ megaAsideHoverPreviewCss && (
+				<style>{ megaAsideHoverPreviewCss }</style>
+			) }
 			<div { ...innerBlocksProps } />
 		</>
 	);

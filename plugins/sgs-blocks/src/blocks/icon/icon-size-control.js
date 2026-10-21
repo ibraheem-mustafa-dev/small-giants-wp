@@ -4,7 +4,7 @@
  * TypographyControls renders for font size. A preset is stored as `var(--wp--preset--font-size--{slug})`, so the icon
  * follows the theme's type scale; a typed size as its CSS length. Both pass iconLengthValue() / sgs_icon_length_value().
  *
- * @package SGS\Blocks
+ * @package
  */
 
 import { __ } from '@wordpress/i18n';
@@ -31,6 +31,12 @@ export default function IconSizeControl( { value, onChange, help } ) {
 }
 
 export const ICON_SIZE_HELP = {
-	icon: __( 'Sets the icon’s size. Leave blank for the group size, else 32px.', 'sgs-blocks' ),
-	group: __( 'Sets the size of every icon without its own size. Blank: 32px.', 'sgs-blocks' ),
+	icon: __(
+		'Sets the icon’s size. Leave blank for the group size, else 32px.',
+		'sgs-blocks'
+	),
+	group: __(
+		'Sets the size of every icon without its own size. Blank: 32px.',
+		'sgs-blocks'
+	),
 };

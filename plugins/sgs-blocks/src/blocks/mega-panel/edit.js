@@ -49,7 +49,6 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import {
-	DesignTokenPicker,
 	ResponsiveControl,
 	ResponsiveBoxControl,
 	SgsBorderControl,
@@ -65,12 +64,29 @@ import drawerPreviewCss from './drawer-preview';
 import DrawerShellControls from './DrawerShellControls';
 import sectionColourRows from './section-colour-rows';
 import MediaElementPanel from '../../components/MediaElementPanel';
-import { colourVar, resolveShadowPreviewComposed, surfaceToneClass, flattenPresetSetting, usePreviewTier, resolveTier, resolveBoxTierPreview, isCssGradient, sgsBorderPreview } from '../../utils';
+import {
+	colourVar,
+	resolveShadowPreviewComposed,
+	surfaceToneClass,
+	flattenPresetSetting,
+	usePreviewTier,
+	resolveTier,
+	resolveBoxTierPreview,
+	isCssGradient,
+	sgsBorderPreview,
+} from '../../utils';
 import { fontFamilyCssValue } from '../../utils/typography-preview';
-import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+	ToolsPanel,
+	ToolsPanelItem,
+} from '../../components/primitives';
 
-/** Default general-variant template: 2 mega-groups — a starting
- *  point only; the panel is NOT locked to this shape. */
+/**
+ * Default general-variant template: 2 mega-groups — a starting
+ *  point only; the panel is NOT locked to this shape.
+ */
 const GENERAL_TEMPLATE = [ [ 'sgs/mega-group' ], [ 'sgs/mega-group' ] ];
 
 /**
@@ -127,7 +143,10 @@ const BRANDS_TEMPLATE = [
  */
 function innerBlocksConfigForVariant( variant ) {
 	if ( 'media-cards' === variant ) {
-		return { allowedBlocks: [ 'sgs/card-grid' ], template: MEDIA_CARDS_TEMPLATE };
+		return {
+			allowedBlocks: [ 'sgs/card-grid' ],
+			template: MEDIA_CARDS_TEMPLATE,
+		};
 	}
 	if ( 'brands' === variant ) {
 		return {
@@ -157,7 +176,9 @@ function paddingFromBox( box ) {
 	if ( ! top && ! right && ! bottom && ! left ) {
 		return undefined;
 	}
-	return `${ top || '0' } ${ right || '0' } ${ bottom || '0' } ${ left || '0' }`;
+	return `${ top || '0' } ${ right || '0' } ${ bottom || '0' } ${
+		left || '0'
+	}`;
 }
 
 /**
@@ -171,9 +192,13 @@ function paddingFromBox( box ) {
  */
 function panelBorderWidthBox( box ) {
 	const b = box && typeof box === 'object' ? box : {};
-	return { top: b.top || '1px', right: b.right || '1px', bottom: b.bottom || '1px', left: b.left || '1px' };
+	return {
+		top: b.top || '1px',
+		right: b.right || '1px',
+		bottom: b.bottom || '1px',
+		left: b.left || '1px',
+	};
 }
-
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Editor-only UI state (never saved): which tier the canvas previews. In
@@ -184,7 +209,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// The editor's device toggle (desktop / tablet / mobile) decides which tier of
 	// the per-device settings the canvas shows.
 	const deviceTier = usePreviewTier();
-	const boxAtTier = ( tiers ) => resolveBoxTierPreview( tiers?.desktop, tiers?.tablet, tiers?.mobile, deviceTier );
+	const boxAtTier = ( tiers ) =>
+		resolveBoxTierPreview(
+			tiers?.desktop,
+			tiers?.tablet,
+			tiers?.mobile,
+			deviceTier
+		);
 
 	const {
 		variant,
@@ -284,7 +315,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} = attributes;
 
 	const resolvedVariant = variant || 'general';
-	const { allowedBlocks, template } = innerBlocksConfigForVariant( resolvedVariant );
+	const { allowedBlocks, template } =
+		innerBlocksConfigForVariant( resolvedVariant );
 
 	const [ colourPalette ] = useSettings( 'color.palette' );
 	// The theme's gradient presets, normalised by flattenPresetSetting() —
@@ -302,8 +334,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// down through the DOM from this root to every descendant regardless of
 	// display type, so editor.css can consume them on `.sgs-mega-panel__content`
 	// / `.sgs-mega-aside` even though those are separate elements.
-	const iconBackgroundValue = colourVar( iconBackground ) || 'var(--wp--preset--color--accent)';
-	const groupBorderValue = colourVar( groupBorderColourHover ) || 'var(--wp--preset--color--accent)';
+	const iconBackgroundValue =
+		colourVar( iconBackground ) || 'var(--wp--preset--color--accent)';
+	const groupBorderValue =
+		colourVar( groupBorderColourHover ) ||
+		'var(--wp--preset--color--accent)';
 	// Gradient-set preview (mirrors sgs/text's firstLetterColour
 	// precedent): a background-clip:text declaration cannot be expressed
 	// through a single CSS custom-property value consumed by a DESCENDANT
@@ -317,7 +352,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const iconColourValue = iconColourGradient
 		? 'var(--wp--preset--color--accent)'
 		: colourVar( iconColour ) || 'var(--wp--preset--color--accent)';
-	const accentImageValue = colourVar( accentBackgroundImage ) || 'var(--wp--preset--color--accent)';
+	const accentImageValue =
+		colourVar( accentBackgroundImage ) ||
+		'var(--wp--preset--color--accent)';
+	let panelBackgroundValue;
+	if ( panelBg ) {
+		panelBackgroundValue =
+			typeof surfaceOpacity === 'number' && surfaceOpacity < 1
+				? `color-mix(in srgb, ${
+						colourVar( panelBg ) || panelBg
+				  } ${ Math.round(
+						Math.max( 0, surfaceOpacity ) * 100
+				  ) }%, transparent)`
+				: colourVar( panelBg ) || panelBg;
+	}
 	const shellStyle = {
 		// Per-role accent custom properties — style.css derives
 		// --sgs-mm-soft / --sgs-mm-soft-image from -bg / -image via color-mix();
@@ -330,10 +378,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// background-image at full strength, same approximation approach as the
 		// borderImage/groupBorderColourGradient mirrors below (a raw CSS function
 		// string, gated on looking like a real gradient() call).
-		'--sgs-mm-soft-gradient':
-			isCssGradient( iconBackgroundGradient )
-				? iconBackgroundGradient
-				: undefined,
+		'--sgs-mm-soft-gradient': isCssGradient( iconBackgroundGradient )
+			? iconBackgroundGradient
+			: undefined,
 		// iconBackgroundHover/iconBackgroundGradientHover canvas mirrors — consumed by style.css's `cards`-style hover rule on
 		// `.sgs-mega-group:hover .sgs-icon-list__icon`. Only set when the operator
 		// has picked one; unset means the hover rule's own var(...) fallback chain
@@ -341,29 +388,26 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		'--sgs-mm-icon-hover-bg': iconBackgroundHover
 			? colourVar( iconBackgroundHover ) || iconBackgroundHover
 			: undefined,
-		'--sgs-mm-icon-hover-bg-gradient':
-			isCssGradient( iconBackgroundGradientHover )
-				? iconBackgroundGradientHover
-				: undefined,
+		'--sgs-mm-icon-hover-bg-gradient': isCssGradient(
+			iconBackgroundGradientHover
+		)
+			? iconBackgroundGradientHover
+			: undefined,
 		// accentBackgroundImageGradient canvas mirror — consumed by
 		// style.css's spotlight `[data-spotlight]::before` rule, bypassing the
 		// derived --sgs-mm-soft-image tint entirely when set.
-		'--sgs-mm-accent-image-gradient':
-			isCssGradient( accentBackgroundImageGradient )
-				? accentBackgroundImageGradient
-				: undefined,
-		'--sgs-mm-panel-bg': panelBg
-			? typeof surfaceOpacity === 'number' && surfaceOpacity < 1
-				? `color-mix(in srgb, ${ colourVar( panelBg ) || panelBg } ${ Math.round( Math.max( 0, surfaceOpacity ) * 100 ) }%, transparent)`
-				: colourVar( panelBg ) || panelBg
+		'--sgs-mm-accent-image-gradient': isCssGradient(
+			accentBackgroundImageGradient
+		)
+			? accentBackgroundImageGradient
 			: undefined,
+		'--sgs-mm-panel-bg': panelBackgroundValue,
 		// panelBgGradient canvas mirror — same approach: --sgs-mm-panel-bg-gradient
 		// is consumed by style.css's dark-scheme rule and by this root's own
 		// panelBg background-color.
-		'--sgs-mm-panel-bg-gradient':
-			isCssGradient( panelBgGradient )
-				? panelBgGradient
-				: undefined,
+		'--sgs-mm-panel-bg-gradient': isCssGradient( panelBgGradient )
+			? panelBgGradient
+			: undefined,
 		'--sgs-mm-panel-border': borderColour
 			? colourVar( borderColour ) || borderColour
 			: undefined,
@@ -381,25 +425,33 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// style.css's `--sgs-mm-group-border-image` consumer is a border-image
 		// approximation, scoped so it is a no-op on the frontend (that custom
 		// property is never set by render.php).
-		'--sgs-mm-group-border-image':
-			isCssGradient( groupBorderColourGradient )
-				? `${ groupBorderColourGradient } 1`
-				: undefined,
-		'--sgs-mm-group-gap': resolveTier( groupGap, deviceTier ).value || undefined,
+		'--sgs-mm-group-border-image': isCssGradient(
+			groupBorderColourGradient
+		)
+			? `${ groupBorderColourGradient } 1`
+			: undefined,
+		'--sgs-mm-group-gap':
+			resolveTier( groupGap, deviceTier ).value || undefined,
 		// groupPadding / groupTransitionDuration canvas mirrors — only the sides
 		// the operator set are written, so an unset side keeps style.css's
 		// per-style tile padding (render.php prints the same per-side longhands).
 		'--sgs-mm-group-pad-top': boxAtTier( groupPadding )?.top || undefined,
-		'--sgs-mm-group-pad-right': boxAtTier( groupPadding )?.right || undefined,
-		'--sgs-mm-group-pad-bottom': boxAtTier( groupPadding )?.bottom || undefined,
+		'--sgs-mm-group-pad-right':
+			boxAtTier( groupPadding )?.right || undefined,
+		'--sgs-mm-group-pad-bottom':
+			boxAtTier( groupPadding )?.bottom || undefined,
 		'--sgs-mm-group-pad-left': boxAtTier( groupPadding )?.left || undefined,
-		'--sgs-mm-group-transition-duration': '' !== ( groupTransitionDuration ?? '' ) && ! isNaN( Number( groupTransitionDuration ) )
-			? `${ Number( groupTransitionDuration ) }ms`
-			: undefined,
+		'--sgs-mm-group-transition-duration':
+			'' !== ( groupTransitionDuration ?? '' ) &&
+			! isNaN( Number( groupTransitionDuration ) )
+				? `${ Number( groupTransitionDuration ) }ms`
+				: undefined,
 		'--sgs-mm-aside-w': asideWidth || undefined,
 		// The divider width render.php paints: the chosen width, else 2px when
 		// none was ever set, else 1px (a cleared field).
-		'--sgs-mm-aside-sep-width': asideSeparator?.width || ( undefined === asideSeparator?.width ? '2px' : '1px' ),
+		'--sgs-mm-aside-sep-width':
+			asideSeparator?.width ||
+			( undefined === asideSeparator?.width ? '2px' : '1px' ),
 		'--sgs-mm-aside-sep-colour': asideSeparator?.colour
 			? colourVar( asideSeparator.colour ) || asideSeparator.colour
 			: undefined,
@@ -410,7 +462,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// to style.css's `-3px`/no-shift static defaults and mis-preview an
 		// explicit clear as "still applied") — the closest a static custom
 		// property can get to render.php's "no transform/no shift" branch.
-		'--sgs-mm-card-lift': panelCardLift ? `calc(-1 * ${ panelCardLift })` : '0px',
+		'--sgs-mm-card-lift': panelCardLift
+			? `calc(-1 * ${ panelCardLift })`
+			: '0px',
 		'--sgs-mm-item-padding-shift': itemPaddingShiftHover || '0px',
 		maxWidth: resolveTier( maxWidth, deviceTier ).value || undefined,
 		// Panel padding applies directly to the ROOT (it's the panel shell
@@ -423,11 +477,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// out-ranks style.css's own root background rules.
 		...( isDrawerPreview
 			? {
-					backgroundColor: drawerBg ? colourVar( drawerBg ) || drawerBg : 'transparent',
-					backgroundImage:
-						isCssGradient( drawerBgGradient )
-							? drawerBgGradient
-							: 'none',
+					backgroundColor: drawerBg
+						? colourVar( drawerBg ) || drawerBg
+						: 'transparent',
+					backgroundImage: isCssGradient( drawerBgGradient )
+						? drawerBgGradient
+						: 'none',
 			  }
 			: {} ),
 		// The Border panel's values through its twin. Width always paints (each
@@ -435,7 +490,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// to the --sgs-mm-panel-border value resolved above, as on the page. A
 		// gradient border (a masked ::before ring on the page) previews as a
 		// border-image.
-		...sgsBorderPreview( { widthValues: panelBorderWidthBox( borderWidth ), styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient }, deviceTier, colourPalette, { fallbackColour: 'var(--sgs-mm-panel-border)' } ),
+		...sgsBorderPreview(
+			{
+				widthValues: panelBorderWidthBox( borderWidth ),
+				styleValue: borderStyle,
+				colourValue: borderColour,
+				colourGradientValue: borderColourGradient,
+			},
+			deviceTier,
+			colourPalette,
+			{ fallbackColour: 'var(--sgs-mm-panel-border)' }
+		),
 		backdropFilter: ( () => {
 			const parts = [];
 			if ( typeof surfaceSaturate === 'number' ) {
@@ -469,11 +534,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		colour: panelBg || '',
 		opacity: 'number' === typeof surfaceOpacity ? surfaceOpacity : 1,
 	} );
-	const toneClass = surfaceToneClass( toneLayers, colourPalette, gradientPresets );
+	const toneClass = surfaceToneClass(
+		toneLayers,
+		colourPalette,
+		gradientPresets
+	);
 
 	// Scope class for the drawer-preview stylesheet (one per block instance, so
 	// two panels previewing at once never share rules).
-	const drawerScopeClass = `sgs-mega-panel-dv-${ String( clientId || '' ).replace( /[^a-z0-9]/gi, '' ) }`;
+	const drawerScopeClass = `sgs-mega-panel-dv-${ String(
+		clientId || ''
+	).replace( /[^a-z0-9]/gi, '' ) }`;
 	const drawerPreviewStyles = isDrawerPreview
 		? drawerPreviewCss( `.wp-block-sgs-mega-panel.${ drawerScopeClass }`, {
 				drawerAsideOrder,
@@ -573,11 +644,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: panelBg,
-								onChange: ( val ) => setAttributes( { panelBg: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { panelBg: val ?? '' } ),
 								linked: true,
 								gradientValue: panelBgGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { panelBgGradient: val ?? '' } ),
+									setAttributes( {
+										panelBgGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -591,11 +665,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: iconBackground,
 								onChange: ( val ) =>
-									setAttributes( { iconBackground: val ?? 'accent' } ),
+									setAttributes( {
+										iconBackground: val ?? 'accent',
+									} ),
 								linked: true,
 								gradientValue: iconBackgroundGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { iconBackgroundGradient: val ?? '' } ),
+									setAttributes( {
+										iconBackgroundGradient: val ?? '',
+									} ),
 							},
 							{
 								// Hover pair — fires off the
@@ -607,11 +685,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: iconBackgroundHover,
 								onChange: ( val ) =>
-									setAttributes( { iconBackgroundHover: val ?? '' } ),
+									setAttributes( {
+										iconBackgroundHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: iconBackgroundGradientHover,
 								onGradientChange: ( val ) =>
-									setAttributes( { iconBackgroundGradientHover: val ?? '' } ),
+									setAttributes( {
+										iconBackgroundGradientHover: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -624,22 +706,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: groupBorderColour,
 								onChange: ( val ) =>
-									setAttributes( { groupBorderColour: val ?? '' } ),
+									setAttributes( {
+										groupBorderColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: groupBorderColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { groupBorderColourGradient: val ?? '' } ),
+									setAttributes( {
+										groupBorderColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: groupBorderColourHover,
 								onChange: ( val ) =>
-									setAttributes( { groupBorderColourHover: val ?? 'accent' } ),
+									setAttributes( {
+										groupBorderColourHover: val ?? 'accent',
+									} ),
 								linked: true,
 								gradientValue: groupBorderColourGradientHover,
 								onGradientChange: ( val ) =>
-									setAttributes( { groupBorderColourGradientHover: val ?? '' } ),
+									setAttributes( {
+										groupBorderColourGradientHover:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -652,11 +743,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: iconColour,
 								onChange: ( val ) =>
-									setAttributes( { iconColour: val ?? 'accent' } ),
+									setAttributes( {
+										iconColour: val ?? 'accent',
+									} ),
 								linked: true,
 								gradientValue: iconColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { iconColourGradient: val ?? '' } ),
+									setAttributes( {
+										iconColourGradient: val ?? '',
+									} ),
 							},
 							{
 								// Hover pair — mirrors iconBackgroundHover immediately above: fires off the
@@ -672,11 +767,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: iconColourHover,
 								onChange: ( val ) =>
-									setAttributes( { iconColourHover: val ?? '' } ),
+									setAttributes( {
+										iconColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: iconColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { iconColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										iconColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -696,15 +795,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: accentBackgroundImage,
 								onChange: ( val ) =>
-									setAttributes( { accentBackgroundImage: val ?? 'accent' } ),
+									setAttributes( {
+										accentBackgroundImage: val ?? 'accent',
+									} ),
 								linked: true,
 								gradientValue: accentBackgroundImageGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { accentBackgroundImageGradient: val ?? '' } ),
+									setAttributes( {
+										accentBackgroundImageGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
-					...sectionColourRows( { attributes, setAttributes, resolvedVariant } ),
+					...sectionColourRows( {
+						attributes,
+						setAttributes,
+						resolvedVariant,
+					} ),
 				] }
 			/>
 			<InspectorControls>
@@ -737,24 +845,41 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 					<ToolsPanelItem
 						label={ __( 'Shadow', 'sgs-blocks' ) }
-						hasValue={ () => shadow !== 'floating' || !! shadowColour }
-						onDeselect={ () => setAttributes( { shadow: 'floating', shadowColour: '' } ) }
+						hasValue={ () =>
+							shadow !== 'floating' || !! shadowColour
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								shadow: 'floating',
+								shadowColour: '',
+							} )
+						}
 					>
 						<ShadowControl
 							label={ __( 'Shadow', 'sgs-blocks' ) }
 							attributes={ attributes }
 							setAttributes={ setAttributes }
-							attrNames={ { base: 'shadow', colour: 'shadowColour' } }
+							attrNames={ {
+								base: 'shadow',
+								colour: 'shadowColour',
+							} }
 						/>
 					</ToolsPanelItem>
 
 					{ /* Layout */ }
 					<ToolsPanelItem
 						label={ __( 'Panel max width', 'sgs-blocks' ) }
-						hasValue={ () => !! maxWidth && Object.values( maxWidth ).some( v => v ) }
-						onDeselect={ () => setAttributes( { maxWidth: undefined } ) }
+						hasValue={ () =>
+							!! maxWidth &&
+							Object.values( maxWidth ).some( ( v ) => v )
+						}
+						onDeselect={ () =>
+							setAttributes( { maxWidth: undefined } )
+						}
 					>
-						<ResponsiveControl label={ __( 'Panel max width', 'sgs-blocks' ) }>
+						<ResponsiveControl
+							label={ __( 'Panel max width', 'sgs-blocks' ) }
+						>
 							{ ( breakpoint ) => (
 								<SgsLengthControl
 									label={ __( 'Max width', 'sgs-blocks' ) }
@@ -762,7 +887,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									value={ maxWidth?.[ breakpoint ] || '' }
 									onChange={ ( value ) =>
 										setAttributes( {
-											maxWidth: { ...maxWidth, [ breakpoint ]: value || undefined },
+											maxWidth: {
+												...maxWidth,
+												[ breakpoint ]:
+													value || undefined,
+											},
 										} )
 									}
 									presets={ false }
@@ -773,8 +902,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 					<ToolsPanelItem
 						label={ __( 'Panel padding', 'sgs-blocks' ) }
-						hasValue={ () => !! panelPadding && Object.values( panelPadding ).some( box => box && Object.values( box ).some( v => v ) ) }
-						onDeselect={ () => setAttributes( { panelPadding: undefined } ) }
+						hasValue={ () =>
+							!! panelPadding &&
+							Object.values( panelPadding ).some(
+								( box ) =>
+									box &&
+									Object.values( box ).some( ( v ) => v )
+							)
+						}
+						onDeselect={ () =>
+							setAttributes( { panelPadding: undefined } )
+						}
 					>
 						<ResponsiveBoxControl
 							label={ __( 'Panel padding', 'sgs-blocks' ) }
@@ -787,7 +925,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							onChange={ ( tier, next ) => {
 								const key = tier === 'base' ? 'desktop' : tier;
 								setAttributes( {
-									panelPadding: { ...panelPadding, [ key ]: next },
+									panelPadding: {
+										...panelPadding,
+										[ key ]: next,
+									},
 								} );
 							} }
 						/>
@@ -795,10 +936,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 					<ToolsPanelItem
 						label={ __( 'Group gap', 'sgs-blocks' ) }
-						hasValue={ () => !! groupGap && Object.values( groupGap ).some( v => v ) }
-						onDeselect={ () => setAttributes( { groupGap: undefined } ) }
+						hasValue={ () =>
+							!! groupGap &&
+							Object.values( groupGap ).some( ( v ) => v )
+						}
+						onDeselect={ () =>
+							setAttributes( { groupGap: undefined } )
+						}
 					>
-						<ResponsiveControl label={ __( 'Group gap', 'sgs-blocks' ) }>
+						<ResponsiveControl
+							label={ __( 'Group gap', 'sgs-blocks' ) }
+						>
 							{ ( breakpoint ) => (
 								<SgsLengthControl
 									label={ __( 'Gap', 'sgs-blocks' ) }
@@ -806,7 +954,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									value={ groupGap?.[ breakpoint ] || '' }
 									onChange={ ( value ) =>
 										setAttributes( {
-											groupGap: { ...groupGap, [ breakpoint ]: value || undefined },
+											groupGap: {
+												...groupGap,
+												[ breakpoint ]:
+													value || undefined,
+											},
 										} )
 									}
 									presets={ false }
@@ -817,8 +969,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 					<ToolsPanelItem
 						label={ __( 'Group tile padding', 'sgs-blocks' ) }
-						hasValue={ () => !! groupPadding && Object.values( groupPadding ).some( box => box && Object.values( box ).some( v => v ) ) }
-						onDeselect={ () => setAttributes( { groupPadding: undefined } ) }
+						hasValue={ () =>
+							!! groupPadding &&
+							Object.values( groupPadding ).some(
+								( box ) =>
+									box &&
+									Object.values( box ).some( ( v ) => v )
+							)
+						}
+						onDeselect={ () =>
+							setAttributes( { groupPadding: undefined } )
+						}
 					>
 						<ResponsiveBoxControl
 							label={ __( 'Group tile padding', 'sgs-blocks' ) }
@@ -831,7 +992,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							onChange={ ( tier, next ) => {
 								const key = tier === 'base' ? 'desktop' : tier;
 								setAttributes( {
-									groupPadding: { ...groupPadding, [ key ]: next },
+									groupPadding: {
+										...groupPadding,
+										[ key ]: next,
+									},
 								} );
 							} }
 						/>
@@ -841,12 +1005,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ToolsPanelItem
 						label={ __( 'Border radius', 'sgs-blocks' ) }
 						hasValue={ () => !! borderRadius }
-						onDeselect={ () => setAttributes( { borderRadius: '' } ) }
+						onDeselect={ () =>
+							setAttributes( { borderRadius: '' } )
+						}
 					>
 						<SgsLengthControl
 							label={ __( 'Border radius', 'sgs-blocks' ) }
 							value={ borderRadius || '' }
-							onChange={ ( value ) => setAttributes( { borderRadius: value || '20px' } ) }
+							onChange={ ( value ) =>
+								setAttributes( {
+									borderRadius: value || '20px',
+								} )
+							}
 							units={ [
 								{ value: 'px', label: 'px', default: 20 },
 								{ value: '%', label: '%', default: 50 },
@@ -858,7 +1028,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ToolsPanelItem>
 				</ToolsPanel>
 
-				<PanelBody title={ __( 'Style', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Style', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ToggleGroupControl
 						label={ __( 'Group layout', 'sgs-blocks' ) }
 						help={ __(
@@ -866,22 +1039,38 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 						value={ style }
-						onChange={ ( value ) => setAttributes( { style: value || 'columns' } ) }
+						onChange={ ( value ) =>
+							setAttributes( { style: value || 'columns' } )
+						}
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="columns" label={ __( 'Columns', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="cards" label={ __( 'Cards', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="minimal" label={ __( 'Minimal', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="columns"
+							label={ __( 'Columns', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="cards"
+							label={ __( 'Cards', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="minimal"
+							label={ __( 'Minimal', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 
 					{ 'columns' === style && (
 						<>
 							<ToggleControl
-								label={ __( 'Show group headings', 'sgs-blocks' ) }
+								label={ __(
+									'Show group headings',
+									'sgs-blocks'
+								) }
 								checked={ headings !== false }
-								onChange={ ( value ) => setAttributes( { headings: value } ) }
+								onChange={ ( value ) =>
+									setAttributes( { headings: value } )
+								}
 								__nextHasNoMarginBottom
 							/>
 							{ false === headings && (
@@ -902,37 +1091,64 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 						value={ colourScheme || 'light' }
-						onChange={ ( value ) => setAttributes( { colourScheme: value || 'light' } ) }
+						onChange={ ( value ) =>
+							setAttributes( { colourScheme: value || 'light' } )
+						}
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="light" label={ __( 'Light', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="dark" label={ __( 'Dark', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="auto" label={ __( 'Auto', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="light"
+							label={ __( 'Light', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="dark"
+							label={ __( 'Dark', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="auto"
+							label={ __( 'Auto', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 
 					{ /* M-21 — item hover paint. itemPaddingShiftHover applies across
 					   all three group styles (each reads its own resting padding);
 					   panelCardLift only paints the `cards` style's own hover-lift. */ }
 					<SgsLengthControl
-						label={ __( 'Item padding shift on hover', 'sgs-blocks' ) }
+						label={ __(
+							'Item padding shift on hover',
+							'sgs-blocks'
+						) }
 						help={ __(
 							'Grows the item’s inline-start padding by this much on hover/focus, on top of whatever padding it already has at rest.',
 							'sgs-blocks'
 						) }
 						value={ itemPaddingShiftHover || '' }
-						onChange={ ( value ) => setAttributes( { itemPaddingShiftHover: value || '' } ) }
+						onChange={ ( value ) =>
+							setAttributes( {
+								itemPaddingShiftHover: value || '',
+							} )
+						}
 						presets={ false }
 					/>
 					<RangeControl
-						label={ __( 'Group tile transition duration (ms)', 'sgs-blocks' ) }
+						label={ __(
+							'Group tile transition duration (ms)',
+							'sgs-blocks'
+						) }
 						help={ __(
 							'How long the group tile’s hover transition runs. Leave at 0 for the style’s own default; ignored when the visitor prefers reduced motion.',
 							'sgs-blocks'
 						) }
 						value={ Number( groupTransitionDuration ) || 0 }
-						onChange={ ( val ) => setAttributes( { groupTransitionDuration: val ? String( val ) : '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( {
+								groupTransitionDuration: val
+									? String( val )
+									: '',
+							} )
+						}
 						min={ 0 }
 						max={ 1000 }
 						step={ 10 }
@@ -947,14 +1163,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								'sgs-blocks'
 							) }
 							value={ panelCardLift ?? '3px' }
-							onChange={ ( value ) => setAttributes( { panelCardLift: value ?? '' } ) }
+							onChange={ ( value ) =>
+								setAttributes( { panelCardLift: value ?? '' } )
+							}
 							presets={ false }
 						/>
 					) }
 				</PanelBody>
 
 				{ 'brands' === resolvedVariant && (
-					<PanelBody title={ __( 'Brands', 'sgs-blocks' ) } initialOpen={ false }>
+					<PanelBody
+						title={ __( 'Brands', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
 						<TextControl
 							label={ __( 'Eyebrow label', 'sgs-blocks' ) }
 							help={ __(
@@ -962,7 +1183,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								'sgs-blocks'
 							) }
 							value={ brandsEyebrow || '' }
-							onChange={ ( value ) => setAttributes( { brandsEyebrow: value } ) }
+							onChange={ ( value ) =>
+								setAttributes( { brandsEyebrow: value } )
+							}
 							__next40pxDefaultSize
 							__nextHasNoMarginBottom
 						/>
@@ -979,17 +1202,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									showResponsive={ false }
 								/>
 								<ResponsiveBoxControl
-									label={ __( 'Eyebrow padding', 'sgs-blocks' ) }
+									label={ __(
+										'Eyebrow padding',
+										'sgs-blocks'
+									) }
 									presets
 									values={ {
-										base: brandsEyebrowPadding?.desktop ?? {},
-										tablet: brandsEyebrowPadding?.tablet ?? {},
-										mobile: brandsEyebrowPadding?.mobile ?? {},
+										base:
+											brandsEyebrowPadding?.desktop ?? {},
+										tablet:
+											brandsEyebrowPadding?.tablet ?? {},
+										mobile:
+											brandsEyebrowPadding?.mobile ?? {},
 									} }
 									onChange={ ( tier, next ) => {
-										const key = tier === 'base' ? 'desktop' : tier;
+										const key =
+											tier === 'base' ? 'desktop' : tier;
 										setAttributes( {
-											brandsEyebrowPadding: { ...brandsEyebrowPadding, [ key ]: next },
+											brandsEyebrowPadding: {
+												...brandsEyebrowPadding,
+												[ key ]: next,
+											},
 										} );
 									} }
 								/>
@@ -998,7 +1231,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</PanelBody>
 				) }
 
-				<PanelBody title={ __( 'Motion', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Motion', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ToggleGroupControl
 						label={ __( '"View all" link', 'sgs-blocks' ) }
 						help={ __(
@@ -1007,20 +1243,37 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 						value={ viewAllPlacement || 'auto' }
 						onChange={ ( value ) =>
-							setAttributes( { viewAllPlacement: value || 'auto' } )
+							setAttributes( {
+								viewAllPlacement: value || 'auto',
+							} )
 						}
 						isBlock
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
 					>
-						<ToggleGroupControlOption value="auto" label={ __( 'Automatic', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="none" label={ __( "Don't show", 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="bottom-left" label={ __( 'Bottom left', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="bottom-right" label={ __( 'Bottom right', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="auto"
+							label={ __( 'Automatic', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="none"
+							label={ __( "Don't show", 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="bottom-left"
+							label={ __( 'Bottom left', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="bottom-right"
+							label={ __( 'Bottom right', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Aside', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Aside', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<p className="sgs-mega-panel-editor-note">
 						{ __(
 							'Only applies when a side panel (sgs/mega-aside) block has been added alongside the groups.',
@@ -1030,7 +1283,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<SgsLengthControl
 						label={ __( 'Aside width', 'sgs-blocks' ) }
 						value={ asideWidth || '' }
-						onChange={ ( value ) => setAttributes( { asideWidth: value || '340px' } ) }
+						onChange={ ( value ) =>
+							setAttributes( { asideWidth: value || '340px' } )
+						}
 						presets={ false }
 					/>
 					<ToggleGroupControl
@@ -1038,15 +1293,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						value={ sepStyle }
 						onChange={ ( value ) =>
 							setAttributes( {
-								asideSeparator: { ...asideSeparator, style: value || 'line' },
+								asideSeparator: {
+									...asideSeparator,
+									style: value || 'line',
+								},
 							} )
 						}
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="line" label={ __( 'Line', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="none" label={ __( 'None', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="line"
+							label={ __( 'Line', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="none"
+							label={ __( 'None', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 					{ 'line' === sepStyle && (
 						<>
@@ -1055,7 +1319,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value={ asideSeparator?.width || '' }
 								onChange={ ( value ) =>
 									setAttributes( {
-										asideSeparator: { ...asideSeparator, width: value || '' },
+										asideSeparator: {
+											...asideSeparator,
+											width: value || '',
+										},
 									} )
 								}
 								presets={ false }
@@ -1080,7 +1347,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'In the drawer', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'In the drawer', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<p className="sgs-mega-panel-editor-note">
 						{ __(
 							'Applies only when this panel renders inside the mobile drawer. Empty values leave the drawer copy as it is.',
@@ -1090,59 +1360,97 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ToggleGroupControl
 						label={ __( 'Preview in the editor as', 'sgs-blocks' ) }
 						value={ previewTier }
-						onChange={ ( value ) => setPreviewTier( value || 'desktop' ) }
+						onChange={ ( value ) =>
+							setPreviewTier( value || 'desktop' )
+						}
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="desktop" label={ __( 'Desktop', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="drawer" label={ __( 'Drawer', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="desktop"
+							label={ __( 'Desktop', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="drawer"
+							label={ __( 'Drawer', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 					<ToggleGroupControl
 						label={ __( 'Side card position', 'sgs-blocks' ) }
 						value={ drawerAsideOrder || 'last' }
-						onChange={ ( value ) => setAttributes( { drawerAsideOrder: value || 'last' } ) }
+						onChange={ ( value ) =>
+							setAttributes( {
+								drawerAsideOrder: value || 'last',
+							} )
+						}
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="first" label={ __( 'Above links', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="last" label={ __( 'Below links', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="first"
+							label={ __( 'Above links', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="last"
+							label={ __( 'Below links', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 					<SgsLengthControl
 						scale="font-size"
 						label={ __( 'Link number size', 'sgs-blocks' ) }
 						value={ drawerLinkNumSize || '' }
-						onChange={ ( value ) => setAttributes( { drawerLinkNumSize: value || '' } ) }
+						onChange={ ( value ) =>
+							setAttributes( { drawerLinkNumSize: value || '' } )
+						}
 						presets={ false }
 					/>
 					<SgsLengthControl
 						scale="font-size"
 						label={ __( 'Link label size', 'sgs-blocks' ) }
 						value={ drawerLinkLabelSize || '' }
-						onChange={ ( value ) => setAttributes( { drawerLinkLabelSize: value || '' } ) }
+						onChange={ ( value ) =>
+							setAttributes( {
+								drawerLinkLabelSize: value || '',
+							} )
+						}
 						presets={ false }
 					/>
 					<SgsLengthControl
 						scale="font-size"
 						label={ __( 'Link description size', 'sgs-blocks' ) }
 						value={ drawerLinkDescSize || '' }
-						onChange={ ( value ) => setAttributes( { drawerLinkDescSize: value || '' } ) }
+						onChange={ ( value ) =>
+							setAttributes( { drawerLinkDescSize: value || '' } )
+						}
 						presets={ false }
 					/>
 					<SgsLengthControl
 						label={ __( 'Link row minimum height', 'sgs-blocks' ) }
 						value={ drawerLinkMinHeight || '' }
-						onChange={ ( value ) => setAttributes( { drawerLinkMinHeight: value || '' } ) }
+						onChange={ ( value ) =>
+							setAttributes( {
+								drawerLinkMinHeight: value || '',
+							} )
+						}
 						presets={ false }
 					/>
 					<SgsLengthControl
-						label={ __( 'Link row vertical padding', 'sgs-blocks' ) }
+						label={ __(
+							'Link row vertical padding',
+							'sgs-blocks'
+						) }
 						value={ drawerLinkPaddingY || '' }
-						onChange={ ( value ) => setAttributes( { drawerLinkPaddingY: value || '' } ) }
+						onChange={ ( value ) =>
+							setAttributes( { drawerLinkPaddingY: value || '' } )
+						}
 						presets={ false }
 					/>
-					<DrawerShellControls attributes={ attributes } setAttributes={ setAttributes } />
+					<DrawerShellControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 					<ToggleControl
 						label={ __( 'Compact side card', 'sgs-blocks' ) }
 						help={ __(
@@ -1150,82 +1458,141 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 						checked={ !! drawerCardCompact }
-						onChange={ ( value ) => setAttributes( { drawerCardCompact: !! value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { drawerCardCompact: !! value } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<SgsLengthControl
 						label={ __( 'Card spacing from links', 'sgs-blocks' ) }
 						value={ drawerCardSpacing || '' }
-						onChange={ ( value ) => setAttributes( { drawerCardSpacing: value || '' } ) }
+						onChange={ ( value ) =>
+							setAttributes( { drawerCardSpacing: value || '' } )
+						}
 						presets={ false }
 					/>
 					<SgsLengthControl
 						label={ __( 'Card corner radius', 'sgs-blocks' ) }
 						value={ drawerCardRadius || '' }
-						onChange={ ( value ) => setAttributes( { drawerCardRadius: value || '' } ) }
+						onChange={ ( value ) =>
+							setAttributes( { drawerCardRadius: value || '' } )
+						}
 						presets={ false }
 					/>
 					<SgsLengthControl
 						label={ __( 'Card padding', 'sgs-blocks' ) }
 						value={ drawerCardPadding || '' }
-						onChange={ ( value ) => setAttributes( { drawerCardPadding: value || '' } ) }
+						onChange={ ( value ) =>
+							setAttributes( { drawerCardPadding: value || '' } )
+						}
 						presets={ false }
 					/>
 					{ drawerCardCompact && (
 						<>
-					<SgsLengthControl
-						label={ __( 'Card thumbnail gap', 'sgs-blocks' ) }
-						value={ drawerCardGap || '' }
-						onChange={ ( value ) => setAttributes( { drawerCardGap: value || '' } ) }
-						presets={ false }
-					/>
-					<SgsLengthControl
-						label={ __( 'Card thumbnail size', 'sgs-blocks' ) }
-						value={ drawerCardThumbSize || '' }
-						onChange={ ( value ) => setAttributes( { drawerCardThumbSize: value || '' } ) }
-						presets={ false }
-					/>
-					<SgsLengthControl
-						scale="font-size"
-						label={ __( 'Card tag size', 'sgs-blocks' ) }
-						value={ drawerCardTagSize || '' }
-						onChange={ ( value ) => setAttributes( { drawerCardTagSize: value || '' } ) }
-						presets={ false }
-					/>
+							<SgsLengthControl
+								label={ __(
+									'Card thumbnail gap',
+									'sgs-blocks'
+								) }
+								value={ drawerCardGap || '' }
+								onChange={ ( value ) =>
+									setAttributes( {
+										drawerCardGap: value || '',
+									} )
+								}
+								presets={ false }
+							/>
+							<SgsLengthControl
+								label={ __(
+									'Card thumbnail size',
+									'sgs-blocks'
+								) }
+								value={ drawerCardThumbSize || '' }
+								onChange={ ( value ) =>
+									setAttributes( {
+										drawerCardThumbSize: value || '',
+									} )
+								}
+								presets={ false }
+							/>
+							<SgsLengthControl
+								scale="font-size"
+								label={ __( 'Card tag size', 'sgs-blocks' ) }
+								value={ drawerCardTagSize || '' }
+								onChange={ ( value ) =>
+									setAttributes( {
+										drawerCardTagSize: value || '',
+									} )
+								}
+								presets={ false }
+							/>
 							<SgsBoxControl
 								label={ __( 'Card tag padding', 'sgs-blocks' ) }
-								values={ drawerCardTagPadding && 'object' === typeof drawerCardTagPadding ? drawerCardTagPadding : {} }
+								values={
+									drawerCardTagPadding &&
+									'object' === typeof drawerCardTagPadding
+										? drawerCardTagPadding
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setAttributes( { drawerCardTagPadding: next || {} } ) }
+								onChange={ ( next ) =>
+									setAttributes( {
+										drawerCardTagPadding: next || {},
+									} )
+								}
 							/>
 							<SgsBoxControl
 								label={ __( 'Card tag spacing', 'sgs-blocks' ) }
-								values={ drawerCardTagMargin && 'object' === typeof drawerCardTagMargin ? drawerCardTagMargin : {} }
+								values={
+									drawerCardTagMargin &&
+									'object' === typeof drawerCardTagMargin
+										? drawerCardTagMargin
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setAttributes( { drawerCardTagMargin: next || {} } ) }
+								onChange={ ( next ) =>
+									setAttributes( {
+										drawerCardTagMargin: next || {},
+									} )
+								}
 							/>
-					<SgsLengthControl
-						scale="font-size"
-						label={ __( 'Card title size', 'sgs-blocks' ) }
-						value={ drawerCardTitleSize || '' }
-						onChange={ ( value ) => setAttributes( { drawerCardTitleSize: value || '' } ) }
-						presets={ false }
-					/>
-					<SgsLengthControl
-						label={ __( 'Card title line height', 'sgs-blocks' ) }
-						value={ drawerCardTitleLineHeight || '' }
-						onChange={ ( value ) => setAttributes( { drawerCardTitleLineHeight: value || '' } ) }
-						presets={ false }
-					/>
-					<SgsLengthControl
-						scale="font-size"
-						label={ __( 'Card link size', 'sgs-blocks' ) }
-						value={ drawerCardLinkSize || '' }
-						onChange={ ( value ) => setAttributes( { drawerCardLinkSize: value || '' } ) }
-						presets={ false }
-					/>
+							<SgsLengthControl
+								scale="font-size"
+								label={ __( 'Card title size', 'sgs-blocks' ) }
+								value={ drawerCardTitleSize || '' }
+								onChange={ ( value ) =>
+									setAttributes( {
+										drawerCardTitleSize: value || '',
+									} )
+								}
+								presets={ false }
+							/>
+							<SgsLengthControl
+								label={ __(
+									'Card title line height',
+									'sgs-blocks'
+								) }
+								value={ drawerCardTitleLineHeight || '' }
+								onChange={ ( value ) =>
+									setAttributes( {
+										drawerCardTitleLineHeight: value || '',
+									} )
+								}
+								presets={ false }
+							/>
+							<SgsLengthControl
+								scale="font-size"
+								label={ __( 'Card link size', 'sgs-blocks' ) }
+								value={ drawerCardLinkSize || '' }
+								onChange={ ( value ) =>
+									setAttributes( {
+										drawerCardLinkSize: value || '',
+									} )
+								}
+								presets={ false }
+							/>
 						</>
 					) }
 				</PanelBody>
@@ -1256,15 +1623,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   requires be made explicitly. Same mechanism sgs/before-after uses
 			   for its own "Frame styling" panel. */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						styleValue={ borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ borderColourGradient }
 						onColourGradientChange={ ( val ) =>
 							setAttributes( { borderColourGradient: val ?? '' } )
@@ -1275,25 +1651,40 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{ drawerPreviewStyles && <style>{ drawerPreviewStyles }</style> }
+				{ drawerPreviewStyles && (
+					<style>{ drawerPreviewStyles }</style>
+				) }
 				{ 'brands' === resolvedVariant && brandsEyebrow && (
 					<p
 						className="sgs-mega-panel__eyebrow"
 						style={ {
-							fontFamily: fontFamilyCssValue( brandsEyebrowFontFamily ),
+							fontFamily: fontFamilyCssValue(
+								brandsEyebrowFontFamily
+							),
 							fontSize: brandsEyebrowFontSize
-								? `${ brandsEyebrowFontSize }${ brandsEyebrowFontSizeUnit || 'px' }`
+								? `${ brandsEyebrowFontSize }${
+										brandsEyebrowFontSizeUnit || 'px'
+								  }`
 								: undefined,
 							fontWeight: brandsEyebrowFontWeight || undefined,
 							letterSpacing: brandsEyebrowLetterSpacing
-								? `${ brandsEyebrowLetterSpacing }${ brandsEyebrowLetterSpacingUnit || 'em' }`
+								? `${ brandsEyebrowLetterSpacing }${
+										brandsEyebrowLetterSpacingUnit || 'em'
+								  }`
 								: undefined,
-							textTransform: brandsEyebrowTextTransform || undefined,
+							textTransform:
+								brandsEyebrowTextTransform || undefined,
 							lineHeight: brandsEyebrowLineHeight
-								? `${ brandsEyebrowLineHeight }${ brandsEyebrowLineHeightUnit || '' }`
+								? `${ brandsEyebrowLineHeight }${
+										brandsEyebrowLineHeightUnit || ''
+								  }`
 								: undefined,
-							color: brandsEyebrowColour ? colourVar( brandsEyebrowColour ) : undefined,
-							padding: paddingFromBox( boxAtTier( brandsEyebrowPadding ) ),
+							color: brandsEyebrowColour
+								? colourVar( brandsEyebrowColour )
+								: undefined,
+							padding: paddingFromBox(
+								boxAtTier( brandsEyebrowPadding )
+							),
 						} }
 					>
 						{ brandsEyebrow }
@@ -1318,7 +1709,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					'bottom-right' === viewAllPlacement ) && (
 					<div
 						className={ `sgs-mega-panel__footer sgs-mega-panel__footer--${
-							'bottom-right' === viewAllPlacement ? 'end' : 'start'
+							'bottom-right' === viewAllPlacement
+								? 'end'
+								: 'start'
 						}` }
 						style={ {
 							display: 'flex',

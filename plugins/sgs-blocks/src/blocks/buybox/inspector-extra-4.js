@@ -1,7 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, TextControl } from '@wordpress/components';
-import { NumberControl, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { SpacingControl } from '../../components';
+import {
+	NumberControl,
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
+import { SgsLengthControl } from '../../components';
 
 /**
  * Settings-tab (default InspectorControls group) extra panels for
@@ -199,10 +203,22 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						>
-							<ToggleGroupControlOption value="top-right" label={ __( 'Top right', 'sgs-blocks' ) } />
-							<ToggleGroupControlOption value="top-left" label={ __( 'Top left', 'sgs-blocks' ) } />
-							<ToggleGroupControlOption value="bottom-right" label={ __( 'Bottom right', 'sgs-blocks' ) } />
-							<ToggleGroupControlOption value="bottom-left" label={ __( 'Bottom left', 'sgs-blocks' ) } />
+							<ToggleGroupControlOption
+								value="top-right"
+								label={ __( 'Top right', 'sgs-blocks' ) }
+							/>
+							<ToggleGroupControlOption
+								value="top-left"
+								label={ __( 'Top left', 'sgs-blocks' ) }
+							/>
+							<ToggleGroupControlOption
+								value="bottom-right"
+								label={ __( 'Bottom right', 'sgs-blocks' ) }
+							/>
+							<ToggleGroupControlOption
+								value="bottom-left"
+								label={ __( 'Bottom left', 'sgs-blocks' ) }
+							/>
 						</ToggleGroupControl>
 					</>
 				) }
@@ -218,7 +234,9 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 					step={ 0.001 }
 					min={ 0 }
 					onChange={ ( val ) =>
-						setAttributes( { galleryColumnRatio: parseFloat( val ) || 0 } )
+						setAttributes( {
+							galleryColumnRatio: parseFloat( val ) || 0,
+						} )
 					}
 					placeholder="1.15"
 					help={ __(
@@ -228,8 +246,8 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 					__unstableInputWidth="100%"
 					__next40pxDefaultSize
 				/>
-				<SpacingControl
-					custom
+				<SgsLengthControl
+					presets
 					label={ __( 'Gap between columns', 'sgs-blocks' ) }
 					value={ galleryColumnGap || '' }
 					onChange={ ( val ) =>

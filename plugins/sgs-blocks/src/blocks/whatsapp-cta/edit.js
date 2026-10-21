@@ -1,8 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import {
-	useBlockProps,
-	InspectorControls,
-} from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	SelectControl,
@@ -10,12 +7,35 @@ import {
 	TextareaControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { SgsLengthControl, TypographyControls, ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsColourPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle, borderRadiusLonghands } from '../../utils';
-import { VariantContent, cardColourRows, CardTypographyPanel } from './card-fields';
+import {
+	SgsLengthControl,
+	TypographyControls,
+	ResponsiveBorderRadiusControl,
+	SgsColourPanel,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	textRow,
+} from '../../components';
+import {
+	colourVar,
+	resolveTextColourPreviewStyle,
+	borderRadiusLonghands,
+	usePreviewTier,
+	tierBoxLonghands,
+} from '../../utils';
+import {
+	VariantContent,
+	cardColourRows,
+	CardTypographyPanel,
+} from './card-fields';
 import { FloatingPanel } from './floating-panel';
-import { buildRootStyle, buildRootClassName, floatingHideLabelPreviewCss } from './preview-style';
-import { usePreviewTier, tierBoxLonghands } from '../../utils';
+import {
+	buildRootStyle,
+	buildRootClassName,
+	floatingHideLabelPreviewCss,
+} from './preview-style';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Inline button', 'sgs-blocks' ), value: 'inline' },
@@ -66,21 +86,29 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		'floating' === variant && !! label
 	);
 	const blockProps = useBlockProps( {
-		className: `${ buildRootClassName( { variant, showOnMobile, showOnDesktop } ) } ${ hideLabelUid }`,
-		style: {
-			...buildRootStyle( {
-			borderRadius,
-			labelColour,
-			labelColourGradient,
-			backgroundColour,
-			backgroundColourGradient,
+		className: `${ buildRootClassName( {
 			variant,
-			cardBorderColour,
-			cardBorderWidth,
-			cardBorderStyle,
-			iconGap: attributes.iconGap,
-			minHeight: attributes.minHeight,
-			}, colourVar, resolveTextColourPreviewStyle ),
+			showOnMobile,
+			showOnDesktop,
+		} ) } ${ hideLabelUid }`,
+		style: {
+			...buildRootStyle(
+				{
+					borderRadius,
+					labelColour,
+					labelColourGradient,
+					backgroundColour,
+					backgroundColourGradient,
+					variant,
+					cardBorderColour,
+					cardBorderWidth,
+					cardBorderStyle,
+					iconGap: attributes.iconGap,
+					minHeight: attributes.minHeight,
+				},
+				colourVar,
+				resolveTextColourPreviewStyle
+			),
 			// Set sides and corners only, as render.php prints them (sgs_box_object_longhands,
 			// sgs_corner_object_longhands): an unset one keeps the stylesheet's value in the canvas too, never a 0.
 			...tierBoxLonghands( padding, previewTier, 'padding' ),
@@ -88,7 +116,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			...borderRadiusLonghands( borderRadius, previewTier ),
 		},
 	} );
-
 
 	return (
 		<>
@@ -116,26 +143,38 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: backgroundColour,
-								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: backgroundColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { backgroundColourGradient: val ?? '' } ),
+									setAttributes( {
+										backgroundColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: backgroundColourHover,
 								onChange: ( val ) =>
-									setAttributes( { backgroundColourHover: val ?? '' } ),
+									setAttributes( {
+										backgroundColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: backgroundColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										backgroundColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
-					...( 'card' === variant ? cardColourRows( { attributes, setAttributes } ) : [] ),
+					...( 'card' === variant
+						? cardColourRows( { attributes, setAttributes } )
+						: [] ),
 				] }
 			/>
 			<InspectorControls>
@@ -155,10 +194,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 					<TextareaControl
-						label={ __(
-							'Pre-filled message',
-							'sgs-blocks'
-						) }
+						label={ __( 'Pre-filled message', 'sgs-blocks' ) }
 						value={ message || '' }
 						onChange={ ( val ) =>
 							setAttributes( { message: val } )
@@ -179,7 +215,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				</PanelBody>
 
 				{ 'floating' === variant && (
-					<FloatingPanel attributes={ attributes } setAttributes={ setAttributes } />
+					<FloatingPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				) }
 
 				<PanelBody
@@ -190,7 +229,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Show on mobile', 'sgs-blocks' ) }
 						checked={ showOnMobile }
 						onChange={ ( val ) =>
-							setAttributes( { showOn: { ...showOn, mobile: val } } )
+							setAttributes( {
+								showOn: { ...showOn, mobile: val },
+							} )
 						}
 						__nextHasNoMarginBottom
 					/>
@@ -198,7 +239,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Show on desktop', 'sgs-blocks' ) }
 						checked={ showOnDesktop }
 						onChange={ ( val ) =>
-							setAttributes( { showOn: { ...showOn, desktop: val } } )
+							setAttributes( {
+								showOn: { ...showOn, desktop: val },
+							} )
 						}
 						__nextHasNoMarginBottom
 					/>
@@ -208,7 +251,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Styling', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextStroke showTextColumns showWritingMode
+					<TypographyControls
+						fontSizePresets
+						showFontFamily
+						showDecoration
+						showTransform
+						showLetterSpacing
+						showTextAlign
+						showTextWrap
+						showTextStroke
+						showTextColumns
+						showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="label"
@@ -216,7 +269,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				</PanelBody>
 
 				{ 'card' === variant && (
-					<CardTypographyPanel attributes={ attributes } setAttributes={ setAttributes } />
+					<CardTypographyPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				) }
 
 				{ /* ── Spacing panel ── padding/margin are each a single block-owned
@@ -229,15 +285,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -248,33 +314,59 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 					<SgsLengthControl
-						label={ __( 'Space between icon and label', 'sgs-blocks' ) }
-						help={ __( 'Empty keeps the theme spacing.', 'sgs-blocks' ) }
+						label={ __(
+							'Space between icon and label',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'Empty keeps the theme spacing.',
+							'sgs-blocks'
+						) }
 						value={ attributes.iconGap || '' }
-						onChange={ ( val ) => setAttributes( { iconGap: val || '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { iconGap: val || '' } )
+						}
 						presets={ false }
 					/>
 					<SgsLengthControl
 						scale="font-size"
 						label={ __( 'Icon size', 'sgs-blocks' ) }
-						help={ __( 'Width and height of the icon. Empty keeps the default size.', 'sgs-blocks' ) }
+						help={ __(
+							'Width and height of the icon. Empty keeps the default size.',
+							'sgs-blocks'
+						) }
 						value={ attributes.iconSize || '' }
-						onChange={ ( val ) => setAttributes( { iconSize: val || '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { iconSize: val || '' } )
+						}
 						presets={ false }
 					/>
 					<SgsLengthControl
 						label={ __( 'Minimum height', 'sgs-blocks' ) }
-						help={ __( 'Keep at 44px or more so the button stays easy to tap. Empty keeps the default.', 'sgs-blocks' ) }
+						help={ __(
+							'Keep at 44px or more so the button stays easy to tap. Empty keeps the default.',
+							'sgs-blocks'
+						) }
 						value={ attributes.minHeight || '' }
-						onChange={ ( val ) => setAttributes( { minHeight: val || '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { minHeight: val || '' } )
+						}
 						presets={ false }
 					/>
 				</PanelBody>
@@ -299,7 +391,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 						onChange={ ( tier, next ) => {
 							const key = 'base' === tier ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -312,7 +409,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   render.php's early `return;` (nothing renders on the frontend
 			   when unset), so it has no frontend equivalent to match. ── */ }
 			<span { ...blockProps }>
-				<VariantContent attributes={ attributes } setAttributes={ setAttributes } />
+				<VariantContent
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</span>
 
 			{ ! phoneNumber && (

@@ -563,7 +563,6 @@ Every shape below is live and fits none of contracts 1–12. **A rule may not si
 | preset `SelectControl` on `minHeight` | live | LENGTH (§4) | **Needs a contract** — a length behind a preset picker breaks the token system |
 | raw `BoxControl` (not the Responsive wrapper) | live | 4-VALUE BOX (§5) | **Needs a contract** — bypasses the tier wrapper |
 | `BorderRadiusControl` (singular, non-responsive) | live | BORDER (§14) | **Absorbed by §14** |
-| `SpacingControl` | live | LENGTH (§4) | **Needs a contract** — is it a length, or its own token-scale type? |
 | `DeviceTabs` | **0 callers** | RESPONSIVE (§12) | **Banned lookalike — verdict binds if reintroduced.** The tier is chosen once, in the global toggle (`src/blocks/extensions/responsive-device-toggle.js`); `inspector-scan` rule 25 flags any block that reintroduces a `<DeviceTabs>`. The component file remains exported from `components/index.js`. |
 | `ComboboxControl` | live | ENUM (§3) | Absorbed by §3 as a permitted large-option-set variant |
 | `FormTokenField` | live | ENUM (§3) | Multi-select enum — **needs an explicit clause in §3** |

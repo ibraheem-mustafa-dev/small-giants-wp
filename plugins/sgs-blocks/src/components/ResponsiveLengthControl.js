@@ -13,23 +13,23 @@
  *     onChange={ ( obj ) => setAttributes( { gap: obj } ) }
  *   />
  *
- * @package SGS\Blocks
+ * @package
  */
 
 import ResponsiveOverride from './ResponsiveOverride';
 import SgsLengthControl from './SgsLengthControl';
 
 /**
- * @param {Object}   props               Props.
- * @param {string}   props.label         Visible label (also the field's accessible name).
- * @param {string}   [props.help]        Help text under the field.
- * @param {Object}   props.value         Tier object `{desktop,tablet,mobile}`; a non-object reads as empty.
- * @param {Function} props.onChange      Receives the whole next tier object.
- * @param {string}   [props.placeholder] Placeholder shown on a tier that does not inherit.
- * @param {boolean}  [props.presets]     Offer the spacing-preset picker. Default false.
- * @param {Array}    [props.units]       UnitControl unit list; SgsLengthControl's default when omitted.
- * @param {'spacing'|'font-size'} [props.scale] SgsLengthControl's scale, chosen by the attribute's role.
- * @param {number}   [props.max]         Tighter slider ceiling in px (see SgsLengthControl).
+ * @param {Object}                props               Props.
+ * @param {string}                props.label         Visible label (also the field's accessible name).
+ * @param {string}                [props.help]        Help text under the field.
+ * @param {Object}                props.value         Tier object `{desktop,tablet,mobile}`; a non-object reads as empty.
+ * @param {Function}              props.onChange      Receives the whole next tier object.
+ * @param {string}                [props.placeholder] Placeholder shown on a tier that does not inherit.
+ * @param {boolean}               [props.presets]     Offer the spacing-preset picker. Default false.
+ * @param {Array}                 [props.units]       UnitControl unit list; SgsLengthControl's default when omitted.
+ * @param {'spacing'|'font-size'} [props.scale]       SgsLengthControl's scale, chosen by the attribute's role.
+ * @param {number}                [props.max]         Tighter slider ceiling in px (see SgsLengthControl).
  * @return {Element} The control.
  */
 export default function ResponsiveLengthControl( {
@@ -45,7 +45,11 @@ export default function ResponsiveLengthControl( {
 } ) {
 	const tiers = value && typeof value === 'object' ? value : {};
 	return (
-		<ResponsiveOverride label={ label } value={ tiers } onChange={ onChange }>
+		<ResponsiveOverride
+			label={ label }
+			value={ tiers }
+			onChange={ onChange }
+		>
 			{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 				<SgsLengthControl
 					label={ label }

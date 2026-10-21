@@ -4,11 +4,16 @@ import {
 	InspectorControls,
 	RichText,
 } from '@wordpress/block-editor';
+import { PanelBody, ToggleControl } from '@wordpress/components';
 import {
-	PanelBody,
-	ToggleControl,
-} from '@wordpress/components';
-import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, textRow, fillRow, SgsLengthControl, SpacingControl, LinkUnderlineControl } from '../../components';
+	TypographyControls,
+	ResponsiveBoxControl,
+	SgsColourPanel,
+	textRow,
+	fillRow,
+	SgsLengthControl,
+	LinkUnderlineControl,
+} from '../../components';
 import {
 	colourVar,
 	SGS_LENGTH_UNITS,
@@ -26,7 +31,10 @@ import {
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { labelDotPreviewCss } from './dot-preview';
 import EndShapePanel from './EndShapePanel';
-import { labelEndShapeEnds, labelEndShapePreviewCss } from './end-shape-preview';
+import {
+	labelEndShapeEnds,
+	labelEndShapePreviewCss,
+} from './end-shape-preview';
 import { RICH_TEXT_LINK_ONLY } from '../../utils/rich-text-formats';
 
 /**
@@ -62,7 +70,10 @@ const TYPOGRAPHY_DEFAULTS = {
 function hasTypographyValue( attributes ) {
 	return Object.keys( TYPOGRAPHY_DEFAULTS ).some( ( key ) => {
 		if ( 'fontSize' === key ) {
-			const size = attributes.fontSize && 'object' === typeof attributes.fontSize ? attributes.fontSize : {};
+			const size =
+				attributes.fontSize && 'object' === typeof attributes.fontSize
+					? attributes.fontSize
+					: {};
 			return 12 !== size.desktop || !! size.tablet || !! size.mobile;
 		}
 		const value = attributes[ key ];
@@ -79,6 +90,9 @@ function hasTypographyValue( attributes ) {
  * This is editor-only convenience (mirrors sgs/heading) — the frontend
  * render.php emits every declaration into a scoped `.{uid}` <style> tag,
  * never inline (contract §A).
+ * @param {Object} attributes Block attributes.
+ * @param {string} tier       Active device tier.
+ * @return {Object} Style object for the label element.
  */
 function buildStyle( attributes, tier ) {
 	const {
@@ -96,7 +110,8 @@ function buildStyle( attributes, tier ) {
 		borderColour,
 		borderColourGradient,
 	} = attributes;
-	const hasEndShape = Object.keys( labelEndShapeEnds( attributes ) ).length > 0;
+	const hasEndShape =
+		Object.keys( labelEndShapeEnds( attributes ) ).length > 0;
 
 	// margin and padding are TIER-OF-BOXES OBJECTS {desktop,tablet,mobile};
 	// the preview shows the tier the editor is previewing.
@@ -105,7 +120,11 @@ function buildStyle( attributes, tier ) {
 	const paddingLonghands = tierBoxLonghands( padding, tier, 'padding' );
 
 	const previewStyle = {
-		...resolveTextColourPreviewStyle( textColour, textColourGradient, colourVar ),
+		...resolveTextColourPreviewStyle(
+			textColour,
+			textColourGradient,
+			colourVar
+		),
 		...typographyPreviewStyle( attributes, '', tier ),
 		...marginLonghands,
 		...paddingLonghands,
@@ -115,7 +134,8 @@ function buildStyle( attributes, tier ) {
 	// render.php's ungated helper (no pill gate). A shaped label paints its fill on
 	// the cut `::after` layer instead (labelEndShapePreviewCss), so the root has none.
 	if ( ! hasEndShape ) {
-		previewStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
+		previewStyle.backgroundColor =
+			colourVar( backgroundColour ) || undefined;
 		// Gradient sibling preview (colour-conformance FILL closeout, 2026-09-06) —
 		// mirrors render.php's sgs_background_paint_decl() gradient-wins-when-set.
 		if ( isCssGradient( backgroundColourGradient ) ) {
@@ -154,11 +174,15 @@ function buildStyle( attributes, tier ) {
 	// Display model — mirrors render.php. When an is-style-* variant class owns
 	// display, emit none (the variant CSS decides). Otherwise: fullWidth →
 	// block+100%, a boxed label → inline-block, a bare eyebrow → block.
-	const hasStyleVariant = typeof className === 'string' &&
-		className.includes( 'is-style-' );
+	const hasStyleVariant =
+		typeof className === 'string' && className.includes( 'is-style-' );
 	if ( ! hasStyleVariant ) {
 		// render.php's `$box_present`: a padding side, a fill, a radius or an end shape.
-		const boxPresent = Object.keys( paddingLonghands ).length > 0 || !! backgroundColour || hasRadius || hasEndShape;
+		const boxPresent =
+			Object.keys( paddingLonghands ).length > 0 ||
+			!! backgroundColour ||
+			hasRadius ||
+			hasEndShape;
 		if ( fullWidth ) {
 			previewStyle.display = 'block';
 			previewStyle.width = '100%';
@@ -204,23 +228,35 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} = attributes;
 
 	const previewTier = usePreviewTier();
-	const hasEndShape = Object.keys( labelEndShapeEnds( attributes ) ).length > 0;
+	const hasEndShape =
+		Object.keys( labelEndShapeEnds( attributes ) ).length > 0;
 	const blockProps = useBlockProps( {
-		className: `sgs-lbl-ed-${ clientId }${ hasEndShape ? ' has-end-shape' : '' }`,
+		className: `sgs-lbl-ed-${ clientId }${
+			hasEndShape ? ' has-end-shape' : ''
+		}`,
 		style: buildStyle( attributes, previewTier ),
 	} );
 	// How a link inside the label is underlined: the same rules render.php prints (includes/helpers-link-underline.php).
-	const linkUnderlineCss = linkUnderlinePreviewCss( `.sgs-lbl-ed-${ clientId }`, {
-		mode: linkUnderline,
-		thickness: linkUnderlineThickness,
-		colour: linkUnderlineColour,
-		colourHover: linkUnderlineColourHover,
-		offset: linkUnderlineOffset,
-	} );
+	const linkUnderlineCss = linkUnderlinePreviewCss(
+		`.sgs-lbl-ed-${ clientId }`,
+		{
+			mode: linkUnderline,
+			thickness: linkUnderlineThickness,
+			colour: linkUnderlineColour,
+			colourHover: linkUnderlineColourHover,
+			offset: linkUnderlineOffset,
+		}
+	);
 	// The leading dot: the same `::before` rule render.php prints, scoped to this canvas element.
-	const dotCss = labelDotPreviewCss( `.sgs-lbl-ed-${ clientId }`, attributes );
+	const dotCss = labelDotPreviewCss(
+		`.sgs-lbl-ed-${ clientId }`,
+		attributes
+	);
 	// The end shapes: the cut `::after` layer carrying the fill and the border (the rules render.php prints).
-	const endShapeCss = labelEndShapePreviewCss( `.sgs-lbl-ed-${ clientId }`, attributes );
+	const endShapeCss = labelEndShapePreviewCss(
+		`.sgs-lbl-ed-${ clientId }`,
+		attributes
+	);
 
 	return (
 		<>
@@ -252,11 +288,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: backgroundColour,
-								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: backgroundColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { backgroundColourGradient: val ?? '' } ),
+									setAttributes( {
+										backgroundColourGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -281,7 +322,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ToolsPanel
 						className="sgs-nested-tools-panel"
 						label={ __( 'Typography', 'sgs-blocks' ) }
-						resetAll={ () => setAttributes( { ...TYPOGRAPHY_DEFAULTS } ) }
+						resetAll={ () =>
+							setAttributes( { ...TYPOGRAPHY_DEFAULTS } )
+						}
 					>
 						{ /* One item for the whole shared panel: font family, size (all devices),
 						   weight, style, line height, letter spacing, transform, decoration,
@@ -289,7 +332,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToolsPanelItem
 							label={ __( 'Typography', 'sgs-blocks' ) }
 							hasValue={ () => hasTypographyValue( attributes ) }
-							onDeselect={ () => setAttributes( { ...TYPOGRAPHY_DEFAULTS } ) }
+							onDeselect={ () =>
+								setAttributes( { ...TYPOGRAPHY_DEFAULTS } )
+							}
 							isShownByDefault
 						>
 							<TypographyControls
@@ -315,7 +360,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</ToolsPanelItem>
 					</ToolsPanel>
 				</PanelBody>
-				<EndShapePanel attributes={ attributes } setAttributes={ setAttributes } />
+				<EndShapePanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ /* ── Settings tab (structural — no CSS property) ─────────────── */ }
@@ -405,10 +453,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Dot', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Dot', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ToggleControl
-						label={ __( 'Show a dot before the text', 'sgs-blocks' ) }
-						help={ __( 'A small decorative dot; its colour is under Colour (it follows the text colour until you pick one).', 'sgs-blocks' ) }
+						label={ __(
+							'Show a dot before the text',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'A small decorative dot; its colour is under Colour (it follows the text colour until you pick one).',
+							'sgs-blocks'
+						) }
 						checked={ !! dot }
 						onChange={ ( val ) => setAttributes( { dot: val } ) }
 						__nextHasNoMarginBottom
@@ -421,31 +478,51 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value={ dotSize ?? '' }
 								units={ SGS_LENGTH_UNITS }
 								onChange={ ( val ) =>
-									setAttributes( { dotSize: sgsNormaliseLength( val ) } )
+									setAttributes( {
+										dotSize: sgsNormaliseLength( val ),
+									} )
 								}
 								presets={ false }
 							/>
-							<SpacingControl
-								custom
-								label={ __( 'Space between dot and text', 'sgs-blocks' ) }
+							<SgsLengthControl
+								presets
+								label={ __(
+									'Space between dot and text',
+									'sgs-blocks'
+								) }
 								value={ dotGap ?? '' }
-								onChange={ ( val ) => setAttributes( { dotGap: val ?? '' } ) }
+								onChange={ ( val ) =>
+									setAttributes( { dotGap: val ?? '' } )
+								}
 							/>
 						</>
 					) }
 				</PanelBody>
-				<PanelBody title={ __( 'Links', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Links', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<LinkUnderlineControl
 						mode={ linkUnderline }
 						thickness={ linkUnderlineThickness }
 						colour={ linkUnderlineColour }
 						colourHover={ linkUnderlineColourHover }
 						offset={ linkUnderlineOffset }
-						onModeChange={ ( val ) => setAttributes( { linkUnderline: val } ) }
-						onThicknessChange={ ( val ) => setAttributes( { linkUnderlineThickness: val } ) }
-						onColourChange={ ( val ) => setAttributes( { linkUnderlineColour: val } ) }
-						onColourHoverChange={ ( val ) => setAttributes( { linkUnderlineColourHover: val } ) }
-						onOffsetChange={ ( val ) => setAttributes( { linkUnderlineOffset: val } ) }
+						onModeChange={ ( val ) =>
+							setAttributes( { linkUnderline: val } )
+						}
+						onThicknessChange={ ( val ) =>
+							setAttributes( { linkUnderlineThickness: val } )
+						}
+						onColourChange={ ( val ) =>
+							setAttributes( { linkUnderlineColour: val } )
+						}
+						onColourHoverChange={ ( val ) =>
+							setAttributes( { linkUnderlineColourHover: val } )
+						}
+						onOffsetChange={ ( val ) =>
+							setAttributes( { linkUnderlineOffset: val } )
+						}
 					/>
 				</PanelBody>
 			</InspectorControls>

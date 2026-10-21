@@ -92,6 +92,7 @@
       },
       "elements": {
         "page-button": {
+          "motion": false,
           "selector": ".sgs-card-grid__page-btn",
           "label": "Pagination page button",
           "order": 10,

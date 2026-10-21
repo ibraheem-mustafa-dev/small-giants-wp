@@ -88,7 +88,7 @@ const CORNER_LABELS = {
 	bottomLeft: __( 'Bottom left', 'sgs-blocks' ),
 };
 
-/** Units offered in the BoxControl side inputs (mirrors SpacingControl's free-input set). */
+/** Units offered in the BoxControl side inputs (mirrors SGS_LENGTH_UNITS). */
 export const BOX_UNITS = [
 	{ value: 'px', label: 'px', default: 0 },
 	{ value: 'rem', label: 'rem', default: 0 },
@@ -121,22 +121,22 @@ export const normaliseResponsiveBox = ( box ) => {
 /**
  * ResponsiveBoxControl — 4-SIDE family (padding / margin / border-width) editor.
  *
- * @param {Object}   props
- * @param {string}   props.label   Heading label for the control group.
- * @param {Object}   props.values  { base, tablet, mobile } — each a
- *                                 { top, right, bottom, left } box object.
- * @param {Function} props.onChange( tier, nextBoxValues ) — see file header.
- * @param {ReadonlyArray<string>} [props.sides] Passed through to BoxControl's
- *                                 `sides` prop (restrict to a subset of sides).
- * @param {boolean}  [props.showResponsive=true] Show the device-icon switcher.
- *                                 When false, only the base tier is editable.
- * @param {boolean}  [props.presets=false] Passed through to SgsBoxControl —
- *                                 offer the theme.json spacing-scale dropdown
- *                                 per side (C16, 2026-08-27). OPT-IN, default
- *                                 OFF; see SgsBoxControl.js's file header.
- * @param {Object}   [props.defaults] Passed through to SgsBoxControl — the
- *                                 block's declared spacing preset per side
- *                                 (`utils/spacing-defaults.js::spacingDefaultsFor`).
+ * @param {Object}                props
+ * @param {string}                props.label                 Heading label for the control group.
+ * @param {Object}                props.values                { base, tablet, mobile } — each a
+ *                                                            { top, right, bottom, left } box object.
+ * @param {Function}              props.onChange              Called as onChange( tier, nextBoxValues ) — see file header.
+ * @param {ReadonlyArray<string>} [props.sides]               Passed through to BoxControl's
+ *                                                            `sides` prop (restrict to a subset of sides).
+ * @param {boolean}               [props.showResponsive=true] Show the device-icon switcher.
+ *                                                            When false, only the base tier is editable.
+ * @param {boolean}               [props.presets=false]       Passed through to SgsBoxControl —
+ *                                                            offer the theme.json spacing-scale dropdown
+ *                                                            per side (C16, 2026-08-27). OPT-IN, default
+ *                                                            OFF; see SgsBoxControl.js's file header.
+ * @param {Object}                [props.defaults]            Passed through to SgsBoxControl — the
+ *                                                            block's declared spacing preset per side
+ *                                                            (`utils/spacing-defaults.js::spacingDefaultsFor`).
  * @return {JSX.Element} Controls fragment.
  */
 export default function ResponsiveBoxControl( {
@@ -179,7 +179,11 @@ export default function ResponsiveBoxControl( {
 					<SgsBoxControl
 						label={ label }
 						values={ tierValues[ tier ] }
-						inherited={ inheritedBox( tierValues, tier, sides ?? ALL_SIDES ) }
+						inherited={ inheritedBox(
+							tierValues,
+							tier,
+							sides ?? ALL_SIDES
+						) }
 						sides={ sides }
 						units={ BOX_UNITS }
 						presets={ presets }
@@ -196,13 +200,13 @@ export default function ResponsiveBoxControl( {
  * ResponsiveBorderRadiusControl — 4-CORNER family (border-radius) editor.
  *
  * @param {Object}   props
- * @param {string}   props.label   Heading label for the control group.
- * @param {Object}   props.values  { base, tablet, mobile } — each a
- *                                 { topLeft, topRight, bottomLeft, bottomRight }
- *                                 corner object.
- * @param {Function} props.onChange( tier, nextCornerValues ) — see file header.
+ * @param {string}   props.label                 Heading label for the control group.
+ * @param {Object}   props.values                { base, tablet, mobile } — each a
+ *                                               { topLeft, topRight, bottomLeft, bottomRight }
+ *                                               corner object.
+ * @param {Function} props.onChange              Called as onChange( tier, nextCornerValues ) — see file header.
  * @param {boolean}  [props.showResponsive=true] Show the device-icon switcher.
- *                                 When false, only the base tier is editable.
+ *                                               When false, only the base tier is editable.
  * @return {JSX.Element} Controls fragment.
  */
 export function ResponsiveBorderRadiusControl( {

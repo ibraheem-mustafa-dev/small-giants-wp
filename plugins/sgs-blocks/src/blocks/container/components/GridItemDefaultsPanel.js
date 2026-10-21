@@ -11,11 +11,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import {
-	PanelBody,
-	SelectControl,
-	TextControl,
-} from '@wordpress/components';
+import { PanelBody, SelectControl } from '@wordpress/components';
 import {
 	ResponsiveOverride,
 	DesignTokenPicker,
@@ -23,7 +19,10 @@ import {
 	ShadowControl,
 	shadowAttrKeys,
 	ResponsiveBorderRadiusControl,
-	normaliseResponsiveBox, SgsBoxControl, SgsLengthControl } from '../../../components';
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	SgsLengthControl,
+} from '../../../components';
 import { gridBorderParts } from '../grid-item-preview';
 
 const GRID_ITEM_BORDER_STYLES = [
@@ -44,7 +43,9 @@ const GRID_ITEM_BORDER_STYLES = [
  * @return {string} Shorthand.
  */
 function _gridBorderJoin( parts ) {
-	const ordered = [ parts.width, parts.style, parts.colour ].filter( Boolean );
+	const ordered = [ parts.width, parts.style, parts.colour ].filter(
+		Boolean
+	);
 	return ordered.length ? ordered.join( ' ' ) : '';
 }
 
@@ -75,8 +76,6 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 		gridItemBorder = '',
 		gridItemBorderGradient = '',
 		gridItemBorderGradientHover = '',
-		gridItemShadow = '',
-		gridItemShadowColour = '',
 		gridItemTextColour = '',
 		gridItemTextColourHover = '',
 		gridItemTextColourGradient = '',
@@ -85,8 +84,13 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 
 	// gridItemBorderRadius is a tier object like gridItemPadding: each tier a corner box. A flat corner box (no tier key)
 	// is the desktop tier, as the renderer reads it.
-	const radiusStored = gridItemBorderRadius && 'object' === typeof gridItemBorderRadius ? gridItemBorderRadius : {};
-	const radiusIsTiered = [ 'desktop', 'tablet', 'mobile' ].some( ( key ) => key in radiusStored );
+	const radiusStored =
+		gridItemBorderRadius && 'object' === typeof gridItemBorderRadius
+			? gridItemBorderRadius
+			: {};
+	const radiusIsTiered = [ 'desktop', 'tablet', 'mobile' ].some(
+		( key ) => key in radiusStored
+	);
 	const gridItemRadiusTiers = {
 		stored: radiusIsTiered ? radiusStored : {},
 		desktop: radiusIsTiered ? radiusStored.desktop : radiusStored,
@@ -99,7 +103,10 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 	}
 
 	return (
-		<PanelBody title={ __( 'Grid item defaults', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Grid item defaults', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<p className="components-base-control__help">
 				{ __(
 					'Values set here become CSS custom properties (--sgs-gi-*) inherited by direct child containers in the grid. Per-child overrides still win via specificity.',
@@ -125,15 +132,23 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 			     components/ResponsiveBoxControls.js. */ }
 			<ResponsiveOverride
 				value={ gridItemPadding }
-				onChange={ ( obj ) => setAttributes( { gridItemPadding: obj } ) }
+				onChange={ ( obj ) =>
+					setAttributes( { gridItemPadding: obj } )
+				}
 			>
 				{ ( { ownValue, setOwnValue } ) => (
 					<SgsBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+						values={
+							ownValue && typeof ownValue === 'object'
+								? ownValue
+								: {}
+						}
 						units={ GRID_ITEM_BOX_UNITS }
 						presets
-						onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+						onChange={ ( next ) =>
+							setOwnValue( normaliseResponsiveBox( next ) )
+						}
 					/>
 				) }
 			</ResponsiveOverride>
@@ -144,19 +159,27 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 						key: 'normal',
 						label: __( 'Normal', 'sgs-blocks' ),
 						value: gridItemBackground,
-						onChange: ( val ) => setAttributes( { gridItemBackground: val ?? '' } ),
+						onChange: ( val ) =>
+							setAttributes( { gridItemBackground: val ?? '' } ),
 						gradientValue: gridItemBackgroundGradient,
 						onGradientChange: ( val ) =>
-							setAttributes( { gridItemBackgroundGradient: val ?? '' } ),
+							setAttributes( {
+								gridItemBackgroundGradient: val ?? '',
+							} ),
 					},
 					{
 						key: 'hover',
 						label: __( 'Hover', 'sgs-blocks' ),
 						value: gridItemBackgroundHover,
-						onChange: ( val ) => setAttributes( { gridItemBackgroundHover: val ?? '' } ),
+						onChange: ( val ) =>
+							setAttributes( {
+								gridItemBackgroundHover: val ?? '',
+							} ),
 						gradientValue: gridItemBackgroundHoverGradient,
 						onGradientChange: ( val ) =>
-							setAttributes( { gridItemBackgroundHoverGradient: val ?? '' } ),
+							setAttributes( {
+								gridItemBackgroundHoverGradient: val ?? '',
+							} ),
 					},
 				] }
 			/>
@@ -179,7 +202,8 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 					setAttributes( {
 						gridItemBorderRadius: {
 							...gridItemRadiusTiers.stored,
-							[ 'base' === tier ? 'desktop' : tier ]: normaliseResponsiveBox( next ),
+							[ 'base' === tier ? 'desktop' : tier ]:
+								normaliseResponsiveBox( next ),
 						},
 					} )
 				}
@@ -204,17 +228,27 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 					label={ __( 'Border width', 'sgs-blocks' ) }
 					value={ gridBorderParts( gridItemBorder ).width }
 					units={ GRID_ITEM_BOX_UNITS }
-					onChange={ ( val ) => setAttributes( {
-						gridItemBorder: _gridBorderJoin( { ...gridBorderParts( gridItemBorder ), width: val || '' } ),
-					} ) }
+					onChange={ ( val ) =>
+						setAttributes( {
+							gridItemBorder: _gridBorderJoin( {
+								...gridBorderParts( gridItemBorder ),
+								width: val || '',
+							} ),
+						} )
+					}
 				/>
 				<SelectControl
 					label={ __( 'Border style', 'sgs-blocks' ) }
 					value={ gridBorderParts( gridItemBorder ).style }
 					options={ GRID_ITEM_BORDER_STYLES }
-					onChange={ ( val ) => setAttributes( {
-						gridItemBorder: _gridBorderJoin( { ...gridBorderParts( gridItemBorder ), style: val } ),
-					} ) }
+					onChange={ ( val ) =>
+						setAttributes( {
+							gridItemBorder: _gridBorderJoin( {
+								...gridBorderParts( gridItemBorder ),
+								style: val,
+							} ),
+						} )
+					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
@@ -234,15 +268,22 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 							key: 'normal',
 							label: __( 'Normal', 'sgs-blocks' ),
 							value: gridBorderParts( gridItemBorder ).colour,
-							onChange: ( val ) => setAttributes( {
-								gridItemBorder: _gridBorderJoin( { ...gridBorderParts( gridItemBorder ), colour: val || '' } ),
-							} ),
+							onChange: ( val ) =>
+								setAttributes( {
+									gridItemBorder: _gridBorderJoin( {
+										...gridBorderParts( gridItemBorder ),
+										colour: val || '',
+									} ),
+								} ),
 							// D636 border-gradient rollout (residual scope, 2026-08-17) —
 							// gridItemBorder stays a plain shorthand string (width/style);
 							// the gradient is a SIBLING attribute painting only the colour,
 							// same pattern as every other block in this rollout.
 							gradientValue: gridItemBorderGradient,
-							onGradientChange: ( val ) => setAttributes( { gridItemBorderGradient: val ?? '' } ),
+							onGradientChange: ( val ) =>
+								setAttributes( {
+									gridItemBorderGradient: val ?? '',
+								} ),
 						},
 						{
 							key: 'hover',
@@ -250,7 +291,10 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 							value: '',
 							onChange: () => {},
 							gradientValue: gridItemBorderGradientHover,
-							onGradientChange: ( val ) => setAttributes( { gridItemBorderGradientHover: val ?? '' } ),
+							onGradientChange: ( val ) =>
+								setAttributes( {
+									gridItemBorderGradientHover: val ?? '',
+								} ),
 						},
 					] }
 				/>
@@ -289,19 +333,27 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 						key: 'normal',
 						label: __( 'Normal', 'sgs-blocks' ),
 						value: gridItemTextColour,
-						onChange: ( val ) => setAttributes( { gridItemTextColour: val ?? '' } ),
+						onChange: ( val ) =>
+							setAttributes( { gridItemTextColour: val ?? '' } ),
 						gradientValue: gridItemTextColourGradient,
 						onGradientChange: ( val ) =>
-							setAttributes( { gridItemTextColourGradient: val ?? '' } ),
+							setAttributes( {
+								gridItemTextColourGradient: val ?? '',
+							} ),
 					},
 					{
 						key: 'hover',
 						label: __( 'Hover', 'sgs-blocks' ),
 						value: gridItemTextColourHover,
-						onChange: ( val ) => setAttributes( { gridItemTextColourHover: val ?? '' } ),
+						onChange: ( val ) =>
+							setAttributes( {
+								gridItemTextColourHover: val ?? '',
+							} ),
 						gradientValue: gridItemTextColourHoverGradient,
 						onGradientChange: ( val ) =>
-							setAttributes( { gridItemTextColourHoverGradient: val ?? '' } ),
+							setAttributes( {
+								gridItemTextColourHoverGradient: val ?? '',
+							} ),
 					},
 				] }
 			/>
@@ -398,7 +450,6 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 // ⛔ `check-wrapper-capability-preconditions.js` rule 2 now FAILS the build on any
 // `supports.sgs.gridAreas` declaration, so this cannot quietly come back.
 // ---------------------------------------------------------------------------
-
 
 // ---------------------------------------------------------------------------
 // KIND → CONTROLS map

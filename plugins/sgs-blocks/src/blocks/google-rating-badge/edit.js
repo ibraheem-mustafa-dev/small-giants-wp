@@ -4,7 +4,7 @@
  * The canvas shows the real server render (the badge is dynamic: the figures come from the block, Site
  * Info or live Google data). Every inspector control reads and writes an attribute render.php consumes.
  *
- * @package SGS\Blocks
+ * @package
  */
 
 import { __ } from '@wordpress/i18n';
@@ -16,7 +16,11 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { NumberControl, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	NumberControl,
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import ServerSideRender from '../../components/ServerSideRender';
 import {
 	SgsColourPanel,
@@ -54,7 +58,15 @@ const typoTarget = ( prefix, label ) => ( {
 	showTextStroke: true,
 } );
 
-/** A tier object of lengths ({desktop, tablet, mobile}) with one length per device. */
+/**
+ * A tier object of lengths ({desktop, tablet, mobile}) with one length per device.
+ * @param {Object}   root0               Component props.
+ * @param {string}   root0.label         Control label.
+ * @param {string}   root0.attr          Attribute name holding the tier object.
+ * @param {Object}   root0.attributes    Block attributes.
+ * @param {Function} root0.setAttributes Attribute setter.
+ * @param {Object}   root0.scale         Length scale for the control.
+ */
 function TierLength( { label, attr, attributes, setAttributes, scale } ) {
 	return (
 		<ResponsiveLengthControl
@@ -95,13 +107,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderRadius,
 	} = attributes;
 
-	const blockProps = useBlockProps( { className: 'sgs-google-rating-badge-editor' } );
+	const blockProps = useBlockProps( {
+		className: 'sgs-google-rating-badge-editor',
+	} );
 	const set = ( key ) => ( value ) => setAttributes( { [ key ]: value } );
 	const usesManual = 'synced' !== dataSource;
 	const usesLive = 'manual' !== dataSource;
 	// null = the preset's own default (pill hides the source, card and stacked show it).
 	const sourceDefault = 'pill' !== badgeStyle;
-	const showSourceValue = null === showSource || undefined === showSource ? sourceDefault : showSource;
+	const showSourceValue =
+		null === showSource || undefined === showSource
+			? sourceDefault
+			: showSource;
 
 	const colourRows = [
 		fillRow( {
@@ -137,7 +154,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					fillRow( {
 						key: 'accentStripe',
 						label: __( 'Accent stripe', 'sgs-blocks' ),
-						attrs: { base: 'accentStripeColour', gradient: 'accentStripeColourGradient' },
+						attrs: {
+							base: 'accentStripeColour',
+							gradient: 'accentStripeColourGradient',
+						},
 						attributes,
 						setAttributes,
 					} ),
@@ -156,9 +176,24 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Badge style', 'sgs-blocks' ) }
 						value={ badgeStyle }
 						options={ [
-							{ label: __( 'Pill (one line)', 'sgs-blocks' ), value: 'pill' },
-							{ label: __( 'Card (accent stripe)', 'sgs-blocks' ), value: 'card' },
-							{ label: __( 'Stacked (centred column)', 'sgs-blocks' ), value: 'stacked' },
+							{
+								label: __( 'Pill (one line)', 'sgs-blocks' ),
+								value: 'pill',
+							},
+							{
+								label: __(
+									'Card (accent stripe)',
+									'sgs-blocks'
+								),
+								value: 'card',
+							},
+							{
+								label: __(
+									'Stacked (centred column)',
+									'sgs-blocks'
+								),
+								value: 'stacked',
+							},
 						] }
 						onChange={ set( 'badgeStyle' ) }
 						__nextHasNoMarginBottom
@@ -172,33 +207,70 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<ToggleControl
 						label={ __( 'Fill the width', 'sgs-blocks' ) }
-						help={ __( 'The badge stretches across its container, like a full-width button.', 'sgs-blocks' ) }
+						help={ __(
+							'The badge stretches across its container, like a full-width button.',
+							'sgs-blocks'
+						) }
 						checked={ !! fullWidth }
-						onChange={ ( value ) => setAttributes( { fullWidth: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { fullWidth: value } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<RangeControl
 						label={ __( 'Minimum height (px)', 'sgs-blocks' ) }
 						value={ minHeight }
-						onChange={ ( value ) => setAttributes( { minHeight: value ?? 44 } ) }
+						onChange={ ( value ) =>
+							setAttributes( { minHeight: value ?? 44 } )
+						}
 						min={ 0 }
 						max={ 120 }
 						__nextHasNoMarginBottom
-						help={ __( 'The tap area stays at least 44px tall whatever the visible height.', 'sgs-blocks' ) }
+						help={ __(
+							'The tap area stays at least 44px tall whatever the visible height.',
+							'sgs-blocks'
+						) }
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Rating figures', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Rating figures', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SelectControl
-						label={ __( 'Where the figures come from', 'sgs-blocks' ) }
+						label={ __(
+							'Where the figures come from',
+							'sgs-blocks'
+						) }
 						value={ dataSource }
 						options={ [
-							{ label: __( 'Automatic (typed or Site Info, else live Google)', 'sgs-blocks' ), value: 'auto' },
-							{ label: __( 'Typed here or Site Info only', 'sgs-blocks' ), value: 'manual' },
-							{ label: __( 'Live Google data only', 'sgs-blocks' ), value: 'synced' },
+							{
+								label: __(
+									'Automatic (typed or Site Info, else live Google)',
+									'sgs-blocks'
+								),
+								value: 'auto',
+							},
+							{
+								label: __(
+									'Typed here or Site Info only',
+									'sgs-blocks'
+								),
+								value: 'manual',
+							},
+							{
+								label: __(
+									'Live Google data only',
+									'sgs-blocks'
+								),
+								value: 'synced',
+							},
 						] }
-						help={ __( 'With nothing real to show, the badge is not drawn on the live site.', 'sgs-blocks' ) }
+						help={ __(
+							'With nothing real to show, the badge is not drawn on the live site.',
+							'sgs-blocks'
+						) }
 						onChange={ set( 'dataSource' ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
@@ -206,22 +278,43 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ usesManual && (
 						<>
 							<RangeControl
-								label={ __( 'Rating (out of 5)', 'sgs-blocks' ) }
+								label={ __(
+									'Rating (out of 5)',
+									'sgs-blocks'
+								) }
 								value={ rating }
-								onChange={ ( value ) => setAttributes( { rating: value ?? 0 } ) }
+								onChange={ ( value ) =>
+									setAttributes( { rating: value ?? 0 } )
+								}
 								min={ 0 }
 								max={ 5 }
 								step={ 0.1 }
-								help={ __( 'Leave at 0 to use the rating saved in Site Info.', 'sgs-blocks' ) }
+								help={ __(
+									'Leave at 0 to use the rating saved in Site Info.',
+									'sgs-blocks'
+								) }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
 							<NumberControl
-								label={ __( 'Number of reviews', 'sgs-blocks' ) }
+								label={ __(
+									'Number of reviews',
+									'sgs-blocks'
+								) }
 								value={ reviewCount }
 								min={ 0 }
-								onChange={ ( value ) => setAttributes( { reviewCount: Math.max( 0, parseInt( value, 10 ) || 0 ) } ) }
-								help={ __( 'Leave at 0 to use the count saved in Site Info.', 'sgs-blocks' ) }
+								onChange={ ( value ) =>
+									setAttributes( {
+										reviewCount: Math.max(
+											0,
+											parseInt( value, 10 ) || 0
+										),
+									} )
+								}
+								help={ __(
+									'Leave at 0 to use the count saved in Site Info.',
+									'sgs-blocks'
+								) }
 								__next40pxDefaultSize
 							/>
 						</>
@@ -231,17 +324,26 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Google place ID', 'sgs-blocks' ) }
 							value={ placeId }
 							onChange={ set( 'placeId' ) }
-							help={ __( 'Leave empty to use the site-wide place ID.', 'sgs-blocks' ) }
+							help={ __(
+								'Leave empty to use the site-wide place ID.',
+								'sgs-blocks'
+							) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
 					) }
 				</PanelBody>
 
-				<PanelBody title={ __( 'Link and caption', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Link and caption', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<LinkPopoverField
 						label={ __( 'Link to (https only)', 'sgs-blocks' ) }
-						help={ __( 'Leave empty to use the Google Maps link, then the Google link in Site Info. With no https link the badge is not a link.', 'sgs-blocks' ) }
+						help={ __(
+							'Leave empty to use the Google Maps link, then the Google link in Site Info. With no https link the badge is not a link.',
+							'sgs-blocks'
+						) }
 						value={ {
 							url: listingUrl || '',
 							linkTarget: openInNewTab ? '_blank' : '_self',
@@ -251,17 +353,30 @@ export default function Edit( { attributes, setAttributes } ) {
 						targetMode="boolean"
 						onChange={ ( next ) => {
 							const patch = {};
-							if ( undefined !== next.url ) patch.listingUrl = next.url;
-							if ( undefined !== next.linkSource ) patch.listingUrlSource = next.linkSource;
-							if ( undefined !== next.linkTarget ) patch.openInNewTab = '_blank' === next.linkTarget;
+							if ( undefined !== next.url ) {
+								patch.listingUrl = next.url;
+							}
+							if ( undefined !== next.linkSource ) {
+								patch.listingUrlSource = next.linkSource;
+							}
+							if ( undefined !== next.linkTarget ) {
+								patch.openInNewTab =
+									'_blank' === next.linkTarget;
+							}
 							setAttributes( patch );
 						} }
 					/>
 					<TextControl
-						label={ __( 'Link label for screen readers', 'sgs-blocks' ) }
+						label={ __(
+							'Link label for screen readers',
+							'sgs-blocks'
+						) }
 						value={ linkLabel }
 						onChange={ set( 'linkLabel' ) }
-						help={ __( 'Leave empty for "Rated 4.7 out of 5 on Google from 15 reviews".', 'sgs-blocks' ) }
+						help={ __(
+							'Leave empty for "Rated 4.7 out of 5 on Google from 15 reviews".',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -272,11 +387,19 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 					{ 'synced' === dataSource ? (
-						<p>{ __( 'Live Google data always shows "on Google Maps" (Google requires it).', 'sgs-blocks' ) }</p>
+						<p>
+							{ __(
+								'Live Google data always shows "on Google Maps" (Google requires it).',
+								'sgs-blocks'
+							) }
+						</p>
 					) : (
 						<ToggleControl
 							label={ __( 'Show "on Google"', 'sgs-blocks' ) }
-							help={ __( 'Live Google data always shows "on Google Maps", whatever this says.', 'sgs-blocks' ) }
+							help={ __(
+								'Live Google data always shows "on Google Maps", whatever this says.',
+								'sgs-blocks'
+							) }
 							checked={ showSourceValue }
 							onChange={ set( 'showSource' ) }
 							__nextHasNoMarginBottom
@@ -284,32 +407,48 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				<PanelBody title={ __( 'Small screens', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Small screens', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<RangeControl
 						label={ __( 'Compact below (px)', 'sgs-blocks' ) }
 						value={ compactBelow }
-						onChange={ ( value ) => setAttributes( { compactBelow: value ?? 0 } ) }
+						onChange={ ( value ) =>
+							setAttributes( { compactBelow: value ?? 0 } )
+						}
 						min={ 0 }
 						max={ 2000 }
 						step={ 10 }
-						help={ __( 'Below this width the badge shows the G, one star and the score only. 0 turns it off.', 'sgs-blocks' ) }
+						help={ __(
+							'Below this width the badge shows the G, one star and the score only. 0 turns it off.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Hide below (px)', 'sgs-blocks' ) }
 						value={ hideBelow }
-						onChange={ ( value ) => setAttributes( { hideBelow: value ?? 0 } ) }
+						onChange={ ( value ) =>
+							setAttributes( { hideBelow: value ?? 0 } )
+						}
 						min={ 0 }
 						max={ 2000 }
 						step={ 10 }
-						help={ __( 'Below this width the badge is hidden, for a crowded header where even the compact badge does not fit. 0 keeps it at every width.', 'sgs-blocks' ) }
+						help={ __(
+							'Below this width the badge is hidden, for a crowded header where even the compact badge does not fit. 0 keeps it at every width.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Position', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Position', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ToggleGroupControl
 						label={ __( 'Position', 'sgs-blocks' ) }
 						value={ position }
@@ -318,8 +457,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="static" label={ __( 'In the page', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="floating" label={ __( 'Floating', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="static"
+							label={ __( 'In the page', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="floating"
+							label={ __( 'Floating', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 					{ 'floating' === position && (
 						<>
@@ -331,13 +476,28 @@ export default function Edit( { attributes, setAttributes } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							>
-								<ToggleGroupControlOption value="bottom-right" label={ __( 'Bottom right', 'sgs-blocks' ) } />
-								<ToggleGroupControlOption value="bottom-left" label={ __( 'Bottom left', 'sgs-blocks' ) } />
-								<ToggleGroupControlOption value="top-right" label={ __( 'Top right', 'sgs-blocks' ) } />
-								<ToggleGroupControlOption value="top-left" label={ __( 'Top left', 'sgs-blocks' ) } />
+								<ToggleGroupControlOption
+									value="bottom-right"
+									label={ __( 'Bottom right', 'sgs-blocks' ) }
+								/>
+								<ToggleGroupControlOption
+									value="bottom-left"
+									label={ __( 'Bottom left', 'sgs-blocks' ) }
+								/>
+								<ToggleGroupControlOption
+									value="top-right"
+									label={ __( 'Top right', 'sgs-blocks' ) }
+								/>
+								<ToggleGroupControlOption
+									value="top-left"
+									label={ __( 'Top left', 'sgs-blocks' ) }
+								/>
 							</ToggleGroupControl>
 							<TierLength
-								label={ __( 'Distance from the corner', 'sgs-blocks' ) }
+								label={ __(
+									'Distance from the corner',
+									'sgs-blocks'
+								) }
 								attr="floatingOffset"
 								attributes={ attributes }
 								setAttributes={ setAttributes }
@@ -346,15 +506,29 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveOverride value={ attributes.padding } onChange={ set( 'padding' ) }>
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ set( 'padding' ) }
+					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && 'object' === typeof ownValue ? ownValue : {} }
+								values={
+									ownValue && 'object' === typeof ownValue
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -366,26 +540,37 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ borderWidth ?? {} }
 						onWidthChange={ set( 'borderWidth' ) }
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ borderStyle }
-						onStyleChange={ ( value ) => setAttributes( { borderStyle: value || 'none' } ) }
+						onStyleChange={ ( value ) =>
+							setAttributes( { borderStyle: value || 'none' } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourStates={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: borderColour,
-								onChange: ( value ) => setAttributes( { borderColour: value ?? '' } ),
+								onChange: ( value ) =>
+									setAttributes( {
+										borderColour: value ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: borderColourHover,
-								onChange: ( value ) => setAttributes( { borderColourHover: value ?? '' } ),
+								onChange: ( value ) =>
+									setAttributes( {
+										borderColourHover: value ?? '',
+									} ),
 							},
 						] }
 						contrastAgainst={ backgroundColour }
@@ -396,12 +581,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = 'base' === tier ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Shadow', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						attributes={ attributes }
@@ -414,13 +607,19 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						targets={ [
 							typoTarget( 'score', __( 'Score', 'sgs-blocks' ) ),
-							typoTarget( 'caption', __( 'Caption', 'sgs-blocks' ) ),
+							typoTarget(
+								'caption',
+								__( 'Caption', 'sgs-blocks' )
+							),
 						] }
 					/>
 				</PanelBody>
@@ -433,7 +632,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						attributes={ attributes }
 						EmptyResponsePlaceholder={ () => (
 							<p className="sgs-google-rating-badge-editor__empty">
-								{ __( 'Google rating badge: add a rating here or in Site Info (or connect Google) and it appears on the site.', 'sgs-blocks' ) }
+								{ __(
+									'Google rating badge: add a rating here or in Site Info (or connect Google) and it appears on the site.',
+									'sgs-blocks'
+								) }
 							</p>
 						) }
 					/>

@@ -8,10 +8,38 @@ import {
 } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (layout kind).
-import ContainerWrapperControls, { BackgroundPanel } from '../container/components/ContainerWrapperControls';
-import { ResponsiveOverride, SpacingControl, SgsColourPanel, fillRow, ResponsiveBoxControl, SGS_FONT_WEIGHT_OPTIONS, textRow, SgsBorderControl, resolveColourToken, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, boxShorthand, resolveBorderStyle, resolveTextColourPreviewStyle, flattenPresetSetting, usePreviewTier, borderRadiusProperties } from '../../utils';
-import { multiButtonFlexPreview, multiButtonWrapperPreview } from './preview-style';
+import ContainerWrapperControls, {
+	BackgroundPanel,
+} from '../container/components/ContainerWrapperControls';
+import {
+	ResponsiveOverride,
+	SgsLengthControl,
+	SgsColourPanel,
+	fillRow,
+	SGS_FONT_WEIGHT_OPTIONS,
+	textRow,
+	SgsBorderControl,
+	resolveColourToken,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+} from '../../components';
+import {
+	backgroundPreview,
+	spacingPreview,
+	isTierBoxEmpty,
+	svgBackgroundPreview,
+	boxShorthand,
+	resolveBorderStyle,
+	resolveTextColourPreviewStyle,
+	flattenPresetSetting,
+	usePreviewTier,
+	borderRadiusProperties,
+} from '../../utils';
+import {
+	multiButtonFlexPreview,
+	multiButtonWrapperPreview,
+} from './preview-style';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
@@ -21,7 +49,10 @@ import {
 	Button,
 } from '@wordpress/components';
 import { BUTTON_PRESETS } from '../button/presets';
-import { GROUP_HOST_BORDER_PROPERTY, groupFocusHostBorder } from '../button/focus-style';
+import {
+	GROUP_HOST_BORDER_PROPERTY,
+	groupFocusHostBorder,
+} from '../button/focus-style';
 
 const CHILD_PRESET_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
@@ -93,8 +124,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		textColourGradient,
 		textColourHover,
 		textColourHoverGradient,
-		childBtnBackground,
-		childBtnTextColour,
 		childBtnBorderColour,
 		childBtnBorderWidth,
 		childBtnBorderStyle,
@@ -105,14 +134,14 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		backgroundColourGradient,
 	} = attributes;
 
-
 	// "Apply to all buttons" — bulk preset-as-seed for every sgs/button child.
 	const [ groupPreset, setGroupPreset ] = useState( 'primary' );
 	const childButtons = useSelect(
 		( select ) =>
-			( select( 'core/block-editor' ).getBlock( clientId )?.innerBlocks || [] ).filter(
-				( block ) => 'sgs/button' === block.name
-			),
+			(
+				select( 'core/block-editor' ).getBlock( clientId )
+					?.innerBlocks || []
+			).filter( ( block ) => 'sgs/button' === block.name ),
 		[ clientId ]
 	);
 	const { updateBlockAttributes } = useDispatch( 'core/block-editor' );
@@ -120,7 +149,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const applyPresetToAllButtons = () => {
 		const presetValues = BUTTON_PRESETS[ groupPreset ];
 		childButtons.forEach( ( child ) => {
-			updateBlockAttributes( child.clientId, { ...presetValues, inheritStyle: groupPreset } );
+			updateBlockAttributes( child.clientId, {
+				...presetValues,
+				inheritStyle: groupPreset,
+			} );
 		} );
 	};
 
@@ -154,26 +186,30 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 	// The device tier the canvas previews (core/editor's device type).
 	const previewTier = usePreviewTier();
-	const bgPreview = backgroundPreview( {
-		backgroundImage: attributes.backgroundImage,
-		bgVideo: attributes.bgVideo,
-		backgroundSize: attributes.backgroundSize,
-		backgroundPosition: attributes.backgroundPosition,
-		backgroundRepeat: attributes.backgroundRepeat,
-		backgroundAttachment: attributes.backgroundAttachment,
-		backgroundOverlayColour: attributes.backgroundOverlayColour,
-		overlayGradient: attributes.overlayGradient,
-		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
-		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
-		backgroundColour: attributes.backgroundColour,
-		backgroundColourGradient: attributes.backgroundColourGradient,
-		surfaceBlur: attributes.surfaceBlur,
-		surfaceSaturate: attributes.surfaceSaturate,
-		surfaceTone: attributes.surfaceTone,
-		backgroundImageTablet: attributes.backgroundImageTablet,
-		backgroundImageMobile: attributes.backgroundImageMobile,
-	}, colourPalette, gradientPresets, previewTier );
-
+	const bgPreview = backgroundPreview(
+		{
+			backgroundImage: attributes.backgroundImage,
+			bgVideo: attributes.bgVideo,
+			backgroundSize: attributes.backgroundSize,
+			backgroundPosition: attributes.backgroundPosition,
+			backgroundRepeat: attributes.backgroundRepeat,
+			backgroundAttachment: attributes.backgroundAttachment,
+			backgroundOverlayColour: attributes.backgroundOverlayColour,
+			overlayGradient: attributes.overlayGradient,
+			backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
+			backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
+			backgroundColour: attributes.backgroundColour,
+			backgroundColourGradient: attributes.backgroundColourGradient,
+			surfaceBlur: attributes.surfaceBlur,
+			surfaceSaturate: attributes.surfaceSaturate,
+			surfaceTone: attributes.surfaceTone,
+			backgroundImageTablet: attributes.backgroundImageTablet,
+			backgroundImageMobile: attributes.backgroundImageMobile,
+		},
+		colourPalette,
+		gradientPresets,
+		previewTier
+	);
 
 	// Lines between the buttons: the block root is the flex list, so the hook's
 	// ref and style land on blockProps.
@@ -187,18 +223,19 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 	// Padding/margin canvas preview. `padding`/`margin` are each ONE
 	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
-	const spacePreview = spacingPreview( {
-		padding: attributes.padding,
-		margin: attributes.margin,
-	}, previewTier );
+	const spacePreview = spacingPreview(
+		{
+			padding: attributes.padding,
+			margin: attributes.margin,
+		},
+		previewTier
+	);
 
 	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
 	// against the multi-button's own background. When the background is a gradient,
 	// the flat backgroundColour is not rendered, so skip the check in that case.
 	const multiButtonContrastAgainst =
-		backgroundColour && ! backgroundColourGradient
-			? backgroundColour
-			: '';
+		backgroundColour && ! backgroundColourGradient ? backgroundColour : '';
 
 	// Preview the desktop layout in the editor.
 	// Gap comes from the block's own Layout panel Gap control (raw CSS string).
@@ -216,7 +253,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		// (2026-09-07). `color` is a naturally-inheriting CSS property, so
 		// setting it here on the wrapper also matches the frontend's cascade to
 		// any sgs/button child that leaves its own text colour unset.
-		...resolveTextColourPreviewStyle( textColour, textColourGradient, (val) => resolveColourToken(val, colourPalette) ),
+		...resolveTextColourPreviewStyle(
+			textColour,
+			textColourGradient,
+			( val ) => resolveColourToken( val, colourPalette )
+		),
 		// CHECK A finding — child-button GROUP DEFAULTS (A2, D638 §4/§5). These
 		// are written by the "Button group defaults" panel and consumed by
 		// render.php as `--sgs-mb-btn-<prop>-default` CUSTOM PROPERTIES on this
@@ -230,16 +271,30 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		// child-block edit needed. Only the 6 flagged attrs are wired here
 		// (childBtnBackground/childBtnTextColour were not part of this finding).
 		...( childBtnBorderColour && {
-			'--sgs-mb-btn-border-default': resolveColourToken( childBtnBorderColour, colourPalette ) || childBtnBorderColour,
+			'--sgs-mb-btn-border-default':
+				resolveColourToken( childBtnBorderColour, colourPalette ) ||
+				childBtnBorderColour,
 		} ),
 		...( boxShorthand( childBtnBorderWidth ) && {
-			'--sgs-mb-btn-border-width-default': boxShorthand( childBtnBorderWidth ),
-			'--sgs-mb-btn-border-style-default': resolveBorderStyle( childBtnBorderStyle ),
+			'--sgs-mb-btn-border-width-default':
+				boxShorthand( childBtnBorderWidth ),
+			'--sgs-mb-btn-border-style-default':
+				resolveBorderStyle( childBtnBorderStyle ),
 		} ),
-		...( groupFocusHostBorder( { childBtnBorderWidth, childBtnBorderStyle } ) && {
-			[ GROUP_HOST_BORDER_PROPERTY ]: groupFocusHostBorder( { childBtnBorderWidth, childBtnBorderStyle } ),
+		...( groupFocusHostBorder( {
+			childBtnBorderWidth,
+			childBtnBorderStyle,
+		} ) && {
+			[ GROUP_HOST_BORDER_PROPERTY ]: groupFocusHostBorder( {
+				childBtnBorderWidth,
+				childBtnBorderStyle,
+			} ),
 		} ),
-		...borderRadiusProperties( childBtnBorderRadius, previewTier, '--sgs-mb-btn-radius-' ),
+		...borderRadiusProperties(
+			childBtnBorderRadius,
+			previewTier,
+			'--sgs-mb-btn-radius-'
+		),
 		...( childBtnFontSize && {
 			'--sgs-mb-btn-font-size-default': childBtnFontSize,
 		} ),
@@ -255,7 +310,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 	const blockProps = useBlockProps( {
 		ref: sep.ref,
-		className: [ bgPreview.className, ...svgPreview.className ].filter( Boolean ).join( ' ' ),
+		className: [ bgPreview.className, ...svgPreview.className ]
+			.filter( Boolean )
+			.join( ' ' ),
 		style: editorStyle,
 	} );
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
@@ -320,17 +377,23 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								linked: true,
 								gradientValue: textColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { textColourGradient: val ?? '' } ),
+									setAttributes( {
+										textColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: textColourHover,
 								onChange: ( val ) =>
-									setAttributes( { textColourHover: val ?? '' } ),
+									setAttributes( {
+										textColourHover: val ?? '',
+									} ),
 								gradientValue: textColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { textColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										textColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -400,7 +463,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						value={ groupPreset }
 						options={ CHILD_PRESET_OPTIONS }
 						onChange={ setGroupPreset }
-						help={ __( 'Apply a preset style to every button in this group at once.', 'sgs-blocks' ) }
+						help={ __(
+							'Apply a preset style to every button in this group at once.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -434,8 +500,14 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				    Scope is deliberately the ~6 core properties Bean ruled,
 				    not sgs/button's full ~35 style attrs — see the parking
 				    lot note in the Stage 1 plan before adding more. */ }
-				<PanelBody title={ __( 'Button group defaults', 'sgs-blocks' ) } initialOpen={ false }>
-					<p className="components-base-control__help" style={ { marginTop: 0 } }>
+				<PanelBody
+					title={ __( 'Button group defaults', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<p
+						className="components-base-control__help"
+						style={ { marginTop: 0 } }
+					>
 						{ __(
 							'Sets a default for every button in this group that does not already have its own value set. A button with its own colour, radius, size or weight keeps that value.',
 							'sgs-blocks'
@@ -457,13 +529,22 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					<SgsBorderControl
 						label={ __( 'Button border', 'sgs-blocks' ) }
 						widthValues={ childBtnBorderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { childBtnBorderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { childBtnBorderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ childBtnBorderStyle }
-						onStyleChange={ ( val ) => setAttributes( { childBtnBorderStyle: val } ) }
-						colourLabel={ __( 'Button border colour', 'sgs-blocks' ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { childBtnBorderStyle: val } )
+						}
+						colourLabel={ __(
+							'Button border colour',
+							'sgs-blocks'
+						) }
 						colourValue={ childBtnBorderColour }
-						onColourChange={ ( val ) => setAttributes( { childBtnBorderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { childBtnBorderColour: val ?? '' } )
+						}
 						colourLinked={ true }
 						radiusValues={ {
 							base: childBtnBorderRadius?.desktop ?? {},
@@ -473,15 +554,23 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
 							setAttributes( {
-								childBtnBorderRadius: { ...childBtnBorderRadius, [ key ]: next },
+								childBtnBorderRadius: {
+									...childBtnBorderRadius,
+									[ key ]: next,
+								},
 							} );
 						} }
 					/>
 					<TextControl
 						label={ __( 'Button font size', 'sgs-blocks' ) }
-						help={ __( 'A CSS length, e.g. 16px. Leave blank to use the framework default.', 'sgs-blocks' ) }
+						help={ __(
+							'A CSS length, e.g. 16px. Leave blank to use the framework default.',
+							'sgs-blocks'
+						) }
 						value={ childBtnFontSize }
-						onChange={ ( val ) => setAttributes( { childBtnFontSize: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { childBtnFontSize: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -489,7 +578,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						label={ __( 'Button font weight', 'sgs-blocks' ) }
 						value={ childBtnFontWeight || '' }
 						options={ SGS_FONT_WEIGHT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { childBtnFontWeight: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { childBtnFontWeight: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -506,7 +597,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				    gradient/hover/hoverGradient) lives in the SgsColourPanel mount
 				    above (mandatory shared colour control, self-routing) — this
 				    panel is the fill cluster's remaining, non-colour half. */ }
-				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
+				<BackgroundPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					name={ name }
+				/>
 
 				{ /* ── Layout (TIER 2 property-family panel for `group`'s layout
 				    cluster) — merges the former separate "Padding & margin" /
@@ -524,7 +619,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							gap: { desktop: '12px', mobile: '8px' },
 							flexWrap: { desktop: 'nowrap', mobile: 'nowrap' },
 							justifyContent: { desktop: 'flex-start' },
-							alignItems: { desktop: 'center', mobile: 'stretch' },
+							alignItems: {
+								desktop: 'center',
+								mobile: 'stretch',
+							},
 							borderWidth: {},
 							borderStyle: 'solid',
 							borderColour: '',
@@ -538,12 +636,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						hasValue={ () =>
 							! isTierBoxEmpty( attributes.padding )
 						}
-						onDeselect={ () =>
-							setAttributes( { padding: {} } )
-						}
+						onDeselect={ () => setAttributes( { padding: {} } ) }
 						isShownByDefault
 					>
-					{ /* ── Padding & margin (A1, D638 — sgs/container parity) ──
+						{ /* ── Padding & margin (A1, D638 — sgs/container parity) ──
 					    `padding`/`margin` are each a single block-owned
 					    tier-object attr { desktop, tablet, mobile } — this block
 					    no longer declares supports.spacing, so there is no
@@ -554,79 +650,109 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					    through WordPress's native Dimensions panel, which the
 					    migration removes. Bean ruled full parity rather than a
 					    padding-only carve-out (Rule 3), so it is built here. */ }
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
-								units={ BOX_UNITS }
-							presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-							/>
-						) }
-					</ResponsiveOverride>
+						<ResponsiveOverride
+							value={ attributes.padding }
+							onChange={ ( obj ) =>
+								setAttributes( { padding: obj } )
+							}
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<SgsBoxControl
+									label={ __( 'Padding', 'sgs-blocks' ) }
+									values={
+										ownValue && typeof ownValue === 'object'
+											? ownValue
+											: {}
+									}
+									units={ BOX_UNITS }
+									presets
+									onChange={ ( next ) =>
+										setOwnValue(
+											normaliseResponsiveBox( next )
+										)
+									}
+								/>
+							) }
+						</ResponsiveOverride>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem
 						label={ __( 'Margin', 'sgs-blocks' ) }
-						hasValue={ () =>
-							! isTierBoxEmpty( attributes.margin )
-						}
-						onDeselect={ () =>
-							setAttributes( { margin: {} } )
-						}
+						hasValue={ () => ! isTierBoxEmpty( attributes.margin ) }
+						onDeselect={ () => setAttributes( { margin: {} } ) }
 					>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-							/>
-						) }
-					</ResponsiveOverride>
+						<ResponsiveOverride
+							value={ attributes.margin }
+							onChange={ ( obj ) =>
+								setAttributes( { margin: obj } )
+							}
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<SgsBoxControl
+									label={ __( 'Margin', 'sgs-blocks' ) }
+									values={
+										ownValue && typeof ownValue === 'object'
+											? ownValue
+											: {}
+									}
+									units={ BOX_UNITS }
+									presets
+									onChange={ ( next ) =>
+										setOwnValue(
+											normaliseResponsiveBox( next )
+										)
+									}
+								/>
+							) }
+						</ResponsiveOverride>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem
 						label={ __( 'Direction', 'sgs-blocks' ) }
 						hasValue={ () =>
 							JSON.stringify( flexDirection ?? {} ) !==
-							JSON.stringify( { desktop: 'row', mobile: 'column' } )
+							JSON.stringify( {
+								desktop: 'row',
+								mobile: 'column',
+							} )
 						}
 						onDeselect={ () =>
-							setAttributes( { flexDirection: { desktop: 'row', mobile: 'column' } } )
+							setAttributes( {
+								flexDirection: {
+									desktop: 'row',
+									mobile: 'column',
+								},
+							} )
 						}
 						isShownByDefault
 					>
-					{ /*
+						{ /*
 						  `flexDirection` is a TIER OBJECT — ONE attr holding
 						  {desktop,tablet,mobile} (Spec 35 pass), same shape as
 						  `gap` below. `flexDirectionTablet`/`…Mobile` are no
 						  longer declared in block.json.
 					*/ }
-					<ResponsiveOverride
-						label={ __( 'Direction', 'sgs-blocks' ) }
-						value={ flexDirection }
-						onChange={ ( obj ) => setAttributes( { flexDirection: obj } ) }
-					>
-						{ ( { tier, ownValue, setOwnValue } ) => (
-							<SelectControl
-								value={ ownValue || '' }
-								options={ tier === 'desktop' ? DIRECTION_OPTIONS : DIRECTION_OPTIONS_WITH_INHERIT }
-								onChange={ ( val ) => setOwnValue( val ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
-					</ResponsiveOverride>
+						<ResponsiveOverride
+							label={ __( 'Direction', 'sgs-blocks' ) }
+							value={ flexDirection }
+							onChange={ ( obj ) =>
+								setAttributes( { flexDirection: obj } )
+							}
+						>
+							{ ( { tier, ownValue, setOwnValue } ) => (
+								<SelectControl
+									value={ ownValue || '' }
+									options={
+										tier === 'desktop'
+											? DIRECTION_OPTIONS
+											: DIRECTION_OPTIONS_WITH_INHERIT
+									}
+									onChange={ ( val ) => setOwnValue( val ) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+						</ResponsiveOverride>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem
@@ -636,10 +762,12 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							JSON.stringify( { desktop: '12px', mobile: '8px' } )
 						}
 						onDeselect={ () =>
-							setAttributes( { gap: { desktop: '12px', mobile: '8px' } } )
+							setAttributes( {
+								gap: { desktop: '12px', mobile: '8px' },
+							} )
 						}
 					>
-					{ /*
+						{ /*
 						  Gap is a TIER OBJECT — ONE attr holding
 						  {desktop,tablet,mobile} (Spec 35 pass 1, 2026-08-10).
 						  ⛔ Do NOT revert to `ResponsiveControl` + an attrMap of
@@ -649,52 +777,74 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						  desktop branch wrote a STRING into an object-typed
 						  attr, which coerces to the default and loses the lot.
 					*/ }
-					<ResponsiveOverride
-						label={ __( 'Gap', 'sgs-blocks' ) }
-						value={ attributes.gap }
-						onChange={ ( obj ) => setAttributes( { gap: obj } ) }
-					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<SpacingControl
-								freeInput
-								value={ ownValue }
-								placeholder={ inherited ? effectiveValue : '' }
-								onChange={ setOwnValue }
-							/>
-						) }
-					</ResponsiveOverride>
+						<ResponsiveOverride
+							label={ __( 'Gap', 'sgs-blocks' ) }
+							value={ attributes.gap }
+							onChange={ ( obj ) =>
+								setAttributes( { gap: obj } )
+							}
+						>
+							{ ( {
+								ownValue,
+								effectiveValue,
+								inherited,
+								setOwnValue,
+							} ) => (
+								<SgsLengthControl
+									value={ ownValue }
+									placeholder={
+										inherited ? effectiveValue : ''
+									}
+									onChange={ setOwnValue }
+								/>
+							) }
+						</ResponsiveOverride>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem
 						label={ __( 'Wrap', 'sgs-blocks' ) }
 						hasValue={ () =>
 							JSON.stringify( flexWrap ?? {} ) !==
-							JSON.stringify( { desktop: 'nowrap', mobile: 'nowrap' } )
+							JSON.stringify( {
+								desktop: 'nowrap',
+								mobile: 'nowrap',
+							} )
 						}
 						onDeselect={ () =>
-							setAttributes( { flexWrap: { desktop: 'nowrap', mobile: 'nowrap' } } )
+							setAttributes( {
+								flexWrap: {
+									desktop: 'nowrap',
+									mobile: 'nowrap',
+								},
+							} )
 						}
 					>
-					{ /*
+						{ /*
 						  `flexWrap` is a TIER OBJECT — same shape as `flexDirection`
 						  above. `flexWrapTablet`/`…Mobile` are no longer declared
 						  in block.json.
 					*/ }
-					<ResponsiveOverride
-						label={ __( 'Wrap', 'sgs-blocks' ) }
-						value={ flexWrap }
-						onChange={ ( obj ) => setAttributes( { flexWrap: obj } ) }
-					>
-						{ ( { tier, ownValue, setOwnValue } ) => (
-							<SelectControl
-								value={ ownValue || '' }
-								options={ tier === 'desktop' ? WRAP_OPTIONS : WRAP_OPTIONS_WITH_INHERIT }
-								onChange={ ( val ) => setOwnValue( val ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
-					</ResponsiveOverride>
+						<ResponsiveOverride
+							label={ __( 'Wrap', 'sgs-blocks' ) }
+							value={ flexWrap }
+							onChange={ ( obj ) =>
+								setAttributes( { flexWrap: obj } )
+							}
+						>
+							{ ( { tier, ownValue, setOwnValue } ) => (
+								<SelectControl
+									value={ ownValue || '' }
+									options={
+										tier === 'desktop'
+											? WRAP_OPTIONS
+											: WRAP_OPTIONS_WITH_INHERIT
+									}
+									onChange={ ( val ) => setOwnValue( val ) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+						</ResponsiveOverride>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem
@@ -704,72 +854,103 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							JSON.stringify( { desktop: 'flex-start' } )
 						}
 						onDeselect={ () =>
-							setAttributes( { justifyContent: { desktop: 'flex-start' } } )
+							setAttributes( {
+								justifyContent: { desktop: 'flex-start' },
+							} )
 						}
 					>
-					{ /*
+						{ /*
 						  `justifyContent` is a TIER OBJECT — same shape as
 						  `flexDirection` above. `justifyContentTablet`/`…Mobile`
 						  are no longer declared in block.json.
 					*/ }
-					<ResponsiveOverride
-						label={ __( 'Button spacing', 'sgs-blocks' ) }
-						value={ justifyContent }
-						onChange={ ( obj ) => setAttributes( { justifyContent: obj } ) }
-					>
-						{ ( { tier, ownValue, setOwnValue } ) => (
-							<SelectControl
-								value={ ownValue || '' }
-								options={ tier === 'desktop' ? JUSTIFY_OPTIONS : JUSTIFY_OPTIONS_WITH_INHERIT }
-								onChange={ ( val ) => setOwnValue( val ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
-					</ResponsiveOverride>
+						<ResponsiveOverride
+							label={ __( 'Button spacing', 'sgs-blocks' ) }
+							value={ justifyContent }
+							onChange={ ( obj ) =>
+								setAttributes( { justifyContent: obj } )
+							}
+						>
+							{ ( { tier, ownValue, setOwnValue } ) => (
+								<SelectControl
+									value={ ownValue || '' }
+									options={
+										tier === 'desktop'
+											? JUSTIFY_OPTIONS
+											: JUSTIFY_OPTIONS_WITH_INHERIT
+									}
+									onChange={ ( val ) => setOwnValue( val ) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+						</ResponsiveOverride>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem
 						label={ __( 'Button alignment', 'sgs-blocks' ) }
 						hasValue={ () =>
 							JSON.stringify( alignItems ?? {} ) !==
-							JSON.stringify( { desktop: 'center', mobile: 'stretch' } )
+							JSON.stringify( {
+								desktop: 'center',
+								mobile: 'stretch',
+							} )
 						}
 						onDeselect={ () =>
-							setAttributes( { alignItems: { desktop: 'center', mobile: 'stretch' } } )
+							setAttributes( {
+								alignItems: {
+									desktop: 'center',
+									mobile: 'stretch',
+								},
+							} )
 						}
 					>
-					{ /*
+						{ /*
 						  `alignItems` is a TIER OBJECT — same shape as
 						  `flexDirection` above. `alignItemsTablet`/`…Mobile` are
 						  no longer declared in block.json.
 					*/ }
-					<ResponsiveOverride
-						label={ __( 'Button alignment', 'sgs-blocks' ) }
-						value={ alignItems }
-						onChange={ ( obj ) => setAttributes( { alignItems: obj } ) }
-					>
-						{ ( { tier, ownValue, setOwnValue } ) => (
-							<SelectControl
-								value={ ownValue || '' }
-								options={ tier === 'desktop' ? ALIGN_ITEMS_OPTIONS : ALIGN_ITEMS_OPTIONS_WITH_INHERIT }
-								onChange={ ( val ) => setOwnValue( val ) }
-								help={ tier === 'mobile' ? __( 'Mobile stacks buttons full-width by default (stretch).', 'sgs-blocks' ) : undefined }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
-					</ResponsiveOverride>
+						<ResponsiveOverride
+							label={ __( 'Button alignment', 'sgs-blocks' ) }
+							value={ alignItems }
+							onChange={ ( obj ) =>
+								setAttributes( { alignItems: obj } )
+							}
+						>
+							{ ( { tier, ownValue, setOwnValue } ) => (
+								<SelectControl
+									value={ ownValue || '' }
+									options={
+										tier === 'desktop'
+											? ALIGN_ITEMS_OPTIONS
+											: ALIGN_ITEMS_OPTIONS_WITH_INHERIT
+									}
+									onChange={ ( val ) => setOwnValue( val ) }
+									help={
+										tier === 'mobile'
+											? __(
+													'Mobile stacks buttons full-width by default (stretch).',
+													'sgs-blocks'
+											  )
+											: undefined
+									}
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+						</ResponsiveOverride>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem
 						label={ __( 'Border', 'sgs-blocks' ) }
 						hasValue={ () =>
-							JSON.stringify( attributes.borderWidth ?? {} ) !== '{}' ||
+							JSON.stringify( attributes.borderWidth ?? {} ) !==
+								'{}' ||
 							attributes.borderStyle !== 'solid' ||
 							( attributes.borderColour ?? '' ) !== '' ||
 							( attributes.borderColourGradient ?? '' ) !== '' ||
-							JSON.stringify( attributes.borderRadius ?? {} ) !== '{}'
+							JSON.stringify( attributes.borderRadius ?? {} ) !==
+								'{}'
 						}
 						onDeselect={ () =>
 							setAttributes( {
@@ -782,31 +963,48 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						}
 						isShownByDefault
 					>
-					{ /* ── Border — group root border (width/style/colour/gradient/
+						{ /* ── Border — group root border (width/style/colour/gradient/
 					    radius). Merged in from the former standalone "Border" panel. */ }
-					<SgsBorderControl
-						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
-						widthPresets={ [ '10', '20', '30' ] }
-						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
-						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
-						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
-						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
-						colourLinked={ true }
-						contrastAgainst={ multiButtonContrastAgainst }
-						radiusValues={ {
+						<SgsBorderControl
+							widthValues={ attributes.borderWidth ?? {} }
+							onWidthChange={ ( next ) =>
+								setAttributes( { borderWidth: next } )
+							}
+							widthPresets={ [ '10', '20', '30' ] }
+							styleValue={ attributes.borderStyle }
+							onStyleChange={ ( val ) =>
+								setAttributes( { borderStyle: val } )
+							}
+							colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+							colourValue={ attributes.borderColour }
+							onColourChange={ ( val ) =>
+								setAttributes( { borderColour: val ?? '' } )
+							}
+							colourGradientValue={
+								attributes.borderColourGradient
+							}
+							onColourGradientChange={ ( val ) =>
+								setAttributes( {
+									borderColourGradient: val ?? '',
+								} )
+							}
+							colourLinked={ true }
+							contrastAgainst={ multiButtonContrastAgainst }
+							radiusValues={ {
 								base: attributes.borderRadius?.desktop ?? {},
 								tablet: attributes.borderRadius?.tablet ?? {},
 								mobile: attributes.borderRadius?.mobile ?? {},
 							} }
-						onRadiusChange={ ( tier, next ) => {
-							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
-						} }
-					/>
+							onRadiusChange={ ( tier, next ) => {
+								const key = tier === 'base' ? 'desktop' : tier;
+								setAttributes( {
+									borderRadius: {
+										...attributes.borderRadius,
+										[ key ]: next,
+									},
+								} );
+							} }
+						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
 			</InspectorControls>

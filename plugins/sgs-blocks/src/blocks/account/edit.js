@@ -12,7 +12,16 @@ import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
 import ServerSideRender from '../../components/ServerSideRender';
-import { ResponsiveControl, SgsBorderControl, SgsLengthControl, SgsColourPanel, SpacingControl, SsrPreviewGuard, fillRow, textRow, TypographyControls } from '../../components';
+import {
+	ResponsiveControl,
+	SgsBorderControl,
+	SgsLengthControl,
+	SgsColourPanel,
+	SsrPreviewGuard,
+	fillRow,
+	textRow,
+	TypographyControls,
+} from '../../components';
 import { patchTier } from '../../utils';
 import MenuPanel from './MenuPanel';
 import DashboardPanel from './DashboardPanel';
@@ -46,28 +55,40 @@ export default function Edit( { attributes, setAttributes } ) {
 		fillRow( {
 			key: 'menuActiveIndicator',
 			label: __( 'Active item indicator (sidebar bar)', 'sgs-blocks' ),
-			attrs: { base: 'menuActiveIndicatorColour', gradient: 'menuActiveIndicatorColourGradient' },
+			attrs: {
+				base: 'menuActiveIndicatorColour',
+				gradient: 'menuActiveIndicatorColourGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
 		fillRow( {
 			key: 'menuActiveBackground',
 			label: __( 'Active item background (tabs pill)', 'sgs-blocks' ),
-			attrs: { base: 'menuActiveBackgroundColour', gradient: 'menuActiveBackgroundColourGradient' },
+			attrs: {
+				base: 'menuActiveBackgroundColour',
+				gradient: 'menuActiveBackgroundColourGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
 		fillRow( {
 			key: 'cardBackground',
 			label: __( 'Card background', 'sgs-blocks' ),
-			attrs: { base: 'cardBackgroundColour', gradient: 'cardBackgroundColourGradient' },
+			attrs: {
+				base: 'cardBackgroundColour',
+				gradient: 'cardBackgroundColourGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
 		textRow( {
 			key: 'contentLink',
 			label: __( 'Content links', 'sgs-blocks' ),
-			attrs: { base: 'contentLinkColour', hover: 'contentLinkColourHover' },
+			attrs: {
+				base: 'contentLinkColour',
+				hover: 'contentLinkColourHover',
+			},
 			attributes,
 			setAttributes,
 		} ),
@@ -81,7 +102,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		fillRow( {
 			key: 'chipBackground',
 			label: __( 'Status chip background', 'sgs-blocks' ),
-			attrs: { base: 'chipBackgroundColour', gradient: 'chipBackgroundColourGradient' },
+			attrs: {
+				base: 'chipBackgroundColour',
+				gradient: 'chipBackgroundColourGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
@@ -114,69 +138,176 @@ export default function Edit( { attributes, setAttributes } ) {
 				<SgsColourPanel rows={ colourRows } />
 			</InspectorControls>
 			<InspectorControls>
-				<MenuPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<DashboardPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<LoggedOutPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<PanelBody title={ __( 'Card border', 'sgs-blocks' ) } initialOpen={ false }>
+				<MenuPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<DashboardPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<LoggedOutPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<PanelBody
+					title={ __( 'Card border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.cardBorderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { cardBorderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { cardBorderWidth: next } )
+						}
 						styleValue={ attributes.cardBorderStyle }
-						onStyleChange={ ( val ) => setAttributes( { cardBorderStyle: val ?? '' } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { cardBorderStyle: val ?? '' } )
+						}
 						colourLabel={ __( 'Card border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.cardBorderColour }
-						onColourChange={ ( val ) => setAttributes( { cardBorderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { cardBorderColour: val ?? '' } )
+						}
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						targets={ [
-							{ key: 'menu', label: __( 'Menu', 'sgs-blocks' ), prefix: 'menu', showFontFamily: true, showDecoration: true, showTransform: true, showTextAlign: true },
-							{ key: 'heading', label: __( 'Headings', 'sgs-blocks' ), prefix: 'heading', showFontFamily: true, showDecoration: true, showTransform: true, showTextAlign: true },
-							{ key: 'cardTitle', label: __( 'Card titles', 'sgs-blocks' ), prefix: 'cardTitle', showFontFamily: true, showDecoration: true, showTransform: true, showTextAlign: true },
-							{ key: 'cardDesc', label: __( 'Card descriptions', 'sgs-blocks' ), prefix: 'cardDesc', showFontFamily: true, showDecoration: true, showTransform: true, showTextAlign: true },
-							{ key: 'chip', label: __( 'Status chip', 'sgs-blocks' ), prefix: 'chip', showFontFamily: true, showDecoration: true, showTransform: true },
-							{ key: 'progressStep', label: __( 'Progress steps', 'sgs-blocks' ), prefix: 'progressStep', showFontFamily: true, showDecoration: true, showTransform: true, showTextAlign: true },
-							{ key: 'guestLine', label: __( 'Guest checkout line', 'sgs-blocks' ), prefix: 'guestLine', showFontFamily: true, showDecoration: true, showTransform: true, showTextAlign: true },
+							{
+								key: 'menu',
+								label: __( 'Menu', 'sgs-blocks' ),
+								prefix: 'menu',
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showTextAlign: true,
+							},
+							{
+								key: 'heading',
+								label: __( 'Headings', 'sgs-blocks' ),
+								prefix: 'heading',
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showTextAlign: true,
+							},
+							{
+								key: 'cardTitle',
+								label: __( 'Card titles', 'sgs-blocks' ),
+								prefix: 'cardTitle',
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showTextAlign: true,
+							},
+							{
+								key: 'cardDesc',
+								label: __( 'Card descriptions', 'sgs-blocks' ),
+								prefix: 'cardDesc',
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showTextAlign: true,
+							},
+							{
+								key: 'chip',
+								label: __( 'Status chip', 'sgs-blocks' ),
+								prefix: 'chip',
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+							},
+							{
+								key: 'progressStep',
+								label: __( 'Progress steps', 'sgs-blocks' ),
+								prefix: 'progressStep',
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showTextAlign: true,
+							},
+							{
+								key: 'guestLine',
+								label: __(
+									'Guest checkout line',
+									'sgs-blocks'
+								),
+								prefix: 'guestLine',
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showTextAlign: true,
+							},
 						] }
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveControl label={ __( 'Menu width', 'sgs-blocks' ) }>
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveControl
+						label={ __( 'Menu width', 'sgs-blocks' ) }
+					>
 						{ ( breakpoint ) => (
 							<SgsLengthControl
 								label={ __( 'Menu width', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ navWidth?.[ breakpoint ] ?? '' }
 								onChange={ ( value ) =>
-									patchTier( attributes, setAttributes, 'navWidth', breakpoint, value )
+									patchTier(
+										attributes,
+										setAttributes,
+										'navWidth',
+										breakpoint,
+										value
+									)
 								}
 							/>
 						) }
 					</ResponsiveControl>
 					<ResponsiveControl label={ __( 'Gap', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => (
-							<SpacingControl
-								custom
+							<SgsLengthControl
+								presets
 								hideLabelFromVision
 								label={ __( 'Gap', 'sgs-blocks' ) }
 								value={ gap?.[ breakpoint ] ?? '' }
 								onChange={ ( value ) =>
-									patchTier( attributes, setAttributes, 'gap', breakpoint, value )
+									patchTier(
+										attributes,
+										setAttributes,
+										'gap',
+										breakpoint,
+										value
+									)
 								}
 							/>
 						) }
 					</ResponsiveControl>
-					<ResponsiveControl label={ __( 'Content max width', 'sgs-blocks' ) }>
+					<ResponsiveControl
+						label={ __( 'Content max width', 'sgs-blocks' ) }
+					>
 						{ ( breakpoint ) => (
 							<SgsLengthControl
-								label={ __( 'Content max width', 'sgs-blocks' ) }
+								label={ __(
+									'Content max width',
+									'sgs-blocks'
+								) }
 								hideLabelFromVision
 								value={ contentMaxWidth?.[ breakpoint ] ?? '' }
 								onChange={ ( value ) =>
-									patchTier( attributes, setAttributes, 'contentMaxWidth', breakpoint, value )
+									patchTier(
+										attributes,
+										setAttributes,
+										'contentMaxWidth',
+										breakpoint,
+										value
+									)
 								}
 							/>
 						) }
@@ -185,7 +316,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 			<div { ...blockProps }>
 				<SsrPreviewGuard>
-					<ServerSideRender block="sgs/account" attributes={ attributes } />
+					<ServerSideRender
+						block="sgs/account"
+						attributes={ attributes }
+					/>
 				</SsrPreviewGuard>
 			</div>
 		</>

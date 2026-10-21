@@ -10,11 +10,11 @@
  * keep the pinned container clear of a sticky header. Mounted inside the
  * container's Layout panel.
  *
- * @package SGS\Blocks
+ * @package
  */
 import { __ } from '@wordpress/i18n';
 import { SelectControl, ToggleControl } from '@wordpress/components';
-import { ResponsiveOverride, SpacingControl } from '../../../components';
+import { ResponsiveOverride, SgsLengthControl } from '../../../components';
 import { resolveTier } from '../../../utils/responsive';
 import { usePreviewTier } from '../../../utils/usePreviewTier';
 
@@ -100,8 +100,8 @@ export default function PinEdgeControl( { attributes, setAttributes } ) {
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<>
-								<SpacingControl
-									custom
+								<SgsLengthControl
+									presets
 									label={ __(
 										'Gap below the header',
 										'sgs-blocks'

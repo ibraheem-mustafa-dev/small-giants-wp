@@ -35,17 +35,17 @@ import { DRAWER_POST_TYPE, DRAWER_QUERY } from './create-drawer-seed';
  * "insert a drawer block into this page" path: a drawer is never an in-page
  * block.
  *
- * @param {Object}   root0                   Props.
- * @param {string}   root0.navLabel          The block's `navLabel` attribute.
- * @param {Function} root0.setAttributes     The block's attribute setter.
- * @param {number}   root0.drawerRef         The block's `drawerRef` attribute (a `sgs_drawer` post id, or 0).
+ * @param {Object}   root0                      Props.
+ * @param {string}   root0.navLabel             The block's `navLabel` attribute.
+ * @param {Function} root0.setAttributes        The block's attribute setter.
+ * @param {number}   root0.drawerRef            The block's `drawerRef` attribute (a `sgs_drawer` post id, or 0).
  * @param {boolean}  root0.drawerNeedsAttention `showDrawerNotice` from useDrawerNotice() — opens the Menu panel section so the picker and the create action are in front of the operator when the burger opens nothing.
- * @param {string}   root0.submenuAlign      The block's `submenuAlign` attribute.
- * @param {Object}   root0.megaAlign         The block's `megaAlign` attribute (a tier object).
- * @param {boolean}  root0.submenuCaret      The block's `submenuCaret` attribute.
- * @param {number}   root0.submenuCloseGrace The block's `submenuCloseGrace` attribute.
- * @param {number}   root0.submenuIntentDelay The block's `submenuIntentDelay` attribute.
- * @param {string}   root0.submenuOpenOn     The block's `submenuOpenOn` attribute.
+ * @param {string}   root0.submenuAlign         The block's `submenuAlign` attribute.
+ * @param {Object}   root0.megaAlign            The block's `megaAlign` attribute (a tier object).
+ * @param {boolean}  root0.submenuCaret         The block's `submenuCaret` attribute.
+ * @param {number}   root0.submenuCloseGrace    The block's `submenuCloseGrace` attribute.
+ * @param {number}   root0.submenuIntentDelay   The block's `submenuIntentDelay` attribute.
+ * @param {string}   root0.submenuOpenOn        The block's `submenuOpenOn` attribute.
  */
 /**
  * Panel placements lined up with the page (Spec 36 FR-36-4 "Panel placement"),
@@ -59,7 +59,10 @@ const PAGE_PLACEMENTS = [
 /** Panel placements lined up with the menu item. */
 const ITEM_PLACEMENTS = [
 	{ label: __( 'Left edge of the menu item', 'sgs-blocks' ), value: 'start' },
-	{ label: __( 'Centred under the menu item', 'sgs-blocks' ), value: 'center' },
+	{
+		label: __( 'Centred under the menu item', 'sgs-blocks' ),
+		value: 'center',
+	},
 	{ label: __( 'Right edge of the menu item', 'sgs-blocks' ), value: 'end' },
 ];
 
@@ -92,29 +95,34 @@ export default function DropdownSettingsPanel( {
 	// core-data keys its resolution cache on the query arguments, so a query
 	// that differed by one key would leave a just-created panel missing from
 	// this list until a reload.
-	const { records: drawerPosts, isResolving: isResolvingDrawers } = useEntityRecords(
-		'postType',
-		DRAWER_POST_TYPE,
-		DRAWER_QUERY
-	);
+	const { records: drawerPosts, isResolving: isResolvingDrawers } =
+		useEntityRecords( 'postType', DRAWER_POST_TYPE, DRAWER_QUERY );
 	const drawerRefOptions = [
 		{
 			label: __( "Site's active menu panel (default)", 'sgs-blocks' ),
 			value: 0,
 		},
 		...( drawerPosts || [] ).map( ( post ) => ( {
-			label: post.title?.rendered || __( '(untitled menu panel)', 'sgs-blocks' ),
+			label:
+				post.title?.rendered ||
+				__( '(untitled menu panel)', 'sgs-blocks' ),
 			value: post.id,
 		} ) ),
 	];
-	const referencedDrawerPost = ( drawerPosts || [] ).find( ( post ) => post.id === drawerRef );
+	const referencedDrawerPost = ( drawerPosts || [] ).find(
+		( post ) => post.id === drawerRef
+	);
 	// A non-zero drawerRef whose post is missing from the published list above
 	// — trashed, unpublished, or deleted since this block last saved —
 	// degrades the same way render.php does: nothing opens from the reference.
-	const drawerRefIsDangling = 0 !== drawerRef && ! isResolvingDrawers && ! referencedDrawerPost;
+	const drawerRefIsDangling =
+		0 !== drawerRef && ! isResolvingDrawers && ! referencedDrawerPost;
 	return (
 		<>
-			<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
+			<PanelBody
+				title={ __( 'Accessibility', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
 				<TextControl
 					label={ __( 'Navigation label', 'sgs-blocks' ) }
 					value={ navLabel }
@@ -122,9 +130,7 @@ export default function DropdownSettingsPanel( {
 						'Auto — from the menu name',
 						'sgs-blocks'
 					) }
-					onChange={ ( val ) =>
-						setAttributes( { navLabel: val } )
-					}
+					onChange={ ( val ) => setAttributes( { navLabel: val } ) }
 					help={ __(
 						'Accessible name for this menu landmark. Leave blank to use the chosen menu’s own name, so two menus are named apart automatically. Set it only to override that (e.g. Primary, Footer).',
 						'sgs-blocks'
@@ -144,9 +150,14 @@ export default function DropdownSettingsPanel( {
 				   ⛔ No "WCAG", no "contrast ratio", no "AA" in any client-visible
 				   string on this block (FR-41-5). */ }
 				<ToggleControl
-					label={ __( 'Keep text readable automatically', 'sgs-blocks' ) }
+					label={ __(
+						'Keep text readable automatically',
+						'sgs-blocks'
+					) }
 					checked={ itemSmartContrast === true }
-					onChange={ ( val ) => setAttributes( { itemSmartContrast: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { itemSmartContrast: val } )
+					}
 					help={ __(
 						'When you set a background, we can check your text colour stays readable against it and swap in a readable one if it doesn’t. Off by default, so your chosen colour always renders exactly as picked — switch this on to have it corrected automatically instead.',
 						'sgs-blocks'
@@ -240,19 +251,30 @@ export default function DropdownSettingsPanel( {
 				/>
 				<ResponsiveOverride
 					label={ __( 'Mega panels open from', 'sgs-blocks' ) }
-					value={ megaAlign && typeof megaAlign === 'object' ? megaAlign : {} }
+					value={
+						megaAlign && typeof megaAlign === 'object'
+							? megaAlign
+							: {}
+					}
 					onChange={ ( obj ) => setAttributes( { megaAlign: obj } ) }
 				>
 					{ ( { ownValue, effectiveValue, setOwnValue } ) => (
 						<SelectControl
 							hideLabelFromVision
-							label={ __( 'Mega panels open from', 'sgs-blocks' ) }
-							value={ ownValue || effectiveValue || 'page-centred' }
+							label={ __(
+								'Mega panels open from',
+								'sgs-blocks'
+							) }
+							value={
+								ownValue || effectiveValue || 'page-centred'
+							}
 							options={ [
 								...PAGE_PLACEMENTS,
 								...ITEM_PLACEMENTS,
 							] }
-							onChange={ ( value ) => setOwnValue( value || undefined ) }
+							onChange={ ( value ) =>
+								setOwnValue( value || undefined )
+							}
 							help={ __(
 								'Centred on the page is the usual choice for a wide panel. Set a different placement per device if needed.',
 								'sgs-blocks'
@@ -284,10 +306,12 @@ export default function DropdownSettingsPanel( {
 							label={ __( 'Arrow size', 'sgs-blocks' ) }
 							value={ submenuCaretSize || '' }
 							onChange={ ( value ) =>
-								setAttributes( { submenuCaretSize: value || '' } )
+								setAttributes( {
+									submenuCaretSize: value || '',
+								} )
 							}
 							help={ __(
-								'Empty rides the item\'s own font size.',
+								"Empty rides the item's own font size.",
 								'sgs-blocks'
 							) }
 							units={ [ { value: 'px', label: 'px' } ] }
@@ -297,13 +321,18 @@ export default function DropdownSettingsPanel( {
 							label={ __( 'Gap from the label', 'sgs-blocks' ) }
 							value={ submenuCaretGap || '' }
 							onChange={ ( value ) =>
-								setAttributes( { submenuCaretGap: value || '' } )
+								setAttributes( {
+									submenuCaretGap: value || '',
+								} )
 							}
 							units={ [ { value: 'px', label: 'px' } ] }
 							presets={ false }
 						/>
 						<RangeControl
-							label={ __( 'Arrow opacity at rest', 'sgs-blocks' ) }
+							label={ __(
+								'Arrow opacity at rest',
+								'sgs-blocks'
+							) }
 							value={
 								typeof submenuCaretOpacity === 'number'
 									? submenuCaretOpacity
@@ -320,7 +349,10 @@ export default function DropdownSettingsPanel( {
 							__next40pxDefaultSize
 						/>
 						<RangeControl
-							label={ __( 'Arrow opacity on hover', 'sgs-blocks' ) }
+							label={ __(
+								'Arrow opacity on hover',
+								'sgs-blocks'
+							) }
 							value={
 								typeof submenuCaretOpacityHover === 'number'
 									? submenuCaretOpacityHover
@@ -331,7 +363,9 @@ export default function DropdownSettingsPanel( {
 							step={ 0.05 }
 							allowReset
 							onChange={ ( value ) =>
-								setAttributes( { submenuCaretOpacityHover: value } )
+								setAttributes( {
+									submenuCaretOpacityHover: value,
+								} )
 							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
@@ -339,7 +373,7 @@ export default function DropdownSettingsPanel( {
 						<RangeControl
 							label={ __( 'Arrow turn time (ms)', 'sgs-blocks' ) }
 							help={ __(
-								'How long the arrow takes to turn as its panel opens. Empty keeps today\'s instant turn.',
+								"How long the arrow takes to turn as its panel opens. Empty keeps today's instant turn.",
 								'sgs-blocks'
 							) }
 							value={
@@ -352,18 +386,23 @@ export default function DropdownSettingsPanel( {
 							step={ 10 }
 							allowReset
 							onChange={ ( value ) =>
-								setAttributes( { submenuCaretTurnDuration: value } )
+								setAttributes( {
+									submenuCaretTurnDuration: value,
+								} )
 							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						<EasingAtom vocab="nav"
+						<EasingAtom
+							vocab="nav"
 							label={ __( 'Arrow turn curve', 'sgs-blocks' ) }
 							value={ submenuCaretTurnEasing }
 							custom={ submenuCaretTurnEasingCustom }
 							fallback="ease"
 							onChange={ ( value ) =>
-								setAttributes( { submenuCaretTurnEasing: value } )
+								setAttributes( {
+									submenuCaretTurnEasing: value,
+								} )
 							}
 							onCustomChange={ ( value ) =>
 								setAttributes( {

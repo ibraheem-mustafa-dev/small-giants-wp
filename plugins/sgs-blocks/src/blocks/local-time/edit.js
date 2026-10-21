@@ -5,7 +5,7 @@
  * the editor canvas) so the operator can see label/separator/colour choices.
  * Frontend ticking is view.js's job (Intl.DateTimeFormat), never the editor's.
  *
- * @package SGS\Blocks
+ * @package
  */
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
@@ -15,13 +15,16 @@ import {
 	ToggleControl,
 	ComboboxControl,
 } from '@wordpress/components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import {
 	SgsColourPanel,
 	textRow,
 	TypographyControls,
 	ResponsiveOverride,
-	SpacingControl,
+	SgsLengthControl,
 } from '../../components';
 import {
 	colourVar,
@@ -73,30 +76,41 @@ export default function Edit( { attributes, setAttributes } ) {
 		showPeriod,
 		gap,
 		labelColour,
-		labelColourHover,
 		labelColourGradient,
-		labelColourHoverGradient,
 		timeColour,
-		timeColourHover,
 		timeColourGradient,
-		timeColourHoverGradient,
 	} = attributes;
 
 	const previewTier = usePreviewTier();
 	// render.php's `gap` tier object: a bare number is pixels, a string is a CSS length.
 	const gapAtTier = resolveTier( gap, previewTier, '' ).value;
-	const hasGap = '' !== gapAtTier && null !== gapAtTier && undefined !== gapAtTier;
+	const hasGap =
+		'' !== gapAtTier && null !== gapAtTier && undefined !== gapAtTier;
 	const blockProps = useBlockProps( {
 		className: 'sgs-local-time',
-		style: hasGap ? { gap: isNaN( Number( gapAtTier ) ) ? gapAtTier : `${ Number( gapAtTier ) }px` } : undefined,
+		style: hasGap
+			? {
+					gap: isNaN( Number( gapAtTier ) )
+						? gapAtTier
+						: `${ Number( gapAtTier ) }px`,
+			  }
+			: undefined,
 	} );
 	const labelStyle = {
 		...typographyPreviewStyle( attributes, 'label', previewTier ),
-		...resolveTextColourPreviewStyle( labelColour, labelColourGradient, colourVar ),
+		...resolveTextColourPreviewStyle(
+			labelColour,
+			labelColourGradient,
+			colourVar
+		),
 	};
 	const timeStyle = {
 		...typographyPreviewStyle( attributes, 'time', previewTier ),
-		...resolveTextColourPreviewStyle( timeColour, timeColourGradient, colourVar ),
+		...resolveTextColourPreviewStyle(
+			timeColour,
+			timeColourGradient,
+			colourVar
+		),
 	};
 
 	const zoneOptions = getTimeZoneOptions().map( ( zone ) => ( {
@@ -127,7 +141,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 
 	const labelNode = label ? (
-		<span className="sgs-local-time__label" style={ labelStyle }>{ label }</span>
+		<span className="sgs-local-time__label" style={ labelStyle }>
+			{ label }
+		</span>
 	) : null;
 	const sepNode =
 		separator && 'above' !== labelPosition ? (
@@ -136,7 +152,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			</span>
 		) : null;
 	const timeNode = (
-		<time className="sgs-local-time__time" style={ timeStyle }>{ previewText }</time>
+		<time className="sgs-local-time__time" style={ timeStyle }>
+			{ previewText }
+		</time>
 	);
 
 	let orderedChildren;
@@ -201,9 +219,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						value={ label }
-						onChange={ ( val ) =>
-							setAttributes( { label: val } )
-						}
+						onChange={ ( val ) => setAttributes( { label: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -286,7 +302,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<p className="sgs-local-time__typography-heading">
 						{ __( 'Label', 'sgs-blocks' ) }
 					</p>
@@ -314,15 +333,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						prefix="time"
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						label={ __( 'Gap', 'sgs-blocks' ) }
 						value={ gap }
 						onChange={ ( obj ) => setAttributes( { gap: obj } ) }
 					>
 						{ ( { ownValue, setOwnValue } ) => (
-							<SpacingControl
-								freeInput
+							<SgsLengthControl
 								value={ ownValue }
 								onChange={ setOwnValue }
 							/>

@@ -5,28 +5,58 @@
  * will produce. Inspector controls choose which type of information to
  * display and configure link / icon behaviour.
  *
- * @package SGS\Blocks
+ * @package
  */
 
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, ToggleControl, TextControl, Notice } from '@wordpress/components';
+import {
+	PanelBody,
+	SelectControl,
+	ToggleControl,
+	TextControl,
+	Notice,
+} from '@wordpress/components';
 import ServerSideRender from '../../components/ServerSideRender';
-import { ResponsiveBoxControl, SgsColourPanel, SsrPreviewGuard, textRow, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl, SgsSeparatorControl, LinkUnderlineControl } from '../../components';
+import {
+	SgsColourPanel,
+	SsrPreviewGuard,
+	textRow,
+	DesignTokenPicker,
+	TypographyControls,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	SgsBorderControl,
+	SgsLengthControl,
+	SgsSeparatorControl,
+	LinkUnderlineControl,
+} from '../../components';
 
-import { openStatusColourRows, OpenStatusPanel, MapSourcePanel } from './OpenStatusPanels';
+import {
+	openStatusColourRows,
+	OpenStatusPanel,
+	MapSourcePanel,
+} from './OpenStatusPanels';
 
 /** Labels for the type selector drop-down. */
 const TYPE_OPTIONS = [
-	{ label: __( 'Phone Number', 'sgs-blocks' ),     value: 'phone'       },
-	{ label: __( 'Email Address', 'sgs-blocks' ),    value: 'email'       },
-	{ label: __( 'Postal Address', 'sgs-blocks' ),   value: 'address'     },
-	{ label: __( 'Opening Hours', 'sgs-blocks' ),    value: 'hours'       },
-	{ label: __( 'Social Media Links', 'sgs-blocks' ), value: 'socials'   },
-	{ label: __( 'Copyright Notice', 'sgs-blocks' ), value: 'copyright'   },
-	{ label: __( 'Tagline / Description', 'sgs-blocks' ), value: 'description' },
-	{ label: __( 'Google Maps Embed', 'sgs-blocks' ), value: 'map'        },
-	{ label: __( 'Website Credit / Attribution', 'sgs-blocks' ), value: 'attribution' },
+	{ label: __( 'Phone Number', 'sgs-blocks' ), value: 'phone' },
+	{ label: __( 'Email Address', 'sgs-blocks' ), value: 'email' },
+	{ label: __( 'Postal Address', 'sgs-blocks' ), value: 'address' },
+	{ label: __( 'Opening Hours', 'sgs-blocks' ), value: 'hours' },
+	{ label: __( 'Social Media Links', 'sgs-blocks' ), value: 'socials' },
+	{ label: __( 'Copyright Notice', 'sgs-blocks' ), value: 'copyright' },
+	{
+		label: __( 'Tagline / Description', 'sgs-blocks' ),
+		value: 'description',
+	},
+	{ label: __( 'Google Maps Embed', 'sgs-blocks' ), value: 'map' },
+	{
+		label: __( 'Website Credit / Attribution', 'sgs-blocks' ),
+		value: 'attribution',
+	},
 	{ label: __( 'Open Now Status', 'sgs-blocks' ), value: 'open-status' },
 ];
 
@@ -96,35 +126,63 @@ export default function Edit( { attributes, setAttributes } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: textColour,
-								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
 								gradientValue: textColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { textColourGradient: val ?? '' } ),
+									setAttributes( {
+										textColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										textColourHover: val ?? '',
+									} ),
 								gradientValue: textColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { textColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										textColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 						/* The phone, email and linked address are links; how they are
 						   underlined sits under the colour they are painted in. */
-						after: ( 'phone' === displayType || 'email' === displayType || ( 'address' === displayType && addressLink ) ) && (
+						after: ( 'phone' === displayType ||
+							'email' === displayType ||
+							( 'address' === displayType && addressLink ) ) && (
 							<LinkUnderlineControl
 								mode={ linkUnderline }
 								thickness={ linkUnderlineThickness }
 								colour={ linkUnderlineColour }
 								colourHover={ linkUnderlineColourHover }
 								offset={ linkUnderlineOffset }
-								onModeChange={ ( val ) => setAttributes( { linkUnderline: val } ) }
-								onThicknessChange={ ( val ) => setAttributes( { linkUnderlineThickness: val } ) }
-								onColourChange={ ( val ) => setAttributes( { linkUnderlineColour: val } ) }
-								onColourHoverChange={ ( val ) => setAttributes( { linkUnderlineColourHover: val } ) }
-								onOffsetChange={ ( val ) => setAttributes( { linkUnderlineOffset: val } ) }
+								onModeChange={ ( val ) =>
+									setAttributes( { linkUnderline: val } )
+								}
+								onThicknessChange={ ( val ) =>
+									setAttributes( {
+										linkUnderlineThickness: val,
+									} )
+								}
+								onColourChange={ ( val ) =>
+									setAttributes( {
+										linkUnderlineColour: val,
+									} )
+								}
+								onColourHoverChange={ ( val ) =>
+									setAttributes( {
+										linkUnderlineColourHover: val,
+									} )
+								}
+								onOffsetChange={ ( val ) =>
+									setAttributes( {
+										linkUnderlineOffset: val,
+									} )
+								}
 							/>
 						),
 					},
@@ -136,19 +194,27 @@ export default function Edit( { attributes, setAttributes } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: iconColour,
-								onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { iconColour: val ?? '' } ),
 								gradientValue: iconColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { iconColourGradient: val ?? '' } ),
+									setAttributes( {
+										iconColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: iconColourHover,
-								onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										iconColourHover: val ?? '',
+									} ),
 								gradientValue: iconColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { iconColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										iconColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -168,7 +234,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							attributes,
 							setAttributes,
 						} ),
-					...( 'open-status' === displayType ? openStatusColourRows( attributes, setAttributes ) : [] ),
+					...( 'open-status' === displayType
+						? openStatusColourRows( attributes, setAttributes )
+						: [] ),
 				] }
 			/>
 			<InspectorControls>
@@ -177,7 +245,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'What to display', 'sgs-blocks' ) }
 						value={ displayType }
 						options={ TYPE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { displayType: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { displayType: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -186,104 +256,208 @@ export default function Edit( { attributes, setAttributes } ) {
 						status="info"
 						style={ { marginTop: '12px' } }
 					>
-						{ __( 'Edit this site’s business data at Appearance → SGS Site Info.', 'sgs-blocks' ) }
+						{ __(
+							'Edit this site’s business data at Appearance → SGS Site Info.',
+							'sgs-blocks'
+						) }
 					</Notice>
 				</PanelBody>
 
 				{ 'open-status' === displayType && (
-					<OpenStatusPanel attributes={ attributes } setAttributes={ setAttributes } />
+					<OpenStatusPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				) }
 				{ 'map' === displayType && (
-					<MapSourcePanel attributes={ attributes } setAttributes={ setAttributes } />
+					<MapSourcePanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				) }
 
 				{ ICON_TYPES.has( displayType ) && (
-					<PanelBody title={ __( 'Display Options', 'sgs-blocks' ) } initialOpen={ false }>
+					<PanelBody
+						title={ __( 'Display Options', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
 						{ 'address' === displayType && (
 							<ToggleControl
-								label={ __( 'Link the address to Google', 'sgs-blocks' ) }
-								help={ __( 'Opens the business on Google: its Google Maps listing (the Maps CID in Site Info), else the Google Business Profile link in Site Info, else a map search for the address.', 'sgs-blocks' ) }
+								label={ __(
+									'Link the address to Google',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Opens the business on Google: its Google Maps listing (the Maps CID in Site Info), else the Google Business Profile link in Site Info, else a map search for the address.',
+									'sgs-blocks'
+								) }
 								checked={ !! addressLink }
-								onChange={ ( val ) => setAttributes( { addressLink: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { addressLink: val } )
+								}
 								__nextHasNoMarginBottom
 							/>
 						) }
 						<ToggleControl
 							label={ __( 'Show icon', 'sgs-blocks' ) }
 							checked={ showIcon }
-							onChange={ ( val ) => setAttributes( { showIcon: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { showIcon: val } )
+							}
 							__nextHasNoMarginBottom
 						/>
 						{ showIcon && (
 							<ResponsiveOverride
 								label={ __( 'Icon size', 'sgs-blocks' ) }
 								value={ attributes.iconSize }
-								onChange={ ( obj ) => setAttributes( { iconSize: obj } ) }
+								onChange={ ( obj ) =>
+									setAttributes( { iconSize: obj } )
+								}
 							>
-								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+								{ ( {
+									ownValue,
+									effectiveValue,
+									inherited,
+									setOwnValue,
+								} ) => (
 									<SgsLengthControl
 										scale="font-size"
 										presets={ false }
-										label={ __( 'Icon size', 'sgs-blocks' ) }
+										label={ __(
+											'Icon size',
+											'sgs-blocks'
+										) }
 										hideLabelFromVision
-										help={ __( 'Empty keeps the icon at the text size.', 'sgs-blocks' ) || undefined }
+										help={
+											__(
+												'Empty keeps the icon at the text size.',
+												'sgs-blocks'
+											) || undefined
+										}
 										value={ ownValue || '' }
-										placeholder={ inherited ? effectiveValue : '1em' }
-										onChange={ ( val ) => setOwnValue( val || '' ) }
+										placeholder={
+											inherited ? effectiveValue : '1em'
+										}
+										onChange={ ( val ) =>
+											setOwnValue( val || '' )
+										}
 									/>
 								) }
 							</ResponsiveOverride>
 						) }
 						{ showIcon && (
 							<ResponsiveOverride
-								label={ __( 'Space between icon and text', 'sgs-blocks' ) }
+								label={ __(
+									'Space between icon and text',
+									'sgs-blocks'
+								) }
 								value={ attributes.iconGap }
-								onChange={ ( obj ) => setAttributes( { iconGap: obj } ) }
+								onChange={ ( obj ) =>
+									setAttributes( { iconGap: obj } )
+								}
 							>
-								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+								{ ( {
+									ownValue,
+									effectiveValue,
+									inherited,
+									setOwnValue,
+								} ) => (
 									<SgsLengthControl
 										presets={ false }
-										label={ __( 'Space between icon and text', 'sgs-blocks' ) }
+										label={ __(
+											'Space between icon and text',
+											'sgs-blocks'
+										) }
 										hideLabelFromVision
 										help={ null || undefined }
 										value={ ownValue || '' }
-										placeholder={ inherited ? effectiveValue : '0.5em' }
-										onChange={ ( val ) => setOwnValue( val || '' ) }
+										placeholder={
+											inherited ? effectiveValue : '0.5em'
+										}
+										onChange={ ( val ) =>
+											setOwnValue( val || '' )
+										}
 									/>
 								) }
 							</ResponsiveOverride>
 						) }
-						
-							<ResponsiveOverride
-								label={ __( 'Link minimum height', 'sgs-blocks' ) }
-								value={ attributes.linkMinHeight }
-								onChange={ ( obj ) => setAttributes( { linkMinHeight: obj } ) }
-							>
-								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-									<SgsLengthControl
-										presets={ false }
-										label={ __( 'Link minimum height', 'sgs-blocks' ) }
-										hideLabelFromVision
-										help={ __( 'Empty keeps the 44px touch-target height.', 'sgs-blocks' ) || undefined }
-										value={ ownValue || '' }
-										placeholder={ inherited ? effectiveValue : '44px' }
-										onChange={ ( val ) => setOwnValue( val || '' ) }
-									/>
-								) }
-							</ResponsiveOverride>
-						
+
+						<ResponsiveOverride
+							label={ __( 'Link minimum height', 'sgs-blocks' ) }
+							value={ attributes.linkMinHeight }
+							onChange={ ( obj ) =>
+								setAttributes( { linkMinHeight: obj } )
+							}
+						>
+							{ ( {
+								ownValue,
+								effectiveValue,
+								inherited,
+								setOwnValue,
+							} ) => (
+								<SgsLengthControl
+									presets={ false }
+									label={ __(
+										'Link minimum height',
+										'sgs-blocks'
+									) }
+									hideLabelFromVision
+									help={
+										__(
+											'Empty keeps the 44px touch-target height.',
+											'sgs-blocks'
+										) || undefined
+									}
+									value={ ownValue || '' }
+									placeholder={
+										inherited ? effectiveValue : '44px'
+									}
+									onChange={ ( val ) =>
+										setOwnValue( val || '' )
+									}
+								/>
+							) }
+						</ResponsiveOverride>
+
 						<SelectControl
-							label={ __( 'Collapse label to icon', 'sgs-blocks' ) }
+							label={ __(
+								'Collapse label to icon',
+								'sgs-blocks'
+							) }
 							help={ __(
 								'Hide the text and show just the icon from the chosen breakpoint down (keeps a working call/email link and an accessible name). Requires the icon to be on.',
 								'sgs-blocks'
 							) }
 							value={ labelCollapse || 'none' }
 							options={ [
-								{ label: __( 'Never — always show label', 'sgs-blocks' ), value: 'none' },
-								{ label: __( 'On mobile (below 768px)', 'sgs-blocks' ), value: 'mobile' },
-								{ label: __( 'On tablet & mobile (below 1024px)', 'sgs-blocks' ), value: 'tablet' },
-								{ label: __( 'Always — icon only', 'sgs-blocks' ), value: 'all' },
+								{
+									label: __(
+										'Never — always show label',
+										'sgs-blocks'
+									),
+									value: 'none',
+								},
+								{
+									label: __(
+										'On mobile (below 768px)',
+										'sgs-blocks'
+									),
+									value: 'mobile',
+								},
+								{
+									label: __(
+										'On tablet & mobile (below 1024px)',
+										'sgs-blocks'
+									),
+									value: 'tablet',
+								},
+								{
+									label: __(
+										'Always — icon only',
+										'sgs-blocks'
+									),
+									value: 'all',
+								},
 							] }
 							onChange={ ( val ) =>
 								setAttributes( { labelCollapse: val } )
@@ -298,15 +472,32 @@ export default function Edit( { attributes, setAttributes } ) {
 				   displayType === 'hours'. 'condensed' groups consecutive
 				   days sharing the same stored hours string into one row. */ }
 				{ 'hours' === displayType && (
-					<PanelBody title={ __( 'Hours Layout', 'sgs-blocks' ) } initialOpen={ false }>
+					<PanelBody
+						title={ __( 'Hours Layout', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
 						<SelectControl
 							label={ __( 'Layout', 'sgs-blocks' ) }
 							value={ hoursLayout || 'rows' }
 							options={ [
-								{ label: __( 'One row per day', 'sgs-blocks' ), value: 'rows' },
-								{ label: __( 'Condensed (group matching days)', 'sgs-blocks' ), value: 'condensed' },
+								{
+									label: __(
+										'One row per day',
+										'sgs-blocks'
+									),
+									value: 'rows',
+								},
+								{
+									label: __(
+										'Condensed (group matching days)',
+										'sgs-blocks'
+									),
+									value: 'condensed',
+								},
 							] }
-							onChange={ ( val ) => setAttributes( { hoursLayout: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { hoursLayout: val } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -319,25 +510,46 @@ export default function Edit( { attributes, setAttributes } ) {
 										'sgs-blocks'
 									) }
 									checked={ !! hoursCondensedInline }
-									onChange={ ( val ) => setAttributes( { hoursCondensedInline: val } ) }
+									onChange={ ( val ) =>
+										setAttributes( {
+											hoursCondensedInline: val,
+										} )
+									}
 									__nextHasNoMarginBottom
 								/>
 								<ToggleControl
-									label={ __( 'Show closed days', 'sgs-blocks' ) }
+									label={ __(
+										'Show closed days',
+										'sgs-blocks'
+									) }
 									help={ __(
 										'A day with no stored hours is closed. Off skips it; on shows it with the label below (e.g. "Sun Closed").',
 										'sgs-blocks'
 									) }
 									checked={ !! hoursShowClosed }
-									onChange={ ( val ) => setAttributes( { hoursShowClosed: val } ) }
+									onChange={ ( val ) =>
+										setAttributes( {
+											hoursShowClosed: val,
+										} )
+									}
 									__nextHasNoMarginBottom
 								/>
 								{ hoursShowClosed && (
 									<TextControl
-										label={ __( 'Closed label', 'sgs-blocks' ) }
+										label={ __(
+											'Closed label',
+											'sgs-blocks'
+										) }
 										value={ hoursClosedLabel ?? '' }
-										placeholder={ __( 'Closed', 'sgs-blocks' ) }
-										onChange={ ( val ) => setAttributes( { hoursClosedLabel: val } ) }
+										placeholder={ __(
+											'Closed',
+											'sgs-blocks'
+										) }
+										onChange={ ( val ) =>
+											setAttributes( {
+												hoursClosedLabel: val,
+											} )
+										}
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									/>
@@ -347,20 +559,33 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
-				<PanelBody title={ __( 'Surrounding Text', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Surrounding Text', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TextControl
 						label={ __( 'Text before', 'sgs-blocks' ) }
-						help={ __( 'Shown before the value in the same line, e.g. "Call the clinic on ". Include the trailing space. Single-line values only.', 'sgs-blocks' ) }
+						help={ __(
+							'Shown before the value in the same line, e.g. "Call the clinic on ". Include the trailing space. Single-line values only.',
+							'sgs-blocks'
+						) }
 						value={ textBefore ?? '' }
-						onChange={ ( val ) => setAttributes( { textBefore: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { textBefore: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Text after', 'sgs-blocks' ) }
-						help={ __( 'Shown straight after the value, e.g. ", or send us a message."', 'sgs-blocks' ) }
+						help={ __(
+							'Shown straight after the value, e.g. ", or send us a message."',
+							'sgs-blocks'
+						) }
 						value={ textAfter ?? '' }
-						onChange={ ( val ) => setAttributes( { textAfter: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { textAfter: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -370,13 +595,21 @@ export default function Edit( { attributes, setAttributes } ) {
 				   displayType === 'copyright'. Empty omits the word,
 				   leaving just "© {year} {name}" with no leading space. */ }
 				{ 'copyright' === displayType && (
-					<PanelBody title={ __( 'Copyright Line', 'sgs-blocks' ) } initialOpen={ false }>
+					<PanelBody
+						title={ __( 'Copyright Line', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
 						<TextControl
 							label={ __( 'Copyright prefix', 'sgs-blocks' ) }
-							help={ __( 'Leave empty to show only © and the year.', 'sgs-blocks' ) }
+							help={ __(
+								'Leave empty to show only © and the year.',
+								'sgs-blocks'
+							) }
 							value={ copyrightPrefix ?? '' }
 							placeholder={ __( 'Copyright', 'sgs-blocks' ) }
-							onChange={ ( val ) => setAttributes( { copyrightPrefix: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { copyrightPrefix: val } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -389,7 +622,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				   Phone/email always render as links (see block.json's `link`
 				   element note + render.php). */ }
 				{ 'attribution' === displayType && (
-					<PanelBody title={ __( 'Hover Colour', 'sgs-blocks' ) } initialOpen={ false }>
+					<PanelBody
+						title={ __( 'Hover Colour', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
 						<DesignTokenPicker
 							label={ __( 'Hover colour', 'sgs-blocks' ) }
 							help={ __(
@@ -401,12 +637,18 @@ export default function Edit( { attributes, setAttributes } ) {
 									key: 'hover',
 									label: __( 'Hover', 'sgs-blocks' ),
 									value: attributionHoverColour,
-									onChange: ( val ) => setAttributes( { attributionHoverColour: val ?? '' } ),
+									onChange: ( val ) =>
+										setAttributes( {
+											attributionHoverColour: val ?? '',
+										} ),
 								},
 							] }
 						/>
 						<DesignTokenPicker
-							label={ __( 'Hover colour (older browsers)', 'sgs-blocks' ) }
+							label={ __(
+								'Hover colour (older browsers)',
+								'sgs-blocks'
+							) }
 							help={ __(
 								'Fallback for browsers with no text-clip support — a plain colour swap instead of the sweep.',
 								'sgs-blocks'
@@ -416,7 +658,11 @@ export default function Edit( { attributes, setAttributes } ) {
 									key: 'hover',
 									label: __( 'Hover', 'sgs-blocks' ),
 									value: attributionHoverColourFallback,
-									onChange: ( val ) => setAttributes( { attributionHoverColourFallback: val ?? '' } ),
+									onChange: ( val ) =>
+										setAttributes( {
+											attributionHoverColourFallback:
+												val ?? '',
+										} ),
 								},
 							] }
 						/>
@@ -427,18 +673,31 @@ export default function Edit( { attributes, setAttributes } ) {
 				   tier-object attr { desktop, tablet, mobile }, written via
 				   ResponsiveOverride + SgsBoxControl; read directly by this
 				   block's render.php. */ }
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -449,32 +708,67 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourStates={ [
-							{ key: 'normal', label: __( 'Normal', 'sgs-blocks' ), value: borderColour,
-							  onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-							  gradientValue: borderColourGradient,
-							  onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) },
-							{ key: 'hover', label: __( 'Hover', 'sgs-blocks' ), value: borderColourHover,
-							  onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
-							  gradientValue: borderColourHoverGradient,
-							  onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ) },
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: borderColour,
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColour: val ?? '',
+									} ),
+								gradientValue: borderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										borderColourGradient: val ?? '',
+									} ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColourHover: val ?? '',
+									} ),
+								gradientValue: borderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										borderColourHoverGradient: val ?? '',
+									} ),
+							},
 						] }
 						radiusValues={ {
 							base: attributes.borderRadius?.desktop ?? {},
@@ -483,7 +777,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -496,8 +795,20 @@ export default function Edit( { attributes, setAttributes } ) {
 				   typography applies to the whole wrapper div ($root_sel in
 				   render.php), not a specific child element. showFontFamily
 				   exposes the font-family control. */ }
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextStroke showTextColumns showWritingMode
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TypographyControls
+						fontSizePresets
+						showDecoration
+						showTransform
+						showLetterSpacing
+						showTextAlign
+						showTextWrap
+						showTextStroke
+						showTextColumns
+						showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""
@@ -509,47 +820,87 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* The hours rows' position, spacing and lines are styles of one element
 			   (hours-row), so they sit together in the Styles tab; a one-line
 			   condensed list has no rows to place, space or divide. */ }
-			{ 'hours' === displayType && ! ( 'condensed' === hoursLayout && hoursCondensedInline ) && (
-				<InspectorControls group="styles">
-					<PanelBody title={ __( 'Hours rows', 'sgs-blocks' ) } initialOpen={ false }>
-						<SelectControl
-							label={ __( 'Hours position', 'sgs-blocks' ) }
-							value={ hoursRowJustify || 'space-between' }
-							options={ [
-								{ label: __( 'At the end of the row', 'sgs-blocks' ), value: 'space-between' },
-								{ label: __( 'Next to the day name', 'sgs-blocks' ), value: 'flex-start' },
-							] }
-							onChange={ ( val ) => setAttributes( { hoursRowJustify: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-						<ResponsiveOverride
-							value={ attributes.hoursRowPadding }
-							onChange={ ( obj ) => setAttributes( { hoursRowPadding: obj } ) }
+			{ 'hours' === displayType &&
+				! ( 'condensed' === hoursLayout && hoursCondensedInline ) && (
+					<InspectorControls group="styles">
+						<PanelBody
+							title={ __( 'Hours rows', 'sgs-blocks' ) }
+							initialOpen={ false }
 						>
-							{ ( { ownValue, setOwnValue } ) => (
-								<SgsBoxControl
-									label={ __( 'Hours row padding', 'sgs-blocks' ) }
-									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
-									units={ BOX_UNITS }
-									presets
-									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-								/>
-							) }
-						</ResponsiveOverride>
-						<SgsSeparatorControl
-							label={ __( 'Lines between rows', 'sgs-blocks' ) }
-							value={ separators }
-							onChange={ ( next ) => setAttributes( { separators: next } ) }
-							axes={ [ 'row' ] }
-						/>
-					</PanelBody>
-				</InspectorControls>
-			) }
+							<SelectControl
+								label={ __( 'Hours position', 'sgs-blocks' ) }
+								value={ hoursRowJustify || 'space-between' }
+								options={ [
+									{
+										label: __(
+											'At the end of the row',
+											'sgs-blocks'
+										),
+										value: 'space-between',
+									},
+									{
+										label: __(
+											'Next to the day name',
+											'sgs-blocks'
+										),
+										value: 'flex-start',
+									},
+								] }
+								onChange={ ( val ) =>
+									setAttributes( { hoursRowJustify: val } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							<ResponsiveOverride
+								value={ attributes.hoursRowPadding }
+								onChange={ ( obj ) =>
+									setAttributes( { hoursRowPadding: obj } )
+								}
+							>
+								{ ( { ownValue, setOwnValue } ) => (
+									<SgsBoxControl
+										label={ __(
+											'Hours row padding',
+											'sgs-blocks'
+										) }
+										values={
+											ownValue &&
+											typeof ownValue === 'object'
+												? ownValue
+												: {}
+										}
+										units={ BOX_UNITS }
+										presets
+										onChange={ ( next ) =>
+											setOwnValue(
+												normaliseResponsiveBox( next )
+											)
+										}
+									/>
+								) }
+							</ResponsiveOverride>
+							<SgsSeparatorControl
+								label={ __(
+									'Lines between rows',
+									'sgs-blocks'
+								) }
+								value={ separators }
+								onChange={ ( next ) =>
+									setAttributes( { separators: next } )
+								}
+								axes={ [ 'row' ] }
+							/>
+						</PanelBody>
+					</InspectorControls>
+				) }
 
 			{ 'hours' === displayType && (
 				<InspectorControls group="styles">
-					<PanelBody title={ __( 'Label typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<PanelBody
+						title={ __( 'Label typography', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
 						<TypographyControls
 							attributes={ attributes }
 							setAttributes={ setAttributes }

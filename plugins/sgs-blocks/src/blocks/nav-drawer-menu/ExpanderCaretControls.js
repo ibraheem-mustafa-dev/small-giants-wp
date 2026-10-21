@@ -38,7 +38,10 @@ export default function ExpanderCaretControls( { attributes, setAttributes } ) {
 				onChange={ ( value ) =>
 					setAttributes( { submenuCaretSize: value || '' } )
 				}
-				help={ __( 'Empty rides the row’s own font size.', 'sgs-blocks' ) }
+				help={ __(
+					'Empty rides the row’s own font size.',
+					'sgs-blocks'
+				) }
 				units={ [ { value: 'px', label: 'px' } ] }
 				presets={ false }
 			/>
@@ -110,7 +113,8 @@ export default function ExpanderCaretControls( { attributes, setAttributes } ) {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
-			<EasingAtom vocab="nav"
+			<EasingAtom
+				vocab="nav"
 				label={ __( 'Expander turn curve', 'sgs-blocks' ) }
 				value={ submenuCaretTurnEasing }
 				custom={ submenuCaretTurnEasingCustom }

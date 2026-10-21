@@ -86,6 +86,7 @@
 			"headerEssential": true,
 			"elements": {
 				"drill-back": {
+					"motion": false,
 					"selector": ".sgs-nav-drawer-menu__drill-back-btn",
 					"label": "Drill-down back button",
 					"order": 14.6,

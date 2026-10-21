@@ -3,6 +3,8 @@ import ServerSideRender from '../../components/ServerSideRender';
 import {
 	useBlockProps,
 	InspectorControls,
+	MediaUpload,
+	MediaUploadCheck,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -10,11 +12,18 @@ import {
 	ToggleControl,
 	SelectControl,
 	TextareaControl,
-	Notice,
+	Button,
 } from '@wordpress/components';
-import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
-import { Button } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveOverride, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsColourPanel, SsrPreviewGuard } from '../../components';
+import {
+	ResponsiveOverride,
+	SgsLengthControl,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	SgsBorderControl,
+	SgsColourPanel,
+	SsrPreviewGuard,
+} from '../../components';
 
 // Units offered on the max-width/max-height UnitControls (mirrors the shared
 // TypographyControls unit-set pattern — px is the common case for a logo cap;
@@ -46,7 +55,7 @@ function composeMaxBoxValue( num, unit ) {
  *
  * @param {string} raw         Raw value from UnitControl onChange.
  * @param {string} currentUnit The currently-stored unit.
- * @return {{ num: number|undefined, unit: string }}
+ * @return {{ num: number|undefined, unit: string }} Parsed number and unit.
  */
 function parseMaxBoxValue( raw, currentUnit ) {
 	if ( ! raw && raw !== 0 ) {
@@ -78,9 +87,7 @@ function getSiteLogo() {
 		typeof window !== 'undefined' && window.sgsBlocksData
 			? window.sgsBlocksData.siteLogo
 			: null;
-	return data && data.url
-		? data
-		: { id: 0, url: '', source: '' };
+	return data && data.url ? data : { id: 0, url: '', source: '' };
 }
 
 /**
@@ -91,10 +98,16 @@ function getSiteLogo() {
  */
 function siteLogoHint( source ) {
 	if ( 'site-info' === source ) {
-		return __( 'Showing the logo from Site Info. Upload one here to override it for this block.', 'sgs-blocks' );
+		return __(
+			'Showing the logo from Site Info. Upload one here to override it for this block.',
+			'sgs-blocks'
+		);
 	}
 	if ( 'wordpress' === source ) {
-		return __( 'Showing your WordPress site logo. Upload one here, or set a logo in Site Info, to override it.', 'sgs-blocks' );
+		return __(
+			'Showing your WordPress site logo. Upload one here, or set a logo in Site Info, to override it.',
+			'sgs-blocks'
+		);
 	}
 	return '';
 }
@@ -110,11 +123,20 @@ function siteLogoHint( source ) {
  * @param {string}   props.label       Button / panel label.
  * @param {string}   props.placeholder Fallback text when no image is selected.
  */
-function LogoSlot( { mediaId, mediaUrl, onSelect, onRemove, label, placeholder } ) {
+function LogoSlot( {
+	mediaId,
+	mediaUrl,
+	onSelect,
+	onRemove,
+	label,
+	placeholder,
+} ) {
 	return (
 		<MediaUploadCheck>
 			<div className="sgs-responsive-logo-editor__slot">
-				<p className="sgs-responsive-logo-editor__slot-label">{ label }</p>
+				<p className="sgs-responsive-logo-editor__slot-label">
+					{ label }
+				</p>
 				{ mediaUrl ? (
 					<div className="sgs-responsive-logo-editor__slot-preview">
 						<img
@@ -180,7 +202,12 @@ function EmptyLogoPlaceholder() {
 	return (
 		<div className="sgs-responsive-logo-editor__empty">
 			<span className="dashicons dashicons-format-image" />
-			<p>{ __( 'Select a logo in the sidebar, or set one in Site Info, to get started.', 'sgs-blocks' ) }</p>
+			<p>
+				{ __(
+					'Select a logo in the sidebar, or set one in Site Info, to get started.',
+					'sgs-blocks'
+				) }
+			</p>
 		</div>
 	);
 }
@@ -285,8 +312,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	// Preview URLs come from the DECLARED, PERSISTED attrs.
 	const desktopUrl = attributes.logoUrl;
-	const tabletUrl  = attributes.logoUrlTablet;
-	const mobileUrl  = attributes.logoUrlMobile;
+	const tabletUrl = attributes.logoUrlTablet;
+	const mobileUrl = attributes.logoUrlMobile;
 
 	// Chain tier 1 is the block's own desktop image; when it is empty the
 	// frontend falls through to the site-level logo (Site Info, then WordPress).
@@ -311,7 +338,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					initialOpen
 				>
 					<p className="sgs-responsive-logo-editor__panel-hint">
-						{ __( 'Without a logo of its own, this block shows your site logo. Tablet and mobile fall back to the desktop logo when not set.', 'sgs-blocks' ) }
+						{ __(
+							'Without a logo of its own, this block shows your site logo. Tablet and mobile fall back to the desktop logo when not set.',
+							'sgs-blocks'
+						) }
 					</p>
 
 					<LogoSlot
@@ -319,7 +349,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						mediaUrl={ desktopUrl }
 						onSelect={ onSelectDesktop }
 						onRemove={ onRemoveDesktop }
-						label={ __( 'Desktop logo (horizontal)', 'sgs-blocks' ) }
+						label={ __(
+							'Desktop logo (horizontal)',
+							'sgs-blocks'
+						) }
 						placeholder={ siteLogoNote }
 					/>
 
@@ -329,7 +362,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						onSelect={ onSelectTablet }
 						onRemove={ onRemoveTablet }
 						label={ __( 'Tablet logo (square)', 'sgs-blocks' ) }
-						placeholder={ __( 'Same as desktop when not set.', 'sgs-blocks' ) }
+						placeholder={ __(
+							'Same as desktop when not set.',
+							'sgs-blocks'
+						) }
 					/>
 
 					<LogoSlot
@@ -338,28 +374,56 @@ export default function Edit( { attributes, setAttributes } ) {
 						onSelect={ onSelectMobile }
 						onRemove={ onRemoveMobile }
 						label={ __( 'Mobile logo (mark/icon)', 'sgs-blocks' ) }
-						placeholder={ __( 'Same as desktop when not set.', 'sgs-blocks' ) }
+						placeholder={ __(
+							'Same as desktop when not set.',
+							'sgs-blocks'
+						) }
 					/>
 					<SelectControl
 						label={ __( 'Switch to compact logo', 'sgs-blocks' ) }
 						value={ logoSwitchMode || 'mobile' }
 						options={ [
-							{ label: __( 'On mobile (≤767px)', 'sgs-blocks' ), value: 'mobile' },
-							{ label: __( 'On tablet & below (≤1023px)', 'sgs-blocks' ), value: 'tablet' },
-							{ label: __( 'Custom breakpoint', 'sgs-blocks' ), value: 'custom' },
+							{
+								label: __( 'On mobile (≤767px)', 'sgs-blocks' ),
+								value: 'mobile',
+							},
+							{
+								label: __(
+									'On tablet & below (≤1023px)',
+									'sgs-blocks'
+								),
+								value: 'tablet',
+							},
+							{
+								label: __( 'Custom breakpoint', 'sgs-blocks' ),
+								value: 'custom',
+							},
 						] }
-						onChange={ ( val ) => setAttributes( { logoSwitchMode: val } ) }
-						help={ __( 'When the compact (tablet/mobile) logo replaces the desktop logo: on mobile, on tablet and below, or at a breakpoint you choose. Only applies once a tablet or mobile logo is set.', 'sgs-blocks' ) }
+						onChange={ ( val ) =>
+							setAttributes( { logoSwitchMode: val } )
+						}
+						help={ __(
+							'When the compact (tablet/mobile) logo replaces the desktop logo: on mobile, on tablet and below, or at a breakpoint you choose. Only applies once a tablet or mobile logo is set.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 
 					{ 'custom' === logoSwitchMode && (
 						<RangeControl
-							label={ __( 'Custom breakpoint (px)', 'sgs-blocks' ) }
-							help={ __( 'Below this width the compact logo shows.', 'sgs-blocks' ) }
+							label={ __(
+								'Custom breakpoint (px)',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'Below this width the compact logo shows.',
+								'sgs-blocks'
+							) }
 							value={ logoSwitchCustomPx ?? 1024 }
-							onChange={ ( val ) => setAttributes( { logoSwitchCustomPx: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { logoSwitchCustomPx: val } )
+							}
 							min={ 320 }
 							max={ 2000 }
 							step={ 1 }
@@ -375,15 +439,24 @@ export default function Edit( { attributes, setAttributes } ) {
 					initialOpen={ false }
 				>
 					<p className="sgs-responsive-logo-editor__panel-hint">
-						{ __( 'Shown in dark mode and wherever the logo sits on a dark background: a dark section or footer, or a header passing over a dark section. Leave empty to use the same logo everywhere.', 'sgs-blocks' ) }
+						{ __(
+							'Shown in dark mode and wherever the logo sits on a dark background: a dark section or footer, or a header passing over a dark section. Leave empty to use the same logo everywhere.',
+							'sgs-blocks'
+						) }
 					</p>
 					<MediaUploadCheck>
 						<div className="sgs-responsive-logo-editor__slot">
 							{ darkLogoId ? (
 								<>
 									<p className="sgs-responsive-logo-editor__svg-id">
-										{ /* translators: %d is the attachment ID */ }
-										{ sprintf( __( 'Attachment ID: %d', 'sgs-blocks' ), darkLogoId ) }
+										{ sprintf(
+											/* translators: %d: attachment ID */
+											__(
+												'Attachment ID: %d',
+												'sgs-blocks'
+											),
+											darkLogoId
+										) }
 									</p>
 									<Button
 										variant="secondary"
@@ -391,7 +464,10 @@ export default function Edit( { attributes, setAttributes } ) {
 										isDestructive
 										size="small"
 									>
-										{ __( 'Remove logo for dark backgrounds', 'sgs-blocks' ) }
+										{ __(
+											'Remove logo for dark backgrounds',
+											'sgs-blocks'
+										) }
 									</Button>
 								</>
 							) : (
@@ -400,8 +476,14 @@ export default function Edit( { attributes, setAttributes } ) {
 									allowedTypes={ [ 'image' ] }
 									value={ darkLogoId }
 									render={ ( { open } ) => (
-										<Button variant="secondary" onClick={ open }>
-											{ __( 'Select logo for dark backgrounds', 'sgs-blocks' ) }
+										<Button
+											variant="secondary"
+											onClick={ open }
+										>
+											{ __(
+												'Select logo for dark backgrounds',
+												'sgs-blocks'
+											) }
 										</Button>
 									) }
 								/>
@@ -436,34 +518,64 @@ export default function Edit( { attributes, setAttributes } ) {
 							'Only takes effect inside an SGS header or header row that has its own "shrink on scroll" setting turned on — the logo keeps its natural proportions (only width is set, height follows automatically). Leave unset to keep the logo the same size when the header shrinks.',
 							'sgs-blocks'
 						) }
-						value={ composeMaxBoxValue( shrinkWidth, shrinkWidthUnit || 'px' ) }
+						value={ composeMaxBoxValue(
+							shrinkWidth,
+							shrinkWidthUnit || 'px'
+						) }
 						onChange={ ( raw ) => {
-							const { num, unit } = parseMaxBoxValue( raw, shrinkWidthUnit || 'px' );
-							setAttributes( { shrinkWidth: num, shrinkWidthUnit: unit } );
+							const { num, unit } = parseMaxBoxValue(
+								raw,
+								shrinkWidthUnit || 'px'
+							);
+							setAttributes( {
+								shrinkWidth: num,
+								shrinkWidthUnit: unit,
+							} );
 						} }
 						units={ MAX_BOX_UNITS }
 					/>
 
 					<ToggleControl
 						label={ __( 'Link to homepage', 'sgs-blocks' ) }
-						help={ __( 'Wraps the logo in an <a> tag pointing to the site home URL.', 'sgs-blocks' ) }
+						help={ __(
+							'Wraps the logo in an <a> tag pointing to the site home URL.',
+							'sgs-blocks'
+						) }
 						checked={ linkToHome }
-						onChange={ ( val ) => setAttributes( { linkToHome: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { linkToHome: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
-						label={ __( 'Decorative logo (hide from screen readers)', 'sgs-blocks' ) }
-						help={ __( 'Only use this if the logo is purely decorative — if it links to your homepage, keep this off so screen reader users can still navigate home. A site logo almost always carries meaning, so this should stay off in most cases.', 'sgs-blocks' ) }
+						label={ __(
+							'Decorative logo (hide from screen readers)',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'Only use this if the logo is purely decorative — if it links to your homepage, keep this off so screen reader users can still navigate home. A site logo almost always carries meaning, so this should stay off in most cases.',
+							'sgs-blocks'
+						) }
 						checked={ !! logoDecorative }
-						onChange={ ( val ) => setAttributes( { logoDecorative: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { logoDecorative: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 
 					<TextareaControl
 						label={ __( 'Alt text', 'sgs-blocks' ) }
-						help={ logoDecorative
-							? __( 'Disabled — the logo image is marked decorative and won’t be announced to screen readers.', 'sgs-blocks' )
-							: __( 'Describes what the logo depicts for screen readers. Leave empty to use "[Business name] home" automatically (or, for the site logo, its media-library alt text) — never just "logo".', 'sgs-blocks' ) }
+						help={
+							logoDecorative
+								? __(
+										'Disabled — the logo image is marked decorative and won’t be announced to screen readers.',
+										'sgs-blocks'
+								  )
+								: __(
+										'Describes what the logo depicts for screen readers. Leave empty to use "[Business name] home" automatically (or, for the site logo, its media-library alt text) — never just "logo".',
+										'sgs-blocks'
+								  )
+						}
 						value={ alt }
 						onChange={ ( val ) => setAttributes( { alt: val } ) }
 						disabled={ !! logoDecorative }
@@ -480,47 +592,80 @@ export default function Edit( { attributes, setAttributes } ) {
 					initialOpen={ false }
 				>
 					<p className="sgs-responsive-logo-editor__panel-hint">
-						{ __( 'Cap the logo box. Leave it blank for no maximum.', 'sgs-blocks' ) }
+						{ __(
+							'Cap the logo box. Leave it blank for no maximum.',
+							'sgs-blocks'
+						) }
 					</p>
 					<ResponsiveOverride
 						label={ __( 'Max width', 'sgs-blocks' ) }
 						value={ attributes.maxWidth }
-						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { maxWidth: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SgsLengthControl
 								presets={ false }
 								label={ __( 'Max width', 'sgs-blocks' ) }
 								hideLabelFromVision
-								value={ composeMaxBoxValue( ownValue, maxWidthUnit || 'px' ) }
+								value={ composeMaxBoxValue(
+									ownValue,
+									maxWidthUnit || 'px'
+								) }
 								placeholder={
 									inherited
-										? composeMaxBoxValue( effectiveValue, maxWidthUnit || 'px' )
+										? composeMaxBoxValue(
+												effectiveValue,
+												maxWidthUnit || 'px'
+										  )
 										: ''
 								}
 								units={ MAX_BOX_UNITS }
-								onChange={ ( val ) => onMaxWidthChange( setOwnValue, val ) }
+								onChange={ ( val ) =>
+									onMaxWidthChange( setOwnValue, val )
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 					<ResponsiveOverride
 						label={ __( 'Max height', 'sgs-blocks' ) }
 						value={ attributes.maxHeight }
-						onChange={ ( obj ) => setAttributes( { maxHeight: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { maxHeight: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SgsLengthControl
 								presets={ false }
 								label={ __( 'Max height', 'sgs-blocks' ) }
 								hideLabelFromVision
-								value={ composeMaxBoxValue( ownValue, maxHeightUnit || 'px' ) }
+								value={ composeMaxBoxValue(
+									ownValue,
+									maxHeightUnit || 'px'
+								) }
 								placeholder={
 									inherited
-										? composeMaxBoxValue( effectiveValue, maxHeightUnit || 'px' )
+										? composeMaxBoxValue(
+												effectiveValue,
+												maxHeightUnit || 'px'
+										  )
 										: ''
 								}
 								units={ MAX_BOX_UNITS }
-								onChange={ ( val ) => onMaxHeightChange( setOwnValue, val ) }
+								onChange={ ( val ) =>
+									onMaxHeightChange( setOwnValue, val )
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -533,15 +678,25 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -552,10 +707,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -575,64 +738,128 @@ export default function Edit( { attributes, setAttributes } ) {
 									key: 'normal',
 									label: __( 'Normal', 'sgs-blocks' ),
 									value: backgroundColour,
-									onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+									onChange: ( val ) =>
+										setAttributes( {
+											backgroundColour: val ?? '',
+										} ),
 									gradientValue: backgroundColourGradient,
 									onGradientChange: ( val ) =>
-										setAttributes( { backgroundColourGradient: val ?? '' } ),
+										setAttributes( {
+											backgroundColourGradient: val ?? '',
+										} ),
 								},
 								{
 									key: 'hover',
 									label: __( 'Hover', 'sgs-blocks' ),
 									value: backgroundColourHover,
-									onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
-									gradientValue: backgroundColourHoverGradient,
+									onChange: ( val ) =>
+										setAttributes( {
+											backgroundColourHover: val ?? '',
+										} ),
+									gradientValue:
+										backgroundColourHoverGradient,
 									onGradientChange: ( val ) =>
-										setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+										setAttributes( {
+											backgroundColourHoverGradient:
+												val ?? '',
+										} ),
 								},
 							],
 							// Colour treatment sits with the colour controls: it turns the logo
 							// IMAGE white (always, or only on a dark ground), where the row
 							// above paints the tile behind it.
 							after: (
-									<SelectControl
-										label={ __( 'Logo image colour', 'sgs-blocks' ) }
-										help={ __(
-											'Turn the logo image pure white, always or only where it sits on a dark background.',
-											'sgs-blocks'
-										) }
-										value={ attributes.colourTreatment || '' }
-										options={ [
-											{ value: '', label: __( 'As uploaded', 'sgs-blocks' ) },
-											{ value: 'white', label: __( 'Force white', 'sgs-blocks' ) },
-											{ value: 'auto', label: __( 'Automatic (white on dark backgrounds)', 'sgs-blocks' ) },
-										] }
-										onChange={ ( val ) => setAttributes( { colourTreatment: val || '' } ) }
-										__next40pxDefaultSize
-										__nextHasNoMarginBottom
-									/>
+								<SelectControl
+									label={ __(
+										'Logo image colour',
+										'sgs-blocks'
+									) }
+									help={ __(
+										'Turn the logo image pure white, always or only where it sits on a dark background.',
+										'sgs-blocks'
+									) }
+									value={ attributes.colourTreatment || '' }
+									options={ [
+										{
+											value: '',
+											label: __(
+												'As uploaded',
+												'sgs-blocks'
+											),
+										},
+										{
+											value: 'white',
+											label: __(
+												'Force white',
+												'sgs-blocks'
+											),
+										},
+										{
+											value: 'auto',
+											label: __(
+												'Automatic (white on dark backgrounds)',
+												'sgs-blocks'
+											),
+										},
+									] }
+									onChange={ ( val ) =>
+										setAttributes( {
+											colourTreatment: val || '',
+										} )
+									}
+									__next40pxDefaultSize
+									__nextHasNoMarginBottom
+								/>
 							),
 						},
 					] }
 				/>
 
 				{ /* ── Panel 5: Border ── */ }
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourStates={ [
-							{ key: 'normal', label: __( 'Normal', 'sgs-blocks' ), value: borderColour,
-							  onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-							  gradientValue: borderColourGradient,
-							  onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) },
-							{ key: 'hover', label: __( 'Hover', 'sgs-blocks' ), value: borderColourHover,
-							  onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
-							  gradientValue: borderColourHoverGradient,
-							  onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ) },
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: borderColour,
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColour: val ?? '',
+									} ),
+								gradientValue: borderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										borderColourGradient: val ?? '',
+									} ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColourHover: val ?? '',
+									} ),
+								gradientValue: borderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										borderColourHoverGradient: val ?? '',
+									} ),
+							},
 						] }
 						contrastAgainst={ responsiveLogoContrastAgainst }
 						radiusValues={ {
@@ -642,7 +869,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>

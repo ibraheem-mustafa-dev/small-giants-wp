@@ -8,7 +8,7 @@
  *       A block.json declares a responsive attr family (X + XTablet and/or
  *       XMobile) AND the block's own edit code writes those attrs directly via
  *       setAttributes — WITHOUT routing through a shared component that owns the
- *       ResponsiveControl wrapper (TypographyControls, SpacingControl,
+ *       ResponsiveControl wrapper (TypographyControls,
  *       ContainerWrapperControls, or any import from '../../components' /
  *       '../container/components'). Shared-component usage is COMPLIANT.
  *
@@ -28,7 +28,7 @@
  *     3. If any Tablet/Mobile family member appears in both the controlled set AND
  *        the block's own source (not via shared-component import path):
  *          – and the block's own source imports NO shared-component that is known
- *            to own a ResponsiveControl (TypographyControls, SpacingControl,
+ *            to own a ResponsiveControl (TypographyControls,
  *            ContainerWrapperControls) AND has no direct ResponsiveControl import:
  *            → VIOLATION.
  *          – if the block imports a shared-component that writes these attrs AND
@@ -56,7 +56,6 @@
  *   component that is the canonical implementation:
  *     '../../components'
  *     '../../components/TypographyControls'
- *     '../../components/SpacingControl'
  *     '../../components/ResponsiveControl'
  *     '../container/components/ContainerWrapperControls'
  *     '../container/components'
@@ -98,7 +97,6 @@ const BASELINE_FILE = path.join( __dirname, 'control-ux-baseline.json' );
 const SHARED_COMPONENT_IMPORT_PATTERNS = [
 	/from\s+['"]\.\.\/\.\.\/components['"]/,
 	/from\s+['"]\.\.\/\.\.\/components\/TypographyControls['"]/,
-	/from\s+['"]\.\.\/\.\.\/components\/SpacingControl['"]/,
 	/from\s+['"]\.\.\/\.\.\/components\/ResponsiveControl['"]/,
 	/from\s+['"]\.\.\/container\/components\/ContainerWrapperControls['"]/,
 	/from\s+['"]\.\.\/container\/components['"]/,
@@ -107,7 +105,6 @@ const SHARED_COMPONENT_IMPORT_PATTERNS = [
 // Component names used in JSX that indicate a shared-component usage.
 const SHARED_COMPONENT_JSX_NAMES = [
 	'TypographyControls',
-	'SpacingControl',
 	'ResponsiveControl',
 	'ContainerWrapperControls',
 ];
@@ -378,7 +375,7 @@ function checkResponsiveSwitcher( blockName, blockDir, attrs ) {
 						`Block declares responsive family ${ family.base }/${ variant } and writes ` +
 						`${ variant } via setAttributes in its own edit.js without a ` +
 						`<ResponsiveControl> wrapper or delegation to a shared component ` +
-						`(TypographyControls/SpacingControl/ContainerWrapperControls).`,
+						`(TypographyControls/ContainerWrapperControls).`,
 				} );
 			}
 		}
@@ -492,7 +489,7 @@ function checkUnitSelectControl( blockName, blockDir, attrs ) {
 			reason:
 				`Block has a SelectControl writing ${ attrName } via setAttributes in its own ` +
 				`edit.js. Replace with a <UnitControl> (integrated unit-inside-input) or delegate ` +
-				`to a shared component (TypographyControls/SpacingControl).`,
+				`to a shared component (TypographyControls).`,
 		} );
 	}
 

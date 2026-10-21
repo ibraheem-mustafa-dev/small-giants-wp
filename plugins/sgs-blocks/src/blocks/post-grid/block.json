@@ -64,6 +64,7 @@
       ],
       "elements": {
         "page-button": {
+          "motion": false,
           "selector": ".sgs-post-grid__page-btn",
           "label": "Pagination page button",
           "order": 10,
@@ -84,6 +85,7 @@
           }
         },
         "load-more": {
+          "motion": false,
           "selector": ".sgs-post-grid__load-more",
           "label": "Load more button",
           "order": 11,
@@ -107,6 +109,8 @@
           "selector": ".sgs-post-grid__badge",
           "label": "Badge",
           "order": 12,
+          "absentIn": [ "flat-inline-category", "minimal-no-image" ],
+          "absentWhy": "cardStyle flat and minimal print the category as the inline label (sgs-post-grid__category), not the image-overlaid badge (sgs-post-grid__badge).",
           "clusters": [
             "text"
           ],

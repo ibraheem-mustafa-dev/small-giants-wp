@@ -896,7 +896,6 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `ShadowControl.js` | `ShadowControl (default)`, `shadowAttrName`, `shadowAttrKeys` | ShadowControl — the shared layered box-shadow control. |
 | `ShadowLiftControls.js` | `ShadowLiftControls (default)`, `shadowLiftAttrKeys` | ShadowLiftControls: the Shadow panel's "Lift on hover" switch. |
 | `ShapeDividerPreview.js` | `ShapeDividerPreview (default)` | Editor-canvas twin of sgs_render_shape_divider(): the top or bottom shape divider of any block routed through… |
-| `SpacingControl.js` | `SpacingControl (default)` | Spacing control that reads theme.json spacing presets. |
 | `SsrPreviewGuard.js` | `SsrPreviewGuard (default)` | SsrPreviewGuard — replaces `<Disabled>` around `<ServerSideRender>` previews. |
 | `starter-look-owned-keys.js` | `deepClone`, `parseExplicitBlocks`, `findExplicitRoot`, `collectOwnedKeys`… | Owned-key derivation for the Starter Look preset control (FR-37-47). |
 | `StarterLookPresetControl.js` | `StarterLookPresetControl (default)` | SGS Starter Look preset control (FR-37-47). |
@@ -904,7 +903,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `SweepAngleControl.js` | `SweepAngleControl (default)` | SweepAngleControl — the directional sweep angle: one preset SelectControl (UI sugar) plus core's own AnglePickerControl, both… |
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 
-**53 files.**
+**52 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 

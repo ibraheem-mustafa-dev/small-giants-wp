@@ -352,7 +352,7 @@ def scan():
 
 def raw_unit_controls():
     """Raw <UnitControl> mounts outside the shared length/box/spacing components, flagged when size-like."""
-    skip = ('components/SgsLengthControl.js', 'components/SgsBoxControl.js', 'components/SpacingControl.js')
+    skip = ('components/SgsLengthControl.js', 'components/SgsBoxControl.js')
     out = []
     for path in sorted(glob.glob(os.path.join(SRC, '**', '*.js'), recursive=True)):
         rel = os.path.relpath(path, SRC).replace(os.sep, '/')

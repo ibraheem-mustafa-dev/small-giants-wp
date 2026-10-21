@@ -27,12 +27,19 @@
  * DB): glyph/icon/number/badge sizes use `font-size`; gaps, offsets, widths, heights, radius and thickness use
  * `spacing`. `--check` fails a mount whose declared scale disagrees.
  *
- * @package SGS\Blocks
+ * @package
  */
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { useSettings } from '@wordpress/block-editor';
-import { BaseControl, Flex, FlexBlock, FlexItem, RangeControl, SelectControl } from '@wordpress/components';
+import {
+	BaseControl,
+	Flex,
+	FlexBlock,
+	FlexItem,
+	RangeControl,
+	SelectControl,
+} from '@wordpress/components';
 import { UnitControl, FontSizePicker } from './primitives';
 import { VALUE_BOX_STYLE, parseLength } from './SgsBoxControl';
 import { flattenPresetSetting } from '../utils/presetSettings';
@@ -66,8 +73,8 @@ const FONT_SIZE_UNITS = [ 'px', 'em', 'rem', 'vw', 'vh' ];
 const FONT_SIZE_PRESET_RE = /^var\(--wp--preset--font-size--([a-z0-9-]+)\)$/;
 
 /**
- * @param {string}      unit Parsed unit.
- * @param {number|undefined} max Caller's tighter maximum, in px.
+ * @param {string}           unit Parsed unit.
+ * @param {number|undefined} max  Caller's tighter maximum, in px.
  * @return {{min: number, max: number, step: number}} The slider range for that unit.
  */
 export function sliderRange( unit, max ) {
@@ -83,7 +90,12 @@ export function sliderRange( unit, max ) {
 	return { min: 0, max: ceiling, step: core.step };
 }
 
-/** A value that is a size in the font-size picker's terms: a length, a preset var, or empty. */
+/**
+ * A value that is a size in the font-size picker's terms: a length, a preset var, or empty.
+ *
+ * @param {*} value The stored size (a string, or a number from an older save).
+ * @return {string} The size as a string, or ''.
+ */
 function fontSizeStored( value ) {
 	if ( 'number' === typeof value ) {
 		return `${ value }px`;
@@ -91,18 +103,36 @@ function fontSizeStored( value ) {
 	return 'string' === typeof value ? value : '';
 }
 
-function FontSizeScale( { label, hideLabelFromVision, help, style, disabled, units, value, onChange } ) {
+function FontSizeScale( {
+	label,
+	hideLabelFromVision,
+	help,
+	style,
+	disabled,
+	units,
+	value,
+	onChange,
+} ) {
 	const stored = fontSizeStored( value );
 	const slug = FONT_SIZE_PRESET_RE.exec( stored )?.[ 1 ];
-	const pickerUnits = Array.isArray( units ) && units.every( ( u ) => 'string' === typeof u ) ? units : FONT_SIZE_UNITS;
+	const pickerUnits =
+		Array.isArray( units ) && units.every( ( u ) => 'string' === typeof u )
+			? units
+			: FONT_SIZE_UNITS;
 	return (
 		<div
 			role="group"
 			aria-label={ label }
 			aria-disabled={ disabled || undefined }
-			style={ disabled ? { ...style, opacity: 0.5, pointerEvents: 'none' } : style }
+			style={
+				disabled
+					? { ...style, opacity: 0.5, pointerEvents: 'none' }
+					: style
+			}
 		>
-			{ label && ! hideLabelFromVision && <BaseControl.VisualLabel>{ label }</BaseControl.VisualLabel> }
+			{ label && ! hideLabelFromVision && (
+				<BaseControl.VisualLabel>{ label }</BaseControl.VisualLabel>
+			) }
 			<FontSizePicker
 				value={ slug || stored || undefined }
 				valueMode={ slug ? 'slug' : 'literal' }
@@ -112,38 +142,46 @@ function FontSizeScale( { label, hideLabelFromVision, help, style, disabled, uni
 				onChange={ ( next, selectedItem ) => {
 					// onChange always emits the literal size; a picked preset arrives as the second argument.
 					if ( selectedItem?.slug ) {
-						onChange( `var(--wp--preset--font-size--${ selectedItem.slug })` );
+						onChange(
+							`var(--wp--preset--font-size--${ selectedItem.slug })`
+						);
 						return;
 					}
-					onChange( undefined === next || null === next || '' === next ? '' : String( next ) );
+					onChange(
+						undefined === next || null === next || '' === next
+							? ''
+							: String( next )
+					);
 				} }
 			/>
-			{ help && <p className="components-base-control__help">{ help }</p> }
+			{ help && (
+				<p className="components-base-control__help">{ help }</p>
+			) }
 		</div>
 	);
 }
 
 /**
- * @param {Object}   props
- * @param {string}   props.label          Field label.
- * @param {string}   [props.value]        Stored length ("20px"), spacing slug ("50"), token value or, for the
- *                                        font-size scale, a font-size preset var.
- * @param {Function} props.onChange       Receives the next stored string; '' when cleared.
- * @param {'spacing'|'font-size'} [props.scale='spacing'] Which core control to match (see the file header).
- * @param {Array}    [props.units]        Unit list for the value box (the font-size scale takes plain strings).
- * @param {boolean}  [props.presets=false] Offer the theme spacing scale. OPT-IN: pass true only when the attribute
- *                                        is typed to hold a slug string alongside a length (D338).
- * @param {Array}    [props.tokenPresets] `[ { label, value } ]` options stored verbatim (for example the motion
- *                                        `distance` tokens), listed after the spacing scale. Only when the
- *                                        attribute stores a string.
- * @param {number}   [props.max]          Tighter slider ceiling in px for a role that needs it (a corner radius).
- * @param {string}   [props.help]         Help line under the control.
- * @param {string}   [props.placeholder]  Shown in the value box while unset (an inherited tier value); the slider
- *                                        rests at it.
- * @param {boolean}  [props.hideLabelFromVision] Keep the label for assistive technology only, for a control already
- *                                        labelled by its wrapper (ResponsiveOverride and ResponsiveControl).
- * @param {Object}   [props.style]        Style for the control's wrapper.
- * @param {boolean}  [props.disabled]     Disable every part (a field inert under a disclosure rule).
+ * @param {Object}                props
+ * @param {string}                props.label                 Field label.
+ * @param {string}                [props.value]               Stored length ("20px"), spacing slug ("50"), token value or, for the
+ *                                                            font-size scale, a font-size preset var.
+ * @param {Function}              props.onChange              Receives the next stored string; '' when cleared.
+ * @param {'spacing'|'font-size'} [props.scale='spacing']     Which core control to match (see the file header).
+ * @param {Array}                 [props.units]               Unit list for the value box (the font-size scale takes plain strings).
+ * @param {boolean}               [props.presets=false]       Offer the theme spacing scale. OPT-IN: pass true only when the attribute
+ *                                                            is typed to hold a slug string alongside a length (D338).
+ * @param {Array}                 [props.tokenPresets]        `[ { label, value } ]` options stored verbatim (for example the motion
+ *                                                            `distance` tokens), listed after the spacing scale. Only when the
+ *                                                            attribute stores a string.
+ * @param {number}                [props.max]                 Tighter slider ceiling in px for a role that needs it (a corner radius).
+ * @param {string}                [props.help]                Help line under the control.
+ * @param {string}                [props.placeholder]         Shown in the value box while unset (an inherited tier value); the slider
+ *                                                            rests at it.
+ * @param {boolean}               [props.hideLabelFromVision] Keep the label for assistive technology only, for a control already
+ *                                                            labelled by its wrapper (ResponsiveOverride and ResponsiveControl).
+ * @param {Object}                [props.style]               Style for the control's wrapper.
+ * @param {boolean}               [props.disabled]            Disable every part (a field inert under a disclosure rule).
  * @return {JSX.Element} The control.
  */
 export default function SgsLengthControl( {
@@ -209,14 +247,27 @@ export default function SgsLengthControl( {
 	}
 	const shown = parseLength( readFrom );
 	const resting = parseLength( placeholder );
-	const unit = shown.num === undefined && resting.num !== undefined ? resting.unit : shown.unit;
+	const unit =
+		shown.num === undefined && resting.num !== undefined
+			? resting.unit
+			: shown.unit;
 	const range = sliderRange( unit, max );
 	const sliderValue = shown.num ?? resting.num ?? 0;
-	const boxPlaceholder = placeholder || ( preset && undefined === shown.num ? preset.size : undefined );
+	// The typed length, shown whole; a preset or token with no plain length leaves the box empty.
+	let boxValue = `${ shown.num }${ shown.unit }`;
+	if ( shown.num === undefined ) {
+		boxValue = isPresetValue ? '' : stored;
+	}
+	const boxPlaceholder =
+		placeholder ||
+		( preset && undefined === shown.num ? preset.size : undefined );
 
 	const options = [
 		{ label: __( '— none —', 'sgs-blocks' ), value: '' },
-		...spacingSizes.map( ( s ) => ( { label: s.name || s.slug, value: s.slug } ) ),
+		...spacingSizes.map( ( s ) => ( {
+			label: s.name || s.slug,
+			value: s.slug,
+		} ) ),
 		...tokens,
 		{ label: __( 'Custom…', 'sgs-blocks' ), value: CUSTOM_VALUE },
 	];
@@ -230,7 +281,9 @@ export default function SgsLengthControl( {
 		// No group role: the select, value box and slider each carry the label, and a wrapper (AtomFrame,
 		// ResponsiveOverride) already names the group.
 		<div className="sgs-length-control" style={ style }>
-			{ label && ! hideLabelFromVision && <BaseControl.VisualLabel>{ label }</BaseControl.VisualLabel> }
+			{ label && ! hideLabelFromVision && (
+				<BaseControl.VisualLabel>{ label }</BaseControl.VisualLabel>
+			) }
 			<Flex align="center" gap={ 2 } className="sgs-length-control__row">
 				{ hasSelect && (
 					<FlexBlock>
@@ -257,11 +310,18 @@ export default function SgsLengthControl( {
 						/>
 					</FlexBlock>
 				) }
-				<FlexItem className="sgs-length-control__value" style={ hasSelect ? VALUE_BOX_STYLE : { ...VALUE_BOX_STYLE, width: 112 } }>
+				<FlexItem
+					className="sgs-length-control__value"
+					style={
+						hasSelect
+							? VALUE_BOX_STYLE
+							: { ...VALUE_BOX_STYLE, width: 112 }
+					}
+				>
 					<UnitControl
 						label={ label }
 						hideLabelFromVision
-						value={ shown.num === undefined ? ( isPresetValue ? '' : stored ) : `${ shown.num }${ shown.unit }` }
+						value={ boxValue }
 						placeholder={ boxPlaceholder }
 						onChange={ ( raw ) => write( raw ) }
 						units={ units || SPACING_UNITS }
@@ -275,7 +335,13 @@ export default function SgsLengthControl( {
 						label={ label }
 						hideLabelFromVision
 						value={ sliderValue }
-						onChange={ ( v ) => write( undefined === v || null === v ? '' : `${ v }${ unit }` ) }
+						onChange={ ( v ) =>
+							write(
+								undefined === v || null === v
+									? ''
+									: `${ v }${ unit }`
+							)
+						}
 						min={ range.min }
 						max={ range.max }
 						step={ range.step }
@@ -286,7 +352,9 @@ export default function SgsLengthControl( {
 					/>
 				</FlexBlock>
 			</Flex>
-			{ help && <p className="components-base-control__help">{ help }</p> }
+			{ help && (
+				<p className="components-base-control__help">{ help }</p>
+			) }
 		</div>
 	);
 }

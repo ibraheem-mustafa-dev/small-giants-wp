@@ -30,7 +30,7 @@
 import { tierValueOf } from './responsive';
 
 /**
- * Units offered for a scalar length control. Matches SpacingControl.js's
+ * Units offered for a scalar length control. Matches SgsLengthControl.js's
  * FREE_UNITS deliberately, so every free-length control in the plugin offers
  * the same set rather than each block inventing its own.
  */
@@ -91,15 +91,20 @@ export function sgsHasLength( value ) {
  * wider one; a plain value passes through), a bare number takes `unit`, and a
  * CSS length passes through.
  *
- * @param {*}       value             Tier object `{desktop,tablet,mobile}` or a plain length.
- * @param {string}  [tier='desktop']  Previewed device tier.
- * @param {string}  [unit='px']       Unit a bare number takes.
+ * @param {*}       value                    Tier object `{desktop,tablet,mobile}` or a plain length.
+ * @param {string}  [tier='desktop']         Previewed device tier.
+ * @param {string}  [unit='px']              Unit a bare number takes.
  * @param {Object}  [options]
  * @param {boolean} [options.dropZero=false] True when the emitter treats a zero length as
  *                                           absent (sgsHasLength's rule).
  * @return {string|undefined} A CSS length, or undefined when unset.
  */
-export function tierLengthPreview( value, tier = 'desktop', unit = 'px', { dropZero = false } = {} ) {
+export function tierLengthPreview(
+	value,
+	tier = 'desktop',
+	unit = 'px',
+	{ dropZero = false } = {}
+) {
 	const raw = tierValueOf( value, tier );
 	if ( undefined === raw || ( dropZero && ! sgsHasLength( raw ) ) ) {
 		return undefined;

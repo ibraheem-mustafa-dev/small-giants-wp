@@ -5,7 +5,7 @@
  * Reviewer colours (name, details, date, avatar initials) live in the shared Colour panel
  * (ColourPanel.js).
  *
- * @package SGS\Blocks
+ * @package
  */
 
 import { __ } from '@wordpress/i18n';
@@ -14,7 +14,12 @@ import { ResponsiveBorderRadiusControl } from '../../../components';
 import { Section, Row, typographyAttrs } from './panel-kit';
 import { TierLength, TypographyRow, typoTarget } from './panel-fields';
 
-export const REVIEWER_TYPOGRAPHY_PREFIXES = [ 'author', 'meta', 'date', 'avatar' ];
+export const REVIEWER_TYPOGRAPHY_PREFIXES = [
+	'author',
+	'meta',
+	'date',
+	'avatar',
+];
 
 /** Every attribute this section owns (drives "Reset all"). */
 export const REVIEWER_ATTRS = [
@@ -31,11 +36,27 @@ export default function ReviewerPanel( { attributes, setAttributes } ) {
 	const radius = attributes.avatarBorderRadius;
 
 	return (
-		<Section title={ __( 'Reviewer', 'sgs-blocks' ) } attrs={ REVIEWER_ATTRS } setAttributes={ setAttributes }>
-			<Row label={ __( 'Avatar size', 'sgs-blocks' ) } attrs={ [ 'avatarSize' ] } { ...shared }>
-				<TierLength label={ __( 'Avatar size', 'sgs-blocks' ) } attr="avatarSize" { ...shared } />
+		<Section
+			title={ __( 'Reviewer', 'sgs-blocks' ) }
+			attrs={ REVIEWER_ATTRS }
+			setAttributes={ setAttributes }
+		>
+			<Row
+				label={ __( 'Avatar size', 'sgs-blocks' ) }
+				attrs={ [ 'avatarSize' ] }
+				{ ...shared }
+			>
+				<TierLength
+					label={ __( 'Avatar size', 'sgs-blocks' ) }
+					attr="avatarSize"
+					{ ...shared }
+				/>
 			</Row>
-			<Row label={ __( 'Avatar corners', 'sgs-blocks' ) } attrs={ [ 'avatarBorderRadius' ] } { ...shared }>
+			<Row
+				label={ __( 'Avatar corners', 'sgs-blocks' ) }
+				attrs={ [ 'avatarBorderRadius' ] }
+				{ ...shared }
+			>
 				<ResponsiveBorderRadiusControl
 					label={ __( 'Avatar corners', 'sgs-blocks' ) }
 					values={ {
@@ -45,12 +66,26 @@ export default function ReviewerPanel( { attributes, setAttributes } ) {
 					} }
 					onChange={ ( tier, next ) => {
 						const key = 'base' === tier ? 'desktop' : tier;
-						setAttributes( { avatarBorderRadius: { ...radius, [ key ]: next } } );
+						setAttributes( {
+							avatarBorderRadius: { ...radius, [ key ]: next },
+						} );
 					} }
 				/>
 			</Row>
-			<Row label={ __( 'Star size (review cards)', 'sgs-blocks' ) } attrs={ [ 'starSize' ] } { ...shared }>
-				<TierLength scale="font-size" label={ __( 'Star size on each review card', 'sgs-blocks' ) } attr="starSize" { ...shared } />
+			<Row
+				label={ __( 'Star size (review cards)', 'sgs-blocks' ) }
+				attrs={ [ 'starSize' ] }
+				{ ...shared }
+			>
+				<TierLength
+					scale="font-size"
+					label={ __(
+						'Star size on each review card',
+						'sgs-blocks'
+					) }
+					attr="starSize"
+					{ ...shared }
+				/>
 			</Row>
 			<Row
 				label={ __( 'Google mark on each card', 'sgs-blocks' ) }
@@ -58,21 +93,36 @@ export default function ReviewerPanel( { attributes, setAttributes } ) {
 				{ ...shared }
 			>
 				<ToggleControl
-					label={ __( 'Show a small Google mark on each card', 'sgs-blocks' ) }
+					label={ __(
+						'Show a small Google mark on each card',
+						'sgs-blocks'
+					) }
 					checked={ !! attributes.showCardLogo }
-					onChange={ ( value ) => setAttributes( { showCardLogo: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { showCardLogo: value } )
+					}
 				/>
 				{ attributes.showCardLogo && (
-					<TierLength label={ __( 'Card Google mark size', 'sgs-blocks' ) } attr="cardLogoSize" { ...shared } />
+					<TierLength
+						label={ __( 'Card Google mark size', 'sgs-blocks' ) }
+						attr="cardLogoSize"
+						{ ...shared }
+					/>
 				) }
 			</Row>
 			<TypographyRow
 				label={ __( 'Reviewer typography', 'sgs-blocks' ) }
 				targets={ [
 					typoTarget( 'author', __( 'Reviewer name', 'sgs-blocks' ) ),
-					typoTarget( 'meta', __( 'Reviewer details', 'sgs-blocks' ) ),
+					typoTarget(
+						'meta',
+						__( 'Reviewer details', 'sgs-blocks' )
+					),
 					typoTarget( 'date', __( 'Review date', 'sgs-blocks' ) ),
-					typoTarget( 'avatar', __( 'Avatar initials', 'sgs-blocks' ) ),
+					typoTarget(
+						'avatar',
+						__( 'Avatar initials', 'sgs-blocks' )
+					),
 				] }
 				{ ...shared }
 			/>

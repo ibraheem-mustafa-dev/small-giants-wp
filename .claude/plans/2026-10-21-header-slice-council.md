@@ -11,19 +11,19 @@ The first Indus header run (manifest, skeleton, Fill, build into post 201, three
 - [ ] Live pairing of the header at 375, 768 and 1440 with Bean's eye (FR-48-81's last done-when clause): not hit. The header is structurally Bean's approved one (`sgs/site-header` > `sgs/site-header-row` > `sgs/responsive-logo` with `logoId` 81, `sgs/nav-bar-menu` with `ref` 5, `collapsePoint` 1024 and item slots, `sgs/button`), built on indus-test post 201 (the active header) from `sites/indus-foods/build/trees/sgs_header/header.json`; skeleton decisions are `sites/indus-foods/build/skeleton/decisions.json` `surfaces['sticky-header']`. Last Solve (`sites/indus-foods/build/qa/solve/header/2026-10-21-0615/solve-report.md`): open rows 131, hardcode 12, missing 27, unresolved 44, wrong writes 1 of 4 settings; States 5 pairs, 2 match, 1 differs, 8 unreadable. No code deploy; the framework DB is reseeded at `0e075939a`.
 - The walker pairs blocks only, so a block that draws its children (`sgs/nav-bar-menu`) is never compared item by item: fewer Solve rows can mean unmeasured, and the cropped pairs carry that check.
 
-### Next wave (what the cropped pairs at 1440, 768 and 375 still show)
+### Next wave (the cropped pairs at 1440, 768 and 375; built through the handoff readers plan)
 
-Each item names its cause and where the fix lives. Resume cold from the command lines in this plan: `node scripts/computed-route/skeleton.mjs propose --client indus-foods --surface header`, Fill with `--allow-external`, build into post 201, Solve.
+Each item names its cause and where it now stands; the fixes are built on `main` by `.claude/plans/2026-10-21-handoff-readers.md` (waves 1 and 2, `d1bce54f1`) and none is live on indus-test yet. Resume from that plan's Status.
 
-1. Logo renders about 170px high (draft `height: clamp(54px, 4.4vw, 66px)`). Fill reports "sgs/responsive-logo has no setting for height"; the block has a calibrated `maxHeight`. Fix: add a `height` to `max-height` row for a fixed-ratio element to `plugins/sgs-blocks/scripts/data/property-equivalents.json` (read by `scripts/computed-route/lib/fill-equivalents.mjs`).
-2. Header row: the nav wraps to two lines and the CTA is clipped. Fill reports `sgs/site-header-row` "display flex cannot be held", "row-gap conflict: gap already holds column-gap (one setting, two gaps)" and no content width or centring.
-3. Current item: Home's blue and gold underline is missing; the current slot is read but `itemColourCurrent` and the indicator are not written.
-4. The CTA shows at 375 where the draft hides it below 768: FR-48-50 (breakpoint rule) is not built.
-5. Menu label "Contact Us" (the page title) against the draft's "Contact": site-build's menu labels.
-6. Not sticky, no scroll shadow, 57px against 87px height difference: FR-48-80 (behaviour recognisers) is not built; the settings exist (`sgs/site-header` `headerSticky`, `scrolledOffset`, `shadowScrolled`).
-7. The menu binding is a hand decision: there is no universal carrier from site-build's menu ids into a stage 3 tree.
-8. `lib/skeleton-rerun.mjs` (intake's offline re-run) does not pass the handoff states, thresholds and calibration inputs, so intake-generated proposals carry no child slots or `collapsePoint`; only `skeleton.mjs propose` does. Fix: pass the same inputs through `skeleton-rerun.mjs::rerunSkeletons`, reusing the helper `skeleton.mjs` uses.
-9. Step 20 cannot fully close on today's code: it includes binding grouping (FR-48-41), the 1200/1260 breakpoint rule (FR-48-50), gates G0 to G7 (FR-48-64) and the R–L verdict half (FR-48-36), all not built.
+1. Logo about 170px high (draft `R.logoH` `clamp(54px,4.4vw,66px)` / 56px / `min(54px, …)`, `aspect-ratio:3741 / 848`): built as the `intrinsic-ratio` equivalents row (`lib/fill-equivalents.mjs`, predicted `maxHeight` 63.36px at 1440, 56px at 768, 54px at 375); waits for the migration `plugins/sgs-blocks/scripts/migrations/2026-10-21-property-equivalents-intrinsic-ratio.py`, the reseed and a header Fill rerun.
+2. Header row wraps, CTA clipped: built: spacing from the declared `justify-content:space-between; gap:20px` (`lib/fill-spacing.mjs`, predicted 20px, not the measured 80.92px) and `display:flex` routed to the layout setting (`lib/resolve.mjs`); waits for the header Fill rerun.
+3. Current item's blue and gold underline: wave 3 of the readers plan.
+4. CTA shown at 375 (draft `showHeaderCta`, `w >= 1260`): wave 3 (width-gated `sc-if` to the block's breakpoint setting or a bounded custom CSS rule, FR-48-50).
+5. Menu label "Contact Us" against "Contact": built (`lib/site-build-labels.mjs`: labels from the draft link text); live after `site-build.mjs --apply` on indus-test.
+6. Not sticky, no scroll shadow (S-03's scrolled state, J-01 `scrollY > 8`): wave 3 (FR-48-80's sticky part); `sgs/site-header` needs recalibrating first (`headerSticky`, `scrolledOffset` have no cache entry).
+7. Menu binding: carried from `sites/indus-foods/build/menu-map.json` (`lib/skeleton-carried.mjs`); its header entry 5 is the earlier hand value until `site-build.mjs --apply` rewrites the file from the live menus.
+8. `lib/skeleton-rerun.mjs` not passing the proposal context: done (`lib/skeleton-context.mjs::proposalContext`).
+9. Step 20 cannot fully close on today's code: binding grouping (FR-48-41), the breakpoint rule (FR-48-50), gates G0 to G7 (FR-48-64) and the R–L verdict half (FR-48-36) are not built.
 
 Candidates from the first between-wave gate that wave 2 did not take: the CTA's exact `.25s` against a token (Spec 38A §7), button `letterSpacing` written at desktop changing 768, and the CTA's `#/apply` link.
 

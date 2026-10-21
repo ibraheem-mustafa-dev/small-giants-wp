@@ -98,6 +98,7 @@
 					"_note": "The `.sgs-testimonial-slider__track` scroll strip inside `.stage` — distinct from the `slider` wrapper element above. `slidesVisible` sets the `--sgs-slides-visible` custom property consumed by this element's own CSS. `clusters: []` — slidesVisible is a slide-count control, not a Text/Fill/Layout style value, so it stays an honest by-design orphan rather than being force-mapped to a cluster member that doesn't exist for it."
 				},
 				"list": {
+					"motion": false,
 					"selector": ".sgs-testimonial-slider__list",
 					"label": "Slide list",
 					"order": 6,

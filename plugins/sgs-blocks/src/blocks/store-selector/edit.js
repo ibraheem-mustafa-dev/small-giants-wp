@@ -6,7 +6,7 @@
  * preview of the trigger and every store, so the operator can see the list
  * without needing the frontend's disclosure JS.
  *
- * @package SGS\Blocks
+ * @package
  */
 import { __ } from '@wordpress/i18n';
 import {
@@ -22,7 +22,10 @@ import {
 	Flex,
 	FlexItem,
 } from '@wordpress/components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import {
 	SgsColourPanel,
 	fillRow,
@@ -35,7 +38,7 @@ import {
 	normaliseResponsiveBox,
 	SgsBorderControl,
 	LinkPopoverField,
-	SpacingControl,
+	SgsLengthControl,
 } from '../../components';
 import { usePreviewTier } from '../../utils';
 import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
@@ -47,11 +50,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		stores,
 		flagSize,
 		panelAlign,
-		triggerColour,
-		triggerColourHover,
-		panelBackground,
-		itemColour,
-		itemColourHover,
 		borderColour,
 		borderColourHover,
 		borderColourGradient,
@@ -76,7 +74,10 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const addStore = () => {
 		setAttributes( {
-			stores: [ ...stores, { label: '', url: '', flagId: 0, flagUrl: '' } ],
+			stores: [
+				...stores,
+				{ label: '', url: '', flagId: 0, flagUrl: '' },
+			],
 		} );
 	};
 
@@ -90,7 +91,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			return;
 		}
 		const updated = [ ...stores ];
-		[ updated[ index ], updated[ target ] ] = [ updated[ target ], updated[ index ] ];
+		[ updated[ index ], updated[ target ] ] = [
+			updated[ target ],
+			updated[ index ],
+		];
 		setAttributes( { stores: updated } );
 	};
 
@@ -103,7 +107,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					textRow( {
 						key: 'trigger',
 						label: __( 'Trigger text', 'sgs-blocks' ),
-						attrs: { base: 'triggerColour', hover: 'triggerColourHover' },
+						attrs: {
+							base: 'triggerColour',
+							hover: 'triggerColourHover',
+						},
 						attributes,
 						setAttributes,
 					} ),
@@ -124,36 +131,59 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Store Selector Settings', 'sgs-blocks' ) }>
+				<PanelBody
+					title={ __( 'Store Selector Settings', 'sgs-blocks' ) }
+				>
 					<TextControl
 						label={ __( 'Trigger prefix', 'sgs-blocks' ) }
-						help={ __( 'Text shown before the flag and current store, e.g. "Select store".', 'sgs-blocks' ) }
+						help={ __(
+							'Text shown before the flag and current store, e.g. "Select store".',
+							'sgs-blocks'
+						) }
 						value={ triggerPrefix }
-						onChange={ ( val ) => setAttributes( { triggerPrefix: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { triggerPrefix: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<ToggleGroupControl
 						label={ __( 'Panel alignment', 'sgs-blocks' ) }
 						value={ panelAlign }
-						onChange={ ( val ) => setAttributes( { panelAlign: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { panelAlign: val } )
+						}
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="start" label={ __( 'Start', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="end" label={ __( 'End', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="start"
+							label={ __( 'Start', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="end"
+							label={ __( 'End', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 				</PanelBody>
 
 				<PanelBody title={ __( 'Stores', 'sgs-blocks' ) }>
 					{ stores.map( ( store, index ) => (
-						<div key={ index } className="sgs-store-selector-editor__item">
+						<div
+							key={ index }
+							className="sgs-store-selector-editor__item"
+						>
 							<TextControl
 								label={ __( 'Label', 'sgs-blocks' ) }
 								value={ store.label || '' }
-								onChange={ ( val ) => updateStore( index, 'label', val ) }
-								placeholder={ __( 'e.g. United Kingdom', 'sgs-blocks' ) }
+								onChange={ ( val ) =>
+									updateStore( index, 'label', val )
+								}
+								placeholder={ __(
+									'e.g. United Kingdom',
+									'sgs-blocks'
+								) }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
@@ -166,7 +196,11 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange={ ( val, extra ) => {
 									// One write for the url and, when it changed with it, the source.
 									const updated = [ ...stores ];
-									updated[ index ] = { ...updated[ index ], url: val, ...( extra || {} ) };
+									updated[ index ] = {
+										...updated[ index ],
+										url: val,
+										...( extra || {} ),
+									};
 									setAttributes( { stores: updated } );
 								} }
 								linkSource={ store.linkSource || '' }
@@ -176,13 +210,25 @@ export default function Edit( { attributes, setAttributes } ) {
 							<MediaUploadCheck>
 								<MediaUpload
 									onSelect={ ( media ) => {
-										updateStore( index, 'flagId', media.id );
-										updateStore( index, 'flagUrl', media.url );
+										updateStore(
+											index,
+											'flagId',
+											media.id
+										);
+										updateStore(
+											index,
+											'flagUrl',
+											media.url
+										);
 									} }
 									allowedTypes={ [ 'image' ] }
 									value={ store.flagId }
 									render={ ( { open } ) => (
-										<Flex align="center" gap={ 2 } className="sgs-store-selector-editor__flag-row">
+										<Flex
+											align="center"
+											gap={ 2 }
+											className="sgs-store-selector-editor__flag-row"
+										>
 											<FlexItem>
 												{ store.flagUrl ? (
 													<img
@@ -190,25 +236,55 @@ export default function Edit( { attributes, setAttributes } ) {
 														alt=""
 														width={ previewFlag.w }
 														height={ previewFlag.h }
-														style={ { display: 'block' } }
+														style={ {
+															display: 'block',
+														} }
 													/>
 												) : null }
 											</FlexItem>
 											<FlexItem>
-												<Button variant="secondary" onClick={ open }>
+												<Button
+													variant="secondary"
+													onClick={ open }
+												>
 													{ store.flagUrl
-														? __( 'Replace flag', 'sgs-blocks' )
-														: __( 'Upload flag', 'sgs-blocks' ) }
+														? __(
+																'Replace flag',
+																'sgs-blocks'
+														  )
+														: __(
+																'Upload flag',
+																'sgs-blocks'
+														  ) }
 												</Button>
 											</FlexItem>
 										</Flex>
 									) }
 								/>
 							</MediaUploadCheck>
-							<Flex justify="flex-end" gap={ 1 } className="sgs-store-selector-editor__actions">
-								<Button icon="arrow-up-alt2" onClick={ () => moveStore( index, -1 ) } disabled={ 0 === index } label={ __( 'Move up', 'sgs-blocks' ) } />
-								<Button icon="arrow-down-alt2" onClick={ () => moveStore( index, 1 ) } disabled={ index === stores.length - 1 } label={ __( 'Move down', 'sgs-blocks' ) } />
-								<Button icon="trash" isDestructive onClick={ () => removeStore( index ) } label={ __( 'Remove', 'sgs-blocks' ) } />
+							<Flex
+								justify="flex-end"
+								gap={ 1 }
+								className="sgs-store-selector-editor__actions"
+							>
+								<Button
+									icon="arrow-up-alt2"
+									onClick={ () => moveStore( index, -1 ) }
+									disabled={ 0 === index }
+									label={ __( 'Move up', 'sgs-blocks' ) }
+								/>
+								<Button
+									icon="arrow-down-alt2"
+									onClick={ () => moveStore( index, 1 ) }
+									disabled={ index === stores.length - 1 }
+									label={ __( 'Move down', 'sgs-blocks' ) }
+								/>
+								<Button
+									icon="trash"
+									isDestructive
+									onClick={ () => removeStore( index ) }
+									label={ __( 'Remove', 'sgs-blocks' ) }
+								/>
 							</Flex>
 						</div>
 					) ) }
@@ -219,7 +295,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TypographyControls
 						showFontFamily
 						attributes={ attributes }
@@ -228,38 +307,63 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Flag size', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Flag size', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveControl
 						label={ __( 'Flag width / height (px)', 'sgs-blocks' ) }
 					>
 						{ ( tier ) => {
-							const tierFlagSize = flagSize?.[ tier ] && typeof flagSize[ tier ] === 'object' ? flagSize[ tier ] : {};
+							const tierFlagSize =
+								flagSize?.[ tier ] &&
+								typeof flagSize[ tier ] === 'object'
+									? flagSize[ tier ]
+									: {};
 							const setTier = ( field, val ) => {
-								const nextTier = { ...tierFlagSize, [ field ]: val ? Number( val ) : undefined };
-								setAttributes( { flagSize: { ...flagSize, [ tier ]: nextTier } } );
+								const nextTier = {
+									...tierFlagSize,
+									[ field ]: val ? Number( val ) : undefined,
+								};
+								setAttributes( {
+									flagSize: {
+										...flagSize,
+										[ tier ]: nextTier,
+									},
+								} );
 							};
 							return (
 								<Flex gap={ 2 }>
 									<FlexItem>
 										<TextControl
-											label={ __( 'Width', 'sgs-blocks' ) }
+											label={ __(
+												'Width',
+												'sgs-blocks'
+											) }
 											type="number"
 											min={ 1 }
 											value={ tierFlagSize.w ?? '' }
 											placeholder="16"
-											onChange={ ( val ) => setTier( 'w', val ) }
+											onChange={ ( val ) =>
+												setTier( 'w', val )
+											}
 											__nextHasNoMarginBottom
 											__next40pxDefaultSize
 										/>
 									</FlexItem>
 									<FlexItem>
 										<TextControl
-											label={ __( 'Height', 'sgs-blocks' ) }
+											label={ __(
+												'Height',
+												'sgs-blocks'
+											) }
 											type="number"
 											min={ 1 }
 											value={ tierFlagSize.h ?? '' }
 											placeholder="12"
-											onChange={ ( val ) => setTier( 'h', val ) }
+											onChange={ ( val ) =>
+												setTier( 'h', val )
+											}
 											__nextHasNoMarginBottom
 											__next40pxDefaultSize
 										/>
@@ -270,31 +374,47 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveControl>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						value={ attributes.panelPadding }
-						onChange={ ( obj ) => setAttributes( { panelPadding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { panelPadding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Panel padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 					<ResponsiveControl label={ __( 'Gap', 'sgs-blocks' ) }>
 						{ ( tier ) => (
-							<SpacingControl
-								custom
+							<SgsLengthControl
+								presets
 								hideLabelFromVision
 								label={ __( 'Gap', 'sgs-blocks' ) }
 								value={ attributes.gap?.[ tier ] ?? '' }
 								onChange={ ( val ) =>
 									setAttributes( {
-										gap: { ...attributes.gap, [ tier ]: val || undefined },
+										gap: {
+											...attributes.gap,
+											[ tier ]: val || undefined,
+										},
 									} )
 								}
 							/>
@@ -302,30 +422,49 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveControl>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourStates={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: borderColour,
-								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColour: val ?? '',
+									} ),
 								gradientValue: borderColourGradient,
-								onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										borderColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: borderColourHover,
-								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColourHover: val ?? '',
+									} ),
 								gradientValue: borderColourHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										borderColourHoverGradient: val ?? '',
+									} ),
 							},
 						] }
 						radiusValues={ {
@@ -335,16 +474,26 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = 'base' === tier ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<span className="sgs-store-selector__trigger" style={ previewStyles.trigger }>
+				<span
+					className="sgs-store-selector__trigger"
+					style={ previewStyles.trigger }
+				>
 					{ triggerPrefix && (
-						<span className="sgs-store-selector__prefix">{ triggerPrefix }</span>
+						<span className="sgs-store-selector__prefix">
+							{ triggerPrefix }
+						</span>
 					) }
 					{ stores[ 0 ]?.flagUrl && (
 						<img
@@ -356,12 +505,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					) }
 					<span className="sgs-store-selector__current">
-						{ stores[ 0 ]?.label || __( 'Add a store…', 'sgs-blocks' ) }
+						{ stores[ 0 ]?.label ||
+							__( 'Add a store…', 'sgs-blocks' ) }
 					</span>
 				</span>
-				<ul className="sgs-store-selector__list" style={ previewStyles.list }>
+				<ul
+					className="sgs-store-selector__list"
+					style={ previewStyles.list }
+				>
 					{ stores.map( ( store, index ) => (
-						<li key={ index } className="sgs-store-selector__item" style={ previewStyles.item }>
+						<li
+							key={ index }
+							className="sgs-store-selector__item"
+							style={ previewStyles.item }
+						>
 							<span>
 								{ store.flagUrl && (
 									<img
@@ -372,7 +529,10 @@ export default function Edit( { attributes, setAttributes } ) {
 										height={ previewFlag.h }
 									/>
 								) }
-								<span>{ store.label || __( '(no label)', 'sgs-blocks' ) }</span>
+								<span>
+									{ store.label ||
+										__( '(no label)', 'sgs-blocks' ) }
+								</span>
 							</span>
 						</li>
 					) ) }

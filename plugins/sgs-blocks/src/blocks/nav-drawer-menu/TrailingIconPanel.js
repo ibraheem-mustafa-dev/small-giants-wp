@@ -11,13 +11,18 @@
  * Colour/size are block-level Styles-tab controls (`itemTrailingIconColour`/
  * `itemTrailingIconSize`), same split as the badge family.
  *
- * @package SGS\Blocks
+ * @package
  */
 import { __ } from '@wordpress/i18n';
 import { Button, PanelBody } from '@wordpress/components';
-import { IconPicker, ResponsiveOverride, SgsLengthControl } from '../../components';
+import {
+	IconPicker,
+	ResponsiveOverride,
+	SgsLengthControl,
+} from '../../components';
 
-const tierObject = ( value ) => ( value && 'object' === typeof value ? value : {} );
+const tierObject = ( value ) =>
+	value && 'object' === typeof value ? value : {};
 
 /**
  * @param {Object}   root0
@@ -31,11 +36,19 @@ const tierObject = ( value ) => ( value && 'object' === typeof value ? value : {
  * @param {Object}   root0.attributes    Block attributes.
  * @param {Function} root0.setAttributes The block's attribute setter.
  */
-export default function TrailingIconPanel( { resolvedItems, attributes, setAttributes } ) {
-	const topLevelItems = resolvedItems.filter( ( item ) => 0 === ( item.depth || 0 ) );
-	const map = attributes.itemTrailingIcons && 'object' === typeof attributes.itemTrailingIcons
-		? attributes.itemTrailingIcons
-		: {};
+export default function TrailingIconPanel( {
+	resolvedItems,
+	attributes,
+	setAttributes,
+} ) {
+	const topLevelItems = resolvedItems.filter(
+		( item ) => 0 === ( item.depth || 0 )
+	);
+	const map =
+		attributes.itemTrailingIcons &&
+		'object' === typeof attributes.itemTrailingIcons
+			? attributes.itemTrailingIcons
+			: {};
 
 	const setIcon = ( identifier, next ) => {
 		const nextMap = { ...map };
@@ -48,19 +61,41 @@ export default function TrailingIconPanel( { resolvedItems, attributes, setAttri
 	};
 
 	return (
-		<PanelBody title={ __( 'Trailing icon', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Trailing icon', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			{ 0 === topLevelItems.length && (
-				<p>{ __( 'Choose a menu above to set a trailing icon per item.', 'sgs-blocks' ) }</p>
+				<p>
+					{ __(
+						'Choose a menu above to set a trailing icon per item.',
+						'sgs-blocks'
+					) }
+				</p>
 			) }
 			{ topLevelItems.map( ( item ) => (
-				<div key={ item.identifier } className="sgs-nav-trailing-icon-row">
+				<div
+					key={ item.identifier }
+					className="sgs-nav-trailing-icon-row"
+				>
 					<IconPicker
 						label={ item.label }
-						sources={ [ 'lucide', 'wp-icon', 'dashicon', 'emoji', 'custom' ] }
+						sources={ [
+							'lucide',
+							'wp-icon',
+							'dashicon',
+							'emoji',
+							'custom',
+						] }
 						value={ map[ item.identifier ] || {} }
-						onChange={ ( next ) => setIcon( item.identifier, next ) }
+						onChange={ ( next ) =>
+							setIcon( item.identifier, next )
+						}
 					/>
-					{ !! ( map[ item.identifier ]?.name || map[ item.identifier ]?.svg ) && (
+					{ !! (
+						map[ item.identifier ]?.name ||
+						map[ item.identifier ]?.svg
+					) && (
 						<Button
 							variant="link"
 							isDestructive
@@ -75,17 +110,29 @@ export default function TrailingIconPanel( { resolvedItems, attributes, setAttri
 				<ResponsiveOverride
 					label={ __( 'Icon size', 'sgs-blocks' ) }
 					value={ tierObject( attributes.itemTrailingIconSize ) }
-					onChange={ ( obj ) => setAttributes( { itemTrailingIconSize: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { itemTrailingIconSize: obj } )
+					}
 				>
-					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					{ ( {
+						ownValue,
+						effectiveValue,
+						inherited,
+						setOwnValue,
+					} ) => (
 						<SgsLengthControl
 							scale="font-size"
 							label={ __( 'Icon size', 'sgs-blocks' ) }
 							hideLabelFromVision
-							help={ __( 'Applies to every trailing icon. Empty keeps the default 10px.', 'sgs-blocks' ) }
+							help={ __(
+								'Applies to every trailing icon. Empty keeps the default 10px.',
+								'sgs-blocks'
+							) }
 							value={ ownValue || '' }
 							placeholder={ inherited ? effectiveValue : '' }
-							onChange={ ( val ) => setOwnValue( val || undefined ) }
+							onChange={ ( val ) =>
+								setOwnValue( val || undefined )
+							}
 							presets={ false }
 						/>
 					) }

@@ -1,10 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import ServerSideRender from '../../components/ServerSideRender';
 import { useEffect, useMemo } from '@wordpress/element';
-import {
-	useBlockProps,
-	InspectorControls,
-} from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	SelectControl,
@@ -13,27 +10,72 @@ import {
 	TextControl,
 	Button,
 } from '@wordpress/components';
-import { SgsColourPanel, SsrPreviewGuard, ResponsiveControl, ResponsiveBoxControl, TypographyControls, ShadowControl, LinkPopoverField, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsSeparatorControl, SpacingControl, MediaGalleryPicker, textRow } from '../../components';
+import {
+	SgsColourPanel,
+	SsrPreviewGuard,
+	ResponsiveControl,
+	TypographyControls,
+	ShadowControl,
+	LinkPopoverField,
+	SgsBorderControl,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	SgsSeparatorControl,
+	SgsLengthControl,
+	MediaGalleryPicker,
+	textRow,
+} from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
 import { generateItemKey, withStableItemKeys } from '../../utils';
-import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToolsPanel,
+	ToolsPanelItem,
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import { SourcePanel, BrandTextStylePanel } from './source-controls';
 
 const LOGO_FIT_OPTIONS = [
-	{ label: __( 'Fit (whole logo, same proportions)', 'sgs-blocks' ), value: 'contain' },
-	{ label: __( 'Fill the tile (crops the edges)', 'sgs-blocks' ), value: 'cover' },
-	{ label: __( 'Stretch to the tile (may distort)', 'sgs-blocks' ), value: 'fill' },
+	{
+		label: __( 'Fit (whole logo, same proportions)', 'sgs-blocks' ),
+		value: 'contain',
+	},
+	{
+		label: __( 'Fill the tile (crops the edges)', 'sgs-blocks' ),
+		value: 'cover',
+	},
+	{
+		label: __( 'Stretch to the tile (may distort)', 'sgs-blocks' ),
+		value: 'fill',
+	},
 	{ label: __( 'Fit, never enlarge', 'sgs-blocks' ), value: 'scale-down' },
 	{ label: __( 'Natural size', 'sgs-blocks' ), value: 'none' },
 ];
 
 const LOGO_FIT_HELP = {
-	contain: __( 'The whole logo is scaled to the tile along its longer side, keeping its proportions.', 'sgs-blocks' ),
-	cover: __( 'The logo fills the whole tile and any overflow is cropped.', 'sgs-blocks' ),
-	fill: __( 'The logo is stretched to the tile shape, so it can look squashed or stretched.', 'sgs-blocks' ),
-	'scale-down': __( 'Like Fit, but a small logo is never enlarged past its own size.', 'sgs-blocks' ),
-	none: __( 'The logo keeps its own size and is cropped if it is bigger than the tile.', 'sgs-blocks' ),
+	contain: __(
+		'The whole logo is scaled to the tile along its longer side, keeping its proportions.',
+		'sgs-blocks'
+	),
+	cover: __(
+		'The logo fills the whole tile and any overflow is cropped.',
+		'sgs-blocks'
+	),
+	fill: __(
+		'The logo is stretched to the tile shape, so it can look squashed or stretched.',
+		'sgs-blocks'
+	),
+	'scale-down': __(
+		'Like Fit, but a small logo is never enlarged past its own size.',
+		'sgs-blocks'
+	),
+	none: __(
+		'The logo keeps its own size and is cropped if it is bigger than the tile.',
+		'sgs-blocks'
+	),
 };
 
 const LOGO_OBJECT_FIT_OPTIONS = [
@@ -82,15 +124,10 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 					}
 					onChange( next );
 				} }
-				onRemove={ () =>
-					onChange( { ...logo, media: null } )
-				}
+				onRemove={ () => onChange( { ...logo, media: null } ) }
 				allowedTypes={ [ 'image' ] }
 				label={ __( 'Select logo', 'sgs-blocks' ) }
-				instructionsImage={ __(
-					'Choose a logo image',
-					'sgs-blocks'
-				) }
+				instructionsImage={ __( 'Choose a logo image', 'sgs-blocks' ) }
 			/>
 
 			{ /* Per-item override of the block-wide `logoFit` default (Spec 35
@@ -124,7 +161,10 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 			/>
 
 			<ToggleControl
-				label={ __( 'Decorative — hide from screen readers', 'sgs-blocks' ) }
+				label={ __(
+					'Decorative — hide from screen readers',
+					'sgs-blocks'
+				) }
 				help={ __(
 					'Turn on for a purely decorative logo — screen readers will skip it entirely instead of reading alt text.',
 					'sgs-blocks'
@@ -167,10 +207,18 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 				targetMode="boolean"
 				onChange={ ( next ) => {
 					const patch = { ...logo };
-					if ( undefined !== next.url ) patch.linkUrl = next.url;
-					if ( undefined !== next.linkSource ) patch.linkUrlSource = next.linkSource;
-					if ( undefined !== next.linkTarget ) patch.linkTarget = next.linkTarget;
-					if ( undefined !== next.rel ) patch.linkRel = next.rel;
+					if ( undefined !== next.url ) {
+						patch.linkUrl = next.url;
+					}
+					if ( undefined !== next.linkSource ) {
+						patch.linkUrlSource = next.linkSource;
+					}
+					if ( undefined !== next.linkTarget ) {
+						patch.linkTarget = next.linkTarget;
+					}
+					if ( undefined !== next.rel ) {
+						patch.linkRel = next.rel;
+					}
 					onChange( patch );
 				} }
 			/>
@@ -214,8 +262,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		tileBorderColour,
 		tileBorderColourGradient,
 		tileShadow,
-		tileShadowColour,
-		tileShadowHover,
 		itemBackgroundColourHover,
 		itemBorderColourHover,
 		itemBorderColourHoverGradient,
@@ -230,9 +276,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		nameColourHover,
 	} = attributes;
 	// A marquee effect layer on the root makes the strip one marquee row.
-	const isScrolling = ( attributes.sgsMotion?.elements?.root?.effects ?? [] ).some(
-		( layer ) => layer?.effect === 'marquee'
-	);
+	const isScrolling = (
+		attributes.sgsMotion?.elements?.root?.effects ?? []
+	).some( ( layer ) => layer?.effect === 'marquee' );
 
 	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
 	// silently for items authored before this field existed. useMemo keeps
@@ -308,14 +354,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		} );
 	};
 
-	const className = [
-		'sgs-brand-strip',
-		'none' !== imageEffect ? `sgs-brand-strip--effect-${ imageEffect }` : '',
-		'row' === attributes.logoLayout ? 'sgs-brand-strip--layout-row' : '',
-	]
-		.filter( Boolean )
-		.join( ' ' );
-
 	// Contrast check for border colour against the brand strip's own background.
 	// When the background has a gradient sibling, skip the check (flat colour would be inaccurate).
 	const brandStripContrastAgainst =
@@ -324,15 +362,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			: '';
 
 	const blockProps = useBlockProps();
-
-	const trackStyle = {
-		'--sgs-logo-max-height': `${ maxHeight }px`,
-		'--sgs-logo-max-width': 'row' === attributes.logoLayout && attributes.logoMaxWidth > 0 ? `${ attributes.logoMaxWidth }px` : undefined,
-		'--sgs-logo-opacity': 'row' === attributes.logoLayout && ( attributes.logoOpacity ?? 100 ) < 100 ? ( attributes.logoOpacity ?? 100 ) / 100 : undefined,
-		'--sgs-columns-desktop': columns?.desktop ?? 8,
-		'--sgs-columns-tablet': columns?.tablet ?? 4,
-		'--sgs-columns-mobile': columns?.mobile ?? 2,
-	};
 
 	return (
 		<>
@@ -347,25 +376,39 @@ export default function Edit( { attributes, setAttributes } ) {
 				rows={ [
 					{
 						key: 'rootBackground',
-						label: __( 'Block background colour (root)', 'sgs-blocks' ),
+						label: __(
+							'Block background colour (root)',
+							'sgs-blocks'
+						),
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: backgroundColour,
-								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColour: val ?? '',
+									} ),
 								gradientValue: backgroundColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { backgroundColourGradient: val ?? '' } ),
+									setAttributes( {
+										backgroundColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: backgroundColourHover,
-								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColourHover: val ?? '',
+									} ),
 								gradientValue: backgroundColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										backgroundColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -378,18 +421,28 @@ export default function Edit( { attributes, setAttributes } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: textColour,
-								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
 								gradientValue: textColourGradient,
-								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										textColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										textColourHover: val ?? '',
+									} ),
 								linked: true,
-								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										textColourHoverGradient: val ?? '',
+									} ),
 								gradientValue: textColourHoverGradient,
 							},
 						],
@@ -403,15 +456,24 @@ export default function Edit( { attributes, setAttributes } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: tileBackgroundColour,
-								onChange: ( val ) => setAttributes( { tileBackgroundColour: val } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										tileBackgroundColour: val,
+									} ),
 								gradientValue: tileBackgroundColourGradient,
-								onGradientChange: ( val ) => setAttributes( { tileBackgroundColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										tileBackgroundColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: itemBackgroundColourHover,
-								onChange: ( val ) => setAttributes( { itemBackgroundColourHover: val } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										itemBackgroundColourHover: val,
+									} ),
 							},
 						],
 					},
@@ -423,19 +485,28 @@ export default function Edit( { attributes, setAttributes } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: tileBorderColour,
-								onChange: ( val ) => setAttributes( { tileBorderColour: val } ),
+								onChange: ( val ) =>
+									setAttributes( { tileBorderColour: val } ),
 								gradientValue: tileBorderColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { tileBorderColourGradient: val ?? '' } ),
+									setAttributes( {
+										tileBorderColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: itemBorderColourHover,
-								onChange: ( val ) => setAttributes( { itemBorderColourHover: val } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										itemBorderColourHover: val,
+									} ),
 								gradientValue: itemBorderColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { itemBorderColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										itemBorderColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -448,17 +519,21 @@ export default function Edit( { attributes, setAttributes } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: nameColour,
-								onChange: ( val ) => setAttributes( { nameColour: val } ),
+								onChange: ( val ) =>
+									setAttributes( { nameColour: val } ),
 								gradientValue: nameColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { nameColourGradient: val ?? '' } ),
+									setAttributes( {
+										nameColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: nameColourHover,
-								onChange: ( val ) => setAttributes( { nameColourHover: val } ),
-								},
+								onChange: ( val ) =>
+									setAttributes( { nameColourHover: val } ),
+							},
 						],
 					},
 					textRow( {
@@ -477,23 +552,37 @@ export default function Edit( { attributes, setAttributes } ) {
 						? [
 								{
 									key: 'brandText',
-									label: __( 'Brand text colour (no-logo fallback)', 'sgs-blocks' ),
+									label: __(
+										'Brand text colour (no-logo fallback)',
+										'sgs-blocks'
+									),
 									gradientCapable: true,
 									states: [
 										{
 											key: 'normal',
 											label: __( 'Normal', 'sgs-blocks' ),
 											value: brandTextColour,
-											onChange: ( val ) => setAttributes( { brandTextColour: val ?? '' } ),
-											gradientValue: brandTextColourGradient,
+											onChange: ( val ) =>
+												setAttributes( {
+													brandTextColour: val ?? '',
+												} ),
+											gradientValue:
+												brandTextColourGradient,
 											onGradientChange: ( val ) =>
-												setAttributes( { brandTextColourGradient: val ?? '' } ),
+												setAttributes( {
+													brandTextColourGradient:
+														val ?? '',
+												} ),
 										},
 										{
 											key: 'hover',
 											label: __( 'Hover', 'sgs-blocks' ),
 											value: brandTextColourHover,
-											onChange: ( val ) => setAttributes( { brandTextColourHover: val ?? '' } ),
+											onChange: ( val ) =>
+												setAttributes( {
+													brandTextColourHover:
+														val ?? '',
+												} ),
 										},
 									],
 								},
@@ -503,15 +592,25 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 			{ /* ── SETTINGS tab — behaviour / configuration ── */ }
 			<InspectorControls>
-				<SourcePanel attributes={ attributes } setAttributes={ setAttributes } />
+				<SourcePanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				{ /* The lines between brands. A marquee strip is one row, so it offers the
 				   between-columns line only. */ }
-				<PanelBody title={ __( 'Separators', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Separators', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsSeparatorControl
 						value={ attributes.separators }
-						onChange={ ( next ) => setAttributes( { separators: next } ) }
-						axes={ isScrolling ? [ 'column' ] : [ 'row', 'column' ] }
+						onChange={ ( next ) =>
+							setAttributes( { separators: next } )
+						}
+						axes={
+							isScrolling ? [ 'column' ] : [ 'row', 'column' ]
+						}
 					/>
 				</PanelBody>
 
@@ -520,7 +619,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				   so there is no dead "Add logo" affordance for a list the
 				   query already fills. */ }
 				{ 'manual' === ( source || 'manual' ) && (
-					<PanelBody title={ __( 'Logos', 'sgs-blocks' ) } initialOpen={ true }>
+					<PanelBody
+						title={ __( 'Logos', 'sgs-blocks' ) }
+						initialOpen={ true }
+					>
 						{ logos.map( ( logo, index ) => (
 							<LogoEditor
 								key={ logo._key || index }
@@ -538,9 +640,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							resolveItem={ resolveLogoItem }
 							allowedTypes={ [ 'image' ] }
 							multiple="add"
-							addLabel={ __( 'Add logos from the library', 'sgs-blocks' ) }
-						/>
-						{ ' ' }
+							addLabel={ __(
+								'Add logos from the library',
+								'sgs-blocks'
+							) }
+						/>{ ' ' }
 						<Button variant="secondary" onClick={ addLogo }>
 							{ __( 'Add empty logo', 'sgs-blocks' ) }
 						</Button>
@@ -562,18 +666,38 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
 						{ ( bp ) => {
 							const cols = {
-								desktop: { tier: 'desktop', value: columns?.desktop ?? 8, max: 12 },
-								tablet: { tier: 'tablet', value: columns?.tablet ?? 4, max: 10 },
-								mobile: { tier: 'mobile', value: columns?.mobile ?? 2, max: 6 },
+								desktop: {
+									tier: 'desktop',
+									value: columns?.desktop ?? 8,
+									max: 12,
+								},
+								tablet: {
+									tier: 'tablet',
+									value: columns?.tablet ?? 4,
+									max: 10,
+								},
+								mobile: {
+									tier: 'mobile',
+									value: columns?.mobile ?? 2,
+									max: 6,
+								},
 							}[ bp ];
 							return (
 								<RangeControl
 									label={ __( 'Columns', 'sgs-blocks' ) }
 									hideLabelFromVision
-									help={ __( 'How many logos fill the width on this device. Tiles resize to fit exactly this many.', 'sgs-blocks' ) }
+									help={ __(
+										'How many logos fill the width on this device. Tiles resize to fit exactly this many.',
+										'sgs-blocks'
+									) }
 									value={ cols.value }
 									onChange={ ( val ) =>
-										setAttributes( { columns: { ...columns, [ cols.tier ]: val } } )
+										setAttributes( {
+											columns: {
+												...columns,
+												[ cols.tier ]: val,
+											},
+										} )
 									}
 									min={ 1 }
 									max={ cols.max }
@@ -605,31 +729,55 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						value={ attributes.logoLayout || 'tiles' }
-						onChange={ ( val ) => setAttributes( { logoLayout: val || 'tiles' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { logoLayout: val || 'tiles' } )
+						}
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="tiles" label={ __( 'Tiles', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="row" label={ __( 'Row', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="tiles"
+							label={ __( 'Tiles', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="row"
+							label={ __( 'Row', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 					{ 'row' === attributes.logoLayout && (
 						<>
 							<RangeControl
-								label={ __( 'Logo max width (px)', 'sgs-blocks' ) }
-								help={ __( '0 lets a logo be as wide as its slot.', 'sgs-blocks' ) }
+								label={ __(
+									'Logo max width (px)',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'0 lets a logo be as wide as its slot.',
+									'sgs-blocks'
+								) }
 								value={ attributes.logoMaxWidth ?? 0 }
-								onChange={ ( val ) => setAttributes( { logoMaxWidth: val ?? 0 } ) }
+								onChange={ ( val ) =>
+									setAttributes( { logoMaxWidth: val ?? 0 } )
+								}
 								min={ 0 }
 								max={ 400 }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
 							<RangeControl
-								label={ __( 'Resting opacity (%)', 'sgs-blocks' ) }
-								help={ __( 'Each brand rises to full strength on hover or keyboard focus.', 'sgs-blocks' ) }
+								label={ __(
+									'Resting opacity (%)',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Each brand rises to full strength on hover or keyboard focus.',
+									'sgs-blocks'
+								) }
 								value={ attributes.logoOpacity ?? 100 }
-								onChange={ ( val ) => setAttributes( { logoOpacity: val ?? 100 } ) }
+								onChange={ ( val ) =>
+									setAttributes( { logoOpacity: val ?? 100 } )
+								}
 								min={ 0 }
 								max={ 100 }
 								__nextHasNoMarginBottom
@@ -639,18 +787,29 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ brandStripContrastAgainst }
 						radiusValues={ {
@@ -660,7 +819,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -689,8 +853,12 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<ToolsPanelItem
 						label={ __( 'Tile shape', 'sgs-blocks' ) }
-						hasValue={ () => ( tileShape || 'square' ) !== 'square' }
-						onDeselect={ () => setAttributes( { tileShape: 'square' } ) }
+						hasValue={ () =>
+							( tileShape || 'square' ) !== 'square'
+						}
+						onDeselect={ () =>
+							setAttributes( { tileShape: 'square' } )
+						}
 						isShownByDefault
 					>
 						<SelectControl
@@ -701,11 +869,22 @@ export default function Edit( { attributes, setAttributes } ) {
 							) }
 							value={ tileShape || 'square' }
 							options={ [
-								{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
-								{ label: __( 'Circle', 'sgs-blocks' ), value: 'circle' },
-								{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+								{
+									label: __( 'Square', 'sgs-blocks' ),
+									value: 'square',
+								},
+								{
+									label: __( 'Circle', 'sgs-blocks' ),
+									value: 'circle',
+								},
+								{
+									label: __( 'None', 'sgs-blocks' ),
+									value: 'none',
+								},
 							] }
-							onChange={ ( val ) => setAttributes( { tileShape: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { tileShape: val } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -714,10 +893,12 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ToolsPanelItem
 						label={ __( 'Tile padding', 'sgs-blocks' ) }
 						hasValue={ () => '0px' !== tilePadding }
-						onDeselect={ () => setAttributes( { tilePadding: '0px' } ) }
+						onDeselect={ () =>
+							setAttributes( { tilePadding: '0px' } )
+						}
 					>
-						<SpacingControl
-							custom
+						<SgsLengthControl
+							presets
 							label={ __( 'Tile padding', 'sgs-blocks' ) }
 							value={ tilePadding }
 							onChange={ ( val ) =>
@@ -738,7 +919,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						onDeselect={ () => setAttributes( { tileRadius: 16 } ) }
 					>
 						<RangeControl
-							label={ __( 'Tile corner radius (px)', 'sgs-blocks' ) }
+							label={ __(
+								'Tile corner radius (px)',
+								'sgs-blocks'
+							) }
 							value={ tileRadius }
 							onChange={ ( val ) =>
 								setAttributes( { tileRadius: val } )
@@ -771,10 +955,12 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ToolsPanelItem
 						label={ __( 'Gap between logos', 'sgs-blocks' ) }
 						hasValue={ () => '10px' !== logoGap }
-						onDeselect={ () => setAttributes( { logoGap: '10px' } ) }
+						onDeselect={ () =>
+							setAttributes( { logoGap: '10px' } )
+						}
 					>
-						<SpacingControl
-							custom
+						<SgsLengthControl
+							presets
 							label={ __( 'Gap between logos', 'sgs-blocks' ) }
 							value={ logoGap }
 							onChange={ ( val ) =>
@@ -789,7 +975,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ToolsPanelItem
 						label={ __( 'Tile border width', 'sgs-blocks' ) }
 						hasValue={ () => tileBorderWidth !== 0 }
-						onDeselect={ () => setAttributes( { tileBorderWidth: 0 } ) }
+						onDeselect={ () =>
+							setAttributes( { tileBorderWidth: 0 } )
+						}
 						isShownByDefault
 					>
 						<RangeControl
@@ -808,7 +996,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
-
 				</ToolsPanel>
 
 				<PanelBody
@@ -831,7 +1018,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<SelectControl
 						label={ __( 'Logo fit', 'sgs-blocks' ) }
-						help={ LOGO_FIT_HELP[ logoFit ] || LOGO_FIT_HELP.contain }
+						help={
+							LOGO_FIT_HELP[ logoFit ] || LOGO_FIT_HELP.contain
+						}
 						value={ logoFit }
 						options={ LOGO_FIT_OPTIONS }
 						onChange={ ( val ) =>
@@ -848,13 +1037,23 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<TextControl
 						label={ __( 'Title text', 'sgs-blocks' ) }
-						help={ __( 'Printed above the strip. Leave empty to show no title.', 'sgs-blocks' ) }
+						help={ __(
+							'Printed above the strip. Leave empty to show no title.',
+							'sgs-blocks'
+						) }
 						value={ attributes.title || '' }
 						onChange={ ( val ) => setAttributes( { title: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<TypographyControls fontSizePresets showFontFamily showTextAlign showTextWrap showTextStroke showTextColumns showWritingMode
+					<TypographyControls
+						fontSizePresets
+						showFontFamily
+						showTextAlign
+						showTextWrap
+						showTextStroke
+						showTextColumns
+						showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="title"
@@ -882,7 +1081,14 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ showNames && (
 						<>
-							<TypographyControls fontSizePresets showFontFamily showTextAlign showTextWrap showTextStroke showTextColumns showWritingMode
+							<TypographyControls
+								fontSizePresets
+								showFontFamily
+								showTextAlign
+								showTextWrap
+								showTextStroke
+								showTextColumns
+								showWritingMode
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								prefix="name"
@@ -891,10 +1097,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								showLetterSpacing
 							/>
 							<SelectControl
-								label={ __(
-									'Caption align',
-									'sgs-blocks'
-								) }
+								label={ __( 'Caption align', 'sgs-blocks' ) }
 								help={ __(
 									'Aligns the caption text within its tile. Leave as inherit unless a caption wraps onto two lines.',
 									'sgs-blocks'
@@ -911,7 +1114,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				<BrandTextStylePanel attributes={ attributes } setAttributes={ setAttributes } />
+				<BrandTextStylePanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				<PanelBody
 					title={ __( 'Strip spacing', 'sgs-blocks' ) }
@@ -919,15 +1125,25 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -938,10 +1154,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -949,22 +1173,25 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-					{ /* Product-brands source starts with an empty `logos[]` (the
+				{ /* Product-brands source starts with an empty `logos[]` (the
 					   query supplies the real list server-side) — only show the
 					   "add logos" empty state for the manual source. */ }
-					{ logos.length === 0 && 'product-brands' !== source ? (
-						<p className="sgs-brand-strip__empty">
-							{ __( 'Add logos in the sidebar panel.', 'sgs-blocks' ) }
-						</p>
-					) : (
-						<SsrPreviewGuard>
-							<ServerSideRender
-								block="sgs/brand-strip"
-								attributes={ attributes }
-							/>
-						</SsrPreviewGuard>
-					) }
-				</div>
-			</>
+				{ logos.length === 0 && 'product-brands' !== source ? (
+					<p className="sgs-brand-strip__empty">
+						{ __(
+							'Add logos in the sidebar panel.',
+							'sgs-blocks'
+						) }
+					</p>
+				) : (
+					<SsrPreviewGuard>
+						<ServerSideRender
+							block="sgs/brand-strip"
+							attributes={ attributes }
+						/>
+					</SsrPreviewGuard>
+				) }
+			</div>
+		</>
 	);
 }

@@ -24,9 +24,25 @@ import {
 	ToggleControl,
 	BaseControl,
 } from '@wordpress/components';
-import { SpacingControl, ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsColourPanel, DesignTokenPicker, GradientCapableColourControl, TypographyControls, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
 import {
-	colourVar,
+	ResponsiveControl,
+	ShadowControl,
+	SgsColourPanel,
+	DesignTokenPicker,
+	GradientCapableColourControl,
+	TypographyControls,
+	fillRow,
+	textRow,
+	SgsLengthControl,
+	SgsBorderControl,
+	MediaElementPanel,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	LinkUnderlineControl,
+} from '../../components';
+import {
 	fontSizeVar,
 	resolveTextColourPreviewStyle,
 	linkColourPreviewCss,
@@ -40,11 +56,19 @@ import {
 	gapVar,
 } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { RICH_TEXT_BODY, RICH_TEXT_EMPHASIS, RICH_TEXT_PLAIN } from '../../utils/rich-text-formats';
+import {
+	RICH_TEXT_BODY,
+	RICH_TEXT_EMPHASIS,
+	RICH_TEXT_PLAIN,
+} from '../../utils/rich-text-formats';
 
 // Variants whose stylesheet already paints a border: a chosen colour, style or
 // width overrides it part by part, as render.php emits each alone.
-const STYLESHEET_BORDER_VARIANTS = [ 'classic-card', 'minimal-quote', 'rating-led' ];
+const STYLESHEET_BORDER_VARIANTS = [
+	'classic-card',
+	'minimal-quote',
+	'rating-led',
+];
 
 // No-inline migration contract §B3 (D294): testimonial is a content-KIND
 // composite using only box+width, so it migrates BLOCK-PRIVATE — dropped
@@ -73,8 +97,25 @@ const VARIANTS = [
 		label: __( 'Inherit from slider', 'sgs-blocks' ),
 		thumb: (
 			<svg viewBox="0 0 48 32" aria-hidden="true">
-				<rect x="2" y="2" width="44" height="28" rx="3" fill="#fff" stroke="#cbd5d5" strokeDasharray="3 2" />
-				<text x="24" y="20" fontSize="9" textAnchor="middle" fill="#778">↑</text>
+				<rect
+					x="2"
+					y="2"
+					width="44"
+					height="28"
+					rx="3"
+					fill="#fff"
+					stroke="#cbd5d5"
+					strokeDasharray="3 2"
+				/>
+				<text
+					x="24"
+					y="20"
+					fontSize="9"
+					textAnchor="middle"
+					fill="#778"
+				>
+					↑
+				</text>
 			</svg>
 		),
 	},
@@ -83,8 +124,23 @@ const VARIANTS = [
 		label: __( 'Classic card', 'sgs-blocks' ),
 		thumb: (
 			<svg viewBox="0 0 48 32" aria-hidden="true">
-				<rect x="2" y="2" width="44" height="28" rx="3" fill="#fff" stroke="#cbd5d5" />
-				<rect x="8" y="7" width="16" height="3" rx="1.5" fill="#F87A1F" />
+				<rect
+					x="2"
+					y="2"
+					width="44"
+					height="28"
+					rx="3"
+					fill="#fff"
+					stroke="#cbd5d5"
+				/>
+				<rect
+					x="8"
+					y="7"
+					width="16"
+					height="3"
+					rx="1.5"
+					fill="#F87A1F"
+				/>
 				<rect x="8" y="13" width="32" height="2" rx="1" fill="#9aa" />
 				<rect x="8" y="17" width="28" height="2" rx="1" fill="#9aa" />
 				<circle cx="11" cy="25" r="3" fill="#0F7E80" />
@@ -97,9 +153,23 @@ const VARIANTS = [
 		label: __( 'Pull quote', 'sgs-blocks' ),
 		thumb: (
 			<svg viewBox="0 0 48 32" aria-hidden="true">
-				<rect x="2" y="2" width="44" height="28" rx="3" fill="#f2f5f5" />
+				<rect
+					x="2"
+					y="2"
+					width="44"
+					height="28"
+					rx="3"
+					fill="#f2f5f5"
+				/>
 				<rect x="7" y="8" width="34" height="4" rx="2" fill="#1E1E1E" />
-				<rect x="7" y="15" width="26" height="4" rx="2" fill="#1E1E1E" />
+				<rect
+					x="7"
+					y="15"
+					width="26"
+					height="4"
+					rx="2"
+					fill="#1E1E1E"
+				/>
 				<rect x="7" y="24" width="16" height="2" rx="1" fill="#778" />
 			</svg>
 		),
@@ -109,8 +179,18 @@ const VARIANTS = [
 		label: __( 'Rating led', 'sgs-blocks' ),
 		thumb: (
 			<svg viewBox="0 0 48 32" aria-hidden="true">
-				<rect x="2" y="2" width="44" height="28" rx="3" fill="#fff" stroke="#cbd5d5" />
-				<text x="8" y="14" fontSize="9" fontWeight="700" fill="#F87A1F">9.2</text>
+				<rect
+					x="2"
+					y="2"
+					width="44"
+					height="28"
+					rx="3"
+					fill="#fff"
+					stroke="#cbd5d5"
+				/>
+				<text x="8" y="14" fontSize="9" fontWeight="700" fill="#F87A1F">
+					9.2
+				</text>
 				<rect x="22" y="9" width="18" height="2" rx="1" fill="#9aa" />
 				<rect x="8" y="20" width="32" height="2" rx="1" fill="#9aa" />
 				<rect x="8" y="24" width="22" height="2" rx="1" fill="#9aa" />
@@ -122,9 +202,24 @@ const VARIANTS = [
 		label: __( 'Avatar spotlight', 'sgs-blocks' ),
 		thumb: (
 			<svg viewBox="0 0 48 32" aria-hidden="true">
-				<rect x="2" y="2" width="44" height="28" rx="3" fill="#fff" stroke="#cbd5d5" />
+				<rect
+					x="2"
+					y="2"
+					width="44"
+					height="28"
+					rx="3"
+					fill="#fff"
+					stroke="#cbd5d5"
+				/>
 				<circle cx="13" cy="16" r="8" fill="#0F7E80" />
-				<rect x="25" y="11" width="16" height="3" rx="1.5" fill="#445" />
+				<rect
+					x="25"
+					y="11"
+					width="16"
+					height="3"
+					rx="1.5"
+					fill="#445"
+				/>
 				<rect x="25" y="17" width="14" height="2" rx="1" fill="#9aa" />
 				<rect x="25" y="21" width="10" height="2" rx="1" fill="#9aa" />
 			</svg>
@@ -135,7 +230,15 @@ const VARIANTS = [
 		label: __( 'Corporate logo', 'sgs-blocks' ),
 		thumb: (
 			<svg viewBox="0 0 48 32" aria-hidden="true">
-				<rect x="2" y="2" width="44" height="28" rx="3" fill="#fff" stroke="#cbd5d5" />
+				<rect
+					x="2"
+					y="2"
+					width="44"
+					height="28"
+					rx="3"
+					fill="#fff"
+					stroke="#cbd5d5"
+				/>
 				<rect x="8" y="6" width="20" height="6" rx="1" fill="#0F7E80" />
 				<rect x="8" y="16" width="32" height="2" rx="1" fill="#9aa" />
 				<rect x="8" y="20" width="28" height="2" rx="1" fill="#9aa" />
@@ -148,8 +251,23 @@ const VARIANTS = [
 		label: __( 'Case study', 'sgs-blocks' ),
 		thumb: (
 			<svg viewBox="0 0 48 32" aria-hidden="true">
-				<rect x="2" y="2" width="44" height="28" rx="3" fill="#fff" stroke="#cbd5d5" />
-				<rect x="4" y="4" width="20" height="24" rx="2" fill="#0F7E80" />
+				<rect
+					x="2"
+					y="2"
+					width="44"
+					height="28"
+					rx="3"
+					fill="#fff"
+					stroke="#cbd5d5"
+				/>
+				<rect
+					x="4"
+					y="4"
+					width="20"
+					height="24"
+					rx="2"
+					fill="#0F7E80"
+				/>
 				<rect x="28" y="9" width="14" height="2" rx="1" fill="#9aa" />
 				<rect x="28" y="14" width="14" height="2" rx="1" fill="#9aa" />
 				<rect x="28" y="22" width="10" height="2" rx="1" fill="#445" />
@@ -161,7 +279,14 @@ const VARIANTS = [
 		label: __( 'Minimal', 'sgs-blocks' ),
 		thumb: (
 			<svg viewBox="0 0 48 32" aria-hidden="true">
-				<rect x="6" y="6" width="3" height="20" rx="1.5" fill="#F87A1F" />
+				<rect
+					x="6"
+					y="6"
+					width="3"
+					height="20"
+					rx="1.5"
+					fill="#F87A1F"
+				/>
 				<rect x="14" y="9" width="28" height="2" rx="1" fill="#9aa" />
 				<rect x="14" y="14" width="24" height="2" rx="1" fill="#9aa" />
 				<rect x="14" y="22" width="14" height="2" rx="1" fill="#445" />
@@ -170,7 +295,12 @@ const VARIANTS = [
 	},
 ];
 
-export default function Edit( { attributes, setAttributes, context, clientId } ) {
+export default function Edit( {
+	attributes,
+	setAttributes,
+	context,
+	clientId,
+} ) {
 	const {
 		maxWidth,
 		variant,
@@ -226,15 +356,12 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		nameFontSize,
 		backgroundColour,
 		backgroundColourGradient,
-		backgroundColourHover,
-		textColourHover,
 		borderColourHover,
 		borderColourHoverGradient,
 		transitionDuration,
 		transitionEasing,
 		scaleHover,
 		shadowHover,
-		shadowColourHover,
 		summaryColourHover,
 		nameColourHover,
 		roleColourHover,
@@ -273,30 +400,48 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	// Editor-canvas preview scope for the quote link-colour CSS below (Task 3,
 	// 2026-09-07).
 	const linkPreviewUid = `sgs-testimonial-link-preview-${ clientId }`;
-	const linkPreviewCss = linkUnderlinePreviewCss( `.${ linkPreviewUid } .sgs-testimonial__quote`, { mode: quoteLinkUnderline, thickness: quoteLinkUnderlineThickness, colour: quoteLinkUnderlineColour, colourHover: quoteLinkUnderlineColourHover, offset: quoteLinkUnderlineOffset, linkGradient: quoteLinkColourGradient } ) + linkColourPreviewCss(
-		`.${ linkPreviewUid } .sgs-testimonial__quote`,
-		quoteLinkColour,
-		quoteLinkColourHover,
-		quoteLinkColourGradient,
-		quoteLinkColourHoverGradient
-	)
+	const linkPreviewCss =
+		linkUnderlinePreviewCss(
+			`.${ linkPreviewUid } .sgs-testimonial__quote`,
+			{
+				mode: quoteLinkUnderline,
+				thickness: quoteLinkUnderlineThickness,
+				colour: quoteLinkUnderlineColour,
+				colourHover: quoteLinkUnderlineColourHover,
+				offset: quoteLinkUnderlineOffset,
+				linkGradient: quoteLinkColourGradient,
+			}
+		) +
+		linkColourPreviewCss(
+			`.${ linkPreviewUid } .sgs-testimonial__quote`,
+			quoteLinkColour,
+			quoteLinkColourHover,
+			quoteLinkColourGradient,
+			quoteLinkColourHoverGradient
+		);
 	// Block-wide link colours (every anchor inside the block).
-	const rootLinkPreviewCss = linkUnderlinePreviewCss( `.${ linkPreviewUid }`, {
-		mode: attributes.linkUnderline,
-		thickness: attributes.linkUnderlineThickness,
-		colour: attributes.linkUnderlineColour,
-		colourHover: attributes.linkUnderlineColourHover,
-		offset: attributes.linkUnderlineOffset,
-		linkGradient: attributes.linkColourGradient,
-	} ) + linkColourPreviewCss(
-		`.${ linkPreviewUid }`,
-		attributes.linkColour,
-		attributes.linkColourHover,
-		attributes.linkColourGradient,
-		attributes.linkColourHoverGradient
-	);
+	const rootLinkPreviewCss =
+		linkUnderlinePreviewCss( `.${ linkPreviewUid }`, {
+			mode: attributes.linkUnderline,
+			thickness: attributes.linkUnderlineThickness,
+			colour: attributes.linkUnderlineColour,
+			colourHover: attributes.linkUnderlineColourHover,
+			offset: attributes.linkUnderlineOffset,
+			linkGradient: attributes.linkColourGradient,
+		} ) +
+		linkColourPreviewCss(
+			`.${ linkPreviewUid }`,
+			attributes.linkColour,
+			attributes.linkColourHover,
+			attributes.linkColourGradient,
+			attributes.linkColourHoverGradient
+		);
 
-	const className = [ 'sgs-testimonial', `sgs-testimonial--${ effectiveVariant }`, linkPreviewUid ]
+	const className = [
+		'sgs-testimonial',
+		`sgs-testimonial--${ effectiveVariant }`,
+		linkPreviewUid,
+	]
 		.filter( Boolean )
 		.join( ' ' );
 
@@ -306,9 +451,31 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		style: {
 			...tierBoxLonghands( attributes.padding, previewTier, 'padding' ),
 			...tierBoxLonghands( attributes.margin, previewTier, 'margin' ),
-			...backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient ),
-			...textPaintPreview( attributes.textColour, attributes.backgroundColourGradient ? '' : attributes.textColourGradient ),
-			...sgsBorderPreview( { widthValues: attributes.borderWidth, styleValue: attributes.borderStyle, colourValue: attributes.borderColour, colourGradientValue: attributes.borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, undefined, { defaultBorder: STYLESHEET_BORDER_VARIANTS.includes( effectiveVariant ) } ),
+			...backgroundPaintPreview(
+				attributes.backgroundColour,
+				attributes.backgroundColourGradient
+			),
+			...textPaintPreview(
+				attributes.textColour,
+				attributes.backgroundColourGradient
+					? ''
+					: attributes.textColourGradient
+			),
+			...sgsBorderPreview(
+				{
+					widthValues: attributes.borderWidth,
+					styleValue: attributes.borderStyle,
+					colourValue: attributes.borderColour,
+					colourGradientValue: attributes.borderColourGradient,
+					radiusValues: attributes.borderRadius,
+				},
+				previewTier,
+				undefined,
+				{
+					defaultBorder:
+						STYLESHEET_BORDER_VARIANTS.includes( effectiveVariant ),
+				}
+			),
 			'--sgs-transition-duration': transitionDuration
 				? `${ transitionDuration }ms`
 				: undefined,
@@ -331,15 +498,24 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	// {attr}ColourGradient wins when set+valid, same recipe as quoteColour/
 	// quoteColourGradient above.
 	const summaryStyle = {
-		...resolveTextColourPreviewStyle( summaryColour, summaryColourGradient ),
+		...resolveTextColourPreviewStyle(
+			summaryColour,
+			summaryColourGradient
+		),
 		fontSize: summaryFontSize ? fontSizeVar( summaryFontSize ) : undefined,
 	};
 	const nameStyle = {
 		...typographyPreviewStyle( attributes, 'name', previewTier ),
 		...resolveTextColourPreviewStyle( nameColour, nameColourGradient ),
 	};
-	const roleStyle = resolveTextColourPreviewStyle( roleColour, roleColourGradient );
-	const orgStyle = resolveTextColourPreviewStyle( orgColour, orgColourGradient );
+	const roleStyle = resolveTextColourPreviewStyle(
+		roleColour,
+		roleColourGradient
+	);
+	const orgStyle = resolveTextColourPreviewStyle(
+		orgColour,
+		orgColourGradient
+	);
 	// ratingSize mirrors render.php:487/499, which sets the same pixel value as
 	// the frontend SVG stars' width/height. The canvas renders the rating as a
 	// text glyph ('★'.repeat(...)) rather than SVG, so the equivalent visual
@@ -351,20 +527,25 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	};
 
 	const showSummary =
-		effectiveVariant === 'pull-quote-editorial' || effectiveVariant === 'case-study-media';
+		effectiveVariant === 'pull-quote-editorial' ||
+		effectiveVariant === 'case-study-media';
 	const showAvatar =
 		effectiveVariant === 'classic-card' ||
 		effectiveVariant === 'avatar-spotlight' ||
 		effectiveVariant === 'corporate-logo';
 	const showLogo =
-		effectiveVariant === 'corporate-logo' || effectiveVariant === 'case-study-media';
+		effectiveVariant === 'corporate-logo' ||
+		effectiveVariant === 'case-study-media';
 	const showWork = effectiveVariant === 'case-study-media';
 	const showStarsControl =
-		effectiveVariant === 'classic-card' || effectiveVariant === 'rating-led';
+		effectiveVariant === 'classic-card' ||
+		effectiveVariant === 'rating-led';
 
 	return (
 		<>
-			{ ( rootLinkPreviewCss || linkPreviewCss ) && <style>{ rootLinkPreviewCss + linkPreviewCss }</style> }
+			{ ( rootLinkPreviewCss || linkPreviewCss ) && (
+				<style>{ rootLinkPreviewCss + linkPreviewCss }</style>
+			) }
 			{ /* D618/D619 — ONE grouped, SGS-OWNED colour panel, mounted FIRST
 			   so it sits at the top of the inspector Styles tab. Replaces the
 			   scattered DesignTokenPicker rows that used to sit in "Rating
@@ -447,13 +628,33 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								mode={ attributes.linkUnderline }
 								thickness={ attributes.linkUnderlineThickness }
 								colour={ attributes.linkUnderlineColour }
-								colourHover={ attributes.linkUnderlineColourHover }
+								colourHover={
+									attributes.linkUnderlineColourHover
+								}
 								offset={ attributes.linkUnderlineOffset }
-								onModeChange={ ( val ) => setAttributes( { linkUnderline: val } ) }
-								onThicknessChange={ ( val ) => setAttributes( { linkUnderlineThickness: val } ) }
-								onColourChange={ ( val ) => setAttributes( { linkUnderlineColour: val } ) }
-								onColourHoverChange={ ( val ) => setAttributes( { linkUnderlineColourHover: val } ) }
-								onOffsetChange={ ( val ) => setAttributes( { linkUnderlineOffset: val } ) }
+								onModeChange={ ( val ) =>
+									setAttributes( { linkUnderline: val } )
+								}
+								onThicknessChange={ ( val ) =>
+									setAttributes( {
+										linkUnderlineThickness: val,
+									} )
+								}
+								onColourChange={ ( val ) =>
+									setAttributes( {
+										linkUnderlineColour: val,
+									} )
+								}
+								onColourHoverChange={ ( val ) =>
+									setAttributes( {
+										linkUnderlineColourHover: val,
+									} )
+								}
+								onOffsetChange={ ( val ) =>
+									setAttributes( {
+										linkUnderlineOffset: val,
+									} )
+								}
 							/>
 						),
 					},
@@ -466,11 +667,15 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: borderColourHover,
 								onChange: ( val ) =>
-									setAttributes( { borderColourHover: val ?? '' } ),
+									setAttributes( {
+										borderColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: borderColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { borderColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										borderColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -494,14 +699,18 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								linked: true,
 								gradientValue: nameColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { nameColourGradient: val ?? '' } ),
+									setAttributes( {
+										nameColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: nameColourHover,
 								onChange: ( val ) =>
-									setAttributes( { nameColourHover: val ?? '' } ),
+									setAttributes( {
+										nameColourHover: val ?? '',
+									} ),
 								linked: true,
 							},
 						],
@@ -520,16 +729,20 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								linked: true,
 								gradientValue: roleColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { roleColourGradient: val ?? '' } ),
+									setAttributes( {
+										roleColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: roleColourHover,
 								onChange: ( val ) =>
-									setAttributes( { roleColourHover: val ?? '' } ),
+									setAttributes( {
+										roleColourHover: val ?? '',
+									} ),
 								linked: true,
-								},
+							},
 						],
 					},
 					{
@@ -546,14 +759,18 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								linked: true,
 								gradientValue: orgColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { orgColourGradient: val ?? '' } ),
+									setAttributes( {
+										orgColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: orgColourHover,
 								onChange: ( val ) =>
-									setAttributes( { orgColourHover: val ?? '' } ),
+									setAttributes( {
+										orgColourHover: val ?? '',
+									} ),
 								linked: true,
 							},
 						],
@@ -568,18 +785,24 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: ratingColour,
 								onChange: ( val ) =>
-									setAttributes( { ratingColour: val ?? '' } ),
+									setAttributes( {
+										ratingColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: ratingColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { ratingColourGradient: val ?? '' } ),
+									setAttributes( {
+										ratingColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: ratingColourHover,
 								onChange: ( val ) =>
-									setAttributes( { ratingColourHover: val ?? '' } ),
+									setAttributes( {
+										ratingColourHover: val ?? '',
+									} ),
 								linked: true,
 							},
 						],
@@ -744,7 +967,9 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 											value={ attributes[ key ] }
 											allowedTypes={ [ 'image' ] }
 											onChange={ ( media ) =>
-												setAttributes( { [ key ]: media } )
+												setAttributes( {
+													[ key ]: media,
+												} )
 											}
 										/>
 									);
@@ -772,7 +997,10 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						) }
 						{ showLogo && (
 							<MediaPanel
-								label={ __( 'Organisation logo', 'sgs-blocks' ) }
+								label={ __(
+									'Organisation logo',
+									'sgs-blocks'
+								) }
 								value={ orgLogo }
 								allowedTypes={ [ 'image' ] }
 								onChange={ ( media ) =>
@@ -803,7 +1031,10 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						     above (D622 is superseded). */ }
 						{ showWork && (
 							<MediaPanel
-								label={ __( 'Work image or video', 'sgs-blocks' ) }
+								label={ __(
+									'Work image or video',
+									'sgs-blocks'
+								) }
 								value={ workMedia }
 								allowedTypes={ [ 'image', 'video' ] }
 								onChange={ ( media ) =>
@@ -827,7 +1058,9 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								) }
 								checked={ !! workMediaDecorative }
 								onChange={ ( val ) =>
-									setAttributes( { workMediaDecorative: val } )
+									setAttributes( {
+										workMediaDecorative: val,
+									} )
 								}
 								__nextHasNoMarginBottom
 							/>
@@ -848,9 +1081,17 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								blockSlug="sgs/testimonial"
 								insertion="element"
 								atoms={ [ 'object-fit', 'focal-point' ] }
-								mediaType={ workMedia?.type === 'video' ? 'video' : 'image' }
+								mediaType={
+									workMedia?.type === 'video'
+										? 'video'
+										: 'image'
+								}
 								scope="element"
-								previewUrl={ workMedia?.type === 'video' ? '' : workMedia?.url || '' }
+								previewUrl={
+									workMedia?.type === 'video'
+										? ''
+										: workMedia?.url || ''
+								}
 							/>
 						) }
 					</PanelBody>
@@ -858,7 +1099,8 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 
 				{ /* ── Rating — visibility + content (behaviour). Appearance
 				     [colour, size] moved to the Styles tab below. ── */ }
-				{ ( effectiveVariant === 'rating-led' || effectiveVariant === 'classic-card' ) && (
+				{ ( effectiveVariant === 'rating-led' ||
+					effectiveVariant === 'classic-card' ) && (
 					<ToolsPanel
 						label={ __( 'Rating', 'sgs-blocks' ) }
 						resetAll={ () =>
@@ -881,7 +1123,9 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						<ToolsPanelItem
 							label={ __( 'Show a rating', 'sgs-blocks' ) }
 							hasValue={ () => showRating !== false }
-							onDeselect={ () => setAttributes( { showRating: false } ) }
+							onDeselect={ () =>
+								setAttributes( { showRating: false } )
+							}
 							isShownByDefault
 						>
 							<ToggleControl
@@ -901,18 +1145,26 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 							<ToolsPanelItem
 								label={ __( 'Rating type', 'sgs-blocks' ) }
 								hasValue={ () => ratingType !== 'stars' }
-								onDeselect={ () => setAttributes( { ratingType: 'stars' } ) }
+								onDeselect={ () =>
+									setAttributes( { ratingType: 'stars' } )
+								}
 							>
 								<SelectControl
 									label={ __( 'Rating type', 'sgs-blocks' ) }
 									value={ ratingType }
 									options={ [
 										{
-											label: __( 'Stars (out of 5)', 'sgs-blocks' ),
+											label: __(
+												'Stars (out of 5)',
+												'sgs-blocks'
+											),
 											value: 'stars',
 										},
 										{
-											label: __( 'Numeric score', 'sgs-blocks' ),
+											label: __(
+												'Numeric score',
+												'sgs-blocks'
+											),
 											value: 'scale',
 										},
 									] }
@@ -931,13 +1183,17 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								<ToolsPanelItem
 									label={ __( 'Stars', 'sgs-blocks' ) }
 									hasValue={ () => ratingStars !== 0 }
-									onDeselect={ () => setAttributes( { ratingStars: 0 } ) }
+									onDeselect={ () =>
+										setAttributes( { ratingStars: 0 } )
+									}
 								>
 									<RangeControl
 										label={ __( 'Stars', 'sgs-blocks' ) }
 										value={ ratingStars }
 										onChange={ ( val ) =>
-											setAttributes( { ratingStars: val } )
+											setAttributes( {
+												ratingStars: val,
+											} )
 										}
 										min={ 0 }
 										max={ 5 }
@@ -954,10 +1210,15 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 									<ToolsPanelItem
 										label={ __( 'Score', 'sgs-blocks' ) }
 										hasValue={ () => ratingScale !== 0 }
-										onDeselect={ () => setAttributes( { ratingScale: 0 } ) }
+										onDeselect={ () =>
+											setAttributes( { ratingScale: 0 } )
+										}
 									>
 										<RangeControl
-											label={ __( 'Score', 'sgs-blocks' ) }
+											label={ __(
+												'Score',
+												'sgs-blocks'
+											) }
 											value={ ratingScale }
 											onChange={ ( val ) =>
 												setAttributes( {
@@ -972,9 +1233,18 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 										/>
 									</ToolsPanelItem>
 									<ToolsPanelItem
-										label={ __( 'Out of (max)', 'sgs-blocks' ) }
-										hasValue={ () => ratingScaleMax !== '10' }
-										onDeselect={ () => setAttributes( { ratingScaleMax: '10' } ) }
+										label={ __(
+											'Out of (max)',
+											'sgs-blocks'
+										) }
+										hasValue={ () =>
+											ratingScaleMax !== '10'
+										}
+										onDeselect={ () =>
+											setAttributes( {
+												ratingScaleMax: '10',
+											} )
+										}
 									>
 										<TextControl
 											label={ __(
@@ -996,9 +1266,14 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						{ showRating && effectiveVariant === 'rating-led' && (
 							<>
 								<ToolsPanelItem
-									label={ __( 'Verified badge', 'sgs-blocks' ) }
+									label={ __(
+										'Verified badge',
+										'sgs-blocks'
+									) }
 									hasValue={ () => verified !== false }
-									onDeselect={ () => setAttributes( { verified: false } ) }
+									onDeselect={ () =>
+										setAttributes( { verified: false } )
+									}
 								>
 									<ToggleControl
 										label={ __(
@@ -1013,9 +1288,14 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 									/>
 								</ToolsPanelItem>
 								<ToolsPanelItem
-									label={ __( 'Source platform', 'sgs-blocks' ) }
+									label={ __(
+										'Source platform',
+										'sgs-blocks'
+									) }
 									hasValue={ () => sourcePlatform !== '' }
-									onDeselect={ () => setAttributes( { sourcePlatform: '' } ) }
+									onDeselect={ () =>
+										setAttributes( { sourcePlatform: '' } )
+									}
 								>
 									<TextControl
 										label={ __(
@@ -1039,10 +1319,15 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								<ToolsPanelItem
 									label={ __( 'Review date', 'sgs-blocks' ) }
 									hasValue={ () => reviewDate !== '' }
-									onDeselect={ () => setAttributes( { reviewDate: '' } ) }
+									onDeselect={ () =>
+										setAttributes( { reviewDate: '' } )
+									}
 								>
 									<TextControl
-										label={ __( 'Review date', 'sgs-blocks' ) }
+										label={ __(
+											'Review date',
+											'sgs-blocks'
+										) }
 										value={ reviewDate }
 										onChange={ ( val ) =>
 											setAttributes( { reviewDate: val } )
@@ -1061,10 +1346,15 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 							<ToolsPanelItem
 								label={ __( 'Star size (px)', 'sgs-blocks' ) }
 								hasValue={ () => ratingSize !== 16 }
-								onDeselect={ () => setAttributes( { ratingSize: 16 } ) }
+								onDeselect={ () =>
+									setAttributes( { ratingSize: 16 } )
+								}
 							>
 								<RangeControl
-									label={ __( 'Star size (px)', 'sgs-blocks' ) }
+									label={ __(
+										'Star size (px)',
+										'sgs-blocks'
+									) }
 									value={ ratingSize }
 									onChange={ ( val ) =>
 										setAttributes( { ratingSize: val } )
@@ -1105,8 +1395,11 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-					{ (() => {
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					{ ( () => {
 						const testimonialContrastAgainst =
 							backgroundColour && ! backgroundColourGradient
 								? backgroundColour
@@ -1114,25 +1407,49 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						return (
 							<SgsBorderControl
 								widthValues={ attributes.borderWidth ?? {} }
-								onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+								onWidthChange={ ( next ) =>
+									setAttributes( { borderWidth: next } )
+								}
 								widthPresets={ [ '10', '20', '30' ] }
 								styleValue={ attributes.borderStyle }
-								onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
-								colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+								onStyleChange={ ( val ) =>
+									setAttributes( { borderStyle: val } )
+								}
+								colourLabel={ __(
+									'Border colour',
+									'sgs-blocks'
+								) }
 								colourValue={ attributes.borderColour }
-								onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
-								colourGradientValue={ attributes.borderColourGradient }
-								onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+								onColourChange={ ( val ) =>
+									setAttributes( { borderColour: val ?? '' } )
+								}
+								colourGradientValue={
+									attributes.borderColourGradient
+								}
+								onColourGradientChange={ ( val ) =>
+									setAttributes( {
+										borderColourGradient: val ?? '',
+									} )
+								}
 								colourLinked={ true }
 								contrastAgainst={ testimonialContrastAgainst }
 								radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+									base:
+										attributes.borderRadius?.desktop ?? {},
+									tablet:
+										attributes.borderRadius?.tablet ?? {},
+									mobile:
+										attributes.borderRadius?.mobile ?? {},
+								} }
 								onRadiusChange={ ( tier, next ) => {
-									const key = tier === 'base' ? 'desktop' : tier;
-									setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+									const key =
+										tier === 'base' ? 'desktop' : tier;
+									setAttributes( {
+										borderRadius: {
+											...attributes.borderRadius,
+											[ key ]: next,
+										},
+									} );
 								} }
 							/>
 						);
@@ -1196,8 +1513,14 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								label={ __( 'Quote font style', 'sgs-blocks' ) }
 								value={ quoteFontStyle }
 								options={ [
-									{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
-									{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
+									{
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: 'normal',
+									},
+									{
+										label: __( 'Italic', 'sgs-blocks' ),
+										value: 'italic',
+									},
 								] }
 								onChange={ ( val ) =>
 									setAttributes( { quoteFontStyle: val } )
@@ -1214,7 +1537,10 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 							}
 						>
 							<TextControl
-								label={ __( 'Quote line height', 'sgs-blocks' ) }
+								label={ __(
+									'Quote line height',
+									'sgs-blocks'
+								) }
 								help={ __(
 									'CSS value (e.g. 1.6, 2em). Leave empty for the variant default.',
 									'sgs-blocks'
@@ -1234,9 +1560,12 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								setAttributes( { quoteMarginBottom: '' } )
 							}
 						>
-							<SpacingControl
-								custom
-								label={ __( 'Quote spacing below', 'sgs-blocks' ) }
+							<SgsLengthControl
+								presets
+								label={ __(
+									'Quote spacing below',
+									'sgs-blocks'
+								) }
 								value={ quoteMarginBottom }
 								onChange={ ( val ) =>
 									setAttributes( { quoteMarginBottom: val } )
@@ -1256,18 +1585,24 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 									label: __( 'Normal', 'sgs-blocks' ),
 									value: quoteColour,
 									onChange: ( val ) =>
-										setAttributes( { quoteColour: val ?? '' } ),
+										setAttributes( {
+											quoteColour: val ?? '',
+										} ),
 									linked: true,
 									gradientValue: quoteColourGradient,
 									onGradientChange: ( val ) =>
-										setAttributes( { quoteColourGradient: val ?? '' } ),
+										setAttributes( {
+											quoteColourGradient: val ?? '',
+										} ),
 								},
 								{
 									key: 'hover',
 									label: __( 'Hover', 'sgs-blocks' ),
 									value: quoteColourHover,
 									onChange: ( val ) =>
-										setAttributes( { quoteColourHover: val ?? '' } ),
+										setAttributes( {
+											quoteColourHover: val ?? '',
+										} ),
 									linked: true,
 								},
 							] }
@@ -1280,22 +1615,31 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 									label: __( 'Normal', 'sgs-blocks' ),
 									value: quoteLinkColour,
 									onChange: ( val ) =>
-										setAttributes( { quoteLinkColour: val ?? '' } ),
+										setAttributes( {
+											quoteLinkColour: val ?? '',
+										} ),
 									linked: true,
 									gradientValue: quoteLinkColourGradient,
 									onGradientChange: ( val ) =>
-										setAttributes( { quoteLinkColourGradient: val ?? '' } ),
+										setAttributes( {
+											quoteLinkColourGradient: val ?? '',
+										} ),
 								},
 								{
 									key: 'hover',
 									label: __( 'Hover', 'sgs-blocks' ),
 									value: quoteLinkColourHover,
 									onChange: ( val ) =>
-										setAttributes( { quoteLinkColourHover: val ?? '' } ),
+										setAttributes( {
+											quoteLinkColourHover: val ?? '',
+										} ),
 									linked: true,
 									gradientValue: quoteLinkColourHoverGradient,
 									onGradientChange: ( val ) =>
-										setAttributes( { quoteLinkColourHoverGradient: val ?? '' } ),
+										setAttributes( {
+											quoteLinkColourHoverGradient:
+												val ?? '',
+										} ),
 								},
 							] }
 						/>
@@ -1305,16 +1649,37 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 							colour={ quoteLinkUnderlineColour }
 							colourHover={ quoteLinkUnderlineColourHover }
 							offset={ quoteLinkUnderlineOffset }
-							onModeChange={ ( val ) => setAttributes( { quoteLinkUnderline: val } ) }
-							onThicknessChange={ ( val ) => setAttributes( { quoteLinkUnderlineThickness: val } ) }
-							onColourChange={ ( val ) => setAttributes( { quoteLinkUnderlineColour: val } ) }
-							onColourHoverChange={ ( val ) => setAttributes( { quoteLinkUnderlineColourHover: val } ) }
-							onOffsetChange={ ( val ) => setAttributes( { quoteLinkUnderlineOffset: val } ) }
+							onModeChange={ ( val ) =>
+								setAttributes( { quoteLinkUnderline: val } )
+							}
+							onThicknessChange={ ( val ) =>
+								setAttributes( {
+									quoteLinkUnderlineThickness: val,
+								} )
+							}
+							onColourChange={ ( val ) =>
+								setAttributes( {
+									quoteLinkUnderlineColour: val,
+								} )
+							}
+							onColourHoverChange={ ( val ) =>
+								setAttributes( {
+									quoteLinkUnderlineColourHover: val,
+								} )
+							}
+							onOffsetChange={ ( val ) =>
+								setAttributes( {
+									quoteLinkUnderlineOffset: val,
+								} )
+							}
 						/>
 						{ showSummary && (
 							<>
 								<ToolsPanelItem
-									label={ __( 'Summary font size', 'sgs-blocks' ) }
+									label={ __(
+										'Summary font size',
+										'sgs-blocks'
+									) }
 									hasValue={ () => !! summaryFontSize }
 									onDeselect={ () =>
 										setAttributes( { summaryFontSize: '' } )
@@ -1327,7 +1692,9 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 										) }
 										value={ summaryFontSize }
 										onChange={ ( val ) =>
-											setAttributes( { summaryFontSize: val } )
+											setAttributes( {
+												summaryFontSize: val,
+											} )
 										}
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
@@ -1335,25 +1702,37 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								</ToolsPanelItem>
 								{ /* Moved in from the shared SgsColourPanel (D622). */ }
 								<DesignTokenPicker
-									label={ __( 'Summary colour', 'sgs-blocks' ) }
+									label={ __(
+										'Summary colour',
+										'sgs-blocks'
+									) }
 									states={ [
 										{
 											key: 'normal',
 											label: __( 'Normal', 'sgs-blocks' ),
 											value: summaryColour,
 											onChange: ( val ) =>
-												setAttributes( { summaryColour: val ?? '' } ),
+												setAttributes( {
+													summaryColour: val ?? '',
+												} ),
 											linked: true,
-											gradientValue: summaryColourGradient,
+											gradientValue:
+												summaryColourGradient,
 											onGradientChange: ( val ) =>
-												setAttributes( { summaryColourGradient: val ?? '' } ),
+												setAttributes( {
+													summaryColourGradient:
+														val ?? '',
+												} ),
 										},
 										{
 											key: 'hover',
 											label: __( 'Hover', 'sgs-blocks' ),
 											value: summaryColourHover,
 											onChange: ( val ) =>
-												setAttributes( { summaryColourHover: val ?? '' } ),
+												setAttributes( {
+													summaryColourHover:
+														val ?? '',
+												} ),
 											linked: true,
 										},
 									] }
@@ -1377,15 +1756,28 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						 * but adds the full extended show* set for comprehensive control.
 						 */ }
 						<ToolsPanelItem
-							label={ __( 'Quote and name typography', 'sgs-blocks' ) }
+							label={ __(
+								'Quote and name typography',
+								'sgs-blocks'
+							) }
 							hasValue={ () => {
 								const quoteHasVal = !! quoteFontSize;
-								const nameObj = nameFontSize && 'object' === typeof nameFontSize ? nameFontSize : {};
-								const nameHasVal = !! nameObj.desktop || !! nameObj.tablet || !! nameObj.mobile;
+								const nameObj =
+									nameFontSize &&
+									'object' === typeof nameFontSize
+										? nameFontSize
+										: {};
+								const nameHasVal =
+									!! nameObj.desktop ||
+									!! nameObj.tablet ||
+									!! nameObj.mobile;
 								return quoteHasVal || nameHasVal;
 							} }
 							onDeselect={ () =>
-								setAttributes( { quoteFontSize: '', nameFontSize: {} } )
+								setAttributes( {
+									quoteFontSize: '',
+									nameFontSize: {},
+								} )
 							}
 							isShownByDefault
 						>
@@ -1415,7 +1807,10 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 									},
 									{
 										key: 'name',
-										label: __( 'Reviewer name', 'sgs-blocks' ),
+										label: __(
+											'Reviewer name',
+											'sgs-blocks'
+										),
 										prefix: 'name',
 										showSize: true,
 										showWeight: true,
@@ -1447,11 +1842,38 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								label={ __( 'Name font weight', 'sgs-blocks' ) }
 								value={ nameFontWeight }
 								options={ [
-									{ label: __( 'Regular (400)', 'sgs-blocks' ), value: '400' },
-									{ label: __( 'Medium (500)', 'sgs-blocks' ), value: '500' },
-									{ label: __( 'Semi-bold (600)', 'sgs-blocks' ), value: '600' },
-									{ label: __( 'Bold (700)', 'sgs-blocks' ), value: '700' },
-									{ label: __( 'Extra bold (800)', 'sgs-blocks' ), value: '800' },
+									{
+										label: __(
+											'Regular (400)',
+											'sgs-blocks'
+										),
+										value: '400',
+									},
+									{
+										label: __(
+											'Medium (500)',
+											'sgs-blocks'
+										),
+										value: '500',
+									},
+									{
+										label: __(
+											'Semi-bold (600)',
+											'sgs-blocks'
+										),
+										value: '600',
+									},
+									{
+										label: __( 'Bold (700)', 'sgs-blocks' ),
+										value: '700',
+									},
+									{
+										label: __(
+											'Extra bold (800)',
+											'sgs-blocks'
+										),
+										value: '800',
+									},
 								] }
 								onChange={ ( val ) =>
 									setAttributes( { nameFontWeight: val } )
@@ -1481,7 +1903,10 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						}
 					>
 						<ToolsPanelItem
-							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+							label={ __(
+								'Transition duration (ms)',
+								'sgs-blocks'
+							) }
 							hasValue={ () => transitionDuration !== '300' }
 							onDeselect={ () =>
 								setAttributes( { transitionDuration: '300' } )
@@ -1502,23 +1927,45 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Transition easing', 'sgs-blocks' ) }
-							hasValue={ () => transitionEasing !== 'ease-in-out' }
+							hasValue={ () =>
+								transitionEasing !== 'ease-in-out'
+							}
 							onDeselect={ () =>
-								setAttributes( { transitionEasing: 'ease-in-out' } )
+								setAttributes( {
+									transitionEasing: 'ease-in-out',
+								} )
 							}
 						>
 							<SelectControl
-								label={ __( 'Transition easing', 'sgs-blocks' ) }
+								label={ __(
+									'Transition easing',
+									'sgs-blocks'
+								) }
 								value={ transitionEasing }
 								options={ [
-									{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-									{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-									{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
 									{
-										label: __( 'Ease in–out', 'sgs-blocks' ),
+										label: __( 'Ease', 'sgs-blocks' ),
+										value: 'ease',
+									},
+									{
+										label: __( 'Ease in', 'sgs-blocks' ),
+										value: 'ease-in',
+									},
+									{
+										label: __( 'Ease out', 'sgs-blocks' ),
+										value: 'ease-out',
+									},
+									{
+										label: __(
+											'Ease in–out',
+											'sgs-blocks'
+										),
 										value: 'ease-in-out',
 									},
-									{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+									{
+										label: __( 'Linear', 'sgs-blocks' ),
+										value: 'linear',
+									},
 								] }
 								onChange={ ( val ) =>
 									setAttributes( { transitionEasing: val } )
@@ -1530,28 +1977,45 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						<ToolsPanelItem
 							label={ __( 'Hover scale', 'sgs-blocks' ) }
 							hasValue={ () => !! scaleHover }
-							onDeselect={ () => setAttributes( { scaleHover: '' } ) }
+							onDeselect={ () =>
+								setAttributes( { scaleHover: '' } )
+							}
 							isShownByDefault
 						>
 							<SelectControl
 								label={ __( 'Hover scale', 'sgs-blocks' ) }
 								value={ scaleHover }
 								options={ [
-									{ label: __( 'None', 'sgs-blocks' ), value: '' },
 									{
-										label: __( 'Subtle (1.02)', 'sgs-blocks' ),
+										label: __( 'None', 'sgs-blocks' ),
+										value: '',
+									},
+									{
+										label: __(
+											'Subtle (1.02)',
+											'sgs-blocks'
+										),
 										value: '1.02',
 									},
 									{
-										label: __( 'Small (1.03)', 'sgs-blocks' ),
+										label: __(
+											'Small (1.03)',
+											'sgs-blocks'
+										),
 										value: '1.03',
 									},
 									{
-										label: __( 'Medium (1.05)', 'sgs-blocks' ),
+										label: __(
+											'Medium (1.05)',
+											'sgs-blocks'
+										),
 										value: '1.05',
 									},
 									{
-										label: __( 'Large (1.08)', 'sgs-blocks' ),
+										label: __(
+											'Large (1.08)',
+											'sgs-blocks'
+										),
 										value: '1.08',
 									},
 								] }
@@ -1569,7 +2033,9 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						<ToolsPanelItem
 							label={ __( 'Hover shadow', 'sgs-blocks' ) }
 							hasValue={ () => !! shadowHover }
-							onDeselect={ () => setAttributes( { shadowHover: '' } ) }
+							onDeselect={ () =>
+								setAttributes( { shadowHover: '' } )
+							}
 						>
 							<ShadowControl
 								label={ __( 'Hover shadow', 'sgs-blocks' ) }
@@ -1596,15 +2062,25 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -1615,10 +2091,18 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -1626,8 +2110,13 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						label={ __( 'Outer max-width', 'sgs-blocks' ) }
 						value={ maxWidth || '' }
 						units={ LENGTH_UNITS }
-						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
-						help={ __( 'Exact CSS length applied as max-width (e.g. 800px). Leave blank for no cap.', 'sgs-blocks' ) }
+						onChange={ ( val ) =>
+							setAttributes( { maxWidth: val ?? '' } )
+						}
+						help={ __(
+							'Exact CSS length applied as max-width (e.g. 800px). Leave blank for no cap.',
+							'sgs-blocks'
+						) }
 						presets={ false }
 					/>
 				</PanelBody>
@@ -1649,29 +2138,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								allowedTypes={ [ 'image', 'video' ] }
 								value={ workMedia?.id }
 								render={ ( { open } ) =>
-									workMedia?.url ? (
-										workMedia.type === 'video' ? (
-											// eslint-disable-next-line jsx-a11y/media-has-caption
-											<video
-												src={ workMedia.url }
-												onClick={ open }
-												muted
-											/>
-										) : (
-											<img
-												src={ workMedia.url }
-												alt={ workMedia.alt || '' }
-												onClick={ open }
-											/>
-										)
-									) : (
-										<Button
-											variant="secondary"
-											onClick={ open }
-										>
-											{ __( 'Add work media', 'sgs-blocks' ) }
-										</Button>
-									)
+									renderWorkMedia( workMedia, open )
 								}
 							/>
 						</MediaUploadCheck>
@@ -1689,8 +2156,11 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						className="sgs-testimonial__rating"
 						style={ ratingStyle }
 					>
-						{ effectiveVariant === 'rating-led' && ratingType === 'scale'
-							? `${ ratingScale || 0 } / ${ ratingScaleMax || '10' }`
+						{ effectiveVariant === 'rating-led' &&
+						ratingType === 'scale'
+							? `${ ratingScale || 0 } / ${
+									ratingScaleMax || '10'
+							  }`
 							: '★'.repeat( Math.floor( ratingStars || 0 ) ) ||
 							  __( '(set a rating)', 'sgs-blocks' ) }
 					</div>
@@ -1763,8 +2233,16 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 										avatarMedia?.url ? (
 											<img
 												src={ avatarMedia.url }
-												alt={ avatarDecorative ? '' : avatarMedia.alt || '' }
-												aria-hidden={ avatarDecorative ? 'true' : undefined }
+												alt={
+													avatarDecorative
+														? ''
+														: avatarMedia.alt || ''
+												}
+												aria-hidden={
+													avatarDecorative
+														? 'true'
+														: undefined
+												}
 												onClick={ open }
 											/>
 										) : (
@@ -1772,7 +2250,10 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 												variant="secondary"
 												onClick={ open }
 											>
-												{ __( 'Add photo', 'sgs-blocks' ) }
+												{ __(
+													'Add photo',
+													'sgs-blocks'
+												) }
 											</Button>
 										)
 									}
@@ -1800,7 +2281,10 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 							onChange={ ( val ) =>
 								setAttributes( { reviewerRole: val } )
 							}
-							placeholder={ __( 'Role / job title', 'sgs-blocks' ) }
+							placeholder={ __(
+								'Role / job title',
+								'sgs-blocks'
+							) }
 							allowedFormats={ RICH_TEXT_PLAIN }
 						/>
 						<RichText
@@ -1845,11 +2329,61 @@ function normalise( media ) {
 }
 
 /**
+ * Canvas preview of the work media: a video, an image, or an add button.
+ *
+ * @param {Object|undefined} workMedia The selected media object.
+ * @param {Function}         open      Opens the media library.
+ * @return {JSX.Element} The preview element.
+ */
+function renderWorkMedia( workMedia, open ) {
+	if ( ! workMedia?.url ) {
+		return (
+			<Button variant="secondary" onClick={ open }>
+				{ __( 'Add work media', 'sgs-blocks' ) }
+			</Button>
+		);
+	}
+	if ( workMedia.type === 'video' ) {
+		return (
+			// eslint-disable-next-line jsx-a11y/media-has-caption
+			<video src={ workMedia.url } onClick={ open } muted />
+		);
+	}
+	return (
+		<div
+			onClick={ open }
+			onKeyDown={ ( event ) => {
+				if ( event.key === 'Enter' || event.key === ' ' ) {
+					event.preventDefault();
+					open();
+				}
+			} }
+			role="button"
+			tabIndex={ 0 }
+		>
+			<img src={ workMedia.url } alt={ workMedia.alt || '' } />
+		</div>
+	);
+}
+
+/**
  * Small inspector media panel: pick or clear a single media object.
+ *
+ * @param {Object}   props              Component props.
+ * @param {string}   props.label        Control label.
+ * @param {Object}   props.value        Selected media object.
+ * @param {string[]} props.allowedTypes Allowed media types.
+ * @param {Function} props.onChange     Called with the new media object.
  */
 function MediaPanel( { label, value, allowedTypes, onChange } ) {
 	return (
-		<BaseControl label={ label } __nextHasNoMarginBottom>
+		<BaseControl
+			id={ `sgs-testimonial-media-${ String( label )
+				.toLowerCase()
+				.replace( /[^a-z0-9]+/g, '-' ) }` }
+			label={ label }
+			__nextHasNoMarginBottom
+		>
 			<PanelRow>
 				<MediaUploadCheck>
 					<MediaUpload
@@ -1857,7 +2391,13 @@ function MediaPanel( { label, value, allowedTypes, onChange } ) {
 						allowedTypes={ allowedTypes }
 						value={ value?.id }
 						render={ ( { open } ) => (
-							<div style={ { display: 'flex', gap: '8px', flexWrap: 'wrap' } }>
+							<div
+								style={ {
+									display: 'flex',
+									gap: '8px',
+									flexWrap: 'wrap',
+								} }
+							>
 								<Button variant="secondary" onClick={ open }>
 									{ value?.url
 										? __( 'Replace', 'sgs-blocks' )

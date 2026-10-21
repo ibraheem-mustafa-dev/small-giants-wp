@@ -18,7 +18,6 @@ import {
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	ResponsiveOverride,
-	SpacingControl,
 	RowQuickInsertAppender,
 	RowScrollBehaviourControls,
 	motionEasingCss,
@@ -26,11 +25,19 @@ import {
 	fillRow,
 	textRow,
 	SgsBorderControl,
-	resolveColourToken,
 	DesignTokenPicker,
-	GradientCapableColourControl, SgsBoxControl, SgsLengthControl } from '../../components';
+	GradientCapableColourControl,
+	SgsBoxControl,
+	SgsLengthControl,
+} from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { resolveResponsiveTier, tierBoxLonghands, resolveContentWidthPreview, contentBandPreview, usePreviewTier } from '../../utils';
+import {
+	resolveResponsiveTier,
+	tierBoxLonghands,
+	resolveContentWidthPreview,
+	contentBandPreview,
+	usePreviewTier,
+} from '../../utils';
 import { footerRowPaint } from './preview-style';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 
@@ -95,7 +102,10 @@ const FOOTER_PROMOTED = [
 		attributes: { displayType: 'phone' },
 	},
 	{ slug: 'sgs/social-icons', label: __( 'Social links', 'sgs-blocks' ) },
-	{ slug: 'sgs/nav-bar-menu', label: __( 'Footer navigation', 'sgs-blocks' ) },
+	{
+		slug: 'sgs/nav-bar-menu',
+		label: __( 'Footer navigation', 'sgs-blocks' ),
+	},
 	{
 		slug: 'sgs/button',
 		variant: 'cta',
@@ -226,8 +236,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		gridAutoRows,
 		gridTemplateColumns,
 		gridTemplateRows,
-		textColour,
-		textColourGradient,
 		padding,
 		margin,
 		maxWidth,
@@ -240,7 +248,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} = attributes;
 
 	const isGrid = 'grid' === layout;
-
 
 	// Editor-preview only: "Show me the shrunk size" (Row behaviour panel).
 	// Local UI state — never persisted, never rendered on the front end.
@@ -273,11 +280,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	[ 'top', 'right', 'bottom', 'left' ].forEach( ( side ) => {
 		const value = sideValue( side );
 		if ( value ) {
-			paddingPreview[ `padding${ side[ 0 ].toUpperCase() }${ side.slice( 1 ) }` ] = value;
+			paddingPreview[
+				`padding${ side[ 0 ].toUpperCase() }${ side.slice( 1 ) }`
+			] = value;
 		}
 	} );
 	if ( rowShrinkDuration > 0 || rowShrinkEasing ) {
-		const ms = rowShrinkDuration > 0 ? Math.min( 3000, rowShrinkDuration ) : 200;
+		const ms =
+			rowShrinkDuration > 0 ? Math.min( 3000, rowShrinkDuration ) : 200;
 		paddingPreview.transition = `padding ${ ms }ms ${ motionEasingCss(
 			rowShrinkEasing || 'ease',
 			rowShrinkEasingCustom || '',
@@ -299,7 +309,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// preview (what the canvas shows), the same pattern as gridTemplateColumns
 	// below. String()/arithmetic on the raw object would yield NaN or
 	// "[object Object]" in the template-string preview.
-	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
+	const columnsDesktop =
+		resolveResponsiveTier( columns, 'desktop' )?.value || 3;
 
 	// Editor preview mirrors the frontend. The grid preview uses the SAME
 	// bounded auto-fit track list the wrapper emits, not `repeat(N,1fr)` — the
@@ -328,9 +339,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					gridTemplateColumnsDesktop ||
 					`repeat(auto-fit, minmax(min(100%, max(var(--sgs-col-basis, 16rem), calc((100% - (${
 						columnsDesktop - 1
-					} * ${ ( gap && gap.desktop ) || '48px' })) / ${
-						columnsDesktop
-					}))), 1fr))`,
+					} * ${
+						( gap && gap.desktop ) || '48px'
+					})) / ${ columnsDesktop }))), 1fr))`,
 				...( gridTemplateRowsDesktop
 					? { gridTemplateRows: gridTemplateRowsDesktop }
 					: {} ),
@@ -369,9 +380,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} );
 
 	const [ colourPalette ] = useSettings( 'color.palette' );
-	const style = { ...previewStyle, ...footerRowPaint( attributes, previewTier, colourPalette ), ...paddingPreview, ...sep.style };
+	const style = {
+		...previewStyle,
+		...footerRowPaint( attributes, previewTier, colourPalette ),
+		...paddingPreview,
+		...sep.style,
+	};
 	Object.assign( style, marginPreview );
-	if ( maxWidthPreview ) style.maxWidth = maxWidthPreview;
+	if ( maxWidthPreview ) {
+		style.maxWidth = maxWidthPreview;
+	}
 
 	// Content band (CHECK A) — mirrors sgs/container's Layer 2 mirror exactly
 	// via the shared contentBandPreview()/resolveContentWidthPreview() utils.
@@ -406,7 +424,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// branching the ARGUMENT (mirrors sgs/container/edit.js).
 	const innerBlocksProps = useInnerBlocksProps(
 		hasBandProps
-			? { className: 'sgs-container__inner', style: bandStyle, ref: sep.ref }
+			? {
+					className: 'sgs-container__inner',
+					style: bandStyle,
+					ref: sep.ref,
+			  }
 			: { ...blockProps, ref: rootRef },
 		{
 			templateLock: false,
@@ -460,9 +482,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			if ( ! parents.length ) {
 				return '';
 			}
-			return (
-				getBlockAttributes( parents[ 0 ] )?.backgroundColour || ''
-			);
+			return getBlockAttributes( parents[ 0 ] )?.backgroundColour || '';
 		},
 		[ clientId ]
 	);
@@ -554,7 +574,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   max-width — `row`'s OWN box attrs; `contentWidth` belongs to
 				   `content-band` and sits in that element's own panel below), and
 				   the "Border" PanelBody (Spec 35 Part O). */ }
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Layout', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ToolsPanel
 						label={ __( 'Alignment & grid', 'sgs-blocks' ) }
 						resetAll={ () =>
@@ -571,8 +594,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					>
 						<ToolsPanelItem
 							label={ __( 'Align items', 'sgs-blocks' ) }
-							hasValue={ () => ( alignItems || 'start' ) !== 'start' }
-							onDeselect={ () => setAttributes( { alignItems: 'start' } ) }
+							hasValue={ () =>
+								( alignItems || 'start' ) !== 'start'
+							}
+							onDeselect={ () =>
+								setAttributes( { alignItems: 'start' } )
+							}
 							isShownByDefault
 						>
 							<SelectControl
@@ -594,11 +621,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<ToolsPanelItem
 								label={ __( 'Flex direction', 'sgs-blocks' ) }
 								hasValue={ () => flexDirection !== '' }
-								onDeselect={ () => setAttributes( { flexDirection: '' } ) }
+								onDeselect={ () =>
+									setAttributes( { flexDirection: '' } )
+								}
 								isShownByDefault
 							>
 								<SelectControl
-									label={ __( 'Flex direction', 'sgs-blocks' ) }
+									label={ __(
+										'Flex direction',
+										'sgs-blocks'
+									) }
 									value={ flexDirection || '' }
 									options={ FLEX_DIRECTION_OPTIONS }
 									onChange={ ( val ) =>
@@ -616,17 +648,32 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						{ isGrid && (
 							<>
 								<ToolsPanelItem
-									label={ __( 'Justify items', 'sgs-blocks' ) }
-									hasValue={ () => ( justifyItems || 'stretch' ) !== 'stretch' }
-									onDeselect={ () => setAttributes( { justifyItems: 'stretch' } ) }
+									label={ __(
+										'Justify items',
+										'sgs-blocks'
+									) }
+									hasValue={ () =>
+										( justifyItems || 'stretch' ) !==
+										'stretch'
+									}
+									onDeselect={ () =>
+										setAttributes( {
+											justifyItems: 'stretch',
+										} )
+									}
 									isShownByDefault
 								>
 									<SelectControl
-										label={ __( 'Justify items', 'sgs-blocks' ) }
+										label={ __(
+											'Justify items',
+											'sgs-blocks'
+										) }
 										value={ justifyItems || 'stretch' }
 										options={ JUSTIFY_ITEMS_OPTIONS }
 										onChange={ ( val ) =>
-											setAttributes( { justifyItems: val } )
+											setAttributes( {
+												justifyItems: val,
+											} )
 										}
 										help={ __(
 											'How each element sits inside its own column when narrower than the column.',
@@ -637,16 +684,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									/>
 								</ToolsPanelItem>
 								<ToolsPanelItem
-									label={ __( 'Align content', 'sgs-blocks' ) }
-									hasValue={ () => ( alignContent || 'stretch' ) !== 'stretch' }
-									onDeselect={ () => setAttributes( { alignContent: 'stretch' } ) }
+									label={ __(
+										'Align content',
+										'sgs-blocks'
+									) }
+									hasValue={ () =>
+										( alignContent || 'stretch' ) !==
+										'stretch'
+									}
+									onDeselect={ () =>
+										setAttributes( {
+											alignContent: 'stretch',
+										} )
+									}
 								>
 									<SelectControl
-										label={ __( 'Align content', 'sgs-blocks' ) }
+										label={ __(
+											'Align content',
+											'sgs-blocks'
+										) }
 										value={ alignContent || 'stretch' }
 										options={ ALIGN_CONTENT_OPTIONS }
 										onChange={ ( val ) =>
-											setAttributes( { alignContent: val } )
+											setAttributes( {
+												alignContent: val,
+											} )
 										}
 										help={ __(
 											'Spacing between grid rows when this row has more than one row of elements.',
@@ -657,9 +719,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									/>
 								</ToolsPanelItem>
 								<ToolsPanelItem
-									label={ __( 'Custom column template', 'sgs-blocks' ) }
-									hasValue={ () => !! gridTemplateColumns?.desktop || !! gridTemplateColumns?.tablet || !! gridTemplateColumns?.mobile }
-									onDeselect={ () => setAttributes( { gridTemplateColumns: {} } ) }
+									label={ __(
+										'Custom column template',
+										'sgs-blocks'
+									) }
+									hasValue={ () =>
+										!! gridTemplateColumns?.desktop ||
+										!! gridTemplateColumns?.tablet ||
+										!! gridTemplateColumns?.mobile
+									}
+									onDeselect={ () =>
+										setAttributes( {
+											gridTemplateColumns: {},
+										} )
+									}
 								>
 									<ResponsiveOverride
 										label={ __(
@@ -683,7 +756,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 												value={ ownValue }
 												onChange={ setOwnValue }
 												placeholder={
-													inherited ? effectiveValue : ''
+													inherited
+														? effectiveValue
+														: ''
 												}
 												help={ __(
 													"Advanced override — CSS grid-template-columns, e.g. '5fr 3fr'. Leave blank to use the Maximum columns count above.",
@@ -697,11 +772,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								</ToolsPanelItem>
 								<ToolsPanelItem
 									label={ __( 'Row template', 'sgs-blocks' ) }
-									hasValue={ () => !! gridTemplateRows?.desktop || !! gridTemplateRows?.tablet || !! gridTemplateRows?.mobile }
-									onDeselect={ () => setAttributes( { gridTemplateRows: {} } ) }
+									hasValue={ () =>
+										!! gridTemplateRows?.desktop ||
+										!! gridTemplateRows?.tablet ||
+										!! gridTemplateRows?.mobile
+									}
+									onDeselect={ () =>
+										setAttributes( {
+											gridTemplateRows: {},
+										} )
+									}
 								>
 									<ResponsiveOverride
-										label={ __( 'Row template', 'sgs-blocks' ) }
+										label={ __(
+											'Row template',
+											'sgs-blocks'
+										) }
 										value={ gridTemplateRows }
 										onChange={ ( obj ) =>
 											setAttributes( {
@@ -719,7 +805,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 												value={ ownValue }
 												onChange={ setOwnValue }
 												placeholder={
-													inherited ? effectiveValue : ''
+													inherited
+														? effectiveValue
+														: ''
 												}
 												help={ __(
 													"CSS grid-template-rows, e.g. 'auto 1fr'. Leave blank for the browser default.",
@@ -734,13 +822,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								<ToolsPanelItem
 									label={ __( 'Auto rows', 'sgs-blocks' ) }
 									hasValue={ () => gridAutoRows !== '' }
-									onDeselect={ () => setAttributes( { gridAutoRows: '' } ) }
+									onDeselect={ () =>
+										setAttributes( { gridAutoRows: '' } )
+									}
 								>
 									<TextControl
-										label={ __( 'Auto rows', 'sgs-blocks' ) }
+										label={ __(
+											'Auto rows',
+											'sgs-blocks'
+										) }
 										value={ gridAutoRows || '' }
 										onChange={ ( val ) =>
-											setAttributes( { gridAutoRows: val } )
+											setAttributes( {
+												gridAutoRows: val,
+											} )
 										}
 										help={ __(
 											"Sets grid-auto-rows, e.g. '1fr' for equal-height rows or 'minmax(100px,auto)'.",
@@ -760,15 +855,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					   merge stays scoped to this block only. */ }
 					<ResponsiveOverride
 						value={ padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ LENGTH_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue( normaliseBox( next ) )
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -780,10 +883,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ LENGTH_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue( normaliseBox( next ) )
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -791,9 +900,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ResponsiveOverride
 						label={ __( 'Max width', 'sgs-blocks' ) }
 						value={ maxWidth }
-						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { maxWidth: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SgsLengthControl
 								label={ __( 'Max width', 'sgs-blocks' ) }
 								hideLabelFromVision
@@ -807,25 +923,38 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ siteFooterRowContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -835,11 +964,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   ResponsiveBoxControls mount alongside `row`'s own padding/
 				   margin/max-width, which put a content-band control inside a
 				   row-scoped panel. It gets its own small panel here instead. */ }
-				<PanelBody title={ __( 'Content band', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Content band', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						label={ __( 'Content width', 'sgs-blocks' ) }
 						value={ contentWidth }
-						onChange={ ( obj ) => setAttributes( { contentWidth: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { contentWidth: obj } )
+						}
 					>
 						{ ( { tier, ownValue, setOwnValue } ) => (
 							<SelectControl
@@ -850,7 +984,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									tier === 'desktop'
 										? CONTENT_WIDTH_OPTIONS
 										: [
-												{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+												{
+													label: __(
+														'— inherit —',
+														'sgs-blocks'
+													),
+													value: '',
+												},
 												...CONTENT_WIDTH_OPTIONS,
 										  ]
 								}
@@ -901,7 +1041,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ResponsiveOverride
 							label={ __( 'Maximum columns', 'sgs-blocks' ) }
 							value={ columns }
-							onChange={ ( obj ) => setAttributes( { columns: obj } ) }
+							onChange={ ( obj ) =>
+								setAttributes( { columns: obj } )
+							}
 						>
 							{ ( {
 								ownValue,
@@ -1017,8 +1159,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							inherited,
 							setOwnValue,
 						} ) => (
-							<SpacingControl
-								freeInput
+							<SgsLengthControl
 								value={ ownValue }
 								placeholder={ inherited ? effectiveValue : '' }
 								onChange={ setOwnValue }

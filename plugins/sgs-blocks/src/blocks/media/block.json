@@ -59,6 +59,7 @@
 			},
 			"elements": {
 				"video-time": {
+					"motion": false,
 					"selector": ".sgs-video__time",
 					"label": "Video time readout",
 					"order": 3,

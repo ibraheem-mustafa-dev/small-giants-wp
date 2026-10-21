@@ -103,7 +103,6 @@ SHARED_COMPONENT_FILES = {
     'ResponsiveBoxControl': 'ResponsiveBoxControl.js',
     'ResponsiveBorderRadiusControl': 'ResponsiveBoxControl.js',
     'ResponsiveBoxControls': 'ResponsiveBoxControls.js',
-    'SpacingControl': 'SpacingControl.js',
     'TypographyControls': 'TypographyControls.js',
     'ResponsiveTriStateControl': 'ResponsiveTriStateControl.js',
     'ResponsiveOverride': 'ResponsiveOverride.js',
@@ -298,7 +297,7 @@ def _extract_exported_function_body(lines, component_name):
         if m:
             starts.append((idx, m.group(1)))
     if not starts:
-        # Single-export file (e.g. SpacingControl.js) — whole file is safe.
+        # Single-export file (e.g. a one-component file) — whole file is safe.
         return ''.join(lines)
     for i, (start, name) in enumerate(starts):
         if name == component_name:
@@ -443,7 +442,7 @@ def scan_edit_file_for_attribute(edit_js_path, attr_name, css_property=None):
                     if re.search(r'<\s*' + re.escape(name) + r'\b', body):
                         found.add(primitive if primitive not in UNIT_CONTROL_NAMES else 'UnitControl')
             # Also allow a locally-defined wrapper to itself wrap a SHARED
-            # component (e.g. a local helper that renders <SpacingControl>).
+            # component (e.g. a local helper that renders <SgsLengthControl>).
             for shared_name in SHARED_COMPONENT_FILES:
                 if re.search(r'<\s*' + re.escape(shared_name) + r'\b', body):
                     _, shared_found = _resolve_shared_component_primitives(shared_name)
