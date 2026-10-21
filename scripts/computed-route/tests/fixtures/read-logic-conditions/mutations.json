@@ -1,0 +1,9 @@
+[
+ { "file": "lib/read-logic-conditions.mjs", "find": "return { bp: c.bp, is: ! c.is, when: c.when };", "replace": "return { bp: c.bp, is: ! c.is, when: negate( c.when ) };", "why": "the width condition of a token negated with it" },
+ { "file": "lib/read-logic-conditions.mjs", "find": "if ( ( c.all || c.any ) && c.partial ) {", "replace": "if ( false ) {", "why": "a partial all/any inverted by De Morgan" },
+ { "file": "lib/read-logic-conditions.mjs", "find": "const wr = widthReader( { file, idx, tags }, gaps );", "replace": "const wr = widthReader( { file, idx, tags }, [] );", "why": "the width reader's gaps discarded" },
+ { "file": "lib/read-logic-conditions.mjs", "find": "const fromWidth = ( k ) => stateWriters( idx, k ).some( ( n ) => wr.widthRef( n ) );", "replace": "const fromWidth = () => false;", "why": "a key written from the width itself not a width key" },
+ { "file": "lib/read-logic-conditions.mjs", "find": "list.some( hasWidth )", "replace": "false", "why": "a key whose token ranges hold a width comparison not a width key" },
+ { "file": "lib/read-logic-conditions.mjs", "find": ".filter( ( p ) => 'ObjectProperty' === p.type ).map( ( p ) => keyName( p ) )", "replace": ".filter( ( p ) => false ).map( ( p ) => keyName( p ) )", "why": "state keys not read" },
+ { "file": "lib/read-logic-conditions.mjs", "find": "seen.has( id ) || ( seen.add( id ), gaps.push( g ) );", "replace": "void id;", "why": "the reader's gaps not returned" }
+]

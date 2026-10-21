@@ -70,5 +70,8 @@ test( 'MUST FAIL the readers of an intake record call assertCurrent', () => {
 
 test( 'intake writes sources into intake.json and into each saved inventory', () => {
 	assert.match( fs.readFileSync( path.join( ROUTE, 'lib/intake-skeletons.mjs' ), 'utf8' ), /\{ \.\.\.inventory, sources \}/ );
-	assert.match( fs.readFileSync( path.join( ROUTE, 'lib/intake-run.mjs' ), 'utf8' ), /sources: sourcesOf\( at\.folder \)/ );
+	const run = fs.readFileSync( path.join( ROUTE, 'lib/intake-run.mjs' ), 'utf8' );
+	assert.match( run, /const hashed = sourcesOf\( at\.folder \);/ );
+	assert.match( run, /sources: hashed \}/ );
+	assert.ok( run.indexOf( 'const hashed = sourcesOf' ) < run.indexOf( 'await runIsolated(' ), 'the inputs are hashed before the worker reads any of them' );
 } );

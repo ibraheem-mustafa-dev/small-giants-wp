@@ -1,0 +1,4 @@
+[
+ { "file": "lib/identity.mjs", "find": "lines.has( m[ 1 ] ) || lines.set( m[ 1 ], line );", "replace": "lines.set( m[ 1 ], line );", "why": "the last stamp of a number wins" },
+ { "file": "lib/identity.mjs", "find": "line++;", "replace": "line += 2;", "why": "lines counted twice" }
+]

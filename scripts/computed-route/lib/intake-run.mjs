@@ -177,8 +177,10 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 		return 1;
 	}
 	const m = readJson( path.join( at.folder, 'MANIFEST.json' ) );
+	// The inputs are hashed before the worker reads any of them, so a draft edited during the run leaves a stale record.
+	const hashed = sourcesOf( at.folder );
 	const work = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-intake-' ) );
-	const job = { repo: o.repo, client: o.client, folder: at.folder, entry: m.entry_drafts?.[ 0 ], harPath, record: o.record, widths: o.widths, surfaces: o.surfaces, inventoriesDir: at.inventories, factsFile: at.facts, runtimeSha: m.runtime_sha256 ?? 'none', progressFile: path.join( work, 'progress.log' ), outFile: path.join( work, 'result.json' ) };
+	const job = { repo: o.repo, client: o.client, folder: at.folder, sources: hashed, entry: m.entry_drafts?.[ 0 ], harPath, record: o.record, widths: o.widths, surfaces: o.surfaces, inventoriesDir: at.inventories, factsFile: at.facts, runtimeSha: m.runtime_sha256 ?? 'none', progressFile: path.join( work, 'progress.log' ), outFile: path.join( work, 'result.json' ) };
 	fs.mkdirSync( at.inventories, { recursive: true } );
 	fs.writeFileSync( path.join( work, 'job.json' ), JSON.stringify( job ) );
 	fs.writeFileSync( job.progressFile, '' );
@@ -196,7 +198,7 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 	}
 	stop();
 	fs.rmSync( work, { recursive: true, force: true } );
-	const built = buildRecord( { client: o.client, takenOn: new Date().toISOString(), manifest, result, sources: sourcesOf( at.folder ) } );
+	const built = buildRecord( { client: o.client, takenOn: new Date().toISOString(), manifest, result, sources: hashed } );
 	const { attempts } = built;
 	let { record } = built;
 	// The skeleton rows proposed once more from the inventories this run saved, now the motion inventory is known (a

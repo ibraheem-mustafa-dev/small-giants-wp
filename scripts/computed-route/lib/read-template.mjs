@@ -8,7 +8,7 @@
 // parent and the whole parent chain, the `sc-if`, `sc-for` and `dc-import` it sits in, its ref, its `data-*` hooks, its
 // events and its fingerprint (lib/identity.mjs::fingerprintOf).
 import { templateKey } from './fact-key.mjs';
-import { fingerprintOf, tplLineOf } from './identity.mjs';
+import { fingerprintOf, tplLineIndex } from './identity.mjs';
 import { decode, realTag, holes } from './intake-census-template.mjs';
 
 const WRAPPERS = new Set( [ 'sc-if', 'sc-for' ] );
@@ -133,6 +133,7 @@ export async function readTemplate( { sources, page = null } ) {
 			return chain;
 		};
 		const byKey = {};
+		const lineOf = tplLineIndex( source.stamped.html );
 		for ( const e of source.stamped.elements ) {
 			const attrs = e.attrs.map( ( [ name, value ] ) => [ decode( name ), value ] );
 			const attrMap = Object.fromEntries( attrs.filter( ( [ n ] ) => ! n.startsWith( 'style-' ) && 'style' !== n ) );
@@ -164,16 +165,17 @@ export async function readTemplate( { sources, page = null } ) {
 				events: 'dc-import' === e.tag ? [] : Object.entries( attrMap ).filter( ( [ n ] ) => /^on[A-Z]/.test( n ) ).map( ( [ name, value ] ) => ( { name, expr: holes( value )[ 0 ] ?? null } ) ),
 				words: e.words || '',
 			};
-			rec.srcLine = tplLineOf( source.stamped.html, e.n );
+			rec.srcLine = lineOf( e.n );
 			recs.push( rec );
 			byKey[ rec.key ] = rec;
 			elements[ rec.key ] = rec;
 			order.push( rec.key );
 		}
 		// Fingerprints walk the real parents (the elements the runtime renders), the same ancestry the inventories use.
+		const ancestry = Object.fromEntries( Object.values( byKey ).map( ( r ) => [ r.key, { tag: r.realTag, parentKey: r.realParent } ] ) );
 		for ( const rec of Object.values( byKey ) ) {
 			const asRecord = { tag: rec.realTag, attrs: { class: rec.attrs.class || '', style: rec.styleText.style || '' }, words: rec.words, parentKey: rec.realParent, srcLine: rec.srcLine };
-			rec.fingerprint = fingerprintOf( asRecord, Object.fromEntries( Object.values( byKey ).map( ( r ) => [ r.key, { tag: r.realTag, parentKey: r.realParent } ] ) ) );
+			rec.fingerprint = fingerprintOf( asRecord, ancestry );
 		}
 	}
 	const { lists, at } = staticLists( recs );

@@ -99,6 +99,23 @@ export function tplLineOf( text, n ) {
 	return at ? String( text ).slice( 0, at.index ).split( '\n' ).length : null;
 }
 
+// The lines of every stamped element of an annotated template, read in one pass: n (as text) -> 1-based line of its first
+// `data-dc-tpl="<n>"`. The same answer as tplLineOf for each element, without scanning the text once per element.
+export function tplLineIndex( text ) {
+	const html = String( text ?? '' );
+	const lines = new Map();
+	let line = 1;
+	let from = 0;
+	for ( const m of html.matchAll( /data-dc-tpl=["']?([0-9]+)/g ) ) {
+		for ( let at = html.indexOf( '\n', from ); -1 !== at && at < m.index; at = html.indexOf( '\n', from ) ) {
+			line++;
+			from = at + 1;
+		}
+		lines.has( m[ 1 ] ) || lines.set( m[ 1 ], line );
+	}
+	return ( n ) => lines.get( String( n ) ) ?? null;
+}
+
 // The fingerprint of one inventory record (lib/skeleton-inventory.mjs): its tag, class, a hash of the style attribute,
 // the tags of its stamped ancestors from the root down, a hash of its own words and, where the record has one, its line
 // in the annotated template. byKey: the records by instance key (parentKey walks the ancestors).

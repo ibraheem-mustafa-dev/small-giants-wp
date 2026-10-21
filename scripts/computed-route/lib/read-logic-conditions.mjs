@@ -4,9 +4,12 @@
 // lib/intake-ast-eval.mjs::evalDeep. The result of a condition is data:
 //   { w: '>=', n: 1260 }                          a width comparison (`showHeaderCta: w >= 1260`)
 //   { bp: 'm', is: true, when: <condition> }      a breakpoint token the logic derives from the width
-//                                                 (`bp === 'm'` with `bpOf() { return w < 768 ? 'm' : … }`), with the
-//                                                 width condition that gives the token
+//                                                 (`bp === 'm'` with `bpOf() { return w < 768 ? 'm' : … }`): `when` is the
+//                                                 width condition that gives the token and is never negated; `is: false`
+//                                                 means the token does not hold (`bp !== 'm'`)
 //   { all: [ … ] } | { any: [ … ] }               `&&` and `||` of readable terms (`partial: true` when a term is no width)
+//   { not: <condition>, partial?: true }          the negation of a condition with no inverse form; a negated partial
+//                                                 `all`/`any` is `{ not, partial: true }` because its unread term has no inverse
 // A condition that reads no width is `width: null`; one that reads a width the reader cannot follow is a gap row.
 import { parseLogic, resolveName, isThisMember, propName, keyName, snippet, classMethod, readBinding } from './intake-ast.mjs';
 import { returnsOf, evalDeep } from './intake-ast-eval.mjs';
@@ -16,32 +19,49 @@ const NEGATED = { '<': '>=', '<=': '>', '>': '<=', '>=': '<', '===': '!==', '!==
 const MIRROR = { '<': '>', '<=': '>=', '>': '<', '>=': '<=', '===': '===', '!==': '!==', '==': '==', '!=': '!=' };
 const MAX_DEPTH = 6;
 
-// The condition `c` negated (De Morgan over all/any; a comparison takes its inverse operator).
+// The condition `c` negated (De Morgan over a complete all/any; a comparison takes its inverse operator; a breakpoint token
+// flips `is` and keeps the width condition that gives it; a partial all/any is `{ not, partial: true }`, since the term the
+// reader dropped has no inverse).
 export function negate( c ) {
 	if ( c.w ) {
 		return { w: NEGATED[ c.w ], n: c.n };
 	}
+	if ( ( c.all || c.any ) && c.partial ) {
+		return { not: c, partial: true };
+	}
 	if ( c.all ) {
-		return { any: c.all.map( negate ), ...( c.partial ? { partial: true } : {} ) };
+		return { any: c.all.map( negate ) };
 	}
 	if ( c.any ) {
-		return { all: c.any.map( negate ), ...( c.partial ? { partial: true } : {} ) };
+		return { all: c.any.map( negate ) };
 	}
 	if ( c.bp ) {
-		return { bp: c.bp, is: ! c.is, when: negate( c.when ) };
+		return { bp: c.bp, is: ! c.is, when: c.when };
 	}
 	return { not: c };
 }
 
 const allOf = ( list ) => ( 1 === list.length ? list[ 0 ] : { all: list } );
 
-// The class-state writers of state key `key`: the value nodes of `state = { key: … }` and of every setState({ key: … }).
-function stateWriters( idx, key ) {
-	const objs = idx.all.filter( ( n ) => 'ClassProperty' === n.type && 'state' === keyName( n ) ).map( ( n ) => n.value )
+// The object literals that write class state: `state = { … }` and the argument of every setState({ … }).
+function stateObjects( idx ) {
+	return idx.all.filter( ( n ) => 'ClassProperty' === n.type && 'state' === keyName( n ) ).map( ( n ) => n.value )
 		.concat( idx.all.filter( ( n ) => 'CallExpression' === n.type && 'setState' === propName( n.callee ) ).map( ( n ) => n.arguments[ 0 ] ) )
 		.map( ( v ) => ( /Function/.test( v?.type || '' ) ? v.body : v ) ).filter( ( v ) => 'ObjectExpression' === v?.type );
-	return objs.flatMap( ( o ) => o.properties ).filter( ( p ) => 'ObjectProperty' === p.type && key === keyName( p ) ).map( ( p ) => p.value );
 }
+
+// The keys of the class state (every key `state = { … }` or a setState({ … }) names).
+export function stateKeysOf( idx ) {
+	return [ ...new Set( stateObjects( idx ).flatMap( ( o ) => o.properties ).filter( ( p ) => 'ObjectProperty' === p.type ).map( ( p ) => keyName( p ) ).filter( Boolean ) ) ];
+}
+
+// The class-state writers of state key `key`: the value nodes of `state = { key: … }` and of every setState({ key: … }).
+function stateWriters( idx, key ) {
+	return stateObjects( idx ).flatMap( ( o ) => o.properties ).filter( ( p ) => 'ObjectProperty' === p.type && key === keyName( p ) ).map( ( p ) => p.value );
+}
+
+// Whether a condition holds a width comparison anywhere in it.
+const hasWidth = ( c ) => Boolean( c && ( c.w || [ ...( c.all || [] ), ...( c.any || [] ) ].some( hasWidth ) || hasWidth( c.not ) || hasWidth( c.when ) ) );
 
 // The state key a node reads (`this.state.bp`, `state.bp` after `const state = this.state`, `bp` after `const { bp } = this.state`), or null.
 function stateKeyOf( idx, node, depth = 0 ) {
@@ -69,9 +89,8 @@ function stateKeyOf( idx, node, depth = 0 ) {
 
 // The reader of one draft's logic: condOf( node ) → condition | null.
 function conditionReader( idx, tags, file ) {
-	const sink = [];
-	const wr = widthReader( { file, idx, tags }, sink );
 	const gaps = [];
+	const wr = widthReader( { file, idx, tags }, gaps );
 
 	// The ranges the value nodes give their string tokens: Map token → [ condition ], or null when one cannot be followed.
 	const rangesFrom = ( nodes ) => {
@@ -119,6 +138,15 @@ function conditionReader( idx, tags, file ) {
 		}
 		const r = 'Identifier' === side.type ? resolveName( idx, side ) : null;
 		return 'var' === r?.kind && r.init && ! r.key ? rangesFrom( [ r.init ] ) : null;
+	};
+
+	// The class state's keys, and those the logic derives from the width: a writer that reads the width itself, or whose
+// token ranges hold a width comparison.
+	const stateInfo = () => {
+		const keys = stateKeysOf( idx );
+		const fromWidth = ( k ) => stateWriters( idx, k ).some( ( n ) => wr.widthRef( n ) );
+		const widthKeys = keys.filter( ( k ) => fromWidth( k ) || [ ...( tokenRanges( k )?.values() || [] ) ].some( ( list ) => list.some( hasWidth ) ) );
+		return { keys, widthKeys };
 	};
 
 	function condOf( node, depth = 0 ) {
@@ -242,10 +270,12 @@ function conditionReader( idx, tags, file ) {
 		const v = 'Identifier' === h.type ? valueOfKey( h.name ) : null;
 		return { condition: go( ast ), widthish: Boolean( v && wr.widthish( v ) ), snippet: v ? snippet( idx, v, 100 ) : null, known: Boolean( v ) };
 	};
-	return { ofTemplate, gaps };
+	return { ofTemplate, gaps, stateInfo };
 }
 
-// The width condition of each sc-if of one census source: { conditions: { <template key>: { value, width, via? } }, gaps }.
+// The width condition of each sc-if of one census source: { conditions: { <template key>: { value, width, via? } }, gaps,
+// state: { keys, widthKeys } | null } (`state`: the logic's class-state keys and those derived from the width; null when
+// the logic does not parse). The gaps include the width reader's (a width basis it cannot determine).
 // `scIfs`: [ { key, n, value } ] (the sc-if records of lib/read-template.mjs, `value` the attribute text).
 export function widthConditions( { source, scIfs } ) {
 	const conditions = {};
@@ -260,6 +290,7 @@ export function widthConditions( { source, scIfs } ) {
 	}
 	const tags = source.stamped.elements.map( ( e ) => ( { name: e.tag, attrs: e.attrs.map( ( [ name, value ] ) => ( { name, value } ) ), line: 0, col: 0 } ) );
 	const reader = idx ? conditionReader( idx, tags, source.file ) : null;
+	const seen = new Set();
 	for ( const s of scIfs ) {
 		const text = /^\{\{([\s\S]*)\}\}$/.exec( String( s.value ?? '' ).trim() )?.[ 1 ].trim();
 		if ( ! reader || ! text ) {
@@ -277,5 +308,9 @@ export function widthConditions( { source, scIfs } ) {
 			}
 		}
 	}
-	return { conditions, gaps };
+	for ( const g of reader?.gaps || [] ) {
+		const id = JSON.stringify( g );
+		seen.has( id ) || ( seen.add( id ), gaps.push( g ) );
+	}
+	return { conditions, gaps, state: reader ? reader.stateInfo() : null };
 }

@@ -14,8 +14,8 @@ import { recheckManifest } from '../lib/intake-sandbox.mjs';
 import { recordExport } from '../lib/intake-record.mjs';
 import { draftSources } from '../lib/intake-census-template.mjs';
 import { splitDecls } from '../lib/read-template.mjs';
-import { buildFactRecord, writeFacts, loadFacts, factsFile, instancesOf, factsProblems } from '../lib/fact-record.mjs';
-import { StaleRecordError } from '../lib/freshness.mjs';
+import { buildFactRecord, writeFacts, loadFacts, factsFile, instancesOf, factsProblems, warnMissingFacts } from '../lib/fact-record.mjs';
+import { StaleRecordError, sourcesOf, changedSources, assertCurrent } from '../lib/freshness.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const EXPORT = path.join( HERE, 'fixtures', 'read-facts', 'export' );
@@ -138,6 +138,48 @@ test( 'MUST FAIL (freshness): loadFacts refuses a record whose input changed, an
 	fs.appendFileSync( path.join( handoff, 'Home.dc.html' ), '\n<!-- edited -->\n' );
 	assert.throws( () => loadFacts( 'fixture', { repo } ), ( e ) => e instanceof StaleRecordError && /Home\.dc\.html changed/.test( e.message ) );
 	assert.throws( () => loadFacts( 'other', { repo } ), /is missing: run intake/ );
+} );
+
+test( 'MUST FAIL (state keys): the record holds each component\'s state keys and those derived from the width', () => {
+	assert.deepEqual( [ ...record.state.Home.keys ].sort(), [ 'bp', 'w' ] );
+	assert.deepEqual( [ ...record.state.Home.widthKeys ].sort(), [ 'bp', 'w' ] );
+} );
+
+test( 'MUST FAIL (hash before reading): the record carries the hashes taken before the read, so a draft edited meanwhile makes it stale', async () => {
+	const repo = temp( 'read-facts-hash-' );
+	const handoff = path.join( repo, 'sites', 'fixture', 'handoff' );
+	fs.cpSync( EXPORT, handoff, { recursive: true } );
+	const taken = sourcesOf( handoff );
+	// The draft on disk when the read ends is not the one that was hashed (the sandbox refuses an edited export, so the
+	// hash taken first is the one that differs).
+	const hashed = { ...taken, files: { ...taken.files, 'Home.dc.html': '0'.repeat( 64 ) } };
+	const built = ( await buildFactRecord( { folder: handoff, client: 'fixture', entry: ENTRY, harPath, sources, hashed } ) ).record;
+	assert.deepEqual( built.sources, hashed );
+	writeFacts( factsFile( repo, 'fixture' ), built );
+	assert.throws( () => loadFacts( 'fixture', { repo } ), ( e ) => e instanceof StaleRecordError && /Home\.dc\.html changed/.test( e.message ) );
+} );
+
+test( 'MUST FAIL (freshness): changedSources and assertCurrent take the sources already hashed and do not hash the folder again', () => {
+	const current = sourcesOf( EXPORT );
+	const gone = path.join( os.tmpdir(), 'sgs-no-such-handoff' );
+	assert.deepEqual( changedSources( current, gone, current ), [] );
+	assert.deepEqual( changedSources( { files: { ...current.files, 'Home.dc.html': '0'.repeat( 64 ) } }, gone, current ), [ 'Home.dc.html changed' ] );
+	assert.deepEqual( assertCurrent( { sources: current }, gone, { current } ), { checked: true } );
+} );
+
+test( 'MUST FAIL (missing record): a client with a handoff folder and no facts.json warns once by name; a fixture client with no handoff stays silent', () => {
+	const repo = temp( 'read-facts-missing-' );
+	fs.mkdirSync( path.join( repo, 'sites', 'real', 'handoff' ), { recursive: true } );
+	const lines = [];
+	const warn = ( l ) => lines.push( l );
+	assert.equal( warnMissingFacts( 'real', { repo, warn } ), true );
+	assert.equal( warnMissingFacts( 'real', { repo, warn } ), true );
+	assert.equal( lines.length, 1, 'once per client' );
+	assert.match( lines[ 0 ], /real has a handoff folder but no sites[\\/]real[\\/]build[\\/]intake[\\/]facts\.json/ );
+	assert.equal( warnMissingFacts( 'fixture', { repo, warn } ), false );
+	assert.equal( lines.length, 1, 'no handoff folder: silent' );
+	writeFacts( factsFile( repo, 'real' ), record );
+	assert.equal( warnMissingFacts( 'real', { repo, warn } ), false );
 } );
 
 test( 'MUST FAIL (schema): writeFacts refuses a record that does not validate and writes nothing', () => {

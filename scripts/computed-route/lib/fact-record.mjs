@@ -29,7 +29,7 @@ export const factsFile = ( repo, client ) => path.join( repo, 'sites', client, '
 // Every instance key the saved inventories hold, by template key: { byTemplate: Map( template key → [ { key, state } ] ),
 // gaps }. An inventory whose `sources` disagree with the folder is stale: it is skipped and listed; one without `sources`
 // is read and counted in one gap row.
-export function instancesOf( { inventoriesDir, folder } ) {
+export function instancesOf( { inventoriesDir, folder, current = null } ) {
 	const byTemplate = new Map();
 	const gaps = [];
 	let unchecked = 0;
@@ -42,7 +42,7 @@ export function instancesOf( { inventoriesDir, folder } ) {
 		}
 		const inv = read.data;
 		if ( inv.sources ) {
-			const changed = changedSources( inv.sources, folder );
+			const changed = changedSources( inv.sources, folder, current ?? ( current = sourcesOf( folder, { commit: null } ) ) );
 			if ( changed.length ) {
 				gaps.push( { construct: 'inventory', draftId: f, error: `the saved inventory is stale and its instance keys are not used (${ changed.slice( 0, 3 ).join( '; ' ) }); run intake again` } );
 				continue;
@@ -105,7 +105,7 @@ export function joinFacts( { client, sources, widths, template, logic, surfaces,
 		elements[ key ] || gaps.push( { construct: 'instance', draftId: key, error: `${ list.length } instance key(s) of a template element the annotated template does not hold (first ${ list[ 0 ].key } in ${ list[ 0 ].state })` } );
 	}
 	return {
-		schema: FACTS_SCHEMA_VERSION, client, generated, widths, sources, elements, surfaces: surfaces.surfaces, mounted: logic.mounted, gaps,
+		schema: FACTS_SCHEMA_VERSION, client, generated, widths, sources, elements, surfaces: surfaces.surfaces, mounted: logic.mounted, state: logic.state || {}, gaps,
 		counts: countsOf( elements, widths, gaps ),
 	};
 }
@@ -113,7 +113,10 @@ export function joinFacts( { client, sources, widths, template, logic, surfaces,
 // The record for a client's handoff folder. `sources`: the census sources (lib/intake-census-template.mjs::draftSources),
 // read once by intake and reused here, so no template is rendered twice. Opens one sandbox for the logic reads (and one
 // page of it for the CSS parser) unless `sandbox` is given. Returns { record, blocked }.
-export async function buildFactRecord( { folder, client, entry, harPath = null, sources, widths = READ_WIDTHS, inventoriesDir = null, sandbox = null } ) {
+// The hashes of the handoff inputs are taken before anything is read (`hashed`, or sourcesOf here), so a draft edited
+// while the record is built leaves a record that assertCurrent refuses.
+export async function buildFactRecord( { folder, client, entry, harPath = null, sources, widths = READ_WIDTHS, inventoriesDir = null, sandbox = null, hashed = null } ) {
+	const taken = hashed || sourcesOf( folder );
 	const sb = sandbox || await openSandbox( { folder, index: entry, harPath, mode: 'replay', widths } );
 	try {
 		const css = await sb.newPage();
@@ -127,8 +130,8 @@ export async function buildFactRecord( { folder, client, entry, harPath = null, 
 		const surfaceFile = readJson( path.join( folder, 'surfaces.json' ) );
 		const surfaces = readSurfaces( { records: surfaceFile.data?.records || [], template } );
 		surfaceFile.error && surfaces.gaps.push( { construct: 'surfaces', draftId: 'surfaces.json', error: `surfaces.json could not be read: ${ surfaceFile.error }` } );
-		const instances = instancesOf( { inventoriesDir, folder } );
-		const record = joinFacts( { client, sources: sourcesOf( folder ), widths, template, logic, surfaces, instances } );
+		const instances = instancesOf( { inventoriesDir, folder, current: taken } );
+		const record = joinFacts( { client, sources: taken, widths, template, logic, surfaces, instances } );
 		return { record, blocked: sandbox ? [] : sb.blocked };
 	} finally {
 		if ( ! sandbox ) {
@@ -153,7 +156,7 @@ export function writeFacts( file, record ) {
 
 // A client's fact record, refused when it is missing, invalid or stale (a StaleRecordError names each changed input). The
 // one way a stage reads the draft's template, logic and surface facts.
-export function loadFacts( client, { repo = REPO, folder = path.join( repo, 'sites', client, 'handoff' ), warn } = {} ) {
+export function loadFacts( client, { repo = REPO, folder = path.join( repo, 'sites', client, 'handoff' ), warn, current = null } = {} ) {
 	const file = factsFile( repo, client );
 	if ( ! fs.existsSync( file ) ) {
 		throw new Error( `${ path.relative( repo, file ) } is missing: run intake for ${ client } first` );
@@ -163,6 +166,20 @@ export function loadFacts( client, { repo = REPO, folder = path.join( repo, 'sit
 	if ( problems.length ) {
 		throw new Error( `${ path.relative( repo, file ) } does not validate: ${ problems.join( '; ' ) }; run intake again` );
 	}
-	assertCurrent( record, folder, { label: 'facts.json', ...( warn ? { warn } : {} ) } );
+	assertCurrent( record, folder, { label: 'facts.json', current, ...( warn ? { warn } : {} ) } );
 	return record;
+}
+
+const warnedMissing = new Set();
+
+// Whether a client's fact record is absent although its handoff folder exists. Warns once per client and process through
+// `warn`, naming the client (a reader that falls back to a record-free read must not do so silently); a client with no
+// handoff folder (a fixture) is silent. Returns true when the record is missing and the handoff exists.
+export function warnMissingFacts( client, { repo = REPO, folder = path.join( repo, 'sites', client, 'handoff' ), warn = ( line ) => console.warn( line ) } = {} ) {
+	if ( fs.existsSync( factsFile( repo, client ) ) || ! fs.existsSync( folder ) ) {
+		return false;
+	}
+	const id = `${ repo }|${ client }`;
+	warnedMissing.has( id ) || ( warnedMissing.add( id ), warn( `facts: ${ client } has a handoff folder but no ${ path.relative( repo, factsFile( repo, client ) ) }; readers use no fact record until intake --facts ${ client } has run` ) );
+	return true;
 }

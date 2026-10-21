@@ -86,23 +86,28 @@ const isSet = ( v ) => {
 	return ! /^\s*(\{\s*\}|\[\s*\]|null|false|0)\s*$/.test( String( v ) );
 };
 
-// Whether a state of an open-able surface sets one of the draft's real state keys. A derived or instance key is not one:
-// `R.*` (the responsive object), a loop item's field (`item.*`), a key starting `_` (a transient flag), and a dotted
-// path whose first segment is not itself a state key of the record (a field of an object the surface does not own).
-// A width state is a breakpoint, read per width by the walker, never a walker state of its own: a key whose value is a
-// width comparison (`{"w": ">= 1060"}`) or a breakpoint token (`{"bp": "m"}`).
+// Whether a state of an open-able surface sets one of the draft's real state keys. With the draft's state context
+// (`ctx`: the fact record's `state[<dc>]`, { keys, widthKeys }: the keys of the logic's class state, and those it derives
+// from the width) a key is derived when it is not a state key (its first segment, for a dotted path: an `R.*` responsive
+// object, a loop item's field and a computed value are not keys of the state) or is a width key; a state that sets a
+// transient flag (a key starting `_`, such as a drawer's `_closing`) is a transition between two states, not a look of its
+// own. A value that is a width comparison (`{"w": ">= 1060"}`) is a width state too: a breakpoint is read per width by
+// the walker, never a walker state of its own. With no context the key names `R`, `item`, `bp` and the dotted-path rule
+// over the record's own keys stand in for it.
 const WIDTH_VALUE = /^\s*(>=|<=|>|<|=)\s*\d/;
-const widthKey = ( key, value ) => ( 'string' === typeof value && WIDTH_VALUE.test( value ) ) || 'bp' === key;
-// A state that sets a transient flag (a key starting `_`, such as a drawer's `_closing`) is a transition between two
-// states, not a look of its own.
+const widthValue = ( value ) => 'string' === typeof value && WIDTH_VALUE.test( value );
 const transient = ( state ) => Object.entries( state.state_keys || {} ).some( ( [ key, value ] ) => key.startsWith( '_' ) && isSet( value ) );
-function setsRealKey( state, stateKeys ) {
+function setsRealKey( state, stateKeys, ctx ) {
 	if ( transient( state ) ) {
 		return false;
 	}
+	const own = ctx ? new Set( ctx.keys ) : stateKeys;
+	const widthKeys = new Set( ctx?.widthKeys || [] );
 	return Object.entries( state.state_keys || {} ).some( ( [ key, value ] ) => {
 		const first = key.split( '.' )[ 0 ];
-		const derived = 'R' === first || 'item' === first || key.startsWith( '_' ) || ( key.includes( '.' ) && ! stateKeys.has( first ) ) || widthKey( key, value );
+		const derived = widthValue( value ) || widthKeys.has( first ) || ( ctx
+			? ! own.has( first )
+			: 'R' === first || 'item' === first || 'bp' === key || ( key.includes( '.' ) && ! own.has( first ) ) );
 		return ! derived && isSet( value );
 	} );
 }
@@ -110,9 +115,10 @@ function setsRealKey( state, stateKeys ) {
 // Walker states of a record: { states: { key: settingState }, pointer, dropped }. Pointer states (hover, focus, active) are
 // matched first and are not walker states; an open-able surface keeps a state named open or expanded, or one that sets a
 // real state key (setsRealKey), as each panel of a mega menu does (`{"mega":"sun"}`). Source order, the
-// first of two states with one key kept; no state left gives { resting: null }.
-export function statesOf( record, vocab ) {
-	const out = { states: {}, pointer: [], dropped: [] };
+// first of two states with one key kept; no state left gives { resting: null }. `ctx` is the draft's state context
+// (setsRealKey); with none, `noContext` lists the names decided by the fallback key names.
+export function statesOf( record, vocab, ctx = null ) {
+	const out = { states: {}, pointer: [], dropped: [], noContext: [] };
 	const seen = new Map();
 	const openable = OPENABLE.includes( record.kind );
 	const stateKeys = new Set( ( record.states || [] ).flatMap( ( s ) => Object.keys( s.state_keys || {} ) ).filter( ( k ) => ! k.includes( '.' ) ) );
@@ -120,8 +126,9 @@ export function statesOf( record, vocab ) {
 		const have = new Set( words( s.name ) );
 		if ( POINTER_WORDS.some( ( w ) => have.has( w ) ) ) {
 			out.pointer.push( s.name );
-		} else if ( openable && ! have.has( 'open' ) && ! have.has( 'expanded' ) && ! setsRealKey( s, stateKeys ) ) {
+		} else if ( openable && ! have.has( 'open' ) && ! have.has( 'expanded' ) && ! setsRealKey( s, stateKeys, ctx ) ) {
 			out.dropped.push( s.name );
+			ctx || out.noContext.push( s.name );
 		} else {
 			const key = walkerKey( s.name );
 			if ( ! key ) {
@@ -152,8 +159,8 @@ const nameSet = ( record ) => [ ...new Set( ( record.states || [] ).map( ( s ) =
 
 // Builds the manifest. `target` is the calibration target ({ envFile, envKey }), `entryFiles` the export's entry drafts
 // (`entryFile` for an export with one); each surface takes the draft draftFor names.
-// `only` limits the run to those keys. Returns { entries, unresolved, unmatched, pointer, dropped, disagree, skipped, added, stale, noIntake }; throws when two rows give one key.
-export function buildManifest( { client, site, rows, records, intake = null, target, entryFile = null, entryFiles = null, vocab = [], existing = {}, only = null } ) {
+// `only` limits the run to those keys. `facts` is the client's fact record (`state[<dc>]` gives statesOf its context). Returns { entries, unresolved, unmatched, pointer, dropped, disagree, skipped, added, stale, noIntake, noFacts }; throws when two rows give one key.
+export function buildManifest( { client, site, rows, records, intake = null, facts = null, target, entryFile = null, entryFiles = null, vocab = [], existing = {}, only = null } ) {
 	const isPlain = ( v ) => null !== v && 'object' === typeof v && ! Array.isArray( v );
 	if ( ! isPlain( existing ) || Object.values( existing ).some( ( v ) => ! isPlain( v ) ) ) {
 		throw new Error( 'the existing surfaces.json is not an object of entry objects' );
@@ -161,7 +168,7 @@ export function buildManifest( { client, site, rows, records, intake = null, tar
 	const drafts = entryFiles || [ entryFile ];
 	const entries = {};
 	const owner = new Map();
-	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {}, stale: [], noIntake: [] };
+	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {}, stale: [], noIntake: [], noFacts: [] };
 	const mapKeys = new Set( rows.flatMap( ( r ) => { try { return [ surfaceKey( r ) ]; } catch { return []; } } ) );
 	out.stale = Object.keys( existing ).filter( ( k ) => ! mapKeys.has( k ) );
 	for ( const row of rows ) {
@@ -186,7 +193,9 @@ export function buildManifest( { client, site, rows, records, intake = null, tar
 		if ( ! KINDS[ row.postType ] ) {
 			out.unmatched.push( { key, reason: 'states-unmatched', why: `no match rule for post type ${ row.postType }` } );
 		} else if ( match.record && ( match.record.states || [] ).length ) {
-			const got = statesOf( match.record, vocab );
+			const ctx = facts?.state?.[ match.record.dc ] ?? null;
+			const got = statesOf( match.record, vocab, ctx );
+			! handSet && got.noContext.length && out.noFacts.push( { key, why: facts ? `facts.json holds no state keys for ${ match.record.dc }` : 'no facts.json: run intake first', names: got.noContext } );
 			states = got.states;
 			got.pointer.forEach( ( name ) => mine.pointer.push( { key, name } ) );
 			got.dropped.forEach( ( name ) => mine.dropped.push( { key, name } ) );

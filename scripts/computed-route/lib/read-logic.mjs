@@ -218,7 +218,7 @@ export async function resizeTo( page, width ) {
 // The logic facts of a template read. `sandbox`: an open intake sandbox (lib/intake-sandbox.mjs::openSandbox); `sources`:
 // the census sources (each `component`, `file`, `via`, `logic`, `stamped`); `template`: lib/read-template.mjs's result.
 // Returns { holes: { <template key>: { <hole id>: { <width>: { v: [ summary ], n, loop, err? } } } }, conditions: { <sc-if key>:
-// { value, width } }, mounted: { <component>: { <width>: boolean } }, gaps }.
+// { value, width } }, mounted: { <component>: { <width>: boolean } }, state: { <component>: { keys, widthKeys } }, gaps }.
 export async function readLogic( { sandbox, entry, sources, template, widths = READ_WIDTHS } ) {
 	const plan = planHoles( template );
 	const gaps = [];
@@ -280,11 +280,13 @@ export async function readLogic( { sandbox, entry, sources, template, widths = R
 		}
 	}
 	const conditions = {};
+	const state = {};
 	for ( const src of sources ) {
 		const scIfs = template.order.map( ( k ) => template.elements[ k ] ).filter( ( r ) => r.component === src.component && 'sc-if' === r.tag ).map( ( r ) => ( { key: r.key, n: r.n, value: r.own.value } ) );
 		const c = widthConditions( { source: src, scIfs } );
 		Object.assign( conditions, c.conditions );
 		gaps.push( ...c.gaps );
+		c.state && ( state[ src.component ] = c.state );
 	}
-	return { holes, conditions, mounted, gaps };
+	return { holes, conditions, mounted, state, gaps };
 }
