@@ -34,6 +34,7 @@ import { walkerConfigs } from './lib/fill-config.mjs';
 import { fillReport, unmappedList } from './lib/fill-report.mjs';
 import { calibrationFor } from './solve.mjs';
 import { stateMap } from './lib/state-map.mjs';
+import { readMediaMap } from './lib/fill-media.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -141,6 +142,8 @@ export async function fillSurface( o ) {
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
 		const result = fillTree( {
 			tree, nodes, reads, db, calFor, origin: reads.origin,
+			// FR-48-39: the uploaded images of the surface's site (a null map when media-upload has not run).
+			media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site },
 			snapshot, rawSnapshot,
 			fixtures: JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) ),
 			ledger: loadLedger( ledgerFile ),

@@ -101,6 +101,10 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 		snap.rel = anchor?.getAttribute( 'rel' ) || null;
 		snap.id = el.getAttribute( 'id' ) || null;
 		snap.ariaLabel = el.getAttribute( 'aria-label' ) || anchor?.getAttribute( 'aria-label' ) || null;
+		// The one image this element is (an <img>, or a <figure> / <picture> holding exactly one) and its figcaption's words.
+		const imgs = el.matches( 'img' ) ? [ el ] : ( el.matches( 'figure, picture' ) ? [ ...el.querySelectorAll( 'img' ) ] : [] );
+		const cap = el.matches( 'figure' ) ? el.querySelector( 'figcaption' ) : null;
+		snap.img = 1 === imgs.length ? { tag: el.localName, src: imgs[ 0 ].getAttribute( 'src' ) ?? imgs[ 0 ].getAttribute( 'data-src' ) ?? '', alt: imgs[ 0 ].getAttribute( 'alt' ), caption: cap ? ( cap.textContent || '' ).replace( /\s+/g, ' ' ).trim() : null } : null;
 		snap.role = el.getAttribute( 'role' );
 		snap.className = String( el.getAttribute( 'class' ) || '' );
 		if ( j.own ) {

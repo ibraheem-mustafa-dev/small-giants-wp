@@ -15,6 +15,7 @@ import { pageBaseline } from './fill-page.mjs';
 import { spacingOwnership } from './fill-spacing.mjs';
 import { presenceDecisions, textDecisions, linkDecisions } from './fill-presence.mjs';
 import { linkAttrDecisions, blockSupportsAnchor } from './fill-link-attrs.mjs';
+import { imageSlots, mediaDecisions } from './fill-media.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { unreadOf } from './fill-unread.mjs';
 import { hasRow } from './fill-skeleton.mjs';
@@ -344,6 +345,7 @@ function fillContent( st, rec, ref, cal ) {
 	take( textDecisions( { calibration: cal, attributes: node.attributes || {}, slots: words, leaf: 0 === rec.children.length } ) );
 	take( linkDecisions( { calibration: cal, attributes: node.attributes || {}, slots: hrefs, origin: st.origin } ) );
 	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts } ) );
+	take( mediaDecisions( { slots: imageSlots( st.db, rec.name ), schema: blockSchema( rec.name ), attributes: node.attributes || {}, img: atDesktop[ '' ]?.img ?? null, media: { ...st.media, origin: st.origin } } ) );
 	// A skeleton's own statement that something lives outside the tree turns the matching UNMAPPED row into handover.
 	for ( const h of skeletonNode.handover || [] ) {
 		const slot = h.slot ?? '';

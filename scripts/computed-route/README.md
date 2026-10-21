@@ -191,6 +191,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/fill-values.mjs` | Fluid fit and `clamp()`, the 16px breakpoint sweep against the SGS boundaries, and the sweep log. |
 | `lib/fill-presence.mjs` | Visibility and variant settings from calibration `presence`, words from `text`, links from `link`. |
 | `lib/fill-link-attrs.mjs` | A draft link's target, rel, id and aria-label, written to the block's own settings (block.json schema, supports.anchor, calibrated `target` entries) or raised as a named UNMAPPED row. |
+| `lib/fill-media.mjs` | FR-48-39 (images): a draft `<img>` or `<figure>` reaches its block's image settings (URL, attachment id, alt, caption) through the media map; an image the map lacks is a named gap; the painted-asset check. |
 | `lib/fill-fixture.mjs` | A calibration fixture's styling preconditions as Fill sees them: a property a precondition paints in the calibrated rest (the social-icons fixture's 1px border and background switch) is compared with its unstyled value, and a written setting carries the switch the fixture turned on for it. |
 | `lib/fill-row-lift.mjs` | Fill's Site Info row lift: the generated icons' shared look (link box as the row's shape element, svg as its glyph element) written once on the `sgs/social-icons` row when every copy agrees. |
 | `lib/fill-unread.mjs` | What Fill leaves unjudged on a measured node: style settings whose calibrated element no finder read, presence settings with no reading or no read element, text and link settings with no reading, and layout or mode enums calibration reads no presence for; never a setting the skeleton sets or Fill wrote. |
@@ -349,6 +350,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/fill-prop.test.mjs` | FR-47-4: tier carry, canonical values, not-painted leftovers, and that every write is the resolver's. |
 | `tests/fill-spacing.test.mjs` | FR-47-4 step 3: one unequal gap hands every gap to the children and writes the parent gap as 0 (MUST FAIL); equal, single, zero, both axes, tolerance, hidden and out-of-flow children. |
 | `tests/fill-values.test.mjs` | FR-47-4: a stepped value is never fluid and a step at 800px is logged against 768 (MUST FAIL); clamp shapes and the sweep log. |
+| `tests/fill-media.test.mjs` | FR-48-39 images: a mapped image writes id, URL and alt, a figcaption writes the caption, an unmapped image is a named gap with no URL written, a block with no image setting is untouched, the painted-asset check names the attachment (MUST FAIL cases). |
 | `tests/fill-presence.test.mjs` | FR-47-4: a draft showing the badge flips its visibility setting on and a draft without it leaves the default (MUST FAIL); variant, words and links, against fixture calibration keys. |
 | `tests/fill-link-attrs.test.mjs` | A draft link's target _blank, rel, id and aria-label go to the block's own settings and to a named gap where it has none (MUST FAIL), against real block.json schemas. |
 | `tests/fill-page.test.mjs` | FR-47-4: the theme baseline for the inherited properties calibration does not record. |
@@ -984,6 +986,13 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 ### `lib/fill-link-attrs.mjs`
 - `blockSupportsAnchor(slug)` → whether block.json declares `supports.anchor`.
 - `linkAttrDecisions(input)` → `{ writes, unmapped, notes }` for a link's `target` (a boolean `...NewTab` or string `...Target` setting, or a calibrated `target` link entry), `rel` (a `rel` or `...Rel` setting; noopener and noreferrer are the block's own for a new tab), `id` (the `anchor` attribute, root element only, when `supports.anchor`) and `aria-label` (an `ariaLabel` or `...AriaLabel` setting). A link's companion setting shares its address setting's prefix; a block with none gets an UNMAPPED row named `target`, `rel`, `id` or `aria-label`. `fill-read.mjs` reads the four from the draft element; `fill-resolve.mjs::fillContent` applies them; `scripts/parity/lib/links.mjs::compareLinkAttributes` compares them on the live render.
+
+### `lib/fill-media.mjs`
+
+- `readMediaMap(file)` → `sites/<client>/build/media-map.json` or null. `imageSlots(db, block)` → `[{ alt, url }]` from the block's DB `image-alt` rows (`alt_companion_attr` names the URL setting). `draftPath(src, origin)` → the draft file an image address names, or null (data:, another origin). `mapEntries(map, site, path)` → the media-map files whose repo path is, or ends at a folder boundary with, that path.
+- `idSetting(schema, urlAttr)` → the attachment id setting for a URL setting (`imageUrl` to `imageId`, else `<attr>Id`) when block.json declares it.
+- `mediaDecisions(input)` → `{ writes, unmapped, notes }`: URL, id, alt and (from a figcaption) caption for a block with exactly one image setting; a held setting is kept; every miss (no map, not in the map, ambiguous, external, several image settings, a bare `<img>` on a block with none) is an `image` row in UNMAPPED and the draft's own address is never written. Called from `fill-resolve.mjs::fillContent`.
+- `paintedImageCheck({ map, site, painted, id })` → `{ ok, reason }`: the painted URL (a WordPress size included, through `media-upload.mjs::paintedAsset`) is the attachment Fill wrote.
 
 ### `lib/brand-registry.mjs`
 
