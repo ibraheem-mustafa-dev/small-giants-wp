@@ -3346,11 +3346,12 @@
 			"slug": "sgs/nav-drawer-menu",
 			"attr": "featuredItemIds",
 			"fields": {
-				"role": "styling",
-				"css_property": "display,max-width,min-width",
-				"css_element": "bar",
-				"css_layer": "GRID"
-			}
+				"role": "behaviour",
+				"css_property": null,
+				"css_element": null,
+				"css_layer": null
+			},
+			"_why": "2026-10-21: a list of menu-item identifiers. src/blocks/nav-drawer-menu/render.php reads `$featured_ids = $attributes['featuredItemIds']` and hands it to SGS_Nav_Drawer_Menu_Flattener and sgs_nav_drawer_menu_render_items(), which match each item's identifier against it to pick which drawer items print the featured markup and classes; the display, max-width and min-width rules are painted by the stylesheet for those classes, not written from this value. Same as sgs/nav-bar-menu.featuredItemIds. Spec 48 5.4 Res 7."
 		},
 		{
 			"slug": "sgs/nav-bar-menu",
