@@ -334,6 +334,18 @@ test( 'a client decision on an element a block absorbs is flagged stale, never s
 	assert.match( about.stale || '', /client decision .* no longer applies/ );
 } );
 
+test( 'a client decision with attributes on a rule-eligible element puts them on its node and the nav still absorbs its items; MUST FAIL without applying a decision\'s attributes', () => {
+	const nav = E( 'header', {}, [ E( 'nav', { display: 'flex' }, [ E( 'button', { words: 'About' } ), E( 'button', { words: 'Sectors' } ) ] ) ] );
+	const tree = inventory( nav );
+	const navEl = tree.elements.find( ( x ) => 'nav' === x.tag );
+	const decision = { block: 'sgs/nav-bar-menu', attributes: { ref: 5 }, signature: `nav|${ navEl.words }` };
+	const r = proposeSkeleton( { inventory: tree, facts: facts(), surface: 'fixture', surfaceKind: 'header', clientDecisions: { surfaces: { fixture: { [ navEl.key ]: decision } } }, db } );
+	assert.equal( byTag( r, 'nav' ).source, 'client decision' );
+	const flat = ( list ) => list.flatMap( ( n ) => [ n, ...flat( n.innerBlocks || [] ) ] );
+	assert.equal( flat( r.skeleton ).find( ( n ) => 'sgs/nav-bar-menu' === n.name )?.attributes?.ref, 5, 'the node carries the decision attributes' );
+	assert.ok( r.proposal.rows.filter( ( x ) => 'button' === x.tag ).every( ( x ) => 'absorbed' === x.action ) );
+} );
+
 test( 'drawsChildren: a leaf, an array-item block and a named block draw their children; MUST FAIL with the name removed', () => {
 	const m = inventoryModel( inventory( E( 'div' ) ) );
 	const hooks = { siteInfoKinds: () => new Map(), isColumnLabel: () => false, topBlock: () => null, blockOfKey: () => null };

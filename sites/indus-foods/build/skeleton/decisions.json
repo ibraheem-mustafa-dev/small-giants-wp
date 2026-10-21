@@ -2701,6 +2701,16 @@
 				"signature": "span|We reply within one working day. Your details are only used to answer your enquiry.",
 				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A privacy reassurance line beside the submit button; sgs/text is the only candidate."
 			}
+		},
+		"sticky-header": {
+			"Root/45#0": {
+				"block": "sgs/nav-bar-menu",
+				"attributes": {
+					"ref": 5
+				},
+				"signature": "nav|",
+				"reason": "the header navigation binds the site's header menu (indus-test term 5, location primary), the binding site-build's placeholder header carries (lib/site-build-map.mjs::placeholderTree); a stage 3 tree must keep it"
+			}
 		}
 	}
 }

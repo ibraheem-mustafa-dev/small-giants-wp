@@ -50,7 +50,9 @@
 					},
 					{
 						"name": "sgs/nav-bar-menu",
-						"attributes": {},
+						"attributes": {
+							"ref": 5
+						},
 						"draftRef": {
 							"tpl": "Root/45#0"
 						},

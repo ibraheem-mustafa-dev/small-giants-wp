@@ -249,7 +249,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// A rule that sets a display type (a business detail) carries the block's settings itself: no generic text attribute.
 		const own = r.rule && ( drawn || top.attributes?.displayType );
 		const { a, handover } = own ? { a: {}, handover: [] } : contentAttrs( block, e, top );
-		Object.assign( a, r.rule ? top.attributes || {} : {} );
+		Object.assign( a, top.attributes || {} );
 		r.handover && handover.push( r.handover );
 		const node = base( e, block, a );
 		handover.length && ( node.handover = handover );
