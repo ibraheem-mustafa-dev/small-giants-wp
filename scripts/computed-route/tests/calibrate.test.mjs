@@ -205,6 +205,17 @@ test( 'MUST FAIL ON REVERT: a timing setting named for what it moves gets a mark
 	assert.strictEqual( exit.attrs.menuExitDuration, 437 );
 } );
 
+test( 'MUST FAIL ON REVERT: a Custom easing setting gets a cubic-bezier() marker, the only form its field paints', () => {
+	// includes/helpers-motion-easing.php::sgs_motion_easing_css paints a Custom value only when
+	// Sgs_Motion_Field_Types::is_valid_cubic_bezier accepts it; a keyword marker falls back to ease and the setting reads dead.
+	const [ caret ] = markersFor( { attr_name: 'submenuCaretTurnEasingCustom', attr_type: 'string', default_value: '""', enum_values: null, css_property: 'transition-timing-function' }, {}, snap );
+	const v = caret.attrs.submenuCaretTurnEasingCustom;
+	assert.match( v, /^cubic-bezier\(\s*0?\.\d+,\s*-?\d*\.?\d+,\s*0?\.\d+,\s*-?\d*\.?\d+\s*\)$/ );
+	assert.equal( caret.expect[ 1440 ], v, 'Chrome serialises a cubic-bezier() as written' );
+	const [ named ] = markersFor( easeRow( { default_value: '"ease"' } ), {}, snap );
+	assert.equal( named.attrs.badgeFadeEasing, MARKER_EASING, 'a named easing keeps its keyword marker' );
+} );
+
 test( 'MUST FAIL ON REVERT: a duration held in seconds gets its marker in seconds, never 437 seconds', () => {
 	// sgs/cart freeDeliveryFillDuration defaults to 0.6 and render.php clamps it to 0..3 seconds: 437 would read as 3s.
 	const [ fill ] = markersFor( { attr_name: 'freeDeliveryFillDuration', attr_type: 'number', default_value: '0.6', enum_values: null, css_property: 'transition-duration' }, {}, snap );

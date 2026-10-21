@@ -16,6 +16,9 @@ export const MARKER_DURATION_MS = 437;
 // when a block's own default is linear.
 export const MARKER_EASING = 'linear';
 const MARKER_EASING_ALT = 'ease-out';
+// A Custom easing field holds a cubic-bezier() only (includes/helpers-motion-easing.php::sgs_motion_easing_css paints it
+// when Sgs_Motion_Field_Types::is_valid_cubic_bezier accepts it, else the fallback); Chrome serialises it as written.
+const MARKER_EASING_CUSTOM = 'cubic-bezier(0.1, 0.7, 0.3, 0.9)';
 
 const TIER_PX = { desktop: 37, tablet: 23, mobile: 7 };
 // A box that holds a glyph (sgs/icon shapeSize): every tier above the 32px resting glyph and the 48px boxed shape, so
@@ -198,7 +201,7 @@ function transitionMarker( row, def, t, prop ) {
 		return t.includes( 'string' ) ? [ { label: 'duration-ms', attrs: set( String( MARKER_DURATION_MS ) ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, `${ MARKER_DURATION_MS / 1000 }s` ] ) ) } ] : [];
 	}
 	if ( EASING_NAME.test( name ) && ( listed.includes( 'transition-timing-function' ) || 'transition' === prop ) && t.includes( 'string' ) ) {
-		const value = MARKER_EASING === def.default ? MARKER_EASING_ALT : MARKER_EASING;
+		const value = /EasingCustom$/.test( name ) ? MARKER_EASING_CUSTOM : MARKER_EASING === def.default ? MARKER_EASING_ALT : MARKER_EASING;
 		return [ { label: 'easing', attrs: set( value ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, value ] ) ) } ];
 	}
 	return null;
