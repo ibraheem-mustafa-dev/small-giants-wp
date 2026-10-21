@@ -178,7 +178,7 @@ export function recordView( record, { openers = {} } = {} ) {
 		const pr = renderedParent ? keyOf( renderedParent ) : null;
 		rec && pr && renderedParent.template === e.template && rec.template.realParent !== pr && note( e, 'parent', rec.template.realParent, pr );
 	};
-	return { has: ( e ) => !! entry( e ), entry, attr, realTag, declared, holeProps, ownPaint, describe, childrenOf, repeated, linkRun, parentsOf, checkParent, disagreements, openers, surfaces: record?.surfaces ?? {}, recordOf: ( id ) => record?.surfaces?.[ id ] ?? null, elements: els };
+	return { has: ( e ) => !! entry( e ), entry, attr, realTag, declared, holeProps, ownPaint, describe, childrenOf, repeated, linkRun, parentsOf, checkParent, disagreements, openers, surfaces: record?.surfaces ?? {}, sources: record?.sources ?? null, recordOf: ( id ) => record?.surfaces?.[ id ] ?? null, elements: els };
 }
 
 // The surface the proposal is for, read from the record's `surfaces` and the elements' memberships: { id, kind, parent: { id,

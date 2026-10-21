@@ -7,6 +7,8 @@
 //   block            the element becomes that block; `absorb` true when the block draws the element's children itself.
 // Precedence (lib/skeleton-classify.mjs::makeClassifier): a client decision, then these rules, then a finaliser pick or a
 // standing element decision, then the database scoring.
+import path from 'path';
+import { narrowedLists } from './skeleton-narrowing.mjs';
 import { specHit } from './skeleton-facts.mjs';
 import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
@@ -467,6 +469,21 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		( { e, st } ) => ( headsCard( e, st ) ? v( 'cardHeading', { block: R.cardHeading?.block } ) : null ),
 	];
 
+	// Whether an ancestor in the element's template parent chain is a form element (a `<form>`, its real tag).
+	const inFormElement = ( e ) => ( view.entry( e )?.template.parentChain ?? [] ).some( ( k ) => 'form' === view.elements[ k ]?.template.realTag );
+	// Whether the choice a chip makes narrows another list of its component (lib/skeleton-narrowing.mjs): the chip's loop list
+	// is a renderVals key and the draft's logic filters a list that an `sc-for` of the same component iterates by a state key
+	// the chips' handlers write.
+	const narrowsList = ( chip ) => {
+		const t = view.entry( chip )?.template;
+		const own = /^\{\{\s*([\w$]+)\s*\}\}$/.exec( t?.membership.scFor[ 0 ]?.list ?? '' )?.[ 1 ];
+		if ( ! facts.repo || ! facts.client ) {
+			return false;
+		}
+		const lists = narrowedLists( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: t.component, listKey: own } );
+		return lists.some( ( name ) => Object.values( view.elements ).some( ( x ) => x.template.component === t.component && x.template.membership.scFor.some( ( f ) => f.list.replace( /\s+/g, '' ) === `{{${ name }}}` ) ) );
+	};
+
 	// The blocks already proposed for the element's ancestors, nearest first (an unwrapped ancestor has none).
 	const ancestorBlocks = ( e ) => {
 		const out = [];
@@ -493,11 +510,20 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			return hit ? v( hit.rule, { block: hit.block } ) : null;
 		},
 		// A group whose block children are all buttons carrying a pressed or checked state (a loop of chips, or two or more) is
-		// an option picker, which draws its own options.
+		// a choice the visitor makes: inside a form element it is that form's tiles field (`optionSetForm`); anywhere else it is
+		// an option picker, which draws its own options, and when the chips' handlers write a state key another list on the
+		// surface is filtered by it carries the hand-over to wire that filter (`optionSetFilter`).
 		( { e } ) => {
 			const chips = R.optionSet ? m.blockKids( e ) : [];
 			const chosen = ( k ) => 'button' === view.realTag( k ) && ( null != view.attr( k, 'aria-pressed' ) || null != view.attr( k, 'aria-checked' ) );
-			return chips.length && chips.every( chosen ) && ( chips.length >= 2 || view.repeated( chips[ 0 ] ) ) ? v( 'optionSet', { block: R.optionSet.block, attributes: {}, absorb: true } ) : null;
+			if ( ! ( chips.length && chips.every( chosen ) && ( chips.length >= 2 || view.repeated( chips[ 0 ] ) ) ) ) {
+				return null;
+			}
+			if ( R.optionSetForm && inFormElement( e ) ) {
+				return v( 'optionSetForm', { block: R.optionSetForm.block, attributes: {}, absorb: true } );
+			}
+			const filter = R.optionSetFilter && narrowsList( chips[ 0 ] );
+			return v( filter ? 'optionSetFilter' : 'optionSet', { block: R.optionSet.block, attributes: {}, absorb: true, ...( filter ? { handover: { owner: 'site-build', kind: 'filter', detail: R.optionSetFilter.handover } } : {} ) } );
 		},
 		// A strip whose own animation loops a translate for ever is a marquee: logos make a brand strip, labels a scrolling
 		// trust bar; the repeated items are its items.

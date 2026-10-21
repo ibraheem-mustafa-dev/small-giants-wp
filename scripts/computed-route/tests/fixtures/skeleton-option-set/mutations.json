@@ -1,0 +1,14 @@
+[
+ { "file": "lib/skeleton-rules.mjs", "find": "if ( R.optionSetForm && inFormElement( e ) ) {", "replace": "if ( R.optionSetForm ) {", "why": "every chip group is a tiles field" },
+ { "file": "lib/skeleton-rules.mjs", "find": "'form' === view.elements[ k ]?.template.realTag", "replace": "!! view.elements[ k ]", "why": "any ancestor is a form" },
+ { "file": "lib/skeleton-rules.mjs", "find": "const filter = R.optionSetFilter && narrowsList( chips[ 0 ] );", "replace": "const filter = R.optionSetFilter;", "why": "every chip group narrows a list" },
+ { "file": "lib/skeleton-rules.mjs", "find": "x.template.membership.scFor.some( ( f ) => f.list.replace( /\\s+/g, '' ) === `{{${ name }}}` )", "replace": "true", "why": "the narrowed list need not be iterated by an sc-for" },
+ { "file": "lib/skeleton-narrowing.mjs", "find": "filter( ( k ) => k !== listKey && ", "replace": "filter( ( k ) => ", "why": "the chips' own list can be the narrowed one" },
+ { "file": "lib/skeleton-narrowing.mjs", "find": "[ ...filteredBy( d, d.values.get( k ) ) ].some( ( s ) => written.has( s ) )", "replace": "true", "why": "any list is narrowed whatever key it reads" },
+ { "file": "lib/skeleton-narrowing.mjs", "find": "if ( hash && crypto.createHash( 'sha256' ).update( bytes ).digest( 'hex' ) !== hash ) {", "replace": "if ( false ) {", "why": "a draft that is not the record's is read" },
+ { "file": "lib/skeleton-narrowing.mjs", "find": "isFn( expr.arguments[ 0 ] ) ) {", "replace": "false ) {", "why": "a filter callback reads no state" },
+ { "file": "lib/skeleton-narrowing.mjs", "find": "if ( ! seen.has( expr.name ) ) {", "replace": "if ( false ) {", "why": "a local variable is not followed" },
+ { "file": "lib/skeleton-narrowing.mjs", "find": "whole.add( n.id.name );", "replace": "void 0;", "why": "an alias of this.state is not read" },
+ { "file": "lib/skeleton-narrowing.mjs", "find": "add( filteredBy( d, expr.callee.object, depth + 1, seen ) );", "replace": "void 0;", "why": "a map chain is not followed to its source" },
+ { "file": "lib/skeleton-record.mjs", "find": "sources: record?.sources ?? null,", "replace": "sources: null,", "why": "the view hides the record's draft hashes" }
+]

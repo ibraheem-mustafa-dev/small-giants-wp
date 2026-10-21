@@ -450,9 +450,26 @@
 			"id": "optionSet",
 			"block": "sgs/option-picker",
 			"taughtBy": { "client": "mamas-munches-redesign", "key": "Home/85 and Home/87", "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe" },
-			"scope": "an element whose block children are all buttons carrying an aria-pressed or aria-checked state (read from the fact record, the render confirms), as a loop (an sc-for) or a run of two or more; a lone button, a run without a pressed or checked state and a disclosure button (aria-expanded) are not an option set",
+			"scope": "an element whose block children are all buttons carrying an aria-pressed or aria-checked state (read from the fact record, the render confirms), as a loop (an sc-for) or a run of two or more, and that is neither inside a form element nor narrows a list; a lone button, a run without a pressed or checked state and a disclosure button (aria-expanded) are not an option set",
 			"clients": [ "indus-foods", "mamas-munches-redesign" ],
 			"reason": "a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it"
+		},
+		"optionSetForm": {
+			"id": "optionSetForm",
+			"block": "sgs/form-field-tiles",
+			"taughtBy": { "client": "mamas-munches-redesign", "key": "Checkout/73, Checkout/98 and Contact/48", "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe" },
+			"scope": "an option set (the optionSet scope) with a form element (the real tag form) among the ancestors in its template parent chain; the same group outside a form element stays the option picker",
+			"clients": [ "indus-foods", "mamas-munches-redesign" ],
+			"reason": "a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21)"
+		},
+		"optionSetFilter": {
+			"id": "optionSetFilter",
+			"block": "sgs/option-picker",
+			"handover": "the choice narrows a list on this page: wire it to the list's filter",
+			"taughtBy": { "client": "mamas-munches-redesign", "key": "Shop/21, Help/19, Gifts/17 and Gifts/21", "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe" },
+			"scope": "an option set outside a form element whose chips loop a renderVals list, when the draft's logic writes a state key from those chips' handlers and filters another list an sc-for of the same component iterates by that key (lib/skeleton-narrowing.mjs, read from the logic's syntax tree); a computed state key, a list not filtered by the key and a group with static chips narrow nothing",
+			"clients": [ "indus-foods", "mamas-munches-redesign" ],
+			"reason": "a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21)"
 		},
 		"megaGridContainer": {
 			"id": "megaGridContainer",
