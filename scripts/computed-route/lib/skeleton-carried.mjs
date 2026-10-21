@@ -10,6 +10,8 @@ import fs from 'fs';
 import path from 'path';
 import { parseLogic, keyName } from './intake-ast.mjs';
 import { boundMenu } from './site-build-map.mjs';
+import { templateKey } from './fact-key.mjs';
+import { SERVED_ROOT } from './key-space.mjs';
 
 const IMAGE = /\.(svg|png|jpe?g|gif|webp|avif)$/i;
 const sha = ( file ) => crypto.createHash( 'sha256' ).update( fs.readFileSync( file ) ).digest( 'hex' );
@@ -36,28 +38,35 @@ export function sourceMaps( folder ) {
 }
 
 // The draft image an element draws, as a path inside the handoff folder: its <img> src, else the one file a script's
-// source map names for a static attribute value of the element's own tag. null when there is none or it is ambiguous.
-export function logoFile( { e, maps } ) {
-	if ( 'img' === e.tag ) {
-		const src = String( e.attrs?.src ?? '' ).split( /[?#]/ )[ 0 ].replace( /^(?:\.{0,2}\/)+/, '' );
+// source map names for a static attribute value of the element's own tag. The tag and the attributes are the fact
+// record's (`view` is lib/skeleton-record.mjs::recordView; an element of a served inventory, whose root host is `Root`,
+// is found under the entry draft's component, `rootComponent`); an element the record has no entry for reads its
+// rendered tag and attributes. null when there is none or it is ambiguous.
+export function logoFile( { e, maps, view = null, rootComponent = null } ) {
+	const entry = view?.entry( e ) ?? ( view && rootComponent && SERVED_ROOT === e.template ? view.elements[ templateKey( { dc: rootComponent, tpl: e.tpl } ) ] : null ) ?? null;
+	const tag = entry ? entry.template.realTag : e.tag;
+	const stated = entry?.template.attrs ?? null;
+	if ( 'img' === tag ) {
+		const text = stated?.src;
+		// A src that is only a binding is the value the render shows.
+		const raw = null != text && ! /\{\{/.test( String( text ) ) ? text : e.attrs?.src;
+		const src = String( raw ?? '' ).split( /[?#]/ )[ 0 ].replace( /^(?:\.{0,2}\/)+/, '' );
 		return src && ! /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test( src ) ? src : null;
 	}
-	const open = /^<[^>]+>/.exec( String( e.snippet || '' ).trim() )?.[ 0 ] || '';
-	const values = [ ...open.matchAll( /\s([a-z][\w-]*)="([^"{}]+)"/gi ) ].filter( ( m ) => ! /^(style|class|aria-label|data-|id$)/i.test( m[ 1 ] ) ).map( ( m ) => m[ 2 ] );
+	const values = Object.entries( stated ?? e.attrs ?? {} ).filter( ( [ name, v ] ) => ! /^(style|class|aria-label|data-|id$)/i.test( name ) && 'string' === typeof v && v && ! /[{}"]/.test( v ) ).map( ( [ , v ] ) => v );
 	const files = [ ...new Set( values.flatMap( ( v ) => maps.get( v ) || [] ) ) ];
 	return 1 === files.length ? files[ 0 ] : null;
 }
 
-// The media-map entry for a draft file: among the site's entries naming that path, the one whose source sha256 is the
-// local file's. Returns { id, asset } or { reason }.
+// The media-map entry for a draft file: the site's entries whose source sha256 is the local file's bytes (a path is never
+// matched by its tail). Returns { id, asset } or { reason }.
 export function mediaEntry( { map, site, repo, folder, file } ) {
 	const local = path.join( folder, file );
 	if ( ! fs.existsSync( local ) ) {
 		return { reason: `${ file } is not a file of the draft` };
 	}
 	const want = sha( local );
-	const named = ( map?.sites?.[ site ]?.files || [] ).filter( ( f ) => f.asset === file || String( f.asset ).endsWith( `/${ file }` ) );
-	const hits = named.filter( ( f ) => f.sha256 === want && Number.isInteger( f.id ) );
+	const hits = ( map?.sites?.[ site ]?.files || [] ).filter( ( f ) => f.sha256 === want && Number.isInteger( f.id ) );
 	const ids = new Set( hits.map( ( h ) => h.id ) );
 	if ( 1 === ids.size ) {
 		return { id: hits[ 0 ].id, asset: hits[ 0 ].asset };
@@ -65,20 +74,20 @@ export function mediaEntry( { map, site, repo, folder, file } ) {
 	return { reason: ids.size ? `${ file } matches different attachments (${ [ ...ids ].join( ', ' ) })` : `${ file } (sha256 ${ want.slice( 0, 8 ) }) is not in the media map for ${ site }` };
 }
 
-// What the skeleton carries for one client and site: { logo( e ) -> { id, asset } | { reason } | null, menu( kind ) -> id | null }.
-export function carriedIds( { repo, client, site } ) {
+// What the skeleton carries for one client and site: { logo( e, view ) -> { id, asset } | { reason } | null, menu( kind ) -> id | null }.
+export function carriedIds( { repo, client, site, rootComponent = null } ) {
 	const build = path.join( repo, 'sites', client, 'build' );
 	const folder = path.join( repo, 'sites', client, 'handoff' );
 	const map = readJson( path.join( build, 'media-map.json' ) );
 	const menus = readJson( path.join( build, 'menu-map.json' ) )?.sites?.[ site ]?.menus || {};
 	let maps = null;
 	return {
-		logo: ( e ) => {
+		logo: ( e, view = null ) => {
 			if ( ! site || ! map || ! fs.existsSync( folder ) ) {
 				return null;
 			}
 			maps ||= sourceMaps( folder );
-			const file = logoFile( { e, maps } );
+			const file = logoFile( { e, maps, view, rootComponent } );
 			return file ? mediaEntry( { map, site, repo, folder, file } ) : null;
 		},
 		menu: ( kind ) => {

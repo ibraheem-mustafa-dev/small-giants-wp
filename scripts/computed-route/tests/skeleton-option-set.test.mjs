@@ -84,6 +84,7 @@ const chips = () => N( 'div', {}, [ chip( 'A' ), chip( 'B' ) ] );
 const item = ( list ) => N( 'li', { loop: list, words: 'item' } );
 const run = ( root, o = {} ) => {
 	const b = build( root );
+	o.drop && Object.keys( b.recs ).filter( ( k ) => 'button' === b.recs[ k ].template.realTag ).forEach( ( k ) => delete b.recs[ k ] );
 	const draft = o.logic ? draftRepo( o.logic ) : { repo: REPO, hash: '' };
 	const rec = { schema: '1', client: 'fixture-client', elements: b.recs, surfaces: {}, sources: { files: { 'Root.dc.html': o.hash ?? draft.hash } } };
 	return proposeSkeleton( { inventory: b.inventory, facts: facts( draft.repo, ...( o.off || [] ) ), surface: 'fixture', surfaceKind: 'page', surfaceName: 'Fixture', motion: new Set(), db, factRecord: rec, openers: {} } );
@@ -131,7 +132,7 @@ test( 'NEGATIVE optionSetFilter: no filtered list, no shared key, a computed key
 	assert.deepEqual( plain( { logic: LOGIC( { write: '{ other: id }' } ) } ), [ 'optionSet', undefined ], 'the handlers write a key no filter reads' );
 	assert.deepEqual( plain( { logic: LOGIC( { write: '{ [ id ]: 1 }' } ) } ), [ 'optionSet', undefined ], 'a computed key is unknown' );
 	assert.deepEqual( plain( { logic: LOGIC( { shown: '[ 1, 2 ]' } ) } ), [ 'optionSet', undefined ], 'a list no filter produces' );
-	assert.deepEqual( plain( { logic: LOGIC(), hash: 'stale' } ), [ 'optionSet', undefined ], 'a draft that is not the record\'s' );
+	assert.throws( () => plain( { logic: LOGIC(), hash: 'stale' } ), /is stale.*Root\.dc\.html changed/, 'a draft that is not the record\'s is a stale record, never an empty answer' );
 	assert.deepEqual( [ group( run( N( 'section', {}, [ chipLoop(), N( 'ul', {}, [ item( 'other' ) ] ) ] ), { logic: LOGIC() } ) ).rule ], [ 'optionSet' ], 'the filtered list is iterated by no sc-for' );
 	const stat = group( run( withList( N( 'div', {}, [ chip( 'A' ), chip( 'B' ) ] ) ), { logic: LOGIC() } ) );
 	assert.deepEqual( [ stat.rule, stat.handover ], [ 'optionSet', undefined ], 'static chips name no loop list' );
@@ -149,6 +150,20 @@ test( 'narrowedLists: the draft\'s filtered lists read through a local variable,
 	assert.deepEqual( narrowedLists( { folder: path.join( self.repo, 'sites', 'fixture-client', 'handoff' ), record: { sources: { files: { 'Root.dc.html': self.hash } } }, component: 'Root', listKey: 'chips' } ), [ 'shown' ], "a chip group's own list is never the one it narrows" );
 	const alias = draftRepo( LOGIC().replace( 'const { filter } = this.state;', 'const S = this.state;' ).replace( "'all' === filter || p === filter", "'all' === S.filter" ) );
 	assert.deepEqual( narrowedLists( { folder: path.join( alias.repo, 'sites', 'fixture-client', 'handoff' ), record: { sources: { files: { 'Root.dc.html': alias.hash } } }, component: 'Root', listKey: 'chips' } ), [ 'shown' ], 'an alias of this.state' );
+} );
+
+test( 'MUST FAIL: a chip with no record entry narrows nothing (the null entry is guarded) and the group stays the option picker', () => {
+	const r = run( withList( chips() ), { drop: true } );
+	assert.deepEqual( [ group( r ).block, group( r ).rule, group( r ).handover ], [ 'sgs/option-picker', 'optionSet', undefined ] );
+} );
+
+test( 'MUST FAIL: narrowedLists throws the stale-record error for a draft whose sha256 differs or that is gone, never []', () => {
+	const { repo, hash } = draftRepo( LOGIC() );
+	const folder = path.join( repo, 'sites', 'fixture-client', 'handoff' );
+	const at = ( files ) => () => narrowedLists( { folder, record: { sources: { files } }, component: 'Root', listKey: 'chips' } );
+	assert.throws( at( { 'Root.dc.html': 'f'.repeat( 64 ) } ), ( e ) => 'StaleRecordError' === e.name && /Root\.dc\.html changed/.test( e.message ) );
+	fs.rmSync( path.join( folder, 'Root.dc.html' ) );
+	assert.throws( at( { 'Root.dc.html': hash } ), ( e ) => 'StaleRecordError' === e.name && /Root\.dc\.html removed/.test( e.message ) );
 } );
 
 test( 'optionSet: a group outside any form that narrows nothing is the option picker', () => {

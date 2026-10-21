@@ -7,21 +7,26 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { StaleRecordError } from './freshness.mjs';
 import { loadDraft, keyName, isThisMember, isFn, subtree } from './intake-ast.mjs';
 
 const MAX_DEPTH = 8;
 const parsed = new Map();
 
 // The draft file's logic read once per path and content hash: { idx, method (renderVals), values (Map key → value node) },
-// or null when the file is missing, does not match the record's hash, or has no renderVals returning an object literal.
+// or null when the file has no renderVals returning an object literal. A file the record hashed that is missing or whose
+// sha256 differs is a stale record (lib/freshness.mjs::StaleRecordError), never an empty answer.
 function readDraft( folder, file, hash ) {
 	const full = path.join( folder, file );
 	if ( ! fs.existsSync( full ) ) {
+		if ( hash ) {
+			throw new StaleRecordError( 'the fact record', [ `${ file } removed` ] );
+		}
 		return null;
 	}
 	const bytes = fs.readFileSync( full );
 	if ( hash && crypto.createHash( 'sha256' ).update( bytes ).digest( 'hex' ) !== hash ) {
-		return null;
+		throw new StaleRecordError( 'the fact record', [ `${ file } changed` ] );
 	}
 	const id = `${ full }|${ crypto.createHash( 'sha256' ).update( bytes ).digest( 'hex' ) }`;
 	if ( ! parsed.has( id ) ) {
