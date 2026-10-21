@@ -37,6 +37,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { makeResponsive, resolveResponsiveTier } from '../utils/responsive';
 import { inheritedBox } from '../utils/inherited-box';
 import { InheritedBoxContext } from './InheritedBoxContext';
+import { ControlLabelContext } from './ControlLabelContext';
 
 // ⛔ Removed with the switcher (Phase 1.3): `useState` (the private tier), the
 // `DeviceTabs` import, the TIERS table, and the desktop/tablet/mobile icons that
@@ -144,18 +145,20 @@ export default function ResponsiveOverride( {
 				className="sgs-responsive-override__field"
 				style={ inherited ? { opacity: 0.6 } : undefined }
 			>
-				<InheritedBoxContext.Provider
-					value={ inheritedBox( obj, active, BOX_KEYS ) }
-				>
-					{ children( {
-						tier: active,
-						ownValue: hasOwn ? ownRaw : '',
-						effectiveValue: resolved.value,
-						inherited,
-						setOwnValue,
-						resetTier,
-					} ) }
-				</InheritedBoxContext.Provider>
+				<ControlLabelContext.Provider value={ label || '' }>
+					<InheritedBoxContext.Provider
+						value={ inheritedBox( obj, active, BOX_KEYS ) }
+					>
+						{ children( {
+							tier: active,
+							ownValue: hasOwn ? ownRaw : '',
+							effectiveValue: resolved.value,
+							inherited,
+							setOwnValue,
+							resetTier,
+						} ) }
+					</InheritedBoxContext.Provider>
+				</ControlLabelContext.Provider>
 			</div>
 
 			{ inherited && (

@@ -30,7 +30,7 @@
  * @package
  */
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
+import { useContext, useState } from '@wordpress/element';
 import { useSettings } from '@wordpress/block-editor';
 import {
 	BaseControl,
@@ -43,6 +43,7 @@ import {
 import { UnitControl, FontSizePicker } from './primitives';
 import { VALUE_BOX_STYLE, parseLength } from './SgsBoxControl';
 import { flattenPresetSetting } from '../utils/presetSettings';
+import { ControlLabelContext } from './ControlLabelContext';
 
 const CUSTOM_VALUE = '__custom__';
 
@@ -204,12 +205,15 @@ export default function SgsLengthControl( {
 	const [ spacingSizesRaw ] = useSettings( 'spacing.spacingSizes' );
 	// With `tokenPresets` an emptied value still shows the Custom input once Custom… is picked.
 	const [ customPicked, setCustomPicked ] = useState( false );
+	// A control mounted without its own label is named by the wrapper it sits in (ResponsiveOverride).
+	const wrapperLabel = useContext( ControlLabelContext );
+	const name = label || wrapperLabel;
 
 	if ( 'font-size' === scale ) {
 		return (
 			<FontSizeScale
-				label={ label }
-				hideLabelFromVision={ hideLabelFromVision }
+				label={ name }
+				hideLabelFromVision={ hideLabelFromVision || ! label }
 				help={ help }
 				style={ style }
 				disabled={ disabled }
@@ -288,7 +292,7 @@ export default function SgsLengthControl( {
 				{ hasSelect && (
 					<FlexBlock>
 						<SelectControl
-							label={ label }
+							label={ name }
 							hideLabelFromVision
 							value={ selectValue }
 							options={ options }
@@ -319,7 +323,7 @@ export default function SgsLengthControl( {
 					}
 				>
 					<UnitControl
-						label={ label }
+						label={ name }
 						hideLabelFromVision
 						value={ boxValue }
 						placeholder={ boxPlaceholder }
@@ -332,7 +336,7 @@ export default function SgsLengthControl( {
 				</FlexItem>
 				<FlexBlock>
 					<RangeControl
-						label={ label }
+						label={ name }
 						hideLabelFromVision
 						value={ sliderValue }
 						onChange={ ( v ) =>

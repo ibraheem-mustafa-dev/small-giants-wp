@@ -328,6 +328,31 @@ describe( 'SgsLengthControl fallbacks and passthroughs', () => {
 	} );
 } );
 
+describe( 'SgsLengthControl accessible name', () => {
+	const { ControlLabelContext } = require( '../../src/components/ControlLabelContext' );
+
+	test( 'with no label of its own it takes the wrapper label for the select, value box and slider', () => {
+		act( () => {
+			root.render(
+				h( ControlLabelContext.Provider, { value: 'Outer max-width' }, h( SgsLengthControl, { value: '', onChange() {}, presets: true } ) )
+			);
+		} );
+		expect( select().getAttribute( 'aria-label' ) ).toBe( 'Outer max-width' );
+		expect( box().getAttribute( 'aria-label' ) ).toBe( 'Outer max-width' );
+		// The wrapper shows the label; the control draws none of its own.
+		expect( container.querySelector( '[data-testid="label"]' ) ).toBeNull();
+	} );
+
+	test( 'its own label wins over the wrapper label', () => {
+		act( () => {
+			root.render(
+				h( ControlLabelContext.Provider, { value: 'Wrapper' }, h( SgsLengthControl, { label: 'Own', value: '', onChange() {}, presets: true } ) )
+			);
+		} );
+		expect( box().getAttribute( 'aria-label' ) ).toBe( 'Own' );
+	} );
+} );
+
 describe( 'SgsLengthControl font-size scale', () => {
 	const picker = () =>
 		container.querySelector( '[data-testid="font-size-picker"]' );
