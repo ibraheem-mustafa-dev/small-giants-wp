@@ -63,7 +63,7 @@ Not in the Indus draft (grepped in all three drafts): a canvas, `polygon()`, `ve
 ## The work
 | Unit | What it is | Done when | Session |
 |---|---|---|---|
-| U0 Header | the header session's wave 1 committed and its header re-run on the corrected skeleton | the header session's handoff marks wave 1 committed; `sites/indus-foods/build/header.tree.json` has an `sgs/nav-bar-menu` | A |
+| U0 Header | the header session's wave 1 committed and its header re-run on the corrected skeleton | met (waves 1 and 2 committed, the header re-run on the corrected skeleton); `sites/indus-foods/build/trees/sgs_header/header.json` has an `sgs/nav-bar-menu` | A |
 | U2 Declared values close | `.claude/prompts/Declared-values-final-session-prompt.md` tasks 2 to 4 (step 3(b), step 6 on the re-run header, the 16 CSS-group entries) | FR-48-8 and FR-48-36 Status read built; the 16 entries covered with tests | A |
 | U2b Intake safety | a run never overwrites a confirmed `page-map.json`; `--apply-review` keeps saved decisions' first dates | two MUST FAIL tests in `scripts/computed-route/tests/intake-review.test.mjs`, mutation-red | G |
 | U2c Spec truth | correct the stale Status lines: FR-48-1, FR-48-11, FR-48-39, FR-48-44, FR-48-77 (its `image-reveal` note, and its done-when's `sgs/timeline` clause per U13a) | `git grep -n "image-reveal.*not built" .claude/specs` finds nothing | G |

@@ -4,6 +4,29 @@
 
 The first Indus header run (manifest, skeleton, Fill, build into post 201, three Solve rounds, 2026-10-21) ended with 308 open rows, 134 unresolved, 6 wrong writes and 36 unreadable state rows. A three-rater QC council (live and motion, skeleton structure, pipeline forensics) found the dominant cause and three more, each proven from code or by experiment. Ground truth and run history: the session scratchpad's `council-ground-truth.md`.
 
+## Status
+
+- [x] Wave 1 (tasks 1 and 2): `ceaffdb50`, `be62f06af`, `7cd17be8c`, `2b5b51e66`, `630ded9fa`, `60e585700`; the header is rebuilt on the right skeleton (`53dc54360`).
+- [x] Wave 2 (tasks 3 and 4): `9df4e8518`, `9e1883275`, `0e075939a` (DB overrides; Spec 48 §5.4 Res 7 closed, `block_attributes` changed exactly the 8 overridden rows, 9217 rows before and after), `9398fad31` (nav child slots and collapse point), `6b68330a9` (reseed outputs), `27dba4540` (header wave 2 artefacts).
+- [ ] Live pairing of the header at 375, 768 and 1440 with Bean's eye (FR-48-81's last done-when clause): not hit. The header is structurally Bean's approved one (`sgs/site-header` > `sgs/site-header-row` > `sgs/responsive-logo` with `logoId` 81, `sgs/nav-bar-menu` with `ref` 5, `collapsePoint` 1024 and item slots, `sgs/button`), built on indus-test post 201 (the active header) from `sites/indus-foods/build/trees/sgs_header/header.json`; skeleton decisions are `sites/indus-foods/build/skeleton/decisions.json` `surfaces['sticky-header']`. Last Solve (`sites/indus-foods/build/qa/solve/header/2026-10-21-0615/solve-report.md`): open rows 131, hardcode 12, missing 27, unresolved 44, wrong writes 1 of 4 settings; States 5 pairs, 2 match, 1 differs, 8 unreadable. No code deploy; the framework DB is reseeded at `0e075939a`.
+- The walker pairs blocks only, so a block that draws its children (`sgs/nav-bar-menu`) is never compared item by item: fewer Solve rows can mean unmeasured, and the cropped pairs carry that check.
+
+### Next wave (what the cropped pairs at 1440, 768 and 375 still show)
+
+Each item names its cause and where the fix lives. Resume cold from the command lines in this plan: `node scripts/computed-route/skeleton.mjs propose --client indus-foods --surface header`, Fill with `--allow-external`, build into post 201, Solve.
+
+1. Logo renders about 170px high (draft `height: clamp(54px, 4.4vw, 66px)`). Fill reports "sgs/responsive-logo has no setting for height"; the block has a calibrated `maxHeight`. Fix: add a `height` to `max-height` row for a fixed-ratio element to `plugins/sgs-blocks/scripts/data/property-equivalents.json` (read by `scripts/computed-route/lib/fill-equivalents.mjs`).
+2. Header row: the nav wraps to two lines and the CTA is clipped. Fill reports `sgs/site-header-row` "display flex cannot be held", "row-gap conflict: gap already holds column-gap (one setting, two gaps)" and no content width or centring.
+3. Current item: Home's blue and gold underline is missing; the current slot is read but `itemColourCurrent` and the indicator are not written.
+4. The CTA shows at 375 where the draft hides it below 768: FR-48-50 (breakpoint rule) is not built.
+5. Menu label "Contact Us" (the page title) against the draft's "Contact": site-build's menu labels.
+6. Not sticky, no scroll shadow, 57px against 87px height difference: FR-48-80 (behaviour recognisers) is not built; the settings exist (`sgs/site-header` `headerSticky`, `scrolledOffset`, `shadowScrolled`).
+7. The menu binding is a hand decision: there is no universal carrier from site-build's menu ids into a stage 3 tree.
+8. `lib/skeleton-rerun.mjs` (intake's offline re-run) does not pass the handoff states, thresholds and calibration inputs, so intake-generated proposals carry no child slots or `collapsePoint`; only `skeleton.mjs propose` does. Fix: pass the same inputs through `skeleton-rerun.mjs::rerunSkeletons`, reusing the helper `skeleton.mjs` uses.
+9. Step 20 cannot fully close on today's code: it includes binding grouping (FR-48-41), the 1200/1260 breakpoint rule (FR-48-50), gates G0 to G7 (FR-48-64) and the R–L verdict half (FR-48-36), all not built.
+
+Candidates from the first between-wave gate that wave 2 did not take: the CTA's exact `.25s` against a token (Spec 38A §7), button `letterSpacing` written at desktop changing 768, and the CTA's `#/apply` link.
+
 ## Trusted diagnoses
 
 - D1 Wrong skeleton. `skeleton.mjs::proposeSurface` calls `lib/skeleton-propose.mjs::proposeSkeleton` without `surfaceKind`, `surfaceName`, `built` and `motion`, which `lib/intake-skeletons.mjs` and `lib/skeleton-rerun.mjs` pass. Without the kind the `navigation` rule cannot fire: the same served inventory gives 19 nodes (buttons and containers), with `kind: header` it gives Bean's approved 5 (`sgs/site-header` > `sgs/site-header-row` > `sgs/responsive-logo`, `sgs/nav-bar-menu`, `sgs/button`). About 140 of the 320 open rows follow from it.
