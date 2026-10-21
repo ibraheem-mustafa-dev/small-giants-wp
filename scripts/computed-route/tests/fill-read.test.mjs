@@ -139,3 +139,19 @@ test( 'jobsFor lists roots before their slots, marks only roots, scopes only slo
 	assert.equal( jobs.find( ( j ) => '0:' === j.id ).own, true, 'a block with children reads its own text styles' );
 	assert.equal( jobs.find( ( j ) => '1:' === j.id ).own, false );
 } );
+
+test( 'MUST FAIL: a page whose targets all miss throws a named error with the width, the target count and the aborted requests; the positive case still reads', async () => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'fill-empty-' ) );
+	// The draft's runtime comes from a host the route blocks, so nothing renders and every finder matches nothing.
+	fs.writeFileSync( path.join( dir, 'index.html' ), '<!doctype html><html><head><meta charset="utf-8"></head><body><div id="root"></div><script src="https://unpkg.invalid/react@18/umd/react.js"></script></body></html>' );
+	const empty = await serveDraft( dir );
+	try {
+		await assert.rejects(
+			readDraft( { url: empty.url, nodes, headless: true, sweep: false } ),
+			( e ) => /read 375px: 0 of \d+ targets resolved/.test( e.message ) && e.message.includes( 'https://unpkg.invalid/react@18/umd/react.js' ) && e.message.includes( '--allow-external' ),
+		);
+	} finally {
+		await empty.close();
+	}
+	assert.ok( ! snap( 1440, '1:' ).missing, 'the positive case still reads its targets' );
+} );

@@ -45,15 +45,26 @@ export const requestAllowed = ( url, origin, external ) => external || url.start
 // Routes a browser context's requests for a draft read: a URL in `mirror` ({ url: local file }) is answered from that file
 // (a draft's CDN script served from a local copy, so the draft renders without leaving the machine), a URL
 // requestAllowed accepts goes through, everything else is aborted.
-export async function routeDraft( ctx, { origin, external = false, mirror = {} } ) {
+export async function routeDraft( ctx, { origin, external = false, mirror = {}, aborted = null } ) {
 	await ctx.route( '**/*', ( route ) => {
 		const u = route.request().url();
 		const file = mirror[ u ] || mirror[ u.split( '#' )[ 0 ] ];
 		if ( file ) {
 			return route.fulfill( { status: 200, body: fs.readFileSync( file ), contentType: contentType( file ) } );
 		}
-		return requestAllowed( u, origin, external ) ? route.continue() : route.abort();
+		if ( requestAllowed( u, origin, external ) ) {
+			return route.continue();
+		}
+		aborted?.add( u );
+		return route.abort();
 	} );
+}
+
+// The named failure for a read width that resolved none of its targets (R-48-3: no silent failure). A Claude Design draft
+// loads React and Babel from unpkg, so with the external-request block on nothing renders and every target reads missing.
+export function emptyReadError( width, count, aborted ) {
+	const urls = [ ...aborted ];
+	return new Error( `Fill read ${ width }px: 0 of ${ count } targets resolved. The route aborted ${ urls.length } request(s)${ urls.length ? `: ${ urls.slice( 0, 8 ).join( ', ' ) }${ urls.length > 8 ? ', ...' : '' }` : '' }. A Claude Design draft loads its runtime (React, Babel) from unpkg, so run Fill with --allow-external; otherwise the finders match nothing on the draft.` );
 }
 
 // In-page. Collects every job's pair snapshot with the walker's collectPair, plus what Fill adds: the exact border box,
@@ -131,10 +142,10 @@ export function jobsFor( nodes ) {
 
 // Opens one page on the draft at a width (a phone at 375, as the walker reads it), runs the draft's open step (a click
 // on the text of a navigation link in a single-page draft) and waits for its animations to finish.
-async function openPage( browser, devices, { url, open, width, origin, external, mirror } ) {
+async function openPage( browser, devices, { url, open, width, origin, external, mirror, aborted } ) {
 	const phone = width < 500 ? devices[ 'iPhone 13' ] : {};
 	const ctx = await browser.newContext( { ...phone, viewport: { width, height: width < 500 ? 812 : 900 } } );
-	await routeDraft( ctx, { origin, external, mirror } );
+	await routeDraft( ctx, { origin, external, mirror, aborted } );
 	const page = await ctx.newPage();
 	const h = makeHelpers( page, 'draft', { cb: ( u ) => u, RESOLVE, onAction: null } );
 	await h.goto( url );
@@ -163,11 +174,16 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 	const jobs = jobsFor( nodes );
 	const browser = await chromium.launch( { headless, args: [ '--hide-scrollbars' ] } );
 	const result = { origin, widths: {}, declared: {}, sweep: {}, states: {} };
+	const aborted = new Set();
 	try {
 		for ( const width of [ ...new Set( [ ...READ_WIDTHS, ...FLUID_WIDTHS ] ) ] ) {
-			const { ctx, page } = await openPage( browser, devices, { url, open, width, origin, external, mirror } );
+			const { ctx, page } = await openPage( browser, devices, { url, open, width, origin, external, mirror, aborted } );
 			const full = READ_WIDTHS.includes( width );
 			result.widths[ width ] = await page.evaluate( collectMany, [ jobs, COLLECT, RESOLVE, PAINT_SRC, full ? PROPS : LENGTH_PROPS, full ? PSEUDO_PROPS : null, SCOPE_ATTR ] );
+			if ( jobs.length && jobs.every( ( j ) => result.widths[ width ][ j.id ]?.missing ) ) {
+				log( `read ${ width }px: 0 of ${ jobs.length } targets` );
+				throw emptyReadError( width, jobs.length, aborted );
+			}
 			if ( full ) {
 				const cdp = await openDevtools( page );
 				result.declared[ width ] = {};
