@@ -108,7 +108,9 @@
 						"css:aspect-ratio": "boxAspectRatio",
 						"css:box-shadow": "shadow",
 						"css:box-shadow-color": "shadowColour",
-						"css:color-gradient": "textColourGradient"
+						"css:color-gradient": "textColourGradient",
+						"css:-webkit-text-stroke-width": "textStrokeWidth",
+						"css:-webkit-text-stroke-color": "textStrokeColour"
 					},
 					"_note_border": "R2c pattern (mirrors sgs/product-card, D-pending 2026-08-25): root border colour/width/style are block-private attrs (borderColour/borderColourGradient/borderWidth/borderStyle), not the native __experimentalBorder path — a single owner instead of the native Styles-tab colour panel and an SGS panel both writing style.border. Native __experimentalBorder is reduced to radius only (a corner-shape control, not a paint decision) and stays skip-serialised, emitted scoped via the style engine exactly as before. borderWidth has NO default (unset = no border, matching the padding attribute's no-default discipline right below) and is a base-only box object (no Tablet/Mobile siblings, matching product-card's own borderWidth).",
 					"_note_animation": "The animation cluster (anim:*) has no member on this block: its motion is the sgsMotion model (Spec 38A), not attributes.",
@@ -119,7 +121,8 @@
 								"css:color": "textColourHover",
 								"css:color-gradient": "textColourHoverGradient",
 								"css:border-color": "borderColourHover",
-								"css:border-color-gradient": "borderColourHoverGradient"
+								"css:border-color-gradient": "borderColourHoverGradient",
+								"css:-webkit-text-stroke-color": "textStrokeColourHover"
 							}
 						}
 					}

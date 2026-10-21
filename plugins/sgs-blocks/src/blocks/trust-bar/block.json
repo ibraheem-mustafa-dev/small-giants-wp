@@ -189,7 +189,18 @@
 						"text"
 					],
 					"prefix": "label",
-					"_note": "Typography only (labelFontSize/labelFontWeight/labelFontStyle, render.php:393) — covers both variants via a compound selector. Colour is NOT claimed here: on icon-circle it's the separate textColour attr (render.php:54,111 -> --sgs-trust-badge-text-colour -> style.css:106 .sgs-trust-bar--icon-circle .sgs-trust-bar__label); on text-only/image-badge it's labelColour, claimed by the sibling badge-label element instead — one attrMap slot can't hold two attributes, and the two variants render different class names for what would otherwise be the same conceptual node."
+					"_note": "Typography only (labelFontSize/labelFontWeight/labelFontStyle, render.php:393) — covers both variants via a compound selector. Colour is NOT claimed here: on icon-circle it's the separate textColour attr (render.php:54,111 -> --sgs-trust-badge-text-colour -> style.css:106 .sgs-trust-bar--icon-circle .sgs-trust-bar__label); on text-only/image-badge it's labelColour, claimed by the sibling badge-label element instead — one attrMap slot can't hold two attributes, and the two variants render different class names for what would otherwise be the same conceptual node.",
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "labelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "labelTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "labelTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"badge-label": {
 					"absentIn": ["icon-circle", "icon-bare", "bg-css-layer"],
@@ -224,13 +235,16 @@
 					"prefix": "title",
 					"attrMap": {
 						"css:color": "titleColour",
-						"css:background-image": "titleColourGradient"
+						"css:background-image": "titleColourGradient",
+						"css:-webkit-text-stroke-width": "titleTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "titleTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "titleColourHover",
-								"css:background-image": "titleColourHoverGradient"
+								"css:background-image": "titleColourHoverGradient",
+								"css:-webkit-text-stroke-color": "titleTextStrokeColourHover"
 							}
 						}
 					},

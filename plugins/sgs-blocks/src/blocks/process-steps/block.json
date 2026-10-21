@@ -111,7 +111,14 @@
 						"css:column-count": "iconTextColumns",
 						"css:writing-mode": "iconWritingMode"
 					},
-					"_note": "The optional Lucide icon above each step's number. Its size is a font-size (the SVG is 1em square), so the icon typography family sizes the glyph and aligns it. Typography emits through sgs_typography_css_rule() as a descendant of the block root, so it out-ranks style.css's `:where()` defaults. The icon colour is not an attribute on this block: style.css paints it from the primary token."
+					"_note": "The optional Lucide icon above each step's number. Its size is a font-size (the SVG is 1em square), so the icon typography family sizes the glyph and aligns it. Typography emits through sgs_typography_css_rule() as a descendant of the block root, so it out-ranks style.css's `:where()` defaults. The icon colour is not an attribute on this block: style.css paints it from the primary token.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "iconTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"title": {
 					"label": "Step title",
@@ -127,12 +134,15 @@
 						"css:font-weight": "titleFontWeight",
 						"css:font-style": "titleFontStyle",
 						"tag": "headingLevel",
-						"css:background-image": "titleColourGradient"
+						"css:background-image": "titleColourGradient",
+						"css:-webkit-text-stroke-width": "titleTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "titleTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "titleColourHover"
+								"css:color": "titleColourHover",
+								"css:-webkit-text-stroke-color": "titleTextStrokeColourHover"
 							}
 						}
 					},
@@ -170,7 +180,8 @@
 							"attrMap": {
 								"css:background-color": "numberBackgroundHover",
 								"css:color": "numberColourHover",
-								"css:color-gradient": "numberColourHoverGradient"
+								"css:color-gradient": "numberColourHoverGradient",
+								"css:-webkit-text-stroke-color": "numberTextStrokeColourHover"
 							},
 							"noBaseByDesign": [
 								"css:color-gradient"
@@ -208,7 +219,8 @@
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "descriptionColourHover"
+								"css:color": "descriptionColourHover",
+								"css:-webkit-text-stroke-color": "descriptionTextStrokeColourHover"
 							}
 						}
 					},

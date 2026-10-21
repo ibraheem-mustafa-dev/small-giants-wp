@@ -758,7 +758,8 @@
 						"hover": {
 							"attrMap": {
 								"css:border-color": "borderColourHover",
-								"css:border-color-gradient": "borderColourHoverGradient"
+								"css:border-color-gradient": "borderColourHoverGradient",
+								"css:-webkit-text-stroke-color": "textStrokeColourHover"
 							}
 						}
 					},

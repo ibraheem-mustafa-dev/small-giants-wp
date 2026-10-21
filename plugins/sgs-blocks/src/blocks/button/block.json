@@ -93,7 +93,8 @@
 								"css:background-image": "colourBackgroundHoverGradient",
 								"css:border-color": "borderColourHover",
 								"css:border-color-gradient": "borderColourHoverGradient",
-								"css:box-shadow": "boxShadowHover"
+								"css:box-shadow": "boxShadowHover",
+								"css:-webkit-text-stroke-color": "textStrokeColourHover"
 							}
 						}
 					}

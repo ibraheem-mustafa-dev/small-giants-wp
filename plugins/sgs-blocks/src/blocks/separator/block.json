@@ -61,13 +61,16 @@
 					"prefix": "content",
 					"attrMap": {
 						"css:color": "contentColour",
-						"css:background-image": "contentColourGradient"
+						"css:background-image": "contentColourGradient",
+						"css:-webkit-text-stroke-width": "contentTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "contentTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "contentColourHover",
-								"css:background-image": "contentColourHoverGradient"
+								"css:background-image": "contentColourHoverGradient",
+								"css:-webkit-text-stroke-color": "contentTextStrokeColourHover"
 							}
 						}
 					},

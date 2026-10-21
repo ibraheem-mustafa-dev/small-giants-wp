@@ -118,12 +118,15 @@
 					"prefix": "name",
 					"attrMap": {
 						"tag": "headingLevel",
-						"css:background-image": "nameColourGradient"
+						"css:background-image": "nameColourGradient",
+						"css:-webkit-text-stroke-width": "nameTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "nameTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "nameColourHover"
+								"css:color": "nameColourHover",
+								"css:-webkit-text-stroke-color": "nameTextStrokeColourHover"
 							}
 						}
 					},
@@ -139,12 +142,15 @@
 					],
 					"prefix": "role",
 					"attrMap": {
-						"css:background-image": "roleColourGradient"
+						"css:background-image": "roleColourGradient",
+						"css:-webkit-text-stroke-width": "roleTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "roleTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "roleColourHover"
+								"css:color": "roleColourHover",
+								"css:-webkit-text-stroke-color": "roleTextStrokeColourHover"
 							}
 						}
 					},
@@ -161,7 +167,18 @@
 					"prefix": "bio",
 					"_note": "Typography now independently controlled (Task 4, 2026-09-07) via the shared TypographyControls targets switcher — bioFontSize/FontWeight/etc resolve via the default `bio` prefix convention. No bioColour exists; bio text still inherits the card root's colour.",
 					"absentIn": [ "compact" ],
-					"absentWhy": "The compact display drops the bio and the social links."
+					"absentWhy": "The compact display drops the bio and the social links.",
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "bioTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "bioTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "bioTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"social": {
 					"label": "Social links",
@@ -188,7 +205,14 @@
 					},
 					"_note": "socialLinks is a content array (platform+url); icons are fixed Lucide glyphs (render.php) with no per-icon colour control. The link text size, weight, style, family, transform, decoration, line-height, letter-spacing, alignment, wrap, columns and writing mode are painted on .sgs-team-member__social-link by sgs_typography_css_rule( $attributes, 'socialLink', … ); the stylesheet keeps the default size inside :where() so this surface out-ranks it.",
 					"absentIn": [ "compact" ],
-					"absentWhy": "The compact display drops the bio and the social links."
+					"absentWhy": "The compact display drops the bio and the social links.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "socialLinkTextStrokeColourHover"
+							}
+						}
+					}
 				}
 			},
 			"boxFamilies": {

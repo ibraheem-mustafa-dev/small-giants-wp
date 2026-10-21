@@ -155,9 +155,18 @@
 					],
 					"prefix": "title",
 					"attrMap": {
-						"tag": "headingLevel"
+						"tag": "headingLevel",
+						"css:-webkit-text-stroke-width": "titleTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "titleTextStrokeColour"
 					},
-					"_note": "`attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:454-456 bound branch, render.php:1022-1435 typed branch, `.sgs-product-card__title`) but doesn't match the `title` prefix convention on its own. This is what lets check-hardcoded-render-defaults.js's E12 gate resolve `headingLevel` to THIS element and correctly NOT resolve `ctaFontWeight` here (it resolves to the separate `cta` element below via that element's own `cta` prefix)."
+					"_note": "`attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:454-456 bound branch, render.php:1022-1435 typed branch, `.sgs-product-card__title`) but doesn't match the `title` prefix convention on its own. This is what lets check-hardcoded-render-defaults.js's E12 gate resolve `headingLevel` to THIS element and correctly NOT resolve `ctaFontWeight` here (it resolves to the separate `cta` element below via that element's own `cta` prefix).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "titleTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"price": {
 					"text": true,
@@ -208,7 +217,14 @@
 						"css:column-count": "rrpTextColumns",
 						"css:writing-mode": "rrpWritingMode"
 					},
-					"_note": "The struck-through RRP beside a live card's price (rrpMetaKey): `.sgs-product-card__rrp`, markup from includes/product-card-live-fill.php::sgs_product_card_rrp_markup. rrpColour is emitted by includes/product-card-card-parts.php."
+					"_note": "The struck-through RRP beside a live card's price (rrpMetaKey): `.sgs-product-card__rrp`, markup from includes/product-card-live-fill.php::sgs_product_card_rrp_markup. rrpColour is emitted by includes/product-card-card-parts.php.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "rrpTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"desc": {
 					"selector": ".sgs-product-card__description",
@@ -223,13 +239,16 @@
 						"css:text-decoration-thickness-link": "descLinkUnderlineThickness",
 						"css:text-decoration-color-link": "descLinkUnderlineColour",
 						"css:text-decoration-offset-link": "descLinkUnderlineOffset",
-						"css:color-link-gradient": "descLinkColourGradient"
+						"css:color-link-gradient": "descLinkColourGradient",
+						"css:-webkit-text-stroke-width": "descTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "descTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color-link-gradient": "descLinkColourHoverGradient",
-								"css:text-decoration-color-link": "descLinkUnderlineColourHover"
+								"css:text-decoration-color-link": "descLinkUnderlineColourHover",
+								"css:-webkit-text-stroke-color": "descTextStrokeColourHover"
 							}
 						}
 					},
@@ -313,13 +332,16 @@
 						"css:background-color": "tagBackgroundColour",
 						"css:width": "tagFullWidth",
 						"css:background-image": "tagBackgroundColourGradient",
-						"css:color-gradient": "tagTextColourGradient"
+						"css:color-gradient": "tagTextColourGradient",
+						"css:-webkit-text-stroke-width": "tagTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "tagTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:background-color": "tagBackgroundColourHover",
-								"css:background-image": "tagBackgroundColourHoverGradient"
+								"css:background-image": "tagBackgroundColourHoverGradient",
+								"css:-webkit-text-stroke-color": "tagTextStrokeColourHover"
 							}
 						}
 					}
@@ -358,7 +380,14 @@
 						"css:column-count": "ratingTextColumns",
 						"css:writing-mode": "ratingWritingMode"
 					},
-					"_note": "Star row + review-count text (Frame Card component). Resolves css:color -> ratingColour via the default {prefix}Colour convention — no explicit attrMap needed (mirrors priceNote's own prefix-only declaration). Rendered by sgs_product_card_rating_markup() (product-card-builtin-render.php), called from every render branch (typed + all 3 bound branches) per FP-9 — one control governs the element everywhere it can appear. No dedicated font-size attr exists for the review-count text — an honest gap, matching priceFromLabel's own precedent."
+					"_note": "Star row + review-count text (Frame Card component). Resolves css:color -> ratingColour via the default {prefix}Colour convention — no explicit attrMap needed (mirrors priceNote's own prefix-only declaration). Rendered by sgs_product_card_rating_markup() (product-card-builtin-render.php), called from every render branch (typed + all 3 bound branches) per FP-9 — one control governs the element everywhere it can appear. No dedicated font-size attr exists for the review-count text — an honest gap, matching priceFromLabel's own precedent.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "ratingTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"brand": {
 					"label": "Brand overlay",
@@ -384,7 +413,14 @@
 						"css:writing-mode": "brandWritingMode",
 						"css:padding": "brandPadding"
 					},
-					"_note": "The brand overlaid top-left on the product image (Frame Card component) - the brand's LOGO when it has one and brandUseLogo is on, else the brand name as a wordmark. The typography and colour settings here style the wordmark form; the logo form is sized by .sgs-product-card__brand-logo in style.css. brandColour resolves via the default {prefix}Colour convention; brandFontSize/Unit via the shared TypographyControls prefix. Rendered by sgs_product_card_brand_markup() (product-card-builtin-render.php), called from every render branch's media area per FP-9."
+					"_note": "The brand overlaid top-left on the product image (Frame Card component) - the brand's LOGO when it has one and brandUseLogo is on, else the brand name as a wordmark. The typography and colour settings here style the wordmark form; the logo form is sized by .sgs-product-card__brand-logo in style.css. brandColour resolves via the default {prefix}Colour convention; brandFontSize/Unit via the shared TypographyControls prefix. Rendered by sgs_product_card_brand_markup() (product-card-builtin-render.php), called from every render branch's media area per FP-9.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "brandTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"savingBadge": {
 					"selector": ".sgs-product-card__saving-badge",
@@ -413,7 +449,14 @@
 						"css:background-color": "savingBadgeBackgroundColour",
 						"css:padding": "savingBadgePadding"
 					},
-					"_note": "Standalone saving/discount badge overlaid on the media area (Frame Card component) — DISTINCT from the existing 'tag' element (trial/featured, keyed to variantStyle): this badge is independent of variant and can appear alongside either. Mirrors 'tag''s own attrMap shape exactly (css:background-color + css:padding explicit; css:color resolves via the default {prefix}TextColour convention, same as tagTextColour). Rendered via the shared sgs_label_box_css_rule() helper (mirrors sgs/label + the existing trial-tag box), called from every render branch per FP-9. Ground-truth position is bottom-left per the real Frame Card.dc.html markup (`bottom:12px;left:12px`) — the README's 'top-right' claim is stale prose, not the design source; savingBadgePosition defaults to 'bottom-left' and is operator-choosable."
+					"_note": "Standalone saving/discount badge overlaid on the media area (Frame Card component) — DISTINCT from the existing 'tag' element (trial/featured, keyed to variantStyle): this badge is independent of variant and can appear alongside either. Mirrors 'tag''s own attrMap shape exactly (css:background-color + css:padding explicit; css:color resolves via the default {prefix}TextColour convention, same as tagTextColour). Rendered via the shared sgs_label_box_css_rule() helper (mirrors sgs/label + the existing trial-tag box), called from every render branch per FP-9. Ground-truth position is bottom-left per the real Frame Card.dc.html markup (`bottom:12px;left:12px`) — the README's 'top-right' claim is stale prose, not the design source; savingBadgePosition defaults to 'bottom-left' and is operator-choosable.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "savingBadgeTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"swatch": {
 					"label": "Each colour swatch",
@@ -467,7 +510,14 @@
 						"css:border-radius": "attributeTagBorderRadius",
 						"css:padding": "attributeTagPadding"
 					},
-					"_note": "Frame Card component: generic tag next to the product title shown when the resolved product carries a chosen WooCommerce product-attribute term or product tag (attributeTagSource/attributeTagTaxonomy/attributeTagTerm) — never hardcoded to one client's vocabulary (e.g. an optician site's 'Polarised' lens attribute). Distinct from the existing 'tag' element (trial/featured, keyed to variantStyle) and 'savingBadge' (media-overlay, independent of variant): this one sits inline beside the title, matching Frame Card.dc.html's title-row markup. css:color needed an EXPLICIT attrMap entry (2026-09-24 compliance fix) — the default `{prefix}Colour` convention would look for `attributeTagColour`, which does not exist; the real attribute is `attributeTagTextColour`, so the prior note claiming the convention resolved it was wrong and the colour reached the DB with no css_property (check-colour-attr-css-property finding). `attributeTagBorderWidth` (2026-09-24, Spec 35 C1 compliance fix) is new — border colour now lives in `SgsBorderControl` alongside width/radius rather than as a sibling `SgsColourPanel` row (radius stays the block's existing scalar `SgsLengthControl`, outside the border-control pair, per Spec 32 §6.1's pill/tag/badge scalar-radius carve-out — `onRadiusChange` is deliberately not wired to `SgsBorderControl`). Rendered via sgs_product_card_attribute_tag_markup()/sgs_product_card_wrap_title_with_attribute_tag() (src/blocks/product-card/attribute-tag.php — a block-directory-private file, NOT includes/product-card-builtin-render.php, because the typed-mode title element is owned by that shared file and this task's touch-only-this-block-directory scope could not edit it; the typed branch is instead wired by post-processing the shared render's returned HTML — see that file's own docblock)."
+					"_note": "Frame Card component: generic tag next to the product title shown when the resolved product carries a chosen WooCommerce product-attribute term or product tag (attributeTagSource/attributeTagTaxonomy/attributeTagTerm) — never hardcoded to one client's vocabulary (e.g. an optician site's 'Polarised' lens attribute). Distinct from the existing 'tag' element (trial/featured, keyed to variantStyle) and 'savingBadge' (media-overlay, independent of variant): this one sits inline beside the title, matching Frame Card.dc.html's title-row markup. css:color needed an EXPLICIT attrMap entry (2026-09-24 compliance fix) — the default `{prefix}Colour` convention would look for `attributeTagColour`, which does not exist; the real attribute is `attributeTagTextColour`, so the prior note claiming the convention resolved it was wrong and the colour reached the DB with no css_property (check-colour-attr-css-property finding). `attributeTagBorderWidth` (2026-09-24, Spec 35 C1 compliance fix) is new — border colour now lives in `SgsBorderControl` alongside width/radius rather than as a sibling `SgsColourPanel` row (radius stays the block's existing scalar `SgsLengthControl`, outside the border-control pair, per Spec 32 §6.1's pill/tag/badge scalar-radius carve-out — `onRadiusChange` is deliberately not wired to `SgsBorderControl`). Rendered via sgs_product_card_attribute_tag_markup()/sgs_product_card_wrap_title_with_attribute_tag() (src/blocks/product-card/attribute-tag.php — a block-directory-private file, NOT includes/product-card-builtin-render.php, because the typed-mode title element is owned by that shared file and this task's touch-only-this-block-directory scope could not edit it; the typed branch is instead wired by post-processing the shared render's returned HTML — see that file's own docblock).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "attributeTagTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"ratingStars": {
 					"selector": ".sgs-product-card__rating-stars",
@@ -493,7 +543,14 @@
 						"css:column-count": "ratingStarsTextColumns",
 						"css:writing-mode": "ratingStarsWritingMode"
 					},
-					"_note": "The star glyphs inside the rating row (.sgs-product-card__rating-stars): its own surface so the letter spacing between stars is a control. Colour is the rating element's ratingColour."
+					"_note": "The star glyphs inside the rating row (.sgs-product-card__rating-stars): its own surface so the letter spacing between stars is a control. Colour is the rating element's ratingColour.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "ratingStarsTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"swatchMore": {
 					"selector": ".sgs-product-card__swatch-more",
@@ -518,7 +575,14 @@
 						"css:column-count": "swatchMoreTextColumns",
 						"css:writing-mode": "swatchMoreWritingMode"
 					},
-					"_note": "The \"+N\" count after the colour dots (.sgs-product-card__swatch-more), emitted by includes/product-card-swatches.php::sgs_product_card_swatches_markup and mirrored in typed-canvas.js::TypedSwatches. A count, not a control: it owns a typography surface only."
+					"_note": "The \"+N\" count after the colour dots (.sgs-product-card__swatch-more), emitted by includes/product-card-swatches.php::sgs_product_card_swatches_markup and mirrored in typed-canvas.js::TypedSwatches. A count, not a control: it owns a typography surface only.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "swatchMoreTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"cta2": {
 					"absentIn": ["live-cpt", "readonly-variable"],

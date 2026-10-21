@@ -121,7 +121,16 @@
 					"prefix": "item",
 					"_note": "The per-item `<li class=\"sgs-icon-list__item\">` row (`$item_row_sel`, fed to `sgs_typography_css_rule( $attributes, 'item', $item_row_sel )` — the shared TypographyControls emitter). Owns itemFontSize/FontSizeUnit/FontWeight/FontStyle/LineHeight/LineHeightUnit, all resolved via the default `item`+suffix convention. This is a DISTINCT DOM node from item-text's `<span class=\"sgs-icon-list__text\">` (`$text_sel`). The item-row's itemFontSize/itemLineHeight family belongs to this element, not item-text. Same split rationale as the `heading` element below.",
 					"attrMap": {
-						"css:padding": "itemPaddingBlock"
+						"css:padding": "itemPaddingBlock",
+						"css:-webkit-text-stroke-width": "itemTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "itemTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "itemTextStrokeColourHover"
+							}
+						}
 					}
 				},
 				"item-text": {
@@ -137,14 +146,17 @@
 						"css:color": "textColour",
 						"css:transition-duration": "itemMotionDuration",
 						"css:transition-timing-function": "itemMotionEasing",
-						"css:color-gradient": "textColourGradient"
+						"css:color-gradient": "textColourGradient",
+						"css:-webkit-text-stroke-width": "textElTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "textElTextStrokeColour"
 					},
 					"_note": "Per-item text span (render.php, `.sgs-icon-list__text`). Typography routes through the shared TypographyControls `textEl` target + sgs_typography_css_rule( $attributes, 'textEl', $text_sel ), so `prefix` is `\"textEl\"` and the default `{prefix}{suffix}` convention resolves fontSize/lineHeight/textAlign/etc via textElFontSize/textElLineHeight/textElTextAlign directly, no explicit mapping needed. Colour is its own explicit mapping (textColour, unprefixed — independent of the textEl typography prefix).",
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "textColourHover",
-								"css:color-gradient": "textColourHoverGradient"
+								"css:color-gradient": "textColourHoverGradient",
+								"css:-webkit-text-stroke-color": "textElTextStrokeColourHover"
 							}
 						}
 					}
@@ -157,7 +169,18 @@
 						"text"
 					],
 					"prefix": "heading",
-					"_note": "Optional list heading (`.sgs-icon-list__heading`). Custom typography resolves via prefix `heading` + the text cluster (headingFontSize/FontWeight/FontStyle/LineHeight). Declared as its OWN element so heading* typography routes to element=heading, DISTINCT from item* text."
+					"_note": "Optional list heading (`.sgs-icon-list__heading`). Custom typography resolves via prefix `heading` + the text cluster (headingFontSize/FontWeight/FontStyle/LineHeight). Declared as its OWN element so heading* typography routes to element=heading, DISTINCT from item* text.",
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "headingTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "headingTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "headingTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"item-dimmed": {
 					"motion": false,
@@ -218,9 +241,18 @@
 					],
 					"prefix": "description",
 					"attrMap": {
-						"css:color": "descriptionColour"
+						"css:color": "descriptionColour",
+						"css:-webkit-text-stroke-width": "descriptionTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "descriptionTextStrokeColour"
 					},
-					"_note": "The optional second line under an item's text (render.php, `.sgs-icon-list__description`). Typography routes through TypographyControls' `description` target + sgs_typography_css_rule( $attributes, 'description', ... ), so the {prefix}{suffix} convention resolves descriptionFontSize etc."
+					"_note": "The optional second line under an item's text (render.php, `.sgs-icon-list__description`). Typography routes through TypographyControls' `description` target + sgs_typography_css_rule( $attributes, 'description', ... ), so the {prefix}{suffix} convention resolves descriptionFontSize etc.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "descriptionTextStrokeColourHover"
+							}
+						}
+					}
 				}
 			},
 			"colourExemptions": {

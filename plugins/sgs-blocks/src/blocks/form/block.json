@@ -643,7 +643,14 @@
 					},
 					"_note": "Typography only (stepLabel* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__progress-step-label). The label beside each multi-step progress number; the active-step bold in style.css stays as the non-colour active cue.",
 					"absentIn": [ "single-step" ],
-					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step)."
+					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "stepLabelTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"file-button": {
 					"motion": false,
@@ -793,7 +800,14 @@
 					},
 					"_note": "Typography only (stepNumber* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__progress-step-number). The number inside each multi-step progress bubble.",
 					"absentIn": [ "single-step" ],
-					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step)."
+					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "stepNumberTextStrokeColourHover"
+							}
+						}
+					}
 				}
 			}
 		}

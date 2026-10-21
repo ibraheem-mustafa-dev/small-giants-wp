@@ -70,14 +70,17 @@
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
 						"css:border-color-gradient": "borderColourGradient",
-						"css:gap": "dotGap"
+						"css:gap": "dotGap",
+						"css:-webkit-text-stroke-width": "textStrokeWidth",
+						"css:-webkit-text-stroke-color": "textStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "textColourHover",
 								"css:color-gradient": "textColourHoverGradient",
-								"css:text-decoration-color-link": "linkUnderlineColourHover"
+								"css:text-decoration-color-link": "linkUnderlineColourHover",
+								"css:-webkit-text-stroke-color": "textStrokeColourHover"
 							}
 						}
 					},

@@ -115,7 +115,9 @@
 						"css:margin-bottom": "quoteMarginBottom",
 						"css:background-image": "quoteColourGradient",
 						"css:color-link": "quoteLinkColour",
-						"css:color-link-gradient": "quoteLinkColourGradient"
+						"css:color-link-gradient": "quoteLinkColourGradient",
+						"css:-webkit-text-stroke-width": "quoteTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "quoteTextStrokeColour"
 					},
 					"states": {
 						"hover": {
@@ -123,7 +125,8 @@
 								"css:color": "quoteColourHover",
 								"css:color-link": "quoteLinkColourHover",
 								"css:color-link-gradient": "quoteLinkColourHoverGradient",
-								"css:text-decoration-color-link": "quoteLinkUnderlineColourHover"
+								"css:text-decoration-color-link": "quoteLinkUnderlineColourHover",
+								"css:-webkit-text-stroke-color": "quoteTextStrokeColourHover"
 							}
 						}
 					},
@@ -141,12 +144,15 @@
 					"attrMap": {
 						"css:color": "nameColour",
 						"css:font-size": "nameFontSize",
-						"css:background-image": "nameColourGradient"
+						"css:background-image": "nameColourGradient",
+						"css:-webkit-text-stroke-width": "nameTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "nameTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "nameColourHover"
+								"css:color": "nameColourHover",
+								"css:-webkit-text-stroke-color": "nameTextStrokeColourHover"
 							}
 						}
 					},

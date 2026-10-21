@@ -98,7 +98,8 @@
 								"css:box-shadow": "boxShadowHover",
 								"css:box-shadow-color": "boxShadowColourHover",
 								"css:color-gradient": "textColourHoverGradient",
-								"css:text-decoration-color-link": "linkUnderlineColourHover"
+								"css:text-decoration-color-link": "linkUnderlineColourHover",
+								"css:-webkit-text-stroke-color": "textStrokeColourHover"
 							}
 						}
 					},

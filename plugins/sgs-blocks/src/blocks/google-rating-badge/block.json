@@ -84,7 +84,16 @@
 					],
 					"prefix": "score",
 					"attrMap": {
-						"css:color": "scoreColour"
+						"css:color": "scoreColour",
+						"css:-webkit-text-stroke-width": "scoreTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "scoreTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "scoreTextStrokeColourHover"
+							}
+						}
 					}
 				},
 				"caption": {
@@ -95,7 +104,16 @@
 					],
 					"prefix": "caption",
 					"attrMap": {
-						"css:color": "captionColour"
+						"css:color": "captionColour",
+						"css:-webkit-text-stroke-width": "captionTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "captionTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "captionTextStrokeColourHover"
+							}
+						}
 					}
 				},
 				"star": {

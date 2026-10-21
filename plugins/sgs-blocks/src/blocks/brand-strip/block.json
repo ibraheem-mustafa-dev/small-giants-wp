@@ -130,10 +130,19 @@
 						"css:font-size": "nameFontSize",
 						"css:font-weight": "nameFontWeight",
 						"css:color": "nameColour",
-						"css:color-gradient": "nameColourGradient"
+						"css:color-gradient": "nameColourGradient",
+						"css:-webkit-text-stroke-width": "nameTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "nameTextStrokeColour"
 					},
 					"absentIn": [ "logos", "text" ],
-					"absentWhy": "A tile, caption and name print only for a logo item with a caption (showNames on); a plain logo row and the text mode print none."
+					"absentWhy": "A tile, caption and name print only for a logo item with a caption (showNames on); a plain logo row and the text mode print none.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "nameTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"name": {
 					"label": "Caption text-align",
@@ -171,13 +180,16 @@
 					"prefix": "title",
 					"attrMap": {
 						"css:color": "titleColour",
-						"css:color-gradient": "titleColourGradient"
+						"css:color-gradient": "titleColourGradient",
+						"css:-webkit-text-stroke-width": "titleTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "titleTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "titleColourHover",
-								"css:color-gradient": "titleColourHoverGradient"
+								"css:color-gradient": "titleColourHoverGradient",
+								"css:-webkit-text-stroke-color": "titleTextStrokeColourHover"
 							}
 						}
 					},

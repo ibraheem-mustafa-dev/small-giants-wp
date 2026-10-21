@@ -97,7 +97,8 @@
 								"css:border-color": "borderColourHover",
 								"css:color-link": "linkColourHover",
 								"css:color-link-gradient": "linkColourHoverGradient",
-								"css:text-decoration-color-link": "linkUnderlineColourHover"
+								"css:text-decoration-color-link": "linkUnderlineColourHover",
+								"css:-webkit-text-stroke-color": "textStrokeColourHover"
 							}
 						}
 					},

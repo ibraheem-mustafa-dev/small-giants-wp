@@ -44,9 +44,18 @@
 						"css:font-size": "optionDescriptionFontSize",
 						"css:font-weight": "optionDescriptionFontWeight",
 						"css:line-height": "optionDescriptionLineHeight",
-						"css:color": "optionDescriptionColour"
+						"css:color": "optionDescriptionColour",
+						"css:-webkit-text-stroke-width": "optionDescriptionTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "optionDescriptionTextStrokeColour"
 					},
-					"_note": "The optional line under an option's label (render.php, printed only when the option has a description); scoped CSS from helpers-description-style.php."
+					"_note": "The optional line under an option's label (render.php, printed only when the option has a description); scoped CSS from helpers-description-style.php.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "optionDescriptionTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"option-badge": {
 					"selector": ".sgs-choice-flow-question__option-badge",

@@ -86,13 +86,16 @@
 					],
 					"prefix": "label",
 					"attrMap": {
-						"css:background-image": "labelColourGradient"
+						"css:background-image": "labelColourGradient",
+						"css:-webkit-text-stroke-width": "labelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "labelTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "labelColourHover",
-								"css:color-gradient": "labelColourHoverGradient"
+								"css:color-gradient": "labelColourHoverGradient",
+								"css:-webkit-text-stroke-color": "labelTextStrokeColourHover"
 							}
 						}
 					},

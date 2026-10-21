@@ -98,13 +98,16 @@
 					"attrMap": {
 						"css:color-gradient": "labelColourGradient",
 						"css:background-image": "labelBackgroundColourGradient",
-						"css:background-color": "labelBackgroundColour"
+						"css:background-color": "labelBackgroundColour",
+						"css:-webkit-text-stroke-width": "labelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "labelTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "labelColourHover",
-								"css:color-gradient": "labelColourHoverGradient"
+								"css:color-gradient": "labelColourHoverGradient",
+								"css:-webkit-text-stroke-color": "labelTextStrokeColourHover"
 							}
 						}
 					},

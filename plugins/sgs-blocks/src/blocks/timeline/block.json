@@ -101,9 +101,18 @@
 						"css:line-height": "titleLineHeight",
 						"css:font-weight": "titleFontWeight",
 						"css:font-style": "titleFontStyle",
-						"tag": "headingLevel"
+						"tag": "headingLevel",
+						"css:-webkit-text-stroke-width": "titleTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "titleTextStrokeColour"
 					},
-					"_note": "Typography full-replacement migration (D971/D972, 2026-09-06) — the WP-native `supports.typography` support (fontSize/lineHeight/fontWeight/fontStyle) that used to paint this element via the declared `selectors.typography: '.sgs-timeline__title'` is REMOVED; replaced by the shared `TypographyControls` component (edit.js) + `sgs_typography_css_rule()` helper (render.php), scoped to `.sgs-timeline__title` exactly as the old native selector was. `letterSpacing`/`textTransform`/`textAlign` were also native sub-flags on this block's old `supports.typography` and have NO shared-component equivalent (mirrors sgs/accordion's own declared gaps for letterSpacing/textTransform/fontFamily) — dropped as honest gaps, not carried forward. No independent title colour control exists (colour is the shared wrapper `color.text`) — pre-existing honest gap. `attrMap.tag` — `headingLevel` sets the rendered tag on this element (render.php) and this element has an explicit `prefix`, but `tag` is not a CSS property so it still needs its own map entry."
+					"_note": "Typography full-replacement migration (D971/D972, 2026-09-06) — the WP-native `supports.typography` support (fontSize/lineHeight/fontWeight/fontStyle) that used to paint this element via the declared `selectors.typography: '.sgs-timeline__title'` is REMOVED; replaced by the shared `TypographyControls` component (edit.js) + `sgs_typography_css_rule()` helper (render.php), scoped to `.sgs-timeline__title` exactly as the old native selector was. `letterSpacing`/`textTransform`/`textAlign` were also native sub-flags on this block's old `supports.typography` and have NO shared-component equivalent (mirrors sgs/accordion's own declared gaps for letterSpacing/textTransform/fontFamily) — dropped as honest gaps, not carried forward. No independent title colour control exists (colour is the shared wrapper `color.text`) — pre-existing honest gap. `attrMap.tag` — `headingLevel` sets the rendered tag on this element (render.php) and this element has an explicit `prefix`, but `tag` is not a CSS property so it still needs its own map entry.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "titleTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"connector": {
 					"motion": false,

@@ -88,7 +88,14 @@
             "css:text-indent": "textIndent",
             "css:column-count": "textColumns"
           },
-          "_note": "Mirrors sgs/container's wrapper/grid split — typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight); no letterSpacing/textTransform/textAlign/fontFamily control is offered, and no width/height/box-shadow/aspect-ratio attrs exist, so those remain honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element, not this one — same double-check pattern container's wrapper uses."
+          "_note": "Mirrors sgs/container's wrapper/grid split — typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight); no letterSpacing/textTransform/textAlign/fontFamily control is offered, and no width/height/box-shadow/aspect-ratio attrs exist, so those remain honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element, not this one — same double-check pattern container's wrapper uses.",
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:-webkit-text-stroke-color": "textStrokeColourHover"
+              }
+            }
+          }
         },
         "inner": {
           "selector": ".sgs-accordion__content-band",

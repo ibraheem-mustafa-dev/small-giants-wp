@@ -290,7 +290,14 @@
 						"css:column-count": "notifyHeadingTextColumns",
 						"css:writing-mode": "notifyHeadingWritingMode"
 					},
-					"_note": "The back-in-stock form heading (.sgs-buybox__notify-heading)."
+					"_note": "The back-in-stock form heading (.sgs-buybox__notify-heading).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "notifyHeadingTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"notifyLabel": {
 					"selector": ".sgs-buybox__notify-label",
@@ -349,7 +356,14 @@
 						"css:column-count": "notifyInputTextColumns",
 						"css:writing-mode": "notifyInputWritingMode"
 					},
-					"_note": "The typed text and placeholder of the back-in-stock email field (.sgs-buybox__notify-email)."
+					"_note": "The typed text and placeholder of the back-in-stock email field (.sgs-buybox__notify-email).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "notifyInputTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"notifySubmit": {
 					"selector": ".sgs-buybox__notify-submit",
@@ -375,7 +389,14 @@
 						"css:column-count": "notifySubmitTextColumns",
 						"css:writing-mode": "notifySubmitWritingMode"
 					},
-					"_note": "The back-in-stock form submit button label (.sgs-buybox__notify-submit)."
+					"_note": "The back-in-stock form submit button label (.sgs-buybox__notify-submit).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "notifySubmitTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"notifyStatus": {
 					"text": true,
@@ -402,7 +423,14 @@
 						"css:column-count": "notifyStatusTextColumns",
 						"css:writing-mode": "notifyStatusWritingMode"
 					},
-					"_note": "The success or error message written under the back-in-stock form (.sgs-buybox__notify-status)."
+					"_note": "The success or error message written under the back-in-stock form (.sgs-buybox__notify-status).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "notifyStatusTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"savingBadge": {
 					"selector": ".sgs-buybox__saving-badge",
@@ -427,7 +455,14 @@
 						"css:column-count": "savingBadgeTextColumns",
 						"css:writing-mode": "savingBadgeWritingMode"
 					},
-					"_note": "The saving badge over the gallery photo (.sgs-buybox__saving-badge)."
+					"_note": "The saving badge over the gallery photo (.sgs-buybox__saving-badge).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "savingBadgeTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"stock": {
 					"text": true,

@@ -131,13 +131,16 @@
 					"prefix": "childIconLabel",
 					"attrMap": {
 						"css:color": "childIconLabelColour",
-						"css:background-image": "childIconLabelColourGradient"
+						"css:background-image": "childIconLabelColourGradient",
+						"css:-webkit-text-stroke-width": "childIconLabelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "childIconLabelTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "childIconLabelColourHover",
-								"css:background-image": "childIconLabelColourHoverGradient"
+								"css:background-image": "childIconLabelColourHoverGradient",
+								"css:-webkit-text-stroke-color": "childIconLabelTextStrokeColourHover"
 							}
 						}
 					},

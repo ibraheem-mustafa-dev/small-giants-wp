@@ -86,7 +86,9 @@
 						"css:color-gradient": "attributionColourGradient",
 						"css:margin-top": "attributionMarginTop",
 						"css:color-link": "attributionLinkColour",
-						"css:color-link-gradient": "attributionLinkColourGradient"
+						"css:color-link-gradient": "attributionLinkColourGradient",
+						"css:-webkit-text-stroke-width": "attributionTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "attributionTextStrokeColour"
 					},
 					"states": {
 						"hover": {
@@ -95,7 +97,8 @@
 								"css:color-gradient": "attributionColourHoverGradient",
 								"css:color-link": "attributionLinkColourHover",
 								"css:color-link-gradient": "attributionLinkColourHoverGradient",
-								"css:text-decoration-color-link": "attributionLinkUnderlineColourHover"
+								"css:text-decoration-color-link": "attributionLinkUnderlineColourHover",
+								"css:-webkit-text-stroke-color": "attributionTextStrokeColourHover"
 							}
 						}
 					},

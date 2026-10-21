@@ -95,7 +95,9 @@
 						"css:max-width": "maxWidth",
 						"css:background-color-gradient": "backgroundColourGradient",
 						"css:color-gradient": "textColourGradient",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:-webkit-text-stroke-width": "textStrokeWidth",
+						"css:-webkit-text-stroke-color": "textStrokeColour"
 					},
 					"_note": "NO-WRAPPER, content-KIND (D294, render.php:9-21) — dropped SGS_Container_Wrapper, block-private; every declaration scoped to the block's own `.{uid}` style (render.php:200-278). Layer CONTENT names the structural role (this block has no GRID layer).",
 					"states": {
@@ -104,7 +106,8 @@
 								"css:background-color": "backgroundColourHover",
 								"css:background-color-gradient": "backgroundColourHoverGradient",
 								"css:color": "textColourHover",
-								"css:color-gradient": "textColourHoverGradient"
+								"css:color-gradient": "textColourHoverGradient",
+								"css:-webkit-text-stroke-color": "textStrokeColourHover"
 							}
 						}
 					}

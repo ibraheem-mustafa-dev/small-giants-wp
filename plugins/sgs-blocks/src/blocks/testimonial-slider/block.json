@@ -57,7 +57,9 @@
 						"css:justify-content": "justifyContent",
 						"css:justify-items": "justifyItems",
 						"css:align-content": "alignContent",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:-webkit-text-stroke-width": "textStrokeWidth",
+						"css:-webkit-text-stroke-color": "textStrokeColour"
 					},
 					"states": {
 						"hover": {
@@ -66,7 +68,8 @@
 								"css:color": "textColourHover",
 								"css:color-gradient": "textColourHoverGradient",
 								"css:border-color": "borderColourHover",
-								"css:border-color-gradient": "borderColourHoverGradient"
+								"css:border-color-gradient": "borderColourHoverGradient",
+								"css:-webkit-text-stroke-color": "textStrokeColourHover"
 							}
 						}
 					},

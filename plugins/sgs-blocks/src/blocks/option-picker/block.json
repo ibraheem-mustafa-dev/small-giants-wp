@@ -79,13 +79,16 @@
 					],
 					"prefix": "label",
 					"attrMap": {
-						"css:color-gradient": "labelColourGradient"
+						"css:color-gradient": "labelColourGradient",
+						"css:-webkit-text-stroke-width": "labelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "labelTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "labelColourHover",
-								"css:color-gradient": "labelColourHoverGradient"
+								"css:color-gradient": "labelColourHoverGradient",
+								"css:-webkit-text-stroke-color": "labelTextStrokeColourHover"
 							}
 						}
 					},
@@ -107,14 +110,17 @@
 						"css:background-image": "pillBgColourGradient",
 						"css:border-color-gradient": "pillBorderColourGradient",
 						"css:color-gradient": "pillTextColourGradient",
-						"css:gap": "tileGap"
+						"css:gap": "tileGap",
+						"css:-webkit-text-stroke-width": "pillTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "pillTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:background-color": "pillBgColourHover",
 								"css:background-image": "pillBgColourHoverGradient",
-								"css:color": "pillTextColourHover"
+								"css:color": "pillTextColourHover",
+								"css:-webkit-text-stroke-color": "pillTextStrokeColourHover"
 							}
 						},
 						"current": {

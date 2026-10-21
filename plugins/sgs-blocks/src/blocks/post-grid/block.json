@@ -153,12 +153,15 @@
             "css:font-size": "titleFontSize",
             "css:font-weight": "titleFontWeight",
             "css:font-style": "titleFontStyle",
-            "css:line-height": "titleLineHeight"
+            "css:line-height": "titleLineHeight",
+            "css:-webkit-text-stroke-width": "titleTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "titleTextStrokeColour"
           },
           "states": {
             "hover": {
               "attrMap": {
-                "css:color": "textColourHover"
+                "css:color": "textColourHover",
+                "css:-webkit-text-stroke-color": "titleTextStrokeColourHover"
               }
             }
           }
@@ -174,12 +177,15 @@
           "_note": "css:color resolves via the default convention (excerptColour). excerptLength is a content-length control, not a style member. states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below. excerptColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php.",
           "attrMap": {
             "css:color": "excerptColour",
-            "css:color-gradient": "excerptColourGradient"
+            "css:color-gradient": "excerptColourGradient",
+            "css:-webkit-text-stroke-width": "excerptTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "excerptTextStrokeColour"
           },
           "states": {
             "hover": {
               "attrMap": {
-                "css:color": "textColourHover"
+                "css:color": "textColourHover",
+                "css:-webkit-text-stroke-color": "excerptTextStrokeColourHover"
               }
             }
           }
@@ -194,12 +200,15 @@
           "_note": "css:color resolves via the default convention (metaColour). states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below. metaColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php.",
           "attrMap": {
             "css:color": "metaColour",
-            "css:color-gradient": "metaColourGradient"
+            "css:color-gradient": "metaColourGradient",
+            "css:-webkit-text-stroke-width": "metaTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "metaTextStrokeColour"
           },
           "states": {
             "hover": {
               "attrMap": {
-                "css:color": "textColourHover"
+                "css:color": "textColourHover",
+                "css:-webkit-text-stroke-color": "metaTextStrokeColourHover"
               }
             }
           }
@@ -217,14 +226,17 @@
             "css:color": "categoryBadgeColour",
             "css:color-gradient": "categoryBadgeColourGradient",
             "css:background-color": "categoryBadgeBgColour",
-            "css:background-image": "categoryBadgeBgColourGradient"
+            "css:background-image": "categoryBadgeBgColourGradient",
+            "css:-webkit-text-stroke-width": "categoryTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "categoryTextStrokeColour"
           },
           "states": {
             "hover": {
               "attrMap": {
                 "css:background-color": "categoryBadgeBgColourHover",
                 "css:background-image": "categoryBadgeBgColourHoverGradient",
-                "css:color": "categoryBadgeColourHover"
+                "css:color": "categoryBadgeColourHover",
+                "css:-webkit-text-stroke-color": "categoryTextStrokeColourHover"
               }
             }
           },
@@ -241,12 +253,15 @@
           "_note": "css:color resolves via the default convention (readMoreColour). readMoreText is content, not style. states.hover.attrMap added 2026-09-04 (D956): textColourHover is ONE attribute that paints FOUR descendant elements (title link/excerpt/meta/read-more) simultaneously on the CARD's hover -- render.php's own comment calls this an 'ancestor-hover shape' (the card receives :hover/:focus-within; each descendant already carries its own resting colour, so the rule targets them individually via sgs_hover_state_rules()'s $suffix param). It previously resolved css_element=NULL/derived_selector=NULL (an undeclared sub-element paint, F6 Check #8) because the manifest's attrMap model has no established one-attr-many-elements shape -- declared here on all 4 real target elements' states.hover, since that is what genuinely happens, not a workaround. No other block in this codebase currently needs this shape (checked); if a second one appears, consider whether the manifest schema itself should grow a first-class 'targets multiple elements' declaration rather than repeating this pattern by hand a third time. readMoreColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php.",
           "attrMap": {
             "css:color": "readMoreColour",
-            "css:color-gradient": "readMoreColourGradient"
+            "css:color-gradient": "readMoreColourGradient",
+            "css:-webkit-text-stroke-width": "readMoreTextStrokeWidth",
+            "css:-webkit-text-stroke-color": "readMoreTextStrokeColour"
           },
           "states": {
             "hover": {
               "attrMap": {
-                "css:color": "textColourHover"
+                "css:color": "textColourHover",
+                "css:-webkit-text-stroke-color": "readMoreTextStrokeColourHover"
               }
             }
           }

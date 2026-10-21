@@ -138,13 +138,16 @@
 					"attrMap": {
 						"css:color": "labelColour",
 						"css:background-image": "labelColourGradient",
-						"css:gap": "labelGap"
+						"css:gap": "labelGap",
+						"css:-webkit-text-stroke-width": "labelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "labelTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "labelColourHover",
-								"css:background-image": "labelColourHoverGradient"
+								"css:background-image": "labelColourHoverGradient",
+								"css:-webkit-text-stroke-color": "labelTextStrokeColourHover"
 							}
 						}
 					},

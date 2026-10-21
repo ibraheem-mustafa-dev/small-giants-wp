@@ -54,7 +54,16 @@
 					"attrMap": {
 						"css:background-color": "backgroundColour",
 						"css:padding": "padding",
-						"css:margin": "margin"
+						"css:margin": "margin",
+						"css:-webkit-text-stroke-width": "textStrokeWidth",
+						"css:-webkit-text-stroke-color": "textStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "textStrokeColourHover"
+							}
+						}
 					}
 				},
 				"body": {

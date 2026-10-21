@@ -200,7 +200,9 @@
 						"css:border-style": "writeReviewBorderStyle",
 						"css:border-radius": "writeReviewBorderRadius",
 						"css:padding": "writeReviewPadding",
-						"css:min-height": "writeReviewMinHeight"
+						"css:min-height": "writeReviewMinHeight",
+						"css:-webkit-text-stroke-width": "writeReviewTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "writeReviewTextStrokeColour"
 					},
 					"states": {
 						"hover": {
@@ -209,7 +211,8 @@
 								"css:background-image": "writeReviewColourBackgroundHoverGradient",
 								"css:color": "writeReviewColourTextHover",
 								"css:color-gradient": "writeReviewColourTextHoverGradient",
-								"css:border-color": "writeReviewColourBorderHover"
+								"css:border-color": "writeReviewColourBorderHover",
+								"css:-webkit-text-stroke-color": "writeReviewTextStrokeColourHover"
 							}
 						}
 					},
@@ -244,10 +247,19 @@
 					],
 					"prefix": "sourceLabel",
 					"attrMap": {
-						"css:color": "sourceLabelColour"
+						"css:color": "sourceLabelColour",
+						"css:-webkit-text-stroke-width": "sourceLabelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "sourceLabelTextStrokeColour"
 					},
 					"absentIn": [ "no-header" ],
-					"absentWhy": "The aggregate header prints only when showAggregate is on."
+					"absentWhy": "The aggregate header prints only when showAggregate is on.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "sourceLabelTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"average": {
 					"selector": ".sgs-google-reviews__score",
@@ -259,11 +271,20 @@
 					],
 					"prefix": "score",
 					"attrMap": {
-						"css:color": "scoreColour"
+						"css:color": "scoreColour",
+						"css:-webkit-text-stroke-width": "scoreTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "scoreTextStrokeColour"
 					},
 					"_note": "css_element is 'average', not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so the draft's star run (annotated __rating) would resolve to this element through the alias group instead of to the star element. The attribute prefix stays 'score'.",
 					"absentIn": [ "no-header" ],
-					"absentWhy": "The aggregate header prints only when showAggregate is on."
+					"absentWhy": "The aggregate header prints only when showAggregate is on.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "scoreTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"count": {
 					"label": "Review count",
@@ -274,10 +295,19 @@
 					],
 					"prefix": "count",
 					"attrMap": {
-						"css:color": "countColour"
+						"css:color": "countColour",
+						"css:-webkit-text-stroke-width": "countTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "countTextStrokeColour"
 					},
 					"absentIn": [ "no-header" ],
-					"absentWhy": "The aggregate header prints only when showAggregate is on."
+					"absentWhy": "The aggregate header prints only when showAggregate is on.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "countTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"aggregate-star": {
 					"selector": ".sgs-google-reviews__aggregate-stars",
@@ -330,7 +360,16 @@
 						"css:color": "avatarTextColour",
 						"css:height": "avatarSize",
 						"css:width": "avatarSize",
-						"css:border-radius": "avatarBorderRadius"
+						"css:border-radius": "avatarBorderRadius",
+						"css:-webkit-text-stroke-width": "avatarTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "avatarTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "avatarTextStrokeColourHover"
+							}
+						}
 					}
 				},
 				"author": {
@@ -342,7 +381,16 @@
 					],
 					"prefix": "author",
 					"attrMap": {
-						"css:color": "authorColour"
+						"css:color": "authorColour",
+						"css:-webkit-text-stroke-width": "authorTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "authorTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "authorTextStrokeColourHover"
+							}
+						}
 					}
 				},
 				"meta": {
@@ -354,7 +402,16 @@
 					],
 					"prefix": "meta",
 					"attrMap": {
-						"css:color": "metaColour"
+						"css:color": "metaColour",
+						"css:-webkit-text-stroke-width": "metaTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "metaTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "metaTextStrokeColourHover"
+							}
+						}
 					}
 				},
 				"date": {
@@ -366,7 +423,16 @@
 					],
 					"prefix": "date",
 					"attrMap": {
-						"css:color": "dateColour"
+						"css:color": "dateColour",
+						"css:-webkit-text-stroke-width": "dateTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "dateTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "dateTextStrokeColourHover"
+							}
+						}
 					}
 				},
 				"text": {
@@ -379,9 +445,18 @@
 					],
 					"prefix": "text",
 					"attrMap": {
-						"css:color": "textColour"
+						"css:color": "textColour",
+						"css:-webkit-text-stroke-width": "textTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "textTextStrokeColour"
 					},
-					"_note": "textClamp / textClampLines cut the review text to N lines (-webkit-line-clamp); the vocabulary has no line-clamp member, so they are classified 'behaviour' in the DB override rather than claimed here."
+					"_note": "textClamp / textClampLines cut the review text to N lines (-webkit-line-clamp); the vocabulary has no line-clamp member, so they are classified 'behaviour' in the DB override rather than claimed here.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "textTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"card-logo": {
 					"label": "Card Google logo",
@@ -406,7 +481,16 @@
 					],
 					"prefix": "reviewLink",
 					"attrMap": {
-						"css:color": "reviewLinkColour"
+						"css:color": "reviewLinkColour",
+						"css:-webkit-text-stroke-width": "reviewLinkTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "reviewLinkTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "reviewLinkTextStrokeColourHover"
+							}
+						}
 					}
 				},
 				"footnote": {
@@ -419,7 +503,16 @@
 					],
 					"prefix": "footnote",
 					"attrMap": {
-						"css:color": "footnoteColour"
+						"css:color": "footnoteColour",
+						"css:-webkit-text-stroke-width": "footnoteTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "footnoteTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "footnoteTextStrokeColourHover"
+							}
+						}
 					}
 				},
 				"maps-link": {
@@ -430,8 +523,18 @@
 						"text"
 					],
 					"prefix": "mapsLink",
-					"attrMap": {},
-					"_note": "The \"View on Google Maps\" link (.sgs-google-reviews__maps-link), in the place attribution and under each review. Typography only; the default font size is the Google widget value."
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "mapsLinkTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "mapsLinkTextStrokeColour"
+					},
+					"_note": "The \"View on Google Maps\" link (.sgs-google-reviews__maps-link), in the place attribution and under each review. Typography only; the default font size is the Google widget value.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "mapsLinkTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"breakdown-row": {
 					"label": "Rating breakdown row",
@@ -441,8 +544,18 @@
 						"text"
 					],
 					"prefix": "breakdownRow",
-					"attrMap": {},
-					"_note": "One star-level row of the rating breakdown (.sgs-google-reviews__breakdown-row): its label, bar and count. Typography only; the default font size is the Google widget value."
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "breakdownRowTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "breakdownRowTextStrokeColour"
+					},
+					"_note": "One star-level row of the rating breakdown (.sgs-google-reviews__breakdown-row): its label, bar and count. Typography only; the default font size is the Google widget value.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "breakdownRowTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"list": {
 					"label": "Review rail",
@@ -479,7 +592,9 @@
 						"css:border-style": "seeAllBorderStyle",
 						"css:border-radius": "seeAllBorderRadius",
 						"css:padding": "seeAllPadding",
-						"css:min-height": "seeAllMinHeight"
+						"css:min-height": "seeAllMinHeight",
+						"css:-webkit-text-stroke-width": "seeAllTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "seeAllTextStrokeColour"
 					},
 					"states": {
 						"hover": {
@@ -489,7 +604,8 @@
 								"css:color": "seeAllColourTextHover",
 								"css:color-gradient": "seeAllColourTextHoverGradient",
 								"css:border-color": "seeAllColourBorderHover",
-								"css:border-color-gradient": "seeAllColourBorderHoverGradient"
+								"css:border-color-gradient": "seeAllColourBorderHoverGradient",
+								"css:-webkit-text-stroke-color": "seeAllTextStrokeColourHover"
 							}
 						}
 					},

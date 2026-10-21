@@ -100,13 +100,16 @@
 					"prefix": "caption",
 					"attrMap": {
 						"css:color": "captionColour",
-						"css:background-image": "captionColourGradient"
+						"css:background-image": "captionColourGradient",
+						"css:-webkit-text-stroke-width": "captionTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "captionTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "captionColourHover",
-								"css:color-gradient": "captionColourHoverGradient"
+								"css:color-gradient": "captionColourHoverGradient",
+								"css:-webkit-text-stroke-color": "captionTextStrokeColourHover"
 							}
 						}
 					},

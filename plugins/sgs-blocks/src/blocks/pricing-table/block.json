@@ -124,12 +124,15 @@
 					"attrMap": {
 						"css:color": "titleColour",
 						"css:background-image": "titleColourGradient",
-						"tag": "headingLevel"
+						"tag": "headingLevel",
+						"css:-webkit-text-stroke-width": "titleTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "titleTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "titleColourHover"
+								"css:color": "titleColourHover",
+								"css:-webkit-text-stroke-color": "titleTextStrokeColourHover"
 							}
 						}
 					},
@@ -145,12 +148,15 @@
 					"prefix": "price",
 					"attrMap": {
 						"css:color": "priceColour",
-						"css:background-image": "priceColourGradient"
+						"css:background-image": "priceColourGradient",
+						"css:-webkit-text-stroke-width": "priceTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "priceTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "priceColourHover"
+								"css:color": "priceColourHover",
+								"css:-webkit-text-stroke-color": "priceTextStrokeColourHover"
 							}
 						}
 					},
@@ -166,12 +172,15 @@
 					"prefix": "feature",
 					"attrMap": {
 						"css:color": "featureColour",
-						"css:background-image": "featureColourGradient"
+						"css:background-image": "featureColourGradient",
+						"css:-webkit-text-stroke-width": "featureTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "featureTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "featureColourHover"
+								"css:color": "featureColourHover",
+								"css:-webkit-text-stroke-color": "featureTextStrokeColourHover"
 							}
 						}
 					},
@@ -189,12 +198,15 @@
 						"css:color": "ctaColour",
 						"css:color-gradient": "ctaColourGradient",
 						"css:background-color": "ctaBackground",
-						"css:background-image": "ctaBackgroundGradient"
+						"css:background-image": "ctaBackgroundGradient",
+						"css:-webkit-text-stroke-width": "ctaTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "ctaTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "ctaColourHover"
+								"css:color": "ctaColourHover",
+								"css:-webkit-text-stroke-color": "ctaTextStrokeColourHover"
 							}
 						}
 					},

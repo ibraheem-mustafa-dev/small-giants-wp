@@ -56,7 +56,9 @@
 						"css:border-style": "cardBorderStyle",
 						"css:border-color": "cardBorderColour",
 						"css:gap": "iconGap",
-						"css:min-height": "minHeight"
+						"css:min-height": "minHeight",
+						"css:-webkit-text-stroke-width": "labelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "labelTextStrokeColour"
 					},
 					"states": {
 						"hover": {
@@ -64,7 +66,8 @@
 								"css:background-color": "backgroundColourHover",
 								"css:background-image": "backgroundColourHoverGradient",
 								"css:color": "labelColourHover",
-								"css:color-gradient": "labelColourHoverGradient"
+								"css:color-gradient": "labelColourHoverGradient",
+								"css:-webkit-text-stroke-color": "labelTextStrokeColourHover"
 							}
 						}
 					},
