@@ -160,7 +160,7 @@ function planSpacing( st, rec ) {
 			const s = st.reads.widths[ w ]?.[ `${ c }:` ];
 			return s && ! s.missing ? { ...s.rect, inFlow: s.inFlow } : null;
 		} );
-		const ownership = spacingOwnership( rects, { unmeasured } );
+		const ownership = spacingOwnership( rects, { unmeasured, declared: st.reads.declared?.[ w ]?.[ `${ rec.index }:` ] || null } );
 		if ( 'unknown' === ownership.owner || ownership.decisions.length ) {
 			st.out.spacing.push( { node: refOf( st.flat[ rec.index ] ), index: rec.index, width: w, owner: ownership.owner, count: ownership.count, decisions: ownership.decisions } );
 		}

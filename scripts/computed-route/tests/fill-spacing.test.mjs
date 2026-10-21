@@ -1,9 +1,9 @@
-// L9.3 (FR-47-4 step 3): spacing ownership is decided per tier from rendered border-box gaps, never the draft's CSS. A
-// parent's gap is written only when every sibling gap is equal (within 0.5px); otherwise the parent gap is 0 and each
-// child takes its own margin.
+// Spec 48 §3.4 step 3: spacing ownership is decided per tier, from the draft's declared gap first (the render confirms
+// it), else from rendered border-box gaps. A parent's rendered gap is written only when every sibling gap is equal
+// (within 0.5px); otherwise the parent gap is 0 and each child takes its own margin.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { spacingOwnership, EQUAL_PX, decisionFor } from '../lib/fill-spacing.mjs';
+import { spacingOwnership, EQUAL_PX, decisionFor, declaredGap } from '../lib/fill-spacing.mjs';
 
 const box = ( x, y, w, h, extra = {} ) => ( { x, y, w, h, ...extra } );
 // Three stacked boxes with the given vertical gaps (a vertical main axis).
@@ -30,20 +30,20 @@ const row = ( ...gaps ) => {
 test( 'MUST FAIL: one unequal gap in a stack hands every gap to the children and writes the parent gap as 0', () => {
 	const r = spacingOwnership( stack( 16, 16, 40 ) );
 	assert.equal( r.owner, 'children' );
-	assert.deepEqual( r.decisions, [ { prop: 'row-gap', owner: 'children', value: '0px', gaps: [ 16, 16, 40 ], margins: [ 'margin-top', 'margin-bottom' ] } ] );
+	assert.deepEqual( r.decisions, [ { prop: 'row-gap', owner: 'children', value: '0px', gaps: [ 16, 16, 40 ], margins: [ 'margin-top', 'margin-bottom' ], source: 'rendered' } ] );
 	assert.notEqual( spacingOwnership( stack( 16, 16, 16 ) ).owner, 'children', 'the control with equal gaps does not take that branch' );
 } );
 
 test( 'equal gaps in a vertical stack: the parent owns row-gap at the gap\'s value', () => {
 	const r = spacingOwnership( stack( 16, 16, 16 ) );
 	assert.equal( r.owner, 'parent' );
-	assert.deepEqual( r.decisions, [ { prop: 'row-gap', owner: 'parent', value: '16px', gaps: [ 16, 16, 16 ], margins: [ 'margin-top', 'margin-bottom' ] } ] );
+	assert.deepEqual( r.decisions, [ { prop: 'row-gap', owner: 'parent', value: '16px', gaps: [ 16, 16, 16 ], margins: [ 'margin-top', 'margin-bottom' ], source: 'rendered' } ] );
 	assert.equal( r.count, 4 );
 } );
 
 test( 'a horizontal main axis: equal gaps are column-gap, unequal gaps zero it, margins are left and right', () => {
 	const eq = spacingOwnership( row( 10, 10 ) );
-	assert.deepEqual( eq.decisions, [ { prop: 'column-gap', owner: 'parent', value: '10px', gaps: [ 10, 10 ], margins: [ 'margin-left', 'margin-right' ] } ] );
+	assert.deepEqual( eq.decisions, [ { prop: 'column-gap', owner: 'parent', value: '10px', gaps: [ 10, 10 ], margins: [ 'margin-left', 'margin-right' ], source: 'rendered' } ] );
 	const un = spacingOwnership( row( 10, 24 ) );
 	assert.equal( un.owner, 'children' );
 	assert.deepEqual( un.decisions.map( ( d ) => [ d.prop, d.owner, d.value ] ), [ [ 'column-gap', 'children', '0px' ] ] );
@@ -111,4 +111,54 @@ test( 'decisionFor picks the decision for a gap property, or null', () => {
 	assert.equal( decisionFor( r, 'row-gap' ).value, '16px' );
 	assert.equal( decisionFor( r, 'column-gap' ), null );
 	assert.equal( decisionFor( null, 'row-gap' ), null );
+} );
+
+// A header row's code: logo, nav and call to action pushed apart, at least 20px between them.
+const spread = { display: 'flex', 'justify-content': 'space-between', 'column-gap': '20px', 'row-gap': '20px', 'flex-direction': 'row' };
+
+test( 'MUST FAIL: a declared gap under space-between is the parent gap, though the render spreads the items wider', () => {
+	const d = decisionFor( spacingOwnership( row( 80.92, 80.92 ), { declared: spread } ), 'column-gap' );
+	assert.equal( d.owner, 'parent' );
+	assert.equal( d.value, '20px' );
+	assert.equal( d.source, 'declared' );
+	assert.equal( d.distributed, 'space-between' );
+	assert.equal( d.disagree, undefined );
+} );
+
+test( 'MUST FAIL: under space-between a rendered gap smaller than the declared one is not confirmed and is reported', () => {
+	const d = decisionFor( spacingOwnership( row( 12, 80 ), { declared: spread } ), 'column-gap' );
+	assert.equal( d.source, 'rendered' );
+	assert.equal( d.owner, 'children' );
+	assert.deepEqual( d.disagree, { declared: '20px', distributed: 'space-between' } );
+} );
+
+test( 'MUST FAIL: a declared gap the render matches within 0.5px is written as declared', () => {
+	const d = decisionFor( spacingOwnership( row( 16.3, 16.3 ), { declared: { display: 'flex', 'column-gap': '16px' } } ), 'column-gap' );
+	assert.equal( d.source, 'declared' );
+	assert.equal( d.value, '16px' );
+} );
+
+test( 'MUST FAIL: a declared gap the render contradicts leaves the rendered decision and reports the declared value', () => {
+	const d = decisionFor( spacingOwnership( row( 35, 35 ), { declared: { display: 'grid', 'column-gap': '20px' } } ), 'column-gap' );
+	assert.equal( d.source, 'rendered' );
+	assert.equal( d.value, '35px' );
+	assert.deepEqual( d.disagree, { declared: '20px' } );
+} );
+
+test( 'MUST FAIL: space-between spreads the block axis of a flex column, not its inline axis', () => {
+	const col = { display: 'flex', 'flex-direction': 'column', 'justify-content': 'space-between', 'row-gap': '10px' };
+	const d = decisionFor( spacingOwnership( stack( 40, 40 ), { declared: col } ), 'row-gap' );
+	assert.equal( d.source, 'declared' );
+	assert.equal( d.value, '10px' );
+	assert.equal( d.distributed, 'space-between' );
+} );
+
+test( 'MUST FAIL: no declared layout, a normal gap or a non-length gap leaves the rendered rule in charge', () => {
+	assert.equal( declaredGap( { display: 'block', 'column-gap': '20px' }, 'column-gap' ), null );
+	assert.equal( declaredGap( { display: 'flex', 'column-gap': 'normal' }, 'column-gap' ), null );
+	assert.equal( declaredGap( { display: 'flex', 'column-gap': 'calc(1rem + 2px)' }, 'column-gap' ), null );
+	assert.equal( declaredGap( { display: 'flex', 'column-gap': '0px' }, 'column-gap' ), null );
+	const d = decisionFor( spacingOwnership( row( 30, 30 ), { declared: { display: 'block', 'column-gap': '20px' } } ), 'column-gap' );
+	assert.equal( d.source, 'rendered' );
+	assert.equal( d.value, '30px' );
 } );

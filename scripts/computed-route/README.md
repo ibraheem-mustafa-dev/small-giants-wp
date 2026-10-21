@@ -199,7 +199,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/fill-prop.mjs` | One property of one element: which tiers differ from what the node shows, the slots a setting could paint, `clamp()` where a setting accepts one; every write is the resolver's. |
 | `lib/fill-equivalents.mjs` | FR-48-8 step 5: a draft property no setting holds, written through a setting for another property on the element or its parent (the framework DB's `property_equivalents`), only under each row's condition. |
 | `lib/fill-resolve.mjs` | Root-down resolution of a whole skeleton: inherited baselines, spacing ownership, presence, words, links, the divergence ledger, UNMAPPED and handover. |
-| `lib/fill-spacing.mjs` | Spacing ownership per tier from rendered border-box gaps (equal within 0.5px). |
+| `lib/fill-spacing.mjs` | Spacing ownership per tier: a flex or grid parent's declared gap first, the render confirming it; otherwise rendered border-box gaps (equal within 0.5px). |
 | `lib/fill-values.mjs` | Fluid fit and `clamp()`, the 16px breakpoint sweep against the SGS boundaries, and the sweep log. |
 | `lib/fill-presence.mjs` | Visibility and variant settings from calibration `presence`, words from `text`, links from `link`. |
 | `lib/fill-link-attrs.mjs` | A draft link's target, rel, id and aria-label, written to the block's own settings (block.json schema, supports.anchor, calibrated `target` entries) or raised as a named UNMAPPED row. |
@@ -381,7 +381,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/fill-read.test.mjs` | FR-47-4: a local draft read in headless Chromium — widths, the carrier rule, scoping, the declared width, fluid samples and the sweep. |
 | `tests/fill-mirror.test.mjs` | FR-47-4: a script on another origin is blocked, answered from a `--mirror`, and the flag parses. |
 | `tests/fill-prop.test.mjs` | FR-47-4: tier carry, canonical values, not-painted leftovers, and that every write is the resolver's. |
-| `tests/fill-spacing.test.mjs` | FR-47-4 step 3: one unequal gap hands every gap to the children and writes the parent gap as 0 (MUST FAIL); equal, single, zero, both axes, tolerance, hidden and out-of-flow children. |
+| `tests/fill-spacing.test.mjs` | Spec 48 §3.4 step 3: one unequal gap hands every gap to the children and writes the parent gap as 0 (MUST FAIL); a declared gap under space-between is the parent gap though the render spreads wider, a rendered gap below it is reported, a declared gap the render matches is written as declared, one it contradicts is reported and the rendered decision kept, a flex column's block axis, no layout or a normal gap leaves the rendered rule (each MUST FAIL); equal, single, zero, both axes, tolerance, hidden and out-of-flow children. |
 | `tests/fill-values.test.mjs` | FR-47-4: a stepped value is never fluid and a step at 800px is logged against 768 (MUST FAIL); clamp shapes and the sweep log. |
 | `tests/fill-media.test.mjs` | FR-48-39 images: a mapped image writes id, URL and alt, a figcaption writes the caption, an unmapped image is a named gap with no URL written, a block with no image setting is untouched, the painted-asset check names the attachment (MUST FAIL cases). |
 | `tests/fill-presence.test.mjs` | FR-47-4: a draft showing the badge flips its visibility setting on and a draft without it leaves the default (MUST FAIL); variant, words and links, against fixture calibration keys. |
@@ -1034,7 +1034,8 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/fill-spacing.mjs`
 - `EQUAL_PX`: 0.5, the tolerance at which two rendered gaps are equal.
-- `spacingOwnership(rects, { unmeasured })` → `{ owner, count, decisions }`: the parent owns the gap only when every sibling gap is equal.
+- `spacingOwnership(rects, { unmeasured, declared })` → `{ owner, count, decisions }`: a flex or grid parent that declares a gap on an axis owns it at the declared value when the render confirms it (every rendered gap at least the declared one under a `space-*` justify-content on that axis, otherwise within `EQUAL_PX`); otherwise the parent owns the gap only when every rendered sibling gap is equal. Each decision carries `source` (`declared` | `rendered`), `distributed` (the `space-*` value) and `disagree` (a declared gap the render did not confirm). `declared` is the parent's declared longhands at that tier (`lib/fill-resolve.mjs` passes `st.reads.declared[w]['<index>:']`).
+- `declaredGap(declared, prop)` → the gap a flex or grid parent declares on one axis in px, or null (`normal`, 0, no layout, not a plain length).
 - `decisionFor(ownership, prop)` → the decision for `row-gap` or `column-gap`, or null.
 
 ### `lib/fill-values.mjs`

@@ -268,7 +268,7 @@ Site Info rows: a row of generated brand icons shares one look, held by the row'
 
 **Done when:** Fill on one unbuilt surface produces a tree that builds, and a walk of it shows only rows listed in its UNMAPPED list or in `divergences.json`.
 
-Status: partly built. Fill from rendered values is built (`fill.mjs`, sixteen `lib/fill-*.mjs` modules, proved against a built Eye Care surface with its tree withheld, §5 stage 4); the skeleton writer is built (`skeleton.mjs`, `lib/skeleton-*.mjs`, `check-refs.mjs`, `origin.mjs`); reading values from the draft's code is not built (FR-48-8). Step 3's declared-gap ownership is not built: `lib/fill-spacing.mjs::spacingOwnership` decides from rendered gaps only. The handoff readers' structure lane is not built (FR-48-7).
+Status: partly built. Fill from rendered values is built (`fill.mjs`, sixteen `lib/fill-*.mjs` modules, proved against a built Eye Care surface with its tree withheld, §5 stage 4); the skeleton writer is built (`skeleton.mjs`, `lib/skeleton-*.mjs`, `check-refs.mjs`, `origin.mjs`); reading values from the draft's code is not built (FR-48-8). Step 3's declared-gap ownership is built (`lib/fill-spacing.mjs::spacingOwnership`, called from `lib/fill-resolve.mjs` with the parent's declared longhands; `node --test scripts/computed-route/tests/fill-spacing.test.mjs`, 17 tests). The handoff readers' structure lane is not built (FR-48-7).
 
 ### FR-48-6 -- Skeleton rules
 
