@@ -9,13 +9,15 @@ import { brandOwnsAddress } from './brand-registry.mjs';
 import { inventoryModel } from './skeleton-model.mjs';
 import { makeClassifier, overrideFor, finish, W } from './skeleton-classify.mjs';
 import { isMarker } from './skeleton-rules.mjs';
+import { childSlots, collapsePoint } from './skeleton-child-slots.mjs';
 
 const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks || [] ), 0 );
 
 // o: { inventory, facts, surface, surfaceKind, surfaceName, built (the client's own built post for this surface, from
 // sites/<client>/build/skeleton/built-surfaces.json), motion (template keys whose own animation loops a translate), clientDecisions, picks ({ key: decision }), calKeys (slug ->
-// calibration element keys), db }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, built = null, motion = new Set(), clientDecisions = {}, picks = {}, calKeys = () => [], db = null } ) {
+// calibration element keys), calSettings (slug -> the calibration's settings with their slots), states (the surface's handoff
+// record states: name, how_to_reach, sc_if_tpl_ids), thresholds (the width thresholds the draft's code uses), db }.
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, built = null, motion = new Set(), clientDecisions = {}, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null } ) {
 	const m = inventoryModel( inventory );
 	const { composition, capsOf, enumOf } = facts;
 	const minLinks = facts.decisions.structural?.linkList?.minLinks ?? 2;
@@ -249,7 +251,10 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// A rule that sets a display type (a business detail) carries the block's settings itself: no generic text attribute.
 		const own = r.rule && ( drawn || top.attributes?.displayType );
 		const { a, handover } = own ? { a: {}, handover: [] } : contentAttrs( block, e, top );
-		Object.assign( a, top.attributes || {} );
+		// A navigation block's collapse point is the width the draft shows its navigation at.
+		const collapseAttr = 'nav' === e.tag ? R.navigation?.collapseAttribute?.[ block ] : null;
+		const collapse = collapseAttr ? collapsePoint( { e, states, thresholds } ) : null;
+		Object.assign( a, null != collapse?.value ? { [ collapseAttr ]: collapse.value } : {}, top.attributes || {} );
 		r.handover && handover.push( r.handover );
 		const node = base( e, block, a );
 		handover.length && ( node.handover = handover );
@@ -264,6 +269,12 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			row.slots = slots;
 		}
 		if ( drawn ) {
+			// The calibrated child slots of a block that draws its children (a nav's resting and current item link).
+			const cfg = ( R.drawsChildren?.blocks || [] ).find( ( d ) => d.block === block )?.childSlots;
+			const cs = childSlots( { cfg, items: m.blockKids( e ), m, finder, settings: cfg ? calSettings( block ) : {}, states } );
+			Object.keys( cs.slots ).length && ( node.draftSlots = { ...node.draftSlots, ...cs.slots }, row.slots = { ...row.slots, ...cs.slots } );
+			const notes = [ ...cs.notes, ...( collapse?.note ? [ collapse.note ] : [] ) ];
+			notes.length && ( row.slotNotes = notes );
 			absorbSubtree( e, { block, key: e.key }, drawn, r.rule || 'drawsChildren' );
 			return node;
 		}

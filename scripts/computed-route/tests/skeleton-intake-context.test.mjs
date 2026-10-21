@@ -8,7 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openDb } from '../lib/db.mjs';
-import { proposeSurface, reviewSurface, main } from '../skeleton.mjs';
+import { proposeSurface, reviewSurface, intakeContext, main } from '../skeleton.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { servedKey, servedMotion, isServedInventory } from '../lib/key-space.mjs';
 
@@ -88,6 +88,20 @@ test( 'decide refuses without an intakeSurface, as propose does', async () => {
 	const f = fixture( { entry: { site: 'x' } } );
 	await assert.rejects( () => main( [ 'decide', '--client', CLIENT, '--surface', 'footer', '--key', 'Root/848#0', '--block', 'sgs/heading' ], { repo: f.repo } ), /no intakeSurface/ );
 	assert.equal( fs.readFileSync( path.join( f.repo, 'sites', CLIENT, 'build', 'skeleton', 'decisions.json' ), 'utf8' ), '{"surfaces":{}}' );
+	f.done();
+} );
+
+test( 'the intake context carries the handoff record states of the intake skeleton id and the draft width thresholds', () => {
+	const f = fixture();
+	const build = path.join( f.repo, 'sites', CLIENT );
+	fs.mkdirSync( path.join( build, 'handoff' ), { recursive: true } );
+	fs.writeFileSync( path.join( build, 'handoff', 'surfaces.json' ), JSON.stringify( { records: [ { id: 'S-99', states: [ { name: 'x' } ] }, { id: 'S-14', states: [ { name: 'desktop nav', how_to_reach: 'state.w ≥ 1024', sc_if_tpl_ids: [ '44' ] } ] } ] } ) );
+	const file = path.join( build, 'build', 'intake', 'intake.json' );
+	const intake = JSON.parse( fs.readFileSync( file, 'utf8' ) );
+	fs.writeFileSync( file, JSON.stringify( { ...intake, breakpoints: [ { thresholds: [ { value: 1024 }, { value: 768 } ] }, { thresholds: [ { value: 1024 } ] } ] } ) );
+	const ctx = intakeContext( { client: CLIENT, surface: 'footer', repo: f.repo } );
+	assert.deepEqual( ctx.states.map( ( x ) => x.name ), [ 'desktop nav' ] );
+	assert.deepEqual( ctx.thresholds.sort( ( a, b ) => a - b ), [ 768, 1024 ] );
 	f.done();
 } );
 

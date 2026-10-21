@@ -34,7 +34,7 @@ function inventory( root ) {
 		const key = `Root/${ id }#0`;
 		const attrs = { ...( node.o.attrs || {} ), ...( node.o.style ? { style: node.o.style } : {} ) };
 		const words = node.o.words || '';
-		const el = { key, parentKey, depth, tag: node.tag, template: 'Root', tpl: id, attrs, words, allText: words, membership: [], srcTag: node.tag, srcOwnText: words,
+		const el = { key, parentKey, depth, tag: node.tag, template: 'Root', tpl: id, attrs, words, allText: words, membership: node.o.membership || [], srcTag: node.tag, srcOwnText: words,
 			snippet: node.o.snippet || `<${ node.tag } data-dc-tpl="${ id }">${ words }</${ node.tag }>`,
 			box: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, node.o.box || { x: 0, y: node.o.y ?? 0, w: 100, h: 20 } ] ) ),
 			visible: { 375: true, 768: true, 1440: true }, display: node.o.display || 'block', flexDirection: 'row', screenshots: {} };
@@ -344,6 +344,43 @@ test( 'a client decision with attributes on a rule-eligible element puts them on
 	const flat = ( list ) => list.flatMap( ( n ) => [ n, ...flat( n.innerBlocks || [] ) ] );
 	assert.equal( flat( r.skeleton ).find( ( n ) => 'sgs/nav-bar-menu' === n.name )?.attributes?.ref, 5, 'the node carries the decision attributes' );
 	assert.ok( r.proposal.rows.filter( ( x ) => 'button' === x.tag ).every( ( x ) => 'absorbed' === x.action ) );
+} );
+
+// A header whose nav (shown by sc-if 44) draws two items; the second item renders sc-if 51 (the current-section look).
+const IF = ( tpl ) => ( { kind: 'sc-if', tpl: String( tpl ) } );
+const navTree = () => E( 'header', {}, [ E( 'nav', { display: 'flex', membership: [ IF( 44 ) ] }, [
+	E( 'button', { words: 'Home', membership: [ IF( 44 ) ] }, [ E( 'span', { membership: [ IF( 44 ), IF( 51 ) ] } ) ] ),
+	E( 'button', { words: 'About', membership: [ IF( 44 ) ] } ),
+] ) ] );
+const SETTINGS = { itemColour: { slot: '.bar > .item:nth-of-type(3) > .link', state: null }, itemColourCurrent: { slot: '.bar > .item:nth-of-type(7) > .link', state: 'current' } };
+const STATES = [ { name: 'desktop nav (≥ 1024)', how_to_reach: 'state.w ≥ 1024', sc_if_tpl_ids: [ '44', '49', '51' ] }, { name: 'current section', how_to_reach: 'route', sc_if_tpl_ids: [ '51' ] }, { name: 'tablet (≥ 768)', how_to_reach: 'state.w ≥ 768', sc_if_tpl_ids: [ '57' ] }, { name: 'compact (< 1024)', how_to_reach: 'state.w < 1024', sc_if_tpl_ids: [ '55' ] } ];
+const navRun = ( o = {} ) => {
+	const tree = inventory( navTree() );
+	const r = proposeSkeleton( { inventory: tree, facts: facts(), surface: 'fixture', surfaceKind: 'header', calSettings: () => SETTINGS, states: STATES, thresholds: [ 768, 1024 ], db, ...o } );
+	const flat = ( list ) => list.flatMap( ( n ) => [ n, ...flat( n.innerBlocks || [] ) ] );
+	return { r, node: flat( r.skeleton ).find( ( n ) => 'sgs/nav-bar-menu' === n.name ), tree };
+};
+
+test( 'a block that draws its children gets draftSlots from its calibration: the resting child and the child a current-state sc-if renders in; MUST FAIL without them', () => {
+	const { node, tree } = navRun();
+	const key = ( w ) => tree.elements.find( ( x ) => 'button' === x.tag && w === x.allText ).key;
+	assert.deepEqual( node.draftSlots, { [ SETTINGS.itemColour.slot ]: { tpl: key( 'About' ) }, [ SETTINGS.itemColourCurrent.slot ]: { tpl: key( 'Home' ) } } );
+} );
+
+test( 'a drawing block with no calibration gets no child slots and the row says why', () => {
+	const { node, r } = navRun( { calSettings: () => ( {} ) } );
+	assert.equal( node.draftSlots, undefined );
+	assert.match( r.proposal.rows.find( ( x ) => 'nav' === x.tag ).slotNotes.join( ' ' ), /no slot for itemColour, so/ );
+	const none = navRun( { states: [] } );
+	assert.deepEqual( Object.keys( none.node.draftSlots ), [ SETTINGS.itemColour.slot ], 'no current-state sc-if known: only the resting child' );
+} );
+
+test( 'a navigation block collapses at the one >= width threshold of the states that show it; MUST FAIL without the rule', () => {
+	assert.equal( navRun().node.attributes.collapsePoint, 1024 );
+	assert.equal( 'collapsePoint' in navRun( { thresholds: [ 768 ] } ).node.attributes, false, 'a width the draft code never uses is not taken' );
+	const two = navRun( { states: [ ...STATES, { name: 'wide', how_to_reach: 'state.w ≥ 1260', sc_if_tpl_ids: [ '44' ] } ], thresholds: [ 1024, 1260 ] } );
+	assert.equal( 'collapsePoint' in two.node.attributes, false, 'two thresholds are not picked between' );
+	assert.match( two.r.proposal.rows.find( ( x ) => 'nav' === x.tag ).slotNotes.join( ' ' ), /2 width thresholds/ );
 } );
 
 test( 'drawsChildren: a leaf, an array-item block and a named block draw their children; MUST FAIL with the name removed', () => {

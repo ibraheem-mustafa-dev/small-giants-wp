@@ -25,7 +25,9 @@
 				"innerBlocks": [
 					{
 						"name": "sgs/responsive-logo",
-						"attributes": {},
+						"attributes": {
+							"logoId": 81
+						},
 						"draftRef": {
 							"tpl": "Root/43#0"
 						},
@@ -40,17 +42,13 @@
 								"owner": "site-info",
 								"kind": "presence",
 								"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
-							},
-							{
-								"owner": "site-info",
-								"kind": "presence",
-								"detail": "the logo image: choose the site logo in the editor"
 							}
 						]
 					},
 					{
 						"name": "sgs/nav-bar-menu",
 						"attributes": {
+							"collapsePoint": 1024,
 							"ref": 5
 						},
 						"draftRef": {
@@ -61,7 +59,15 @@
 							"cls": "",
 							"styleHash": "1c0176c2"
 						},
-						"innerBlocks": []
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": {
+								"tpl": "Root/47#1"
+							},
+							".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link": {
+								"tpl": "Root/47#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/button",

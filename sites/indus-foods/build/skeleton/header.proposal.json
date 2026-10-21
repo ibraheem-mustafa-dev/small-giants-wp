@@ -1,5 +1,5 @@
 {
-	"generated": "2026-10-21T04:32:13.720Z",
+	"generated": "2026-10-21T05:00:42.888Z",
 	"inventory": "2026-10-21T03:32:11.794Z",
 	"source": "http://127.0.0.1:63470/",
 	"surface": "sticky-header",
@@ -194,24 +194,19 @@
 			"words": "",
 			"block": "sgs/responsive-logo",
 			"action": null,
-			"reason": "a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo",
-			"source": "rule logoElement",
+			"reason": null,
+			"source": "client decision",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "clientBuiltSurface",
-			"handover": {
-				"owner": "site-info",
-				"kind": "presence",
-				"detail": "the logo image: choose the site logo in the editor"
-			},
 			"candidates": [
 				{
 					"block": "sgs/responsive-logo",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule logoElement: a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo"
+						"client decision: the header logo is <indus-logo variant=\"horizontal\"> (Indus Foods Website v2.dc.html line 49), which indus-logo.js draws from assets/logo-horizontal-anim.svg; that export asset is attachment 81 on indus-test (build/media-map.json)"
 					]
 				}
 			],
@@ -221,7 +216,9 @@
 				"1440": "shots/Root_43_0@1440.png"
 			},
 			"snippet": "<indus-logo variant=\"horizontal\" aria-label=\"Indus Foods Ltd\" style=\"display:block;height:{{ R.logoH }};aspect-ratio:3741 / 848;\" data-dc-tpl=\"43\"></indus-logo>",
-			"attributes": {},
+			"attributes": {
+				"logoId": 81
+			},
 			"builtPost": {
 				"site": "sandybrown",
 				"postType": "sgs_header",
@@ -259,7 +256,16 @@
 			},
 			"snippet": "<nav style=\"display:flex;align-items:center;gap:2px;height:100%;\" data-dc-tpl=\"45\"> <sc-for list=\"{{ items }}\" as=\"item\" hint-placeholder-count=\"7\" data-dc-tpl=\"46\"> <button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"pos",
 			"attributes": {
+				"collapsePoint": 1024,
 				"ref": 5
+			},
+			"slots": {
+				".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": {
+					"tpl": "Root/47#1"
+				},
+				".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link": {
+					"tpl": "Root/47#0"
+				}
 			},
 			"builtPost": {
 				"site": "sandybrown",

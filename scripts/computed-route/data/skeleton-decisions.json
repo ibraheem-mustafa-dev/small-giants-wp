@@ -126,7 +126,11 @@
 				},
 				{
 					"block": "sgs/nav-bar-menu",
-					"reason": "draws its items, labels and carets from a WordPress menu"
+					"reason": "draws its items, labels and carets from a WordPress menu",
+					"childSlots": {
+						"resting": "itemColour",
+						"current": "itemColourCurrent"
+					}
 				},
 				{
 					"block": "sgs/nav-drawer-menu",
@@ -256,6 +260,9 @@
 			"bySurface": {
 				"header": "sgs/nav-bar-menu",
 				"drawer": "sgs/nav-drawer-menu"
+			},
+			"collapseAttribute": {
+				"sgs/nav-bar-menu": "collapsePoint"
 			},
 			"reason": "the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu"
 		},

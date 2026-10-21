@@ -43,6 +43,8 @@ export function skeletonPaths( { client, surface, repo = REPO } ) {
 
 // The calibration cache's element keys for a block on a site (slot targets), or none when it has no default paint there.
 const calKeysFor = ( site ) => ( slug ) => Object.keys( loadCalibration( path.join( HERE, 'cache' ), slug, site )?.elements || {} );
+// The calibration's settings (each with the slot it was measured on) for a block on a site.
+const calSettingsFor = ( site ) => ( slug ) => loadCalibration( path.join( HERE, 'cache' ), slug, site )?.settings || {};
 
 const write = ( file, text ) => {
 	fs.mkdirSync( path.dirname( file ), { recursive: true } );
@@ -67,7 +69,11 @@ export function intakeContext( { client, surface, repo = REPO } ) {
 		throw new Error( `"${ surface }" names intakeSurface "${ slug }", which is not in sites/${ client }/build/intake/intake.json skeletons` );
 	}
 	const built = readJson( path.join( skeletonDir( repo, client ), 'built-surfaces.json' ), {} ).surfaces || {};
-	return { slug, kind: entry.kind, name: entry.name, built: built[ entry.id ] || built[ slug ] || null, rootComponent: entry.inventory?.checks?.rootName || null, motion: loopingKeys( intake.inventory?.animations ) };
+	// The handoff record of the same id carries the states (with the sc-if templates each shows); the draft's width thresholds are intake's.
+	const record = ( readJson( path.join( repo, 'sites', client, 'handoff', 'surfaces.json' ), {} ).records || [] ).find( ( r ) => r.id === entry.id );
+	const states = record?.states || [];
+	const thresholds = [ ...new Set( ( intake.breakpoints || [] ).flatMap( ( b ) => ( b.thresholds || [] ).map( ( t ) => Number( t.value ) ) ) ) ];
+	return { slug, kind: entry.kind, name: entry.name, built: built[ entry.id ] || built[ slug ] || null, rootComponent: entry.inventory?.checks?.rootName || null, motion: loopingKeys( intake.inventory?.animations ), states, thresholds };
 }
 
 // The intake context and the saved client decisions of a surface as propose and review read them: decisions under the intake
@@ -101,7 +107,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	if ( bad.length ) {
 		throw new Error( `the decisions data is not sound:\n- ${ bad.join( '\n- ' ) }` );
 	}
-	const r = propose( { inventory, facts, surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, built: ctx.built, motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), db } );
+	const r = propose( { inventory, facts, surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, built: ctx.built, motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), calSettings: calSettingsFor( readSurface( repo, client, surface ).site ), states: ctx.states, thresholds: ctx.thresholds, db } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
 	return { ...r, paths: p, facts, inventory, clientDecisions };
