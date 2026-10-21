@@ -89,21 +89,29 @@ Status: done 2026-10-11.
 
 ## 3. Readers
 
-Every file has a named reader. "Built" means the reader exists today.
+Every kind of data in the folder has a named reader, and every stage takes a fact from the reader of the file that states it; the render confirms (Spec 48 R-47-4). The readers join into one fact record per draft element (Spec 48 FR-48-7). The full register, with each kind's values on the three exports, the stages that could use it and its use by agents, is `.claude/reports/2026-10-21-handoff-data-register.md`. "Built" means the reader exists today.
 
-| File | Reader | Built |
-|---|---|---|
-| `MANIFEST.json` | `handoff-check.mjs`: completeness, hashes, runtime | yes |
-| `support.js` | `handoff-check.mjs` runtime check and probe; `lib/draft.mjs::serveDraft` serves the draft | yes |
-| draft `.dc.html` | `handoff-check.mjs` reachability; intake decodes template and logic (`METHOD.md`); walker and skeleton writer measure only what code cannot state | yes (intake: Spec 48 §9) |
-| project scripts, `assets/` | the runtime while serving; `handoff-check.mjs` SVG and size checks; intake adds `assets/` to the media upload list | check yes, upload Spec 48 |
-| `tokens/*.css` | intake's `lib/tokens.mjs` proposes the palette roles; the theme extractor builds the brand palette from the declared tokens with the confirmed roles; every other colour stays a one-off hex literal | intake yes; extractor Spec 48 §11 |
-| `README.md` | Bean and agents (human guide to the design; not a cloning input, which reads the code) | yes (human/agent reader) |
-| `animations.json`, `surfaces.json` | `handoff-check.mjs` schema and currency; `trace-check.mjs` runtime cross-check; intake cross-check against its own inventory | check and trace yes, intake Spec 48 |
-| `READING-DC-FILES.md` | agents working on the draft | yes (human/agent reader) |
-| `handoff-schema/*` | `handoff-check.mjs` compares each with the master copy | yes |
+| File | Data kind | Reader and the stages it feeds | Built |
+|---|---|---|---|
+| `MANIFEST.json` | file list, sizes, hashes, entry drafts, runtime hash | `lib/handoff.mjs::checkHandoff` (completeness, hashes, reachability); `lib/intake-sandbox.mjs::recheckManifest` per intake run; the fact record's `sources` header, checked by every reader | check and intake re-check yes; `sources` no |
+| `support.js` | runtime build; the annotated template (`__dcAnnotatedTemplate`, pre-order `data-dc-tpl`), the registry (`propsMeta`), the live logic instance | `checkHandoff` known-runtime gate and probe; `lib/draft.mjs::serveDraft`; the census and `lib/read-template.mjs` read the annotated template in the sandboxed page; `lib/read-logic.mjs` reads the logic instance there | gate, serve and census yes; template and logic readers no |
+| draft `.dc.html` template | element identity and nesting, tags, attributes (ARIA included), static declarations, `style-*` rules, holes, `sc-if`, `sc-for`, `dc-import`, refs, hooks, events, custom elements, links | the census (`lib/intake-census*.mjs`), `lib/intake-construct-readers.mjs`, `lib/read-template.mjs`; the skeleton (structure, ARIA, declared layout), Fill (declared values, spacing ownership), states (`style-*`) | census yes; the skeleton reads nesting and layout from the render today; `read-template.mjs` no |
+| draft logic class | state keys, `renderVals()` values per width and the width basis, getters and statics (content arrays, menus, catalogues, form schemas), handlers, timers, observers, Web Animations calls | `lib/intake-ast*.mjs`, `lib/intake-census-logic.mjs`, `lib/intake-breakpoints.mjs`, `lib/intake-routing.mjs`, `lib/intake-pagemap.mjs`, `lib/intake-siteinfo.mjs`; `lib/read-logic.mjs` for per-tier values of elements no read width renders and for `sc-if` width conditions | intake readers yes; `read-logic.mjs` no |
+| `data-props` | prop names, enum options, defaults, `$preview` | `lib/intake-props.mjs::declaredProps`, reading the attribute as the runtime's `parseDataProps` does | yes |
+| embedded `data-sgs-manifest` | pages, overlays, repeated groups, behavioural rules, breakpoints, assets, open items | `lib/intake-routing.mjs::embeddedManifest`, `lib/intake-pagemap.mjs` (pages); the rest is review evidence | pages yes; the rest no |
+| project scripts, `assets/` | SVG viewBox and animated group ids, raster sizes, logo variants, image slot attributes, data models (`store.js`) | the runtime while serving; `checkHandoff` SVG and size checks; `lib/media-upload.mjs` (uploads, `media-map.json`); `lib/read-assets.mjs` (intrinsic ratio, the element using each asset) | check and upload yes; `read-assets.mjs` no |
+| `tokens/*.css` | palette, aliases, gradients, families, type scale, spacing, gutters, section padding, radii, shadows, focus, easings, durations, breakpoints | `lib/tokens.mjs` (palette role proposal; literal-to-token by value); the theme extractor builds the snapshot from intake's resolved tokens with Bean's confirmed roles (Spec 48 FR-33-1); every colour used once or twice stays a hex literal | palette yes; snapshot from tokens no |
+| `surfaces.json` | per surface: kind, root, parent, route, page key, states (state keys, `sc-if` ids, animation ids, how to reach), page block lists, breakpoints, time dependence, unresolved | `checkHandoff` schema and currency; `lib/intake-skeletons.mjs::surfaceRoots`, `::openers`; `lib/manifest-build.mjs`; `lib/state-map.mjs` (from intake's re-derived inventory); `lib/read-surfaces.mjs` (each element's surfaces, part roots and states) | check, roots, openers and manifest yes; `read-surfaces.mjs` no |
+| `animations.json` | per effect: target, source, trigger, properties and timings, stagger, reduced motion, breakpoints, routes, status, trace | `checkHandoff` schema and currency; `lib/intake-inventory.mjs::readTheirs` and `lib/intake-inventory-diff.mjs::diffAnimations` (a cross-check of intake's re-derived inventory, which is the source); `trace-check.mjs`; `lib/read-animations.mjs` (effects per element; `group`, `routes` and `breakpoints` as evidence) | check, diff and trace yes; `read-animations.mjs` no |
+| `README.md` | the guide's sections: platform intent, judgement calls, open items, business details; block hints | `checkHandoff` heading warning; `lib/intake-flags.mjs::readmePlaceholderLines`; `lib/intake-prose.mjs`; `lib/read-readme.mjs` (sections as review and agent evidence, never a block decision) | heading check, placeholder lines and prose screen yes; `read-readme.mjs` no |
+| `READING-DC-FILES.md`, `handoff-schema/*` | the reading contract the readers implement (READING §1 to §7, METHOD §2 to §8), the schemas, the README template | the readers above implement it; `checkHandoff` compares each schema file with the master copy | yes |
 
 ## 4. Open questions for Claude Design
 
 1. Indus records L-01 to L-10 give `nearest_tpl_id` 40, 108 and 632; the `indus-logo` elements are 43, 114 and 684.
-2. `counts.*.record_ids` is not one-to-one with the counted occurrences, and surface counts carry no ids.
+2. `counts.*.record_ids` is not one-to-one with the counted occurrences (Indus `pseudo_rules` 103 with 102 ids), and surface counts carry no ids.
+3. No export follows `README.template.md`'s headings exactly (Indus has no Routes, Forms, Business details or Judgement calls headings; Mama's has no Forms, Judgement calls or Revision; Eye Care no Revision), all three cite `MANIFEST.md` for the folder's `MANIFEST.json`, and Mama's and Eye Care's READMEs map the design to SGS blocks ("Block mapping (SGS)", "Building it in SGS").
+4. README counts and values drift from the code: Indus states 183 animation and 60 surface records (217 and 61) and a header logo of `clamp(40px,3.8vw,52px)` where the code declares `clamp(54px,4.4vw,66px)`; Eye Care states 80 toggling `sc-if`s (97 listed).
+5. Indus READING-DC-FILES says no draft has `data-props` (TradeApplication and EnquiryForm do) and lists 11 refs (the template holds 12).
+6. `surfaces.json` `state_keys` mix real state keys with derived values and instance fields (`R.pin`, `item.current`, `_closing`), and thresholds are written three ways ("≥ N" prose in `how_to_reach`, `{"w": ">= 1060"}` in `state_keys`, `{"bp": "m|t"}`).
+7. Eye Care's `animations.json` `drafts` and `surfaces.json` S-38 and counts still name the removed `WP Build Gap Map.dc.html`.
