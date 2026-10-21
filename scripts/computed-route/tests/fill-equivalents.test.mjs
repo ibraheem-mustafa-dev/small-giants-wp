@@ -6,7 +6,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { everyChildSame, rendersAt, equivalentRows, fillEquivalent } from '../lib/fill-equivalents.mjs';
+import { everyChildSame, rendersAt, equivalentRows, fillEquivalent, intrinsicRatio, ratioOf } from '../lib/fill-equivalents.mjs';
 import { fillTree } from '../lib/fill-resolve.mjs';
 import { skeletonNodes, cleanTree } from '../lib/fill-skeleton.mjs';
 import { addRefs } from '../lib/tree.mjs';
@@ -16,7 +16,7 @@ import { confirmRecords } from '../lib/fill-confirm.mjs';
 const SEED = JSON.parse( readFileSync( fileURLToPath( new URL( '../../../plugins/sgs-blocks/scripts/data/property-equivalents.json', import.meta.url ) ), 'utf8' ) ).rows;
 // The framework DB with property_equivalents answered from the seed file (the shared DB gains the table at its reseed).
 const realDb = openDb();
-const db = { prepare: ( sql ) => ( /property_equivalents/.test( sql ) ? { all: ( p ) => SEED.filter( ( r ) => r.draft_property === p ) } : realDb.prepare( sql ) ) };
+const db = { prepare: ( sql ) => ( /property_equivalents/.test( sql ) ? { all: ( p ) => SEED.filter( ( r ) => r.draft_property === p ).sort( ( a, b ) => a.setting_property.localeCompare( b.setting_property ) ) } : realDb.prepare( sql ) ) };
 
 test( 'every-child-same: MUST FAIL when one sibling asks another value, or one sibling was not measured', () => {
 	const styles = { 1: { 'align-self': 'center' }, 2: { 'align-self': 'center' }, 3: { 'align-self': 'flex-start' } };
@@ -42,7 +42,7 @@ test( 'equivalentRows: no table reads as no rows; any other error is thrown', ()
 	assert.throws( () => equivalentRows( { prepare: () => {
 		throw new Error( 'database is locked' );
 	} }, 'height' ), /locked/ );
-	assert.deepEqual( equivalentRows( db, 'height' ).map( ( r ) => r.setting_property ), [ 'min-height' ] );
+	assert.deepEqual( equivalentRows( db, 'height' ).map( ( r ) => r.setting_property ), [ 'max-height', 'min-height' ] );
 } );
 
 // A Fill state for one parent (index 0) and its children, each child's root read at 1440.
@@ -169,4 +169,90 @@ test( 'MUST FAIL (end to end): children all asking align-self centre write the c
 	assert.equal( mixed.writes.filter( ( w ) => 'align-self' === w.prop ).length, 0 );
 	assert.equal( mixed.tree[ 0 ].attributes.alignItems, undefined );
 	assert.equal( mixed.unmapped.filter( ( u ) => 'align-self' === u.property ).length, 3 );
+} );
+
+// intrinsic-ratio: an image, SVG or logo whose box keeps its ratio at every width.
+const RATIO = 3741 / 848;
+const snapAt = ( h, intrinsic = { ratio: RATIO } ) => ( { styles: {}, rect: { w: h * RATIO, h }, ...( intrinsic ? { intrinsic } : {} ) } );
+const HEIGHTS = { 375: '40px', 768: '56px', 1440: '66px' };
+function ratioState( { intrinsic, declared = {}, stretch = 1, heights = HEIGHTS } ) {
+	const st = state( [] );
+	st.reads.widths = Object.fromEntries( Object.entries( heights ).map( ( [ w, h ] ) => [ w, { '0:': { ...snapAt( parseFloat( h ), intrinsic ), rect: { w: parseFloat( h ) * RATIO * stretch, h: parseFloat( h ) } } } ] ) );
+	st.reads.declared = Object.fromEntries( Object.keys( heights ).map( ( w ) => [ w, { '0:': declared } ] ) );
+	st.calFor = () => ( { settings: {} } );
+	return st;
+}
+
+test( 'ratioOf: reads "w / h", "auto w / h" and a bare number; anything else is no ratio', () => {
+	assert.ok( Math.abs( ratioOf( '3741 / 848' ) - RATIO ) < 1e-9 );
+	assert.ok( Math.abs( ratioOf( 'auto 3741/848' ) - RATIO ) < 1e-9 );
+	assert.equal( ratioOf( '1.5' ), 1.5 );
+	assert.equal( ratioOf( 'auto' ), null );
+	assert.equal( ratioOf( undefined ), null );
+} );
+
+test( 'intrinsicRatio: MUST FAIL when the box leaves its ratio at one width, or no width states a ratio', () => {
+	const snaps = { 375: snapAt( 40 ), 768: snapAt( 56 ) };
+	assert.equal( intrinsicRatio( [ 375, 768 ], ( w ) => snaps[ w ], () => undefined ), true );
+	snaps[ 768 ] = { ...snapAt( 56 ), rect: { w: 56 * RATIO * 1.2, h: 56 } };
+	assert.equal( intrinsicRatio( [ 375, 768 ], ( w ) => snaps[ w ], () => undefined ), false, 'a stretched box is not the ratio' );
+	assert.equal( intrinsicRatio( [ 375 ], () => snapAt( 40, null ), () => undefined ), false );
+	assert.equal( intrinsicRatio( [ 375 ], () => snapAt( 40, null ), () => '3741 / 848' ), true, 'a declared aspect-ratio is a ratio' );
+	assert.equal( intrinsicRatio( [], () => snapAt( 40 ), () => undefined ), false );
+	assert.equal( intrinsicRatio( [ 375 ], () => undefined, () => '3741 / 848' ), false, 'an unmeasured box proves nothing' );
+} );
+
+test( 'MUST FAIL: an element of intrinsic ratio gets max-height at every width, the rendered height, never the plain-declared widths only', () => {
+	const st = ratioState( { intrinsic: { ratio: RATIO } } );
+	const x = hooks();
+	const res = fillEquivalent( st, st.nodes[ 0 ], { slot: '', id: '0:' }, 'height', { 768: '56px' }, { ...x.h, rendered: HEIGHTS } );
+	assert.equal( res.status, 'written' );
+	assert.equal( res.condition, 'intrinsic-ratio' );
+	assert.equal( x.calls.resolve[ 0 ].prop, 'max-height' );
+	assert.deepEqual( x.calls.resolve[ 0 ].draft, HEIGHTS );
+	assert.deepEqual( x.calls.apply, [ { at: 0, prop: 'height', how: 'equivalent:self', slot: '' } ] );
+} );
+
+test( 'MUST FAIL: an element with no intrinsic ratio, or a stretched one, never gets max-height from a height', () => {
+	const plain = ratioState( { intrinsic: null } );
+	const a = hooks();
+	assert.equal( fillEquivalent( plain, plain.nodes[ 0 ], { slot: '', id: '0:' }, 'height', { 768: '57px' }, { ...a.h, rendered: HEIGHTS } ), null );
+	assert.equal( a.calls.resolve.length, 0 );
+	const stretched = ratioState( { intrinsic: { ratio: RATIO }, stretch: 1.3 } );
+	const b = hooks();
+	assert.equal( fillEquivalent( stretched, stretched.nodes[ 0 ], { slot: '', id: '0:' }, 'height', { 768: '57px' }, { ...b.h, rendered: HEIGHTS } ), null );
+	assert.equal( b.calls.resolve.length, 0 );
+	const declared = ratioState( { intrinsic: null, declared: { 'aspect-ratio': '3741 / 848' } } );
+	const c = hooks();
+	assert.equal( fillEquivalent( declared, declared.nodes[ 0 ], { slot: '', id: '0:' }, 'height', { 768: '57px' }, { ...c.h, rendered: HEIGHTS } ).condition, 'intrinsic-ratio', 'a declared ratio on a box that keeps it is a ratio element' );
+} );
+
+test( 'MUST FAIL: a row whose condition Fill does not know is never applied; it is named', () => {
+	const row = { draft_property: 'height', setting_property: 'max-height', hop: 'self', condition: 'always', note: 'x' };
+	const st = { ...ratioState( { intrinsic: { ratio: RATIO } } ), db: { prepare: () => ( { all: () => [ row ] } ) } };
+	const x = hooks();
+	const res = fillEquivalent( st, st.nodes[ 0 ], { slot: '', id: '0:' }, 'height', { 768: '56px' }, { ...x.h, rendered: HEIGHTS } );
+	assert.equal( res.status, 'gap' );
+	assert.equal( res.gap, 'unknown-condition' );
+	assert.match( res.detail, /height to max-height \(always\)/ );
+	assert.equal( x.calls.resolve.length + x.calls.apply.length, 0 );
+} );
+
+test( 'MUST FAIL (end to end): a logo of intrinsic ratio takes its rendered height per tier as maxHeight, with no not-plain row left for the clamp', () => {
+	const skeleton = [ { name: 'sgs/responsive-logo', draftRef: 'main', attributes: {} } ];
+	const tree = cleanTree( skeleton );
+	addRefs( tree, 'eq' );
+	const heights = { 375: 40, 768: 56, 1440: 66, 1920: 66, 1024: 60 };
+	const declaredHeight = { 375: 'min(54px, -26.2443px + 22.6244vw)', 768: '56px', 1440: 'clamp(54px, 4.4vw, 66px)', 1024: '60px', 1920: 'clamp(54px, 4.4vw, 66px)' };
+	const widths = Object.fromEntries( FIVE.map( ( w ) => [ w, { '0:': { styles: { ...BASE, height: `${ heights[ w ] }px` }, pseudo: {}, rect: { x: 0, y: 0, w: heights[ w ] * RATIO, h: heights[ w ] }, inFlow: true, words: '', href: null, intrinsic: { ratio: RATIO } } } ] ) );
+	const declared = Object.fromEntries( FIVE.map( ( w ) => [ w, { '0:': { height: declaredHeight[ w ], 'aspect-ratio': '3741 / 848' } } ] ) );
+	const nodes = skeletonNodes( skeleton );
+	const cal = { block: 'sgs/responsive-logo', elements: { '': tiers( { ...BASE, 'max-height': 'none' } ) }, settings: { maxHeight: setting( 'max-height' ) }, discovered: {} };
+	const reads = { widths, declared, sweep: {}, origin: 'http://127.0.0.1:1' };
+	const out = fillTree( { tree, nodes, reads, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, calFor: ( b ) => ( 'sgs/responsive-logo' === b ? cal : null ), ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
+	const writes = out.writes.filter( ( w ) => 'height' === w.prop );
+	assert.deepEqual( writes.map( ( w ) => [ w.attr, w.how ] ), [ [ 'maxHeight', 'equivalent:self' ] ] );
+	const mh = tree[ 0 ].attributes.maxHeight;
+	assert.deepEqual( [ mh.mobile, mh.tablet, mh.desktop ].map( Number ), [ 40, 56, 66 ] );
+	assert.equal( out.unmapped.filter( ( u ) => 'height' === u.property ).length, 0, JSON.stringify( out.unmapped ) );
 } );

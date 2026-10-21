@@ -26,7 +26,7 @@ CREATE TABLE property_equivalents (
     draft_property    TEXT NOT NULL,
     setting_property  TEXT NOT NULL,
     hop               TEXT NOT NULL CHECK (hop IN ('self', 'parent')),
-    condition         TEXT NOT NULL CHECK (condition IN ('every-child-same', 'render-matches')),
+    condition         TEXT NOT NULL CHECK (condition IN ('every-child-same', 'render-matches', 'intrinsic-ratio')),
     note              TEXT NOT NULL,
     created_at        TEXT DEFAULT (datetime('now')),
     PRIMARY KEY (draft_property, setting_property, hop)

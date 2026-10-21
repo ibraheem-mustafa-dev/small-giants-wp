@@ -38,6 +38,10 @@ export function valueText( draft ) {
 // The settings (other than the slot itself) a carried property could be painted by: the slots of the block's settings for
 // that property, from calibration.
 function alternateSlots( cal, prop ) {
+	// A layout setting calibration discovered painting display sits on the element laying out the children.
+	if ( 'display' === prop ) {
+		return Object.values( cal?.discovered || {} ).flatMap( ( d ) => d.display?.slots || [] );
+	}
 	if ( ! CARRIED.includes( prop ) ) {
 		return [];
 	}
@@ -222,6 +226,8 @@ function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 	const gapProp = {};
 	for ( const prop of ids ) {
 		let draft = allDrafts[ prop ];
+		let rendered = null;
+		let notPlain = [];
 		if ( ! Object.keys( draft ).length ) {
 			continue;
 		}
@@ -262,16 +268,27 @@ function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		} else if ( ! layer && USED_VALUE.includes( prop ) ) {
 			// A used-value property: the declared value, never the laid-out pixels; another declared form is named.
 			const u = usedValueDrafts( draft, ( w ) => st.reads.declared?.[ w ]?.[ target.id ]?.[ prop ] );
-			u.notPlain.forEach( ( n ) => unmapped( st, rec, ref, { slot, property: prop, value: n.declared, reason: `not-plain: the code declares ${ n.declared } at ${ n.width }px, which no setting holds as a length (the rendered pixels are a layout result)` } ) );
+			rendered = { ...draft };
+			notPlain = u.notPlain.map( ( n ) => ( { slot, property: prop, value: n.declared, reason: `not-plain: the code declares ${ n.declared } at ${ n.width }px, which no setting holds as a length (the rendered pixels are a layout result)` } ) );
 			draft = u.draft;
 			if ( ! Object.keys( draft ).length ) {
+				// Nothing plain to write; an element of fixed ratio still takes its rendered height as a maximum height.
+				const eq = notPlain.length ? fillEquivalent( st, rec, target, prop, draft, { baselineFn, apply, rendered } ) : null;
+				if ( ! ( 'intrinsic-ratio' === eq?.condition && 'gap' !== eq.status ) ) {
+					notPlain.forEach( ( row ) => unmapped( st, rec, ref, row ) );
+				}
 				continue;
 			}
 		}
 		const fluid = fluidSamples( st, target, layer, prop );
 		const res = resolveProperty( { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...( layer ? [] : alternateSlots( cal, prop ).filter( ( s ) => s !== slot ) ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declared: layer ? {} : agreedDeclared( st, target, prop, draft, fontPx ) } );
-		if ( 'gap' === res.status && ! ( 'no-setting' === res.gap && ! layer && fillEquivalent( st, rec, target, prop, draft, { baselineFn, apply } ) ) ) {
-			unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: `${ res.gap }: ${ res.detail }` } );
+		const eq = 'gap' === res.status && 'no-setting' === res.gap && ! layer ? fillEquivalent( st, rec, target, prop, draft, { baselineFn, apply, rendered } ) : null;
+		// A maximum height written from the rendered heights replaces the not-plain rows: each width's height is what it paints.
+		if ( ! ( 'intrinsic-ratio' === eq?.condition && 'gap' !== eq.status ) ) {
+			notPlain.forEach( ( row ) => unmapped( st, rec, ref, row ) );
+		}
+		if ( 'gap' === res.status && ( ! eq || 'gap' === eq.status ) ) {
+			unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: `${ res.gap }: ${ res.detail }${ eq ? `; ${ eq.detail }` : '' }` } );
 		} else if ( 'written' === res.status ) {
 			// One gap setting holds both a row and a column gap: a second prop writing it with another value is a conflict.
 			const attrs = res.writes.map( ( w ) => w.attr );
