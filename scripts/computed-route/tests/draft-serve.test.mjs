@@ -7,7 +7,7 @@ import os from 'os';
 import path from 'path';
 import net from 'net';
 import http from 'http';
-import { serveDraft, contentType, resolveRequest } from '../lib/draft.mjs';
+import { serveDraft, contentType, resolveRequest, draftPageProblem, assertDraftPage } from '../lib/draft.mjs';
 
 function folder( files ) {
 	const root = fs.mkdtempSync( path.join( os.tmpdir(), 'draft-serve-' ) );
@@ -96,6 +96,16 @@ test( 'directory index: / and nested directories serve index.html, a directory w
 	} finally {
 		await s.close();
 	}
+} );
+
+test( 'MUST FAIL: a draft folder with no page at its root is refused, naming its .dc.html pages; index.html or a present --draft-index passes', () => {
+	const pages = folder( { 'Home.dc.html': 'home', 'Form.dc.html': 'form' } );
+	assert.match( draftPageProblem( pages.site ), /no index\.html; name its page with --draft-index \(.*"Home\.dc\.html"/, 'no index.html and no --draft-index: refused, the pages named' );
+	assert.match( draftPageProblem( pages.site, 'Gone.dc.html' ), /the --draft-index file "Gone\.dc\.html" is not in it/ );
+	assert.throws( () => assertDraftPage( pages.site ), /serves no page at its root/ );
+	assert.equal( draftPageProblem( pages.site, 'Home.dc.html' ), null );
+	assert.equal( assertDraftPage( pages.site, 'Home.dc.html' ), pages.site, 'a present page passes and returns the folder' );
+	assert.equal( draftPageProblem( folder( { 'index.html': 'i' } ).site ), null );
 } );
 
 test( 'an explicit index file serves a folder that has no index.html, and index.html still wins when present', async () => {

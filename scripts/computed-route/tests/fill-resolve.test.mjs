@@ -109,6 +109,26 @@ test( 'MUST FAIL: one unequal gap leaves the parent gap at 0 and every child kee
 	assert.match( JSON.stringify( find( r.tree, 0, 1 ).attributes.margin ), /"bottom":"40px"/ );
 } );
 
+test( 'MUST FAIL: a block whose gap paints its inner element takes the declared gap from that element\'s draft slot, not its own element', () => {
+	// The draft's outer band declares no layout; its centring wrapper (the inner slot) declares a 20px gap distributed by
+	// space-between, so the rendered 80px gaps are a layout result and the declared 20px is written.
+	const cal = { ...CAL[ 'sgs/container' ], settings: { ...CAL[ 'sgs/container' ].settings, gap: setting( 'gap', { slot: '.sgs-container__inner', slots: [ '.sgs-container__inner' ] } ) } };
+	const sk = SKEL();
+	sk[ 0 ].draftSlots = { '.sgs-container__inner': '.inner' };
+	const kid = ( x ) => snap( {}, { rect: { x, y: 0, w: 300, h: 40 }, words: 'x' } );
+	const inner = { display: 'flex', 'justify-content': 'space-between', 'column-gap': '20px', 'row-gap': '20px' };
+	const declared = Object.fromEntries( THREE.map( ( w ) => [ w, { '0:': { display: 'block' }, '0:.sgs-container__inner': inner } ] ) );
+	const r = run( sk, { '0:': snap( {}, { rect: { x: 0, y: 0, w: 1060, h: 40 } } ), '0:.sgs-container__inner': snap( { display: 'flex', 'column-gap': '20px', 'row-gap': '20px' }, { rect: { x: 0, y: 0, w: 1060, h: 40 } } ), '1:': kid( 0 ), '2:': kid( 380 ), '3:': kid( 760 ) }, { declared, calFor: calFor( { 'sgs/container': cal } ) } );
+	const d = r.spacing.find( ( s ) => 1440 === s.width ).decisions.find( ( x ) => 'column-gap' === x.prop );
+	assert.deepEqual( [ d.value, d.source, d.distributed ], [ '20px', 'declared', 'space-between' ], 'the inner slot\'s declared gap decides, the render (80px gaps) confirming it as a minimum' );
+	assert.equal( find( r.tree, 0 ).attributes.gap?.desktop, '20px', 'the declared 20px is written, not the rendered 80px' );
+	// Unequal rendered gaps with no space-* distribution: the children own the spacing, so the decided 0 replaces the
+	// inner element's own 20px at that slot.
+	const flexOnly = Object.fromEntries( THREE.map( ( w ) => [ w, { '0:': { display: 'block' }, '0:.sgs-container__inner': { display: 'flex', 'column-gap': '20px' } } ] ) );
+	const u = run( sk, { '0:': snap( {}, { rect: { x: 0, y: 0, w: 1060, h: 40 } } ), '0:.sgs-container__inner': snap( { display: 'flex', 'column-gap': '20px' }, { rect: { x: 0, y: 0, w: 1060, h: 40 } } ), '1:': kid( 0 ), '2:': kid( 340 ), '3:': kid( 760 ) }, { declared: flexOnly, calFor: calFor( { 'sgs/container': cal } ) } );
+	assert.notEqual( find( u.tree, 0 ).attributes.gap?.desktop, '20px', 'the decided gap is applied at the inner slot, replacing its own 20px' );
+} );
+
 test( 'spacing is decided per tier: equal gaps at desktop, unequal on a phone', () => {
 	const kidAt = ( ys, mb ) => ( w ) => snap( { 'margin-bottom': `${ mb( w ) }px` }, { rect: box( ys( w ) ), words: 'x' } );
 	// 1440: gaps 16, 16. 768 and 375: gaps 16, 40.

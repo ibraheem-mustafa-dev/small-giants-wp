@@ -105,6 +105,29 @@ function respond( root, index, req, res ) {
 	fs.createReadStream( hit.file, { start, end } ).on( 'error', () => res.destroy() ).pipe( res );
 }
 
+// Why a draft folder serves no page at its root, or null when it does: the root serves index.html, or `index` when one
+// is named. A root with no page answers 404, so a reader that opens it matches nothing; the reason names the folder's
+// `.dc.html` pages for --draft-index.
+export function draftPageProblem( folder, index = null ) {
+	const has = ( f ) => fs.existsSync( path.join( folder, f ) );
+	if ( index ? has( index ) : has( 'index.html' ) ) {
+		return null;
+	}
+	const pages = fs.existsSync( folder ) ? fs.readdirSync( folder ).filter( ( f ) => /\.dc\.html$/.test( f ) ) : [];
+	const missing = index ? `the --draft-index file ${ JSON.stringify( index ) } is not in it` : 'it has no index.html';
+	const named = pages.map( ( f ) => JSON.stringify( f ) ).join( ', ' ) || 'no .dc.html page in it';
+	return `${ folder } serves no page at its root: ${ missing }; name its page with --draft-index (${ named })`;
+}
+
+// The folder, once it serves a page at its root; throws draftPageProblem's reason otherwise.
+export function assertDraftPage( folder, index = null ) {
+	const problem = draftPageProblem( folder, index );
+	if ( problem ) {
+		throw new Error( problem );
+	}
+	return folder;
+}
+
 // Serves `folder` on 127.0.0.1 at an ephemeral port. `index` names the file a folder without an index.html serves at its
 // root (a handoff whose page is "Home.dc.html"). Returns { url, port, close }: url ends in a slash; close() ends every
 // connection and resolves once the port is free, and may be called again.

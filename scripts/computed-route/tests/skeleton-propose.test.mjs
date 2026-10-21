@@ -198,6 +198,23 @@ test( 'MUST FAIL (2026-10-10 header: sgs/hero and sgs/site-header both list "hea
 	assert.equal( real.skeleton[ 0 ].name, 'sgs/site-footer' );
 } );
 
+test( 'MUST FAIL: an unwrapped centring width wrapper is the draft element of its host block\'s contentWidth slot', () => {
+	const WRAP = { checks: {}, source: 'fixture', root: 'footer', generated: 'fixture', elements: [
+		el( 'Root/1#0', null, 'footer', '', { depth: 0, box: at( 0 ) } ),
+		{ ...el( 'Root/2#0', 'Root/1#0', 'div', '', { depth: 1, box: at( 0 ) } ), attrs: { style: 'max-width: 1200px; margin: 0 auto' } },
+		el( 'Root/3#0', 'Root/2#0', 'p', 'Designer eyewear from an independent optician.', { depth: 2, box: at( 0 ) } ),
+		el( 'Root/4#0', 'Root/2#0', 'p', 'Open six days a week.', { depth: 2, box: at( 30 ) } ),
+	] };
+	const calSettings = () => ( { contentWidth: { slot: '.sgs-container__inner' } } );
+	const r = run( WRAP, { calSettings } );
+	assert.equal( row( r, ( x ) => 'Root/2#0' === x.key )?.rule, 'widthWrapper', 'the fixture wrapper is unwrapped by the width-wrapper rule' );
+	assert.deepEqual( r.skeleton[ 0 ].draftSlots, { '.sgs-container__inner': { tpl: 'Root/2#0' } }, 'the wrapper is the host\'s contentWidth slot, so Fill reads its width, layout and gaps there' );
+	assert.equal( run( WRAP ).skeleton[ 0 ].draftSlots, undefined, 'without a calibrated slot for the setting the host gains none' );
+	const noHost = facts();
+	noHost.decisions = { ...noHost.decisions, rules: { ...noHost.decisions.rules, widthWrapper: { reason: noHost.decisions.rules.widthWrapper.reason } } };
+	assert.equal( run( WRAP, { calSettings, facts: noHost } ).skeleton[ 0 ].draftSlots, undefined, 'a rule naming no hostSetting hands over no slot' );
+} );
+
 test( 'MUST FAIL (SGS bans core blocks): a core pick from any source is rewritten to its SGS replacement through blocks.replaces, or rejected when none exists', async () => {
 	const { sgsOnly } = await import( '../lib/skeleton-classify.mjs' );
 	const f = facts();

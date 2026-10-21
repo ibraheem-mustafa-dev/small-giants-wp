@@ -188,7 +188,13 @@
 			"reason": "the link around one or more logos (a mark and a wordmark) goes: the logo block links home itself"
 		},
 		"widthWrapper": {
-			"reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place"
+			"hostSetting": "contentWidth",
+			"taughtBy": {
+				"client": "indus-foods",
+				"key": "Indus Foods Website v2/41#0",
+				"runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+			},
+			"reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there"
 		},
 		"listWrapper": {
 			"reason": "a bare wrapper whose only content is one list goes: the list block is that wrapper"

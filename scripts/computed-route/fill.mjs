@@ -19,7 +19,7 @@ import { loadSnapshot } from './lib/normalise.mjs';
 import { readTree, addRefs, refOf, walk } from './lib/tree.mjs';
 import { lintSkeleton } from './lint.mjs';
 import { load as loadLedger } from './lib/ledger.mjs';
-import { serveDraft } from './lib/draft.mjs';
+import { assertDraftPage, draftPageProblem, serveDraft } from './lib/draft.mjs';
 import { skeletonNodes, skeletonProblems, cleanTree, expandSiteInfoRows, originMap } from './lib/fill-skeleton.mjs';
 import { readDraft } from './lib/fill-read.mjs';
 import { fillTree } from './lib/fill-resolve.mjs';
@@ -127,7 +127,7 @@ export async function fillSurface( o ) {
 	if ( Object.keys( origin ).length ) {
 		fs.writeFileSync( path.join( buildDir, `${ o.surface }.origin.json` ), `${ JSON.stringify( origin, null, 2 ) }\n` );
 	}
-	const served = o.draftDir ? await serveDraft( o.draftDir, { index: o.draftIndex || null } ) : null;
+	const served = o.draftDir ? await serveDraft( assertDraftPage( o.draftDir, o.draftIndex || null ), { index: o.draftIndex || null } ) : null;
 	const url = served ? served.url : o.draftUrl;
 	try {
 		// The state vocabulary (FR-48-81): a DB seeded before the states table reads no state looks, and says so.
@@ -201,6 +201,8 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		if ( flag( '--serve' ) ) {
 			const s = await serveDraft( flag( '--serve' ), { index: flag( '--draft-index' ) } );
 			console.log( `serving ${ flag( '--serve' ) } at ${ s.url } (Ctrl-C to stop)` );
+			const pageProblem = draftPageProblem( flag( '--serve' ), flag( '--draft-index' ) );
+			pageProblem && console.log( `warning: ${ pageProblem }; a reader opening ${ s.url } (SGS_DRAFT_URL) matches nothing` );
 			process.on( 'SIGINT', () => s.close().then( () => process.exit( 0 ) ) );
 		} else {
 			const r = await fillSurface( {

@@ -17,7 +17,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { openDb } from './lib/db.mjs';
-import { serveDraft } from './lib/draft.mjs';
+import { assertDraftPage, serveDraft } from './lib/draft.mjs';
 import { readInventory } from './lib/skeleton-inventory.mjs';
 import { loadFacts, decisionsProblems, REPO } from './lib/skeleton-facts.mjs';
 import { proposeSkeleton } from './lib/skeleton-propose.mjs';
@@ -125,7 +125,7 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 			throw new Error( '--root <selector> is required, and the surface needs a draftUrl or a draftDir in surfaces.json' );
 		}
 		// A hand-set draftUrl wins; otherwise the handoff folder is served as Fill serves it, and closed afterwards.
-		const served = p.draftUrl ? null : await serveDraft( p.draftDir, { index: p.draftIndex } );
+		const served = p.draftUrl ? null : await serveDraft( assertDraftPage( p.draftDir, p.draftIndex ), { index: p.draftIndex } );
 		let inv;
 		try {
 			inv = await read( { url: served ? served.url : p.draftUrl, root, shotsDir: p.shots, log } );

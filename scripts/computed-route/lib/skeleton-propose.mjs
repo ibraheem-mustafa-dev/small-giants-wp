@@ -291,6 +291,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		}
 		if ( 'unwrap' === r.action ) {
 			record( e, r );
+			hostSlot( e, r );
 			return buildChildren( e, parentBlock );
 		}
 		if ( 'absorbed' === r.action ) {
@@ -362,8 +363,26 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			} );
 			return node;
 		}
+		hosts.push( { block, node, row } );
 		node.innerBlocks = buildChildren( e, block );
+		hosts.pop();
 		return node;
+	}
+
+	// The built blocks whose children are being built, innermost last.
+	const hosts = [];
+	// An element a rule unwraps whose rule names a hostSetting (widthWrapper: the block sets its own width) is the draft
+	// element of that setting's calibrated slot on the block it unwraps into, so Fill reads its width, layout and gaps
+	// there. The outermost such wrapper wins; a block whose setting paints its root gains no slot.
+	function hostSlot( e, r ) {
+		const setting = R[ r.rule ]?.hostSetting;
+		const host = hosts.at( -1 );
+		const slot = setting && host ? calSettings( host.block )?.[ setting ]?.slot : null;
+		if ( ! slot || host.node.draftSlots?.[ slot ] ) {
+			return;
+		}
+		host.node.draftSlots = { ...host.node.draftSlots, [ slot ]: finder( e ) };
+		host.row.slots = { ...host.row.slots, [ slot ]: finder( e ) };
 	}
 
 	function buildChildren( e, parentBlock ) {

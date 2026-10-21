@@ -150,6 +150,13 @@ function ledgerView( st, rec, ref, prop, draft, pseudo ) {
 	return out;
 }
 
+// The node's element that holds its gap: the target at the calibrated slot of the block's `gap` setting when the
+// skeleton gives one (a container's inner element), else the node's own element.
+const gapTarget = ( st, rec ) => {
+	const slot = st.calFor( rec.name )?.settings?.gap?.slot;
+	return ( slot && rec.targets.find( ( t ) => t.slot === slot ) ) || rec.targets.find( ( t ) => '' === t.slot ) || null;
+};
+
 const snapsOf = ( st, id ) => Object.fromEntries( READ_WIDTHS.map( ( w ) => [ w, st.reads.widths[ w ]?.[ id ] ] ).filter( ( [ , s ] ) => s && ! s.missing ) );
 const draftOf = ( snaps, get ) => Object.fromEntries( Object.entries( snaps ).map( ( [ w, s ] ) => [ Number( w ), get( s ) ] ).filter( ( [ , v ] ) => undefined !== v && '' !== v ) );
 
@@ -163,12 +170,13 @@ function planSpacing( st, rec ) {
 	}
 	const measured = kids.filter( ( c ) => st.nodes[ c ].targets.length );
 	const unmeasured = kids.length - measured.length;
+	const holder = gapTarget( st, rec );
 	for ( const w of READ_WIDTHS ) {
 		const rects = measured.map( ( c ) => {
 			const s = st.reads.widths[ w ]?.[ `${ c }:` ];
 			return s && ! s.missing ? { ...s.rect, inFlow: s.inFlow } : null;
 		} );
-		const ownership = spacingOwnership( rects, { unmeasured, declared: st.reads.declared?.[ w ]?.[ `${ rec.index }:` ] || null } );
+		const ownership = spacingOwnership( rects, { unmeasured, declared: ( holder && st.reads.declared?.[ w ]?.[ holder.id ] ) || null } );
 		if ( 'unknown' === ownership.owner || ownership.decisions.length ) {
 			st.out.spacing.push( { node: refOf( st.flat[ rec.index ] ), index: rec.index, width: w, owner: ownership.owner, count: ownership.count, decisions: ownership.decisions } );
 		}
@@ -250,7 +258,7 @@ function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			continue;
 		}
 		// Spacing ownership (step 3): the parent's gap and the children's margins follow the rendered gaps.
-		if ( ! layer && '' === target.slot && GAP_PROPS.includes( prop ) && st.gapSet.has( `${ rec.index }|${ prop }` ) ) {
+		if ( ! layer && target.id === gapTarget( st, rec )?.id && GAP_PROPS.includes( prop ) && st.gapSet.has( `${ rec.index }|${ prop }` ) ) {
 			draft = { ...draft, ...Object.fromEntries( Object.entries( st.gapSet.get( `${ rec.index }|${ prop }` ) ).filter( ( [ w ] ) => undefined !== draft[ w ] ) ) };
 		}
 		const owned = ! layer && '' === target.slot ? st.margins.get( rec.index ) : null;
