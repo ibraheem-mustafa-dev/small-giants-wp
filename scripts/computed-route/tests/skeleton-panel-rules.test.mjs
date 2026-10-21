@@ -173,6 +173,13 @@ test( 'NEGATIVE: loopingKeys takes a code-built strip only for an infinite trans
 	assert.equal( loopingKeys( { records: [ rec( 'infinite', 'opacity', '1' ) ] } ).size, 0 );
 } );
 
+test( 'MUST FAIL loopingKeys names a template record by its own template_tpl_id only; its nearest_tpl_id adds no key', () => {
+	const rec = ( own, near ) => ( { iterations: 'infinite', element: { dc: 'Home', template_tpl_id: own, nearest_tpl_id: near }, properties: [ { property: 'transform', from: 'translateX(0)', to: 'translateX(-50%)' } ] } );
+	assert.deepEqual( [ ...loopingKeys( { records: [ rec( '7', '42' ) ] } ) ], [ 'Home/7' ], 'a template record: its own element, not the one near it' );
+	assert.deepEqual( [ ...loopingKeys( { records: [ rec( null, '42' ) ] } ) ], [ 'Home/42' ], 'a code-built strip: the host of its hole' );
+	assert.deepEqual( [ ...loopingKeys( { records: [ rec( [ '7', '8' ], '42' ) ] } ) ].sort(), [ 'Home/7', 'Home/8' ] );
+} );
+
 test( 'alignWrapper.siblingGap: a wrapper declaring a margin against its previous sibling stays; MUST FAIL without the entry', () => {
 	const tree = () => N( 'section', {}, [ N( 'div', { style: 'display:flex' }, [ N( 'p', { words: 'Before' } ), N( 'div', { style: 'margin-top:18px' }, [ N( 'p', { words: 'A' } ), N( 'p', { words: 'B' } ) ] ) ] ) ] );
 	const wrapper = ( r ) => rows( r ).find( ( x ) => 'div' === x.tag && x.depth === 2 );
@@ -187,6 +194,7 @@ test( 'record reads: aria-expanded, aria-pressed, required and the real tag come
 	// A toggle button the render shows no aria-pressed on: the record's pressed state keeps it from being a pill.
 	const toggle = () => N( 'section', {}, [ N( 'div', { style: 'display:flex' }, [ N( 'button', { attrs: { 'aria-pressed': '{{ on }}' } }, [ N( 'span', { words: 'Vegan' } ) ] ) ] ) ] );
 	const b = build( toggle() );
+	b.recs[ 'Root/3' ].logic.holes = { 'attr:aria-pressed#0': { 375: { v: [ { t: 'boolean', v: true }, { t: 'boolean', v: false } ], n: 2, loop: true } } };
 	const strip = ( rec ) => proposeSkeleton( { inventory: structuredClone( b.inventory ), facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'F', db, factRecord: rec, openers: {} } );
 	b.inventory.elements.forEach( ( e ) => delete e.attrs[ 'aria-pressed' ] );
 	const withRec = strip( record( b.recs ) );
@@ -199,10 +207,65 @@ test( 'record reads: aria-expanded, aria-pressed, required and the real tag come
 	// required: a literal `{{ true }}` in the template makes the lone checkbox the consent field
 	const consent = N( 'section', {}, [ N( 'div', {}, [ N( 'input', { attrs: { type: 'checkbox', required: '{{ true }}' } } ) ] ) ] );
 	const cb = build( consent );
-	cb.inventory.elements.forEach( ( e ) => delete e.attrs.required );
-	const asConsent = ( rec ) => rows( proposeSkeleton( { inventory: cb.inventory, facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'F', db, factRecord: rec, openers: {} } ) ).find( ( x ) => 'input' === x.tag ).block;
+	cb.inventory.elements.forEach( ( e ) => delete e.attrs.required );	const asConsent = ( rec ) => rows( proposeSkeleton( { inventory: cb.inventory, facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'F', db, factRecord: rec, openers: {} } ) ).find( ( x ) => 'input' === x.tag ).block;
 	assert.equal( asConsent( record( cb.recs ) ), 'sgs/form-field-consent' );
 	assert.notEqual( asConsent( record( Object.fromEntries( Object.entries( cb.recs ).map( ( [ k, v ] ) => [ k, { ...v, template: { ...v.template, attrs: {} } } ] ) ) ) ), 'sgs/form-field-consent' );
+} );
+
+test( 'MUST FAIL an attribute bound to a draft value is present only when the record resolves it or the render shows it', () => {
+	const hole = { id: 'attr:aria-pressed#0', where: 'attr:aria-pressed', expr: 'o.on', path: 'o.on', whole: true };
+	const answers = ( v, err ) => ( { 375: { v, n: v.length, loop: true, ...( err ? { err } : {} ) } } );
+	const viewOf = ( holes, attrs = {}, text = '{{ o.on }}' ) => {
+		const rec = entry( 'Root/3', 'button', { 'aria-pressed': text }, [], [], 'Root/2', 'Root/2' );
+		rec.template.holes = [ hole ];
+		rec.logic.holes = holes;
+		const el = { template: 'Root', tpl: 3, tag: 'button', attrs };
+		return { view: recordView( { schema: '1', elements: { 'Root/3': rec }, surfaces: {} } ), el };
+	};
+	const read = ( o ) => o.view.attr( o.el, 'aria-pressed' );
+	assert.equal( read( viewOf( { 'attr:aria-pressed#0': answers( [ { t: 'boolean', v: false } ] ) } ) ), '{{ o.on }}', 'resolved to false is still a set state' );
+	assert.equal( read( viewOf( { 'attr:aria-pressed#0': answers( [ { t: 'undefined' } ] ) } ) ), null, 'resolved to undefined everywhere' );
+	assert.equal( read( viewOf( {} ) ), null, 'the record holds no answer' );
+	assert.equal( read( viewOf( { 'attr:aria-pressed#0': answers( [ { t: 'boolean', v: true } ], 'boom' ) } ) ), null, 'a failed read resolves nothing' );
+	assert.equal( read( viewOf( {}, { 'aria-pressed': 'true' } ) ), '{{ o.on }}', 'the render shows it' );
+	assert.equal( read( viewOf( {}, {}, '{{ true }}' ) ), '{{ true }}', 'a constant expression is its own value' );
+	assert.equal( read( viewOf( {}, {}, 'false' ) ), 'false', 'a literal attribute is not a binding' );
+} );
+
+test( 'megaGridContainer: a header panel root that lays its own grid out with its own padding or paint is a container, not the shell; MUST FAIL without the entry', () => {
+	const kids = [ card( 'One', '/one' ), card( 'Two', '/two' ) ];
+	const rootOf = ( style, o = {} ) => rows( run( N( 'div', { style }, kids ), { kind: 'menu', name: 'Panel', surfaces: header, openers: OPEN, ...o } ) ).find( ( x ) => 0 === x.depth );
+	const grid = 'display:grid;grid-template-columns:repeat(2, 1fr);padding-top:28px;padding-left:28px;background-color:rgb(10, 126, 168)';
+	assert.deepEqual( [ rootOf( grid ).block, rootOf( grid ).rule ], [ 'sgs/container', 'megaGridContainer' ] );
+	assert.deepEqual( [ rootOf( 'display:grid;grid-template-columns:repeat(2, 1fr);padding-top:28px' ).block, rootOf( 'display:grid;grid-template-columns:repeat(2, 1fr);background-color:rgb(1, 2, 3)' ).block ], [ 'sgs/container', 'sgs/container' ], 'padding alone, or paint alone, is enough' );
+	assert.equal( rootOf( grid, { facts: facts( 'megaGridContainer' ) } ).block, 'sgs/mega-panel', 'without the entry the root is the shell' );
+	assert.equal( rootOf( 'display:grid;grid-template-columns:repeat(2, 1fr);padding-top:0px' ).block, 'sgs/mega-panel', 'a grid with no padding and no paint stays the shell' );
+	assert.equal( rootOf( 'display:flex;padding-top:28px;background-color:rgb(10, 126, 168)' ).block, 'sgs/mega-panel', 'a flex root stays the shell' );
+	const page = rows( run( N( 'div', { style: grid }, kids ), { kind: 'panel', name: 'Panel', surfaces: { 'S-1': { kind: 'page', name: 'Home' }, 'S-2': { kind: 'panel', name: 'Panel', parent: 'S-1' } }, openers: { 'S-2': 'Scroll' } } ) ).find( ( x ) => 0 === x.depth );
+	assert.notEqual( page.rule, 'megaGridContainer', 'a panel of a page is not a header disclosure' );
+} );
+
+test( 'optionSet: a group whose children are all pressable buttons (a loop, or two or more) is one option picker that absorbs its chips; MUST FAIL without the entry', () => {
+	const chip = ( words, o = {} ) => N( 'button', { attrs: { 'aria-pressed': 'false' }, ...o }, [ N( 'span', { words } ), N( 'span', { attrs: { 'aria-hidden': 'true' }, words: 'ok' } ) ] );
+	const group = ( kids ) => N( 'section', {}, [ N( 'div', { style: 'display:flex' }, kids ) ] );
+	const picker = ( r ) => rows( r ).find( ( x ) => 'sgs/option-picker' === x.block );
+	const r = run( group( [ chip( 'Small' ), chip( 'Large' ) ] ) );
+	assert.equal( picker( r ).rule, 'optionSet' );
+	assert.equal( picker( r ).tag, 'div' );
+	const inside = rows( r ).filter( ( x ) => 'button' === x.tag || 'span' === x.tag );
+	assert.equal( inside.length, 6 );
+	assert.ok( inside.every( ( x ) => 'absorbed' === x.action && x.into === picker( r ).key && 'optionSet' === x.rule ), 'the chips and their text and tick spans are the picker\'s' );
+	assert.equal( picker( run( group( [ chip( 'Small' ) ] ) ) ), undefined, 'a lone toggle button is no option set' );
+	assert.ok( picker( run( group( [ chip( 'Small', { loop: true } ) ] ) ) ), 'a loop of chips is one, even when it renders one copy' );
+	assert.equal( picker( run( group( [ chip( 'Small' ), chip( 'Large' ) ] ), { facts: facts( 'optionSet' ) } ) ), undefined );
+	const plain = ( words ) => N( 'button', {}, [ N( 'span', { words } ) ] );
+	assert.equal( picker( run( group( [ plain( 'Small' ), plain( 'Large' ) ] ) ) ), undefined, 'buttons with no pressed state' );
+	const disclosure = ( words ) => N( 'button', { attrs: { 'aria-expanded': 'false' } }, [ N( 'span', { words } ) ] );
+	assert.equal( picker( run( group( [ disclosure( 'One' ), disclosure( 'Two' ) ] ) ) ), undefined, 'disclosure buttons stay as they are' );
+	assert.equal( picker( run( group( [ chip( 'Small' ), chip( 'Large' ), N( 'p', { words: 'Pick a size' } ) ] ) ) ), undefined, 'a group with another kind of child is not an option set' );
+	assert.equal( picker( run( group( [ N( 'a', { attrs: { 'aria-pressed': 'false', href: '/x' }, words: 'Link' } ), N( 'a', { attrs: { 'aria-pressed': 'false', href: '/y' }, words: 'Link2' } ) ] ) ) ), undefined, 'links are not buttons' );
+	const box = ( words ) => N( 'div', { attrs: { 'aria-pressed': 'false' } }, [ N( 'span', { words } ) ] );
+	assert.equal( picker( run( group( [ box( 'One' ), box( 'Two' ) ] ) ) ), undefined, 'only buttons are chips' );
 } );
 
 test( 'recordView.describe carries every field the rules read; the parent chain sits beside the rendered parent', () => {
@@ -231,4 +294,18 @@ test( 'lint: the rule modules read no literal pixel value, author logic key or c
 	assert.equal( /\\srequired/.test( rules ), false );
 	assert.match( rules, /view\.attr\( e, 'aria-expanded' \)/ );
 	assert.match( rules, /view\.attr\( e, 'required' \)/ );
+} );
+
+test( 'a grid panel child\'s track counts each rendered child, so a loop\'s copies take consecutive tracks; MUST FAIL when tracks are counted per template element', () => {
+	// Root grid `1fr 1fr 300px`: a loop of two copies fills tracks 0 and 1, the painted aside is on track 2.
+	const grid = N( 'div', { style: 'display:grid;grid-template-columns:1fr 1fr 300px' }, [
+		N( 'div', { loop: true } ),
+		N( 'div', { style: 'width:300px;background-color:rgb(10, 126, 168)' }, [ N( 'p', { words: 'Feature' } ) ] ),
+	] );
+	const b = build( grid );
+	const loopEl = b.inventory.elements.find( ( x ) => 'Root/2#0' === x.key );
+	b.inventory.elements.splice( b.inventory.elements.indexOf( loopEl ) + 1, 0, { ...loopEl, key: 'Root/2#1', box: structuredClone( loopEl.box ) } );
+	const r = proposeSkeleton( { inventory: b.inventory, facts: facts(), surface: 'fixture', surfaceKind: 'menu', surfaceName: 'Panel', motion: new Set(), db, factRecord: record( b.recs, header ), openers: OPEN } );
+	assert.equal( rows( r ).filter( ( x ) => 1 === x.depth ).length, 3, 'two loop copies and the aside' );
+	assert.equal( rows( r ).find( ( x ) => 'Root/3#0' === x.key ).rule, 'megaAside' );
 } );

@@ -303,6 +303,28 @@ test( 'cardAction: a card link ending in a call to action is a plain card and th
 	assert.equal( byTag( off, 'a' ).attributes.sgsBlockLink, '/food-service', 'without the rule the whole card is the link again' );
 } );
 
+test( 'cardAction: every copy of one template element takes one verdict, a button only when every copy ends its card in a call to action; MUST FAIL when a copy is judged alone', () => {
+	const copies = ( second ) => {
+		const tree = section( [
+			E( 'a', { attrs: { href: '/a' } }, [ E( 'h3', { words: 'Alpha' } ), E( 'p', { words: 'About alpha' } ), E( 'div', { words: 'Explore Alpha' }, [ svg() ] ) ] ),
+			E( 'a', { attrs: { href: '/b' } }, [ E( 'h3', { words: 'Beta' } ), E( 'div', { words: 'Explore Beta' }, second ? [ svg() ] : [] ) ] ),
+		] );
+		const inv = inventory( tree );
+		// The two call-to-action divs are the same template element: copy 0 and copy 1.
+		const [ first, last ] = [ 'Explore Alpha', 'Explore Beta' ].map( ( w ) => inv.elements.find( ( x ) => x.words === w ) );
+		const was = last.key;
+		last.tpl = first.tpl;
+		last.key = `Root/${ first.tpl }#1`;
+		inv.elements.filter( ( x ) => x.parentKey === was ).forEach( ( x ) => ( x.parentKey = last.key ) );
+		return proposeSkeleton( { inventory: inv, facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'Fixture', built: null, motion: new Set(), db } );
+	};
+	const kind = ( r ) => [ 'Explore Alpha', 'Explore Beta' ].map( ( w ) => byWords( r, w ).rule );
+	assert.deepEqual( kind( copies( true ) ), [ 'cardAction', 'cardAction' ], 'both copies end their card in an action' );
+	const mixed = copies( false );
+	assert.deepEqual( kind( mixed ).map( ( x ) => 'cardAction' === x ), [ false, false ], 'one copy does not, so neither is a button' );
+	assert.equal( byWords( mixed, 'Alpha' ) ? byTag( mixed, 'a' ).attributes.sgsBlockLink : null, '/a', 'the card whose action is not a button keeps its own link' );
+} );
+
 test( 'openStatus: a second open-status line in a cousin position joins the first display and takes no text attribute', () => {
 	const tree = section( [ E( 'div', {}, [ E( 'div', {}, [ E( 'span', { words: 'Open now' } ) ] ), E( 'div', {}, [ E( 'span', { words: 'Closes at 5pm today' } ) ] ) ] ) ] );
 	const r = run( tree );

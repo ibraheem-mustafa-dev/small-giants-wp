@@ -1,0 +1,5 @@
+[
+ { "file": "lib/skeleton-rules.mjs", "find": "return verdicts.get( tk ) ? card : null;", "replace": "return card;", "why": "a cardAction copy is judged alone" },
+ { "file": "lib/skeleton-rules.mjs", "find": ".every( ( k ) => copyActionOf( k ) ) );", "replace": ".some( ( k ) => copyActionOf( k ) ) );", "why": "one qualifying copy is enough for a cardAction" },
+ { "file": "lib/skeleton-rules.mjs", "find": "( ( a ) => !! a && !! actionOf( a ) )( cardAction( e ) )", "replace": "cardAction( e )", "why": "a card's link is decided per copy" }
+]

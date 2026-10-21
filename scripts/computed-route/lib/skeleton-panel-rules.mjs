@@ -19,6 +19,8 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 		const d = String( view.has( e ) ? view.declared( e ).display ?? '' : e.display ?? '' );
 		return /grid/.test( d ) ? 'grid' : /flex/.test( d ) ? 'flex' : null;
 	};
+	// Whether the element declares padding on any side.
+	const hasPadding = ( e ) => [ 'top', 'right', 'bottom', 'left' ].some( ( side ) => ! UNSET.has( view.declared( e )[ `padding-${ side }` ] ?? '' ) && ! /^0(?:px|%|r?em)?$/.test( view.declared( e )[ `padding-${ side }` ] ) );
 	// How a child is sized inside its panel: it shares the free space (a flex-grow, or a fractional grid track), or it is a
 	// fixed box (a declared width that does not shrink, a fixed grid track, or an aspect ratio).
 	const sizing = ( e, layout ) => {
@@ -28,18 +30,18 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 			return { grows: grows( st[ 'flex-grow' ] ), fixed: ratio || ( ! UNSET.has( st.width ?? '' ) && '0' === String( st[ 'flex-shrink' ] ?? '' ).trim() ) };
 		}
 		const tracks = gridTracks( view.declared( root )[ 'grid-template-columns' ] );
-		const seen = [];
-		m.blockKids( root ).forEach( ( k ) => {
-			const t = `${ k.template }/${ k.tpl }`;
-			seen.includes( t ) || seen.push( t );
-		} );
-		const track = tracks[ seen.indexOf( `${ e.template }/${ e.tpl }` ) ];
+		// Each rendered child (each copy of a loop's item) takes the next track.
+		const track = tracks[ m.blockKids( root ).indexOf( e ) ];
 		return { grows: !! track && fractionalTrack( track ), fixed: ratio || ( !! track && fixedTrack( track ) ) };
 	};
 
 	// The verdict ({ rule, block }) for a direct child of a header disclosure panel, or null. A loop's repeated item (a card
 	// with its own paint) is the card grid's, as before.
 	const panelChild = ( e ) => {
+		// The panel's root that lays its own grid out and carries its own padding or paint is a container, not the shell.
+		if ( scope?.headerDisclosure && R.megaGridContainer && root === e && view.has( e ) && 'grid' === layoutOf( e ) && ( view.ownPaint( e ) || hasPadding( e ) ) ) {
+			return { rule: 'megaGridContainer', block: R.megaGridContainer.block };
+		}
 		if ( ! scope?.headerDisclosure || m.byKey[ e.parentKey ] !== root || ! view.has( e ) || view.repeated( e ) ) {
 			return null;
 		}

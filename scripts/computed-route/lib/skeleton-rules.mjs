@@ -8,6 +8,7 @@
 // Precedence (lib/skeleton-classify.mjs::makeClassifier): a client decision, then these rules, then a finaliser pick or a
 // standing element decision, then the database scoring.
 import { specHit } from './skeleton-facts.mjs';
+import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
 
@@ -169,14 +170,26 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const glyph = [ ...m.kids( last ), ...( holder && holder !== card ? m.kids( holder ) : [] ) ].some( ( k ) => 'svg' === k.tag || iconOnly( k ) || bindingGlyph( k ) );
 		return glyph || texts.length >= 3 ? last : null;
 	};
-	// The card link an element is the call to action of, or null.
-	const actionOf = ( e ) => {
+	// The card link an element is the call to action of in this copy, or null.
+	const copyActionOf = ( e ) => {
 		for ( let p = m.byKey[ e.parentKey ], i = 0; p && i < 3; p = m.byKey[ p.parentKey ], i++ ) {
 			if ( 'a' === p.tag ) {
 				return cardAction( p ) === e ? p : null;
 			}
 		}
 		return null;
+	};
+	// Every copy of one template element takes one verdict: it is a card's call to action only when every copy of it is.
+	const verdicts = new Map();
+	const actionOf = ( e ) => {
+		const card = copyActionOf( e );
+		if ( ! card ) {
+			return null;
+		}
+		const tk = templateKey( { dc: e.template, tpl: e.tpl } );		if ( ! verdicts.has( tk ) ) {
+			verdicts.set( tk, m.els.filter( ( k ) => k.template === e.template && k.tpl === e.tpl ).every( ( k ) => copyActionOf( k ) ) );
+		}
+		return verdicts.get( tk ) ? card : null;
 	};
 	const realHref = ( e ) => ( e.attrs?.href && '#' !== e.attrs.href && ! /\{\{/.test( e.attrs.href ) ? e.attrs.href : null );
 	// A form control (an <input>, <select>, the draft's <sc-raw-select> or a <textarea>) and the field block it becomes,
@@ -402,7 +415,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 					return null;
 				}
 				// A card that ends in a short call to action is a plain card: the action is the button that holds the link.
-				return R.cardAction && cardAction( e ) ? v( 'wholeCardLink', { block: R.wholeCardLink?.block, attributes: {} } ) : v( 'wholeCardLink', { block: R.wholeCardLink?.block, attributes: linkAttrs( e, lk ) } );
+				return R.cardAction && ( ( a ) => !! a && !! actionOf( a ) )( cardAction( e ) ) ? v( 'wholeCardLink', { block: R.wholeCardLink?.block, attributes: {} } ) : v( 'wholeCardLink', { block: R.wholeCardLink?.block, attributes: linkAttrs( e, lk ) } );
 			}
 			// One action with one label (and a glyph): a pill. A toggle or a slider arrow is not; nor is a link with no words.
 			if ( 1 !== texts.length || disclosure( e ) ) {
@@ -479,6 +492,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const hit = panel.panelChild( e );
 			return hit ? v( hit.rule, { block: hit.block } ) : null;
 		},
+		// A group whose block children are all buttons carrying a pressed or checked state (a loop of chips, or two or more) is
+		// an option picker, which draws its own options.
+		( { e } ) => {
+			const chips = R.optionSet ? m.blockKids( e ) : [];
+			const chosen = ( k ) => 'button' === view.realTag( k ) && ( null != view.attr( k, 'aria-pressed' ) || null != view.attr( k, 'aria-checked' ) );
+			return chips.length && chips.every( chosen ) && ( chips.length >= 2 || view.repeated( chips[ 0 ] ) ) ? v( 'optionSet', { block: R.optionSet.block, attributes: {}, absorb: true } ) : null;
+		},
 		// A strip whose own animation loops a translate for ever is a marquee: logos make a brand strip, labels a scrolling
 		// trust bar; the repeated items are its items.
 		// A strip with no stamped children whose template holds one text binding the draft's code fills (its items are built
@@ -487,7 +507,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const rec = view.entry( e );
 			const built = rec && ! kidsB.length && ! view.childrenOf( e ).length && rec.template.holes.some( ( h ) => 'text' === h.where );
 			// The motion keys name the template element (`<dc file>/<tpl>`), whatever import chain the page stamps it under.
-			return R.marqueeCodeItems && built && ( loops( e ) || motion.has( `${ e.template }/${ e.tpl }` ) ) ? v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: R.marqueeCodeItems.handover } } ) : null;
+			return R.marqueeCodeItems && built && ( loops( e ) || motion.has( templateKey( { dc: e.template, tpl: e.tpl } ) ) ) ? v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: R.marqueeCodeItems.handover } } ) : null;
 		},
 		( { e, kidsB } ) => {
 			if ( ! loops( e ) || ! kidsB.length ) {

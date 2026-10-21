@@ -17,12 +17,13 @@ import { fingerprintsOf } from './identity.mjs';
 
 // The template keys (`<component>/<tpl>`) whose own animation loops a translate for ever, from intake.json's re-derived
 // motion inventory (`inventory.animations.records`, FR-48-25): the mechanism of a marquee track, read from the record, never
-// from a name. A record names its element by `template_tpl_id`, or, for a strip built in code and bound into the template
-// through a hole, by the `nearest_tpl_id` of the element holding that hole; that host counts only because its record is
-// a translate transform with an infinite iteration, so an element merely near an animation is never a track.
+// from a name. A record names its element by `template_tpl_id`; only a record with no `template_tpl_id` (a strip built in
+// code and bound into the template through a hole) is named by the `nearest_tpl_id` of the element holding that hole, and
+// a template record's own `nearest_tpl_id` never adds a key. A record counts only when it is a translate transform with an
+// infinite iteration, so an element merely near an animation is never a track.
 const tplIds = ( v ) => ( null == v ? [] : [].concat( v ) );
 const translatesForEver = ( a ) => 'infinite' === String( a.iterations ) && ( a.properties || [] ).some( ( p ) => 'transform' === p.property && /translate/.test( `${ p.from ?? '' } ${ p.to ?? '' } ${ p.formula ?? '' }` ) );
-export const loopingKeys = ( animations ) => new Set( ( animations?.records || [] ).filter( translatesForEver ).flatMap( ( a ) => [ ...tplIds( a.element?.template_tpl_id ), ...tplIds( a.element?.nearest_tpl_id ) ].map( ( tpl ) => templateKey( { dc: a.element.dc, tpl } ) ) ) );
+export const loopingKeys = ( animations ) => new Set( ( animations?.records || [] ).filter( translatesForEver ).flatMap( ( a ) => ( null == a.element?.template_tpl_id ? tplIds( a.element?.nearest_tpl_id ) : tplIds( a.element.template_tpl_id ) ).map( ( tpl ) => templateKey( { dc: a.element.dc, tpl } ) ) ) );
 
 // The breakpoints in the client's saved intake.json: the width thresholds the proposals collapse at when the caller does not pass its own.
 const savedBreakpoints = ( repo, client ) => {
