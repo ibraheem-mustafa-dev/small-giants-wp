@@ -76,6 +76,7 @@ ROLE_EXCEPTIONS = {
 # Generic components whose attribute is supplied by their caller (not resolvable from the file itself).
 GENERIC_FILES = {
     'components/ResponsiveLengthControl.js': ('spacing', 'generic wrapper: must forward `scale` from its callers'),
+    'blocks/icon/icon-size-control.js': ('font-size', 'the glyph-size wrapper for sgs/icon and sgs/social-icons'),
     'components/MediaSizingPanel.js': ('spacing', 'media height and inset boxes'),
     'components/motion/DistanceAtom.js': ('spacing', 'motion distance length'),
     'components/motion/AngleAtom.js': ('plain', 'an angle in degrees, not a length: needs its own control, not either scale'),
@@ -200,6 +201,18 @@ def attr_candidates(tag, before, known, whole=''):
     return ([nearest[-1][1]] if nearest else []), 'window'
 
 
+def declared_scale(raw):
+    """The scale a mount declares: a literal ('spacing'/'font-size'), 'forwarded' for an expression
+    (a wrapper handing its caller's `scale` on), or None when the mount does not say."""
+    if not raw:
+        return None
+    text = raw.strip()
+    literal = text.strip('\'"')
+    if text in ('spacing', 'font-size') or text[0] in '\'"':
+        return literal
+    return 'forwarded'
+
+
 def storage_of(value_src):
     v = value_src or ''
     if re.search(r'composeUnit\(|\}\s*\$\{|\$\{[^}]*(Unit|unit)', v):
@@ -235,7 +248,7 @@ def parse_mounts(src, rel, known_by_block):
             'attrs': attrs,
             'attr_basis': basis if attrs else 'none',
             'storage': storage_of(value_src),
-            'declared_scale': (prop_source(tag, 'scale') or '').strip('\'" ') or None,
+            'declared_scale': declared_scale(prop_source(tag, 'scale')),
             'generic': bool(not attrs and re.search(r'\[\s*attr\s*\]', tag)),
             'presets': 'presets' in re.findall(r'\b(presets)\b', tag),
         })
@@ -368,14 +381,14 @@ def crosscheck(mounts):
         failures.append('CORPUS: raw count %d != parsed mounts %d' % (raw, len(mounts)))
     if len(mounts) < 100:
         failures.append('SANITY: only %d mounts found, expected well over 100. Scope collapsed.' % len(mounts))
-    bad = [m for m in mounts if m['declared_scale'] not in (None, 'spacing', 'font-size')]
+    bad = [m for m in mounts if m['declared_scale'] not in (None, 'spacing', 'font-size', 'forwarded')]
     for m in bad:
         failures.append('%s:%d declares an unknown scale %r' % (m['file'], m['line'], m['declared_scale']))
     return failures
 
 
 def tally(mounts):
-    pending = [m for m in mounts if m['proposed'] in ('font-size', 'mixed-loop') and m['declared_scale'] != 'font-size']
+    pending = [m for m in mounts if m['proposed'] in ('font-size', 'mixed-loop') and m['declared_scale'] not in ('font-size', 'forwarded')]
     wrong = [m for m in mounts if m['declared_scale'] == 'font-size' and m['proposed'] not in ('font-size', 'mixed-loop')]
     unresolved = [m for m in mounts if m['proposed'] == 'unresolved']
     return {'PENDING_FONT_SIZE': pending, 'WRONG_SCALE': wrong, 'UNRESOLVED': unresolved}

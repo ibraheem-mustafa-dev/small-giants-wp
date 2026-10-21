@@ -148,7 +148,7 @@ function allIconFor( keys ) {
  * left to size itself, the unit control takes the whole row and the select collapses (read on sandybrown,
  * 280px inspector, 2026-10-08).
  */
-const VALUE_BOX_STYLE = { width: 104, flexShrink: 0 };
+export const VALUE_BOX_STYLE = { width: 104, flexShrink: 0 };
 
 /** Sentinel select values — mirrors SgsLengthControl.js's CUSTOM_VALUE shape. */
 const CUSTOM_VALUE = '__custom__';
@@ -203,7 +203,7 @@ function rangeForUnit( unit ) {
  * @param {string} raw Stored side value.
  * @return {{num: number|undefined, unit: string}} Parsed parts.
  */
-function parseLength( raw ) {
+export function parseLength( raw ) {
 	if ( ! raw && raw !== 0 ) {
 		return { num: undefined, unit: 'px' };
 	}

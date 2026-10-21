@@ -28,6 +28,8 @@ import SgsLengthControl from './SgsLengthControl';
  * @param {string}   [props.placeholder] Placeholder shown on a tier that does not inherit.
  * @param {boolean}  [props.presets]     Offer the spacing-preset picker. Default false.
  * @param {Array}    [props.units]       UnitControl unit list; SgsLengthControl's default when omitted.
+ * @param {'spacing'|'font-size'} [props.scale] SgsLengthControl's scale, chosen by the attribute's role.
+ * @param {number}   [props.max]         Tighter slider ceiling in px (see SgsLengthControl).
  * @return {Element} The control.
  */
 export default function ResponsiveLengthControl( {
@@ -38,6 +40,8 @@ export default function ResponsiveLengthControl( {
 	placeholder = '',
 	presets = false,
 	units,
+	scale,
+	max,
 } ) {
 	const tiers = value && typeof value === 'object' ? value : {};
 	return (
@@ -52,6 +56,8 @@ export default function ResponsiveLengthControl( {
 					placeholder={ inherited ? effectiveValue : placeholder }
 					onChange={ ( next ) => setOwnValue( next || undefined ) }
 					presets={ presets }
+					scale={ scale }
+					max={ max }
 				/>
 			) }
 		</ResponsiveOverride>

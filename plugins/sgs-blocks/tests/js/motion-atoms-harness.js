@@ -56,7 +56,7 @@ jest.mock( '@wordpress/components', () => {
 			value: value ?? '',
 			onChange: ( e ) => onChange( e.target.value ),
 		} );
-	return {
+	const mocked = {
 		SelectControl: ( { label, value, options, onChange } ) =>
 			el(
 				'select',
@@ -86,6 +86,12 @@ jest.mock( '@wordpress/components', () => {
 				onChange: ( e ) => onChange( e.target.checked ),
 			} ),
 		BaseControl: ( { label, children } ) => el( 'div', { role: 'group', 'aria-label': label }, children ),
+		Flex: ( { children } ) => el( 'div', null, children ),
+		FlexBlock: ( { children } ) => el( 'div', null, children ),
+		FlexItem: ( { children } ) => el( 'div', null, children ),
+		// No aria-label: the value box keeps the field's accessible name, so a query by label finds one input.
+		RangeControl: ( { value, min, max, step } ) =>
+			el( 'input', { type: 'range', 'data-testid': 'slider', value, min, max, step, readOnly: true } ),
 		__experimentalToggleGroupControl: ( { label, value, onChange, children } ) =>
 			el(
 				'div',
@@ -105,6 +111,9 @@ jest.mock( '@wordpress/components', () => {
 			),
 		__experimentalToggleGroupControlOption: () => null,
 	};
+	// SgsLengthControl labels itself with `<BaseControl.VisualLabel>`, as core ships it.
+	mocked.BaseControl.VisualLabel = ( { children } ) => el( 'span', null, children );
+	return mocked;
 } );
 
 jest.mock( '../../src/components/DesignTokenPicker', () => ( {
