@@ -2898,7 +2898,7 @@
 			"write": null,
 			"check": null,
 			"wave": "behaviour recognisers",
-			"note": "Indus: the sheen sweep on magnet buttons (a stripe slanted by a constant skewX(-18deg) slides across on pointer enter), so it is the sgs sheen effect, recognised with the magnet in the behaviour recognisers wave; no animated slant, so not Spec 38A FR-38A-57"
+			"note": "a draft's the sheen sweep on magnet buttons (a stripe slanted by a constant skewX(-18deg) slides across on pointer enter), so it is the sgs sheen effect, recognised with the magnet in the behaviour recognisers wave; no animated slant, so not Spec 38A FR-38A-57"
 		},
 		"css-function:skewy": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
