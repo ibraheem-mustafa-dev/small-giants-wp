@@ -867,7 +867,8 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `READ_WIDTHS`: 375, 768, 1440. `PRESENT`: the render-presence sweep series. `PROPS`: the properties Fill resolves.
 - `loadChromium()` → Playwright, imported from `plugins/sgs-blocks/node_modules`.
 - `requestAllowed(url, origin, external)` → whether the draft may load a url.
-- `routeDraft(ctx, { origin, external, mirror })` → routes a context's requests (mirror, allow, abort).
+- `routeDraft(ctx, { origin, external, mirror, aborted? })` → routes a context's requests (mirror, allow, abort), adding each aborted url to `aborted` when given.
+- `emptyReadError(width, count, aborted)` → the error `readDraft` throws when a read width resolves none of its targets (Spec 48 R-48-3): the width, the target count, the aborted requests and the `--allow-external` hint for a draft whose runtime loads from unpkg.
 - `jobsFor(nodes)` → the collection jobs, roots before slots.
 - `readDraft(options)` → `{ origin, widths, declared, sweep, states }`; `states[w]` is each target's state looks (`readStates`) at the read widths when `options.states` (the vocabulary) is given; `fill.mjs` passes `lib/db.mjs::statesVocabulary` and runs `lib/fill-state.mjs::fillStates` after `fillTree`.
 
