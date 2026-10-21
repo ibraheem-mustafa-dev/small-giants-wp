@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<header role="banner" aria-label="Site" data-head="top" style="display:flex;gap:{{ gap }};margin:0 auto;padding:8px 16px" style-hover="opacity:.8;margin:{{ hoverMargin }}">
+  <a ref="{{ setLogo }}" href="/" tabindex="0" aria-current="{{ cur }}" style="height:{{ logoH }};width:auto">{{ title }}</a>
+  <sc-if value="{{ showCta }}">
+    <button type="button" required onClick="{{ go }}" style="padding:4px 8px">{{ ctaLabel }}</button>
+  </sc-if>
+  <sc-if value="{{ isM }}">
+    <nav aria-label="Menu">
+      <sc-for list="{{ links }}" as="item">
+        <a href="{{ item.href }}">{{ item.label }}</a>
+      </sc-for>
+    </nav>
+  </sc-if>
+  <select><option>One</option></select>
+  <sc-if value="{{ showChild }}">
+    <dc-import name="Child"></dc-import>
+  </sc-if>
+</header>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { w: window.innerWidth, bp: this.bpOf() };
+
+  bpOf() {
+    const w = window.innerWidth;
+    return w < 768 ? 'm' : w < 1024 ? 't' : 'd';
+  }
+
+  setLogo = ( el ) => { this._logo = el; };
+  go = () => {};
+
+  componentDidMount() {
+    this.onResize = () => this.setState( { w: window.innerWidth, bp: this.bpOf() } );
+    window.addEventListener( 'resize', this.onResize );
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener( 'resize', this.onResize );
+  }
+
+  get links() {
+    return [ { href: '#/one', label: 'One' }, { href: '#/two', label: 'Two' } ];
+  }
+
+  renderVals() {
+    const w = this.state.w;
+    const logoH = w < 768 ? '40px' : w < 1100 ? '50px' : '60px';
+    return {
+      title: 'Fixture',
+      gap: w < 768 ? '8px' : '24px',
+      logoH,
+      hoverMargin: '0 4px',
+      cur: 'page',
+      links: this.links,
+      setLogo: this.setLogo,
+      go: this.go,
+      showCta: w >= 1260,
+      ctaLabel: w >= 1260 ? 'Call us now' : 'Call',
+      isM: this.state.bp === 'm',
+      showChild: false,
+    };
+  }
+}
+</script>
+</body>
+</html>

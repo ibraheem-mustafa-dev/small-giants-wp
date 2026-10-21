@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-21",
+  "project": "Read facts fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Child.dc.html",
+      "bytes": 365,
+      "sha256": "3885f60f87ac48fd471f2f249f07d834195c245ca87985226ec7d99b4ed1898e"
+    },
+    {
+      "path": "Home.dc.html",
+      "bytes": 2117,
+      "sha256": "0e6f164d17adbb066bf288cc1be154c03264328125b5e05d923a8344b843fad2"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    },
+    {
+      "path": "surfaces.json",
+      "bytes": 1234,
+      "sha256": "414826452286bde6d5489754dbe91023827913e3897f06437887dee33c6615ed"
+    }
+  ]
+}

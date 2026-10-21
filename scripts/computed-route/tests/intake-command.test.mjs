@@ -18,6 +18,7 @@ import { parseReview, isoDay, reviewRows, renderReview } from '../lib/intake-rev
 import { recordProblems, parseArgs } from '../lib/intake-run.mjs';
 import { collapseSkeletonRows, collapseSkeletons, collapseFlags, collapseMissing, paletteUsage, templateOf } from '../lib/intake-run-collapse.mjs';
 import { pageMapProblems } from '../lib/intake-pagemap.mjs';
+import { factsProblems } from '../lib/fact-record.mjs';
 import { defectReviewRows } from '../lib/intake-run-defects.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -103,9 +104,14 @@ test( 'a full run writes a schema-valid intake.json, review.md and page-map.json
 	assert.ok( intake.census.length > 20 && intake.census.every( ( r ) => r.reader || r.gap ) );
 	assert.match( intake.tools.browser, /^chromium \d/ );
 	assert.equal( intake.harness.clock, '2026-01-05T10:00:00.000Z' );
-	for ( const s of [ 'replay', 'census', 'page map', 'tokens and palette', 'site info', 'flags', 'draft defects', 'skeletons', 'missing features', 'notices' ] ) {
+	for ( const s of [ 'replay', 'census', 'page map', 'tokens and palette', 'site info', 'flags', 'draft defects', 'skeletons', 'facts', 'missing features', 'notices' ] ) {
 		assert.match( first.out, new RegExp( `\\[intake\\] ${ s }: done in \\d+\\.\\ds` ), `no timing line for ${ s }` );
 	}
+	// FR-48-7: the facts stage writes a schema-valid fact record whose instance keys come from the skeleton inventories.
+	const facts = read( CLIENT, 'intake', 'facts.json' );
+	assert.deepEqual( factsProblems( facts ), [] );
+	assert.ok( facts.counts.elements > 10 && facts.counts.instances > 0 && facts.counts.perWidth[ 375 ].resolved > 0, JSON.stringify( facts.counts ) );
+	assert.equal( facts.counts.perWidth[ 375 ].unresolved, 0 );
 	assert.match( first.out, /proxy attempts 0$/m, 'no live network' );
 	assert.ok( intake.siteInfo.rows.some( ( r ) => 'phone' === r.key ) && intake.palette.unused.length >= 1 );
 } );

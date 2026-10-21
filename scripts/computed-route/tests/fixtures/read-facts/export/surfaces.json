@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "project": "Read facts fixture",
+  "generated": "2026-10-21",
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "records": [
+    {
+      "id": "S-01",
+      "kind": "header",
+      "name": "Header",
+      "dc": "Home",
+      "template_tpl_id": [ "0" ],
+      "route": "*",
+      "breakpoints": [ "desktop" ],
+      "parent": null,
+      "states": [
+        { "name": "closed", "state_keys": {}, "how_to_reach": "default" },
+        { "name": "call to action", "state_keys": { "w": ">= 1260" }, "how_to_reach": "widen the window", "sc_if_tpl_ids": [ "2" ] }
+      ],
+      "time_dependent": { "value": false, "reason": "" }
+    },
+    {
+      "id": "S-02",
+      "kind": "drawer",
+      "name": "Drawer",
+      "dc": "Home",
+      "template_tpl_id": [ "5" ],
+      "route": "*",
+      "breakpoints": [ "mobile" ],
+      "parent": "S-01",
+      "states": [
+        { "name": "closed", "state_keys": {}, "how_to_reach": "default" },
+        { "name": "open", "state_keys": { "bp": "m" }, "how_to_reach": "narrow the window", "sc_if_tpl_ids": [ "4" ] }
+      ],
+      "time_dependent": { "value": false, "reason": "" }
+    }
+  ],
+  "counts": {},
+  "unresolved": []
+}

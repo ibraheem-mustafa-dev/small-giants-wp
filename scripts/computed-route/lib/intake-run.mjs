@@ -31,12 +31,12 @@ const WIDTHS = [ 375, 768, 1440 ];
 export const USAGE = [
 	'usage: node scripts/computed-route/intake.mjs <client> [--record] [--widths 375,768,1440] [--surfaces a,b] [--repo <path>]',
 	'       node scripts/computed-route/intake.mjs --apply-review <client> [--repo <path>]',
-	'       node scripts/computed-route/intake.mjs --finalise <client> | --apply-picks <client> | --render <client> | --rerun-skeletons <client> [--repo <path>]',
+	'       node scripts/computed-route/intake.mjs --finalise <client> | --apply-picks <client> | --render <client> | --rerun-skeletons <client> | --facts <client> [--repo <path>]',
 ].join( '\n' );
 
-const MODES = { '--apply-review': 'apply', '--finalise': 'finalise', '--apply-picks': 'apply-picks', '--render': 'render', '--rerun-skeletons': 'rerun-skeletons' };
+const MODES = { '--apply-review': 'apply', '--finalise': 'finalise', '--apply-picks': 'apply-picks', '--render': 'render', '--rerun-skeletons': 'rerun-skeletons', '--facts': 'facts' };
 
-// argv (after the script) to { mode: 'run'|'apply'|'finalise'|'apply-picks'|'render'|'rerun-skeletons', client, record, widths, surfaces,
+// argv (after the script) to { mode: 'run'|'apply'|'finalise'|'apply-picks'|'render'|'rerun-skeletons'|'facts', client, record, widths, surfaces,
 // repo } or { error }.
 export function parseArgs( argv ) {
 	const o = { mode: 'run', client: null, record: false, widths: WIDTHS, surfaces: null, repo: REPO };
@@ -89,7 +89,7 @@ export function parseArgs( argv ) {
 export function pathsFor( repo, client ) {
 	const build = path.join( repo, 'sites', client, 'build' );
 	const dir = path.join( build, 'intake' );
-	return { folder: path.join( repo, 'sites', client, 'handoff' ), dir, intake: path.join( dir, 'intake.json' ), prev: path.join( dir, 'intake.prev.json' ), review: path.join( dir, 'review.md' ), inventories: path.join( dir, 'inventories' ), pageMap: path.join( build, 'page-map.json' ), replay: ( hash ) => path.join( dir, 'replay', `${ hash }.har` ) };
+	return { folder: path.join( repo, 'sites', client, 'handoff' ), dir, intake: path.join( dir, 'intake.json' ), prev: path.join( dir, 'intake.prev.json' ), review: path.join( dir, 'review.md' ), inventories: path.join( dir, 'inventories' ), facts: path.join( dir, 'facts.json' ), pageMap: path.join( build, 'page-map.json' ), replay: ( hash ) => path.join( dir, 'replay', `${ hash }.har` ) };
 }
 
 const secs = ( ms ) => `${ ( ms / 1000 ).toFixed( 1 ) }s`;
@@ -178,7 +178,7 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 	}
 	const m = readJson( path.join( at.folder, 'MANIFEST.json' ) );
 	const work = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-intake-' ) );
-	const job = { repo: o.repo, client: o.client, folder: at.folder, entry: m.entry_drafts?.[ 0 ], harPath, record: o.record, widths: o.widths, surfaces: o.surfaces, inventoriesDir: at.inventories, runtimeSha: m.runtime_sha256 ?? 'none', progressFile: path.join( work, 'progress.log' ), outFile: path.join( work, 'result.json' ) };
+	const job = { repo: o.repo, client: o.client, folder: at.folder, entry: m.entry_drafts?.[ 0 ], harPath, record: o.record, widths: o.widths, surfaces: o.surfaces, inventoriesDir: at.inventories, factsFile: at.facts, runtimeSha: m.runtime_sha256 ?? 'none', progressFile: path.join( work, 'progress.log' ), outFile: path.join( work, 'result.json' ) };
 	fs.mkdirSync( at.inventories, { recursive: true } );
 	fs.writeFileSync( path.join( work, 'job.json' ), JSON.stringify( job ) );
 	fs.writeFileSync( job.progressFile, '' );

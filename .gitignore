@@ -190,6 +190,8 @@ sites/*/build/qa/solve/
 # Intake replay files (Spec 48 FR-48-23): fonts, stock images and runtime scripts per export hash; re-recordable.
 sites/*/build/intake/replay/
 sites/*/build/intake/inventories/
+# The handoff fact record (Spec 48 FR-48-7): written by intake and `intake.mjs --facts`, refused when stale.
+sites/*/build/intake/facts.json
 
 # LEDGER backups written by the ledger-rotate hook (git already holds every LEDGER version)
 .claude/memory/session-*.md

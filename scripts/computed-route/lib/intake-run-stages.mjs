@@ -211,6 +211,18 @@ export const STAGES = [
 			note: `${ surfaces.length } surfaces, ${ r.gaps.length } gaps, ${ c.before } rows, ${ c.withinSurfaces } after collapsing within surfaces, ${ c.after } across surfaces; opened ${ opened.join( ', ' ) || 'none' }`,
 		};
 	} ],
+	// FR-48-7: the template, logic and surfaces readers joined into sites/<client>/build/intake/facts.json. The widened
+	// census's sources (every page of a one-file-per-page draft, left by the inventory stage) are reused (no template is
+	// rendered twice); the logic reads open one sandbox, the entry page resized to each
+	// read width plus one visit per component the entry never mounts. The instance keys come from the inventories the
+	// skeletons stage saved.
+	[ 'facts', async ( job, ctx ) => {
+		const { buildFactRecord, writeFacts } = await import( './fact-record.mjs' );
+		const { record, blocked } = await buildFactRecord( { folder: job.folder, client: job.client, entry: job.entry, harPath: job.harPath, sources: ctx.widenedSources, widths: job.widths, inventoriesDir: job.inventoriesDir ?? null } );
+		const c = writeFacts( job.factsFile, record );
+		const resolved = job.widths.map( ( w ) => `${ w }px ${ c.perWidth[ w ].resolved }/${ c.holes } (${ c.perWidth[ w ].absent } absent, ${ c.perWidth[ w ].unresolved } unresolved)` ).join( ', ' );
+		return { facts: c, blocked, gaps: [], note: `${ c.elements } elements, ${ c.holes } holes resolved ${ resolved }, ${ c.widthConditions } width conditions, ${ c.elementsInSurfaces } in surfaces, ${ c.instances } instance keys, ${ c.gaps } gaps in facts.json` };
+	} ],
 	[ 'missing features', async ( job, ctx ) => {
 		const { proposeMissingFeatures } = await import( './intake-missing.mjs' );
 		const fw = frameworkFacts( job );
@@ -280,10 +292,11 @@ export const STAGE_NEEDS = Object.freeze( {
 	'draft defects': [ 'replay', 'census', 'flags' ],
 	inventory: [ 'routing', 'census', 'draft defects', 'page map' ],
 	skeletons: [ 'routing', 'census' ],
+	facts: [ 'inventory', 'skeletons' ],
 	'missing features': [ 'census', 'skeletons' ],
 	'replay top-up': [ '*' ],
 	notices: [],
 } );
 
 // The stages that open a browser outside the browser-unit pool: run side by side, each holds one pool slot.
-export const SLOT_STAGES = Object.freeze( [ 'replay', 'inventory', 'replay top-up' ] );
+export const SLOT_STAGES = Object.freeze( [ 'replay', 'inventory', 'facts', 'replay top-up' ] );

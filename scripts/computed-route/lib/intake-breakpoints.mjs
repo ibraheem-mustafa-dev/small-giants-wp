@@ -20,7 +20,7 @@ const gap = ( construct, draftId, error ) => ( { construct, draftId, error } );
 const isDocumentElement = ( n ) => 'MemberExpression' === n?.type && /^(documentElement|body)$/.test( propName( n ) || '' ) && 'document' === n.object.name;
 
 // The width readers of one parsed draft, closed over its root ref names and its state width keys.
-function reader( d, gaps ) {
+export function widthReader( d, gaps ) {
 	const idx = d.idx;
 	const rootNames = new Set();
 	const refTag = d.tags.find( ( t ) => undefined !== attrOf( t, 'ref' ) );
@@ -148,7 +148,7 @@ function reader( d, gaps ) {
 }
 
 // A static number: a numeric literal, a negated one, or a const declared with one.
-function numberOf( idx, n, depth = 0 ) {
+export function numberOf( idx, n, depth = 0 ) {
 	if ( 'NumericLiteral' === n?.type ) {
 		return n.value;
 	}
@@ -170,7 +170,7 @@ export function draftBreakpoints( d ) {
 		return out;
 	}
 	const idx = d.idx;
-	const { keys, widthRef, widthish, sources } = reader( d, out.gaps );
+	const { keys, widthRef, widthish, sources } = widthReader( d, out.gaps );
 	const where = ( n ) => `${ d.file }:${ idx.line( n ) }`;
 	for ( const n of idx.all ) {
 		if ( 'CallExpression' === n.type && 'matchMedia' === propName( n.callee ) && /width/i.test( n.arguments[ 0 ]?.value || snippet( idx, n ) ) ) {

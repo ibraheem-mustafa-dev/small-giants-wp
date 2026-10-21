@@ -1,0 +1,19 @@
+[
+ { "file": "lib/read-template.mjs", "find": "! n.startsWith( 'style-' ) && 'style' !== n ) );\n\t\t\tconst chain", "replace": "! n.startsWith( 'style-' ) && 'style' !== n && ! n.startsWith( 'aria-' ) ) );\n\t\t\tconst chain", "why": "ARIA attributes dropped" },
+ { "file": "lib/read-template.mjs", "find": "/^on[A-Z]/.test( n )", "replace": "/^onNone/.test( n )", "why": "events dropped" },
+ { "file": "lib/read-template.mjs", "find": "chain.filter( ( p ) => 'sc-for' === p.tag )", "replace": "chain.filter( ( p ) => 'sc-forx' === p.tag )", "why": "sc-for membership dropped" },
+ { "file": "lib/read-template.mjs", "find": "names.forEach( ( n ) => out.push( [ n, probe.getPropertyValue( n ) ] ) );", "replace": "out.push( [ name, value ] );", "why": "shorthands left unexpanded" },
+ { "file": "lib/read-template.mjs", "find": "parentKey: rec.realParent, srcLine", "replace": "parentKey: null, srcLine", "why": "fingerprint without ancestry" },
+ { "file": "lib/read-logic.mjs", "find": "await page.setViewportSize( { width, height: 900 } );", "replace": "await page.setViewportSize( { width: 1440, height: 900 } );", "why": "width never set by resizing" },
+ { "file": "lib/read-logic.mjs", "find": "if ( ! rec.holes.length ) {", "replace": "if ( ! rec.holes.length || rec.membership.scIf.length ) {", "why": "holes of conditional elements not asked" },
+ { "file": "lib/read-logic.mjs", "find": "const need = widths.filter( ( w ) => ! answers[ comp ]?.[ w ]?.mounted );", "replace": "const need = [];", "why": "unmounted components not read" },
+ { "file": "lib/read-logic.mjs", "find": "bad.length && gaps.push(", "replace": "false && gaps.push(", "why": "unresolved holes not listed as gaps" },
+ { "file": "lib/read-logic-conditions.mjs", "find": "return { w: op, n };", "replace": "return null;", "why": "width comparison not recorded" },
+ { "file": "lib/read-logic-conditions.mjs", "find": "const when = rangesOfSide( side )?.get( token );", "replace": "const when = rangesOfSide( side )?.get( `${ token }x` );", "why": "breakpoint token range not followed" },
+ { "file": "lib/read-surfaces.mjs", "find": "if ( template.elements[ key ].parentChain.includes( root ) ) {", "replace": "if ( false ) {", "why": "subtree not marked" },
+ { "file": "lib/read-surfaces.mjs", "find": "parent && parent.parts.push( { id: s.id, kind: s.kind, roots: s.roots } );", "replace": "void parent;", "why": "part roots not listed" },
+ { "file": "lib/fact-record.mjs", "find": "assertCurrent( record, folder, { label: 'facts.json', ...( warn ? { warn } : {} ) } );", "replace": "void warn;", "why": "stale record accepted" },
+ { "file": "lib/fact-record.mjs", "find": "throw new Error( `facts.json does not validate, nothing written: ${ problems.join( '; ' ) }` );", "replace": "void problems;", "why": "invalid record written" },
+ { "file": "lib/fact-record.mjs", "find": "if ( changed.length ) {", "replace": "if ( false ) {", "why": "stale inventory used" },
+ { "file": "lib/fact-record.mjs", "find": "byTemplate.get( k ).push( { key: e.key, state } );", "replace": "byTemplate.get( k ).push( { key: e.key, state: 'x' } );", "why": "instance state wrong" }
+]
