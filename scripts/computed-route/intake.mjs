@@ -16,9 +16,12 @@
 //   node scripts/computed-route/intake.mjs --rerun-skeletons <client>   proposes the skeleton rows again offline from
 //     the inventories the last run saved, with today's standing rules (no browser), carries the finaliser's earlier
 //     picks for rows that still await it, and re-renders review.md.
+//   node scripts/computed-route/intake.mjs --facts <client>         writes only build/intake/facts.json (FR-48-7) from the
+//     export, the replay file and the inventories the last run saved, without the other intake stages.
 // Exit 0 pass, 1 a failure (named on stderr), 2 usage. --repo points every path at another repository root (tests).
 import { parseArgs, runIntake, applyIntakeReview, recordProblems, pathsFor, USAGE } from './lib/intake-run.mjs';
 import { runFinalise, runApplyPicks, runRender, runRerunSkeletons } from './lib/intake-run-finalise.mjs';
+import { runFacts } from './lib/intake-facts-run.mjs';
 
 const o = parseArgs( process.argv.slice( 2 ) );
 if ( o.error ) {
@@ -33,6 +36,7 @@ const modes = {
 	'apply-picks': () => runApplyPicks( at, o, { log, recordProblems } ),
 	render: () => runRender( at, o, { log } ),
 	'rerun-skeletons': () => runRerunSkeletons( at, o, { log, recordProblems } ),
+	facts: () => runFacts( o, { log } ),
 	run: () => runIntake( o ),
 };
 process.exitCode = await modes[ o.mode ]();

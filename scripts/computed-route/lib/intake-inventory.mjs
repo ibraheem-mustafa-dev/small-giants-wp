@@ -205,10 +205,11 @@ export function readInventory( row, ctx ) {
 
 // The intake stage (lib/intake-run-stages.mjs, after the draft defects): the census widened to every page, timer and
 // frame writers sampled on the entry page at each width, the inventory built and validated, and Claude Design's copies
-// diffed. Returns the stage parts { inventory: { animations, surfaces, diff, occurrences, propVariants, samples }, gaps,
+// diffed. Leaves the widened census's sources in ctx.widenedSources (the fact record reads them). Returns the stage parts { inventory: { animations, surfaces, diff, occurrences, propVariants, samples }, gaps,
 // blocked, note }.
 export async function inventoryStage( job, ctx ) {
 	const census = await inventoryCensus( { folder: job.folder, entry: job.entry, routing: ctx.routing, census: ctx.censusFull, harPath: job.harPath } );
+	ctx.widenedSources = census.sources;
 	const gaps = [ ...census.gaps ];
 	const base = inventoryBase( { census, folder: job.folder, routing: ctx.routing, pageRows: ctx.pageMap ?? null, notDefects: ctx.notDefects || [] } );
 	const sampled = await sampleWriters( { folder: job.folder, index: job.entry, harPath: job.harPath, targets: sampleTargets( base.core.anim.records, base.core.anim.meta ), widths: job.widths } );

@@ -69,7 +69,7 @@ Bean's request, outside this plan: move Eye Care's Google review block into the 
 
 - [x] 1. Analysis: the register (`7a83c4600`, `51eee8e7b`, `f71ee51a5`, `aa2432fdb`) and its gap analysis (`.claude/gap-analysis/reports/2026-10-21-handoff-data-register.md`).
 - [x] 2. Design: the design council's must-fix items and Bean's decisions recorded above; the readers and fact-record design; Spec 48A §3 and §4, Spec 48 FR-48-7, §3.4, FR-48-6 rule 1, FR-48-33 and FR-48-29 committed before the build (`81262f6f7`), each saying what is not built.
-- [ ] 3. Build: the cross-client freeze is built (wave 1 council item); the fact record's identity and freshness are in progress; wave 2's spacing change is written and tested, uncommitted.
+- [ ] 3. Build: the cross-client freeze is built (wave 1 council item); the fact record's keys, fingerprints and freshness are built (`lib/fact-key.mjs`, `lib/identity.mjs`, `lib/freshness.mjs`); wave 1 part R is built: the template, logic and surfaces readers and the fact record (`lib/read-template.mjs`, `lib/read-logic.mjs`, `lib/read-logic-conditions.mjs`, `lib/read-surfaces.mjs`, `lib/fact-record.mjs`; `facts.json` written by intake's `facts` stage and by `node scripts/computed-route/intake.mjs --facts <client>`; `tests/read-facts.test.mjs`, 17 of 17 mutations red). Not built in wave 1: the skeleton reading structure through the record (its predicted 155 match, 2 mismatch), the animations, assets and README readers, and the other wave 1 council items; wave 2's spacing change is written and tested, uncommitted.
 - [ ] 4. Close.
 
 ## 4. Close

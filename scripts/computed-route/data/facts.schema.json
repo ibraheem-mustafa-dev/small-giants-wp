@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sgs.local/computed-route/facts.schema.json",
+  "title": "Handoff fact record (Spec 48 FR-48-7)",
+  "type": "object",
+  "required": [ "schema", "client", "generated", "widths", "sources", "elements", "surfaces", "gaps", "counts" ],
+  "properties": {
+    "schema": { "const": "1" },
+    "client": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "generated": { "type": "string" },
+    "widths": { "type": "array", "items": { "type": "integer", "minimum": 200, "maximum": 4000 }, "minItems": 1 },
+    "sources": {
+      "type": "object",
+      "required": [ "files", "route" ],
+      "properties": {
+        "files": { "type": "object", "additionalProperties": { "type": "string", "pattern": "^[0-9a-f]{64}$" } },
+        "route": { "type": "object", "required": [ "commit" ], "properties": { "commit": { "type": [ "string", "null" ] } } }
+      }
+    },
+    "elements": { "type": "object", "additionalProperties": { "$ref": "#/$defs/element" } },
+    "surfaces": { "type": "object", "additionalProperties": { "$ref": "#/$defs/surface" } },
+    "mounted": { "type": "object", "additionalProperties": { "type": "object", "additionalProperties": { "type": "boolean" } } },
+    "gaps": { "type": "array", "items": { "$ref": "#/$defs/gap" } },
+    "counts": {
+      "type": "object",
+      "required": [ "elements", "holes", "perWidth", "widthConditions", "elementsInSurfaces", "instances", "gaps" ],
+      "properties": {
+        "elements": { "type": "integer" },
+        "holes": { "type": "integer" },
+        "perWidth": { "type": "object", "additionalProperties": { "type": "object", "required": [ "resolved", "absent", "unresolved" ], "properties": { "resolved": { "type": "integer" }, "absent": { "type": "integer" }, "unresolved": { "type": "integer" } } } },
+        "widthConditions": { "type": "integer" },
+        "elementsInSurfaces": { "type": "integer" },
+        "instances": { "type": "integer" },
+        "gaps": { "type": "integer" }
+      }
+    }
+  },
+  "$defs": {
+    "gap": {
+      "type": "object",
+      "required": [ "construct", "draftId", "error" ],
+      "properties": { "construct": { "type": "string" }, "draftId": { "type": "string" }, "error": { "type": "string" } }
+    },
+    "pairs": { "type": "array", "items": { "type": "array", "minItems": 2, "maxItems": 3, "items": { "type": "string" } } },
+    "templateRef": { "type": [ "string", "null" ] },
+    "summary": {
+      "type": "object",
+      "required": [ "t" ],
+      "properties": { "t": { "enum": [ "string", "number", "boolean", "null", "undefined", "function", "element", "array", "object" ] } }
+    },
+    "answer": {
+      "type": "object",
+      "required": [ "v", "n", "loop" ],
+      "properties": {
+        "v": { "type": "array", "items": { "$ref": "#/$defs/summary" } },
+        "n": { "type": "integer", "minimum": 0 },
+        "loop": { "type": "boolean" },
+        "more": { "type": "integer" },
+        "err": { "type": "string" }
+      }
+    },
+    "hole": {
+      "type": "object",
+      "required": [ "id", "where", "expr", "path", "whole" ],
+      "properties": {
+        "id": { "type": "string" },
+        "where": { "type": "string" },
+        "expr": { "type": "string" },
+        "path": { "type": [ "string", "null" ] },
+        "whole": { "type": "boolean" }
+      }
+    },
+    "condition": {
+      "type": [ "object", "null" ],
+      "properties": {
+        "w": { "enum": [ "<", "<=", ">", ">=", "===", "!==", "==", "!=" ] },
+        "n": { "type": "number" },
+        "bp": { "type": "string" },
+        "is": { "type": "boolean" },
+        "when": { "$ref": "#/$defs/condition" },
+        "all": { "type": "array", "items": { "$ref": "#/$defs/condition" } },
+        "any": { "type": "array", "items": { "$ref": "#/$defs/condition" } },
+        "not": { "$ref": "#/$defs/condition" },
+        "partial": { "type": "boolean" }
+      }
+    },
+    "template": {
+      "type": "object",
+      "required": [ "component", "n", "tag", "realTag", "attrs", "style", "pseudo", "holes", "parent", "realParent", "parentChain", "membership", "own", "ref", "hooks", "events", "words", "srcLine" ],
+      "properties": {
+        "component": { "type": "string" },
+        "n": { "type": "string" },
+        "key": { "type": "string" },
+        "tag": { "type": "string" },
+        "realTag": { "type": "string" },
+        "attrs": { "type": "object", "additionalProperties": { "type": "string" } },
+        "style": { "type": "object", "required": [ "static", "holes" ], "properties": { "static": { "$ref": "#/$defs/pairs" }, "holes": { "type": "array", "items": { "type": "string" } } } },
+        "pseudo": { "type": "object", "additionalProperties": { "type": "object", "required": [ "static", "holes" ], "properties": { "static": { "$ref": "#/$defs/pairs" }, "holes": { "type": "array", "items": { "type": "string" } } } } },
+        "holes": { "type": "array", "items": { "$ref": "#/$defs/hole" } },
+        "parent": { "$ref": "#/$defs/templateRef" },
+        "realParent": { "$ref": "#/$defs/templateRef" },
+        "parentChain": { "type": "array", "items": { "type": "string" } },
+        "membership": {
+          "type": "object",
+          "required": [ "scIf", "scFor", "dcImport" ],
+          "properties": {
+            "scIf": { "type": "array", "items": { "type": "object", "required": [ "key", "value" ], "properties": { "key": { "type": "string" }, "value": { "type": [ "string", "null" ] } } } },
+            "scFor": { "type": "array", "items": { "type": "object", "required": [ "key", "list", "as" ], "properties": { "key": { "type": "string" }, "list": { "type": [ "string", "null" ] }, "as": { "type": "string" } } } },
+            "dcImport": { "type": "array", "items": { "type": "object", "required": [ "key", "name" ], "properties": { "key": { "type": "string" }, "name": { "type": [ "string", "null" ] } } } }
+          }
+        },
+        "own": { "type": "object" },
+        "inHelmet": { "type": "boolean" },
+        "inFor": { "type": "boolean" },
+        "ref": { "type": [ "string", "null" ] },
+        "hooks": { "type": "object", "additionalProperties": { "type": "string" } },
+        "events": { "type": "array", "items": { "type": "object", "required": [ "name", "expr" ], "properties": { "name": { "type": "string" }, "expr": { "type": [ "string", "null" ] } } } },
+        "words": { "type": "string" },
+        "srcLine": { "type": [ "integer", "string", "null" ] }
+      }
+    },
+    "membership": {
+      "type": "object",
+      "required": [ "id", "kind", "parent", "root", "states" ],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "type": "string" },
+        "parent": { "type": [ "string", "null" ] },
+        "root": { "type": "boolean" },
+        "states": { "type": "array", "items": { "type": "object", "required": [ "name", "state_keys" ], "properties": { "name": { "type": "string" }, "state_keys": { "type": "object" } } } }
+      }
+    },
+    "surface": {
+      "type": "object",
+      "required": [ "id", "kind", "dc", "parent", "roots", "parts", "states" ],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "type": "string" },
+        "name": { "type": [ "string", "null" ] },
+        "dc": { "type": "string" },
+        "parent": { "type": [ "string", "null" ] },
+        "roots": { "type": "array", "items": { "type": "string" } },
+        "parts": { "type": "array", "items": { "type": "object", "required": [ "id", "kind", "roots" ], "properties": { "id": { "type": "string" }, "kind": { "type": "string" }, "roots": { "type": "array", "items": { "type": "string" } } } } },
+        "states": { "type": "array", "items": { "type": "object", "required": [ "name", "state_keys", "sc_if_tpl_ids" ] } }
+      }
+    },
+    "element": {
+      "type": "object",
+      "required": [ "template", "logic", "surfaces", "instances", "fingerprint" ],
+      "properties": {
+        "template": { "$ref": "#/$defs/template" },
+        "logic": {
+          "type": "object",
+          "required": [ "holes" ],
+          "properties": {
+            "holes": { "type": "object", "additionalProperties": { "type": "object", "additionalProperties": { "$ref": "#/$defs/answer" } } },
+            "width": { "$ref": "#/$defs/condition" },
+            "via": { "type": "string" }
+          }
+        },
+        "surfaces": { "type": "array", "items": { "$ref": "#/$defs/membership" } },
+        "instances": { "type": "array", "items": { "type": "object", "required": [ "key", "state" ], "properties": { "key": { "type": "string" }, "state": { "type": "string" } } } },
+        "fingerprint": { "type": "object", "required": [ "tag", "parentTags", "textHash" ], "properties": { "tag": { "type": "string" }, "parentTags": { "type": "array", "items": { "type": "string" } }, "textHash": { "type": "string" } } }
+      }
+    }
+  }
+}

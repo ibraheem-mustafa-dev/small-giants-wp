@@ -55,7 +55,7 @@ export function cutDraft( text ) {
 
 // In-page: the stamped template parsed in a <template>; one record per element in document order:
 // { n, parent (the nearest enclosing element's n, null at the top), tag, attrs: [[name, value]], texts: [string], inFor,
-// inHelmet, svg? (an SVG element's own-case name: HTML parsing lower-cases `tag`), body? (a <style>, <script> or <title>'s text), css? } (css: the rules of a <style>,
+// inHelmet, words (its own text nodes, whitespace collapsed), svg? (an SVG element's own-case name: HTML parsing lower-cases `tag`), body? (a <style>, <script> or <title>'s text), css? } (css: the rules of a <style>,
 // parsed by the browser: { type: keyframes|font-face|import|style, name?, selector?, decls?, cssText?, stops? }; a style rule
 // is kept only when it sets a transition or animation property; a keyframes rule carries `stops`: [ { key (the
 // keyText: `from`, `50%`, `0%, 100%`), decls: [[property, value]] } ] in source order).
@@ -112,7 +112,7 @@ function readStamped( [ html, source ] ) {
 		for ( const c of node.childNodes ) {
 			if ( 1 === c.nodeType ) {
 				const tag = c.tagName.toLowerCase();
-				const rec = { n: c.getAttribute( 'data-dc-tpl' ), parent: ctx.rec?.n ?? null, tag, attrs: [ ...c.attributes ].filter( ( a ) => 'data-dc-tpl' !== a.name ).map( ( a ) => [ a.name, a.value ] ), texts: [], inFor: ctx.inFor, inHelmet: ctx.inHelmet };
+				const rec = { n: c.getAttribute( 'data-dc-tpl' ), parent: ctx.rec?.n ?? null, tag, attrs: [ ...c.attributes ].filter( ( a ) => 'data-dc-tpl' !== a.name ).map( ( a ) => [ a.name, a.value ] ), texts: [], words: '', inFor: ctx.inFor, inHelmet: ctx.inHelmet };
 				if ( 'http://www.w3.org/2000/svg' === c.namespaceURI ) {
 					rec.svg = c.localName;
 				}
@@ -128,8 +128,13 @@ function readStamped( [ html, source ] ) {
 				if ( 'style' !== tag && 'script' !== tag ) {
 					visit( c, { inFor: ctx.inFor || 'sc-for' === tag, inHelmet: ctx.inHelmet || 'sc-helmet' === tag, rec } );
 				}
-			} else if ( 3 === c.nodeType && c.data.includes( '{{' ) ) {
-				( ctx.rec ? ctx.rec.texts : top ).push( c.data );
+			} else if ( 3 === c.nodeType ) {
+				if ( ctx.rec && c.data.trim() ) {
+					ctx.rec.words = `${ ctx.rec.words } ${ c.data.replace( /\s+/g, ' ' ).trim() }`.trim();
+				}
+				if ( c.data.includes( '{{' ) ) {
+					( ctx.rec ? ctx.rec.texts : top ).push( c.data );
+				}
 			}
 		}
 	};
@@ -145,7 +150,7 @@ async function stampedFor( page, name, template, timeout ) {
 	if ( stamped.pairError ) {
 		throw new Error( `${ name }: import attributes cannot be restored (${ stamped.pairError })` );
 	}
-	return stamped;
+	return { ...stamped, html };
 }
 
 // In-page: every rendered import host as { parent, tpl, name } (parent: the nearest enclosing host's template name).
@@ -165,7 +170,7 @@ function checkHosts( sources, hosts ) {
 
 // Every draft reachable from `entry` (recursive dc-import) with its cut and its stamped template, plus the helmet
 // script files each loads: [{ component, file, template, logic, logicLine, logicColumn, via: entry|bridge|standalone,
-// stamped: { elements, topTexts }, scripts: [{ src, file, text } | { src, error }] }], with `blocked` on the list. Renders in the sandbox (replay
+// stamped: { elements, topTexts, html (the annotated template text) }, scripts: [{ src, file, text } | { src, error }] }], with `blocked` on the list. Renders in the sandbox (replay
 // mode, `harPath`), or in an already open `sandbox` (openSandbox's result). Throws when a draft is missing or its
 // template never reaches the runtime.
 export async function draftSources( { folder, entry, harPath = null, sandbox = null, timeout = 60000 } ) {
