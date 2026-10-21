@@ -2,7 +2,8 @@
 // intake review names, every active record of its handoff animations.json and every state of its surfaces.json, each
 // owned by a unit of the plan the map names, or marked done or accepted. `mapProblems` is the check: a missing,
 // duplicated or unknown key, a unit the plan does not hold, a done commit that does not exist, and a coverage key whose
-// mark disagrees with the coverage map (an open key whose entry is covered or excluded, a done key still a gap).
+// mark disagrees with the coverage map (an open key whose entry is covered or excluded, a done or accepted key still a
+// gap).
 import fs from 'fs';
 import path from 'path';
 import { spawnSync } from 'child_process';
@@ -43,30 +44,76 @@ export function expectedKeys( client, root = REPO ) {
 	if ( fs.existsSync( surf ) ) {
 		for ( const s of readJson( surf ).records || [] ) {
 			for ( const st of s.states || [] ) {
-				keys.add( `state:${ s.id }:${ st.name }` );
+				let key = `state:${ s.id }:${ st.name }`;
+				for ( let n = 2; keys.has( key ); n++ ) {
+					key = `state:${ s.id }:${ st.name } #${ n }`;
+				}
+				keys.add( key );
 			}
 		}
 	}
 	return [ ...keys ].sort();
 }
 
-// The unit ids of a plan: the first cell of each row of its work table (`| U13a Heritage track | ...`).
+// The unit ids of a plan: the first cell of each row of its work table, the table whose header row starts `| Unit |`.
 export function planUnits( markdown ) {
-	return new Set( [ ...String( markdown ).matchAll( /^\| (U\d+[a-z]?) /gm ) ].map( ( m ) => m[ 1 ] ) );
+	const units = new Set();
+	let inTable = false;
+	for ( const line of String( markdown ).split( /\r?\n/ ) ) {
+		if ( /^\| Unit \|/.test( line ) ) {
+			inTable = true;
+		} else if ( inTable && ! line.startsWith( '|' ) ) {
+			inTable = false;
+		} else if ( inTable ) {
+			const m = line.match( /^\| (U\d+[a-z]?) / );
+			m && units.add( m[ 1 ] );
+		}
+	}
+	return units;
 }
 
-// The keys of the map's `keys` object that occur more than once in its raw text (JSON.parse keeps only the last).
+// The member names of the map's top-level `keys` object that occur more than once in its raw text (JSON.parse keeps
+// only the last). A character scan that tracks strings and nesting, so names inside values never count.
 export function duplicateKeys( raw ) {
-	const block = raw.slice( raw.indexOf( '"keys"' ) );
-	const seen = new Map();
-	for ( const m of block.matchAll( /"((?:[^"\\]|\\.)*)"\s*:/g ) ) {
-		seen.set( m[ 1 ], ( seen.get( m[ 1 ] ) || 0 ) + 1 );
+	const counts = new Map();
+	let depth = 0;
+	let inKeys = false;
+	let keysDepth = -1;
+	let lastName = null;
+	for ( let i = 0; i < raw.length; i++ ) {
+		const c = raw[ i ];
+		if ( '"' === c ) {
+			let j = i + 1;
+			while ( j < raw.length && '"' !== raw[ j ] ) {
+				j += '\\' === raw[ j ] ? 2 : 1;
+			}
+			const str = JSON.parse( raw.slice( i, j + 1 ) );
+			let k = j + 1;
+			while ( /\s/.test( raw[ k ] || '' ) ) {
+				k++;
+			}
+			if ( ':' === raw[ k ] ) {
+				if ( 1 === depth ) {
+					lastName = str;
+				} else if ( inKeys && depth === keysDepth ) {
+					counts.set( str, ( counts.get( str ) || 0 ) + 1 );
+				}
+			}
+			i = j;
+		} else if ( '{' === c || '[' === c ) {
+			depth++;
+			if ( '{' === c && 2 === depth && 'keys' === lastName ) {
+				inKeys = true;
+				keysDepth = 2;
+			}
+		} else if ( '}' === c || ']' === c ) {
+			if ( inKeys && depth === keysDepth ) {
+				inKeys = false;
+			}
+			depth--;
+		}
 	}
-	seen.delete( 'keys' );
-	seen.delete( 'done' );
-	seen.delete( 'accepted' );
-	seen.delete( 'unit' );
-	return [ ...seen ].filter( ( [ , n ] ) => n > 1 ).map( ( [ k ] ) => k );
+	return [ ...counts ].filter( ( [ , n ] ) => n > 1 ).map( ( [ k ] ) => k );
 }
 
 // Whether a commit exists in the repo.
@@ -111,8 +158,14 @@ export function mapProblems( { raw, expected, units, coverage, hasCommit } ) {
 			}
 			continue;
 		}
-		if ( v?.done ) {
-			if ( PRIOR === v.done ) {
+		if ( ! v || 'object' !== typeof v || Array.isArray( v ) ) {
+			problems.push( `${ k }: a value is a unit id, { done, unit } or { accepted, unit }` );
+		} else if ( 'done' in v && 'accepted' in v ) {
+			problems.push( `${ k }: a value is done or accepted, never both` );
+		} else if ( 'done' in v ) {
+			if ( 'string' !== typeof v.done || ! v.done.trim() ) {
+				problems.push( `${ k }: done names a commit hash or "prior"` );
+			} else if ( PRIOR === v.done ) {
 				if ( 'covered' !== status ) {
 					problems.push( `${ k }: "prior" is only for a coverage id already covered` );
 				}
@@ -122,9 +175,12 @@ export function mapProblems( { raw, expected, units, coverage, hasCommit } ) {
 			if ( 'gap' === status ) {
 				problems.push( `${ k }: marked done but the coverage map still has it as a gap` );
 			}
-		} else if ( v?.accepted ) {
+		} else if ( 'accepted' in v ) {
 			if ( ! String( v.accepted ).trim() ) {
 				problems.push( `${ k }: an accepted key needs its reason` );
+			}
+			if ( 'gap' === status ) {
+				problems.push( `${ k }: accepted but the coverage map still has it as a gap (record Bean's exclusion there)` );
 			}
 		} else {
 			problems.push( `${ k }: a value is a unit id, { done, unit } or { accepted, unit }` );

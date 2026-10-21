@@ -8,7 +8,7 @@ Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the appr
 
 ## Tasks, in order
 1. Step 0 (the plan's "Step 0" section, 5 min, inline): archive the two old plans, repoint links until the plan's `git grep` lists only archive files, and merge LEDGER's Front M and the Indus front into one front pointing at the plan.
-2. U0 (5 min, inline): confirm its done-when still holds after `git pull` (the header tree path the plan names).
+2. U0 (5 min, inline): confirm its done-when still holds after `git pull` (the header tree path the plan names). Its 10 delivery-map keys stay open: Session R flips them after the header's gate chain and Bean's eye.
 3. U2 (declared values close): follow `.claude/prompts/Declared-values-final-session-prompt.md` tasks 2 to 4. Delegate the fill and calibration runs to one Sonnet operator subagent (serial: one calibration and one browser at a time) and judge its results in the main thread against `fill-report.json`. Bean reviews step 6's surface proof (about 20 min): show him the cropped pairs and the confirm record's disagreements. Mark the 22 open U2 delivery-map keys done as their entries become covered. Delete the declared-values prompt file when its tasks are done.
 4. U4b (safe-area, about 15 min, inline or one Sonnet subagent in a worktree): its done-when in the plan.
 
@@ -31,7 +31,7 @@ Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the appr
 | `ListAgents` + `SendMessage` | the serial queue before any build, deploy, reseed or calibration |
 
 ## Done when
-Gate G-A in the plan: the U2 and U4b done-whens met, `capabilities.mjs --gate` and `delivery-map.mjs indus-foods --check` exit 0, the full route suite green in the main checkout, and the refresh-loop pass for any framework edits taken in its turn.
+Gate G-A in the plan: the U2 and U4b done-whens met, `capabilities.mjs --gate` and `delivery-map.mjs indus-foods --check` exit 0, the full route suite green in the main checkout; a refresh-loop pass only if this session changed framework code (then ahead of B's). Every delivery-map key your units own is flipped (done with its commit, or accepted naming the rule it breaks), and your planted-draft test `scripts/computed-route/tests/<session>-planted-draft.test.mjs` raises its gaps again with one write ref nulled.
 
 Estimate: 1 h agent time plus about 45 min machine.
 

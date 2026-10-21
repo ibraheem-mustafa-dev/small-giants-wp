@@ -8,8 +8,8 @@ Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the appr
 
 ## Tasks, in order
 1. Before any build onto indus-test: a `mysqldump` backup (`.claude/dev-setup.md`). Trees build only into the ids the page map holds.
-2. U15: FR-48-51 (button presets) and FR-48-14 (one parent write over a loop body) as their own first commits with tests; then every surface. Send surface builds to the `wp-sgs-developer` agent or Sonnet subagents one at a time (one browser and one build at a time on the site).
-3. U17: its row in the plan, checked with axe and a keyboard walk at 375/768/1440.
+2. U15: FR-48-51 (button presets) and FR-48-14 (one parent write over a loop body) as their own first commits with tests; then every row of `sites/indus-foods/build/page-map.json` (23 pages, 6 posts, 4 forms), every surface in `sites/indus-foods/build/surfaces.json` and the single-post template. Send surface builds to the `wp-sgs-developer` agent or Sonnet subagents one at a time (one browser and one build at a time on the site).
+3. U17: its row in the plan, checked with axe and a keyboard walk at 375/768/1440. The drawer's scroll lock and the slider's dot labels come from U14: verify them, never rebuild.
 
 ## Skills
 - `/autopilot` first (routing, orchestration, docs current).
@@ -30,7 +30,7 @@ Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the appr
 | `ListAgents` + `SendMessage` | the serial queue before any build, deploy, reseed or calibration |
 
 ## Done when
-The U15 and U17 done-whens in the plan; every surface-state key in the delivery map done or accepted.
+The U15 and U17 done-whens in the plan; every U15 delivery-map key done or accepted.
 
 Estimate: 2 h 30 agent time plus machine time.
 

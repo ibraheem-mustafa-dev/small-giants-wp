@@ -9,7 +9,7 @@ Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the appr
 ## Tasks, in order
 1. The last refresh-loop pass (reseed, deploy to indus-test, mirror refresh, recalibrate; about 20 min machine), after `ListAgents`.
 2. The intake delta re-run (about 20 min machine): mark its review rows. FR-48-34's timer-opened state is checked on it.
-3. The header through G0 to G7 (Session G's chain), then cropped pairs at 375, 768, 1023, 1024, 1199, 1200, 1259, 1260 and 1440 for Bean's eye (about 15 min of his time).
+3. The header through G0 to G7 (Session G's chain), then cropped pairs at 375, 768, 1023, 1024, 1199, 1200, 1259, 1260 and 1440 for Bean's eye (about 15 min of his time). Then flip U0's 10 delivery-map keys (the top bar and header states): done with the header's commit, or accepted with Bean's reason.
 
 ## Skills
 - `/autopilot` first (routing, orchestration, docs current).
@@ -30,7 +30,7 @@ Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the appr
 | `ListAgents` + `SendMessage` | the serial queue before any build, deploy, reseed or calibration |
 
 ## Done when
-Gate G-R in the plan: the header passes G0 to G7 and Bean's eye; the delta re-run's review rows marked.
+Gate G-R in the plan: the header passes G0 to G7 and Bean's eye; the delta re-run's review rows marked; no U0 key open in `delivery-map.mjs indus-foods --status`.
 
 Estimate: 30 min agent time plus about 40 min machine.
 

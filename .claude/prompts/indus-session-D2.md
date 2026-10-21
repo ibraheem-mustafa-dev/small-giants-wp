@@ -7,8 +7,8 @@ Context: the Indus Foods clone's behaviours mapped onto existing SGS settings (F
 Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the approved plan for its units; you need no separate plan-mode approval), then `.claude/LEDGER.md`'s Indus front. Before touching a surface, read the governing spec section the plan names (Spec 48 `.claude/specs/48-CLONING-SYSTEM.md`, Spec 38 and 38A for motion, Spec 04 for forms, Spec 01 and 36 for the logo and SVG upload); grep large specs to the FR, never read them whole.
 
 ## Tasks, in order
-1. U14 (the behaviour recogniser): its row in the plan. Builds inside it: the page transition's custom duration and easing beside its style presets, always winning (Ruling 5); the opening-hours dot pulse and today's row highlight; the accordion's scroll to the opened section (J-20). Everything else maps to existing settings. A block behaviour the draft lacks is switched off where a setting allows, or else recorded as an accepted difference.
-2. U11 (setting meanings), once Session D1's first commit (its settings list) is pushed: detector first (`plugins/sgs-blocks/scripts/check-setting-meanings.py --check`), then the meanings, then a reseed from a clean `origin/main` worktree in this session's refresh-loop slot.
+1. U14 (the behaviour recogniser): its row in the plan. Builds inside it: the page transition's custom duration and easing beside its style presets, always winning (Ruling 5); the opening-hours dot pulse and today's row highlight; the accordion's scroll to the opened section (J-20). Everything else maps to existing settings. A block behaviour the draft lacks is switched off where a setting allows, or else recorded as an accepted difference. Hovers that darken are cloned as drawn (Ruling 7). For each open U14 key (`delivery-map.mjs indus-foods --status`): `capabilities.mjs --like` for a worked example; done when the built tree holds the record's values and the live probe confirms them, else accepted naming the rule it breaks. Send batches of keys to a Sonnet subagent with that rule; judge its results in the main thread.
+2. U11 (setting meanings), once Session D1's `scripts/computed-route/data/effect-settings.json` is pushed: append U14's settings to it, then build the detector `plugins/sgs-blocks/scripts/check-setting-meanings.py` (it does not exist yet; `--check` fails on a listed setting with no `sgs.meaning`, with a MUST FAIL test), then the meanings, then a reseed from a clean `origin/main` worktree in this session's refresh-loop slot.
 3. At the end: the refresh-loop pass after D1's.
 
 ## Skills
@@ -30,7 +30,7 @@ Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the appr
 | `ListAgents` + `SendMessage` | the serial queue before any build, deploy, reseed or calibration |
 
 ## Done when
-Gate G-D2 in the plan; the open U14 delivery-map keys (169 at the start) done or accepted with reasons.
+Gate G-D2 in the plan; every U14 and U11 delivery-map key (163 at the start) done or accepted with reasons. Every delivery-map key your units own is flipped (done with its commit, or accepted naming the rule it breaks), and your planted-draft test `scripts/computed-route/tests/<session>-planted-draft.test.mjs` raises its gaps again with one write ref nulled.
 
 Estimate: 1 h 45 agent time plus the refresh-loop pass.
 

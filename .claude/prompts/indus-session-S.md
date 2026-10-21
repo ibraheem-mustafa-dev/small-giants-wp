@@ -9,7 +9,7 @@ Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the appr
 ## Tasks, in order
 1. U18: the check on every surface; cropped draft-and-live pairs for every surface at 375, 768 and 1440 (the header also at its thresholds); `gaps.json` written with every gate's evidence and every accepted difference naming its rule.
 2. Bean's eye (about 1 h with the pairs): show him surface by surface, collect his rulings in one pass, then one fix round.
-3. The carried content questions (the plan's "Carried from the archived plans"): put them to Bean in the same sitting, each self-contained.
+3. The carried content questions (the plan's "Carried from the archived plans"): put them to Bean in the same sitting, each self-contained, including L-06 and L-09 (the square logo's letters are one path in the asset, so they cannot wave); flip those two keys per his answer.
 
 ## Skills
 - `/autopilot` first (routing, orchestration, docs current).

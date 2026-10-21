@@ -7,9 +7,9 @@ Context: the Indus Foods clone's script effects (magnet, sheen, ripple, tilt and
 Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the approved plan for its units; you need no separate plan-mode approval), then `.claude/LEDGER.md`'s Indus front. Before touching a surface, read the governing spec section the plan names (Spec 48 `.claude/specs/48-CLONING-SYSTEM.md`, Spec 38 and 38A for motion, Spec 04 for forms, Spec 01 and 36 for the logo and SVG upload); grep large specs to the FR, never read them whole.
 
 ## Tasks, in order
-1. First commit (about 10 min): the list of block settings U13 maps each effect to, as a file the plan's U11 row can read. Push it and message Session D2 so it can start U11.
+1. First commit (about 10 min): `scripts/computed-route/data/effect-settings.json`, an array of `{ block, attr, effect }` for every setting U13 writes (D2 appends U14's). Push it and message Session D2 so it can start U11. If Session B's split of `lib/fill-resolve.mjs` is not on `origin/main` yet (`git log origin/main --oneline -- scripts/computed-route/lib/fill-resolve.mjs`), do U13a, U13b and U13c's allowlist first and U13 once it lands.
 2. U13 (the effect recogniser, including the peek's full reveal on keyboard focus and on tap in `plugins/sgs-blocks/src/shared/effects/cursor-field.js`), U13a (the timeline: SGS's switch point kept as an accepted difference, the active-year look built) and U13b (clip reveals, no radius build): each row in the plan.
-3. U13c last: the SVG upload allowlist keeping SMIL and `<style>` animation under `lib/svg-screen.mjs::svgProblem`'s refusals (security-relevant: a MUST FAIL test for every refused case, and `/security-standards`), the logo's inline-SVG setting, then the original files uploaded to indus-test and the logo hover written in its custom CSS, registered as a one-off.
+3. U13c last: the SVG upload allowlist keeping SMIL and `<style>` animation under `lib/svg-screen.mjs::svgProblem`'s refusals (security-relevant: a MUST FAIL test for every refused case, and `/security-standards`), the logo's inline-SVG setting, then the original files uploaded to indus-test and the logo hover written in its custom CSS, labelled in the logo's `sgsCustomCssNote`. L-06 and L-09 stay open for Bean's content question in Session S.
 4. At the end: the refresh-loop pass after C's.
 
 ## Skills
@@ -31,7 +31,7 @@ Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the appr
 | `ListAgents` + `SendMessage` | the serial queue before any build, deploy, reseed or calibration |
 
 ## Done when
-Gate G-D1 in the plan, with a cropped draft-and-live pair per effect at 375/768/1440 and the five SVG files animating on indus-test after upload.
+Gate G-D1 in the plan, with a cropped draft-and-live pair per effect at 375/768/1440 and the five SVG files animating on indus-test after upload. Every delivery-map key your units own is flipped (done with its commit, or accepted naming the rule it breaks), and your planted-draft test `scripts/computed-route/tests/<session>-planted-draft.test.mjs` raises its gaps again with one write ref nulled.
 
 Estimate: 2 h agent time plus the refresh-loop pass.
 

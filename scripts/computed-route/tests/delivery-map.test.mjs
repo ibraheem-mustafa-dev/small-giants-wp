@@ -62,3 +62,29 @@ test( 'MUST FAIL: a coverage key whose mark disagrees with the coverage map fail
 	assert.match( run( { ...good, keys: { ...good.keys, 'coverage:html:form': { done: 'abc1234', unit: 'U9' } } } ).join( '\n' ), /coverage:html:form: marked done but the coverage map still has it as a gap/ );
 	assert.match( run( { ...good, keys: { ...good.keys, 'animation:A-01': { done: PRIOR, unit: 'U13a' } } } ).join( '\n' ), /"prior" is only for a coverage id already covered/ );
 } );
+
+test( 'MUST FAIL: an accepted coverage key still a gap, a value both done and accepted, and a non-string done fail', () => {
+	assert.match( run( { ...good, keys: { ...good.keys, 'coverage:html:form': { accepted: 'a difference', unit: 'U9' } } } ).join( '\n' ), /coverage:html:form: accepted but the coverage map still has it as a gap/ );
+	assert.match( run( { ...good, keys: { ...good.keys, 'animation:A-01': { done: 'abc1234', accepted: 'x', unit: 'U13a' } } } ).join( '\n' ), /never both/ );
+	assert.match( run( { ...good, keys: { ...good.keys, 'animation:A-01': { done: true, unit: 'U13a' } } } ).join( '\n' ), /done names a commit hash/ );
+} );
+
+test( 'duplicate scan: names inside values, escaped quotes and keys outside the keys object never count', () => {
+	const raw = '{ "keys": "x", "plan": "p", "keys2": 1, "keys": { "a": { "unit": "U9", "done": "prior" }, "b": { "accepted": "says \\"a\\": twice", "unit": "U9" }, "c": "U9" } }';
+	assert.deepEqual( duplicateKeys( raw ), [] );
+	assert.deepEqual( duplicateKeys( raw.replace( '"c": "U9"', '"c": "U9", "b": "U9"' ) ), [ 'b' ] );
+} );
+
+test( 'plan units come from the work table only; repeated state names get their own keys', () => {
+	assert.deepEqual( [ ...planUnits( '| Unit | What |\n|---|---|\n| U2 a | x |\n\n| Session | Units |\n|---|---|\n| U99 b | x |\n' ) ], [ 'U2' ] );
+	const s = path.join( root, 'sites', 'client-b', 'handoff' );
+	fs.mkdirSync( s, { recursive: true } );
+	fs.writeFileSync( path.join( s, 'surfaces.json' ), JSON.stringify( { records: [ { id: 'S-09', states: [ { name: 'open' }, { name: 'open' } ] } ] } ) );
+	assert.deepEqual( expectedKeys( 'client-b', root ), [ 'state:S-09:open', 'state:S-09:open #2' ] );
+} );
+
+test( 'MUST FAIL: a number, boolean or array value is refused, never a crash', () => {
+	for ( const v of [ 7, true, [ 'U9' ] ] ) {
+		assert.match( run( { ...good, keys: { ...good.keys, 'animation:A-01': v } } ).join( '\n' ), /a value is a unit id/ );
+	}
+} );

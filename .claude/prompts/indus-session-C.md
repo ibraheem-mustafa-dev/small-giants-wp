@@ -7,7 +7,7 @@ Context: the Indus Foods clone's forms: the careers and catalogue inline forms, 
 Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the approved plan for its units; you need no separate plan-mode approval), then `.claude/LEDGER.md`'s Indus front. Before touching a surface, read the governing spec section the plan names (Spec 48 `.claude/specs/48-CLONING-SYSTEM.md`, Spec 38 and 38A for motion, Spec 04 for forms, Spec 01 and 36 for the logo and SVG upload); grep large specs to the FR, never read them whole.
 
 ## Tasks, in order
-1. U10 first (the form settings the writer needs; none exists today): per-field validation copy, floating labels, textarea maxlength and counter, autocomplete, inputmode, default value (text and select) and checked, a field's value taken from a named link parameter (escaped, and a select accepts only its own options), the review step's per-section cards with an Edit link, and saved progress per the plan's Ruling 4 (every field and the step in `localStorage`, restored with the draft's notice, cleared on submit). Each one is a Spec 04 FR with a test, built in the owning block with an inspector control.
+1. U10 first (the form settings the writer needs; none exists today): per-field validation copy, floating labels, textarea maxlength and counter, autocomplete, inputmode, default value (text and select) and checked, a field's value taken from a named link parameter (escaped, and a select accepts only its own options), the review step's per-section cards with an Edit link, and saved progress per the plan's Ruling 4 (every field and the step in `localStorage`, restored with the draft's notice, cleared on submit). Each one is a new `FR-4-<N>` in `.claude/specs/04-SGS-FORMS.md` (continuing its numbering) with a test, built in the owning block with an inspector control.
 2. U9 (form writer): its row in the plan, including the careers "Apply for this role" link per Ruling 6.
 3. Step 22's done-when: each Indus form submits on indus-test and the owner email reaches the confirmed recipient (FluentSMTP log).
 4. At the end: one refresh-loop pass after B's, after `ListAgents`.
@@ -31,7 +31,7 @@ Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the appr
 | `ListAgents` + `SendMessage` | the serial queue before any build, deploy, reseed or calibration |
 
 ## Done when
-Gate G-C in the plan, with the trade application's review step and saved progress paired with the draft, and the careers link preselecting both selects on indus-test.
+Gate G-C in the plan, with the trade application's review step and saved progress paired with the draft, and the careers link preselecting both selects on indus-test. Every delivery-map key your units own is flipped (done with its commit, or accepted naming the rule it breaks), and your planted-draft test `scripts/computed-route/tests/<session>-planted-draft.test.mjs` raises its gaps again with one write ref nulled.
 
 Estimate: 1 h 45 agent time plus the refresh-loop pass.
 

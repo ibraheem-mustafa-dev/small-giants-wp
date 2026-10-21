@@ -8,7 +8,7 @@ Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the appr
 
 ## Tasks, in order
 1. U5's first commit: split `lib/fill-resolve.mjs` under 400 lines by responsibility (every consumer's import updated, the README listing updated, the route suite green). Push it straight away and message Session D1 if it is running.
-2. U5 (images and maps), U6 (icons), U7 (links), U8 (styling): each row in the plan. U8 writes to what exists (conditional visibility, the theme scrollbar tokens, the logo's mobile size) and builds only the `::selection` colour. Mechanical writers can go to Sonnet subagents in worktrees. The map display controls (height per device, zoom, filter) are a framework change: build them in the owning block with an inspector control and a render, per CLAUDE.md.
+2. U5 (images and maps), U6 (icons), U7 (links), U8 (styling): each row in the plan. U8 writes to what exists (conditional visibility, the theme scrollbar tokens, the logo's mobile size) and builds only the `::selection` colour. Mechanical writers can go to Sonnet subagents in worktrees. The map display controls (height per device, zoom, a filter with a custom value) are a framework change on `sgs/business-info` (confirm with `/sgs-db`): build them with an inspector control and a render, per CLAUDE.md, and clone the draft's whole filter including `contrast(1.05)`.
 3. At the end: batch the framework edits into one refresh-loop pass, after `ListAgents` and a message to each busy peer.
 
 ## Skills
@@ -30,7 +30,7 @@ Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the appr
 | `ListAgents` + `SendMessage` | the serial queue before any build, deploy, reseed or calibration |
 
 ## Done when
-Gate G-B in the plan, including a cropped draft-and-live pair for both Indus maps at 375/768/1440.
+Gate G-B in the plan, including a cropped draft-and-live pair for both Indus maps at 375/768/1440. Every delivery-map key your units own is flipped (done with its commit, or accepted naming the rule it breaks), and your planted-draft test `scripts/computed-route/tests/<session>-planted-draft.test.mjs` raises its gaps again with one write ref nulled.
 
 Estimate: 1 h 15 agent time plus the refresh-loop pass (about 20 min machine).
 

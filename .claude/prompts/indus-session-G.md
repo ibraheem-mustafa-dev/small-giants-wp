@@ -30,7 +30,7 @@ Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the appr
 | `ListAgents` + `SendMessage` | the serial queue before any build, deploy, reseed or calibration |
 
 ## Done when
-Gate G-G in the plan: every U16, U2b and U2c done-when met with MUST FAIL tests mutation-red, `capabilities.mjs --gate` exit 0, and the full route suite green in the main checkout. Each Spec 48 FR's Status line updated once, in the closing commit.
+Gate G-G in the plan: every U16, U2b and U2c done-when met with MUST FAIL tests mutation-red, `capabilities.mjs --gate` exit 0, and the full route suite green in the main checkout; no refresh-loop pass (code only). Each Spec 48 FR's Status line updated once, in the closing commit. Every delivery-map key your units own is flipped (done with its commit, or accepted naming the rule it breaks), and your planted-draft test `scripts/computed-route/tests/<session>-planted-draft.test.mjs` raises its gaps again with one write ref nulled.
 
 Estimate: 2 to 3 h agent time over one or two sittings.
 
