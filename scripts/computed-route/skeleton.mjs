@@ -4,7 +4,9 @@
 // sites/<client>/build/surfaces.json[surface].draftUrl.
 //   node scripts/computed-route/skeleton.mjs inventory --client <slug> --surface <name> --root <selector>
 //   node scripts/computed-route/skeleton.mjs propose   --client <slug> --surface <name> [--site-name <text>]
-//   node scripts/computed-route/skeleton.mjs review    --client <slug> --surface <name>
+//     (the surfaces.json entry names its intake skeleton in `intakeSurface`: the proposal takes that skeleton's kind, name and
+//     built post, the intake motion inventory's loops, and the client decisions saved under that slug)
+//   node scripts/computed-route/skeleton.mjs review   --client <slug> --surface <name>
 //   node scripts/computed-route/skeleton.mjs finalise  --client <slug> --surface <name> [--apply <picks.json>]
 //   node scripts/computed-route/skeleton.mjs decide    --client <slug> --surface <name> --key <key> (--block <slug> [--attrs <json>] | --remove) [--reason <text>]
 //   node scripts/computed-route/skeleton.mjs decide    --client <slug> --surface <name> --site-name <text>
@@ -19,6 +21,8 @@ import { serveDraft } from './lib/draft.mjs';
 import { readInventory } from './lib/skeleton-inventory.mjs';
 import { loadFacts, decisionsProblems, REPO } from './lib/skeleton-facts.mjs';
 import { proposeSkeleton } from './lib/skeleton-propose.mjs';
+import { loopingKeys } from './lib/skeleton-rerun.mjs';
+import { isServedInventory, servedDecisions, servedMotion } from './lib/key-space.mjs';
 import { reviewHtml } from './lib/skeleton-review.mjs';
 import { loadCalibration } from './lib/cache.mjs';
 import { skeletonDir, readDecisions, readPicks, recordDecision, recordSiteName, finaliseRequest, applyPicks } from './lib/skeleton-finalise.mjs';
@@ -46,19 +50,42 @@ const write = ( file, text ) => {
 };
 const json = ( file, value ) => write( file, `${ JSON.stringify( value, null, '\t' ) }\n` );
 
-// Runs propose from the files on disk and writes <surface>.skeleton.json and <surface>.proposal.json. Returns the result.
 const readSurface = ( repo, client, surface ) => JSON.parse( fs.readFileSync( path.join( repo, 'sites', client, 'build', 'surfaces.json' ), 'utf8' ) )[ surface ] || {};
+const readJson = ( file, fallback ) => ( fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : fallback );
 
-export function proposeSurface( { client, surface, repo = REPO, siteName = null, db = openDb() } ) {
+// The intake context of a surface, as lib/skeleton-rerun.mjs::rerunSkeletons passes it: the intake skeleton the manifest
+// entry names in `intakeSurface` (its slug, id, kind, name and root component), the client's built post for it and the
+// intake motion inventory's looping templates. Throws when the entry has no usable link.
+export function intakeContext( { client, surface, repo = REPO } ) {
+	const slug = readSurface( repo, client, surface ).intakeSurface;
+	if ( ! slug ) {
+		throw new Error( `sites/${ client }/build/surfaces.json "${ surface }" has no intakeSurface: the slug of its intake.json skeletons entry (node scripts/computed-route/manifest.mjs ${ client } --site <site> --only ${ surface } --apply sets it)` );
+	}
+	const intake = readJson( path.join( repo, 'sites', client, 'build', 'intake', 'intake.json' ), null );
+	const entry = intake?.skeletons?.[ slug ];
+	if ( ! entry ) {
+		throw new Error( `"${ surface }" names intakeSurface "${ slug }", which is not in sites/${ client }/build/intake/intake.json skeletons` );
+	}
+	const built = readJson( path.join( skeletonDir( repo, client ), 'built-surfaces.json' ), {} ).surfaces || {};
+	return { slug, kind: entry.kind, name: entry.name, built: built[ entry.id ] || built[ slug ] || null, rootComponent: entry.inventory?.checks?.rootName || null, motion: loopingKeys( intake.inventory?.animations ) };
+}
+
+// Runs propose from the files on disk and writes <surface>.skeleton.json and <surface>.proposal.json. Returns the result.
+// A served inventory (`Root/…` keys) is proposed with the decisions and motion keys written in intake's space rewritten
+// to its root (lib/key-space.mjs).
+export function proposeSurface( { client, surface, repo = REPO, siteName = null, db = openDb(), propose = proposeSkeleton } ) {
 	const p = skeletonPaths( { client, surface, repo } );
+	const ctx = intakeContext( { client, surface, repo } );
 	const inventory = JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) );
-	const clientDecisions = readDecisions( p.decisions );
-	const facts = loadFacts( { db, client, repo, siteName: siteName || clientDecisions.siteName || null } );
+	const saved = readDecisions( p.decisions );
+	const served = isServedInventory( inventory );
+	const clientDecisions = served ? { ...saved, surfaces: { ...saved.surfaces, [ ctx.slug ]: servedDecisions( saved.surfaces?.[ ctx.slug ], ctx.rootComponent ) } } : saved;
+	const facts = loadFacts( { db, client, repo, siteName: siteName || saved.siteName || null } );
 	const bad = decisionsProblems( facts );
 	if ( bad.length ) {
 		throw new Error( `the decisions data is not sound:\n- ${ bad.join( '\n- ' ) }` );
 	}
-	const r = proposeSkeleton( { inventory, facts, surface, clientDecisions, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), db } );
+	const r = propose( { inventory, facts, surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, built: ctx.built, motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), db } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
 	return { ...r, paths: p, facts, inventory, clientDecisions };
@@ -132,7 +159,7 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 				throw new Error( `${ block } is not in the framework database` );
 			}
 		}
-		recordDecision( { file: p.decisions, surface, element, choice: argv.includes( '--remove' ) ? { remove: true } : { block, attributes: flag( '--attrs' ) ? JSON.parse( flag( '--attrs' ) ) : undefined }, reason: flag( '--reason' ) } );
+		recordDecision( { file: p.decisions, surface: readSurface( repo, client, surface ).intakeSurface || surface, element, choice: argv.includes( '--remove' ) ? { remove: true } : { block, attributes: flag( '--attrs' ) ? JSON.parse( flag( '--attrs' ) ) : undefined }, reason: flag( '--reason' ) } );
 		log( `decided ${ key }: ${ argv.includes( '--remove' ) ? 'remove' : block }. Run propose and review again.` );
 	}
 }

@@ -1,8 +1,8 @@
 {
-	"generated": "2026-10-21T03:32:52.014Z",
+	"generated": "2026-10-21T04:24:29.311Z",
 	"inventory": "2026-10-21T03:32:11.794Z",
 	"source": "http://127.0.0.1:63470/",
-	"surface": "header",
+	"surface": "sticky-header",
 	"siteName": null,
 	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
 	"weights": {
@@ -16,21 +16,23 @@
 		"logo": 0.5,
 		"rule": 1
 	},
+	"builtPost": {
+		"site": "sandybrown",
+		"postType": "sgs_header",
+		"postId": 4461,
+		"title": "QA copy Indus mega menu"
+	},
 	"counts": {
 		"inventoryElements": 24,
 		"parts": 0,
 		"rows": 24,
-		"skeletonNodes": 19,
-		"expandedNodes": 19,
+		"skeletonNodes": 5,
+		"expandedNodes": 5,
 		"low": 0,
-		"removed": 5,
+		"removed": 19,
 		"unresolved": 0,
 		"byRule": {
-			"widthWrapper": 1,
-			"homeLink": 1,
-			"logoElement": 1,
-			"pillButton": 5,
-			"solitaryIcon": 4
+			"clientBuiltSurface": 24
 		}
 	},
 	"problems": [],
@@ -44,18 +46,31 @@
 			"block": "sgs/site-header",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
+			"source": null,
+			"confidence": 0.58,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "clientBuiltSurface",
 			"candidates": [
 				{
 					"block": "sgs/site-header",
-					"score": 1,
-					"share": 1,
+					"score": 1.4,
+					"share": 0.583,
 					"evidence": [
-						"client decision: agent pick: the draft root is a <header> whose children (a logo, a nav and a CTA row) are what sgs/site-header accepts (block_composition: section-root accepting sgs/site-header-row); sgs/hero lists header only as a tag capability. Surface is the sgs_header post."
+						"block_capabilities: sgs/site-header lists \"header\" (the draft root tag)",
+						"block_composition: sgs/site-header is a section-root accepting [\"sgs/site-header-row\"]",
+						"the root of the surface",
+						"the root's children fit what it accepts (sgs/site-header-row)"
+					]
+				},
+				{
+					"block": "sgs/hero",
+					"score": 1,
+					"share": 0.417,
+					"evidence": [
+						"block_capabilities: sgs/hero lists \"header\" (the draft root tag)",
+						"block_composition: sgs/hero is a section-root accepting [\"sgs/media\"]",
+						"the root of the surface"
 					]
 				}
 			],
@@ -65,7 +80,13 @@
 				"1440": "shots/Root_39_0@1440.png"
 			},
 			"snippet": "<header ref=\"{{ setHeaderEl }}\" sc-camel-on-mouse-leave=\"{{ scheduleClose }}\" sc-camel-on-mouse-enter=\"{{ cancelClose }}\" style=\"position:sticky;top:0;z-index:200;transition:box-shadow .3s;\" data-dc-tpl=\"39\"> <div style=\"background:#FFFFFF;border-bottom:3px solid #D8CA50;\" data-dc-tpl=\"40\"> <div style=\"max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:{{ R.headH }};display:flex;align-item",
-			"attributes": {}
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
 		},
 		{
 			"order": 1,
@@ -80,7 +101,7 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "clientBuiltSurface",
 			"candidates": [
 				{
 					"block": "sgs/site-header-row",
@@ -99,7 +120,13 @@
 				"1440": "shots/Root_40_0@1440.png"
 			},
 			"snippet": "<div style=\"background:#FFFFFF;border-bottom:3px solid #D8CA50;\" data-dc-tpl=\"40\"> <div style=\"max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:{{ R.headH }};display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;\" data-dc-tpl=\"41\"> <a href=\"#/\" sc-camel-on-click=\"{{ closeAll }}\" aria-label=\"Indus Foods home\" style=\"display:flex;align-items:center;flex-s",
-			"attributes": {}
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
 		},
 		{
 			"order": 2,
@@ -114,7 +141,7 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "widthWrapper",
+			"rule": "clientBuiltSurface",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -122,7 +149,13 @@
 				"1440": "shots/Root_41_0@1440.png"
 			},
 			"snippet": "<div style=\"max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:{{ R.headH }};display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;\" data-dc-tpl=\"41\"> <a href=\"#/\" sc-camel-on-click=\"{{ closeAll }}\" aria-label=\"Indus Foods home\" style=\"display:flex;align-items:center;flex-shrink:0;\" data-dc-tpl=\"42\"> <indus-logo variant=\"horizontal\" aria-label=\"Indus Food",
-			"attributes": {}
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
 		},
 		{
 			"order": 3,
@@ -137,7 +170,7 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "homeLink",
+			"rule": "clientBuiltSurface",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -145,7 +178,13 @@
 				"1440": "shots/Root_42_0@1440.png"
 			},
 			"snippet": "<a href=\"#/\" sc-camel-on-click=\"{{ closeAll }}\" aria-label=\"Indus Foods home\" style=\"display:flex;align-items:center;flex-shrink:0;\" data-dc-tpl=\"42\"> <indus-logo variant=\"horizontal\" aria-label=\"Indus Foods Ltd\" style=\"display:block;height:{{ R.logoH }};aspect-ratio:3741 / 848;\" data-dc-tpl=\"43\"></indus-logo> </a>",
-			"attributes": {}
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
 		},
 		{
 			"order": 4,
@@ -160,7 +199,7 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "logoElement",
+			"rule": "clientBuiltSurface",
 			"handover": {
 				"owner": "site-info",
 				"kind": "presence",
@@ -182,7 +221,13 @@
 				"1440": "shots/Root_43_0@1440.png"
 			},
 			"snippet": "<indus-logo variant=\"horizontal\" aria-label=\"Indus Foods Ltd\" style=\"display:block;height:{{ R.logoH }};aspect-ratio:3741 / 848;\" data-dc-tpl=\"43\"></indus-logo>",
-			"attributes": {}
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
 		},
 		{
 			"order": 5,
@@ -190,23 +235,21 @@
 			"tag": "nav",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/container",
+			"block": "sgs/nav-bar-menu",
 			"action": null,
-			"reason": null,
-			"source": null,
+			"reason": "the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu",
+			"source": "rule navigation",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "clientBuiltSurface",
 			"candidates": [
 				{
-					"block": "sgs/container",
+					"block": "sgs/nav-bar-menu",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 6 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+						"rule navigation: the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu"
 					]
 				}
 			],
@@ -215,9 +258,12 @@
 				"1440": "shots/Root_45_0@1440.png"
 			},
 			"snippet": "<nav style=\"display:flex;align-items:center;gap:2px;height:100%;\" data-dc-tpl=\"45\"> <sc-for list=\"{{ items }}\" as=\"item\" hint-placeholder-count=\"7\" data-dc-tpl=\"46\"> <button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"pos",
-			"attributes": {
-				"tagName": "nav",
-				"layout": "flex"
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
 			}
 		},
 		{
@@ -226,31 +272,27 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": "sgs/button",
-			"action": null,
-			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
-			"source": "rule pillButton",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
-					]
-				}
-			],
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_47_0@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
-			"attributes": {
-				"label": "Home"
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
 			}
 		},
 		{
@@ -261,20 +303,26 @@
 			"words": "Home",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/button: rule pillButton",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"into": "Root/47#0",
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_48_0@1440.png"
 			},
 			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
-			"attributes": {}
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
 		},
 		{
 			"order": 8,
@@ -284,20 +332,26 @@
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/button: rule pillButton",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"into": "Root/47#0",
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_52_0@1440.png"
 			},
 			"snippet": "<span style=\"position:absolute;left:{{ R.navPad }};right:{{ R.navPad }};bottom:3px;height:2px;background:#D8CA50;\" data-dc-tpl=\"52\"></span>",
-			"attributes": {}
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
 		},
 		{
 			"order": 9,
@@ -305,34 +359,27 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_47_1@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
 			}
 		},
 		{
@@ -341,34 +388,27 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "About",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_48_1@1440.png"
 			},
 			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
 			}
 		},
 		{
@@ -377,30 +417,28 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "",
-			"block": "sgs/icon",
-			"action": null,
-			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
-			"source": "rule solitaryIcon",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "solitaryIcon",
-			"candidates": [
-				{
-					"block": "sgs/icon",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
-					]
-				}
-			],
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_50_0@1440.png"
 			},
 			"snippet": "<span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon }}</span>",
-			"attributes": {}
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
 		},
 		{
 			"order": 12,
@@ -408,34 +446,27 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_47_2@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
 			}
 		},
 		{
@@ -444,34 +475,27 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "Sectors",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_48_2@1440.png"
 			},
 			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
 			}
 		},
 		{
@@ -480,30 +504,28 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "",
-			"block": "sgs/icon",
-			"action": null,
-			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
-			"source": "rule solitaryIcon",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "solitaryIcon",
-			"candidates": [
-				{
-					"block": "sgs/icon",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
-					]
-				}
-			],
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_50_1@1440.png"
 			},
 			"snippet": "<span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon }}</span>",
-			"attributes": {}
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
 		},
 		{
 			"order": 15,
@@ -511,34 +533,27 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_47_3@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
 			}
 		},
 		{
@@ -547,34 +562,27 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "Brands",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_48_3@1440.png"
 			},
 			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
 			}
 		},
 		{
@@ -583,30 +591,28 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "",
-			"block": "sgs/icon",
-			"action": null,
-			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
-			"source": "rule solitaryIcon",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "solitaryIcon",
-			"candidates": [
-				{
-					"block": "sgs/icon",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
-					]
-				}
-			],
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_50_2@1440.png"
 			},
 			"snippet": "<span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon }}</span>",
-			"attributes": {}
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
 		},
 		{
 			"order": 18,
@@ -614,34 +620,27 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_47_4@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
 			}
 		},
 		{
@@ -650,34 +649,27 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "Trade",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_48_4@1440.png"
 			},
 			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
 			}
 		},
 		{
@@ -686,30 +678,28 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "",
-			"block": "sgs/icon",
-			"action": null,
-			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
-			"source": "rule solitaryIcon",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "solitaryIcon",
-			"candidates": [
-				{
-					"block": "sgs/icon",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
-					]
-				}
-			],
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_50_3@1440.png"
 			},
 			"snippet": "<span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon }}</span>",
-			"attributes": {}
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
 		},
 		{
 			"order": 21,
@@ -717,31 +707,27 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": "sgs/button",
-			"action": null,
-			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
-			"source": "rule pillButton",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
-					]
-				}
-			],
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_47_5@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
-			"attributes": {
-				"label": "Contact"
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
 			}
 		},
 		{
@@ -752,20 +738,26 @@
 			"words": "Contact",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/button: rule pillButton",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"into": "Root/47#5",
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_48_5@1440.png"
 			},
 			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
-			"attributes": {}
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
 		},
 		{
 			"order": 23,
@@ -780,7 +772,7 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "clientBuiltSurface",
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -800,6 +792,12 @@
 			"attributes": {
 				"label": "Register For A Trade Account",
 				"url": "#/apply"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
 			}
 		}
 	]

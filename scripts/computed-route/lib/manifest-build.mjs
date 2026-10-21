@@ -91,10 +91,16 @@ function intakeRecord( row, intake ) {
 	return 1 === found.length ? found[ 0 ] : null;
 }
 
+// The slug of intake's skeleton entry whose id is the matched handoff record's id (never by position), or null.
+function intakeSurfaceOf( record, intake ) {
+	const found = Object.entries( intake?.skeletons || {} ).filter( ( [ , x ] ) => null != record?.id && x?.id === record.id );
+	return 1 === found.length ? found[ 0 ][ 0 ] : null;
+}
+
 const nameSet = ( record ) => [ ...new Set( ( record.states || [] ).map( ( s ) => s.name ) ) ].sort();
 
 // Builds the manifest. `target` is the calibration target ({ envFile, envKey }), `entryFile` the draft's entry file.
-// `only` limits the run to those keys. Returns { entries, unresolved, unmatched, pointer, dropped, disagree, skipped, added, stale }; throws when two rows give one key.
+// `only` limits the run to those keys. Returns { entries, unresolved, unmatched, pointer, dropped, disagree, skipped, added, stale, noIntake }; throws when two rows give one key.
 export function buildManifest( { client, site, rows, records, intake = null, target, entryFile, vocab = [], existing = {}, only = null } ) {
 	const isPlain = ( v ) => null !== v && 'object' === typeof v && ! Array.isArray( v );
 	if ( ! isPlain( existing ) || Object.values( existing ).some( ( v ) => ! isPlain( v ) ) ) {
@@ -102,7 +108,7 @@ export function buildManifest( { client, site, rows, records, intake = null, tar
 	}
 	const entries = {};
 	const owner = new Map();
-	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {}, stale: [] };
+	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {}, stale: [], noIntake: [] };
 	const mapKeys = new Set( rows.flatMap( ( r ) => { try { return [ surfaceKey( r ) ]; } catch { return []; } } ) );
 	out.stale = Object.keys( existing ).filter( ( k ) => ! mapKeys.has( k ) );
 	for ( const row of rows ) {
@@ -138,8 +144,12 @@ export function buildManifest( { client, site, rows, records, intake = null, tar
 		} else {
 			mine.unresolved.push( { key, reason: 'states-unresolved', why: match.reason || `record ${ match.record.id } has no states` } );
 		}
+		// The entry's link to its intake skeleton, through the handoff record both carry; none when intake has no skeleton for it.
+		const intakeSurface = intakeSurfaceOf( match.record, intake );
+		null === intakeSurface && ! ( have && Object.hasOwn( have, 'intakeSurface' ) ) && out.noIntake.push( { key, why: match.record ? `no intake skeleton has the id ${ match.record.id }` : 'no handoff record matched' } );
 		const entry = {
-			tree: `${ key }.tree.json`,
+			tree: `trees/${ row.postType }/${ row.slug }.json`,
+			...( intakeSurface ? { intakeSurface } : {} ),
 			envFile: target.envFile,
 			envKey: target.envKey,
 			site,

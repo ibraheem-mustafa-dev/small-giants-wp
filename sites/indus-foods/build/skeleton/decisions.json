@@ -2701,13 +2701,6 @@
 				"signature": "span|We reply within one working day. Your details are only used to answer your enquiry.",
 				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A privacy reassurance line beside the submit button; sgs/text is the only candidate."
 			}
-		},
-		"header": {
-			"Root/39#0": {
-				"block": "sgs/site-header",
-				"signature": "header|",
-				"reason": "agent pick: the draft root is a <header> whose children (a logo, a nav and a CTA row) are what sgs/site-header accepts (block_composition: section-root accepting sgs/site-header-row); sgs/hero lists header only as a tag capability. Surface is the sgs_header post."
-			}
 		}
 	}
 }

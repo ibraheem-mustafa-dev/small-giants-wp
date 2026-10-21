@@ -48,7 +48,7 @@ test( 'a CPT row is a canvas and a page is not', () => {
 test( 'fixed fields: tree, target, walkers, draft, provides', () => {
 	const { entries } = run( [ row( 'sgs_header', 'header', 9 ), row( 'sgs_form', 'enquiry', 8 ), row( 'sgs_footer', 'footer', 7 ), row( 'page', 'home', 6 ) ] );
 	const h = entries.header;
-	assert.equal( h.tree, 'header.tree.json' );
+	assert.equal( h.tree, 'trees/sgs_header/header.json' );
 	assert.deepEqual( h.target, { postId: 9 } );
 	assert.equal( h.walker, 'qa/parity/header.fill-base.mjs' );
 	assert.equal( h.walkerFull, 'qa/parity/header.fill.mjs' );
@@ -365,4 +365,33 @@ test( 'a hand-set draftUrl wins: draftDir and draftIndex are not added beside it
 	assert.equal( 'draftIndex' in kept.entries.a, false );
 	assert.equal( kept.entries.a.draftUrl, 'https://x.test/' );
 	assert.equal( run( [ row( 'page', 'a', 1 ) ], [], { existing: { a: {} } } ).entries.a.draftDir, 'sites/acme/handoff' );
+} );
+
+test( 'intakeSurface is the slug of the intake skeleton with the matched record id, never by position; a hand-set value is kept', () => {
+	const records = [ rec( 'S-3', 'header', 'Sticky header' ) ];
+	const intake = { skeletons: { 'top-bar': { id: 'S-1' }, 'sticky-header': { id: 'S-3' }, footer: { id: 'S-14' } } };
+	assert.equal( run( [ row( 'sgs_header', 'header', 9 ) ], records, { intake } ).entries.header.intakeSurface, 'sticky-header' );
+	const swapped = { skeletons: { footer: { id: 'S-14' }, 'sticky-header': { id: 'S-3' } } };
+	assert.equal( run( [ row( 'sgs_header', 'header', 9 ) ], records, { intake: swapped } ).entries.header.intakeSurface, 'sticky-header' );
+	const kept = run( [ row( 'sgs_header', 'header', 9 ) ], records, { intake, existing: { header: { intakeSurface: 'hand-set' } } } );
+	assert.equal( kept.entries.header.intakeSurface, 'hand-set' );
+	assert.equal( kept.noIntake.length, 0 );
+} );
+
+test( 'an entry whose record has no intake skeleton gets no intakeSurface and is listed', () => {
+	const records = [ rec( 'S-3', 'header', 'Sticky header' ) ];
+	const out = run( [ row( 'sgs_header', 'header', 9 ) ], records, { intake: { skeletons: { footer: { id: 'S-14' } } } } );
+	assert.equal( 'intakeSurface' in out.entries.header, false );
+	assert.equal( out.noIntake.length, 1 );
+	assert.equal( out.noIntake[ 0 ].key, 'header' );
+	assert.equal( run( [ row( 'sgs_header', 'header', 9 ) ], records ).noIntake.length, 1, 'no intake file at all is listed too' );
+	const twice = run( [ row( 'sgs_header', 'header', 9 ) ], records, { intake: { skeletons: { a: { id: 'S-3' }, b: { id: 'S-3' } } } } );
+	assert.equal( 'intakeSurface' in twice.entries.header, false, 'two intake skeletons with one id are not picked between' );
+	assert.equal( twice.noIntake.length, 1 );
+} );
+
+test( 'the generated tree path is trees/<postType>/<slug>.json, the path site-build-map reads; a hand-set tree is kept', () => {
+	const out = run( [ row( 'sgs_mega_menu', 'about', 2 ), row( 'page', 'home', 3 ) ], [], { existing: { home: { tree: 'hand.json' } } } );
+	assert.equal( out.entries[ 'mega-about' ].tree, 'trees/sgs_mega_menu/about.json' );
+	assert.equal( out.entries.home.tree, 'hand.json' );
 } );

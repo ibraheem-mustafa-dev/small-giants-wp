@@ -1,6 +1,7 @@
 {
   "header": {
-    "tree": "header.tree.json",
+    "tree": "trees/sgs_header/header.json",
+    "intakeSurface": "sticky-header",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",
@@ -26,7 +27,8 @@
     ]
   },
   "drawer-site-menu": {
-    "tree": "drawer-site-menu.tree.json",
+    "tree": "trees/sgs_drawer/site-menu.json",
+    "intakeSurface": "mobile-tablet-drawer",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",
@@ -43,7 +45,8 @@
     }
   },
   "footer": {
-    "tree": "footer.tree.json",
+    "tree": "trees/sgs_footer/footer.json",
+    "intakeSurface": "footer",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",
@@ -65,7 +68,8 @@
     ]
   },
   "mega-about": {
-    "tree": "mega-about.tree.json",
+    "tree": "trees/sgs_mega_menu/about.json",
+    "intakeSurface": "about-mega-menu",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",
@@ -82,7 +86,8 @@
     }
   },
   "mega-sectors": {
-    "tree": "mega-sectors.tree.json",
+    "tree": "trees/sgs_mega_menu/sectors.json",
+    "intakeSurface": "sectors-mega-menu",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",
@@ -99,7 +104,8 @@
     }
   },
   "mega-brands": {
-    "tree": "mega-brands.tree.json",
+    "tree": "trees/sgs_mega_menu/brands.json",
+    "intakeSurface": "brands-mega-menu",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",
@@ -116,7 +122,8 @@
     }
   },
   "mega-trade": {
-    "tree": "mega-trade.tree.json",
+    "tree": "trees/sgs_mega_menu/trade.json",
+    "intakeSurface": "trade-mega-menu",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",

@@ -93,6 +93,7 @@ try {
 	result.unmatched.forEach( ( u ) => console.log( `${ u.reason } ${ u.key }: ${ u.why }` ) );
 	result.pointer.forEach( ( d ) => console.log( `states-pointer ${ d.key }: ${ d.name }` ) );
 	result.dropped.forEach( ( d ) => console.log( `states-dropped ${ d.key }: ${ d.name }` ) );
+	result.noIntake.forEach( ( u ) => console.log( `no-intake-surface ${ u.key }: ${ u.why }` ) );
 	result.stale.forEach( ( k ) => console.log( `stale ${ k }: in surfaces.json but not in the page map (kept)` ) );
 	result.skipped.forEach( ( s ) => console.log( `skipped ${ s.row }: ${ s.reason }` ) );
 	result.disagree.forEach( ( d ) => console.log( `states-disagree ${ d.key }: handoff [${ d.handoff.join( ' | ' ) }] intake [${ d.intake.join( ' | ' ) }]` ) );
