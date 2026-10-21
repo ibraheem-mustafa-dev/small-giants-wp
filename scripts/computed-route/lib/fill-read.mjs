@@ -116,9 +116,17 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 		const imgs = el.matches( 'img' ) ? [ el ] : ( el.matches( 'figure, picture' ) ? [ ...el.querySelectorAll( 'img' ) ] : [] );
 		const cap = el.matches( 'figure' ) ? el.querySelector( 'figcaption' ) : null;
 		snap.img = 1 === imgs.length ? { tag: el.localName, src: imgs[ 0 ].getAttribute( 'src' ) ?? imgs[ 0 ].getAttribute( 'data-src' ) ?? '', alt: imgs[ 0 ].getAttribute( 'alt' ), caption: cap ? ( cap.textContent || '' ).replace( /\s+/g, ' ' ).trim() : null } : null;
-		// The intrinsic ratio of the one image or SVG this element is or holds: an image's natural size, else its width and
-		// height attributes, else an SVG's viewBox; null when there is no such element or none states a ratio.
-		const media = el.matches( 'img, svg' ) ? el : ( 1 === el.querySelectorAll( 'img, svg' ).length ? el.querySelector( 'img, svg' ) : null );
+		// The intrinsic ratio of the image or SVG this element is, or of the one it wraps: an image's natural size, else its
+		// width and height attributes, else an SVG's viewBox. A wrapper is media only when that image is its only rendered
+		// content (no words, no other element) and fills its box; a button or card holding one icon is not media. null when
+		// there is no such element or none states a ratio.
+		const only = el.matches( 'img, svg' ) ? null : ( 1 === el.querySelectorAll( 'img, svg' ).length ? el.querySelector( 'img, svg' ) : null );
+		const fills = ( m ) => {
+			const [ a, b ] = [ el.getBoundingClientRect(), m.getBoundingClientRect() ];
+			return Math.abs( a.width - b.width ) <= 1 && Math.abs( a.height - b.height ) <= 1;
+		};
+		const wraps = only && ! el.textContent.trim() && [ ...el.querySelectorAll( '*' ) ].every( ( d ) => d === only || d.contains( only ) || only.contains( d ) ) && fills( only );
+		const media = el.matches( 'img, svg' ) ? el : ( wraps ? only : null );
 		let ratio = null;
 		if ( media && 'svg' === media.localName ) {
 			const vb = media.viewBox?.baseVal;
