@@ -492,6 +492,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const hit = panel.panelChild( e );
 			return hit ? v( hit.rule, { block: hit.block } ) : null;
 		},
+		// A group whose block children are all buttons carrying a pressed or checked state (a loop of chips, or two or more) is
+		// an option picker, which draws its own options.
+		( { e } ) => {
+			const chips = R.optionSet ? m.blockKids( e ) : [];
+			const chosen = ( k ) => 'button' === view.realTag( k ) && ( null != view.attr( k, 'aria-pressed' ) || null != view.attr( k, 'aria-checked' ) );
+			return chips.length && chips.every( chosen ) && ( chips.length >= 2 || view.repeated( chips[ 0 ] ) ) ? v( 'optionSet', { block: R.optionSet.block, attributes: {}, absorb: true } ) : null;
+		},
 		// A strip whose own animation loops a translate for ever is a marquee: logos make a brand strip, labels a scrolling
 		// trust bar; the repeated items are its items.
 		// A strip with no stamped children whose template holds one text binding the draft's code fills (its items are built

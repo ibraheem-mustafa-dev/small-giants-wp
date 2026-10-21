@@ -101,10 +101,9 @@ export function recordView( record, { openers = {} } = {} ) {
 
 	// Whether the record resolves an attribute binding to a value: its answers hold one at any width (not undefined, not a
 	// failed read), or its expression is a constant other than false, null or undefined (`{{ true }}`).
-	const holeResolved = ( rec, name ) => {
-		const mine = ( id ) => id.startsWith( `attr:${ name }#` );
-		const answered = Object.entries( rec.logic?.holes ?? {} ).some( ( [ id, answers ] ) => mine( id ) && Object.values( answers ).some( ( a ) => ! a.err && ( a.v ?? [] ).some( ( x ) => 'undefined' !== x.t ) ) );
-		return answered || ( rec.template.holes ?? [] ).some( ( h ) => mine( h.id ) && /^(?:true|-?\d+(?:\.\d+)?|'[^']*'|"[^"]*")$/.test( String( h.expr ?? '' ).trim() ) );
+	const holeResolved = ( rec, name, text ) => {
+		const answered = Object.entries( rec.logic?.holes ?? {} ).some( ( [ id, answers ] ) => id.startsWith( `attr:${ name }#` ) && Object.values( answers ).some( ( a ) => ! a.err && ( a.v ?? [] ).some( ( x ) => 'undefined' !== x.t ) ) );
+		return answered || /^\s*\{\{\s*(?:true|-?\d+(?:\.\d+)?|'[^']*'|"[^"]*")\s*\}\}\s*$/.test( String( text ) );
 	};
 	// An attribute's template text (a literal, or a draft binding such as `{{ open }}`), or null when the template has none.
 	// An attribute that is only a binding counts as present when the record's answers for it hold a value, or the render
@@ -116,7 +115,7 @@ export function recordView( record, { openers = {} } = {} ) {
 			return null == rendered ? null : String( rendered );
 		}
 		const text = rec.template.attrs[ name ];
-		const present = null != text && ( ! /^\s*\{\{[^}]*\}\}\s*$/.test( String( text ) ) || null != rendered || holeResolved( rec, name ) );
+		const present = null != text && ( ! /^\s*\{\{[^}]*\}\}\s*$/.test( String( text ) ) || null != rendered || holeResolved( rec, name, text ) );
 		present !== ( null != rendered ) && note( e, name, present, null != rendered );
 		return present ? String( text ) : null;
 	};

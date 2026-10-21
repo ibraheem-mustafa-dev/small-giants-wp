@@ -207,9 +207,7 @@ test( 'record reads: aria-expanded, aria-pressed, required and the real tag come
 	// required: a literal `{{ true }}` in the template makes the lone checkbox the consent field
 	const consent = N( 'section', {}, [ N( 'div', {}, [ N( 'input', { attrs: { type: 'checkbox', required: '{{ true }}' } } ) ] ) ] );
 	const cb = build( consent );
-	cb.inventory.elements.forEach( ( e ) => delete e.attrs.required );
-	cb.recs[ 'Root/3' ].template.holes = [ { id: 'attr:required#0', where: 'attr:required', expr: 'true', path: 'true', whole: true } ];
-	const asConsent = ( rec ) => rows( proposeSkeleton( { inventory: cb.inventory, facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'F', db, factRecord: rec, openers: {} } ) ).find( ( x ) => 'input' === x.tag ).block;
+	cb.inventory.elements.forEach( ( e ) => delete e.attrs.required );	const asConsent = ( rec ) => rows( proposeSkeleton( { inventory: cb.inventory, facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'F', db, factRecord: rec, openers: {} } ) ).find( ( x ) => 'input' === x.tag ).block;
 	assert.equal( asConsent( record( cb.recs ) ), 'sgs/form-field-consent' );
 	assert.notEqual( asConsent( record( Object.fromEntries( Object.entries( cb.recs ).map( ( [ k, v ] ) => [ k, { ...v, template: { ...v.template, attrs: {} } } ] ) ) ) ), 'sgs/form-field-consent' );
 } );
@@ -217,8 +215,8 @@ test( 'record reads: aria-expanded, aria-pressed, required and the real tag come
 test( 'MUST FAIL an attribute bound to a draft value is present only when the record resolves it or the render shows it', () => {
 	const hole = { id: 'attr:aria-pressed#0', where: 'attr:aria-pressed', expr: 'o.on', path: 'o.on', whole: true };
 	const answers = ( v, err ) => ( { 375: { v, n: v.length, loop: true, ...( err ? { err } : {} ) } } );
-	const viewOf = ( holes, attrs = {} ) => {
-		const rec = entry( 'Root/3', 'button', { 'aria-pressed': '{{ o.on }}' }, [], [], 'Root/2', 'Root/2' );
+	const viewOf = ( holes, attrs = {}, text = '{{ o.on }}' ) => {
+		const rec = entry( 'Root/3', 'button', { 'aria-pressed': text }, [], [], 'Root/2', 'Root/2' );
 		rec.template.holes = [ hole ];
 		rec.logic.holes = holes;
 		const el = { template: 'Root', tpl: 3, tag: 'button', attrs };
@@ -230,6 +228,8 @@ test( 'MUST FAIL an attribute bound to a draft value is present only when the re
 	assert.equal( read( viewOf( {} ) ), null, 'the record holds no answer' );
 	assert.equal( read( viewOf( { 'attr:aria-pressed#0': answers( [ { t: 'boolean', v: true } ], 'boom' ) } ) ), null, 'a failed read resolves nothing' );
 	assert.equal( read( viewOf( {}, { 'aria-pressed': 'true' } ) ), '{{ o.on }}', 'the render shows it' );
+	assert.equal( read( viewOf( {}, {}, '{{ true }}' ) ), '{{ true }}', 'a constant expression is its own value' );
+	assert.equal( read( viewOf( {}, {}, 'false' ) ), 'false', 'a literal attribute is not a binding' );
 } );
 
 test( 'megaGridContainer: a header panel root that lays its own grid out with its own padding or paint is a container, not the shell; MUST FAIL without the entry', () => {
@@ -243,6 +243,29 @@ test( 'megaGridContainer: a header panel root that lays its own grid out with it
 	assert.equal( rootOf( 'display:flex;padding-top:28px;background-color:rgb(10, 126, 168)' ).block, 'sgs/mega-panel', 'a flex root stays the shell' );
 	const page = rows( run( N( 'div', { style: grid }, kids ), { kind: 'panel', name: 'Panel', surfaces: { 'S-1': { kind: 'page', name: 'Home' }, 'S-2': { kind: 'panel', name: 'Panel', parent: 'S-1' } }, openers: { 'S-2': 'Scroll' } } ) ).find( ( x ) => 0 === x.depth );
 	assert.notEqual( page.rule, 'megaGridContainer', 'a panel of a page is not a header disclosure' );
+} );
+
+test( 'optionSet: a group whose children are all pressable buttons (a loop, or two or more) is one option picker that absorbs its chips; MUST FAIL without the entry', () => {
+	const chip = ( words, o = {} ) => N( 'button', { attrs: { 'aria-pressed': 'false' }, ...o }, [ N( 'span', { words } ), N( 'span', { attrs: { 'aria-hidden': 'true' }, words: 'ok' } ) ] );
+	const group = ( kids ) => N( 'section', {}, [ N( 'div', { style: 'display:flex' }, kids ) ] );
+	const picker = ( r ) => rows( r ).find( ( x ) => 'sgs/option-picker' === x.block );
+	const r = run( group( [ chip( 'Small' ), chip( 'Large' ) ] ) );
+	assert.equal( picker( r ).rule, 'optionSet' );
+	assert.equal( picker( r ).tag, 'div' );
+	const inside = rows( r ).filter( ( x ) => 'button' === x.tag || 'span' === x.tag );
+	assert.equal( inside.length, 6 );
+	assert.ok( inside.every( ( x ) => 'absorbed' === x.action && x.into === picker( r ).key && 'optionSet' === x.rule ), 'the chips and their text and tick spans are the picker\'s' );
+	assert.equal( picker( run( group( [ chip( 'Small' ) ] ) ) ), undefined, 'a lone toggle button is no option set' );
+	assert.ok( picker( run( group( [ chip( 'Small', { loop: true } ) ] ) ) ), 'a loop of chips is one, even when it renders one copy' );
+	assert.equal( picker( run( group( [ chip( 'Small' ), chip( 'Large' ) ] ), { facts: facts( 'optionSet' ) } ) ), undefined );
+	const plain = ( words ) => N( 'button', {}, [ N( 'span', { words } ) ] );
+	assert.equal( picker( run( group( [ plain( 'Small' ), plain( 'Large' ) ] ) ) ), undefined, 'buttons with no pressed state' );
+	const disclosure = ( words ) => N( 'button', { attrs: { 'aria-expanded': 'false' } }, [ N( 'span', { words } ) ] );
+	assert.equal( picker( run( group( [ disclosure( 'One' ), disclosure( 'Two' ) ] ) ) ), undefined, 'disclosure buttons stay as they are' );
+	assert.equal( picker( run( group( [ chip( 'Small' ), chip( 'Large' ), N( 'p', { words: 'Pick a size' } ) ] ) ) ), undefined, 'a group with another kind of child is not an option set' );
+	assert.equal( picker( run( group( [ N( 'a', { attrs: { 'aria-pressed': 'false', href: '/x' }, words: 'Link' } ), N( 'a', { attrs: { 'aria-pressed': 'false', href: '/y' }, words: 'Link2' } ) ] ) ) ), undefined, 'links are not buttons' );
+	const box = ( words ) => N( 'div', { attrs: { 'aria-pressed': 'false' } }, [ N( 'span', { words } ) ] );
+	assert.equal( picker( run( group( [ box( 'One' ), box( 'Two' ) ] ) ) ), undefined, 'only buttons are chips' );
 } );
 
 test( 'recordView.describe carries every field the rules read; the parent chain sits beside the rendered parent', () => {

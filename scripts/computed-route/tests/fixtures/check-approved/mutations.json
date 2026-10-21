@@ -1,0 +1,5 @@
+[
+ { "file": "lib/approved-check.mjs", "find": "( found.copies?.length ? found.copies : [ r ] )", "replace": "[ r ]", "why": "only the named copy is checked" },
+ { "file": "lib/approved-identity.mjs", "find": "if ( named && ( ! fingerprint || ! current ) ) {", "replace": "if ( named && ! fingerprint ) {", "why": "a missing current fingerprint reads as agreement" },
+ { "file": "lib/approved-identity.mjs", "find": "copylessKey( other.slice( prefix.length ) ) === base )", "replace": "other === id )", "why": "the copies of the element are not gathered" }
+]

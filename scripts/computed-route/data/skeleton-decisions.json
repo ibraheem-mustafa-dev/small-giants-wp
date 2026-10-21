@@ -446,6 +446,14 @@
 			"clients": [ "indus-foods", "mamas-munches-redesign" ],
 			"reason": "a growing child of a header disclosure panel with no run of links of its own is a plain container, not a mega group (Bean approved the brands panel's heading and logo grid as sgs/container, 2026-10-21)"
 		},
+		"optionSet": {
+			"id": "optionSet",
+			"block": "sgs/option-picker",
+			"taughtBy": { "client": "mamas-munches-redesign", "key": "Home/85 and Home/87", "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe" },
+			"scope": "an element whose block children are all buttons carrying an aria-pressed or aria-checked state (read from the fact record, the render confirms), as a loop (an sc-for) or a run of two or more; a lone button, a run without a pressed or checked state and a disclosure button (aria-expanded) are not an option set",
+			"clients": [ "indus-foods", "mamas-munches-redesign" ],
+			"reason": "a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it"
+		},
 		"megaGridContainer": {
 			"id": "megaGridContainer",
 			"block": "sgs/container",
