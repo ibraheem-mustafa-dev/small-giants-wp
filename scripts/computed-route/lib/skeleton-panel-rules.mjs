@@ -28,12 +28,8 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 			return { grows: grows( st[ 'flex-grow' ] ), fixed: ratio || ( ! UNSET.has( st.width ?? '' ) && '0' === String( st[ 'flex-shrink' ] ?? '' ).trim() ) };
 		}
 		const tracks = gridTracks( view.declared( root )[ 'grid-template-columns' ] );
-		const seen = [];
-		m.blockKids( root ).forEach( ( k ) => {
-			const t = `${ k.template }/${ k.tpl }`;
-			seen.includes( t ) || seen.push( t );
-		} );
-		const track = tracks[ seen.indexOf( `${ e.template }/${ e.tpl }` ) ];
+		// Each rendered child (each copy of a loop's item) takes the next track.
+		const track = tracks[ m.blockKids( root ).indexOf( e ) ];
 		return { grows: !! track && fractionalTrack( track ), fixed: ratio || ( !! track && fixedTrack( track ) ) };
 	};
 

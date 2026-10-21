@@ -13,7 +13,7 @@ const LIB = path.join( ROUTE, 'lib' );
 
 // The template literals of a source text that build a key: an interpolation naming a chain, tpl, copy or dc, followed by
 // `/` or `#` and another interpolation; or `#` then an interpolation naming a copy or tpl.
-const KEYWORD = '(?:chain|tpl|copy|\\bdc\\b|template_tpl_id|rootComponent|SERVED_ROOT)';
+const KEYWORD = '(?:chain|tpl|copy|\\bdc\\b|\\btemplate\\b|template_tpl_id|rootComponent|SERVED_ROOT)';
 const BUILDERS = [
 	new RegExp( '`[^`]*\\$\\{[^}]*' + KEYWORD + '[^}]*\\}[#/]\\$\\{[^}]*\\}[^`]*`', 'g' ),
 	new RegExp( '`[^`]*#\\$\\{[^}]*(?:copy|tpl)[^}]*\\}[^`]*`', 'g' ),
@@ -61,6 +61,7 @@ test( 'MUST FAIL a key built from a template literal is found; the key shapes in
 	assert.equal( keyLiterals( 'const k = `${ chain.join( ">" ) }/${ tpl }#${ copy }`;' ).length, 1 );
 	assert.equal( keyLiterals( 'const k = `${ a.element.dc }/${ id }`;' ).length, 1 );
 	assert.equal( keyLiterals( 'const k = `${ base }#${ copy }`;' ).length, 1 );
+	assert.equal( keyLiterals( 'const t = `${ k.template }/${ k.tpl }`; const u = `${ e.template }/${ e.tpl }`;' ).length, 2 );
 	assert.equal( keyLiterals( 'const u = `${ origin }/${ file }`; const r = `${ r.rowId }#${ n }`; const h = `${ v.file }#${ v.hash }`;' ).length, 0 );
 } );
 

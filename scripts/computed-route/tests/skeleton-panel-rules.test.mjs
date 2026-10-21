@@ -232,3 +232,17 @@ test( 'lint: the rule modules read no literal pixel value, author logic key or c
 	assert.match( rules, /view\.attr\( e, 'aria-expanded' \)/ );
 	assert.match( rules, /view\.attr\( e, 'required' \)/ );
 } );
+
+test( 'a grid panel child\'s track counts each rendered child, so a loop\'s copies take consecutive tracks; MUST FAIL when tracks are counted per template element', () => {
+	// Root grid `1fr 1fr 300px`: a loop of two copies fills tracks 0 and 1, the painted aside is on track 2.
+	const grid = N( 'div', { style: 'display:grid;grid-template-columns:1fr 1fr 300px' }, [
+		N( 'div', { loop: true } ),
+		N( 'div', { style: 'width:300px;background-color:rgb(10, 126, 168)' }, [ N( 'p', { words: 'Feature' } ) ] ),
+	] );
+	const b = build( grid );
+	const loopEl = b.inventory.elements.find( ( x ) => 'Root/2#0' === x.key );
+	b.inventory.elements.splice( b.inventory.elements.indexOf( loopEl ) + 1, 0, { ...loopEl, key: 'Root/2#1', box: structuredClone( loopEl.box ) } );
+	const r = proposeSkeleton( { inventory: b.inventory, facts: facts(), surface: 'fixture', surfaceKind: 'menu', surfaceName: 'Panel', motion: new Set(), db, factRecord: record( b.recs, header ), openers: OPEN } );
+	assert.equal( rows( r ).filter( ( x ) => 1 === x.depth ).length, 3, 'two loop copies and the aside' );
+	assert.equal( rows( r ).find( ( x ) => 'Root/3#0' === x.key ).rule, 'megaAside' );
+} );

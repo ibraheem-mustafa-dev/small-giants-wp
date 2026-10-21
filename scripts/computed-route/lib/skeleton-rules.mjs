@@ -8,6 +8,7 @@
 // Precedence (lib/skeleton-classify.mjs::makeClassifier): a client decision, then these rules, then a finaliser pick or a
 // standing element decision, then the database scoring.
 import { specHit } from './skeleton-facts.mjs';
+import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
 
@@ -487,7 +488,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const rec = view.entry( e );
 			const built = rec && ! kidsB.length && ! view.childrenOf( e ).length && rec.template.holes.some( ( h ) => 'text' === h.where );
 			// The motion keys name the template element (`<dc file>/<tpl>`), whatever import chain the page stamps it under.
-			return R.marqueeCodeItems && built && ( loops( e ) || motion.has( `${ e.template }/${ e.tpl }` ) ) ? v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: R.marqueeCodeItems.handover } } ) : null;
+			return R.marqueeCodeItems && built && ( loops( e ) || motion.has( templateKey( { dc: e.template, tpl: e.tpl } ) ) ) ? v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: R.marqueeCodeItems.handover } } ) : null;
 		},
 		( { e, kidsB } ) => {
 			if ( ! loops( e ) || ! kidsB.length ) {
