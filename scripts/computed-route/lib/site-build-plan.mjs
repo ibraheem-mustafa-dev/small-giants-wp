@@ -10,6 +10,7 @@
 // before marking it) stops the run, so it is never duplicated or renamed `<slug>-2`.
 import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, orderRows, parentRow, rowKey, treeFor, treeHash } from './site-build-map.mjs';
 import { desiredMenus, menuLocation } from './site-build-menus.mjs';
+import { readSurfaces } from './site-build-labels.mjs';
 import { MENU_META, ROW_META } from './site-build-state.mjs';
 
 export const PERMALINKS = '/%postname%/';
@@ -57,7 +58,7 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 			ids[ key ] = null;
 		}
 	}
-	const wanted = desiredMenus( rows, linkText );
+	const wanted = desiredMenus( rows, linkText, readSurfaces( repo, client ) );
 	problems.push( ...wanted.problems );
 	notes.push( ...wanted.notes );
 	if ( problems.length ) {

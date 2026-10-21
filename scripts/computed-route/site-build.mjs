@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { readPageMap, writeMenuMap, writePageMap } from './lib/site-build-map.mjs';
 import { readState } from './lib/site-build-state.mjs';
-import { readLinkText } from './lib/site-build-labels.mjs';
+import { readLinkTextReport } from './lib/site-build-labels.mjs';
 import { PHASES, planBuild, tally } from './lib/site-build-plan.mjs';
 import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
 
@@ -47,7 +47,9 @@ try {
 	const ids = {};
 	let rows = original;
 	const plan = () => {
-		const p = planBuild( { rows, state: readState( runPhp, rows ), repo, client, linkText: readLinkText( { repo, client } ) } );
+		const link = readLinkTextReport( { repo, client } );
+		const p = planBuild( { rows, state: readState( runPhp, rows ), repo, client, linkText: link.text } );
+		p.notes.push( ...link.conflicts );
 		if ( p.problems.length ) {
 			p.problems.forEach( ( m ) => console.error( `STOP ${ m }` ) );
 			throw new Error( `${ p.problems.length } problem(s); nothing was written` );
