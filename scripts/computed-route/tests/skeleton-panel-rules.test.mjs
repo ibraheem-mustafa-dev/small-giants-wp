@@ -173,6 +173,13 @@ test( 'NEGATIVE: loopingKeys takes a code-built strip only for an infinite trans
 	assert.equal( loopingKeys( { records: [ rec( 'infinite', 'opacity', '1' ) ] } ).size, 0 );
 } );
 
+test( 'MUST FAIL loopingKeys names a template record by its own template_tpl_id only; its nearest_tpl_id adds no key', () => {
+	const rec = ( own, near ) => ( { iterations: 'infinite', element: { dc: 'Home', template_tpl_id: own, nearest_tpl_id: near }, properties: [ { property: 'transform', from: 'translateX(0)', to: 'translateX(-50%)' } ] } );
+	assert.deepEqual( [ ...loopingKeys( { records: [ rec( '7', '42' ) ] } ) ], [ 'Home/7' ], 'a template record: its own element, not the one near it' );
+	assert.deepEqual( [ ...loopingKeys( { records: [ rec( null, '42' ) ] } ) ], [ 'Home/42' ], 'a code-built strip: the host of its hole' );
+	assert.deepEqual( [ ...loopingKeys( { records: [ rec( [ '7', '8' ], '42' ) ] } ) ].sort(), [ 'Home/7', 'Home/8' ] );
+} );
+
 test( 'alignWrapper.siblingGap: a wrapper declaring a margin against its previous sibling stays; MUST FAIL without the entry', () => {
 	const tree = () => N( 'section', {}, [ N( 'div', { style: 'display:flex' }, [ N( 'p', { words: 'Before' } ), N( 'div', { style: 'margin-top:18px' }, [ N( 'p', { words: 'A' } ), N( 'p', { words: 'B' } ) ] ) ] ) ] );
 	const wrapper = ( r ) => rows( r ).find( ( x ) => 'div' === x.tag && x.depth === 2 );
