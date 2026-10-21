@@ -2,6 +2,7 @@
 	"sites": {
 		"indus-test": {
 			"menus": {
+				"footer": 7,
 				"header": 5
 			}
 		}

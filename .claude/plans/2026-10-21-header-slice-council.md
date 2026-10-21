@@ -21,7 +21,7 @@ Each item names its cause and where it now stands; the fixes are built on `main`
 4. CTA shown at 375 (draft `showHeaderCta`, `w >= 1260`): wave 3 (width-gated `sc-if` to the block's breakpoint setting or a bounded custom CSS rule, FR-48-50).
 5. Menu label "Contact Us" against "Contact": built (`lib/site-build-labels.mjs`: labels from the draft link text); live after `site-build.mjs --apply` on indus-test.
 6. Not sticky, no scroll shadow (S-03's scrolled state, J-01 `scrollY > 8`): wave 3 (FR-48-80's sticky part); `sgs/site-header` needs recalibrating first (`headerSticky`, `scrolledOffset` have no cache entry).
-7. Menu binding: carried from `sites/indus-foods/build/menu-map.json` (`lib/skeleton-carried.mjs`); its header entry 5 is the earlier hand value until `site-build.mjs --apply` rewrites the file from the live menus.
+7. Menu binding: carried from `sites/indus-foods/build/menu-map.json` (`lib/skeleton-carried.mjs`); site-build wrote it from the live menus (header 5, footer 7).
 8. `lib/skeleton-rerun.mjs` not passing the proposal context: done (`lib/skeleton-context.mjs::proposalContext`).
 9. Step 20 cannot fully close on today's code: binding grouping (FR-48-41), the breakpoint rule (FR-48-50), gates G0 to G7 (FR-48-64) and the R–L verdict half (FR-48-36) are not built.
 
