@@ -56,8 +56,8 @@ try {
 		throw new Error( `calibration-targets.json has no envFile and envKey for ${ site }` );
 	}
 	const drafts = readJson( path.join( dir, 'handoff', 'MANIFEST.json' ) ).entry_drafts || [];
-	if ( 1 !== drafts.length ) {
-		throw new Error( `handoff/MANIFEST.json entry_drafts names ${ drafts.length } files; exactly one is needed` );
+	if ( ! drafts.length ) {
+		throw new Error( 'handoff/MANIFEST.json entry_drafts names no file; at least one is needed' );
 	}
 	const vocab = stateRows( given[ '--db' ] ? openDb( given[ '--db' ] ) : null );
 	if ( ! vocab.length ) {
@@ -80,7 +80,7 @@ try {
 		records: readJson( path.join( dir, 'handoff', 'surfaces.json' ) ).records,
 		intake: optional( path.join( dir, 'build', 'intake', 'intake.json' ) ),
 		target,
-		entryFile: drafts[ 0 ],
+		entryFiles: drafts,
 		vocab,
 		existing: keep,
 	} );

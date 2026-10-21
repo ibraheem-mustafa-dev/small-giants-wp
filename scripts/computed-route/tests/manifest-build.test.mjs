@@ -257,7 +257,6 @@ test( 'a hand-set field survives a rerun through the command', () => {
 test( 'the command refuses an input it cannot use with exit 2 and writes nothing', () => {
 	const cases = {
 		'no MANIFEST.json': { manifest: false },
-		'two entry files': { drafts: [ 'a.html', 'b.html' ] },
 		'no entry file': { drafts: [] },
 		'a malformed page-map.json': { pageMapText: '{ not json' },
 	};
@@ -394,4 +393,67 @@ test( 'the generated tree path is trees/<postType>/<slug>.json, the path site-bu
 	const out = run( [ row( 'sgs_mega_menu', 'about', 2 ), row( 'page', 'home', 3 ) ], [], { existing: { home: { tree: 'hand.json' } } } );
 	assert.equal( out.entries[ 'mega-about' ].tree, 'trees/sgs_mega_menu/about.json' );
 	assert.equal( out.entries.home.tree, 'hand.json' );
+} );
+
+// Eye Care's mega menu (S-04): each panel is a state that sets `mega`, with no word `open` in its name.
+const MEGA = [ { name: 'closed', state_keys: { mega: null } }, { name: 'Sunglasses', state_keys: { mega: 'sun' } }, { name: 'Brands', state_keys: { mega: 'brands' } }, { name: 'Lenses', state_keys: { mega: 'lenses' } }, { name: 'Help', state_keys: { mega: 'help' } } ];
+
+test( 'MUST FAIL (FR-48-6): an openable surface keeps each state that sets a real state key to a set value', () => {
+	const got = statesOf( rec( 'S-4', 'menu', 'Mega menu', MEGA ), vocab );
+	assert.deepEqual( Object.keys( got.states ), [ 'sunglasses', 'brands', 'lenses', 'help' ] );
+	assert.deepEqual( got.dropped, [ 'closed' ], 'a null value is the closed state' );
+} );
+
+test( 'MUST FAIL (FR-48-6): derived and instance keys do not make a state; an unset value does not either', () => {
+	const states = [
+		{ name: 'wide', state_keys: { 'R.wide': true } },
+		{ name: 'row item', state_keys: { 'item.current': true } },
+		{ name: 'closing', state_keys: { _closing: true } },
+		{ name: 'gift note shown', state_keys: { 'gift.on': true } },
+		{ name: 'empty list', state_keys: { faq: {} } },
+		{ name: 'text empty', state_keys: { acc: '{}' } },
+		{ name: 'none picked', state_keys: { faq: -1 } },
+		{ name: 'off', state_keys: { sumOpen: false } },
+		{ name: 'real', state_keys: { 'R.wide': true, nav: true } },
+	];
+	const got = statesOf( rec( 'S-2', 'drawer', 'D', states ), vocab );
+	assert.deepEqual( Object.keys( got.states ), [ 'real' ] );
+	const ownR = statesOf( rec( 'S-2', 'drawer', 'D', [ { name: 'responsive', state_keys: { R: 1 } }, { name: 'wide', state_keys: { 'R.wide': true } }, { name: 'rows', state_keys: { item: 1 } }, { name: 'row current', state_keys: { 'item.current': true } } ] ), vocab );
+	assert.deepEqual( ownR.dropped, [ 'responsive', 'wide', 'rows', 'row current' ], 'R.* and item.* are derived even when the record also holds a bare R or item' );
+	const owned = statesOf( rec( 'S-2', 'drawer', 'D', [ { name: 'gift', state_keys: { gift: 1 } }, { name: 'gift note shown', state_keys: { 'gift.on': true } } ] ), vocab );
+	assert.deepEqual( Object.keys( owned.states ), [ 'gift', 'gift-note-shown' ], 'a dotted path under a state key the record owns is real' );
+	assert.deepEqual( got.dropped, [ 'wide', 'row item', 'closing', 'gift note shown', 'empty list', 'text empty', 'none picked', 'off' ] );
+} );
+
+test( 'a pointer word is matched before the state keys, and a state named open stays whatever its keys', () => {
+	const got = statesOf( rec( 'S-2', 'menu', 'M', [ { name: 'link hover', state_keys: { active: 1 } }, { name: 'open', state_keys: {} }, { name: 'open, empty', state_keys: { basket: true } } ] ), vocab );
+	assert.deepEqual( got.pointer, [ 'link hover' ] );
+	assert.deepEqual( Object.keys( got.states ), [ 'open', 'open-empty' ] );
+} );
+
+test( 'a header (not openable) keeps every non-pointer state whatever its keys', () => {
+	const got = statesOf( rec( 'S-1', 'header', 'H', [ { name: 'scrolled', state_keys: { scrolled: true } }, { name: 'plain', state_keys: { _x: 1 } } ] ), vocab );
+	assert.deepEqual( Object.keys( got.states ), [ 'scrolled', 'plain' ] );
+} );
+
+test( 'MUST FAIL (FR-48-6): a page whose route is a draft file matches the record whose page_key is the file base name', () => {
+	const pages = [ rec( 'S-1', 'page', 'Home', undefined, { page_key: 'Home' } ), rec( 'S-2', 'page', 'Shop', undefined, { page_key: 'Shop' } ) ];
+	assert.equal( matchRecord( row( 'page', 'home', 1, { route: 'Home.dc.html' } ), pages ).record.id, 'S-1' );
+	assert.equal( matchRecord( row( 'page', 'shop', 1, { route: 'Shop.dc.html?tab=2#top' } ), pages ).record.id, 'S-2', 'the query string and fragment are ignored' );
+	assert.equal( matchRecord( row( 'page', 'x', 1, { route: 'Basket.dc.html' } ), pages ).record, undefined );
+	assert.equal( matchRecord( row( 'page', 'home', 1, { route: 'Home' } ), pages ).record.id, 'S-1', 'the control: a route that is the key itself still matches' );
+} );
+
+test( 'MUST FAIL (FR-48-6): several entry drafts: a surface takes the draft whose base name is its record dc, else the first', () => {
+	const records = [ rec( 'S-1', 'page', 'Shop', undefined, { page_key: 'Shop', dc: 'Shop' } ), rec( 'S-2', 'header', 'H', undefined, { dc: 'SiteHeader' } ) ];
+	const out = run( [ row( 'page', 'shop', 1, { route: 'Shop.dc.html' } ), row( 'sgs_header', 'header', 2 ) ], records, { entryFile: undefined, entryFiles: [ 'Home.dc.html', 'Shop.dc.html' ] } );
+	assert.equal( out.entries.shop.draftIndex, 'Shop.dc.html' );
+	assert.equal( out.entries.header.draftIndex, 'Home.dc.html' );
+} );
+
+test( 'the command accepts several entry drafts', () => {
+	const f = fixture( { drafts: [ 'Home.dc.html', 'Shop.dc.html' ], rows: [ row( 'page', 'shop', 4, { route: 'Shop.dc.html' } ) ], records: [ rec( 'S-1', 'page', 'Shop', undefined, { page_key: 'Shop', dc: 'Shop' } ) ] } );
+	assert.equal( f.go( '--apply' ).status, 0 );
+	assert.equal( JSON.parse( fs.readFileSync( f.out, 'utf8' ) ).shop.draftIndex, 'Shop.dc.html' );
+	f.done();
 } );

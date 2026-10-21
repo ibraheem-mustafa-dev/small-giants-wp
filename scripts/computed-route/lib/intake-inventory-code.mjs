@@ -321,7 +321,7 @@ function triggerWalk( model, comp, node, seen ) {
 			continue;
 		}
 		if ( 'renderVals' === memberOf( p, r )?.name ) {
-			found.push( done( { type: 'state', detail: `a value renderVals passes to the template${ names.length ? ` as ${ names.join( '.' ) }` : '' } (→ ${ m.name })` } ) );
+			found.push( done( { type: 'state', detail: `a value renderVals passes to the template${ names.length ? ` as ${ names.join( '.' ) }` : '' } (→ ${ m.name })`, holes: names } ) );
 			continue;
 		}
 		const t = triggerOf( model, comp, r, seen );
