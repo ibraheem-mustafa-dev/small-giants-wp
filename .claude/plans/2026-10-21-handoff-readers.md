@@ -27,7 +27,7 @@ No new fact-record module. The skeleton inventory (`lib/skeleton-inventory.mjs::
 1. The identity and freshness mechanics above, with `mutate.mjs` moved into the repo.
 2. Eye Care's origin maps re-keyed to the current export by fingerprint (the header map starts at `Root/14`, the export's header root is 13); Eye Care's built header and footer trees become frozen rows for the cross-client guard. The adapter that turns them into `check-approved.mjs` rows is cut first if time runs short.
 3. The cross-client freeze and its diff tool.
-4. To Bean now, in parallel: the three decisions under "For Bean".
+4. The decisions under "Bean's decisions" are settled; Eye Care's 1060 fit test runs with wave 3.
 - Gate: the key test, the fingerprint MUST FAIL (a renumbered fixture export re-aligns; a changed element refuses), the freshness MUST FAIL (a stale `surfaces.json` hash refuses), all three clients frozen.
 
 ## Lanes
@@ -45,7 +45,7 @@ No new fact-record module. The skeleton inventory (`lib/skeleton-inventory.mjs::
 4. `lib/skeleton-rerun.mjs::rerunSkeletons` passes states, thresholds, `calKeys` and `calSettings` as `skeleton.mjs::intakeContext` does; `loopingKeys` accepts `nearest_tpl_id` only with a translate transform and an infinite iteration, and the re-derived inventory reads a declared `animation` value's `infinite` (Mama's two marquees).
 5. `lib/manifest-build.mjs::statesOf`: a state of an openable surface is kept when any of its `state_keys` is a real state key with a truthy value; derived and instance keys (`R.*`, `item.*`, `_`-prefixed) are filtered; pointer words are still matched first. `manifest.mjs` accepts several entry drafts, choosing each surface's draft by its record's `dc`, and `matchRecord` matches a page whose route is a file (`Home.dc.html` to `page_key` `Home`).
 - Baseline: `check-approved.mjs indus-foods --no-built` 133 match, 24 mismatch (20 mega-panel, 2 drawer social links, 2 group rows); the header proposal is Bean's 5 blocks; Mama's trust-bar marquee count 0; Eye's mega menu kept states 1 ("resting"); Mama's `build/surfaces.json` not generated.
-- Predicted: 153 match, 4 mismatch (2 drawer pending Bean's decision, 2 group rows named); the header proposal byte-identical (`git diff --exit-code` on `sites/indus-foods/build/skeleton/header.proposal.json` after a rerun); no change on Mama's or Eye Care's frozen rows except their two marquees and Eye's five mega-menu states; Mama's `build/surfaces.json` generated with its 11 pages matched.
+- Predicted: 155 match, 2 mismatch (the 2 group rows, named); the drawer's 116 and 117 settled as one `sgs/social-icons` group in the top-row slot; the header proposal byte-identical (`git diff --exit-code` on `sites/indus-foods/build/skeleton/header.proposal.json` after a rerun); no change on Mama's or Eye Care's frozen rows except their two marquees and Eye's five mega-menu states; Mama's `build/surfaces.json` generated with its 11 pages matched.
 - Tests touched: `tests/skeleton-rules.test.mjs`, `skeleton-rerun*`, the manifest tests, `handoff-check.test.mjs`.
 - Retires: the word match in `statesOf`; the tag-only `fingerprintAgrees`.
 
@@ -74,11 +74,13 @@ Intake writes the resolved tokens (`lib/tokens.mjs::readTokens`, `::resolveToken
 - Baseline: Indus snapshot body 16px/1.6, radii and shadows the framework's.
 - Predicted: Indus snapshot body 19px/1.55, the card radius 22px, every emitted token `_source: declared`, unused tokens in the gap log; Indus only, pushed with `push-theme-snapshot.py` after Bean sees its diff (rollback: the previous snapshot file in `theme-snapshot-backups/`).
 
-## For Bean (sent at step 0, each with a recommendation)
+## Bean's decisions (2026-10-21)
 
-1. The Indus drawer's 116 and 117 are `tel:` and `mailto:` links with code-drawn glyphs; Bean approved `sgs/social-icons`; the code states business-info links.
-2. The 5% breakpoint snap (Bean's FR-32-13 ruling): the evidence (Eye Care's 1060, "the full nav no longer fits") challenges it.
-3. A rule taught on Indus that the cross-client diff shows changing a Mama's or Eye Care row: confirm or scope.
+1. The Indus drawer's call and email circles (116, 117: icon-only `tel:` and `mailto:` links) stay one `sgs/social-icons` group in `sgs/nav-drawer`'s top-row `icons` slot, as approved: `sgs/social-icons` links Site Info's `phone` and `email` keys (brand registry `siteInfoKey`; its Links panel lists them, checked by Bean in the editor). Wave 1 teaches the skeleton that rule: a run of icon-only Site Info links (`tel:`, `mailto:`, social profiles) in a drawer's top row is one `sgs/social-icons` group in that slot.
+2. The 5% breakpoint snap (FR-32-13) stands unless a legitimate reason blocks it; the threshold goes into the block's own breakpoint setting first (FR-48-50). Eye Care's 1060 ("the full nav no longer fits") was caused by the "Glasses SOON" nav placeholder, removed on the live site as an accepted difference: test whether the live nav fits at 1024 without it; if it does, the snap applies.
+3. A rule taught on one client that the cross-client diff shows changing another client's row comes to Bean batched once per wave, each with the changed row, before and after, and a recommendation (keep, scope it to the teaching client's signal, or drop).
+
+Recorded, outside this plan: Bean wants Eye Care's Google review block moved into the header nav's side where "Glasses SOON" was (it already collapses at lower widths and hides when it no longer fits); an Eye Care live header change, carried in the handoff.
 
 ## Cut line
 
