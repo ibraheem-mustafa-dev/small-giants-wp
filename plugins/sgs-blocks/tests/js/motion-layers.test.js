@@ -107,7 +107,7 @@ describe( 'adding, reordering and removing layers on one element', () => {
 		expect( ripple ).toMatchObject( {
 			effect: 'ripple',
 			preset: 'ripple-standard',
-			trigger: 'click',
+			trigger: 'pointerdown',
 			values: { sizeFactor: 2.2 },
 		} );
 		expect( ids( motion, 'hover.effects' ) ).toEqual( [

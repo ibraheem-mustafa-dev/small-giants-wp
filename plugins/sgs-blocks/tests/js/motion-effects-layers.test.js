@@ -82,7 +82,7 @@ describe( 'the default preset and trigger of a new effect layer', () => {
 
 	it( 'gives an effect with no preset row its first registry trigger, and keeps a trigger a preset sets', () => {
 		expect( L.addLayer( undefined, 'root', LIST, { effect: 'lottie' } ).layer.trigger ).toBe( 'load' );
-		expect( L.addLayer( undefined, 'root', LIST, { effect: 'ripple' } ).layer.trigger ).toBe( 'click' );
+		expect( L.addLayer( undefined, 'root', LIST, { effect: 'ripple' } ).layer.trigger ).toBe( 'pointerdown' );
 		expect( effectTriggers( 'ripple' )[ 0 ] ).toBe( 'pointerdown' );
 	} );
 } );

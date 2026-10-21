@@ -1,15 +1,25 @@
 /**
- * AngleAtom: an angle (the `angle` field type): a number in degrees, or a `deg` or `turn` value. The same unit input
- * as the Distance atom with the angle units; the range comes from the schema, narrowed by the field's own node.
+ * AngleAtom: an angle (the `angle` field type): a number in degrees, or a `deg` or `turn` value. A unit box (deg and
+ * turn) with a slider beside it, the way core pairs a number with a range; the range comes from the schema, narrowed by
+ * the field's own node. An angle is not a length, so it does not use SgsLengthControl.
  *
  * @package
  */
 
-import SgsLengthControl from '../SgsLengthControl';
+import { Flex, FlexBlock, FlexItem, RangeControl } from '@wordpress/components';
+import { UnitControl } from '../primitives';
 import { boundsOf, textDraft, useAtomField } from './atom-utils';
 import AtomFrame from './AtomFrame';
 
 const DEGREES = /^(-?(?:\d+(?:\.\d+)?|\.\d+))(?:deg)?$/;
+const ANGLE = /^(-?(?:\d+(?:\.\d+)?|\.\d+))\s*(deg|turn)?$/;
+
+// The slider's range per unit when the schema names none: a full turn either way.
+const FALLBACK_RANGE = {
+	deg: { min: -360, max: 360, step: 1 },
+	turn: { min: -1, max: 1, step: 0.01 },
+};
+const VALUE_BOX_STYLE = { width: 104, flexShrink: 0 };
 
 // A stored number is degrees; the unit input shows it as such.
 const toDraft = ( value ) =>
@@ -59,6 +69,14 @@ export default function AngleAtom( {
 		default: 0,
 	} ) );
 
+	const shown = ANGLE.exec( String( field.draft ?? '' ).trim() );
+	const unit = shown?.[ 2 ] || 'deg';
+	const fallback = FALLBACK_RANGE[ unit ];
+	// The schema bounds are degrees; a turn is 360 of them.
+	const scale = 'turn' === unit ? 1 / 360 : 1;
+	const sliderMin = null === range.min ? fallback.min : range.min * scale;
+	const sliderMax = null === range.max ? fallback.max : range.max * scale;
+
 	return (
 		<AtomFrame
 			kind="angle"
@@ -68,13 +86,39 @@ export default function AngleAtom( {
 			customised={ field.customised }
 			onReset={ field.reset }
 		>
-			<SgsLengthControl
-				label={ label }
-				value={ field.draft }
-				units={ units }
-				hideLabelFromVision={ hideLabelFromVision }
-				onChange={ field.edit }
-			/>
+			<Flex align="center" gap={ 2 }>
+				<FlexItem style={ VALUE_BOX_STYLE }>
+					<UnitControl
+						label={ label }
+						hideLabelFromVision={ hideLabelFromVision }
+						value={ field.draft }
+						units={ units }
+						onChange={ ( raw ) => field.edit( raw ?? '' ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</FlexItem>
+				<FlexBlock>
+					<RangeControl
+						label={ label }
+						hideLabelFromVision
+						value={ shown ? Number( shown[ 1 ] ) : 0 }
+						onChange={ ( next ) =>
+							field.edit(
+								undefined === next || null === next
+									? ''
+									: `${ next }${ unit }`
+							)
+						}
+						min={ sliderMin }
+						max={ sliderMax }
+						step={ fallback.step }
+						withInputField={ false }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</FlexBlock>
+			</Flex>
 		</AtomFrame>
 	);
 }

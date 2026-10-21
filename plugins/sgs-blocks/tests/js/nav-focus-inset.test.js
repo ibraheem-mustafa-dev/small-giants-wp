@@ -22,9 +22,9 @@ describe( 'navigation focus: inset class on clipped items', () => {
 		}
 	} );
 
-	test( 'both submenu toggle buttons carry sgs-focus--inset', () => {
+	test( 'every submenu toggle button (plain, mega and mega section-page chevron) carries sgs-focus--inset', () => {
 		const buttons = markup.match( /<button type="button" class="[^"]*sgs-nav-bar-menu__subtoggle[^"]*"/g ) || [];
-		expect( buttons.length ).toBe( 2 );
+		expect( buttons.length ).toBe( 3 );
 		for ( const b of buttons ) {
 			expect( b ).toContain( 'sgs-focus--inset' );
 		}

@@ -80,13 +80,12 @@ GENERIC_FILES = {
     'blocks/icon/icon-size-control.js': ('font-size', 'the glyph-size wrapper for sgs/icon and sgs/social-icons'),
     'components/MediaSizingPanel.js': ('spacing', 'media height and inset boxes'),
     'components/motion/DistanceAtom.js': ('spacing', 'motion distance length'),
-    'components/motion/AngleAtom.js': ('plain', 'an angle in degrees, not a length: needs its own control, not either scale'),
 }
 EXTENSION_ATTRS =sorted(k.split('/', 1)[1] for k in ROLE_EXCEPTIONS if k.startswith('extension/'))
 
 # The ratcheted ceilings: mounts still to move (font-size role not yet declared) and mounts whose
 # attribute could not be resolved. Lower with a stated reason as mounts migrate; never raise.
-CEILING = {'PENDING_FONT_SIZE': 0, 'WRONG_SCALE': 0, 'UNRESOLVED': 1}
+CEILING = {'PENDING_FONT_SIZE': 0, 'WRONG_SCALE': 0, 'UNRESOLVED': 0}
 
 RAW_UNIT_SIZE_RE = re.compile(r'size|width|height|gap|radius|thickness|offset', re.I)
 
@@ -186,6 +185,9 @@ def attr_candidates(tag, before, known, whole=''):
     # Bare identifiers count only inside value/onChange: `label=` is a prop name, not the attribute `label`.
     body = ' '.join(prop_source(tag, p) or '' for p in ('value', 'onChange'))
     in_tag += [n for n in re.findall(r'\b[a-z]\w+', body) if n in known and n not in in_tag]
+    # A computed name, `attr={ attr( 'MinHeight' ) }`: the attributes of the block that end in that suffix.
+    for m in re.finditer(r"\battr\s*=\s*\{\s*\w+\(\s*['\"](\w+)['\"]\s*\)", tag):
+        in_tag += sorted(n for n in known if n.endswith(m.group(1)) and n != m.group(1))
     in_tag = [n for n in dict.fromkeys(in_tag) if n in known]
     if not in_tag:
         looped = [n for n in tuple_attrs(tag, whole) if n in known]
