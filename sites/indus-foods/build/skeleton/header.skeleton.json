@@ -8,7 +8,9 @@
 		"draftFingerprint": {
 			"tag": "header",
 			"cls": "",
-			"styleHash": "5faf966e"
+			"styleHash": "5faf966e",
+			"parentTags": [],
+			"textHash": "1505"
 		},
 		"innerBlocks": [
 			{
@@ -20,7 +22,11 @@
 				"draftFingerprint": {
 					"tag": "div",
 					"cls": "",
-					"styleHash": "c37c73c"
+					"styleHash": "c37c73c",
+					"parentTags": [
+						"header"
+					],
+					"textHash": "1505"
 				},
 				"innerBlocks": [
 					{
@@ -34,7 +40,14 @@
 						"draftFingerprint": {
 							"tag": "indus-logo",
 							"cls": "",
-							"styleHash": "f9f9a652"
+							"styleHash": "f9f9a652",
+							"parentTags": [
+								"header",
+								"div",
+								"div",
+								"a"
+							],
+							"textHash": "1505"
 						},
 						"innerBlocks": [],
 						"handover": [
@@ -48,8 +61,8 @@
 					{
 						"name": "sgs/nav-bar-menu",
 						"attributes": {
-							"collapsePoint": 1024,
-							"ref": 5
+							"ref": 5,
+							"collapsePoint": 1024
 						},
 						"draftRef": {
 							"tpl": "Root/45#0"
@@ -57,7 +70,13 @@
 						"draftFingerprint": {
 							"tag": "nav",
 							"cls": "",
-							"styleHash": "1c0176c2"
+							"styleHash": "1c0176c2",
+							"parentTags": [
+								"header",
+								"div",
+								"div"
+							],
+							"textHash": "1505"
 						},
 						"innerBlocks": [],
 						"draftSlots": {
@@ -81,7 +100,13 @@
 						"draftFingerprint": {
 							"tag": "a",
 							"cls": "scp2",
-							"styleHash": "9fda5047"
+							"styleHash": "9fda5047",
+							"parentTags": [
+								"header",
+								"div",
+								"div"
+							],
+							"textHash": "61ec7831"
 						},
 						"innerBlocks": []
 					}

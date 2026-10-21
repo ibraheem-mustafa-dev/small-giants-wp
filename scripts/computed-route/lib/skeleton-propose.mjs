@@ -19,7 +19,7 @@ const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks 
 // calibration element keys), calSettings (slug -> the calibration's settings with their slots), states (the surface's handoff
 // record states: name, how_to_reach, sc_if_tpl_ids), thresholds (the width thresholds the draft's code uses), db, openers (surface id to its surfaces.json opened_by words, read from the handoff folder when omitted), factRecord (the
 // client's fact record, lib/fact-record.mjs: loaded from `facts.client` when omitted, none when the client has no record) }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, built = null, motion = new Set(), clientDecisions = {}, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined } ) {
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined } ) {
 	const m = inventoryModel( inventory );
 	const { composition, capsOf, enumOf } = facts;
 	const minLinks = facts.decisions.structural?.linkList?.minLinks ?? 2;
@@ -256,6 +256,24 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		return { a: { ...a, ...Object.fromEntries( Object.entries( top.attributes || {} ) ) }, handover };
 	}
 
+	// The ids the build holds for this element's block: a logo block's `logoId` (the attachment of the file the element
+	// draws) and a menu block's `ref` (the menu site-build made for this surface). { attrs, said: { attr: where from } }.
+	function carriedAttrs( block, e ) {
+		const out = { attrs: {}, said: {} };
+		if ( ! carried ) {
+			return out;
+		}
+		if ( facts.logoBlocks.includes( block ) && attrExists( block, 'logoId' ) ) {
+			const hit = carried.logo( e );
+			hit?.id && Object.assign( out.attrs, { logoId: hit.id } ) && ( out.said.logoId = `media-map.json: ${ hit.asset }` );
+		}
+		if ( 'nav' === e.tag && attrExists( block, 'ref' ) && surfaceKind ) {
+			const id = carried.menu( surfaceKind );
+			id && Object.assign( out.attrs, { ref: id } ) && ( out.said.ref = `menu-map.json: the ${ surfaceKind } menu` );
+		}
+		return out;
+	}
+
 	function buildNode( e, parentBlock ) {
 		// A bare wrapper whose children are exactly one list: the list block is that wrapper (unless the client decided it).
 		const units = m.words( e ) || 'client decision' === overrides( e, '' )?.source ? [] : unitsOf( e );
@@ -292,11 +310,16 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// A navigation block's collapse point is the width the draft shows its navigation at.
 		const collapseAttr = 'nav' === e.tag ? R.navigation?.collapseAttribute?.[ block ] : null;
 		const collapse = collapseAttr ? collapsePoint( { e, states, thresholds } ) : null;
-		Object.assign( a, null != collapse?.value ? { [ collapseAttr ]: collapse.value } : {}, top.attributes || {} );
+		// An id the build holds (lib/skeleton-carried.mjs) fills the setting first; a decision's own value for it wins and,
+		// when it differs, the row reports the difference instead of the decision being overwritten.
+		const { attrs: carry, said } = carriedAttrs( block, e );
+		Object.assign( a, carry, null != collapse?.value ? { [ collapseAttr ]: collapse.value } : {}, top.attributes || {} );
+		const clash = Object.keys( carry ).filter( ( k ) => undefined !== top.attributes?.[ k ] && String( top.attributes[ k ] ) !== String( carry[ k ] ) );
 		r.handover && handover.push( r.handover );
 		const node = base( e, block, a );
 		handover.length && ( node.handover = handover );
-		const row = record( e, r, { attributes: a } );
+		const clashSaid = clash.map( ( k ) => `the client decision sets ${ k } ${ top.attributes[ k ] }; the build carries ${ carry[ k ] } (${ said[ k ] })` );
+		const row = record( e, r, { attributes: a, ...( Object.keys( carry ).length ? { carried: said } : {} ), ...( clash.length ? { stale: [ r.stale, ...clashSaid ].filter( Boolean ).join( '; ' ) } : {} ) } );
 		const slots = {};
 		m.kids( e ).filter( ( k ) => m.isPart( k ) && 'svg' === k.tag && k.visible[ 1440 ] ).forEach( ( k ) => {
 			const key = calKeys( block ).filter( ( c ) => new RegExp( `(^|> )svg$` ).test( c ) ).sort( ( x, y ) => x.length - y.length )[ 0 ];

@@ -12,7 +12,7 @@ import { rowKey } from './site-build-map.mjs';
 
 const labelOf = ( row ) => ( 'sgs_mega_menu' === row.postType ? megaPanelLabel( row.title ) : row.title );
 
-export function desiredMenus( rows ) {
+export function desiredMenus( rows, linkText = {} ) {
 	const problems = [];
 	const notes = [];
 	const menus = {};
@@ -45,16 +45,19 @@ export function desiredMenus( rows ) {
 				sections[ mega ] = page;
 				notes.push( `${ page }: the ${ where } is the "${ labelOf( megas[ 0 ].row ) }" mega item's; the page is that panel's section page and adds no item of its own` );
 			}
-			chosen.push( megas[ 0 ] || others[ 0 ] );
+			// The draft's own link text for the slot's route (a mega slot takes its section page's link), else the row's label.
+			const text = linkText[ name ]?.[ ( others[ 0 ] || megas[ 0 ] ).row.route ] || null;
+			chosen.push( Object.assign( megas[ 0 ] || others[ 0 ], { text } ) );
 		}
 		const item = ( e ) => ( {
 			key: `post:${ rowKey( e.row ) }@${ e.parentItem || '' }`,
 			kind: 'post',
 			rowKey: rowKey( e.row ),
 			postType: e.row.postType,
-			label: labelOf( e.row ),
-			// The stored item title: a mega item carries its label, a post item shows the post's own title ('').
-			title: 'sgs_mega_menu' === e.row.postType ? labelOf( e.row ) : '',
+			label: e.text || labelOf( e.row ),
+			// The stored item title: a mega item carries its label, a post item shows the post's own title ('') unless the
+			// draft's link text differs from it.
+			title: 'sgs_mega_menu' === e.row.postType ? e.text || labelOf( e.row ) : e.text && e.text !== e.row.title ? e.text : '',
 			position: e.position,
 			parentItem: e.parentItem,
 		} );

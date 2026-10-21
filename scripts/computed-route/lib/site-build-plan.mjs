@@ -18,7 +18,7 @@ const CREATES = [ 'create', 'menu', 'item-add' ];
 
 const shown = ( v ) => ( v && 'object' === typeof v && v.ref ? `(new ${ v.ref })` : String( v ) );
 
-export function planBuild( { rows, state, repo, client, frontRoute = 'home' } ) {
+export function planBuild( { rows, state, repo, client, frontRoute = 'home', linkText = {} } ) {
 	const problems = [];
 	const notes = [];
 	const actions = [];
@@ -57,7 +57,7 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home' } ) 
 			ids[ key ] = null;
 		}
 	}
-	const wanted = desiredMenus( rows );
+	const wanted = desiredMenus( rows, linkText );
 	problems.push( ...wanted.problems );
 	notes.push( ...wanted.notes );
 	if ( problems.length ) {
