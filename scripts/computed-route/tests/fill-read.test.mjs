@@ -155,3 +155,18 @@ test( 'MUST FAIL: a page whose targets all miss throws a named error with the wi
 	}
 	assert.ok( ! snap( 1440, '1:' ).missing, 'the positive case still reads its targets' );
 } );
+
+test( 'MUST FAIL: a page empty at some widths by design (nothing aborted) does not throw, and an all-widths-empty page with nothing aborted does', async () => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'fill-partial-' ) );
+	fs.writeFileSync( path.join( dir, 'index.html' ), '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>main { display: none } @media (min-width: 1000px) { main { display: block } }</style></head><body><main>Desktop only</main></body></html>' );
+	const partial = await serveDraft( dir );
+	const one = skeletonNodes( [ { name: 'sgs/container', draftRef: 'main', attributes: {} } ] );
+	try {
+		const r = await readDraft( { url: partial.url, nodes: one, headless: true, sweep: false } );
+		assert.ok( r.widths[ 375 ][ '0:' ].missing && ! r.widths[ 1440 ][ '0:' ].missing );
+		const none = skeletonNodes( [ { name: 'sgs/container', draftRef: '.nowhere', attributes: {} } ] );
+		await assert.rejects( readDraft( { url: partial.url, nodes: none, headless: true, sweep: false } ), /0 of 1 targets resolved/ );
+	} finally {
+		await partial.close();
+	}
+} );

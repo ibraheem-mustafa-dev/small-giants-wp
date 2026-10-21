@@ -175,14 +175,20 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 	const browser = await chromium.launch( { headless, args: [ '--hide-scrollbars' ] } );
 	const result = { origin, widths: {}, declared: {}, sweep: {}, states: {} };
 	const aborted = new Set();
+	const emptyWidths = [];
 	try {
 		for ( const width of [ ...new Set( [ ...READ_WIDTHS, ...FLUID_WIDTHS ] ) ] ) {
 			const { ctx, page } = await openPage( browser, devices, { url, open, width, origin, external, mirror, aborted } );
 			const full = READ_WIDTHS.includes( width );
 			result.widths[ width ] = await page.evaluate( collectMany, [ jobs, COLLECT, RESOLVE, PAINT_SRC, full ? PROPS : LENGTH_PROPS, full ? PSEUDO_PROPS : null, SCOPE_ATTR ] );
+			// A width that resolves none is legitimate when the surface is hidden there by design; it is a failure when the route
+			// aborted a request (the draft's runtime never loaded), or when every width resolves none.
 			if ( jobs.length && jobs.every( ( j ) => result.widths[ width ][ j.id ]?.missing ) ) {
-				log( `read ${ width }px: 0 of ${ jobs.length } targets` );
-				throw emptyReadError( width, jobs.length, aborted );
+				emptyWidths.push( width );
+				if ( aborted.size > 0 ) {
+					log( `read ${ width }px: 0 of ${ jobs.length } targets` );
+					throw emptyReadError( width, jobs.length, aborted );
+				}
 			}
 			if ( full ) {
 				const cdp = await openDevtools( page );
@@ -213,6 +219,9 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 			}
 			log( `read ${ width }px: ${ Object.values( result.widths[ width ] ).filter( ( s ) => ! s.missing ).length } of ${ jobs.length } targets` );
 			await ctx.close();
+		}
+		if ( jobs.length && emptyWidths.length === new Set( [ ...READ_WIDTHS, ...FLUID_WIDTHS ] ).size ) {
+			throw emptyReadError( emptyWidths.join( '/' ), jobs.length, aborted );
 		}
 		// A property the code declares beyond PROPS at one width is read at every read width, so its value at the others
 		// (a default, or another declaration) is known and one width's value is never carried to the rest.
