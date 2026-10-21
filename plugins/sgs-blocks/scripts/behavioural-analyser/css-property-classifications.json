@@ -250,6 +250,9 @@
       "attr": "textStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -1319,6 +1322,7 @@
       "attr": "labelTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "label"
       }
     },
@@ -1327,6 +1331,7 @@
       "attr": "labelTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "label",
         "css_state": "hover"
       }
@@ -1619,7 +1624,8 @@
       "attr": "nameTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "name"
+        "role": "color",
+        "css_element": "caption"
       }
     },
     {
@@ -1627,7 +1633,8 @@
       "attr": "nameTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "name",
+        "role": "color",
+        "css_element": "caption",
         "css_state": "hover"
       }
     },
@@ -1636,7 +1643,7 @@
       "attr": "nameTextStrokeWidth",
       "fields": {
         "css_property": "-webkit-text-stroke-width",
-        "css_element": "name"
+        "css_element": "caption"
       }
     },
     {
@@ -1821,6 +1828,7 @@
       "attr": "titleTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "title"
       }
     },
@@ -1829,6 +1837,7 @@
       "attr": "titleTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "title",
         "css_state": "hover"
       }
@@ -2031,7 +2040,9 @@
       "slug": "sgs/breadcrumbs",
       "attr": "textStrokeColour",
       "fields": {
-        "css_property": "-webkit-text-stroke-color"
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2039,6 +2050,8 @@
       "attr": "textStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -2046,7 +2059,8 @@
       "slug": "sgs/breadcrumbs",
       "attr": "textStrokeWidth",
       "fields": {
-        "css_property": "-webkit-text-stroke-width"
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2319,6 +2333,8 @@
       "attr": "textStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -2607,6 +2623,8 @@
       "attr": "textStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -3108,7 +3126,8 @@
       "attr": "notifyHeadingTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "notify-heading",
+        "role": "color",
+        "css_element": "notifyHeading",
         "css_state": "hover"
       }
     },
@@ -3230,7 +3249,8 @@
       "attr": "notifyInputTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "notify-email",
+        "role": "color",
+        "css_element": "notifyInput",
         "css_state": "hover"
       }
     },
@@ -3475,7 +3495,8 @@
       "attr": "notifyStatusTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "notify-status",
+        "role": "color",
+        "css_element": "notifyStatus",
         "css_state": "hover"
       }
     },
@@ -3597,7 +3618,8 @@
       "attr": "notifySubmitTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "notify-submit",
+        "role": "color",
+        "css_element": "notifySubmit",
         "css_state": "hover"
       }
     },
@@ -3805,7 +3827,8 @@
       "attr": "savingBadgeTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "saving-badge",
+        "role": "color",
+        "css_element": "savingBadge",
         "css_state": "hover"
       }
     },
@@ -4355,6 +4378,7 @@
       "attr": "badgeTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "badge"
       }
     },
@@ -4363,6 +4387,7 @@
       "attr": "badgeTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "badge",
         "css_state": "hover"
       }
@@ -4614,7 +4639,8 @@
       "attr": "glyphInitialTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "glyph-initial"
+        "role": "color",
+        "css_element": "glyphInitial"
       }
     },
     {
@@ -4622,7 +4648,8 @@
       "attr": "glyphInitialTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "glyph-initial",
+        "role": "color",
+        "css_element": "glyphInitial",
         "css_state": "hover"
       }
     },
@@ -4631,7 +4658,7 @@
       "attr": "glyphInitialTextStrokeWidth",
       "fields": {
         "css_property": "-webkit-text-stroke-width",
-        "css_element": "glyph-initial"
+        "css_element": "glyphInitial"
       }
     },
     {
@@ -4850,7 +4877,8 @@
       "attr": "pageButtonTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "page-btn"
+        "role": "color",
+        "css_element": "page-button"
       }
     },
     {
@@ -4858,7 +4886,8 @@
       "attr": "pageButtonTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "page-btn",
+        "role": "color",
+        "css_element": "page-button",
         "css_state": "hover"
       }
     },
@@ -4867,7 +4896,7 @@
       "attr": "pageButtonTextStrokeWidth",
       "fields": {
         "css_property": "-webkit-text-stroke-width",
-        "css_element": "page-btn"
+        "css_element": "page-button"
       }
     },
     {
@@ -6040,6 +6069,7 @@
       "attr": "optionDescriptionTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "option-description"
       }
     },
@@ -6048,6 +6078,7 @@
       "attr": "optionDescriptionTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "option-description",
         "css_state": "hover"
       }
@@ -6295,7 +6326,8 @@
       "attr": "textStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "body"
+        "role": "color",
+        "css_element": "wrapper"
       }
     },
     {
@@ -6303,7 +6335,8 @@
       "attr": "textStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "body",
+        "role": "color",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -6312,7 +6345,7 @@
       "attr": "textStrokeWidth",
       "fields": {
         "css_property": "-webkit-text-stroke-width",
-        "css_element": "body"
+        "css_element": "wrapper"
       }
     },
     {
@@ -6747,7 +6780,10 @@
       "slug": "sgs/container",
       "attr": "textStrokeColour",
       "fields": {
-        "css_property": "-webkit-text-stroke-color"
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -6755,6 +6791,9 @@
       "attr": "textStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -6762,7 +6801,9 @@
       "slug": "sgs/container",
       "attr": "textStrokeWidth",
       "fields": {
-        "css_property": "-webkit-text-stroke-width"
+        "css_property": "-webkit-text-stroke-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -7431,6 +7472,7 @@
       "attr": "labelTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "label"
       }
     },
@@ -7439,6 +7481,7 @@
       "attr": "labelTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "label",
         "css_state": "hover"
       }
@@ -9875,7 +9918,8 @@
       "attr": "stepLabelTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "progress-step-label",
+        "role": "color",
+        "css_element": "step-label",
         "css_state": "hover"
       }
     },
@@ -9997,7 +10041,8 @@
       "attr": "stepNumberTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "progress-step-number",
+        "role": "color",
+        "css_element": "step-number",
         "css_state": "hover"
       }
     },
@@ -10881,6 +10926,7 @@
       "attr": "captionTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "caption"
       }
     },
@@ -10889,6 +10935,7 @@
       "attr": "captionTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "caption",
         "css_state": "hover"
       }
@@ -11017,6 +11064,7 @@
       "attr": "scoreTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "score"
       }
     },
@@ -11025,6 +11073,7 @@
       "attr": "scoreTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "score",
         "css_state": "hover"
       }
@@ -11273,6 +11322,7 @@
       "attr": "authorTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "author"
       }
@@ -11282,6 +11332,7 @@
       "attr": "authorTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "author",
         "css_state": "hover"
@@ -11391,8 +11442,9 @@
       "attr": "avatarTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
-        "css_element": "avatar-initials"
+        "css_element": "avatar"
       }
     },
     {
@@ -11400,7 +11452,9 @@
       "attr": "avatarTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "avatar-initials",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "avatar",
         "css_state": "hover"
       }
     },
@@ -11410,7 +11464,7 @@
       "fields": {
         "css_property": "-webkit-text-stroke-width",
         "css_layer": "OUTER",
-        "css_element": "avatar-initials"
+        "css_element": "avatar"
       }
     },
     {
@@ -11526,6 +11580,7 @@
       "attr": "breakdownRowTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "breakdown-row"
       }
@@ -11535,6 +11590,7 @@
       "attr": "breakdownRowTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "breakdown-row",
         "css_state": "hover"
@@ -11686,6 +11742,7 @@
       "attr": "countTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "count"
       }
@@ -11695,6 +11752,7 @@
       "attr": "countTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "count",
         "css_state": "hover"
@@ -11804,6 +11862,7 @@
       "attr": "dateTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "date"
       }
@@ -11813,6 +11872,7 @@
       "attr": "dateTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "date",
         "css_state": "hover"
@@ -12010,6 +12070,7 @@
       "attr": "footnoteTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "footnote"
       }
@@ -12019,6 +12080,7 @@
       "attr": "footnoteTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "footnote",
         "css_state": "hover"
@@ -12201,6 +12263,7 @@
       "attr": "mapsLinkTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "maps-link"
       }
@@ -12210,6 +12273,7 @@
       "attr": "mapsLinkTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "maps-link",
         "css_state": "hover"
@@ -12328,6 +12392,7 @@
       "attr": "metaTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "meta"
       }
@@ -12337,6 +12402,7 @@
       "attr": "metaTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "meta",
         "css_state": "hover"
@@ -12455,6 +12521,7 @@
       "attr": "reviewLinkTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "review-link"
       }
@@ -12464,6 +12531,7 @@
       "attr": "reviewLinkTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "review-link",
         "css_state": "hover"
@@ -12573,8 +12641,9 @@
       "attr": "scoreTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
-        "css_element": "score"
+        "css_element": "average"
       }
     },
     {
@@ -12582,7 +12651,9 @@
       "attr": "scoreTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "score",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "average",
         "css_state": "hover"
       }
     },
@@ -12592,7 +12663,7 @@
       "fields": {
         "css_property": "-webkit-text-stroke-width",
         "css_layer": "OUTER",
-        "css_element": "score"
+        "css_element": "average"
       }
     },
     {
@@ -12817,6 +12888,7 @@
       "attr": "seeAllTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "see-all"
       }
@@ -12826,6 +12898,7 @@
       "attr": "seeAllTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "see-all",
         "css_state": "hover"
@@ -12935,6 +13008,7 @@
       "attr": "sourceLabelTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "source-label"
       }
@@ -12944,6 +13018,7 @@
       "attr": "sourceLabelTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "source-label",
         "css_state": "hover"
@@ -13090,6 +13165,7 @@
       "attr": "textTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "text"
       }
@@ -13099,6 +13175,7 @@
       "attr": "textTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "text",
         "css_state": "hover"
@@ -13326,6 +13403,7 @@
       "attr": "writeReviewTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "write-review"
       }
@@ -13335,6 +13413,7 @@
       "attr": "writeReviewTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "write-review",
         "css_state": "hover"
@@ -13595,6 +13674,8 @@
       "attr": "textStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -14186,7 +14267,10 @@
       "slug": "sgs/hero",
       "attr": "textStrokeColour",
       "fields": {
-        "css_property": "-webkit-text-stroke-color"
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -14194,6 +14278,9 @@
       "attr": "textStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -14201,7 +14288,9 @@
       "slug": "sgs/hero",
       "attr": "textStrokeWidth",
       "fields": {
-        "css_property": "-webkit-text-stroke-width"
+        "css_property": "-webkit-text-stroke-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -14432,7 +14521,8 @@
       "attr": "labelTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "label-text"
+        "role": "color",
+        "css_element": "label"
       }
     },
     {
@@ -14440,7 +14530,8 @@
       "attr": "labelTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "label-text",
+        "role": "color",
+        "css_element": "label",
         "css_state": "hover"
       }
     },
@@ -14449,7 +14540,7 @@
       "attr": "labelTextStrokeWidth",
       "fields": {
         "css_property": "-webkit-text-stroke-width",
-        "css_element": "label-text"
+        "css_element": "label"
       }
     },
     {
@@ -14622,7 +14713,8 @@
       "attr": "descriptionTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "description"
+        "role": "color",
+        "css_element": "item-description"
       }
     },
     {
@@ -14630,7 +14722,8 @@
       "attr": "descriptionTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "description",
+        "role": "color",
+        "css_element": "item-description",
         "css_state": "hover"
       }
     },
@@ -14639,7 +14732,7 @@
       "attr": "descriptionTextStrokeWidth",
       "fields": {
         "css_property": "-webkit-text-stroke-width",
-        "css_element": "description"
+        "css_element": "item-description"
       }
     },
     {
@@ -14752,6 +14845,7 @@
       "attr": "headingTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "heading"
       }
     },
@@ -14760,6 +14854,7 @@
       "attr": "headingTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "heading",
         "css_state": "hover"
       }
@@ -14915,6 +15010,7 @@
       "attr": "itemTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "item"
       }
     },
@@ -14923,6 +15019,7 @@
       "attr": "itemTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "item",
         "css_state": "hover"
       }
@@ -15134,7 +15231,8 @@
       "attr": "textElTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "text"
+        "role": "color",
+        "css_element": "item-text"
       }
     },
     {
@@ -15142,7 +15240,8 @@
       "attr": "textElTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "text",
+        "role": "color",
+        "css_element": "item-text",
         "css_state": "hover"
       }
     },
@@ -15151,7 +15250,7 @@
       "attr": "textElTextStrokeWidth",
       "fields": {
         "css_property": "-webkit-text-stroke-width",
-        "css_element": "text"
+        "css_element": "item-text"
       }
     },
     {
@@ -15363,7 +15462,9 @@
       "slug": "sgs/info-box",
       "attr": "textStrokeColour",
       "fields": {
-        "css_property": "-webkit-text-stroke-color"
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper"
       }
     },
     {
@@ -15371,6 +15472,8 @@
       "attr": "textStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -15378,7 +15481,8 @@
       "slug": "sgs/info-box",
       "attr": "textStrokeWidth",
       "fields": {
-        "css_property": "-webkit-text-stroke-width"
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "wrapper"
       }
     },
     {
@@ -15617,7 +15721,9 @@
       "slug": "sgs/label",
       "attr": "textStrokeColour",
       "fields": {
-        "css_property": "-webkit-text-stroke-color"
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper"
       }
     },
     {
@@ -15625,6 +15731,8 @@
       "attr": "textStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -15632,7 +15740,8 @@
       "slug": "sgs/label",
       "attr": "textStrokeWidth",
       "fields": {
-        "css_property": "-webkit-text-stroke-width"
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "wrapper"
       }
     },
     {
@@ -16291,6 +16400,7 @@
       "attr": "captionTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "caption"
       }
     },
@@ -16299,6 +16409,7 @@
       "attr": "captionTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "caption",
         "css_state": "hover"
       }
@@ -16346,63 +16457,73 @@
       "slug": "sgs/media",
       "attr": "videoTimeFontFamily",
       "fields": {
-        "css_property": "font-family"
+        "css_property": "font-family",
+        "css_element": "video-time"
       }
     },
     {
       "slug": "sgs/media",
       "attr": "videoTimeFontSize",
       "fields": {
-        "css_property": "font-size"
+        "css_property": "font-size",
+        "css_element": "video-time"
       }
     },
     {
       "slug": "sgs/media",
       "attr": "videoTimeFontStyle",
       "fields": {
-        "css_property": "font-style"
+        "css_property": "font-style",
+        "css_element": "video-time"
       }
     },
     {
       "slug": "sgs/media",
       "attr": "videoTimeFontWeight",
       "fields": {
-        "css_property": "font-weight"
+        "css_property": "font-weight",
+        "css_element": "video-time"
       }
     },
     {
       "slug": "sgs/media",
       "attr": "videoTimeLetterSpacing",
       "fields": {
-        "css_property": "letter-spacing"
+        "css_property": "letter-spacing",
+        "css_element": "video-time"
       }
     },
     {
       "slug": "sgs/media",
       "attr": "videoTimeLineHeight",
       "fields": {
-        "css_property": "line-height"
+        "css_property": "line-height",
+        "css_element": "video-time"
       }
     },
     {
       "slug": "sgs/media",
       "attr": "videoTimeTextColumns",
       "fields": {
-        "css_property": "column-count"
+        "css_property": "column-count",
+        "css_element": "video-time"
       }
     },
     {
       "slug": "sgs/media",
       "attr": "videoTimeTextDecoration",
       "fields": {
-        "css_property": "text-decoration"
+        "css_property": "text-decoration",
+        "css_element": "video-time"
       }
     },
     {
       "slug": "sgs/media",
       "attr": "videoTimeTextStrokeColour",
       "fields": {
-        "css_property": "-webkit-text-stroke-color"
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "video-time"
       }
     },
     {
@@ -16410,6 +16531,8 @@
       "attr": "videoTimeTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "video-time",
         "css_state": "hover"
       }
     },
@@ -16417,21 +16540,24 @@
       "slug": "sgs/media",
       "attr": "videoTimeTextStrokeWidth",
       "fields": {
-        "css_property": "-webkit-text-stroke-width"
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "video-time"
       }
     },
     {
       "slug": "sgs/media",
       "attr": "videoTimeTextTransform",
       "fields": {
-        "css_property": "text-transform"
+        "css_property": "text-transform",
+        "css_element": "video-time"
       }
     },
     {
       "slug": "sgs/media",
       "attr": "videoTimeTextWrap",
       "fields": {
-        "css_property": "text-wrap"
+        "css_property": "text-wrap",
+        "css_element": "video-time"
       }
     },
     {
@@ -17986,7 +18112,8 @@
       "attr": "drillBackTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "drill-back-btn"
+        "role": "color",
+        "css_element": "drill-back"
       }
     },
     {
@@ -17994,7 +18121,8 @@
       "attr": "drillBackTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "drill-back-btn",
+        "role": "color",
+        "css_element": "drill-back",
         "css_state": "hover"
       }
     },
@@ -18003,7 +18131,7 @@
       "attr": "drillBackTextStrokeWidth",
       "fields": {
         "css_property": "-webkit-text-stroke-width",
-        "css_element": "drill-back-btn"
+        "css_element": "drill-back"
       }
     },
     {
@@ -18558,7 +18686,10 @@
       "slug": "sgs/notice-banner",
       "attr": "textStrokeColour",
       "fields": {
-        "css_property": "-webkit-text-stroke-color"
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
       }
     },
     {
@@ -18566,6 +18697,9 @@
       "attr": "textStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -18573,7 +18707,9 @@
       "slug": "sgs/notice-banner",
       "attr": "textStrokeWidth",
       "fields": {
-        "css_property": "-webkit-text-stroke-width"
+        "css_property": "-webkit-text-stroke-width",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
       }
     },
     {
@@ -18726,6 +18862,7 @@
       "attr": "labelTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "label"
       }
     },
@@ -18734,6 +18871,7 @@
       "attr": "labelTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "label",
         "css_state": "hover"
       }
@@ -18954,6 +19092,7 @@
       "attr": "pillTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "pill"
       }
     },
@@ -18962,6 +19101,7 @@
       "attr": "pillTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "pill",
         "css_state": "hover"
       }
@@ -19306,6 +19446,7 @@
       "attr": "badgeTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "badge"
       }
     },
@@ -19314,6 +19455,7 @@
       "attr": "badgeTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "badge",
         "css_state": "hover"
       }
@@ -19482,7 +19624,8 @@
       "attr": "categoryTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "category"
+        "role": "color",
+        "css_element": "category-badge"
       }
     },
     {
@@ -19490,7 +19633,8 @@
       "attr": "categoryTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "category",
+        "role": "color",
+        "css_element": "category-badge",
         "css_state": "hover"
       }
     },
@@ -19499,7 +19643,7 @@
       "attr": "categoryTextStrokeWidth",
       "fields": {
         "css_property": "-webkit-text-stroke-width",
-        "css_element": "category"
+        "css_element": "category-badge"
       }
     },
     {
@@ -19621,6 +19765,7 @@
       "attr": "excerptTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "excerpt"
       }
     },
@@ -19629,6 +19774,7 @@
       "attr": "excerptTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "excerpt",
         "css_state": "hover"
       }
@@ -19797,6 +19943,7 @@
       "attr": "loadMoreTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "load-more"
       }
     },
@@ -19805,6 +19952,7 @@
       "attr": "loadMoreTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "load-more",
         "css_state": "hover"
       }
@@ -19927,6 +20075,7 @@
       "attr": "metaTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "meta"
       }
     },
@@ -19935,6 +20084,7 @@
       "attr": "metaTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "meta",
         "css_state": "hover"
       }
@@ -20040,7 +20190,8 @@
       "attr": "pageButtonTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "page-btn"
+        "role": "color",
+        "css_element": "page-button"
       }
     },
     {
@@ -20048,7 +20199,8 @@
       "attr": "pageButtonTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "page-btn",
+        "role": "color",
+        "css_element": "page-button",
         "css_state": "hover"
       }
     },
@@ -20057,7 +20209,7 @@
       "attr": "pageButtonTextStrokeWidth",
       "fields": {
         "css_property": "-webkit-text-stroke-width",
-        "css_element": "page-btn"
+        "css_element": "page-button"
       }
     },
     {
@@ -20161,7 +20313,8 @@
       "attr": "readMoreTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "readmore"
+        "role": "color",
+        "css_element": "read-more"
       }
     },
     {
@@ -20169,7 +20322,8 @@
       "attr": "readMoreTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "readmore",
+        "role": "color",
+        "css_element": "read-more",
         "css_state": "hover"
       }
     },
@@ -20178,7 +20332,7 @@
       "attr": "readMoreTextStrokeWidth",
       "fields": {
         "css_property": "-webkit-text-stroke-width",
-        "css_element": "readmore"
+        "css_element": "read-more"
       }
     },
     {
@@ -20333,6 +20487,7 @@
       "attr": "titleTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "title"
       }
     },
@@ -20341,6 +20496,7 @@
       "attr": "titleTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "title",
         "css_state": "hover"
       }
@@ -20534,6 +20690,7 @@
       "attr": "ctaTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "cta"
       }
     },
@@ -20542,6 +20699,7 @@
       "attr": "ctaTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "cta",
         "css_state": "hover"
       }
@@ -20674,6 +20832,7 @@
       "attr": "featureTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "feature"
       }
     },
@@ -20682,6 +20841,7 @@
       "attr": "featureTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "feature",
         "css_state": "hover"
       }
@@ -20922,6 +21082,7 @@
       "attr": "priceTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "price"
       }
     },
@@ -20930,6 +21091,7 @@
       "attr": "priceTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "price",
         "css_state": "hover"
       }
@@ -21062,7 +21224,8 @@
       "attr": "titleTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "name"
+        "role": "color",
+        "css_element": "title"
       }
     },
     {
@@ -21070,7 +21233,8 @@
       "attr": "titleTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "name",
+        "role": "color",
+        "css_element": "title",
         "css_state": "hover"
       }
     },
@@ -21079,7 +21243,7 @@
       "attr": "titleTextStrokeWidth",
       "fields": {
         "css_property": "-webkit-text-stroke-width",
-        "css_element": "name"
+        "css_element": "title"
       }
     },
     {
@@ -21264,6 +21428,7 @@
       "attr": "descriptionTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "description",
         "css_state": "hover"
       }
@@ -21386,6 +21551,7 @@
       "attr": "iconTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "icon",
         "css_state": "hover"
       }
@@ -21554,6 +21720,7 @@
       "attr": "numberTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "number",
         "css_state": "hover"
       }
@@ -21703,6 +21870,7 @@
       "attr": "titleTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "title"
       }
     },
@@ -21711,6 +21879,7 @@
       "attr": "titleTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "title",
         "css_state": "hover"
       }
@@ -21866,7 +22035,8 @@
       "attr": "attributeTagTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "attribute-tag",
+        "role": "color",
+        "css_element": "attributeTag",
         "css_state": "hover"
       }
     },
@@ -22058,6 +22228,7 @@
       "attr": "brandTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "brand",
         "css_state": "hover"
       }
@@ -22400,7 +22571,8 @@
       "attr": "descTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "description"
+        "role": "color",
+        "css_element": "desc"
       }
     },
     {
@@ -22408,7 +22580,8 @@
       "attr": "descTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "description",
+        "role": "color",
+        "css_element": "desc",
         "css_state": "hover"
       }
     },
@@ -22417,7 +22590,7 @@
       "attr": "descTextStrokeWidth",
       "fields": {
         "css_property": "-webkit-text-stroke-width",
-        "css_element": "description"
+        "css_element": "desc"
       }
     },
     {
@@ -22887,7 +23060,8 @@
       "attr": "ratingStarsTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "rating-stars",
+        "role": "color",
+        "css_element": "ratingStars",
         "css_state": "hover"
       }
     },
@@ -22961,6 +23135,7 @@
       "attr": "ratingTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "rating",
         "css_state": "hover"
       }
@@ -23084,6 +23259,7 @@
       "attr": "rrpTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "rrp",
         "css_state": "hover"
       }
@@ -23206,7 +23382,8 @@
       "attr": "savingBadgeTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "saving-badge",
+        "role": "color",
+        "css_element": "savingBadge",
         "css_state": "hover"
       }
     },
@@ -23338,7 +23515,8 @@
       "attr": "swatchMoreTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "swatch-more",
+        "role": "color",
+        "css_element": "swatchMore",
         "css_state": "hover"
       }
     },
@@ -23467,6 +23645,7 @@
       "attr": "tagTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "tag"
       }
     },
@@ -23475,6 +23654,7 @@
       "attr": "tagTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "tag",
         "css_state": "hover"
       }
@@ -23596,6 +23776,7 @@
       "attr": "titleTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "title"
       }
     },
@@ -23604,6 +23785,7 @@
       "attr": "titleTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "title",
         "css_state": "hover"
       }
@@ -24452,6 +24634,7 @@
       "attr": "attributionTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "attribution"
       }
     },
@@ -24460,6 +24643,7 @@
       "attr": "attributionTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "attribution",
         "css_state": "hover"
       }
@@ -24756,6 +24940,7 @@
       "attr": "contentTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "content"
       }
     },
@@ -24764,6 +24949,7 @@
       "attr": "contentTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "content",
         "css_state": "hover"
       }
@@ -25797,6 +25983,7 @@
       "attr": "childIconLabelTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "label"
       }
     },
@@ -25805,6 +25992,8 @@
       "attr": "childIconLabelTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "label",
         "css_state": "hover"
       }
     },
@@ -26673,6 +26862,7 @@
       "attr": "bioTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "bio"
       }
     },
@@ -26681,6 +26871,7 @@
       "attr": "bioTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "bio",
         "css_state": "hover"
       }
@@ -26905,6 +27096,7 @@
       "attr": "nameTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "name"
       }
     },
@@ -26913,6 +27105,7 @@
       "attr": "nameTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "name",
         "css_state": "hover"
       }
@@ -27070,6 +27263,7 @@
       "attr": "roleTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "role"
       }
     },
@@ -27078,6 +27272,7 @@
       "attr": "roleTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "role",
         "css_state": "hover"
       }
@@ -27207,7 +27402,8 @@
       "attr": "socialLinkTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "social-link",
+        "role": "color",
+        "css_element": "social",
         "css_state": "hover"
       }
     },
@@ -27471,7 +27667,8 @@
       "attr": "nameTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "name"
+        "role": "color",
+        "css_element": "reviewer-name"
       }
     },
     {
@@ -27479,7 +27676,8 @@
       "attr": "nameTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "name",
+        "role": "color",
+        "css_element": "reviewer-name",
         "css_state": "hover"
       }
     },
@@ -27488,7 +27686,7 @@
       "attr": "nameTextStrokeWidth",
       "fields": {
         "css_property": "-webkit-text-stroke-width",
-        "css_element": "name"
+        "css_element": "reviewer-name"
       }
     },
     {
@@ -27701,7 +27899,8 @@
       "attr": "quoteTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "quote"
+        "role": "color",
+        "css_element": "quote-text"
       }
     },
     {
@@ -27709,7 +27908,8 @@
       "attr": "quoteTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "quote",
+        "role": "color",
+        "css_element": "quote-text",
         "css_state": "hover"
       }
     },
@@ -27718,7 +27918,7 @@
       "attr": "quoteTextStrokeWidth",
       "fields": {
         "css_property": "-webkit-text-stroke-width",
-        "css_element": "quote"
+        "css_element": "quote-text"
       }
     },
     {
@@ -28017,7 +28217,10 @@
       "slug": "sgs/testimonial-slider",
       "attr": "textStrokeColour",
       "fields": {
-        "css_property": "-webkit-text-stroke-color"
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -28025,6 +28228,9 @@
       "attr": "textStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -28032,7 +28238,9 @@
       "slug": "sgs/testimonial-slider",
       "attr": "textStrokeWidth",
       "fields": {
-        "css_property": "-webkit-text-stroke-width"
+        "css_property": "-webkit-text-stroke-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -28327,6 +28535,8 @@
       "attr": "textStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -28774,6 +28984,7 @@
       "attr": "titleTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "title"
       }
     },
@@ -28782,6 +28993,7 @@
       "attr": "titleTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "title",
         "css_state": "hover"
       }
@@ -29272,6 +29484,7 @@
       "attr": "labelTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "label"
       }
     },
@@ -29280,6 +29493,7 @@
       "attr": "labelTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "label",
         "css_state": "hover"
       }
@@ -29475,6 +29689,7 @@
       "attr": "titleTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "title"
       }
     },
@@ -29483,6 +29698,7 @@
       "attr": "titleTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "title",
         "css_state": "hover"
       }
@@ -29946,7 +30162,8 @@
       "attr": "labelTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "label"
+        "role": "color",
+        "css_element": "wrapper"
       }
     },
     {
@@ -29954,7 +30171,8 @@
       "attr": "labelTextStrokeColourHover",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
-        "css_element": "label",
+        "role": "color",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -29963,7 +30181,7 @@
       "attr": "labelTextStrokeWidth",
       "fields": {
         "css_property": "-webkit-text-stroke-width",
-        "css_element": "label"
+        "css_element": "wrapper"
       }
     },
     {

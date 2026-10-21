@@ -260,7 +260,7 @@
         "colour": true,
         "link": true,
         "media": true,
-        "animation": false
+        "animation": true
       },
       "qualifies": {
         "paintDeclarations": 25,
