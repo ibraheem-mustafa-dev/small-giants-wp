@@ -180,11 +180,11 @@
 			"note": "aria-keyshortcuts: an ARIA property (name, description, relationship); SGS blocks render their own"
 		},
 		"aria-attr:aria-label": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "aria-label: an ARIA property (name, description, relationship); SGS blocks render their own"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-link-attrs.mjs#linkAttrDecisions",
+			"check": "scripts/parity/lib/links.mjs#compareLinkAttributes",
+			"test": "scripts/computed-route/tests/fill-link-attrs.test.mjs",
+			"note": "aria-label: written to the block's ariaLabel or ...AriaLabel setting, else a named aria-label gap; the live links check compares it on links"
 		},
 		"aria-attr:aria-labelledby": {
 			"recognise": null,
@@ -9037,11 +9037,11 @@
 			"note": "<a referrerpolicy>: element semantics (link target, list numbering, citation, date); no writer"
 		},
 		"html-attr:a.rel": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<a rel>: element semantics (link target, list numbering, citation, date); no writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-link-attrs.mjs#linkAttrDecisions",
+			"check": "scripts/parity/lib/links.mjs#compareLinkAttributes",
+			"test": "scripts/computed-route/tests/fill-link-attrs.test.mjs",
+			"note": "<a rel>: tokens beyond the noopener and noreferrer a block adds for a new tab are written to its rel or ...Rel setting, else a named rel gap; the live links check compares it"
 		},
 		"html-attr:a.rev": {
 			"excluded": {
@@ -9058,11 +9058,11 @@
 			}
 		},
 		"html-attr:a.target": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<a target>: element semantics (link target, list numbering, citation, date); no writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-link-attrs.mjs#linkAttrDecisions",
+			"check": "scripts/parity/lib/links.mjs#compareLinkAttributes",
+			"test": "scripts/computed-route/tests/fill-link-attrs.test.mjs",
+			"note": "<a target=_blank>: written to the block's own new-tab or target setting (a calibrated target link entry first, else the block.json setting sharing the address setting's prefix); a block with none raises a named target gap; the live links check compares it"
 		},
 		"html-attr:a.type": {
 			"recognise": null,
@@ -9454,11 +9454,11 @@
 			"note": "<button commandfor>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:button.disabled": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<button disabled>: form; no form-field writer (FR-48-48)"
+			"excluded": {
+				"reason": "a run-time state, not a resting look: a disabled button's look arrives through css-pseudo-class:disabled, and the form decides when a button is disabled",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"html-attr:button.form": {
 			"recognise": null,
@@ -9890,11 +9890,11 @@
 			"note": "<form name>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:form.novalidate": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<form novalidate>: form; no form-field writer (FR-48-48)"
+			"excluded": {
+				"reason": "sgs/form always renders novalidate and validates in its own script, so there is nothing to write",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"html-attr:form.rel": {
 			"recognise": null,
@@ -10120,11 +10120,11 @@
 			"note": "hidden: the element is not rendered, which Fill reads as presence"
 		},
 		"html-attr:global.id": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "an element id: anchor targets for in-page links (the block anchor setting); no writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-link-attrs.mjs#linkAttrDecisions",
+			"check": "scripts/parity/lib/links.mjs#compareLinkAttributes",
+			"test": "scripts/computed-route/tests/fill-link-attrs.test.mjs",
+			"note": "an element id: the root element's id is written to the block's anchor attribute when block.json declares supports.anchor; a nested element or a block without it raises a named id gap; the live links check compares it"
 		},
 		"html-attr:global.inert": {
 			"recognise": null,
@@ -10983,11 +10983,11 @@
 			"note": "<isindex prompt>: element semantics (link target, list numbering, citation, date); no writer"
 		},
 		"html-attr:label.for": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<label for>: form; no form-field writer (FR-48-48)"
+			"excluded": {
+				"reason": "every SGS form-field block renders its own label bound to its own input, so the association exists by construction",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"html-attr:label.form": {
 			"recognise": null,
