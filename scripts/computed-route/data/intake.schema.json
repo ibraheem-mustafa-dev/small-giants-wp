@@ -38,6 +38,38 @@
       "type": "string",
       "minLength": 1
     },
+    "sources": {
+      "type": "object",
+      "required": [
+        "files",
+        "route"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "files": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "route": {
+          "type": "object",
+          "required": [
+            "commit"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "commit": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      }
+    },
     "manifest": {
       "type": "object",
       "required": [
@@ -538,6 +570,10 @@
           },
           "changed": {
             "type": "boolean"
+          },
+          "realignedFrom": {
+            "type": "string",
+            "minLength": 1
           }
         }
       }

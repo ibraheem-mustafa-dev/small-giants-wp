@@ -10,11 +10,14 @@ import { loadFacts, decisionsProblems, REPO } from './skeleton-facts.mjs';
 import { readDecisions, skeletonDir } from './skeleton-finalise.mjs';
 import { rowsOf, summaryOf } from './intake-skeletons.mjs';
 import { collapseSkeletons } from './intake-run-collapse.mjs';
+import { templateKey } from './fact-key.mjs';
+import { assertCurrent } from './freshness.mjs';
+import { fingerprintsOf } from './identity.mjs';
 
 // The template keys (`<component>/<tpl>`) whose own animation loops a translate for ever, from intake.json's re-derived
 // motion inventory (`inventory.animations.records`, FR-48-25): the mechanism of a marquee track, read from the record, never
 // from a name.
-export const loopingKeys = ( animations ) => new Set( ( animations?.records || [] ).filter( ( a ) => 'infinite' === String( a.iterations ) && a.element?.template_tpl_id && ( a.properties || [] ).some( ( p ) => 'transform' === p.property && /translate/.test( `${ p.from ?? '' } ${ p.to ?? '' } ${ p.formula ?? '' }` ) ) ).map( ( a ) => `${ a.element.dc }/${ a.element.template_tpl_id }` ) );
+export const loopingKeys = ( animations ) => new Set( ( animations?.records || [] ).filter( ( a ) => 'infinite' === String( a.iterations ) && a.element?.template_tpl_id && ( a.properties || [] ).some( ( p ) => 'transform' === p.property && /translate/.test( `${ p.from ?? '' } ${ p.to ?? '' } ${ p.formula ?? '' }` ) ) ).map( ( a ) => templateKey( { dc: a.element.dc, tpl: a.element.template_tpl_id } ) ) );
 
 // o: { client, db, repo?, skeletons (intake.json's `skeletons`: { <slug>: { id, kind, name } }), motion? (loopingKeys), picks? ({ surface: { key:
 // decision } }), useBuilt? (false proposes
@@ -38,6 +41,8 @@ export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = n
 	const surfaces = Object.entries( skeletons ).filter( ( [ , x ] ) => read( x ) ).map( ( [ slug, x ] ) => ( { slug, id: x.id, kind: x.kind, name: x.name } ) );
 	const out = {};
 	const missing = [];
+	const handoffRoot = path.join( repo, 'sites', client, 'handoff' );
+	const unchecked = [];
 	for ( const s of surfaces ) {
 		const file = path.join( dir, `${ s.slug }.json` );
 		if ( ! fs.existsSync( file ) ) {
@@ -45,11 +50,13 @@ export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = n
 			continue;
 		}
 		const inventory = JSON.parse( fs.readFileSync( file, 'utf8' ) );
+		assertCurrent( inventory, handoffRoot, { label: `${ client } inventory ${ s.slug }`, warn: () => unchecked.push( s.slug ) } );
 		const b = built[ s.id ] || built[ s.slug ] || null;
 		const r = proposeSkeleton( { inventory, facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: b, motion, clientDecisions, picks: picks[ s.slug ] || {}, db } );
-		out[ s.slug ] = { kind: s.kind, name: s.name, built: b, rows: r.proposal.rows, counts: r.proposal.counts, problems: r.problems, skeleton: r.skeleton, entry: entryOf( s.slug, skeletons[ s.slug ], r, inventory ) };
+		out[ s.slug ] = { kind: s.kind, name: s.name, built: b, rows: r.proposal.rows, counts: r.proposal.counts, problems: r.problems, skeleton: r.skeleton, entry: entryOf( s.slug, skeletons[ s.slug ], r, inventory ), fingerprints: fingerprintsOf( inventory ) };
 	}
 	Object.entries( skeletons ).filter( ( [ , x ] ) => ! read( x ) ).forEach( ( [ slug ] ) => missing.push( slug ) );
+	unchecked.length && console.warn( `freshness: ${ unchecked.length } saved inventor${ 1 === unchecked.length ? 'y has' : 'ies have' } no sources (written before the route recorded them); currency is not checked` );
 	return { surfaces: out, missing };
 }
 

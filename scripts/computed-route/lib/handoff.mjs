@@ -327,11 +327,12 @@ export function checkHandoff( root, { known = readKnown(), schemas = MASTER_SCHE
 			continue;
 		}
 		errors.push( ...schemaProblems( validator, path.join( schemas, schema ), j.data ).map( ( b ) => `FR-48A-7 ${ f }: ${ b }` ) );
+		// surfaces.json records the runtime it was read under and no drafts (surfaces.schema.json), so only the runtime is compared.
+		if ( sha && j.data.runtime_sha256 !== sha ) {
+			errors.push( `FR-48A-7 ${ f }: inventory is stale: runtime_sha256 ${ j.data.runtime_sha256 } is not support.js (${ sha })` );
+		}
 		if ( 'animations.json' !== f ) {
 			continue;
-		}
-		if ( sha && j.data.runtime_sha256 !== sha ) {
-			errors.push( `FR-48A-7 animations.json: inventory is stale: runtime_sha256 ${ j.data.runtime_sha256 } is not support.js (${ sha })` );
 		}
 		for ( const d of Array.isArray( j.data.drafts ) ? j.data.drafts : [] ) {
 			const p = resolveRef( d?.file ?? '' );

@@ -167,6 +167,16 @@ test( 'MUST FAIL FR-48A-7: an inventory recorded against an older draft is stale
 	assert.equal( r.errors.length, 1, r.errors.join( '\n' ) );
 } );
 
+test( 'MUST FAIL FR-48A-7: a surfaces.json read under an older runtime is stale', () => {
+	const root = folder();
+	const file = path.join( root, 'surfaces.json' );
+	fs.writeFileSync( file, JSON.stringify( { ...JSON.parse( fs.readFileSync( file, 'utf8' ) ), runtime_sha256: '0'.repeat( 64 ) } ) );
+	writeManifest( root, [ 'Home.dc.html' ] );
+	const r = check( root );
+	failsWith( r, /^FR-48A-7 surfaces\.json: inventory is stale: runtime_sha256 0{64} is not support\.js/ );
+	assert.equal( r.errors.length, 1, r.errors.join( '\n' ) );
+} );
+
 test( 'MUST FAIL FR-48A-10: an SVG under assets/ holding a script, an event attribute or foreignObject', () => {
 	const root = folder( { extra: {
 		'assets/a.svg': '<svg xmlns="http://www.w3.org/2000/svg"><SCRIPT>alert(1)</SCRIPT></svg>',

@@ -35,6 +35,7 @@ import { fillReport, unmappedList } from './lib/fill-report.mjs';
 import { calibrationFor } from './solve.mjs';
 import { stateMap } from './lib/state-map.mjs';
 import { readMediaMap } from './lib/fill-media.mjs';
+import { assertCurrent } from './lib/freshness.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -71,6 +72,7 @@ function animationInventory( buildDir, draftIndex, log ) {
 		return { records: [], rootComponent: null, draftDefects: [] };
 	}
 	const intake = JSON.parse( fs.readFileSync( file, 'utf8' ) );
+	assertCurrent( intake, path.join( buildDir, '..', 'handoff' ), { label: path.relative( REPO, file ) } );
 	const inv = intake.inventory?.animations || {};
 	const drafts = inv.drafts || [];
 	const entry = drafts.find( ( d ) => draftIndex && d.file === path.basename( draftIndex ) ) || drafts[ 0 ];

@@ -26,6 +26,8 @@ import { loadCalibration } from './cache.mjs';
 import { openDb } from './db.mjs';
 import { setDraftState, fireTrigger, snapshotDraftState, restoreDraftState } from './intake-state.mjs';
 import { templateOf } from './intake-run-collapse.mjs';
+import { sourcesOf } from './freshness.mjs';
+import { fingerprintsOf } from './identity.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const SURFACE_KINDS = [ 'header', 'footer', 'drawer', 'menu', 'form', 'modal', 'global', 'page' ];
@@ -188,8 +190,10 @@ export function contextOf( inventory, proposal, key ) {
 }
 
 // A proposal's rows as intake.json holds them (row id, the finaliser's context, the rule that settled each).
-export const rowsOf = ( surface, proposal, inventory ) => proposal.rows.map( ( r ) => ( {
-	rowId: `skeleton:${ surface }:${ r.key }`, key: r.key, tag: r.tag, words: r.words, block: r.block, confidence: r.confidence, low: r.low, reason: r.reason, rule: r.rule ?? null,
+export const rowsOf = ( surface, proposal, inventory ) => rowsWith( surface, proposal, inventory, fingerprintsOf( inventory ) );
+
+const rowsWith = ( surface, proposal, inventory, fingerprints ) => proposal.rows.map( ( r ) => ( {
+	rowId: `skeleton:${ surface }:${ r.key }`, key: r.key, ...( fingerprints[ r.key ] ? { fingerprint: fingerprints[ r.key ] } : {} ), tag: r.tag, words: r.words, block: r.block, confidence: r.confidence, low: r.low, reason: r.reason, rule: r.rule ?? null,
 	...( r.into ? { into: r.into } : {} ), ...( r.handover ? { handover: r.handover } : {} ), ...( r.builtPost ? { builtPost: r.builtPost } : {} ),
 	candidates: r.candidates.slice( 0, 3 ).map( ( c ) => ( { block: c.block, score: c.score, share: c.share } ) ), action: r.action, snippet: r.snippet, screenshots: r.screenshots,
 	...contextOf( inventory, proposal, r.key ),
@@ -326,6 +330,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 	const theDb = db || ( facts ? null : openDb() );
 	const f = factsFor( { db: theDb, client, repo, facts } );
 	const calKeys = site ? ( s ) => Object.keys( loadCalibration( path.join( HERE, '..', 'cache' ), s, site )?.elements || {} ) : () => [];
+	const sources = inventoriesDir ? sourcesOf( folder ) : null;
 	const out = [];
 	const gaps = [];
 	const runs = [];
@@ -388,7 +393,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 						} else {
 							inventory = await readInventory( { page: h.page, root: s.selector, settle, shotsDir: shotsDir ? path.join( shotsDir, s.slug ) : null, url: h.page.url() } );
 						}
-						inventoriesDir && fs.writeFileSync( path.join( inventoriesDir, `${ s.slug }.json` ), `${ JSON.stringify( inventory ) }
+						inventoriesDir && fs.writeFileSync( path.join( inventoriesDir, `${ s.slug }.json` ), `${ JSON.stringify( { ...inventory, sources } ) }
 ` );
 						if ( f.error ) {
 							throw new Error( f.error );

@@ -16,20 +16,14 @@ import { stateTrigger, openWords } from './motion-states.mjs';
 import { setRecord } from './motion-set.mjs';
 import { stateRows } from './state-vocab.mjs';
 import { setAttr } from './tree.mjs';
+import { templateKey, templateKeyOf } from './fact-key.mjs';
 
 // The inventory key of a draft element: the innermost host's name and the element's tpl id, from a tpl finder
 // (`Host>Child@12#0/34#1` is `Child/34`); null for any other finder. An element of the root host takes `rootComponent`
 // (the entry draft's component), because the runtime names the root host `Root` on a served draft and intake's harness
 // names it after the component.
 export function elementKey( finder, rootComponent = null ) {
-	const tpl = finder && 'object' === typeof finder ? finder.tpl : null;
-	const m = /^([^/]+)\/(\d+)#\d+$/.exec( tpl || '' );
-	if ( ! m ) {
-		return null;
-	}
-	const parts = m[ 1 ].split( '>' );
-	const host = 1 === parts.length && rootComponent ? rootComponent : parts.pop().replace( /(?:@\d+)?#\d+$/, '' );
-	return `${ host }/${ m[ 2 ] }`;
+	return templateKeyOf( finder && 'object' === typeof finder ? finder.tpl : null, rootComponent );
 }
 
 // Inventory records by element key (`<dc>/<tpl id>`); a record naming several template elements (a ref bound in each)
@@ -39,7 +33,7 @@ export function recordsByElement( records ) {
 	for ( const r of records || [] ) {
 		const tpl = r.element?.template_tpl_id;
 		for ( const id of null === tpl || undefined === tpl ? [] : [ tpl ].flat() ) {
-			const key = `${ r.element.dc }/${ id }`;
+			const key = templateKey( { dc: r.element.dc, tpl: id } );
 			if ( ! out.has( key ) ) {
 				out.set( key, [] );
 			}

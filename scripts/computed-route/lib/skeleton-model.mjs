@@ -2,6 +2,7 @@
 // another (a glyph and everything in it, an element never shown), the words and links an element carries, whether a run of
 // siblings is stacked. Pure functions over the inventory JSON, so they run offline.
 import { parseTplKey } from './fill-skeleton.mjs';
+import { fingerprintOf } from './identity.mjs';
 
 const ws = ( s ) => String( s ?? '' ).replace( /\s+/g, ' ' ).trim();
 
@@ -41,13 +42,7 @@ export function inventoryModel( inventory ) {
 	const isIconLink = ( e ) => 'a' === e.tag && ! words( e ) && kids( e ).some( ( k ) => 'svg' === k.tag );
 	// The slot of an element in the draft's own naming: the copy of its tag among its parent's block children.
 	const childIndex = ( e ) => blockKids( byKey[ e.parentKey ] || { key: null } ).indexOf( e );
-	// The fingerprint Fill's origin map keeps: tag, class and a short hash of the style attribute (only a hash, never a value).
-	const fingerprint = ( e ) => {
-		let h = 5381;
-		for ( const ch of String( e.attrs?.style || '' ) ) {
-			h = ( ( h * 33 ) ^ ch.charCodeAt( 0 ) ) >>> 0;
-		}
-		return { tag: e.tag, cls: e.attrs?.class || '', styleHash: h.toString( 16 ) };
-	};
+	// The fingerprint Fill's origin map keeps (lib/identity.mjs::fingerprintOf): tag, class, a hash of the style attribute (only a hash, never a value), the ancestor tags, a hash of the element's own words and its template line.
+	const fingerprint = ( e ) => fingerprintOf( e, byKey );
 	return { els, byKey, kids, isPart, blockKids, words, textWithBreaks, placeholders, box, stacked, isTextLink, isIconLink, childIndex, fingerprint, root: els.find( ( e ) => 0 === e.depth ) || els[ 0 ], tplFinder: ( e ) => ( parseTplKey( e.key ) ? { tpl: e.key } : null ) };
 }

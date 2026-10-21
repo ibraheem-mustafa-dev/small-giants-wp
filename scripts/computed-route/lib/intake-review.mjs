@@ -19,6 +19,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { isUnwiredEntry } from './intake-defects-static.mjs';
+import { realign, fingerprintDiff } from './identity.mjs';
 
 export const ROW_TYPES = [ 'page-map', 'palette-role', 'site-info', 'flag', 'draft-defect', 'not-a-defect', 'missing-feature', 'skeleton-block', 'inventory-diff', 'notice' ];
 export const SECTION_TITLES = {
@@ -473,8 +474,10 @@ export function applyReview( intake, markdown, { today = isoDay() } = {} ) {
 export function carryOver( previousIntake, intake ) {
 	const prior = new Map( ( previousIntake?.review || [] ).map( ( r ) => [ r.rowId, r ] ) );
 	const changed = [];
+	// A skeleton row id whose fingerprint now names another element is not the row the mark was written on, whatever its content.
+	const drifted = driftedRows( previousIntake, intake );
 	const review = reviewRows( intake ).map( ( r ) => {
-		const old = prior.get( r.rowId );
+		const old = drifted.has( r.rowId ) ? null : prior.get( r.rowId );
 		const base = { rowId: r.rowId, rowType: r.rowType, contentHash: r.contentHash, mark: null, markedOn: null, carriedFrom: null };
 		if ( ! old ) {
 			return base;
@@ -485,5 +488,51 @@ export function carryOver( previousIntake, intake ) {
 		}
 		return null === old.mark ? base : { ...base, mark: old.mark, markedOn: old.markedOn, carriedFrom: old.carriedFrom ?? previousIntake.takenOn };
 	} );
-	return { review, changed };
+	const lost = ( previousIntake?.review || [] ).filter( ( o ) => null !== o.mark && ( drifted.has( o.rowId ) || ! review.some( ( r ) => r.rowId === o.rowId ) ) );
+	const { realigned, refused } = carryLost( { lost, previousIntake, intake, review } );
+	return { review, changed, realigned, refused };
+}
+
+// The skeleton row ids both runs have whose fingerprints disagree (the source line apart).
+function driftedRows( previousIntake, intake ) {
+	const now = Object.values( skeletonRowsOf( intake ) ).flat();
+	const byId = new Map( now.map( ( r ) => [ r.rowId, r ] ) );
+	return new Set( Object.values( skeletonRowsOf( previousIntake ) ).flat().filter( ( r ) => r.fingerprint && byId.get( r.rowId )?.fingerprint && fingerprintDiff( r.fingerprint, byId.get( r.rowId ).fingerprint, [ 'line' ] ).length ).map( ( r ) => r.rowId ) );
+}
+
+const skeletonRowsOf = ( intake ) => Object.fromEntries( ( Array.isArray( intake?.skeletons ) ? intake.skeletons.map( ( s ) => [ s.surface, s ] ) : Object.entries( intake?.skeletons || {} ) ).map( ( [ slug, s ] ) => [ slug, s.rows || [] ] ) );
+
+// Marks whose row id the new run no longer has (a re-export renumbered the template). A skeleton mark follows its element
+// when lib/identity.mjs::realign maps the previous row's fingerprint to a new row whose proposed block and action are the
+// same; every other mark is refused with why. Mutates `review` (the new rows) to carry the realigned marks; returns
+// { realigned: [ 'old -> new' ], refused: [ 'rowId: why' ] }: a mark is carried or listed, never dropped.
+function carryLost( { lost, previousIntake, intake, review } ) {
+	const realigned = [];
+	const refused = [];
+	const was = skeletonRowsOf( previousIntake );
+	const now = skeletonRowsOf( intake );
+	const maps = {};
+	for ( const o of lost ) {
+		const m = /^skeleton:([^:]+):(.+)$/.exec( o.rowId );
+		const prevRow = m && ( was[ m[ 1 ] ] || [] ).find( ( r ) => r.rowId === o.rowId );
+		if ( ! prevRow?.fingerprint ) {
+			refused.push( `${ o.rowId }: mark "${ o.mark }" not carried (${ m ? 'the previous row carries no fingerprint to re-align by' : 'the row is not in the new export' })` );
+			continue;
+		}
+		maps[ m[ 1 ] ] ||= realign( ( was[ m[ 1 ] ] || [] ).filter( ( r ) => r.fingerprint ).map( ( r ) => ( { key: r.key, fingerprint: r.fingerprint } ) ), ( now[ m[ 1 ] ] || [] ).filter( ( r ) => r.fingerprint ).map( ( r ) => ( { key: r.key, fingerprint: r.fingerprint } ) ) );
+		const to = maps[ m[ 1 ] ].map[ prevRow.key ];
+		const next = to && ( now[ m[ 1 ] ] || [] ).find( ( r ) => r.key === to );
+		const target = next && review.find( ( r ) => r.rowId === next.rowId );
+		const why = ! to ? maps[ m[ 1 ] ].refused.find( ( r ) => r.key === prevRow.key )?.why || 'no element of the new export agrees with its fingerprint'
+			: ! target ? `${ to } has no review row`
+				: null !== target.mark ? `${ to } already carries a mark`
+					: prevRow.block !== next.block || ( prevRow.action ?? null ) !== ( next.action ?? null ) ? `the element moved to ${ to } but its proposal changed (${ prevRow.block } to ${ next.block })` : null;
+		if ( why ) {
+			refused.push( `${ o.rowId }: mark "${ o.mark }" not carried (${ why })` );
+			continue;
+		}
+		Object.assign( target, { mark: o.mark, markedOn: o.markedOn, carriedFrom: o.carriedFrom ?? previousIntake.takenOn, realignedFrom: o.rowId } );
+		realigned.push( `${ o.rowId } -> ${ next.rowId }` );
+	}
+	return { realigned, refused };
 }

@@ -21,6 +21,7 @@ import { mergeBlocked } from './intake-run-collapse.mjs';
 import { reviewDecisions, recordReviewDecisions, decisionsFile, dbKnownBlock } from './intake-run-finalise.mjs';
 import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
 import { openDb } from './db.mjs';
+import { sourcesOf } from './freshness.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const REPO = path.resolve( HERE, '..', '..', '..' );
@@ -118,7 +119,7 @@ function tail( file, log ) {
 }
 
 // The intake record from the worker's result (Appendix C "Intake record"), review rows unmarked until carryOver.
-export function buildRecord( { client, takenOn, manifest, result } ) {
+export function buildRecord( { client, takenOn, manifest, result, sources = null } ) {
 	const p = result.parts;
 	const gaps = [ ...result.gaps ];
 	const attempts = ( p.replay?.proxyAttempts ?? 0 ) + ( p.skeletons?.proxyAttempts ?? 0 );
@@ -127,7 +128,7 @@ export function buildRecord( { client, takenOn, manifest, result } ) {
 	}
 	const r = p.routing?.routing;
 	const record = {
-		schemaVersion: '1', client, takenOn,
+		schemaVersion: '1', client, takenOn, ...( sources ? { sources } : {} ),
 		manifest: { schema_version: manifest.schemaVersion, files: Object.fromEntries( manifest.files.map( ( f ) => [ f.path, f.sha256 ] ) ) },
 		tools: result.tools, harness: result.harness,
 		census: p.census?.census?.rows ?? [],
@@ -195,7 +196,7 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 	}
 	stop();
 	fs.rmSync( work, { recursive: true, force: true } );
-	const built = buildRecord( { client: o.client, takenOn: new Date().toISOString(), manifest, result } );
+	const built = buildRecord( { client: o.client, takenOn: new Date().toISOString(), manifest, result, sources: sourcesOf( at.folder ) } );
 	const { attempts } = built;
 	let { record } = built;
 	// The skeleton rows proposed once more from the inventories this run saved, now the motion inventory is known (a
@@ -233,6 +234,8 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 	}
 	const carried = carryOver( previous, record );
 	record.review = carried.review;
+	carried.realigned.length && say( `review: ${ carried.realigned.length } mark(s) followed their element to a renumbered row: ${ carried.realigned.slice( 0, 5 ).join( '; ' ) }${ carried.realigned.length > 5 ? '; ...' : '' }` );
+	carried.refused.length && say( `review: ${ carried.refused.length } mark(s) NOT carried (the element changed or is gone): ${ carried.refused.join( '; ' ) }` );
 	const problems = recordProblems( record );
 	if ( problems.length ) {
 		say( `intake.json does NOT validate, nothing written:\n${ problems.map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );

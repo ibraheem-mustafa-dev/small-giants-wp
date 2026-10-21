@@ -25,6 +25,7 @@ import { loopingKeys } from './lib/skeleton-rerun.mjs';
 import { isServedInventory, servedDecisions, servedMotion } from './lib/key-space.mjs';
 import { reviewHtml } from './lib/skeleton-review.mjs';
 import { loadCalibration } from './lib/cache.mjs';
+import { assertCurrent } from './lib/freshness.mjs';
 import { skeletonDir, readDecisions, readPicks, recordDecision, recordSiteName, finaliseRequest, applyPicks } from './lib/skeleton-finalise.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -64,6 +65,7 @@ export function intakeContext( { client, surface, repo = REPO } ) {
 		throw new Error( `sites/${ client }/build/surfaces.json "${ surface }" has no intakeSurface: the slug of its intake.json skeletons entry (node scripts/computed-route/manifest.mjs ${ client } --site <site> --only ${ surface } --apply sets it)` );
 	}
 	const intake = readJson( path.join( repo, 'sites', client, 'build', 'intake', 'intake.json' ), null );
+	intake && assertCurrent( intake, path.join( repo, 'sites', client, 'handoff' ), { label: `sites/${ client }/build/intake/intake.json` } );
 	const entry = intake?.skeletons?.[ slug ];
 	if ( ! entry ) {
 		throw new Error( `"${ surface }" names intakeSurface "${ slug }", which is not in sites/${ client }/build/intake/intake.json skeletons` );
