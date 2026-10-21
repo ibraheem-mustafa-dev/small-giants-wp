@@ -6,9 +6,9 @@
  * same "renders 0, hydrates client-side" pattern as sgs/cart's badge).
  */
 import { __ } from '@wordpress/i18n';
-import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
+import { InspectorControls, useBlockProps, useSettings } from '@wordpress/block-editor';
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
-import { UnitControl } from '../../components/primitives';
+import { glyphSizePx } from '../../utils/font-size-preset';
 import {
 	IconPicker,
 	IconPreview,
@@ -17,6 +17,7 @@ import {
 	BooleanResponsiveControl,
 	fillRow,
 	textRow,
+	SgsLengthControl,
 } from '../../components';
 import { usePreviewTier, resolveTier, backgroundPaintPreview, textPaintPreview } from '../../utils';
 
@@ -51,7 +52,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const iconPaintCss = iconPaint.color
 		? `.${ previewUid } .sgs-wishlist-link__icon svg{color:${ iconPaint.color };}`
 		: '';
-	const iconSizePreview = parseInt( resolveTier( iconSize, previewTier ).value, 10 ) || 24;
+	const [ fontSizes ] = useSettings( 'typography.fontSizes' );
+	const iconSizePreview = glyphSizePx( resolveTier( iconSize, previewTier ).value, fontSizes, 24 );
 	const badgeStyle = {
 		...backgroundPaintPreview( attributes.badgeBackgroundColour, attributes.badgeBackgroundColourGradient ),
 		...textPaintPreview( attributes.badgeTextColour, '' ),
@@ -128,11 +130,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 					<ResponsiveControl label={ __( 'Icon size (px)', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => (
-							<UnitControl
-								__next40pxDefaultSize
+							<SgsLengthControl
+								scale="font-size"
 								label={ __( 'Icon size', 'sgs-blocks' ) }
 								hideLabelFromVision
-								units={ [ { value: 'px', label: 'px' } ] }
 								value={ iconSize[ breakpoint ] ?? '' }
 								onChange={ ( value ) =>
 									setAttributes( {

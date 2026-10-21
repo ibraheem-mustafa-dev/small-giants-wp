@@ -887,10 +887,10 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `ServerSideRender.js` | `ServerSideRender (default)`, `omitNullish` | ServerSideRender: the SGS drop-in for `@wordpress/server-side-render`. |
 | `SgsBooleanField.js` | `SgsBooleanField (default)` | SgsBooleanField — the SGS standard BOOLEAN control (golden-controls.json goldens/input.json `boolean` row, Bean-approved live… |
 | `SgsBorderControl.js` | `SgsBorderControl (default)` | SgsBorderControl — the border control PAIR, matching WP core's native `BorderBoxControl` layout (Bean-directed 2026-08-27 Task 0… |
-| `SgsBoxControl.js` | `SgsBoxControl (default)` | SgsBoxControl — compact 4-side box editor (padding / margin / border-width), built from native primitives with a hand-aligned row… |
+| `SgsBoxControl.js` | `SgsBoxControl (default)`, `parseLength`, `VALUE_BOX_STYLE` | SgsBoxControl — compact 4-side box editor (padding / margin / border-width), built from native primitives with a hand-aligned row… |
 | `SgsColourPanel.js` | `SgsColourPanel (default)` | THE grouped colour panel — D609's "missing half" (amended 2026-08-13, corrected 2026-08-14 per Bean's direct challenge — see… |
 | `SgsFreeTextField.js` | `SgsFreeTextField (default)` | SgsFreeTextField — the SGS standard FREE-TEXT / BARE-NUMBER control |
-| `SgsLengthControl.js` | `SgsLengthControl (default)` | SgsLengthControl — thin SGS wrapper for a length/unit value (Bean-directed new build, 2026-08-19; same construction pattern… |
+| `SgsLengthControl.js` | `SgsLengthControl (default)`, `sliderRange` | SgsLengthControl — the one control for a single length, in two scales chosen by `scale`. |
 | `SgsMultiSelectField.js` | `SgsMultiSelectField (default)` | SgsMultiSelectField — the SGS standard MULTI-SELECT / TOKEN control |
 | `SgsSeparatorControl.js` | `SgsSeparatorControl (default)` | SgsSeparatorControl — the one control for the lines drawn between a list's items. |
 | `ShadowControl.js` | `ShadowControl (default)`, `shadowAttrName`, `shadowAttrKeys` | ShadowControl — the shared layered box-shadow control. |

@@ -4,11 +4,14 @@
 
 import { __ } from '@wordpress/i18n';
 import { useMergeRefs } from '@wordpress/compose';
+import { useSettings } from '@wordpress/block-editor';
 import { IconPreview } from '../../../components';
 import { colourVar, focalPointToObjectPosition, BandWrap } from '../../../utils';
+import { glyphSizePx } from '../../../utils/font-size-preset';
 import ProductTemplateCanvas from './ProductTemplateCanvas';
 
 export default function CardGridCanvas( { attributes, clientId, sep, isWcProductMode, isCptCollectionMode, blockProps, pageButtonPreviewCss, wrapper, gridStyle, items, cardPreview, titleStyle, subtitleStyle, HeadingTag } ) {
+	const [ fontSizes ] = useSettings( 'typography.fontSizes' );
 	const {
 		variant,
 		glyphSize,
@@ -92,7 +95,7 @@ export default function CardGridCanvas( { attributes, clientId, sep, isWcProduct
 						// (width/height); the initial-letter span below keeps
 						// the raw CSS-length string, which `fontSize` accepts
 						// directly.
-						const glyphSizePx = parseInt( glyphSize, 10 ) || 32;
+						const glyphPx = glyphSizePx( glyphSize, fontSizes );
 						// Image overlay preview — same rule as render.php: only over a real
 						// photo, and only when a colour or gradient is set.
 						const overlayPaint = overlayGradient || colourVar( overlayColour );
@@ -127,7 +130,7 @@ export default function CardGridCanvas( { attributes, clientId, sep, isWcProduct
 									aria-hidden="true"
 									style={ { color: glyphColourValue } }
 								>
-									<IconPreview source="lucide" name={ item.glyph } size={ glyphSizePx } />
+									<IconPreview source="lucide" name={ item.glyph } size={ glyphPx } />
 								</span>
 							);
 						}

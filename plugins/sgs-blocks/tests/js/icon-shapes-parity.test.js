@@ -51,6 +51,9 @@ const LENGTHS = [
 	'2px', '2', ' 2px ', '0', '0.5rem', '1px 2px', 'calc(1px) 2px', 'calc(100% - (2 * 4px))', 'CALC(1px + 1px)', 'clamp(1px, 0.2vw, 3px)',
 	'var(--wp--preset--spacing--10)', 'min(1px, max(2px, 3px))', 'calc(1px', 'calc(1px))', '2px;}body{', 'calc(}body{)', 'url(x)',
 	'expression(1)', 'inherit', '-1px', '1e3px', 'a&b', 'calc(1px & 2px)', '1px /* x */', '',
+	// The font-size scale stores a theme preset as a var(): both validators must keep it whole.
+	'var(--wp--preset--font-size--large)', 'var(--wp--preset--font-size--x-large)', 'var(--wp--preset--font-size--medium, 1rem)',
+	'var(--wp--preset--font-size--large);color:red', 'var(--wp--preset--font-size--large',
 ];
 
 let php;
