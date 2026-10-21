@@ -2710,6 +2710,14 @@
 				},
 				"signature": "nav|",
 				"reason": "the header navigation binds the site's header menu (indus-test term 5, location primary), the binding site-build's placeholder header carries (lib/site-build-map.mjs::placeholderTree); a stage 3 tree must keep it"
+			},
+			"Root/43#0": {
+				"block": "sgs/responsive-logo",
+				"attributes": {
+					"logoId": 81
+				},
+				"signature": "indus-logo|",
+				"reason": "the header logo is <indus-logo variant=\"horizontal\"> (Indus Foods Website v2.dc.html line 49), which indus-logo.js draws from assets/logo-horizontal-anim.svg; that export asset is attachment 81 on indus-test (build/media-map.json)"
 			}
 		}
 	}

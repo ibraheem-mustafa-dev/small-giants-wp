@@ -3,7 +3,7 @@
     "name": "sgs/site-header",
     "attributes": {
       "className": "cr-ref-header-0",
-      "textColour": "custom-ink"
+      "textColour": "primary"
     },
     "innerBlocks": [
       {
@@ -20,7 +20,7 @@
           "borderColour": "accent",
           "gap": {
             "tablet": "20px",
-            "desktop": "80.97px"
+            "desktop": "80.92px"
           },
           "justifyContent": "space-between",
           "borderStyle": "solid"
@@ -29,6 +29,7 @@
           {
             "name": "sgs/responsive-logo",
             "attributes": {
+              "logoId": 81,
               "className": "cr-ref-header-2"
             },
             "innerBlocks": []
@@ -36,15 +37,41 @@
           {
             "name": "sgs/nav-bar-menu",
             "attributes": {
+              "collapsePoint": 1024,
               "ref": 5,
               "className": "cr-ref-header-3",
               "itemFontWeight": "600",
               "itemLineHeight": 1.412,
               "navColour": "primary",
               "gap": {
-                "desktop": "2px"
+                "desktop": "6px"
               },
-              "burgerSize": "100%"
+              "burgerSize": "100%",
+              "itemFontSize": {
+                "desktop": 17
+              },
+              "itemFontSizeUnit": "px",
+              "itemTextAlign": "center",
+              "itemColour": "custom-ink",
+              "itemBorderRadius": {
+                "topLeft": "11px",
+                "topRight": "11px",
+                "bottomRight": "11px",
+                "bottomLeft": "11px"
+              },
+              "itemPadding": {
+                "desktop": {
+                  "top": "0px",
+                  "right": "15px",
+                  "bottom": "0px",
+                  "left": "15px"
+                }
+              },
+              "itemMotionDuration": 220,
+              "itemMinHeight": {
+                "desktop": "42px"
+              },
+              "itemMotionEasing": "ease"
             },
             "innerBlocks": []
           },

@@ -29,6 +29,10 @@
       "tag": "nav",
       "cls": "",
       "styleHash": "1c0176c2"
+    },
+    "slots": {
+      ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": "Root/47#1",
+      ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link": "Root/47#0"
     }
   },
   "cr-ref-header-4": {
