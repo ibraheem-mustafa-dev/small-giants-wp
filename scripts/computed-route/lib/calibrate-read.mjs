@@ -154,9 +154,18 @@ export function missedReason( whys = [] ) {
 
 // Clicks the marked panel toggle. A toggle hidden at this width (a burger at desktop) cannot take a real click even
 // forced, so it is clicked in the page: the block's own handler still runs, and a panel that stays shut leaves its
-// target hidden (reported as missed) instead of failing the block.
+// target hidden (reported as missed) instead of failing the block. A link that is also its panel's trigger (a nav
+// parent with its own page and no caret) follows its href on a click, which would leave the calibration page, so it is
+// opened the keyboard's way: focus-visible focus, then ArrowDown while it is still shut.
 export async function openToggle( page ) {
 	const toggle = page.locator( '[data-cr-toggle]' ).first();
+	if ( await toggle.evaluate( ( el ) => el.matches( 'a[href]' ) ) ) {
+		await toggle.evaluate( ( el ) => el.focus( { focusVisible: true } ) );
+		if ( 'true' !== await toggle.getAttribute( 'aria-expanded' ) ) {
+			await toggle.press( 'ArrowDown' );
+		}
+		return;
+	}
 	if ( await toggle.isVisible() ) {
 		await toggle.click( { force: true } );
 		return;
@@ -254,11 +263,17 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 	}
 	await page.waitForTimeout( 800 );
 	out[ w ] = await page.evaluate( readInstancesInPage, args( instances.length ) );
+	const calibrationUrl = page.url();
 	for ( const [ n, inst ] of instances.entries() ) {
 		if ( ! [ 'hover', 'focus', 'class', 'probe' ].includes( inst.trigger ) ) {
 			continue;
 		}
-		const { read, why } = await readUnderTrigger( page, instances, n, inst );
+		// Every state instance is read on this one loaded page, so a trigger that followed a link leaves each later
+		// instance unread: the reason names the page it went to, not a missing instance.
+		const left = page.url() !== calibrationUrl ? page.url() : null;
+		const { read, why } = left
+			? { read: null, why: `an earlier trigger left the calibration page for ${ left }` }
+			: await readUnderTrigger( page, instances, n, inst );
 		if ( read ) {
 			out[ w ][ n ] = read;
 			hoverHit.add( n );

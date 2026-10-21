@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { slotFor, WIDTHS } from '../lib/calibrate.mjs';
-import { readInstancesInPage, openToggle, markTargetInPage, missedReason } from '../lib/calibrate-read.mjs';
+import { readInstancesInPage, openToggle, markTargetInPage, missedReason, readAll } from '../lib/calibrate-read.mjs';
 import { READ_PROPS, PSEUDO_PROPS, CAL_PSEUDO_PROPS, CAL_EXTRA_PSEUDO_PROPS, TEXT_PSEUDO_PROPS } from '../lib/calibrate-props.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
 
@@ -138,6 +138,68 @@ test( 'MUST FAIL (stale toggle): marking a second instance leaves only its own p
 		await page.evaluate( markTargetInPage, [ 'cr-ref-cal-', 1, '.sgs-x__link' ] );
 		const marked = await page.evaluate( () => [ ...document.querySelectorAll( '[data-cr-toggle]' ) ].map( ( b ) => b.getAttribute( 'aria-controls' ) ) );
 		assert.deepEqual( marked, [ 'p-1' ], 'openToggle clicks the first marked toggle, so an earlier instance\'s mark would open the wrong panel' );
+	} finally {
+		await browser.close();
+	}
+} );
+
+// nav-bar-menu's caret-off parent with its own page (includes/nav-menu-markup.php): one link that is also its panel's
+// trigger. Hover or keyboard focus opens the panel, ArrowDown enters it, and a mouse click follows the link.
+const LINK_TRIGGER = `<a id="t" href="/elsewhere" aria-controls="p" aria-expanded="false" data-cr-toggle>Shop</a>
+	<div id="p" hidden><a class="sgs-x__sublink" href="#">Sunglasses</a></div>
+	<script>
+		const t = document.getElementById( 't' );
+		const open = () => { document.getElementById( 'p' ).hidden = false; t.setAttribute( 'aria-expanded', 'true' ); };
+		t.addEventListener( 'focus', () => t.matches( ':focus-visible' ) && open() );
+		t.addEventListener( 'keydown', ( e ) => 'ArrowDown' === e.key && ( e.preventDefault(), open() ) );
+	</script>`;
+
+test( 'MUST FAIL (nav-bar-menu 14 hover settings "no instance"): a link that is its panel\'s trigger opens the panel without leaving the page', async () => {
+	const { chromium } = await import( 'playwright' );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage();
+		await page.route( 'http://cal.test/**', ( route ) => route.fulfill( { contentType: 'text/html', body: route.request().url().endsWith( '/elsewhere' ) ? '<p>another page</p>' : LINK_TRIGGER } ) );
+		await page.goto( 'http://cal.test/calibration' );
+		await openToggle( page );
+		await page.waitForTimeout( 300 );
+		assert.equal( page.url(), 'http://cal.test/calibration', 'the calibration page is still loaded: a mouse click on the link would follow it, and every later instance on the page would read "no instance"' );
+		assert.equal( await page.locator( '#p' ).isVisible(), true, 'the panel opened' );
+	} finally {
+		await browser.close();
+	}
+} );
+
+test( 'MUST FAIL (a navigating trigger hides as "no instance"): once a trigger leaves the page, each later state instance names the page it went to', async () => {
+	const { chromium } = await import( 'playwright' );
+	const browser = await chromium.launch();
+	try {
+		const page = await ( await browser.newContext() ).newPage();
+		// Instance 0's own hover script follows a link; instance 1 is read after it on the same page.
+		const cal = `<div class="cr-ref-cal-0" onmouseover="location.href='/elsewhere'">first</div><div class="cr-ref-cal-1">second</div>`;
+		await page.context().route( 'http://cal.test/**', ( route ) => route.fulfill( { contentType: 'text/html', body: route.request().url().includes( '/elsewhere' ) ? '<p>another page</p>' : cal } ) );
+		const hover = { trigger: 'hover', target: null, row: { css_state: 'hover' } };
+		const reads = await readAll( page, 'http://cal.test/calibration', [ hover, hover ] );
+		assert.deepEqual( reads.hoverMissed, [ 0, 1 ] );
+		assert.match( missedReason( reads.hoverWhy[ 1 ] ), /an earlier trigger left the calibration page for http:\/\/cal\.test\/elsewhere/ );
+	} finally {
+		await browser.close();
+	}
+} );
+
+test( 'MUST FAIL (a link trigger that focus does not open): ArrowDown opens it, still without leaving the page', async () => {
+	const { chromium } = await import( 'playwright' );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage();
+		const arrowOnly = LINK_TRIGGER.replace( "t.addEventListener( 'focus', () => t.matches( ':focus-visible' ) && open() );", '' );
+		assert.notEqual( arrowOnly, LINK_TRIGGER, 'the fixture lost its focus opener' );
+		await page.route( 'http://cal.test/**', ( route ) => route.fulfill( { contentType: 'text/html', body: route.request().url().endsWith( '/elsewhere' ) ? '<p>another page</p>' : arrowOnly } ) );
+		await page.goto( 'http://cal.test/calibration' );
+		await openToggle( page );
+		await page.waitForTimeout( 300 );
+		assert.equal( page.url(), 'http://cal.test/calibration' );
+		assert.equal( await page.locator( '#p' ).isVisible(), true, 'ArrowDown opened the panel' );
 	} finally {
 		await browser.close();
 	}
