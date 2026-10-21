@@ -481,11 +481,11 @@
 			"note": "role=\"deletion\": structure or landmark semantics; SGS blocks render their own ARIA"
 		},
 		"aria-role:dialog": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "behaviour recognisers",
-			"note": "role=\"dialog\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"excluded": {
+				"reason": "the drawer block renders its own dialog role; the drawer itself is cloned as its surface",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"aria-role:directory": {
 			"recognise": null,
@@ -859,11 +859,11 @@
 			"note": "role=\"gridcell\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
 		},
 		"aria-role:group": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "role=\"group\": structure or landmark semantics; SGS blocks render their own ARIA"
+			"excluded": {
+				"reason": "SGS blocks render their own structural semantics; a draft group role has no look",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"aria-role:heading": {
 			"recognise": null,
@@ -2029,11 +2029,11 @@
 			"note": "read by the construct registry's reader; no writer or check yet"
 		},
 		"construct:ref": {
-			"recognise": "construct:ref",
-			"write": null,
-			"check": null,
-			"wave": "behaviour recognisers",
-			"note": "read by the construct registry's reader; no writer or check yet"
+			"excluded": {
+				"reason": "a DOM handle in the draft's script: wiring only, the effect each one drives is cloned through its target",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"construct:renderVals-key": {
 			"recognise": "construct:renderVals-key",
@@ -2363,11 +2363,11 @@
 			"note": "conic-gradient(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:contrast": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "contrast(): reported by lib/motion-channels.mjs::filterChannels as unsupported, never written (tests/css-functions.test.mjs); the drafts' one use (a footer map, contrast(1.05)) is not visible"
+			"excluded": {
+				"reason": "one use, contrast(1.05) on the footer map, below what the eye can see",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"css-function:cos": {
 			"recognise": null,
@@ -2897,8 +2897,8 @@
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": null,
 			"check": null,
-			"wave": "motion model additions",
-			"note": "a horizontal slant; the value is Spec 38A FR-38A-57, built after the three test sites are fully cloned (Bean, 2026-10-19), and until then the writer reports it by name"
+			"wave": "behaviour recognisers",
+			"note": "Indus: the sheen sweep on magnet buttons (a stripe slanted by a constant skewX(-18deg) slides across on pointer enter), so it is the sgs sheen effect, recognised with the magnet in the behaviour recognisers wave; no animated slant, so not Spec 38A FR-38A-57"
 		},
 		"css-function:skewy": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
@@ -3125,11 +3125,11 @@
 			"note": "Fill reads 2 of 6 of these properties (lib/fill-read.mjs PROPS)"
 		},
 		"css-group:compositing-and-blending": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads 0 of 3 of these properties (lib/fill-read.mjs PROPS)"
+			"excluded": {
+				"reason": "the drafts use only isolation, the internal plumbing of the highlight stripe, which is built (Spec 02 FR-2-4); no mix-blend-mode in either draft",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"css-group:conditional-rules": {
 			"recognise": null,
@@ -3188,11 +3188,11 @@
 			"note": "Fill reads 0 of 6 of these properties (lib/fill-read.mjs PROPS)"
 		},
 		"css-group:generated-content": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads 0 of 2 of these properties (lib/fill-read.mjs PROPS)"
+			"excluded": {
+				"reason": "the drafts use content only on empty decorative pseudo-elements, whose paint is read already; no generated text",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"css-group:grid-layout": {
 			"recognise": null,
@@ -3300,11 +3300,11 @@
 			}
 		},
 		"css-group:pointer-events": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads 0 of 1 of these properties (lib/fill-read.mjs PROPS)"
+			"excluded": {
+				"reason": "touch-action appears only in the draft prototype's drag-to-reframe image component, which is not part of the design",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"css-group:positioned-layout": {
 			"recognise": null,
@@ -3439,18 +3439,18 @@
 			"note": "WebKit extensions (-webkit-line-clamp, -webkit-text-fill-color, -webkit-text-stroke, -webkit-mask, -webkit-appearance and the rest, 50 properties): common in modern designs; Fill reads none of them (re-opened by Bean 2026-10-18)"
 		},
 		"css-group:will-change": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads 0 of 1 of these properties (lib/fill-read.mjs PROPS)"
+			"excluded": {
+				"reason": "a rendering hint with no visible effect; the motion model sets its own",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"css-group:writing-modes": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads 0 of 5 of these properties (lib/fill-read.mjs PROPS)"
+			"excluded": {
+				"reason": "false hits: the direction keys are animate() options, not CSS; neither draft sets a writing direction",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"css-media-feature:-moz-device-pixel-ratio": {
 			"recognise": null,
@@ -4019,11 +4019,11 @@
 			"note": "-webkit-transform-origin-z: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
 		},
 		"css-property:-webkit-user-drag": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "-webkit-user-drag: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"excluded": {
+				"reason": "only in the draft prototype's drag-to-reframe image component",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"css-property:alt": {
 			"excluded": {
@@ -10072,11 +10072,11 @@
 			"note": "text direction; no writer"
 		},
 		"html-attr:global.draggable": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "behaviour recognisers",
-			"note": "drag source; no writer"
+			"excluded": {
+				"reason": "only in the draft prototype's drag-to-reframe image component",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"html-attr:global.elementtiming": {
 			"excluded": {
@@ -10204,11 +10204,11 @@
 			}
 		},
 		"html-attr:global.popover": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "behaviour recognisers",
-			"note": "native popover; no behaviour writer"
+			"excluded": {
+				"reason": "only in the draft prototype's reframe controls",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"html-attr:global.slot": {
 			"excluded": {
@@ -10238,11 +10238,11 @@
 			"note": "focus order; blocks set their own"
 		},
 		"html-attr:global.title": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "advisory title (tooltip); no writer"
+			"excluded": {
+				"reason": "a hover tooltip, not a look; the clone matches the draft's rendered page without it",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"html-attr:global.translate": {
 			"recognise": null,
@@ -10432,11 +10432,11 @@
 			"note": "<iframe height>: a presentational attribute the browser turns into height (WHATWG presentational hints); Fill does not read height"
 		},
 		"html-attr:iframe.loading": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<iframe loading>: media; no media upload or attachment map yet (FR-48-39)"
+			"excluded": {
+				"reason": "SGS blocks set their own loading attribute on an embed, so the draft's value has nothing to write",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"html-attr:iframe.longdesc": {
 			"excluded": {
@@ -15616,11 +15616,11 @@
 			"note": "SVG <mask>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
 		},
 		"svg:metadata": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <metadata>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"excluded": {
+				"reason": "editor metadata inside an SVG paints nothing, and the media upload strips it (FR-48-58)",
+				"signedBy": "Bean",
+				"date": "2026-10-21"
+			}
 		},
 		"svg:mpath": {
 			"recognise": null,
