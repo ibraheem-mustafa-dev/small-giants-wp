@@ -24,11 +24,10 @@ import { proposeSkeleton } from './lib/skeleton-propose.mjs';
 import { loopingKeys } from './lib/skeleton-rerun.mjs';
 import { isServedInventory, servedDecisions, servedMotion } from './lib/key-space.mjs';
 import { reviewHtml } from './lib/skeleton-review.mjs';
-import { loadCalibration } from './lib/cache.mjs';
+import { calKeysFor, calSettingsFor, statesOfRecord, thresholdsOf } from './lib/skeleton-context.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
 import { skeletonDir, readDecisions, readPicks, recordDecision, recordSiteName, finaliseRequest, applyPicks } from './lib/skeleton-finalise.mjs';
 
-const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const FINALISER_PROMPT = 'scripts/computed-route/prompts/skeleton-finaliser.md';
 
 // The files of one surface's skeleton run, and its draft url.
@@ -41,11 +40,6 @@ export function skeletonPaths( { client, surface, repo = REPO } ) {
 	const f = ( ext ) => path.join( dir, `${ surface }.${ ext }` );
 	return { dir, draftUrl: surfaces[ surface ].draftUrl || null, draftDir: surfaces[ surface ].draftDir ? path.resolve( repo, surfaces[ surface ].draftDir ) : null, draftIndex: surfaces[ surface ].draftIndex || null, inventory: f( 'inventory.json' ), skeleton: f( 'skeleton.json' ), proposal: f( 'proposal.json' ), review: f( 'review.html' ), request: f( 'finalise-request.json' ), picks: f( 'picks.json' ), decisions: path.join( dir, 'decisions.json' ), shots: path.join( dir, 'shots' ) };
 }
-
-// The calibration cache's element keys for a block on a site (slot targets), or none when it has no default paint there.
-const calKeysFor = ( site ) => ( slug ) => Object.keys( loadCalibration( path.join( HERE, 'cache' ), slug, site )?.elements || {} );
-// The calibration's settings (each with the slot it was measured on) for a block on a site.
-const calSettingsFor = ( site ) => ( slug ) => loadCalibration( path.join( HERE, 'cache' ), slug, site )?.settings || {};
 
 const write = ( file, text ) => {
 	fs.mkdirSync( path.dirname( file ), { recursive: true } );
@@ -72,9 +66,8 @@ export function intakeContext( { client, surface, repo = REPO } ) {
 	}
 	const built = readJson( path.join( skeletonDir( repo, client ), 'built-surfaces.json' ), {} ).surfaces || {};
 	// The handoff record of the same id carries the states (with the sc-if templates each shows); the draft's width thresholds are intake's.
-	const record = ( readJson( path.join( repo, 'sites', client, 'handoff', 'surfaces.json' ), {} ).records || [] ).find( ( r ) => r.id === entry.id );
-	const states = record?.states || [];
-	const thresholds = [ ...new Set( ( intake.breakpoints || [] ).flatMap( ( b ) => ( b.thresholds || [] ).map( ( t ) => Number( t.value ) ) ) ) ];
+	const states = statesOfRecord( { repo, client, id: entry.id } );
+	const thresholds = thresholdsOf( intake.breakpoints );
 	return { slug, kind: entry.kind, name: entry.name, built: built[ entry.id ] || built[ slug ] || null, rootComponent: entry.inventory?.checks?.rootName || null, motion: loopingKeys( intake.inventory?.animations ), states, thresholds };
 }
 

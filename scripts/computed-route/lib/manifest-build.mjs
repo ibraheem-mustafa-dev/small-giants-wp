@@ -40,6 +40,19 @@ export function settingState( state, vocab ) {
 	return words( state.name ).find( ( w ) => PAGE_LOOKS.includes( w ) && names.has( w ) ) ?? null;
 }
 
+// The page_key a page-map route names: the base name of a draft file route (`Home.dc.html`, any query string or fragment
+// ignored) is the file's `page_key` (`Home`); any other route is its own key.
+export function pageKeyOf( route ) {
+	const file = /^([^?#]+\.dc\.html)(?:[?#].*)?$/i.exec( String( route ?? '' ) );
+	return file ? file[ 1 ].split( '/' ).pop().replace( /\.dc\.html$/i, '' ) : route;
+}
+
+// The draft file a surface is read from, out of the export's `entry_drafts`: the one whose base name is the record's `dc`
+// (the component that declares the surface), else the first entry draft, which renders the chrome every page shares.
+export function draftFor( record, drafts ) {
+	return ( record?.dc && drafts.find( ( d ) => pageKeyOf( d ) === record.dc ) ) || drafts[ 0 ];
+}
+
 // The handoff record of a row: { record } or { reason }.
 export function matchRecord( row, records ) {
 	const kind = KINDS[ row.postType ];
@@ -48,7 +61,7 @@ export function matchRecord( row, records ) {
 	}
 	let mine = records.filter( ( r ) => r.kind === kind );
 	if ( 'page' === kind ) {
-		mine = mine.filter( ( r ) => null != row.route && r.page_key === row.route );
+		mine = mine.filter( ( r ) => null != row.route && r.page_key === pageKeyOf( row.route ) );
 	} else if ( mine.length > 1 ) {
 		mine = mine.filter( ( r ) => norm( r.name ) === norm( row.title ) );
 	}
@@ -58,18 +71,46 @@ export function matchRecord( row, records ) {
 	return { reason: 0 === mine.length ? `no ${ kind } record matches` : `${ mine.length } ${ kind } records match (${ mine.map( ( r ) => r.id ).join( ', ' ) })` };
 }
 
+// Whether a `state_keys` value is a set one: not null, false, zero, empty, an empty object or array (or its text), or a
+// negative index (-1 names no item).
+const isSet = ( v ) => {
+	if ( null == v || false === v || '' === v || 0 === v || ( 'number' === typeof v && v < 0 ) ) {
+		return false;
+	}
+	if ( Array.isArray( v ) ) {
+		return v.length > 0;
+	}
+	if ( 'object' === typeof v ) {
+		return Object.keys( v ).length > 0;
+	}
+	return ! /^\s*(\{\s*\}|\[\s*\]|null|false|0)\s*$/.test( String( v ) );
+};
+
+// Whether a state of an open-able surface sets one of the draft's real state keys. A derived or instance key is not one:
+// `R.*` (the responsive object), a loop item's field (`item.*`), a key starting `_` (a transient flag), and a dotted
+// path whose first segment is not itself a state key of the record (a field of an object the surface does not own).
+function setsRealKey( state, stateKeys ) {
+	return Object.entries( state.state_keys || {} ).some( ( [ key, value ] ) => {
+		const first = key.split( '.' )[ 0 ];
+		const derived = 'R' === first || 'item' === first || key.startsWith( '_' ) || ( key.includes( '.' ) && ! stateKeys.has( first ) );
+		return ! derived && isSet( value );
+	} );
+}
+
 // Walker states of a record: { states: { key: settingState }, pointer, dropped }. Pointer states (hover, focus, active) are
-// not walker states; an open-able surface keeps only its open or expanded states. Source order, the first of two states
-// with one key kept; no state left gives { resting: null }.
+// matched first and are not walker states; an open-able surface keeps a state named open or expanded, or one that sets a
+// real state key (setsRealKey), as each panel of a mega menu does (`{"mega":"sun"}`). Source order, the
+// first of two states with one key kept; no state left gives { resting: null }.
 export function statesOf( record, vocab ) {
 	const out = { states: {}, pointer: [], dropped: [] };
 	const seen = new Map();
 	const openable = OPENABLE.includes( record.kind );
+	const stateKeys = new Set( ( record.states || [] ).flatMap( ( s ) => Object.keys( s.state_keys || {} ) ).filter( ( k ) => ! k.includes( '.' ) ) );
 	for ( const s of record.states || [] ) {
 		const have = new Set( words( s.name ) );
 		if ( POINTER_WORDS.some( ( w ) => have.has( w ) ) ) {
 			out.pointer.push( s.name );
-		} else if ( openable && ! have.has( 'open' ) && ! have.has( 'expanded' ) ) {
+		} else if ( openable && ! have.has( 'open' ) && ! have.has( 'expanded' ) && ! setsRealKey( s, stateKeys ) ) {
 			out.dropped.push( s.name );
 		} else {
 			const key = walkerKey( s.name );
@@ -87,7 +128,7 @@ export function statesOf( record, vocab ) {
 // Intake's record of the same kind whose name matches the row (a page by page_key), or null.
 function intakeRecord( row, intake ) {
 	const kind = KINDS[ row.postType ];
-	const found = ( intake?.inventory?.surfaces?.records || [] ).filter( ( r ) => r.kind === kind && ( 'page' === kind ? null != row.route && r.page_key === row.route : norm( r.name ) === norm( row.title ) ) );
+	const found = ( intake?.inventory?.surfaces?.records || [] ).filter( ( r ) => r.kind === kind && ( 'page' === kind ? null != row.route && r.page_key === pageKeyOf( row.route ) : norm( r.name ) === norm( row.title ) ) );
 	return 1 === found.length ? found[ 0 ] : null;
 }
 
@@ -99,13 +140,15 @@ function intakeSurfaceOf( record, intake ) {
 
 const nameSet = ( record ) => [ ...new Set( ( record.states || [] ).map( ( s ) => s.name ) ) ].sort();
 
-// Builds the manifest. `target` is the calibration target ({ envFile, envKey }), `entryFile` the draft's entry file.
+// Builds the manifest. `target` is the calibration target ({ envFile, envKey }), `entryFiles` the export's entry drafts
+// (`entryFile` for an export with one); each surface takes the draft draftFor names.
 // `only` limits the run to those keys. Returns { entries, unresolved, unmatched, pointer, dropped, disagree, skipped, added, stale, noIntake }; throws when two rows give one key.
-export function buildManifest( { client, site, rows, records, intake = null, target, entryFile, vocab = [], existing = {}, only = null } ) {
+export function buildManifest( { client, site, rows, records, intake = null, target, entryFile = null, entryFiles = null, vocab = [], existing = {}, only = null } ) {
 	const isPlain = ( v ) => null !== v && 'object' === typeof v && ! Array.isArray( v );
 	if ( ! isPlain( existing ) || Object.values( existing ).some( ( v ) => ! isPlain( v ) ) ) {
 		throw new Error( 'the existing surfaces.json is not an object of entry objects' );
 	}
+	const drafts = entryFiles || [ entryFile ];
 	const entries = {};
 	const owner = new Map();
 	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {}, stale: [], noIntake: [] };
@@ -158,7 +201,7 @@ export function buildManifest( { client, site, rows, records, intake = null, tar
 			walker: `qa/parity/${ key }.fill-base.mjs`,
 			walkerFull: `qa/parity/${ key }.fill.mjs`,
 			draftDir: `sites/${ client }/handoff`,
-			draftIndex: entryFile,
+			draftIndex: draftFor( match.record, drafts ),
 			states,
 			...( PROVIDES[ row.postType ] ? { provides: PROVIDES[ row.postType ]( row ) } : {} ),
 		};

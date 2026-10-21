@@ -60,12 +60,13 @@ export function parseTransition( value ) {
 	} );
 }
 
-// An animation shorthand: [{ name, duration_ms, delay_ms, easing, iterations, direction, fill }].
+// An animation shorthand: [{ name, duration_ms, delay_ms, easing, iterations, direction, fill }]. The value may be the
+// source text of a string literal in a style object (`'mmMarquee 24s linear infinite'`): its quotes are not tokens.
 export function parseAnimation( value ) {
 	return splitTop( value ).map( ( item ) => {
 		const out = { name: null, duration_ms: 0, delay_ms: 0, easing: 'ease', iterations: 1, direction: 'normal', fill: 'none' };
 		let times = 0;
-		for ( const t of tokens( item.replace( /[{}]/g, ' ' ).replace( /\s*!important\s*$/, '' ) ) ) {
+		for ( const t of tokens( item.replace( /[{}'"`]/g, ' ' ).replace( /\s*!important\s*$/, '' ) ) ) {
 			if ( null !== ms( t ) ) {
 				out[ 0 === times++ ? 'duration_ms' : 'delay_ms' ] = ms( t );
 			} else if ( EASING.test( t ) ) {

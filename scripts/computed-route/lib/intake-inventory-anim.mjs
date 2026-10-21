@@ -8,6 +8,10 @@ import { targetOf, waapiEffect, writerSites } from './intake-inventory-target.mj
 import { templateRecords, animationRecord, applyReducedMotion, traceOf } from './intake-inventory-tpl.mjs';
 import { parseTransition } from './intake-inventory-css.mjs';
 
+// The template elements that hold a renderVals value built in code: the tpl ids of the component's `{{ }}` bindings whose
+// expression starts with one of the value's renderVals key names.
+const holeHosts = ( rows, names ) => [ ...new Set( rows.filter( ( x ) => 'binding' === x.kind && names.includes( String( x.detail.expression ).split( '.' )[ 0 ] ) ).map( ( x ) => x.draftId.split( ':' ).pop() ).filter( ( n ) => /^\d+$/.test( n ) ) ) ];
+
 const isCode = ( r ) => r.draftId.includes( ':js:' );
 const compOf = ( r ) => ( isCode( r ) ? r.draftId.split( ':js:' )[ 0 ] : r.component );
 const pad = ( prefix, i ) => `${ prefix }-${ String( i ).padStart( /^(TR|PS)$/.test( prefix ) ? 3 : 2, '0' ) }`;
@@ -168,7 +172,8 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 		const { p, owner, file } = code( comp );
 		const node = nodeAt( p, offsetOf( p, r.draftId ), /./ ) || p.nodes[ 0 ];
 		const tr = triggerOf( model, comp, node );
-		const element = { dc: owner, template_tpl_id: null, selector: 'a style value built in code', selection_rule: `bound or inserted by ${ functionName( p, node ) }`, description: `code-built ${ r.detail.property ?? 'stylesheet' } string` };
+		const hosts = holeHosts( model.rowsByComp.get( comp ) || [], tr.holes || [] );
+		const element = { dc: owner, template_tpl_id: null, ...( hosts.length ? { nearest_tpl_id: 1 === hosts.length ? hosts[ 0 ] : hosts } : {} ), selector: 'a style value built in code', selection_rule: `bound or inserted by ${ functionName( p, node ) }`, description: `code-built ${ r.detail.property ?? 'stylesheet' } string` };
 		const source = { file, function: functionName( p, node ), ref: null, line: Number( r.draftId.split( ':js:' )[ 1 ].split( ':' )[ 0 ] ), code: `${ r.detail.property ? `${ r.detail.property }: ` : '' }${ r.detail.value }` };
 		const meta = { comp, via: tr.via.map( ( o ) => `${ comp }@${ o }` ), members: tr.members.map( ( m ) => `${ comp }:${ m }` ), trigger: tr };
 		if ( 'keyframes' === r.kind && ! r.detail.property ) {
