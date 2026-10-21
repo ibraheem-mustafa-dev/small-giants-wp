@@ -37,6 +37,7 @@
 							"recognise": { "type": [ "string", "null" ], "minLength": 1 },
 							"write": { "type": [ "string", "null" ], "minLength": 1 },
 							"check": { "type": [ "string", "null" ], "minLength": 1 },
+							"test": { "type": "string", "minLength": 1 },
 							"wave": { "type": "string" },
 							"note": { "type": "string" }
 						}

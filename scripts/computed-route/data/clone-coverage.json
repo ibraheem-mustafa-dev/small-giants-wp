@@ -50,7 +50,8 @@
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": "aria-checked: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to the selected-pill settings (sgs/option-picker, sgs/product-card) (tests/states-planted-draft.test.mjs)"
+			"note": "aria-checked: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to the selected-pill settings (sgs/option-picker, sgs/product-card) (tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"aria-attr:aria-colcount": {
 			"recognise": null,
@@ -84,7 +85,8 @@
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": "aria-current: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to sgs/nav-bar-menu, sgs/nav-drawer-menu and sgs/breadcrumbs current settings (tests/states-planted-draft.test.mjs)"
+			"note": "aria-current: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to sgs/nav-bar-menu, sgs/nav-drawer-menu and sgs/breadcrumbs current settings (tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"aria-attr:aria-describedby": {
 			"recognise": null,
@@ -132,7 +134,8 @@
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": "aria-expanded: the vocabulary row sets the attribute on the host and reads the look as the 'open' state; written to sgs/accordion headerColourOpen, sgs/nav-drawer-menu itemColourOpen (tests/states-planted-draft.test.mjs)"
+			"note": "aria-expanded: the vocabulary row sets the attribute on the host and reads the look as the 'open' state; written to sgs/accordion headerColourOpen, sgs/nav-drawer-menu itemColourOpen (tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"aria-attr:aria-flowto": {
 			"recognise": null,
@@ -159,7 +162,8 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": "SGS and drafts set aria-hidden=\"true\" on decorative pieces for good, so a [aria-hidden=\"true\"] rule is in the resting read (fill-read readDraft) and written by the resting resolver; a panel toggled open and shut is covered by aria-expanded and [open]; tests/states-planted-draft.test.mjs proves the read"
+			"note": "SGS and drafts set aria-hidden=\"true\" on decorative pieces for good, so a [aria-hidden=\"true\"] rule is in the resting read (fill-read readDraft) and written by the resting resolver; a panel toggled open and shut is covered by aria-expanded and [open]; tests/states-planted-draft.test.mjs proves the read",
+			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"aria-attr:aria-invalid": {
 			"recognise": null,
@@ -256,7 +260,8 @@
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": "aria-pressed: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to sgs/theme-toggle textColourPressed (tests/states-planted-draft.test.mjs)"
+			"note": "aria-pressed: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to sgs/theme-toggle textColourPressed (tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"aria-attr:aria-readonly": {
 			"recognise": null,
@@ -311,7 +316,8 @@
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": "aria-selected: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to sgs/tabs tabActive* settings (tests/states-planted-draft.test.mjs)"
+			"note": "aria-selected: the vocabulary row sets the attribute on the host and reads the look as the 'current' state; written to sgs/tabs tabActive* settings (tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"aria-attr:aria-setsize": {
 			"recognise": null,
@@ -2052,7 +2058,8 @@
 			"recognise": "construct:style-hover",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": "a style-* pseudo rule: the draft runtime compiles it into a stylesheet rule, which the state reader reads as the hover (or focus) look and writes to the setting states; its motion is also written on hover.state (lib/fill-motion.mjs::motionWrites). A bound value ({{ }}) is a draft defect (FR-48-34) (tests/states-planted-draft.test.mjs)"
+			"note": "a style-* pseudo rule: the draft runtime compiles it into a stylesheet rule, which the state reader reads as the hover (or focus) look and writes to the setting states; its motion is also written on hover.state (lib/fill-motion.mjs::motionWrites). A bound value ({{ }}) is a draft defect (FR-48-34) (tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"construct:template-element": {
 			"recognise": "construct:template-element",
@@ -2291,7 +2298,8 @@
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#filterChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
 			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
-			"note": "blur() in an animated filter is the motion model's blur channel (tests/css-functions.test.mjs); a backdrop blur (the drawer scrim) belongs to nav-drawer's scrimBlur, which calibration has no marker for yet (coverage plan Order item 2(d) remaining)"
+			"note": "blur() in an animated filter is the motion model's blur channel (tests/css-functions.test.mjs); a backdrop blur (the drawer scrim) belongs to nav-drawer's scrimBlur, which calibration has no marker for yet (coverage plan Order item 2(d) remaining)",
+			"test": "scripts/computed-route/tests/css-functions.test.mjs"
 		},
 		"css-function:brightness": {
 			"recognise": null,
@@ -2301,11 +2309,11 @@
 			"note": "brightness(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:calc": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "calc(): Fill reads the computed result at 375, 768 and 1440, so a fluid value becomes three steps (FR-48-44, fluid values, not built)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/resolve.test.mjs",
+			"note": "calc(): a fluid value is read as computed px at 375, 768 and 1440 and written per tier (calc is never a form the calibration accepts)"
 		},
 		"css-function:calc-size": {
 			"recognise": null,
@@ -2329,11 +2337,11 @@
 			"note": "circle(): the drafts' one use is the pointer-following reveal, the cursor-field effect's image reveal (fx:cursor-field, recognised by FR-48-77); as a static clip-path it is reported (tests/css-functions.test.mjs)"
 		},
 		"css-function:clamp": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "clamp(): Fill reads the computed result at 375, 768 and 1440, so a fluid value becomes three steps (FR-48-44, fluid values, not built)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/resolve.test.mjs",
+			"note": "clamp(): resolve.mjs fluidForm recognises it; a calibration that proves clamp writes the form, otherwise it is written per tier from the computed value"
 		},
 		"css-function:color": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -2448,7 +2456,8 @@
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#filterChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
 			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
-			"note": "grayscale() in a filter: at rest it is the motion model's restGrayscale (lib/motion-layers.mjs; the drafts' one use, a footer map) and on hover the hover state's grayscale; Spec 38A has no entrance grayscale channel, so an entrance grayscale is not written (tests/css-functions.test.mjs)"
+			"note": "grayscale() in a filter: at rest it is the motion model's restGrayscale (lib/motion-layers.mjs; the drafts' one use, a footer map) and on hover the hover state's grayscale; Spec 38A has no entrance grayscale channel, so an entrance grayscale is not written (tests/css-functions.test.mjs)",
+			"test": "scripts/computed-route/tests/css-functions.test.mjs"
 		},
 		"css-function:hsl": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -2500,7 +2509,8 @@
 			"recognise": "scripts/computed-route/lib/motion-clip.mjs#clipChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
 			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
-			"note": "inset() in an animated clip-path is the entrance clip channel, in Chrome's computed form with 0px edges (tests/css-functions.test.mjs); a rounded inset (round 24px) has no channel and is reported (coverage plan Order item 2(d) remaining)"
+			"note": "inset() in an animated clip-path is the entrance clip channel, in Chrome's computed form with 0px edges (tests/css-functions.test.mjs); a rounded inset (round 24px) has no channel and is reported (coverage plan Order item 2(d) remaining)",
+			"test": "scripts/computed-route/tests/css-functions.test.mjs"
 		},
 		"css-function:invert": {
 			"recognise": null,
@@ -2552,7 +2562,8 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": "linear-gradient(): Fill reads the computed background-image and writes it as measured to the element's `*Gradient` setting; a gradient never lands in an image setting (tests/css-functions.test.mjs); every gradient setting's css_property is its paint-mechanism key, read as the property it paints (lib/db.mjs::GRADIENT_PAINTS, plugins/sgs-blocks/scripts/data/gradient-paint-keys.json), so sgs/container, sgs/hero and the other blocks whose gradient row was NULL are reached (coverage plan d1, 2026-10-20)"
+			"note": "linear-gradient(): Fill reads the computed background-image and writes it as measured to the element's `*Gradient` setting; a gradient never lands in an image setting (tests/css-functions.test.mjs); every gradient setting's css_property is its paint-mechanism key, read as the property it paints (lib/db.mjs::GRADIENT_PAINTS, plugins/sgs-blocks/scripts/data/gradient-paint-keys.json), so sgs/container, sgs/hero and the other blocks whose gradient row was NULL are reached (coverage plan d1, 2026-10-20)",
+			"test": "scripts/computed-route/tests/css-functions.test.mjs"
 		},
 		"css-function:log": {
 			"recognise": null,
@@ -2575,24 +2586,25 @@
 			"note": "a true 3D matrix (a flat one is already written as translate, scale and rotate); it decomposes into turns, slant and the axis angle; the value is Spec 38A FR-38A-57, built after the three test sites are fully cloned (Bean, 2026-10-19), and until then the writer reports it by name"
 		},
 		"css-function:max": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "max(): Fill reads the computed result at 375, 768 and 1440, so a fluid value becomes three steps (FR-48-44, fluid values, not built)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/resolve.test.mjs",
+			"note": "max(): resolve.mjs fluidForm recognises it; a calibration that proves max writes the form, otherwise it is written per tier from the computed value"
 		},
 		"css-function:min": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "min(): Fill reads the computed result at 375, 768 and 1440, so a fluid value becomes three steps (FR-48-44, fluid values, not built)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/resolve.test.mjs",
+			"note": "min(): resolve.mjs fluidForm recognises it; a calibration that proves min writes the form, otherwise it is written per tier from the computed value"
 		},
 		"css-function:minmax": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/normalise.mjs#tracksSetting",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": "minmax() in grid-template-columns: read through the computed tracks and written as per-tier proportions (tests/css-functions.test.mjs)"
+			"note": "minmax() in grid-template-columns: read through the computed tracks and written as per-tier proportions (tests/css-functions.test.mjs)",
+			"test": "scripts/computed-route/tests/css-functions.test.mjs"
 		},
 		"css-function:mod": {
 			"recognise": null,
@@ -2679,7 +2691,8 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": "radial-gradient(): written as measured to the element's `*Gradient` setting, as linear-gradient() (tests/css-functions.test.mjs); every gradient setting's css_property is its paint-mechanism key, read as the property it paints (lib/db.mjs::GRADIENT_PAINTS, plugins/sgs-blocks/scripts/data/gradient-paint-keys.json), so sgs/container, sgs/hero and the other blocks whose gradient row was NULL are reached (coverage plan d1, 2026-10-20)"
+			"note": "radial-gradient(): written as measured to the element's `*Gradient` setting, as linear-gradient() (tests/css-functions.test.mjs); every gradient setting's css_property is its paint-mechanism key, read as the property it paints (lib/db.mjs::GRADIENT_PAINTS, plugins/sgs-blocks/scripts/data/gradient-paint-keys.json), so sgs/container, sgs/hero and the other blocks whose gradient row was NULL are reached (coverage plan d1, 2026-10-20)",
+			"test": "scripts/computed-route/tests/css-functions.test.mjs"
 		},
 		"css-function:ray": {
 			"recognise": null,
@@ -2706,7 +2719,8 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/normalise.mjs#tracksSetting",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": "repeat() in grid-template-columns: Fill reads the computed tracks per width and writes them as per-tier proportions, repeat(auto-fit, minmax()) included (tests/css-functions.test.mjs)"
+			"note": "repeat() in grid-template-columns: Fill reads the computed tracks per width and writes them as per-tier proportions, repeat(auto-fit, minmax()) included (tests/css-functions.test.mjs)",
+			"test": "scripts/computed-route/tests/css-functions.test.mjs"
 		},
 		"css-function:repeating-conic-gradient": {
 			"recognise": null,
@@ -2719,7 +2733,8 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": "repeating-linear-gradient(): written as measured, layered with other gradients, to the element's `*Gradient` setting (tests/css-functions.test.mjs); every gradient setting's css_property is its paint-mechanism key, read as the property it paints (lib/db.mjs::GRADIENT_PAINTS, plugins/sgs-blocks/scripts/data/gradient-paint-keys.json), so sgs/container, sgs/hero and the other blocks whose gradient row was NULL are reached (coverage plan d1, 2026-10-20)"
+			"note": "repeating-linear-gradient(): written as measured, layered with other gradients, to the element's `*Gradient` setting (tests/css-functions.test.mjs); every gradient setting's css_property is its paint-mechanism key, read as the property it paints (lib/db.mjs::GRADIENT_PAINTS, plugins/sgs-blocks/scripts/data/gradient-paint-keys.json), so sgs/container, sgs/hero and the other blocks whose gradient row was NULL are reached (coverage plan d1, 2026-10-20)",
+			"test": "scripts/computed-route/tests/css-functions.test.mjs"
 		},
 		"css-function:repeating-radial-gradient": {
 			"recognise": null,
@@ -4455,7 +4470,8 @@
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state-tokens.mjs#applyTokenLooks",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": ":active: forced on the host and read as the press look; on a block that reads buttonPresets (sgs/button, sgs/whatsapp-cta) its transform and box-shadow are written to settings.custom.buttonPresets.<variant>.active-transform and .active-shadow of theme-snapshot.patch.json; a pressed colour is a named gap, as is a press look on any other block (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)"
+			"note": ":active: forced on the host and read as the press look; on a block that reads buttonPresets (sgs/button, sgs/whatsapp-cta) its transform and box-shadow are written to settings.custom.buttonPresets.<variant>.active-transform and .active-shadow of theme-snapshot.patch.json; a pressed colour is a named gap, as is a press look on any other block (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/fill-state-tokens.test.mjs"
 		},
 		"css-pseudo-class:active-view-transition": {
 			"recognise": null,
@@ -4475,7 +4491,8 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":any-link matches every link at rest, so its rule is in the resting read (fill-read readDraft) and written by the resting resolver; tests/states-planted-draft.test.mjs proves the read"
+			"note": ":any-link matches every link at rest, so its rule is in the resting read (fill-read readDraft) and written by the resting resolver; tests/states-planted-draft.test.mjs proves the read",
+			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:autofill": {
 			"recognise": null,
@@ -4502,7 +4519,8 @@
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": ":checked: a checked input forced and read; its look is the 'current' state, written to the selected-pill settings (sgs/option-picker, sgs/product-card); the target must be the input itself or an ancestor of it, as a sibling combinator has no host (tests/states-planted-draft.test.mjs)"
+			"note": ":checked: a checked input forced and read; its look is the 'current' state, written to the selected-pill settings (sgs/option-picker, sgs/product-card); the target must be the input itself or an ancestor of it, as a sibling combinator has no host (tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:current": {
 			"excluded": {
@@ -4529,19 +4547,22 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":dir: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":dir: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:disabled": {
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": ":disabled: forced and read as the 'disabled' state, written to itemDisabledColour (sgs/nav-bar-menu, sgs/nav-drawer-menu); an element already disabled at rest has the look as its resting read, so only a draft control that is not disabled at rest yields a state look (tests/states-planted-draft.test.mjs)"
+			"note": ":disabled: forced and read as the 'disabled' state, written to itemDisabledColour (sgs/nav-bar-menu, sgs/nav-drawer-menu); an element already disabled at rest has the look as its resting read, so only a draft control that is not disabled at rest yields a state look (tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:empty": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":empty: matches at rest, so the rule is in the element's resting computed style; Fill reads it on each element the skeleton maps to a block and writes it there, like the structural pseudo-classes (tests/states-planted-draft.test.mjs)"
+			"note": ":empty: matches at rest, so the rule is in the element's resting computed style; Fill reads it on each element the skeleton maps to a block and writes it there, like the structural pseudo-classes (tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:enabled": {
 			"recognise": null,
@@ -4561,31 +4582,36 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":first-child: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":first-child: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:first-of-type": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":first-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":first-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:focus": {
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state-tokens.mjs#applyTokenLooks",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": ":focus: forced on the host and read as the focus look; a look that paints like hover is held by the hover write, and an outline or box-shadow look unlike hover is written to settings.custom.focus (source \"draft\") of theme-snapshot.patch.json; any other property of a different focus look stays a named gap (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)"
+			"note": ":focus: forced on the host and read as the focus look; a look that paints like hover is held by the hover write, and an outline or box-shadow look unlike hover is written to settings.custom.focus (source \"draft\") of theme-snapshot.patch.json; any other property of a different focus look stays a named gap (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/fill-state-tokens.test.mjs"
 		},
 		"css-pseudo-class:focus-visible": {
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state-tokens.mjs#applyTokenLooks",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": ":focus-visible: forced on the host and read as the focus look; SGS paints hover on :hover and :focus-visible together, so a look equal to hover is held, and an outline or box-shadow look unlike hover is written to settings.custom.focus (source \"draft\") of theme-snapshot.patch.json (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)"
+			"note": ":focus-visible: forced on the host and read as the focus look; SGS paints hover on :hover and :focus-visible together, so a look equal to hover is held, and an outline or box-shadow look unlike hover is written to settings.custom.focus (source \"draft\") of theme-snapshot.patch.json (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/fill-state-tokens.test.mjs"
 		},
 		"css-pseudo-class:focus-within": {
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state-tokens.mjs#applyTokenLooks",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": ":focus-within: forced on the host and read as a focus look; the site has one focus ring, so an outline or box-shadow look unlike hover is written to settings.custom.focus (source \"draft\") of theme-snapshot.patch.json and a second target setting another value is reported as a conflict (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)"
+			"note": ":focus-within: forced on the host and read as a focus look; the site has one focus ring, so an outline or box-shadow look unlike hover is written to settings.custom.focus (source \"draft\") of theme-snapshot.patch.json and a second target setting another value is reported as a conflict (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/fill-state-tokens.test.mjs"
 		},
 		"css-pseudo-class:fullscreen": {
 			"excluded": {
@@ -4605,7 +4631,8 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":has: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":has: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:has-slotted": {
 			"excluded": {
@@ -4618,7 +4645,8 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":heading: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":heading: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:host": {
 			"excluded": {
@@ -4638,7 +4666,8 @@
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": ":hover: forced on the host by CSS.forcePseudoState and read as the hover look; written to the setting states 'hover' (678 settings in 77 blocks), and the check compares it with the live page's hover (tests/states-planted-draft.test.mjs)"
+			"note": ":hover: forced on the host by CSS.forcePseudoState and read as the hover look; written to the setting states 'hover' (678 settings in 77 blocks), and the check compares it with the live page's hover (tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:in-range": {
 			"recognise": null,
@@ -4665,25 +4694,29 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":is: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":is: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:lang": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":lang: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":lang: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:last-child": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":last-child: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":last-child: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:last-of-type": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":last-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":last-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:left": {
 			"recognise": null,
@@ -4696,7 +4729,8 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":link matches every unvisited link at rest, so its rule is in the resting read (fill-read readDraft) and written by the resting resolver (on a theme link, the theme link colour); tests/states-planted-draft.test.mjs proves the read"
+			"note": ":link matches every unvisited link at rest, so its rule is in the resting read (fill-read readDraft) and written by the resting resolver (on a theme link, the theme link colour); tests/states-planted-draft.test.mjs proves the read",
+			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:local-link": {
 			"excluded": {
@@ -4709,7 +4743,8 @@
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": ":modal: the reader opens the dialog modally and reads the open look; on a sgs/modal, sgs/nav-drawer or sgs/mega-panel hidden at rest the look is the surface's own look, written to its resting settings (lib/fill-state.mjs::SURFACE_BLOCKS, hiddenAtRest); a surface shown at rest keeps the state-setting path (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)"
+			"note": ":modal: the reader opens the dialog modally and reads the open look; on a sgs/modal, sgs/nav-drawer or sgs/mega-panel hidden at rest the look is the surface's own look, written to its resting settings (lib/fill-state.mjs::SURFACE_BLOCKS, hiddenAtRest); a surface shown at rest keeps the state-setting path (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/fill-state-tokens.test.mjs"
 		},
 		"css-pseudo-class:muted": {
 			"excluded": {
@@ -4729,49 +4764,57 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":not: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":not: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:nth-child": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":nth-child: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":nth-child: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:nth-last-child": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":nth-last-child: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":nth-last-child: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:nth-last-of-type": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":nth-last-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":nth-last-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:nth-of-type": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":nth-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":nth-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:only-child": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":only-child: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":only-child: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:only-of-type": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":only-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":only-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:open": {
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": ":open: forced on the host (details, dialog, select) and read as the 'open' state; written to the open-state settings (sgs/accordion header colour and background, sgs/nav-drawer-menu item and caret) (tests/states-planted-draft.test.mjs)"
+			"note": ":open: forced on the host (details, dialog, select) and read as the 'open' state; written to the open-state settings (sgs/accordion header colour and background, sgs/nav-drawer-menu item and caret) (tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/states-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:optional": {
 			"recognise": null,
@@ -4826,7 +4869,8 @@
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": ":popover-open: the reader opens the popover and reads the open look; on a sgs/modal, sgs/nav-drawer or sgs/mega-panel hidden at rest the look is the surface's own look, written to its resting settings (lib/fill-state.mjs::SURFACE_BLOCKS, hiddenAtRest) (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)"
+			"note": ":popover-open: the reader opens the popover and reads the open look; on a sgs/modal, sgs/nav-drawer or sgs/mega-panel hidden at rest the look is the surface's own look, written to its resting settings (lib/fill-state.mjs::SURFACE_BLOCKS, hiddenAtRest) (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/fill-state-tokens.test.mjs"
 		},
 		"css-pseudo-class:read-only": {
 			"recognise": null,
@@ -4860,13 +4904,15 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":root: in a stylesheet it matches the document element, so its effect reaches the page's elements through inheritance and is read in their computed style (the page baseline, lib/fill-page.mjs); a custom property it defines is a token (lib/tokens.mjs) (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":root: in a stylesheet it matches the document element, so its effect reaches the page's elements through inheritance and is read in their computed style (the page baseline, lib/fill-page.mjs); a custom property it defines is a token (lib/tokens.mjs) (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:scope": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":scope: in a stylesheet it matches the document element, so its effect reaches the page's elements through inheritance and is read in their computed style (the page baseline, lib/fill-page.mjs); a custom property it defines is a token (lib/tokens.mjs) (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":scope: in a stylesheet it matches the document element, so its effect reaches the page's elements through inheritance and is read in their computed style (the page baseline, lib/fill-page.mjs); a custom property it defines is a token (lib/tokens.mjs) (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:seeking": {
 			"excluded": {
@@ -4893,7 +4939,8 @@
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state.mjs#fillStates",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": ":target: forced on the host and read as the open look; on a sgs/modal, sgs/nav-drawer or sgs/mega-panel hidden at rest the look is the surface's own look, written to its resting settings (lib/fill-state.mjs::SURFACE_BLOCKS, hiddenAtRest) (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)"
+			"note": ":target: forced on the host and read as the open look; on a sgs/modal, sgs/nav-drawer or sgs/mega-panel hidden at rest the look is the surface's own look, written to its resting settings (lib/fill-state.mjs::SURFACE_BLOCKS, hiddenAtRest) (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/fill-state-tokens.test.mjs"
 		},
 		"css-pseudo-class:target-current": {
 			"recognise": null,
@@ -4934,7 +4981,8 @@
 			"recognise": "scripts/computed-route/lib/fill-state-read.mjs#readStates",
 			"write": "scripts/computed-route/lib/fill-state-tokens.mjs#applyTokenLooks",
 			"check": "scripts/computed-route/lib/state-live.mjs#liveStateCheck",
-			"note": ":visited: no browser exposes it to scripts, so its look is read from the draft's own stylesheet rule (read \"code\": the render cannot confirm it) and written to styles.elements.link[':visited'] of theme-snapshot.patch.json when the target is a plain content link (lib/snapshot-tokens.mjs::isThemeLink); a link a block setting owns, or with no href, is a named gap (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)"
+			"note": ":visited: no browser exposes it to scripts, so its look is read from the draft's own stylesheet rule (read \"code\": the render cannot confirm it) and written to styles.elements.link[':visited'] of theme-snapshot.patch.json when the target is a plain content link (lib/snapshot-tokens.mjs::isThemeLink); a link a block setting owns, or with no href, is a named gap (tests/fill-state-tokens.test.mjs, tests/states-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/fill-state-tokens.test.mjs"
 		},
 		"css-pseudo-class:volume-locked": {
 			"excluded": {
@@ -4947,7 +4995,8 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":where: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
+			"note": ":where: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)",
+			"test": "scripts/computed-route/tests/css-planted-draft.test.mjs"
 		},
 		"css-pseudo-class:xr-overlay": {
 			"recognise": null,
@@ -5623,7 +5672,8 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/normalise.mjs#tracksSetting",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": "fr in grid-template-columns: read through the computed tracks and written as per-tier minmax(0, Nfr) proportions (tests/css-functions.test.mjs)"
+			"note": "fr in grid-template-columns: read through the computed tracks and written as per-tier minmax(0, Nfr) proportions (tests/css-functions.test.mjs)",
+			"test": "scripts/computed-route/tests/css-functions.test.mjs"
 		},
 		"css-unit:grad": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#angleOf",
@@ -5863,11 +5913,11 @@
 			"note": "vb: a viewport unit; Fill reads the computed px per width, so it becomes three steps (FR-48-44)"
 		},
 		"css-unit:vh": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "vh: a viewport unit; Fill reads the computed px per width, so it becomes three steps (FR-48-44)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/resolve.test.mjs",
+			"note": "vh: read as computed px per width and always written per tier"
 		},
 		"css-unit:vi": {
 			"recognise": null,
@@ -5891,11 +5941,11 @@
 			"note": "vmin: a viewport unit; Fill reads the computed px per width, so it becomes three steps (FR-48-44)"
 		},
 		"css-unit:vw": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "vw: a viewport unit; Fill reads the computed px per width, so it becomes three steps (FR-48-44)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/resolve.test.mjs",
+			"note": "vw: resolve.mjs fluidForm recognises a vw length; a calibration that proves it writes the form, otherwise it is written per tier from the computed value"
 		},
 		"css-unit:x": {
 			"recognise": null,
@@ -10513,11 +10563,11 @@
 			"note": "<img fetchpriority>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:img.height": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "<img height>: a presentational attribute the browser turns into aspect-ratio, height (WHATWG presentational hints); Fill does not read height"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"test": "scripts/computed-route/tests/presentational-hints.test.mjs",
+			"note": "<img height>: a presentational hint the browser turns into aspect-ratio and height (data/presentational-hints.json), read as computed values"
 		},
 		"html-attr:img.hspace": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",

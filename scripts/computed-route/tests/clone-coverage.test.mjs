@@ -4,7 +4,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildInventory, readInventoryFile } from '../lib/capabilities.mjs';
-import { loadCoverage, coverageProblems, statusOf, referenceProblem, seedGaps, gapList, COVERAGE_SCHEMA } from '../lib/clone-coverage.mjs';
+import { loadCoverage, loadBaseline, coverageProblems, statusOf, referenceProblem, testProblem, seedGaps, gapList, COVERAGE_SCHEMA } from '../lib/clone-coverage.mjs';
+import { likeEntries, draftGaps, reviewCoverageIds, backfillTests } from '../lib/coverage-register.mjs';
 import { loadAjv, schemaProblems } from '../lib/handoff.mjs';
 import { fixtureDb, BASE_ROWS } from './fixtures/framework-db.mjs';
 
@@ -19,9 +20,9 @@ test( 'THE GATE: every capability in data/capabilities.json has a sound coverage
 test( 'MUST FAIL (control 1): a planted new block setting has no coverage entry', () => {
 	const base = buildInventory( { dbFile: fixtureDb( BASE_ROWS ) } );
 	const { coverage } = seedGaps( base, { _meta: {}, entries: {} }, 'test' );
-	assert.deepEqual( coverageProblems( base, coverage ), [] );
+	assert.deepEqual( coverageProblems( base, coverage, { baseline: [] } ), [] );
 	const planted = buildInventory( { dbFile: fixtureDb( { ...BASE_ROWS, block_attributes: [ ...BASE_ROWS.block_attributes, { block_slug: 'sgs/hero', attr_name: 'autoplay', attr_type: 'boolean', role: 'carousel' } ] } ) } );
-	const problems = coverageProblems( planted, coverage );
+	const problems = coverageProblems( planted, coverage, { baseline: [] } );
 	assert.equal( problems.length, 1 );
 	assert.match( problems[ 0 ], /^block-setting:carousel:boolean: in the inventory with no coverage entry/ );
 } );
@@ -89,4 +90,87 @@ test( 'MUST FAIL: no gap carries a Phase 0 marker now the motion model is built;
 	assert.ok( schemaProblems( loadAjv(), COVERAGE_SCHEMA, cov ).length > 0 );
 	const { coverage } = seedGaps( { sections: { svg: { entries: [ { id: 'svg:animate', motion: true } ] } } }, { entries: {} }, 'note' );
 	assert.deepEqual( Object.keys( coverage.entries[ 'svg:animate' ] ).sort(), [ 'check', 'note', 'recognise', 'wave', 'write' ] );
+} );
+
+const COVERED = { recognise: 'construct:handler', write: 'scripts/computed-route/lib/resolve.mjs#resolve', check: 'scripts/computed-route/lib/triage.mjs#triage', wave: 'w', note: 'n' };
+const ONE = { sections: { html: { status: 'present', entries: [ { id: 'html:planted', label: 'planted', count: 1, examples: [], motion: false } ] } } };
+const withEntry = ( entry ) => ( { entries: { 'html:planted': entry } } );
+const TEST_FILE = 'scripts/computed-route/tests/resolve.test.mjs';
+
+test( 'the committed baseline is sorted, and every covered entry names a test or is in it', () => {
+	const baseline = loadBaseline();
+	assert.deepEqual( baseline, [ ...baseline ].sort() );
+	for ( const [ id, e ] of Object.entries( committed.coverage.entries ) ) {
+		if ( 'covered' === statusOf( e ) ) {
+			assert.ok( e.test || baseline.includes( id ), `${ id } names no test and is not in the baseline` );
+		}
+	}
+} );
+
+test( 'MUST FAIL: a covered entry with no test that is not in the baseline', () => {
+	const p = coverageProblems( ONE, withEntry( COVERED ), { baseline: [] } );
+	assert.equal( p.length, 1 );
+	assert.match( p[ 0 ], /^html:planted: a covered entry names the test that proves it/ );
+	assert.deepEqual( coverageProblems( ONE, withEntry( COVERED ), { baseline: [ 'html:planted' ] } ), [] );
+	assert.deepEqual( coverageProblems( ONE, withEntry( { ...COVERED, test: TEST_FILE } ), { baseline: [] } ), [] );
+} );
+
+test( 'MUST FAIL: a test path that does not exist, or a #name the file never mentions', () => {
+	const missing = coverageProblems( ONE, withEntry( { ...COVERED, test: 'scripts/computed-route/tests/no-such.test.mjs' } ), { baseline: [] } );
+	assert.match( missing.join( '\n' ), /html:planted test: .*no-such\.test\.mjs does not exist/ );
+	assert.match( testProblem( `${ TEST_FILE }#zzNoSuchTestNamezz` ), /does not mention/ );
+	assert.equal( testProblem( `${ TEST_FILE }#fluidForm` ), null );
+} );
+
+test( 'MUST FAIL: a baseline id that now has a test, is no longer covered, or has no entry is stale', () => {
+	const hasTest = coverageProblems( ONE, withEntry( { ...COVERED, test: TEST_FILE } ), { baseline: [ 'html:planted' ] } );
+	assert.match( hasTest.join( '\n' ), /html:planted: in coverage-test-baseline\.json but it now names a test/ );
+	const gap = coverageProblems( ONE, withEntry( { recognise: null, write: null, check: null, wave: 'w' } ), { baseline: [ 'html:planted' ] } );
+	assert.match( gap.join( '\n' ), /no longer covered/ );
+	assert.match( coverageProblems( ONE, withEntry( COVERED ), { baseline: [ 'html:planted', 'html:gone' ] } ).join( '\n' ), /html:gone: in coverage-test-baseline\.json but no longer covered/ );
+} );
+
+test( 'MUST FAIL: a reference or test under sites/ is refused', () => {
+	assert.match( referenceProblem( 'sites/some-draft/build/x.mjs#y' ), /never by a file under sites\// );
+	assert.match( testProblem( 'sites/some-draft/tests/x.test.mjs' ), /never by a file under sites\// );
+	const p = coverageProblems( ONE, withEntry( { ...COVERED, write: 'sites/some-draft/fix.mjs#fix', test: 'sites/some-draft/t.test.mjs' } ), { baseline: [] } );
+	assert.ok( p.some( ( x ) => x.startsWith( 'html:planted write:' ) && x.includes( 'sites/' ) ) );
+	assert.ok( p.some( ( x ) => x.startsWith( 'html:planted test:' ) && x.includes( 'sites/' ) ) );
+} );
+
+test( '--like: same write reference, or the same id prefix when the entry has no write; a gap and the entry itself are never listed', () => {
+	const cov = { entries: {
+		'a:one': { ...COVERED, write: 'w.mjs#x' }, 'a:two': { ...COVERED, write: 'w.mjs#x' }, 'a:three': { ...COVERED, write: 'other.mjs#y' },
+		'a:gap': { recognise: null, write: 'w.mjs#x', check: null, wave: 'w' }, 'svg:new': { recognise: null, write: null, check: null, wave: 'w' },
+		'svg:old': COVERED, 'html:old': COVERED,
+	} };
+	assert.deepEqual( likeEntries( cov, 'a:one' ).map( ( x ) => x.id ), [ 'a:two' ] );
+	assert.deepEqual( likeEntries( cov, 'svg:new' ).map( ( x ) => x.id ), [ 'svg:old' ] );
+	assert.equal( likeEntries( cov, 'nope:x' ), null );
+} );
+
+test( '--drafts: ids from missing:coverage cells that are still gaps, grouped by wave with the draft folder name; covered ids are dropped, an id with no entry lands under wave none', () => {
+	const cov = { entries: { 'x:gap1': { recognise: null, write: null, check: null, wave: 'wave a' }, 'x:gap2': { recognise: null, write: null, check: null, wave: 'wave b' }, 'x:done': COVERED } };
+	const row = ( id ) => `| \`missing:coverage:${ id }\` | ${ id } seen | gap |`;
+	const reviews = [ { draft: 'draft-one', markdown: [ row( 'x:gap1' ), row( 'x:gap1' ), row( 'x:done' ) ].join( '\n' ) }, { draft: 'draft-two', markdown: [ row( 'x:gap1' ), row( 'x:gap2' ), row( 'x:unknown' ) ].join( '\n' ) } ];
+	const r = draftGaps( cov, reviews );
+	assert.deepEqual( r.byWave, { 'wave a': { 'x:gap1': [ 'draft-one', 'draft-two' ] }, 'wave b': { 'x:gap2': [ 'draft-two' ] }, none: { 'x:unknown': [ 'draft-two' ] } } );
+	assert.equal( r.ids, 3 );
+	assert.deepEqual( r.drafts, { 'draft-one': 1, 'draft-two': 3 } );
+	assert.deepEqual( reviewCoverageIds( row( 'a:b' ) ), [ 'a:b' ] );
+} );
+
+test( 'backfill: a note naming an existing test sets it; the rest goes to the baseline', () => {
+	const cov = { entries: { 'x:a': { ...COVERED, note: 'proved by tests/resolve.test.mjs' }, 'x:b': { ...COVERED, note: 'proved by tests/no-such.test.mjs' }, 'x:c': { ...COVERED, note: 'none' }, 'x:d': { ...COVERED, test: TEST_FILE } } };
+	const r = backfillTests( cov );
+	assert.equal( r.coverage.entries[ 'x:a' ].test, TEST_FILE );
+	assert.equal( r.backfilled, 1 );
+	assert.deepEqual( r.baseline, [ 'x:b', 'x:c' ] );
+} );
+
+test( 'the seven fluid and presentational-hint entries are covered with a test', () => {
+	for ( const id of [ 'css-function:calc', 'css-function:clamp', 'css-function:min', 'css-function:max', 'css-unit:vh', 'css-unit:vw', 'html-attr:img.height' ] ) {
+		assert.equal( statusOf( committed.coverage.entries[ id ] ), 'covered', id );
+		assert.ok( committed.coverage.entries[ id ].test, id );
+	}
 } );

@@ -15,6 +15,16 @@ const ROUTE = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '.
 export const COVERAGE_FILE = path.join( ROUTE, 'data', 'clone-coverage.json' );
 export const COVERAGE_SCHEMA = path.join( ROUTE, 'data', 'clone-coverage.schema.json' );
 export const STEPS = [ 'recognise', 'write', 'check' ];
+export const BASELINE_FILE = path.join( ROUTE, 'data', 'coverage-test-baseline.json' );
+
+// The grandfathered covered entries that name no test yet: a sorted id list that may only shrink.
+export function loadBaseline( file = BASELINE_FILE ) {
+	const r = readJsonResult( file );
+	if ( r.error ) {
+		throw new Error( `${ file }: ${ r.error }` );
+	}
+	return r.data.ids || [];
+}
 
 // The coverage map, schema-validated. Throws on a malformed file.
 export function loadCoverage( file = COVERAGE_FILE ) {
@@ -67,6 +77,9 @@ export function referenceProblem( ref, { root = REPO, registry } = {} ) {
 		return e.gap ? `${ ref }: the construct registry has no reader for it (${ e.gap })` : null;
 	}
 	const [ rel, symbol ] = ref.split( '#' );
+	if ( /^sites\//.test( rel ) ) {
+		return `${ ref }: a capability is solved by shared code, never by a file under sites/`;
+	}
 	const file = path.join( root, rel );
 	if ( ! fs.existsSync( file ) ) {
 		return `${ ref }: ${ rel } does not exist`;
@@ -77,11 +90,29 @@ export function referenceProblem( ref, { root = REPO, registry } = {} ) {
 	return null;
 }
 
+// The problem with a `test` reference, or null: a repo-relative path to an existing test file, optionally `#name` that
+// the file's source contains (a test title or function name). Never a path under sites/.
+export function testProblem( ref, { root = REPO } = {} ) {
+	const [ rel, name ] = ref.split( '#' );
+	if ( /^sites\//.test( rel ) ) {
+		return `${ ref }: a capability is proven by shared tests, never by a file under sites/`;
+	}
+	const file = path.join( root, rel );
+	if ( ! fs.existsSync( file ) ) {
+		return `${ ref }: ${ rel } does not exist`;
+	}
+	if ( name && ! fs.readFileSync( file, 'utf8' ).includes( name ) ) {
+		return `${ ref }: ${ rel } does not mention ${ name }`;
+	}
+	return null;
+}
+
 // Every reason the coverage map does not cover the inventory, as sentences; empty when it does. A DB section the
 // inventory records as absent (it was written without the DB) is not checked for unknown IDs.
-export function coverageProblems( inventory, coverage, { root = REPO, registry } = {} ) {
+export function coverageProblems( inventory, coverage, { root = REPO, registry, baseline } = {} ) {
 	const reg = registry || loadRegistry();
 	const problems = [];
+	const grandfathered = new Set( baseline || loadBaseline() );
 	const entries = coverage.entries || {};
 	const ids = new Set( allEntries( inventory ).map( ( e ) => e.id ) );
 	const absent = new Set( Object.entries( inventory.sections ).filter( ( [ , s ] ) => 'absent' === s.status ).map( ( [ n ] ) => n ) );
@@ -106,10 +137,27 @@ export function coverageProblems( inventory, coverage, { root = REPO, registry }
 				problems.push( `${ id } ${ s }: ${ p }` );
 			}
 		}
+		if ( e.test ) {
+			const p = testProblem( e.test, { root } );
+			if ( p ) {
+				problems.push( `${ id } test: ${ p }` );
+			}
+		}
+		if ( 'covered' === statusOf( e ) && ! e.test && ! grandfathered.has( id ) ) {
+			problems.push( `${ id }: a covered entry names the test that proves it (set "test" to a repo-relative test file, optionally #name)` );
+		}
 		if ( 'gap' === statusOf( e ) ) {
 			if ( ! String( e.wave || '' ).trim() ) {
 				problems.push( `${ id }: a gap names its Phase 4 wave ("unassigned" until triaged)` );
 			}
+		}
+	}
+	for ( const id of grandfathered ) {
+		const e = entries[ id ];
+		if ( ! e || 'covered' !== statusOf( e ) ) {
+			problems.push( `${ id }: in coverage-test-baseline.json but no longer covered (remove it from the baseline)` );
+		} else if ( e.test ) {
+			problems.push( `${ id }: in coverage-test-baseline.json but it now names a test (remove it from the baseline)` );
 		}
 	}
 	return problems;
