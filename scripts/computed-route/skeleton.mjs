@@ -15,6 +15,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { openDb } from './lib/db.mjs';
+import { serveDraft } from './lib/draft.mjs';
 import { readInventory } from './lib/skeleton-inventory.mjs';
 import { loadFacts, decisionsProblems, REPO } from './lib/skeleton-facts.mjs';
 import { proposeSkeleton } from './lib/skeleton-propose.mjs';
@@ -33,7 +34,7 @@ export function skeletonPaths( { client, surface, repo = REPO } ) {
 		throw new Error( `no surface "${ surface }" in sites/${ client }/build/surfaces.json` );
 	}
 	const f = ( ext ) => path.join( dir, `${ surface }.${ ext }` );
-	return { dir, draftUrl: surfaces[ surface ].draftUrl || null, inventory: f( 'inventory.json' ), skeleton: f( 'skeleton.json' ), proposal: f( 'proposal.json' ), review: f( 'review.html' ), request: f( 'finalise-request.json' ), picks: f( 'picks.json' ), decisions: path.join( dir, 'decisions.json' ), shots: path.join( dir, 'shots' ) };
+	return { dir, draftUrl: surfaces[ surface ].draftUrl || null, draftDir: surfaces[ surface ].draftDir ? path.resolve( repo, surfaces[ surface ].draftDir ) : null, draftIndex: surfaces[ surface ].draftIndex || null, inventory: f( 'inventory.json' ), skeleton: f( 'skeleton.json' ), proposal: f( 'proposal.json' ), review: f( 'review.html' ), request: f( 'finalise-request.json' ), picks: f( 'picks.json' ), decisions: path.join( dir, 'decisions.json' ), shots: path.join( dir, 'shots' ) };
 }
 
 // The calibration cache's element keys for a block on a site (slot targets), or none when it has no default paint there.
@@ -63,7 +64,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	return { ...r, paths: p, facts, inventory, clientDecisions };
 }
 
-export async function main( argv ) {
+export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 	const cmd = argv[ 0 ];
 	const flag = ( n ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : null );
 	const client = flag( '--client' );
@@ -71,14 +72,21 @@ export async function main( argv ) {
 	if ( ! [ 'inventory', 'propose', 'review', 'finalise', 'decide' ].includes( cmd ) || ! client || ! surface ) {
 		throw new Error( 'usage: skeleton.mjs <inventory|propose|review|finalise|decide> --client <slug> --surface <name> [options] (see the header of skeleton.mjs)' );
 	}
-	const p = skeletonPaths( { client, surface } );
+	const p = skeletonPaths( { client, surface, repo } );
 	const log = ( m ) => console.log( m );
 	if ( 'inventory' === cmd ) {
 		const root = flag( '--root' );
-		if ( ! root || ! p.draftUrl ) {
-			throw new Error( '--root <selector> is required, and the surface needs a draftUrl in surfaces.json' );
+		if ( ! root || ! ( p.draftUrl || p.draftDir ) ) {
+			throw new Error( '--root <selector> is required, and the surface needs a draftUrl or a draftDir in surfaces.json' );
 		}
-		const inv = await readInventory( { url: p.draftUrl, root, shotsDir: p.shots, log } );
+		// A hand-set draftUrl wins; otherwise the handoff folder is served as Fill serves it, and closed afterwards.
+		const served = p.draftUrl ? null : await serveDraft( p.draftDir, { index: p.draftIndex } );
+		let inv;
+		try {
+			inv = await read( { url: served ? served.url : p.draftUrl, root, shotsDir: p.shots, log } );
+		} finally {
+			served && await served.close();
+		}
 		json( p.inventory, inv );
 		log( `inventory ${ surface }: ${ inv.elements.length } elements, ${ Object.keys( inv.elements.reduce( ( a, e ) => Object.assign( a, e.screenshots ), {} ) ).length ? 'screenshots in' : 'no screenshots in' } ${ p.shots }, ${ inv.checks.duplicateKeys } duplicate keys` );
 	} else if ( 'propose' === cmd ) {

@@ -73,7 +73,12 @@ export function lintSurfaces( surfaces, buildDir, refs = detectReferences() ) {
 	const provided = new Set( Object.values( surfaces ).flatMap( ( s ) => s.provides || [] ) );
 	const problems = [];
 	for ( const [ name, s ] of Object.entries( surfaces ) ) {
-		const tree = JSON.parse( fs.readFileSync( path.join( buildDir, s.tree ), 'utf8' ) );
+		const treeFile = path.join( buildDir, s.tree );
+		if ( ! fs.existsSync( treeFile ) ) {
+			problems.push( `${ name }: tree file ${ s.tree } does not exist` );
+			continue;
+		}
+		const tree = JSON.parse( fs.readFileSync( treeFile, 'utf8' ) );
 		walk( tree, ( node ) => {
 			const r = referenceOf( node, refs );
 			if ( ! r || ( 'core' === r.kind && null === r.key ) ) {

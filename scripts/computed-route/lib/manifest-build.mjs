@@ -94,15 +94,17 @@ function intakeRecord( row, intake ) {
 const nameSet = ( record ) => [ ...new Set( ( record.states || [] ).map( ( s ) => s.name ) ) ].sort();
 
 // Builds the manifest. `target` is the calibration target ({ envFile, envKey }), `entryFile` the draft's entry file.
-// Returns { entries, unresolved, unmatched, pointer, dropped, disagree, skipped, added }; throws when two rows give one key.
-export function buildManifest( { client, site, rows, records, intake = null, target, entryFile, vocab = [], existing = {} } ) {
+// `only` limits the run to those keys. Returns { entries, unresolved, unmatched, pointer, dropped, disagree, skipped, added, stale }; throws when two rows give one key.
+export function buildManifest( { client, site, rows, records, intake = null, target, entryFile, vocab = [], existing = {}, only = null } ) {
 	const isPlain = ( v ) => null !== v && 'object' === typeof v && ! Array.isArray( v );
 	if ( ! isPlain( existing ) || Object.values( existing ).some( ( v ) => ! isPlain( v ) ) ) {
 		throw new Error( 'the existing surfaces.json is not an object of entry objects' );
 	}
 	const entries = {};
 	const owner = new Map();
-	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {} };
+	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {}, stale: [] };
+	const mapKeys = new Set( rows.flatMap( ( r ) => { try { return [ surfaceKey( r ) ]; } catch { return []; } } ) );
+	out.stale = Object.keys( existing ).filter( ( k ) => ! mapKeys.has( k ) );
 	for ( const row of rows ) {
 		if ( null == row.id ) {
 			out.skipped.push( { row: `${ row.postType }:${ row.slug }`, reason: 'no id' } );
@@ -113,6 +115,9 @@ export function buildManifest( { client, site, rows, records, intake = null, tar
 			throw new Error( `page-map rows ${ owner.get( key ) } and ${ row.postType }:${ row.slug } both give the key ${ key }` );
 		}
 		owner.set( key, `${ row.postType }:${ row.slug }` );
+		if ( only && ! only.includes( key ) ) {
+			continue;
+		}
 		const have = Object.hasOwn( existing, key ) ? existing[ key ] : null;
 		// A hand-set `states` is kept as it is, so the generated states' listings stay out of the run.
 		const handSet = !! have && Object.hasOwn( have, 'states' );
@@ -140,8 +145,8 @@ export function buildManifest( { client, site, rows, records, intake = null, tar
 			site,
 			target: { postId: row.id },
 			...( 'page' === row.postType ? {} : { canvas: true } ),
-			walker: `qa/parity/${ key }.mjs`,
-			walkerFull: `qa/parity/${ key }.full.mjs`,
+			walker: `qa/parity/${ key }.fill-base.mjs`,
+			walkerFull: `qa/parity/${ key }.fill.mjs`,
 			draftDir: `sites/${ client }/handoff`,
 			draftIndex: entryFile,
 			states,
@@ -149,6 +154,11 @@ export function buildManifest( { client, site, rows, records, intake = null, tar
 		};
 		if ( ! handSet ) {
 			Object.keys( mine ).forEach( ( list ) => out[ list ].push( ...mine[ list ] ) );
+		}
+		// A hand-set draftUrl names the draft, so the generated draftDir and draftIndex are not added beside it.
+		if ( have && Object.hasOwn( have, 'draftUrl' ) ) {
+			delete entry.draftDir;
+			delete entry.draftIndex;
 		}
 		if ( have ) {
 			const added = Object.keys( entry ).filter( ( f ) => ! Object.hasOwn( have, f ) );

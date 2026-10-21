@@ -50,8 +50,8 @@ test( 'fixed fields: tree, target, walkers, draft, provides', () => {
 	const h = entries.header;
 	assert.equal( h.tree, 'header.tree.json' );
 	assert.deepEqual( h.target, { postId: 9 } );
-	assert.equal( h.walker, 'qa/parity/header.mjs' );
-	assert.equal( h.walkerFull, 'qa/parity/header.full.mjs' );
+	assert.equal( h.walker, 'qa/parity/header.fill-base.mjs' );
+	assert.equal( h.walkerFull, 'qa/parity/header.fill.mjs' );
 	assert.equal( h.draftDir, 'sites/acme/handoff' );
 	assert.equal( h.draftIndex, 'Site.dc.html' );
 	assert.equal( h.envKey, 'X' );
@@ -75,7 +75,7 @@ test( 'an existing entry keeps its hand-set fields and gains only missing ones',
 	assert.equal( out.entries.home.tree, 'custom.json' );
 	assert.deepEqual( out.entries.home.states, { opening: null } );
 	assert.equal( out.entries.home.draftUrl, 'https://x.test/' );
-	assert.equal( out.entries.home.walker, 'qa/parity/home.mjs' );
+	assert.equal( out.entries.home.walker, 'qa/parity/home.fill-base.mjs' );
 	assert.ok( out.added.home.includes( 'walker' ) );
 	assert.equal( out.added.home.includes( 'tree' ), false );
 } );
@@ -250,7 +250,7 @@ test( 'a hand-set field survives a rerun through the command', () => {
 	const after = JSON.parse( fs.readFileSync( f.out, 'utf8' ) );
 	assert.equal( after.home.tree, 'hand.tree.json' );
 	assert.equal( after.other.tree, 'other.tree.json', 'an entry outside the page map is kept' );
-	assert.equal( after.home.walker, 'qa/parity/home.mjs' );
+	assert.equal( after.home.walker, 'qa/parity/home.fill-base.mjs' );
 	f.done();
 } );
 
@@ -322,4 +322,47 @@ test( 'a form or post row is unmatched and the command still exits 0', () => {
 	const got = f.go();
 	assert.equal( got.status, 0, said( got ) );
 	f.done();
+} );
+
+test( '--only limits the run to the named keys; an unknown key is a usage error naming the valid ones', () => {
+	const rows = [ row( 'page', 'a', 1 ), row( 'page', 'b', 2 ), row( 'sgs_mega_menu', 'a', 3 ) ];
+	assert.deepEqual( Object.keys( run( rows, [], { only: [ 'mega-a', 'b' ] } ).entries ), [ 'b', 'mega-a' ] );
+	assert.throws( () => run( [ row( 'page', 'a', 1 ), row( 'page', 'a', 2 ) ], [], { only: [ 'zzz' ] } ), /both give the key a/ );
+	const f = fixture( { rows } );
+	f.go( '--apply', '--only', 'a' );
+	const written = JSON.parse( fs.readFileSync( f.out, 'utf8' ) );
+	assert.deepEqual( Object.keys( written ), [ 'a' ] );
+	const bad = f.go( '--only', 'nope,a' );
+	assert.equal( bad.status, 2 );
+	assert.match( bad.stderr, /--only names nope, which no page-map row with an id generates; valid keys: a, b, mega-a/ );
+	f.go( '--apply' );
+	const all = JSON.parse( fs.readFileSync( f.out, 'utf8' ) );
+	all.b.tree = 'hand.json';
+	fs.writeFileSync( f.out, JSON.stringify( all ) );
+	f.go( '--apply', '--only', 'a' );
+	assert.equal( JSON.parse( fs.readFileSync( f.out, 'utf8' ) ).b.tree, 'hand.json', 'an entry outside the slice is untouched' );
+	f.done();
+} );
+
+test( 'a key in surfaces.json but not in the page map is printed as stale and kept, with no exit effect', () => {
+	const out = run( [ row( 'page', 'a', 1 ) ], [], { existing: { gone: { tree: 'x' }, a: {} } } );
+	assert.deepEqual( out.stale, [ 'gone' ] );
+	const f = fixture();
+	f.go( '--apply' );
+	const kept = JSON.parse( fs.readFileSync( f.out, 'utf8' ) );
+	kept.gone = { tree: 'gone.tree.json' };
+	fs.writeFileSync( f.out, JSON.stringify( kept ) );
+	const got = f.go( '--apply' );
+	assert.equal( got.status, 0 );
+	assert.match( got.stdout, /^stale gone: /m );
+	assert.equal( JSON.parse( fs.readFileSync( f.out, 'utf8' ) ).gone.tree, 'gone.tree.json' );
+	f.done();
+} );
+
+test( 'a hand-set draftUrl wins: draftDir and draftIndex are not added beside it', () => {
+	const kept = run( [ row( 'page', 'a', 1 ) ], [], { existing: { a: { draftUrl: 'https://x.test/' } } } );
+	assert.equal( 'draftDir' in kept.entries.a, false );
+	assert.equal( 'draftIndex' in kept.entries.a, false );
+	assert.equal( kept.entries.a.draftUrl, 'https://x.test/' );
+	assert.equal( run( [ row( 'page', 'a', 1 ) ], [], { existing: { a: {} } } ).entries.a.draftDir, 'sites/acme/handoff' );
 } );

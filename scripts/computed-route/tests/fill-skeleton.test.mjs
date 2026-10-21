@@ -1,6 +1,10 @@
 // FR-47-4 skeleton contract: draftRef and draftSlots are walker finders (a selector, { text }, { textRun }, { group }, { js }),
 // slot finders resolve inside their node's draft element, and the filled tree carries none of the draft keys.
 import test from 'node:test';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { main as skeletonMain } from '../skeleton.mjs';
 import assert from 'node:assert/strict';
 import { finderKind, finderProblem, scopeFinder, scopeSelector, skeletonNodes, skeletonProblems, cleanTree, parseTplKey, tplKey, originMap } from '../lib/fill-skeleton.mjs';
 import { lintSkeleton } from '../lint.mjs';
@@ -122,4 +126,31 @@ test( 'originMap names, for each node with a tpl draftRef, its cr-ref, tpl key, 
 	} );
 	assert.ok( ! JSON.stringify( cleanTree( sk ) ).includes( 'draftFingerprint' ), 'cleanTree strips the fingerprint with the other draft keys' );
 	assert.match( skeletonProblems( [ { name: 'sgs/text', draftFingerprint: 'x' } ] ).join(), /draftFingerprint must be/ );
+} );
+
+test( 'skeleton inventory serves a surface with only a draftDir, hands the reader a localhost url and closes the server', async () => {
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'skel-' ) );
+	const build = path.join( repo, 'sites', 'acme', 'build' );
+	fs.mkdirSync( build, { recursive: true } );
+	fs.mkdirSync( path.join( repo, 'sites', 'acme', 'handoff' ), { recursive: true } );
+	fs.writeFileSync( path.join( repo, 'sites', 'acme', 'handoff', 'Home.dc.html' ), '<p>draft</p>' );
+	const write = ( entry ) => fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { header: { site: 'x', ...entry } } ) );
+	const argv = [ 'inventory', '--client', 'acme', '--surface', 'header', '--root', 'body' ];
+	const seen = [];
+	const reader = async ( { url } ) => {
+		seen.push( url );
+		if ( url.startsWith( 'http://127.0.0.1:' ) ) {
+			assert.equal( ( await fetch( url ) ).status, 200, 'the draft is being served' );
+		}
+		return { elements: [], checks: { duplicateKeys: 0 } };
+	};
+	write( { draftDir: 'sites/acme/handoff', draftIndex: 'Home.dc.html' } );
+	await skeletonMain( argv, { read: reader, repo } );
+	assert.match( seen[ 0 ], /^http:\/\/127\.0\.0\.1:\d+\/$/ );
+	await assert.rejects( fetch( seen[ 0 ] ), 'the server is closed afterwards' );
+	await assert.rejects( skeletonMain( argv, { read: async () => { throw new Error( 'reader failed' ); }, repo } ), /reader failed/ );
+	write( { draftUrl: 'https://hand.test/', draftDir: 'sites/acme/handoff' } );
+	await skeletonMain( argv, { read: reader, repo } );
+	assert.equal( seen[ 1 ], 'https://hand.test/', 'a hand-set draftUrl wins' );
+	fs.rmSync( repo, { recursive: true, force: true } );
 } );

@@ -45,3 +45,11 @@ test( 'the surfaces lint fails a printed post with no surface and passes once on
 	assert.deepEqual( lintSurfaces( owners, dir, refs ), [] );
 	fs.rmSync( dir, { recursive: true } );
 } );
+
+test( 'a surface whose tree file is not built yet is a named problem, not a crash', () => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'refs-' ) );
+	assert.deepEqual( lintSurfaces( { header: { tree: 'header.tree.json', target: { postId: 1 } } }, dir, refs ), [ 'header: tree file header.tree.json does not exist' ] );
+	fs.writeFileSync( path.join( dir, 'header.tree.json' ), JSON.stringify( [] ) );
+	assert.deepEqual( lintSurfaces( { header: { tree: 'header.tree.json', target: { postId: 1 } } }, dir, refs ), [] );
+	fs.rmSync( dir, { recursive: true, force: true } );
+} );
