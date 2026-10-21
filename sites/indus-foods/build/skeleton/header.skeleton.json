@@ -110,7 +110,12 @@
 						},
 						"innerBlocks": []
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner": {
+						"tpl": "Root/41#0"
+					}
+				}
 			}
 		]
 	}

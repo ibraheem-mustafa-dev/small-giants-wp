@@ -4,7 +4,9 @@
     "fingerprint": {
       "tag": "header",
       "cls": "",
-      "styleHash": "5faf966e"
+      "styleHash": "5faf966e",
+      "parentTags": [],
+      "textHash": "1505"
     }
   },
   "cr-ref-header-1": {
@@ -12,7 +14,14 @@
     "fingerprint": {
       "tag": "div",
       "cls": "",
-      "styleHash": "c37c73c"
+      "styleHash": "c37c73c",
+      "parentTags": [
+        "header"
+      ],
+      "textHash": "1505"
+    },
+    "slots": {
+      ".sgs-container__inner": "Root/41#0"
     }
   },
   "cr-ref-header-2": {
@@ -20,7 +29,14 @@
     "fingerprint": {
       "tag": "indus-logo",
       "cls": "",
-      "styleHash": "f9f9a652"
+      "styleHash": "f9f9a652",
+      "parentTags": [
+        "header",
+        "div",
+        "div",
+        "a"
+      ],
+      "textHash": "1505"
     }
   },
   "cr-ref-header-3": {
@@ -28,7 +44,13 @@
     "fingerprint": {
       "tag": "nav",
       "cls": "",
-      "styleHash": "1c0176c2"
+      "styleHash": "1c0176c2",
+      "parentTags": [
+        "header",
+        "div",
+        "div"
+      ],
+      "textHash": "1505"
     },
     "slots": {
       ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": "Root/47#1",
@@ -40,7 +62,13 @@
     "fingerprint": {
       "tag": "a",
       "cls": "scp2",
-      "styleHash": "9fda5047"
+      "styleHash": "9fda5047",
+      "parentTags": [
+        "header",
+        "div",
+        "div"
+      ],
+      "textHash": "61ec7831"
     }
   }
 }

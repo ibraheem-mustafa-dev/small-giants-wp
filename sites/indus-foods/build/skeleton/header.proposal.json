@@ -1,5 +1,5 @@
 {
-	"generated": "2026-10-21T22:10:40.625Z",
+	"generated": "2026-10-21T23:15:41.670Z",
 	"inventory": "2026-10-21T03:32:11.794Z",
 	"source": "http://127.0.0.1:63470/",
 	"surface": "sticky-header",
@@ -164,6 +164,11 @@
 			},
 			"snippet": "<div style=\"background:#FFFFFF;border-bottom:3px solid #D8CA50;\" data-dc-tpl=\"40\"> <div style=\"max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:{{ R.headH }};display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;\" data-dc-tpl=\"41\"> <a href=\"#/\" sc-camel-on-click=\"{{ closeAll }}\" aria-label=\"Indus Foods home\" style=\"display:flex;align-items:center;flex-s",
 			"attributes": {},
+			"slots": {
+				".sgs-container__inner": {
+					"tpl": "Root/41#0"
+				}
+			},
 			"builtPost": {
 				"site": "sandybrown",
 				"postType": "sgs_header",
@@ -179,7 +184,7 @@
 			"words": "",
 			"block": null,
 			"action": "unwrap",
-			"reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place",
+			"reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there",
 			"source": "rule widthWrapper",
 			"confidence": 1,
 			"low": false,

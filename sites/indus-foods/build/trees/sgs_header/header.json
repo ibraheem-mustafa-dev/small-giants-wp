@@ -19,8 +19,7 @@
           },
           "borderColour": "accent",
           "gap": {
-            "tablet": "20px",
-            "desktop": "80.92px"
+            "desktop": "20px"
           },
           "justifyContent": "space-between",
           "borderStyle": "solid"
@@ -30,15 +29,20 @@
             "name": "sgs/responsive-logo",
             "attributes": {
               "logoId": 81,
-              "className": "cr-ref-header-2"
+              "className": "cr-ref-header-2",
+              "maxHeight": {
+                "mobile": 54,
+                "tablet": 56,
+                "desktop": 63.359
+              }
             },
             "innerBlocks": []
           },
           {
             "name": "sgs/nav-bar-menu",
             "attributes": {
-              "collapsePoint": 1024,
               "ref": 5,
+              "collapsePoint": 1024,
               "className": "cr-ref-header-3",
               "itemFontWeight": "600",
               "itemLineHeight": 1.412,
