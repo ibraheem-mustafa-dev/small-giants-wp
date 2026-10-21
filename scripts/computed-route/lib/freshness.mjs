@@ -41,9 +41,10 @@ export class StaleRecordError extends Error {
 }
 
 // Each file whose hash differs between the recorded sources and the folder now: [ 'support.js changed', 'x.dc.html
-// added', 'y.dc.html removed' ].
-export function changedSources( recorded, handoffRoot ) {
-	const now = sourcesOf( handoffRoot, { commit: null } ).files;
+// added', 'y.dc.html removed' ]. `current` is a sourcesOf result the caller already took (so a loop over many records
+// hashes the folder once); without it the folder is hashed here.
+export function changedSources( recorded, handoffRoot, current = null ) {
+	const now = ( current || sourcesOf( handoffRoot, { commit: null } ) ).files;
 	const was = recorded?.files || {};
 	return [
 		...Object.keys( was ).filter( ( f ) => f in now && was[ f ] !== now[ f ] ).map( ( f ) => `${ f } changed` ),
@@ -54,12 +55,13 @@ export function changedSources( recorded, handoffRoot ) {
 
 // Throws StaleRecordError when the record's `sources` disagree with the folder. A record with no `sources` passes with
 // one warning through `warn` (default console.warn) and returns { checked: false }; a current one returns { checked: true }.
-export function assertCurrent( record, handoffRoot, { label = 'the record', warn = ( line ) => console.warn( line ) } = {} ) {
+// `current`: an optional sourcesOf result already taken for the folder.
+export function assertCurrent( record, handoffRoot, { label = 'the record', warn = ( line ) => console.warn( line ), current = null } = {} ) {
 	if ( ! record?.sources ) {
 		warn( `freshness: ${ label } has no sources (written before the route recorded them); its currency is not checked` );
 		return { checked: false };
 	}
-	const changed = changedSources( record.sources, handoffRoot );
+	const changed = changedSources( record.sources, handoffRoot, current );
 	if ( changed.length ) {
 		throw new StaleRecordError( label, changed );
 	}

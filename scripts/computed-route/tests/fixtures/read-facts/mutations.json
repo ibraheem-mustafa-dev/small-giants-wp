@@ -12,8 +12,15 @@
  { "file": "lib/read-logic-conditions.mjs", "find": "const when = rangesOfSide( side )?.get( token );", "replace": "const when = rangesOfSide( side )?.get( `${ token }x` );", "why": "breakpoint token range not followed" },
  { "file": "lib/read-surfaces.mjs", "find": "if ( template.elements[ key ].parentChain.includes( root ) ) {", "replace": "if ( false ) {", "why": "subtree not marked" },
  { "file": "lib/read-surfaces.mjs", "find": "parent && parent.parts.push( { id: s.id, kind: s.kind, roots: s.roots } );", "replace": "void parent;", "why": "part roots not listed" },
- { "file": "lib/fact-record.mjs", "find": "assertCurrent( record, folder, { label: 'facts.json', ...( warn ? { warn } : {} ) } );", "replace": "void warn;", "why": "stale record accepted" },
+ { "file": "lib/fact-record.mjs", "find": "assertCurrent( record, folder, { label: 'facts.json', current, ...( warn ? { warn } : {} ) } );", "replace": "void warn;", "why": "stale record accepted" },
  { "file": "lib/fact-record.mjs", "find": "throw new Error( `facts.json does not validate, nothing written: ${ problems.join( '; ' ) }` );", "replace": "void problems;", "why": "invalid record written" },
  { "file": "lib/fact-record.mjs", "find": "if ( changed.length ) {", "replace": "if ( false ) {", "why": "stale inventory used" },
- { "file": "lib/fact-record.mjs", "find": "byTemplate.get( k ).push( { key: e.key, state } );", "replace": "byTemplate.get( k ).push( { key: e.key, state: 'x' } );", "why": "instance state wrong" }
+ { "file": "lib/fact-record.mjs", "find": "byTemplate.get( k ).push( { key: e.key, state } );", "replace": "byTemplate.get( k ).push( { key: e.key, state: 'x' } );", "why": "instance state wrong" },
+ { "file": "lib/fact-record.mjs", "find": "const taken = hashed || sourcesOf( folder );", "replace": "const taken = sourcesOf( folder );", "why": "hashes taken at the end, not before the read" },
+ { "file": "lib/fact-record.mjs", "find": "sources: taken, widths,", "replace": "sources: sourcesOf( folder ), widths,", "why": "record carries the hashes of the end of the read" },
+ { "file": "lib/fact-record.mjs", "find": "mounted: logic.mounted, state: logic.state || {}, gaps,", "replace": "mounted: logic.mounted, state: {}, gaps,", "why": "state keys left out of the record" },
+ { "file": "lib/fact-record.mjs", "find": "|| ! fs.existsSync( folder ) ) {", "replace": "|| false ) {", "why": "a fixture client with no handoff warns" },
+ { "file": "lib/fact-record.mjs", "find": "warnedMissing.has( id ) || ( warnedMissing.add( id ), warn(", "replace": "( warnedMissing.add( id ), warn(", "why": "the missing-record warning repeats" },
+ { "file": "lib/freshness.mjs", "find": "const now = ( current || sourcesOf( handoffRoot, { commit: null } ) ).files;", "replace": "const now = sourcesOf( handoffRoot, { commit: null } ).files;", "why": "the precomputed sources ignored" },
+ { "file": "lib/read-logic.mjs", "find": "c.state && ( state[ src.component ] = c.state );", "replace": "void c.state;", "why": "state keys dropped before the record" }
 ]

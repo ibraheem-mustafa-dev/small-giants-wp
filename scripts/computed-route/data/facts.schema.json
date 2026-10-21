@@ -20,6 +20,7 @@
     "elements": { "type": "object", "additionalProperties": { "$ref": "#/$defs/element" } },
     "surfaces": { "type": "object", "additionalProperties": { "$ref": "#/$defs/surface" } },
     "mounted": { "type": "object", "additionalProperties": { "type": "object", "additionalProperties": { "type": "boolean" } } },
+    "state": { "type": "object", "additionalProperties": { "type": "object", "required": [ "keys", "widthKeys" ], "properties": { "keys": { "type": "array", "items": { "type": "string" } }, "widthKeys": { "type": "array", "items": { "type": "string" } } } } },
     "gaps": { "type": "array", "items": { "$ref": "#/$defs/gap" } },
     "counts": {
       "type": "object",

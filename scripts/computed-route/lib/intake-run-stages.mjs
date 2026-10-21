@@ -218,10 +218,10 @@ export const STAGES = [
 	// skeletons stage saved.
 	[ 'facts', async ( job, ctx ) => {
 		const { buildFactRecord, writeFacts } = await import( './fact-record.mjs' );
-		const { record, blocked } = await buildFactRecord( { folder: job.folder, client: job.client, entry: job.entry, harPath: job.harPath, sources: ctx.widenedSources, widths: job.widths, inventoriesDir: job.inventoriesDir ?? null } );
+		const { record, blocked } = await buildFactRecord( { folder: job.folder, client: job.client, entry: job.entry, hashed: job.sources ?? null, harPath: job.harPath, sources: ctx.widenedSources, widths: job.widths, inventoriesDir: job.inventoriesDir ?? null } );
 		const c = writeFacts( job.factsFile, record );
 		const resolved = job.widths.map( ( w ) => `${ w }px ${ c.perWidth[ w ].resolved }/${ c.holes } (${ c.perWidth[ w ].absent } absent, ${ c.perWidth[ w ].unresolved } unresolved)` ).join( ', ' );
-		return { facts: c, blocked, gaps: [], note: `${ c.elements } elements, ${ c.holes } holes resolved ${ resolved }, ${ c.widthConditions } width conditions, ${ c.elementsInSurfaces } in surfaces, ${ c.instances } instance keys, ${ c.gaps } gaps in facts.json` };
+		return { facts: c, blocked, gaps: record.gaps, note: `${ c.elements } elements, ${ c.holes } holes resolved ${ resolved }, ${ c.widthConditions } width conditions, ${ c.elementsInSurfaces } in surfaces, ${ c.instances } instance keys, ${ c.gaps } gaps in facts.json` };
 	} ],
 	[ 'missing features', async ( job, ctx ) => {
 		const { proposeMissingFeatures } = await import( './intake-missing.mjs' );

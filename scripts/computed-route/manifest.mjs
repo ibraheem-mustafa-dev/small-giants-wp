@@ -79,6 +79,7 @@ try {
 		only,
 		records: readJson( path.join( dir, 'handoff', 'surfaces.json' ) ).records,
 		intake: optional( path.join( dir, 'build', 'intake', 'intake.json' ) ),
+		facts: optional( path.join( dir, 'build', 'intake', 'facts.json' ) ),
 		target,
 		entryFiles: drafts,
 		vocab,
@@ -93,6 +94,7 @@ try {
 	result.unmatched.forEach( ( u ) => console.log( `${ u.reason } ${ u.key }: ${ u.why }` ) );
 	result.pointer.forEach( ( d ) => console.log( `states-pointer ${ d.key }: ${ d.name }` ) );
 	result.dropped.forEach( ( d ) => console.log( `states-dropped ${ d.key }: ${ d.name }` ) );
+	result.noFacts.forEach( ( u ) => console.log( `states-no-facts ${ u.key }: ${ u.why }; the key names R, item and bp decided [${ u.names.join( ' | ' ) }]` ) );
 	result.noIntake.forEach( ( u ) => console.log( `no-intake-surface ${ u.key }: ${ u.why }` ) );
 	result.stale.forEach( ( k ) => console.log( `stale ${ k }: in surfaces.json but not in the page map (kept)` ) );
 	result.skipped.forEach( ( s ) => console.log( `skipped ${ s.row }: ${ s.reason }` ) );

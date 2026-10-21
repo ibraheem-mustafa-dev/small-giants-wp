@@ -37,6 +37,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import subprocess
 import sys
@@ -127,6 +128,11 @@ ALLOWLIST: Tuple[Tuple[str, str], ...] = (
         "clients it was checked on (Spec 48 FR-48-7); the record is data, not framework logic",
     ),
 )
+
+# An allowlisted JSON file may name a client only inside these fields (any depth); a name in any other field still fails.
+ALLOWED_FIELDS: Dict[str, Tuple[str, ...]] = {
+    "scripts/computed-route/data/skeleton-decisions.json": ("taughtBy", "clients"),
+}
 
 # A pointer INTO a client or reference folder is how framework docs legitimately reach that
 # material ("see sites/<client>/CLAUDE.md"), so a path that starts with one of these roots is
@@ -226,12 +232,37 @@ def area_of(rel: str) -> str:
     return parts[0] if len(parts) > 1 else "(repo root)"
 
 
+def without_fields(node, fields: Tuple[str, ...]):
+    """The JSON value with every key in `fields` removed, at any depth."""
+    if isinstance(node, dict):
+        return {k: without_fields(v, fields) for k, v in node.items() if k not in fields}
+    if isinstance(node, list):
+        return [without_fields(v, fields) for v in node]
+    return node
+
+
+def names_outside_fields(root: Path, rel: str) -> set:
+    """Name keys that remain in a field-scoped allowlisted file once its allowed fields are removed (all of them when it does not parse)."""
+    fields = ALLOWED_FIELDS.get(rel)
+    if not fields:
+        return set()
+    text = (root / rel).read_text(encoding="utf-8", errors="replace")
+    try:
+        text = json.dumps(without_fields(json.loads(text), fields))
+    except ValueError:
+        pass
+    cleaned = blank_allowed(text)
+    return {key for key, rx in COMPILED.items() if rx.search(cleaned)}
+
+
 def collect(root: Path) -> Tuple[List[Tuple[str, str, str, int]], List[Tuple[str, str, str, int, str]]]:
     live: List[Tuple[str, str, str, int]] = []
     allowed: List[Tuple[str, str, str, int, str]] = []
     for kind, rel, key, n in scan(root):
         reason = allow_reason(rel)
-        if reason and kind == "content":
+        if reason and kind == "content" and key in names_outside_fields(root, rel):
+            live.append((kind, rel, key, n))
+        elif reason and kind == "content":
             allowed.append((kind, rel, key, n, reason))
         else:
             live.append((kind, rel, key, n))
@@ -304,7 +335,23 @@ def self_test() -> int:
         if got != expected:
             print(f"[self-test] FAIL: expected {sorted(expected)}, got {sorted(got)}")
             return 1
-    print("[self-test] PASS: the planted names are caught, a clean file and the exempt folder are ignored.")
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+        data = root / "scripts" / "computed-route" / "data"
+        data.mkdir(parents=True)
+        decisions = data / "skeleton-decisions.json"
+        decisions.write_text(json.dumps({"rules": [{"reason": "ok", "taughtBy": {"client": "indus-foods"}, "clients": ["indus-foods"]}]}), encoding="utf-8")
+        live, allowed = collect(root)
+        if live or not allowed:
+            print(f"[self-test] FAIL: a name in taughtBy and clients must be allowed, got live {live} allowed {len(allowed)}")
+            return 1
+        decisions.write_text(json.dumps({"rules": [{"reason": "taught by indus-foods", "taughtBy": {"client": "indus-foods"}, "clients": ["indus-foods"]}]}), encoding="utf-8")
+        live, _ = collect(root)
+        if {rel for _, rel, _, _ in live} != {"scripts/computed-route/data/skeleton-decisions.json"}:
+            print(f"[self-test] FAIL: a name in a reason field must fail, got {live}")
+            return 1
+    print("[self-test] PASS: the planted names are caught, a clean file and the exempt folder are ignored, and the decisions file may name a client only in taughtBy and clients.")
     return 0
 
 

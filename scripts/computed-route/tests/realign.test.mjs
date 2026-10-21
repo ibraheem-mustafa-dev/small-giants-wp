@@ -3,7 +3,7 @@
 // previous export's keys to the next export's. A re-export that inserts one element renumbers every tpl after it.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { fingerprintOf, fingerprintsOf, fingerprintAgrees, fingerprintDiff, realign, tplLineOf, hashText } from '../lib/identity.mjs';
+import { fingerprintOf, fingerprintsOf, fingerprintAgrees, fingerprintDiff, realign, tplLineOf, tplLineIndex, hashText } from '../lib/identity.mjs';
 import { resolveApproval } from '../lib/approved-identity.mjs';
 import { carryOver } from '../lib/intake-review.mjs';
 
@@ -25,6 +25,16 @@ test( 'tplLineOf finds the line of a stamped element, and not a longer tpl numbe
 	assert.equal( tplLineOf( text, 2 ), 3 );
 	assert.equal( tplLineOf( text, 1 ), 1 );
 	assert.equal( tplLineOf( text, 7 ), null );
+} );
+
+test( 'MUST FAIL (read once): tplLineIndex gives every element the line tplLineOf gives it, from one pass over the text', () => {
+	const text = '<header data-dc-tpl="1">\n<a data-dc-tpl="12">x</a>\n\n<a data-dc-tpl=\'2\'>y</a>\n<b data-dc-tpl=2>z</b>\n</header>';
+	const lineOf = tplLineIndex( text );
+	for ( const n of [ 1, 2, 12, 7 ] ) {
+		assert.equal( lineOf( n ), tplLineOf( text, n ), `element ${ n }` );
+	}
+	assert.deepEqual( [ lineOf( 1 ), lineOf( 12 ), lineOf( 2 ), lineOf( 7 ) ], [ 1, 2, 4, null ], 'the first stamp of a number wins' );
+	assert.equal( tplLineIndex( null )( 1 ), null );
 } );
 
 test( 'fingerprintAgrees compares every field both sides carry and skips a field one side lacks', () => {

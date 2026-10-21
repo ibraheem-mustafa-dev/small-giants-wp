@@ -1,0 +1,9 @@
+[
+ { "file": "lib/manifest-build.mjs", "find": "widthValue( value ) || widthKeys.has( first ) ||", "replace": "widthValue( value ) ||", "why": "a key the logic derives from the width treated as a walker state" },
+ { "file": "lib/manifest-build.mjs", "find": "? ! own.has( first )", "replace": "? false", "why": "a key that is no state key of the logic treated as a walker state" },
+ { "file": "lib/manifest-build.mjs", "find": "|| 'bp' === key ||", "replace": "||", "why": "no context: the fallback key name dropped" },
+ { "file": "lib/manifest-build.mjs", "find": "ctx || out.noContext.push( s.name );", "replace": "void ctx;", "why": "names decided without context not listed" },
+ { "file": "lib/manifest-build.mjs", "find": "out.noFacts.push(", "replace": "[].push(", "why": "no warning when the fact record is missing" },
+ { "file": "lib/manifest-build.mjs", "find": "const ctx = facts?.state?.[ match.record.dc ] ?? null;", "replace": "const ctx = null;", "why": "the fact record's state keys never reach statesOf" },
+ { "file": "lib/manifest-build.mjs", "find": "const widthValue = ( value ) => 'string' === typeof value && WIDTH_VALUE.test( value );", "replace": "const widthValue = () => false;", "why": "a width comparison value treated as a walker state" }
+]

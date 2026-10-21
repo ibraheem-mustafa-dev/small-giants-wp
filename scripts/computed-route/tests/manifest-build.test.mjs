@@ -470,3 +470,45 @@ test( 'MUST FAIL: a width state (a width comparison or a breakpoint token) and a
 	assert.deepEqual( Object.keys( got.states ).sort(), [ 'open', 'panel-sun' ].sort() );
 	assert.ok( got.dropped.includes( 'closing' ) && got.dropped.includes( 'wide nav' ) && got.dropped.includes( 'collapsed' ) );
 } );
+
+const CTX = { keys: [ 'vp', 'mega', 'bp', 'menuOpen', 'gift' ], widthKeys: [ 'vp' ] };
+
+test( 'MUST FAIL (FR-48-6): with the draft\'s state context a width key is the one the logic derives from the width, whatever it is called', () => {
+	const states = [
+		{ name: 'narrow', state_keys: { vp: 'narrow' } },
+		{ name: 'panel sun', state_keys: { mega: 'sun' } },
+	];
+	const got = statesOf( rec( 'S-2', 'drawer', 'D', states ), vocab, CTX );
+	assert.deepEqual( Object.keys( got.states ), [ 'panel-sun' ], 'vp is derived from the width in the logic, so it is no walker state' );
+	assert.deepEqual( got.dropped, [ 'narrow' ] );
+	const named = statesOf( rec( 'S-2', 'drawer', 'D', [ { name: 'collapsed', state_keys: { bp: 'm' } } ] ), vocab, CTX );
+	assert.deepEqual( Object.keys( named.states ), [ 'collapsed' ], 'a state key called bp that the logic does not derive from the width is a real key: no author name decides' );
+} );
+
+test( 'MUST FAIL (FR-48-6): with the draft\'s state context a key that is no state key of the logic is derived, whatever it is called', () => {
+	const states = [
+		{ name: 'responsive', state_keys: { R: 1 } },
+		{ name: 'wide', state_keys: { 'R.wide': true } },
+		{ name: 'row', state_keys: { item: 1 } },
+		{ name: 'computed', state_keys: { isNarrow: true } },
+		{ name: 'gift note', state_keys: { 'gift.on': true } },
+		{ name: 'menu', state_keys: { menuOpen: true } },
+	];
+	const got = statesOf( rec( 'S-2', 'drawer', 'D', states ), vocab, CTX );
+	assert.deepEqual( Object.keys( got.states ), [ 'gift-note', 'menu' ] );
+	assert.deepEqual( got.dropped, [ 'responsive', 'wide', 'row', 'computed' ] );
+	const own = statesOf( rec( 'S-2', 'drawer', 'D', [ { name: 'row', state_keys: { item: 1 } } ] ), vocab, { keys: [ 'item' ], widthKeys: [] } );
+	assert.deepEqual( Object.keys( own.states ), [ 'row' ], 'a key called item that the logic owns is real' );
+	assert.deepEqual( got.noContext, [] );
+} );
+
+test( 'MUST FAIL (FR-48-6): with no state context the key names stand in and the manifest warns by surface', () => {
+	const states = [ { name: 'collapsed', state_keys: { bp: 'm' } }, { name: 'panel sun', state_keys: { mega: 'sun' } } ];
+	const got = statesOf( rec( 'S-2', 'drawer', 'D', states ), vocab );
+	assert.deepEqual( [ Object.keys( got.states ), got.noContext ], [ [ 'panel-sun' ], [ 'collapsed' ] ] );
+	const out = run( [ row( 'sgs_drawer', 'menu', 5, { title: 'D' } ) ], [ rec( 'S-2', 'drawer', 'D', states, { dc: 'Site' } ) ] );
+	assert.equal( out.noFacts.length, 1 );
+	assert.deepEqual( out.noFacts[ 0 ].names, [ 'collapsed' ] );
+	const withFacts = run( [ row( 'sgs_drawer', 'menu', 5, { title: 'D' } ) ], [ rec( 'S-2', 'drawer', 'D', states, { dc: 'Site' } ) ], { facts: { state: { Site: { keys: [ 'bp', 'mega' ], widthKeys: [ 'bp' ] } } } } );
+	assert.deepEqual( [ Object.keys( withFacts.entries[ 'drawer-menu' ].states ), withFacts.noFacts ], [ [ 'panel-sun' ], [] ] );
+} );
