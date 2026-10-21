@@ -72,7 +72,7 @@ Not in the Indus draft (grepped in all three drafts): `polygon()`, `vertical-ali
 | Unit | What it is | Done when | Session |
 |---|---|---|---|
 | U0 Header | the header session's wave 1 committed and its header re-run on the corrected skeleton | met (waves 1 and 2 committed, the header re-run on the corrected skeleton); `sites/indus-foods/build/trees/sgs_header/header.json` has an `sgs/nav-bar-menu` | A |
-| U2 Declared values close | `.claude/prompts/Declared-values-final-session-prompt.md` tasks 2 to 4 (step 3(b), step 6 on the re-run header, the 16 CSS-group entries) | FR-48-8 Status reads built; FR-48-36's record and draft-to-resolve half stay built (its rendered-live half is U16); the 16 entries covered with tests | A |
+| U2 Declared values close | `.claude/prompts/Declared-values-final-session-prompt.md` tasks 2 to 4 (step 3(b), step 6 on the re-run header, the 22 CSS-group entries the Indus review names: the delivery map's open U2 keys) | FR-48-8 Status reads built; FR-48-36's record and draft-to-resolve half stay built (its rendered-live half is U16); the 22 entries covered with tests | A |
 | U2b Intake safety | a run never overwrites a confirmed `page-map.json`; `--apply-review` keeps saved decisions' first dates | two MUST FAIL tests in `scripts/computed-route/tests/intake-review.test.mjs`, mutation-red | G |
 | U2c Spec truth | correct the stale Status lines: FR-48-1, FR-48-11, FR-48-39, FR-48-44, FR-48-77 (its `image-reveal` note, and its done-when's `sgs/timeline` clause per U13a). The inventory scanner (`capabilities.mjs`) skips the Spec 48A runtime files (`support.js`, `image-slot.js`), which removes `html:canvas`; `css-at:media`, `css-pseudo-element:before` and `css-pseudo-element:after` used only inside `@media (prefers-reduced-motion: reduce)` are covered by SGS's own reduced-motion handling (`fx_effects.reduced_motion`) with a test | `git grep -n "image-reveal.*not built" .claude/specs` finds nothing; a planted runtime file raises no gap; the four ids leave the Indus `--drafts` list | G |
 | U4b Safe-area | the drawer foot's `env()` renders 16px with no `viewport-fit=cover`; Fill's rendered read writes it | a MUST FAIL test, `css-function:env` covered | A |
@@ -98,7 +98,7 @@ Each session's main thread (Opus) keeps judgement and Bean's decisions; sweeps a
 
 | Session | Units | Needs | Runs beside | Bean | Estimate |
 |---|---|---|---|---|---|
-| P Prep (tonight) | the rulings recorded (done); `tools/mutate.mjs` into the repo; `delivery-map.mjs` and the map; prompts for every session | none | none | none | 30 min |
+| P Prep | done 2026-10-21: the rulings recorded; `tools/mutate.mjs`, `delivery-map.mjs` and the map (466 keys, `--check` exit 0); each session's prompt at `.claude/prompts/indus-session-<session>.md` | none | none | none | done |
 | A Opener | step 0, U0, U2, U4b | the header session's wave 1 | G, B, C | step 6 review, 20 min | 1 h (+45 min machine) |
 | G Gate machinery | U16, U2b, U2c | P | A, B, C, D1, D2 | none | 2 to 3 h over 2 sessions |
 | B Content | U5 (split first), U6, U7, U8 | P | A, C, G | none | 1 h 15 |
