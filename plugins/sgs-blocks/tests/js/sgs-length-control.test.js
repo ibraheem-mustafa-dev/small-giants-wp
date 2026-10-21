@@ -106,10 +106,11 @@ jest.mock( '@wordpress/components', () => {
 				disabled,
 				onChange: ( e ) => onChange( e.target.value ),
 			} ),
-		RangeControl: ( { value, min, max, step, onChange } ) =>
+		RangeControl: ( { value, min, max, step, onChange, disabled } ) =>
 			R.createElement( 'input', {
 				'data-testid': 'slider',
 				type: 'range',
+				disabled,
 				value,
 				'data-min': min,
 				'data-max': max,
@@ -325,6 +326,34 @@ describe( 'SgsLengthControl fallbacks and passthroughs', () => {
 			container.querySelector( '[data-testid="label"]' ).textContent
 		).toBe( 'Gap' );
 		expect( container.textContent ).toContain( 'Some help' );
+	} );
+} );
+
+describe( 'SgsLengthControl a stored CSS value that is not one length', () => {
+	test( 'a two-value gap is kept, named, and not offered to the slider; the page value is untouched', () => {
+		const writes = renderControlled( '16px 12px' );
+		expect( box().value ).toBe( '' );
+		expect( box().placeholder ).toBe( '16px 12px' );
+		expect( container.textContent ).toContain( 'Set as CSS: 16px 12px.' );
+		expect( slider().disabled ).toBe( true );
+		expect( writes ).toEqual( [] );
+	} );
+
+	test( 'typing a single length replaces it and the notice goes', () => {
+		const writes = renderControlled( '16px 12px' );
+		change( select(), '40' );
+		expect( writes.at( -1 ) ).toBe( '40' );
+		expect( container.textContent ).not.toContain( 'Set as CSS' );
+	} );
+
+	test( 'negative control: a plain length and a preset show no notice and an enabled slider', () => {
+		renderControlled( '20px' );
+		expect( container.textContent ).not.toContain( 'Set as CSS' );
+		expect( slider().disabled ).toBe( false );
+		act( () => root.unmount() );
+		root = createRoot( container );
+		renderControlled( '40' );
+		expect( container.textContent ).not.toContain( 'Set as CSS' );
 	} );
 } );
 

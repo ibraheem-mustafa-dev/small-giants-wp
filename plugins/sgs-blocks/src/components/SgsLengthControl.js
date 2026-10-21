@@ -29,7 +29,7 @@
  *
  * @package
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { useContext, useState } from '@wordpress/element';
 import { useSettings } from '@wordpress/block-editor';
 import {
@@ -269,11 +269,18 @@ export default function SgsLengthControl( {
 	// The typed length, shown whole; a preset or token with no plain length leaves the box empty.
 	let boxValue = `${ shown.num }${ shown.unit }`;
 	if ( shown.num === undefined ) {
-		boxValue = isPresetValue ? '' : stored;
+		boxValue = '';
 	}
-	const boxPlaceholder =
-		placeholder ||
-		( preset && undefined === shown.num ? preset.size : undefined );
+	// A stored CSS value that is not one length (a two-value gap such as "16px 12px", a calc() or var()): the box cannot
+	// edit it, so it is kept as it is and named below until a preset or a single length replaces it. The page output
+	// does not change.
+	const cssOnly = '' !== stored && shown.num === undefined && ! isPresetValue;
+	let boxPlaceholder = placeholder;
+	if ( preset && undefined === shown.num ) {
+		boxPlaceholder = preset.size;
+	} else if ( cssOnly ) {
+		boxPlaceholder = stored;
+	}
 
 	const options = [
 		{ label: __( '— none —', 'sgs-blocks' ), value: '' },
@@ -359,12 +366,24 @@ export default function SgsLengthControl( {
 						max={ range.max }
 						step={ range.step }
 						withInputField={ false }
-						disabled={ disabled }
+						disabled={ disabled || cssOnly }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 				</FlexBlock>
 			</Flex>
+			{ cssOnly && (
+				<p className="components-base-control__help">
+					{ sprintf(
+						/* translators: %s: the stored CSS value, for example "16px 12px". */
+						__(
+							'Set as CSS: %s. Pick a preset or type a single length to replace it.',
+							'sgs-blocks'
+						),
+						stored
+					) }
+				</p>
+			) }
 			{ help && (
 				<p className="components-base-control__help">{ help }</p>
 			) }
