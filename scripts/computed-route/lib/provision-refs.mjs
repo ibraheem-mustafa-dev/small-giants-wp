@@ -177,7 +177,7 @@ if ( empty( $ids['menu'] ) ) {
 	$ids['menu'] = (int) $id;
 }
 $have = wp_get_nav_menu_items( $ids['menu'], array( 'post_status' => 'any' ) ) ?: array();
-if ( ! get_post( $ids['page'] ) ) { $fail( "calibration page {$ids['page']} does not exist" ); }
+if ( ! get_post( $ids['page'] ) || 'trash' === get_post_status( $ids['page'] ) ) { $fail( "calibration page {$ids['page']} does not exist or is in the trash" ); }
 $page_args = array( 'menu-item-type' => 'post_type', 'menu-item-object' => get_post_type( $ids['page'] ), 'menu-item-object-id' => $ids['page'] );
 $pos = 0;
 foreach ( $a['items'] as $it ) {

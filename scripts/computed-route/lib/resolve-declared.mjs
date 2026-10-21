@@ -44,8 +44,9 @@ const sameUnit = ( a, b ) => a === b || ( unitless( a ) && unitless( b ) );
 // The unit a unit setting switches to so it holds the declared numbers, or null to keep its unit: every tier written
 // declares one unit, that unit differs from the setting's, and no tier the write leaves alone holds a value the switch
 // would reinterpret. A per-tier unit setting (an object) and a flat Tablet/Mobile sibling setting never switch.
-// o: { prop, decl ({ tier: declared }), tiers ({ tier: rendered }), unit (the setting's unit now), attr, current, flat }.
-export function declaredUnit( { prop, decl, tiers, unit, attr, current = {}, flat = false } ) {
+// o: { prop, decl ({ tier: declared }), tiers ({ tier: rendered }), unit (the setting's unit now), attr, current, flat,
+// defaultValue (the attribute's schema default: a tier it fills, such as sgs/label fontSize { desktop: 12 }, is held too) }.
+export function declaredUnit( { prop, decl, tiers, unit, attr, current = {}, flat = false, defaultValue = null } ) {
 	if ( flat || 'string' !== typeof unit ) {
 		return null;
 	}
@@ -54,12 +55,17 @@ export function declaredUnit( { prop, decl, tiers, unit, attr, current = {}, fla
 	if ( ! written.length || units.some( ( u ) => null === u ) || 1 !== new Set( units ).size || sameUnit( units[ 0 ], unit ) ) {
 		return null;
 	}
-	const held = current[ attr ];
-	if ( held && 'object' === typeof held && Object.entries( held ).some( ( [ t, v ] ) => ! written.includes( t ) && null != v && '' !== v ) ) {
+	const isObj = ( v ) => v && 'object' === typeof v && ! Array.isArray( v );
+	const held = isObj( current[ attr ] ) || isObj( defaultValue ) ? { ...( isObj( defaultValue ) ? defaultValue : {} ), ...( isObj( current[ attr ] ) ? current[ attr ] : {} ) } : null;
+	if ( held && Object.entries( held ).some( ( [ t, v ] ) => ! written.includes( t ) && null != v && '' !== v ) ) {
 		return null;
 	}
 	return units[ 0 ];
 }
+
+// A declared font weight keyword as the number the weight vocabulary holds (bold is 700, normal 400); any other value as
+// it is.
+export const resolveWeightKeyword = ( prop, declared ) => ( 'font-weight' === prop ? { bold: '700', normal: '400' }[ String( declared ).trim().toLowerCase() ] ?? declared : declared );
 
 // A declared length in the setting's own form, or null where this setting cannot hold it as declared.
 // o: { prop, declared, def (the attribute's schema), unit (the unit the setting holds after any switch; undefined when

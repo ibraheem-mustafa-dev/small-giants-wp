@@ -191,7 +191,7 @@ function apply( st, rec, ref, target, prop, res, slot ) {
 		}
 		const { before, after } = setAttr( node, w );
 		changed++;
-		st.out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: res.how } );
+		st.out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: res.how, ...( w.unit ? { unit: true } : {} ) } );
 		// The switch the fixture turned on for this setting (childIconShowBackground for childIconBackground).
 		const gate = gateFor( st, rec.name, st.calFor( rec.name ), blockSchema( rec.name ), w.attr, node.attributes );
 		if ( gate ) {

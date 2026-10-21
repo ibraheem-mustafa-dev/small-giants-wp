@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 import { candidates, siblings, isPseudoProperty } from './db.mjs';
 import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, round } from './normalise.mjs';
 import { applyClamp } from './fill-values.mjs';
-import { declaredTiers, declaredUnit, declaredLength } from './resolve-declared.mjs';
+import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword } from './resolve-declared.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const BLOCKS_DIR = path.resolve( HERE, '../../../plugins/sgs-blocks/src/blocks' );
@@ -447,7 +447,7 @@ export function resolve( input, ctx ) {
 	// (lib/resolve-declared.mjs). A declared form the setting cannot hold is formatted as the rendered value is (the two
 	// agree, so a relative length gives the same px), and one the formatter cannot read falls back to the rendered value.
 	const decl = declaredTiers( input.declaredForm, tiers, TIER_OF );
-	const unitTo = unitAttr ? declaredUnit( { prop: short, decl, tiers, unit, attr, current, flat: 'flat_sibling' === row.tier_shape } ) : null;
+	const unitTo = unitAttr ? declaredUnit( { prop: short, decl, tiers, unit, attr, current, flat: 'flat_sibling' === row.tier_shape, defaultValue: schema[ attr ]?.default } ) : null;
 	const fmtTier = ( t, raw, def ) => {
 		const d = decl[ t ];
 		if ( undefined === d ) {
@@ -457,7 +457,7 @@ export function resolve( input, ctx ) {
 		if ( held ) {
 			return held;
 		}
-		const f = fmt( t, d, def );
+		const f = fmt( t, resolveWeightKeyword( short, d ), def );
 		return f.error ? fmt( t, raw, def ) : f;
 	};
 	const out = {};
@@ -512,7 +512,7 @@ export function resolve( input, ctx ) {
 		writes.push( { attr, value: boxed( JSON.parse( vals[ 0 ] ), 'desktop' ), merge: isBox ? 'deep' : 'replace' } );
 	}
 	if ( null !== unitTo ) {
-		writes.push( { attr: unitAttr, value: unitTo, merge: 'replace' } );
+		writes.push( { attr: unitAttr, value: unitTo, merge: 'replace', unit: true } );
 	}
 	return done( { writes: fluid?.accepted ? applyClamp( writes, fluid.declared, side ) : writes } );
 }

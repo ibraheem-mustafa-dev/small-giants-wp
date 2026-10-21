@@ -143,7 +143,8 @@ export function verdictOf( dr, defect ) {
 // rootComponent: the entry draft's component.
 export function confirmRecords( { writes, nodes, reads, defects = new Map(), rootComponent } ) {
 	const out = [];
-	for ( const w of writes.filter( ( x ) => x.prop && ! x.prop.startsWith( '(' ) ) ) {
+	// A unit partner write (fontSizeUnit beside fontSize) is part of its value write's record, never one of its own.
+	for ( const w of writes.filter( ( x ) => x.prop && ! x.prop.startsWith( '(' ) && ! x.unit ) ) {
 		// A write made through another setting (lib/fill-equivalents.mjs) is confirmed on the element whose property it
 		// holds: a parent's Align items against the child that asked align-self.
 		const src = w.from || w;

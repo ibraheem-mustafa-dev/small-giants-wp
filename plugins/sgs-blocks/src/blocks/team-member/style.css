@@ -4,7 +4,7 @@
 	padding: var(--wp--preset--spacing--40, 1.5rem);
 	transition-duration: var(--sgs-transition-duration, 300ms);
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
-	transition-property: background-color, color, border-color, transform, box-shadow;
+	transition-property: background-color, color, border-color, border-radius, outline-color, opacity, filter, transform, box-shadow;
 }
 
 /* :where() (specificity 0) so the native textAlign support's has-text-align-*

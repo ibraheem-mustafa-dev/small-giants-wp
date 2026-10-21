@@ -931,7 +931,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 ### `lib/resolve-declared.mjs`
 - `declaredTiers(declaredForm, tiers, tierOf)` → `{ tier: declared }` for the tiers being written.
 - `declaredUnit({ prop, decl, tiers, unit, attr, current, flat })` → the unit a unit setting switches to (every written tier declares it, it differs, no unwritten tier would be reinterpreted; never a per-tier unit object or flat siblings), else null.
-- `declaredLength({ prop, declared, def, unit, forms, box })` → `{ value }` in the setting's form, or null to format as rendered.
+- `declaredLength({ prop, declared, def, unit, forms, box })` → `{ value }` in the setting's form, or null to format as rendered. `resolveWeightKeyword(prop, declared)` → a declared `bold`/`normal` weight as `700`/`400`. `declaredUnit` also takes `defaultValue`, the schema default whose tiers count as held.
 
 ### `lib/fill-prop.mjs`
 - `TIER_WIDTHS`: 1440, 768, 375. `INHERITED`: calibration's inherited list, re-exported rather than copied. `CARRIED`: properties read from a text or layout carrier.

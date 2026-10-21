@@ -104,3 +104,25 @@ test( 'MUST FAIL: a setting with no unit partner holds a relative length only wh
 	assert.equal( declaredUnit( { prop: 'letter-spacing', decl: { desktop: '0', mobile: '0' }, tiers, unit: 'em', attr: 'letterSpacing' } ), null, 'a bare 0 states no unit' );
 	assert.equal( declaredUnit( { prop: 'font-size', decl: { desktop: '2rem', mobile: '1.5rem' }, tiers, unit: 'px', attr: 'fontSize', flat: true } ), null, 'flat Tablet/Mobile siblings never switch' );
 } );
+
+test( 'MUST FAIL: a unit switch never reinterprets a tier the schema default holds, and a weight keyword keeps its number', async () => {
+	const { declaredUnit } = await import( '../lib/resolve-declared.mjs' );
+	// sgs/label fontSize defaults to { desktop: 12 }: switching fontSizeUnit to rem for a mobile-only write would read it as 12rem.
+	assert.equal( declaredUnit( { prop: 'font-size', decl: { mobile: '0.75rem' }, tiers: { mobile: '12px' }, unit: 'px', attr: 'fontSize', defaultValue: { desktop: 12 } } ), null );
+	assert.equal( declaredUnit( { prop: 'font-size', decl: { mobile: '0.75rem' }, tiers: { mobile: '12px' }, unit: 'px', attr: 'fontSize', defaultValue: {} } ), 'rem' );
+	const { resolveWeightKeyword } = await import( '../lib/resolve-declared.mjs' );
+	assert.equal( resolveWeightKeyword( 'font-weight', 'bold' ), '700' );
+	assert.equal( resolveWeightKeyword( 'font-weight', 'normal' ), '400' );
+	assert.equal( resolveWeightKeyword( 'font-weight', '600' ), '600' );
+	assert.equal( resolveWeightKeyword( 'color', 'bold' ), 'bold' );
+} );
+
+test( 'MUST FAIL: a unit partner write carries no confirm record of its own', async () => {
+	const { confirmRecords } = await import( '../lib/fill-confirm.mjs' );
+	const nodes = [ { targets: [ { id: '0:', slot: '', finder: { tpl: 'Root/5#0' } } ] } ];
+	const reads = { widths: { 1440: { '0:': { styles: { 'font-size': '32px' } } } }, declared: { 1440: { '0:': { 'font-size': '2rem' } } } };
+	const writes = [ { node: 'n', index: 0, block: 'sgs/heading', slot: '', prop: 'font-size', attr: 'fontSize', after: { desktop: 2 } }, { node: 'n', index: 0, block: 'sgs/heading', slot: '', prop: 'font-size', attr: 'fontSizeUnit', after: 'rem', unit: true } ];
+	assert.deepEqual( confirmRecords( { writes, nodes, reads, rootComponent: 'Home' } ).map( ( r ) => r.attribute ), [ 'fontSize' ] );
+	const unitWrite = result.writes.find( ( w ) => 'fontSizeUnit' === w.attr );
+	assert.equal( unitWrite?.unit, true, 'Fill marks the unit partner write' );
+} );
