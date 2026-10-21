@@ -996,6 +996,8 @@ Single-icon block with FOUR icon sources: Lucide icons via `plugins/sgs-blocks/i
 
 Attributes: `/wp-blocks schema sgs/icon`.
 
+`iconSize` (and `sgs/social-icons::childIconSize`, the row's size for every icon without its own) is set with core's `FontSizePicker`, the same control and slider ranges as the Typography font size (`plugins/sgs-blocks/src/blocks/icon/icon-size-control.js::IconSizeControl`): a theme font-size preset is stored as `var(--wp--preset--font-size--{slug})`, a typed size as its CSS length (px, em, rem, vw, vh), and both pass `plugins/sgs-blocks/includes/helpers-icon.php::sgs_icon_length_value` and its editor twin `icon-state.js::iconLengthValue`.
+
 `iconRotate` (degrees, -360 to 360, default 0) rotates the icon element, shape background and glyph together, as a paint-time `transform: rotate()` on the root (`icon/render.php`). A transform never changes layout, so the box stays `iconSize` wide: a diamond is one plain square shape plus `iconRotate: 45`, not a rotation baked into an oversized custom-SVG viewBox.
 
 SGS-BEM: `.sgs-icon` root + `__link` / `__svg` / `__emoji` / `__dashicon` + `--source-{lucide,wp-icon,dashicon,emoji}` + `--size-{small,medium,large,custom}`.

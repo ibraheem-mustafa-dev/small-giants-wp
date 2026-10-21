@@ -180,7 +180,7 @@
 		"childIconSize": {
 			"type": "object",
 			"default": {},
-			"description": "Glyph size per device {desktop,tablet,mobile} for every icon: a CSS length (px, rem, em, %) or a theme spacing preset."
+			"description": "Glyph size per device {desktop,tablet,mobile} for every icon: a CSS length (px, rem, em, vw, vh) or a theme font-size preset as var(--wp--preset--font-size--x), set through the font-size picker."
 		},
 		"childIconShape": {
 			"type": "string",

@@ -26,7 +26,6 @@ import {
 	LinkPopoverField,
 	ResponsiveControl,
 	ResponsiveOverride,
-	SgsLengthControl,
 	SgsBoxControl,
 	BOX_UNITS,
 	normaliseResponsiveBox,
@@ -36,6 +35,7 @@ import { BRANDS } from '../../utils/brand-registry';
 import { isOutlineShape } from '../../utils/icon-shapes';
 import ShapePanels from './inspector-shape';
 import IconLabelPanel from './inspector-label';
+import IconSizeControl, { ICON_SIZE_HELP } from './icon-size-control';
 import { metadataWithoutLinkBinding } from './icon-state';
 import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
 
@@ -80,12 +80,6 @@ const TEXT_ALIGN_OPTIONS = [
 	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
 	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
 	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
-];
-
-const SIZE_UNITS = [
-	{ value: 'px', label: 'px' },
-	{ value: 'rem', label: 'rem' },
-	{ value: 'em', label: 'em' },
 ];
 
 /**
@@ -185,16 +179,13 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 						brands={ BRANDS }
 						onChange={ handleIconChange }
 					/>
-					<ResponsiveControl label={ __( 'Icon size', 'sgs-blocks' ) }>
+					{ /* No ResponsiveControl label: FontSizePicker brings its own header. */ }
+					<ResponsiveControl>
 						{ ( tier ) => (
-							<SgsLengthControl
-								label={ __( 'Icon size', 'sgs-blocks' ) }
-								hideLabelFromVision
-								value={ iconSize?.[ tier ] ?? '' }
-								units={ SIZE_UNITS }
-								presets
-								help={ __( 'Leave blank for the group size, else 32px.', 'sgs-blocks' ) }
-								onChange={ ( value ) => patchTier( attributes, setAttributes, 'iconSize', tier, value || undefined ) }
+							<IconSizeControl
+								value={ iconSize?.[ tier ] }
+								help={ ICON_SIZE_HELP.icon }
+								onChange={ ( value ) => patchTier( attributes, setAttributes, 'iconSize', tier, value ) }
 							/>
 						) }
 					</ResponsiveControl>
