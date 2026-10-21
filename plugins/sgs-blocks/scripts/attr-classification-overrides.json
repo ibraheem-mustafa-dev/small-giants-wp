@@ -7489,6 +7489,26 @@
 				"css_layer": null
 			},
 			"_why": "2026-10-21: line geometry in percent of the drawing box. src/blocks/diagram-dimension/render.php reads `sgs_measured_diagram_pct( $attributes['endY'] ?? null, 50.0 )` and feeds it to sgs_diagram_dimension_paths(), which builds SVG path data; nothing writes a top value from it (block.json notes: line geometry is drawing content with no CSS property; labelX and labelY carry the left and top). Matches startY, which has no role or css_property. Spec 48 3.6 item 14."
+		},
+		{
+			"slug": "sgs/responsive-logo",
+			"attr": "logoIdTablet",
+			"fields": {
+				"role": "image-object",
+				"css_property": null,
+				"css_element": null
+			},
+			"_why": "2026-10-21: the tablet-tier logo attachment ID. src/blocks/responsive-logo/render.php reads it as `$tablet_logo_id = absint( $attributes['logoIdTablet'] )` and resolves the tablet image from it; it carries no length, so the max-width the classifier derived is an emission side effect (the logo's width comes from the separate `width` attribute through --logo-width). Same as logoId. Spec 48 5.4 Res 7."
+		},
+		{
+			"slug": "sgs/responsive-logo",
+			"attr": "logoIdMobile",
+			"fields": {
+				"role": "image-object",
+				"css_property": null,
+				"css_element": null
+			},
+			"_why": "2026-10-21: the mobile-tier logo attachment ID. src/blocks/responsive-logo/render.php reads it as `$mobile_logo_id = absint( $attributes['logoIdMobile'] )` and resolves the mobile image from it; it carries no length, so the max-width the classifier derived is an emission side effect (the logo's width comes from the separate `width` attribute through --logo-width). Same as logoId. Spec 48 5.4 Res 7."
 		}
 	]
 }
