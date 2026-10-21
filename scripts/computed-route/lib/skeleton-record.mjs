@@ -6,7 +6,7 @@
 // reads the record. An element with no record entry (one a custom element draws, or an inventory taken from another
 // draft) is read from its rendered attributes, as before.
 import fs from 'fs';
-import { loadFacts as loadFactRecord, factsFile } from './fact-record.mjs';
+import { loadFacts as loadFactRecord, factsFile, warnMissingFacts } from './fact-record.mjs';
 import { templateKey } from './fact-key.mjs';
 import { readJson } from './handoff.mjs';
 import path from 'path';
@@ -22,6 +22,7 @@ export function recordFor( facts ) {
 	}
 	const file = factsFile( facts.repo, facts.client );
 	if ( ! fs.existsSync( file ) ) {
+		warnMissingFacts( facts.client, { repo: facts.repo } );
 		return null;
 	}
 	const st = fs.statSync( file );

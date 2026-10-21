@@ -12,7 +12,7 @@ import { rowsOf, summaryOf } from './intake-skeletons.mjs';
 import { collapseSkeletons } from './intake-run-collapse.mjs';
 import { templateKey } from './fact-key.mjs';
 import { proposalContext } from './skeleton-context.mjs';
-import { assertCurrent } from './freshness.mjs';
+import { assertCurrent, sourcesOf } from './freshness.mjs';
 import { fingerprintsOf } from './identity.mjs';
 
 // The template keys (`<component>/<tpl>`) whose own animation loops a translate for ever, from intake.json's re-derived
@@ -56,6 +56,8 @@ export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = n
 	const missing = [];
 	const handoffRoot = path.join( repo, 'sites', client, 'handoff' );
 	const unchecked = [];
+	// The export is hashed once per run, not once per surface.
+	const current = fs.existsSync( handoffRoot ) ? sourcesOf( handoffRoot ) : null;
 	for ( const s of surfaces ) {
 		const file = path.join( dir, `${ s.slug }.json` );
 		if ( ! fs.existsSync( file ) ) {
@@ -63,7 +65,7 @@ export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = n
 			continue;
 		}
 		const inventory = JSON.parse( fs.readFileSync( file, 'utf8' ) );
-		assertCurrent( inventory, handoffRoot, { label: `${ client } inventory ${ s.slug }`, warn: () => unchecked.push( s.slug ) } );
+		assertCurrent( inventory, handoffRoot, { label: `${ client } inventory ${ s.slug }`, warn: () => unchecked.push( s.slug ), ...( current ? { current } : {} ) } );
 		const b = built[ s.id ] || built[ s.slug ] || null;
 		const ctx = proposalContext( { repo, client, slug: s.slug, id: s.id, breakpoints } );
 		const r = propose( { inventory, facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: b, motion, clientDecisions, picks: picks[ s.slug ] || {}, ...ctx, db } );
