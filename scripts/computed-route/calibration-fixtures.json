@@ -1311,7 +1311,16 @@
       {
         "markerType": "icon"
       }
-    ]
+    ],
+    "preconditions": {
+      "itemMotionDuration": {
+        "siblingDimOpacity": 0.4
+      },
+      "itemMotionEasing": {
+        "siblingDimOpacity": 0.4,
+        "itemMotionDuration": 300
+      }
+    }
   },
   "sgs/label": {
     "attributes": {
@@ -1749,6 +1758,9 @@
           "tablet": "on",
           "mobile": "on"
         }
+      },
+      {
+        "submenuCaret": true
       }
     ],
     "preconditions": {
@@ -1760,6 +1772,20 @@
       },
       "itemMotionEasing": {
         "itemMotionDuration": 300
+      },
+      "submenuCaretTurnEasingCustom": {
+        "submenuCaretTurnEasing": "custom",
+        "submenuCaretTurnDuration": 300
+      },
+      "scrimFadeDuration": {
+        "scrimOpacity": {
+          "desktop": 0.5
+        }
+      },
+      "scrimFadeEasing": {
+        "scrimOpacity": {
+          "desktop": 0.5
+        }
       }
     }
   },
@@ -2559,7 +2585,12 @@
           "id:{{menuItem}}"
         ]
       }
-    ]
+    ],
+    "preconditions": {
+      "submenuCaretTurnEasingCustom": {
+        "submenuCaretTurnEasing": "custom"
+      }
+    }
   },
   "sgs/notice-banner": {
     "attributes": {
