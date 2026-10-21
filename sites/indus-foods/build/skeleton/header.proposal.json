@@ -1,0 +1,806 @@
+{
+	"generated": "2026-10-21T03:32:52.014Z",
+	"inventory": "2026-10-21T03:32:11.794Z",
+	"source": "http://127.0.0.1:63470/",
+	"surface": "header",
+	"siteName": null,
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 24,
+		"parts": 0,
+		"rows": 24,
+		"skeletonNodes": 19,
+		"expandedNodes": 19,
+		"low": 0,
+		"removed": 5,
+		"unresolved": 0,
+		"byRule": {
+			"widthWrapper": 1,
+			"homeLink": 1,
+			"logoElement": 1,
+			"pillButton": 5,
+			"solitaryIcon": 4
+		}
+	},
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/39#0",
+			"tag": "header",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/site-header",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/site-header",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: agent pick: the draft root is a <header> whose children (a logo, a nav and a CTA row) are what sgs/site-header accepts (block_composition: section-root accepting sgs/site-header-row); sgs/hero lists header only as a tag capability. Surface is the sgs_header post."
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_39_0@375.png",
+				"1440": "shots/Root_39_0@1440.png"
+			},
+			"snippet": "<header ref=\"{{ setHeaderEl }}\" sc-camel-on-mouse-leave=\"{{ scheduleClose }}\" sc-camel-on-mouse-enter=\"{{ cancelClose }}\" style=\"position:sticky;top:0;z-index:200;transition:box-shadow .3s;\" data-dc-tpl=\"39\"> <div style=\"background:#FFFFFF;border-bottom:3px solid #D8CA50;\" data-dc-tpl=\"40\"> <div style=\"max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:{{ R.headH }};display:flex;align-item",
+			"attributes": {}
+		},
+		{
+			"order": 1,
+			"key": "Root/40#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/site-header-row",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/site-header-row",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/site-header (section-root) accepts [\"sgs/site-header-row\"]; sgs/site-header-row is a content-block",
+						"sgs/site-header accepts sgs/site-header-row as its only child",
+						"element holds 1 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_40_0@375.png",
+				"1440": "shots/Root_40_0@1440.png"
+			},
+			"snippet": "<div style=\"background:#FFFFFF;border-bottom:3px solid #D8CA50;\" data-dc-tpl=\"40\"> <div style=\"max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:{{ R.headH }};display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;\" data-dc-tpl=\"41\"> <a href=\"#/\" sc-camel-on-click=\"{{ closeAll }}\" aria-label=\"Indus Foods home\" style=\"display:flex;align-items:center;flex-s",
+			"attributes": {}
+		},
+		{
+			"order": 2,
+			"key": "Root/41#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place",
+			"source": "rule widthWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "widthWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_41_0@375.png",
+				"1440": "shots/Root_41_0@1440.png"
+			},
+			"snippet": "<div style=\"max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:{{ R.headH }};display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;\" data-dc-tpl=\"41\"> <a href=\"#/\" sc-camel-on-click=\"{{ closeAll }}\" aria-label=\"Indus Foods home\" style=\"display:flex;align-items:center;flex-shrink:0;\" data-dc-tpl=\"42\"> <indus-logo variant=\"horizontal\" aria-label=\"Indus Food",
+			"attributes": {}
+		},
+		{
+			"order": 3,
+			"key": "Root/42#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "the link around one or more logos (a mark and a wordmark) goes: the logo block links home itself",
+			"source": "rule homeLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "homeLink",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_42_0@375.png",
+				"1440": "shots/Root_42_0@1440.png"
+			},
+			"snippet": "<a href=\"#/\" sc-camel-on-click=\"{{ closeAll }}\" aria-label=\"Indus Foods home\" style=\"display:flex;align-items:center;flex-shrink:0;\" data-dc-tpl=\"42\"> <indus-logo variant=\"horizontal\" aria-label=\"Indus Foods Ltd\" style=\"display:block;height:{{ R.logoH }};aspect-ratio:3741 / 848;\" data-dc-tpl=\"43\"></indus-logo> </a>",
+			"attributes": {}
+		},
+		{
+			"order": 4,
+			"key": "Root/43#0",
+			"tag": "indus-logo",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/responsive-logo",
+			"action": null,
+			"reason": "a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo",
+			"source": "rule logoElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "logoElement",
+			"handover": {
+				"owner": "site-info",
+				"kind": "presence",
+				"detail": "the logo image: choose the site logo in the editor"
+			},
+			"candidates": [
+				{
+					"block": "sgs/responsive-logo",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule logoElement: a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_43_0@375.png",
+				"1440": "shots/Root_43_0@1440.png"
+			},
+			"snippet": "<indus-logo variant=\"horizontal\" aria-label=\"Indus Foods Ltd\" style=\"display:block;height:{{ R.logoH }};aspect-ratio:3741 / 848;\" data-dc-tpl=\"43\"></indus-logo>",
+			"attributes": {}
+		},
+		{
+			"order": 5,
+			"key": "Root/45#0",
+			"tag": "nav",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 6 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_45_0@1440.png"
+			},
+			"snippet": "<nav style=\"display:flex;align-items:center;gap:2px;height:100%;\" data-dc-tpl=\"45\"> <sc-for list=\"{{ items }}\" as=\"item\" hint-placeholder-count=\"7\" data-dc-tpl=\"46\"> <button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"pos",
+			"attributes": {
+				"tagName": "nav",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 6,
+			"key": "Root/47#0",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
+			"source": "rule pillButton",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "pillButton",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_47_0@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
+			"attributes": {
+				"label": "Home"
+			}
+		},
+		{
+			"order": 7,
+			"key": "Root/48#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Home",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/button: rule pillButton",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "pillButton",
+			"into": "Root/47#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_48_0@1440.png"
+			},
+			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
+			"attributes": {}
+		},
+		{
+			"order": 8,
+			"key": "Root/52#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/button: rule pillButton",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "pillButton",
+			"into": "Root/47#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_52_0@1440.png"
+			},
+			"snippet": "<span style=\"position:absolute;left:{{ R.navPad }};right:{{ R.navPad }};bottom:3px;height:2px;background:#D8CA50;\" data-dc-tpl=\"52\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 9,
+			"key": "Root/47#1",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_47_1@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 10,
+			"key": "Root/48#1",
+			"tag": "span",
+			"depth": 5,
+			"words": "About",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_48_1@1440.png"
+			},
+			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Root/50#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"source": "rule solitaryIcon",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "solitaryIcon",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_50_0@1440.png"
+			},
+			"snippet": "<span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 12,
+			"key": "Root/47#2",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_47_2@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 13,
+			"key": "Root/48#2",
+			"tag": "span",
+			"depth": 5,
+			"words": "Sectors",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_48_2@1440.png"
+			},
+			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 14,
+			"key": "Root/50#1",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"source": "rule solitaryIcon",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "solitaryIcon",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_50_1@1440.png"
+			},
+			"snippet": "<span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 15,
+			"key": "Root/47#3",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_47_3@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root/48#3",
+			"tag": "span",
+			"depth": 5,
+			"words": "Brands",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_48_3@1440.png"
+			},
+			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root/50#2",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"source": "rule solitaryIcon",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "solitaryIcon",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_50_2@1440.png"
+			},
+			"snippet": "<span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 18,
+			"key": "Root/47#4",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_47_4@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root/48#4",
+			"tag": "span",
+			"depth": 5,
+			"words": "Trade",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_48_4@1440.png"
+			},
+			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root/50#3",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"source": "rule solitaryIcon",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "solitaryIcon",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_50_3@1440.png"
+			},
+			"snippet": "<span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 21,
+			"key": "Root/47#5",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
+			"source": "rule pillButton",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "pillButton",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_47_5@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
+			"attributes": {
+				"label": "Contact"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root/48#5",
+			"tag": "span",
+			"depth": 5,
+			"words": "Contact",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/button: rule pillButton",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "pillButton",
+			"into": "Root/47#5",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_48_5@1440.png"
+			},
+			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
+			"attributes": {}
+		},
+		{
+			"order": 23,
+			"key": "Root/54#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "Register For A Trade Account",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_54_0@1440.png"
+			},
+			"snippet": "<a href=\"#/apply\" data-mag=\"\" style=\"flex-shrink:0;display:inline-flex;align-items:center;gap:8px;background:#0A7EA8;color:#FFFFFF;border:2px solid #0A7EA8;border-radius:999px;padding:12px 22px;font-size:17px;font-weight:600;white-space:nowrap;box-shadow:0 8px 18px -8px rgba(10,126,168,.65);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,background .2s,color .2s;\" style-hover=\"t",
+			"attributes": {
+				"label": "Register For A Trade Account",
+				"url": "#/apply"
+			}
+		}
+	]
+}

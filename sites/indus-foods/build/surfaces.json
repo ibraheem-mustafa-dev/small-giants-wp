@@ -1,0 +1,135 @@
+{
+  "header": {
+    "tree": "header.tree.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 201
+    },
+    "canvas": true,
+    "walker": "qa/parity/header.fill-base.mjs",
+    "walkerFull": "qa/parity/header.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "desktop-nav": null,
+      "desktop-with-cta-pill": null,
+      "compact-1024-hamburger": null,
+      "tablet-cta-pill": null,
+      "current-section": "current",
+      "scrolled": "scrolled",
+      "nav-label-magnet": null
+    },
+    "provides": [
+      "core/template-part:header"
+    ]
+  },
+  "drawer-site-menu": {
+    "tree": "drawer-site-menu.tree.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 203
+    },
+    "canvas": true,
+    "walker": "qa/parity/drawer-site-menu.fill-base.mjs",
+    "walkerFull": "qa/parity/drawer-site-menu.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "open": null
+    }
+  },
+  "footer": {
+    "tree": "footer.tree.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 205
+    },
+    "canvas": true,
+    "walker": "qa/parity/footer.fill-base.mjs",
+    "walkerFull": "qa/parity/footer.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "open-now": null,
+      "closed": null,
+      "today-row-highlighted": null
+    },
+    "provides": [
+      "core/template-part:footer"
+    ]
+  },
+  "mega-about": {
+    "tree": "mega-about.tree.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 155
+    },
+    "canvas": true,
+    "walker": "qa/parity/mega-about.fill-base.mjs",
+    "walkerFull": "qa/parity/mega-about.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "open": null
+    }
+  },
+  "mega-sectors": {
+    "tree": "mega-sectors.tree.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 157
+    },
+    "canvas": true,
+    "walker": "qa/parity/mega-sectors.fill-base.mjs",
+    "walkerFull": "qa/parity/mega-sectors.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "open": null
+    }
+  },
+  "mega-brands": {
+    "tree": "mega-brands.tree.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 159
+    },
+    "canvas": true,
+    "walker": "qa/parity/mega-brands.fill-base.mjs",
+    "walkerFull": "qa/parity/mega-brands.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "open": null
+    }
+  },
+  "mega-trade": {
+    "tree": "mega-trade.tree.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 161
+    },
+    "canvas": true,
+    "walker": "qa/parity/mega-trade.fill-base.mjs",
+    "walkerFull": "qa/parity/mega-trade.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "open": null
+    }
+  }
+}

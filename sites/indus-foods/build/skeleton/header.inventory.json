@@ -1,0 +1,1701 @@
+{
+	"generated": "2026-10-21T03:32:11.794Z",
+	"source": "http://127.0.0.1:63470/",
+	"root": "header",
+	"keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+	"checks": {
+		"rootName": "Root",
+		"rootKey": "Root/39#0",
+		"unstamped": [
+			{
+				"tag": "svg",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "defs",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "lineargradient",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "stop",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "stop",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "lineargradient",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "stop",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "stop",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "meshgradient",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "meshrow",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "meshpatch",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "stop",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "stop",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "stop",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "stop",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "lineargradient",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "lineargradient",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "g",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "g",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "g",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "g",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "g",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "g",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "g",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Home"
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "About"
+			},
+			{
+				"tag": "svg",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "polyline",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Sectors"
+			},
+			{
+				"tag": "svg",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "polyline",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Brands"
+			},
+			{
+				"tag": "svg",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "polyline",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Trade"
+			},
+			{
+				"tag": "svg",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "polyline",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Contact"
+			}
+		],
+		"duplicateKeys": 0,
+		"perWidthCounts": {
+			"375": 10,
+			"768": 11,
+			"1440": 24
+		},
+		"tagAgree": 24,
+		"tagDisagree": [],
+		"keysMissingAt": {
+			"375": [
+				"Root/45#0",
+				"Root/47#0",
+				"Root/48#0",
+				"Root/52#0",
+				"Root/47#1",
+				"Root/48#1",
+				"Root/50#0",
+				"Root/47#2",
+				"Root/48#2",
+				"Root/50#1",
+				"Root/47#3",
+				"Root/48#3",
+				"Root/50#2",
+				"Root/47#4",
+				"Root/48#4",
+				"Root/50#3",
+				"Root/47#5",
+				"Root/48#5",
+				"Root/54#0"
+			],
+			"768": [
+				"Root/45#0",
+				"Root/47#0",
+				"Root/48#0",
+				"Root/52#0",
+				"Root/47#1",
+				"Root/48#1",
+				"Root/50#0",
+				"Root/47#2",
+				"Root/48#2",
+				"Root/50#1",
+				"Root/47#3",
+				"Root/48#3",
+				"Root/50#2",
+				"Root/47#4",
+				"Root/48#4",
+				"Root/50#3",
+				"Root/47#5",
+				"Root/48#5",
+				"Root/54#0"
+			],
+			"1440": []
+		},
+		"screenshotSkips": []
+	},
+	"elements": [
+		{
+			"key": "Root/39#0",
+			"parentKey": "Root/8#0",
+			"depth": 0,
+			"tag": "header",
+			"template": "Root",
+			"tpl": 39,
+			"attrs": {
+				"style": "position: sticky; top: 0px; z-index: 200; transition: box-shadow 0.3s; box-shadow: rgba(20, 40, 60, 0.35) 0px 10px 30px -18px;"
+			},
+			"words": "",
+			"allText": "Home About Sectors Brands Trade Contact Register For A Trade Account",
+			"membership": [],
+			"srcTag": "header",
+			"srcOwnText": "",
+			"snippet": "<header ref=\"{{ setHeaderEl }}\" sc-camel-on-mouse-leave=\"{{ scheduleClose }}\" sc-camel-on-mouse-enter=\"{{ cancelClose }}\" style=\"position:sticky;top:0;z-index:200;transition:box-shadow .3s;\" data-dc-tpl=\"39\"> <div style=\"background:#FFFFFF;border-bottom:3px solid #D8CA50;\" data-dc-tpl=\"40\"> <div style=\"max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:{{ R.headH }};display:flex;align-item",
+			"box": {
+				"375": {
+					"x": 0,
+					"y": 8637,
+					"w": 375,
+					"h": 75
+				},
+				"768": {
+					"x": 0,
+					"y": 6622,
+					"w": 768,
+					"h": 75
+				},
+				"1440": {
+					"x": 0,
+					"y": 4595,
+					"w": 1440,
+					"h": 87
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_39_0@375.png",
+				"1440": "shots/Root_39_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/40#0",
+			"parentKey": "Root/39#0",
+			"depth": 1,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 40,
+			"attrs": {
+				"style": "background: rgb(255, 255, 255); border-bottom: 3px solid rgb(216, 202, 80);"
+			},
+			"words": "",
+			"allText": "Home About Sectors Brands Trade Contact Register For A Trade Account",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"background:#FFFFFF;border-bottom:3px solid #D8CA50;\" data-dc-tpl=\"40\"> <div style=\"max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:{{ R.headH }};display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;\" data-dc-tpl=\"41\"> <a href=\"#/\" sc-camel-on-click=\"{{ closeAll }}\" aria-label=\"Indus Foods home\" style=\"display:flex;align-items:center;flex-s",
+			"box": {
+				"375": {
+					"x": 0,
+					"y": 8637,
+					"w": 375,
+					"h": 75
+				},
+				"768": {
+					"x": 0,
+					"y": 6622,
+					"w": 768,
+					"h": 75
+				},
+				"1440": {
+					"x": 0,
+					"y": 4595,
+					"w": 1440,
+					"h": 87
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_40_0@375.png",
+				"1440": "shots/Root_40_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/41#0",
+			"parentKey": "Root/40#0",
+			"depth": 2,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 41,
+			"attrs": {
+				"style": "max-width: 1320px; margin: 0px auto; padding: 0px 40px; height: 84px; display: flex; align-items: center; justify-content: space-between; gap: 20px; position: relative;"
+			},
+			"words": "",
+			"allText": "Home About Sectors Brands Trade Contact Register For A Trade Account",
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:{{ R.headH }};display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;\" data-dc-tpl=\"41\"> <a href=\"#/\" sc-camel-on-click=\"{{ closeAll }}\" aria-label=\"Indus Foods home\" style=\"display:flex;align-items:center;flex-shrink:0;\" data-dc-tpl=\"42\"> <indus-logo variant=\"horizontal\" aria-label=\"Indus Food",
+			"box": {
+				"375": {
+					"x": 0,
+					"y": 8637,
+					"w": 375,
+					"h": 72
+				},
+				"768": {
+					"x": 0,
+					"y": 6622,
+					"w": 768,
+					"h": 72
+				},
+				"1440": {
+					"x": 60,
+					"y": 4595,
+					"w": 1320,
+					"h": 84
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_41_0@375.png",
+				"1440": "shots/Root_41_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/42#0",
+			"parentKey": "Root/41#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 42,
+			"attrs": {
+				"href": "#/",
+				"aria-label": "Indus Foods home",
+				"style": "display: flex; align-items: center; flex-shrink: 0;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"#/\" sc-camel-on-click=\"{{ closeAll }}\" aria-label=\"Indus Foods home\" style=\"display:flex;align-items:center;flex-shrink:0;\" data-dc-tpl=\"42\"> <indus-logo variant=\"horizontal\" aria-label=\"Indus Foods Ltd\" style=\"display:block;height:{{ R.logoH }};aspect-ratio:3741 / 848;\" data-dc-tpl=\"43\"></indus-logo> </a>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8646,
+					"w": 238.2,
+					"h": 54
+				},
+				"768": {
+					"x": 32,
+					"y": 6630,
+					"w": 247,
+					"h": 56
+				},
+				"1440": {
+					"x": 100,
+					"y": 4605.3,
+					"w": 279.5,
+					"h": 63.4
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_42_0@375.png",
+				"1440": "shots/Root_42_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/43#0",
+			"parentKey": "Root/42#0",
+			"depth": 4,
+			"tag": "indus-logo",
+			"template": "Root",
+			"tpl": 43,
+			"attrs": {
+				"aria-label": "Indus Foods Ltd",
+				"style": "display: block; height: clamp(54px, 4.4vw, 66px); aspect-ratio: 3741 / 848;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [],
+			"srcTag": "indus-logo",
+			"srcOwnText": "",
+			"snippet": "<indus-logo variant=\"horizontal\" aria-label=\"Indus Foods Ltd\" style=\"display:block;height:{{ R.logoH }};aspect-ratio:3741 / 848;\" data-dc-tpl=\"43\"></indus-logo>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8646,
+					"w": 238.2,
+					"h": 54
+				},
+				"768": {
+					"x": 32,
+					"y": 6630,
+					"w": 247,
+					"h": 56
+				},
+				"1440": {
+					"x": 100,
+					"y": 4605.3,
+					"w": 279.5,
+					"h": 63.4
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_43_0@375.png",
+				"1440": "shots/Root_43_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/45#0",
+			"parentKey": "Root/41#0",
+			"depth": 3,
+			"tag": "nav",
+			"template": "Root",
+			"tpl": 45,
+			"attrs": {
+				"style": "display: flex; align-items: center; gap: 2px; height: 100%;"
+			},
+			"words": "",
+			"allText": "Home About Sectors Brands Trade Contact",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				}
+			],
+			"srcTag": "nav",
+			"srcOwnText": "",
+			"snippet": "<nav style=\"display:flex;align-items:center;gap:2px;height:100%;\" data-dc-tpl=\"45\"> <sc-for list=\"{{ items }}\" as=\"item\" hint-placeholder-count=\"7\" data-dc-tpl=\"46\"> <button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"pos",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 460.4,
+					"y": 4595,
+					"w": 543.8,
+					"h": 84
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_45_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/47#0",
+			"parentKey": "Root/45#0",
+			"depth": 4,
+			"tag": "button",
+			"template": "Root",
+			"tpl": 47,
+			"attrs": {
+				"style": "position: relative; background: transparent; border-radius: 11px; border: 0px; cursor: pointer; padding: 0px 15px; height: 42px; display: flex; align-items: center; gap: 6px; color: rgb(10, 126, 168); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; transition: background 0.22s, color 0.22s;"
+			},
+			"words": "",
+			"allText": "Home",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				}
+			],
+			"srcTag": "button",
+			"srcOwnText": "",
+			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 460.4,
+					"y": 4616,
+					"w": 72.9,
+					"h": 42
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_47_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/48#0",
+			"parentKey": "Root/47#0",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 48,
+			"attrs": {
+				"style": "display: inline-flex; align-items: center; gap: 6px; transition: transform 0.2s ease-out;"
+			},
+			"words": "Home",
+			"allText": "Home",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ item.label }}",
+			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 475.4,
+					"y": 4625,
+					"w": 42.9,
+					"h": 24
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_48_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/52#0",
+			"parentKey": "Root/47#0",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 52,
+			"attrs": {
+				"style": "position: absolute; left: 15px; right: 15px; bottom: 3px; height: 2px; background: rgb(216, 202, 80);"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				},
+				{
+					"kind": "sc-if",
+					"value": "{{ item.current }}",
+					"tpl": "51"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span style=\"position:absolute;left:{{ R.navPad }};right:{{ R.navPad }};bottom:3px;height:2px;background:#D8CA50;\" data-dc-tpl=\"52\"></span>",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 475.4,
+					"y": 4653,
+					"w": 42.9,
+					"h": 2
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_52_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/47#1",
+			"parentKey": "Root/45#0",
+			"depth": 4,
+			"tag": "button",
+			"template": "Root",
+			"tpl": 47,
+			"attrs": {
+				"style": "position: relative; background: transparent; border-radius: 11px; border: 0px; cursor: pointer; padding: 0px 15px; height: 42px; display: flex; align-items: center; gap: 6px; color: rgb(30, 42, 60); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; transition: background 0.22s, color 0.22s;"
+			},
+			"words": "",
+			"allText": "About",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				}
+			],
+			"srcTag": "button",
+			"srcOwnText": "",
+			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 535.3,
+					"y": 4616,
+					"w": 90.1,
+					"h": 42
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_47_1@1440.png"
+			}
+		},
+		{
+			"key": "Root/48#1",
+			"parentKey": "Root/47#1",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 48,
+			"attrs": {
+				"style": "display: inline-flex; align-items: center; gap: 6px; transition: transform 0.2s ease-out;"
+			},
+			"words": "About",
+			"allText": "About",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ item.label }}",
+			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 550.3,
+					"y": 4625,
+					"w": 60.1,
+					"h": 24
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_48_1@1440.png"
+			}
+		},
+		{
+			"key": "Root/50#0",
+			"parentKey": "Root/48#1",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 50,
+			"attrs": {
+				"style": "opacity: 0.6; transform: rotate(0deg); transition: transform 0.3s cubic-bezier(0.16, 0.84, 0.32, 1); display: inline-block;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				},
+				{
+					"kind": "sc-if",
+					"value": "{{ item.hasPanel }}",
+					"tpl": "49"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ caretIcon }}",
+			"snippet": "<span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon }}</span>",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 599.4,
+					"y": 4631.5,
+					"w": 11,
+					"h": 11
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_50_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/47#2",
+			"parentKey": "Root/45#0",
+			"depth": 4,
+			"tag": "button",
+			"template": "Root",
+			"tpl": 47,
+			"attrs": {
+				"style": "position: relative; background: transparent; border-radius: 11px; border: 0px; cursor: pointer; padding: 0px 15px; height: 42px; display: flex; align-items: center; gap: 6px; color: rgb(30, 42, 60); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; transition: background 0.22s, color 0.22s;"
+			},
+			"words": "",
+			"allText": "Sectors",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				}
+			],
+			"srcTag": "button",
+			"srcOwnText": "",
+			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 627.4,
+					"y": 4616,
+					"w": 100.2,
+					"h": 42
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_47_2@1440.png"
+			}
+		},
+		{
+			"key": "Root/48#2",
+			"parentKey": "Root/47#2",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 48,
+			"attrs": {
+				"style": "display: inline-flex; align-items: center; gap: 6px; transition: transform 0.2s ease-out;"
+			},
+			"words": "Sectors",
+			"allText": "Sectors",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ item.label }}",
+			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 642.4,
+					"y": 4625,
+					"w": 70.2,
+					"h": 24
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_48_2@1440.png"
+			}
+		},
+		{
+			"key": "Root/50#1",
+			"parentKey": "Root/48#2",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 50,
+			"attrs": {
+				"style": "opacity: 0.6; transform: rotate(0deg); transition: transform 0.3s cubic-bezier(0.16, 0.84, 0.32, 1); display: inline-block;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				},
+				{
+					"kind": "sc-if",
+					"value": "{{ item.hasPanel }}",
+					"tpl": "49"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ caretIcon }}",
+			"snippet": "<span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon }}</span>",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 701.6,
+					"y": 4631.5,
+					"w": 11,
+					"h": 11
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_50_1@1440.png"
+			}
+		},
+		{
+			"key": "Root/47#3",
+			"parentKey": "Root/45#0",
+			"depth": 4,
+			"tag": "button",
+			"template": "Root",
+			"tpl": 47,
+			"attrs": {
+				"style": "position: relative; background: transparent; border-radius: 11px; border: 0px; cursor: pointer; padding: 0px 15px; height: 42px; display: flex; align-items: center; gap: 6px; color: rgb(30, 42, 60); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; transition: background 0.22s, color 0.22s;"
+			},
+			"words": "",
+			"allText": "Brands",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				}
+			],
+			"srcTag": "button",
+			"srcOwnText": "",
+			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 729.6,
+					"y": 4616,
+					"w": 97.3,
+					"h": 42
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_47_3@1440.png"
+			}
+		},
+		{
+			"key": "Root/48#3",
+			"parentKey": "Root/47#3",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 48,
+			"attrs": {
+				"style": "display: inline-flex; align-items: center; gap: 6px; transition: transform 0.2s ease-out;"
+			},
+			"words": "Brands",
+			"allText": "Brands",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ item.label }}",
+			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 744.6,
+					"y": 4625,
+					"w": 67.3,
+					"h": 24
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_48_3@1440.png"
+			}
+		},
+		{
+			"key": "Root/50#2",
+			"parentKey": "Root/48#3",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 50,
+			"attrs": {
+				"style": "opacity: 0.6; transform: rotate(0deg); transition: transform 0.3s cubic-bezier(0.16, 0.84, 0.32, 1); display: inline-block;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				},
+				{
+					"kind": "sc-if",
+					"value": "{{ item.hasPanel }}",
+					"tpl": "49"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ caretIcon }}",
+			"snippet": "<span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon }}</span>",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 800.8,
+					"y": 4631.5,
+					"w": 11,
+					"h": 11
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_50_2@1440.png"
+			}
+		},
+		{
+			"key": "Root/47#4",
+			"parentKey": "Root/45#0",
+			"depth": 4,
+			"tag": "button",
+			"template": "Root",
+			"tpl": 47,
+			"attrs": {
+				"style": "position: relative; background: transparent; border-radius: 11px; border: 0px; cursor: pointer; padding: 0px 15px; height: 42px; display: flex; align-items: center; gap: 6px; color: rgb(30, 42, 60); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; transition: background 0.22s, color 0.22s;"
+			},
+			"words": "",
+			"allText": "Trade",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				}
+			],
+			"srcTag": "button",
+			"srcOwnText": "",
+			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 828.8,
+					"y": 4616,
+					"w": 87.6,
+					"h": 42
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_47_4@1440.png"
+			}
+		},
+		{
+			"key": "Root/48#4",
+			"parentKey": "Root/47#4",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 48,
+			"attrs": {
+				"style": "display: inline-flex; align-items: center; gap: 6px; transition: transform 0.2s ease-out;"
+			},
+			"words": "Trade",
+			"allText": "Trade",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ item.label }}",
+			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 843.8,
+					"y": 4625,
+					"w": 57.6,
+					"h": 24
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_48_4@1440.png"
+			}
+		},
+		{
+			"key": "Root/50#3",
+			"parentKey": "Root/48#4",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 50,
+			"attrs": {
+				"style": "opacity: 0.6; transform: rotate(0deg); transition: transform 0.3s cubic-bezier(0.16, 0.84, 0.32, 1); display: inline-block;"
+			},
+			"words": "",
+			"allText": "",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				},
+				{
+					"kind": "sc-if",
+					"value": "{{ item.hasPanel }}",
+					"tpl": "49"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ caretIcon }}",
+			"snippet": "<span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon }}</span>",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 890.4,
+					"y": 4631.5,
+					"w": 11,
+					"h": 11
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "block",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_50_3@1440.png"
+			}
+		},
+		{
+			"key": "Root/47#5",
+			"parentKey": "Root/45#0",
+			"depth": 4,
+			"tag": "button",
+			"template": "Root",
+			"tpl": 47,
+			"attrs": {
+				"style": "position: relative; background: transparent; border-radius: 11px; border: 0px; cursor: pointer; padding: 0px 15px; height: 42px; display: flex; align-items: center; gap: 6px; color: rgb(30, 42, 60); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; transition: background 0.22s, color 0.22s;"
+			},
+			"words": "",
+			"allText": "Contact",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				}
+			],
+			"srcTag": "button",
+			"srcOwnText": "",
+			"snippet": "<button sc-camel-on-click=\"{{ item.onClick }}\" sc-camel-on-mouse-enter=\"{{ item.onEnter }}\" sc-camel-on-mouse-move=\"{{ item.onMove }}\" sc-camel-on-mouse-leave=\"{{ item.onLeaveLabel }}\" sc-camel-on-focus=\"{{ item.onEnter }}\" style=\"position:relative;background:{{ item.activeBg }};border-radius:11px;border:0;cursor:pointer;padding:0 {{ R.navPad }};height:42px;display:flex;align-items:center;gap:6px;",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 918.4,
+					"y": 4616,
+					"w": 85.8,
+					"h": 42
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_47_5@1440.png"
+			}
+		},
+		{
+			"key": "Root/48#5",
+			"parentKey": "Root/47#5",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 48,
+			"attrs": {
+				"style": "display: inline-flex; align-items: center; gap: 6px; transition: transform 0.2s ease-out;"
+			},
+			"words": "Contact",
+			"allText": "Contact",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-for",
+					"list": "{{ items }}",
+					"as": "item",
+					"tpl": "46"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ item.label }}",
+			"snippet": "<span data-label=\"\" style=\"display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease-out;\" data-dc-tpl=\"48\"> {{ item.label }} <sc-if value=\"{{ item.hasPanel }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"49\"> <span style=\"opacity:.6;transform:rotate({{ item.caret }}deg);transition:transform .3s cubic-bezier(.16,.84,.32,1);display:inline-block;\" data-dc-tpl=\"50\">{{ caretIcon ",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 933.4,
+					"y": 4625,
+					"w": 55.8,
+					"h": 24
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_48_5@1440.png"
+			}
+		},
+		{
+			"key": "Root/54#0",
+			"parentKey": "Root/41#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 54,
+			"attrs": {
+				"href": "#/apply",
+				"class": "scp2",
+				"style": "flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; background: rgb(10, 126, 168); color: rgb(255, 255, 255); border: 2px solid rgb(10, 126, 168); border-radius: 999px; padding: 12px 22px; font-size: 17px; font-weight: 600; white-space: nowrap; box-shadow: rgba(10, 126, 168, 0.65) 0px 8px 18px -8px; transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s, background 0.2s, color 0.2s;"
+			},
+			"words": "Register For A Trade Account",
+			"allText": "Register For A Trade Account",
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isDesktop }}",
+					"tpl": "44"
+				},
+				{
+					"kind": "sc-if",
+					"value": "{{ showHeaderCta }}",
+					"tpl": "53"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "Register For A Trade Account",
+			"snippet": "<a href=\"#/apply\" data-mag=\"\" style=\"flex-shrink:0;display:inline-flex;align-items:center;gap:8px;background:#0A7EA8;color:#FFFFFF;border:2px solid #0A7EA8;border-radius:999px;padding:12px 22px;font-size:17px;font-weight:600;white-space:nowrap;box-shadow:0 8px 18px -8px rgba(10,126,168,.65);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,background .2s,color .2s;\" style-hover=\"t",
+			"box": {
+				"375": null,
+				"768": null,
+				"1440": {
+					"x": 1085.2,
+					"y": 4609.8,
+					"w": 254.8,
+					"h": 54.3
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": true
+			},
+			"display": "flex",
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_54_0@1440.png"
+			}
+		}
+	]
+}

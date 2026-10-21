@@ -1,0 +1,306 @@
+[
+	{
+		"name": "sgs/site-header",
+		"attributes": {},
+		"draftRef": {
+			"tpl": "Root/39#0"
+		},
+		"draftFingerprint": {
+			"tag": "header",
+			"cls": "",
+			"styleHash": "5faf966e"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/site-header-row",
+				"attributes": {},
+				"draftRef": {
+					"tpl": "Root/40#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "c37c73c"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/responsive-logo",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root/43#0"
+						},
+						"draftFingerprint": {
+							"tag": "indus-logo",
+							"cls": "",
+							"styleHash": "f9f9a652"
+						},
+						"innerBlocks": [],
+						"handover": [
+							{
+								"owner": "site-info",
+								"kind": "presence",
+								"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
+							},
+							{
+								"owner": "site-info",
+								"kind": "presence",
+								"detail": "the logo image: choose the site logo in the editor"
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "nav",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root/45#0"
+						},
+						"draftFingerprint": {
+							"tag": "nav",
+							"cls": "",
+							"styleHash": "1c0176c2"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Home"
+								},
+								"draftRef": {
+									"tpl": "Root/47#0"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "d33f99ac"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/47#1"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "dfaf0544"
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "flex"
+										},
+										"draftRef": {
+											"tpl": "Root/48#1"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "e9711844"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/icon",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/50#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "53801004"
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/47#2"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "dfaf0544"
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "flex"
+										},
+										"draftRef": {
+											"tpl": "Root/48#2"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "e9711844"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/icon",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/50#1"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "53801004"
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/47#3"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "dfaf0544"
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "flex"
+										},
+										"draftRef": {
+											"tpl": "Root/48#3"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "e9711844"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/icon",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/50#2"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "53801004"
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/47#4"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "dfaf0544"
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "flex"
+										},
+										"draftRef": {
+											"tpl": "Root/48#4"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "e9711844"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/icon",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/50#3"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "53801004"
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Contact"
+								},
+								"draftRef": {
+									"tpl": "Root/47#5"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "dfaf0544"
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Register For A Trade Account",
+							"url": "#/apply"
+						},
+						"draftRef": {
+							"tpl": "Root/54#0"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "scp2",
+							"styleHash": "9fda5047"
+						},
+						"innerBlocks": []
+					}
+				]
+			}
+		]
+	}
+]
