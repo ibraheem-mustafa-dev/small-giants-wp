@@ -232,6 +232,19 @@ test( 'MUST FAIL an attribute bound to a draft value is present only when the re
 	assert.equal( read( viewOf( {}, { 'aria-pressed': 'true' } ) ), '{{ o.on }}', 'the render shows it' );
 } );
 
+test( 'megaGridContainer: a header panel root that lays its own grid out with its own padding or paint is a container, not the shell; MUST FAIL without the entry', () => {
+	const kids = [ card( 'One', '/one' ), card( 'Two', '/two' ) ];
+	const rootOf = ( style, o = {} ) => rows( run( N( 'div', { style }, kids ), { kind: 'menu', name: 'Panel', surfaces: header, openers: OPEN, ...o } ) ).find( ( x ) => 0 === x.depth );
+	const grid = 'display:grid;grid-template-columns:repeat(2, 1fr);padding-top:28px;padding-left:28px;background-color:rgb(10, 126, 168)';
+	assert.deepEqual( [ rootOf( grid ).block, rootOf( grid ).rule ], [ 'sgs/container', 'megaGridContainer' ] );
+	assert.deepEqual( [ rootOf( 'display:grid;grid-template-columns:repeat(2, 1fr);padding-top:28px' ).block, rootOf( 'display:grid;grid-template-columns:repeat(2, 1fr);background-color:rgb(1, 2, 3)' ).block ], [ 'sgs/container', 'sgs/container' ], 'padding alone, or paint alone, is enough' );
+	assert.equal( rootOf( grid, { facts: facts( 'megaGridContainer' ) } ).block, 'sgs/mega-panel', 'without the entry the root is the shell' );
+	assert.equal( rootOf( 'display:grid;grid-template-columns:repeat(2, 1fr);padding-top:0px' ).block, 'sgs/mega-panel', 'a grid with no padding and no paint stays the shell' );
+	assert.equal( rootOf( 'display:flex;padding-top:28px;background-color:rgb(10, 126, 168)' ).block, 'sgs/mega-panel', 'a flex root stays the shell' );
+	const page = rows( run( N( 'div', { style: grid }, kids ), { kind: 'panel', name: 'Panel', surfaces: { 'S-1': { kind: 'page', name: 'Home' }, 'S-2': { kind: 'panel', name: 'Panel', parent: 'S-1' } }, openers: { 'S-2': 'Scroll' } } ) ).find( ( x ) => 0 === x.depth );
+	assert.notEqual( page.rule, 'megaGridContainer', 'a panel of a page is not a header disclosure' );
+} );
+
 test( 'recordView.describe carries every field the rules read; the parent chain sits beside the rendered parent', () => {
 	const b = build( N( 'div', { style: 'display:flex;flex-grow:1;flex-shrink:0;flex-basis:0%;width:10px;min-width:0px;position:relative;aspect-ratio:2 / 1;background-color:rgb(1, 2, 3)', attrs: { 'aria-current': 'page', 'aria-expanded': 'false', 'aria-pressed': 'true', tabindex: '0', required: '' } }, [ N( 'span', { real: 'select' } ) ] ) );
 	const view = recordView( record( b.recs ) );

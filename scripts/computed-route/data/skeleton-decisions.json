@@ -446,6 +446,14 @@
 			"clients": [ "indus-foods", "mamas-munches-redesign" ],
 			"reason": "a growing child of a header disclosure panel with no run of links of its own is a plain container, not a mega group (Bean approved the brands panel's heading and logo grid as sgs/container, 2026-10-21)"
 		},
+		"megaGridContainer": {
+			"id": "megaGridContainer",
+			"block": "sgs/container",
+			"taughtBy": { "client": "indus-foods", "key": "Indus Foods Website v2/85#0", "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6" },
+			"scope": "the root element of a surface of kind menu or panel whose parent surface is a header and that something opens (the same panel as megaGroup), when it declares its own grid layout and its own paint (a declared or style-bound background, border or shadow) or its own padding; a root that declares no grid, or neither paint nor padding, stays the panel shell",
+			"clients": [ "indus-foods", "mamas-munches-redesign" ],
+			"reason": "a header disclosure panel's root that lays its own grid out and carries its own padding or paint is the container that holds the cards, not the panel shell (Bean approved the sectors panel's gradient card grid as sgs/container, 2026-10-21)"
+		},
 		"drawerIconRun": {
 			"id": "drawerIconRun",
 			"block": "sgs/social-icons",
