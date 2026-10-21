@@ -79,6 +79,7 @@ export default function TrailingIconPanel( { resolvedItems, attributes, setAttri
 				>
 					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 						<SgsLengthControl
+							scale="font-size"
 							label={ __( 'Icon size', 'sgs-blocks' ) }
 							hideLabelFromVision
 							help={ __( 'Applies to every trailing icon. Empty keeps the default 10px.', 'sgs-blocks' ) }

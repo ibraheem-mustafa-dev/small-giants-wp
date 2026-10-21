@@ -28,8 +28,8 @@ import {
 	SgsBorderControl,
 	resolveColourToken,
 	DesignTokenPicker,
-	GradientCapableColourControl, SgsBoxControl } from '../../components';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+	GradientCapableColourControl, SgsBoxControl, SgsLengthControl } from '../../components';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	resolveResponsiveTier,
 	tierBoxLonghands,
@@ -820,14 +820,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
 					>
 						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<UnitControl
+							<SgsLengthControl
 								label={ __( 'Max width', 'sgs-blocks' ) }
 								hideLabelFromVision
 								units={ LENGTH_UNITS }
 								value={ ownValue || '' }
 								placeholder={ inherited ? effectiveValue : '' }
 								onChange={ ( v ) => setOwnValue( v || '' ) }
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>

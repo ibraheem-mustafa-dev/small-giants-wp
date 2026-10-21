@@ -55,10 +55,11 @@ const typoTarget = ( prefix, label ) => ( {
 } );
 
 /** A tier object of lengths ({desktop, tablet, mobile}) with one length per device. */
-function TierLength( { label, attr, attributes, setAttributes } ) {
+function TierLength( { label, attr, attributes, setAttributes, scale } ) {
 	return (
 		<ResponsiveLengthControl
 			label={ label }
+			scale={ scale }
 			units={ BOX_UNITS }
 			value={ attributes[ attr ] }
 			onChange={ ( obj ) => setAttributes( { [ attr ]: obj } ) }

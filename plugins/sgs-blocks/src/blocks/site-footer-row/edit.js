@@ -15,7 +15,7 @@ import {
 	RangeControl,
 	TextControl,
 } from '@wordpress/components';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	ResponsiveOverride,
 	SpacingControl,
@@ -28,7 +28,7 @@ import {
 	SgsBorderControl,
 	resolveColourToken,
 	DesignTokenPicker,
-	GradientCapableColourControl, SgsBoxControl } from '../../components';
+	GradientCapableColourControl, SgsBoxControl, SgsLengthControl } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { resolveResponsiveTier, tierBoxLonghands, resolveContentWidthPreview, contentBandPreview, usePreviewTier } from '../../utils';
 import { footerRowPaint } from './preview-style';
@@ -794,14 +794,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
 					>
 						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<UnitControl
+							<SgsLengthControl
 								label={ __( 'Max width', 'sgs-blocks' ) }
 								hideLabelFromVision
 								units={ LENGTH_UNITS }
 								value={ ownValue || '' }
 								placeholder={ inherited ? effectiveValue : '' }
 								onChange={ ( v ) => setOwnValue( v || '' ) }
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>

@@ -263,6 +263,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						presets={ false }
 					/>
 					<SgsLengthControl
+						scale="font-size"
 						label={ __( 'Icon size', 'sgs-blocks' ) }
 						help={ __( 'Width and height of the icon. Empty keeps the default size.', 'sgs-blocks' ) }
 						value={ attributes.iconSize || '' }

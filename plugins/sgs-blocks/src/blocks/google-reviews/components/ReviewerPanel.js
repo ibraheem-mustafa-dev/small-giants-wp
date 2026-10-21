@@ -50,7 +50,7 @@ export default function ReviewerPanel( { attributes, setAttributes } ) {
 				/>
 			</Row>
 			<Row label={ __( 'Star size (review cards)', 'sgs-blocks' ) } attrs={ [ 'starSize' ] } { ...shared }>
-				<TierLength label={ __( 'Star size on each review card', 'sgs-blocks' ) } attr="starSize" { ...shared } />
+				<TierLength scale="font-size" label={ __( 'Star size on each review card', 'sgs-blocks' ) } attr="starSize" { ...shared } />
 			</Row>
 			<Row
 				label={ __( 'Google mark on each card', 'sgs-blocks' ) }

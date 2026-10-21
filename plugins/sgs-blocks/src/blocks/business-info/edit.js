@@ -222,6 +222,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							>
 								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 									<SgsLengthControl
+										scale="font-size"
 										presets={ false }
 										label={ __( 'Icon size', 'sgs-blocks' ) }
 										hideLabelFromVision

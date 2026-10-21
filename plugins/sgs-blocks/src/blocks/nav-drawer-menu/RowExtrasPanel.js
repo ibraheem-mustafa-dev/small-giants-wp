@@ -82,6 +82,7 @@ export default function RowExtrasPanel( { attributes, setAttributes } ) {
 			{ usesOrnament && (
 				<>
 					<ResponsiveLengthControl
+						scale="font-size"
 						label={ __( 'Ornament size', 'sgs-blocks' ) }
 						help={ __( 'The icon box, or the number’s text size.', 'sgs-blocks' ) }
 						value={ itemOrnamentSize }

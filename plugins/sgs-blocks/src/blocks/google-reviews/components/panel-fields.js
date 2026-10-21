@@ -23,10 +23,11 @@ import { spacingAxesFor } from '../../../utils/spacing-axes';
 import { Row, borderStyleValue, typographyAttrs } from './panel-kit';
 
 /** A tier object of CSS lengths ({desktop, tablet, mobile}), one length per device. */
-export function TierLength( { label, attr, attributes, setAttributes } ) {
+export function TierLength( { label, attr, attributes, setAttributes, scale } ) {
 	return (
 		<ResponsiveLengthControl
 			label={ label }
+			scale={ scale }
 			units={ BOX_UNITS }
 			value={ attributes[ attr ] }
 			onChange={ ( obj ) => setAttributes( { [ attr ]: obj } ) }

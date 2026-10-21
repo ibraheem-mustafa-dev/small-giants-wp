@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
-import { TypographyControls } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
+import { SgsLengthControl, TypographyControls } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 const PICKER_STYLE_OPTIONS = [
 	{ value: '', label: __( "Picker's own default", 'sgs-blocks' ) },
@@ -387,7 +387,7 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 					) }
 					__nextHasNoMarginBottom
 				/>
-				<UnitControl
+				<SgsLengthControl
 					label={ __( 'Minimum height', 'sgs-blocks' ) }
 					value={ addToCartMinHeight || '' }
 					onChange={ ( val ) =>
@@ -397,8 +397,6 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 						"Empty = today's 48px.",
 						'sgs-blocks'
 					) }
-					__unstableInputWidth="100%"
-					__next40pxDefaultSize
 				/>
 			</PanelBody>
 		</>

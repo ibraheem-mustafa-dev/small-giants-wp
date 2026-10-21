@@ -56,7 +56,7 @@ export default function HeaderPanel( { attributes, setAttributes } ) {
 				/>
 			</Row>
 			<Row label={ __( 'Star size (rating row)', 'sgs-blocks' ) } attrs={ [ 'aggregateStarSize' ] } { ...shared }>
-				<TierLength label={ __( 'Star size in the rating row', 'sgs-blocks' ) } attr="aggregateStarSize" { ...shared } />
+				<TierLength scale="font-size" label={ __( 'Star size in the rating row', 'sgs-blocks' ) } attr="aggregateStarSize" { ...shared } />
 			</Row>
 			<Row label={ __( 'Header gap', 'sgs-blocks' ) } attrs={ [ 'headerGap' ] } { ...shared }>
 				<TierLength label={ __( 'Space between header items', 'sgs-blocks' ) } attr="headerGap" { ...shared } />

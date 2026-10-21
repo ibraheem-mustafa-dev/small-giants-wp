@@ -1110,18 +1110,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToggleGroupControlOption value="last" label={ __( 'Below links', 'sgs-blocks' ) } />
 					</ToggleGroupControl>
 					<SgsLengthControl
+						scale="font-size"
 						label={ __( 'Link number size', 'sgs-blocks' ) }
 						value={ drawerLinkNumSize || '' }
 						onChange={ ( value ) => setAttributes( { drawerLinkNumSize: value || '' } ) }
 						presets={ false }
 					/>
 					<SgsLengthControl
+						scale="font-size"
 						label={ __( 'Link label size', 'sgs-blocks' ) }
 						value={ drawerLinkLabelSize || '' }
 						onChange={ ( value ) => setAttributes( { drawerLinkLabelSize: value || '' } ) }
 						presets={ false }
 					/>
 					<SgsLengthControl
+						scale="font-size"
 						label={ __( 'Link description size', 'sgs-blocks' ) }
 						value={ drawerLinkDescSize || '' }
 						onChange={ ( value ) => setAttributes( { drawerLinkDescSize: value || '' } ) }
@@ -1183,6 +1186,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						presets={ false }
 					/>
 					<SgsLengthControl
+						scale="font-size"
 						label={ __( 'Card tag size', 'sgs-blocks' ) }
 						value={ drawerCardTagSize || '' }
 						onChange={ ( value ) => setAttributes( { drawerCardTagSize: value || '' } ) }
@@ -1203,6 +1207,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onChange={ ( next ) => setAttributes( { drawerCardTagMargin: next || {} } ) }
 							/>
 					<SgsLengthControl
+						scale="font-size"
 						label={ __( 'Card title size', 'sgs-blocks' ) }
 						value={ drawerCardTitleSize || '' }
 						onChange={ ( value ) => setAttributes( { drawerCardTitleSize: value || '' } ) }
@@ -1215,6 +1220,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						presets={ false }
 					/>
 					<SgsLengthControl
+						scale="font-size"
 						label={ __( 'Card link size', 'sgs-blocks' ) }
 						value={ drawerCardLinkSize || '' }
 						onChange={ ( value ) => setAttributes( { drawerCardLinkSize: value || '' } ) }

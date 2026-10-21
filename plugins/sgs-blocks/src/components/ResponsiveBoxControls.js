@@ -27,7 +27,7 @@ import {
 } from '@wordpress/components';
 import SgsBoxControl from './SgsBoxControl';
 import ResponsiveOverride from './ResponsiveOverride';
-import { UnitControl } from './primitives';
+import SgsLengthControl from './SgsLengthControl';
 
 /** Units offered in the BoxControl / UnitControl inputs. */
 const LENGTH_UNITS = [
@@ -126,14 +126,13 @@ export default function ResponsiveBoxControls( {
 				onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
 			>
 				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Max width', 'sgs-blocks' ) }
 						hideLabelFromVision
 						units={ LENGTH_UNITS }
 						value={ ownValue || '' }
 						placeholder={ inherited ? effectiveValue : '' }
 						onChange={ ( v ) => setOwnValue( v || '' ) }
-						__next40pxDefaultSize
 					/>
 				) }
 			</ResponsiveOverride>

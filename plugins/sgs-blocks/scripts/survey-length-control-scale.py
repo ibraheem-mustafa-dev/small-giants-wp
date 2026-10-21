@@ -66,6 +66,7 @@ GLYPH_PROPERTY_RE = re.compile(r'(^|,)(width|height|font-size)(,|$)')
 # Bean rulings that override the DB reading: 'slug/attr' -> (scale, reason). Never a per-file case.
 ROLE_EXCEPTIONS = {
     'sgs/icon-list/iconBoxSize': ('spacing', 'the circle behind the icon is a box (its height), not a glyph'),
+    'sgs/wishlist-link/iconSize': ('font-size', 'an icon glyph size (its DB row names no CSS property)'),
     'sgs/nav-bar-menu/submenuCaretSize': ('font-size', 'the caret is a glyph sized like text'),
     'sgs/nav-drawer-menu/submenuCaretSize': ('font-size', 'the caret is a glyph sized like text'),
     'sgs/google-reviews/arrowSize': ('spacing', 'the arrow button is a tap target (a box), not a glyph'),
@@ -85,7 +86,7 @@ EXTENSION_ATTRS =sorted(k.split('/', 1)[1] for k in ROLE_EXCEPTIONS if k.startsw
 
 # The ratcheted ceilings: mounts still to move (font-size role not yet declared) and mounts whose
 # attribute could not be resolved. Lower with a stated reason as mounts migrate; never raise.
-CEILING = {'PENDING_FONT_SIZE': 19, 'WRONG_SCALE': 0, 'UNRESOLVED': 1}
+CEILING = {'PENDING_FONT_SIZE': 0, 'WRONG_SCALE': 0, 'UNRESOLVED': 1}
 
 RAW_UNIT_SIZE_RE = re.compile(r'size|width|height|gap|radius|thickness|offset', re.I)
 
@@ -500,15 +501,64 @@ def self_test():
     return 0
 
 
+def plan_fixes(mounts):
+    """{file: new source} inserting `scale="font-size"` into every pending mount (offsets found afresh per file)."""
+    todo = {}
+    for m in tally(mounts)['PENDING_FONT_SIZE']:
+        todo.setdefault(m['file'], []).append(m)
+    out = {}
+    for rel, items in todo.items():
+        path = os.path.join(SRC, rel)
+        src = _read(path)
+        clean = strip_comments(src)
+        starts = [mm.start() for mm in MOUNT_RE.finditer(clean)]
+        wanted = {clean.count('\n', 0, st) + 1: st for st in starts}
+        edits = []
+        for m in items:
+            st = wanted.get(m['line'])
+            if st is None or 'mixed-loop' == m['proposed']:
+                continue
+            name = MOUNT_RE.match(clean, st).group(0)
+            edits.append(st + len(name))
+        for at in sorted(edits, reverse=True):
+            # A multi-line tag gets the prop on its own line at the indentation of the props below it.
+            following = re.match(r'(\r?\n)([ \t]+)', src[at:])
+            insert = (following.group(1) + following.group(2) + 'scale="font-size"') if following else ' scale="font-size"'
+            src = src[:at] + insert + src[at:]
+        if edits:
+            out[rel] = src
+    return out
+
+
+def cmd_fix(apply):
+    import difflib
+    changes = plan_fixes(scan())
+    for rel, new in sorted(changes.items()):
+        old = _read(os.path.join(SRC, rel))
+        if not apply:
+            sys.stdout.writelines(difflib.unified_diff(old.splitlines(True), new.splitlines(True), 'a/' + rel, 'b/' + rel, n=0))
+            continue
+        path = os.path.join(SRC, rel)
+        with open(path + '.tmp', 'w', encoding='utf-8', newline='') as fh:
+            fh.write(new)
+        os.replace(path + '.tmp', path)
+    print('%s %d file(s)' % ('Rewrote' if apply else 'Would rewrite', len(changes)))
+    return 0
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('--survey', action='store_true')
     p.add_argument('--json', action='store_true')
     p.add_argument('--check', action='store_true')
     p.add_argument('--self-test', action='store_true')
+    p.add_argument('--fix', action='store_true', help='print the diff that declares scale="font-size" on every pending mount')
+    p.add_argument('--apply', action='store_true', help='with --fix: write the files')
     args = p.parse_args()
     if args.self_test:
         sys.exit(self_test())
+    if args.fix:
+        sys.exit(cmd_fix(args.apply))
     if args.check:
         sys.exit(cmd_check())
     sys.exit(cmd_survey(as_json=args.json))

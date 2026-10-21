@@ -23,8 +23,7 @@ import {
 	ShadowControl,
 	shadowAttrKeys,
 	ResponsiveBorderRadiusControl,
-	normaliseResponsiveBox, SgsBoxControl } from '../../../components';
-import { UnitControl } from '../../../components/primitives';
+	normaliseResponsiveBox, SgsBoxControl, SgsLengthControl } from '../../../components';
 import { gridBorderParts } from '../grid-item-preview';
 
 const GRID_ITEM_BORDER_STYLES = [
@@ -201,14 +200,13 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 			     {color,style,width} OBJECT and adopting it would force a content
 			     migration on every stored instance for no user-visible gain. */ }
 			<div className="sgs-grid-item-border-builder">
-				<UnitControl
+				<SgsLengthControl
 					label={ __( 'Border width', 'sgs-blocks' ) }
 					value={ gridBorderParts( gridItemBorder ).width }
 					units={ GRID_ITEM_BOX_UNITS }
 					onChange={ ( val ) => setAttributes( {
 						gridItemBorder: _gridBorderJoin( { ...gridBorderParts( gridItemBorder ), width: val || '' } ),
 					} ) }
-					__next40pxDefaultSize
 				/>
 				<SelectControl
 					label={ __( 'Border style', 'sgs-blocks' ) }

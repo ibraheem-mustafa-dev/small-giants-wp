@@ -787,6 +787,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
                 <ToggleGroupControlOption value="decimal-leading-zero" label="01, 02, 03" />
               </ToggleGroupControl>
               <SgsLengthControl
+                scale="font-size"
                 label={__("Number size", "sgs-blocks")}
                 value={numberFontSize || ""}
                 onChange={(val) => setAttributes({ numberFontSize: val || "" })}

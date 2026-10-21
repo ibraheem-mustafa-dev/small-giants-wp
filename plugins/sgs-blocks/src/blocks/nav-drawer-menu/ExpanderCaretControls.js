@@ -32,6 +32,7 @@ export default function ExpanderCaretControls( { attributes, setAttributes } ) {
 	return (
 		<>
 			<SgsLengthControl
+				scale="font-size"
 				label={ __( 'Expander size', 'sgs-blocks' ) }
 				value={ submenuCaretSize || '' }
 				onChange={ ( value ) =>

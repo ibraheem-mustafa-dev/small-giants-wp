@@ -33,6 +33,7 @@ export default function GlyphOverlayPanels( { attributes, setAttributes } ) {
 					     raw-px RangeControl (Spec 35 C5). Mirrors this same
 					     file's own cardRadius control above. */ }
 					<SgsLengthControl
+						scale="font-size"
 						label={ __( 'Glyph size', 'sgs-blocks' ) }
 						value={ glyphSize || '' }
 						units={ SGS_LENGTH_UNITS }

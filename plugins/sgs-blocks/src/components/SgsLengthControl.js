@@ -200,7 +200,14 @@ export default function SgsLengthControl( {
 	}
 
 	// What the value box and slider read: the preset's size, the typed length, or the inherited placeholder.
-	const shown = parseLength( preset ? preset.size : isToken ? '' : stored );
+	// A preset reads as its size, a token as nothing (it is not a length), anything else as the typed length.
+	let readFrom = stored;
+	if ( preset ) {
+		readFrom = preset.size;
+	} else if ( isToken ) {
+		readFrom = '';
+	}
+	const shown = parseLength( readFrom );
 	const resting = parseLength( placeholder );
 	const unit = shown.num === undefined && resting.num !== undefined ? resting.unit : shown.unit;
 	const range = sliderRange( unit, max );
@@ -237,7 +244,7 @@ export default function SgsLengthControl( {
 								setCustomPicked( CUSTOM_VALUE === next );
 								if ( CUSTOM_VALUE === next ) {
 									// Custom starts from the size of the preset just left; from none it waits for a value.
-									const start = preset ? preset.size : isToken ? '' : stored;
+									const start = readFrom;
 									if ( start !== stored ) {
 										onChange( start );
 									}

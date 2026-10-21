@@ -416,6 +416,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{ dot && (
 						<>
 							<SgsLengthControl
+								scale="font-size"
 								label={ __( 'Dot size', 'sgs-blocks' ) }
 								value={ dotSize ?? '' }
 								units={ SGS_LENGTH_UNITS }

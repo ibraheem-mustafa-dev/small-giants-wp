@@ -280,6 +280,7 @@ export default function DropdownSettingsPanel( {
 				{ submenuCaret !== false && (
 					<>
 						<SgsLengthControl
+							scale="font-size"
 							label={ __( 'Arrow size', 'sgs-blocks' ) }
 							value={ submenuCaretSize || '' }
 							onChange={ ( value ) =>

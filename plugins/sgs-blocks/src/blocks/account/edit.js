@@ -12,8 +12,7 @@ import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
 import ServerSideRender from '../../components/ServerSideRender';
-import { ResponsiveControl, SgsBorderControl, SgsColourPanel, SpacingControl, SsrPreviewGuard, fillRow, textRow, TypographyControls } from '../../components';
-import { UnitControl } from '../../components/primitives';
+import { ResponsiveControl, SgsBorderControl, SgsLengthControl, SgsColourPanel, SpacingControl, SsrPreviewGuard, fillRow, textRow, TypographyControls } from '../../components';
 import { patchTier } from '../../utils';
 import MenuPanel from './MenuPanel';
 import DashboardPanel from './DashboardPanel';
@@ -147,8 +146,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveControl label={ __( 'Menu width', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => (
-							<UnitControl
-								__next40pxDefaultSize
+							<SgsLengthControl
 								label={ __( 'Menu width', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ navWidth?.[ breakpoint ] ?? '' }
@@ -173,8 +171,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveControl>
 					<ResponsiveControl label={ __( 'Content max width', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => (
-							<UnitControl
-								__next40pxDefaultSize
+							<SgsLengthControl
 								label={ __( 'Content max width', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ contentMaxWidth?.[ breakpoint ] ?? '' }
