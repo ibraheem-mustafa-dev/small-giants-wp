@@ -3,17 +3,17 @@
 // each; every original key or row ID stays listed inside the collapsed row, so no row is lost. Also the palette usage
 // read from rest-mode reading records, and the slim census rows the record keeps.
 import { colourHex } from './tokens.mjs';
+import { parseInstanceKey, copylessKey } from './fact-key.mjs';
 
 // `<chain>/<n>#<copy>` (parity/lib/collect.mjs::tplKeyOf) to its template element: the chain with every copy index
 // removed, the component (the chain's last host) and the draft ID `<component>:<n>`. Null for another shape.
 export function templateOf( key ) {
-	const m = /^(.+)\/(\d+)#\d+$/.exec( String( key ?? '' ) );
-	if ( ! m ) {
+	const p = parseInstanceKey( String( key ?? '' ) );
+	if ( ! p ) {
 		return null;
 	}
-	const chain = m[ 1 ].split( '>' ).map( ( p ) => p.replace( /#\d+$/, '' ) ).join( '>' );
-	const component = m[ 1 ].split( '>' ).pop().replace( /[@#].*$/, '' );
-	return { key: `${ chain }/${ m[ 2 ] }`, component, draftId: `${ component }:${ m[ 2 ] }` };
+	const component = p.chain[ p.chain.length - 1 ].replace( /[@#].*$/, '' );
+	return { key: copylessKey( p ), component, draftId: `${ component }:${ p.tpl }` };
 }
 
 const countBy = ( list ) => list.reduce( ( o, v ) => ( ( o[ v ] = ( o[ v ] || 0 ) + 1 ), o ), {} );

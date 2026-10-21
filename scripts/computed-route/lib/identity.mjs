@@ -83,9 +83,102 @@ export function identityAgrees( { relation, idBox, wordBox }, tol = 2 ) {
 // The why of a disagreement, for qa/pairs/<surface>.json `mispaired` and the walker's row flag.
 export const mispairWhy = ( { tpl, relation, idBox, wordBox, idTag, wordTag } ) => `identity ${ tpl } is <${ idTag || '?' }> ${ idBox ? `${ Math.round( idBox.w ) }x${ Math.round( idBox.h ) }` : 'unresolved' }; the words chose <${ wordTag || '?' }> ${ wordBox ? `${ Math.round( wordBox.w ) }x${ Math.round( wordBox.h ) }` : 'unresolved' } (${ relation })`;
 
-// Whether the identity element still is the element the skeleton writer stamped: its tag equals the fingerprint's (no
-// fingerprint, nothing to compare). A tpl number that now resolves to another tag points at a changed draft.
-export const fingerprintAgrees = ( fingerprint, idTag ) => ! fingerprint?.tag || fingerprint.tag === idTag;
+// A short stable hash of a string (djb2 xor), only ever a hash: a value never leaves the record it came from.
+export function hashText( text ) {
+	let h = 5381;
+	for ( const ch of String( text ?? '' ) ) {
+		h = ( ( h * 33 ) ^ ch.charCodeAt( 0 ) ) >>> 0;
+	}
+	return h.toString( 16 );
+}
+
+// The line (1-based) of the element stamped `data-dc-tpl="<n>"` in an annotated template's text, or null when it is not
+// found. Self-contained: lib/skeleton-inventory.mjs::collect serialises it into the page.
+export function tplLineOf( text, n ) {
+	const at = new RegExp( `data-dc-tpl=["']?${ n }(?![0-9])` ).exec( String( text ?? '' ) );
+	return at ? String( text ).slice( 0, at.index ).split( '\n' ).length : null;
+}
+
+// The fingerprint of one inventory record (lib/skeleton-inventory.mjs): its tag, class, a hash of the style attribute,
+// the tags of its stamped ancestors from the root down, a hash of its own words and, where the record has one, its line
+// in the annotated template. byKey: the records by instance key (parentKey walks the ancestors).
+export function fingerprintOf( e, byKey = {} ) {
+	const parentTags = [];
+	for ( let p = byKey[ e.parentKey ], guard = 0; p && guard < 200; p = byKey[ p.parentKey ], guard++ ) {
+		parentTags.unshift( p.tag );
+	}
+	return { tag: e.tag, cls: e.attrs?.class || '', styleHash: hashText( e.attrs?.style ), parentTags, textHash: hashText( e.words ), ...( null == e.srcLine ? {} : { line: e.srcLine } ) };
+}
+
+// The instance key to fingerprint of every element of a saved inventory.
+export function fingerprintsOf( inventory ) {
+	const byKey = Object.fromEntries( ( inventory.elements || [] ).map( ( e ) => [ e.key, e ] ) );
+	return Object.fromEntries( ( inventory.elements || [] ).map( ( e ) => [ e.key, fingerprintOf( e, byKey ) ] ) );
+}
+
+const FIELDS = [ 'tag', 'cls', 'styleHash', 'parentTags', 'textHash', 'line' ];
+const same = ( a, b ) => ( Array.isArray( a ) ? Array.isArray( b ) && a.length === b.length && a.every( ( x, i ) => x === b[ i ] ) : a === b );
+
+// The fields on which two fingerprints disagree: every field both sides carry is compared (a field one side lacks is
+// skipped, so a record written before the field existed still compares by what it has). `ignore` names fields left out.
+export const fingerprintDiff = ( a, b, ignore = [] ) => FIELDS.filter( ( f ) => ! ignore.includes( f ) && null != a?.[ f ] && null != b?.[ f ] && ! same( a[ f ], b[ f ] ) );
+
+// Whether the identity element still is the element the skeleton writer stamped. `other` is a tag name (the live page's
+// element: only the tag is known there) or a fingerprint (every field both carry must agree). No fingerprint, or no tag
+// on it, compares nothing. A tpl number that now resolves to another element points at a changed draft.
+export function fingerprintAgrees( fingerprint, other, { ignore = [] } = {} ) {
+	if ( ! fingerprint || 'object' !== typeof fingerprint ) {
+		return true;
+	}
+	if ( other && 'object' === typeof other ) {
+		return 0 === fingerprintDiff( fingerprint, other, ignore ).length;
+	}
+	return ! fingerprint.tag || fingerprint.tag === other;
+}
+
+// Maps each previous record's key to the key of the next export's record it still is. Records are { key, fingerprint }.
+// Pass 1 pairs records whose identity fields (tag, class, style, ancestors, own words) are all equal, in document order
+// within each group of equal signatures when the groups are the same size. Pass 2 pairs what is left in sequence within
+// the same tag and ancestor chain, when the fingerprints agree on every carried field except the source line (a
+// re-export moves lines). A previous record that pairs with nothing, or whose paired record disagrees, is refused with
+// why. Returns { map: { [previousKey]: nextKey }, refused: [ { key, why } ] }.
+export function realign( prevRecords, nextRecords ) {
+	const sig = ( r ) => JSON.stringify( [ r.fingerprint?.tag, r.fingerprint?.cls, r.fingerprint?.styleHash, r.fingerprint?.parentTags, r.fingerprint?.textHash ] );
+	const chain = ( r ) => JSON.stringify( [ r.fingerprint?.tag, r.fingerprint?.parentTags ] );
+	const group = ( list, by ) => list.reduce( ( m, r ) => m.set( by( r ), [ ...( m.get( by( r ) ) || [] ), r ] ), new Map() );
+	const map = {};
+	const taken = new Set();
+	const note = ( p, n ) => {
+		map[ p.key ] = n.key;
+		taken.add( n.key );
+	};
+	const nexts = group( nextRecords, sig );
+	for ( const [ k, ps ] of group( prevRecords, sig ) ) {
+		const ns = nexts.get( k ) || [];
+		if ( ns.length === ps.length ) {
+			ps.forEach( ( p, i ) => note( p, ns[ i ] ) );
+		}
+	}
+	const left = nextRecords.filter( ( n ) => ! taken.has( n.key ) );
+	const refused = [];
+	for ( const ps of group( prevRecords.filter( ( p ) => ! ( p.key in map ) ), chain ).values() ) {
+		// A previous record with no ancestor chain (written before the field existed) pairs by tag alone.
+		const room = ps[ 0 ].fingerprint?.parentTags ? left.filter( ( n ) => chain( n ) === chain( ps[ 0 ] ) ) : left.filter( ( n ) => n.fingerprint?.tag === ps[ 0 ].fingerprint?.tag );
+		const open = room.filter( ( n ) => ! taken.has( n.key ) );
+		ps.forEach( ( p, i ) => {
+			const n = open[ i ];
+			const bad = n ? fingerprintDiff( p.fingerprint, n.fingerprint, [ 'line' ] ) : [];
+			if ( ! n ) {
+				refused.push( { key: p.key, why: 'no element of the same tag and ancestors in the new export' } );
+			} else if ( bad.length ) {
+				refused.push( { key: p.key, why: `the element at ${ n.key } differs in ${ bad.join( ', ' ) }` } );
+			} else {
+				note( p, n );
+			}
+		} );
+	}
+	return { map, refused };
+}
 
 // The live block refs with no origin entry: blocks identity pairing cannot check (their skeleton node did not align).
 export const unalignedRefs = ( refs, origin ) => [ ...refs ].filter( ( r ) => ! Object.hasOwn( origin, r ) ).sort();

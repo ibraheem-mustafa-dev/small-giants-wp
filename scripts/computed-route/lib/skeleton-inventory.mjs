@@ -5,6 +5,7 @@
 import fs from 'fs';
 import path from 'path';
 import { tplKeyOf } from '../../parity/lib/collect.mjs';
+import { tplLineOf } from './identity.mjs';
 import { loadChromium } from './fill-read.mjs';
 
 export const INVENTORY_WIDTHS = [ 1440, 375, 768 ];
@@ -12,10 +13,11 @@ export const INVENTORY_WIDTHS = [ 1440, 375, 768 ];
 // (the fingerprint Fill's origin map keeps).
 const ATTRS = [ 'href', 'aria-label', 'alt', 'role', 'type', 'title', 'target', 'aria-hidden', 'viewBox', 'class', 'style' ];
 
-// In-page. in: [ rootSelector, tplKeyOfSource, attrs ]. Returns { records } or { error }.
-function collect( [ rootSelector, keySrc, attrNames ] ) {
+// In-page. in: [ rootSelector, tplKeyOfSource, attrs, tplLineOfSource ]. Returns { records } or { error }.
+function collect( [ rootSelector, keySrc, attrNames, lineSrc ] ) {
 	// eslint-disable-next-line no-new-func
 	const keyOf = new Function( `return (${ keySrc });` )();
+	const lineOf = new Function( `return (${ lineSrc });` )();
 	const root = document.querySelector( rootSelector );
 	if ( ! root ) {
 		return { error: `no element matches ${ rootSelector }` };
@@ -101,7 +103,7 @@ function collect( [ rootSelector, keySrc, attrNames ] ) {
 		const box = e.getClientRects().length ? { x: +( r.left + scrollX ).toFixed( 1 ), y: +( r.top + scrollY ).toFixed( 1 ), w: +r.width.toFixed( 1 ), h: +r.height.toFixed( 1 ) } : null;
 		out.push( {
 			i: out.length, key: keyOf( e ), parentKey: p ? keyOf( p ) : null, depth, tag: e.tagName.toLowerCase(), template: tname, tpl: Number( n ), attrs, words: ws( own ), allText: ws( e.textContent ).slice( 0, 120 ),
-			membership, srcTag, srcOwnText: srcOwn, snippet, box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, flexDirection: getComputedStyle( e ).flexDirection,
+			srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, flexDirection: getComputedStyle( e ).flexDirection,
 		} );
 	} );
 	return { records: out, unstamped, rootKey: out[ 0 ]?.key ?? null, rootName: window.__dcRootName() };
@@ -158,7 +160,7 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt } 
 		await page.setViewportSize( { width: w, height } );
 		await settleAt( page, w );
 		await page.evaluate( () => document.querySelectorAll( '[data-inv-i]' ).forEach( ( e ) => e.removeAttribute( 'data-inv-i' ) ) );
-		const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS ] );
+		const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString() ] );
 		if ( res.error ) {
 			throw new Error( `${ res.error } at ${ w }px` );
 		}
@@ -223,7 +225,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			const page = await ctx.newPage();
 			await page.goto( url, { waitUntil: 'networkidle', timeout: 90000 } );
 			await settle( page, root );
-			const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS ] );
+			const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString() ] );
 			if ( res.error ) {
 				throw new Error( `${ res.error } at ${ w }px` );
 			}

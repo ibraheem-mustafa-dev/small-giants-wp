@@ -10,6 +10,7 @@
 // it needs no knowledge of the page around it.
 import { handoverProblems } from './fill-handover.mjs';
 import { brandRegistry } from './brand-registry.mjs';
+import { parseInstanceKey, instanceKey } from './fact-key.mjs';
 
 const isStr = ( v ) => 'string' === typeof v && '' !== v.trim();
 
@@ -35,20 +36,10 @@ const KINDS = [ 'text', 'textRun', 'group', 'js', 'tpl' ];
 // stamp>#<host copy>` for each nested import, joined by `>`), the data-dc-tpl number (the runtime restarts it at 0 in
 // every template, so a number alone is ambiguous), and the element's position among same-numbered elements of its
 // nearest host. { chain, tpl, copy }, or null when the text is not a key.
-export function parseTplKey( key ) {
-	const m = 'string' === typeof key ? /^(.+)\/(\d+)#(\d+)$/.exec( key ) : null;
-	if ( ! m ) {
-		return null;
-	}
-	const chain = m[ 1 ].split( '>' );
-	if ( chain.some( ( part, i ) => '' === part || ( i > 0 && ! /^.+#\d+$/.test( part ) ) ) ) {
-		return null;
-	}
-	return { chain, tpl: Number( m[ 2 ] ), copy: Number( m[ 3 ] ) };
-}
+export const parseTplKey = parseInstanceKey;
 
-// The key text of { chain, tpl, copy } (parseTplKey's inverse).
-export const tplKey = ( { chain, tpl, copy } ) => `${ chain.join( '>' ) }/${ tpl }#${ copy }`;
+// The key text of { chain, tpl, copy } (parseTplKey's inverse); lib/fact-key.mjs builds and reads both key levels.
+export const tplKey = instanceKey;
 
 // A reason a value is not a walker finder, or null when it is one.
 export function finderProblem( f ) {

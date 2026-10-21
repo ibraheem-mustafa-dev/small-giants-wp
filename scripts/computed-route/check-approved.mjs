@@ -12,6 +12,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { rerunSkeletons, loopingKeys } from './lib/skeleton-rerun.mjs';
 import { openDb } from './lib/db.mjs';
+import { assertCurrent } from './lib/freshness.mjs';
+import { resolveApproval } from './lib/approved-identity.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
 const [ client, ...flags ] = process.argv.slice( 2 );
@@ -21,6 +23,7 @@ if ( ! client || ! /^[a-z0-9-]+$/.test( client ) ) {
 }
 const dir = path.join( REPO, 'sites', client, 'build', 'intake' );
 const intake = JSON.parse( fs.readFileSync( path.join( dir, 'intake.json' ), 'utf8' ) );
+assertCurrent( intake, path.join( REPO, 'sites', client, 'handoff' ), { label: `sites/${ client }/build/intake/intake.json` } );
 const approved = JSON.parse( fs.readFileSync( path.join( dir, 'approved-decisions.json' ), 'utf8' ) );
 const db = openDb();
 const run = rerunSkeletons( { client, db, repo: REPO, skeletons: intake.skeletons, motion: loopingKeys( intake.inventory?.animations ), useBuilt: ! flags.includes( '--no-built' ) } );
@@ -39,14 +42,23 @@ const wanted = ( text ) => {
 	return block ? { kind: 'block', block, notLinked: /\bnot linked\b/i.test( t ), source } : { kind: 'setting' };
 };
 const rows = {};
+const fingerprints = {};
 for ( const [ slug, s ] of Object.entries( run.surfaces ) ) {
 	s.rows.forEach( ( r ) => ( rows[ `skeleton:${ slug }:${ r.key }` ] = { ...r, surface: slug, built: s.built } ) );
+	fingerprints[ slug ] = s.fingerprints;
 }
 const linkOf = ( a = {} ) => a.sgsBlockLink || a.sgsBlockLinkSource || a.url || a.linkSource || null;
-const out = { match: 0, mismatch: [], builtSettled: 0, settings: 0, noRow: [] };
+const out = { match: 0, mismatch: [], builtSettled: 0, settings: 0, noRow: [], refused: [], realigned: [], unverified: 0 };
 for ( const [ batch, list ] of Object.entries( approved.category3 || {} ) ) {
 	for ( const a of list ) {
-		const r = [ a.rowId, a.rowId.replace( /#\d+$/, '#0' ), `${ a.rowId }#0` ].map( ( id ) => rows[ id ] ).find( Boolean );
+		const found = resolveApproval( a, { rows, fingerprints } );
+		if ( found.refused ) {
+			out.refused.push( `${ batch } ${ a.rowId }: ${ found.refused }` );
+			continue;
+		}
+		'realigned' === found.how && out.realigned.push( `${ batch } ${ a.rowId } -> ${ found.to }` );
+		'unchecked' === found.how && out.unverified++;
+		const r = found.row;
 		const want = wanted( a.approvedBlock );
 		if ( ! r ) {
 			out.noRow.push( `${ batch } ${ a.rowId }` );
@@ -81,4 +93,7 @@ for ( const [ batch, list ] of Object.entries( approved.category3 || {} ) ) {
 }
 console.log( `${ client }: ${ out.match } match, ${ out.mismatch.length } mismatch, ${ out.builtSettled } settled by built posts, ${ out.settings } approved as settings, ${ out.noRow.length } with no row; inventories missing: ${ run.missing.join( ', ' ) || 'none' }` );
 out.mismatch.forEach( ( l ) => console.log( `  MISMATCH ${ l }` ) );
-process.exitCode = out.mismatch.length ? 1 : 0;
+out.refused.forEach( ( l ) => console.log( `  REFUSED ${ l }` ) );
+out.realigned.forEach( ( l ) => console.log( `  REALIGNED ${ l }` ) );
+out.unverified && console.error( `${ out.unverified } approvals carry no fingerprint: a renumbered export cannot be detected for them` );
+process.exitCode = out.mismatch.length || out.refused.length ? 1 : 0;
