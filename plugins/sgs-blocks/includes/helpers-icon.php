@@ -20,10 +20,11 @@ if ( ! function_exists( 'sgs_icon_length_value' ) ) {
 	/**
 	 * A size an icon control stored, as one safe CSS length, or ''.
 	 *
-	 * Accepts only: a number (px), `<number>px|rem|em|%`, a theme spacing preset as `var(--wp--preset--spacing--x)`,
-	 * or the bare preset slug the length control stores ('50'). Anything else, including `calc()`, keywords,
-	 * negatives and any declaration breakout, gives ''. Lengths are clamped to `$max_px` (rem and em at 16px each,
-	 * percentages at 100%).
+	 * Accepts only: a number (px), `<number>px|rem|em|%|vw|vh`, a theme spacing or font-size preset as
+	 * `var(--wp--preset--spacing--x)` / `var(--wp--preset--font-size--x)` (the icon size control stores the
+	 * font-size form), or the bare spacing preset slug the length control stores ('50'). Anything else, including
+	 * `calc()`, keywords, negatives and any declaration breakout, gives ''. Lengths are clamped to `$max_px` (rem and
+	 * em at 16px each, percentages, vw and vh at 100).
 	 *
 	 * @param mixed $raw    Stored value.
 	 * @param int   $max_px Largest length allowed, in px.
@@ -40,13 +41,13 @@ if ( ! function_exists( 'sgs_icon_length_value' ) ) {
 		if ( '' === $value ) {
 			return '';
 		}
-		if ( preg_match( '/^var\(--wp--preset--spacing--([a-z0-9-]+)\)$/', $value ) ) {
+		if ( preg_match( '/^var\(--wp--preset--(?:spacing|font-size)--([a-z0-9-]+)\)$/', $value ) ) {
 			return $value;
 		}
 		if ( preg_match( '/^\d+$/', $value ) && in_array( $value, sgs_css_length_value_preset_slugs(), true ) ) {
 			return 'var(--wp--preset--spacing--' . $value . ')';
 		}
-		if ( ! preg_match( '/^(\d+(?:\.\d+)?)(px|rem|em|%)?$/', $value, $m ) ) {
+		if ( ! preg_match( '/^(\d+(?:\.\d+)?)(px|rem|em|%|vw|vh)?$/', $value, $m ) ) {
 			return '';
 		}
 		$unit = $m[2] ?? '';
@@ -56,6 +57,8 @@ if ( ! function_exists( 'sgs_icon_length_value' ) ) {
 			'rem' => $max_px / 16,
 			'em'  => $max_px / 16,
 			'%'   => 100.0,
+			'vw'  => 100.0,
+			'vh'  => 100.0,
 		)[ $unit ];
 		$num  = min( (float) $m[1], $max );
 		return rtrim( rtrim( number_format( $num, 3, '.', '' ), '0' ), '.' ) . $unit;

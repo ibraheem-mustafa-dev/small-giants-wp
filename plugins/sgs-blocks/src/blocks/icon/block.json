@@ -213,7 +213,7 @@
 		"iconSize": {
 			"type": "object",
 			"default": {},
-			"description": "Glyph size per device {desktop,tablet,mobile}: a CSS length (px, rem, em, %) or a theme spacing preset. Unset = the wrapper's group size, else 32px."
+			"description": "Glyph size per device {desktop,tablet,mobile}: a CSS length (px, rem, em, vw, vh) or a theme font-size preset as var(--wp--preset--font-size--x), set through the font-size picker. Unset = the wrapper's group size, else 32px."
 		},
 		"iconFill": {
 			"type": "boolean",

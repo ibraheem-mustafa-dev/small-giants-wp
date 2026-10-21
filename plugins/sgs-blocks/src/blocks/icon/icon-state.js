@@ -218,7 +218,7 @@ export function labelPositionFor( own, group ) {
  * @param {*}        raw         Stored value.
  * @param {number}   maxPx       Largest length, in px.
  * @param {string[]} presetSlugs Theme spacing preset slugs.
- * @return {string} CSS length.
+ * @return {string} CSS length, or a spacing or font-size preset var.
  */
 export function iconLengthValue( raw, maxPx = 512, presetSlugs = [] ) {
 	if ( 'number' === typeof raw ) {
@@ -231,18 +231,18 @@ export function iconLengthValue( raw, maxPx = 512, presetSlugs = [] ) {
 	if ( ! value ) {
 		return '';
 	}
-	if ( /^var\(--wp--preset--spacing--[a-z0-9-]+\)$/.test( value ) ) {
+	if ( /^var\(--wp--preset--(?:spacing|font-size)--[a-z0-9-]+\)$/.test( value ) ) {
 		return value;
 	}
 	if ( /^\d+$/.test( value ) && presetSlugs.includes( value ) ) {
 		return `var(--wp--preset--spacing--${ value })`;
 	}
-	const m = /^(\d+(?:\.\d+)?)(px|rem|em|%)?$/.exec( value );
+	const m = /^(\d+(?:\.\d+)?)(px|rem|em|%|vw|vh)?$/.exec( value );
 	if ( ! m ) {
 		return '';
 	}
 	const unit = m[ 2 ] || 'px';
-	const max = { px: maxPx, rem: maxPx / 16, em: maxPx / 16, '%': 100 }[ unit ];
+	const max = { px: maxPx, rem: maxPx / 16, em: maxPx / 16, '%': 100, vw: 100, vh: 100 }[ unit ];
 	const num = Math.min( parseFloat( m[ 1 ] ), max );
 	return `${ parseFloat( num.toFixed( 3 ) ) }${ unit }`;
 }

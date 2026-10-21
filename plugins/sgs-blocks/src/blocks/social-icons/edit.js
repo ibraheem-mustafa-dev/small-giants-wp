@@ -39,6 +39,7 @@ import {
 } from '../../utils';
 import { svgStrokeGradientPreview, parseSvgGradient, SvgGradientDefs } from '../../utils/svg-gradient-preview';
 import { iconLengthValue } from '../icon/icon-state';
+import IconSizeControl, { ICON_SIZE_HELP } from '../icon/icon-size-control';
 import { ShapeToggle } from '../icon/shape-options';
 import { shapeUsesWidthOnly } from '../../utils/icon-shapes';
 import { templateFromSiteInfo, checklistRows, toggleLink } from './links';
@@ -304,16 +305,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<ResponsiveControl label={ __( 'Icon size', 'sgs-blocks' ) }>
+					{ /* No ResponsiveControl label: FontSizePicker brings its own header. */ }
+					<ResponsiveControl>
 						{ ( t ) => (
-							<SgsLengthControl
-								label={ __( 'Icon size', 'sgs-blocks' ) }
-								hideLabelFromVision
-								value={ childIconSize?.[ t ] ?? '' }
-								units={ LENGTH_UNITS }
-								presets
-								help={ __( 'Every icon without its own size. Blank: 32px.', 'sgs-blocks' ) }
-								onChange={ ( value ) => patchTier( attributes, setAttributes, 'childIconSize', t, value || undefined ) }
+							<IconSizeControl
+								value={ childIconSize?.[ t ] }
+								help={ ICON_SIZE_HELP.group }
+								onChange={ ( value ) => patchTier( attributes, setAttributes, 'childIconSize', t, value ) }
 							/>
 						) }
 					</ResponsiveControl>

@@ -30,7 +30,7 @@ const NAME_CASES = [
 	{ url: '/contact' },
 	{ glyph: 'phone', url: '' },
 ];
-const LENGTHS = [ '40px', 24, 24.5, '9999px', '99rem', '150%', '1.5em', 'x;}a{', '-1px', 'calc(1px)', 'var(--wp--preset--spacing--30)', 'var(--x)', '50', '' ];
+const LENGTHS = [ '40px', 24, 24.5, '9999px', '99rem', '150%', '1.5em', 'x;}a{', '-1px', 'calc(1px)', 'var(--wp--preset--spacing--30)', 'var(--wp--preset--font-size--large)', '5vw', '999vh', 'var(--x)', '50', '' ];
 
 let php;
 
