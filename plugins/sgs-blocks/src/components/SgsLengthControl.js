@@ -68,6 +68,15 @@ const SPACING_UNITS = [
 	{ value: 'vh', label: 'vh', default: 0 },
 ];
 
+/**
+ * In the 280px inspector the row is select + value box + slider. The select keeps room to read a preset name, the value
+ * box is narrower than SgsBoxControl's 104px (no side icon shares this row), and the slider keeps a floor so it never
+ * collapses; the three together fit the inspector's content width.
+ */
+const SELECT_STYLE = { flex: '1 1 76px', minWidth: 76 };
+const SLIDER_STYLE = { flex: '1 1 56px', minWidth: 56 };
+const SELECT_ROW_BOX_STYLE = { width: 88, flexShrink: 0 };
+
 /** Core's font-size unit set, a plain string array (FontSizePicker builds the object form itself). */
 const FONT_SIZE_UNITS = [ 'px', 'em', 'rem', 'vw', 'vh' ];
 
@@ -290,7 +299,7 @@ export default function SgsLengthControl( {
 			) }
 			<Flex align="center" gap={ 2 } className="sgs-length-control__row">
 				{ hasSelect && (
-					<FlexBlock>
+					<FlexBlock style={ SELECT_STYLE }>
 						<SelectControl
 							label={ name }
 							hideLabelFromVision
@@ -318,7 +327,7 @@ export default function SgsLengthControl( {
 					className="sgs-length-control__value"
 					style={
 						hasSelect
-							? VALUE_BOX_STYLE
+							? SELECT_ROW_BOX_STYLE
 							: { ...VALUE_BOX_STYLE, width: 112 }
 					}
 				>
@@ -334,7 +343,7 @@ export default function SgsLengthControl( {
 						__next40pxDefaultSize
 					/>
 				</FlexItem>
-				<FlexBlock>
+				<FlexBlock style={ SLIDER_STYLE }>
 					<RangeControl
 						label={ name }
 						hideLabelFromVision

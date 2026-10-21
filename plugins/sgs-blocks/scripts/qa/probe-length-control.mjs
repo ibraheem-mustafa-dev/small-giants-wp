@@ -87,7 +87,7 @@ const CASES = [
 		block: 'sgs/container',
 		label: 'Gap',
 		canvas: [ ( id ) => `[data-block="${ id }"]`, 'column-gap*' ],
-		live: [ '.sgs-container--flex', 'column-gap*' ],
+		live: [ '.wp-block-sgs-container.sgs-container--flex', 'column-gap*' ],
 		perDevice: true,
 	},
 	{
@@ -96,7 +96,7 @@ const CASES = [
 		block: 'sgs/container',
 		label: 'Outer max-width',
 		canvas: [ ( id ) => `[data-block="${ id }"]`, 'max-width' ],
-		live: [ '.sgs-container--flex', 'max-width' ],
+		live: [ '.wp-block-sgs-container.sgs-container--flex', 'max-width' ],
 		perDevice: true,
 	},
 ];
@@ -149,29 +149,22 @@ const shot = async ( name, locator ) => {
 	}
 };
 
-/** Expand every panel on a tab except the noisy ones, so every control of the block is in the DOM. */
-async function expandAll() {
-	for ( const tab of [ 'Settings', 'Styles' ] ) {
-		await sidebar.getByRole( 'tab', { name: tab } ).click();
-		await page.waitForTimeout( 300 );
-		for ( let i = 0; i < 14; i++ ) {
-			const closed = sidebar.locator(
-				'button.components-panel__body-toggle[aria-expanded="false"]'
-			);
-			if ( ! ( await closed.count() ) ) {
-				break;
-			}
-			if (
-				/Visibility|Advanced|Entrance|Effects|Hover/.test(
-					await closed.first().innerText()
-				)
-			) {
-				break;
-			}
-			await closed.first().click();
-			await page.waitForTimeout( 200 );
-		}
+/** Expand the closed panels of the tab on screen (switching tabs remounts them closed), except the noisy ones. */
+async function expandPanels() {
+	for ( let i = 0; i < 14; i++ ) {
+		const closed = sidebar.locator( 'button.components-panel__body-toggle[aria-expanded="false"]' );
+		if ( ! ( await closed.count() ) ) break;
+		if ( /Visibility|Advanced|Entrance|Effects|Hover/.test( await closed.first().innerText() ) ) break;
+		await closed.first().click();
+		await page.waitForTimeout( 200 );
 	}
+}
+
+/** Open a tab and expand its panels. */
+async function openTab( tab ) {
+	await sidebar.getByRole( 'tab', { name: tab } ).click();
+	await page.waitForTimeout( 300 );
+	await expandPanels();
 }
 
 /**
@@ -181,8 +174,7 @@ async function expandAll() {
  */
 async function spacingGroup( label ) {
 	for ( const tab of [ 'Settings', 'Styles' ] ) {
-		await sidebar.getByRole( 'tab', { name: tab } ).click();
-		await page.waitForTimeout( 300 );
+		await openTab( tab );
 		const tagged = await page.evaluate( ( text ) => {
 			document
 				.querySelectorAll( '[data-qa-target]' )
@@ -257,7 +249,14 @@ async function spacingGroup( label ) {
 					.slice( 0, 30 )
 		)
 	);
-	note( `no-control-${ label }`, { seen } );
+	await sidebar.screenshot( { path: path.join( OUT, `notfound-${ label.replace( /\W+/g, '-' ) }.png` ) } );
+	const panels = {};
+	for ( const tab of [ 'Settings', 'Styles' ] ) {
+		await sidebar.getByRole( 'tab', { name: tab } ).click();
+		await page.waitForTimeout( 300 );
+		panels[ tab ] = await sidebar.locator( 'button.components-panel__body-toggle' ).evaluateAll( ( t ) => t.map( ( x ) => x.innerText.trim() + '|' + x.getAttribute( 'aria-expanded' ) ) );
+	}
+	note( `no-control-${ label }`, { seen, panels } );
 	return null;
 }
 
@@ -267,8 +266,7 @@ async function spacingGroup( label ) {
  */
 async function fontPicker( nth = 0 ) {
 	for ( const tab of [ 'Settings', 'Styles' ] ) {
-		await sidebar.getByRole( 'tab', { name: tab } ).click();
-		await page.waitForTimeout( 250 );
+		await openTab( tab );
 		const pickers = sidebar.locator( '.components-font-size-picker' );
 		if ( ( await pickers.count() ) > nth ) {
 			const picker = pickers.nth( nth );
@@ -368,7 +366,10 @@ async function driveSpacing( c, id, group, rows, read, prev ) {
 			unit: unitSelect ? await unitSelect.inputValue() : null,
 		} );
 	}
-	for ( const [ unit, number ] of UNIT_STEPS ) {
+	// A control may offer fewer units than the full set (a block's own `units` list): drive only what it offers.
+	const offered = unitSelect ? await unitSelect.locator( 'option' ).evaluateAll( ( o ) => o.map( ( x ) => x.value ) ) : [];
+	rows.push( { step: 'units offered', offered } );
+	for ( const [ unit, number ] of UNIT_STEPS.filter( ( [ u ] ) => ! unitSelect || offered.includes( u ) ) ) {
 		await step(
 			c,
 			rows,
@@ -507,7 +508,8 @@ const setDevice = async ( type ) => {
 	await page.waitForTimeout( 900 );
 };
 
-for ( const c of CASES ) {
+const ONLY = opt( '--only', '' );
+for ( const c of CASES.filter( ( x ) => ! ONLY || ONLY.split( ',' ).includes( x.id ) ) ) {
 	const rows = [];
 	const entry = { id: c.id, scale: c.scale, block: c.block, rows, tiers: {} };
 	results.push( entry );
@@ -515,7 +517,6 @@ for ( const c of CASES ) {
 	const ok = await attempt( `case:${ c.id }`, async () => {
 		await setDevice( 'Desktop' );
 		const id = await selectBlock( page, c.block );
-		await expandAll();
 		const nth =
 			'social-icons-gap' === c.id || 'social-icons-size' === c.id ? 0 : 0;
 		const group =
@@ -541,8 +542,7 @@ for ( const c of CASES ) {
 			if ( 'Desktop' !== tier ) {
 				await setDevice( tier );
 				await selectBlock( page, c.block );
-				await expandAll();
-			}
+					}
 			const g =
 				'font-size' === c.scale
 					? await fontPicker( nth )
