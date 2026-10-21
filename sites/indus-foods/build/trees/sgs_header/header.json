@@ -1,0 +1,110 @@
+[
+  {
+    "name": "sgs/site-header",
+    "attributes": {
+      "className": "cr-ref-header-0",
+      "textColour": "custom-ink"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/site-header-row",
+        "attributes": {
+          "className": "cr-ref-header-1",
+          "backgroundColour": "surface",
+          "borderWidth": {
+            "top": "0px",
+            "right": "0px",
+            "left": "0px",
+            "bottom": "3px"
+          },
+          "borderColour": "accent",
+          "gap": {
+            "tablet": "20px",
+            "desktop": "80.97px"
+          },
+          "justifyContent": "space-between",
+          "borderStyle": "solid"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/responsive-logo",
+            "attributes": {
+              "className": "cr-ref-header-2"
+            },
+            "innerBlocks": []
+          },
+          {
+            "name": "sgs/nav-bar-menu",
+            "attributes": {
+              "ref": 5,
+              "className": "cr-ref-header-3",
+              "itemFontWeight": "600",
+              "itemLineHeight": 1.412,
+              "navColour": "primary",
+              "gap": {
+                "desktop": "2px"
+              },
+              "burgerSize": "100%"
+            },
+            "innerBlocks": []
+          },
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "label": "Register For A Trade Account",
+              "url": "#/apply",
+              "className": "cr-ref-header-4",
+              "fontSize": {
+                "desktop": 17
+              },
+              "fontWeight": "600",
+              "lineHeight": {
+                "desktop": 1.55
+              },
+              "colourText": "surface",
+              "borderWidth": {
+                "right": "2px",
+                "bottom": "2px",
+                "left": "2px",
+                "top": "2px"
+              },
+              "borderColour": "primary",
+              "boxShadow": "rgba(10, 126, 168, 0.65) 0px 8px 18px -8px",
+              "padding": {
+                "desktop": {
+                  "right": "22px",
+                  "left": "22px"
+                }
+              },
+              "iconGap": {
+                "desktop": "8px"
+              },
+              "textWrap": "nowrap",
+              "boxShadowHover": "rgba(0, 0, 0, 0.25) 0px 6px 20px 0px",
+              "sgsMotion": {
+                "v": 1,
+                "elements": {
+                  "root": {
+                    "hover": {
+                      "state": {
+                        "values": {
+                          "scale": 1.05,
+                          "translateY": -2.1,
+                          "duration": "token:duration.fast",
+                          "easing": "cubic-bezier(.2,.8,.2,1)"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "colourTextHover": "surface",
+              "borderColourHover": "primary"
+            },
+            "innerBlocks": []
+          }
+        ]
+      }
+    ]
+  }
+]
