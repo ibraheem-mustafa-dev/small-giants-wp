@@ -223,7 +223,7 @@ Where it stands (2026-10-22): Track T's readers are part built (template, logic,
 
 ### Next
 
-- [ ] T1: `lib/read-assets.mjs` (in progress); `lib/read-readme.mjs`; the unread `surfaces.json` fields; the logic's statics and values outside the resting state; served-inventory keys.
+- [ ] T1: `lib/read-assets.mjs` done (`459e70434`, schema version 3, both records regenerated: Indus 8 files, the logo `/43` and `/114` at the viewBox ratio 4.4124 against the declared 3741 / 848, 20 image-slot alt texts; Mama's 24 elements using an asset; the `about-hero-*.svg` paths built by string in the logic read as unused until the logic reader states them); `lib/read-readme.mjs`; the unread `surfaces.json` fields; the logic's statics and values outside the resting state; served-inventory keys.
 - [ ] T2 to T5 (Track T above).
 - [ ] F1 to F4 (Track F above).
 - [ ] Stage S, steps 1 to 7.
