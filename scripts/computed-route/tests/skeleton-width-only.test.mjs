@@ -1,0 +1,101 @@
+// Elements that render only below 1440 (an sc-if on a width) in the skeleton writer (Spec 48 §3.4, FR-48-50): a block is
+// classified on what renders at 1440; a width-only sibling is its own node; a width-only element inside a block that draws
+// its own content is absorbed with the width alternative named; the control that opens the drawer is the navigation block's.
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { openDb } from '../lib/db.mjs';
+import { loadFacts } from '../lib/skeleton-facts.mjs';
+import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
+
+const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
+const db = openDb();
+const facts = loadFacts( { db, client: 'eye-care-ward-end', repo: REPO, siteName: 'Example Co' } );
+const nodes = ( list ) => list.flatMap( ( n ) => [ n, ...nodes( n.innerBlocks || [] ) ] );
+const nodeAt = ( r, key ) => nodes( r.skeleton ).find( ( n ) => n.draftRef?.tpl === key );
+const rowAt = ( r, key ) => r.proposal.rows.find( ( x ) => x.key === key );
+
+const at = ( x, y, w = 100 ) => ( { x, y, w, h: 20 } );
+// el( id, parent, tag, words, { widths: the widths it renders at, box, attrs, display, snippet } ).
+const el = ( id, parent, tag, words, x = {} ) => {
+	const shown = x.widths || [ 375, 768, 1440 ];
+	const vis = Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, shown.includes( w ) ] ) );
+	const box = Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, vis[ w ] ? x.box : null ] ) );
+	return { key: `Root/${ id }#0`, parentKey: parent ? `Root/${ parent }#0` : null, depth: x.depth ?? 1, tag, template: 'Root', tpl: id, attrs: x.attrs || {}, words, allText: x.allText ?? words, membership: [], srcTag: tag, srcOwnText: words, snippet: x.snippet || `<${ tag } data-dc-tpl="${ id }">${ words }</${ tag }>`, box, visible: vis, display: x.display || 'block', flexDirection: 'row', screenshots: {} };
+};
+const inv = ( elements ) => ( { checks: {}, source: 'fixture', root: 'header', generated: 'fixture', elements } );
+const run = ( elements, o = {} ) => proposeSkeleton( { inventory: inv( elements ), facts, surface: 'header', surfaceKind: 'header', surfaceName: 'Header', db, ...o } );
+
+// A pill group: [ 13 (renders below 768 only) ] [ 14 a pill link holding 16 (768 and up) and 18 (below 768) ] [ 20 ].
+const GROUP = [
+	el( 1, null, 'header', '', { depth: 0, box: at( 0, 0, 800 ), display: 'flex' } ),
+	el( 11, 1, 'div', '', { depth: 1, box: at( 0, 0, 500 ), display: 'flex' } ),
+	el( 13, 11, 'a', 'Register today', { depth: 2, widths: [ 375 ], box: at( 0, 0 ), attrs: { href: '/apply' } } ),
+	el( 14, 11, 'a', '', { depth: 2, box: at( 110, 0 ), attrs: { href: '/contact' }, allText: 'Order now' } ),
+	el( 16, 14, 'span', 'Order now', { depth: 3, widths: [ 768, 1440 ], box: at( 110, 0 ) } ),
+	el( 18, 14, 'span', 'Call', { depth: 3, widths: [ 375 ], box: at( 110, 0 ) } ),
+	el( 20, 11, 'a', 'Email us', { depth: 2, box: at( 220, 0 ), attrs: { href: '/email' } } ),
+	el( 21, 11, 'a', 'Tablet only', { depth: 2, widths: [ 768 ], box: at( 330, 0 ), attrs: { href: '/tablet' } } ),
+];
+const without = ( list, ...ids ) => list.filter( ( e ) => ! ids.includes( e.tpl ) );
+
+test( 'MUST FAIL (a block is classified on what renders at 1440): width-only descendants never change an element\'s block or rule hits', () => {
+	const base = run( without( GROUP, 13, 18 ) );
+	const wide = run( GROUP );
+	for ( const id of [ 11, 14, 20 ] ) {
+		const key = `Root/${ id }#0`;
+		assert.equal( rowAt( wide, key ).block, rowAt( base, key ).block, `${ key } keeps its block` );
+		assert.equal( rowAt( wide, key ).rule, rowAt( base, key ).rule, `${ key } keeps its rule` );
+	}
+	assert.equal( rowAt( wide, 'Root/14#0' ).rule, 'pillButton' );
+	assert.deepEqual( nodeAt( wide, 'Root/14#0' ).attributes, nodeAt( base, 'Root/14#0' ).attributes, 'the pill keeps its own label' );
+	assert.equal( rowAt( wide, 'Root/16#0' ).action, 'absorbed', 'the 1440 label is absorbed into the pill' );
+} );
+
+test( 'MUST FAIL (a width-only sibling is its own node): the element beside the pills is a node in the same parent, after the one it follows', () => {
+	const r = run( GROUP );
+	const group = nodeAt( r, 'Root/11#0' );
+	assert.deepEqual( group.innerBlocks.map( ( n ) => n.draftRef.tpl ), [ 'Root/13#0', 'Root/14#0', 'Root/20#0', 'Root/21#0' ] );
+	assert.equal( group.innerBlocks[ 0 ].name, group.innerBlocks[ 1 ].name, 'the same block as the pill beside it' );
+	assert.equal( rowAt( r, 'Root/13#0' ).action, null );
+} );
+
+test( 'MUST FAIL (a width-only element inside a block that draws its own content is listed, never dropped): absorbed with the width named', () => {
+	const r = run( GROUP );
+	const row = rowAt( r, 'Root/18#0' );
+	assert.equal( row.action, 'absorbed' );
+	assert.equal( row.into, 'Root/14#0' );
+	assert.match( row.reason, /only at 375px.*no setting holds a per-width label/ );
+	assert.deepEqual( r.proposal.widthAlternatives.map( ( x ) => [ x.key, x.into, x.widths ] ), [ [ 'Root/18#0', 'Root/14#0', [ 375 ] ] ] );
+	assert.ok( nodeAt( r, 'Root/14#0' ).handover.some( ( h ) => /Call/.test( h.detail ) && 'behaviour' === h.owner ), 'the pill\'s node carries the handover' );
+	assert.deepEqual( run( without( GROUP, 18 ) ).proposal.widthAlternatives, [], 'no width-only element, no entry' );
+} );
+
+// The header: the navigation (a block that draws its own burger) and a compact-only wrapper holding the burger.
+const click = ( h ) => `<button data-dc-tpl="59" sc-camel-on-click="{{ ${ h } }}"></button>`;
+const HEADER = ( handler ) => [
+	el( 1, null, 'header', '', { depth: 0, box: at( 0, 0, 1000 ), display: 'flex' } ),
+	el( 45, 1, 'nav', '', { depth: 1, box: at( 0, 0, 400 ), display: 'flex', allText: 'Home About' } ),
+	el( 46, 45, 'a', 'Home', { depth: 2, box: at( 0, 0, 50 ), attrs: { href: '/' } } ),
+	el( 47, 45, 'a', 'About', { depth: 2, box: at( 60, 0, 50 ), attrs: { href: '/about' } } ),
+	el( 56, 1, 'div', '', { depth: 1, widths: [ 375, 768 ], box: at( 500, 0 ), display: 'flex' } ),
+	el( 59, 56, 'button', '', { depth: 2, widths: [ 375, 768 ], box: at( 500, 0 ), snippet: click( handler ) } ),
+];
+const DRAWER = { elements: {}, surfaces: { 'S-09': { id: 'S-09', kind: 'drawer', name: 'Mobile menu', parent: null } } };
+const withDrawer = { factRecord: DRAWER, openers: { 'S-09': 'Burger button (toggleMobile) on tablet and mobile' } };
+
+test( 'MUST FAIL (the drawer opener is the navigation block\'s): the control named in the drawer\'s opener is absorbed into the navigation that draws its own burger', () => {
+	const r = run( HEADER( 'toggleMobile' ), withDrawer );
+	const row = rowAt( r, 'Root/59#0' );
+	assert.equal( row.action, 'absorbed' );
+	assert.equal( row.rule, 'drawerOpener' );
+	assert.equal( row.into, 'Root/45#0' );
+	assert.equal( nodeAt( r, 'Root/59#0' ), undefined, 'no node for the burger' );
+	assert.ok( facts.decisions.rules.navigation.collapseAttribute[ nodeAt( r, 'Root/45#0' ).name ], 'the navigation block holds a collapse setting' );
+} );
+
+test( 'MUST FAIL (only the drawer\'s own opener): a button with another handler, or with no drawer recorded, stays a node', () => {
+	assert.notEqual( rowAt( run( HEADER( 'toggleSearch' ), withDrawer ), 'Root/59#0' ).rule, 'drawerOpener', 'another handler' );
+	assert.notEqual( rowAt( run( HEADER( 'toggleMobile' ) ), 'Root/59#0' ).rule, 'drawerOpener', 'no drawer in the record' );
+} );
