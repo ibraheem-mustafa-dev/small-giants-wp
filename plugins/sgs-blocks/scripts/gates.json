@@ -1888,5 +1888,23 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 212
+  },
+  {
+    "id": "check-container-band-layers",
+    "cmd": "python scripts/check-container-band-layers.py --check --ratchet",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 213
+  },
+  {
+    "id": "check-container-band-layers-selftest",
+    "cmd": "python scripts/check-container-band-layers.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 214
   }
 ]
