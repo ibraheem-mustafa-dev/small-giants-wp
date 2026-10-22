@@ -768,37 +768,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$has_responsive_margin  = ( '' !== $margin_top_tablet || '' !== $margin_right_tablet || '' !== $margin_bottom_tablet || '' !== $margin_left_tablet
 				|| '' !== $margin_top_mobile || '' !== $margin_right_mobile || '' !== $margin_bottom_mobile || '' !== $margin_left_mobile );
 
-			// contentBandMargin — a tier-of-boxes object {desktop,tablet,mobile}, read via
-			// sgs_responsive_normalise_object(). Completes a wire-up that was
-			// previously write-only: the Universal Cloning Pipeline's
-			// content_band.py resolver already writes real values here for the
-			// "sole passthrough child" fold case (Defect 3, qc-council-validated
-			// 2026-09-04); this is the read side (Bean-directed, 2026-09-06).
-			// Emitted AFTER band padding + the base margin-inline:auto centring
-			// line below (see $base_band_decls / $band_base_decls further down),
-			// so an explicit side here wins over the auto-centring shorthand on
-			// exactly that side via plain CSS declaration order — no separate
-			// override branch needed, and it never stacks with auto-centring.
-			$band_margin_tiers  = sgs_responsive_normalise_object( $attributes['contentBandMargin'] ?? null, true );
-			$band_margin_obj    = is_array( $band_margin_tiers['desktop'] ?? null ) ? $band_margin_tiers['desktop'] : array();
-			$band_margin_top    = $sgs_css_length( $band_margin_obj['top'] ?? '' );
-			$band_margin_right  = $sgs_css_length( $band_margin_obj['right'] ?? '' );
-			$band_margin_bottom = $sgs_css_length( $band_margin_obj['bottom'] ?? '' );
-			$band_margin_left   = $sgs_css_length( $band_margin_obj['left'] ?? '' );
-
-			$band_margin_tablet_obj = ( $is_section || $is_layout ) && is_array( $band_margin_tiers['tablet'] ?? null ) ? $band_margin_tiers['tablet'] : array();
-			$band_margin_mobile_obj = ( $is_section || $is_layout ) && is_array( $band_margin_tiers['mobile'] ?? null ) ? $band_margin_tiers['mobile'] : array();
-
-			$band_margin_top_tablet    = $sgs_css_length( $band_margin_tablet_obj['top'] ?? '' );
-			$band_margin_right_tablet  = $sgs_css_length( $band_margin_tablet_obj['right'] ?? '' );
-			$band_margin_bottom_tablet = $sgs_css_length( $band_margin_tablet_obj['bottom'] ?? '' );
-			$band_margin_left_tablet   = $sgs_css_length( $band_margin_tablet_obj['left'] ?? '' );
-
-			$band_margin_top_mobile    = $sgs_css_length( $band_margin_mobile_obj['top'] ?? '' );
-			$band_margin_right_mobile  = $sgs_css_length( $band_margin_mobile_obj['right'] ?? '' );
-			$band_margin_bottom_mobile = $sgs_css_length( $band_margin_mobile_obj['bottom'] ?? '' );
-			$band_margin_left_mobile   = $sgs_css_length( $band_margin_mobile_obj['left'] ?? '' );
-
 			// ⛔ BAND BACKGROUND — CAPABILITY RETIRED 2026-08-12 (Bean-ruled).
 			// `contentBandBackground` and every line that emitted it are GONE, and
 			// the attribute is no longer declared by any block.json. The rule: a
@@ -828,13 +797,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$content_width_tablet = ( $is_section || $is_layout ) ? $sgs_resolve_content_width( $attributes['contentWidthTablet'] ?? '' ) : '';
 			$content_width_mobile = ( $is_section || $is_layout ) ? $sgs_resolve_content_width( $attributes['contentWidthMobile'] ?? '' ) : '';
 
-			$has_band_responsive = ( $is_section || $is_layout ) && (
-				'' !== $band_margin_top_tablet || '' !== $band_margin_right_tablet ||
-				'' !== $band_margin_bottom_tablet || '' !== $band_margin_left_tablet ||
-				'' !== $band_margin_top_mobile || '' !== $band_margin_right_mobile ||
-				'' !== $band_margin_bottom_mobile || '' !== $band_margin_left_mobile ||
-				'' !== $content_width_tablet || '' !== $content_width_mobile
-			);
+			$has_band_responsive = ( $is_section || $is_layout ) && ( '' !== $content_width_tablet || '' !== $content_width_mobile );
 
 			// HTML tag. No block declares a user-facing 'htmlTag' attr any more
 			// (removed 2026-07-05) — callers pass 'tag' in $opts explicitly.
@@ -1060,15 +1023,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Drives both grid-on-inner folding and __inner existence so band CSS
 			// survives cloning regardless of which draft layer it came from or the
 			// block's kind. Defined here because all five band vars are read above
-			// ( $content_width, $band_padding_has_value, the band margin ).
-			$has_band_props = (
-				'' !== $content_width ||
-				$band_padding_has_value ||
-				'' !== $band_margin_top ||
-				'' !== $band_margin_right ||
-				'' !== $band_margin_bottom ||
-				'' !== $band_margin_left
-			);
+			// ( $content_width, $band_padding_has_value ).
+			$has_band_props = ( '' !== $content_width || $band_padding_has_value );
 
 			// Task 1 (Stack layout): Stack is a flex mode (display:flex +
 			// forced flex-direction:column, see the layout branch below), so it
@@ -2269,7 +2225,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| $sgs_needs_uid_object_tier( $attributes['gridTemplateColumns'] ?? null )
 				|| $sgs_needs_uid_object_tier( $attributes['gridTemplateRows'] ?? null )
 				|| $sgs_needs_uid_object_tier( $attributes['columns'] ?? null )
-				|| $sgs_needs_uid_object_tier( $attributes['contentBandMargin'] ?? null )
 				// Phase 2 fix (2026-09-06): on a block whose `padding`/`margin`
 				// has migrated to the tier-of-boxes shape (D555 + the Phase 2
 				// box-object migration — e.g. sgs/container, sgs/hero), these
@@ -2598,22 +2553,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$base_band_decls[] = 'max-width:' . $content_width;
 					$base_band_decls[] = 'margin-inline:auto';
 				}
-				// contentBandMargin — emitted AFTER margin-inline:auto above (when
-				// content_width set it), so an explicit side here wins by plain CSS
-				// declaration order without stacking with the auto-centring
-				// shorthand; a side left unset here stays auto-centred.
-				if ( '' !== $band_margin_top ) {
-					$base_band_decls[] = 'margin-top:' . $band_margin_top;
-				}
-				if ( '' !== $band_margin_right ) {
-					$base_band_decls[] = 'margin-right:' . $band_margin_right;
-				}
-				if ( '' !== $band_margin_bottom ) {
-					$base_band_decls[] = 'margin-bottom:' . $band_margin_bottom;
-				}
-				if ( '' !== $band_margin_left ) {
-					$base_band_decls[] = 'margin-left:' . $band_margin_left;
-				}
 				// (band background-color emission removed 2026-08-12 — capability retired)
 				if ( $base_band_decls ) {
 					$responsive_css .= '.' . $uid . '>.sgs-container__inner{' . implode( ';', $base_band_decls ) . '}';
@@ -2910,20 +2849,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$band_base_decls[] = 'max-width:' . $content_width;
 						$band_base_decls[] = 'margin-inline:auto';
 					}
-					// contentBandMargin — same declaration-order-wins-over-auto-
-					// centring reasoning as the $base_band_decls twin above.
-					if ( '' !== $band_margin_top ) {
-						$band_base_decls[] = 'margin-top:' . $band_margin_top;
-					}
-					if ( '' !== $band_margin_right ) {
-						$band_base_decls[] = 'margin-right:' . $band_margin_right;
-					}
-					if ( '' !== $band_margin_bottom ) {
-						$band_base_decls[] = 'margin-bottom:' . $band_margin_bottom;
-					}
-					if ( '' !== $band_margin_left ) {
-						$band_base_decls[] = 'margin-left:' . $band_margin_left;
-					}
 					// (band background-color emission removed 2026-08-12 — capability retired)
 					if ( $band_base_decls ) {
 						$responsive_css .= $band_sel . '{' . implode( ';', $band_base_decls ) . '}';
@@ -2935,42 +2860,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					}
 					if ( '' !== $content_width_mobile ) {
 						$responsive_css .= '@media (max-width:767px){' . $band_sel . '{max-width:' . $content_width_mobile . '}}';
-					}
-
-					// Band padding — tablet tier (≤1023px).
-					$band_tablet_decls = array();
-					if ( '' !== $band_margin_top_tablet ) {
-						$band_tablet_decls[] = 'margin-top:' . $band_margin_top_tablet;
-					}
-					if ( '' !== $band_margin_right_tablet ) {
-						$band_tablet_decls[] = 'margin-right:' . $band_margin_right_tablet;
-					}
-					if ( '' !== $band_margin_bottom_tablet ) {
-						$band_tablet_decls[] = 'margin-bottom:' . $band_margin_bottom_tablet;
-					}
-					if ( '' !== $band_margin_left_tablet ) {
-						$band_tablet_decls[] = 'margin-left:' . $band_margin_left_tablet;
-					}
-					if ( $band_tablet_decls ) {
-						$responsive_css .= '@media (max-width:1023px){' . $band_sel . '{' . implode( ';', $band_tablet_decls ) . '}}';
-					}
-
-					// Band padding — mobile tier (≤767px).
-					$band_mobile_decls = array();
-					if ( '' !== $band_margin_top_mobile ) {
-						$band_mobile_decls[] = 'margin-top:' . $band_margin_top_mobile;
-					}
-					if ( '' !== $band_margin_right_mobile ) {
-						$band_mobile_decls[] = 'margin-right:' . $band_margin_right_mobile;
-					}
-					if ( '' !== $band_margin_bottom_mobile ) {
-						$band_mobile_decls[] = 'margin-bottom:' . $band_margin_bottom_mobile;
-					}
-					if ( '' !== $band_margin_left_mobile ) {
-						$band_mobile_decls[] = 'margin-left:' . $band_margin_left_mobile;
-					}
-					if ( $band_mobile_decls ) {
-						$responsive_css .= '@media (max-width:767px){' . $band_sel . '{' . implode( ';', $band_mobile_decls ) . '}}';
 					}
 				}
 			}
@@ -3695,7 +3584,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// "Scroll sideways" goes LAST, so at equal specificity it wins over the
 			// grid/flex rules written above on the same selector.
 			if ( $sgs_scroll_row_on && $uid ) {
-				$responsive_css .= sgs_container_scroll_row_css( $grid_sel, $attributes, $container_queries, $padding_on_band ? ( $attributes['padding'] ?? array() ) : array(), $attributes['contentBandMargin'] ?? array() );
+				$responsive_css .= sgs_container_scroll_row_css( $grid_sel, $attributes, $container_queries, $padding_on_band ? ( $attributes['padding'] ?? array() ) : array() );
 			}
 
 			$style_tag = '';

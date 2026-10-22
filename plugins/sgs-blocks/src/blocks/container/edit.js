@@ -58,7 +58,6 @@ import { getBlockType } from '@wordpress/blocks';
 import {
 	containerColumnsPreview,
 	containerRowsPreview,
-	bandMarginPreview,
 } from './layout-preview';
 import {
 	LayoutPanel,
@@ -413,21 +412,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// band exists (grid-on-inner: the frontend moves grid/flex declarations onto the
 	// band, so the canvas must too — a grid container would otherwise preview its
 	// columns on the full-bleed outer while rendering them on the capped band).
-	// The band also renders for a band margin alone ($has_band_props counts it);
-	// that band carries no width cap, so the cap the helper adds is removed again.
-	const bandMargin = bandMarginPreview( attributes, previewTier );
-	const bandForMarginOnly =
-		Object.keys( bandMargin ).length > 0 && '' === bandMaxWidth;
 	const { hasBandProps: bandFromProps, bandStyle } = contentBandPreview( {
-		contentWidth: bandForMarginOnly ? 'none' : bandMaxWidth,
+		contentWidth: bandMaxWidth,
 		bandPadding: bandPad,
 		style,
 		layout,
 	} );
-	if ( bandForMarginOnly ) {
-		delete bandStyle.maxWidth;
-		delete bandStyle.marginInline;
-	}
 	// A motion layer on the band part (`content-band`, `inner`; Spec 38A §6.2) needs the band, so it forces it here as
 	// `Sgs_Motion_Targets::names_band()` forces it in the container wrapper on the page.
 	const hasBandProps =
@@ -437,7 +427,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			name,
 			getBlockType( name )?.supports?.sgs?.elements || {}
 		);
-	Object.assign( bandStyle, bandMargin );
 	if (
 		'grid' === layout &&
 		hasBandProps &&
@@ -1014,40 +1003,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
               background on the block itself (BackgroundPanel) instead. Zero
               stored instances existed on the canary at deletion. Do NOT re-add
               a band-scoped background control here or on any composite. */ }
-					{ /* contentBandMargin — a tier-object band margin,
-              immediately above, same ResponsiveOverride wiring. Completes a
-              wire-up that was previously write-only: the Universal Cloning
-              Pipeline's content_band.py resolver already writes real values
-              here for the "sole passthrough child" fold case (Defect 3,
-              qc-council-validated 2026-09-04), but until now nothing in the
-              editor or the wrapper's CSS emission ever read this attribute —
-              a converted page's fold-margin was silently inert on both the
-              canvas and the live frontend. Bean-directed completion,
-              2026-09-06: mirrors Band padding's control exactly. */ }
-					<ResponsiveOverride
-						value={ attributes.contentBandMargin }
-						onChange={ ( obj ) =>
-							setAttributes( { contentBandMargin: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Band margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* Grid item defaults — only shown when layout is grid. */ }

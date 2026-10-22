@@ -55,9 +55,6 @@
 				"margin": [
 					"margin"
 				],
-				"contentBandMargin": [
-					"contentBandMargin"
-				],
 				"gridItemPadding": [
 					"gridItemPadding"
 				],
@@ -730,12 +727,6 @@
 				"outset"
 			],
 			"description": "Wrapper root border style. Empty = solid once any side has a width (sgs_border_box_decls); 'none' = no border rendered regardless of colour/width."
-		},
-		"contentBandMargin": {
-			"type": "object",
-			"default": {
-				"desktop": {}
-			}
 		},
 		"backgroundColour": {
 			"type": "string",

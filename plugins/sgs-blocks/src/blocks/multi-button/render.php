@@ -106,7 +106,7 @@ $root_sel = '.' . $uid . '.sgs-multi-button';
 
 // The buttons' flex row sits on whichever element holds them: the root, or the
 // wrapper's content band (`>.sgs-container__inner`, rendered when a content width,
-// band padding or band margin is set). When the band renders the root becomes a
+// or band padding is set). When the band renders the root becomes a
 // plain block so the band keeps its own width and centring.
 $flex_sel = $root_sel . ',' . $root_sel . '>.sgs-container__inner';
 

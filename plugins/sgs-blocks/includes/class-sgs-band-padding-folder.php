@@ -1,6 +1,6 @@
 <?php
 /**
- * Folds a stored `contentBandPadding` into `padding` in one post's block content.
+ * Folds a stored `contentBandPadding` into `padding` in one post's block content, and lists a stored `contentBandMargin`.
  *
  * `padding` paints the content band and is the only padding control of a block that declares `contentWidth`
  * (`SGS_Container_Wrapper::render`), so a block comment that still carries `contentBandPadding` moves its sides
@@ -9,6 +9,11 @@
  * value takes the nearest larger tier's): a zero or absent side adds nothing, and where both hold a length the sum
  * is `calc( own + band )` and is reported. Only the attribute JSON of the changed block
  * comments is replaced in the stored text, so every other byte of the post is untouched.
+ *
+ * A stored `contentBandMargin` is not folded. The band is a block-flow child of the block's outer element, so its
+ * top and bottom margins collapse through that element (merging with the neighbours' margins) where padding never
+ * does, and its left and right margins override the band's auto centring. No padding value paints the same space, so
+ * every stored side is listed for a person to move onto the block's `margin`, and the block comment is left as stored.
  *
  * @package SGS\Blocks
  */
@@ -23,6 +28,8 @@ defined( 'ABSPATH' ) || exit;
 final class Sgs_Band_Padding_Folder {
 
 	const BAND_ATTRIBUTE = 'contentBandPadding';
+
+	const MARGIN_ATTRIBUTE = 'contentBandMargin';
 
 	const TIERS = array( 'desktop', 'tablet', 'mobile' );
 
@@ -115,6 +122,33 @@ final class Sgs_Band_Padding_Folder {
 	}
 
 	/**
+	 * The sides a block's stored `contentBandMargin` still sets, per tier.
+	 *
+	 * A zero top or bottom is skipped (it paints nothing); a zero left or right is kept because it overrides the
+	 * band's auto centring.
+	 *
+	 * @param array<string,mixed> $attrs Stored attributes of the block.
+	 * @return array<int,array{tier:string,side:string,value:string}>
+	 */
+	public static function band_margins( array $attrs ): array {
+		$out = array();
+		foreach ( self::tiers_of( $attrs[ self::MARGIN_ATTRIBUTE ] ?? null ) as $tier => $box ) {
+			foreach ( self::SIDES as $side ) {
+				$value = self::length( $box[ $side ] ?? null );
+				if ( '' === $value || ( in_array( $side, array( 'top', 'bottom' ), true ) && self::is_zero( $value ) ) ) {
+					continue;
+				}
+				$out[] = array(
+					'tier'  => $tier,
+					'side'  => $side,
+					'value' => $value,
+				);
+			}
+		}
+		return $out;
+	}
+
+	/**
 	 * A stored side as a length string, or '' when it holds none.
 	 *
 	 * @param mixed $value Stored side value.
@@ -174,8 +208,9 @@ final class Sgs_Band_Padding_Folder {
 	 * Fold every block of one post's content.
 	 *
 	 * @param string $content The stored `post_content`.
-	 * @return array{content:string,changed:bool,changes:array<int,array<string,mixed>>,skipped?:string} One `changes` row per folded
-	 *         block: path, block, conflicts. When the block comments in the text do not line up with the parsed blocks
+	 * @return array{content:string,changed:bool,changes:array<int,array<string,mixed>>,margins:array<int,array<string,mixed>>,skipped?:string}
+	 *         One `changes` row per folded block: path, block, conflicts. One `margins` row per block that still sets a
+	 *         `contentBandMargin` side: path, block, sides. When the block comments in the text do not line up with the parsed blocks
 	 *         nothing is changed, `changes` is empty and `skipped` names the reason.
 	 */
 	public function migrate_content( string $content ): array {
@@ -183,8 +218,9 @@ final class Sgs_Band_Padding_Folder {
 			'content' => $content,
 			'changed' => false,
 			'changes' => array(),
+			'margins' => array(),
 		);
-		if ( false === strpos( $content, self::BAND_ATTRIBUTE ) ) {
+		if ( false === strpos( $content, self::BAND_ATTRIBUTE ) && false === strpos( $content, self::MARGIN_ATTRIBUTE ) ) {
 			return $unchanged;
 		}
 		$blocks = parse_blocks( $content );
@@ -192,8 +228,10 @@ final class Sgs_Band_Padding_Folder {
 			'seq'     => 0,
 			'patches' => array(),
 			'changes' => array(),
+			'margins' => array(),
 		);
 		$this->walk( $blocks, '', $run );
+		$unchanged['margins'] = $run['margins'];
 		if ( array() === $run['changes'] ) {
 			return $unchanged;
 		}
@@ -208,6 +246,7 @@ final class Sgs_Band_Padding_Folder {
 			'content' => $patched,
 			'changed' => true,
 			'changes' => $run['changes'],
+			'margins' => $run['margins'],
 		);
 	}
 
@@ -222,8 +261,17 @@ final class Sgs_Band_Padding_Folder {
 		foreach ( $blocks as $index => $block ) {
 			$here = '' === $path ? (string) $index : $path . '.' . $index;
 			if ( ! empty( $block['blockName'] ) && is_string( $block['blockName'] ) ) {
-				$seq = $run['seq']++;
-				$out = self::fold( is_array( $block['attrs'] ?? null ) ? $block['attrs'] : array() );
+				$seq   = $run['seq']++;
+				$attrs = is_array( $block['attrs'] ?? null ) ? $block['attrs'] : array();
+				$out   = self::fold( $attrs );
+				$sides = self::band_margins( $attrs );
+				if ( array() !== $sides ) {
+					$run['margins'][] = array(
+						'path'  => $here,
+						'block' => $block['blockName'],
+						'sides' => $sides,
+					);
+				}
 				if ( null !== $out ) {
 					$run['patches'][ $seq ] = $out['attrs'];
 					$run['changes'][]       = array(
