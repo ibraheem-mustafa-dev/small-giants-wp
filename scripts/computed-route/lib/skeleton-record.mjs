@@ -7,7 +7,7 @@
 // draft) is read from its rendered attributes, as before.
 import fs from 'fs';
 import { loadFacts as loadFactRecord, factsFile, warnMissingFacts } from './fact-record.mjs';
-import { templateKey } from './fact-key.mjs';
+import { translateElement } from './key-space.mjs';
 import { readJson } from './handoff.mjs';
 import path from 'path';
 
@@ -78,9 +78,23 @@ export const fractionalTrack = ( t ) => /\d\s*fr$/.test( t ) || /^minmax\(\s*0(?
 export const fixedTrack = ( t ) => /^-?[\d.]+(?:px|rem|em|ch|vw|vh)$/.test( t );
 
 // The view of a record: o { record (or null), parts: { surface id: opened_by words } }.
-export function recordView( record, { openers = {} } = {} ) {
+export function recordView( record, { openers = {}, rootComponent = null } = {} ) {
 	const els = record?.elements ?? {};
-	const keyOf = ( e ) => ( e?.template && null != e.tpl ? templateKey( { dc: e.template, tpl: e.tpl } ) : null );
+	// The element's template key through lib/key-space.mjs::translateElement (a served `Root` host is the entry component);
+	// an element that cannot be translated is listed in `untranslated`, never guessed.
+	const untranslated = [];
+	const listed = new Set();
+	const keyOf = ( e ) => {
+		if ( ! e ) {
+			return null;
+		}
+		const t = translateElement( e, rootComponent );
+		if ( t.reason && ! listed.has( e.key ) ) {
+			listed.add( e.key );
+			untranslated.push( { key: e.key, reason: t.reason } );
+		}
+		return t.templateKey ?? null;
+	};
 	const entry = ( e ) => {
 		const k = keyOf( e );
 		return k ? els[ k ] ?? null : null;
@@ -178,7 +192,7 @@ export function recordView( record, { openers = {} } = {} ) {
 		const pr = renderedParent ? keyOf( renderedParent ) : null;
 		rec && pr && renderedParent.template === e.template && rec.template.realParent !== pr && note( e, 'parent', rec.template.realParent, pr );
 	};
-	return { has: ( e ) => !! entry( e ), entry, attr, realTag, declared, holeProps, ownPaint, describe, childrenOf, repeated, linkRun, parentsOf, checkParent, disagreements, openers, surfaces: record?.surfaces ?? {}, sources: record?.sources ?? null, recordOf: ( id ) => record?.surfaces?.[ id ] ?? null, elements: els };
+	return { has: ( e ) => !! entry( e ), entry, attr, realTag, declared, holeProps, ownPaint, describe, childrenOf, repeated, linkRun, parentsOf, checkParent, disagreements, untranslated, openers, surfaces: record?.surfaces ?? {}, sources: record?.sources ?? null, recordOf: ( id ) => record?.surfaces?.[ id ] ?? null, elements: els };
 }
 
 // The surface the proposal is for, read from the record's `surfaces` and the elements' memberships: { id, kind, parent: { id,
