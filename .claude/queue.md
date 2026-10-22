@@ -36,3 +36,4 @@ The signal between the cloning tool plan's two orchestrator sessions (`.claude/p
 - 2026-10-22 T site-run-start header post 201 (skeleton, Fill with every wave T2b writer, build; reads the framework DB)
 - 2026-10-22 T site-run-end (header post 201 built through wave T2b's writers; pairs sites/indus-foods/build/qa/pairs/header-2026-10-22-t2b/, untracked)
 - 2026-10-22 T db-reads paused (wave T2b's lanes merged; Track T reads the framework DB again after the next F reseed-done)
+- 2026-10-22 F reseed-start 52e61d742 (U11: adds block_attributes.meaning and seeds the sgs.meaning of 50 settings; Track T holds framework-DB reads until F reseed-done)
