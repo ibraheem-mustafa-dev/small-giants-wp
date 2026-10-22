@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 
 from .vocabulary import (
     DAYS, GOOGLE_HOSTS, SOCIAL_DOMAINS,
-    EMAIL_SHAPE_RE, HOURS_RE, PHONE_SHAPE_RE, POSTCODE_RE,
+    HOURS_RE, PHONE_SHAPE_RE, POSTCODE_RE, is_business_email,
 )
 
 
@@ -65,7 +65,7 @@ def resolve(shape: str, site_key: str | None, raw: str) -> dict[str, str]:
         return {site_key: value} if ok and site_key else {}
     if shape == "email":
         value = re.sub(r"^mailto:", "", value, flags=re.IGNORECASE).split("?")[0].strip()
-        return {site_key: value} if site_key and EMAIL_SHAPE_RE.match(value) else {}
+        return {site_key: value} if site_key and is_business_email(value) else {}
     if shape == "address":
         plausible = POSTCODE_RE.search(value) or len(value.split()) >= 3
         clean = "@" not in value and "://" not in value and len(value) <= 200

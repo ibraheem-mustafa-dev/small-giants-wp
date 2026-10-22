@@ -14,7 +14,7 @@ from .script_source import from_script
 from .shapes import has_binding, resolve
 from .vocabulary import (
     LABEL_MAX_CHARS, LABELS, SOCIAL_DOMAINS,
-    COPYRIGHT_RE, EMAIL_SHAPE_RE, HREF_RE, MAILTO_RE, TEL_RE,
+    COPYRIGHT_RE, HREF_RE, MAILTO_RE, TEL_RE, is_business_email,
 )
 
 
@@ -26,7 +26,7 @@ def extract_literal(html: str) -> dict[str, str]:
     m = MAILTO_RE.search(html)
     if m:
         email = m.group(1).strip().rstrip(".,;")
-        if EMAIL_SHAPE_RE.match(email) and not has_binding(email):
+        if is_business_email(email) and not has_binding(email):
             fields["email"] = email
 
     # phone — first tel:

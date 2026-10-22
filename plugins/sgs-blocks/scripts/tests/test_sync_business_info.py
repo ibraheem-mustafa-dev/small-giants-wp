@@ -18,9 +18,7 @@ import pytest
 SCRIPTS = Path(__file__).resolve().parents[1]
 REPO = SCRIPTS.parents[2]
 MAMAS_DRAFT = REPO / "sites/mamas-munches/mockups/homepage/index.html"
-EYE_DRAFT = (
-    REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html"
-)
+EYE_DRAFT = REPO / "sites/eye-care-ward-end/handoff/Eye Care Birmingham.dc.html"
 
 
 def _load(name: str, path: Path):
@@ -90,6 +88,17 @@ def test_optician_real_draft():
     assert pmap["{{ igHref }}"] == {"key": "socials.instagram", "as": "url"}
     assert pmap["{{ gmbHref }}"] == {"key": "socials.google", "as": "url"}
     assert pmap["{{ mapHref }}"] == {"key": None, "as": "url"}
+
+
+def test_reserved_example_email_is_never_business_info():
+    """MUST FAIL without the reserved-domain check: a draft's demo record outranks the real address."""
+    demo = _script("email: 'aisha.khan@example.com', first: 'Aisha'")
+    real = '<a href="mailto:hello@shop.co.uk">hello@shop.co.uk</a>'
+    assert sbi.extract_business_info(demo + real)["email"] == "hello@shop.co.uk"
+    for value in ("a@example.com", "a@mail.example.org", "a@example.net", "a@x.invalid", "a@localhost"):
+        assert not bi_vocabulary.is_business_email(value), value
+    for value in ("hello@shop.co.uk", "a@examples.com", "a@notexample.com", "hello@example.test"):
+        assert bi_vocabulary.is_business_email(value), value
 
 
 # --- shape validators (synthetic) ----------------------------------------------------

@@ -71,6 +71,20 @@ HREF_RE = re.compile(r"""href\s*=\s*["']([^"']+)["']""", re.IGNORECASE)
 MAILTO_RE = re.compile(r"""mailto:([^"'\s?>]+)""", re.IGNORECASE)
 TEL_RE = re.compile(r"""tel:([^"'\s>]+)""", re.IGNORECASE)
 EMAIL_SHAPE_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+# The example domains (RFC 2606: example.com, .net, .org and their sub-domains) and the never-resolving .invalid and
+# .localhost names never belong to a real business: a draft's demo records (a mock customer in a checkout prototype)
+# use them.
+RESERVED_EMAIL_DOMAIN_RE = re.compile(
+    r"@(?:[^@\s]*\.)?(?:example\.(?:com|net|org)|invalid|localhost)$",
+    re.IGNORECASE,
+)
+
+
+def is_business_email(value: str) -> bool:
+    """An email-shaped value whose domain is not an example, .invalid or .localhost domain."""
+    return bool(EMAIL_SHAPE_RE.match(value)) and not RESERVED_EMAIL_DOMAIN_RE.search(value)
+
+
 # Copyright line: a © or &copy; followed by the rest of that text run. Stop only
 # at an HTML tag boundary (< >), a newline, or a JS-template backtick — so real
 # text with apostrophes/quotes ("Acme Bakery's.") is kept intact.
