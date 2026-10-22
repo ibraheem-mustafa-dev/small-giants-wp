@@ -23,6 +23,7 @@
  *   .sgs-responsive-logo__picture     — <picture> element
  *   .sgs-responsive-logo__image (+ --desktop) / --tablet / --mobile — img elements
  *   .sgs-responsive-logo__svg         — inline SVG wrapper (draw layer or inlineSvg)
+ *   .sgs-responsive-logo__svg--inline — the inlineSvg logo's wrapper (dark-logo swap, colour treatment)
  *   .sgs-responsive-logo__svg--swaps  — the inline SVG hides below 1024px for a compact logo
  *   .sgs-responsive-logo--animate-draw / --animate-hover / --animate-scroll
  *
@@ -365,7 +366,7 @@ if ( ! in_array( $colour_treatment, array( '', 'white', 'auto' ), true ) ) {
 	$colour_treatment = '';
 }
 if ( 'white' === $colour_treatment ) {
-	$scoped_css[] = "{$sel} img{filter:brightness(0) invert(1);}";
+	$scoped_css[] = "{$sel} img,{$sel} .sgs-responsive-logo__svg--inline svg{filter:brightness(0) invert(1);}";
 }
 $colour_auto_modifier = 'auto' === $colour_treatment ? ' sgs-responsive-logo--colour-auto' : '';
 
@@ -562,11 +563,14 @@ $wrapper_attributes = get_block_wrapper_attributes( $sgs_rl_wrapper_args );
 
 // ── SVG inline render (draw layer, or the inlineSvg setting) ─────────────────
 
+// Both inline SVGs (the draw layer's and the inline logo) have their ids, keyframes and <style> rules scoped to this
+// instance (a unique root id), so the file's CSS never reaches the rest of the page and two logos never share an id.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-svg-inline-attachment.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-svg-instance-scope.php';
 $svg_html          = '';
 $has_svg_animation = $svg_animation_id > 0;
 if ( $has_svg_animation ) {
-	$svg_html = sgs_svg_inline_attachment( $svg_animation_id );
+	$svg_html = sgs_svg_scope_instance( sgs_svg_inline_attachment( $svg_animation_id ), wp_unique_id( 'sgs-logo-svg-' ) );
 }
 
 // The inline logo carries the logo's accessible name as the <img> would (role="img" + aria-label), or is hidden
@@ -574,7 +578,7 @@ if ( $has_svg_animation ) {
 $inline_logo_html = '';
 if ( ! $has_svg_animation && $inline_svg_on && $desktop_logo_id > 0 ) {
 	$inline_logo_html = sgs_svg_inline_root_attributes(
-		sgs_svg_inline_attachment( $desktop_logo_id ),
+		sgs_svg_scope_instance( sgs_svg_inline_attachment( $desktop_logo_id ), wp_unique_id( 'sgs-logo-svg-' ) ),
 		$logo_decorative
 			? array(
 				'aria-hidden' => 'true',
@@ -627,7 +631,7 @@ if ( $has_svg_animation && $svg_html ) {
 } elseif ( '' !== $inline_logo_html ) {
 	// Inline logo: the SVG file itself at every width; a compact logo (mobile, else tablet slot) swaps in below 1024px.
 	$inline_compact_url = '' !== $mobile_url ? $mobile_url : $tablet_url;
-	printf( '<span class="sgs-responsive-logo__svg%s">', '' !== $inline_compact_url ? ' sgs-responsive-logo__svg--swaps' : '' );
+	printf( '<span class="sgs-responsive-logo__svg sgs-responsive-logo__svg--inline%s">', '' !== $inline_compact_url ? ' sgs-responsive-logo__svg--swaps' : '' );
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rebuilt through sgs_svg_sanitise_document(); added attributes escaped by sgs_svg_inline_root_attributes().
 	echo $inline_logo_html;
 	echo '</span>';

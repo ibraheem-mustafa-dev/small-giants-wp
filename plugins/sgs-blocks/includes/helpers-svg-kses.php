@@ -71,12 +71,6 @@ function sgs_svg_kses_allowed_tags(): array {
 		)
 	);
 
-	// SMIL timing and value attributes shared by animate, set, animateTransform and animateMotion.
-	$animation_attrs = array_fill_keys(
-		array( 'id', 'class', 'attributename', 'attributetype', 'values', 'from', 'to', 'by', 'dur', 'begin', 'end', 'repeatcount', 'repeatdur', 'fill', 'calcmode', 'keytimes', 'keysplines', 'keypoints', 'additive', 'accumulate', 'restart', 'min', 'max' ),
-		true
-	);
-
 	return array(
 		'svg'               => array_merge(
 			$core_attrs,
@@ -284,7 +278,6 @@ function sgs_svg_kses_allowed_tags(): array {
 				'offset'       => true,
 				'stop-color'   => true,
 				'stop-opacity' => true,
-				'path'         => true,
 			)
 		),
 		'filter'            => array_merge(
@@ -400,40 +393,25 @@ function sgs_svg_kses_allowed_tags(): array {
 		 * restricted external <use> references to same-origin since ~2017 — so
 		 * it is materially lower severity than the <a> case and is left in
 		 * place. Revisit if any of those gains a navigating behaviour.
+		 *
+		 * This shared list carries <animate> only. <set>, <animateTransform>,
+		 * <animateMotion>, <mpath>, the mesh gradients and the wider SMIL
+		 * attribute set live in sgs_svg_document_allowed_tags()
+		 * (helpers-svg-document.php), whose sanitiser screens every
+		 * attributeName and link; plain wp_kses callers never screen them.
 		 */
-		'animate'           => $animation_attrs,
-		'set'               => $animation_attrs,
-		'animatetransform'  => array_merge( $animation_attrs, array( 'type' => true ) ),
-		'animatemotion'     => array_merge(
-			$animation_attrs,
-			array(
-				'path'   => true,
-				'rotate' => true,
-				'origin' => true,
-			)
+		'animate'           => array(
+			'attributename' => true,
+			'from'          => true,
+			'to'            => true,
+			'dur'           => true,
+			'repeatcount'   => true,
+			'begin'         => true,
+			'fill'          => true,
+			'values'        => true,
+			'id'            => true,
+			'class'         => true,
 		),
-		// An <animateMotion>'s path by reference: only a #fragment survives the whole-file sanitiser.
-		'mpath'             => array(
-			'id'         => true,
-			'href'       => true,
-			'xlink:href' => true,
-		),
-
-		// Mesh gradients (SVG 2, Inkscape exports). Each patch's <stop> carries its edge in `path` (see 'stop').
-		'meshgradient'      => array_merge(
-			$core_attrs,
-			array(
-				'x'                 => true,
-				'y'                 => true,
-				'type'              => true,
-				'gradientunits'     => true,
-				'gradienttransform' => true,
-				'href'              => true,
-				'xlink:href'        => true,
-			)
-		),
-		'meshrow'           => $core_attrs,
-		'meshpatch'         => $core_attrs,
 
 		/*
 		 * <a> is kept as a grouping/styling element but is DELIBERATELY INERT:

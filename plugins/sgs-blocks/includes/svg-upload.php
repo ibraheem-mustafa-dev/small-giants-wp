@@ -95,7 +95,7 @@ function sgs_svg_upload_prefilter( $file ) {
 	$safe   = $result['svg'];
 	if ( '' === $safe ) {
 		/* translators: %s: why the file was refused, e.g. "holds a CSS @import". */
-		$file['error'] = sprintf( __( 'This SVG was not uploaded because it %s.', 'sgs-blocks' ), $result['error'] );
+		$file['error'] = sprintf( __( 'This SVG was not uploaded because it %s.', 'sgs-blocks' ), esc_html( $result['error'] ) );
 		return $file;
 	}
 	file_put_contents( $path, $safe ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- rewriting the upload tmp file before WordPress moves it.
