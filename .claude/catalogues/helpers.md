@@ -853,6 +853,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `BooleanResponsiveControl.js` | `BooleanResponsiveControl (default)` | BooleanResponsiveControl — a single ToggleControl on Desktop, a 3-way Inherit/On/Off switch on Tablet/Mobile, driven by the… |
 | `BorderStyleControl.js` | `BorderStyleControl (default)` | BorderStyleControl — thin SGS wrapper matching WP core's native `BorderControlStylePicker` exactly (Bean-directed, 2026-08-19). |
 | `ColumnShapePicker.js` | `ColumnShapePicker (default)`, `weightsToTrack`, `activeShapeKey`, `ColumnShapePicker` | ColumnShapePicker — pick a column SHAPE by clicking a diagram (FR-37-42). |
+| `ControlLabelContext.js` | `ControlLabelContext` | The visible label of the wrapper a control sits in (`ResponsiveOverride`). A control mounted without its own label takes this as… |
 | `DateTimePickerField.js` | `DateTimePickerField (default)` | DateTimePickerField — the SGS standard DATE control (golden-controls.json goldens/input.json `date` row, Bean-approved live… |
 | `DesignTokenPicker.js` | `DesignTokenPicker (default)`, `resolveColourToken` | Colour picker that reads the active theme.json palette. |
 | `FieldLabelLayoutPanel.js` | `FieldLabelLayoutPanel (default)` | "Label and headings" panel for SGS form fields: whether the field's label shows or is read only by screen readers, and (for boxes… |
@@ -890,6 +891,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `SgsBoxControl.js` | `SgsBoxControl (default)`, `parseLength`, `VALUE_BOX_STYLE` | SgsBoxControl — compact 4-side box editor (padding / margin / border-width), built from native primitives with a hand-aligned row… |
 | `SgsColourPanel.js` | `SgsColourPanel (default)` | THE grouped colour panel — D609's "missing half" (amended 2026-08-13, corrected 2026-08-14 per Bean's direct challenge — see… |
 | `SgsFreeTextField.js` | `SgsFreeTextField (default)` | SgsFreeTextField — the SGS standard FREE-TEXT / BARE-NUMBER control |
+| `SgsGapControl.js` | `SgsGapControl (default)`, `splitTopLevel`, `parseGap`, `composeGap` | SgsGapControl — a row gap and a column gap in one control, shaped like SgsBoxControl but with two parts instead of four. |
 | `SgsLengthControl.js` | `SgsLengthControl (default)`, `sliderRange` | SgsLengthControl — the one control for a single length, in two scales chosen by `scale`. |
 | `SgsMultiSelectField.js` | `SgsMultiSelectField (default)` | SgsMultiSelectField — the SGS standard MULTI-SELECT / TOKEN control |
 | `SgsSeparatorControl.js` | `SgsSeparatorControl (default)` | SgsSeparatorControl — the one control for the lines drawn between a list's items. |
@@ -903,7 +905,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `SweepAngleControl.js` | `SweepAngleControl (default)` | SweepAngleControl — the directional sweep angle: one preset SelectControl (UI sugar) plus core's own AnglePickerControl, both… |
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 
-**52 files.**
+**54 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 
