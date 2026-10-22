@@ -7,7 +7,7 @@
 	{ "file": "lib/key-space.mjs", "find": "record && ! record.elements?.[ t.templateKey ] &&", "replace": "false &&", "why": "elements the record has no entry for are not listed" },
 	{ "file": "lib/key-space.mjs", "find": "if ( ! e?.template || null == e.tpl ) {", "replace": "if ( false ) {", "why": "an element with no identity is translated" },
 	{ "file": "lib/skeleton-record.mjs", "find": "const t = translateElement( e, rootComponent );", "replace": "const t = translateElement( e, null );", "why": "the view ignores the entry component" },
-	{ "file": "lib/skeleton-record.mjs", "find": "if ( t.reason && ! listed.has( e.key ) ) {", "replace": "if ( false ) {", "why": "an untranslatable element is not listed" },
+	{ "file": "lib/skeleton-record.mjs", "find": "if ( ! listed.has( e.key ) ) {", "replace": "if ( false ) {", "why": "an untranslatable element is not listed" },
 	{ "file": "lib/skeleton-propose.mjs", "find": "openersFor( facts ) : {} ), rootComponent } );", "replace": "openersFor( facts ) : {} ) } );", "why": "propose does not hand the entry component to the record view" },
 	{ "file": "lib/skeleton-propose.mjs", "find": "recordUntranslated: view.untranslated,", "replace": "recordUntranslated: [],", "why": "the proposal hides the untranslated list" }
 ]

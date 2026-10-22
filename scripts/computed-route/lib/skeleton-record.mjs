@@ -8,6 +8,7 @@
 import fs from 'fs';
 import { loadFacts as loadFactRecord, factsFile, warnMissingFacts } from './fact-record.mjs';
 import { translateElement } from './key-space.mjs';
+import { templateKey } from './fact-key.mjs';
 import { readJson } from './handoff.mjs';
 import path from 'path';
 
@@ -89,11 +90,20 @@ export function recordView( record, { openers = {}, rootComponent = null } = {} 
 			return null;
 		}
 		const t = translateElement( e, rootComponent );
-		if ( t.reason && ! listed.has( e.key ) ) {
+		if ( ! t.reason ) {
+			return t.templateKey;
+		}
+		// A root host with no entry component is read under the name it was stamped with when the record holds an entry there
+		// (a record whose draft component is itself named for the runtime's root); otherwise it is listed (and still answers under the stamped name).
+		const stamped = e.template && null != e.tpl ? templateKey( { dc: e.template, tpl: e.tpl } ) : null;
+		if ( stamped && els[ stamped ] ) {
+			return stamped;
+		}
+		if ( ! listed.has( e.key ) ) {
 			listed.add( e.key );
 			untranslated.push( { key: e.key, reason: t.reason } );
 		}
-		return t.templateKey ?? null;
+		return stamped;
 	};
 	const entry = ( e ) => {
 		const k = keyOf( e );
