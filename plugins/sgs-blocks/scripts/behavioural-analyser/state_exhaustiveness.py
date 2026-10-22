@@ -143,7 +143,9 @@ def block_for(file: str, selector: str, block_slugs: frozenset[str]) -> str | No
     m = re.match(r"plugins/sgs-blocks/src/blocks/([^/]+)/", file)
     if m:
         return "sgs/" + m.group(1)
-    for cls in _BLOCK_CLASS_RE.findall(selector):
+    # The shared wrapper's band (`.sgs-container__inner`) is rendered inside every container-type block, so it names
+    # no block of its own; the owner comes from another class in the selector, or stays unknown.
+    for cls in _BLOCK_CLASS_RE.findall(re.sub(r"\.sgs-container__[a-z0-9-]+", "", selector)):
         parts = cls.split("-")
         for n in range(len(parts), 0, -1):
             slug = "sgs/" + "-".join(parts[:n])

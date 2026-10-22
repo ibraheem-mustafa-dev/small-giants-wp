@@ -112,6 +112,13 @@
 					"attrMap": {
 						"css:max-width": "contentWidth",
 						"css:padding": "padding"
+					},
+					"states": {
+						"shrunk": {
+							"attrMap": {
+								"css:padding": "rowShrinkPadding"
+							}
+						}
 					}
 				}
 			}
