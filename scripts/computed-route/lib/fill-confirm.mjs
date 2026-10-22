@@ -6,6 +6,7 @@
 // lists the element's declaration as never painting, FR-48-34) and `open` (no declared value: the render alone decides).
 import { parseColour, deltaE, toPx, COLOUR_DE } from './normalise.mjs';
 import { transformMatrix, sameMatrix } from './css-matrix.mjs';
+import { templateKeyOfSelector } from './fact-key.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 
 // FR-48-36's tolerances by property type (provisional until calibrated on the first client clone).
@@ -114,6 +115,10 @@ export function compareDR( prop, declared, rendered, fontPx = 16, { tol = 0.5, r
 // The draft ID of a target finder ({ tpl: 'Root/220#0' } or 'Root>Child/12#0'): the component that stamps it and its
 // template number, with the served root named by the entry draft's component.
 export function draftIdOf( finder, rootComponent ) {
+	if ( 'string' === typeof finder ) {
+		const k = templateKeyOfSelector( finder, rootComponent );
+		return k ? k.replace( /\/(\d+)$/, ':$1' ) : null;
+	}
 	const m = /^(.*)\/(\d+)#\d+$/.exec( String( finder?.tpl ?? '' ) );
 	if ( ! m ) {
 		return null;

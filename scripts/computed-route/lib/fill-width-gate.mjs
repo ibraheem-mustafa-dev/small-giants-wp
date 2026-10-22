@@ -4,10 +4,11 @@
 // enclosing sc-ifs (`template.membership.scIf`). For a skeleton node whose draft element sits inside gated sc-ifs:
 //   1. the widths the content is hidden at are the complement of the intersection of the gates' shown widths;
 //   2. a boundary at or within 5% of a tier (768, 1024) snaps to the tier, with a `breakpoint-snap` ledger entry (distance in px);
-//   3. a hidden range whose boundaries are all tiers writes the conditional-visibility flags (sgsHideOnMobile, sgsHideOnTablet,
-//      sgsHideOnDesktop; the block must hold them, by the framework DB);
-//   4. otherwise, when the block holds its own numeric breakpoint setting (the framework DB: collapsePoint) and the gate is one
-//      threshold, that setting is written with the threshold;
+//   3. a block that draws its own alternative below a threshold holds a numeric breakpoint setting (the framework DB: the nav's
+//      collapsePoint draws its burger under it); when the hidden range is [0, threshold) that setting is written with the
+//      threshold (or left when the node holds it already) and no hiding flag, which would hide the alternative too;
+//   4. otherwise a hidden range whose boundaries are all tiers writes the conditional-visibility flags (sgsHideOnMobile,
+//      sgsHideOnTablet, sgsHideOnDesktop; the block must hold them, by the framework DB);
 //   5. otherwise a bounded `@media` rule in the block's Additional CSS (`sgsCustomCss`, scoped to the instance by
 //      includes/custom-css.php), with the scope key `sgsCustomCssId` and the label `sgsCustomCssNote` naming the rule.
 // A skeleton node whose parent is gated the same way is not written again (the parent hides it). Both branches of a width
@@ -15,7 +16,7 @@
 // condition (`partial`) hides only where its width part is false.
 
 import { setAttr } from './tree.mjs';
-import { templateKeyOf } from './fact-key.mjs';
+import { templateKeyOf, templateKeyOfSelector } from './fact-key.mjs';
 
 export const TIERS = [ 768, 1024 ];
 export const SNAP_TOLERANCE = 0.05;
@@ -89,7 +90,8 @@ export function snapThreshold( t ) {
 }
 
 // The template key a finder names (`<chain>/<n>#<copy>` -> `<component>/<n>`, the served root named by rootComponent), or null.
-export const tplKey = ( finder, rootComponent = null ) => templateKeyOf( finder?.tpl, rootComponent );
+// A finder is a `{ tpl }` instance key or a selector string (a Site Info row node: its last data-dc-tpl, in the root's key space).
+export const tplKey = ( finder, rootComponent = null ) => 'string' === typeof finder ? templateKeyOfSelector( finder, rootComponent ) : templateKeyOf( finder?.tpl, rootComponent );
 
 // The widths a template element is shown at, from the width conditions of its enclosing sc-ifs: { shown, via } or null
 // when no enclosing sc-if is gated by width.
@@ -190,17 +192,19 @@ export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, entries
 			const e = snapEntry( { scope, ref, snap: s, entries: [ ...entries, ...out.ledger ], date } );
 			e && out.ledger.push( e );
 		}
+		// A block that draws its own alternative below a threshold (the nav's burger under collapsePoint) takes the threshold as
+		// that setting; a hiding flag would hide the alternative with it.
+		const own = ownBreakpoint( db, n.name );
+		if ( own && 1 === hidden.length && 0 === hidden[ 0 ][ 0 ] && Infinity > hidden[ 0 ][ 1 ] ) {
+			const t = hidden[ 0 ][ 1 ];
+			node.attributes?.[ own ] === t || put( own, t, `width gate (${ via }): the block's own breakpoint` );
+			out.notes.push( `${ ref } ${ n.name }: ${ via } is its own setting ${ own } = ${ t }; no hiding flag is written` );
+			continue;
+		}
 		const tiers = tiersOf( hidden );
 		if ( tiers && tiers.length && tiers.every( ( t ) => holdsAttr( db, n.name, HIDE_ATTR[ t ] ) ) ) {
 			tiers.forEach( ( t ) => put( HIDE_ATTR[ t ], true, `width gate (${ via }): hide on ${ t }` ) );
 			out.notes.push( `${ ref } ${ n.name }: shown only at ${ at.shown.map( ( [ lo, hi ] ) => `${ lo }-${ Infinity === hi ? 'up' : hi - 1 }` ).join( ', ' ) } (${ via }); hidden on ${ tiers.join( ', ' ) }${ snaps.length ? `; snapped ${ snaps.map( ( s ) => `${ s.draft } to ${ s.tier }` ).join( ', ' ) }` : '' }` );
-			continue;
-		}
-		const own = ownBreakpoint( db, n.name );
-		const edges = hidden.flat().filter( ( x ) => x > 0 && Infinity > x );
-		if ( own && 1 === new Set( edges ).size ) {
-			put( own, edges[ 0 ], `width gate (${ via }): the block's own breakpoint` );
-			out.notes.push( `${ ref } ${ n.name }: ${ via } written to its own setting ${ own } = ${ edges[ 0 ] }` );
 			continue;
 		}
 		const css = hidden.map( mediaRule ).join( ' ' );
