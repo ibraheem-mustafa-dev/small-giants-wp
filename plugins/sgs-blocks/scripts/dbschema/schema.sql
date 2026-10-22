@@ -1,12 +1,12 @@
 -- SGS framework knowledge-base schema
--- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-10-20
+-- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-10-22
 -- by: python dbschema/check_schema_drift.py --regenerate
 -- Do NOT hand-edit: byte-fidelity to the live schema is the entire point.
 -- Regenerate rather than patch, then run: python dbschema/check_schema_drift.py --check
 --
 -- EXCLUDED: SQLite-internal objects (sqlite_*) — SQLite creates these itself and
 -- REFUSES an explicit CREATE ('object name reserved for internal use').
--- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1, sqlite_autoindex_components_1, sqlite_autoindex_motion_presets_1, sqlite_autoindex_motion_targets_1, sqlite_autoindex_motion_fields_1, sqlite_autoindex_property_equivalents_1, sqlite_autoindex_states_1
+-- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1, sqlite_autoindex_components_1, sqlite_autoindex_motion_presets_1, sqlite_autoindex_motion_targets_1, sqlite_autoindex_motion_fields_1, sqlite_autoindex_states_1, sqlite_autoindex_property_equivalents_1
 
 -- table: array_item_schema
 CREATE TABLE array_item_schema (
@@ -26,7 +26,7 @@ CREATE TABLE block_attributes (
         default_value TEXT,
         enum_values TEXT,
         description TEXT,
-        is_responsive INTEGER DEFAULT 0, canonical_slot TEXT, role TEXT, derived_selector TEXT, output_signature TEXT, equivalent_implementations TEXT, inspector_control_type TEXT, source TEXT NOT NULL DEFAULT 'sgs', emit_shape TEXT, alt_companion_attr TEXT, css_layer TEXT, css_property TEXT, box_family TEXT, css_element TEXT, css_state TEXT, css_tier TEXT, canonical_slot_aliases TEXT, "tier_shape" TEXT, emit_shape_proof TEXT,
+        is_responsive INTEGER DEFAULT 0, canonical_slot TEXT, role TEXT, derived_selector TEXT, output_signature TEXT, equivalent_implementations TEXT, inspector_control_type TEXT, source TEXT NOT NULL DEFAULT 'sgs', emit_shape TEXT, alt_companion_attr TEXT, css_layer TEXT, css_property TEXT, box_family TEXT, css_element TEXT, css_state TEXT, css_tier TEXT, canonical_slot_aliases TEXT, "tier_shape" TEXT, emit_shape_proof TEXT, meaning TEXT,
         FOREIGN KEY (block_slug) REFERENCES blocks(slug),
         UNIQUE(block_slug, attr_name)
     );
@@ -301,7 +301,7 @@ CREATE TABLE plugins (
     );
 
 -- table: property_equivalents
-CREATE TABLE property_equivalents (
+CREATE TABLE "property_equivalents" (
     draft_property    TEXT NOT NULL,
     setting_property  TEXT NOT NULL,
     hop               TEXT NOT NULL CHECK (hop IN ('self', 'parent')),
