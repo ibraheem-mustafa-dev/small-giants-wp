@@ -30,7 +30,7 @@ CSS_PROPS = (
     r"place-(?:items|content|self)|flex(?:-(?:direction|wrap|grow|shrink|basis|flow))?|opacity|transform(?:-origin)?|filter|backdrop-filter|object-(?:fit|position)|aspect-ratio|"
     r"inset(?:-[a-z-]+)?|top|left|right|bottom|z-index|display|order|fill|stroke(?:-width)?|outline(?:-[a-z]+)?|transition(?:-[a-z-]+)?|animation(?:-[a-z-]+)?|mix-blend-mode|"
     r"clip-path|mask(?:-[a-z]+)?|columns|column-(?:count|width|rule)|writing-mode|white-space|overflow(?:-[xy])?|position|scale|rotate|translate|cursor|accent-color|caret-color|"
-    r"hyphens|vertical-align|list-style(?:-[a-z]+)?|visibility|isolation|content|-webkit-line-clamp|line-clamp|text-overflow|scroll-[a-z-]+|perspective|will-change|"
+    r"hyphens|vertical-align|list-style(?:-[a-z]+)?|visibility|isolation|content|-webkit-line-clamp|-webkit-text-stroke(?:-(?:width|color))?|line-clamp|text-overflow|scroll-[a-z-]+|perspective|will-change|"
     r"border-collapse|table-layout|counter-[a-z]+|object-view-box|offset-[a-z]+|stop-color)"
 )
 DECL_RE = re.compile(r"""['"\s;{(]""" + CSS_PROPS + r"""\s*:(?!:)""")

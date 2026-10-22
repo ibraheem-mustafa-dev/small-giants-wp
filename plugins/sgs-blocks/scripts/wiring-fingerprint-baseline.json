@@ -1,7 +1,7 @@
 {
  "_comment": "Wiring-fingerprint ratchet baseline (check-wiring-fingerprint.py). Each entry is <block>::<attr>::<link>. --check fails only for a blocking gap not listed here; regenerate with --update-baseline after fixing gaps, or add named gaps with --accept. Advisory links (L3-state, L6-token) are never listed.",
  "counts": {
-  "L3": 123,
+  "L3": 124,
   "L5": 12,
   "L2": 1,
   "L3-tier": 1,
@@ -133,6 +133,7 @@
   "sgs/star-rating::starColour::L5",
   "sgs/table-of-contents::scrollOffset::L3",
   "sgs/testimonial::ratingSize::L5",
+  "sgs/timeline::panelEdgeOpacity::L3",
   "sgs/trust-bar::shapeDividerBottom::L3",
   "sgs/trust-bar::shapeDividerBottomColour::L3",
   "sgs/trust-bar::shapeDividerBottomColourGradient::L3",

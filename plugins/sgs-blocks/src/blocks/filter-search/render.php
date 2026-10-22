@@ -202,7 +202,7 @@ $is_terms_mode = ( 'taxonomy-terms' === $search_mode );
 
 $wrapper_attrs = get_block_wrapper_attributes(
 	array(
-		'class'                       => 'sgs-filter-search ' . ( $is_terms_mode ? 'sgs-filter-search--terms ' : '' ) . $style_uid,
+		'class'                       => 'sgs-filter-search ' . $style_uid,
 		'data-sgs-filter-search'      => '',
 		'data-sgs-filter-search-mode' => $is_terms_mode ? 'terms' : 'chips',
 	)

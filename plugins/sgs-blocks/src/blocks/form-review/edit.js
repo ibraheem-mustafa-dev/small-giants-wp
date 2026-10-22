@@ -1,8 +1,8 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, TextControl, SelectControl, ToggleControl } from '@wordpress/components';
 import { SgsColourPanel, fillRow, textRow, SgsBorderControl, SgsLengthControl, TypographyControls } from '../../components';
-import { colourVar, typographyPreviewStyle, usePreviewTier, sgsLengthPreview, sgsBorderPreview } from '../../utils';
+import { backgroundPaintPreview, textPaintPreview, typographyPreviewStyle, usePreviewTier, sgsLengthPreview, sgsBorderPreview } from '../../utils';
 
 // D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
 // allow-list exactly (render.php validates the same set independently).
@@ -18,8 +18,9 @@ const HEADING_LEVEL_OPTIONS = [
 export default function Edit( { attributes, setAttributes } ) {
 	const { heading, headingLevel, intro, showEditLinks, editLabel } = attributes;
 	const tier = usePreviewTier();
+	const [ colourPalette ] = useSettings( 'color.palette' );
 	const cardStyle = {
-		backgroundColor: colourVar( attributes.cardBackgroundColour ) || undefined,
+		...backgroundPaintPreview( attributes.cardBackgroundColour, attributes.cardBackgroundColourGradient, colourPalette ),
 		padding: sgsLengthPreview( attributes.cardPadding ) || undefined,
 		...sgsBorderPreview(
 			{
@@ -32,8 +33,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		),
 	};
 	const titleStyle = typographyPreviewStyle( attributes, 'cardTitle', tier );
-	const termStyle = { color: colourVar( attributes.termColour ) || undefined };
-	const valueStyle = { color: colourVar( attributes.valueColour ) || undefined };
+	const termStyle = textPaintPreview( attributes.termColour, attributes.termColourGradient, colourPalette );
+	const valueStyle = textPaintPreview( attributes.valueColour, attributes.valueColourGradient, colourPalette );
 
 	const blockProps = useBlockProps( { className: 'sgs-form-review' } );
 
@@ -101,21 +102,21 @@ export default function Edit( { attributes, setAttributes } ) {
 						fillRow( {
 							key: 'card',
 							label: __( 'Card background', 'sgs-blocks' ),
-							attrs: { base: 'cardBackgroundColour' },
+							attrs: { base: 'cardBackgroundColour', gradient: 'cardBackgroundColourGradient' },
 							attributes,
 							setAttributes,
 						} ),
 						textRow( {
 							key: 'term',
 							label: __( 'Row label', 'sgs-blocks' ),
-							attrs: { base: 'termColour' },
+							attrs: { base: 'termColour', gradient: 'termColourGradient' },
 							attributes,
 							setAttributes,
 						} ),
 						textRow( {
 							key: 'value',
 							label: __( 'Row value', 'sgs-blocks' ),
-							attrs: { base: 'valueColour' },
+							attrs: { base: 'valueColour', gradient: 'valueColourGradient' },
 							attributes,
 							setAttributes,
 						} ),
