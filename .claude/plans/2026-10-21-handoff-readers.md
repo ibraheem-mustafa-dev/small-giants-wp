@@ -67,7 +67,7 @@ Bean's request, outside this plan: move Eye Care's Google review block into the 
 
 ## Status
 
-Where it stands (2026-10-22): waves 1 and 2 are built and live on indus-test (header post 201); the container band layers are built and live on all four test sites. Wave 3 has not started. Bean's priority (2026-10-22): this session runs the cloning tool's missing mechanisms first, the Indus delivery's framework units (`.claude/plans/2026-10-21-indus-delivery.md`: each unit's row is its spec, the `.claude/prompts/indus-session-*.md` file named beside it is its brief), then wave 3's universal rules, and the Indus header's polish last (it belongs to the delivery plan's Session R and U18 sign-off). After each unit its delivery-map keys are flipped (`node scripts/computed-route/delivery-map.mjs indus-foods --check`) and its Spec 48 FR Status lines updated; a prompt file is `git rm`'d once every task in it is done, or cut down to what is left. Next: the first unchecked item below.
+Where it stands (2026-10-22): the plan's purpose is that every cloning stage reads its facts from the handoff folder (the template, the logic, `surfaces.json`, `animations.json`, `tokens/*.css`, `assets/`, the README) through the one fact record, the render only confirming. Built: the template, logic and surfaces readers, the fact record, and two consumers (the skeleton's structure, wave 1; Fill's declared spacing, ratio-bound heights and `display`, wave 2), live on the Indus header (post 201). Not built: the animations, assets and README readers, and every other stage's switch to the record (below, from the register's per-stage index, `.claude/reports/2026-10-21-handoff-data-register.md`). Next: the first unchecked item below. Work outside this purpose (framework fixes, Indus delivery units, header polish) is recorded where it belongs and not taken here.
 
 ### Done
 
@@ -82,30 +82,30 @@ Where it stands (2026-10-22): waves 1 and 2 are built and live on indus-test (he
 
 ### Next, in order
 
-- [ ] 1. The cloning tool's missing mechanisms (code-only first, Sonnet implementers in worktrees, at most three at once):
-  - [ ] a. Gate machinery U16 (FR-48-41, FR-48-36 rendered-live half, FR-48-64, -65, -66 `gaps.json`, -67, -69, -22, -71, FR-48-20 code-to-code, FR-48-11 walker half), with U2c (spec truth and the inventory scanner) and U2b (intake never overwrites a confirmed `page-map.json`) [`indus-session-G.md`].
-  - [ ] b. Hash links U7 (`#/apply` to the page map's permalink; `lib/fill-presence.mjs::normaliseHref` drops every `#` href today), `env()` safe-area U4b, per-device hiding to the conditional-visibility settings U8, `lib/fill-media.mjs::paintedImageCheck` wired into the live check (U5's last image step) [`indus-session-B.md`, `indus-session-A.md`].
-  - [ ] c. The SVG subtree writer U6 [`indus-session-B.md`].
-  - [ ] d. Button presets FR-48-51 and one parent write over a loop body FR-48-14 (U15's first commits) [`indus-session-E.md` task 2].
-  - [ ] e. Script-effect and behaviour recognisers FR-48-77 and FR-48-80, U13 and U14 (about 35 records `lib/motion-layers.mjs::classify` skips) [`indus-session-D1.md`, `indus-session-D2.md`].
-  - [ ] f. The form writer U9: draft controls to `sgs/form-field-*` by framework-DB query [`indus-session-C.md`].
-- [ ] 2. Wave 3's universal rules (each: a rule from a universal signal, MUST FAIL test, red mutation, `taughtBy`, then the header rerun in §3 and cropped pairs):
-  - [ ] Width-gated content: an `sc-if` width condition to the block's breakpoint setting or a bounded `sgsCustomCss` rule (FR-48-50, this plan's alone); the Indus CTA (w >= 1260); Eye Care's 1060 fit test (Bean's decision 2).
-  - [ ] Current nav item from a forced current state and each link's resolved declarations (`aria-current` where present).
-  - [ ] Sticky and the scroll state from a declared `position:sticky` and the scroll listener's state key, after recalibrating `sgs/site-header` (`headerSticky`, `scrolledOffset` have no cache entry).
-  - [ ] Tokens into the theme snapshot, after proving why Indus's holds 16px/1.6 (`theme-extractor/typography.py`'s fallback); Indus pushed only after Bean sees the snapshot diff.
-  - [ ] Served-inventory keys (`Root/…`) translated through `lib/key-space.mjs`, so record rules apply to `skeleton.mjs propose` on the header.
-  - [ ] Fill reads the absorbed chips' text into `sgs/form-field-tiles` `tiles`.
-  - [ ] Wave 3 /qc-council.
-- [ ] 3. Indus header polish (Session R and U18 in the delivery plan; only where one blocks a step-2 rule):
-  - [ ] Row height `{{ R.headH }}` 72px / 72px / 84px: no setting holds it (the shared wrapper emits `minHeight` only for section blocks; the header and footer rows are layout blocks); Fill's `height` to `min-height` equivalence would write it once the rows have the setting. Bean's question on min-height against height is answered in the session; the choice is his.
-  - [ ] Burger at 768: its place (the draft's follows the button) and size (live 24×18px, 44px hit area on `::after`; the draft's 48×48).
-  - [ ] Caret drawn larger and heavier than the draft's.
-  - [ ] Eye Care's home hero heading 4px lower than the draft at 375 only.
-  - [ ] Two Solve candidates: the CTA's `.25s` transition against a motion token (Spec 38A §7); the button's `letterSpacing` written at desktop changing the 768 value.
-  - [ ] Bean signs the header pairs (FP-13) and FR-48-81's Status records it.
-- [ ] Eye Care comparison: re-key `sites/eye-care-ward-end/build/header.origin.json` and `footer.origin.json` by fingerprint (`lib/identity.mjs::realign`), run the skeleton writer on Eye Care's header and footer, diff with the built trees; the diff goes to Bean as ratchet rule candidates.
-- [ ] 4. Close (below).
+- [ ] 3. The readers the design lists and the record lacks (each writes its part of `sites/<client>/build/intake/facts.json` through `lib/fact-record.mjs`, a MUST FAIL test and a red mutation, Indus and Mama's re-intaken, the freeze diff checked):
+  - [ ] `lib/read-animations.mjs`: per element, the `animations.json` effects that target it or a descendant (ids by containment), with `trigger` (scroll threshold, interval), `breakpoints`, `reduced_motion` and route.
+  - [ ] `lib/read-assets.mjs`: each asset's intrinsic ratio (SVG viewBox, raster size) and the element that uses it; `image-slot` placeholder text kept as the alt evidence.
+  - [ ] `lib/read-readme.mjs`: the README's sections by `README.template.md`'s headings, its judgement calls, open items and platform intent, as evidence only (FR-48A-8, FR-48A-10).
+  - [ ] `surfaces.json` fields saved but unread: `state_keys`, `sc_if_tpl_ids`, `animation_ids`, `time_dependent`, `unresolved`, `closed_by`, page `blocks`.
+  - [ ] Logic values for elements no width renders and for states other than the entry route's resting state (the record holds resting values only).
+  - [ ] Served-inventory keys (`Root/…`) translated through `lib/key-space.mjs`, so record rules apply to `skeleton.mjs propose` on a served draft.
+- [ ] 4. Each stage reads the record (one consumer per stage; the old read it retires named in the commit):
+  - [ ] Fill states: a forced state through `surfaces.json` `state_keys` and the diff of resolved declarations (the current nav item's colour and underline; `aria-current` where present).
+  - [ ] Fill width gates: an `sc-if` width condition from the logic's syntax tree to the block's breakpoint setting or a bounded `sgsCustomCss` rule (FR-48-50, this plan's alone); the Indus CTA (w >= 1260); Eye Care's 1060 fit test (Bean's decision 2).
+  - [ ] Fill behaviour: sticky from a declared `position:sticky` and the scroll state from the listener's state key, cross-checked by `animations.json` (J-01), after recalibrating `sgs/site-header`; per-width motion scope from `animations.json` `breakpoints`.
+  - [ ] Fill content: the absorbed chips' text into `sgs/form-field-tiles` `tiles`; logic array counts checked against the rendered copies.
+  - [ ] Fill values: a declared `clamp()` held as one value where a calibration proves the setting takes it; token values for snapping.
+  - [ ] Theme snapshot: `tokens/*.css` into the extractor (FR-33-1), after proving why Indus's snapshot holds 16px/1.6 (`theme-extractor/typography.py`'s fallback); Indus pushed only after Bean sees the diff.
+  - [ ] Handoff check and intake: `surfaces.json` draft hashes and currency; `time_dependent`, `unresolved` and `closed_by`; README open items.
+  - [ ] Solve and live checks: `time_dependent` stubs and effects per state.
+  - [ ] Review and ledger: README judgement calls as difference reasons.
+- [ ] 5. The proving ground: after each consumer the Indus header reruns (§3) with cropped pairs; the wave's /qc-council; Bean signs the header pairs (FP-13) and FR-48-81's Status records it.
+- [ ] 6. Eye Care as the second answer sheet: re-key `sites/eye-care-ward-end/build/header.origin.json` and `footer.origin.json` by fingerprint (`lib/identity.mjs::realign`), run the skeleton writer on Eye Care's header and footer, diff with the built trees; the diff goes to Bean as ratchet rule candidates.
+- [ ] 7. Close (§4 below).
+
+Recorded elsewhere, not taken here:
+- Indus delivery units dispatched from this session on 2026-10-22 at the other session's relay (U2b and U2c, U5's `lib/fill-resolve.mjs` split and U7, U16's FR-48-41) are merged as Indus delivery work and recorded in `.claude/plans/2026-10-21-indus-delivery.md`; the rest of those units stay with its sessions.
+- Indus header polish (row height `{{ R.headH }}` 72px / 72px / 84px, the burger's place and size at 768, the caret's size, Eye Care's hero 4px at 375, the CTA `.25s` and `letterSpacing` Solve candidates) belongs to the delivery plan's Session R and U18. The row height needs a `minHeight` setting on the header and footer rows (the shared wrapper emits it only for section blocks); Bean's question on min-height against height was answered in the session, and the choice is his.
 
 ### Facts wave 3 needs
 
