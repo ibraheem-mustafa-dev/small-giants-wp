@@ -30,7 +30,7 @@ require_once __DIR__ . '/motion/migrate/class-sgs-motion-migrate-backup.php';
 require_once __DIR__ . '/motion/migrate/class-sgs-motion-migrate-lock.php';
 
 /**
- * Fold `contentBandPadding` into `padding` in stored block content, and list every stored `contentBandMargin` side (not folded: a band margin collapses where padding does not).
+ * Fold `contentBandPadding` and `contentBandMargin` into `padding` and `margin` in stored block content (`Sgs_Band_Padding_Folder`), reporting every band margin side and where it went.
  *
  * ## OPTIONS
  *
@@ -199,14 +199,21 @@ final class Sgs_Band_Padding_Migrate_Command {
 		$sides = 0;
 		foreach ( $this->margins as $margin ) {
 			foreach ( $margin['sides'] as $side ) {
-				++$sides;
-				\WP_CLI::warning( sprintf( 'BAND MARGIN post %d (%s) "%s" block %s %s: %s %s is %s on contentBandMargin, left as stored; set it on the block margin by hand.', $margin['ID'], $margin['type'], $margin['title'], $margin['path'], $margin['block'], $side['tier'], $side['side'], $side['value'] ) );
+				$where = sprintf( 'post %d (%s) "%s" block %s %s: %s %s band margin %s', $margin['ID'], $margin['type'], $margin['title'], $margin['path'], $margin['block'], $side['tier'], $side['side'], $side['value'] );
+				if ( 'kept' === $side['to'] ) {
+					++$sides;
+					\WP_CLI::warning( 'BAND MARGIN ' . $where . ' moves the band off its centring; the block\'s band margin is left as stored, set it by hand.' );
+				} elseif ( 'dropped' === $side['to'] ) {
+					\WP_CLI::warning( 'BAND MARGIN ' . $where . ' dropped; the band centres again (check it where the band is narrower than the block).' );
+				} else {
+					\WP_CLI::log( sprintf( '  band margin %s folded into %s as %s', $where, $side['to'], $side['result'] ) );
+				}
 			}
 		}
 		foreach ( $this->skipped as $line ) {
 			\WP_CLI::warning( $line );
 		}
-		\WP_CLI::log( sprintf( '%d post(s) with changes, %d block(s) folded, %d side(s) set on both and summed, %d post(s) skipped, %d band margin side(s) left as stored.', count( $rows ), $blocks, $conflicts, count( $this->skipped ), $sides ) );
+		\WP_CLI::log( sprintf( '%d post(s) with changes, %d block(s) folded, %d side(s) set on both and summed, %d post(s) skipped, %d band margin side(s) left as stored (non-zero left or right).', count( $rows ), $blocks, $conflicts, count( $this->skipped ), $sides ) );
 	}
 
 	/**

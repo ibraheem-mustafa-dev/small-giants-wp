@@ -1,6 +1,6 @@
 <?php
 /**
- * Folds a stored `contentBandPadding` into `padding` in one post's block content, and lists a stored `contentBandMargin`.
+ * Folds a stored `contentBandPadding` and `contentBandMargin` into `padding` and `margin` in one post's block content.
  *
  * `padding` paints the content band and is the only padding control of a block that declares `contentWidth`
  * (`SGS_Container_Wrapper::render`), so a block comment that still carries `contentBandPadding` moves its sides
@@ -10,10 +10,10 @@
  * is `calc( own + band )` and is reported. Only the attribute JSON of the changed block
  * comments is replaced in the stored text, so every other byte of the post is untouched.
  *
- * A stored `contentBandMargin` is not folded. The band is a block-flow child of the block's outer element, so its
- * top and bottom margins collapse through that element (merging with the neighbours' margins) where padding never
- * does, and its left and right margins override the band's auto centring. No padding value paints the same space, so
- * every stored side is listed for a person to move onto the block's `margin`, and the block comment is left as stored.
+ * A stored `contentBandMargin` is folded where its look can be kept (`fold_margin()`): a top or bottom side the
+ * block's outer element holds in joins `padding`, one that collapses through it joins `margin` as the larger of the
+ * two, and a zero left or right side is dropped; a block with a non-zero left or right band margin is left as stored
+ * and listed for a person to place.
  *
  * @package SGS\Blocks
  */
@@ -122,30 +122,142 @@ final class Sgs_Band_Padding_Folder {
 	}
 
 	/**
-	 * The sides a block's stored `contentBandMargin` still sets, per tier.
+	 * Fold one block's stored `contentBandMargin`.
 	 *
-	 * A zero top or bottom is skipped (it paints nothing); a zero left or right is kept because it overrides the
-	 * band's auto centring.
+	 * The band is a block-flow child of the block's outer element. A top or bottom band margin stays inside that
+	 * element when the element holds it in (a border on that side, or a minimum height, which makes the element a flex
+	 * box): there it paints the same space as band padding, so it is added to `padding`. Otherwise it collapses through
+	 * the element and merges with the element's own margin on that side, the larger of the two winning, so that side of
+	 * `margin` becomes the larger value. Each side is read as its tier paints it (a tier with no value takes the nearest
+	 * larger tier's). A left or right band margin overrides the band's auto centring: a zero one is dropped and reported
+	 * (it moves the band only where the band is narrower than its element), and any other leaves the block's band
+	 * margin as stored, reported, for a person to place.
 	 *
 	 * @param array<string,mixed> $attrs Stored attributes of the block.
-	 * @return array<int,array{tier:string,side:string,value:string}>
+	 * @return array{attrs:array<string,mixed>,sides:array<int,array<string,string>>,kept:bool}|null Null when the block
+	 *         carries no `contentBandMargin`. Each side row: tier, side, value, to (padding, margin, dropped or kept),
+	 *         result.
 	 */
-	public static function band_margins( array $attrs ): array {
-		$out = array();
-		foreach ( self::tiers_of( $attrs[ self::MARGIN_ATTRIBUTE ] ?? null ) as $tier => $box ) {
-			foreach ( self::SIDES as $side ) {
+	public static function fold_margin( array $attrs ): ?array {
+		if ( ! array_key_exists( self::MARGIN_ATTRIBUTE, $attrs ) ) {
+			return null;
+		}
+		$band  = self::tiers_of( $attrs[ self::MARGIN_ATTRIBUTE ] );
+		$sides = array();
+		foreach ( $band as $tier => $box ) {
+			foreach ( array( 'left', 'right' ) as $side ) {
 				$value = self::length( $box[ $side ] ?? null );
-				if ( '' === $value || ( in_array( $side, array( 'top', 'bottom' ), true ) && self::is_zero( $value ) ) ) {
+				if ( '' !== $value && ! self::is_zero( $value ) ) {
+					$sides[] = array(
+						'tier'   => $tier,
+						'side'   => $side,
+						'value'  => $value,
+						'to'     => 'kept',
+						'result' => '',
+					);
+				}
+			}
+		}
+		if ( array() !== $sides ) {
+			return array(
+				'attrs' => $attrs,
+				'sides' => $sides,
+				'kept'  => true,
+			);
+		}
+		unset( $attrs[ self::MARGIN_ATTRIBUTE ] );
+		$padding = self::tiers_of( $attrs['padding'] ?? null );
+		$margin  = self::tiers_of( $attrs['margin'] ?? null );
+		$border  = self::tiers_of( $attrs['borderWidth'] ?? null );
+		$styled  = 'none' !== ( $attrs['borderStyle'] ?? 'solid' );
+		$tall    = self::has_length( $attrs['minHeight'] ?? null );
+		foreach ( self::TIERS as $index => $tier ) {
+			foreach ( self::SIDES as $side ) {
+				$value = self::length( $band[ $tier ][ $side ] ?? null );
+				if ( '' === $value ) {
 					continue;
 				}
-				$out[] = array(
-					'tier'  => $tier,
-					'side'  => $side,
-					'value' => $value,
+				if ( in_array( $side, array( 'left', 'right' ), true ) ) {
+					$sides[] = array(
+						'tier'   => $tier,
+						'side'   => $side,
+						'value'  => $value,
+						'to'     => 'dropped',
+						'result' => '',
+					);
+					continue;
+				}
+				if ( self::is_zero( $value ) ) {
+					continue;
+				}
+				$edge = self::inherited( $border, $index, $side );
+				if ( $tall || ( $styled && '' !== $edge && ! self::is_zero( $edge ) ) ) {
+					$result                    = self::sum( self::inherited( $padding, $index, $side ), $value );
+					$padding[ $tier ][ $side ] = $result;
+					$to                        = 'padding';
+				} else {
+					$result                   = self::larger( self::inherited( $margin, $index, $side ), $value );
+					$margin[ $tier ][ $side ] = $result;
+					$to                       = 'margin';
+				}
+				$sides[] = array(
+					'tier'   => $tier,
+					'side'   => $side,
+					'value'  => $value,
+					'to'     => $to,
+					'result' => $result,
 				);
 			}
 		}
-		return $out;
+		foreach ( array( 'padding' => $padding, 'margin' => $margin ) as $name => $tiers ) {
+			if ( array() !== $tiers ) {
+				$ordered = array();
+				foreach ( self::TIERS as $tier ) {
+					if ( isset( $tiers[ $tier ] ) ) {
+						$ordered[ $tier ] = $tiers[ $tier ];
+					}
+				}
+				$attrs[ $name ] = $ordered;
+			}
+		}
+		return array(
+			'attrs' => $attrs,
+			'sides' => $sides,
+			'kept'  => false,
+		);
+	}
+
+	/**
+	 * Whether a stored length or tier object of lengths sets any value.
+	 *
+	 * @param mixed $value Stored attribute value.
+	 * @return bool
+	 */
+	private static function has_length( $value ): bool {
+		if ( is_array( $value ) ) {
+			foreach ( $value as $one ) {
+				if ( self::has_length( $one ) ) {
+					return true;
+				}
+			}
+			return false;
+		}
+		$length = self::length( $value );
+		return '' !== $length && ! self::is_zero( $length );
+	}
+
+	/**
+	 * Two collapsing margins leave the larger: a zero or absent side gives way, two lengths become `max()`.
+	 *
+	 * @param string $own  The block's margin on that side.
+	 * @param string $band The band's margin on that side.
+	 * @return string
+	 */
+	private static function larger( string $own, string $band ): string {
+		if ( '' === $own || self::is_zero( $own ) || $own === $band ) {
+			return $band;
+		}
+		return 'max(' . $own . ', ' . $band . ')';
 	}
 
 	/**
@@ -263,21 +375,23 @@ final class Sgs_Band_Padding_Folder {
 			if ( ! empty( $block['blockName'] ) && is_string( $block['blockName'] ) ) {
 				$seq   = $run['seq']++;
 				$attrs = is_array( $block['attrs'] ?? null ) ? $block['attrs'] : array();
-				$out   = self::fold( $attrs );
-				$sides = self::band_margins( $attrs );
-				if ( array() !== $sides ) {
+				$out    = self::fold( $attrs );
+				$folded = null !== $out ? $out['attrs'] : $attrs;
+				$margin = self::fold_margin( $folded );
+				if ( null !== $margin && array() !== $margin['sides'] ) {
 					$run['margins'][] = array(
 						'path'  => $here,
 						'block' => $block['blockName'],
-						'sides' => $sides,
+						'sides' => $margin['sides'],
 					);
 				}
-				if ( null !== $out ) {
-					$run['patches'][ $seq ] = $out['attrs'];
+				$margin_folded = null !== $margin && ! $margin['kept'];
+				if ( null !== $out || $margin_folded ) {
+					$run['patches'][ $seq ] = $margin_folded ? $margin['attrs'] : $folded;
 					$run['changes'][]       = array(
 						'path'      => $here,
 						'block'     => $block['blockName'],
-						'conflicts' => $out['conflicts'],
+						'conflicts' => null !== $out ? $out['conflicts'] : array(),
 					);
 				}
 			}

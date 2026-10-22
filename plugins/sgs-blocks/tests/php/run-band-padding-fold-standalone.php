@@ -261,38 +261,61 @@ ok( ! $misaligned['changed'], 'misaligned comments: the content is not rewritten
 ok( isset( $misaligned['skipped'] ) && '' !== $misaligned['skipped'], 'misaligned comments: the post is reported as skipped' );
 ok( ! isset( $clean['skipped'] ) && ! isset( $result['skipped'] ), 'aligned content: nothing is reported as skipped' );
 
-// contentBandMargin is never folded: top and bottom collapse through the outer element where padding does not,
-// and left and right override the band's auto centring. Every stored side is listed, the comment is left as stored.
+// contentBandMargin, collapsing case (MUST FAIL against list-and-leave): with no border or minimum height the band's
+// top and bottom margins collapse through the outer element, so they join `margin`; a zero left side is dropped.
 $content = '<!-- wp:sgs/container {"contentBandMargin":{"desktop":{"top":"20px","left":"0px"},"mobile":{"bottom":"8px"}},"padding":{"desktop":{"top":"5px"}}} --><div></div><!-- /wp:sgs/container -->';
 $result  = $folder->migrate_content( $content );
-ok( ! $result['changed'] && $content === $result['content'], 'margin only: the content is not rewritten' );
-same( 1, count( $result['margins'] ), 'margin only: one block reported' );
-same(
+ok( $result['changed'], 'band margin, collapsing: the content changed' );
+ok( false === strpos( $result['content'], 'contentBandMargin' ), 'band margin, collapsing: the attribute is gone' );
+ok( false !== strpos( $result['content'], '"margin":{"desktop":{"top":"20px"},"mobile":{"bottom":"8px"}}' ), 'band margin, collapsing: top and bottom join margin per tier' );
+ok( false !== strpos( $result['content'], '"padding":{"desktop":{"top":"5px"}}' ), 'band margin, collapsing: padding is untouched' );
+same( array( 'margin', 'dropped', 'margin' ), array_column( $result['margins'][0]['sides'], 'to' ), 'band margin, collapsing: each side reports where it went' );
+same( '0', $result['margins'][0]['path'], 'band margin: the block path is reported' );
+
+// Collapsing against the block's own margin leaves the larger: equal stays, different becomes max().
+$out = Sgs_Band_Padding_Folder::fold_margin(
 	array(
-		array(
-			'tier'  => 'desktop',
-			'side'  => 'top',
-			'value' => '20px',
-		),
-		array(
-			'tier'  => 'desktop',
-			'side'  => 'left',
-			'value' => '0px',
-		),
-		array(
-			'tier'  => 'mobile',
-			'side'  => 'bottom',
-			'value' => '8px',
-		),
-	),
-	$result['margins'][0]['sides'],
-	'margin only: top, left (zero kept, it overrides centring) and mobile bottom are listed by tier and side'
+		'margin'            => array( 'desktop' => array( 'bottom' => '28px', 'top' => '10px' ) ),
+		'contentBandMargin' => array( 'desktop' => array( 'bottom' => '28px', 'top' => '30px' ) ),
+	)
 );
-same( '0', $result['margins'][0]['path'], 'margin only: the block path is reported' );
+same( array( 'bottom' => '28px', 'top' => 'max(10px, 30px)' ), $out['attrs']['margin']['desktop'], 'band margin, collapsing: the larger of the two margins' );
+
+// Held in by a border on that side (MUST FAIL against margin-always): the band margin paints inside, as padding.
+$out = Sgs_Band_Padding_Folder::fold_margin(
+	array(
+		'borderWidth'       => array( 'bottom' => '1px' ),
+		'padding'           => array( 'desktop' => array( 'bottom' => '4px' ) ),
+		'contentBandMargin' => array( 'desktop' => array( 'bottom' => '28px', 'top' => '6px' ) ),
+	)
+);
+same( array( 'bottom' => 'calc(4px + 28px)' ), $out['attrs']['padding']['desktop'], 'band margin, border: the bordered side joins padding' );
+same( array( 'top' => '6px' ), $out['attrs']['margin']['desktop'], 'band margin, border: the unbordered side still collapses into margin' );
+$out = Sgs_Band_Padding_Folder::fold_margin(
+	array(
+		'borderWidth'       => array( 'bottom' => '1px' ),
+		'borderStyle'       => 'none',
+		'contentBandMargin' => array( 'desktop' => array( 'bottom' => '28px' ) ),
+	)
+);
+same( array( 'bottom' => '28px' ), $out['attrs']['margin']['desktop'], 'band margin, border style none: no border holds it, it joins margin' );
+
+// Held in by a minimum height (the outer element is then a flex box): every side joins padding.
+$out = Sgs_Band_Padding_Folder::fold_margin(
+	array(
+		'minHeight'         => array( 'desktop' => '400px' ),
+		'contentBandMargin' => array( 'desktop' => array( 'bottom' => '28px' ) ),
+	)
+);
+same( array( 'bottom' => '28px' ), $out['attrs']['padding']['desktop'], 'band margin, minimum height: it joins padding' );
+
+// Zero top and bottom paint nothing: the attribute goes and nothing is reported.
 $zero = $folder->migrate_content( '<!-- wp:sgs/container {"contentBandMargin":{"desktop":{"top":"0px","bottom":"0"}}} --><div></div><!-- /wp:sgs/container -->' );
+ok( $zero['changed'] && false === strpos( $zero['content'], 'contentBandMargin' ), 'zero top and bottom: the attribute goes' );
 same( array(), $zero['margins'], 'zero top and bottom: nothing to report' );
 
-// Both retired attributes on one block: the padding folds, the margin is kept and reported.
+// Both retired attributes on one block: the padding folds; a non-zero right band margin keeps the band margin as
+// stored and reports it.
 $content = '<!-- wp:sgs/hero {"contentBandPadding":{"desktop":{"left":"30px"}},"contentBandMargin":{"desktop":{"right":"12px"}},"padding":{"desktop":{"top":"9px"}}} /-->';
 $result  = $folder->migrate_content( $content );
 ok( $result['changed'], 'both attributes: the content changed' );
