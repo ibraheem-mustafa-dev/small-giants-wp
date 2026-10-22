@@ -63,6 +63,16 @@ _populate_allowed_blocks = _UPDATE_MOD._populate_allowed_blocks
 # Helpers
 # ---------------------------------------------------------------------------
 
+def _scratch_db_copy() -> sqlite3.Connection:
+    """A writable copy of the framework DB in a temp folder. The integration tests run the real
+    write path, so they must never touch the shared DB that other sessions read."""
+    src = sqlite3.connect(f"file:{_REAL_DB.as_posix()}?mode=ro", uri=True)
+    dst = sqlite3.connect(str(Path(tempfile.mkdtemp()) / "sgs-framework.db"))
+    src.backup(dst)
+    src.close()
+    return dst
+
+
 def _write_edit_js(tmp_path: Path, content: str) -> Path:
     """Write a fake edit.js to a temp directory and return the path."""
     f = tmp_path / "edit.js"
@@ -306,7 +316,7 @@ class TestIntegrationRealBlocks:
         assert ground_truth == ["sgs/accordion-item"], (
             f"edit.js ground-truth unexpected: {ground_truth}"
         )
-        conn = sqlite3.connect(str(_REAL_DB))
+        conn = _scratch_db_copy()
         try:
             stored = self._get_stored(conn, "sgs/accordion")
         finally:
@@ -321,7 +331,7 @@ class TestIntegrationRealBlocks:
         assert ground_truth == ["sgs/tab"], (
             f"edit.js ground-truth unexpected: {ground_truth}"
         )
-        conn = sqlite3.connect(str(_REAL_DB))
+        conn = _scratch_db_copy()
         try:
             stored = self._get_stored(conn, "sgs/tabs")
         finally:
@@ -334,7 +344,7 @@ class TestIntegrationRealBlocks:
         assert ground_truth == ["sgs/button"], (
             f"edit.js ground-truth unexpected: {ground_truth}"
         )
-        conn = sqlite3.connect(str(_REAL_DB))
+        conn = _scratch_db_copy()
         try:
             stored = self._get_stored(conn, "sgs/multi-button")
         finally:
@@ -343,7 +353,7 @@ class TestIntegrationRealBlocks:
 
     def test_container_is_null(self) -> None:
         """sgs/container → NULL (dynamic conditional, no literal array)."""
-        conn = sqlite3.connect(str(_REAL_DB))
+        conn = _scratch_db_copy()
         try:
             stored = self._get_stored(conn, "sgs/container")
         finally:
@@ -354,7 +364,7 @@ class TestIntegrationRealBlocks:
 
     def test_counts_scanned_gt_zero(self) -> None:
         """allowed_blocks_scanned must be > 0 (edit.js files were found)."""
-        conn = sqlite3.connect(str(_REAL_DB))
+        conn = _scratch_db_copy()
         c = conn.cursor()
         try:
             counts = _populate_allowed_blocks(_BLOCKS_DIR, c, dry_run=False)
@@ -366,7 +376,7 @@ class TestIntegrationRealBlocks:
     def test_idempotency_second_run_zero_updates(self) -> None:
         """A second run of _populate_allowed_blocks must report
         allowed_blocks_updated == 0 (write-on-drift idempotency)."""
-        conn = sqlite3.connect(str(_REAL_DB))
+        conn = _scratch_db_copy()
         c = conn.cursor()
         try:
             # First run (populates)
@@ -384,7 +394,7 @@ class TestIntegrationRealBlocks:
     def test_db_count_gt_zero(self) -> None:
         """SELECT COUNT(*) FROM block_composition WHERE accepts_allowed_blocks IS NOT NULL
         must be > 0 after a scrape run."""
-        conn = sqlite3.connect(str(_REAL_DB))
+        conn = _scratch_db_copy()
         try:
             row = conn.execute(
                 "SELECT COUNT(*) FROM block_composition WHERE accepts_allowed_blocks IS NOT NULL"

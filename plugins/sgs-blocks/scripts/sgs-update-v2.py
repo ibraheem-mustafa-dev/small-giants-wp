@@ -3135,9 +3135,11 @@ def _populate_allowed_blocks(
     write a JSON-array string into block_composition.accepts_allowed_blocks
     (UPDATE only when the stored value differs — write-on-drift, idempotent).
 
-    Blocks with no allowedBlocks at all → column NULL (a stored value is cleared).
-    Blocks with a dynamic allowedBlocks expression → column NULL (a stored value
-    is cleared) and counted in dynamic_skipped.
+    Blocks with no allowedBlocks found, or a dynamic allowedBlocks expression, leave the
+    stored value untouched (dynamic ones are counted in dynamic_skipped): the scraper
+    returns None both when edit.js declares no list and when it cannot parse the
+    declaration (sgs/multi-button's `const allowedBlocks = [...]`), so a None never clears
+    a value written earlier.
 
     Returns counters:
         allowed_blocks_scanned    — edit.js files examined
@@ -3164,12 +3166,13 @@ def _populate_allowed_blocks(
 
         if result is _DYNAMIC_SKIP:
             dynamic_skipped += 1
-            new_value = None  # dynamic means we cannot know statically: the column is cleared
-        elif result is None:
-            new_value = None  # no declaration: the column is cleared
-        else:
-            # Literal array found — serialise to canonical JSON.
-            new_value = json.dumps(result, ensure_ascii=False)
+            continue  # leave column NULL — dynamic means we cannot know statically
+
+        if result is None:
+            continue  # no declaration → leave column NULL
+
+        # Literal array found — serialise to canonical JSON.
+        new_value = json.dumps(result, ensure_ascii=False)
 
         # Derive block slug from block.json (same logic as _index_sgs_block_files).
         block_json_path = block_dir / "block.json"
@@ -3190,8 +3193,7 @@ def _populate_allowed_blocks(
                 (slug,),
             ).fetchone()
             if existing_row is not None:
-                if new_value is not None:
-                    populated += 1
+                populated += 1
                 if existing_row[0] != new_value:
                     updated += 1
             continue
@@ -3215,8 +3217,7 @@ def _populate_allowed_blocks(
             )
             updated += 1
 
-        if new_value is not None:
-            populated += 1
+        populated += 1
 
     return {
         "allowed_blocks_scanned": scanned,

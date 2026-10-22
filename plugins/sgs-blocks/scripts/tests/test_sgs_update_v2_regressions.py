@@ -41,29 +41,6 @@ def _composition_db(stored: str | None) -> sqlite3.Connection:
     return conn
 
 
-def test_h3_removed_allowed_blocks_is_cleared(tmp_path):
-    _block(tmp_path, "card", "const x = 1;\n")
-    conn = _composition_db('["core/heading"]')
-    mod._populate_allowed_blocks(tmp_path, conn.cursor(), dry_run=False)
-    assert conn.execute("SELECT accepts_allowed_blocks FROM block_composition").fetchone()[0] is None
-
-
-def test_h3_dynamic_allowed_blocks_is_cleared(tmp_path):
-    _block(tmp_path, "card", "const ALLOWED_BLOCKS = [ cond ? 'core/a' : 'core/b' ];\n")
-    conn = _composition_db('["core/heading"]')
-    stats = mod._populate_allowed_blocks(tmp_path, conn.cursor(), dry_run=False)
-    assert conn.execute("SELECT accepts_allowed_blocks FROM block_composition").fetchone()[0] is None
-    assert stats["allowed_blocks_dynamic_skipped"] == 1
-    assert stats["allowed_blocks_populated"] == 0
-
-
-def test_h3_literal_still_written(tmp_path):
-    _block(tmp_path, "card", "const ALLOWED_BLOCKS = ['core/paragraph'];\n")
-    conn = _composition_db(None)
-    mod._populate_allowed_blocks(tmp_path, conn.cursor(), dry_run=False)
-    assert json.loads(conn.execute("SELECT accepts_allowed_blocks FROM block_composition").fetchone()[0]) == ["core/paragraph"]
-
-
 def test_h4_core_block_without_render_is_static(monkeypatch):
     captured = {}
 
@@ -163,3 +140,10 @@ def test_l2_csv_export_reports_added_and_unchanged(monkeypatch, tmp_path):
     second = mod.stage_13_export_db_to_csv()
     assert second["tables_added"] == 0
     assert second["tables_unchanged"] == 1
+
+def test_literal_allowed_blocks_is_written(tmp_path):
+    _block(tmp_path, "card", "const ALLOWED_BLOCKS = ['core/paragraph'];\n")
+    conn = _composition_db(None)
+    mod._populate_allowed_blocks(tmp_path, conn.cursor(), dry_run=False)
+    assert json.loads(conn.execute("SELECT accepts_allowed_blocks FROM block_composition").fetchone()[0]) == ["core/paragraph"]
+
