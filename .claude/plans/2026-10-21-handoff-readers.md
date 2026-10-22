@@ -67,7 +67,7 @@ Bean's request, outside this plan: move Eye Care's Google review block into the 
 
 ## Status
 
-Where it stands (2026-10-22): waves 1 and 2 are built and live on indus-test (header post 201); the container band layers are built and live on all four test sites. Wave 3 has not started. Next: wave 3's first unchecked item below.
+Where it stands (2026-10-22): waves 1 and 2 are built and live on indus-test (header post 201); the container band layers are built and live on all four test sites. Wave 3 has not started. Bean's priority (2026-10-22): this session runs the cloning tool's missing mechanisms first, the Indus delivery's framework units (`.claude/plans/2026-10-21-indus-delivery.md`: each unit's row is its spec, the `.claude/prompts/indus-session-*.md` file named beside it is its brief), then wave 3's universal rules, and the Indus header's polish last (it belongs to the delivery plan's Session R and U18 sign-off). After each unit its delivery-map keys are flipped (`node scripts/computed-route/delivery-map.mjs indus-foods --check`) and its Spec 48 FR Status lines updated; a prompt file is `git rm`'d once every task in it is done, or cut down to what is left. Next: the first unchecked item below.
 
 ### Done
 
@@ -77,23 +77,33 @@ Where it stands (2026-10-22): waves 1 and 2 are built and live on indus-test (he
 - [x] Wave 2, Fill reads the draft's declared values: spacing ownership from the code (`4b91affb4`), the `intrinsic-ratio` equivalent and `display` to the layout setting (`5f01793a1`, migration and reseed at `ac2b8b3e7`), menu labels from the draft link text and carried `logoId` / menu `ref` (`de06f879c`), QC fixes (`d1bce54f1`), the width wrapper as its host's `contentWidth` slot (`daeced937`), the logo cap on the image (`f9b1fd493`, `26c9a9dff`). Live on post 201: row gap 20px, logo 279×63 against the draft's 280×63 at 1440 and 247×56 at 768, menu reads Contact; site build ran (`sites/indus-foods/build/menu-map.json`).
 - [x] Wave 2 live check (/qc-council): at 768 and 1440 the logo, band and gap match the draft; split toggles 44×44px, keyboard and Escape pass; measure-only Solve `sites/indus-foods/build/qa/solve/header/2026-10-22T07-36-54`: 38 issues, 0 wrong writes. Fixes `6fd28682f`, `f2ceacfed`.
 - [x] Nav caret and wrap (Bean's option A, `a36cb6faf`): the split item draws its caret inside the item with a 44×44px target that never reaches the next item; the bar's `flexWrap` defaults to one row. Live at 1440 the nav is one row, 570px against the draft's 544.
+- [x] Clone coverage declarations: every writer module declares its `COVERAGE_WRITES` (17 modules) and `lib/clone-coverage.mjs::coverageProblems` checks both ways (`e5b7f1855`).
 - [x] Container band layers (Bean): every block has one Padding and one Margin; on the 24 blocks with `contentWidth`, `contentWidth` is the band's `max-width` and `padding` paints the band (the outer element where no band renders); `margin` paints the outer element; a stylesheet's padding default follows the same rule (the standard hero's). `contentBandPadding` and `contentBandMargin` are removed and saved posts folded by `wp sgs band-padding-migrate` (`.claude/wp-sgs-cli.md`), run on all four test sites. Gate `check-container-band-layers` (binary `--check`); all 24 blocks recalibrated on `local-indus`, only the retired settings lost. Live: Eye Care's home hero matches its draft (heading x 20 / 52 / 52 at 375 / 768 / 1440). Commits `700fdc58e` to `1e7c5025f`; Spec 02's contentWidth bullet holds the rule.
 
 ### Next, in order
 
-- [ ] 3. Wave 3 (each item: rule from a universal signal, MUST FAIL test, red mutation, `taughtBy`, then the header rerun in §3 and cropped pairs):
-  - [ ] Row height: `{{ R.headH }}` 72px / 72px / 84px on the row's inner element; no setting on `.sgs-container__inner` holds a height today.
-  - [ ] Current nav item: colour and gold underline from a forced current state and each link's resolved declarations (`aria-current` where present).
-  - [ ] Width-gated content: the CTA's `sc-if` (shown at w >= 1260) to the block's breakpoint setting or a bounded `sgsCustomCss` rule (FR-48-50); live the CTA shows at 375 and 768 and squeezes the logo at 375. Eye Care's 1060 fit test (Bean's decision 2).
-  - [ ] Burger at 768: its place (the draft's follows the button, the live one sits between logo and button) and size (live 24×18px, 44px hit area on `::after`; the draft's 48×48).
-  - [ ] Caret: drawn larger and heavier than the draft's.
-  - [ ] Sticky and the scroll state, after recalibrating `sgs/site-header` (`headerSticky`, `scrolledOffset` have no cache entry).
+- [ ] 1. The cloning tool's missing mechanisms (code-only first, Sonnet implementers in worktrees, at most three at once):
+  - [ ] a. Gate machinery U16 (FR-48-41, FR-48-36 rendered-live half, FR-48-64, -65, -66 `gaps.json`, -67, -69, -22, -71, FR-48-20 code-to-code, FR-48-11 walker half), with U2c (spec truth and the inventory scanner) and U2b (intake never overwrites a confirmed `page-map.json`) [`indus-session-G.md`].
+  - [ ] b. Hash links U7 (`#/apply` to the page map's permalink; `lib/fill-presence.mjs::normaliseHref` drops every `#` href today), `env()` safe-area U4b, per-device hiding to the conditional-visibility settings U8, `lib/fill-media.mjs::paintedImageCheck` wired into the live check (U5's last image step) [`indus-session-B.md`, `indus-session-A.md`].
+  - [ ] c. The SVG subtree writer U6 [`indus-session-B.md`].
+  - [ ] d. Button presets FR-48-51 and one parent write over a loop body FR-48-14 (U15's first commits) [`indus-session-E.md` task 2].
+  - [ ] e. Script-effect and behaviour recognisers FR-48-77 and FR-48-80, U13 and U14 (about 35 records `lib/motion-layers.mjs::classify` skips) [`indus-session-D1.md`, `indus-session-D2.md`].
+  - [ ] f. The form writer U9: draft controls to `sgs/form-field-*` by framework-DB query [`indus-session-C.md`].
+- [ ] 2. Wave 3's universal rules (each: a rule from a universal signal, MUST FAIL test, red mutation, `taughtBy`, then the header rerun in §3 and cropped pairs):
+  - [ ] Width-gated content: an `sc-if` width condition to the block's breakpoint setting or a bounded `sgsCustomCss` rule (FR-48-50, this plan's alone); the Indus CTA (w >= 1260); Eye Care's 1060 fit test (Bean's decision 2).
+  - [ ] Current nav item from a forced current state and each link's resolved declarations (`aria-current` where present).
+  - [ ] Sticky and the scroll state from a declared `position:sticky` and the scroll listener's state key, after recalibrating `sgs/site-header` (`headerSticky`, `scrolledOffset` have no cache entry).
   - [ ] Tokens into the theme snapshot, after proving why Indus's holds 16px/1.6 (`theme-extractor/typography.py`'s fallback); Indus pushed only after Bean sees the snapshot diff.
   - [ ] Served-inventory keys (`Root/…`) translated through `lib/key-space.mjs`, so record rules apply to `skeleton.mjs propose` on the header.
   - [ ] Fill reads the absorbed chips' text into `sgs/form-field-tiles` `tiles`.
+  - [ ] Wave 3 /qc-council.
+- [ ] 3. Indus header polish (Session R and U18 in the delivery plan; only where one blocks a step-2 rule):
+  - [ ] Row height `{{ R.headH }}` 72px / 72px / 84px: no setting holds it (the shared wrapper emits `minHeight` only for section blocks; the header and footer rows are layout blocks); Fill's `height` to `min-height` equivalence would write it once the rows have the setting. Bean's question on min-height against height is answered in the session; the choice is his.
+  - [ ] Burger at 768: its place (the draft's follows the button) and size (live 24×18px, 44px hit area on `::after`; the draft's 48×48).
+  - [ ] Caret drawn larger and heavier than the draft's.
+  - [ ] Eye Care's home hero heading 4px lower than the draft at 375 only.
   - [ ] Two Solve candidates: the CTA's `.25s` transition against a motion token (Spec 38A §7); the button's `letterSpacing` written at desktop changing the 768 value.
-  - [ ] Eye Care's home hero heading sits 4px lower than the draft at 375 only.
-  - [ ] Wave 3 /qc-council, then Bean signs the header pairs (FP-13) and FR-48-81's Status records it.
+  - [ ] Bean signs the header pairs (FP-13) and FR-48-81's Status records it.
 - [ ] Eye Care comparison: re-key `sites/eye-care-ward-end/build/header.origin.json` and `footer.origin.json` by fingerprint (`lib/identity.mjs::realign`), run the skeleton writer on Eye Care's header and footer, diff with the built trees; the diff goes to Bean as ratchet rule candidates.
 - [ ] 4. Close (below).
 
