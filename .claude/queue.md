@@ -29,3 +29,4 @@ The signal between the cloning tool plan's two orchestrator sessions (`.claude/p
 - 2026-10-22 F built F0-fix f4cfcd31b (sgs/site-header-row minHeight now paints: the header's rows reset printed min-height:auto at two-class specificity over the row's own rule; not yet deployed to indus-test; Track T: recalibrate site-header-row after the next mirror sync)
 - 2026-10-22 F deployed indus-test 5b7495f00 (carries F0-fix f4cfcd31b; host marker names 5b7495f00; payload-verify 97 of 97; Track T: sync local-indus and recalibrate sgs/site-header-row)
 - 2026-10-22 T site-run-start recalibrate sgs/site-header-row on local-indus (after F deployed indus-test 5b7495f00, the header-row min-height fix)
+- 2026-10-22 T site-run-end (sgs/site-header-row recalibrated on local-indus after the mirror sync to 5b7495f00: minHeight now routes to the row root like sgs/site-footer-row's; 26 settings, dead gridTemplateColumns, justifyItems, rowShrinkPadding as before; no setting lost)
