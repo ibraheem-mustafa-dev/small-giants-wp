@@ -63,7 +63,7 @@ export function inventoryStrips( { client, surface, repo = REPO } ) {
 	if ( 'header' !== entry?.kind || ! records ) {
 		return null;
 	}
-	return { exclude: records.filter( ( r ) => r.id !== entry.id && 'global' !== r.kind && null != r.template_tpl_id ).map( ( r ) => [ r.dc, String( [].concat( r.template_tpl_id ).at( -1 ) ) ] ), pages: records.some( ( r ) => 'page' === r.kind ) };
+	return { rootComponent: records.find( ( r ) => r.id === entry.id )?.dc ?? null, exclude: records.filter( ( r ) => r.id !== entry.id && 'global' !== r.kind && null != r.template_tpl_id ).map( ( r ) => [ r.dc, String( [].concat( r.template_tpl_id ).at( -1 ) ) ] ), pages: records.some( ( r ) => 'page' === r.kind ) };
 }
 
 // The intake context of a surface, as lib/skeleton-rerun.mjs::rerunSkeletons passes it: the intake skeleton the manifest

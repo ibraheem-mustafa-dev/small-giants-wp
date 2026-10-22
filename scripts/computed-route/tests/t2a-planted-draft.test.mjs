@@ -42,13 +42,14 @@ after( async () => {
 const SURFACES = [ { id: 'S-1', kind: 'global', component: 'Root', rootTpl: '2' }, { id: 'S-2', kind: 'header', component: 'Root', rootTpl: '4' }, { id: 'S-3', kind: 'page', component: 'Root', rootTpl: '9' } ];
 const header = SURFACES[ 1 ];
 
-async function read( strips, html = HTML ) {
+async function read( strips, html = HTML, annotated = '', scrollBy = 0 ) {
 	const page = await browser.newPage( { viewport: { width: 1440, height: 900 } } );
 	await page.setContent( html );
-	await page.evaluate( () => {
-		window.__dcAnnotatedTemplate = () => '';
+	await page.evaluate( ( src ) => {
+		window.__dcAnnotatedTemplate = () => src;
 		window.__dcRootName = () => 'Root';
-	} );
+	}, annotated );
+	scrollBy && await page.evaluate( ( y ) => scrollTo( 0, y ), scrollBy );
 	try {
 		return await readInventory( { page, root: 'header', settle: async () => {}, strips } );
 	} finally {
@@ -111,4 +112,28 @@ test( 'MUST FAIL: a <main> that is no surface\'s root is not "page content" by i
 	const inv = await read( stripOptions( header, surfacesWithPageAt( '99' ) ), withAfter( '<main data-dc-tpl="11" style="height:300px"><h1 data-dc-tpl="12">Notes</h1></main>' ) );
 	assert.deepEqual( inv.beside.map( ( b ) => [ b.key, b.holdsOtherRoot ] ), [ [ 'Root/11#0', false ] ], 'the tag does not decide' );
 	assert.deepEqual( rowSlots( propose( inv ) ).map( ( x ) => x[ 1 ] ), [ null, 'Root/5#0', 'Root/11#0' ] );
+} );
+
+test( 'MUST FAIL: a tpl number is unique only within its component: another component\'s root with the strip\'s number does not make the strip hold another surface\'s root', async () => {
+	const other = [ header, { id: 'S-9', kind: 'form-step', component: 'Other', rootTpl: '2' } ];
+	const inv = await read( stripOptions( header, other ) );
+	assert.deepEqual( inv.beside.find( ( b ) => 'Root/2#0' === b.key ).holdsOtherRoot, false, 'Other:2 is not Root:2' );
+	assert.deepEqual( rowSlots( propose( inv ) ).map( ( x ) => x[ 1 ] ).slice( 0, 2 ), [ 'Root/2#0', 'Root/5#0' ], 'the strip is the top row' );
+	const same = await read( stripOptions( header, [ header, { id: 'S-9', kind: 'form-step', component: 'Root', rootTpl: '2' } ] ) );
+	assert.equal( same.beside.find( ( b ) => 'Root/2#0' === b.key ).holdsOtherRoot, true, 'the same component and number does' );
+} );
+
+test( 'MUST FAIL: a page root that is a non-rendering sc-if is held by the sibling that renders its elements, though no element carries its number', async () => {
+	const html = withAfter( '<main data-dc-tpl="11" style="height:300px"><section data-dc-tpl="13"><h1 data-dc-tpl="14">Page</h1></section></main>' );
+	const annotated = '<sc-if data-dc-tpl="12"><section data-dc-tpl="13"><h1 data-dc-tpl="14">Page</h1></section></sc-if>';
+	const inv = await read( stripOptions( header, surfacesWithPageAt( '12' ) ), html, annotated );
+	assert.deepEqual( inv.beside.map( ( b ) => [ b.key, b.holdsOtherRoot ] ), [ [ 'Root/11#0', true ] ] );
+	assert.deepEqual( rowSlots( propose( inv ) ).map( ( x ) => x[ 1 ] ), [ null, 'Root/5#0', null ] );
+} );
+
+test( 'MUST FAIL: the header root and its siblings are read in one frame, at scroll 0, whatever the scroll the page rested at', async () => {
+	const html = '<!doctype html><html><head><style>body{margin:0;height:3000px}</style></head><body><div class="sc-host" data-sc-name="Root" data-dc-tpl=""><div data-dc-tpl="1" style="height:3000px"><div data-dc-tpl="2" style="height:30px">Strip</div><header data-dc-tpl="4" style="position:sticky;top:0;height:60px"><div data-dc-tpl="5" style="display:flex"><nav data-dc-tpl="6"><a data-dc-tpl="7" href="/shop">Shop</a></nav></div></header></div></div></body></html>';
+	const inv = await read( { exclude: [] }, html, '', 500 );
+	assert.equal( inv.elements[ 0 ].box[ 1440 ].y, 30, 'the sticky header is at its natural place, not stuck 500px down' );
+	assert.deepEqual( rowSlots( propose( inv ) ).map( ( x ) => x[ 1 ] ), [ 'Root/2#0', 'Root/5#0', null ], 'the strip above it is stacked on it' );
 } );

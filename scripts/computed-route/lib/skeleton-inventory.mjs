@@ -13,12 +13,33 @@ export const INVENTORY_WIDTHS = [ 1440, 375, 768 ];
 // (the fingerprint Fill's origin map keeps).
 const ATTRS = [ 'href', 'aria-label', 'alt', 'role', 'type', 'title', 'target', 'aria-hidden', 'viewBox', 'class', 'style' ];
 
+// In-page (self-contained: its source is sent to the page). Whether a sibling is, or holds at any depth, the root of another
+// surface. `strips.exclude` is [ [ component, tpl ] ]: a tpl number is unique only within its component, so an element is a
+// surface's own only when its host's component is that component (`strips.rootComponent` names the entry draft's component
+// where the served runtime calls the root host `window.__dcRootName()`; absent, the host name is the component). A surface
+// root may be a non-rendering sc-if / sc-for / sc-else (a page), which no element carries: the surface then holds every
+// element its stamped source subtree stamps, so the template's own tree (`srcDoc( templateName )`) names the ids.
+export function holdsOtherRoot( s, strips, srcDoc ) {
+	const rootName = window.__dcRootName();
+	const hostName = ( x ) => x.parentElement?.closest( '.sc-host' )?.dataset.scName;
+	const componentOf = ( x ) => {
+		const n = hostName( x );
+		return n === rootName && strips.rootComponent ? strips.rootComponent : n;
+	};
+	const mine = [ s, ...s.querySelectorAll( '[data-dc-tpl]' ) ].filter( ( x ) => x.hasAttribute( 'data-dc-tpl' ) );
+	return ( strips?.exclude || [] ).some( ( [ dc, tpl ] ) => {
+		const src = srcDoc( dc === strips.rootComponent ? rootName : dc ).querySelector( `[data-dc-tpl="${ tpl }"]` );
+		const ids = new Set( [ String( tpl ), ...( src ? [ ...src.querySelectorAll( '[data-dc-tpl]' ) ].map( ( n ) => n.dataset.dcTpl ) : [] ) ] );
+		return mine.some( ( x ) => componentOf( x ) === dc && ids.has( x.dataset.dcTpl ) );
+	} );
+}
+
 // In-page. in: [ rootSelector, tplKeyOfSource, attrs, tplLineOfSource, strips ]. `strips` is null, or { exclude: [ [ component,
 // tpl ] ] } (the roots of the other surfaces that are not global: a page, footer, drawer, panel, menu or form; a sibling that
 // is or holds one at any depth holds another surface's root): the root's siblings are then read too, as `beside`, and the
 // elements of those in the chain of strips next to the root are inventoried under `strip` roots (rules.headerSlots decides
 // which are rows: lib/skeleton-header-slots.mjs::besideStrips). Returns { records, beside } or { error }.
-function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips ] ) {
+function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc ] ) {
 	// eslint-disable-next-line no-new-func
 	const keyOf = new Function( `return (${ keySrc });` )();
 	const lineOf = new Function( `return (${ lineSrc });` )();
@@ -28,8 +49,22 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips ] ) {
 	}
 	document.querySelectorAll( '[data-inv-strip]' ).forEach( ( x ) => x.removeAttribute( 'data-inv-strip' ) );
 	const stampedAt = ( x ) => x.hasAttribute( 'data-dc-tpl' );
-	const hostName = ( x ) => x.parentElement?.closest( '.sc-host' )?.dataset.scName;
-	const holdsOther = ( s ) => ( strips?.exclude || [] ).some( ( [ dc, tpl ] ) => [ s, ...s.querySelectorAll( `[data-dc-tpl="${ tpl }"]` ) ].some( ( x ) => x.matches( `[data-dc-tpl="${ tpl }"]` ) && [ dc, window.__dcRootName() ].includes( hostName( x ) ) ) );
+	const parsed = {};
+	const srcDoc = ( name ) => {
+		if ( ! parsed[ name ] ) {
+			const t = document.createElement( 'template' );
+			t.innerHTML = window.__dcAnnotatedTemplate( name ) || '';
+			parsed[ name ] = t.content;
+		}
+		return parsed[ name ];
+	};
+	// The sibling boxes and the root's are read in one frame: at scroll 0, where a sticky root is at its natural place. The
+	// scroll is put back after the read.
+	const scrollWas = [ scrollX, scrollY ];
+	scrollTo( 0, 0 );
+	// eslint-disable-next-line no-new-func
+	const holdsFn = holdsSrc ? new Function( `return (${ holdsSrc });` )() : null;
+	const holdsOther = ( s ) => holdsFn( s, strips, srcDoc );
 	const beside = [];
 	const stripRoots = new Map();
 	if ( strips && root.parentElement ) {
@@ -50,15 +85,6 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips ] ) {
 	}
 	stripRoots.forEach( ( v, s ) => s.setAttribute( 'data-inv-strip', v.side ) );
 	const els = [ root, ...root.querySelectorAll( '*' ), ...[ ...stripRoots.keys() ].flatMap( ( s ) => [ s, ...s.querySelectorAll( '*' ) ] ) ];
-	const parsed = {};
-	const srcDoc = ( name ) => {
-		if ( ! parsed[ name ] ) {
-			const t = document.createElement( 'template' );
-			t.innerHTML = window.__dcAnnotatedTemplate( name ) || '';
-			parsed[ name ] = t.content;
-		}
-		return parsed[ name ];
-	};
 	const ws = ( s ) => ( s || '' ).replace( /\s+/g, ' ' ).trim();
 	const hostOf = ( e ) => ( e.parentElement ? e.parentElement.closest( '.sc-host' ) : null );
 	const out = [];
@@ -134,6 +160,7 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips ] ) {
 			srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, position: getComputedStyle( e ).position, flexDirection: getComputedStyle( e ).flexDirection,
 		} );
 	} );
+	scrollTo( scrollWas[ 0 ], scrollWas[ 1 ] );
 	return { records: out, beside, unstamped, rootKey: out[ 0 ]?.key ?? null, rootName: window.__dcRootName() };
 }
 
@@ -188,7 +215,7 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 		await page.setViewportSize( { width: w, height } );
 		await settleAt( page, w );
 		await page.evaluate( () => document.querySelectorAll( '[data-inv-i]' ).forEach( ( e ) => e.removeAttribute( 'data-inv-i' ) ) );
-		const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips ] );
+		const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString() ] );
 		if ( res.error ) {
 			throw new Error( `${ res.error } at ${ w }px` );
 		}
@@ -253,7 +280,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			const page = await ctx.newPage();
 			await page.goto( url, { waitUntil: 'networkidle', timeout: 90000 } );
 			await settle( page, root );
-			const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips ] );
+			const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString() ] );
 			if ( res.error ) {
 				throw new Error( `${ res.error } at ${ w }px` );
 			}
