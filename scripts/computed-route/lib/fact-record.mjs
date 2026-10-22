@@ -1,7 +1,7 @@
 // The shared fact record (Spec 48 FR-48-7, Spec 48A §3): the template, logic and surfaces readers joined into
 // `sites/<client>/build/intake/facts.json`, one entry per template element keyed by template key (lib/fact-key.mjs):
-//   { schema, client, generated, widths, sources, elements: { <template key>: { template, logic, surfaces, instances:
-//     [ { key, state } ], fingerprint } }, surfaces, gaps, counts }
+//   { schema, client, generated, widths, sources, elements: { <template key>: { template, logic, surfaces, effects, instances:
+//     [ { key, state } ], fingerprint } }, surfaces, animations: { records, unjoined }, gaps, counts }
 // `sources` is lib/freshness.mjs::sourcesOf: the sha256 of every handoff input and the route's commit. `instances` are the
 // element's instance keys (`<chain>/<tpl>#<copy>`) in the per-surface inventories intake saved (the copy index is counted
 // on the rendered page, so only a rendered inventory can name one); `state` is the inventory's surface slug. Intake writes
@@ -16,12 +16,13 @@ import { templateKey } from './fact-key.mjs';
 import { readTemplate } from './read-template.mjs';
 import { readLogic, READ_WIDTHS } from './read-logic.mjs';
 import { readSurfaces } from './read-surfaces.mjs';
+import { readAnimations } from './read-animations.mjs';
 import { openSandbox } from './intake-sandbox.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '..', '..', '..' );
 export const FACTS_SCHEMA = path.join( HERE, '..', 'data', 'facts.schema.json' );
-export const FACTS_SCHEMA_VERSION = '1';
+export const FACTS_SCHEMA_VERSION = '2';
 
 // Where a client's fact record lives.
 export const factsFile = ( repo, client ) => path.join( repo, 'sites', client, 'build', 'intake', 'facts.json' );
@@ -64,9 +65,10 @@ export function instancesOf( { inventoriesDir, folder, current = null } ) {
 	return { byTemplate, gaps };
 }
 
+// `effects` are the animations.json records that target the element (reach `self`) or a descendant (lib/read-animations.mjs).
 // The counts of a record: elements, holes, hole answers per width (resolved to a value, absent: the live state holds no value
 // for it, unresolved: the expression or the instance failed), width conditions, elements in a surface, instances, gaps.
-export function countsOf( elements, widths, gaps ) {
+export function countsOf( elements, widths, gaps, animations = { records: 0, unjoined: [] } ) {
 	const per = Object.fromEntries( widths.map( ( w ) => [ w, { resolved: 0, absent: 0, unresolved: 0 } ] ) );
 	let holes = 0;
 	let joined = 0;
@@ -83,13 +85,17 @@ export function countsOf( elements, widths, gaps ) {
 			}
 		}
 	}
-	return { elements: Object.keys( elements ).length, holes, perWidth: per, widthConditions: conditions, elementsInSurfaces: joined, instances, gaps: gaps.length };
+	return { elements: Object.keys( elements ).length, holes, perWidth: per, widthConditions: conditions, elementsInSurfaces: joined, instances, gaps: gaps.length, effects: effectCounts( elements, animations ) };
 }
 
+// Effect counts: animations.json records read, records that landed on a template element, records with no element, and
+// elements carrying at least one effect.
+const effectCounts = ( elements, a ) => ( { records: a.records, joined: a.records - a.unjoined.length, unjoined: a.unjoined.length, elements: Object.values( elements ).filter( ( e ) => e.effects.length ).length } );
+
 // Joins the readers' results into the record (no browser, no files).
-export function joinFacts( { client, sources, widths, template, logic, surfaces, instances, generated = new Date().toISOString() } ) {
+export function joinFacts( { client, sources, widths, template, logic, surfaces, animations, instances, generated = new Date().toISOString() } ) {
 	const elements = {};
-	const gaps = [ ...template.gaps, ...logic.gaps, ...surfaces.gaps, ...instances.gaps ];
+	const gaps = [ ...template.gaps, ...logic.gaps, ...surfaces.gaps, ...animations.gaps, ...instances.gaps ];
 	for ( const key of template.order ) {
 		const { fingerprint, ...rec } = template.elements[ key ];
 		const cond = logic.conditions[ key ];
@@ -97,6 +103,7 @@ export function joinFacts( { client, sources, widths, template, logic, surfaces,
 			template: rec,
 			logic: { holes: logic.holes[ key ] || {}, ...( cond ? { width: cond.width, ...( cond.via ? { via: cond.via } : {} ) } : {} ) },
 			surfaces: surfaces.byElement[ key ] || [],
+			effects: animations.byElement[ key ] || [],
 			instances: instances.byTemplate.get( key ) || [],
 			fingerprint,
 		};
@@ -105,8 +112,8 @@ export function joinFacts( { client, sources, widths, template, logic, surfaces,
 		elements[ key ] || gaps.push( { construct: 'instance', draftId: key, error: `${ list.length } instance key(s) of a template element the annotated template does not hold (first ${ list[ 0 ].key } in ${ list[ 0 ].state })` } );
 	}
 	return {
-		schema: FACTS_SCHEMA_VERSION, client, generated, widths, sources, elements, surfaces: surfaces.surfaces, mounted: logic.mounted, state: logic.state || {}, gaps,
-		counts: countsOf( elements, widths, gaps ),
+		schema: FACTS_SCHEMA_VERSION, client, generated, widths, sources, elements, surfaces: surfaces.surfaces, animations: { records: animations.records, unjoined: animations.unjoined }, mounted: logic.mounted, state: logic.state || {}, gaps,
+		counts: countsOf( elements, widths, gaps, animations ),
 	};
 }
 
@@ -130,8 +137,11 @@ export async function buildFactRecord( { folder, client, entry, harPath = null, 
 		const surfaceFile = readJson( path.join( folder, 'surfaces.json' ) );
 		const surfaces = readSurfaces( { records: surfaceFile.data?.records || [], template } );
 		surfaceFile.error && surfaces.gaps.push( { construct: 'surfaces', draftId: 'surfaces.json', error: `surfaces.json could not be read: ${ surfaceFile.error }` } );
+		const animationFile = readJson( path.join( folder, 'animations.json' ) );
+		const animations = readAnimations( { records: animationFile.data?.records || [], template } );
+		animationFile.error && animations.gaps.push( { construct: 'animations', draftId: 'animations.json', error: `animations.json could not be read: ${ animationFile.error }` } );
 		const instances = instancesOf( { inventoriesDir, folder, current: taken } );
-		const record = joinFacts( { client, sources: taken, widths, template, logic, surfaces, instances } );
+		const record = joinFacts( { client, sources: taken, widths, template, logic, surfaces, animations, instances } );
 		return { record, blocked: sandbox ? [] : sb.blocked };
 	} finally {
 		if ( ! sandbox ) {
