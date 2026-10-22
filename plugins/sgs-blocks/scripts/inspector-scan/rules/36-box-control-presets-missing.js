@@ -59,7 +59,7 @@ function jsxName( openingElement ) {
  *   - bare shorthand (`presets`, no value) — treated as `presets={true}`
  *   - `presets={true}`
  *   - `presets={ [ 'XXS', ... ] }` — any non-empty array literal
- * and NOT truthy when it is absent, `presets={false}`, or any other falsy literal.
+ * and NOT truthy when it is absent, `presets={false}`, or any null, number, string or bigint literal.
  * This mirrors SgsBoxControl.js's own `Array.isArray(presets) || presets === true` gate —
  * see its `hasPresets` line — so the rule and the runtime agree on what "on" means.
  */
@@ -69,6 +69,8 @@ function presetsAttrIsTruthy( attr ) {
 	const expr = attr.value.expression;
 	if ( ! expr ) return false;
 	if ( expr.type === 'BooleanLiteral' ) return expr.value === true;
+	// The runtime gate is `Array.isArray( presets ) || presets === true`, so every other literal is off.
+	if ( [ 'NullLiteral', 'NumericLiteral', 'StringLiteral', 'BigIntLiteral' ].includes( expr.type ) ) return false;
 	if ( expr.type === 'ArrayExpression' ) return expr.elements.length > 0;
 	// Anything else (identifier, member expression, ternary, etc.) — cannot prove it's
 	// falsy statically, so do not flag a false positive. This rule only needs to catch

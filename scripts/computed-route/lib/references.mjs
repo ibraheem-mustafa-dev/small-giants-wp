@@ -58,7 +58,7 @@ export function referenceOf( node, refs ) {
 		return null;
 	}
 	const value = node.attributes?.[ r.key ];
-	if ( undefined === value || '' === value || 0 === value || ( 'linked' === r.kind && ! node.attributes?.[ r.flag ] ) ) {
+	if ( undefined === value || null === value || '' === value || 0 === value || '0' === value || ( 'linked' === r.kind && ! node.attributes?.[ r.flag ] ) ) {
 		return null;
 	}
 	return { kind: r.kind, key: r.key, value };

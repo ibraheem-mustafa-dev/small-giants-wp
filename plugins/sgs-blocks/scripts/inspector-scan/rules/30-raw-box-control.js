@@ -206,7 +206,7 @@ module.exports = {
 							'hero\'s padding pattern); (b) if it is deliberately NOT responsive, ' +
 							'register it in baselines/30-raw-box-control.json with that specific reason — do ' +
 							'not leave it silently matching neither sanctioned shape.',
-						keyParts: [ 'raw-box-control', String( line ) ],
+						keyParts: [ 'raw-box-control', bound ],
 					} )
 				);
 			},

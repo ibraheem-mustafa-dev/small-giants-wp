@@ -171,7 +171,7 @@ test( 'MUST FAIL (labels): items under a decision label leave the open items; a 
 
 test( 'MUST FAIL (block hints): block-mapping bullets and table rows are kept as evidence, never in a decision list', () => withFolder( ( dir ) => {
 	const r = readReadme( { folder: dir } );
-	assert.deepEqual( r.blockHints.map( ( h ) => h.text ), [ 'Hero: sgs/hero (Restyle).', '| Part | Block |', '| Footer | sgs/site-footer |' ] );
+	assert.deepEqual( r.blockHints.map( ( h ) => h.text ), [ 'Hero: sgs/hero (Restyle).', '| Footer | sgs/site-footer |' ] );
 	assert.ok( r.blockHints.every( ( h ) => 'Block mapping (SGS)' === h.section ) );
 	assert.ok( ! r.platformIntent.some( ( p ) => /sgs\//.test( p.text ) ), 'a block hint is not platform intent' );
 	withFolder( ( d ) => {

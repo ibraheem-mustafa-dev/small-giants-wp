@@ -164,16 +164,23 @@ function wpRootClass( name ) {
 	return 'wp-block-' + String( name || '' ).replace( '/', '-' );
 }
 
-/** Last simple class token in a (possibly compound/combinator) selector string. */
-function lastClassToken( selectorString ) {
-	const matches = String( selectorString || '' ).match( /\.([A-Za-z0-9_-]+)/g );
-	if ( ! matches || ! matches.length ) return null;
-	return matches[ matches.length - 1 ].slice( 1 );
+/**
+ * The last simple class token of every comma-separated part of a selector
+ * string, in order, after any `:not( ... )` argument is removed (a negated
+ * class is not what the selector targets).
+ */
+function classTokens( selectorString ) {
+	const tokens = [];
+	for ( const part of String( selectorString || '' ).split( ',' ) ) {
+		const matches = part.replace( /:not\([^)]*\)/g, '' ).match( /\.([A-Za-z0-9_-]+)/g );
+		if ( matches && matches.length ) tokens.push( matches[ matches.length - 1 ].slice( 1 ) );
+	}
+	return tokens;
 }
 
 /**
  * Finds every InnerBlocks TEMPLATE array entry in edit.js whose className
- * property equals `token`, via AST (not text) so a commented-out template
+ * property carries `token` among its classes, via AST (not text) so a commented-out template
  * entry never counts. Returns [start,end) CHARACTER-OFFSET ranges for those
  * className string literals, so the DOM-emission text scan can exclude them
  * (they are child-owned, not self-owned).
@@ -211,7 +218,7 @@ function findTemplateOwnedRanges( ctx, editFile, token ) {
 					( ( prop.key.type === 'Identifier' && prop.key.name === 'className' ) ||
 						( prop.key.type === 'StringLiteral' && prop.key.value === 'className' ) ) &&
 					prop.value.type === 'StringLiteral' &&
-					prop.value.value === token
+					prop.value.value.split( /\s+/ ).includes( token )
 				) {
 					ranges.push( [ prop.value.start, prop.value.end ] );
 				}
@@ -256,11 +263,17 @@ function stripPhpLineComments( text ) {
 		.map( ( line ) => {
 			let inSingle = false;
 			let inDouble = false;
-			for ( let i = 0; i < line.length - 1; i++ ) {
+			for ( let i = 0; i < line.length; i++ ) {
 				const ch = line[ i ];
+				if ( ( inSingle || inDouble ) && ch === '\\' ) {
+					i++;
+					continue;
+				}
 				if ( ch === "'" && ! inDouble ) inSingle = ! inSingle;
 				else if ( ch === '"' && ! inSingle ) inDouble = ! inDouble;
 				else if ( ! inSingle && ! inDouble && ch === '/' && line[ i + 1 ] === '/' && line[ i - 1 ] !== ':' ) {
+					return line.slice( 0, i );
+				} else if ( ! inSingle && ! inDouble && ch === '#' && line[ i + 1 ] !== '[' ) {
 					return line.slice( 0, i );
 				}
 			}
@@ -282,7 +295,7 @@ const SELECTOR_CONTEXT_RE = /(_sel\b|['"]selector['"]|wp_style_engine)/i;
 
 function domClassAttrRe( token ) {
 	const t = escapeRegExp( token );
-	return new RegExp( `class(Name)?\\s*=\\s*(\\{[^}]*)?["'\`][^"'\`]*\\b${ t }\\b`, 'i' );
+	return new RegExp( `class(Name)?\\s*=\\s*(\\{[^}]*)?["'\`][^"'\`]*(?<![\\w-])${ t }(?![\\w-])` );
 }
 
 /**
@@ -299,7 +312,7 @@ function domClassAttrRe( token ) {
  */
 function hasDomEmission( text, token, excludeRanges ) {
 	if ( ! text ) return false;
-	const tokenRe = new RegExp( '\\b' + escapeRegExp( token ) + '\\b', 'g' );
+	const tokenRe = new RegExp( '(?<![\\w-])' + escapeRegExp( token ) + '(?![\\w-])', 'g' );
 	const classAttrRe = domClassAttrRe( token );
 	let m;
 	while ( ( m = tokenRe.exec( text ) ) ) {
@@ -361,13 +374,13 @@ module.exports = {
 
 		const name = blockJson.name || block.slug;
 		const { selectorString, explicit } = resolveEffectiveSelector( blockJson, name );
-		const token = lastClassToken( selectorString );
-		if ( ! token ) return []; // couldn't extract a class token — nothing to check.
+		const tokens = classTokens( selectorString );
+		if ( ! tokens.length ) return []; // couldn't extract a class token — nothing to check.
 
 		// Case (c): resolves to the WP-core-generated root class (whether via an
 		// explicit selectors.root that equals it, or via total absence of
 		// `selectors`). Legitimately absent from source — never flag.
-		if ( token === wpRootClass( name ) ) return [];
+		if ( tokens.includes( wpRootClass( name ) ) ) return [];
 
 		const editFile = path.join( blockDir, 'edit.js' );
 		const saveFile = path.join( blockDir, 'save.js' );
@@ -375,36 +388,45 @@ module.exports = {
 
 		// edit.js plus the components it imports from inside the block folder;
 		// the render side is render.php plus the partials it requires.
-		let templateOwned = false;
-		let templateFile = editFile;
-		let domFound = false;
-		for ( const file of ctx.editFiles( block.tail ) ) {
-			const ranges = findTemplateOwnedRanges( ctx, file, token );
-			if ( ranges.length > 0 && ! templateOwned ) {
-				templateOwned = true;
-				templateFile = file;
+		const scanToken = ( tok ) => {
+			let owned = false;
+			let ownedFile = editFile;
+			let found = false;
+			for ( const file of ctx.editFiles( block.tail ) ) {
+				const ranges = findTemplateOwnedRanges( ctx, file, tok );
+				if ( ranges.length > 0 && ! owned ) {
+					owned = true;
+					ownedFile = file;
+				}
+				found = found || hasDomEmission( scanText( ctx, file ), tok, ranges );
 			}
-			domFound = domFound || hasDomEmission( scanText( ctx, file ), token, ranges );
-		}
-		if ( fs.existsSync( saveFile ) ) {
-			domFound = domFound || hasDomEmission( scanText( ctx, saveFile ), token, null );
-		}
-		for ( const file of ctx.renderFiles( block.tail ) ) {
-			domFound = domFound || hasDomEmission( scanText( ctx, file ), token, null );
-		}
-		if ( ! domFound ) {
-			const includesDir = sharedIncludesDir( ctx.blocksDir );
-			if ( includesDir && fs.existsSync( includesDir ) ) {
-				for ( const file of walkPhpFiles( includesDir ) ) {
-					if ( hasDomEmission( scanText( ctx, file ), token, null ) ) {
-						domFound = true;
-						break;
+			if ( fs.existsSync( saveFile ) ) {
+				found = found || hasDomEmission( scanText( ctx, saveFile ), tok, null );
+			}
+			for ( const file of ctx.renderFiles( block.tail ) ) {
+				found = found || hasDomEmission( scanText( ctx, file ), tok, null );
+			}
+			if ( ! found ) {
+				const includesDir = sharedIncludesDir( ctx.blocksDir );
+				if ( includesDir && fs.existsSync( includesDir ) ) {
+					for ( const file of walkPhpFiles( includesDir ) ) {
+						if ( hasDomEmission( scanText( ctx, file ), tok, null ) ) {
+							found = true;
+							break;
+						}
 					}
 				}
 			}
-		}
+			return { templateOwned: owned, templateFile: ownedFile, domFound: found };
+		};
 
-		if ( domFound ) return []; // case (d): self-rendered somewhere real. Fine.
+		// A selector list matches when any of its parts matches, so the list is
+		// dead only when no part is emitted; the reported token is the first
+		// template-owned part, else the first part.
+		const scans = tokens.map( ( tok ) => ( { tok, ...scanToken( tok ) } ) );
+		if ( scans.some( ( s ) => s.domFound ) ) return []; // case (d): self-rendered somewhere real. Fine.
+		const reported = scans.find( ( s ) => s.templateOwned ) || scans[ 0 ];
+		const { tok: token, templateOwned, templateFile } = reported;
 
 		if ( templateOwned ) {
 			// Case (b): the class lives ONLY on an InnerBlocks TEMPLATE child.

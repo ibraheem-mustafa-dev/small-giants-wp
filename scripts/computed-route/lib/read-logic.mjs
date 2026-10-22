@@ -50,6 +50,7 @@ function resolveInPage( { comps } ) {
 	const topOperator = ( s ) => {
 		let depth = 0;
 		let quote = null;
+		let last = null;
 		for ( let i = 0; i < s.length; i++ ) {
 			const c = s[ i ];
 			if ( quote ) {
@@ -61,14 +62,15 @@ function resolveInPage( { comps } ) {
 			} else if ( ')' === c || ']' === c ) {
 				depth--;
 			} else if ( ! depth ) {
-				for ( const op of [ '===', '!==', '==', '!=' ] ) {
-					if ( s.startsWith( op, i ) && i > 0 ) {
-						return { op, i };
-					}
+				const op = [ '===', '!==', '==', '!=' ].find( ( o ) => s.startsWith( o, i ) );
+				if ( op && i > 0 ) {
+					last = { op, i };
+					i += op.length - 1;
 				}
 			}
 		}
-		return null;
+		// The last operator splits the expression, so a chain groups left to right as in JS.
+		return last;
 	};
 	const lookup = ( scope, vals, name ) => ( name in scope ? scope[ name ] : vals[ name ] );
 	const evalExpr = ( text, scope, vals ) => {

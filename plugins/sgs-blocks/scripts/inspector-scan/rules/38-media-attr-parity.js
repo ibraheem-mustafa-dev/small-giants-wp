@@ -116,6 +116,7 @@ const REGISTRY_FILE = path.join(
 // value or the caught error so a broken producer only pays the cost once.
 let cachedResolution = null;
 let cachedError = null;
+let cachedBlocksDir = null;
 let cachedReadsMap = null;
 
 /**
@@ -282,6 +283,11 @@ function buildRequests( blockSlug, mediaElements, generated ) {
  * @return {{ok:true, byBlock:Object}|{ok:false, error:string}}
  */
 function loadResolution( ctx ) {
+	if ( cachedBlocksDir !== ctx.blocksDir ) {
+		cachedResolution = null;
+		cachedError = null;
+		cachedBlocksDir = ctx.blocksDir;
+	}
 	if ( cachedResolution ) return { ok: true, byBlock: cachedResolution };
 	if ( cachedError ) return { ok: false, error: cachedError };
 

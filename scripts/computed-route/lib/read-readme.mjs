@@ -175,25 +175,43 @@ export function readReadme( { folder } ) {
 		out.sections.push( { heading: s.heading, level: s.level, line: s.line, template, text: s.text, none: isNone( s.text ), flagged: mine } );
 		out.flagged.push( ...mine );
 		// The section and the deeper headings under it.
-		const own = [ s ];
+		// A deeper heading that feeds a list on its own (a template list, platform intent, block hints) is not collected again
+		// into the same list by this section: `covered` names the lists its section and the headings under it feed themselves.
+		const feeds = ( j ) => ( {
+			list: Boolean( templates[ j ] && LIST_OF[ templates[ j ] ] ),
+			platform: ! templates[ j ] && PLATFORM.test( sections[ j ].heading ) && ! BLOCK_HINT.test( sections[ j ].heading ),
+			hint: BLOCK_HINT.test( sections[ j ].heading ),
+		} );
+		const own = [ { part: s, covered: {} } ];
+		const open = [];
 		for ( let j = idx + 1; j < sections.length && sections[ j ].level > s.level; j++ ) {
-			own.push( sections[ j ] );
+			while ( open.length && open[ open.length - 1 ].level >= sections[ j ].level ) {
+				open.pop();
+			}
+			open.push( { level: sections[ j ].level, feeds: feeds( j ) } );
+			own.push( { part: sections[ j ], covered: {
+				list: open.some( ( o ) => o.feeds.list ),
+				platform: open.some( ( o ) => o.feeds.platform ),
+				hint: open.some( ( o ) => o.feeds.hint ),
+			} } );
 		}
 		// In the judgement calls and open items sections a sub-heading, a bold line or a `Label:` line that names a decision or
 		// something still open sends the items under it (and its own text, when it carries any) to that list.
 		const routed = 'Judgement calls' === template || 'Open items' === template;
 		const base = template && LIST_OF[ template ];
 		const items = [];
-		for ( const part of own ) {
+		for ( const { part, covered } of own ) {
 			const partKind = routed && part !== s ? ( labelKind( part.heading ) ?? base ) : base;
 			let kind = partKind;
-			for ( const l of part.lines ) {
+			for ( const [ n, l ] of part.lines.entries() ) {
 				const m = ITEM.exec( l.text );
-				const row = ! m && /^\s*\|.*\|\s*$/.test( l.text ) && ! /^\s*\|[\s:|-]+\|\s*$/.test( l.text ) ? l.text.trim() : null;
+				// A table row is an item only in a block-hint section, and its header row (the one before the separator) is not.
+				const next = part.lines[ n + 1 ]?.text ?? '';
+				const row = ! m && BLOCK_HINT.test( s.heading ) && /^\s*\|.*\|\s*$/.test( l.text ) && ! /^\s*\|[\s:|-]+\|\s*$/.test( l.text ) && ! /^\s*\|[\s:|-]+\|\s*$/.test( next ) ? l.text.trim() : null;
 				const text = m ? m[ 1 ] : row;
 				const mark = flaggedAt.has( l.line ) ? { flagged: flaggedAt.get( l.line ) } : {};
 				if ( text ) {
-					! isNone( text ) && items.push( { kind, item: { text, line: l.line, section: part.heading, ...mark } } );
+					! isNone( text ) && items.push( { kind, covered, item: { text, line: l.line, section: part.heading, ...mark } } );
 					continue;
 				}
 				const lab = routed ? labelOf( l.text ) : null;
@@ -206,14 +224,14 @@ export function readReadme( { folder } ) {
 					continue;
 				}
 				kind = named;
-				lab.rest && ! isNone( lab.rest ) && items.push( { kind, item: { text: l.text.trim(), line: l.line, section: part.heading, ...mark } } );
+				lab.rest && ! isNone( lab.rest ) && items.push( { kind, covered, item: { text: l.text.trim(), line: l.line, section: part.heading, ...mark } } );
 			}
 		}
-		for ( const { kind, item } of items ) {
-			template && LIST_OF[ template ] && out[ kind ].push( item );
+		for ( const { kind, covered, item } of items ) {
+			template && LIST_OF[ template ] && ! covered.list && out[ kind ].push( item );
 		}
-		! template && PLATFORM.test( s.heading ) && ! BLOCK_HINT.test( s.heading ) && out.platformIntent.push( ...items.map( ( x ) => x.item ) );
-		BLOCK_HINT.test( s.heading ) && out.blockHints.push( ...items.map( ( { item: { flagged, ...it } } ) => it ) );
+		! template && PLATFORM.test( s.heading ) && ! BLOCK_HINT.test( s.heading ) && out.platformIntent.push( ...items.filter( ( x ) => ! x.covered.platform ).map( ( x ) => x.item ) );
+		BLOCK_HINT.test( s.heading ) && out.blockHints.push( ...items.filter( ( x ) => ! x.covered.hint ).map( ( { item: { flagged, ...it } } ) => it ) );
 	} );
 	out.missing = TEMPLATE_HEADINGS.filter( ( t ) => ! seen.has( t ) );
 	return out;

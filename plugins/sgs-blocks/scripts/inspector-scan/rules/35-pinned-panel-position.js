@@ -56,12 +56,13 @@
 
 const { makeFinding } = require( '../core/finding' );
 
-// Matches <PanelBody ...title="X"...> or <ToolsPanel ...title="X"...> with
+// Matches <PanelBody ...title="X"...> or <ToolsPanel ...label="X"...> (a ToolsPanel
+// takes its heading from `label`; the lookbehind keeps `aria-label` out) with
 // either a plain string literal or an i18n-wrapped __( 'X', 'sgs-blocks' )
 // value. Deliberately does not try to resolve a computed/variable title —
 // those are out of scope for a static name match and are simply not flagged
 // (a false absence here is safe; the rule only ever claims what it can see).
-const TITLE_RE = /<(PanelBody|ToolsPanel)\b[^>]*\btitle\s*=\s*(?:"([^"]*)"|'([^']*)'|\{\s*__\(\s*['"]([^'"]*)['"])/g;
+const TITLE_RE = /<(PanelBody|ToolsPanel)\b(?:[^>{]|\{[^}]*\})*?(?<![\w-])(?:title|label)\s*=\s*(?:"([^"]*)"|'([^']*)'|\{\s*__\(\s*['"]([^'"]*)['"])/g;
 
 const PINNED = new Map( [
 	[ 'advanced', {
@@ -104,7 +105,7 @@ module.exports = {
 					block: block.slug,
 					file: editFile,
 					severity: 'warn',
-					detail: `${ block.slug } authors its own <${ tag }> titled "${ title }" inside the default Settings group. ${ pinned.why } A block-private panel of this name is not that slot — it renders wherever this block's JSX places it, so it silently breaks the pinned-position guarantee for this one block while reading, by title alone, as if it keeps it.`,
+					detail: `${ block.slug } authors its own <${ tag }> titled "${ title }". ${ pinned.why } A block-private panel of this name is not that slot — it renders wherever this block's JSX places it, so it silently breaks the pinned-position guarantee for this one block while reading, by title alone, as if it keeps it.`,
 					fix: `For "${ pinned.label }": ${ pinned.fixHow }.`,
 					keyParts: [ title.toLowerCase() ],
 				} )

@@ -10,7 +10,7 @@ import { templateKey } from './fact-key.mjs';
 // components of one read (a cap hit sets `truncated: true`).
 export const CAPS = { depth: 10, items: 200, keys: 80, nodes: 40000, text: 300, componentNodes: 120000, recordNodes: 400000 };
 const SLOT = 'read-logic-statics';
-const ASSET_PATH = /(?:^|[\s("'=])((?:\.{0,2}\/)?assets\/[^\s"'()<>?#]+\.(?:svg|png|jpe?g|webp|gif|avif|mp4|webm|ico|woff2?))/gi;
+const ASSET_PATH = /(?:^|[\s,("'=])((?:\.{0,2}\/)?assets\/[^\s,"'()<>?#]+\.(?:svg|png|jpe?g|webp|gif|avif|mp4|webm|ico|woff2?))/gi;
 
 // In-page. in: { names: [ component ], caps, used (nodes the record has spent already) }. Returns { statics: { <component>:
 // null (no live instance) | { entries: [ { name, source (static | getter | field), kind (array | object), length, value,

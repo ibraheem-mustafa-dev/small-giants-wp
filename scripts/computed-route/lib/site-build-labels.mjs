@@ -19,11 +19,12 @@ const stringValues = ( hole ) => {
 };
 // A bare "#" is a disclosure, never a route.
 const routeOf = ( href, front ) => {
-	if ( '#' === ( href || '' ).trim() ) {
+	const h = ( href || '' ).trim();
+	if ( '#' === h || h.startsWith( '//' ) ) {
 		return null;
 	}
-	const m = /^#?\/?([^?#]*)$/.exec( href || '' );
-	return m && ! /^[a-z][a-z0-9+.-]*:/i.test( href ) ? ( m[ 1 ].replace( /\/+$/, '' ) || front ) : null;
+	const m = /^#?\/*([^?#]*)(?:[?#].*)?$/.exec( h );
+	return m && ! /^[a-z][a-z0-9+.-]*:/i.test( h ) ? ( m[ 1 ].replace( /\/+$/, '' ) || front ) : null;
 };
 
 // { label -> route | null (ambiguous) } from every object literal with a static label and href.

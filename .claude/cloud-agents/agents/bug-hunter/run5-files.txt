@@ -1,0 +1,12 @@
+plugins/sgs-blocks/scripts/inspector-scan/rules/30-raw-box-control.js
+plugins/sgs-blocks/scripts/inspector-scan/rules/33-ineffective-typography-selector.js
+plugins/sgs-blocks/scripts/inspector-scan/rules/35-pinned-panel-position.js
+plugins/sgs-blocks/scripts/inspector-scan/rules/36-box-control-presets-missing.js
+plugins/sgs-blocks/scripts/inspector-scan/rules/38-media-attr-parity.js
+scripts/computed-route/lib/read-assets.mjs
+scripts/computed-route/lib/read-logic-statics.mjs
+scripts/computed-route/lib/read-logic.mjs
+scripts/computed-route/lib/read-readme.mjs
+scripts/computed-route/lib/references.mjs
+scripts/computed-route/lib/resolve-declared.mjs
+scripts/computed-route/lib/site-build-labels.mjs

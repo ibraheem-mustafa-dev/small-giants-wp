@@ -10,7 +10,7 @@ const STRING_FORMS = [ 'clamp', 'vw', 'min', 'max' ];
 // px, and '' for a unitless line height; 'unitless' is the same as '', includes/helpers-typography.php::sgs_typography_css_rule).
 const LENGTH = /^(-?\d*\.?\d+)(px|em|rem)?$/;
 
-const clean = ( v ) => String( v ?? '' ).replace( /\s*!important$/, '' ).trim();
+const clean = ( v ) => String( v ?? '' ).trim().replace( /\s*!important$/, '' );
 const unitless = ( u ) => '' === u || 'unitless' === u;
 
 // The declared value at each tier ({ tier: value }) for the tiers being written.
