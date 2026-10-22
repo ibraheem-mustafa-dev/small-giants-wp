@@ -1,0 +1,12 @@
+/*
+ * Text selection colour (Spec 32 FR-32-26a).
+ *
+ * Painted from the theme snapshot's settings.custom.selection.background and .colour. The theme enqueues this
+ * stylesheet only when both are set (inc/selection.php), so an unset pair leaves the browser's own selection
+ * colour. The rule carries no fallback: a fallback would be every other client's value.
+ */
+
+::selection {
+	background: var(--wp--custom--selection--background);
+	color: var(--wp--custom--selection--colour);
+}

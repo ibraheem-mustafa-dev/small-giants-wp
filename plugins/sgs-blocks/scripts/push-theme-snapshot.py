@@ -84,6 +84,7 @@ import snapshot_layout_tokens as layout_tokens  # noqa: E402
 import snapshot_motion_tokens as motion_tokens  # noqa: E402
 import snapshot_focus_tokens as focus_tokens  # noqa: E402
 import snapshot_scrollbar_tokens as scrollbar_tokens  # noqa: E402
+import snapshot_selection_tokens as selection_tokens  # noqa: E402
 import snapshot_inline_format_tokens as inline_format_tokens  # noqa: E402
 
 # The generic host-matched secrets lookup lives with the Site Info push; one copy, not two.
@@ -241,7 +242,8 @@ def roster_guard(snapshot: dict) -> list[str]:
     motion schema's x-sgs-tokens table names (snapshot_motion_tokens.py, Spec 38A section 7), named `custom.<path>`,
     and the keyboard-focus keys under settings.custom.focus (snapshot_focus_tokens.py), named `custom.focus.<key>`,
     and the scrollbar keys under settings.custom.scrollbar (snapshot_scrollbar_tokens.py), named `custom.scrollbar.<key>`,
-    and the highlight and inline-photo keys (snapshot_inline_format_tokens.py), named `custom.highlight.<key>` /
+    and the half of the optional selection pair a snapshot lacks (snapshot_selection_tokens.py), named
+    `custom.selection.<key>`, and the highlight and inline-photo keys (snapshot_inline_format_tokens.py), named `custom.highlight.<key>` /
     `custom.inlinePhoto.<key>`.
     """
     missing = palette_roster.missing_roster_slugs(snapshot, palette_roster.framework_roster())
@@ -251,6 +253,7 @@ def roster_guard(snapshot: dict) -> list[str]:
         snapshot, motion_tokens.motion_token_keys())]
     missing += ["custom.focus." + key for key in focus_tokens.missing_focus_keys(snapshot)]
     missing += ["custom.scrollbar." + key for key in scrollbar_tokens.missing_scrollbar_keys(snapshot)]
+    missing += ["custom.selection." + key for key in selection_tokens.incomplete_selection_keys(snapshot)]
     missing += ["custom." + path for path in inline_format_tokens.missing_inline_format_keys(snapshot)]
     return missing
 
