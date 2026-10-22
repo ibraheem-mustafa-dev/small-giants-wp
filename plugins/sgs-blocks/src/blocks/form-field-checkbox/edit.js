@@ -8,6 +8,7 @@ import {
 	Button,
 } from '@wordpress/components';
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
+import { fieldLabelClasses } from '../../components/form-field-preview';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const WIDTH_OPTIONS = [
@@ -30,6 +31,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		'sgs-form-field',
 		'sgs-form-field--checkbox',
 		`sgs-form-field--${ width }`,
+		...fieldLabelClasses( attributes ),
 	].join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
@@ -230,6 +232,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								type="checkbox"
 								name={ `preview-${ fieldName }` }
 								value={ option.value || '' }
+								checked={ !! option.checked }
+								readOnly
 								disabled
 							/>
 							<span>{ option.label || '' }</span>

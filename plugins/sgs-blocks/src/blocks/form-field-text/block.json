@@ -131,6 +131,11 @@
             "type": "boolean",
             "default": true
         },
+        "floatingLabelPosition": {
+            "type": "string",
+            "enum": [ "above", "inside" ],
+            "default": "above"
+        },
         "maxLength": {
             "type": "number",
             "default": 0

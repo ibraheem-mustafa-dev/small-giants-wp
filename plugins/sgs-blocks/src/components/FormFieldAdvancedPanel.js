@@ -128,6 +128,19 @@ export default function FormFieldAdvancedPanel( { attributes, setAttributes, fea
 					__nextHasNoMarginBottom
 				/>
 			) }
+			{ has( 'floatingLabel' ) && false !== attributes.floatingLabel && (
+				<SelectControl
+					label={ __( 'Floating label position', 'sgs-blocks' ) }
+					value={ 'inside' === attributes.floatingLabelPosition ? 'inside' : 'above' }
+					options={ [
+						{ label: __( 'Lifts above the box', 'sgs-blocks' ), value: 'above' },
+						{ label: __( 'Stays inside the box, shrinks on focus', 'sgs-blocks' ), value: 'inside' },
+					] }
+					onChange={ set( 'floatingLabelPosition' ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
 			{ has( 'autocomplete' ) && (
 				<AutocompleteControl value={ attributes.autocomplete || '' } onChange={ set( 'autocomplete' ) } />
 			) }

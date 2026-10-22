@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, SelectControl, ToggleControl } from '@wordpress/components';
+import { SgsColourPanel, fillRow, textRow, SgsBorderControl, SgsLengthControl, TypographyControls } from '../../components';
 
 // D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
 // allow-list exactly (render.php validates the same set independently).
@@ -73,6 +74,78 @@ export default function Edit( { attributes, setAttributes } ) {
 							__next40pxDefaultSize
 						/>
 					) }
+				</PanelBody>
+			</InspectorControls>
+
+			<InspectorControls group="styles">
+				<SgsColourPanel
+					rows={ [
+						fillRow( {
+							key: 'card',
+							label: __( 'Card background', 'sgs-blocks' ),
+							attrs: { base: 'cardBackgroundColour' },
+							attributes,
+							setAttributes,
+						} ),
+						textRow( {
+							key: 'term',
+							label: __( 'Row label', 'sgs-blocks' ),
+							attrs: { base: 'termColour' },
+							attributes,
+							setAttributes,
+						} ),
+						textRow( {
+							key: 'value',
+							label: __( 'Row value', 'sgs-blocks' ),
+							attrs: { base: 'valueColour' },
+							attributes,
+							setAttributes,
+						} ),
+					] }
+				/>
+				<PanelBody title={ __( 'Card border and spacing', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.cardBorderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { cardBorderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.cardBorderStyle }
+						onStyleChange={ ( val ) => setAttributes( { cardBorderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourStates={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: attributes.cardBorderColour,
+								onChange: ( val ) => setAttributes( { cardBorderColour: val ?? '' } ),
+							},
+						] }
+						radiusValues={ {
+							base: attributes.cardBorderRadius?.desktop ?? {},
+							tablet: attributes.cardBorderRadius?.tablet ?? {},
+							mobile: attributes.cardBorderRadius?.mobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { cardBorderRadius: { ...attributes.cardBorderRadius, [ key ]: next } } );
+						} }
+					/>
+					<SgsLengthControl
+						label={ __( 'Card padding', 'sgs-blocks' ) }
+						value={ attributes.cardPadding }
+						onChange={ ( val ) => setAttributes( { cardPadding: val ?? '' } ) }
+						presets
+					/>
+				</PanelBody>
+				<PanelBody title={ __( 'Card title typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						fontSizePresets
+						showFontFamily
+						showTransform
+						showLetterSpacing
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="cardTitle"
+					/>
 				</PanelBody>
 			</InspectorControls>
 

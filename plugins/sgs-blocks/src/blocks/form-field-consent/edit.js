@@ -7,6 +7,7 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
+import { fieldLabelClasses } from '../../components/form-field-preview';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
 const WIDTH_OPTIONS = [
@@ -29,6 +30,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		'sgs-form-field',
 		'sgs-form-field--consent',
 		`sgs-form-field--${ width }`,
+		...fieldLabelClasses( attributes ),
 	].join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
@@ -110,7 +112,12 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			<div { ...blockProps }>
 				<label className="sgs-form-field__consent">
-					<input type="checkbox" disabled />
+					<input
+						type="checkbox"
+						checked={ !! attributes.defaultChecked }
+						readOnly
+						disabled
+					/>
 					<RichText
 						tagName="span"
 						className="sgs-form-field__consent-text"

@@ -6,6 +6,7 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
+import { fieldLabelClasses, fieldDefaultValue } from '../../components/form-field-preview';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import FieldLabelLayoutPanel from '../../components/FieldLabelLayoutPanel';
 
@@ -42,6 +43,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		'sgs-form-field',
 		'sgs-form-field--number',
 		`sgs-form-field--${ width }`,
+		...fieldLabelClasses( attributes ),
 	].join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
@@ -238,7 +240,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				<input
 					type="number"
 					className="sgs-form-field__input"
-					placeholder={ placeholder }
+					placeholder={ placeholder || ' ' }
+					value={ fieldDefaultValue( attributes ) }
+					readOnly
 					min={ min }
 					max={ max }
 					step={ step }

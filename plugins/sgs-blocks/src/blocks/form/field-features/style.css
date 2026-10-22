@@ -2,6 +2,7 @@
  * Form field features (Spec 04 FR-4-4 and FR-4-5). Named style.css in its own folder so the build bundles it into the form's frontend stylesheet.
  *
  * - A field with floating labels switched off keeps its label above the box.
+ * - A field with the "inside" floating label keeps the label inside the box and lifts it on focus or once filled.
  * - The textarea's live character counter sits under the box, right-aligned.
  *
  * Colours come from the theme tokens; the floating-label rules these override live in style.css.
@@ -17,14 +18,46 @@
 	position: static;
 	display: block;
 	margin-bottom: 0.375rem;
-	color: var(--wp--preset--color--text, #1e1e1e);
+	pointer-events: auto;
+}
+
+/* The static label's colour and type are defaults at zero specificity, so the form's label typography
+   control and a client's label colour always win. */
+:where(.sgs-form-field--static-label) .sgs-form-field__label:where(.sgs-form-field__label) {
+	color: var(--wp--preset--color--text);
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	font-weight: 600;
-	pointer-events: auto;
 }
 
 .sgs-form-field.sgs-form-field--static-label.sgs-form-field--static-label.sgs-form-field--static-label .sgs-form-field__input::placeholder {
 	color: var(--sgs-field-placeholder-colour, var(--wp--preset--color--text-muted, #555));
+}
+
+/* Floating label placed inside the box (floatingLabelPosition "inside"): the label rests in the box and lifts
+   to its top edge on focus or once filled, instead of lifting above the box. The chained class raises
+   specificity above the per-type floating rules and their :has() focus and filled states. */
+.sgs-form-field.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--label-inside {
+	padding-top: 0;
+}
+
+.sgs-form-field.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--label-inside .sgs-form-field__label {
+	top: 1.25rem;
+	left: 1rem;
+}
+
+.sgs-form-field.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--textarea .sgs-form-field__label {
+	top: 1.375rem;
+}
+
+.sgs-form-field.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--label-inside:has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--label-inside:has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label {
+	top: 0.5rem;
+	left: 1rem;
+}
+
+.sgs-form-field.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--label-inside .sgs-form-field__input {
+	padding-top: 1.5rem;
+	padding-bottom: 0.375rem;
 }
 
 /* Live character counter. */
