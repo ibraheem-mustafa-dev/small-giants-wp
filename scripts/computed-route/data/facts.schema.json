@@ -3,9 +3,9 @@
   "$id": "https://sgs.local/computed-route/facts.schema.json",
   "title": "Handoff fact record (Spec 48 FR-48-7)",
   "type": "object",
-  "required": [ "schema", "client", "generated", "widths", "sources", "elements", "surfaces", "animations", "gaps", "counts" ],
+  "required": [ "schema", "client", "generated", "widths", "sources", "elements", "surfaces", "animations", "assets", "gaps", "counts" ],
   "properties": {
-    "schema": { "const": "2" },
+    "schema": { "const": "3" },
     "client": { "type": "string", "pattern": "^[a-z0-9-]+$" },
     "generated": { "type": "string" },
     "widths": { "type": "array", "items": { "type": "integer", "minimum": 200, "maximum": 4000 }, "minItems": 1 },
@@ -20,12 +20,13 @@
     "elements": { "type": "object", "additionalProperties": { "$ref": "#/$defs/element" } },
     "surfaces": { "type": "object", "additionalProperties": { "$ref": "#/$defs/surface" } },
     "animations": { "type": "object", "required": [ "records", "unjoined" ], "properties": { "records": { "type": "integer" }, "unjoined": { "type": "array", "items": { "type": "object", "required": [ "id", "reason" ], "properties": { "id": { "type": "string" }, "reason": { "type": "string" } } } } } },
+    "assets": { "type": "object", "required": [ "files", "unused", "missing" ], "properties": { "files": { "type": "integer" }, "unused": { "type": "array", "items": { "type": "string" } }, "missing": { "type": "array", "items": { "type": "object", "required": [ "path", "by" ], "properties": { "path": { "type": "string" }, "by": { "type": "string" }, "via": { "type": "string" } } } } } },
     "mounted": { "type": "object", "additionalProperties": { "type": "object", "additionalProperties": { "type": "boolean" } } },
     "state": { "type": "object", "additionalProperties": { "type": "object", "required": [ "keys", "widthKeys" ], "properties": { "keys": { "type": "array", "items": { "type": "string" } }, "widthKeys": { "type": "array", "items": { "type": "string" } } } } },
     "gaps": { "type": "array", "items": { "$ref": "#/$defs/gap" } },
     "counts": {
       "type": "object",
-      "required": [ "elements", "holes", "perWidth", "widthConditions", "elementsInSurfaces", "instances", "gaps", "effects" ],
+      "required": [ "elements", "holes", "perWidth", "widthConditions", "elementsInSurfaces", "instances", "gaps", "effects", "assets" ],
       "properties": {
         "elements": { "type": "integer" },
         "holes": { "type": "integer" },
@@ -34,7 +35,8 @@
         "elementsInSurfaces": { "type": "integer" },
         "instances": { "type": "integer" },
         "gaps": { "type": "integer" },
-        "effects": { "type": "object", "required": [ "records", "joined", "unjoined", "elements" ], "properties": { "records": { "type": "integer" }, "joined": { "type": "integer" }, "unjoined": { "type": "integer" }, "elements": { "type": "integer" } } }
+        "effects": { "type": "object", "required": [ "records", "joined", "unjoined", "elements" ], "properties": { "records": { "type": "integer" }, "joined": { "type": "integer" }, "unjoined": { "type": "integer" }, "elements": { "type": "integer" } } },
+        "assets": { "type": "object", "required": [ "files", "elements", "unused", "missing" ], "properties": { "files": { "type": "integer" }, "elements": { "type": "integer" }, "unused": { "type": "integer" }, "missing": { "type": "integer" } } }
       }
     }
   },
@@ -152,6 +154,11 @@
         "reduced_motion": { "type": "object", "required": [ "behaviour", "detail" ], "properties": { "behaviour": { "enum": [ null, "skip", "final-state", "unchanged" ] }, "detail": { "type": "string" } } }
       }
     },
+    "assetUse": {
+      "type": "object",
+      "required": [ "path", "ratio", "kind", "sha256", "animated", "via" ],
+      "properties": { "path": { "type": "string" }, "ratio": { "type": [ "number", "null" ] }, "kind": { "type": "string" }, "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "animated": { "type": "boolean" }, "via": { "type": "string" } }
+    },
     "surface": {
       "type": "object",
       "required": [ "id", "kind", "dc", "parent", "roots", "parts", "states" ],
@@ -168,7 +175,7 @@
     },
     "element": {
       "type": "object",
-      "required": [ "template", "logic", "surfaces", "effects", "instances", "fingerprint" ],
+      "required": [ "template", "logic", "surfaces", "effects", "assets", "instances", "fingerprint" ],
       "properties": {
         "template": { "$ref": "#/$defs/template" },
         "logic": {
@@ -182,6 +189,8 @@
         },
         "surfaces": { "type": "array", "items": { "$ref": "#/$defs/membership" } },
         "effects": { "type": "array", "items": { "$ref": "#/$defs/effect" } },
+        "assets": { "type": "array", "items": { "$ref": "#/$defs/assetUse" } },
+        "alt": { "type": "object", "required": [ "source", "placeholder", "hole", "id" ], "properties": { "source": { "const": "image-slot" }, "placeholder": { "type": "string" }, "hole": { "type": "boolean" }, "id": { "type": [ "string", "null" ] } } },
         "instances": { "type": "array", "items": { "type": "object", "required": [ "key", "state" ], "properties": { "key": { "type": "string" }, "state": { "type": "string" } } } },
         "fingerprint": { "type": "object", "required": [ "tag", "parentTags", "textHash" ], "properties": { "tag": { "type": "string" }, "parentTags": { "type": "array", "items": { "type": "string" } }, "textHash": { "type": "string" } } }
       }
