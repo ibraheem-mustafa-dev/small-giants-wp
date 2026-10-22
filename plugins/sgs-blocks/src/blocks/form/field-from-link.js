@@ -74,10 +74,12 @@ function applyTo( control, value ) {
 	if ( [ 'checkbox', 'file', 'hidden', 'submit', 'button' ].includes( control.type ) ) {
 		return false;
 	}
-	if ( control.value === value ) {
+	// A value set from script never trips the field's own maxlength, so the link value is held to it here.
+	const capped = control.maxLength > 0 ? value.slice( 0, control.maxLength ) : value;
+	if ( control.value === capped ) {
 		return false;
 	}
-	control.value = value;
+	control.value = capped;
 	return true;
 }
 

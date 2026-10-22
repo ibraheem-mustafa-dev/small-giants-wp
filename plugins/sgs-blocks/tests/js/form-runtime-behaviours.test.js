@@ -171,6 +171,10 @@ describe( 'FR-4-9 saved progress', () => {
 		expect( global.fetch ).toHaveBeenCalled();
 		expect( mockCtx.submitted ).toBe( true );
 		expect( progressKeys() ).toHaveLength( 0 );
+
+		// A change after the success view is never stored again.
+		typeEverything( root );
+		expect( progressKeys() ).toHaveLength( 0 );
 	} );
 
 	it( 'keys differ per form on a page, per copy of one form, and per page', () => {
@@ -277,6 +281,14 @@ describe( 'FR-4-10 field value from a link parameter', () => {
 		expect( root.querySelectorAll( 'img' ) ).toHaveLength( 0 );
 		// A field with no data-sgs-value-param is never touched.
 		expect( root.querySelector( '[name="plain"]' ).value ).toBe( '' );
+	} );
+
+	it( 'holds a text value to the field own maxlength', () => {
+		const root = linkForm();
+		root.querySelector( '[name="ref"]' ).setAttribute( 'maxlength', '5' );
+		const { applyLinkValues } = require( SRC( 'field-from-link.js' ) );
+		applyLinkValues( root, '?ref=abcdefghij' );
+		expect( root.querySelector( '[name="ref"]' ).value ).toBe( 'abcde' );
 	} );
 
 	it( 'is applied on load by the form script', () => {

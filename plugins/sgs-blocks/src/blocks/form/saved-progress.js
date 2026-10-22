@@ -153,13 +153,16 @@ function markSaved( formRoot ) {
 	}
 }
 
+// Forms already submitted on this page: nothing they hold is written again.
+const submitted = new WeakSet();
+
 /**
  * Write every field and the step. No-op when the setting is off.
  *
  * @param {HTMLElement} formRoot Form wrapper.
  */
 export function writeProgress( formRoot ) {
-	if ( ! isEnabled( formRoot ) ) {
+	if ( ! isEnabled( formRoot ) || submitted.has( formRoot ) ) {
 		return;
 	}
 	try {
@@ -185,11 +188,12 @@ export function saveStep( formRoot, step ) {
 }
 
 /**
- * Remove the stored progress (the form was submitted).
+ * Remove the stored progress (the form was submitted) and stop saving: a change after the success view is never stored.
  *
  * @param {HTMLElement} formRoot Form wrapper.
  */
 export function clearProgress( formRoot ) {
+	submitted.add( formRoot );
 	try {
 		window.localStorage.removeItem( progressKey( formRoot ) );
 	} catch ( _e ) {
