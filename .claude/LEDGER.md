@@ -41,7 +41,7 @@ last_updated: 2026-10-22
 **Container band layers and the nav caret** (Bean, 2026-10-22): done and live on all four test sites; the rules are in Spec 02's contentWidth bullet and Spec 36, the record in the plan's Status.
 
 **Resume from:** `plans/2026-10-21-handoff-readers.md`, Status, Next; the tracks signal each other through `.claude/queue.md`.
-- **Track T (the handoff readers session):** T1 done 2026-10-22 (six readers in the fact record, schema version 6, `f3398ec5c`; route suite 2086 pass, only the known intake re-run red); next T2a, the header architecture (Indus post 201 has one unslotted row and no row for the draft's top bar).
+- **Track T (the handoff readers session):** T1, T2a done 2026-10-22 (the header's three slotted rows, skeleton and build tool; Indus post 201 rebuilt, top bar in its top row, `774966427`; suite 2205 pass, the known intake re-run red). Next: T2a's footer half, T2b, T3 (`.claude/prompts/2026-10-22-track-t-t2b.md`).
 - **Track F:** not started; it starts from `.claude/prompts/2026-10-22-track-f-framework.md` (its F0 asks Bean the header row-height question).
 
 ### Front F: Eye Care Birmingham, built by hand (D1149)
