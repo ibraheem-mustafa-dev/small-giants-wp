@@ -35,6 +35,7 @@ import FormEmbedEdit from './FormEmbedEdit';
 import { FORM_CPT } from './SavedFormPicker';
 import EmailSettingsPanel from './EmailSettingsPanel';
 import SubmitMotionControls from './SubmitMotionControls';
+import SavedProgressPanel from './SavedProgressPanel';
 import { submitShadowPreviewStyle, submitLiftPreviewRule } from './submit-motion-preview';
 
 const SUBMIT_ALIGN_OPTIONS = [
@@ -113,6 +114,9 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		progressBarColourGradient,
 		progressBarColourHover,
 		progressBarColourHoverGradient,
+		savedProgress,
+		savedProgressDotColour,
+		savedProgressLabel,
 		fieldColumnsFrom,
 		prevColourBackground,
 		prevColourBackgroundHover,
@@ -529,6 +533,23 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 							},
 						],
 					},
+					...( savedProgress
+						? [
+								{
+									key: 'saved-dot',
+									label: __( 'Saved-progress dot colour', 'sgs-blocks' ),
+									states: [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: savedProgressDotColour,
+											onChange: ( val ) => setAttributes( { savedProgressDotColour: val ?? '' } ),
+											linked: true,
+										},
+									],
+								},
+						  ]
+						: [] ),
 					{
 						key: 'prev-button-background',
 						label: __( 'Previous button background colour', 'sgs-blocks' ),
@@ -786,6 +807,8 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+
+				<SavedProgressPanel attributes={ attributes } setAttributes={ setAttributes } />
 
 				<EmailSettingsPanel
 					notifyEmail={ notifyEmail }
@@ -1323,6 +1346,21 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					submitColour/submitBackground added 2026-08-13 — render.php:
 					211-228 emits a real, unconditional `color`/`background-color`
 					rule on this exact element; the preview had never carried it. */ }
+				{ /* Saved-progress notice preview: render.php prints the same notice on the frontend. */ }
+				{ savedProgress && (
+					<p className="sgs-form__saved-notice">
+						<span
+							className="sgs-form__saved-dot"
+							aria-hidden="true"
+							style={
+								resolveColourToken( savedProgressDotColour, palette )
+									? { backgroundColor: resolveColourToken( savedProgressDotColour, palette ) }
+									: undefined
+							}
+						/>
+						<span className="sgs-form__saved-text">{ savedProgressLabel || __( 'Saves as you go', 'sgs-blocks' ) }</span>
+					</p>
+				) }
 				<div className="sgs-form__actions">
 					{ /* Editor-canvas-only Previous-button preview (2026-09-05) — same
 						reasoning as the Submit button preview above: no real multi-step

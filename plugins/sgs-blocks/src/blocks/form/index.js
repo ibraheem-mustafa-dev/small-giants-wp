@@ -3,6 +3,7 @@ import metadata from './block.json';
 import Edit from './edit';
 import Save from './save';
 import './style.css';
+import './saved-progress/style.css';
 import './editor.css';
 import './field-features/style.css';
 import { formIcon } from '../../utils';
