@@ -3078,18 +3078,18 @@
 			"note": "animation-* properties: name, duration, delay, timing, iteration count and direction read into the inventory record and written as entrance or effect"
 		},
 		"css-group:backgrounds-and-borders": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "Fill reads each value the draft declares (lib/fill-declared.mjs), writes it through calibration to the setting the framework DB records for it and confirms it against the render (lib/fill-confirm.mjs); proven by tests/fill-css-groups.test.mjs for background-repeat on a real setting; a property no setting paints is an unmapped row. Longhands no setting paints (background-clip, background-origin, border-image-*, per-side border style) are unmapped rows.",
+			"test": "scripts/computed-route/tests/fill-css-groups.test.mjs#css-group:backgrounds-and-borders"
 		},
 		"css-group:basic-user-interface": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"note": "No setting paints accent-color, appearance, caret-color, cursor, outline, outline-color, outline-offset, outline-style, outline-width, pointer-events, resize or user-select, so a draft value for them is an unmapped row, not a write (focus outlines go to the theme focus ring, lib/fill-state-tokens.mjs). Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
 		},
 		"css-group:box-alignment": {
 			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
@@ -3106,11 +3106,11 @@
 			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:box-sizing": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "Fill reads each value the draft declares (lib/fill-declared.mjs), writes it through calibration to the setting the framework DB records for it and confirms it against the render (lib/fill-confirm.mjs); proven by tests/fill-css-groups.test.mjs for max-width on a real setting; a property no setting paints is an unmapped row. box-sizing, column-width and the contain-intrinsic-* sizes have no setting that paints them.",
+			"test": "scripts/computed-route/tests/fill-css-groups.test.mjs#css-group:box-sizing"
 		},
 		"css-group:cascading-and-inheritance": {
 			"recognise": null,
@@ -3155,25 +3155,25 @@
 			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:display": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "Fill reads each value the draft declares (lib/fill-declared.mjs), writes it through calibration to the setting the framework DB records for it and confirms it against the render (lib/fill-confirm.mjs); proven by tests/fill-css-groups.test.mjs for order on a real setting; a property no setting paints is an unmapped row. The display property itself is written through the layout settings calibration discovered (lib/resolve.mjs::resolveDiscovered; tests/fill-display.test.mjs and tests/fill-display-hide.test.mjs); reading-flow, reading-order and visibility have no setting that paints them.",
+			"test": "scripts/computed-route/tests/fill-css-groups.test.mjs#css-group:display"
 		},
 		"css-group:filter-effects": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "Fill reads each value the draft declares (lib/fill-declared.mjs), writes it through calibration to the setting the framework DB records for it and confirms it against the render (lib/fill-confirm.mjs); proven by tests/fill-css-groups.test.mjs for backdrop-filter on a real setting; a property no setting paints is an unmapped row. filter itself is a named colour treatment (sgsColourTreatment), not a free filter list; color-interpolation-filters, flood-color, flood-opacity and lighting-color have no setting that paints them.",
+			"test": "scripts/computed-route/tests/fill-css-groups.test.mjs#css-group:filter-effects"
 		},
 		"css-group:flexible-box-layout": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "Fill reads each value the draft declares (lib/fill-declared.mjs), writes it through calibration to the setting the framework DB records for it and confirms it against the render (lib/fill-confirm.mjs); proven by tests/fill-css-groups.test.mjs for flex-direction on a real setting; a property no setting paints is an unmapped row. align-self, flex-basis, flex-flow, flex-grow and flex-shrink have no setting that paints them.",
+			"test": "scripts/computed-route/tests/fill-css-groups.test.mjs#css-group:flexible-box-layout"
 		},
 		"css-group:fonts": {
 			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
@@ -3197,11 +3197,11 @@
 			}
 		},
 		"css-group:grid-layout": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "Fill reads each value the draft declares (lib/fill-declared.mjs), writes it through calibration to the setting the framework DB records for it and confirms it against the render (lib/fill-confirm.mjs); proven by tests/fill-css-groups.test.mjs for grid-template-columns on a real setting; a property no setting paints is an unmapped row. grid-auto-columns, grid-auto-flow, grid-template-areas, grid-area, grid-column and grid-row have no setting that paints them.",
+			"test": "scripts/computed-route/tests/fill-css-groups.test.mjs#css-group:grid-layout"
 		},
 		"css-group:images": {
 			"recognise": null,
@@ -3229,14 +3229,14 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"note": "Settings exist only under the shorthands margin-block and padding-block (sgs/mega-panel) and, in states, padding-inline-start; Fill reads the longhands (a shorthand is read through them, lib/fill-declared.mjs#extraProps) and the resolver matches a setting by its exact property, so a draft margin-block-start, margin-block-end, padding-block-start, padding-block-end, padding-inline-end, block-size, inline-size or inset-block is an unmapped row. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
 		},
 		"css-group:masking": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"note": "The only setting is sgs/hero splitMediaShape for clip-path, a fixed set of named shapes (none, rounded, circle, square), so a draft clip-path of any other value is a shape row. No setting paints clip, mask, mask-image, mask-size, mask-position, mask-repeat, mask-mode, mask-clip, mask-composite, mask-origin, mask-type or clip-rule. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
 		},
 		"css-group:mathml": {
 			"excluded": {
@@ -3285,14 +3285,14 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"note": "Settings exist only under the shorthand overflow (sgs/decorative-image, a fixed set of keywords) and -webkit-line-clamp; Fill reads the longhands overflow-x and overflow-y and the resolver matches a setting by its exact property, so a draft overflow-x, overflow-y, overflow-block, overflow-inline, text-overflow, scroll-behavior or scrollbar-gutter is an unmapped row. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
 		},
 		"css-group:overscroll-behavior": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"note": "No setting paints overscroll-behavior, overscroll-behavior-x or overscroll-behavior-y, so a draft value is an unmapped row. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
 		},
 		"css-group:paged-media": {
 			"excluded": {
@@ -3309,11 +3309,11 @@
 			}
 		},
 		"css-group:positioned-layout": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "Fill reads each value the draft declares (lib/fill-declared.mjs), writes it through calibration to the setting the framework DB records for it and confirms it against the render (lib/fill-confirm.mjs); proven by tests/fill-css-groups.test.mjs for top on a real setting; a property no setting paints is an unmapped row. z-index and position settings hold a fixed set of values, so a draft value outside it is a shape row; bottom, right, inset, float and clear have no setting that paints them.",
+			"test": "scripts/computed-route/tests/fill-css-groups.test.mjs#css-group:positioned-layout"
 		},
 		"css-group:rhythmic-sizing": {
 			"recognise": null,
@@ -3330,11 +3330,11 @@
 			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:scalable-vector-graphics": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "Fill reads each value the draft declares (lib/fill-declared.mjs), writes it through calibration to the setting the framework DB records for it and confirms it against the render (lib/fill-confirm.mjs); proven by tests/fill-css-groups.test.mjs for stroke-width on a real setting; a property no setting paints is an unmapped row. fill-opacity, stroke-linecap, stroke-linejoin, stroke-dashoffset and the other SVG attributes without a setting are unmapped rows.",
+			"test": "scripts/computed-route/tests/fill-css-groups.test.mjs#css-group:scalable-vector-graphics"
 		},
 		"css-group:scroll-anchoring": {
 			"recognise": null,
@@ -3355,14 +3355,14 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"note": "No setting paints scroll-margin, scroll-padding, scroll-snap-align or scroll-snap-type (or their longhands), so a draft value is an unmapped row. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
 		},
 		"css-group:scrollbars-styling": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "Fill reads each value the draft declares (lib/fill-declared.mjs), writes it through calibration to the setting the framework DB records for it and confirms it against the render (lib/fill-confirm.mjs); proven by tests/fill-css-groups.test.mjs for scrollbar-width on a real setting; a property no setting paints is an unmapped row. scrollbar-color is held by its own setting; the group is fully covered.",
+			"test": "scripts/computed-route/tests/fill-css-groups.test.mjs#css-group:scrollbars-styling"
 		},
 		"css-group:shapes": {
 			"recognise": null,
@@ -3393,18 +3393,18 @@
 			"test": "scripts/computed-route/tests/fill-prop.test.mjs#css-group:"
 		},
 		"css-group:text-decoration": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "Fill reads each value the draft declares (lib/fill-declared.mjs), writes it through calibration to the setting the framework DB records for it and confirms it against the render (lib/fill-confirm.mjs); proven by tests/fill-css-groups.test.mjs for text-decoration-thickness on a real setting; a property no setting paints is an unmapped row. text-decoration-style, text-decoration-skip-ink, text-shadow and text-emphasis have no setting that paints them; text-decoration-line is a fixed set of link-underline treatments.",
+			"test": "scripts/computed-route/tests/fill-css-groups.test.mjs#css-group:text-decoration"
 		},
 		"css-group:transforms": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
+			"note": "The only resting transform setting is sgs/decorative-image rotation (degrees); the hover scales go through the states path (lib/fill-state.mjs), so any other resting transform is a shape row. No setting paints rotate, scale, perspective, perspective-origin, transform-origin, transform-style, transform-box or backface-visibility. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
 		},
 		"css-group:transitions": {
 			"recognise": "construct:transition",
@@ -3434,11 +3434,11 @@
 			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:webkit-extensions": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "WebKit extensions (-webkit-line-clamp, -webkit-text-fill-color, -webkit-text-stroke, -webkit-mask, -webkit-appearance and the rest, 50 properties): common in modern designs; Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group (re-opened by Bean 2026-10-18)"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "Fill reads each value the draft declares (lib/fill-declared.mjs), writes it through calibration to the setting the framework DB records for it and confirms it against the render (lib/fill-confirm.mjs); proven by tests/fill-css-groups.test.mjs for -webkit-text-stroke-width on a real setting; a property no setting paints is an unmapped row. -webkit-mask-*, -webkit-box-reflect and the -webkit-border-* logical properties have no setting that paints them.",
+			"test": "scripts/computed-route/tests/fill-css-groups.test.mjs#css-group:webkit-extensions"
 		},
 		"css-group:will-change": {
 			"excluded": {
