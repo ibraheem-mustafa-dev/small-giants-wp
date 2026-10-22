@@ -17488,10 +17488,28 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "burgerTextGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "burgerTextTransform",
       "fields": {
         "css_property": "text-transform",
         "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "bar"
       }
     },
     {
@@ -17585,6 +17603,15 @@
       "fields": {
         "css_property": "transform",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuCaretGap",
+      "fields": {
+        "css_property": "gap,padding-inline",
+        "css_layer": "GRID",
+        "css_element": "link"
       }
     },
     {
@@ -18398,7 +18425,7 @@
       "slug": "sgs/nav-drawer-menu",
       "attr": "submenuCaretGap",
       "fields": {
-        "css_property": "gap",
+        "css_property": "gap,padding-inline",
         "css_layer": "GRID"
       }
     },
@@ -35567,15 +35594,6 @@
       "attr": "burgerPadding",
       "fields": {
         "css_property": "padding",
-        "css_element": "burger"
-      }
-    },
-    {
-      "slug": "sgs/nav-bar-menu",
-      "attr": "burgerTextGap",
-      "fields": {
-        "css_property": "gap",
-        "css_layer": "GRID",
         "css_element": "burger"
       }
     },

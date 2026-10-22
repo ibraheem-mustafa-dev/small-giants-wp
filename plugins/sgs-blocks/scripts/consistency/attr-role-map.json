@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9211,
+    "row_count": 9212,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -5491,6 +5491,7 @@
     "sgs/nav-bar-menu::featuredItemIds": "behaviour",
     "sgs/nav-bar-menu::featuredRadius": "visual",
     "sgs/nav-bar-menu::featuredRadiusHover": "visual",
+    "sgs/nav-bar-menu::flexWrap": "layout",
     "sgs/nav-bar-menu::gap": "layout",
     "sgs/nav-bar-menu::itemBadgeBorderRadius": "visual",
     "sgs/nav-bar-menu::itemBadgeColour": "color",
