@@ -365,8 +365,8 @@ if ( $show_dots && $total_testimonials > 0 ) {
 			$is_first ? ' sgs-testimonial-slider__dot--active' : '',
 			$is_first ? 'true' : 'false',
 			$controls_id,
-			/* translators: %d = slide number */
-			esc_attr( sprintf( __( 'Go to testimonial %d', 'sgs-blocks' ), $d ) )
+			/* translators: 1: slide number, 2: total slides */
+			esc_attr( sprintf( __( 'Go to testimonial %1$d of %2$d', 'sgs-blocks' ), $d, $total_testimonials ) )
 		);
 	}
 	$dots_html .= '</div>';
