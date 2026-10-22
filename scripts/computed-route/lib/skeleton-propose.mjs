@@ -85,7 +85,7 @@ const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks 
 // calibration element keys), calSettings (slug -> the calibration's settings with their slots), states (the surface's handoff
 // record states: name, how_to_reach, sc_if_tpl_ids), thresholds (the width thresholds the draft's code uses), db, openers (surface id to its surfaces.json opened_by words, read from the handoff folder when omitted), factRecord (the
 // client's fact record, lib/fact-record.mjs: loaded from `facts.client` when omitted, none when the client has no record) }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined } ) {
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null } ) {
 	const m = inventoryModel( inventory );
 	const { composition, capsOf, enumOf } = facts;
 	const minLinks = facts.decisions.structural?.linkList?.minLinks ?? 2;
@@ -94,7 +94,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// The fact record's reading of the template (lib/skeleton-record.mjs), and the surface it places this proposal in: its
 	// parent, kind and opener from `surfaces.json`, and the records whose parent is this surface (`surfaceParts`).
 	const factRecord = undefined === given ? recordFor( facts ) : given;
-	const view = recordView( factRecord, { openers: openers ?? ( factRecord ? openersFor( facts ) : {} ) } );
+	const view = recordView( factRecord, { openers: openers ?? ( factRecord ? openersFor( facts ) : {} ), rootComponent } );
 	const scope = factRecord ? surfaceContext( view, { kind: surfaceKind, name: surfaceName } ) : null;
 	m.els.forEach( ( e ) => view.checkParent( e, m.byKey[ e.parentKey ] ) );
 	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName }, motion, view, scope, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
@@ -461,7 +461,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	built && R.clientBuiltSurface && rows.forEach( ( x ) => Object.assign( x, { rule: 'clientBuiltSurface', builtPost: built, low: false }, 'unresolved' === x.action ? { action: null } : {} ) );
 	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ) ];
 	const proposal = {
-		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], recordDisagreements: view.disagreements,
+		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], recordDisagreements: view.disagreements, recordUntranslated: view.untranslated,
 		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W, ...( built ? { builtPost: built } : {} ),
 		counts: { inventoryElements: m.els.length, parts: m.els.filter( m.isPart ).length, rows: rows.length, skeletonNodes: count( skeleton ), expandedNodes: count( expandSiteInfoRows( skeleton ) ), low: rows.filter( ( r ) => r.low && ! r.action ).length, removed: rows.filter( ( r ) => [ 'remove', 'absorbed', 'unwrap' ].includes( r.action ) ).length, unresolved: rows.filter( ( r ) => 'unresolved' === r.action ).length, byRule: rows.reduce( ( o, r ) => ( r.rule ? { ...o, [ r.rule ]: ( o[ r.rule ] || 0 ) + 1 } : o ), {} ) },
 		problems, rows,
