@@ -483,20 +483,25 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			const b = view.parentsOf( e );
 			return ! a || ! b || a.realParent === b.realParent;
 		};
-		const inside = insideStrips( m.blockKids( e ), { holdsMain, declared: declaredPosition } );
-		const beside = besideStrips( inventory, { declared: declaredPosition, sameParent } );
-		stripRoots = [ ...beside.before, ...beside.after ].map( ( x ) => x.key );
+		const inside = insideStrips( m.blockKids( e ), { holdsMain, declared: declaredPosition } );		const beside = besideStrips( inventory, { declared: declaredPosition, sameParent } );
 		const plan = slotPlan( { beside, inside } );
 		if ( ! H.slotAttribute ) {
 			[ [ 'top', plan.top ], [ 'bottom', plan.bottom ], ...plan.extras.map( ( x ) => [ x.side, x.el ] ) ].filter( ( [ , x ] ) => x ).forEach( ( [ side, x ] ) => slotProblems.push( `${ x.key }: a strip ${ 'top' === side ? 'above' : 'below' } the header's main bar has no row: rules.headerSlots names no slot attribute` ) );
 			return buildChildren( e, block );
 		}
+		// Only a strip beside the header that got a row is absorbed: an extra strip keeps its own surface.
+		const besideKeys = new Set( [ ...beside.before, ...beside.after ].map( ( x ) => x.key ) );
+		stripRoots = [ plan.top, plan.bottom ].filter( ( x ) => x && besideKeys.has( x.key ) ).map( ( x ) => x.key );
 		const top = plan.top && buildSlotRow( plan.top, 'top' );
 		plan.extras.forEach( leaveStrip );
 		const nodes = buildChildren( e, block, inside.main );
 		const bottom = plan.bottom && buildSlotRow( plan.bottom, 'bottom' );
 		const rowsIn = nodes.filter( ( n ) => n.name === H.rowBlock );
-		const middle = 1 === nodes.length && 1 === rowsIn.length ? nodes[ 0 ] : { name: H.rowBlock, attributes: {}, innerBlocks: nodes.flatMap( ( n ) => ( n.name === H.rowBlock ? n.innerBlocks : [ n ] ) ) };
+		// A main bar that is itself a row block is the middle row and keeps its attributes and draft element; any node beside
+		// it goes inside it. Otherwise the middle row is a new keyless row: a row block cannot nest, so those inside it give
+		// their children to it and their own attributes have no row to live on.
+		const middle = 1 === rowsIn.length ? rowsIn[ 0 ] : { name: H.rowBlock, attributes: {}, innerBlocks: [] };
+		middle.innerBlocks = nodes.flatMap( ( n ) => ( n.name === H.rowBlock ? n.innerBlocks : [ n ] ) );
 		middle.attributes[ H.slotAttribute ] = 'middle';
 		return [ top || emptyRow( 'top' ), middle, bottom || emptyRow( 'bottom' ) ];
 	}

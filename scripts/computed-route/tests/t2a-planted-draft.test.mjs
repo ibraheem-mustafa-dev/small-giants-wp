@@ -42,9 +42,9 @@ after( async () => {
 const SURFACES = [ { id: 'S-1', kind: 'global', component: 'Root', rootTpl: '2' }, { id: 'S-2', kind: 'header', component: 'Root', rootTpl: '4' }, { id: 'S-3', kind: 'page', component: 'Root', rootTpl: '9' } ];
 const header = SURFACES[ 1 ];
 
-async function read( strips ) {
+async function read( strips, html = HTML ) {
 	const page = await browser.newPage( { viewport: { width: 1440, height: 900 } } );
-	await page.setContent( HTML );
+	await page.setContent( html );
 	await page.evaluate( () => {
 		window.__dcAnnotatedTemplate = () => '';
 		window.__dcRootName = () => 'Root';
@@ -60,7 +60,7 @@ const rowSlots = ( r ) => r.skeleton[ 0 ].innerBlocks.map( ( n ) => [ n.attribut
 
 test( 'the reader finds the strip beside the header and not the fixed button or the page content (the page root is excluded)', async () => {
 	const strips = stripOptions( header, SURFACES );
-	assert.deepEqual( strips, { exclude: [ [ 'Root', '9' ] ], pages: true }, 'only the roots of surfaces that are not global (the header itself apart)' );
+	assert.deepEqual( strips, { exclude: [ [ 'Root', '9' ] ] }, 'only the roots of surfaces that are not global (the header itself apart)' );
 	const inv = await read( strips );
 	assert.deepEqual( inv.beside.map( ( b ) => [ b.key, b.side, b.position, b.renders, b.holdsOtherRoot ] ), [ [ 'Root/3#0', 'before', 'fixed', true, false ], [ 'Root/9#0', 'after', 'static', true, true ], [ 'Root/2#0', 'before', 'relative', true, false ] ], 'nearest the header first' );
 	const roots = inv.elements.filter( ( e ) => e.strip );
@@ -94,4 +94,21 @@ test( 'a surface that is not a header reads no siblings', async () => {
 	const inv = await read( null );
 	assert.equal( inv.beside, undefined );
 	assert.ok( ! inv.elements.some( ( e ) => e.strip ) );
+} );
+
+// A header with one sibling after it, whose own markup is given; the sibling's tpl is 11.
+const withAfter = ( markup ) => `<!doctype html><html><head><style>body{margin:0}</style></head><body><div class="sc-host" data-sc-name="Root" data-dc-tpl="">
+	<div data-dc-tpl="1"><header data-dc-tpl="4" style="height:60px"><div data-dc-tpl="5" style="display:flex"><nav data-dc-tpl="6"><a data-dc-tpl="7" href="/shop">Shop</a></nav></div></header>${ markup }</div></div></body></html>`;
+const surfacesWithPageAt = ( tpl ) => [ header, { id: 'S-3', kind: 'page', component: 'Root', rootTpl: tpl } ];
+
+test( 'MUST FAIL: a page root that is a plain section inside a wrapper sibling makes that sibling hold another surface\'s root, with no <main> anywhere', async () => {
+	const inv = await read( stripOptions( header, surfacesWithPageAt( '12' ) ), withAfter( '<div data-dc-tpl="11" style="height:300px"><section data-dc-tpl="12"><h1 data-dc-tpl="13">Page</h1></section></div>' ) );
+	assert.deepEqual( inv.beside.map( ( b ) => [ b.key, b.holdsOtherRoot ] ), [ [ 'Root/11#0', true ] ] );
+	assert.deepEqual( rowSlots( propose( inv ) ).map( ( x ) => x[ 1 ] ), [ null, 'Root/5#0', null ], 'the page is not the bottom row' );
+} );
+
+test( 'MUST FAIL: a <main> that is no surface\'s root is not "page content" by its tag: with no surface in it the in-flow stacked block is a strip, listed for review', async () => {
+	const inv = await read( stripOptions( header, surfacesWithPageAt( '99' ) ), withAfter( '<main data-dc-tpl="11" style="height:300px"><h1 data-dc-tpl="12">Notes</h1></main>' ) );
+	assert.deepEqual( inv.beside.map( ( b ) => [ b.key, b.holdsOtherRoot ] ), [ [ 'Root/11#0', false ] ], 'the tag does not decide' );
+	assert.deepEqual( rowSlots( propose( inv ) ).map( ( x ) => x[ 1 ] ), [ null, 'Root/5#0', 'Root/11#0' ] );
 } );

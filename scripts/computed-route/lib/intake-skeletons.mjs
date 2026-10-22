@@ -288,10 +288,10 @@ async function readOpened( h, s, settle, open, shotsDir ) {
 }
 
 // The reading of a header surface's siblings (lib/skeleton-header-slots.mjs, rules.headerSlots): the roots of the other
-// surfaces that are not global, which a sibling may not hold, and whether the export has page surfaces (a page's root is its
-// route's <main>). null for any other kind of surface.
+// surfaces that are not global (a page, footer, drawer, panel, menu, form: each by its own root), which a sibling may not
+// be or hold at any depth. null for any other kind of surface.
 export function stripOptions( s, all ) {
-	return 'header' === s.kind ? { exclude: all.filter( ( x ) => x.id !== s.id && 'global' !== x.kind ).map( ( x ) => [ x.component, x.rootTpl ] ), pages: all.some( ( x ) => 'page' === x.kind ) } : null;
+	return 'header' === s.kind ? { exclude: all.filter( ( x ) => x.id !== s.id && 'global' !== x.kind ).map( ( x ) => [ x.component, x.rootTpl ] ) } : null;
 }
 
 // The facts and client decisions, once per run. Returns { facts, clientDecisions } or { error }.

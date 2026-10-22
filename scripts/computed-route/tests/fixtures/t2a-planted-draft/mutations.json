@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/skeleton-inventory.mjs", "find": "const holdsOther = ( s ) => ( strips?.exclude || [] ).some(", "replace": "const holdsOther = ( s ) => s.matches( 'main' ) || !! s.querySelector( 'main' ) || ( strips?.exclude || [] ).some(", "why": "a <main> that is no surface's root would be read as page content by its tag" },
+	{ "file": "lib/skeleton-inventory.mjs", "find": "[ s, ...s.querySelectorAll( `[data-dc-tpl=\"${ tpl }\"]` ) ].some(", "replace": "[ s ].some(", "why": "a page root inside a wrapper sibling would not make the wrapper hold another surface's root" },
+	{ "file": "lib/skeleton-inventory.mjs", "find": "if ( open[ side ] && ! [ 'fixed', 'absolute' ].includes( position ) && renders ) {", "replace": "if ( open[ side ] && renders ) {", "why": "a fixed sibling would be inventoried as a strip" }
+]
