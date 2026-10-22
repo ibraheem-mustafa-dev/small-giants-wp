@@ -2,7 +2,7 @@
 doc_type: plan
 title: Pipeline tooling bug hunt, follow-ups
 created: 2026-10-22
-status: open
+status: closed
 ---
 
 # Pipeline tooling bug hunt: follow-ups
@@ -11,7 +11,7 @@ The Console's bug-hunter Managed Agent (`.claude/cloud-agents/agents/bug-hunter/
 
 Decisions recorded with the fixes: rule 45 counts `writingMode` as native typography; the two bugs in the hash-pinned runtime `c60c49083997.support.js` are accepted (Spec 48A FR-48A-5); a worker run through `api-agent.py` cannot write under `.claude/` (auto memory `api-worker-cannot-write-claude-dir-protected-path`), so the main session writes `.claude/` docs.
 
-## Open
+## Closed
 
-1. **Reseed the framework DB at the next reseed.** Two code changes only take effect on a reseed, and neither needs a reseed of its own: `sync-container-wrapping-blocks.py` now lists `sgs/decorative-image` in its roster, so Stage 10 can write again; `sgs-update-v2.py::_process_gutenberg_block_dir` now updates a core block's `type` when its `render` key changes. After that reseed, confirm Stage 10 writes `block_composition` rows and `python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` prints `VALIDATION PASS`.
-2. **Not hunted: the 35 rating-2 suspicions in run 5's report** ("Not checked" list) never went to a prover. Hunt them only if a later run finds the hit rate worth it.
+1. **Reseed:** cancelled as a task. Both changes are in code on `main` (the roster passes its dry run), so whichever session next reseeds the framework DB carries them with no extra step; a dedicated reseed would cost a detached worktree and a regenerated-files commit for no earlier benefit.
+2. **Run 5's 35 unproven rating-2 suspicions:** cancelled. They are the agent's lowest-confidence guesses, its provers over-confirm, and five runs have already drained the files with a real fix history.
