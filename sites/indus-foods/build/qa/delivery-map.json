@@ -4,22 +4,58 @@
 	"keys": {
 		"animation:A-01": "U14",
 		"animation:A-02": "U14",
-		"animation:A-06": "U13",
-		"animation:A-07": "U13",
-		"animation:A-08": "U13b",
-		"animation:A-09": "U13",
-		"animation:A-10": "U13",
+		"animation:A-06": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
+		"animation:A-07": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
+		"animation:A-08": {
+			"done": "4e36ceca4",
+			"unit": "U13b"
+		},
+		"animation:A-09": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
+		"animation:A-10": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
 		"animation:A-12": "U14",
 		"animation:A-13": "U14",
 		"animation:A-14": "U14",
 		"animation:A-15": "U13",
-		"animation:A-16": "U13",
-		"animation:A-18": "U13",
-		"animation:A-19": "U13",
-		"animation:A-20": "U13",
-		"animation:A-21": "U13",
-		"animation:A-22": "U13b",
-		"animation:A-23": "U13",
+		"animation:A-16": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
+		"animation:A-18": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
+		"animation:A-19": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
+		"animation:A-20": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
+		"animation:A-21": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
+		"animation:A-22": {
+			"done": "4e36ceca4",
+			"unit": "U13b"
+		},
+		"animation:A-23": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
 		"animation:A-24": "U13c",
 		"animation:A-25": "U13c",
 		"animation:A-26": "U13c",
@@ -36,29 +72,59 @@
 		"animation:A-37": "U14",
 		"animation:A-38": "U14",
 		"animation:A-39": "U14",
-		"animation:A-40": "U13",
+		"animation:A-40": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
 		"animation:A-41": "U9",
 		"animation:J-01": "U14",
-		"animation:J-02": "U13",
-		"animation:J-03": "U13",
+		"animation:J-02": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
+		"animation:J-03": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
 		"animation:J-04": "U13a",
 		"animation:J-05": "U13a",
 		"animation:J-06": "U13a",
 		"animation:J-07": "U13a",
 		"animation:J-08": "U13a",
-		"animation:J-09": "U13",
-		"animation:J-10": "U13",
-		"animation:J-11": "U13",
+		"animation:J-09": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
+		"animation:J-10": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
+		"animation:J-11": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
 		"animation:J-12": "U9",
 		"animation:J-13": "U14",
-		"animation:J-14": "U13",
-		"animation:J-15": "U13",
+		"animation:J-14": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
+		"animation:J-15": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
 		"animation:J-16": "U14",
 		"animation:J-17": "U9",
 		"animation:J-20": "U14",
 		"animation:J-21": "U9",
-		"animation:J-22": "U13",
-		"animation:J-23": "U13",
+		"animation:J-22": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
+		"animation:J-23": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
 		"animation:L-01": "U13c",
 		"animation:L-02": "U13c",
 		"animation:L-03": "U13c",
@@ -84,9 +150,18 @@
 		"animation:PS-013": "U14",
 		"animation:PS-014": "U14",
 		"animation:PS-015": "U14",
-		"animation:RM-01": "U13",
-		"animation:RM-02": "U13",
-		"animation:RM-03": "U13",
+		"animation:RM-01": {
+			"done": "1d53b7771",
+			"unit": "U13"
+		},
+		"animation:RM-02": {
+			"done": "1d53b7771",
+			"unit": "U13"
+		},
+		"animation:RM-03": {
+			"done": "1d53b7771",
+			"unit": "U13"
+		},
 		"animation:TR-001": "U14",
 		"animation:TR-002": "U14",
 		"animation:TR-003": "U14",
@@ -262,7 +337,10 @@
 			"done": "prior",
 			"unit": "U2"
 		},
-		"coverage:css-function:circle": "U13",
+		"coverage:css-function:circle": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
 		"coverage:css-function:clamp": {
 			"done": "prior",
 			"unit": "U2"
@@ -280,21 +358,39 @@
 			"done": "prior",
 			"unit": "U2"
 		},
-		"coverage:css-function:skewx": "U13",
-		"coverage:css-group:backgrounds-and-borders": "U2",
+		"coverage:css-function:skewx": {
+			"done": "6f3d09beb",
+			"unit": "U13"
+		},
+		"coverage:css-group:backgrounds-and-borders": {
+			"done": "58b2018c9",
+			"unit": "U2"
+		},
 		"coverage:css-group:basic-user-interface": "U2",
 		"coverage:css-group:box-alignment": {
 			"done": "prior",
 			"unit": "U2"
 		},
-		"coverage:css-group:box-sizing": "U2",
+		"coverage:css-group:box-sizing": {
+			"done": "58b2018c9",
+			"unit": "U2"
+		},
 		"coverage:css-group:compositing-and-blending": {
 			"accepted": "excluded by Bean in clone-coverage.json: the drafts use only isolation, the internal plumbing of the highlight stripe, which is built (Spec 02 FR-2-4); no mix-blend-mode in either draft",
 			"unit": "U2"
 		},
-		"coverage:css-group:display": "U2",
-		"coverage:css-group:filter-effects": "U2",
-		"coverage:css-group:flexible-box-layout": "U2",
+		"coverage:css-group:display": {
+			"done": "58b2018c9",
+			"unit": "U2"
+		},
+		"coverage:css-group:filter-effects": {
+			"done": "58b2018c9",
+			"unit": "U2"
+		},
+		"coverage:css-group:flexible-box-layout": {
+			"done": "58b2018c9",
+			"unit": "U2"
+		},
 		"coverage:css-group:fonts": {
 			"done": "prior",
 			"unit": "U2"
@@ -303,7 +399,10 @@
 			"accepted": "excluded by Bean in clone-coverage.json: the drafts use content only on empty decorative pseudo-elements, whose paint is read already; no generated text",
 			"unit": "U2"
 		},
-		"coverage:css-group:grid-layout": "U2",
+		"coverage:css-group:grid-layout": {
+			"done": "58b2018c9",
+			"unit": "U2"
+		},
 		"coverage:css-group:inline": {
 			"done": "prior",
 			"unit": "U2"
@@ -316,17 +415,32 @@
 			"accepted": "excluded by Bean in clone-coverage.json: touch-action appears only in the draft prototype's drag-to-reframe image component, which is not part of the design",
 			"unit": "U2"
 		},
-		"coverage:css-group:positioned-layout": "U2",
-		"coverage:css-group:scalable-vector-graphics": "U2",
+		"coverage:css-group:positioned-layout": {
+			"done": "58b2018c9",
+			"unit": "U2"
+		},
+		"coverage:css-group:scalable-vector-graphics": {
+			"done": "58b2018c9",
+			"unit": "U2"
+		},
 		"coverage:css-group:scroll-snap": "U2",
-		"coverage:css-group:scrollbars-styling": "U2",
+		"coverage:css-group:scrollbars-styling": {
+			"done": "58b2018c9",
+			"unit": "U2"
+		},
 		"coverage:css-group:text": {
 			"done": "prior",
 			"unit": "U2"
 		},
-		"coverage:css-group:text-decoration": "U2",
+		"coverage:css-group:text-decoration": {
+			"done": "58b2018c9",
+			"unit": "U2"
+		},
 		"coverage:css-group:transforms": "U2",
-		"coverage:css-group:webkit-extensions": "U2",
+		"coverage:css-group:webkit-extensions": {
+			"done": "58b2018c9",
+			"unit": "U2"
+		},
 		"coverage:css-group:will-change": {
 			"accepted": "excluded by Bean in clone-coverage.json: a rendering hint with no visible effect; the motion model sets its own",
 			"unit": "U2"
