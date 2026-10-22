@@ -291,7 +291,9 @@ async function readOpened( h, s, settle, open, shotsDir ) {
 // surfaces that are not global (a page, footer, drawer, panel, menu, form: each by its own root), which a sibling may not
 // be or hold at any depth. null for any other kind of surface.
 export function stripOptions( s, all ) {
-	return 'header' === s.kind ? { exclude: all.filter( ( x ) => x.id !== s.id && 'global' !== x.kind ).map( ( x ) => [ x.component, x.rootTpl ] ) } : null;
+	const exclude = all.filter( ( x ) => x.id !== s.id && 'global' !== x.kind ).map( ( x ) => [ x.component, x.rootTpl ] );
+	// A footer reads only the floating siblings beside it (rules.footerSlots, lib/skeleton-footer-slots.mjs).
+	return 'header' === s.kind ? { exclude } : 'footer' === s.kind ? { exclude, floating: true } : null;
 }
 
 // The facts and client decisions, once per run. Returns { facts, clientDecisions } or { error }.
@@ -383,7 +385,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 			try {
 				const settle = ( page ) => settleRest( page, h.options );
 				const absorbed = new Map();
-				for ( const s of [ ...g.list ].sort( ( a, b ) => Number( 'header' !== a.kind ) - Number( 'header' !== b.kind ) ) ) {
+				for ( const s of [ ...g.list ].sort( ( a, b ) => Number( ! [ 'header', 'footer' ].includes( a.kind ) ) - Number( ! [ 'header', 'footer' ].includes( b.kind ) ) ) ) {
 					try {
 						await h.page.setViewportSize( { width: 1440, height: 900 } );
 						await settle( h.page );

@@ -11,6 +11,7 @@ import { makeClassifier, overrideFor, finish, W } from './skeleton-classify.mjs'
 import { isMarker } from './skeleton-rules.mjs';
 import { specHit } from './skeleton-facts.mjs';
 import { besideStrips, insideStrips, slotPlan } from './skeleton-header-slots.mjs';
+import { buildFooterRows as footerRowsOf } from './skeleton-footer-slots.mjs';
 import { childSlots, collapsePoint } from './skeleton-child-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 
@@ -439,7 +440,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			return node;
 		}
 		hosts.push( { block, node, row } );
-		node.innerBlocks = e === m.root && R.headerSlots && block === R.headerSlots.block ? buildHeaderRows( e, block ) : buildChildren( e, block );
+		node.innerBlocks = e !== m.root ? buildChildren( e, block ) : R.headerSlots && block === R.headerSlots.block ? buildHeaderRows( e, block ) : R.footerSlots && block === R.footerSlots.block ? buildFooterRows( e, block ) : buildChildren( e, block );
 		hosts.pop();
 		return node;
 	}
@@ -505,6 +506,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		middle.attributes[ H.slotAttribute ] = 'middle';
 		return [ top || emptyRow( 'top' ), middle, bottom || emptyRow( 'bottom' ) ];
 	}
+
+	// ---- rules.footerSlots: the footer's three rows (lib/skeleton-footer-slots.mjs) ----
+	const buildFooterRows = ( e, block ) => footerRowsOf( e, block, { R, m, inventory, contentAttrs, base, record, hosts, buildChildren, buildNode, slotProblems, declared: declaredPosition, setStripRoots: ( keys ) => ( stripRoots = keys ) } );
 
 	// The built blocks whose children are being built, innermost last.
 	const hosts = [];

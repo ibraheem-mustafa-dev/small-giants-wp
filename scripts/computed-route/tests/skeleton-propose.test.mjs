@@ -65,7 +65,8 @@ test( 'rule a: a footer root is the section-root block whose capabilities list "
 	const rows = real.proposal.rows.filter( ( r ) => 1 === r.depth );
 	assert.equal( rows.length, 2 );
 	rows.forEach( ( r ) => assert.ok( accepts.includes( r.block ), `${ r.key } is ${ r.block }, which ${ want } accepts` ) );
-	assert.deepEqual( real.skeleton[ 0 ].innerBlocks.map( ( n ) => n.name ), rows.map( ( r ) => r.block ) );
+	// rules.footerSlots: the footer always holds exactly three rows, in the template's order; a row the draft has no element for is empty.
+	assert.deepEqual( real.skeleton[ 0 ].innerBlocks.map( ( n ) => [ n.name, n.attributes.rowSlot ] ), [ 'top', 'columns', 'bottom' ].map( ( s ) => [ 'sgs/site-footer-row', s ] ) );
 } );
 
 test( 'rule b: a stacked run of bare text links is ONE list block; Site Info links read Site Info exactly as the committed tree encodes them', () => {
@@ -122,10 +123,11 @@ test( 'every node names its draft element by a tpl finder that is an inventory k
 			assert.ok( n.draftFingerprint?.tag );
 		}
 	} );
-	assert.deepEqual( kinds, { tpl: nodes( real.skeleton ).length - 1, selector: 1 } );
+	// The footer's empty row (rules.footerSlots) names no draft element: the one node with no finder.
+	assert.deepEqual( kinds, { tpl: nodes( real.skeleton ).length - 2, selector: 1, null: 1 } );
 	const social = nodes( real.skeleton ).find( ( n ) => 'sgs/social-icons' === n.name );
 	assert.deepEqual( social.siteInfoRow, [ 'instagram', 'google', 'whatsapp' ] );
-	assert.equal( expandSiteInfoRows( real.skeleton )[ 0 ].innerBlocks.length, 2 );
+	assert.equal( expandSiteInfoRows( real.skeleton )[ 0 ].innerBlocks.length, 3 );
 } );
 
 test( 'the skeleton passes the skeleton rules and carries no style value (R-47-10)', () => {

@@ -112,7 +112,8 @@ test( 'widthWrapper: a centred block wrapper under a footer goes and its rows ta
 	const tree = E( 'footer', {}, [ E( 'div', { style: 'position:relative;max-width:1240px;margin:0 auto' }, [ rowEl( 'One' ), rowEl( 'Two' ) ] ) ] );
 	const r = run( tree, { kind: 'footer' } );
 	assert.deepEqual( settled( r.proposal.rows[ 1 ] ), { block: null, action: 'unwrap', rule: 'widthWrapper' } );
-	assert.equal( r.skeleton[ 0 ].innerBlocks.length, 2, 'both rows sit directly in the footer' );
+	assert.deepEqual( r.skeleton[ 0 ].innerBlocks.map( ( n ) => n.attributes.rowSlot ), [ 'top', 'columns', 'bottom' ], 'the footer holds its three rows (rules.footerSlots); the wrapper is not one of them' );
+	assert.equal( r.skeleton[ 0 ].innerBlocks[ 1 ].innerBlocks.length, 4, 'the unwrapped wrapper two rows give their four paragraphs to the columns row' );
 	assert.notEqual( run( tree, { kind: 'footer', facts: facts( 'widthWrapper' ) } ).proposal.rows[ 1 ].action, 'unwrap' );
 	const grid = E( 'footer', {}, [ E( 'div', { style: 'max-width:1440px;margin:0 auto;display:grid', display: 'grid' }, [ E( 'div', {}, [ E( 'p', { words: 'A' } ) ] ), E( 'div', {}, [ E( 'p', { words: 'B' } ) ] ) ] ) ] );
 	assert.notEqual( run( grid, { kind: 'footer' } ).proposal.rows[ 1 ].action, 'unwrap', 'a centred grid under the footer is its row' );
