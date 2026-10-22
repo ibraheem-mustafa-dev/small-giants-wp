@@ -1906,5 +1906,23 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 214
+  },
+  {
+    "id": "check-setting-meanings",
+    "cmd": "python scripts/check-setting-meanings.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 215
+  },
+  {
+    "id": "check-setting-meanings-selftest",
+    "cmd": "python scripts/check-setting-meanings.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 216
   }
 ]
