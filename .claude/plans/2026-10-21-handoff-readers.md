@@ -83,7 +83,7 @@ Where it stands (2026-10-22): the plan's purpose is that every cloning stage rea
 ### Next, in order
 
 - [ ] 3. The readers the design lists and the record lacks (each writes its part of `sites/<client>/build/intake/facts.json` through `lib/fact-record.mjs`, a MUST FAIL test and a red mutation, Indus and Mama's re-intaken, the freeze diff checked):
-  - [ ] `lib/read-animations.mjs`: per element, the `animations.json` effects that target it or a descendant (ids by containment), with `trigger` (scroll threshold, interval), `breakpoints`, `reduced_motion` and route.
+  - [x] `lib/read-animations.mjs` (`ca77b7871`): per element, the `animations.json` effects that target it or a descendant (ids by containment), with `trigger` (scroll threshold, interval), `breakpoints`, `reduced_motion` and route. Joined as each element's `effects` (facts schema version 2, both records regenerated): Indus 206 of 217 records on 509 elements, Mama's 192 of 195; the records naming no element (Indus A-03, A-04, A-11, A-17, A-18, A-19, J-13, J-15, J-16, J-18, J-19; Mama's J-01, J-11, J-12) are kept in `animations.unjoined`; J-01 lands on the Indus header (`/39`).
   - [ ] `lib/read-assets.mjs`: each asset's intrinsic ratio (SVG viewBox, raster size) and the element that uses it; `image-slot` placeholder text kept as the alt evidence.
   - [ ] `lib/read-readme.mjs`: the README's sections by `README.template.md`'s headings, its judgement calls, open items and platform intent, as evidence only (FR-48A-8, FR-48A-10).
   - [ ] `surfaces.json` fields saved but unread: `state_keys`, `sc_if_tpl_ids`, `animation_ids`, `time_dependent`, `unresolved`, `closed_by`, page `blocks`.
@@ -92,9 +92,10 @@ Where it stands (2026-10-22): the plan's purpose is that every cloning stage rea
 - [ ] 4. Each stage reads the record (one consumer per stage; the old read it retires named in the commit):
   - [ ] Fill states: a forced state through `surfaces.json` `state_keys` and the diff of resolved declarations (the current nav item's colour and underline; `aria-current` where present).
   - [ ] Fill width gates: an `sc-if` width condition from the logic's syntax tree to the block's breakpoint setting or a bounded `sgsCustomCss` rule (FR-48-50, this plan's alone); the Indus CTA (w >= 1260); Eye Care's 1060 fit test (Bean's decision 2).
-  - [ ] Fill behaviour: sticky from a declared `position:sticky` and the scroll state from the listener's state key, cross-checked by `animations.json` (J-01), after recalibrating `sgs/site-header`; per-width motion scope from `animations.json` `breakpoints`.
-  - [ ] Fill content: the absorbed chips' text into `sgs/form-field-tiles` `tiles`; logic array counts checked against the rendered copies.
+  - [ ] Fill behaviour: the record carries what the behaviour and effect recognisers read (a declared `position`, the scroll listener's state key, each effect's `trigger`, `breakpoints` and `group`); the writers are the delivery plan's U13 and U14 (the header's sticky and scroll shadow, J-01, is U14's), which read them from the record once `read-animations.mjs` is merged.
+  - [ ] Fill content: the logic's statics (content arrays, form schemas, the chips' text) in the record, with array counts checked against the rendered copies; the form writer that puts the chips' text into `sgs/form-field-tiles` `tiles` is the delivery plan's U9, which reads them from the record.
   - [ ] Fill values: a declared `clamp()` held as one value where a calibration proves the setting takes it; token values for snapping.
+  - [ ] Fill binding groups (FR-48-41, built from intake's census): read each `{{ }}` binding from the record's holes, which name the property it feeds, so two elements sharing a binding group only on that property.
   - [ ] Theme snapshot: `tokens/*.css` into the extractor (FR-33-1), after proving why Indus's snapshot holds 16px/1.6 (`theme-extractor/typography.py`'s fallback); Indus pushed only after Bean sees the diff.
   - [ ] Handoff check and intake: `surfaces.json` draft hashes and currency; `time_dependent`, `unresolved` and `closed_by`; README open items.
   - [ ] Solve and live checks: `time_dependent` stubs and effects per state.
@@ -102,6 +103,13 @@ Where it stands (2026-10-22): the plan's purpose is that every cloning stage rea
 - [ ] 5. The proving ground: after each consumer the Indus header reruns (§3) with cropped pairs; the wave's /qc-council; Bean signs the header pairs (FP-13) and FR-48-81's Status records it.
 - [ ] 6. Eye Care as the second answer sheet: re-key `sites/eye-care-ward-end/build/header.origin.json` and `footer.origin.json` by fingerprint (`lib/identity.mjs::realign`), run the skeleton writer on Eye Care's header and footer, diff with the built trees; the diff goes to Bean as ratchet rule candidates.
 - [ ] 7. Close (§4 below).
+
+Who waits on this plan (the delivery plan's units write settings; this plan supplies the facts they read):
+- After `lib/read-animations.mjs` merges: U13 (effect recogniser) and U14 (behaviour recogniser, including the header's sticky and scroll shadow).
+- After `lib/read-assets.mjs` merges: U5's ratio and image-slot alt steps and U6's SVG subtree writer (viewBox).
+- After the logic's statics reach the record: U9 (form writer, the chips' text into tiles).
+- After this plan's stage consumers and U16's gate chain: Session R (header close), then U15's surface builds, then Session S.
+- Not waiting (no handoff fact they need): U16's other FRs (FR-48-20's code side reads `loadFacts`), U10, U13c, U11, U4b, U2 (declared values; its header Fill runs share post 201 with this plan's reruns, one at a time), U8 (its `::selection` snapshot slot sits beside the tokens item), FR-48-51 and FR-48-14.
 
 Recorded elsewhere, not taken here:
 - Indus delivery units dispatched from this session on 2026-10-22 at the other session's relay (U2b and U2c, U5's `lib/fill-resolve.mjs` split and U7, U16's FR-48-41) are merged as Indus delivery work and recorded in `.claude/plans/2026-10-21-indus-delivery.md`; the rest of those units stay with its sessions.
