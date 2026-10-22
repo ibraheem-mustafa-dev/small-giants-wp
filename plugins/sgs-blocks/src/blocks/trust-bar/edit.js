@@ -969,17 +969,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
-				{ /* ── Content band (Layer 2 __inner) — object attrs ─────────── */ }
-				<PanelBody title={ __( 'Content band', 'sgs-blocks' ) } initialOpen={ false }>
-					<p className="components-base-control__help">
-						{ __( 'Styles the inner content band (the max-width wrapper set by Content width). Only active when Content width is set.', 'sgs-blocks' ) }
-					</p>
-					{ /* ⛔ "Band background colour" (contentBandBackground) REMOVED
-						2026-08-12, attribute retired framework-wide — a background
-						fills its CONTAINER's max-width and is never clipped to the
-						inner content layer (Bean-ruled). Use BackgroundPanel on the
-						block itself. Do NOT re-add a band-scoped background. */ }
-				</PanelBody>
 
 				{ /* ── Layout (grid/flex, columns, gap) ──────────────────────── */ }
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>

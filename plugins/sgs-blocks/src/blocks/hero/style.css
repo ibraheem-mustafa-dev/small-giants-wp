@@ -46,6 +46,13 @@ section.sgs-hero {
 	   position and verticalAlignment could never move it. render.php always
 	   emits a scoped .uid{justify-content:…} for this variant (default
 	   'center' maps to 'center', so an untouched instance is unchanged). */
+}
+
+/* Default padding paints the content band, where the hero's Padding setting
+   paints when a band exists, and the outer element of a standard hero with no
+   band. Zero specificity, so a Padding the block sets replaces it. */
+:where(.sgs-hero--standard > .sgs-container__inner),
+:where(.sgs-hero--standard:not(:has(> .sgs-container__inner))) {
 	padding: var(--wp--preset--spacing--60) var(--wp--preset--spacing--40);
 }
 
@@ -410,7 +417,8 @@ section.sgs-hero {
 		min-height: auto;
 	}
 
-	.sgs-hero--standard {
+	:where(.sgs-hero--standard > .sgs-container__inner),
+	:where(.sgs-hero--standard:not(:has(> .sgs-container__inner))) {
 		padding: var(--wp--preset--spacing--50) var(--wp--preset--spacing--30);
 	}
 

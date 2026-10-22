@@ -1741,20 +1741,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 
 				</PanelBody>
 
-				{ /* Content band (Layer 2 __inner) — box-object family, rendered
-				   entirely by SGS_Container_Wrapper (mirrors sgs/container's own
-				   local panel). */ }
-				<PanelBody title={ __( 'Content band', 'sgs-blocks' ) } initialOpen={ false }>
-					<p className="components-base-control__help">
-						{ __( 'Styles the inner content band (the max-width wrapper set by Content width). Only active when Content width is set.', 'sgs-blocks' ) }
-					</p>
-					{ /* ⛔ "Band background colour" (contentBandBackground) REMOVED
-						2026-08-12, attribute retired framework-wide — a background
-						fills its CONTAINER's max-width and is never clipped to the
-						inner content layer (Bean-ruled). Use the hero's own
-						media/content background controls instead. Do NOT re-add a
-						band-scoped background. */ }
-				</PanelBody>
 
 				{ /* Root padding & margin — box-object interface contract (mirrors
 					sgs/container). `padding` and `margin` are each

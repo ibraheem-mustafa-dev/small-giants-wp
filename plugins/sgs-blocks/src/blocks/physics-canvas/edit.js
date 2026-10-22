@@ -383,25 +383,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
-				{ /* ── Content band (Layer 2 __inner) — this band IS the physics
-				     arena (block.json's own note); its rendered box is what view.js
-				     reads as Draggable's bounds and the Physics2D floor/wall
-				     geometry, so band padding/background here directly changes the
-				     playable area, not just decoration. ─────────────────────── */ }
-				<PanelBody title={ __( 'Content band', 'sgs-blocks' ) } initialOpen={ false }>
-					<p className="components-base-control__help">
-						{ __( 'Styles the inner content band — the throw arena itself (the max-width wrapper set by Content width). Only active when Content width is set.', 'sgs-blocks' ) }
-					</p>
-					{ /* ⛔ "Band background colour" (contentBandBackground) REMOVED
-						2026-08-12, attribute retired framework-wide — a background
-						fills its CONTAINER's max-width and is never clipped to the
-						inner content layer (Bean-ruled). Use BackgroundPanel on the
-						block itself (mounted below, after Padding & margin — mirrors
-						sgs/hero's ordering) — added 2026-08-16, wrapper decomposition
-						step 6 (D626/D633): physics-canvas is the one wrapper block that
-						had no background capability at all. Do NOT re-add a
-						band-scoped background. */ }
-				</PanelBody>
 
 				{ /* Background (image/video/overlay/SVG/animation) — same shared
 				     component + attrs as sgs/container, sgs/hero, sgs/site-footer
