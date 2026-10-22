@@ -2760,6 +2760,16 @@
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
    "selector": "dialog.sgs-shop-filters[open]::backdrop",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/field-features/style.css",
+   "selector": ".sgs-form-field.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--label-inside:has(.sgs-form-field__input:focus) .sgs-form-field__label",
+   "reason": "the inside floating label's lifted position under focus or a filled box: layout, no colour or setting"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/saved-progress/style.css",
+   "selector": ".sgs-form-review__edit:hover",
+   "reason": "the review card Edit button's hover fill: fixed surface tint, no setting"
   }
  ]
 }
