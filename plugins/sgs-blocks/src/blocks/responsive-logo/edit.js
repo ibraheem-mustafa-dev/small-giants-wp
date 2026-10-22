@@ -233,6 +233,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		maxWidthUnit,
 		maxHeightUnit,
 		linkToHome,
+		inlineSvg,
 		alt,
 		logoDecorative,
 		borderColour,
@@ -545,6 +546,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						units={ MAX_BOX_UNITS }
 					/>
 
+					<ToggleControl
+						label={ __( 'Print SVG inline', 'sgs-blocks' ) }
+						help={ __(
+							'For an SVG logo: prints the file itself into the page instead of an image, so its own animation plays and custom CSS can style its parts. Other image types are unaffected.',
+							'sgs-blocks'
+						) }
+						checked={ !! inlineSvg }
+						onChange={ ( val ) =>
+							setAttributes( { inlineSvg: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
 					<ToggleControl
 						label={ __( 'Link to homepage', 'sgs-blocks' ) }
 						help={ __(

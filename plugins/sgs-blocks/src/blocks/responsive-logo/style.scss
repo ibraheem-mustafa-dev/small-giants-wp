@@ -274,6 +274,13 @@
 		}
 	}
 
+	// The inline logo hides below 1024px when a compact logo swaps in.
+	&__svg--swaps {
+		@media ( max-width: 1023px ) {
+			display: none;
+		}
+	}
+
 	// Hide inline SVG on tablet/mobile when fallback picture is present
 	&--animate-draw,
 	&--animate-hover,

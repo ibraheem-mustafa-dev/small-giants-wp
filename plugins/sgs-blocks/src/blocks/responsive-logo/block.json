@@ -208,6 +208,10 @@
 			"type": "boolean",
 			"default": true
 		},
+		"inlineSvg": {
+			"type": "boolean",
+			"default": false
+		},
 		"alt": {
 			"type": "string",
 			"default": "",

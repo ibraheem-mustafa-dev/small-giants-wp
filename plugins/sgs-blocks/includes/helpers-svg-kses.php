@@ -22,7 +22,8 @@
 function sgs_svg_kses_allowed_tags(): array {
 	// Shared presentation attributes permitted on most SVG elements. Every key is lowercase: wp_kses lowercases an
 	// attribute's name before it looks it up, so a camelCase key (pathLength) never matches and the attribute is
-	// stripped; svg-upload.php restores the camelCase spelling after kses.
+	// stripped. The whole-file sanitiser (helpers-svg-document.php) looks names up lowercased too and keeps the file's own
+	// spelling.
 	$presentation_attrs = array(
 		'id'                          => true,
 		'class'                       => true,
@@ -68,6 +69,12 @@ function sgs_svg_kses_allowed_tags(): array {
 			'xmlns'       => true,
 			'xmlns:xlink' => true,
 		)
+	);
+
+	// SMIL timing and value attributes shared by animate, set, animateTransform and animateMotion.
+	$animation_attrs = array_fill_keys(
+		array( 'id', 'class', 'attributename', 'attributetype', 'values', 'from', 'to', 'by', 'dur', 'begin', 'end', 'repeatcount', 'repeatdur', 'fill', 'calcmode', 'keytimes', 'keysplines', 'keypoints', 'additive', 'accumulate', 'restart', 'min', 'max' ),
+		true
 	);
 
 	return array(
@@ -277,6 +284,7 @@ function sgs_svg_kses_allowed_tags(): array {
 				'offset'       => true,
 				'stop-color'   => true,
 				'stop-opacity' => true,
+				'path'         => true,
 			)
 		),
 		'filter'            => array_merge(
@@ -393,20 +401,39 @@ function sgs_svg_kses_allowed_tags(): array {
 		 * it is materially lower severity than the <a> case and is left in
 		 * place. Revisit if any of those gains a navigating behaviour.
 		 */
-		'animate'           => array(
-			'attributename' => true,
-			'attributeName' => true,
-			'from'          => true,
-			'to'            => true,
-			'dur'           => true,
-			'repeatcount'   => true,
-			'repeatCount'   => true,
-			'begin'         => true,
-			'fill'          => true,
-			'values'        => true,
-			'id'            => true,
-			'class'         => true,
+		'animate'           => $animation_attrs,
+		'set'               => $animation_attrs,
+		'animatetransform'  => array_merge( $animation_attrs, array( 'type' => true ) ),
+		'animatemotion'     => array_merge(
+			$animation_attrs,
+			array(
+				'path'   => true,
+				'rotate' => true,
+				'origin' => true,
+			)
 		),
+		// An <animateMotion>'s path by reference: only a #fragment survives the whole-file sanitiser.
+		'mpath'             => array(
+			'id'         => true,
+			'href'       => true,
+			'xlink:href' => true,
+		),
+
+		// Mesh gradients (SVG 2, Inkscape exports). Each patch's <stop> carries its edge in `path` (see 'stop').
+		'meshgradient'      => array_merge(
+			$core_attrs,
+			array(
+				'x'                 => true,
+				'y'                 => true,
+				'type'              => true,
+				'gradientunits'     => true,
+				'gradienttransform' => true,
+				'href'              => true,
+				'xlink:href'        => true,
+			)
+		),
+		'meshrow'           => $core_attrs,
+		'meshpatch'         => $core_attrs,
 
 		/*
 		 * <a> is kept as a grouping/styling element but is DELIBERATELY INERT:
