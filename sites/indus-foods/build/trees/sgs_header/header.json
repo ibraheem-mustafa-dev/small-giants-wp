@@ -22,7 +22,24 @@
             "desktop": "20px"
           },
           "justifyContent": "space-between",
-          "borderStyle": "solid"
+          "borderStyle": "solid",
+          "padding": {
+            "mobile": {
+              "right": "20px",
+              "left": "20px"
+            },
+            "tablet": {
+              "right": "32px",
+              "left": "32px"
+            },
+            "desktop": {
+              "right": "40px",
+              "left": "40px"
+            }
+          },
+          "contentWidth": {
+            "desktop": "1320px"
+          }
         },
         "innerBlocks": [
           {
