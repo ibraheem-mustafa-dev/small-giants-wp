@@ -41,6 +41,7 @@ import {
 	gapVar,
 } from '../../utils';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
+import HorizontalPanelControls from './horizontal-panel-controls';
 
 // ── Select options ──────────────────────────────────────────────────────────
 
@@ -1625,6 +1626,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+				<HorizontalPanelControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ /* ── Editor preview ── */ }
