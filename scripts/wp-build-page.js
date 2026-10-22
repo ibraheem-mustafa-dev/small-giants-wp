@@ -16,6 +16,11 @@
  * back valid and unchanged. It prints the post ID and link.
  * ============================================================================
  *
+ * A header or footer tree is refused unless it is the one root block (sgs/site-header or sgs/site-footer, or any
+ * container whose edit.js TEMPLATE is slotted rows) holding exactly its template's rows, each with its rowSlot, in
+ * order (lib/surface-tree-shape.js; tests/wp-build-page-surface-shape.test.mjs). The check runs before the browser
+ * opens and again against the post's own template once the editor is open, also under --dry-run.
+ *
  * Tree file: an array of blocks, each
  *   { "name": "sgs/container", "attributes": { ... }, "innerBlocks": [ ... ] }
  *
@@ -47,7 +52,8 @@ const os = require( 'os' );
 const crypto = require( 'crypto' );
 const { execFileSync } = require( 'child_process' );
 
-const pluginRequire = createRequire( path.join( __dirname, '..', 'plugins', 'sgs-blocks', 'package.json' ) );
+const surfaceShape = require( './lib/surface-tree-shape' );
+const pluginRequire =createRequire( path.join( __dirname, '..', 'plugins', 'sgs-blocks', 'package.json' ) );
 const { chromium } = pluginRequire( 'playwright' );
 
 function parseArgs( argv ) {
@@ -265,6 +271,9 @@ async function main() {
 		fail( 1, `cannot read tree: ${ e.message }` );
 	}
 	if ( ! Array.isArray( tree ) ) fail( 1, 'tree must be an array of blocks' );
+	// A header or footer (any slotted container) is one root block with its slotted rows; refused before the browser opens.
+	const shapeProblems = surfaceShape.slottedRootProblems( tree );
+	if ( shapeProblems.length ) fail( 4, `tree rejected:\n  ${ shapeProblems.join( '\n  ' ) }` );
 
 	// sgs/form's edit.js assigns a stable formId in a mount effect the first
 	// time it's opened in the editor (src/blocks/form/edit.js — the
@@ -412,8 +421,19 @@ async function main() {
 			fail( 3, `editor did not load at ${ editorUrl }` );
 		}
 
+		// A post type whose own template is one block under lock "all" (sgs_header, sgs_footer, sgs_drawer) takes exactly
+		// that root block, with its rows when it is a slotted container.
+		if ( ! templateSlug ) {
+			const settings = await page.evaluate( () => {
+				const s = window.wp.data.select( 'core/editor' ).getEditorSettings();
+				return { template: s.template || null, templateLock: s.templateLock || false };
+			} );
+			const lockProblems = surfaceShape.lockedTemplateProblems( tree, settings );
+			if ( lockProblems.length ) fail( 4, `tree rejected:\n  ${ lockProblems.join( '\n  ' ) }` );
+		}
+
 		// Validate the whole tree before touching the post.
-		const problems = await page.evaluate( ( { t, bannedMap, flat } ) => {
+		const problems =await page.evaluate( ( { t, bannedMap, flat } ) => {
 			const out = [];
 			const walk = ( blocks, trail ) => blocks.forEach( ( b, i ) => {
 				const where = `${ trail }[${ i }] ${ b && b.name }`;
