@@ -1140,13 +1140,11 @@ dialog.sgs-shop-filters {
 /* ── 8c. Trust bar — visually distinct band on the PDP ── */
 /*
  * The sgs/trust-bar lives inside parts/sgs-pdp-content (template part, read-only).
- * A scoped CSS band via the `.wp-block-sgs-trust-bar` wrapper class isolates PDP
- * trust-bar styling without touching the hero trust-bar on the homepage.
- * UNVERIFIED: .wp-block-sgs-trust-bar — confirmed from block registration; not
- * present in truncated static curl. Selector is the standard WP block wrapper
- * (`wp-block-` + block namespace slug `sgs-trust-bar`).
+ * This stylesheet loads on every page while WooCommerce is active, so the rule is
+ * scoped to the product page's `single-product` body class: a trust-bar anywhere
+ * else keeps its own settings.
  */
-.wp-block-sgs-trust-bar {
+.single-product .wp-block-sgs-trust-bar {
 	background-color: var(--wp--preset--color--surface, #FBF3DC);
 	padding-top: var(--wp--preset--spacing--50, 2rem);
 	padding-bottom: var(--wp--preset--spacing--50, 2rem);
