@@ -144,6 +144,8 @@
 						"layout"
 					],
 					"prefix": "contentBand",
+					"motion": false,
+					"_note": "The wrapper prints its band inside the field's fieldset, so the band is the root's grandchild, not its direct child; a motion layer cannot resolve it (the tiles container is the motion part `inner`).",
 					"attrMap": {
 						"css:max-width": "contentWidth"
 					}
