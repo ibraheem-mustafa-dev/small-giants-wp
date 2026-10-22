@@ -17,7 +17,7 @@ status: BUILD IN PROGRESS (2026-10-08)
 
 - **Draft:** https://mintcream-lyrebird-224487.hostingersite.com/
   - Source: `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap Handoff/`. `Eye Care Birmingham.dc.html` is the whole storefront; `Frame Card.dc.html` is the product card.
-  - The older `design_handoff_ward_end_eye_care_v2/` is the clone pipeline's input, not the build's.
+  - `sites/eye-care-ward-end/handoff/` is the clone pipeline's input, not the build's.
 - **Test site:** https://darkcyan-grouse-898606.hostingersite.com
   - Credentials: `.claude/secrets/eye-care-test.env`.
   - Deploy target `eye-care-test`; its running build is recorded in `.claude/LEDGER.md` (blocks `ec51d6cf1` on 2026-10-08).
