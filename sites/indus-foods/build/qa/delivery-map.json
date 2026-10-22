@@ -307,18 +307,30 @@
 			"done": "prior",
 			"unit": "U2"
 		},
-		"coverage:aria-role:checkbox": "U9",
+		"coverage:aria-role:checkbox": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
 		"coverage:aria-role:dialog": {
 			"accepted": "excluded by Bean in clone-coverage.json: the drawer block renders its own dialog role; the drawer itself is cloned as its surface",
 			"unit": "U2"
 		},
-		"coverage:construct:data-hook": "U14",
-		"coverage:construct:handler": "U14",
+		"coverage:construct:data-hook": {
+			"done": "7c5434cb1",
+			"unit": "U14"
+		},
+		"coverage:construct:handler": {
+			"done": "7c5434cb1",
+			"unit": "U14"
+		},
 		"coverage:construct:helmet-font": {
 			"done": "prior",
 			"unit": "U2"
 		},
-		"coverage:construct:observer": "U14",
+		"coverage:construct:observer": {
+			"done": "7c5434cb1",
+			"unit": "U14"
+		},
 		"coverage:construct:ref": {
 			"accepted": "excluded by Bean in clone-coverage.json: a DOM handle in the draft's script: wiring only, the effect each one drives is cloned through its target",
 			"unit": "U2"
@@ -331,7 +343,10 @@
 			"done": "prior",
 			"unit": "U2"
 		},
-		"coverage:construct:timer": "U14",
+		"coverage:construct:timer": {
+			"done": "7c5434cb1",
+			"unit": "U14"
+		},
 		"coverage:css-at:media": "U2c",
 		"coverage:css-function:calc": {
 			"done": "prior",
@@ -349,7 +364,10 @@
 			"accepted": "excluded by Bean in clone-coverage.json: one use, contrast(1.05) on the footer map, below what the eye can see",
 			"unit": "U2"
 		},
-		"coverage:css-function:env": "U4b",
+		"coverage:css-function:env": {
+			"done": "cf0166702",
+			"unit": "U4b"
+		},
 		"coverage:css-function:max": {
 			"done": "prior",
 			"unit": "U2"
@@ -481,9 +499,18 @@
 			"done": "prior",
 			"unit": "U2"
 		},
-		"coverage:css-pseudo-element:-webkit-scrollbar": "U8",
-		"coverage:css-pseudo-element:-webkit-scrollbar-thumb": "U8",
-		"coverage:css-pseudo-element:-webkit-scrollbar-track": "U8",
+		"coverage:css-pseudo-element:-webkit-scrollbar": {
+			"done": "39d03ea77",
+			"unit": "U8"
+		},
+		"coverage:css-pseudo-element:-webkit-scrollbar-thumb": {
+			"done": "39d03ea77",
+			"unit": "U8"
+		},
+		"coverage:css-pseudo-element:-webkit-scrollbar-track": {
+			"done": "39d03ea77",
+			"unit": "U8"
+		},
 		"coverage:css-pseudo-element:after": "U2c",
 		"coverage:css-pseudo-element:before": "U2c",
 		"coverage:css-pseudo-element:selection": "U8",
@@ -495,7 +522,10 @@
 			"done": "prior",
 			"unit": "U2"
 		},
-		"coverage:embed:other": "U5",
+		"coverage:embed:other": {
+			"done": "3ab5f8f7e",
+			"unit": "U5"
+		},
 		"coverage:html-attr:a.rel": {
 			"done": "prior",
 			"unit": "U2"
@@ -508,7 +538,10 @@
 			"accepted": "excluded by Bean in clone-coverage.json: a run-time state, not a resting look: a disabled button's look arrives through css-pseudo-class:disabled, and the form decides when a button is disabled",
 			"unit": "U2"
 		},
-		"coverage:html-attr:button.type": "U9",
+		"coverage:html-attr:button.type": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
 		"coverage:html-attr:form.novalidate": {
 			"accepted": "excluded by Bean in clone-coverage.json: sgs/form always renders novalidate and validates in its own script, so there is nothing to write",
 			"unit": "U2"
@@ -517,7 +550,10 @@
 			"accepted": "excluded by Bean in clone-coverage.json: class names carry no value of their own: their styles reach the clone through the computed values Fill reads, and the behaviour they drive through the census",
 			"unit": "U2"
 		},
-		"coverage:html-attr:global.data": "U14",
+		"coverage:html-attr:global.data": {
+			"done": "7c5434cb1",
+			"unit": "U14"
+		},
 		"coverage:html-attr:global.draggable": {
 			"accepted": "excluded by Bean in clone-coverage.json: only in the draft prototype's drag-to-reframe image component",
 			"unit": "U2"
@@ -542,18 +578,42 @@
 			"accepted": "excluded by Bean in clone-coverage.json: SGS blocks set their own loading attribute on an embed, so the draft's value has nothing to write",
 			"unit": "U2"
 		},
-		"coverage:html-attr:iframe.src": "U5",
-		"coverage:html-attr:img.alt": "U5",
+		"coverage:html-attr:iframe.src": {
+			"done": "3ab5f8f7e",
+			"unit": "U5"
+		},
+		"coverage:html-attr:img.alt": {
+			"done": "5fa64d63d",
+			"unit": "U5"
+		},
 		"coverage:html-attr:img.height": {
 			"done": "prior",
 			"unit": "U2"
 		},
-		"coverage:html-attr:img.src": "U5",
-		"coverage:html-attr:input.accept": "U9",
-		"coverage:html-attr:input.autocomplete": "U10",
-		"coverage:html-attr:input.placeholder": "U9",
-		"coverage:html-attr:input.required": "U9",
-		"coverage:html-attr:input.value": "U10",
+		"coverage:html-attr:img.src": {
+			"done": "5fa64d63d",
+			"unit": "U5"
+		},
+		"coverage:html-attr:input.accept": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:html-attr:input.autocomplete": {
+			"done": "15c7c1e92",
+			"unit": "U10"
+		},
+		"coverage:html-attr:input.placeholder": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:html-attr:input.required": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:html-attr:input.value": {
+			"done": "15c7c1e92",
+			"unit": "U10"
+		},
 		"coverage:html-attr:label.for": {
 			"accepted": "excluded by Bean in clone-coverage.json: every SGS form-field block renders its own label bound to its own input, so the association exists by construction",
 			"unit": "U2"
@@ -578,22 +638,67 @@
 			"done": "prior",
 			"unit": "U2"
 		},
-		"coverage:html-attr:option.value": "U9",
-		"coverage:html-attr:select.name": "U9",
-		"coverage:html-attr:select.required": "U9",
-		"coverage:html-attr:textarea.maxlength": "U10",
-		"coverage:html-attr:textarea.placeholder": "U9",
-		"coverage:html-attr:textarea.required": "U9",
-		"coverage:html-attr:textarea.rows": "U9",
-		"coverage:html:button": "U9",
+		"coverage:html-attr:option.value": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:html-attr:select.name": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:html-attr:select.required": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:html-attr:textarea.maxlength": {
+			"done": "15c7c1e92",
+			"unit": "U10"
+		},
+		"coverage:html-attr:textarea.placeholder": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:html-attr:textarea.required": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:html-attr:textarea.rows": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:html:button": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
 		"coverage:html:canvas": "U2c",
-		"coverage:html:figcaption": "U5",
-		"coverage:html:figure": "U5",
-		"coverage:html:form": "U9",
-		"coverage:html:iframe": "U5",
-		"coverage:html:img": "U5",
-		"coverage:html:input": "U9",
-		"coverage:html:label": "U9",
+		"coverage:html:figcaption": {
+			"done": "5fa64d63d",
+			"unit": "U5"
+		},
+		"coverage:html:figure": {
+			"done": "5fa64d63d",
+			"unit": "U5"
+		},
+		"coverage:html:form": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:html:iframe": {
+			"done": "3ab5f8f7e",
+			"unit": "U5"
+		},
+		"coverage:html:img": {
+			"done": "5fa64d63d",
+			"unit": "U5"
+		},
+		"coverage:html:input": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:html:label": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
 		"coverage:html:link": {
 			"done": "prior",
 			"unit": "U2"
@@ -602,33 +707,102 @@
 			"done": "prior",
 			"unit": "U2"
 		},
-		"coverage:html:option": "U9",
-		"coverage:html:select": "U9",
-		"coverage:html:textarea": "U9",
-		"coverage:input-type:checkbox": "U9",
-		"coverage:input-type:email": "U9",
-		"coverage:input-type:file": "U9",
-		"coverage:input-type:tel": "U9",
-		"coverage:input-type:text": "U9",
-		"coverage:svg:circle": "U6",
-		"coverage:svg:defs": "U6",
-		"coverage:svg:ellipse": "U6",
-		"coverage:svg:feGaussianBlur": "U6",
-		"coverage:svg:feMerge": "U6",
-		"coverage:svg:feMergeNode": "U6",
-		"coverage:svg:filter": "U6",
-		"coverage:svg:g": "U6",
-		"coverage:svg:line": "U6",
-		"coverage:svg:linearGradient": "U6",
+		"coverage:html:option": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:html:select": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:html:textarea": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:input-type:checkbox": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:input-type:email": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:input-type:file": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:input-type:tel": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:input-type:text": {
+			"done": "15c7c1e92",
+			"unit": "U9"
+		},
+		"coverage:svg:circle": {
+			"done": "997bb4dba",
+			"unit": "U6"
+		},
+		"coverage:svg:defs": {
+			"done": "997bb4dba",
+			"unit": "U6"
+		},
+		"coverage:svg:ellipse": {
+			"done": "997bb4dba",
+			"unit": "U6"
+		},
+		"coverage:svg:feGaussianBlur": {
+			"done": "997bb4dba",
+			"unit": "U6"
+		},
+		"coverage:svg:feMerge": {
+			"done": "997bb4dba",
+			"unit": "U6"
+		},
+		"coverage:svg:feMergeNode": {
+			"done": "997bb4dba",
+			"unit": "U6"
+		},
+		"coverage:svg:filter": {
+			"done": "997bb4dba",
+			"unit": "U6"
+		},
+		"coverage:svg:g": {
+			"done": "997bb4dba",
+			"unit": "U6"
+		},
+		"coverage:svg:line": {
+			"done": "997bb4dba",
+			"unit": "U6"
+		},
+		"coverage:svg:linearGradient": {
+			"done": "997bb4dba",
+			"unit": "U6"
+		},
 		"coverage:svg:metadata": {
 			"accepted": "excluded by Bean in clone-coverage.json: editor metadata inside an SVG paints nothing, and the media upload strips it (FR-48-58)",
 			"unit": "U2"
 		},
-		"coverage:svg:path": "U6",
-		"coverage:svg:polyline": "U6",
-		"coverage:svg:rect": "U6",
-		"coverage:svg:stop": "U6",
-		"coverage:svg:svg": "U6",
+		"coverage:svg:path": {
+			"done": "997bb4dba",
+			"unit": "U6"
+		},
+		"coverage:svg:polyline": {
+			"done": "997bb4dba",
+			"unit": "U6"
+		},
+		"coverage:svg:rect": {
+			"done": "997bb4dba",
+			"unit": "U6"
+		},
+		"coverage:svg:stop": {
+			"done": "997bb4dba",
+			"unit": "U6"
+		},
+		"coverage:svg:svg": {
+			"done": "997bb4dba",
+			"unit": "U6"
+		},
 		"coverage:svg:unlisted": {
 			"accepted": "excluded by Bean in clone-coverage.json: an SVG element no browser renders (meshgradient, meshrow and meshpatch from an SVG editor's draft spec, seen in an exported logo); the SVG file uploads whole, so the clone loses nothing",
 			"unit": "U2"
