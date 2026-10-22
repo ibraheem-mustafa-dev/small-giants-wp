@@ -104,7 +104,8 @@ function sgs_svg_upload_prefilter( $file ) {
 		$file['error'] = $compressed;
 		return $file;
 	}
-	$trusted = current_user_can( 'unfiltered_html' );
+	// Trust follows a person's own upload only: a sideload (an importer, a remote product image) is always sanitised.
+	$trusted = current_user_can( 'unfiltered_html' ) && doing_filter( 'wp_handle_upload_prefilter' );
 	$result  = $trusted ? sgs_svg_trusted_prepare( $raw ) : sgs_svg_sanitise_document( $raw );
 	$safe    = $result['svg'];
 	if ( '' === $safe ) {
@@ -123,6 +124,38 @@ function sgs_svg_upload_prefilter( $file ) {
 }
 add_filter( 'wp_handle_upload_prefilter', 'sgs_svg_upload_prefilter' );
 add_filter( 'wp_handle_sideload_prefilter', 'sgs_svg_upload_prefilter' );
+
+/**
+ * Sanitise an SVG written through wp_upload_bits() (XML-RPC uploads), which never runs the upload prefilters. Never
+ * trusted: there is no person-upload context here. A refused file makes wp_upload_bits() return the message.
+ *
+ * @param array $args Array with 'name', 'bits' and 'time'.
+ * @return array|string The args with sanitised bits, or the refusal message.
+ */
+function sgs_svg_upload_bits( $args ) {
+	if ( ! is_array( $args ) ) {
+		return $args;
+	}
+	$extension = strtolower( pathinfo( (string) ( $args['name'] ?? '' ), PATHINFO_EXTENSION ) );
+	if ( 'svgz' === $extension ) {
+		return __( 'Compressed SVG files (.svgz or gzipped) are not accepted. Upload a plain .svg file.', 'sgs-blocks' );
+	}
+	if ( 'svg' !== $extension ) {
+		return $args;
+	}
+	$bits = (string) ( $args['bits'] ?? '' );
+	if ( 0 === strncmp( $bits, "", 2 ) ) {
+		return __( 'Compressed SVG files (.svgz or gzipped) are not accepted. Upload a plain .svg file.', 'sgs-blocks' );
+	}
+	$result = sgs_svg_sanitise_document( $bits );
+	if ( '' === $result['svg'] ) {
+		/* translators: %s: why the file was refused, e.g. "holds a CSS @import". */
+		return sprintf( __( 'This SVG was not uploaded because it %s.', 'sgs-blocks' ), esc_html( $result['error'] ) );
+	}
+	$args['bits'] = $result['svg'];
+	return $args;
+}
+add_filter( 'wp_upload_bits', 'sgs_svg_upload_bits' );
 
 /**
  * Record an SVG attachment's width and height from its root element, so blocks

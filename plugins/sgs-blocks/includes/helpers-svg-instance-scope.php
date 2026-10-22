@@ -48,12 +48,10 @@ if ( ! function_exists( 'sgs_svg_scope_instance' ) ) {
 		$xpath = new DOMXPath( $doc );
 
 		// A file with a <script> keeps every id and id reference as written, so the script can still find its elements;
-		// its <style> is contained by the root's own id (or the instance id when the root has none).
+		// its <style> is contained by a data-sgs-svg attribute on the root, never by an id the page could also hold.
 		$scripted = $doc->getElementsByTagName( 'script' )->length > 0;
-		$root_id  = (string) $root->getAttribute( 'id' );
-		if ( $scripted && 1 === preg_match( '/^[A-Za-z_][\w-]*$/', $root_id ) ) {
-			$scope = $root_id;
-		}
+		$root_sel = $scripted ? '[data-sgs-svg="' . $scope . '"]' : '#' . $scope;
+		$prefix   = sgs_svg_scope_prefix( $root_sel );
 		$ids = array();
 		foreach ( $scripted ? array() : $xpath->query( '//*[@id]' ) as $element ) {
 			$old         = (string) $element->getAttribute( 'id' );
@@ -63,13 +61,13 @@ if ( ! function_exists( 'sgs_svg_scope_instance' ) ) {
 		foreach ( $doc->getElementsByTagName( 'style' ) as $style ) {
 			if ( preg_match_all( '/@(?:-webkit-|-moz-|-o-)?keyframes\s+([A-Za-z_][\w-]*)/', (string) $style->textContent, $m ) ) {
 				foreach ( $m[1] as $name ) {
-					$frames[ $name ] = $scope . '-' . $name;
+					$frames[ $name ] = $prefix . '-' . $name;
 				}
 			}
 		}
 
 		foreach ( $xpath->query( '//*' ) as $element ) {
-			foreach ( iterator_to_array( $element->attributes ) as $attr ) {
+			foreach ( iterator_to_array( $element->attributes, false ) as $attr ) {
 				$name  = strtolower( (string) $attr->localName );
 				$value = (string) $attr->value;
 				if ( 'id' === $name ) {
@@ -105,10 +103,10 @@ if ( ! function_exists( 'sgs_svg_scope_instance' ) ) {
 				}
 			}
 		}
-		$root->setAttribute( 'id', $scope );
+		$root->setAttribute( $scripted ? 'data-sgs-svg' : 'id', $scope );
 
 		foreach ( iterator_to_array( $doc->getElementsByTagName( 'style' ) ) as $style ) {
-			$css = sgs_svg_scope_css( (string) $style->textContent, '#' . $scope, $ids, $frames );
+			$css = sgs_svg_scope_css( (string) $style->textContent, $root_sel, $ids, $frames );
 			if ( '' === $css ) {
 				$style->parentNode->removeChild( $style );
 				continue;
@@ -119,6 +117,18 @@ if ( ! function_exists( 'sgs_svg_scope_instance' ) ) {
 			$style->appendChild( $doc->createTextNode( $css ) );
 		}
 		return (string) $doc->saveXML( $root );
+	}
+}
+
+if ( ! function_exists( 'sgs_svg_scope_prefix' ) ) {
+	/**
+	 * The name prefix an instance gives its keyframes: its root selector without punctuation.
+	 *
+	 * @param string $root The root's selector (#scope or [data-sgs-svg="scope"]).
+	 * @return string
+	 */
+	function sgs_svg_scope_prefix( string $root ): string {
+		return (string) preg_replace( '/[^A-Za-z0-9_-]/', '', $root );
 	}
 }
 
@@ -232,7 +242,7 @@ if ( ! function_exists( 'sgs_svg_scope_rules' ) ) {
 	 * every rule holding a nested block dropped.
 	 *
 	 * @param string               $css    Comment-free CSS.
-	 * @param string               $root   The root's id selector (#scope).
+	 * @param string               $root   The root's selector (#scope, or [data-sgs-svg="scope"]).
 	 * @param array<string,string> $ids    Old id => new id.
 	 * @param array<string,string> $frames Old keyframes name => new name.
 	 * @return string
@@ -246,7 +256,7 @@ if ( ! function_exists( 'sgs_svg_scope_rules' ) ) {
 			$prelude = $item['prelude'];
 			$body    = $item['body'];
 			if ( preg_match( '/^@(?:-webkit-|-moz-|-o-)?keyframes\s+([A-Za-z_][\w-]*)$/i', $prelude, $m ) ) {
-				$out .= '@keyframes ' . ( $frames[ $m[1] ] ?? substr( $root, 1 ) . '-' . $m[1] ) . '{' . $body . '}';
+				$out .= '@keyframes ' . ( $frames[ $m[1] ] ?? sgs_svg_scope_prefix( $root ) . '-' . $m[1] ) . '{' . $body . '}';
 			} elseif ( preg_match( '/^@(?:media|supports)(?![\w-])/i', $prelude ) ) {
 				$out .= $prelude . '{' . sgs_svg_scope_rules( $body, $root, $ids, $frames ) . '}';
 			} elseif ( '@' !== $prelude[0] && ! sgs_svg_scope_has_block( $body ) ) {
@@ -273,26 +283,27 @@ if ( ! function_exists( 'sgs_svg_scope_verify' ) ) {
 	 * Read scoped CSS again and confirm every top-level item is a clean rule whose every selector starts with the root
 	 * scope, a @keyframes named with the instance prefix, or a @media/@supports holding only such items.
 	 *
-	 * @param string $css   Scoped CSS.
-	 * @param string $scope The instance id.
+	 * @param string $css  Scoped CSS.
+	 * @param string $root The root's selector (#scope, or [data-sgs-svg="scope"] for a scripted file).
 	 * @return bool
 	 */
-	function sgs_svg_scope_verify( string $css, string $scope ): bool {
-		$inner   = ':where(#' . $scope . ') ';
-		$on_root = 'svg:where(#' . $scope . ')';
+	function sgs_svg_scope_verify( string $css, string $root ): bool {
+		$inner   = ':where(' . $root . ') ';
+		$on_root = 'svg:where(' . $root . ')';
+		$prefix  = sgs_svg_scope_prefix( $root ) . '-';
 		foreach ( sgs_svg_scope_items( $css ) as $item ) {
 			if ( ! $item['clean'] || null === $item['body'] ) {
 				return false;
 			}
 			$prelude = $item['prelude'];
 			if ( preg_match( '/^@keyframes\s+([A-Za-z_][\w-]*)$/', $prelude, $m ) ) {
-				if ( 0 !== strpos( $m[1], $scope . '-' ) ) {
+				if ( 0 !== strpos( $m[1], $prefix ) ) {
 					return false;
 				}
 				continue;
 			}
 			if ( preg_match( '/^@(?:media|supports)(?![\w-])/i', $prelude ) ) {
-				if ( ! sgs_svg_scope_verify( $item['body'], $scope ) ) {
+				if ( ! sgs_svg_scope_verify( $item['body'], $root ) ) {
 					return false;
 				}
 				continue;
@@ -321,13 +332,13 @@ if ( ! function_exists( 'sgs_svg_scope_css' ) ) {
 	 * Scope a <style> element's CSS to the instance root, or return '' when the scoped result cannot be confirmed.
 	 *
 	 * @param string               $css    CSS text.
-	 * @param string               $root   The root's id selector (#scope).
+	 * @param string               $root   The root's selector (#scope, or [data-sgs-svg="scope"]).
 	 * @param array<string,string> $ids    Old id => new id.
 	 * @param array<string,string> $frames Old keyframes name => new name.
 	 * @return string
 	 */
 	function sgs_svg_scope_css( string $css, string $root, array $ids, array $frames ): string {
 		$scoped = sgs_svg_scope_rules( sgs_svg_scope_strip_comments( $css ), $root, $ids, $frames );
-		return sgs_svg_scope_verify( $scoped, substr( $root, 1 ) ) ? $scoped : '';
+		return sgs_svg_scope_verify( $scoped, $root ) ? $scoped : '';
 	}
 }

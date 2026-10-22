@@ -23,10 +23,14 @@ $GLOBALS['t'] = array(
 	'options' => array(),
 	'markers' => null,
 	'basedir' => '',
+	'filter'  => 'wp_handle_upload_prefilter',
+	'extracted' => array(),
 );
 function __( $s, $d = '' ) { return $s; }
 function esc_html( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES, 'UTF-8' ); }
 function add_filter( ...$a ) { return true; }
+function doing_filter( $f = null ) { return $GLOBALS['t']['filter'] === $f; }
+function extract_from_markers( $file, $marker ) { return $GLOBALS['t']['extracted']; }
 function add_action( ...$a ) { return true; }
 function get_current_user_id() { return $GLOBALS['t']['current']; }
 function current_user_can( $c ) { return 'unfiltered_html' === $c && ! empty( $GLOBALS['t']['caps'][ $GLOBALS['t']['current'] ] ); }
@@ -165,7 +169,7 @@ $doc    = new DOMDocument();
 $doc->loadXML( $scoped );
 $script = $doc->getElementsByTagName( 'script' )->item( 0 );
 ok( null !== $script && $script->textContent === $code, '(h) the scoper leaves a script\'s text byte-identical', $scoped );
-ok( false !== strpos( $scoped, 'id="g"' ) && false !== strpos( $scoped, 'fill="url(#g)"' ) && false !== strpos( $scoped, 'id="a"' ) && false !== strpos( $scoped, 'id="inst1"' ), '(h) a scripted SVG keeps its own ids and url(#) references', $scoped );
+ok( false !== strpos( $scoped, 'id="g"' ) && false !== strpos( $scoped, 'fill="url(#g)"' ) && false !== strpos( $scoped, 'id="a"' ) && false !== strpos( $scoped, 'data-sgs-svg="inst1"' ) && false === strpos( $scoped, 'id="inst1' ), '(h) a scripted SVG keeps its own ids and url(#) references', $scoped );
 
 // (j) a scripted SVG keeps every id, and its <style> stays contained to the instance.
 $probe_code = "var p=document.getElementById('probe'); p.setAttribute('fill','url(#grad)');";
@@ -176,19 +180,19 @@ $jdoc->loadXML( $scoped_js );
 ok( false !== strpos( $scoped_js, 'id="probe"' ) && false !== strpos( $scoped_js, 'id="grad"' ) && false !== strpos( $scoped_js, 'fill="url(#grad)"' ) && false !== strpos( $scoped_js, 'href="#probe"' ) && false !== strpos( $scoped_js, 'begin="probe.end"' ), '(j) a scripted SVG keeps every id and id reference as written', $scoped_js );
 ok( $jdoc->getElementsByTagName( 'script' )->item( 0 )->textContent === $probe_code && false !== strpos( $scoped_js, "getElementById('probe')" ), '(j) the scripted SVG\'s script text is unchanged' );
 $jstyle = $jdoc->getElementsByTagName( 'style' )->item( 0 );
-ok( null !== $jstyle && false !== strpos( $jstyle->textContent, ':where(#inst2) path{fill:red}' ) && false !== strpos( $jstyle->textContent, ':where(#inst2) .a > rect{stroke:blue}' ), '(j) the scripted SVG\'s element and class selectors are contained to the instance', $scoped_js );
-ok( null !== $jstyle && false !== strpos( $jstyle->textContent, ':where(#inst2) #probe{opacity:1}' ), '(j) an id selector in the scripted SVG\'s <style> stays unrenamed and contained', $scoped_js );
+ok( null !== $jstyle && false !== strpos( $jstyle->textContent, ':where([data-sgs-svg="inst2"]) path{fill:red}' ) && false !== strpos( $jstyle->textContent, ':where([data-sgs-svg="inst2"]) .a > rect{stroke:blue}' ), '(j) the scripted SVG\'s element and class selectors are contained to the instance', $scoped_js );
+ok( null !== $jstyle && false !== strpos( $jstyle->textContent, ':where([data-sgs-svg="inst2"]) #probe{opacity:1}' ), '(j) an id selector in the scripted SVG\'s <style> stays unrenamed and contained', $scoped_js );
 $rooted = sgs_svg_scope_instance( str_replace( '<style>', '<style>svg{fill:green}', str_replace( 'viewBox', 'id="own" viewBox', $scripted_svg ) ), 'inst3' );
-ok( false !== strpos( $rooted, 'id="own"' ) && false !== strpos( $rooted, 'svg:where(#own){fill:green}' ) && false === strpos( $rooted, 'inst3' ), '(j) a scripted root that has its own id keeps it and is the containment root', $rooted );
+ok( false !== strpos( $rooted, 'id="own"' ) && false !== strpos( $rooted, 'svg:where([data-sgs-svg="inst3"]){fill:green}' ) && false === strpos( $rooted, 'id="inst3"' ), '(j) a scripted root that has its own id keeps it and is the containment root', $rooted );
 
-// (k) a script-free SVG is scoped exactly as the scoper did before scripts were handled (output captured from the scoper before this change).
+// (k) a script-free SVG is scoped as before scripts were handled, with href and xlink:href both renamed.
 $k_in  = <<<'KIN'
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 10 10" aria-labelledby="t"><title id="t">T</title><style>@keyframes spin{from{opacity:0}to{opacity:1}} .sun > path{animation:spin 2s;fill:url(#g)} #a{opacity:1} svg > g{stroke:red}</style><defs><linearGradient id="g"><stop offset="0"/></linearGradient></defs><g class="sun"><path id="a" d="M0 0" fill="url(#g)"><animate attributeName="opacity" begin="b.end" dur="1s"/></path><use xlink:href="#a" href="#a"/><rect id="b" width="1" height="1"/></g></svg>
 KIN;
 $k_out = <<<'KOUT'
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 10 10" aria-labelledby="inst1-t" id="inst1"><title id="inst1-t">T</title><style>@keyframes inst1-spin{from{opacity:0}to{opacity:1}}:where(#inst1) .sun &gt; path{animation:inst1-spin 2s;fill:url(#inst1-g)}:where(#inst1) #inst1-a{opacity:1}svg:where(#inst1) &gt; g{stroke:red}</style><defs><linearGradient id="inst1-g"><stop offset="0"/></linearGradient></defs><g class="sun"><path id="inst1-a" d="M0 0" fill="url(#inst1-g)"><animate attributeName="opacity" begin="inst1-b.end" dur="1s"/></path><use xlink:href="#a" href="#inst1-a"/><rect id="inst1-b" width="1" height="1"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 10 10" aria-labelledby="inst1-t" id="inst1"><title id="inst1-t">T</title><style>@keyframes inst1-spin{from{opacity:0}to{opacity:1}}:where(#inst1) .sun &gt; path{animation:inst1-spin 2s;fill:url(#inst1-g)}:where(#inst1) #inst1-a{opacity:1}svg:where(#inst1) &gt; g{stroke:red}</style><defs><linearGradient id="inst1-g"><stop offset="0"/></linearGradient></defs><g class="sun"><path id="inst1-a" d="M0 0" fill="url(#inst1-g)"><animate attributeName="opacity" begin="inst1-b.end" dur="1s"/></path><use xlink:href="#inst1-a" href="#inst1-a"/><rect id="inst1-b" width="1" height="1"/></g></svg>
 KOUT;
-ok( sgs_svg_scope_instance( $k_in, 'inst1' ) === $k_out, '(k) a script-free SVG is scoped byte-identically to the earlier scoper output', sgs_svg_scope_instance( $k_in, 'inst1' ) );
+ok( sgs_svg_scope_instance( $k_in, 'inst1' ) === $k_out, '(k) a script-free SVG is scoped byte-identically to the expected output', sgs_svg_scope_instance( $k_in, 'inst1' ) );
 
 // Duplicate-script removal ignores <script> text inside a comment or CDATA section.
 $cd_in = $svg( '<!-- <script>x()</script> --><script>x()</script><style><![CDATA[ /* <script>x()</script> */ ]]></style><script>x()</script><g><![CDATA[<script>x()</script>]]></g>' );
@@ -209,13 +213,64 @@ $expected = array(
 );
 ok( array( $dir . '/.htaccess', 'SGS SVG', $expected ) === $GLOBALS['t']['markers'], '(i) the .htaccess writer produces exactly the specified lines' );
 ok( SGS_SVG_HTACCESS_VERSION === get_option( 'sgs_svg_htaccess_version' ), '(i) the version option is stored' );
-$GLOBALS['t']['markers'] = null;
+$GLOBALS['t']['markers']   = null;
+$GLOBALS['t']['extracted'] = $expected;
+file_put_contents( $dir . '/.htaccess', "# SGS SVG
+" );
 sgs_svg_htaccess_install();
-ok( null === $GLOBALS['t']['markers'], '(i) a current version does not rewrite' );
+ok( null === $GLOBALS['t']['markers'], '(i) a current version with the block in place does not rewrite' );
 $GLOBALS['t']['options'] = array();
 $GLOBALS['t']['basedir'] = $dir . DIRECTORY_SEPARATOR . 'missing';
 sgs_svg_htaccess_install();
 ok( null === $GLOBALS['t']['markers'], '(i) an unwritable folder is skipped silently' );
+
+// Review fix 1: trust follows a person's own upload only; a sideload is sanitised even for an unfiltered_html user.
+$GLOBALS['t']['filter'] = 'wp_handle_sideload_prefilter';
+list( $res, $out ) = $upload( $scripted, 'side.svg', 1, true );
+ok( empty( $res['error'] ) && false === stripos( $out, 'script' ), 'MUST FAIL: a sideloaded SVG is sanitised even for an unfiltered_html user', $out );
+$GLOBALS['t']['filter'] = 'wp_handle_upload_prefilter';
+
+// Review fix 2 and 3: an entity DOCTYPE in any encoding, any DOCTYPE and a non-UTF-8 file are refused for a trusted user.
+$entities = '<!DOCTYPE svg [<!ENTITY a "aaaaaaaa"><!ENTITY b "&a;&a;&a;&a;">]>' . $svg( '<text>&b;</text>' );
+$utf16    = "\xFF\xFE" . mb_convert_encoding( $entities, 'UTF-16LE', 'UTF-8' );
+list( $res ) = $upload( $utf16, 'u16.svg', 1, true );
+ok( ! empty( $res['error'] ), 'MUST FAIL: a UTF-16LE SVG with an entity DOCTYPE is refused for a trusted user', $res['error'] ?? '' );
+list( $res ) = $upload( '<?xml version="1.0" encoding="UTF-16"?>' . $svg( '<path d="M0 0"/>' ), 'u16b.svg', 1, true );
+ok( ! empty( $res['error'] ), 'MUST FAIL: a declared non-UTF-8 encoding is refused for a trusted user' );
+list( $res ) = $upload( '<!DOCTYPE svg SYSTEM "http://evil.test/x.dtd">' . $svg( '<path d="M0 0"/>' ), 'dtd.svg', 1, true );
+ok( ! empty( $res['error'] ), 'MUST FAIL: an external DTD is refused for a trusted user', $res['error'] ?? '' );
+list( $res ) = $upload( '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' . $svg( '<path d="M0 0"/>' ), 'plain.svg', 1, true );
+ok( ! empty( $res['error'] ), 'MUST FAIL: a plain DOCTYPE is refused for a trusted user' );
+ok( '' === sgs_svg_parse_problem( $scripted ), 'a plain scripted SVG still passes the trusted parse check' );
+
+// Review fix 4: href and xlink:href on one element are both renamed.
+$both = sgs_svg_scope_instance( $svg( '<g id="a"/><use href="#a" xlink:href="#a"/>' ), 'inst4' );
+ok( false !== strpos( $both, 'xlink:href="#inst4-a"' ) && false !== strpos( $both, ' href="#inst4-a"' ) && false === strpos( $both, '"#a"' ), 'MUST FAIL: href and xlink:href are both renamed', $both );
+
+// Review fix 5: a scripted SVG's <style> is contained by an instance attribute, so a root id the page also holds is not matched.
+$content = sgs_svg_scope_instance( str_replace( 'viewBox', 'id="content" viewBox', $svg( '<style>*{display:none}</style><script>x()</script>' ) ), 'inst5' );
+ok( false !== strpos( $content, ':where([data-sgs-svg="inst5"]) *{display:none}' ) && false === strpos( $content, ':where(#content)' ) && false !== strpos( $content, 'id="content"' ), 'MUST FAIL: a scripted SVG\'s style is not scoped by its own id', $content );
+
+// Review fix 6: wp_upload_bits sanitises an SVG, never trusts it, and refuses .svgz.
+$bits = sgs_svg_upload_bits( array( 'name' => 'x.svg', 'bits' => $scripted, 'time' => null ) );
+ok( is_array( $bits ) && false === stripos( $bits['bits'], 'script' ), 'MUST FAIL: wp_upload_bits strips an SVG\'s script even for an unfiltered_html user', is_array( $bits ) ? $bits['bits'] : (string) $bits );
+ok( is_string( sgs_svg_upload_bits( array( 'name' => 'x.svg', 'bits' => $svg( '<path onclick="x()"/>' ), 'time' => null ) ) ), 'MUST FAIL: wp_upload_bits refuses a refused SVG with a message' );
+ok( is_string( sgs_svg_upload_bits( array( 'name' => 'x.svgz', 'bits' => $gz, 'time' => null ) ) ), 'MUST FAIL: wp_upload_bits refuses .svgz' );
+ok( is_string( sgs_svg_upload_bits( array( 'name' => 'x.svg', 'bits' => $gz, 'time' => null ) ) ), 'MUST FAIL: wp_upload_bits refuses a gzipped .svg' );
+ok( is_array( sgs_svg_upload_bits( array( 'name' => 'x.png', 'bits' => 'x', 'time' => null ) ) ), 'wp_upload_bits leaves a non-SVG alone' );
+
+// Review fix 7: the guard re-installs when the block in the file no longer matches, not only on a version change.
+$GLOBALS['t']['basedir'] = $dir;
+$GLOBALS['t']['options'] = array( 'sgs_svg_htaccess_version' => SGS_SVG_HTACCESS_VERSION );
+file_put_contents( $dir . '/.htaccess', "# rewritten by another tool\n" );
+$GLOBALS['t']['extracted'] = array();
+$GLOBALS['t']['markers']   = null;
+sgs_svg_htaccess_install();
+ok( null !== $GLOBALS['t']['markers'], 'MUST FAIL: a current version with a missing block is written back' );
+$GLOBALS['t']['extracted'] = sgs_svg_htaccess_lines();
+$GLOBALS['t']['markers']   = null;
+sgs_svg_htaccess_install();
+ok( null === $GLOBALS['t']['markers'], 'a current version with the expected block in the file is left alone' );
 
 // Negative control: an assertion must be able to fail.
 $before = $fail;

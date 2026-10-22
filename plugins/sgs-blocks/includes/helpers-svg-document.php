@@ -299,18 +299,24 @@ if ( ! function_exists( 'sgs_svg_document_copy' ) ) {
 
 if ( ! function_exists( 'sgs_svg_parse_problem' ) ) {
 	/**
-	 * Why a file cannot be used as an SVG at all, or '': it declares entities, is not well-formed XML or has no <svg>
-	 * root in the SVG namespace. Nothing else is screened; a trusted upload keeps everything but these.
+	 * Why a file cannot be used as an SVG at all, or '': it is not UTF-8 (a UTF-16 or UTF-32 file, a declared other
+	 * encoding), holds any DOCTYPE or entity declaration, is not well-formed XML or has no <svg> root in the SVG
+	 * namespace. Nothing else is screened; a trusted upload keeps everything but these.
 	 *
 	 * @param string $markup Raw file contents.
 	 * @return string
 	 */
 	function sgs_svg_parse_problem( string $markup ): string {
 		$markup = (string) preg_replace( '/^\xEF\xBB\xBF/', '', $markup );
+		if ( 1 === preg_match( '/^(?:\xFF\xFE|\xFE\xFF|\x00\x00\xFE\xFF)/', $markup ) || false !== strpos( $markup, "\0" ) ) {
+			return __( 'is not UTF-8 text', 'sgs-blocks' );
+		}
+		if ( preg_match( '/^\s*<\?xml[^>]*\bencoding\s*=\s*["\']\s*([^"\'\s]+)/i', $markup, $declared ) && 'utf-8' !== strtolower( $declared[1] ) ) {
+			return __( 'is not UTF-8 text', 'sgs-blocks' );
+		}
 		if ( preg_match( '/<!ENTITY/i', $markup ) || preg_match( '/<!DOCTYPE[^>\[]*\[/i', $markup ) ) {
 			return __( 'holds a DOCTYPE with entity declarations', 'sgs-blocks' );
 		}
-		$markup = (string) preg_replace( '/<!DOCTYPE[^>\[]*>/i', '', $markup );
 		if ( '' === trim( $markup ) ) {
 			return __( 'is empty', 'sgs-blocks' );
 		}
@@ -330,6 +336,9 @@ if ( ! function_exists( 'sgs_svg_parse_problem' ) ) {
 			$detail = $xml_error ? trim( (string) $xml_error->message ) : '';
 			/* translators: %s: the parser's message. */
 			return sprintf( __( 'is not well-formed XML (%s)', 'sgs-blocks' ), substr( $detail, 0, 80 ) );
+		}
+		if ( null !== $doc->doctype ) {
+			return __( 'holds a DOCTYPE', 'sgs-blocks' );
 		}
 		$root = $doc->documentElement;
 		if ( ! $root || SGS_SVG_NS !== $root->namespaceURI || 'svg' !== $root->localName ) {
