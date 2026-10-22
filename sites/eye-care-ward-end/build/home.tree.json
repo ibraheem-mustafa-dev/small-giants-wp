@@ -589,26 +589,6 @@
           },
           "textWrap": "wrap",
           "className": "cr-ref-home-15",
-          "contentBandMargin": {
-            "mobile": {
-              "top": "0px",
-              "bottom": "0px",
-              "left": "0px",
-              "right": "0px"
-            },
-            "tablet": {
-              "top": "0px",
-              "bottom": "0px",
-              "left": "0px",
-              "right": "0px"
-            },
-            "desktop": {
-              "top": "0px",
-              "bottom": "0px",
-              "left": "0px",
-              "right": "0px"
-            }
-          },
           "sgsMotion": {
             "v": 1,
             "elements": {
@@ -2675,11 +2655,6 @@
       {
         "name": "sgs/container",
         "attributes": {
-          "contentBandMargin": {
-            "desktop": {
-              "bottom": "28px"
-            }
-          },
           "textWrap": "wrap",
           "className": "cr-ref-home-55",
           "margin": {

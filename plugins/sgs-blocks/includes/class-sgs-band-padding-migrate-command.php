@@ -1,6 +1,6 @@
 <?php
 /**
- * `wp sgs band-padding-migrate`: folds a stored `contentBandPadding` into `padding` across every post.
+ * `wp sgs band-padding-migrate`: folds a stored `contentBandPadding` into `padding` across every post and lists every stored `contentBandMargin` side.
  *
  * Default is a dry run that prints the diff and writes nothing. `--apply` skips posts open in the editor, backs up
  * every post it will change to a file outside the web root, then writes with `$wpdb->update` and `clean_post_cache`
@@ -30,7 +30,7 @@ require_once __DIR__ . '/motion/migrate/class-sgs-motion-migrate-backup.php';
 require_once __DIR__ . '/motion/migrate/class-sgs-motion-migrate-lock.php';
 
 /**
- * Fold `contentBandPadding` into `padding` in stored block content.
+ * Fold `contentBandPadding` into `padding` in stored block content, and list every stored `contentBandMargin` side (not folded: a band margin collapses where padding does not).
  *
  * ## OPTIONS
  *
@@ -66,6 +66,13 @@ final class Sgs_Band_Padding_Migrate_Command {
 	 * @var string[]
 	 */
 	private $skipped = array();
+
+	/**
+	 * Stored `contentBandMargin` sides, one entry per block, for the `BAND MARGIN` warnings.
+	 *
+	 * @var array<int,array<string,mixed>>
+	 */
+	private $margins = array();
 
 	/**
 	 * Entry point.
@@ -142,6 +149,16 @@ final class Sgs_Band_Padding_Migrate_Command {
 				if ( isset( $result['skipped'] ) ) {
 					$this->skipped[] = sprintf( 'Skipped post %d (%s) "%s": %s; it still holds contentBandPadding.', $last_id, $post['post_type'], $post['post_title'], $result['skipped'] );
 				}
+				foreach ( $result['margins'] as $margin ) {
+					$this->margins[] = array(
+						'ID'    => $last_id,
+						'title' => (string) $post['post_title'],
+						'type'  => (string) $post['post_type'],
+						'path'  => $margin['path'],
+						'block' => $margin['block'],
+						'sides' => $margin['sides'],
+					);
+				}
 				if ( ! $result['changed'] ) {
 					continue;
 				}
@@ -179,10 +196,17 @@ final class Sgs_Band_Padding_Migrate_Command {
 				}
 			}
 		}
+		$sides = 0;
+		foreach ( $this->margins as $margin ) {
+			foreach ( $margin['sides'] as $side ) {
+				++$sides;
+				\WP_CLI::warning( sprintf( 'BAND MARGIN post %d (%s) "%s" block %s %s: %s %s is %s on contentBandMargin, left as stored; set it on the block margin by hand.', $margin['ID'], $margin['type'], $margin['title'], $margin['path'], $margin['block'], $side['tier'], $side['side'], $side['value'] ) );
+			}
+		}
 		foreach ( $this->skipped as $line ) {
 			\WP_CLI::warning( $line );
 		}
-		\WP_CLI::log( sprintf( '%d post(s) with changes, %d block(s) folded, %d side(s) set on both and summed, %d post(s) skipped.', count( $rows ), $blocks, $conflicts, count( $this->skipped ) ) );
+		\WP_CLI::log( sprintf( '%d post(s) with changes, %d block(s) folded, %d side(s) set on both and summed, %d post(s) skipped, %d band margin side(s) left as stored.', count( $rows ), $blocks, $conflicts, count( $this->skipped ), $sides ) );
 	}
 
 	/**

@@ -5,7 +5,7 @@
    (render: includes/helpers-grid-item.php; editor: grid-item-preview.js). This is the
    ONE consumer: it styles every direct grid cell, whatever block the cell is, at both
    depths, because the .sgs-container__inner band renders only when the grid has band
-   props (contentWidth / band padding / band margin), turning cells into grandchildren.
+   props (contentWidth / band padding), turning cells into grandchildren.
 
    A cell is any direct child except the band wrapper itself, the decorative layers the
    wrapper renders (all aria-hidden="true", plus the Lottie background), <style>/<script>

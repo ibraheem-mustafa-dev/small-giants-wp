@@ -6,13 +6,12 @@
  *    (`supports.sgs.intrinsicColumns`): the column count is a ceiling that
  *    degrades with available width, floored at the "Minimum column width"
  *    (twin of sgs_intrinsic_columns_track() + sgs_container_tier_min_column_width());
- *  - grid rows (`gridTemplateRows`);
- *  - the content band's margin (`contentBandMargin`).
+ *  - grid rows (`gridTemplateRows`).
  *
  * @package SGS\Blocks
  */
 
-import { tierValueOf, resolveBoxTierPreview } from '../../utils';
+import { tierValueOf } from '../../utils';
 
 const UNITS = [ 'px', 'em', 'rem' ];
 
@@ -69,23 +68,4 @@ export function containerColumnsPreview( attributes, tier, gap ) {
 export function containerRowsPreview( attributes, tier ) {
 	const rows = tierValueOf( attributes.gridTemplateRows, tier );
 	return isBlank( rows ) ? undefined : String( rows ).trim();
-}
-
-/**
- * The content band's margin sides at `tier`, as React style keys.
- *
- * @param {Object} attributes Block attributes.
- * @param {string} tier       'desktop' | 'tablet' | 'mobile'.
- * @return {Object} `{ marginTop?, marginRight?, marginBottom?, marginLeft? }`.
- */
-export function bandMarginPreview( attributes, tier ) {
-	const tiers = attributes.contentBandMargin && 'object' === typeof attributes.contentBandMargin ? attributes.contentBandMargin : {};
-	const box = resolveBoxTierPreview( tiers.desktop, tiers.tablet, tiers.mobile, tier );
-	const out = {};
-	[ [ 'top', 'marginTop' ], [ 'right', 'marginRight' ], [ 'bottom', 'marginBottom' ], [ 'left', 'marginLeft' ] ].forEach( ( [ side, key ] ) => {
-		if ( ! isBlank( box[ side ] ) ) {
-			out[ key ] = /^\d+(\.\d+)?$/.test( String( box[ side ] ) ) ? `${ box[ side ] }px` : String( box[ side ] );
-		}
-	} );
-	return out;
 }

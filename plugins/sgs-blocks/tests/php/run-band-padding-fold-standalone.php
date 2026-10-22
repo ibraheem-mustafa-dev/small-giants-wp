@@ -261,5 +261,45 @@ ok( ! $misaligned['changed'], 'misaligned comments: the content is not rewritten
 ok( isset( $misaligned['skipped'] ) && '' !== $misaligned['skipped'], 'misaligned comments: the post is reported as skipped' );
 ok( ! isset( $clean['skipped'] ) && ! isset( $result['skipped'] ), 'aligned content: nothing is reported as skipped' );
 
+// contentBandMargin is never folded: top and bottom collapse through the outer element where padding does not,
+// and left and right override the band's auto centring. Every stored side is listed, the comment is left as stored.
+$content = '<!-- wp:sgs/container {"contentBandMargin":{"desktop":{"top":"20px","left":"0px"},"mobile":{"bottom":"8px"}},"padding":{"desktop":{"top":"5px"}}} --><div></div><!-- /wp:sgs/container -->';
+$result  = $folder->migrate_content( $content );
+ok( ! $result['changed'] && $content === $result['content'], 'margin only: the content is not rewritten' );
+same( 1, count( $result['margins'] ), 'margin only: one block reported' );
+same(
+	array(
+		array(
+			'tier'  => 'desktop',
+			'side'  => 'top',
+			'value' => '20px',
+		),
+		array(
+			'tier'  => 'desktop',
+			'side'  => 'left',
+			'value' => '0px',
+		),
+		array(
+			'tier'  => 'mobile',
+			'side'  => 'bottom',
+			'value' => '8px',
+		),
+	),
+	$result['margins'][0]['sides'],
+	'margin only: top, left (zero kept, it overrides centring) and mobile bottom are listed by tier and side'
+);
+same( '0', $result['margins'][0]['path'], 'margin only: the block path is reported' );
+$zero = $folder->migrate_content( '<!-- wp:sgs/container {"contentBandMargin":{"desktop":{"top":"0px","bottom":"0"}}} --><div></div><!-- /wp:sgs/container -->' );
+same( array(), $zero['margins'], 'zero top and bottom: nothing to report' );
+
+// Both retired attributes on one block: the padding folds, the margin is kept and reported.
+$content = '<!-- wp:sgs/hero {"contentBandPadding":{"desktop":{"left":"30px"}},"contentBandMargin":{"desktop":{"right":"12px"}},"padding":{"desktop":{"top":"9px"}}} /-->';
+$result  = $folder->migrate_content( $content );
+ok( $result['changed'], 'both attributes: the content changed' );
+ok( false === strpos( $result['content'], 'contentBandPadding' ), 'both attributes: the band padding is gone' );
+ok( false !== strpos( $result['content'], '"contentBandMargin":{"desktop":{"right":"12px"}}' ), 'both attributes: the band margin stays as stored' );
+ok( false !== strpos( $result['content'], '"padding":{"desktop":{"top":"9px","left":"30px"}}' ), 'both attributes: the padding holds the folded side' );
+same( 'right', $result['margins'][0]['sides'][0]['side'], 'both attributes: the margin side is reported' );
+
 echo "\n==== $pass passed, $fail failed ====\n";
 exit( $fail > 0 ? 1 : 0 );

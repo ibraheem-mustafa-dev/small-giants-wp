@@ -70,8 +70,8 @@ $padded = sgs_container_scroll_row_css( $row, array( 'scrollSideways' => array( 
 ok( false !== strpos( $padded, 'scroll-padding-inline-start:24px;scroll-padding-inline-end:var(--wp--preset--spacing--30);' ), '9 band side padding becomes scroll padding (preset resolved)' );
 $ring = sgs_container_scroll_row_css( $row, array( 'scrollSideways' => array( 'mobile' => 'on' ) ) );
 ok( false !== strpos( $ring, 'padding-block-start:8px;margin-block-start:-8px;padding-block-end:8px;margin-block-end:-8px;' ), '10 8px of block room for a focus ring, taken back by a negative margin' );
-$banded = sgs_container_scroll_row_css( $row, array( 'scrollSideways' => array( 'mobile' => 'on' ) ), false, array( 'mobile' => array( 'top' => '20px' ) ), array( 'mobile' => array( 'bottom' => 'var:preset|spacing|20' ) ) );
-ok( false !== strpos( $banded, 'padding-block-start:calc(20px + 8px);margin-block-start:-8px;padding-block-end:8px;margin-block-end:calc(var(--wp--preset--spacing--20) - 8px);' ), '11 band padding and band margin are added to, not replaced' );
+$banded = sgs_container_scroll_row_css( $row, array( 'scrollSideways' => array( 'mobile' => 'on' ) ), false, array( 'mobile' => array( 'top' => '20px', 'bottom' => 'var:preset|spacing|20' ) ) );
+ok( false !== strpos( $banded, 'padding-block-start:calc(20px + 8px);margin-block-start:-8px;padding-block-end:calc(var(--wp--preset--spacing--20) + 8px);margin-block-end:-8px;' ), '11 band padding is added to, not replaced' );
 
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

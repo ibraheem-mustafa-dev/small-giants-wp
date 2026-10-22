@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Container band layers: contentWidth and padding on the ONE content-band layer.
+"""Container band layers: contentWidth, padding and margin on their one layer each.
 
 Governing plan: .claude/plans/2026-10-21-handoff-readers.md, Status, Container band layers (Bean's decisions,
 2026-10-22): every container-type block records `contentWidth` as `max-width` on its
-content band, and `padding` paints the content band (`contentBandPadding` is folded
-into `padding` and removed).
+content band, `padding` paints the content band (`contentBandPadding` is folded
+into `padding` and removed) and `margin` paints the block's outer element
+(`contentBandMargin` is removed; the sweep lists what it held).
 
 SCOPE
     Every block that declares the `contentWidth` attribute (disk: src/blocks/*/block.json,
@@ -15,7 +16,7 @@ RULES ENFORCED
              `"css:max-width": "contentWidth"` on the content-band element; never
              `css:width`, never on the wrapper.
     padding  `padding` is declared on the content-band element, not the wrapper.
-    residue  no `contentBandPadding` remains anywhere in source (manifests, wrapper,
+    residue  no `contentBandPadding` or `contentBandMargin` remains anywhere in source (manifests, wrapper,
              render.php, editors, includes, utils, theme, saved trees, route data).
 
 WHAT --fix DOES
@@ -60,7 +61,9 @@ BLOCKS_GLOB = 'plugins/sgs-blocks/src/blocks/*/block.json'
 BASELINE = 'plugins/sgs-blocks/scripts/check-container-band-layers-baseline.json'
 CENSUS = 'reports/migrations/container-band-layers-census.json'
 DB_PATH = os.path.expanduser('~/.claude/skills/sgs-wp-engine/sgs-framework.db')
-TOKEN = 'contentBandPadding'
+TOKENS = ('contentBandPadding', 'contentBandMargin')
+TOKEN = TOKENS[0]
+TOKEN_RE = re.compile('|'.join(re.escape(t) for t in TOKENS).encode())
 
 WIDTH_ATTR = 'contentWidth'
 PADDING_ATTRS = ('padding', 'native:spacing.padding')
@@ -78,13 +81,13 @@ EXEMPT_RULES = (
     (lambda r: r.startswith('reports/'), 'dated report or this migration\'s census'),
     (lambda r: '/fixtures/' in r, 'detector fixture: the token is the input under test'),
     (lambda r: re.search(r'band-padding-(fold|migrate)', r) is not None,
-     'the saved-content sweep and its test: they name the old attribute to fold it into padding'),
+     'the saved-content sweep and its test: they name the retired attributes they fold or list'),
     (lambda r: re.match(r'^sites/[^/]+/build/qa/', r) is not None,
      'a Fill, Solve, triage or confirm run report: it names settings it measured and saves none'),
     (lambda r: r.startswith('plugins/sgs-blocks/scripts/check-container-band-layers'),
      'this detector, its baseline and its census'),
     (lambda r: r.startswith('plugins/sgs-blocks/includes/class-sgs-band-padding-'),
-     'the saved-content migration: it names the retired attribute it folds into padding'),
+     'the saved-content migration: it names the retired attributes it folds or lists'),
     (lambda r: r == 'plugins/sgs-blocks/scripts/oldshape-audit-baseline.json',
      'the deploy audit\'s accepted stored content: it names the attribute on posts the sweep has not yet folded'),
 )
@@ -211,7 +214,7 @@ def db_connect():
 
 
 def db_facts():
-    """(set of slugs declaring contentWidth, {slug: container_kind}, set with contentBandPadding)."""
+    """(set of slugs declaring contentWidth, {slug: container_kind}, set with a retired band attribute)."""
     con = db_connect()
     if con is None:
         return None
@@ -222,8 +225,8 @@ def db_facts():
         kinds = dict(con.execute(
             'SELECT block_slug, container_kind FROM block_composition').fetchall())
         cbp = {r[0] for r in con.execute(
-            "SELECT DISTINCT block_slug FROM block_attributes WHERE attr_name=? AND source='sgs'",
-            (TOKEN,))}
+            "SELECT DISTINCT block_slug FROM block_attributes WHERE attr_name IN (%s) AND source='sgs'"
+            % ','.join('?' * len(TOKENS)), TOKENS)}
     finally:
         con.close()
     return cw, kinds, cbp
@@ -280,7 +283,7 @@ def block_census(db):
             'contentWidth': {'state': wstate, 'declared_on': [
                 {'element': k, 'band': b, 'prop': p} for k, b, p in wdecls],
                 'mechanical': wstate == 'css-width-on-band'},
-            'has_contentBandPadding': TOKEN in attrs,
+            'has_retired_band_attr': any(t in attrs for t in TOKENS),
         })
     return blocks, disk
 
@@ -312,7 +315,6 @@ def tracked_files():
 def wide_token_files():
     """Dumb wide walk: every text file in the repo that contains the token."""
     out = []
-    needle = TOKEN.encode()
     tracked = tracked_files()
     for dirpath, dirnames, filenames in os.walk(ROOT):
         drel = rel(dirpath) if dirpath != ROOT else ''
@@ -329,7 +331,7 @@ def wide_token_files():
                     data = fh.read()
             except OSError:
                 continue
-            n = data.count(needle)
+            n = len(TOKEN_RE.findall(data))
             if n:
                 out.append((rel(p), n))
     return sorted(out)
@@ -337,7 +339,6 @@ def wide_token_files():
 
 def narrow_token_files():
     out = set()
-    needle = TOKEN.encode()
     tracked = tracked_files()
     for g in NARROW_GLOBS:
         for p in glob.glob(os.path.join(ROOT, *g.split('/')), recursive=True):
@@ -345,7 +346,7 @@ def narrow_token_files():
                 continue
             try:
                 with open(p, 'rb') as fh:
-                    if needle in fh.read():
+                    if TOKEN_RE.search(fh.read()):
                         out.add(rel(p))
             except OSError:
                 continue
@@ -376,7 +377,7 @@ def corpus_control(wide, narrow):
     for r in sorted(wide_paths - narrow):
         if not exempt_reason(r):
             fails.append('corpus width: %s mentions %s but is outside the narrow target globs '
-                         'and has no EXEMPT_RULES reason' % (r, TOKEN))
+                         'and has no EXEMPT_RULES reason' % (r, '/'.join(TOKENS)))
     for r in sorted(narrow - wide_paths):
         fails.append('corpus width: %s is in the narrow list but the wide walk missed it' % r)
     return fails
@@ -392,7 +393,7 @@ def build_census():
     if db:
         mismatch['db_only'] = sorted(db[0] - disk)
         mismatch['disk_only'] = sorted(disk - db[0])
-        disk_cbp = {b['block'] for b in blocks if b['has_contentBandPadding']}
+        disk_cbp = {b['block'] for b in blocks if b['has_retired_band_attr']}
         mismatch['cbp_db_vs_disk'] = sorted(db[2] ^ disk_cbp)
     wide = wide_token_files()
     files = file_census(wide)
@@ -418,7 +419,7 @@ def build_census():
     for w in worklist.values():
         w['paths'].sort()
     return {
-        'rule': 'contentWidth is max-width on the content band; padding paints the content band; no contentBandPadding',
+        'rule': 'contentWidth is max-width on the content band; padding paints the content band; margin paints the outer element; no contentBandPadding or contentBandMargin',
         'plan': '.claude/plans/2026-10-21-handoff-readers.md (Status, Container band layers)',
         'wrapper_code_path': WRAPPER_CODE_PATH,
         'totals': {
@@ -426,7 +427,7 @@ def build_census():
             'contentWidth_state': tally(blocks, lambda b: b['contentWidth']['state']),
             'padding_state': tally(blocks, lambda b: b['padding']['state']),
             'blocks_with_manifest_band_element': sum(1 for b in blocks if b['band']['manifest_band_element']),
-            'blocks_with_contentBandPadding_attr': sum(1 for b in blocks if b['has_contentBandPadding']),
+            'blocks_with_retired_band_attr': sum(1 for b in blocks if b['has_retired_band_attr']),
             'blocks_mechanically_fixable': sum(1 for b in blocks if b['contentWidth']['mechanical']),
             'padding_exempt_blocks': sum(1 for b in blocks if b['padding']['exempt']),
             'token_files_by_status': tally(files, lambda f: f['status']),
@@ -540,18 +541,18 @@ def print_survey(c):
              c['db_disk']['cbp_db_vs_disk'], c['db_disk']['db_available']))
     print('contentWidth manifest state:', t['contentWidth_state'])
     print('padding manifest state    :', t['padding_state'], '(exempt: %d)' % t['padding_exempt_blocks'])
-    print('manifest band element     : %d of %d; mechanically fixable: %d; contentBandPadding attr: %d'
+    print('manifest band element     : %d of %d; mechanically fixable: %d; retired band attr: %d'
           % (t['blocks_with_manifest_band_element'], t['blocks_with_contentWidth'],
-             t['blocks_mechanically_fixable'], t['blocks_with_contentBandPadding_attr']))
+             t['blocks_mechanically_fixable'], t['blocks_with_retired_band_attr']))
     print('token files by status     :', t['token_files_by_status'])
     print('target files by mechanism :', t['token_files_target_by_mechanism'])
     print('unrecognised: %d   refused: %d' % (t['unrecognised'], t['refused']))
     print('')
-    print('%-24s %-8s %-22s %-14s %-5s %s' % ('block', 'kind', 'width', 'padding', 'cbp', 'band element'))
+    print('%-24s %-8s %-22s %-14s %-5s %s' % ('block', 'kind', 'width', 'padding', 'retired', 'band element'))
     for b in c['blocks']:
         print('%-24s %-8s %-22s %-14s %-5s %s' % (
             b['block'], b['kind'] or '-', b['contentWidth']['state'], b['padding']['state'],
-            'yes' if b['has_contentBandPadding'] else 'no', b['band']['manifest_band_element'] or '-'))
+            'yes' if b['has_retired_band_attr'] else 'no', b['band']['manifest_band_element'] or '-'))
     print('')
     for mech, w in c['worklist_by_mechanism'].items():
         print('worklist %-18s %2d file(s), %3d mention(s)' % (mech, w['files'], w['mentions']))
@@ -600,7 +601,7 @@ def write_baseline(c):
         comp[grp] = comp.get(grp, 0) + 1
     doc = {
         '_note': ('Ratcheted ceiling for check-container-band-layers.py --check --ratchet. Entries are '
-                  'content keys with a count (a file key counts its contentBandPadding mentions). The ceiling '
+                  'content keys with a count (a file key counts its contentBandPadding and contentBandMargin mentions). The ceiling '
                   'only moves down: lower it with --write-baseline after a drop; raising it is refused. '
                   'Exit condition: empty, then promote the gate to binary --check.'),
         'ceiling': len(live),
@@ -700,6 +701,15 @@ def self_test():
           zone_of('theme/sgs-theme/patterns/x.php') == 'theme-content'
           and zone_of('sites/acme/build/trees/home.json') == 'saved-trees'
           and zone_of('somewhere/else.php') is None)
+
+    # Both retired tokens are counted by the corpus walk and flagged on a manifest.
+    check('token: contentBandMargin is a retired token like contentBandPadding',
+          'contentBandMargin' in TOKENS and 'contentBandPadding' in TOKENS)
+    check('token: the corpus needle matches each retired token and nothing else',
+          len(TOKEN_RE.findall(b'contentBandMargin x contentBandPadding y contentBandMarginTop z contentMargin')) == 3)
+    check('token: a sweep file naming contentBandMargin is exempt, a wrapper naming it is not',
+          exempt_reason('plugins/sgs-blocks/includes/class-sgs-band-padding-folder.php') is not None
+          and exempt_reason('plugins/sgs-blocks/includes/class-sgs-container-wrapper.php') is None)
 
     # Atomic write leaves no .tmp behind and round-trips bytes.
     with tempfile.TemporaryDirectory() as d:

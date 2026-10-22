@@ -11,15 +11,14 @@ describe( 'hasContentBand', () => {
 		expect( hasContentBand( { contentWidth: { desktop: '900px' } } ) ).toBe( true );
 	} );
 
-	it( 'is false for a full-bleed container with no padding or band margin', () => {
+	it( 'is false for a full-bleed container with no padding', () => {
 		expect( hasContentBand( { contentWidth: { desktop: 'full' } } ) ).toBe( false );
 		expect( hasContentBand( { contentWidth: { desktop: '' }, padding: { desktop: {} } } ) ).toBe( false );
 		expect( hasContentBand( {} ) ).toBe( false );
 	} );
 
-	it( 'is true for a full-bleed container that sets a padding or band margin side', () => {
+	it( 'is true for a full-bleed container that sets a padding side', () => {
 		expect( hasContentBand( { contentWidth: { desktop: 'full' }, padding: { desktop: { top: '8px' } } } ) ).toBe( true );
-		expect( hasContentBand( { contentWidth: { desktop: 'full' }, contentBandMargin: { desktop: { left: '0' } } } ) ).toBe( true );
 	} );
 } );
 
