@@ -1,0 +1,19 @@
+[
+ { "file": "lib/read-logic-statics.mjs", "find": "add( entryOf( k, 'static', () => c[ k ] ) );", "replace": "void k;", "why": "statics not read" },
+ { "file": "lib/read-logic-statics.mjs", "find": "d.get && add( entryOf( k, 'getter', () => logic[ k ] ) );", "replace": "void d;", "why": "getters not read" },
+ { "file": "lib/read-logic-statics.mjs", "find": "add( entryOf( k, 'field', () => logic[ k ] ) );", "replace": "void k;", "why": "instance fields not read" },
+ { "file": "lib/read-logic-statics.mjs", "find": "[ 'state', 'props' ].includes( n ) && ! n.startsWith( '__' )", "replace": "true", "why": "the runtime's state and props read as data of the draft" },
+ { "file": "lib/read-logic-statics.mjs", "find": "\t\t\tst.dropped.push( at );\n\t\t\treturn undefined;", "replace": "\t\t\treturn String( v );", "why": "a function kept in the value as text, not dropped and named" },
+ { "file": "lib/read-logic-statics.mjs", "find": "functions.push( k );", "replace": "void k;", "why": "static methods not named" },
+ { "file": "lib/read-logic-statics.mjs", "find": "names.some( ( k ) => ! /^[A-Za-z_$][\\w$]*$/.test( k ) )", "replace": "false", "why": "a prop variant or selector read as a state key" },
+ { "file": "lib/read-logic-statics.mjs", "find": "if ( got.component !== el.component ) {", "replace": "if ( false ) {", "why": "a state of one component recorded against another's holes" },
+ { "file": "lib/read-logic-statics.mjs", "find": "|| /<[^<>]+>|…|#{2,}/.test( JSON.stringify( keys ) )", "replace": "", "why": "a placeholder value set as a state" },
+ { "file": "lib/read-logic-statics.mjs", "find": "if ( ! names.length || ! s.dc ) {", "replace": "if ( ! s.dc ) {", "why": "the resting state read as a state job" },
+ { "file": "lib/read-logic-statics.mjs", "find": "JSON.stringify( a.v ) === JSON.stringify( r?.v )", "replace": "false", "why": "a state value equal to resting recorded" },
+ { "file": "lib/read-logic-statics.mjs", "find": "await restoreDraftState( page, SLOT );", "replace": "void SLOT;", "why": "the state not put back after a read" },
+ { "file": "lib/read-logic-statics.mjs", "find": "const reached = await setDraftState( page, { component: job.component, keys: job.keys } ).catch( () => 0 );", "replace": "const reached = 1;", "why": "the state keys never applied" },
+ { "file": "lib/read-logic-statics.mjs", "find": "Object.values( per ).forEach( ( a ) => note( a.v, `hole ${ key } ${ id } in ${ job }` ) );", "replace": "void per;", "why": "paths in a state's hole values not collected" },
+ { "file": "lib/read-assets.mjs", "find": "files[ p ] ? scriptNamed.add( p ) : missing.push( { path: p, by, via: 'logic' } );", "replace": "void by;", "why": "a logic-built asset path not marked used" },
+ { "file": "lib/fact-record.mjs", "find": "logic: { statics: logic.statics || {} }, ", "replace": "", "why": "statics dropped before the record" },
+ { "file": "lib/fact-record.mjs", "find": "...( logic.holesByState?.[ key ] ? { holesByState: logic.holesByState[ key ] } : {} ), ", "replace": "", "why": "per-state hole values dropped before the record" }
+]

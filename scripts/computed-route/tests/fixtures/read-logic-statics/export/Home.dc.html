@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<main style="padding:8px">
+  <img src="{{ img }}" alt="">
+  <h1>{{ title }}</h1>
+  <p>{{ same }}</p>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static CATALOGUE = [ { name: 'Rice', onPick: () => {} }, { name: 'Lentils' }, { name: 'Flour' } ];
+  static helper() { return 1; }
+
+  state = { tab: 'one' };
+  schema = { fields: [ { id: 'topic', chips: [ 'Pricing', 'Samples' ] } ] };
+
+  get menu() {
+    return [ 'Home', 'About' ];
+  }
+
+  get tabNow() {
+    return [ this.state.tab ];
+  }
+
+  renderVals() {
+    return {
+      img: './assets/about-hero-' + this.state.tab + '.svg',
+      title: this.state.tab === 'one' ? 'First' : 'Second',
+      same: 'Same',
+    };
+  }
+}
+</script>
+</body>
+</html>

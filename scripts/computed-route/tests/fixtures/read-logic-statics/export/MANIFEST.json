@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-22",
+  "project": "Read logic statics fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Home.dc.html",
+      "bytes": 936,
+      "sha256": "a868d0c4269f03b8fe5a0ee487c136614501e1cd8556fa4a7ef228728b2f547e"
+    },
+    {
+      "path": "assets/about-hero-one.svg",
+      "bytes": 95,
+      "sha256": "b2a678d444331d351836765032dd40b1300bc1078751a08c53cf8d9a84d2f7a2"
+    },
+    {
+      "path": "assets/about-hero-three.svg",
+      "bytes": 95,
+      "sha256": "b2a678d444331d351836765032dd40b1300bc1078751a08c53cf8d9a84d2f7a2"
+    },
+    {
+      "path": "assets/about-hero-two.svg",
+      "bytes": 95,
+      "sha256": "b2a678d444331d351836765032dd40b1300bc1078751a08c53cf8d9a84d2f7a2"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    },
+    {
+      "path": "surfaces.json",
+      "bytes": 700,
+      "sha256": "7b9eadcbdcf3b46628cf8bfa1fae9c2aed2f472345b7b94ce91979ad99bf3d01"
+    }
+  ]
+}
