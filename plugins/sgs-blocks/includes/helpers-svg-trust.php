@@ -52,12 +52,16 @@ if ( ! function_exists( 'sgs_svg_trusted_prepare' ) ) {
 		}
 		$seen = array();
 		$svg  = (string) preg_replace_callback(
-			'#<script\b[^>]*(?<!/)>(.*?)</script\s*>#is',
+			'#(<!--.*?-->|<!\[CDATA\[.*?\]\]>)|<script\b[^>]*(?<!/)>((?:<!\[CDATA\[.*?\]\]>|.)*?)</script\s*>#is',
 			static function ( $m ) use ( &$seen ) {
-				if ( isset( $seen[ $m[1] ] ) ) {
+				// A comment or CDATA section outside a script is kept as written; <script> text inside one is not an element.
+				if ( '' !== $m[1] ) {
+					return $m[0];
+				}
+				if ( isset( $seen[ $m[2] ] ) ) {
 					return '';
 				}
-				$seen[ $m[1] ] = true;
+				$seen[ $m[2] ] = true;
 				return $m[0];
 			},
 			$raw

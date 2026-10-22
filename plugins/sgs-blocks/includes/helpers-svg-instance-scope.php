@@ -7,6 +7,8 @@
  * sgs_svg_scope_instance() gives the root <svg> a unique id, prefixes every id in the file with it (rewriting each
  * url(#id), href="#id", begin/end "id.event" and aria id list to match), renames the file's @keyframes, and limits
  * every selector in its <style> to the root's subtree with `:where(#root)`, so each rule keeps its own specificity.
+ * A file holding a <script> keeps its ids and id references untouched (its script looks elements up by id); only its
+ * <style> is contained.
  *
  * The <style> CSS is read the way the browser's tokenizer reads it (strings, escapes, comments and nested brackets),
  * so a brace inside a string, after a backslash or inside a comment never ends a rule. Only qualified rules, @media,
@@ -45,8 +47,15 @@ if ( ! function_exists( 'sgs_svg_scope_instance' ) ) {
 		$root  = $doc->documentElement;
 		$xpath = new DOMXPath( $doc );
 
+		// A file with a <script> keeps every id and id reference as written, so the script can still find its elements;
+		// its <style> is contained by the root's own id (or the instance id when the root has none).
+		$scripted = $doc->getElementsByTagName( 'script' )->length > 0;
+		$root_id  = (string) $root->getAttribute( 'id' );
+		if ( $scripted && 1 === preg_match( '/^[A-Za-z_][\w-]*$/', $root_id ) ) {
+			$scope = $root_id;
+		}
 		$ids = array();
-		foreach ( $xpath->query( '//*[@id]' ) as $element ) {
+		foreach ( $scripted ? array() : $xpath->query( '//*[@id]' ) as $element ) {
 			$old         = (string) $element->getAttribute( 'id' );
 			$ids[ $old ] = $element->isSameNode( $root ) ? $scope : $scope . '-' . $old;
 		}

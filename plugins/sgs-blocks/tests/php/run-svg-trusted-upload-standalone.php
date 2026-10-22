@@ -157,7 +157,7 @@ $GLOBALS['t']['caps'][1] = false;
 $demoted_inline = sgs_svg_inline_attachment( 9 );
 ok( 0 === strpos( $demoted_inline, '<svg' ) && false === stripos( $demoted_inline, '<script' ), 'a demoted uploader\'s attachment prints sanitised', $demoted_inline );
 
-// (h) the scoper leaves a script's text byte-identical and scopes the rest.
+// (h) the scoper leaves a script's text byte-identical, and a scripted file keeps its ids.
 $code   = 'var a=document.getElementById("a"); if(a&&1<2){ a.setAttribute("fill","url(#g)"); }';
 $inline = sgs_svg_trusted_inline_markup( $svg( '<defs><linearGradient id="g"><stop offset="0"/></linearGradient></defs><script><![CDATA[' . $code . ']]></script><path id="a" d="M0 0" fill="url(#g)"/>' ) );
 $scoped = sgs_svg_scope_instance( $inline, 'inst1' );
@@ -165,7 +165,35 @@ $doc    = new DOMDocument();
 $doc->loadXML( $scoped );
 $script = $doc->getElementsByTagName( 'script' )->item( 0 );
 ok( null !== $script && $script->textContent === $code, '(h) the scoper leaves a script\'s text byte-identical', $scoped );
-ok( false !== strpos( $scoped, 'id="inst1-g"' ) && false !== strpos( $scoped, 'fill="url(#inst1-g)"' ) && false !== strpos( $scoped, 'id="inst1-a"' ), '(h) the SVG\'s own ids and url(#) references are scoped consistently', $scoped );
+ok( false !== strpos( $scoped, 'id="g"' ) && false !== strpos( $scoped, 'fill="url(#g)"' ) && false !== strpos( $scoped, 'id="a"' ) && false !== strpos( $scoped, 'id="inst1"' ), '(h) a scripted SVG keeps its own ids and url(#) references', $scoped );
+
+// (j) a scripted SVG keeps every id, and its <style> stays contained to the instance.
+$probe_code = "var p=document.getElementById('probe'); p.setAttribute('fill','url(#grad)');";
+$scripted_svg = $svg( '<style>path{fill:red} .a > rect{stroke:blue} #probe{opacity:1}</style><defs><linearGradient id="grad"><stop offset="0"/></linearGradient></defs><script>' . $probe_code . '</script><path id="probe" d="M0 0" fill="url(#grad)"/><use href="#probe"/><animate begin="probe.end" attributeName="opacity" dur="1s"/>' );
+$scoped_js = sgs_svg_scope_instance( $scripted_svg, 'inst2' );
+$jdoc      = new DOMDocument();
+$jdoc->loadXML( $scoped_js );
+ok( false !== strpos( $scoped_js, 'id="probe"' ) && false !== strpos( $scoped_js, 'id="grad"' ) && false !== strpos( $scoped_js, 'fill="url(#grad)"' ) && false !== strpos( $scoped_js, 'href="#probe"' ) && false !== strpos( $scoped_js, 'begin="probe.end"' ), '(j) a scripted SVG keeps every id and id reference as written', $scoped_js );
+ok( $jdoc->getElementsByTagName( 'script' )->item( 0 )->textContent === $probe_code && false !== strpos( $scoped_js, "getElementById('probe')" ), '(j) the scripted SVG\'s script text is unchanged' );
+$jstyle = $jdoc->getElementsByTagName( 'style' )->item( 0 );
+ok( null !== $jstyle && false !== strpos( $jstyle->textContent, ':where(#inst2) path{fill:red}' ) && false !== strpos( $jstyle->textContent, ':where(#inst2) .a > rect{stroke:blue}' ), '(j) the scripted SVG\'s element and class selectors are contained to the instance', $scoped_js );
+ok( null !== $jstyle && false !== strpos( $jstyle->textContent, ':where(#inst2) #probe{opacity:1}' ), '(j) an id selector in the scripted SVG\'s <style> stays unrenamed and contained', $scoped_js );
+$rooted = sgs_svg_scope_instance( str_replace( '<style>', '<style>svg{fill:green}', str_replace( 'viewBox', 'id="own" viewBox', $scripted_svg ) ), 'inst3' );
+ok( false !== strpos( $rooted, 'id="own"' ) && false !== strpos( $rooted, 'svg:where(#own){fill:green}' ) && false === strpos( $rooted, 'inst3' ), '(j) a scripted root that has its own id keeps it and is the containment root', $rooted );
+
+// (k) a script-free SVG is scoped exactly as the scoper did before scripts were handled (output captured from the scoper before this change).
+$k_in  = <<<'KIN'
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 10 10" aria-labelledby="t"><title id="t">T</title><style>@keyframes spin{from{opacity:0}to{opacity:1}} .sun > path{animation:spin 2s;fill:url(#g)} #a{opacity:1} svg > g{stroke:red}</style><defs><linearGradient id="g"><stop offset="0"/></linearGradient></defs><g class="sun"><path id="a" d="M0 0" fill="url(#g)"><animate attributeName="opacity" begin="b.end" dur="1s"/></path><use xlink:href="#a" href="#a"/><rect id="b" width="1" height="1"/></g></svg>
+KIN;
+$k_out = <<<'KOUT'
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 10 10" aria-labelledby="inst1-t" id="inst1"><title id="inst1-t">T</title><style>@keyframes inst1-spin{from{opacity:0}to{opacity:1}}:where(#inst1) .sun &gt; path{animation:inst1-spin 2s;fill:url(#inst1-g)}:where(#inst1) #inst1-a{opacity:1}svg:where(#inst1) &gt; g{stroke:red}</style><defs><linearGradient id="inst1-g"><stop offset="0"/></linearGradient></defs><g class="sun"><path id="inst1-a" d="M0 0" fill="url(#inst1-g)"><animate attributeName="opacity" begin="inst1-b.end" dur="1s"/></path><use xlink:href="#a" href="#inst1-a"/><rect id="inst1-b" width="1" height="1"/></g></svg>
+KOUT;
+ok( sgs_svg_scope_instance( $k_in, 'inst1' ) === $k_out, '(k) a script-free SVG is scoped byte-identically to the earlier scoper output', sgs_svg_scope_instance( $k_in, 'inst1' ) );
+
+// Duplicate-script removal ignores <script> text inside a comment or CDATA section.
+$cd_in = $svg( '<!-- <script>x()</script> --><script>x()</script><style><![CDATA[ /* <script>x()</script> */ ]]></style><script>x()</script><g><![CDATA[<script>x()</script>]]></g>' );
+$cd    = sgs_svg_trusted_prepare( $cd_in );
+ok( '' === $cd['error'] && 1 === substr_count( $cd['svg'], '<!-- <script>x()</script> -->' ) && 1 === substr_count( $cd['svg'], '/* <script>x()</script> */' ) && 1 === substr_count( $cd['svg'], '<![CDATA[<script>x()</script>]]>' ) && 1 === preg_match_all( '#<script>x\(\)</script>#', (string) preg_replace( '#<!--.*?-->|<!\[CDATA\[.*?\]\]>#s', '', $cd['svg'] ) ), 'dedupe leaves comment and CDATA text alone and removes only the duplicate element', $cd['svg'] . $cd['error'] );
 
 // (i) the .htaccess writer.
 $GLOBALS['t']['basedir'] = $dir;
