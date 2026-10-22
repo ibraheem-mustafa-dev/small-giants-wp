@@ -34,6 +34,7 @@ import { currentItemGroups } from './lib/fill-current-item.mjs';
 import { widthGateWrites } from './lib/fill-width-gate.mjs';
 import { addDefectLooks } from './lib/fill-state-defect.mjs';
 import { presetWrites } from './lib/fill-preset.mjs';
+import { formWrites, formSources } from './lib/fill-form.mjs';
 import { motionDb } from './lib/motion-db.mjs';
 import { loadMotionSchema } from './lib/motion-schema.mjs';
 import { sweepSteps } from './lib/fill-values.mjs';
@@ -76,14 +77,14 @@ function animationInventory( buildDir, draftIndex, log ) {
 	const file = path.join( buildDir, 'intake', 'intake.json' );
 	if ( ! fs.existsSync( file ) ) {
 		log( `no ${ path.relative( REPO, file ) }: motion is not written` );
-		return { records: [], rootComponent: null, draftDefects: [] };
+		return { records: [], rootComponent: null, draftDefects: [], flags: [] };
 	}
 	const intake = JSON.parse( fs.readFileSync( file, 'utf8' ) );
 	assertCurrent( intake, path.join( buildDir, '..', 'handoff' ), { label: path.relative( REPO, file ) } );
 	const inv = intake.inventory?.animations || {};
 	const drafts = inv.drafts || [];
 	const entry = drafts.find( ( d ) => draftIndex && d.file === path.basename( draftIndex ) ) || drafts[ 0 ];
-	return { records: inv.records || [], rootComponent: entry?.dc ?? null, draftDefects: intake.draftDefects || [] };
+	return { records: inv.records || [], rootComponent: entry?.dc ?? null, draftDefects: intake.draftDefects || [], flags: intake.flags || [] };
 }
 
 // Runs Fill and writes its outputs. o: { client, surface, skeleton (a file), draftUrl | draftDir (+ draftIndex), liveUrl,
@@ -181,6 +182,11 @@ export async function fillSurface( o ) {
 		const presets = presetWrites( { nodes, flat, refOf, reads, rawSnapshot, snapshot, writes: result.writes, db } );
 		result.writes = presets.writes;
 		result.notes.push( ...presets.notes );
+		// FR-48-57: each form field's settings from the draft's control and logic (lib/fill-form.mjs).
+		const forms = formWrites( { nodes, flat, refOf, reads, facts, flags: intakeParts.flags, db, sources: formSources( o.draftDir, facts ) } );
+		result.writes.push( ...forms.writes );
+		result.unmapped.push( ...forms.unmapped );
+		result.notes.push( ...forms.notes );
 		const patchFile = states.patchEntries.length ? 'theme-snapshot.patch.json' : null;
 		result.notes.push( ...states.held.map( ( h ) => `${ h.node } (${ h.slot }) ${ h.prop } ${ h.state }: ${ h.reason }` ) );
 		// Motion (Spec 48 FR-48-78): the draft's motion records from intake's re-derived inventory, written as each

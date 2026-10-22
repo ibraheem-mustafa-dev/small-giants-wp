@@ -425,11 +425,11 @@
 			"note": "role=\"cell\": structure or landmark semantics; SGS blocks render their own ARIA"
 		},
 		"aria-role:checkbox": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "behaviour recognisers",
-			"note": "role=\"checkbox\": an interactive widget; SGS blocks render their own ARIA, the draft's role is read for intent"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "role=\"checkbox\" on a button: read as the field's ticked start (aria-checked) and written as the consent field's defaultChecked; the block draws its own native checkbox"
 		},
 		"aria-role:code": {
 			"recognise": null,
@@ -9533,11 +9533,11 @@
 			"note": "<button popovertargetaction>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:button.type": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<button type>: form; no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "type=\"submit\" on a button written as sgs/button isSubmit; type=\"button\" is the block's own default"
 		},
 		"html-attr:button.value": {
 			"recognise": null,
@@ -10653,11 +10653,11 @@
 			"note": "<img width>: a presentational attribute the browser turns into aspect-ratio, width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:input.accept": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<input accept>: form; no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "accept written as the file field's allowedTypes"
 		},
 		"html-attr:input.align": {
 			"recognise": null,
@@ -10681,11 +10681,11 @@
 			"note": "<input alt>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:input.autocomplete": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<input autocomplete>: form; no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "autocomplete written as the field's autocomplete (Spec 04 FR-4-6)"
 		},
 		"html-attr:input.border": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -10847,11 +10847,11 @@
 			"note": "<input pattern>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:input.placeholder": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<input placeholder>: form; no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "placeholder written as the field's placeholder"
 		},
 		"html-attr:input.popovertarget": {
 			"recognise": null,
@@ -10875,11 +10875,11 @@
 			"note": "<input readonly>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:input.required": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<input required>: form; no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "required is the skeleton's field content (required); the write and its readback are in this module"
 		},
 		"html-attr:input.size": {
 			"recognise": null,
@@ -10924,11 +10924,11 @@
 			}
 		},
 		"html-attr:input.value": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<input value>: form; no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "a value written as the field's defaultValue, a checked input as defaultChecked (Spec 04 FR-4-8)"
 		},
 		"html-attr:input.vspace": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -11542,11 +11542,11 @@
 			"note": "<option selected>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:option.value": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<option value>: form; no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "a select's options written as the field's options (value and label); the empty option is the placeholder"
 		},
 		"html-attr:output.for": {
 			"recognise": null,
@@ -11757,18 +11757,18 @@
 			"note": "<select multiple>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:select.name": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<select name>: form; no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "a select's name or id matched to a link parameter and written as valueFromParam (Spec 04 FR-4-10)"
 		},
 		"html-attr:select.required": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<select required>: form; no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "required is the skeleton's field content (required)"
 		},
 		"html-attr:select.size": {
 			"recognise": null,
@@ -12171,11 +12171,11 @@
 			"note": "<textarea form>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:textarea.maxlength": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<textarea maxlength>: form; no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "maxlength (or the draft's n / max counter) written as maxLength with showCounter (Spec 04 FR-4-5)"
 		},
 		"html-attr:textarea.minlength": {
 			"recognise": null,
@@ -12192,11 +12192,11 @@
 			"note": "<textarea name>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:textarea.placeholder": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<textarea placeholder>: form; no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "placeholder written as the field's placeholder"
 		},
 		"html-attr:textarea.readonly": {
 			"recognise": null,
@@ -12206,18 +12206,18 @@
 			"note": "<textarea readonly>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:textarea.required": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<textarea required>: form; no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "required is the skeleton's field content (required)"
 		},
 		"html-attr:textarea.rows": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<textarea rows>: form; no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "rows written as the textarea field's rows"
 		},
 		"html-attr:textarea.wrap": {
 			"recognise": null,
@@ -12756,11 +12756,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:button": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "form element: no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "a draft button: submit type written as isSubmit; a choice chip is a tile of the tiles field"
 		},
 		"html:canvas": {
 			"recognise": null,
@@ -12954,11 +12954,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:form": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "form element: no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "the form block's savedProgress, each step's label and the review step's intro and Edit label, from the draft's logic"
 		},
 		"html:frame": {
 			"excluded": {
@@ -13070,11 +13070,11 @@
 			"note": "media element: Fill writes the block's image URL and attachment id from the media map lib/media-upload.mjs wrote (tests/fill-media.test.mjs); the check that the painted image is the draft's asset (lib/fill-media.mjs::paintedImageCheck) is built and not yet called from the live check"
 		},
 		"html:input": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "form element: no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "a form control is the field block the skeleton proposed; its settings are written here"
 		},
 		"html:ins": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -13103,11 +13103,11 @@
 			}
 		},
 		"html:label": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "form element: no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "a label inside the box is floatingLabelPosition inside, one outside is floatingLabel off (Spec 04 FR-4-4); its words are the skeleton's label"
 		},
 		"html:legend": {
 			"recognise": null,
@@ -13263,11 +13263,11 @@
 			"note": "form element: no form-field writer (FR-48-48)"
 		},
 		"html:option": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "form element: no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "an option is an entry of the select field's options"
 		},
 		"html:output": {
 			"recognise": null,
@@ -13391,11 +13391,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:select": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "form element: no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "a select is the select field block; its options, default and placeholder are written here"
 		},
 		"html:shadow": {
 			"excluded": {
@@ -13511,11 +13511,11 @@
 			}
 		},
 		"html:textarea": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "form element: no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "a textarea is the textarea field block; its settings are written here"
 		},
 		"html:tfoot": {
 			"recognise": null,
@@ -13617,11 +13617,11 @@
 			"note": "<input type=\"button\">: no form-field writer (FR-48-48)"
 		},
 		"input-type:checkbox": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<input type=\"checkbox\">: no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "a checkbox is the consent field; its ticked start is written as defaultChecked"
 		},
 		"input-type:color": {
 			"recognise": null,
@@ -13645,18 +13645,18 @@
 			"note": "<input type=\"datetime-local\">: no form-field writer (FR-48-48)"
 		},
 		"input-type:email": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<input type=\"email\">: no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "an email input is the email field block; its autocomplete, inputmode and placeholder are written here"
 		},
 		"input-type:file": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<input type=\"file\">: no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "a file input is the file field block; accept is written as allowedTypes"
 		},
 		"input-type:hidden": {
 			"recognise": null,
@@ -13729,18 +13729,18 @@
 			"note": "<input type=\"submit\">: no form-field writer (FR-48-48)"
 		},
 		"input-type:tel": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<input type=\"tel\">: no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "a tel input is the phone field block; its autocomplete, inputmode and placeholder are written here"
 		},
 		"input-type:text": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<input type=\"text\">: no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-form.mjs#formFieldWrites",
+			"check": "scripts/computed-route/lib/fill-form.mjs#formReadback",
+			"test": "scripts/computed-route/tests/u9-planted-draft.test.mjs",
+			"note": "a text input is the text field block; its autocomplete, maxLength, placeholder and value are written here"
 		},
 		"input-type:time": {
 			"recognise": null,

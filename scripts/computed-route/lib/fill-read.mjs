@@ -113,6 +113,49 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 		snap.rel = anchor?.getAttribute( 'rel' ) || null;
 		snap.id = el.getAttribute( 'id' ) || null;
 		snap.ariaLabel = el.getAttribute( 'aria-label' ) || anchor?.getAttribute( 'aria-label' ) || null;
+		// A form control, a checkbox button or a group of choice chips: what the field blocks hold as settings (lib/fill-form.mjs).
+		snap.form = ( () => {
+			const text = ( n ) => ( n.textContent || '' ).replace( /\s+/g, ' ' ).trim();
+			const control = el.matches( 'input, select, textarea' );
+			const toggle = el.matches( 'button[role="checkbox"], [role="checkbox"]' );
+			const pressed = [ ...el.querySelectorAll( 'button[aria-pressed], [role="radio"], [role="option"]' ) ];
+			if ( ! control && ! toggle && pressed.length < 2 && ! el.matches( 'button' ) ) {
+				return null;
+			}
+			const f = { tag: el.localName, type: el.getAttribute( 'type' ), role: el.getAttribute( 'role' ), id: el.getAttribute( 'id' ), name: el.getAttribute( 'name' ) };
+			for ( const a of [ 'autocomplete', 'inputmode', 'maxlength', 'placeholder', 'accept', 'rows', 'min', 'max', 'step' ] ) {
+				f[ a ] = el.getAttribute( a );
+			}
+			f.required = el.hasAttribute( 'required' ) || 'true' === el.getAttribute( 'aria-required' );
+			if ( control && 'select' !== el.localName ) {
+				f.value = el.value;
+				f.checked = !! el.checked;
+			} else if ( toggle ) {
+				f.checked = 'true' === el.getAttribute( 'aria-checked' );
+			}
+			if ( 'select' === el.localName ) {
+				f.options = [ ...el.options ].map( ( o ) => ( { value: o.value, label: text( o ), selected: o.selected && o.defaultSelected } ) );
+				f.value = el.value;
+			}
+			if ( pressed.length >= 2 ) {
+				f.chips = pressed.map( ( c ) => {
+					const leaves = [ ...c.querySelectorAll( '*' ) ].filter( ( x ) => ! x.children.length && text( x ) );
+					const label = leaves.length ? text( leaves[ 0 ] ) : text( c );
+					return { label, description: leaves.length > 1 ? text( leaves[ 1 ] ) : '', on: 'true' === c.getAttribute( 'aria-pressed' ) || 'true' === c.getAttribute( 'aria-checked' ) };
+				} );
+			}
+			// The label that names the control: inside its box (floating) or outside it (static); and a live "n / max" counter beside it.
+			if ( control ) {
+				const lab = ( el.labels && el.labels[ 0 ] ) || ( f.id ? document.querySelector( `label[for="${ CSS.escape( f.id ) }"]` ) : null );
+				const box = el.getBoundingClientRect();
+				const lr = lab ? lab.getBoundingClientRect() : null;
+				f.labelInside = lr ? lr.top >= box.top - 1 && lr.bottom <= box.bottom + 1 && lr.height > 0 : null;
+				const holder = el.parentElement && el.parentElement.querySelectorAll( 'input, select, textarea' ).length < 2 ? el.parentElement : null;
+				const m = holder ? /(?:^|[^\d.])\d+\s*\/\s*(\d+)(?!\d)/.exec( text( holder ) ) : null;
+				f.counterMax = m ? Number( m[ 1 ] ) : null;
+			}
+			return f;
+		} )();
 		// The one image this element is (an <img>, or a <figure> / <picture> holding exactly one) and its figcaption's words.
 		const imgs = el.matches( 'img' ) ? [ el ] : ( el.matches( 'figure, picture' ) ? [ ...el.querySelectorAll( 'img' ) ] : [] );
 		const cap = el.matches( 'figure' ) ? el.querySelector( 'figcaption' ) : null;
