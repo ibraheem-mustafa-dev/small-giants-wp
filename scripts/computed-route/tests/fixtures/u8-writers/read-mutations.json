@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/fill-read.mjs", "find": "const scroller = [ el, ...[ ...el.querySelectorAll( '*' ) ].slice( 0, 400 ) ].find(", "replace": "const scroller = [ el ].find(", "why": "a scroller inside the element is not found" },
+	{ "file": "lib/fill-read.mjs", "find": "ground = getComputedStyle( a ).backgroundColor;", "replace": "ground = 'rgba(0, 0, 0, 0)';", "why": "the ground the scroller sits on is not read" },
+	{ "file": "lib/fill-read.mjs", "find": "snap.scrollbar = { color: sc.scrollbarColor, width: sc.scrollbarWidth,", "replace": "snap.scrollbar = { color: 'auto', width: sc.scrollbarWidth,", "why": "the scroller's colours are not read" }
+]

@@ -24,11 +24,13 @@ iframe { display: block; width: 100%; height: 320px; border: 0; filter: grayscal
 <a class="link" href="/x"><svg class="ico" viewBox="0 0 24 24"><path d="M4 12h16"/><circle class="solid" cx="12" cy="12" r="3"/></svg></a>
 <iframe class="map" title="map" src="https://www.google.com/maps?q=1+High+Street&z=14&output=embed"></iframe>
 <div class="media"><div class="inner"><img alt="A loaf" src="${ SVG }" width="60" height="20"></div></div>
+<div class="drawer" style="background:#123428"><div class="scroll" style="overflow-y:auto;height:50px;scrollbar-width:thin;scrollbar-color:rgba(231,215,104,.75) transparent"><p style="height:200px">x</p></div></div>
 </body></html>`;
 const TREE = [ { name: 'sgs/container', draftRef: 'body', attributes: {}, innerBlocks: [
 	{ name: 'sgs/icon', draftRef: 'a.link', attributes: {} },
 	{ name: 'sgs/business-info', draftRef: 'iframe.map', attributes: { displayType: 'map' } },
 	{ name: 'sgs/media', draftRef: '.media', attributes: {}, innerBlocks: [] },
+	{ name: 'sgs/nav-drawer', draftRef: '.drawer', attributes: {} },
 ] } ];
 
 let served;
@@ -66,4 +68,12 @@ test( 'MUST FAIL: a nested image (inside wrapper elements) is read and found by 
 	const img = at( 1440, '3:' ).img;
 	assert.equal( img.alt, 'A loaf' );
 	assert.equal( nestedImage( { '': at( 1440, '3:' ) } ).alt, 'A loaf' );
+} );
+
+test( 'MUST FAIL: the page read carries the scroller\'s scrollbar colours, width and the ground it sits on (a descendant scroller is found)', () => {
+	const sb = at( 1440, '4:' ).scrollbar;
+	assert.equal( sb.color, 'rgba(231, 215, 104, 0.75) rgba(0, 0, 0, 0)' );
+	assert.equal( sb.width, 'thin' );
+	assert.equal( sb.ground, 'rgb(18, 52, 40)' );
+	assert.equal( at( 1440, '1:' ).scrollbar, null, 'an element with no scroller of its own colour reads none' );
 } );

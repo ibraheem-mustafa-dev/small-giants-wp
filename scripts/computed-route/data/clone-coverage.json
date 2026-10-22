@@ -5232,11 +5232,11 @@
 			"note": "-webkit-resizer: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
 		},
 		"css-pseudo-element:-webkit-scrollbar": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "-webkit-scrollbar: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-scrollbar.mjs#scrollbarTokens",
+			"check": "scripts/computed-route/lib/fill-scrollbar.mjs#scrollbarPatch",
+			"note": "a scroller's scrollbar: Fill reads the scroller's colours, width and ground and writes the colours to the theme's scrollbar tokens (theme-snapshot.patch.json), a colour the site already has as a note; the width is one value site-wide, so another width is a named row",
+			"test": "scripts/computed-route/tests/fill-u8-writers.test.mjs#a width other than auto"
 		},
 		"css-pseudo-element:-webkit-scrollbar-button": {
 			"recognise": null,
@@ -5253,18 +5253,18 @@
 			"note": "-webkit-scrollbar-corner: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
 		},
 		"css-pseudo-element:-webkit-scrollbar-thumb": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "-webkit-scrollbar-thumb: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-scrollbar.mjs#scrollbarTokens",
+			"check": "scripts/computed-route/lib/fill-scrollbar.mjs#scrollbarPatch",
+			"note": "the scrollbar thumb: written to the theme's scrollbar thumb token (thumbOnDark on a dark ground); the draft's ::-webkit-scrollbar-thumb paint is read beside its scrollbar-color and a difference is named",
+			"test": "scripts/computed-route/tests/fill-u8-writers.test.mjs#a draft thumb that differs"
 		},
 		"css-pseudo-element:-webkit-scrollbar-track": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "-webkit-scrollbar-track: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-scrollbar.mjs#scrollbarTokens",
+			"check": "scripts/computed-route/lib/fill-scrollbar.mjs#scrollbarPatch",
+			"note": "the scrollbar track: written to the theme's scrollbar track token; a transparent track is the theme's own",
+			"test": "scripts/computed-route/tests/fill-u8-writers.test.mjs#a colour the site"
 		},
 		"css-pseudo-element:-webkit-scrollbar-track-piece": {
 			"recognise": null,

@@ -120,6 +120,25 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 		// The one embedded frame this element is or holds (a map): its address, the filter it paints and its height.
 		const frames = el.matches( 'iframe' ) ? [ el ] : [ ...el.querySelectorAll( 'iframe' ) ];
 		snap.embed = 1 === frames.length ? { src: frames[ 0 ].getAttribute( 'src' ) ?? '', filter: getComputedStyle( frames[ 0 ] ).filter, h: frames[ 0 ].getBoundingClientRect().height } : null;
+		// The first scroller in this element (or inside it) that sets its own scrollbar colour: the colours it paints, the width
+		// it asks, the parts the draft declares beside them and the ground it sits on, for the theme's scrollbar tokens.
+		const scroller = [ el, ...[ ...el.querySelectorAll( '*' ) ].slice( 0, 400 ) ].find( ( n ) => 'auto' !== getComputedStyle( n ).scrollbarColor );
+		snap.scrollbar = null;
+		if ( scroller ) {
+			const sc = getComputedStyle( scroller );
+			let ground = 'rgba(0, 0, 0, 0)';
+			for ( let a = scroller; a && 'rgba(0, 0, 0, 0)' === ground; a = a.parentElement ) {
+				ground = getComputedStyle( a ).backgroundColor;
+			}
+			const part = ( name ) => {
+				try {
+					return getComputedStyle( scroller, `::-webkit-scrollbar-${ name }` ).backgroundColor || null;
+				} catch {
+					return null;
+				}
+			};
+			snap.scrollbar = { color: sc.scrollbarColor, width: sc.scrollbarWidth, ground, thumbPart: part( 'thumb' ), trackPart: part( 'track' ) };
+		}
 		// The one inline SVG this element is or holds, as XML with the paint the draft's CSS gave each drawing element written onto it
 		// (fill, stroke and stroke width, a colour equal to the SVG's own colour as currentColor), for the icon writer.
 		const svgs = el.matches( 'svg' ) ? [ el ] : [ ...el.querySelectorAll( 'svg' ) ];
