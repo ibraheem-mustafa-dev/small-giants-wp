@@ -3,22 +3,16 @@
  * SVG uploads to the media library — sanitised on the way in.
  *
  * WordPress refuses `.svg` uploads by default because an SVG is XML that can
- * carry script. SGS sites use SVGs as images (client logos, brand marks), so
- * the framework accepts them for any user who can upload files, and makes
- * every uploaded file safe before WordPress stores it:
- *
- *   1. The markup is run through wp_kses() with the framework's SVG allowlist
- *      (sgs_svg_kses_allowed_tags(), the same list inline SVGs use), minus
- *      <animate> (it can rewrite an attribute such as href at run time).
- *      Scripts, event handlers (on*), <foreignObject> and every HTML element
- *      are removed.
- *   2. Every href / xlink:href that is not an in-file fragment (`#id`) is
- *      removed, and so is any attribute whose value holds a url() that is not
- *      an in-file fragment, so a file can neither load nor link to anything
- *      outside itself (wp_kses() checks neither the protocol of xlink:href nor
- *      a url() inside a value).
- *   3. The XML prolog, DOCTYPE and any entity declarations are dropped
- *      (no external entities), and a file with no <svg> root left is refused.
+ * carry script. SGS sites use SVGs as images (client logos, brand marks, animated
+ * backgrounds), so the framework accepts them for any user who can upload files,
+ * and rebuilds every uploaded file through sgs_svg_sanitise_document()
+ * (helpers-svg-document.php) before WordPress stores it. The file keeps its own
+ * animation (SMIL and a <style> with @keyframes) and its mesh gradients; a file
+ * holding a construct the route's SVG screen refuses (an event attribute, an
+ * outside link or CSS url(), an animation that rewrites a link, @import,
+ * javascript:, <foreignObject>, an element outside the SVG namespace, entity
+ * declarations, malformed XML) is refused with the reason. <script>, comments and
+ * editor metadata are stripped.
  *
  * The same sanitising runs on both ways a file reaches the media library: an
  * upload (wp_handle_upload) and a sideload from a URL (wp_handle_sideload, used
@@ -33,118 +27,17 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-svg-document.php';
+
 if ( ! function_exists( 'sgs_svg_upload_sanitise' ) ) {
 	/**
 	 * Sanitise uploaded SVG markup.
 	 *
 	 * @param string $markup Raw file contents.
-	 * @return string Safe SVG markup, or '' when nothing usable remains.
+	 * @return string Safe SVG markup, or '' when the file is refused.
 	 */
 	function sgs_svg_upload_sanitise( string $markup ): string {
-		// No prolog, DOCTYPE, entity declarations or comments.
-		$markup = preg_replace( '/<\?xml.*?\?>/is', '', $markup );
-		$markup = preg_replace( '/<!DOCTYPE[^>\[]*(\[[^\]]*\])?\s*>/is', '', (string) $markup );
-		$markup = preg_replace( '/<!ENTITY.*?>/is', '', (string) $markup );
-		$markup = preg_replace( '/<!--.*?-->/s', '', (string) $markup );
-
-		$allowed = sgs_svg_kses_allowed_tags();
-		unset( $allowed['animate'] );
-		$markup = wp_kses( (string) $markup, $allowed );
-
-		// wp_kses() lowercases attribute names. Inline SVG survives that (the HTML
-		// parser is case-insensitive), but an uploaded file is parsed as XML, where
-		// `viewbox` is not `viewBox` and the image stops scaling. Restore the SVG
-		// specification's mixed-case attribute names.
-		$svg_case_map = array(
-			'attributename'       => 'attributeName',
-			'basefrequency'       => 'baseFrequency',
-			'baseprofile'         => 'baseProfile',
-			'calcmode'            => 'calcMode',
-			'clippathunits'       => 'clipPathUnits',
-			'diffuseconstant'     => 'diffuseConstant',
-			'edgemode'            => 'edgeMode',
-			'filterunits'         => 'filterUnits',
-			'glyphref'            => 'glyphRef',
-			'gradienttransform'   => 'gradientTransform',
-			'gradientunits'       => 'gradientUnits',
-			'kernelmatrix'        => 'kernelMatrix',
-			'kernelunitlength'    => 'kernelUnitLength',
-			'keypoints'           => 'keyPoints',
-			'keysplines'          => 'keySplines',
-			'keytimes'            => 'keyTimes',
-			'lengthadjust'        => 'lengthAdjust',
-			'limitingconeangle'   => 'limitingConeAngle',
-			'markerheight'        => 'markerHeight',
-			'markerunits'         => 'markerUnits',
-			'markerwidth'         => 'markerWidth',
-			'maskcontentunits'    => 'maskContentUnits',
-			'maskunits'           => 'maskUnits',
-			'numoctaves'          => 'numOctaves',
-			'pathlength'          => 'pathLength',
-			'patterncontentunits' => 'patternContentUnits',
-			'patterntransform'    => 'patternTransform',
-			'patternunits'        => 'patternUnits',
-			'pointsatx'           => 'pointsAtX',
-			'pointsaty'           => 'pointsAtY',
-			'pointsatz'           => 'pointsAtZ',
-			'preservealpha'       => 'preserveAlpha',
-			'preserveaspectratio' => 'preserveAspectRatio',
-			'primitiveunits'      => 'primitiveUnits',
-			'refx'                => 'refX',
-			'refy'                => 'refY',
-			'repeatcount'         => 'repeatCount',
-			'repeatdur'           => 'repeatDur',
-			'requiredextensions'  => 'requiredExtensions',
-			'requiredfeatures'    => 'requiredFeatures',
-			'specularconstant'    => 'specularConstant',
-			'specularexponent'    => 'specularExponent',
-			'spreadmethod'        => 'spreadMethod',
-			'startoffset'         => 'startOffset',
-			'stddeviation'        => 'stdDeviation',
-			'stitchtiles'         => 'stitchTiles',
-			'surfacescale'        => 'surfaceScale',
-			'systemlanguage'      => 'systemLanguage',
-			'tablevalues'         => 'tableValues',
-			'targetx'             => 'targetX',
-			'targety'             => 'targetY',
-			'textlength'          => 'textLength',
-			'viewbox'             => 'viewBox',
-			'xchannelselector'    => 'xChannelSelector',
-			'ychannelselector'    => 'yChannelSelector',
-			'zoomandpan'          => 'zoomAndPan',
-		);
-		$markup = preg_replace_callback(
-			'/(\s)(' . implode( '|', array_keys( $svg_case_map ) ) . ')(\s*=)/',
-			static function ( $match ) use ( $svg_case_map ) {
-				return $match[1] . $svg_case_map[ $match[2] ] . $match[3];
-			},
-			(string) $markup
-		);
-
-		// Only in-file references survive (#id): no external or javascript: link.
-		$markup = preg_replace_callback(
-			'/\s(xlink:href|href)\s*=\s*("([^"]*)"|\'([^\']*)\')/i',
-			static function ( $match ) {
-				$value = '' !== ( $match[3] ?? '' ) ? $match[3] : ( $match[4] ?? '' );
-				return 0 === strpos( trim( $value ), '#' ) ? $match[0] : '';
-			},
-			(string) $markup
-		);
-
-		// No url() reference to anything outside the file, in any attribute
-		// (fill, filter, mask, clip-path, style): an attribute holding a url()
-		// that is not an in-file fragment (#id) is removed.
-		$markup = preg_replace_callback(
-			'/\s[a-zA-Z:-]+\s*=\s*("([^"]*)"|\'([^\']*)\')/',
-			static function ( $match ) {
-				$value = '' !== ( $match[2] ?? '' ) ? $match[2] : ( $match[3] ?? '' );
-				return preg_match( '/url\(\s*[\'"]?\s*(?!#)/i', $value ) ? '' : $match[0];
-			},
-			(string) $markup
-		);
-
-		$markup = trim( (string) $markup );
-		return preg_match( '/^<svg\b/i', $markup ) ? $markup : '';
+		return sgs_svg_sanitise_document( $markup )['svg'];
 	}
 }
 
@@ -198,9 +91,11 @@ function sgs_svg_upload_prefilter( $file ) {
 	}
 	$path = (string) ( $file['tmp_name'] ?? '' );
 	$raw  = is_readable( $path ) ? (string) file_get_contents( $path ) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local upload tmp file.
-	$safe = sgs_svg_upload_sanitise( $raw );
+	$result = sgs_svg_sanitise_document( $raw );
+	$safe   = $result['svg'];
 	if ( '' === $safe ) {
-		$file['error'] = __( 'This SVG could not be made safe to upload.', 'sgs-blocks' );
+		/* translators: %s: why the file was refused, e.g. "holds a CSS @import". */
+		$file['error'] = sprintf( __( 'This SVG was not uploaded because it %s.', 'sgs-blocks' ), $result['error'] );
 		return $file;
 	}
 	file_put_contents( $path, $safe ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- rewriting the upload tmp file before WordPress moves it.

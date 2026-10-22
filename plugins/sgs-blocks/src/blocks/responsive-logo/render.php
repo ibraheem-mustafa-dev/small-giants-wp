@@ -7,17 +7,23 @@
  * desktop with static images for smaller breakpoints. A `lottie` layer on the
  * wrapper plays over the <picture>, which is its poster.
  *
- * SVG SECURITY NOTE: the draw layer's `asset` is a media library attachment ID.
- * The .svg file is fetched via get_attached_file() (a local disk path) and
- * sanitised with wp_kses() before inlining. Operators CANNOT paste raw SVG
- * markup into the block — the editor forces a media library upload.
+ * With `inlineSvg` on and an SVG desktop logo, the logo's own file is printed
+ * inline instead of the <img>, so its own animation plays and the block's custom
+ * CSS reaches its parts; a compact logo, when set, still swaps in below 1024px.
+ *
+ * SVG SECURITY NOTE: the draw layer's `asset` and the inline logo are media
+ * library attachment IDs. The .svg file is read from its local path and rebuilt
+ * through sgs_svg_sanitise_document() (includes/helpers-svg-document.php, the
+ * same sanitiser every upload passes) before inlining. Operators CANNOT paste
+ * raw SVG markup into the block — the editor forces a media library upload.
  *
  * SGS-BEM naming:
  *   .sgs-responsive-logo              — root wrapper
  *   .sgs-responsive-logo__link        — home link (when linkToHome = true)
  *   .sgs-responsive-logo__picture     — <picture> element
  *   .sgs-responsive-logo__image (+ --desktop) / --tablet / --mobile — img elements
- *   .sgs-responsive-logo__svg         — inline SVG wrapper (animation mode)
+ *   .sgs-responsive-logo__svg         — inline SVG wrapper (draw layer or inlineSvg)
+ *   .sgs-responsive-logo__svg--swaps  — the inline SVG hides below 1024px for a compact logo
  *   .sgs-responsive-logo--animate-draw / --animate-hover / --animate-scroll
  *
  * @var array    $attributes Block attributes.
@@ -89,6 +95,7 @@ $bg_colour_hover_gradient = isset( $attributes['backgroundColourHoverGradient'] 
 require_once dirname( __DIR__, 3 ) . '/includes/motion/class-sgs-motion-draw-asset.php';
 $draw_layer       = \SGS\Blocks\Motion\Sgs_Motion_Draw_Asset::find( $attributes['sgsMotion']['elements']['wrapper'] ?? null );
 $svg_animation_id = null !== $draw_layer ? $draw_layer['asset'] : 0;
+$inline_svg_on    = ! empty( $attributes['inlineSvg'] );
 
 // ── Dark-mode logo variant (U-17, design §3.1). ──
 $dark_logo_id  = isset( $attributes['darkLogoId'] ) ? absint( $attributes['darkLogoId'] ) : 0;
@@ -465,7 +472,7 @@ if ( $rl_has_max_height ) {
 			},
 		),
 	);
-	$scoped_css[] = sgs_responsive_css_rule( $rl_auto_tiers, $rl_auto_width, $sel . ',' . $sel . ' .sgs-responsive-logo__image--desktop' );
+	$scoped_css[] = sgs_responsive_css_rule( $rl_auto_tiers, $rl_auto_width, $sel . ',' . $sel . ' .sgs-responsive-logo__image--desktop,' . $sel . ' .sgs-responsive-logo__svg svg' );
 	$scoped_css[] = sgs_responsive_css_rule(
 		$rl_css_attributes,
 		array(
@@ -478,7 +485,7 @@ if ( $rl_has_max_height ) {
 				'mobile_attr'  => 'maxHeightMobile',
 			),
 		),
-		$sel . ' .sgs-responsive-logo__image--desktop,' . $sel . ' .sgs-responsive-logo__dark'
+		$sel . ' .sgs-responsive-logo__image--desktop,' . $sel . ' .sgs-responsive-logo__dark,' . $sel . ' .sgs-responsive-logo__svg svg'
 	);
 }
 
@@ -553,23 +560,32 @@ $sgs_rl_wrapper_args = array(
 );
 $wrapper_attributes = get_block_wrapper_attributes( $sgs_rl_wrapper_args );
 
-// ── SVG inline render (animation mode) ───────────────────────────────────────
+// ── SVG inline render (draw layer, or the inlineSvg setting) ─────────────────
 
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-svg-inline-attachment.php';
 $svg_html          = '';
 $has_svg_animation = $svg_animation_id > 0;
-
 if ( $has_svg_animation ) {
-	$svg_path = get_attached_file( $svg_animation_id );
-	if ( $svg_path && file_exists( $svg_path ) ) {
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local file, no network call.
-		$raw_svg = file_get_contents( $svg_path );
-		if ( $raw_svg ) {
-			// Sanitise the SVG with wp_kses using the extended SVG element schema.
-			// This allows all legitimate SVG drawing elements while stripping
-			// script, event handlers, and other XSS vectors.
-			$svg_html = wp_kses( $raw_svg, sgs_svg_kses_allowed_tags() );
-		}
-	}
+	$svg_html = sgs_svg_inline_attachment( $svg_animation_id );
+}
+
+// The inline logo carries the logo's accessible name as the <img> would (role="img" + aria-label), or is hidden
+// from assistive tech when the logo is decorative.
+$inline_logo_html = '';
+if ( ! $has_svg_animation && $inline_svg_on && $desktop_logo_id > 0 ) {
+	$inline_logo_html = sgs_svg_inline_root_attributes(
+		sgs_svg_inline_attachment( $desktop_logo_id ),
+		$logo_decorative
+			? array(
+				'aria-hidden' => 'true',
+				'focusable'   => 'false',
+			)
+			: array(
+				'role'       => 'img',
+				'aria-label' => $img_alt,
+				'focusable'  => 'false',
+			)
+	);
 }
 
 // ── Build inner markup ────────────────────────────────────────────────────────
@@ -590,7 +606,7 @@ if ( $has_svg_animation && $svg_html ) {
 	// The draw layer's attributes sit on the block root (the motion renderer prints them), and `fx-draw.js` searches
 	// that element's descendants for drawable shapes, so this wrapper span only holds the sanitised SVG.
 	echo '<span class="sgs-responsive-logo__svg" aria-hidden="true">';
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitised above via wp_kses.
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rebuilt through sgs_svg_sanitise_document().
 	echo $svg_html;
 	echo '</span>';
 
@@ -608,6 +624,24 @@ if ( $has_svg_animation && $svg_html ) {
 		absint( $width ),
 		$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
 	);
+} elseif ( '' !== $inline_logo_html ) {
+	// Inline logo: the SVG file itself at every width; a compact logo (mobile, else tablet slot) swaps in below 1024px.
+	$inline_compact_url = '' !== $mobile_url ? $mobile_url : $tablet_url;
+	printf( '<span class="sgs-responsive-logo__svg%s">', '' !== $inline_compact_url ? ' sgs-responsive-logo__svg--swaps' : '' );
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rebuilt through sgs_svg_sanitise_document(); added attributes escaped by sgs_svg_inline_root_attributes().
+	echo $inline_logo_html;
+	echo '</span>';
+	if ( '' !== $inline_compact_url ) {
+		printf(
+			'<picture class="sgs-responsive-logo__picture sgs-responsive-logo__picture--fallback">' .
+			'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%1$s" alt="%2$s" width="%3$d" loading="eager" decoding="async"%4$s>' .
+			'</picture>',
+			esc_url( $inline_compact_url ),
+			esc_attr( $img_alt ),
+			absint( $width ),
+			$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
+		);
+	}
 } else {
 	// Standard mode: the compact/alternate logo replaces the desktop logo per
 	// logoSwitchMode. mobile/tablet swap at fixed viewport tiers; custom swaps

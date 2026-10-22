@@ -1,0 +1,118 @@
+<?php
+/**
+ * Standalone test for the whole-file SVG sanitiser (helpers-svg-document.php) and the logo's inline option.
+ * Each refused case of scripts/computed-route/lib/svg-screen.mjs::svgProblem must be refused or stripped.
+ *
+ *   php plugins/sgs-blocks/tests/php/run-svg-document-standalone.php
+ *
+ * @package SGS\Blocks\Tests
+ */
+
+// phpcs:disable
+define( 'ABSPATH', sys_get_temp_dir() . DIRECTORY_SEPARATOR );
+function __( $s, $d = '' ) { return $s; }
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-svg-document.php';
+
+$pass = 0;
+$fail = 0;
+function ok( bool $c, string $label, string $detail = '' ): void {
+	global $pass, $fail;
+	$c ? ++$pass : ++$fail;
+	echo ( $c ? 'PASS  ' : 'FAIL  ' ) . $label . ( $c || '' === $detail ? '' : "  => $detail" ) . "\n";
+}
+const NS = 'xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"';
+$svg = static function ( string $inner ): string {
+	return '<svg ' . NS . ' viewBox="0 0 10 10">' . $inner . '</svg>';
+};
+// The end state never holds any refused construct.
+$clean = static function ( string $out ): bool {
+	return ! preg_match( '/javascript|@import|<script|foreignObject|\son[a-z]+=|attributeName="\s*(xlink:)?href|url\(\s*["\']?(?!#)/i', $out );
+};
+
+// ── MUST FAIL: every refused construct, plus case and encoding tricks ──
+$refused = array(
+	'javascript: in an attribute'            => $svg( '<path d="M0 0" class="javascript:x"/>' ),
+	'case and space trick JaVaScRiPt :'      => $svg( '<use href="JaVaScRiPt :alert(1)"/>' ),
+	'entity-encoded &#106;avascript:'        => $svg( '<use href="&#106;avascript:alert(1)"/>' ),
+	'tab inside java\tscript:'               => $svg( '<set attributeName="fill" to="java&#9;script:x"/>' ),
+	'CSS @import in <style>'                 => $svg( '<style>@import "https://evil.test/x.css";</style>' ),
+	'@import hidden by a CSS comment'        => $svg( '<style>@im/**/port url(#a);</style>' ),
+	'escaped @\69mport'                      => $svg( '<style>@\69mport "x.css";</style>' ),
+	'DOCTYPE with entity declarations'       => '<!DOCTYPE svg [<!ENTITY x "y">]>' . $svg( '<path d="M0 0"/>' ),
+	'element outside the SVG namespace'      => $svg( '<html:div xmlns:html="http://www.w3.org/1999/xhtml">x</html:div>' ),
+	'root with no namespace'                 => '<svg viewBox="0 0 1 1"><path d="M0 0"/></svg>',
+	'foreignObject'                          => $svg( '<foreignObject><p>x</p></foreignObject>' ),
+	'on… event attribute'                    => $svg( '<path d="M0 0" onclick="x()"/>' ),
+	'ONLOAD on the root'                     => '<svg ' . NS . ' ONLOAD="x()"></svg>',
+	'animate attributeName href'             => $svg( '<a><animate attributeName="href" values="#a;#b"/></a>' ),
+	'set attributeName " xlink:href"'        => $svg( '<a><set attributeName=" xlink:href" to="#b"/></a>' ),
+	'animate values javascript: on href'     => $svg( '<a><animate attributeName="href" values="javascript:alert(1)"/></a>' ),
+	'animation targeting an on… attribute'   => $svg( '<set attributeName="onclick" to="x()"/>' ),
+	'href to an outside URL'                 => $svg( '<image href="https://evil.test/a.png"/>' ),
+	'xlink:href to an outside URL'           => $svg( '<use xlink:href="//evil.test/s.svg#a"/>' ),
+	'data:image/svg+xml link'                => $svg( '<image href="data:image/svg+xml;base64,AAAA"/>' ),
+	'style attribute url() outside'          => $svg( '<path d="M0 0" style="fill:url( &quot;javascript:x&quot; )"/>' ),
+	'<style> url() outside'                  => $svg( '<style>.a{background:url(https://evil.test/x)}</style>' ),
+	'presentation attribute url() outside'   => $svg( '<path d="M0 0" fill="url(https://evil.test/x#g)"/>' ),
+	'escaped u\72l( in <style>'              => $svg( '<style>.a{fill:u\72l(https://evil.test/x)}</style>' ),
+	'not well-formed XML'                    => '<svg ' . NS . '><path d="M0 0"></svg>',
+	'undefined entity'                       => $svg( '<text>&nbsp;</text>' ),
+);
+foreach ( $refused as $label => $markup ) {
+	$r = sgs_svg_sanitise_document( $markup );
+	ok( '' === $r['svg'] || $clean( $r['svg'] ), "MUST FAIL: $label", $r['svg'] );
+	ok( '' === $r['svg'] && '' !== $r['error'], "MUST FAIL: $label is refused with a reason", $r['svg'] );
+}
+
+// ── Stripped, the file still uploads ──
+$r = sgs_svg_sanitise_document( '<?xml version="1.0"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' . $svg( '<!-- c --><script type="text/javascript">!function(){}()</script><sodipodi:namedview xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"/><path d="M0 0" inkscape:label="x" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"/>' ) );
+ok( '' !== $r['svg'] && false === stripos( $r['svg'], 'script' ) && false === strpos( $r['svg'], 'sodipodi' ) && false === strpos( $r['svg'], 'inkscape' ) && false === strpos( $r['svg'], '<!--' ), 'script, editor metadata, comments and a plain DOCTYPE are stripped', $r['svg'] . $r['error'] );
+
+// ── Positive: animation, style, fragment url and mesh gradient survive with camelCase ──
+$animated = $svg(
+	'<style type="text/css">@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}} .sun > path{animation:spin 9s linear infinite;fill:url(#g)}</style>'
+	. '<defs><linearGradient id="g" gradientUnits="userSpaceOnUse" xlink:href="#h"><stop offset="0" style="stop-color:#f00"/></linearGradient>'
+	. '<meshgradient id="m" x="0" y="0" gradientUnits="userSpaceOnUse"><meshrow><meshpatch><stop path="c 1,0 2,0 3,0" style="stop-color:#fff"/></meshpatch></meshrow></meshgradient></defs>'
+	. '<g class="sun" style="fill:url(#m)"><path d="M0 0" pathLength="1"><animate attributeName="opacity" values="0;1" dur="1s" repeatCount="indefinite" keySplines="0.4 0 0.2 1" calcMode="spline"/></path>'
+	. '<animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="30s" repeatCount="indefinite"/></g>'
+);
+$r   = sgs_svg_sanitise_document( $animated );
+$out = $r['svg'];
+ok( '' !== $out, 'an animated file is kept', $r['error'] );
+foreach ( array( 'viewBox="0 0 10 10"', '<animate attributeName="opacity"', 'repeatCount="indefinite"', 'keySplines=', 'calcMode="spline"', '<animateTransform', 'type="rotate"', '@keyframes spin', 'url(#g)', '<meshgradient', '<meshrow>', '<meshpatch>', 'path="c 1,0 2,0 3,0"', 'gradientUnits="userSpaceOnUse"', 'xlink:href="#h"', 'pathLength="1"', 'style="fill:url(#m)"', '.sun &gt; path' ) as $needle ) {
+	ok( false !== strpos( $out, $needle ), "kept: $needle", $out );
+}
+ok( '' !== sgs_svg_sanitise_document( $svg( '<image href="data:image/png;base64,AAAA"/>' ) )['svg'], 'a raster data:image href is kept' );
+
+// ── Render: the logo's inline option through the real render.php ──
+$dir  = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'sgs-svg-inline-' . getmypid();
+@mkdir( $dir );
+$file = $dir . DIRECTORY_SEPARATOR . 'logo.svg';
+file_put_contents( $file, $svg( '<script>x()</script><path id="sun" d="M0 0"><animate attributeName="opacity" values="0;1" dur="1s"/></path>' ) );
+$prepend = $dir . DIRECTORY_SEPARATOR . 'prepend.php';
+file_put_contents( $prepend, '<?php function get_attached_file( $id ) { return 7 === (int) $id ? ' . var_export( $file, true ) . ' : false; }'
+	. ' function wp_get_attachment_url( $id ) { return 7 === (int) $id ? "https://x.test/logo.svg" : ( 8 === (int) $id ? "https://x.test/square.png" : false ); }'
+	. ' function get_transient( $k ) { return false; } function set_transient( $k, $v, $e = 0 ) { return true; }'
+	. ' defined( "DAY_IN_SECONDS" ) || define( "DAY_IN_SECONDS", 86400 );' );
+$render = static function ( array $attrs ) use ( $prepend, $dir ): string {
+	$af = $dir . DIRECTORY_SEPARATOR . 'attrs.json';
+	file_put_contents( $af, json_encode( $attrs ) );
+	$cmd = escapeshellarg( PHP_BINARY ) . ' -d auto_prepend_file=' . escapeshellarg( $prepend ) . ' ' . escapeshellarg( dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php' ) . ' --slug sgs/responsive-logo --attrs-file ' . escapeshellarg( $af ) . ' 2>&1';
+	$json = json_decode( (string) shell_exec( $cmd ), true );
+	return is_array( $json ) && ! empty( $json['ok'] ) ? (string) $json['html'] : 'NOT RUN: ' . json_encode( $json );
+};
+$on = $render( array( 'logoId' => 7, 'inlineSvg' => true, 'alt' => 'Acme home' ) );
+ok( 1 === preg_match( '/<span class="sgs-responsive-logo__svg"><svg role="img" aria-label="Acme home" focusable="false" xmlns="http:\/\/www.w3.org\/2000\/svg"/', $on ), 'inline on: the SVG is printed with role="img" and the accessible name', $on );
+ok( false !== strpos( $on, '<animate attributeName="opacity"' ) && false === strpos( $on, '<script' ) && false === strpos( $on, '<img' ), 'inline on: sanitised, animation kept, no <img>', $on );
+ok( false !== strpos( $on, 'class="sgs-responsive-logo__link" href=' ), 'inline on: the home link still wraps the logo', $on );
+$swap = $render( array( 'logoId' => 7, 'logoIdMobile' => 8, 'inlineSvg' => true ) );
+ok( false !== strpos( $swap, 'sgs-responsive-logo__svg--swaps' ) && false !== strpos( $swap, 'src="https://x.test/square.png"' ), 'inline on with a compact logo: the compact logo swaps in below 1024px', $swap );
+$deco = $render( array( 'logoId' => 7, 'inlineSvg' => true, 'logoDecorative' => true ) );
+ok( false !== strpos( $deco, '<svg aria-hidden="true"' ) && false === strpos( $deco, 'role="img"' ), 'inline on, decorative: the SVG is hidden from assistive tech', $deco );
+$off = $render( array( 'logoId' => 7 ) );
+ok( false === strpos( $off, '<svg' ) && false !== strpos( $off, '<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="https://x.test/logo.svg"' ), 'negative control: inline off prints the <img> as before', $off );
+array_map( 'unlink', glob( $dir . DIRECTORY_SEPARATOR . '*' ) );
+@rmdir( $dir );
+
+echo "\nRESULT  $pass passed, $fail failed\n";
+exit( $fail > 0 ? 1 : 0 );
