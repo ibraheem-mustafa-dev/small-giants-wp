@@ -1973,11 +1973,11 @@
 			"note": "a {{ }} binding: the route reads what it renders, not the binding. readBinding routes each to the place it fills; Fill writes the text, styles and links it renders (fillSurface); a binding that renders unresolved is a draft defect (unresolvedBindingDefects). A handler, ref or loop list it fills is its own capability (construct:handler and construct:ref wait in behaviour recognisers), and so is a form attribute"
 		},
 		"construct:data-hook": {
-			"recognise": "construct:data-hook",
-			"write": null,
-			"check": null,
-			"wave": "behaviour recognisers",
-			"note": "read by the construct registry's reader; no writer or check yet"
+			"recognise": "scripts/computed-route/lib/motion-behaviours.mjs#recogniseBehaviour",
+			"write": "scripts/computed-route/lib/fill-behaviour.mjs#applySettings",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"test": "scripts/computed-route/tests/motion-settings.test.mjs",
+			"note": "a script that finds its elements by a data-* hook is recognised by what it does to them (lib/motion-behaviours.mjs: the effects by mechanism, the settings behaviours); a hook whose behaviour no recogniser expresses is raised as an unmapped row naming the mechanism (FR-48-80)"
 		},
 		"construct:dc-import": {
 			"recognise": "construct:dc-import",
@@ -1992,11 +1992,11 @@
 			"note": "a logic getter: read through its component's own reads and the template expressions that name it (readGetter; one nothing reads is reported as unused); its values reach the page through the bindings that use them, as construct:renderVals-key"
 		},
 		"construct:handler": {
-			"recognise": "construct:handler",
-			"write": null,
-			"check": null,
-			"wave": "behaviour recognisers",
-			"note": "read by the construct registry's reader; no writer or check yet"
+			"recognise": "scripts/computed-route/lib/motion-behaviours.mjs#recogniseBehaviour",
+			"write": "scripts/computed-route/lib/fill-behaviour.mjs#applySettings",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"test": "scripts/computed-route/tests/motion-settings.test.mjs",
+			"note": "an event handler is recognised by the behaviour it drives: a state-started entrance (the open and exit layers), a scroll-position write (the header settings), a press scroll (native); one no recogniser expresses is raised as an unmapped row (FR-48-80)"
 		},
 		"construct:helmet-font": {
 			"recognise": "construct:helmet-font",
@@ -2024,11 +2024,11 @@
 			"note": "a link by its address (readLink): anchors, contact links, bound, external and page addresses (a hash route is the permalink of its page map page) reach the link decisions; a head link (a font host or stylesheet) is the document's: stylesheets are read by the CSS readers, fonts are the snapshot's (construct:helmet-font, site and surfaces); javascript: and data: addresses are named as such"
 		},
 		"construct:observer": {
-			"recognise": "construct:observer",
-			"write": null,
-			"check": null,
-			"wave": "behaviour recognisers",
-			"note": "read by the construct registry's reader; no writer or check yet"
+			"recognise": "scripts/computed-route/lib/motion-behaviours.mjs#recogniseBehaviour",
+			"write": "scripts/computed-route/lib/fill-behaviour.mjs#applySettings",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"test": "scripts/computed-route/tests/motion-settings.test.mjs",
+			"note": "an observer the draft starts (scroll position, intersection) is recognised by the behaviour it writes: scroll-progress, parallax, the pinned timeline settings, the scrolled header; one no recogniser expresses is raised as an unmapped row (FR-48-80)"
 		},
 		"construct:ref": {
 			"excluded": {
@@ -2070,11 +2070,11 @@
 			"note": "a stamped template element: read by draft identity (lib/intake-construct-readers.mjs::readTemplateElement names it a block, its children's membership or part of the document); the skeleton inventory reads it on the render and proposes its block, pairing checks it"
 		},
 		"construct:timer": {
-			"recognise": "construct:timer",
-			"write": null,
-			"check": null,
-			"wave": "behaviour recognisers",
-			"note": "read by the construct registry's reader; no writer or check yet"
+			"recognise": "scripts/computed-route/lib/motion-behaviours.mjs#recogniseBehaviour",
+			"write": "scripts/computed-route/lib/fill-behaviour.mjs#applySettings",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"test": "scripts/computed-route/tests/motion-settings.test.mjs",
+			"note": "a timer the draft starts is recognised by the behaviour it drives: an interval that advances a slider is the testimonial slider's autoplay settings; a delay is the record's own delay; one no recogniser expresses is raised as an unmapped row (FR-48-80)"
 		},
 		"construct:transition": {
 			"recognise": "construct:transition",
@@ -10060,11 +10060,11 @@
 			}
 		},
 		"html-attr:global.data": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "behaviour recognisers",
-			"note": "data-* attributes: the census reads them as data hooks; no behaviour writer"
+			"recognise": "scripts/computed-route/lib/motion-behaviours.mjs#recogniseBehaviour",
+			"write": "scripts/computed-route/lib/fill-behaviour.mjs#applySettings",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"test": "scripts/computed-route/tests/motion-settings.test.mjs",
+			"note": "data-* attributes are the hooks a draft script finds its elements by; the behaviour the script drives is recognised from the animation inventory (lib/motion-behaviours.mjs::hostOf places a record on the elements that carry its hook), and the attribute itself is not written (FR-48-80)"
 		},
 		"html-attr:global.dir": {
 			"recognise": null,

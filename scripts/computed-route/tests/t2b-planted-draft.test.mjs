@@ -132,3 +132,51 @@ test( 'MUST FAIL: a planted draft raises one effect review row per recognised ef
 		assert.ok( line.includes( `\`${ m.value ?? m.shape }\`` ), `Appendix C names the mark ${ m.value ?? m.shape }` );
 	}
 } );
+
+// Track T wave T2b, delivery units U14 and U13a (FR-48-80): the draft constructs the script behaviours stand on (a data
+// hook, an event handler, an observer, a timer) are covered by the settings and exit writers, and each raises its
+// missing-feature row again with that one entry's write ref nulled.
+const BEHAVIOUR_CENSUS = [ 'data-hook', 'handler', 'observer', 'timer' ].map( ( kind ) => ( { kind, draftId: `Page:${ kind }` } ) );
+const BEHAVIOUR_DRAFT = [ { component: 'Page', stamped: { elements: [ { n: '1', tag: 'section', attrs: [ [ 'data-x', '' ] ] } ] } } ];
+const BEHAVIOUR_IDS = [ 'construct:data-hook', 'construct:handler', 'construct:observer', 'construct:timer', 'html-attr:global.data' ];
+const behaviourRows = ( coverage ) => coverageMissing( { census: { rows: BEHAVIOUR_CENSUS }, coverage, usage: draftUsage( { sources: BEHAVIOUR_DRAFT, known: KNOWN } ).usage } );
+
+test( 'MUST FAIL: the behaviour constructs raise no row while covered, and each raises its row again with its write ref nulled', () => {
+	const coverage = loadCoverage();
+	const raised = new Set( behaviourRows( coverage ).map( ( r ) => r.construct ) );
+	for ( const id of BEHAVIOUR_IDS ) {
+		assert.equal( statusOf( coverage.entries[ id ] ), 'covered', id );
+		assert.match( coverage.entries[ id ].write, /lib\/fill-behaviour\.mjs#applySettings$/, id );
+		assert.match( coverage.entries[ id ].test, /tests\/motion-settings\.test\.mjs$/, id );
+		assert.ok( ! raised.has( id ), `${ id } raises no row while it is covered` );
+		const nulled = { ...coverage, entries: { ...coverage.entries, [ id ]: { ...coverage.entries[ id ], write: null } } };
+		const row = behaviourRows( nulled ).find( ( r ) => r.construct === id );
+		assert.ok( row, `${ id } raises its row again with its write ref nulled` );
+		assert.match( row.why, /no clone path yet \(has recognise, check/ );
+	}
+} );
+
+// One planted record per settings behaviour; with the block's setting undeclared (the write ref nulled) it is raised as an unmapped row.
+const SETTINGS_PLANTED = [
+	[ 'sgs/site-header', 'scrolledOffset', { id: 'B-1', mechanism: 'js-style-write', status: 'active', element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setHeaderEl', description: 'Sticky header' }, trigger: { type: 'scroll-position', detail: 'window scroll: scrollY > 8' }, properties: [ { property: 'box-shadow', from: 'none', to: '0 10px 30px -18px rgba(20,40,60,.35)' } ] } ],
+	[ 'sgs/business-info', 'openStatusDotPulse', { id: 'B-2', mechanism: 'waapi', status: 'active', iterations: 'infinite', duration_ms: 1600, element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setPulseEl', description: 'Status dot' }, trigger: { type: 'mount', detail: '' }, properties: [ { property: 'box-shadow', from: '0 0 0 0 currentColor', to: '0 0 0 8px transparent' } ] } ],
+	[ 'sgs/testimonial-slider', 'autoplaySpeed', { id: 'B-3', mechanism: 'waapi', status: 'active', duration_ms: 520, element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setCard', description: 'Testimonial card' }, trigger: { type: 'state', detail: 'state.i changes or the 6.5s setInterval', state_keys: [ 'i' ] }, properties: [ { property: 'opacity', from: 0, to: 1 } ] } ],
+	[ 'sgs/timeline', 'panelCounter', { id: 'B-4', mechanism: 'js-text-write', status: 'active', element: { dc: 'Site', template_tpl_id: '10', selector: '[data-pin] -> [data-pin-count]' }, trigger: { type: 'scroll-position', detail: 'updatePins() on window scroll' }, properties: [ { property: 'textContent', from: '01 / NN', to: 'NN / NN' } ] } ],
+];
+
+test( 'MUST FAIL: each planted settings behaviour is written, and with its setting undeclared the record is raised as an unmapped row', () => {
+	for ( const [ block, attr, record ] of SETTINGS_PLANTED ) {
+		const nodes = [ { index: 0, name: block, targets: [ { id: '0:', slot: '', finder: { tpl: 'Site/10#0' } } ] } ];
+		const call = ( hasAttr ) => {
+			const flat = [ { name: block, attributes: {}, ref: 'r0' } ];
+			const out = motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records: [ record ], mdb, schema, rawSnapshot: { settings: { custom: {} } }, hasAttr } );
+			return { out, flat };
+		};
+		const wrote = call( () => true );
+		assert.deepEqual( wrote.out.unmapped, [], `${ record.id } raises nothing while written` );
+		assert.ok( attr in wrote.flat[ 0 ].attributes, `${ record.id } writes ${ attr }` );
+		const nulled = call( () => false );
+		assert.deepEqual( nulled.flat[ 0 ].attributes, {}, `${ record.id } writes nothing with ${ block } declaring none` );
+		assert.match( nulled.out.unmapped.map( ( u ) => u.reason ).join( '\n' ), new RegExp( `${ block } declares no ` ), `${ record.id } is raised again` );
+	}
+} );

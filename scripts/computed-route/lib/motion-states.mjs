@@ -35,6 +35,8 @@ const hasRun = ( hay, needle ) => needle.length > 0 && hay.some( ( _, i ) => nee
 // { trigger: 'state', state: '<name>' } for a named motion state (the longest name its words spell, else the one
 // published state whose last word is an open word, `menu-open`). `offers`: { names, opens, openWords } (the
 // open words as a Set or a function returning one); `target`: the part the record's element is.
+const DISCLOSURE = /\bchanges? to (?:a )?non-null\b|\bbecomes? non-null\b|\bfalse\s*(?:→|->)\s*true\b/i;
+
 export function stateTrigger( record, offers, target = 'root' ) {
 	if ( 'state' !== record.trigger?.type ) {
 		return null;
@@ -44,6 +46,10 @@ export function stateTrigger( record, offers, target = 'root' ) {
 	const words = () => ( 'function' === typeof offers.openWords ? offers.openWords() : offers.openWords );
 	// A part the block opens (a panel, a drawer body) plays on the disclosure opening, whatever the state is called.
 	if ( ( offers.opens || [] ).includes( target ) && words() && hay.some( ( w ) => words().has( w ) ) ) {
+		return { trigger: 'open' };
+	}
+	// A state that picks which panel is showing (`active` is null while none is) opens the panel when it becomes non-null.
+	if ( ( offers.opens || [] ).includes( target ) && DISCLOSURE.test( String( record.trigger.detail ?? '' ) ) ) {
 		return { trigger: 'open' };
 	}
 	const name = [ ...( offers.names || [] ) ].filter( ( n ) => hasRun( hay, WORDS( n ) ) ).sort( ( a, b ) => WORDS( b ).length - WORDS( a ).length )[ 0 ];

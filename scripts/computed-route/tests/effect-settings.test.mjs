@@ -26,6 +26,7 @@ test( 'every listed setting is a framework DB attribute and its effect has an fx
 	const db = openDb();
 	for ( const e of LIST ) {
 		assert.ok( db.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug=? AND attr_name=?' ).get( e.block, e.attr ), `${ e.block } ${ e.attr } is in block_attributes` );
-		assert.ok( db.prepare( 'SELECT 1 FROM fx_effects WHERE effect=?' ).get( e.effect ), `${ e.effect } is in fx_effects` );
+		// A `behaviour:<name>` setting belongs to a script behaviour with no fx layer of its own (the header's scrolled shadow, the slider's autoplay).
+		assert.ok( e.effect.startsWith( 'behaviour:' ) || db.prepare( 'SELECT 1 FROM fx_effects WHERE effect=?' ).get( e.effect ), `${ e.effect } is in fx_effects` );
 	}
 } );

@@ -193,6 +193,8 @@ export async function fillSurface( o ) {
 		result.writes.push( ...motion.writes );
 		result.unmapped.push( ...motion.unmapped );
 		result.notes.push( ...motion.notes.map( ( x ) => `${ x.node } ${ x.block }${ x.slot ? ` (${ x.slot })` : '' }: ${ x.text }` ) );
+		// The site-wide options the draft's behaviours set (the route fade): `sgs_motion_settings` keys, merged over what the site holds when site-build applies them.
+		const siteOptions = motion.site.length ? { option: 'sgs_motion_settings', records: motion.site.map( ( s ) => s.record ), value: Object.assign( {}, ...motion.site.map( ( s ) => s.settings ) ) } : null;
 		// FR-48-41: the written settings that one {{ }} style binding feeds on two or more elements, grouped (binding-groups.json);
 		// the bindings are read from the fact record's holes; none when intake has not run.
 		const bound = groupBindings( { facts, nodes, writes: result.writes, rootComponent: intakeParts.rootComponent } );
@@ -207,6 +209,7 @@ export async function fillSurface( o ) {
 		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, draftUrl: url, liveUrl: o.liveUrl, open: o.open || null, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening' } );
 		const put = ( name, text ) => fs.writeFileSync( path.join( outDir, name ), text );
 		put( 'filled.tree.json', `${ JSON.stringify( tree, null, 2 ) }\n` );
+		siteOptions && put( 'site-options.json', `${ JSON.stringify( siteOptions, null, 2 ) }\n` );
 		put( 'fill-report.md', report.markdown );
 		put( 'fill-report.json', JSON.stringify( report.json, null, 1 ) );
 		if ( patchFile ) {

@@ -131,7 +131,7 @@ test( 'MUST FAIL: the marquee\'s hover slow-down is a control of the marquee lay
 test( 'MUST FAIL: a fade of the main element on a route change is the page transition option, and a scroll reset on a route change is native; neither is a block layer', () => {
 	const { out, doc } = run( [ node( 0, 'sgs/container', '10' ) ], [ FADE, SCROLL_TOP ], hosted( '10', 'data-x' ) );
 	assert.equal( doc, null );
-	assert.deepEqual( recogniseBehaviour( FADE ).value, { style: 'fade', durationMs: 380, easing: 'ease-out' } );
+	assert.deepEqual( recogniseBehaviour( FADE ).value, { style: 'fade', durationMs: 380, easing: 'ease-out', settings: { page_transitions: true, page_transition_style: 'fade', page_transition_duration: 380, page_transition_easing: 'ease-out' } } );
 	assert.equal( recogniseBehaviour( SCROLL_TOP ).kind, 'native' );
 	assert.deepEqual( out.unmapped, [] );
 } );

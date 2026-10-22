@@ -29,6 +29,7 @@ export function motionFixtureDb( blocks = { 'sgs/container': [] } ) {
 		effect, tier: 'vanilla', plugin_set: 'none', reduced_motion: 'off', editor_story: 'static',
 		triggers: TRIGGERS[ effect ] || 'load,visible', owned_properties: JSON.stringify( { channels: OWNED[ effect ] || [], properties: [], slots: [] } ), panels: JSON.stringify( meta.panels ),
 	} ) );
-	const targets = Object.entries( blocks ).flatMap( ( [ slug, parts ] ) => [ { block_slug: slug, target: 'root', css_element: 'root', kind: 'root' }, ...parts.map( ( p ) => ( { block_slug: slug, kind: 'part', ...p } ) ) ] );
+	// A part named `root` adds fields to the root row (a block that opens: { target: 'root', motion_support: '{"opens":["root"]}' }).
+	const targets = Object.entries( blocks ).flatMap( ( [ slug, parts ] ) => [ { block_slug: slug, target: 'root', css_element: 'root', kind: 'root', ...( parts.find( ( p ) => 'root' === p.target ) || {} ) }, ...parts.filter( ( p ) => 'root' !== p.target ).map( ( p ) => ( { block_slug: slug, kind: 'part', ...p } ) ) ] );
 	return fixtureDb( { motion_fields: fields, fx_effects: fx, motion_targets: targets } );
 }

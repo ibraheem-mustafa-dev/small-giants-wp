@@ -13,6 +13,11 @@ import { recogniseBehaviour, hostsFromTemplate } from './motion-behaviours.mjs';
 export const COVERAGE_WRITES = [
 	'css-function:circle',
 	'css-function:skewx',
+	'construct:data-hook',
+	'construct:handler',
+	'construct:observer',
+	'construct:timer',
+	'html-attr:global.data',
 ];
 
 let attrDb = null;
@@ -32,12 +37,75 @@ export function declaredAttr( block, attr ) {
 // by the elements that carry the hook. Returns { hosted: [ { r, b } ], hostsOf(key) } where hostsOf gives the hosted
 // ones for a template element key.
 export function behaviourIndex( { records, template, css } ) {
-	const found = ( records || [] ).map( ( r ) => ( { r, b: recogniseBehaviour( r, { css } ) } ) ).filter( ( x ) => x.b );
+	const found = ( records || [] ).map( ( r ) => ( { r, b: recogniseBehaviour( r, { css, template } ) } ) ).filter( ( x ) => x.b );
 	const hosted = found.filter( ( x ) => null === ( x.r.element?.template_tpl_id ?? null ) && x.b.host );
 	const hosts = hostsFromTemplate( template, hosted.map( ( x ) => x.b.host ) );
 	// A control names the record it controls, not an element: it is applied wherever that record's layer was written.
 	const controls = found.filter( ( x ) => 'control' === x.b.kind ).map( ( x ) => ( { r: x.r, b: x.b, where: { node: null, block: '', slot: '' } } ) );
-	return { found, controls, hostedFor: ( key ) => hosted.filter( ( x ) => hosts.get( x.b.host )?.has( key ) ) };
+	return { found, controls, stripKeys: stripKeysOf( found, template ), hostedFor: ( key ) => hosted.filter( ( x ) => hosts.get( x.b.host )?.has( key ) ) };
+}
+
+// The template elements that scroll away above a pinned header: when the draft pins one element (a sticky header that
+// also shadows on scroll), its earlier siblings that are not pinned themselves scroll off the page while the bar stays,
+// as do their descendants. A Set of template keys.
+export function stripKeysOf( found, template ) {
+	const keys = new Set();
+	const elements = template?.elements || {};
+	const pinned = ( e ) => /^(?:sticky|fixed)$/.test( String( ( e?.style?.static || [] ).find( ( [ n ] ) => 'position' === n )?.[ 1 ] ?? '' ).trim() );
+	for ( const { b } of found.filter( ( x ) => 'settings' === x.b.kind && x.b.sticky ) ) {
+		const header = b.sticky.element;
+		const strips = Object.entries( elements ).filter( ( [ key, e ] ) => key !== b.sticky.key && e.realParent && e.realParent === header.realParent && e.srcLine < header.srcLine && ! pinned( e ) ).map( ( [ key ] ) => key );
+		strips.forEach( ( key ) => keys.add( key ) );
+		for ( const [ key, e ] of Object.entries( elements ) ) {
+			if ( ( e.parentChain || [] ).some( ( k ) => strips.includes( k ) ) ) {
+				keys.add( key );
+			}
+		}
+	}
+	return keys;
+}
+
+// Writes a node's block settings from its settings behaviours (the behaviours whose block declares each attribute, a
+// framework DB query); `colour` values equal to a palette colour are written by their slug. A behaviour no settings of
+// this node's block belong to is reported. Returns the items it wrote or reported.
+export function applySettings( { items, n, out, where, flat, hasAttr = declaredAttr, palette = null } ) {
+	const seen = ( out.settingsDone ||= new Set() );
+	for ( const { r, b } of items ) {
+		if ( seen.has( `${ where.node }|${ r.id }` ) ) {
+			continue;
+		}
+		seen.add( `${ where.node }|${ r.id }` );
+		const mine = b.blocks[ n.name ];
+		if ( ! mine ) {
+			out.unmapped.push( { ...where, property: 'motion', value: r.id, reason: `${ r.id } maps onto settings of ${ Object.keys( b.blocks ).join( ' or ' ) }; this element is ${ n.name }` } );
+			continue;
+		}
+		const missing = mine.filter( ( s ) => ! hasAttr( n.name, s.attr ) );
+		if ( missing.length ) {
+			out.unmapped.push( { ...where, property: 'motion', value: r.id, reason: `${ n.name } declares no ${ missing.map( ( s ) => s.attr ).join( ', ' ) } setting` } );
+			continue;
+		}
+		for ( const s of mine ) {
+			const value = s.colour && 'string' === typeof s.value ? ( palette?.get( s.value.toLowerCase() ) ?? s.value ) : s.value;
+			const { before, after } = setAttr( flat[ n.index ], { attr: s.attr, value } );
+			out.writes.push( { node: where.node, block: n.name, slot: where.slot, prop: `${ r.id } ${ s.attr }`, attr: s.attr, before, after, widths: [], how: 'motion' } );
+		}
+		out.notes.push( { ...where, text: `${ r.id }: ${ b.notes.join( '; ' ) } (${ mine.map( ( s ) => s.attr ).join( ', ' ) })` } );
+		if ( b.accepted ) {
+			out.notes.push( { ...where, text: `${ r.id }: accepted difference: ${ b.accepted }` } );
+		}
+	}
+}
+
+// The header row that scrolls away above the pinned header bar: `rowHideOnScroll` on a `sgs/site-header-row` whose
+// element is one of the strip keys.
+export function applyStrip( { n, target, key, idx, out, where, flat, hasAttr = declaredAttr } ) {
+	if ( 'sgs/site-header-row' !== n.name || ! idx.stripKeys.has( key ) || flat[ n.index ].attributes?.rowHideOnScroll?.desktop || ! hasAttr( n.name, 'rowHideOnScroll' ) ) {
+		return;
+	}
+	const { before, after } = setAttr( flat[ n.index ], { attr: 'rowHideOnScroll', value: { desktop: 'on' } } );
+	out.writes.push( { node: where.node, block: n.name, slot: where.slot, prop: 'rowHideOnScroll', attr: 'rowHideOnScroll', before, after, widths: [], how: 'motion' } );
+	out.notes.push( { ...where, text: 'the draft pins its header bar and lets this strip scroll away: the row hides on scroll' } );
 }
 
 const layerCount = ( el, effect, hover ) => ( ( hover ? el?.hover?.effects : el?.effects ) || [] ).filter( ( l ) => l.effect === effect ).length;
@@ -66,8 +134,17 @@ export function applyBehaviours( { items, n, target, doc, pending, written, cont
 		} else if ( 'site' === b.kind ) {
 			out.site.push( { record: r.id, option: b.option, ...b.value } );
 			b.notes.forEach( ( t ) => note( r.id, t ) );
-		} else if ( 'control' === b.kind ) {
-			continue; // applied by applyControls once every node has been written
+		} else if ( 'control' === b.kind || 'settings' === b.kind ) {
+			continue; // a control is applied by applyControls once every node is written; settings by applySettings
+		} else if ( 'close' === b.kind ) {
+			const base = doc.elements[ target ]?.entrance?.base;
+			if ( ! base || ! [ 'open', 'state' ].includes( base.trigger ) ) {
+				refuse( r.id, 'the exit of an open entrance, but this element has no open entrance to close' );
+				continue;
+			}
+			base.close = Object.fromEntries( Object.entries( { to: b.to, closeDuration: b.duration, closeEasing: b.easing, closeDelay: b.delay } ).filter( ( [ , v ] ) => null !== v && undefined !== v ) );
+			pending.push( target );
+			note( r.id, `the exit of the open entrance: ${ JSON.stringify( base.close ) }` );
 		} else if ( b.alt?.settings.every( ( s ) => hasAttr( n.name, s.attr ) ) ) {
 			for ( const s of b.alt.settings ) {
 				const { before, after } = setAttr( flat[ n.index ], { attr: s.attr, value: s.value } );
@@ -96,6 +173,18 @@ export function applyBehaviours( { items, n, target, doc, pending, written, cont
 				note( r.id, `follow-pointer hover state ${ JSON.stringify( kept ) }` );
 			}
 		}
+	}
+}
+
+// The behaviours that belong to no element: the draft's route fade (a site option) and the ones SGS already does (a
+// scroll reset on a route change, the page scroll lock of a modal drawer, a back-to-top press). Each is reported once.
+export function applyGlobals( { found, out } ) {
+	const where = { node: 'site', block: '', slot: '' };
+	for ( const { r, b } of found.filter( ( x ) => [ 'site', 'native' ].includes( x.b.kind ) && null === ( x.r.element?.template_tpl_id ?? null ) && ! x.b.host ) ) {
+		if ( 'site' === b.kind ) {
+			out.site.push( { record: r.id, option: b.option, ...b.value } );
+		}
+		( 'site' === b.kind ? b.notes : [ b.reason ] ).forEach( ( text ) => out.notes.push( { ...where, text: `${ r.id }: ${ text }` } ) );
 	}
 }
 
