@@ -88,7 +88,7 @@ test( 'MUST FAIL: a skeleton carrying a style value, a missing client or both dr
 
 test( 'every output of step 5 is written, and nothing else is: the committed tree, the ledger and the manifest are untouched', () => {
 	const out = fs.readdirSync( path.join( work, 'out' ) ).sort();
-	assert.deepEqual( out, [ 'breakpoints.json', 'fill-report.json', 'fill-report.md', 'filled.tree.json', 'handover.json', 'home.fill-base.mjs', 'home.fill.mjs', 'unmapped.json' ] );
+	assert.deepEqual( out, [ 'binding-groups.json', 'breakpoints.json', 'fill-report.json', 'fill-report.md', 'filled.tree.json', 'handover.json', 'home.fill-base.mjs', 'home.fill.mjs', 'unmapped.json' ] );
 	assert.equal( fs.readFileSync( treeFile, 'utf8' ), '[{"name":"sgs/container","attributes":{"committed":true}}]\n' );
 	assert.equal( fs.readFileSync( path.join( repo, 'sites', 'acme', 'build', 'qa', 'divergences.json' ), 'utf8' ), '[]\n' );
 	const onDisk = JSON.parse( fs.readFileSync( path.join( work, 'out', 'filled.tree.json' ), 'utf8' ) );

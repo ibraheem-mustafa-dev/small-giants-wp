@@ -1002,7 +1002,7 @@ Status: the snap and write are built (`lib/normalise.mjs`, `lib/resolve.mjs`). D
 ### FR-48-41 — Row 5, type, spacing, size, border, shadow
 **Read:** literals, `renderVals()` values per width, and `{{ }}` bindings. **Write:** a preset or token on an exact match, else a literal per tier. Elements sharing one binding share one setting: a binding used by several sections becomes one token or preset, never n copies. **Check:** declared against emitted. **Gap:** as row 4.
 
-Status: per-element literal writing is built (Fill). Binding grouping is not built. The per-tier section padding and gutter tokens it needs are a Spec 32 hand-off (§16).
+Status: per-element literal writing is built (Fill). Binding grouping is built (2026-10-22): Fill lists each written setting that one `{{ }}` style binding feeds the same value on two or more elements as one group, and a binding written different values as a split, never a group (`scripts/computed-route/lib/fill-binding-group.mjs::groupBindings`, run by `fill.mjs` into `binding-groups.json`, each grouped write marked `group`; `scripts/computed-route/tests/fill-binding-group.test.mjs`). The group is the one shared setting; creating its token in the snapshot waits on the per-tier section padding and gutter tokens, a Spec 32 hand-off (§16). A binding is matched to its elements by the census row and the node's tpl finder, not to the individual property it feeds.
 
 ### FR-48-42 — Row 6, layout
 **Read:** the declared form (`display`, `grid-template-columns: repeat(...)`, `flex-direction`, `flex-wrap`).
@@ -1566,7 +1566,7 @@ Items Spec 48 needs but does not own. "Blocks" says which client cannot finish w
 | Shop surfaces matched part by part (buy box, filter, drawer) | Spec 48 §13 | Mama's | not built |
 | Motion presets the drafts need (no combined move-plus-blur or move-plus-scale entrance, no rounded `clip-path` reveal). The values are written by the route's `lib/fill-motion.mjs`. What exists is the entrance rows of `motion_presets` (`SELECT slug FROM motion_presets WHERE panel = 'entrance'`), which include `entrance-blur-in`, `entrance-reveal-up` and `entrance-scale-in`; query them before adding one | Spec 38A | neither | not built |
 | Validation copy setting per form field | Spec 04 | Indus, if its drafts write their own messages | not built |
-| Binding grouping (one shared setting per `{{ }}` binding) | Spec 48 §10 | Indus | not built |
+| Binding grouping (one shared setting per `{{ }}` binding) | Spec 48 §10 | Indus | grouping built (FR-48-41); the snapshot token waits on Spec 32 |
 
 ## Appendix A. Fresh-site checklist
 
