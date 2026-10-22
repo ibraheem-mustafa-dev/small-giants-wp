@@ -19,6 +19,9 @@ Read first, all of it: `.claude/plans/2026-10-21-handoff-readers.md` sections "H
 4. The wave's framework edits go live once: `ListAgents` and a message to the handoff readers session, then a reseed from a clean `origin/main` worktree (`.claude/dev-setup.md` "Reseeding from a clean worktree", diffing `block_attributes` against a copy taken first), `npm run build` from PowerShell, and `python plugins/sgs-blocks/scripts/build-deploy.py --target indus-test --blocks-only` (add `sandybrown` for a canary check); then one live check per unit at 375/768/1440 (computed styles and a screenshot), never closing on a green gate alone.
 5. Docs: the plan's Track F items ticked with their commits in the same commit as the work; each unit's delivery-map keys flipped (`node scripts/computed-route/delivery-map.mjs indus-foods --status`, `--check`); the owning spec's FR Status lines; `.claude/catalogues/` regenerated if a gate says so.
 
+## Between waves
+Neither track starts a fresh session. When a wave is fully done (its units merged, its /qc-council's fixes applied, its docs updated), the orchestrator runs `/handoff` in `local` mode, then the session is compacted (`/compact`), and the next wave continues in the same session from the prompt that handoff wrote. Nothing carries across a compaction except the docs and that prompt, so a wave is not done until the plan's Status, the delivery map and the FR Status lines say what it did. This prompt file is used once, to start the track; after the first compaction the handoff's prompt replaces it.
+
 ## Skills
 - `/autopilot` first.
 - `/delegate` before each dispatch; `/subagent-prompt` for each brief; `/dispatching-parallel-agents` for a wave.
