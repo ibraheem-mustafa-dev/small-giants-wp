@@ -92,6 +92,25 @@ if ( ! function_exists( 'sgs_nav_item_padding_css' ) ) {
 					),
 				)
 			);
+			// The right side is also published on the root: a link followed by its
+			// split toggle gives that padding to the toggle, which closes the item
+			// after the caret (nav-bar-menu/style.css).
+			$item_padding_end = array();
+			foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+				if ( isset( $item_padding[ $tier ]['right'] ) && '' !== $item_padding[ $tier ]['right'] ) {
+					$item_padding_end[ $tier ] = $item_padding[ $tier ]['right'];
+				}
+			}
+			$css .= sgs_emit_responsive_css(
+				$uid_sel,
+				array(
+					array(
+						'value'        => $item_padding_end,
+						'css'          => '--sgs-nav-link-pad-end',
+						'unit_default' => 'px',
+					),
+				)
+			);
 		}
 
 		/*

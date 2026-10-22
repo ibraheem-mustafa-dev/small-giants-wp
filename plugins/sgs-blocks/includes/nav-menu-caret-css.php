@@ -58,6 +58,9 @@ if ( ! function_exists( 'sgs_nav_menu_caret_css' ) ) {
 		if ( '' !== $gap ) {
 			$gap_sel = (string) ( $selectors['gap'] ?? $uid_sel . ' .' . $bem_root . '__link' );
 			$css    .= $gap_sel . '{gap:' . $gap . ';}';
+			// A split item keeps its caret in a separate toggle beside the link, so
+			// the same gap rides a custom property the toggle's left padding reads.
+			$css .= $uid_sel . '{--sgs-nav-caret-gap:' . $gap . ';}';
 		}
 
 		// Resting opacity — independent of the item's own itemOpacity.

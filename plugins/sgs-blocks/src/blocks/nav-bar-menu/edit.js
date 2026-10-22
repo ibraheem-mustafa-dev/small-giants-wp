@@ -706,6 +706,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					itemBadgeGap={ attributes.itemBadgeGap }
 					showSubmenuLinkPadding
 					submenuLinkPadding={ attributes.submenuLinkPadding }
+					showFlexWrap
+					flexWrap={ attributes.flexWrap }
 					setAttributes={ setAttributes }
 				/>
 
