@@ -1,7 +1,7 @@
 // The confirm record (Spec 48 FR-48-8, FR-48-36): for every value Fill writes, at each read width, the value the
 // draft's code declares on the element against the value the draft renders (D–R), with the tolerance its type takes and
-// the verdict. Fill runs before the live page exists, so the rendered-live value (R–L) stays empty here and the check
-// fills it; the verdict is D–R's: `confirmed` (agree, or a value the code resolves at run time, which the render is),
+// the verdict. Fill runs before the live page exists, so the rendered-live value (R–L) stays empty here and Solve fills it
+// (lib/confirm-live.mjs); the verdict is D–R's: `confirmed` (agree, or a value the code resolves at run time, which the render is),
 // `render-wins` (disagree: the rendered value is written and the row reported), `draft-defect` (disagree where intake
 // lists the element's declaration as never painting, FR-48-34) and `open` (no declared value: the render alone decides).
 import { parseColour, deltaE, toPx, COLOUR_DE } from './normalise.mjs';
@@ -40,21 +40,23 @@ const colourOf = ( v ) => ( 'transparent' === String( v ).trim().toLowerCase() ?
 // A value's top-level parts (split on spaces and commas outside brackets).
 const parts = ( v ) => String( v ).match( /(?:[^\s,(]+|\([^)]*\))+/g ) || [];
 // Two parts agree: colours within ΔE and alpha, lengths within 0.5px, anything else equal ignoring case.
-function samePart( a, b, fontPx ) {
+function samePart( a, b, fontPx, tol = 0.5 ) {
 	const [ ca, cb ] = [ colourOf( a ), colourOf( b ) ];
 	if ( ca && cb ) {
 		return deltaE( ca, cb ) <= COLOUR_DE && Math.abs( ca.a - cb.a ) <= 0.02;
 	}
 	const [ la, lb ] = [ lengthPx( a, fontPx ), lengthPx( b, fontPx ) ];
 	if ( null !== la && null !== lb ) {
-		return Math.abs( la - lb ) <= 0.5;
+		return Math.abs( la - lb ) <= tol;
 	}
 	return a.toLowerCase() === b.toLowerCase();
 }
 
 // D–R for one property at one width: { dr: 'agree' | 'disagree' | 'runtime' | 'no-declared' | 'unreadable', type,
 // tolerance }. fontPx is the element's font size there (em lengths and unitless line heights).
-export function compareDR( prop, declared, rendered, fontPx = 16 ) {
+// `opts.rendered` compares two rendered values (R–L): no run-time shortcut, and lengths take `opts.tol` (the rendered
+// ±1px, FR-48-36) in place of the declared ±0.5px.
+export function compareDR( prop, declared, rendered, fontPx = 16, { tol = 0.5, rendered: bothRendered = false } = {} ) {
 	if ( null == declared || '' === String( declared ).trim() ) {
 		return { dr: 'no-declared', type: null, tolerance: null };
 	}
@@ -63,7 +65,7 @@ export function compareDR( prop, declared, rendered, fontPx = 16 ) {
 	// A value the browser resolves itself: run-time functions and relative units, a CSS-wide keyword (the default),
 	// `currentcolor`, and a keyword the render states as a plain length (`thin`, `medium`, `auto` laid out): its render
 	// is its value.
-	if ( RUNTIME.test( d ) || /^(?:initial|inherit|unset|revert|revert-layer|currentcolor)$/i.test( d ) || ( /^[a-z-]+$/i.test( d ) && null !== lengthPx( r ) ) ) {
+	if ( ! bothRendered && ( RUNTIME.test( d ) || /^(?:initial|inherit|unset|revert|revert-layer|currentcolor)$/i.test( d ) || ( /^[a-z-]+$/i.test( d ) && null !== lengthPx( r ) ) ) ) {
 		return { dr: 'runtime', type: null, tolerance: null };
 	}
 	const type = propertyType( prop, d, r );
@@ -93,12 +95,12 @@ export function compareDR( prop, declared, rendered, fontPx = 16 ) {
 			return out( null !== a && null !== b ? Math.abs( a - b ) <= 10 : null );
 		}
 		case 'length':
-			return out( Math.abs( lengthPx( d, fontPx ) - lengthPx( r, fontPx ) ) <= 0.5 );
+			return out( Math.abs( lengthPx( d, fontPx ) - lengthPx( r, fontPx ) ) <= tol );
 		default: {
 			// Part by part; a value the browser serialises in another shape (a shadow with its colour moved first and a
 			// spread added, a radius expanded to four corners) cannot be compared here.
 			const [ a, b ] = [ parts( d ), parts( r ) ];
-			return out( a.length === b.length ? a.every( ( x, i ) => samePart( x, b[ i ], fontPx ) ) : null );
+			return out( a.length === b.length ? a.every( ( x, i ) => samePart( x, b[ i ], fontPx, tol ) ) : null );
 		}
 	}
 }
@@ -153,7 +155,7 @@ export function confirmRecords( { writes, nodes, reads, defects = new Map(), roo
 		const layer = /::(?:before|after)$/.exec( slot )?.[ 0 ] ?? null;
 		const base = layer ? slot.slice( 0, -layer.length ) : slot;
 		const target = nodes[ src.index ]?.targets.find( ( t ) => t.slot === base );
-		const record = { node: w.node, block: w.block, attribute: w.attr, property: w.prop, state: 'default', emitted: w.after ?? null, renderedLive: null };
+		const record = { node: w.node, block: w.block, attribute: w.attr, property: w.prop, state: 'default', slot, emitted: w.after ?? null, renderedLive: null };
 		if ( ! target ) {
 			out.push( { ...record, draftId: null, width: null, declared: null, renderedDraft: null, dr: 'no-target', tolerance: null, verdict: 'open' } );
 			continue;
