@@ -14,6 +14,7 @@ import { FLUID_WIDTHS, SWEEP_WIDTHS, LENGTH_PROPS } from './fill-values.mjs';
 import { extraProps, readExtras, missingExtras } from './fill-declared.mjs';
 import { readStates } from './fill-state-read.mjs';
 import { readLogicStates } from './fill-logic-state.mjs';
+import { readCurrentItems } from './fill-current-item.mjs';
 
 const RESOLVE = resolveFinder.toString();
 const COLLECT = collectPair.toString();
@@ -185,10 +186,11 @@ async function openPage( browser, devices, { url, open, width, origin, external,
 //   states[w]             each target's state looks at READ_WIDTHS (lib/fill-state-read.mjs::readStates), when `states`
 //                         (the state vocabulary, lib/db.mjs::statesVocabulary) is given; with `logicRows` (the state map's
 //                         `scIf` rows) it also holds the looks behind each set-state sc-if (lib/fill-logic-state.mjs::readLogicStates)
-//                         in the same shape, and `logicGaps`.
+//                         in the same shape, and `logicGaps`; with `currentGroups` (lib/fill-current-item.mjs::currentItemGroups) it holds
+//                         the current-item looks of a repeated list too.
 // nodes: lib/fill-skeleton.mjs::skeletonNodes. open: the regex source of the text to click first. external: allow the
 // draft to load anything beyond its own origin (off by default, so a read is the same offline).
-export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, states = [], logicRows = [], log = () => {} } ) {
+export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, states = [], logicRows = [], currentGroups = [], log = () => {} } ) {
 	const { chromium, devices } = await loadChromium();
 	const origin = new URL( url ).origin;
 	const jobs = jobsFor( nodes );
@@ -234,6 +236,14 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 							( result.states[ width ].looks[ id ] ??= [] ).push( ...looks );
 						}
 						result.states[ width ].logicGaps = logic.gaps;
+					}
+					// A list item the draft's logic marks current (lib/fill-current-item.mjs): its look against a non-current copy.
+					if ( currentGroups.length ) {
+						const current = await readCurrentItems( { page, cdp, jobs, groups: currentGroups, resolveSrc: RESOLVE } );
+						for ( const [ id, looks ] of Object.entries( current.looks ) ) {
+							( result.states[ width ].looks[ id ] ??= [] ).push( ...looks );
+						}
+						result.states[ width ].logicGaps = [ ...( result.states[ width ].logicGaps || [] ), ...current.gaps ];
 					}
 				}
 			}

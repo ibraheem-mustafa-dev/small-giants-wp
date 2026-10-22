@@ -29,6 +29,7 @@ import { confirmRecords, defectIndex } from './lib/fill-confirm.mjs';
 import { motionWrites } from './lib/fill-motion.mjs';
 import { groupBindings, noFactsWarning } from './lib/fill-binding-group.mjs';
 import { factsFile, loadFacts } from './lib/fact-record.mjs';
+import { currentItemGroups } from './lib/fill-current-item.mjs';
 import { motionDb } from './lib/motion-db.mjs';
 import { loadMotionSchema } from './lib/motion-schema.mjs';
 import { sweepSteps } from './lib/fill-values.mjs';
@@ -141,7 +142,8 @@ export async function fillSurface( o ) {
 		// states (lib/fill-logic-state.mjs); none when intake has not run.
 		const intakeFile = path.join( buildDir, 'intake', 'intake.json' );
 		const logicRows = fs.existsSync( intakeFile ) && vocab.rows.length ? stateMap( { surfaces, surface: o.surface, intake: JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ), vocab: vocab.rows } ).scIf : [];
-		const reads = await readDraft( { url, nodes, open: o.open || null, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, log } );
+		const currentGroups = fs.existsSync( factsFile( repo, o.client ) ) ? currentItemGroups( loadFacts( o.client, { repo } ) ) : [];
+		const reads = await readDraft( { url, nodes, open: o.open || null, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, log } );
 		const calFor = calibrationLoader( entry.site, o.cache );
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
 		const result = fillTree( {
