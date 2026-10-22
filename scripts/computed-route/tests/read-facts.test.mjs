@@ -145,6 +145,11 @@ test( 'MUST FAIL (state keys): the record holds each component\'s state keys and
 	assert.deepEqual( [ ...record.state.Home.widthKeys ].sort(), [ 'bp', 'w' ] );
 } );
 
+test( 'MUST FAIL (readme): the builder runs the README reader, so a record of a folder with no README holds a readme that is not present and lists every template heading missing', () => {
+	assert.equal( record.readme.present, false );
+	assert.equal( record.readme.missing.length, 11 );
+} );
+
 test( 'MUST FAIL (hash before reading): the record carries the hashes taken before the read, so a draft edited meanwhile makes it stale', async () => {
 	const repo = temp( 'read-facts-hash-' );
 	const handoff = path.join( repo, 'sites', 'fixture', 'handoff' );

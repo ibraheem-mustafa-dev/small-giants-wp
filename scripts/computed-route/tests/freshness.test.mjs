@@ -14,7 +14,7 @@ const roots = [];
 function folder() {
 	const root = fs.mkdtempSync( path.join( os.tmpdir(), 'freshness-' ) );
 	roots.push( root );
-	const files = { 'support.js': '// runtime\n', 'surfaces.json': '{"records":[]}\n', 'animations.json': '{"records":[]}\n', 'tokens/colors.css': ':root{--a:#111}\n', 'Home.dc.html': '<x-dc>home</x-dc>\n', 'README.md': 'not a source\n' };
+	const files = { 'support.js': '// runtime\n', 'surfaces.json': '{"records":[]}\n', 'animations.json': '{"records":[]}\n', 'tokens/colors.css': ':root{--a:#111}\n', 'Home.dc.html': '<x-dc>home</x-dc>\n', 'NOTES.md': 'not a source\n' };
 	for ( const [ f, body ] of Object.entries( files ) ) {
 		fs.mkdirSync( path.dirname( path.join( root, f ) ), { recursive: true } );
 		fs.writeFileSync( path.join( root, f ), body );
@@ -50,7 +50,7 @@ test( 'MUST FAIL every changed, added and removed source is listed', () => {
 	write( root, 'Extra.dc.html', '<x-dc/>\n' );
 	write( root, 'tokens/spacing.css', ':root{}\n' );
 	fs.rmSync( path.join( root, 'surfaces.json' ) );
-	write( root, 'README.md', 'still not a source\n' );
+	write( root, 'NOTES.md', 'still not a source\n' );
 	assert.deepEqual( changedSources( record.sources, root ).sort(), [ 'Extra.dc.html added', 'Home.dc.html changed', 'surfaces.json removed', 'tokens/spacing.css added' ] );
 	assert.throws( () => assertCurrent( record, root ), StaleRecordError );
 } );

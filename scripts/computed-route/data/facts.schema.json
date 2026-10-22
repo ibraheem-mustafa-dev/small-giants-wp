@@ -21,6 +21,22 @@
     "surfaces": { "type": "object", "additionalProperties": { "$ref": "#/$defs/surface" } },
     "animations": { "type": "object", "required": [ "records", "unjoined" ], "properties": { "records": { "type": "integer" }, "unjoined": { "type": "array", "items": { "type": "object", "required": [ "id", "reason" ], "properties": { "id": { "type": "string" }, "reason": { "type": "string" } } } } } },
     "assets": { "type": "object", "required": [ "files", "unused", "missing" ], "properties": { "files": { "type": "integer" }, "unused": { "type": "array", "items": { "type": "string" } }, "missing": { "type": "array", "items": { "type": "object", "required": [ "path", "by" ], "properties": { "path": { "type": "string" }, "by": { "type": "string" }, "via": { "type": "string" } } } } } },
+    "readme": {
+      "type": "object",
+      "required": [ "present", "title", "sections", "judgementCalls", "openItems", "businessDetails", "platformIntent", "blockHints", "flagged", "missing" ],
+      "properties": {
+        "present": { "type": "boolean" },
+        "title": { "type": [ "string", "null" ] },
+        "sections": { "type": "array", "items": { "type": "object", "required": [ "heading", "level", "line", "template", "text", "none", "flagged" ], "properties": { "heading": { "type": "string" }, "level": { "type": "integer" }, "line": { "type": "integer" }, "template": { "type": [ "string", "null" ] }, "text": { "type": "string" }, "none": { "type": "boolean" }, "flagged": { "type": "array", "items": { "$ref": "#/$defs/readmeFlag" } } } } },
+        "judgementCalls": { "type": "array", "items": { "$ref": "#/$defs/readmeItem" } },
+        "openItems": { "type": "array", "items": { "$ref": "#/$defs/readmeItem" } },
+        "businessDetails": { "type": "array", "items": { "$ref": "#/$defs/readmeItem" } },
+        "platformIntent": { "type": "array", "items": { "$ref": "#/$defs/readmeItem" } },
+        "blockHints": { "type": "array", "items": { "$ref": "#/$defs/readmeItem" } },
+        "flagged": { "type": "array", "items": { "$ref": "#/$defs/readmeFlag" } },
+        "missing": { "type": "array", "items": { "type": "string" } }
+      }
+    },
     "mounted": { "type": "object", "additionalProperties": { "type": "object", "additionalProperties": { "type": "boolean" } } },
     "state": { "type": "object", "additionalProperties": { "type": "object", "required": [ "keys", "widthKeys" ], "properties": { "keys": { "type": "array", "items": { "type": "string" } }, "widthKeys": { "type": "array", "items": { "type": "string" } } } } },
     "gaps": { "type": "array", "items": { "$ref": "#/$defs/gap" } },
@@ -154,6 +170,8 @@
         "reduced_motion": { "type": "object", "required": [ "behaviour", "detail" ], "properties": { "behaviour": { "enum": [ null, "skip", "final-state", "unchanged" ] }, "detail": { "type": "string" } } }
       }
     },
+    "readmeItem": { "type": "object", "required": [ "text", "line", "section" ], "properties": { "text": { "type": "string" }, "line": { "type": "integer" }, "section": { "type": "string" }, "flagged": { "type": "string" } } },
+    "readmeFlag": { "type": "object", "required": [ "line", "text", "why" ], "properties": { "line": { "type": "integer" }, "text": { "type": "string" }, "why": { "type": "string" } } },
     "assetUse": {
       "type": "object",
       "required": [ "path", "ratio", "kind", "sha256", "animated", "via" ],
