@@ -28,6 +28,8 @@ import {
 import { link as linkIcon, linkOff as linkOffIcon } from '@wordpress/icons';
 import SgsLengthControl from './SgsLengthControl';
 
+const PAIR_STYLE = { display: 'grid', gap: 16 };
+
 const PRESET_VAR = /^var\(--wp--preset--spacing--(\d+)\)$/;
 
 /**
@@ -194,22 +196,28 @@ export default function SgsGapControl( {
 					/>
 				</FlexItem>
 			</Flex>
-			<SgsLengthControl
-				{ ...shared }
-				label={ __( 'Row gap', 'sgs-blocks' ) }
-				placeholder={ placeholder ? inherited.row : undefined }
-				value={ row }
-				onChange={ ( next ) => onChange( composeGap( next, column ) ) }
-			/>
-			<SgsLengthControl
-				{ ...shared }
-				label={ __( 'Column gap', 'sgs-blocks' ) }
-				placeholder={
-					placeholder ? inherited.column || inherited.row : undefined
-				}
-				value={ column }
-				onChange={ ( next ) => onChange( composeGap( row, next ) ) }
-			/>
+			<div style={ PAIR_STYLE }>
+				<SgsLengthControl
+					{ ...shared }
+					label={ __( 'Row gap', 'sgs-blocks' ) }
+					placeholder={ placeholder ? inherited.row : undefined }
+					value={ row }
+					onChange={ ( next ) =>
+						onChange( composeGap( next, column ) )
+					}
+				/>
+				<SgsLengthControl
+					{ ...shared }
+					label={ __( 'Column gap', 'sgs-blocks' ) }
+					placeholder={
+						placeholder
+							? inherited.column || inherited.row
+							: undefined
+					}
+					value={ column }
+					onChange={ ( next ) => onChange( composeGap( row, next ) ) }
+				/>
+			</div>
 		</BaseControl>
 	);
 }
