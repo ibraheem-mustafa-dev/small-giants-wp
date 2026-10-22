@@ -38,9 +38,11 @@ last_updated: 2026-10-22
 
 **Control gaps** (the 12 features Mama's and Indus's drafts use that SGS lacked): done (2026-10-20), plan archived (`plans/archive/2026-10-19-control-gaps-build.md`). Mama's redesign snapshot is pushed with the two new easing tokens. Live on mamas-test at 375/768/1440: the hero buttons ease the move on the spring and the shadow and background on `ease`, the sparkle is within 0.67deg of the draft, both inline-format popovers work by keyboard (the photo popover's Escape was fixed on the way), the showcase description override paints, and the canary's old image-only Floating layers still validate (`.claude/qa/control-gaps/results-2026-10-20.md`). Owned elsewhere: the route's writer and detector for the new attributes and inline formats (Indus delivery units; Mama's-only controls: `plans/2026-10-22-mamas-delivery.md`); the Indus timeline outline following the current card (Indus delivery U13a).
 
-**Container band layers and the nav caret** (Bean, 2026-10-22): every block has one Padding and one Margin; on every block with `contentWidth` its `max-width` and `padding` paint the content band and `margin` the outer element (`contentBandPadding` and `contentBandMargin` removed, gate `check-container-band-layers`), and a nav submenu item draws its caret inside the item with a 44px tap target. All four test sites run it (deploy marker `d743fc29f`) and `wp sgs band-padding-migrate` has folded every saved post. Next: wave 3 of `plans/2026-10-21-handoff-readers.md` (its Status lists the items in order).
+**Container band layers and the nav caret** (Bean, 2026-10-22): done and live on all four test sites; the rules are in Spec 02's contentWidth bullet and Spec 36, the record in the plan's Status.
 
-**Resume from:** `plans/2026-10-21-handoff-readers.md`, Status, Next. Track T (the handoff readers session): T1 in progress. Track F: not started; it starts from `.claude/prompts/2026-10-22-track-f-framework.md`. The tracks signal each other through `.claude/queue.md`.
+**Resume from:** `plans/2026-10-21-handoff-readers.md`, Status, Next; the tracks signal each other through `.claude/queue.md`.
+- **Track T (the handoff readers session):** T1 done 2026-10-22 (six readers in the fact record, schema version 6, `f3398ec5c`; route suite 2086 pass, only the known intake re-run red); next T2a, the header architecture (Indus post 201 has one unslotted row and no row for the draft's top bar).
+- **Track F:** not started; it starts from `.claude/prompts/2026-10-22-track-f-framework.md` (its F0 asks Bean the header row-height question).
 
 ### Front F: Eye Care Birmingham, built by hand (D1149)
 
