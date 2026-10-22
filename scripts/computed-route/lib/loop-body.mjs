@@ -4,6 +4,8 @@
 // identity (the fact record's template element and its enclosing `sc-for`, R-47-4), never a match on words. This builds the
 // `ctx.loopBody` callback the hop calls: { ancestor, paths, prop, state } -> { key } | null.
 
+import { templateKeyOf } from './fact-key.mjs';
+
 // The innermost `sc-for` a template element sits in, or null.
 export function loopKeyOf( facts, tplKey ) {
 	return facts?.elements?.[ tplKey ]?.template?.membership?.scFor?.[ 0 ]?.key ?? null;
@@ -43,16 +45,6 @@ export function loopBodyCheck( { facts, identityOf } ) {
 	};
 }
 
-// The template key a tpl finder names (`<chain>/<n>#<copy>` -> `<component>/<n>`; the served root is named by `rootComponent`).
-export function tplKeyOf( tpl, rootComponent = null ) {
-	const m = /^(.+)\/(\d+)#\d+$/.exec( String( tpl ?? '' ) );
-	if ( ! m ) {
-		return null;
-	}
-	const comp = m[ 1 ].split( '>' ).pop().replace( /^(.*?)(?:@\d+)?(?:#\d+)?$/, '$1' );
-	return `${ 'Root' === comp && rootComponent ? rootComponent : comp }/${ m[ 2 ] }`;
-}
-
 // identityOf for loopBodyCheck from the surface's origin map ({ [cr-ref]: { tpl } }, lib/fill-skeleton.mjs::originMap): the
 // measured path of an ancestor came from the descendant ref the caller recorded in `ancestor.measuredRefs`.
-export const identityFromOrigin = ( origin, rootComponent = null ) => ( ancestor, path ) => tplKeyOf( origin?.[ ancestor?.measuredRefs?.[ path ] ]?.tpl, rootComponent );
+export const identityFromOrigin = ( origin, rootComponent = null ) => ( ancestor, path ) => templateKeyOf( origin?.[ ancestor?.measuredRefs?.[ path ] ]?.tpl, rootComponent );

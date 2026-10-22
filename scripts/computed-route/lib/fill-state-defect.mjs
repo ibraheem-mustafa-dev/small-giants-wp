@@ -8,6 +8,7 @@
 // fill report for Bean. A binding that resolves to no single value (undefined, or an expression error) is a gap row.
 
 import { draftIdOf } from './fill-confirm.mjs';
+import { templateKey } from './fact-key.mjs';
 
 // The defect rows of intake's `draftDefects` (groups hold `rows`) that name a dropped state declaration:
 // [{ draftId, pseudo, prop, declared }].
@@ -45,7 +46,7 @@ export function addDefectLooks( { reads, jobs, facts, draftDefects, rootComponen
 		const copy = Number( /#(\d+)$/.exec( job.finder?.tpl || '' )?.[ 1 ] ?? 0 );
 		for ( const d of decls.filter( ( x ) => x.draftId === draftId ) ) {
 			const [ component, n ] = [ draftId.slice( 0, draftId.lastIndexOf( ':' ) ), draftId.slice( draftId.lastIndexOf( ':' ) + 1 ) ];
-			const el = facts.elements?.[ `${ component }/${ n }` ];
+			const el = facts.elements?.[ templateKey( { dc: component, tpl: n } ) ];
 			const hole = ( el?.template?.holes || [] ).find( ( h ) => h.where === `style-${ d.pseudo }:${ d.prop }` );
 			if ( ! hole ) {
 				out.gaps.push( { draftId, state: d.pseudo, prop: d.prop, reason: `the fact record holds no ${ d.pseudo } binding for ${ d.prop } on ${ draftId }` } );

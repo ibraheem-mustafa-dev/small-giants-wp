@@ -146,10 +146,11 @@ export async function fillSurface( o ) {
 		const intakeFile = path.join( buildDir, 'intake', 'intake.json' );
 		const logicRows = fs.existsSync( intakeFile ) && vocab.rows.length ? stateMap( { surfaces, surface: o.surface, intake: JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ), vocab: vocab.rows } ).scIf : [];
 		const facts = fs.existsSync( factsFile( repo, o.client ) ) ? loadFacts( o.client, { repo } ) : null;
-		const currentGroups = facts ? currentItemGroups( facts ) : [];
+		// The entry draft's component and the draft defects intake lists (the served root host is named `Root`, the fact record names it after the component).
+		const intakeParts = animationInventory( buildDir, o.draftIndex, log );
+		const currentGroups = facts ? currentItemGroups( facts, intakeParts.rootComponent ) : [];
 		const reads = await readDraft( { url, nodes, open: o.open || null, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, log } );
 		// FR-48-69: a state declaration the draft never paints (intake.json `draftDefects`) is built from the code value, as a code look.
-		const intakeParts = animationInventory( buildDir, o.draftIndex, log );
 		const defectLooks = addDefectLooks( { reads, jobs: nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) ), facts, draftDefects: intakeParts.draftDefects, rootComponent: intakeParts.rootComponent } );
 		const calFor = calibrationLoader( entry.site, o.cache );
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
@@ -171,7 +172,7 @@ export async function fillSurface( o ) {
 		result.unmapped.push( ...states.unmapped );
 		// FR-48-50: content the draft's logic shows or hides by width, written as hiding settings (lib/fill-width-gate.mjs); a snapped
 		// threshold's `breakpoint-snap` ledger entry is written beside the other outputs for the client's ledger.
-		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, entries: loadLedger( ledgerFile ) } );
+		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, entries: loadLedger( ledgerFile ), rootComponent: intakeParts.rootComponent } );
 		result.writes.push( ...gates.writes );
 		result.unmapped.push( ...gates.unmapped );
 		result.notes.push( ...gates.notes );

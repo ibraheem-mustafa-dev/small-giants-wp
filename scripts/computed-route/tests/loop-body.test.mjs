@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { resolveViaAncestor } from '../lib/resolve.mjs';
-import { loopBodyCheck, loopKeyOf, staticIn, tplKeyOf, identityFromOrigin } from '../lib/loop-body.mjs';
+import { loopBodyCheck, loopKeyOf, staticIn, identityFromOrigin } from '../lib/loop-body.mjs';
 import { openDb } from '../lib/db.mjs';
 
 const db = openDb();
@@ -51,7 +51,9 @@ test( 'loop membership and static properties come from the fact record', () => {
 	assert.equal( staticIn( FACTS, 'A/14', 'color' ), false );
 	assert.equal( staticIn( FACTS, 'A/14', 'padding-top' ), true, 'another property is unaffected' );
 	assert.equal( staticIn( FACTS, 'A/nope', 'color' ), false );
-	assert.equal( tplKeyOf( 'Root/220#0', 'Main' ), 'Main/220' );
-	assert.equal( tplKeyOf( 'Main>Card@3#1/12#4' ), 'Card/12' );
-	assert.equal( tplKeyOf( 'x' ), null );
+	const ancestor = { measuredRefs: { p: 'r' } };
+	assert.equal( identityFromOrigin( { r: { tpl: 'Root/220#0' } }, 'Main' )( ancestor, 'p' ), 'Main/220', 'the served root is named by the entry component' );
+	assert.equal( identityFromOrigin( { r: { tpl: 'Main>Card@3#1/12#4' } } )( ancestor, 'p' ), 'Card/12' );
+	assert.equal( identityFromOrigin( { r: { tpl: 'x' } } )( ancestor, 'p' ), null );
+	assert.equal( identityFromOrigin( {} )( ancestor, 'p' ), null );
 } );

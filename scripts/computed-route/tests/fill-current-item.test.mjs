@@ -84,6 +84,20 @@ test( 'MUST FAIL WITHOUT THE READER: the current copy is read against a non-curr
 	assert.deepEqual( res.writes.map( ( w ) => w.attr ).sort(), [ 'itemBgCurrent', 'itemColourCurrent' ] );
 } );
 
+test( 'the served root host is Root in the page and a finder, and the entry component in the fact record', async () => {
+	const groups = currentItemGroups( FACTS, 'Page' );
+	const root = { id: '0:', finder: { tpl: 'Root/47#0' } };
+	assert.equal( groupOfJob( groups, root ), groups[ 0 ] );
+	assert.equal( groupOfJob( currentItemGroups( FACTS ), root ), undefined, 'without the entry component Root is not the fact record\'s host' );
+	assert.match( currentSelectors( groups[ 0 ] ).current, /data-sc-name="Root"/ );
+	const page = await browser.newPage( { viewport: { width: 800, height: 600 } } );
+	await page.setContent( HTML.replace( 'data-sc-name="Page"', 'data-sc-name="Root"' ) );
+	const cdp = await openDevtools( page );
+	const out = await readCurrentItems( { page, cdp, jobs: [ root ], groups, resolveSrc: RESOLVE } );
+	await page.close();
+	assert.equal( out.looks[ root.id ][ 0 ].declared.color, 'rgb(10, 126, 168)' );
+} );
+
 test( 'a page with no group, or no non-current copy, reads no look', async () => {
 	assert.deepEqual( ( await readPlanted( [] ) ).looks, {} );
 	const out = await readPlanted( currentItemGroups( FACTS ), HTML.replace( /<button class="it" data-dc-tpl="47">(Home|Contact)<\/button>/g, '' ) );

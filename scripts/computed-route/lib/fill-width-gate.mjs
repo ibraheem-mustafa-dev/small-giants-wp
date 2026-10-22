@@ -15,6 +15,7 @@
 // condition (`partial`) hides only where its width part is false.
 
 import { setAttr } from './tree.mjs';
+import { templateKeyOf } from './fact-key.mjs';
 
 export const TIERS = [ 768, 1024 ];
 export const SNAP_TOLERANCE = 0.05;
@@ -87,11 +88,8 @@ export function snapThreshold( t ) {
 	return near.distance > 0 && near.distance <= SNAP_TOLERANCE * near.tier ? near : null;
 }
 
-// The template key a finder names (`<chain>/<n>#<copy>` -> `<component>/<n>`), or null.
-export function tplKey( finder ) {
-	const m = /^(.+)\/(\d+)#\d+$/.exec( finder?.tpl || '' );
-	return m ? `${ m[ 1 ].split( '>' ).pop().replace( /^(.*?)(?:@\d+)?(?:#\d+)?$/, '$1' ) }/${ m[ 2 ] }` : null;
-}
+// The template key a finder names (`<chain>/<n>#<copy>` -> `<component>/<n>`, the served root named by rootComponent), or null.
+export const tplKey = ( finder, rootComponent = null ) => templateKeyOf( finder?.tpl, rootComponent );
 
 // The widths a template element is shown at, from the width conditions of its enclosing sc-ifs: { shown, via } or null
 // when no enclosing sc-if is gated by width.
@@ -156,14 +154,14 @@ function snapEntry( { scope, ref, snap, entries, date } ) {
 // ref; facts: the fact record (null: nothing written); db: the framework DB; scope: the surface; entries: the ledger's
 // entries (the snap entries continue its numbering). Returns { writes, unmapped, notes, ledger } in the shapes
 // lib/fill-resolve.mjs uses; `ledger` holds the new snap entries.
-export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, entries = [], date = new Date().toISOString().slice( 0, 10 ) } ) {
+export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, entries = [], rootComponent = null, date = new Date().toISOString().slice( 0, 10 ) } ) {
 	const out = { writes: [], unmapped: [], notes: [], ledger: [] };
 	if ( ! facts ) {
 		return out;
 	}
 	const gate = new Map();
 	for ( const n of nodes ) {
-		const key = tplKey( n.node.draftRef );
+		const key = tplKey( n.node.draftRef, rootComponent );
 		const at = key ? shownAt( facts, key ) : null;
 		at && gate.set( n.index, at );
 	}

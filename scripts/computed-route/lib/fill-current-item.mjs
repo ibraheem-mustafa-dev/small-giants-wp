@@ -10,13 +10,14 @@
 import { declaredValues } from '../../parity/lib/devtools.mjs';
 import { renderedOf } from './fill-state-apply.mjs';
 import { declaredDiff } from './fill-state-read.mjs';
+import { templateKeyOf, parseTemplateKey } from './fact-key.mjs';
 
 // The loop variable's property names a draft uses for "this item is the current route".
 export const CURRENT_PATH = /(?:^|\.)(?:current|isCurrent|active|isActive|selected|isSelected)$/;
 
 const splitKey = ( key ) => {
-	const i = String( key ).lastIndexOf( '/' );
-	return { component: key.slice( 0, i ), n: key.slice( i + 1 ) };
+	const p = parseTemplateKey( key );
+	return { component: p?.dc ?? null, n: p?.tpl ?? null };
 };
 
 const isBool = ( x, v ) => 'boolean' === x.t && v === x.v;
@@ -24,7 +25,7 @@ const hasBoth = ( holes ) => Object.values( holes || {} ).flatMap( ( byWidth ) =
 
 // The current-item groups of a fact record: [{ ifKey, itemKey, markKey, component, itemN, markN, path }]. Only an sc-if inside
 // an sc-for, whose single hole is a current-like path, answered both true and false across the loop, with an element child.
-export function currentItemGroups( facts ) {
+export function currentItemGroups( facts, rootComponent = null ) {
 	const groups = [];
 	const els = facts?.elements || {};
 	for ( const [ key, e ] of Object.entries( els ) ) {
@@ -36,24 +37,21 @@ export function currentItemGroups( facts ) {
 		const itemKey = t.realParent || t.parent;
 		const markKey = Object.keys( els ).find( ( k ) => els[ k ].template.parent === key && 'sc-if' !== els[ k ].template.tag );
 		const item = splitKey( itemKey );
-		groups.push( { ifKey: key, itemKey, markKey: markKey || null, component: item.component, itemN: item.n, markN: markKey ? splitKey( markKey ).n : null, path: hole.path } );
+		groups.push( { ifKey: key, itemKey, markKey: markKey || null, component: item.component, itemN: item.n, markN: markKey ? splitKey( markKey ).n : null, path: hole.path, rootComponent } );
 	}
 	return groups;
 }
 
 // The group a read job (a target with a `{ tpl: '<chain>/<n>#<copy>' }` finder) is the item of, or undefined.
 export function groupOfJob( groups, job ) {
-	const m = /^(.+)\/(\d+)#\d+$/.exec( job?.finder?.tpl || '' );
-	if ( ! m ) {
-		return undefined;
-	}
-	const component = m[ 1 ].split( '>' ).pop().replace( /^(.*?)(?:@\d+)?(?:#\d+)?$/, '$1' );
-	return groups.find( ( g ) => g.component === component && g.itemN === m[ 2 ] );
+	return groups.find( ( g ) => g.itemKey === templateKeyOf( job?.finder?.tpl, g.rootComponent ) );
 }
 
 // The two selectors of a group: the copy where the condition holds and a copy where it does not.
 export function currentSelectors( g ) {
-	const base = `.sc-host[data-sc-name="${ g.component }"] [data-dc-tpl="${ g.itemN }"]`;
+	// The served draft names its root host `Root`; any other host keeps its component name.
+	const host = g.component === g.rootComponent ? 'Root' : g.component;
+	const base = `.sc-host[data-sc-name="${ host }"] [data-dc-tpl="${ g.itemN }"]`;
 	return { current: `${ base }:has([data-dc-tpl="${ g.markN }"])`, other: `${ base }:not(:has([data-dc-tpl="${ g.markN }"]))` };
 }
 

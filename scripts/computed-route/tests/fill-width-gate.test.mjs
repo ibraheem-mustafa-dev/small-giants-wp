@@ -93,6 +93,15 @@ test( 'a child gated like its parent is not written again; one gated further is'
 	assert.deepEqual( r.flat[ 2 ].attributes, {} );
 } );
 
+test( 'the served root host is named Root in a finder and by the entry component in the fact record', () => {
+	const facts = factsOf( gate( 'Page/12', isM, 'm' ), leaf( 'Page/13', [ 'Page/12' ] ) );
+	const flat = [ { name: 'sgs/button', attributes: {}, ref: 'r0' } ];
+	const nodes = [ { index: 0, name: 'sgs/button', parent: null, node: { draftRef: { tpl: 'Root/13#0' } }, children: [], targets: [] } ];
+	const at = ( rootComponent ) => widthGateWrites( { nodes, flat: structuredClone( flat ), refOf: ( n ) => n.ref, facts, db, scope: 'header', entries: [], rootComponent, date: '2026-10-22' } ).writes.length;
+	assert.equal( at( 'Page' ), 2 );
+	assert.equal( at( null ), 0, 'without the entry component the root key is not the fact record\'s' );
+} );
+
 test( 'an element with no width-gated sc-if, or no fact record, is untouched', () => {
 	const facts = factsOf( leaf( 'Page/13', [] ), [ 'Page/9', { template: { tag: 'sc-if', membership: { scIf: [] } }, logic: { holes: {} } } ], leaf( 'Page/10', [ 'Page/9' ] ) );
 	assert.equal( run( [ { name: 'sgs/button', n: 13 }, { name: 'sgs/button', n: 10 } ], facts ).writes.length, 0 );
