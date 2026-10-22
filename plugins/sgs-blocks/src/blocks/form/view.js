@@ -15,6 +15,10 @@ import {
 	publishStepChange,
 	preloadMotionState,
 } from '../../shared/motion-state-publish.js';
+import { validateField } from './custom-messages.js';
+import { applyLinkValues } from './field-from-link.js';
+import { populateReview } from './review-cards.js';
+import { initSavedProgress, saveStep, clearProgress } from './saved-progress.js';
 
 const { state } = store( 'sgs/form', {
 	state: {
@@ -109,34 +113,13 @@ const { state } = store( 'sgs/form', {
 				return;
 			}
 
-			// Validate all fields in current step.
-			const fields = currentStepEl.querySelectorAll(
-				'input, select, textarea'
-			);
+			// Validate all fields in current step (WCAG 3.3.1: aria-invalid + error line; a field's own
+			// data-sgs-msg-* copy replaces the browser text).
 			let isValid = true;
-
-			fields.forEach( ( field ) => {
-				if ( ! field.checkValidity() ) {
-					// WCAG 2.2 SC 3.3.1 — mark field as invalid and populate error message.
-					field.setAttribute( 'aria-invalid', 'true' );
-					const errorId = field.id ? field.id + '-error' : null;
-					if ( errorId ) {
-						const errorEl = document.getElementById( errorId );
-						if ( errorEl ) {
-							errorEl.textContent = field.validationMessage || 'This field is required.';
-						}
-					}
+			currentStepEl.querySelectorAll( 'input, select, textarea' ).forEach( ( field ) => {
+				if ( ! validateField( field ) ) {
 					field.reportValidity();
 					isValid = false;
-				} else {
-					field.removeAttribute( 'aria-invalid' );
-					const errorId = field.id ? field.id + '-error' : null;
-					if ( errorId ) {
-						const errorEl = document.getElementById( errorId );
-						if ( errorEl ) {
-							errorEl.textContent = '';
-						}
-					}
 				}
 			} );
 
@@ -150,7 +133,7 @@ const { state } = store( 'sgs/form', {
 			if ( ctx.currentStep < ctx.totalSteps - 1 ) {
 				ctx.currentStep++;
 				updateStepVisibility( formRoot, ctx.currentStep );
-				saveStepState( formRoot, ctx.currentStep );
+				saveStep( formRoot, ctx.currentStep );
 				publishStepChange( formRoot, 'forward' );
 				formRoot.scrollIntoView( {
 					behavior: 'smooth',
@@ -174,7 +157,7 @@ const { state } = store( 'sgs/form', {
 			if ( ctx.currentStep > 0 ) {
 				ctx.currentStep--;
 				updateStepVisibility( formRoot, ctx.currentStep );
-				saveStepState( formRoot, ctx.currentStep );
+				saveStep( formRoot, ctx.currentStep );
 				publishStepChange( formRoot, 'back' );
 				formRoot.scrollIntoView( {
 					behavior: 'smooth',
@@ -201,7 +184,7 @@ const { state } = store( 'sgs/form', {
 				const moved = ctx.stepIndex < ctx.currentStep;
 				ctx.currentStep = ctx.stepIndex;
 				updateStepVisibility( formRoot, ctx.currentStep );
-				saveStepState( formRoot, ctx.currentStep );
+				saveStep( formRoot, ctx.currentStep );
 				if ( moved ) {
 					publishStepChange( formRoot, 'back' );
 				}
@@ -235,28 +218,11 @@ const { state } = store( 'sgs/form', {
 				return;
 			}
 
-			// Validate entire form — mark invalid fields with aria-invalid + error message.
+			// Validate entire form: aria-invalid + error line per field.
 			let formValid = true;
 			formEl.querySelectorAll( 'input, select, textarea' ).forEach( ( field ) => {
-				if ( ! field.checkValidity() ) {
-					field.setAttribute( 'aria-invalid', 'true' );
-					const errorId = field.id ? field.id + '-error' : null;
-					if ( errorId ) {
-						const errorEl = document.getElementById( errorId );
-						if ( errorEl ) {
-							errorEl.textContent = field.validationMessage || 'This field is required.';
-						}
-					}
+				if ( ! validateField( field ) ) {
 					formValid = false;
-				} else {
-					field.removeAttribute( 'aria-invalid' );
-					const errorId = field.id ? field.id + '-error' : null;
-					if ( errorId ) {
-						const errorEl = document.getElementById( errorId );
-						if ( errorEl ) {
-							errorEl.textContent = '';
-						}
-					}
 				}
 			} );
 
@@ -355,15 +321,8 @@ const { state } = store( 'sgs/form', {
 				setState( formRoot, 'invalid', false );
 				setState( formRoot, 'success' );
 
-				// Clear persisted step state — submission is complete.
-				try {
-					const key = getStepStorageKey( formRoot );
-					if ( key ) {
-						sessionStorage.removeItem( key );
-					}
-				} catch ( _e ) {
-					// sessionStorage unavailable — ignore.
-				}
+				// Submission is complete: forget the saved progress.
+				clearProgress( formRoot );
 
 				// Redirect if configured.
 				if ( ctx.successRedirect ) {
@@ -549,206 +508,17 @@ function updateStepVisibility( formRoot, currentStep ) {
 	// If current step contains a review block, populate it.
 	const currentStepEl = steps[ currentStep ];
 	if ( currentStepEl ) {
-		const reviewList = currentStepEl.querySelector(
-			'.sgs-form-review__list'
-		);
-		if ( reviewList ) {
-			populateReview( formRoot, reviewList );
+		const review = currentStepEl.querySelector( '.sgs-form-review' );
+		if ( review ) {
+			populateReview( formRoot, review );
 		}
 	}
-}
-
-/**
- * Populate review summary with all field values.
- * Uses safe DOM methods only — no innerHTML.
- *
- * @param {HTMLElement} formRoot Form wrapper element.
- * @param {HTMLElement} reviewList Review list element (dl).
- */
-function populateReview( formRoot, reviewList ) {
-	// Clear existing content safely.
-	while ( reviewList.firstChild ) {
-		reviewList.removeChild( reviewList.firstChild );
-	}
-
-	// Get all form fields.
-	const fields = formRoot.querySelectorAll( '.sgs-form-field' );
-
-	fields.forEach( ( field ) => {
-		const labelEl = field.querySelector( 'label' );
-		const labelText = labelEl ? labelEl.textContent.trim() : '';
-
-		if ( ! labelText ) {
-			return;
-		}
-
-		let valueText = '';
-
-		// Text, email, phone, textarea, hidden.
-		const textInput = field.querySelector(
-			'input[type="text"], input[type="email"], input[type="tel"], input[type="hidden"], textarea'
-		);
-		if ( textInput && textInput.value ) {
-			valueText = textInput.value;
-		}
-
-		// Select.
-		const selectEl = field.querySelector( 'select' );
-		if ( selectEl && selectEl.value ) {
-			const selectedOption = selectEl.querySelector(
-				'option:checked'
-			);
-			valueText = selectedOption
-				? selectedOption.textContent
-				: selectEl.value;
-		}
-
-		// Radio buttons.
-		const checkedRadio = field.querySelector(
-			'input[type="radio"]:checked'
-		);
-		if ( checkedRadio ) {
-			const radioLabel = field.querySelector(
-				`label[for="${ checkedRadio.id }"]`
-			);
-			valueText = radioLabel
-				? radioLabel.textContent.trim()
-				: checkedRadio.value;
-		}
-
-		// Checkboxes.
-		const checkedBoxes = field.querySelectorAll(
-			'input[type="checkbox"]:checked'
-		);
-		if ( checkedBoxes.length > 0 ) {
-			const values = [];
-			checkedBoxes.forEach( ( checkbox ) => {
-				const checkboxLabel = field.querySelector(
-					`label[for="${ checkbox.id }"]`
-				);
-				values.push(
-					checkboxLabel
-						? checkboxLabel.textContent.trim()
-						: checkbox.value
-				);
-			} );
-			valueText = values.join( ', ' );
-		}
-
-		// Tiles (similar to checkboxes/radio).
-		const checkedTiles = field.querySelectorAll(
-			'.sgs-form-tile input:checked'
-		);
-		if ( checkedTiles.length > 0 ) {
-			const values = [];
-			checkedTiles.forEach( ( tileInput ) => {
-				const tileLabel = tileInput.closest( 'label' );
-				if ( tileLabel ) {
-					const tileLabelText =
-						tileLabel.querySelector( '.sgs-form-tile__label' );
-					values.push(
-						tileLabelText
-							? tileLabelText.textContent.trim()
-							: tileInput.value
-					);
-				}
-			} );
-			valueText = values.join( ', ' );
-		}
-
-		// File upload.
-		const filePreview = field.querySelector( '.sgs-form-file__name' );
-		if ( filePreview ) {
-			valueText = filePreview.textContent;
-		}
-
-		// Consent.
-		const consentCheckbox = field.querySelector(
-			'input[type="checkbox"]'
-		);
-		if (
-			field.classList.contains( 'sgs-form-field--consent' ) &&
-			consentCheckbox
-		) {
-			valueText = consentCheckbox.checked ? 'Yes' : 'No';
-		}
-
-		// Only add to review if we have a value.
-		if ( ! valueText ) {
-			return;
-		}
-
-		// Create dt and dd elements safely.
-		const dt = document.createElement( 'dt' );
-		dt.className = 'sgs-form-review__term';
-		dt.textContent = labelText;
-
-		const dd = document.createElement( 'dd' );
-		dd.className = 'sgs-form-review__detail';
-		dd.textContent = valueText;
-
-		reviewList.appendChild( dt );
-		reviewList.appendChild( dd );
-	} );
-}
-
-/**
- * Build the sessionStorage key for a form's step state.
- *
- * @param {HTMLElement} formRoot Form wrapper element.
- * @return {string|null} Storage key, or null if no form ID.
- */
-function getStepStorageKey( formRoot ) {
-	const formId = formRoot.getAttribute( 'data-form-id' );
-	return formId ? `sgs-form-step-${ formId }` : null;
-}
-
-/**
- * Persist the current step index to sessionStorage.
- * Survives page refresh so users don't lose progress.
- *
- * @param {HTMLElement} formRoot   Form wrapper element.
- * @param {number}      stepIndex  Zero-based step index to save.
- */
-function saveStepState( formRoot, stepIndex ) {
-	try {
-		const key = getStepStorageKey( formRoot );
-		if ( key ) {
-			sessionStorage.setItem( key, String( stepIndex ) );
-		}
-	} catch ( _e ) {
-		// sessionStorage may be unavailable (private browsing restrictions, etc.).
-	}
-}
-
-/**
- * Restore the step index from sessionStorage.
- *
- * @param {HTMLElement} formRoot Form wrapper element.
- * @return {number} Saved step index (defaults to 0 if not found).
- */
-function restoreStepState( formRoot ) {
-	try {
-		const key = getStepStorageKey( formRoot );
-		if ( key ) {
-			const saved = sessionStorage.getItem( key );
-			if ( saved !== null ) {
-				const parsed = parseInt( saved, 10 );
-				if ( ! isNaN( parsed ) && parsed >= 0 ) {
-					return parsed;
-				}
-			}
-		}
-	} catch ( _e ) {
-		// sessionStorage unavailable — start from step 0.
-	}
-	return 0;
 }
 
 /**
  * Initialise forms on page load.
  * Sets up initial step visibility for multi-step forms.
- * Restores saved step state from sessionStorage when available.
+ * Restores saved progress (fields and step) and applies link parameters.
  */
 function initForms() {
 	const forms = document.querySelectorAll(
@@ -759,10 +529,10 @@ function initForms() {
 		preloadMotionState( formRoot );
 		const steps = formRoot.querySelectorAll( '.sgs-form-step' );
 
+		const startStep = initSavedProgress( formRoot, steps.length );
+		applyLinkValues( formRoot, window.location.search );
+
 		if ( steps.length > 1 ) {
-			// Restore saved step (survives page refresh as per spec).
-			const savedStep = restoreStepState( formRoot );
-			const startStep = Math.min( savedStep, steps.length - 1 );
 
 			// Multi-step form: hide all steps except the restored one.
 			steps.forEach( ( step, index ) => {
@@ -783,6 +553,10 @@ function initForms() {
 				} catch ( _e ) {
 					// Context parse failure — leave at step 0.
 				}
+			}
+			const startReview = steps[ startStep ].querySelector( '.sgs-form-review' );
+			if ( startReview ) {
+				populateReview( formRoot, startReview );
 			}
 		}
 	} );

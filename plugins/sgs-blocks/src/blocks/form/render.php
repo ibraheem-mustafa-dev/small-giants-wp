@@ -676,7 +676,33 @@ if ( null !== $sgs_form_loop_style ) {
 	$content = $sgs_form_loop_tagged['html'];
 }
 
+// Saved progress (Spec 04 FR-4-9): the notice shows only when the setting is on; view.js stores every field and the step in
+// localStorage and switches the wording to the saved label. The dot colour is a scoped rule, never an inline style.
+$sgs_form_saved_on = ! empty( $attributes['savedProgress'] );
+if ( $sgs_form_saved_on ) {
+	$sgs_form_saved_dot = function_exists( 'sgs_colour_value' ) ? sgs_colour_value( (string) ( $attributes['savedProgressDotColour'] ?? '' ) ) : '';
+	if ( '' !== $sgs_form_saved_dot ) {
+		if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+			$sgs_form_supports_classes[] = $sgs_form_uid;
+		}
+		$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__saved-dot{background-color:' . $sgs_form_saved_dot . ';}';
+	}
+}
+
 ob_start();
+
+if ( $sgs_form_saved_on ) :
+	$sgs_form_saved_label      = trim( (string) ( $attributes['savedProgressLabel'] ?? '' ) );
+	$sgs_form_saved_done_label = trim( (string) ( $attributes['savedProgressSavedLabel'] ?? '' ) );
+	$sgs_form_saved_label      = '' !== $sgs_form_saved_label ? $sgs_form_saved_label : __( 'Saves as you go', 'sgs-blocks' );
+	$sgs_form_saved_done_label = '' !== $sgs_form_saved_done_label ? $sgs_form_saved_done_label : __( 'Progress saved', 'sgs-blocks' );
+	?>
+<p class="sgs-form__saved-notice">
+	<span class="sgs-form__saved-dot" aria-hidden="true"></span>
+	<span class="sgs-form__saved-text" role="status" data-saved-label="<?php echo esc_attr( $sgs_form_saved_done_label ); ?>"><?php echo esc_html( $sgs_form_saved_label ); ?></span>
+</p>
+	<?php
+endif;
 
 if ( $is_multi_step ) :
 	?>
@@ -844,6 +870,7 @@ $sgs_form_output = SGS_Container_Wrapper::render(
 			'data-wp-context'        => wp_json_encode( $context ),
 			'data-form-id'           => esc_attr( $form_id ),
 			'data-store-submissions' => $store_submissions ? 'true' : 'false',
+			'data-saved-progress'    => $sgs_form_saved_on ? 'true' : 'false',
 		),
 	)
 );

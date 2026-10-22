@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, SelectControl } from '@wordpress/components';
+import { PanelBody, TextControl, SelectControl, ToggleControl } from '@wordpress/components';
 
 // D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
 // allow-list exactly (render.php validates the same set independently).
@@ -14,7 +14,7 @@ const HEADING_LEVEL_OPTIONS = [
 ];
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { heading, headingLevel } = attributes;
+	const { heading, headingLevel, intro, showEditLinks, editLabel } = attributes;
 
 	const blockProps = useBlockProps( { className: 'sgs-form-review' } );
 
@@ -49,17 +49,36 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<TextControl
+						label={ __( 'Intro text', 'sgs-blocks' ) }
+						value={ intro }
+						onChange={ ( val ) => setAttributes( { intro: val } ) }
+						help={ __( 'Shown under the heading. Leave empty to hide it.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<ToggleControl
+						label={ __( 'Show an Edit button on each section', 'sgs-blocks' ) }
+						checked={ false !== showEditLinks }
+						onChange={ ( val ) => setAttributes( { showEditLinks: val } ) }
+						help={ __( 'Takes the visitor back to that step.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					{ false !== showEditLinks && (
+						<TextControl
+							label={ __( 'Edit button text', 'sgs-blocks' ) }
+							value={ editLabel }
+							onChange={ ( val ) => setAttributes( { editLabel: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
 				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>
 				<HeadingTag className="sgs-form-review__heading">{ heading }</HeadingTag>
-				<p className="sgs-form-review__intro">
-					{ __(
-						'Please check your details below before submitting.',
-						'sgs-blocks'
-					) }
-				</p>
+				{ intro && <p className="sgs-form-review__intro">{ intro }</p> }
 				<div
 					className="sgs-form-review__placeholder"
 					style={ {
@@ -71,6 +90,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						color: '#666',
 					} }
 				>
+					{ false !== showEditLinks && (
+						<button type="button" className="sgs-form-review__edit" tabIndex={ -1 }>
+							{ editLabel || __( 'Edit', 'sgs-blocks' ) }
+						</button>
+					) }
 					<p>
 						{ __(
 							'Review step — entered fields will be displayed here on the frontend.',

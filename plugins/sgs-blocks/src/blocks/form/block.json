@@ -222,6 +222,19 @@
 					"absentIn": [ "single-step" ],
 					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step)."
 				},
+				"saved-dot": {
+					"selector": ".sgs-form__saved-dot",
+					"label": "Saved-progress dot",
+					"order": 30,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "savedProgressDot",
+					"attrMap": {
+						"css:background-color": "savedProgressDotColour"
+					},
+					"_note": "The small dot beside the saved-progress notice (Spec 04 FR-4-9). Printed only when savedProgress is on; a preset slug or a custom hex, emitted as a scoped rule on the form uid class."
+				},
 				"field-input": {
 					"motion": false,
 					"label": "Field controls",
@@ -861,6 +874,24 @@
 			"type": "string",
 			"default": "Thank you! Your submission has been received.",
 			"role": "content"
+		},
+		"savedProgress": {
+			"type": "boolean",
+			"default": false
+		},
+		"savedProgressLabel": {
+			"type": "string",
+			"default": "Saves as you go",
+			"role": "content"
+		},
+		"savedProgressSavedLabel": {
+			"type": "string",
+			"default": "Progress saved",
+			"role": "content"
+		},
+		"savedProgressDotColour": {
+			"type": "string",
+			"default": ""
 		},
 		"successRedirect": {
 			"type": "string",

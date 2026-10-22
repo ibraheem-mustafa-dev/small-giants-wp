@@ -5,7 +5,7 @@
     "version": "0.1.0",
     "title": "SGS Form Review",
     "category": "sgs-forms",
-    "description": "Displays a summary of form fields for review before submission.",
+    "description": "Displays one card per form section with the answers given and an Edit button back to that section.",
     "keywords": [
         "review",
         "summary",
@@ -37,13 +37,13 @@
                     "label": "Intro text",
                     "order": 2,
                     "clusters": [],
-                    "_note": "Renders as <p class=\"sgs-form-review__intro\">, a fixed hard-coded string (not a block attribute), styled entirely by shared framework CSS. clusters: [] is a genuine gap."
+                    "_note": "Renders as <p class=\"sgs-form-review__intro\"> from the intro attribute, styled entirely by shared framework CSS. clusters: [] is a genuine gap."
                 },
                 "list": {
                     "label": "Review summary list",
                     "order": 3,
                     "clusters": [],
-                    "_note": "Renders as an empty <dl class=\"sgs-form-review__list\"> — populated client-side by view.js with the submitted field rows. No per-instance style attribute exists on this block for the list or its rows; styling is shared framework CSS. clusters: [] is a genuine gap."
+                    "_note": "Renders as an empty cards mount <div class=\"sgs-form-review__cards\"> — populated client-side by view.js (review-cards.js) with one card per section, each holding a <dl class=\"sgs-form-review__list\"> of the answered field rows. No per-instance style attribute exists on this block for the list or its rows; styling is shared framework CSS. clusters: [] is a genuine gap."
                 }
             }
         }
@@ -58,6 +58,20 @@
             "type": "string",
             "enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
             "default": "h3"
+        },
+        "intro": {
+            "type": "string",
+            "default": "Please check your details below before submitting.",
+            "role": "content"
+        },
+        "showEditLinks": {
+            "type": "boolean",
+            "default": true
+        },
+        "editLabel": {
+            "type": "string",
+            "default": "Edit",
+            "role": "content"
         }
     },
     "render": "file:./render.php",
