@@ -38,6 +38,8 @@ import {
 	openStatusColourRows,
 	OpenStatusPanel,
 	MapSourcePanel,
+	TodayRowPanel,
+	todayRowColourRows,
 } from './OpenStatusPanels';
 
 /** Labels for the type selector drop-down. */
@@ -237,6 +239,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					...( 'open-status' === displayType
 						? openStatusColourRows( attributes, setAttributes )
 						: [] ),
+					...( 'hours' === displayType
+						? todayRowColourRows( attributes, setAttributes )
+						: [] ),
 				] }
 			/>
 			<InspectorControls>
@@ -265,6 +270,12 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ 'open-status' === displayType && (
 					<OpenStatusPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+				) }
+				{ 'hours' === displayType && (
+					<TodayRowPanel
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>

@@ -7,6 +7,7 @@
  * and re-checks every quarter of an hour so a page left open stays right. The text sits in no
  * live region, so assistive technology reads it once as part of the page and is not interrupted.
  */
+import { initialiseHoursToday } from './hours-today';
 import { parseSchedule, hasAnySession, zonedNow, computeStatus, buildLine } from './open-status-logic';
 
 const RECHECK_MS = 15 * 60 * 1000;
@@ -63,3 +64,4 @@ function initialise( root ) {
 }
 
 document.querySelectorAll( '[data-sgs-open-status]' ).forEach( initialise );
+initialiseHoursToday();
