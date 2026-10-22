@@ -752,7 +752,7 @@ Header, footer and drawer posts are template-locked so each contains exactly its
 
 **Mechanism.** WordPress applies a post-type `template` once, from the editor's `setupEditor` action, gated on `post.status === 'auto-draft'` (`setupEditor`, WordPress core `wp-includes/js/dist/editor.js`), so it does not re-apply on saved posts — unlike the block-level `useInnerBlockTemplateSync` path of §3.3a, which re-applies on every mount under `templateLock: 'all'`. Evidence and cited bundle symbols: `.claude/reports/2026-09-17-fr37-46-verification-spike.md`.
 
-**Status:** `BUILT`.
+**Status:** `BUILT`. The build tool refuses a header or footer tree without its one root block and that block's three slotted rows, read from each container's `edit.js::TEMPLATE` (`scripts/lib/surface-tree-shape.js`, wired in `scripts/wp-build-page.js`; `scripts/computed-route/tests/wp-build-page-surface-shape.test.mjs`).
 
 **Done when:** a new post of any of the three types opens with the locked block already present and populated by its own template default; no other block can be inserted as a sibling or appended below it **in the block-editor UI** (the REST case is the named gap above, not a Done-when criterion).
 

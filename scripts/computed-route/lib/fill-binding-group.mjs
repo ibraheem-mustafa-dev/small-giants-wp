@@ -1,30 +1,30 @@
 // Binding grouping (Spec 48 FR-48-41, row 5): elements that share one `{{ }}` binding in their style attribute share one
-// setting. The census names each bound element (a binding row: `<component>:<n>` and `attr:style=<expression>`), a Fill
-// node names its draft element by a tpl finder (`<chain>/<n>#<copy>`), and a write names its node and slot. A group is one
-// binding that fed the same setting with the same value on two or more elements; it is listed once, as the one token the
-// n writes share, instead of n copies. Elements bound to the same expression whose written values differ (a loop item's
-// own value) are listed apart as `split`, never grouped.
+// setting. The fact record (lib/fact-record.mjs) names each bound element: `elements[<template key>].template.holes` lists a
+// hole per `{{ }}` with its place (`style:<property>` for the style attribute) and `expr`. A Fill node names its draft
+// element by a tpl finder (`<chain>/<n>#<copy>`, read to the record's `<component>/<n>` key), and a write names its node and
+// slot. A group is one binding that fed the same setting with the same value on two or more elements; it is listed once, as
+// the one token the n writes share, instead of n copies. Elements bound to the same expression whose written values differ
+// (a loop item's own value) are listed apart as `split`, never grouped.
 
 import { templateKeyOf } from './fact-key.mjs';
 
-// The census binding row's place and expression: `detail` when the row carries it, else the row id
-// (`binding@<draftId>/<where>=<expression>`).
-export function bindingOf( row ) {
-	if ( 'binding' !== row?.kind ) {
-		return null;
+// The resting style-attribute expressions of each record element: Map<template key, expression[]>. A `style-hover:` hole is
+// a state look, not the resting style, and is left out.
+function styleBindings( facts ) {
+	const out = new Map();
+	for ( const [ key, e ] of Object.entries( facts?.elements || {} ) ) {
+		const exprs = ( e?.template?.holes || [] )
+			.filter( ( h ) => String( h?.where ?? '' ).startsWith( 'style:' ) && h.expr )
+			.map( ( h ) => String( h.expr ).trim() );
+		exprs.length && out.set( key, exprs );
 	}
-	const m = /^binding@.+?\/(text|attr:[^=]+)=([\s\S]*)$/.exec( String( row.id || '' ) );
-	const where = row.detail?.where ?? m?.[ 1 ];
-	const expression = row.detail?.expression ?? m?.[ 2 ];
-	return where && expression ? { where, expression: String( expression ).trim(), draftId: row.draftId } : null;
+	return out;
 }
 
-// Census draft id (`<component>:<n>`) of the element a finder names, or null when the finder is not a tpl key.
+// The record key (`<component>/<n>`) of the element a finder names, or null when the finder is not a tpl key.
 function elementOfFinder( finder, rootComponent ) {
 	const key = 'string' === typeof finder ? finder : finder?.tpl;
-	const t = key ? templateKeyOf( key, rootComponent ) : null;
-	const cut = t ? t.lastIndexOf( '/' ) : -1;
-	return cut < 0 ? null : `${ t.slice( 0, cut ) }:${ t.slice( cut + 1 ) }`;
+	return key ? templateKeyOf( key, rootComponent ) : null;
 }
 
 const rootOf = ( nodes, i ) => {
@@ -35,17 +35,11 @@ const rootOf = ( nodes, i ) => {
 	return at;
 };
 
-// { groups, split }. rows: the census rows; nodes: lib/fill-skeleton.mjs::skeletonNodes; writes: Fill's style writes (node,
+// { groups, split }. facts: the fact record (null when intake has not run: nothing is grouped); nodes: lib/fill-skeleton.mjs::skeletonNodes; writes: Fill's style writes (node,
 // index, slot, prop, attr, after). A group: { id, binding, attr, value, members: [ { node, slot, prop } ], sections }. A
 // split: { binding, attr, values: [ { value, members } ] }. Each grouped write gains `group: <id>`.
-export function groupBindings( { rows, nodes, writes, rootComponent = null } ) {
-	const exprsOf = new Map();
-	for ( const r of rows || [] ) {
-		const b = bindingOf( r );
-		if ( b && 'attr:style' === b.where ) {
-			exprsOf.set( b.draftId, [ ...( exprsOf.get( b.draftId ) || [] ), b.expression ] );
-		}
-	}
+export function groupBindings( { facts, nodes, writes, rootComponent = null } ) {
+	const exprsOf = styleBindings( facts );
 	const elementOf = ( w ) => {
 		const t = nodes[ w.index ]?.targets.find( ( x ) => x.slot === ( w.slot || '' ) );
 		return t ? elementOfFinder( t.finder, rootComponent ) : null;
