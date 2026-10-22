@@ -479,6 +479,9 @@
   },
   "card-grid": {
    "base": {
+    "contentWidth": {
+     "desktop": "640px"
+    },
     "variant": "card",
     "imageFallback": true,
     "noImageLabel": "Photo to come",
@@ -833,8 +836,25 @@
    },
    "pathsWhy": "render.php returns early when the resolver finds no taxonomy or fewer terms than the threshold (nothing prints), otherwise the input prints in both searchMode branches (attribute-chips adds nothing else, taxonomy-terms also prints the term list); the input is the only offered part."
   },
+  "feature-grid": {
+   "base": {
+    "contentWidth": {
+     "desktop": "640px"
+    }
+   },
+   "paths": {
+    "default": {
+     "why": "the only part-bearing branch: the shared container wrapper prints its content band when contentWidth or a padding is set, and the grid is the block root; layoutMode only changes the grid template",
+     "attrs": {}
+    }
+   },
+   "pathsWhy": "render.php has no attribute-driven branch that changes which parts print: layoutMode (fixed-columns, auto-fit) and columns change the scoped grid CSS only; the content band is printed by SGS_Container_Wrapper::render whenever contentWidth is set."
+  },
   "form": {
    "base": {
+    "contentWidth": {
+     "desktop": "640px"
+    },
     "formName": "Sample enquiry",
     "submitLabel": "Send"
    },
@@ -870,6 +890,9 @@
   },
   "form-field-tiles": {
    "base": {
+    "contentWidth": {
+     "desktop": "640px"
+    },
     "fieldName": "interest",
     "label": "What are you interested in?",
     "tiles": [
@@ -902,6 +925,9 @@
   },
   "gallery": {
    "base": {
+    "contentWidth": {
+     "desktop": "640px"
+    },
     "showCaptions": true
    },
    "paths": {
@@ -1356,6 +1382,9 @@
   },
   "multi-button": {
    "base": {
+    "contentWidth": {
+     "desktop": "640px"
+    },
     "backgroundImage": {
      "url": "https://example.test/bg.jpg",
      "id": 0
@@ -1563,6 +1592,9 @@
   },
   "post-grid": {
    "base": {
+    "contentWidth": {
+     "desktop": "640px"
+    },
     "showImage": true,
     "showTitle": true,
     "showExcerpt": true,
@@ -2650,6 +2682,9 @@
   },
   "testimonial-slider": {
    "base": {
+    "contentWidth": {
+     "desktop": "640px"
+    },
     "slidesVisible": 1,
     "autoplay": false
    },
@@ -2768,6 +2803,9 @@
   },
   "trust-bar": {
    "base": {
+    "contentWidth": {
+     "desktop": "640px"
+    },
     "backgroundImage": {
      "url": "https://example.test/bg.jpg",
      "id": 0
