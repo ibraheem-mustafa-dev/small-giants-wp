@@ -31,6 +31,7 @@ import { groupBindings, noFactsWarning } from './lib/fill-binding-group.mjs';
 import { factsFile, loadFacts } from './lib/fact-record.mjs';
 import { currentItemGroups } from './lib/fill-current-item.mjs';
 import { widthGateWrites } from './lib/fill-width-gate.mjs';
+import { addDefectLooks } from './lib/fill-state-defect.mjs';
 import { motionDb } from './lib/motion-db.mjs';
 import { loadMotionSchema } from './lib/motion-schema.mjs';
 import { sweepSteps } from './lib/fill-values.mjs';
@@ -146,6 +147,9 @@ export async function fillSurface( o ) {
 		const facts = fs.existsSync( factsFile( repo, o.client ) ) ? loadFacts( o.client, { repo } ) : null;
 		const currentGroups = facts ? currentItemGroups( facts ) : [];
 		const reads = await readDraft( { url, nodes, open: o.open || null, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, log } );
+		// FR-48-69: a state declaration the draft never paints (intake.json `draftDefects`) is built from the code value, as a code look.
+		const intakeParts = animationInventory( buildDir, o.draftIndex, log );
+		const defectLooks = addDefectLooks( { reads, jobs: nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) ), facts, draftDefects: intakeParts.draftDefects, rootComponent: intakeParts.rootComponent } );
 		const calFor = calibrationLoader( entry.site, o.cache );
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
 		const result = fillTree( {
@@ -162,6 +166,7 @@ export async function fillSurface( o ) {
 		// FR-48-81: each target's state looks, through the settings that hold their states.
 		const states = fillStates( { tree, nodes, reads, calFor, db, snapshot } );
 		result.writes.push( ...states.writes );
+		result.notes.push( ...defectLooks.listed.map( ( d ) => `draft defect ${ d.draftId } (${ d.state } ${ d.prop }, ${ d.declared }): the draft never paints it; built from the code value ${ JSON.stringify( d.built ) } by width; listed for Bean (intake.json draftDefects, FR-48-69)` ), ...defectLooks.gaps.map( ( g ) => `draft defect ${ g.draftId } (${ g.state } ${ g.prop }${ g.width ? ` at ${ g.width }px` : '' }): not built: ${ g.reason }` ) );
 		result.unmapped.push( ...states.unmapped );
 		// FR-48-50: content the draft's logic shows or hides by width, written as hiding settings (lib/fill-width-gate.mjs); a snapped
 		// threshold's `breakpoint-snap` ledger entry is written beside the other outputs for the client's ledger.
@@ -177,7 +182,6 @@ export async function fillSurface( o ) {
 		const jobs = nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) );
 		const { entrances: sampled, loops } = await sampleMotion( { url, jobs, open: o.open || null, headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {} } );
 		const entrances = nodes.filter( ( x ) => x.targets.length ).map( ( n ) => ( { node: refOf( flat[ n.index ] ), block: n.name, measured: sampled[ n.targets[ 0 ].id ]?.[ 1440 ] ?? null } ) );
-		const intakeParts = animationInventory( buildDir, o.draftIndex, log );
 		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), schema: loadMotionSchema(), rawSnapshot } );
 		result.writes.push( ...motion.writes );
 		result.unmapped.push( ...motion.unmapped );

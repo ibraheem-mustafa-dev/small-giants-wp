@@ -1,0 +1,9 @@
+[
+	{ "file": "lib/fill-state-defect.mjs", "find": "( r ) => 'unresolved-binding' === r.test && r.evidence?.pseudo", "replace": "( r ) => r.evidence?.pseudo", "why": "any state row would be built, not only an unresolved binding" },
+	{ "file": "lib/fill-state-defect.mjs", "find": "filter( ( d ) => 'dropped' === d.state )", "replace": "filter( ( d ) => true )", "why": "a declaration the page does paint would be rebuilt from the code" },
+	{ "file": "lib/fill-state-defect.mjs", "find": "answer.v?.[ answer.loop ? copy : 0 ]", "replace": "answer.v?.[ 0 ]", "why": "every copy would take the first copy's value" },
+	{ "file": "lib/fill-state-defect.mjs", "find": "rendered: null, read: 'code', draftDefect: draftId", "replace": "rendered: null, read: 'entered', draftDefect: draftId", "why": "the look would claim a render confirmed it" },
+	{ "file": "lib/fill-state-defect.mjs", "find": "had || looks.push(", "replace": "looks.push(", "why": "a look the page did paint would be duplicated by the code value" },
+	{ "file": "lib/fill-state-defect.mjs", "find": "Object.keys( perWidth ).length && out.listed.push(", "replace": "void (", "why": "a built defect would not be listed for Bean" },
+	{ "file": "lib/fill-state.mjs", "find": "...( draftDefect ? { draftDefect } : {} ),", "replace": "", "why": "the write would not carry its draft ID" }
+]
