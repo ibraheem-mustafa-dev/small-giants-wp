@@ -72,6 +72,17 @@ foreach ( array( 'start', 'end', 'stretch' ) as $align ) {
 	ok( false !== strpos( $css, $width ), "rowsAlign {$align}: rows stay full width" );
 }
 
+// A row's own minHeight (one class on the row root) must beat the rows' min-height reset, so the reset
+// sits only inside :where() and never at the header's own two-class specificity.
+foreach ( array( 'center', 'stretch' ) as $align ) {
+	$css = sgs_header_rows_align_css( $root_sel, array( 'rowsAlign' => array( 'desktop' => $align ) ) );
+	$bare = preg_replace( '/:where\([^)]*\)\{[^}]*\}/', '', $css );
+	ok( false === strpos( $bare, 'min-height' ), "rowsAlign {$align}: no min-height reset outside :where() (a row's minHeight wins)" );
+	ok( false !== strpos( $css, ':where(' . $root_sel . ' > *){min-height:' ), "rowsAlign {$align}: the min-height reset is emitted at zero specificity" );
+}
+$css = sgs_header_rows_align_css( $root_sel, array( 'rowsAlign' => array( 'desktop' => 'stretch' ) ) );
+ok( false !== strpos( $css, $root_sel . ' > *{flex:1 1 auto;}' ), 'rowsAlign stretch: the rows still grow at the header specificity' );
+
 // Negative control: the same assertion fails against CSS without the rule.
 $without = str_replace( $width, '', sgs_header_rows_align_css( $root_sel, array() ) );
 ok( false === strpos( $without, $width ), 'negative control: the assertion can fail when the rule is missing' );

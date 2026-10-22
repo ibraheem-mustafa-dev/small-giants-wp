@@ -68,8 +68,19 @@ if ( ! function_exists( 'sgs_header_rows_align_css' ) ) {
 		$css .= sgs_emit_tier_rules_map(
 			$root_sel . ' > *',
 			$raw,
-			array( 'stretch' => 'flex:1 1 auto;min-height:0;' ),
-			'flex:0 1 auto;min-height:auto;',
+			array( 'stretch' => 'flex:1 1 auto;' ),
+			'flex:0 1 auto;',
+			'center'
+		);
+
+		// The rows' min-height reset sits at zero specificity, so a row's own minHeight (one class on the
+		// row root) still wins: at the header's two-class specificity the reset cancelled every row's
+		// minHeight. Without a row minHeight, stretch still lets the rows shrink below their content.
+		$css .= sgs_emit_tier_rules_map(
+			':where(' . $root_sel . ' > *)',
+			$raw,
+			array( 'stretch' => 'min-height:0;' ),
+			'min-height:auto;',
 			'center'
 		);
 
