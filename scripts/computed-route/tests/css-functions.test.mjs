@@ -51,8 +51,8 @@ test( 'MUST FAIL: an inset() clip in Chrome computed form, zero edges as 0px, is
 	assert.deepEqual( clipChannels( 'inset(8%)' ).channels, { clip: 8 } );
 } );
 
-test( 'circle(), polygon(), a rounded inset() and a length inset are reported as no clip channel', () => {
-	for ( const v of [ 'circle(40px at 10px 10px)', 'polygon(0px 0px, 100% 0px, 88% 50%, 100% 100%, 0px 100%)', 'inset(10% round 24px)', 'inset(10px)' ] ) {
+test( 'circle(), polygon() and a length inset are reported as no clip channel', () => {
+	for ( const v of [ 'circle(40px at 10px 10px)', 'polygon(0px 0px, 100% 0px, 88% 50%, 100% 100%, 0px 100%)', 'inset(10px)', 'inset(10% round)', 'inset(round 24px)' ] ) {
 		assert.deepEqual( clipChannels( v ), { channels: {}, unsupported: [ 'clip-path' ] }, v );
 	}
 } );

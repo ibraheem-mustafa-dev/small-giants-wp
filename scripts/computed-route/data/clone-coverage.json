@@ -2511,8 +2511,8 @@
 			"recognise": "scripts/computed-route/lib/motion-clip.mjs#clipChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
 			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
-			"note": "inset() in an animated clip-path is the entrance clip channel, in Chrome's computed form with 0px edges (tests/css-functions.test.mjs); a rounded inset (round 24px) has no channel and is reported (coverage plan Order item 2(d) remaining)",
-			"test": "scripts/computed-route/tests/css-functions.test.mjs"
+			"note": "inset() in an animated clip-path is the entrance clip channel, in Chrome's computed form with 0px edges (tests/css-functions.test.mjs); a round tail (round 24px) is dropped, never built: the entrance has no corner-radius channel and the image's own border radius gives the end shape (tests/motion-clip-reveal.test.mjs)",
+			"test": "scripts/computed-route/tests/motion-clip-reveal.test.mjs"
 		},
 		"css-function:invert": {
 			"recognise": null,

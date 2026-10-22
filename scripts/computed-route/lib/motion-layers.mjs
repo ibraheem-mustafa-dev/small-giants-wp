@@ -209,6 +209,11 @@ export function entranceLayer( given, mdb, measured = null, named = null ) {
 	if ( other.length ) {
 		notes.push( `${ other.join( ', ' ) } is not an entrance channel and is left to the block's own settings` );
 	}
+	// A clip reveal's `round <radius>` is not a channel: the image's own border radius gives the end shape (FR-48-77).
+	const rounded = ( record.properties || [] ).filter( ( p ) => 'clip-path' === p.property && /\sround\s/.test( `${ p.from } ${ p.to }` ) );
+	if ( rounded.length ) {
+		notes.push( `clip-path ${ rounded.map( ( p ) => `${ p.from } to ${ p.to }` ).join( ', ' ) }: the corner radius has no entrance channel and is not built, the image's own border radius gives the end shape` );
+	}
 	const dropped = [];
 	const values = kf
 		? { keyframes: kf.stops.map( ( s ) => ( { offset: s.offset, ...keepFields( mdb, 'entrance.base', 'values.keyframes', s.channels, dropped ) } ) ), duration: record.duration_ms }

@@ -46,7 +46,8 @@ test( 'MUST FAIL: a clip-path inset is the entrance clip channel, one edge with 
 	assert.deepEqual( clipChannels( 'inset(100%)' ).channels, { clip: 100 } );
 	assert.deepEqual( clipChannels( 'inset(0 0 100% 0)' ).channels, { clip: 100, clipEdge: 'bottom' } );
 	assert.deepEqual( clipChannels( 'inset(0% 30% 0% 0%)' ).channels, { clip: 30, clipEdge: 'right' } );
-	for ( const v of [ 'circle(40%)', 'inset(10px)', 'inset(10% 20% 0 0)', 'inset(10% round 4px)' ] ) {
+	assert.deepEqual( clipChannels( 'inset(10% round 4px)' ).channels, { clip: 10 }, 'a round tail is dropped, never built (FR-48-77)' );
+	for ( const v of [ 'circle(40%)', 'inset(10px)', 'inset(10% 20% 0 0)', 'inset(round 4px)' ] ) {
 		assert.deepEqual( clipChannels( v ).unsupported, [ 'clip-path' ], v );
 	}
 	const { from, to, unsupported, other } = poseOf( [ { property: 'clip-path', from: 'inset(100%)', to: 'inset(0)' }, { property: 'opacity', from: '0', to: '1' } ] );
