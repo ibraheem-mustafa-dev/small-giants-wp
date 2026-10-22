@@ -2,6 +2,7 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, SelectControl, ToggleControl } from '@wordpress/components';
 import { SgsColourPanel, fillRow, textRow, SgsBorderControl, SgsLengthControl, TypographyControls } from '../../components';
+import { colourVar, typographyPreviewStyle, usePreviewTier, sgsLengthPreview, sgsBorderPreview } from '../../utils';
 
 // D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
 // allow-list exactly (render.php validates the same set independently).
@@ -16,6 +17,23 @@ const HEADING_LEVEL_OPTIONS = [
 
 export default function Edit( { attributes, setAttributes } ) {
 	const { heading, headingLevel, intro, showEditLinks, editLabel } = attributes;
+	const tier = usePreviewTier();
+	const cardStyle = {
+		backgroundColor: colourVar( attributes.cardBackgroundColour ) || undefined,
+		padding: sgsLengthPreview( attributes.cardPadding ) || undefined,
+		...sgsBorderPreview(
+			{
+				widthValues: attributes.cardBorderWidth,
+				styleValue: attributes.cardBorderStyle,
+				colourValue: attributes.cardBorderColour,
+				radiusValues: attributes.cardBorderRadius,
+			},
+			tier
+		),
+	};
+	const titleStyle = typographyPreviewStyle( attributes, 'cardTitle', tier );
+	const termStyle = { color: colourVar( attributes.termColour ) || undefined };
+	const valueStyle = { color: colourVar( attributes.valueColour ) || undefined };
 
 	const blockProps = useBlockProps( { className: 'sgs-form-review' } );
 
@@ -152,28 +170,24 @@ export default function Edit( { attributes, setAttributes } ) {
 			<div { ...blockProps }>
 				<HeadingTag className="sgs-form-review__heading">{ heading }</HeadingTag>
 				{ intro && <p className="sgs-form-review__intro">{ intro }</p> }
-				<div
-					className="sgs-form-review__placeholder"
-					style={ {
-						padding: '24px',
-						border: '2px dashed #ccc',
-						borderRadius: '8px',
-						backgroundColor: '#f9f9f9',
-						textAlign: 'center',
-						color: '#666',
-					} }
-				>
-					{ false !== showEditLinks && (
-						<button type="button" className="sgs-form-review__edit" tabIndex={ -1 }>
-							{ editLabel || __( 'Edit', 'sgs-blocks' ) }
-						</button>
-					) }
-					<p>
-						{ __(
-							'Review step — entered fields will be displayed here on the frontend.',
-							'sgs-blocks'
-						) }
-					</p>
+				{ /* A sample card painted from the card settings; the front end builds one per step from the visitor's answers. */ }
+				<div className="sgs-form-review__cards">
+					<section className="sgs-form-review__card" style={ cardStyle }>
+						<div className="sgs-form-review__card-head">
+							<p className="sgs-form-review__card-title" style={ titleStyle }>
+								{ __( 'Your details', 'sgs-blocks' ) }
+							</p>
+							{ false !== showEditLinks && (
+								<button type="button" className="sgs-form-review__edit" tabIndex={ -1 }>
+									{ editLabel || __( 'Edit', 'sgs-blocks' ) }
+								</button>
+							) }
+						</div>
+						<dl className="sgs-form-review__list">
+							<dt className="sgs-form-review__term" style={ termStyle }>{ __( 'Name', 'sgs-blocks' ) }</dt>
+							<dd className="sgs-form-review__detail" style={ valueStyle }>{ __( 'Sample answer', 'sgs-blocks' ) }</dd>
+						</dl>
+					</section>
 				</div>
 			</div>
 		</>

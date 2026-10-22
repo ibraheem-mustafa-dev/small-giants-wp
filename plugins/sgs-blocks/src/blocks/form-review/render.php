@@ -7,7 +7,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$heading            = $attributes['heading'] ?? __( 'Review your information', 'sgs-blocks' );
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
+$heading           = $attributes['heading'] ?? __( 'Review your information', 'sgs-blocks' );
 $intro              = trim( (string) ( $attributes['intro'] ?? __( 'Please check your details below before submitting.', 'sgs-blocks' ) ) );
 $edit_label         = trim( (string) ( $attributes['editLabel'] ?? '' ) );
 $edit_label         = '' !== $edit_label ? $edit_label : __( 'Edit', 'sgs-blocks' );
