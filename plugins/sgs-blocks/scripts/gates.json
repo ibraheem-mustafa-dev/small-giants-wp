@@ -1891,7 +1891,7 @@
   },
   {
     "id": "check-container-band-layers",
-    "cmd": "python scripts/check-container-band-layers.py --check --ratchet",
+    "cmd": "python scripts/check-container-band-layers.py --check",
     "tier": "fast",
     "added_D": null,
     "added_commit": null,

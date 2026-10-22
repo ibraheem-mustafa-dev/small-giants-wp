@@ -26,10 +26,11 @@ WHAT --fix DOES
     grouped by mechanism.
 
 GATE SHAPE
-    `--check` is binary (exit 1 while any target remains).
-    `--check --ratchet` is the registered gate: a ratcheted ceiling kept in the sibling
+    `--check` is binary (exit 1 while any target remains) and is the registered gate.
+    `--check --ratchet` reads a ratcheted ceiling kept in the sibling
     check-container-band-layers-baseline.json (fails on a site outside the baseline and
-    on a baseline entry no longer reproduced, so the baseline only ever shrinks).
+    on a baseline entry no longer reproduced, so the baseline only ever shrinks); its
+    ceiling is 0, so both forms ask the same.
 
     python check-container-band-layers.py --survey [--json [--out FILE]]
     python check-container-band-layers.py --fix [--apply]
@@ -84,6 +85,8 @@ EXEMPT_RULES = (
      'this detector, its baseline and its census'),
     (lambda r: r.startswith('plugins/sgs-blocks/includes/class-sgs-band-padding-'),
      'the saved-content migration: it names the retired attribute it folds into padding'),
+    (lambda r: r == 'plugins/sgs-blocks/scripts/oldshape-audit-baseline.json',
+     'the deploy audit\'s accepted stored content: it names the attribute on posts the sweep has not yet folded'),
 )
 
 # Generated from block.json by the reseed / consistency generators: they follow once
