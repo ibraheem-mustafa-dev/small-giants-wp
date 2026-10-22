@@ -1,0 +1,10 @@
+[
+	{ "file": "lib/fill-preset.mjs", "find": "return null !== want && undefined !== got && equal( key, want, got, fontPx );", "replace": "return true;", "why": "any button would match the first preset" },
+	{ "file": "lib/fill-preset.mjs", "find": "return null !== want && undefined !== got && equal( key, want, got, fontPx );", "replace": "return null !== want && equal( key, want, got ?? want, fontPx );", "why": "a value the read did not return would count as equal" },
+	{ "file": "lib/fill-preset.mjs", "find": "const keys = PRESET_KEYS.filter( ( [ k ] ) => undefined !== preset[ k ] );", "replace": "const keys = PRESET_KEYS.filter( ( [ k , , s ] ) => undefined !== preset[ k ] && ! s );", "why": "a hover look would not have to match" },
+	{ "file": "lib/fill-preset.mjs", "find": "if ( ! attr || ! target ) {", "replace": "if ( ! target ) {", "why": "a block that is not a preset button could be given a variant" },
+	{ "file": "lib/fill-preset.mjs", "find": "null === w.before ? delete node.attributes[ w.attr ] : ( node.attributes[ w.attr ] = w.before );", "replace": "void w;", "why": "the per-instance values would stay in the tree" },
+	{ "file": "lib/fill-preset.mjs", "find": "out.writes = [ ...out.writes.filter( ( w ) => ! dropped.includes( w ) ),", "replace": "out.writes = [ ...out.writes,", "why": "the per-instance writes would stay in the list" },
+	{ "file": "lib/fill-preset.mjs", "find": "( ! w.state || 'hover' === w.state ) && m.props.includes( w.prop )", "replace": "! w.state && m.props.includes( w.prop )", "why": "the per-instance hover values would stay" },
+	{ "file": "lib/fill-preset.mjs", "find": "m.props.includes( w.prop ) );", "replace": "true );", "why": "an unrelated per-instance value would be dropped" }
+]
