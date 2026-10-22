@@ -10,6 +10,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { refsFor, resolveFixture, tokensIn, fixtureRoles, refGate, checkRefsExist, refsProblem, existencePhp, hostedRoot } from '../lib/calibration-refs.mjs';
 import { checkFixtureRefs } from '../lib/fixture-refs.mjs';
+import { remotePlugin } from '../lib/deploy-hash.mjs';
 import { selfTest } from '../fixture-refs.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -110,4 +111,9 @@ test( 'the fixtures carry no bare reference, and the detector\'s own cases pass'
 test( 'a hosted site\'s WordPress root comes from deploy_common.py TARGETS', () => {
 	assert.equal( hostedRoot( 'indus-test', path.resolve( ROOT, '../..' ) ), 'domains/lavender-dinosaur-183533.hostingersite.com/public_html' );
 	assert.throws( () => hostedRoot( 'no-such-site', path.resolve( ROOT, '../..' ) ), /no wp_content/ );
+} );
+
+test( 'a hosted site\'s plugin folder is its WordPress root\'s wp-content/plugins/sgs-blocks (MUST FAIL)', () => {
+	assert.equal( remotePlugin( 'indus-test', path.resolve( ROOT, '../..' ) ), 'domains/lavender-dinosaur-183533.hostingersite.com/public_html/wp-content/plugins/sgs-blocks' );
+	assert.throws( () => remotePlugin( 'no-such-site', path.resolve( ROOT, '../..' ) ), /no wp_content/ );
 } );

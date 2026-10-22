@@ -112,9 +112,9 @@ final class Sgs_Band_Padding_Folder {
 	 * Fold every block of one post's content.
 	 *
 	 * @param string $content The stored `post_content`.
-	 * @return array{content:string,changed:bool,changes:array<int,array<string,mixed>>} One `changes` row per folded
+	 * @return array{content:string,changed:bool,changes:array<int,array<string,mixed>>,skipped?:string} One `changes` row per folded
 	 *         block: path, block, conflicts. When the block comments in the text do not line up with the parsed blocks
-	 *         nothing is changed and `changes` is empty.
+	 *         nothing is changed, `changes` is empty and `skipped` names the reason.
 	 */
 	public function migrate_content( string $content ): array {
 		$unchanged = array(
@@ -136,7 +136,10 @@ final class Sgs_Band_Padding_Folder {
 			return $unchanged;
 		}
 		$patched = self::patch_comments( $content, $run['patches'], $run['seq'] );
-		if ( null === $patched || $patched === $content ) {
+		if ( null === $patched ) {
+			return array_merge( $unchanged, array( 'skipped' => 'its block comments do not line up with the parsed blocks' ) );
+		}
+		if ( $patched === $content ) {
 			return $unchanged;
 		}
 		return array(

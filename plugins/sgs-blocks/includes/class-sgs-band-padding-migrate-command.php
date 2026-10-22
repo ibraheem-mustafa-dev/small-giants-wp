@@ -61,6 +61,13 @@ final class Sgs_Band_Padding_Migrate_Command {
 	const BATCH = 200;
 
 	/**
+	 * Posts holding the attribute that `collect()` could not fold, one line each.
+	 *
+	 * @var string[]
+	 */
+	private $skipped = array();
+
+	/**
 	 * Entry point.
 	 *
 	 * @param string[]             $args       Positional arguments (unused).
@@ -132,6 +139,9 @@ final class Sgs_Band_Padding_Migrate_Command {
 			foreach ( is_array( $posts ) ? $posts : array() as $post ) {
 				$last_id = (int) $post['ID'];
 				$result  = $folder->migrate_content( (string) $post['post_content'] );
+				if ( isset( $result['skipped'] ) ) {
+					$this->skipped[] = sprintf( 'Skipped post %d (%s) "%s": %s; it still holds contentBandPadding.', $last_id, $post['post_type'], $post['post_title'], $result['skipped'] );
+				}
 				if ( ! $result['changed'] ) {
 					continue;
 				}
@@ -169,7 +179,10 @@ final class Sgs_Band_Padding_Migrate_Command {
 				}
 			}
 		}
-		\WP_CLI::log( sprintf( '%d post(s) with changes, %d block(s) folded, %d conflict(s).', count( $rows ), $blocks, $conflicts ) );
+		foreach ( $this->skipped as $line ) {
+			\WP_CLI::warning( $line );
+		}
+		\WP_CLI::log( sprintf( '%d post(s) with changes, %d block(s) folded, %d conflict(s), %d post(s) skipped.', count( $rows ), $blocks, $conflicts, count( $this->skipped ) ) );
 	}
 
 	/**

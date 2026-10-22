@@ -440,14 +440,32 @@ $scoped_css[] = sgs_responsive_css_rule(
 // and the dark variant), not the root: the image keeps its aspect ratio
 // (`width:auto`), so its width follows from the capped height, and the root
 // drops its fill-width default (`width:auto`) so the block box shrinks to the
-// image instead of filling its container. With no tier set nothing is emitted
-// and the logo stays width-driven. ---
+// image instead of filling its container. Both `width:auto` rules start at the
+// largest tier that sets a cap, the tier the cap itself cascades down from, so
+// an uncapped larger tier stays width-driven. With no tier set nothing is
+// emitted and the logo stays width-driven. ---
 $rl_has_max_height = '' !== $rl_css_attributes['maxHeight']
 	|| '' !== $rl_css_attributes['maxHeightTablet']
 	|| '' !== $rl_css_attributes['maxHeightMobile'];
 if ( $rl_has_max_height ) {
-	$scoped_css[] = $sel . '{width:auto}';
-	$scoped_css[] = $sel . ' .sgs-responsive-logo__image--desktop{width:auto}';
+	$rl_capped_at  = '' !== $rl_css_attributes['maxHeight'] ? 'desktop' : ( '' !== $rl_css_attributes['maxHeightTablet'] ? 'tablet' : 'mobile' );
+	$rl_auto_tiers = array(
+		'rlAuto'       => 'desktop' === $rl_capped_at ? 'auto' : '',
+		'rlAutoTablet' => 'tablet' === $rl_capped_at ? 'auto' : '',
+		'rlAutoMobile' => 'mobile' === $rl_capped_at ? 'auto' : '',
+	);
+	$rl_auto_width = array(
+		array(
+			'attr'        => 'rlAuto',
+			'css'         => 'width',
+			'tablet_attr' => 'rlAutoTablet',
+			'mobile_attr' => 'rlAutoMobile',
+			'transform'   => static function () {
+				return 'auto';
+			},
+		),
+	);
+	$scoped_css[] = sgs_responsive_css_rule( $rl_auto_tiers, $rl_auto_width, $sel . ',' . $sel . ' .sgs-responsive-logo__image--desktop' );
 	$scoped_css[] = sgs_responsive_css_rule(
 		$rl_css_attributes,
 		array(

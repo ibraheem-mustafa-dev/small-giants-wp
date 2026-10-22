@@ -26,7 +26,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! function_exists( 'parse_blocks' ) ) {
 	/**
-	 * Stub: one block per opening comment, in document order, attributes decoded from the JSON.
+	 * Stub: one block per opening comment, in document order, attributes decoded from the JSON. A `test/unparsed`
+	 * comment is left out, standing in for a parser that reads fewer blocks than the text holds.
 	 *
 	 * @param string $content Stored content.
 	 * @return array<int,array<string,mixed>>
@@ -35,6 +36,9 @@ if ( ! function_exists( 'parse_blocks' ) ) {
 		preg_match_all( '/<!--\s+wp:([a-z][a-z0-9_-]*(?:\/[a-z][a-z0-9_-]*)?)(\s+\{.*?\})?(\s*\/)?\s*-->/s', $content, $m, PREG_SET_ORDER );
 		$out = array();
 		foreach ( $m as $one ) {
+			if ( 'test/unparsed' === $one[1] ) {
+				continue;
+			}
 			$out[] = array(
 				'blockName'   => $one[1],
 				'attrs'       => isset( $one[2] ) && '' !== $one[2] ? json_decode( trim( $one[2] ), true ) : array(),
@@ -184,6 +188,12 @@ ok( false === strpos( $result['content'], 'contentBandPadding' ), 'patcher: the 
 
 $clean = $folder->migrate_content( '<!-- wp:sgs/container {"padding":{"desktop":{"top":"1px"}}} --><div></div><!-- /wp:sgs/container -->' );
 ok( ! $clean['changed'], 'patcher: content without the retired attribute is not rewritten' );
+
+// Comments that do not line up with the parsed blocks: nothing is written and the post is reported as skipped.
+$misaligned = $folder->migrate_content( '<!-- wp:test/unparsed /--><!-- wp:sgs/hero {"contentBandPadding":{"desktop":{"left":"30px"}}} /-->' );
+ok( ! $misaligned['changed'], 'misaligned comments: the content is not rewritten' );
+ok( isset( $misaligned['skipped'] ) && '' !== $misaligned['skipped'], 'misaligned comments: the post is reported as skipped' );
+ok( ! isset( $clean['skipped'] ) && ! isset( $result['skipped'] ), 'aligned content: nothing is reported as skipped' );
 
 echo "\n==== $pass passed, $fail failed ====\n";
 exit( $fail > 0 ? 1 : 0 );
