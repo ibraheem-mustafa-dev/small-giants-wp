@@ -123,6 +123,9 @@ ok( '' !== $r['svg'], 'a parser warning alone does not refuse the file', $r['err
 
 // ── Upload: the refusal reason the media uploader shows as HTML is escaped ──
 function add_filter( ...$a ) { return true; }
+function add_action( ...$a ) { return true; }
+function current_user_can( $c ) { return false; }
+function get_current_user_id() { return 0; }
 function esc_html( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES, 'UTF-8' ); }
 require_once dirname( __DIR__, 2 ) . '/includes/svg-upload.php';
 $tmp = tempnam( sys_get_temp_dir(), 'sgs' );
@@ -139,6 +142,7 @@ file_put_contents( $file, $svg( '<style>rect{fill:red} #sun{opacity:1} svg > g{f
 $prepend = $dir . DIRECTORY_SEPARATOR . 'prepend.php';
 file_put_contents( $prepend, '<?php function get_attached_file( $id ) { return 7 === (int) $id ? ' . var_export( $file, true ) . ' : false; }'
 	. ' function wp_get_attachment_url( $id ) { return 7 === (int) $id ? "https://x.test/logo.svg" : ( 8 === (int) $id ? "https://x.test/square.png" : false ); }'
+	. ' function get_post_meta( $id, $k = "", $single = false ) { return ""; } function get_userdata( $id ) { return false; } function user_can( $u, $c ) { return false; }'
 	. ' function get_transient( $k ) { return false; } function set_transient( $k, $v, $e = 0 ) { return true; }'
 	. ' defined( "DAY_IN_SECONDS" ) || define( "DAY_IN_SECONDS", 86400 );' );
 $render = static function ( array $attrs ) use ( $prepend, $dir ): string {

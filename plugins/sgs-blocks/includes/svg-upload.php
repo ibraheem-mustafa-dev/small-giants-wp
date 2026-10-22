@@ -6,7 +6,9 @@
  * carry script. SGS sites use SVGs as images (client logos, brand marks, animated
  * backgrounds), so the framework accepts them for any user who can upload files,
  * and rebuilds every uploaded file through sgs_svg_sanitise_document()
- * (helpers-svg-document.php) before WordPress stores it. The file keeps its own
+ * (helpers-svg-document.php) before WordPress stores it. A user with
+ * `unfiltered_html` instead keeps the file's scripts (helpers-svg-trust.php); a
+ * .svgz or gzipped .svg is refused for everyone. The file keeps its own
  * animation (SMIL and a <style> with @keyframes) and its mesh gradients; a file
  * holding a construct the route's SVG screen refuses (an event attribute, an
  * outside link or CSS url(), an animation that rewrites a link, @import,
@@ -28,6 +30,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-svg-document.php';
+require_once __DIR__ . '/helpers-svg-trust.php';
 
 if ( ! function_exists( 'sgs_svg_upload_sanitise' ) ) {
 	/**
@@ -85,20 +88,36 @@ add_filter( 'wp_check_filetype_and_ext', 'sgs_svg_upload_filetype', 10, 3 );
  * @return array The same array, with 'error' set when the file is refused.
  */
 function sgs_svg_upload_prefilter( $file ) {
-	$name = (string) ( $file['name'] ?? '' );
-	if ( 'svg' !== strtolower( pathinfo( $name, PATHINFO_EXTENSION ) ) ) {
+	$name      = (string) ( $file['name'] ?? '' );
+	$extension = strtolower( pathinfo( $name, PATHINFO_EXTENSION ) );
+	$compressed = __( 'Compressed SVG files (.svgz or gzipped) are not accepted. Upload a plain .svg file.', 'sgs-blocks' );
+	if ( 'svgz' === $extension ) {
+		$file['error'] = $compressed;
+		return $file;
+	}
+	if ( 'svg' !== $extension ) {
 		return $file;
 	}
 	$path = (string) ( $file['tmp_name'] ?? '' );
 	$raw  = is_readable( $path ) ? (string) file_get_contents( $path ) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local upload tmp file.
-	$result = sgs_svg_sanitise_document( $raw );
-	$safe   = $result['svg'];
+	if ( 0 === strncmp( $raw, "\x1f\x8b", 2 ) ) {
+		$file['error'] = $compressed;
+		return $file;
+	}
+	$trusted = current_user_can( 'unfiltered_html' );
+	$result  = $trusted ? sgs_svg_trusted_prepare( $raw ) : sgs_svg_sanitise_document( $raw );
+	$safe    = $result['svg'];
 	if ( '' === $safe ) {
 		/* translators: %s: why the file was refused, e.g. "holds a CSS @import". */
 		$file['error'] = sprintf( __( 'This SVG was not uploaded because it %s.', 'sgs-blocks' ), esc_html( $result['error'] ) );
 		return $file;
 	}
-	file_put_contents( $path, $safe ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- rewriting the upload tmp file before WordPress moves it.
+	if ( $safe !== $raw ) {
+		file_put_contents( $path, $safe ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- rewriting the upload tmp file before WordPress moves it.
+	}
+	if ( $trusted ) {
+		sgs_svg_trust_intent( hash( 'sha256', $safe ), (int) get_current_user_id() );
+	}
 	$file['size'] = strlen( $safe );
 	return $file;
 }

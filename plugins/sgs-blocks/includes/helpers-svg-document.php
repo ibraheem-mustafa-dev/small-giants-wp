@@ -2,7 +2,7 @@
 /**
  * A whole SVG file made safe: parsed as namespace-aware XML and rebuilt from the framework's SVG allowlist.
  *
- * Used for every SVG upload (svg-upload.php) and for a logo printed inline from its uploaded file
+ * Used for every SVG upload except a trusted uploader's (svg-upload.php, helpers-svg-trust.php) and for a logo printed inline from its uploaded file
  * (helpers-svg-inline-attachment.php). The file keeps its own animation (SMIL animate, animateTransform, animateMotion,
  * set, mpath and a <style> element with @keyframes) and its mesh gradients. Rebuilding through DOM keeps every element
  * and attribute name in its own case (viewBox, attributeName, animateTransform), so nothing is lowercased.
@@ -292,6 +292,48 @@ if ( ! function_exists( 'sgs_svg_document_copy' ) ) {
 			if ( '' !== $problem ) {
 				return $problem;
 			}
+		}
+		return '';
+	}
+}
+
+if ( ! function_exists( 'sgs_svg_parse_problem' ) ) {
+	/**
+	 * Why a file cannot be used as an SVG at all, or '': it declares entities, is not well-formed XML or has no <svg>
+	 * root in the SVG namespace. Nothing else is screened; a trusted upload keeps everything but these.
+	 *
+	 * @param string $markup Raw file contents.
+	 * @return string
+	 */
+	function sgs_svg_parse_problem( string $markup ): string {
+		$markup = (string) preg_replace( '/^\xEF\xBB\xBF/', '', $markup );
+		if ( preg_match( '/<!ENTITY/i', $markup ) || preg_match( '/<!DOCTYPE[^>\[]*\[/i', $markup ) ) {
+			return __( 'holds a DOCTYPE with entity declarations', 'sgs-blocks' );
+		}
+		$markup = (string) preg_replace( '/<!DOCTYPE[^>\[]*>/i', '', $markup );
+		if ( '' === trim( $markup ) ) {
+			return __( 'is empty', 'sgs-blocks' );
+		}
+		$doc       = new DOMDocument();
+		$previous  = libxml_use_internal_errors( true );
+		$parsed    = $doc->loadXML( $markup, LIBXML_NONET );
+		$xml_error = null;
+		foreach ( libxml_get_errors() as $message ) {
+			if ( LIBXML_ERR_WARNING < $message->level ) {
+				$xml_error = $message;
+				break;
+			}
+		}
+		libxml_clear_errors();
+		libxml_use_internal_errors( $previous );
+		if ( ! $parsed || $xml_error ) {
+			$detail = $xml_error ? trim( (string) $xml_error->message ) : '';
+			/* translators: %s: the parser's message. */
+			return sprintf( __( 'is not well-formed XML (%s)', 'sgs-blocks' ), substr( $detail, 0, 80 ) );
+		}
+		$root = $doc->documentElement;
+		if ( ! $root || SGS_SVG_NS !== $root->namespaceURI || 'svg' !== $root->localName ) {
+			return __( 'has no <svg> root in the SVG namespace', 'sgs-blocks' );
 		}
 		return '';
 	}
