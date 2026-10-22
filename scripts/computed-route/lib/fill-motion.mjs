@@ -18,6 +18,49 @@ import { stateRows } from './state-vocab.mjs';
 import { setAttr } from './tree.mjs';
 import { templateKey, templateKeyOf } from './fact-key.mjs';
 
+export const COVERAGE_WRITES = [
+	'block-setting:css-gate:styling',
+	'construct:helmet-script',
+	'construct:keyframes',
+	'construct:transition',
+	'construct:waapi',
+	'css-at:keyframes',
+	'css-at:starting-style',
+	'css-function:blur',
+	'css-function:cubic-bezier',
+	'css-function:grayscale',
+	'css-function:inset',
+	'css-function:linear',
+	'css-function:matrix',
+	'css-function:perspective',
+	'css-function:rotate',
+	'css-function:rotatex',
+	'css-function:rotatey',
+	'css-function:rotatez',
+	'css-function:scale',
+	'css-function:scale3d',
+	'css-function:scalex',
+	'css-function:scaley',
+	'css-function:scalez',
+	'css-function:translate',
+	'css-function:translate3d',
+	'css-function:translatex',
+	'css-function:translatey',
+	'css-function:translatez',
+	'css-group:animations',
+	'css-group:transitions',
+	'css-media-feature:prefers-reduced-motion',
+	'css-unit:deg',
+	'css-unit:grad',
+	'css-unit:ms',
+	'css-unit:rad',
+	'css-unit:s',
+	'css-unit:turn',
+	'html-attr:script.src',
+	'html:script',
+	'motion-preset:hover:hover-none',
+];
+
 // The inventory key of a draft element: the innermost host's name and the element's tpl id, from a tpl finder
 // (`Host>Child@12#0/34#1` is `Child/34`); null for any other finder. An element of the root host takes `rootComponent`
 // (the entry draft's component), because the runtime names the root host `Root` on a served draft and intake's harness

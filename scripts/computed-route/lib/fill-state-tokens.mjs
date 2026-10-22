@@ -12,6 +12,14 @@
 import { focusTokens, pressTokens, linkStateTokens } from './snapshot-tokens.mjs';
 import { LOOSE } from './resolve.mjs';
 
+export const COVERAGE_WRITES = [
+	'css-pseudo-class:active',
+	'css-pseudo-class:focus',
+	'css-pseudo-class:focus-visible',
+	'css-pseudo-class:focus-within',
+	'css-pseudo-class:visited',
+];
+
 // The declared properties a focus look feeds into settings.custom.focus.
 export const FOCUS_PROPS = [ 'outline-width', 'outline-color', 'outline-style', 'outline-offset', 'box-shadow' ];
 // The declared properties a pressed look feeds into buttonPresets (the two painted ones, and the colours pressTokens names as gaps).

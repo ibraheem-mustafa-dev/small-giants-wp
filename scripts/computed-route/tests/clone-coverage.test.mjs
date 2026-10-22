@@ -55,6 +55,18 @@ test( 'MUST FAIL (control 2b): a module that declares it writes an ID whose entr
 	assert.ok( Object.keys( declaredWrites() ).includes( file ), 'the image writer declares its IDs' );
 } );
 
+test( 'MUST FAIL (control 2c): an entry whose write names a module that does not declare the ID', () => {
+	const file = 'scripts/computed-route/lib/fill-media.mjs';
+	const coverage = clone( committed.coverage );
+	coverage.entries[ 'html:sgs-planted-element' ] = { recognise: null, write: `${ file }#mediaDecisions`, check: null, wave: 'unassigned', note: 'planted' };
+	const inv = clone( committed.inventory );
+	inv.sections.html.entries.push( { id: 'html:sgs-planted-element', label: '<sgs-planted-element>', count: 1, examples: [], motion: false } );
+	assert.deepEqual( coverageProblems( inv, coverage ), [ `html:sgs-planted-element: its write names ${ file }, but that module's COVERAGE_WRITES does not declare it (add it there, or point write at the module that writes it)` ] );
+	coverage.entries[ 'html:sgs-planted-element' ].excluded = { signedBy: 'Bean', date: '2026-10-22', reason: 'planted' };
+	assert.deepEqual( coverageProblems( inv, coverage ), [], 'an excluded entry is not held to a writer' );
+	assert.deepEqual( coverageProblems( committed.inventory, committed.coverage ), [], 'every committed entry that names a lib module is declared by it' );
+} );
+
 test( 'MUST FAIL: a COVERAGE_WRITES declaration that is not a literal list of quoted IDs throws instead of declaring nothing', () => {
 	const root = fs.mkdtempSync( path.join( os.tmpdir(), 'declared-writes-' ) );
 	const lib = path.join( root, 'scripts', 'computed-route', 'lib', 'sub' );

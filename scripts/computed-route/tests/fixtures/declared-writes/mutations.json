@@ -46,5 +46,11 @@
 		"find": "if ( ! [ 'node_modules', 'tests', 'cache', 'data' ].includes( d.name ) ) {",
 		"replace": "if ( false ) {",
 		"why": "a writer in a subfolder would be missed"
+	},
+	{
+		"file": "lib/clone-coverage.mjs",
+		"find": "if ( ! writes && writer && ! ( declared[ writer[ 1 ] ] || [] ).includes( id ) ) {",
+		"replace": "if ( false ) {",
+		"why": "an entry whose write names a module that does not declare it would pass"
 	}
 ]

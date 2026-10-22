@@ -13,6 +13,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { BLOCKS_DIR, LOOSE } from './resolve.mjs';
 
+export const COVERAGE_WRITES = [
+	'aria-attr:aria-label',
+	'html-attr:a.rel',
+	'html-attr:a.target',
+	'html-attr:global.id',
+];
+
 const same = ( a, b ) => LOOSE( a ) === LOOSE( b );
 const unset = ( v ) => undefined === v || null === v || '' === String( v ).trim() || false === v;
 const typeOf = ( def ) => [].concat( def?.type || [] );

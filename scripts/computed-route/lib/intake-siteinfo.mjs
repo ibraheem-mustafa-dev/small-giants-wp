@@ -16,6 +16,10 @@ import { brandRegistry } from './brand-registry.mjs';
 import { DAYS, POSTCODE, validate, socialKey, brandByLabel, locator, textRuns, parseHoursText } from './intake-siteinfo-shape.mjs';
 import { readHead } from './intake-head.mjs';
 
+export const COVERAGE_WRITES = [
+	'html:title',
+];
+
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 export const SYNC_SCRIPT = path.join( REPO, 'plugins', 'sgs-blocks', 'scripts', 'sync-business-info.py' );
 export const PROVISION_SCRIPT = path.join( REPO, 'plugins', 'sgs-blocks', 'scripts', 'provision-site-info-from-draft.py' );

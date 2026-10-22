@@ -10,6 +10,41 @@ import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, trac
 import { applyClamp } from './fill-values.mjs';
 import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword } from './resolve-declared.mjs';
 
+export const COVERAGE_WRITES = [
+	'aria-attr:aria-hidden',
+	'css-function:calc',
+	'css-function:clamp',
+	'css-function:linear-gradient',
+	'css-function:max',
+	'css-function:min',
+	'css-function:radial-gradient',
+	'css-function:repeating-linear-gradient',
+	'css-pseudo-class:any-link',
+	'css-pseudo-class:dir',
+	'css-pseudo-class:empty',
+	'css-pseudo-class:first-child',
+	'css-pseudo-class:first-of-type',
+	'css-pseudo-class:has',
+	'css-pseudo-class:heading',
+	'css-pseudo-class:is',
+	'css-pseudo-class:lang',
+	'css-pseudo-class:last-child',
+	'css-pseudo-class:last-of-type',
+	'css-pseudo-class:link',
+	'css-pseudo-class:not',
+	'css-pseudo-class:nth-child',
+	'css-pseudo-class:nth-last-child',
+	'css-pseudo-class:nth-last-of-type',
+	'css-pseudo-class:nth-of-type',
+	'css-pseudo-class:only-child',
+	'css-pseudo-class:only-of-type',
+	'css-pseudo-class:root',
+	'css-pseudo-class:scope',
+	'css-pseudo-class:where',
+	'css-unit:vh',
+	'css-unit:vw',
+];
+
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const BLOCKS_DIR = path.resolve( HERE, '../../../plugins/sgs-blocks/src/blocks' );
 

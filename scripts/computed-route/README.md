@@ -37,7 +37,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/intake-usage.test.mjs` | Step 1.6's usage read: each mapper (CSS, elements, the runtime's encodings, code strings and calls, bound values, assets), the runtime check in a real browser (an @import sheet, a script-set inline style, a shadow root, the runtime shell and markers excluded), and the done-when row for each listed capability; MUST FAIL: prose never read as CSS, an unknown property kept as itself, an asset the draft never names not read, the runtime's own shell and markers not counted. |
 | `tests/capabilities.test.mjs` | Phase 1 steps 1.1 and 1.2: sections derived from a fixture DB and the code; MUST FAIL: a planted block setting and a planted draft tag each become a new entry. |
 | `tests/delivery-map.test.mjs` | The delivery map check: the expected keys (each review coverage id once, active animation records only, every surface state), a positive control, and MUST FAIL cases for a missing, invented, dead-code or repeated key, a unit the plan lacks, a done commit that does not exist, an empty accepted reason, a value both done and accepted or of the wrong shape, coverage marks that disagree with the coverage map (an accepted id must be excluded there); the duplicate scan ignores names inside values; plan units come from the work table only; repeated state names get their own keys (15 of 15 mutations killed with `tools/mutate.mjs`). |
-| `tests/clone-coverage.test.mjs`, `tests/fixtures/declared-writes/mutations.json` | The gate over the committed inventory and map; MUST FAIL controls 1 to 4: a planted setting, a planted tag, a missing writer or reader, an unsigned exclusion, a wave-less gap, an unknown ID; control 2b: an ID a module declares in `COVERAGE_WRITES` whose entry is a gap, missing or names another writer, and every declared ID is one the inventory holds; and a gap carrying a Phase 0 marker, which the schema refuses. `mutations.json` is the 4-mutation list for `tools/mutate.mjs` (all red). |
+| `tests/clone-coverage.test.mjs`, `tests/fixtures/declared-writes/mutations.json` | The gate over the committed inventory and map; MUST FAIL controls 1 to 4: a planted setting, a planted tag, a missing writer or reader, an unsigned exclusion, a wave-less gap, an unknown ID; control 2b: an ID a module declares in `COVERAGE_WRITES` whose entry is a gap, missing or names another writer, and every declared ID is one the inventory holds; control 2c: an entry whose write names a lib module that does not declare it; and a gap carrying a Phase 0 marker, which the schema refuses. `mutations.json` is the mutation list for `tools/mutate.mjs` (all red). |
 | `tests/intake-coverage-rows.test.mjs` | `lib/intake-missing.mjs` rule 3: one seen-but-unsupported row per uncovered capability; MUST FAIL: an uncovered element is never dropped. |
 | `tests/fixtures/framework-db.mjs` | A temp framework DB built from `plugins/sgs-blocks/scripts/dbschema/schema.sql` for tests that cannot use the real one. |
 | `tests/fixtures/motion-loop-css/records.json`, `tests/fixtures/motion-loop-css/A-02.expected.css` | Two minimal endless-loop inventory records, and the box content proven against the draft's own Web Animations call for Mama's A-02 (`.claude/qa/control-gaps/sparkle/compare-twinkle.mjs`). |
@@ -455,6 +455,7 @@ Measures a rendered design draft and writes block settings through the framework
 - `isPseudoProperty(stored)` → whether the stored value is namespaced under `PSEUDO_NAMESPACES`, so it holds a keyword slug rather than a measured CSS value.
 
 ### `lib/normalise.mjs`
+- `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `COLOUR_DE`, `LENGTH_TOL`: snap tolerances (ΔE 2, 0.5px).
 - `round(n)` → 3 decimals.
 - `parseLength(v)` → `{ n, unit }` or null.
@@ -472,6 +473,7 @@ Measures a rendered design draft and writes block settings through the framework
 - `snapFontFamily(value, snapshot, { log, where, prefer })` → the font-family preset slug whose first family matches a measured font stack (`prefer`, the slug the node already holds, first), or null (the stack is written as measured).
 ### `lib/resolve.mjs` (reads block.json files)
 
+- `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `timeToMs(value)` → a CSS time as whole milliseconds (`0.25s` → `250`, `1s` → `1000`), else null. `formatValue` uses it so the route never hands a duration setting a decimal or a unit suffix: `sgs_transition_vars` would refuse it and silently apply the default, and before that helper was fixed it stripped it to a tenth of the value asked for.
 - `BLOCKS_DIR`: the block sources folder.
 - `GAPS`: gap reasons (`no-setting`, `ambiguous`, `shape`, `uncalibrated`).
@@ -979,16 +981,19 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `liveStateCheck({ browser, cfg, rows, widths, logicRows, log })` → `{ rows, summary, pairs }` (the `checkStates` rows, each with its pair name and `walkerState`); `surfaceStateCheck({ cfg, vocab, surfaces, surface, buildDir, logicRows, headless, log, run })` → the report part in its own browser, or why nothing was checked; the surface's sc-if rows (`surfaceLogicRows({ surfaces, surface, buildDir, vocab })`: the state map built from `<buildDir>/intake/intake.json`, none when intake has not run) go to `liveStateCheck`, so the draft's logic states are compared too; `run` is the check it runs (default `liveStateCheck`); `stateReport(check)` → `{ json: { summary, pairs, skipped, open }, markdown }`.
 
 ### `lib/fill-state.mjs`
+- `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `fillStates({ tree, nodes, reads, calFor, db, snapshot })` → `{ writes, unmapped, held, patch, patchEntries }`, writing into the tree in place through `lib/fill-prop.mjs::resolveProperty` with the look's state (a surface's open look with state null); `patch` is the theme-snapshot patch and `patchEntries` lists each key it set.
 - `stateDrafts(reads, id)` → Map `state|prop` → `{ state, prop, perWidth, read }` (a combination joined by `+`; `read` is `"code"` when any width's value came from the stylesheet); `stateGap(state, held)` → why a look has no setting state, or null.
 - `targetSnap(reads, target)` → the target's resting snapshot at the narrowest read width whose snapshot has a tag (a target hidden at 375 has none there), else the narrowest one; a focus look on an element with no tag and no role at any width feeds no theme ring.
 - `SURFACE_BLOCKS` (`sgs/modal`, `sgs/nav-drawer`, `sgs/mega-panel`); `hiddenAtRest(reads, id)` → true when every read width found the target not visible.
 
 ### `lib/fill-state-tokens.mjs`
+- `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `tokenRoute({ state, prop, held, block, node })` → `"focus"`, `"press"`, `"link"` or null; `FOCUS_PROPS`, `PRESS_PROPS`, `LINK_STATES`; `pressVariant(block, node)` → the preset variant or null; `pickValue(perWidth)` → the widest read width's value.
 - `createPatch()` → `{ patch, entries, conflicts, set(path, value, from) }`; `applyTokenLooks({ looks, sink, from, target, variant, owned })` → the UNMAPPED rows of the mappers' gaps; `ownedBySetting(cal, slot)`; `conflictRow(conflict)`.
 
 ### `lib/fill-timing.mjs`
+- `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `timingFacts(reads, id)` → `{ rest, enter, skipped }`: the resting rule's timings (`rest[prop]`, per width), each state rule's (`enter[state][prop]`) and the lists that name a time per property or compute it (`skipped`). `oneTiming(text)` → the one value a transition list states, or null; `TIMING_PROPS`.
 - `timingWrites({ node, ref, rec, target, cal, db, snapshot, reads, held })` → `{ writes, unmapped }`: the resting timing to the setting with no state, a state's timing to the setting tagged with it (`how: "fill-timing"`), a state timing alone to the setting that times both ways when the block has none for the state (`"fill-timing-reverse"`); a different resting timing with no state setting is `timing-enter-differs`. `fillStates` calls it for every target, and `stateDrafts` leaves these properties to it.
 - `timingCheck({ draft, live, pairs })` → rows `{ direction: "both" | "enter" | "leave", verdict: "match" | "differs" | "unreadable" }`; with only a state timing the live resting timing must equal the enter timing.
@@ -1014,6 +1019,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `stateCombos([jobs, rows, resolveSrc, hostAttr])` (in-page) → each target's state combinations with each token's host; `tokenSource(row)` → a vocabulary row's token as regex source; `readableRows(rows)` → the rows a page can enter (`READABLE` reaches) plus the unreachable ones.
 
 ### `lib/fill-logic-state.mjs`
+- `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `readLogicStates({ page, cdp, jobs, rest, logicRows, vocab, resolveSrc, log })` → `{ looks: { targetId: [look] }, gaps: [{ ids, reason }] }`: sets each `set-state` row's keys, reads the targets whose declared values change, restores the state. `logicGroups(logicRows, vocab)` → the rows grouped by component and keys, each with its setting state (the row's, else the vocabulary state the keys name) or a gap reason. `readDraft` calls it after `readStates` when given `logicRows` (the state map's `scIf` rows) and puts the looks in `states[width].looks` and the gaps in `states[width].logicGaps`.
 
 ### `lib/fill-confirm.mjs`
@@ -1026,7 +1032,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `declaredLength({ prop, declared, def, unit, forms, box })` → `{ value }` in the setting's form, or null to format as rendered. `resolveWeightKeyword(prop, declared)` → a declared `bold`/`normal` weight as `700`/`400`. `declaredUnit` also takes `defaultValue`, the schema default whose tiers count as held.
 
 ### `lib/fill-prop.mjs`
-- `COVERAGE_WRITES`: the coverage IDs this module writes (the CSS groups a draft header's Fill run wrote and confirmed); `coverageProblems` holds each entry's write to this module.
+- `COVERAGE_WRITES`: the coverage IDs this module writes (the CSS groups a draft header's Fill run wrote and confirmed, and every other property the register names this module as writing); `coverageProblems` holds each entry's write to this module, both ways.
 - `TIER_WIDTHS`: 1440, 768, 375. `INHERITED`: calibration's inherited list, re-exported rather than copied. `CARRIED`: properties read from a text or layout carrier.
 - `knownPaths(cal)` → every path a calibration knows for a block.
 - `canon(prop, v)` → the value as painted, for comparison. `notPainted(prop, styles)` → whether the property paints nothing here.
@@ -1068,18 +1074,20 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `unreadOf({ db, block, cal, attributes, slots, written })` → `[ { kind, slot, settings, reason } ]`: kinds `element`, `presence`, `text`, `link`, `structure`. `fillTree` adds `node` and `block` and returns them as `unread`; `fill-report.md` lists them under Not read.
 
 ### `lib/fill-presence.mjs`
+- `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `plainText(s)` → text without markup, whitespace collapsed.
 - `presenceDecisions(input)` → `{ writes, unmapped, notes }` for visibility and variant settings, from calibration's `presence`.
 - `textDecisions(input)` → the same for words, from calibration's `text`.
 - `normaliseHref(href, origin)` → the href as WordPress holds it, or null. `linkDecisions(input)` → the same for links, from calibration's `link`; a setting bound to Site Info (`metadata.bindings.<attr>.args.key`) is still written and also returns a `handover` row, which `fill-resolve.mjs::fillContent` records as a `site-info` / `link` handover entry. A block whose `link` names one distinct path (the nested anchor `sgs/icon` calibrates as `.sgs-icon__link`) also takes the address at the draft's root slot when no slot names that path: the draft's own anchor, or the sole anchor inside the copied element, is that block's one link; a block with two link paths takes no root guess.
 
 ### `lib/fill-link-attrs.mjs`
+- `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `blockSupportsAnchor(slug)` → whether block.json declares `supports.anchor`.
 - `linkAttrDecisions(input)` → `{ writes, unmapped, notes }` for a link's `target` (a boolean `...NewTab` or string `...Target` setting, or a calibrated `target` link entry), `rel` (a `rel` or `...Rel` setting; noopener and noreferrer are the block's own for a new tab), `id` (the `anchor` attribute, root element only, when `supports.anchor`) and `aria-label` (an `ariaLabel` or `...AriaLabel` setting). A link's companion setting shares its address setting's prefix; a block with none gets an UNMAPPED row named `target`, `rel`, `id` or `aria-label`. `fill-read.mjs` reads the four from the draft element; `fill-resolve.mjs::fillContent` applies them; `scripts/parity/lib/links.mjs::compareLinkAttributes` compares them on the live render.
 
 ### `lib/fill-media.mjs`
 
-- `COVERAGE_WRITES`: the image coverage IDs this module writes (`html:img`, `img.src`, `img.alt`, `figure`, `figcaption`); `coverageProblems` holds each entry's write to this module.
+- `COVERAGE_WRITES`: the image coverage IDs this module writes (`html:img`, `img.src`, `img.alt`, `figure`, `figcaption`); `coverageProblems` holds each entry's write to this module, both ways.
 - `readMediaMap(file)` → `sites/<client>/build/media-map.json` or null. `imageSlots(db, block)` → `[{ alt, url }]` from the block's DB `image-alt` rows (`alt_companion_attr` names the URL setting). `draftPath(src, origin)` → the draft file an image address names, or null (data:, another origin). `mapEntries(map, site, path)` → the media-map files whose repo path is, or ends at a folder boundary with, that path.
 - `idSetting(schema, urlAttr)` → the attachment id setting for a URL setting (`imageUrl` to `imageId`, else `<attr>Id`) when block.json declares it.
 - `mediaDecisions(input)` → `{ writes, unmapped, notes }`: URL, id, alt and (from a figcaption) caption for a block with exactly one image setting; a held setting is kept; every miss (no map, not in the map, ambiguous, external, several image settings, a bare `<img>` on a block with none) is an `image` row in UNMAPPED and the draft's own address is never written. Called from `fill-resolve.mjs::fillContent`.
@@ -1109,6 +1117,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `translationOf(pose)` → `{ x, y }` in px. `scaleOf(pose)` → the uniform scale. `rotateOf(pose)` → the rotation in degrees (matrix angle plus the `rotate` property). `shapeEntrance(raw)` → `{ trigger, delayMs, durationMs, delayRawMs, durationRawMs, distancePx, scale, … }` or null.
 
 ### `lib/fill-motion.mjs`
+- `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `motionWrites(options)` → `{ writes, unmapped, notes }`: every node's `sgsMotion`, validated by `lib/motion-validate.mjs`.
 - `elementMotion(records, options)` → one target's entrance and hover layers; with `options.offers` and `options.target` an animation the draft starts on a state change becomes a `state` or `open` entrance (`lib/motion-states.mjs`), a transition on a published state a state layer, and an SVG `<set>` (`lib/motion-set.mjs`) a held load entrance; none of these is render-checked at load. `elementEffects(records, options)` → one target's effects from its loop records, the run-time loop records its measured animation is, its `<marquee>` and its SVG animation elements. `renderRefutes(sampled)` is true when the element was found and played no entrance at any width, so the render wins and nothing is written.
 - `elementKey(finder, rootComponent)`, `recordsByElement(records)`, `partForSlot(block, slot, targets)`.
@@ -1123,6 +1132,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `openWords(rows)` → the words that mean a disclosure is open: `open` and the last word of each attribute or class token the `states` table lists for it, less any word that names another state.
 
 ### `lib/motion-set.mjs`
+- `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `setRecord(sampledSet, index)` → `{ record }` (an entrance record: opacity from the value before to the value set, duration 0, the begin time as its delay) or `{ reason }` for a `<set>` that begins on an event, reverts, switches another attribute or changes nothing. `lib/fill-entrance.mjs::sampleMotion` samples a `<set>` with its begin, end, fill and the attribute it overrides (`base`).
 
 ### `lib/motion-check.mjs`
@@ -1135,6 +1145,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `transformChannels` also reads a flat `matrix()`/`matrix3d()` (translate, scale, rotate; a skew is reported), `rotate3d()` about one axis, and `perspective()` (returned as `perspective`). `shadowParts(value)` → `{ inset, x, y, blur, spread, colour }` of a single box-shadow; `colourHex(value)` → lowercase hex for a hex or `rgb()` colour.
 
 ### `lib/motion-effects.mjs`
+- `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `writeEffect(effect, { mdb, schema, offers })` → `{ target, list, layer, dropped }` or `{ refused }`. `placeEffect(effect, { schema, offers })` → `{ target }` (a block-level effect found on a part goes on the root) or `{ refused }`.
 - `loadEffectOffers()` → `{ qualifying, elementsOf(block) }` from `generated-fx-qualifying-blocks.json` and each block.json; `levelsForTarget(target, elements)`, `kindsFit(meta, target, elements)` (the editor's `refusal-match.js` rules); `PANEL_LISTS`: each panel's list, DB layer and schema layer.
 
@@ -1143,6 +1154,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `lib/fill-motion.mjs::elementEffects` returns such a loop as `css` when `chooseEffect` reports it unmapped; `motionWrites` writes it to `sgsCustomCss`, `sgsCustomCssId` (`loop` plus the record id's letters and digits, at most 16, the key `includes/custom-css.php::sgs_custom_css_uid` accepts) and `sgsCustomCssNote` of the block root, adding nothing the box already holds, refuses a hex colour loop, and reports it unmapped on a declared part.
 
 ### `lib/motion-loops.mjs`
+- `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `loopEffect(record, measuredByWidth, { mdb })`, `chooseEffect(loop, narrow, { mdb })` → `{ effect, values, devices, trigger, notes }` or `{ unmapped }`; `LOOP_BUILDERS`: marquee, ambient-float, svg-loop, ken-burns.
 - `loopCheck(record, measuredByWidth)` → one line per width where the measured loop differs from the code's duration or keyframes, `[]` when every width agrees.
 - `resolvedLoop(record, measured)` (values from the code, else the measured animation; random values refused), `measuredLoopOf(record, measured)`, `loopFamilies(loop)`, `runtimeLoopsFor(candidates, measured)`; `smilLoop(animate, box)`, `marqueeTag(attrs)`.
@@ -1164,6 +1176,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `motionDb(db)` → `{ targetsOf(block), statesOf(block), opensOf(block), field(layer, path, effect), presets(panel), effect(slug), effects() }`; `statesOf`/`opensOf` read `motion_targets.motion_support` (the named motion states a block publishes, the parts it opens). `fieldKey(layer, fieldPath)`.
 
 ### `lib/motion-tokens.mjs`
+- `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `tokenTypes(schema)`, `clientTokens(rawSnapshot)`, `clientPalette(rawSnapshot)` (palette hex to slug, so a palette colour is written by its slug and a one-off colour stays hex), `tokenises(field, fieldType)` (durations, curves and travel only), `snapToken(value, fieldType, ctx)`, `presetFor(layer, presets)` (a pose channel at identity counts as absent), `intensityPresetFor(layer, presets)` (an open or state layer that holds the travel an intensity preset stamps), `effectPresetFor(layer, presets)` (an intensity preset whose stamped values the effect layer holds); `msOf`, `pxOf`, `easingOf`.
 
 ### `lib/fill-config.mjs`
@@ -1315,6 +1328,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `makePanelRules({ m, view, scope, R, facts, surface, declared })` → `{ panelChild(element), iconRun(list, i, parent), siteInfoBrand(element) }`: the verdict for a direct child of a header disclosure panel, the run of icon-only Site Info links at `list[i]` in a drawer's top row, and the brand a link stands for.
 
 ### `lib/skeleton-propose.mjs`
+- `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `proposeSkeleton({ inventory, facts, surface, surfaceKind?, surfaceName?, built?, clientDecisions?, carried?, picks?, calKeys?, calSettings?, states?, thresholds?, db?, factRecord?, openers? })` → `{ skeleton, proposal, problems }` (the proposal also carries `surfaceParts` and `recordDisagreements`); the skeleton passes `skeletonProblems` and `lintSkeleton`. Each row carries `rule` (the standing rule that settled it, or null) and, for an absorbed row, `into`; stacked text links, or stacked rows of a marker (`isMarker`) and one piece of text, are one list; a bare wrapper holding exactly one list is unwrapped into it (`listWrapper`); with `built` (`sites/<client>/build/skeleton/built-surfaces.json`) every row is settled by that post (`clientBuiltSurface`). `proposal.counts.byRule` counts rows per rule.
 
 ### `lib/skeleton-child-slots.mjs`
@@ -1486,7 +1500,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 ### `lib/clone-coverage.mjs`
 - `COVERAGE_FILE`, `COVERAGE_SCHEMA`, `STEPS`; `loadCoverage(file?)` throws listing every schema problem.
 - `statusOf(entry)` → `covered`, `gap` or `excluded`; `referenceProblem(ref, { root?, registry? })` → a sentence or null.
-- `coverageProblems(inventory, coverage, { root?, registry?, baseline?, writes? })` → every gate problem as a sentence, including an ID a module declares it writes (`writes`, default `declaredWrites()`) whose entry is missing, excluded or names another writer; `declaredWrites(root?)` → `{ '<repo path>': [ ids ] }` from each `lib/*.mjs` file's `export const COVERAGE_WRITES`; `gapList(inventory, coverage)`; `seedGaps(inventory, coverage, note)` → `{ coverage, added }`.
+- `coverageProblems(inventory, coverage, { root?, registry?, baseline?, writes? })` → every gate problem as a sentence, including an ID a module declares it writes (`writes`, default `declaredWrites()`) whose entry is missing, excluded or names another writer, and an entry whose `write` names a lib module that does not declare it (checked against the declarations on disk, so only when `writes` is not passed); `declaredWrites(root?)` → `{ '<repo path>': [ ids ] }` from each `lib/*.mjs` file's `export const COVERAGE_WRITES`; `gapList(inventory, coverage)`; `seedGaps(inventory, coverage, note)` → `{ coverage, added }`.
 
 ### `tests/fixtures/framework-db.mjs`
 - `fixtureDb(rows)` → the path of a temp DB built from the committed schema and filled with `rows`; `BASE_ROWS`.
@@ -1532,6 +1546,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `readSurface({ folder, index, harPath, file, hash, width, mode, surface, state, sample, ... })` → `{ records, jsonl, settings, summary, url }`.
 
 ### `lib/intake-siteinfo.mjs`
+- `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `SYNC_SCRIPT`, `PROVISION_SCRIPT`: the two plugin scripts, run as commands only. `linkCandidate(href, where)` → a candidate from one link.
 - `runSyncPrint({ draft, python })` (throws if `--push` is ever in its arguments) and `parseSyncPrint(text)` → the print's key/value pairs.
 - `proposeSiteInfo({ folder, routing?, census?, syncPrint?, python? })` → `{ rows: [{ rowId: 'siteinfo:<key>[#n]', key, value, normalised, sources, valid, reason }], refused, gaps }`.

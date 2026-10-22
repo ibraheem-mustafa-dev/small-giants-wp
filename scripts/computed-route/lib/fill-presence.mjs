@@ -8,6 +8,16 @@
 // function returns { writes: [{ attr, value, merge }], unmapped: [{ property, value, slot, reason }], notes }.
 import { LOOSE } from './resolve.mjs';
 
+export const COVERAGE_WRITES = [
+	'block-setting:boolean-visibility:boolean',
+	'block-setting:link-href:string',
+	'block-setting:presence-boolean:boolean',
+	'block-setting:text-content:string',
+	'construct:link',
+	'html-attr:a.href',
+	'html-attr:global.hidden',
+];
+
 const same = ( a, b ) => LOOSE( a ) === LOOSE( b );
 const holds = ( list, p ) => ( list || [] ).some( ( x ) => same( x, p ) );
 const empty = () => ( { writes: [], unmapped: [], notes: [] } );

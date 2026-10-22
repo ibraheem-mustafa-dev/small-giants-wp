@@ -5,6 +5,16 @@
 // reproduces is reported as a Spec 38 gap. The chosen effect is written through lib/motion-effects.mjs::writeEffect.
 import { propertyChannels, filterChannels, keyframeStops } from './motion-channels.mjs';
 
+export const COVERAGE_WRITES = [
+	'html-attr:marquee.behavior',
+	'html-attr:marquee.direction',
+	'html-attr:marquee.scrollamount',
+	'html-attr:marquee.scrolldelay',
+	'html-attr:marquee.truespeed',
+	'svg:animate',
+	'svg:animateTransform',
+];
+
 const RANDOM = /Math\.random|\brnd\(/;
 const camel = ( k ) => k.replace( /-([a-z])/g, ( _, c ) => c.toUpperCase() );
 
