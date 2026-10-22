@@ -1,0 +1,14 @@
+[
+	{ "file": "data/intake.schema.json", "find": "\"effect\",\n              \"skeleton-block\",", "replace": "\"skeleton-block\",", "why": "the schema would refuse an effect review row" },
+	{ "file": "../../.claude/specs/48-CLONING-SYSTEM.md", "find": "| Script effect (FR-48-77) | `accept`", "replace": "| Script effect (FR-48-77) | `agree`", "why": "Appendix C would name a different first mark than the review" },
+	{ "file": "lib/intake-review.mjs", "find": "effect: [ { value: 'accept' },", "replace": "effect: [ { value: 'agree' },", "why": "the review's first effect mark would differ from Appendix C" },
+	{ "file": "lib/intake-review.mjs", "find": "effectRows( intake.inventory?.animations?.records )", "replace": "effectRows( [] )", "why": "a recognised effect would raise no review row" },
+	{ "file": "data/clone-coverage.json", "find": "a stripe slanted by a constant skewX that slides across its host on pointer entry is the sheen effect, its angle, band width, duration and easing stored (lib/motion-behaviours.mjs::sheenOf)", "replace": "sheen", "why": "the sheen's coverage entry would not say how it is solved" },
+	{ "file": "data/clone-coverage.json", "find": "\"css-function:skewx\": {\n\t\t\t\"recognise\": \"scripts/computed-route/lib/motion-behaviours.mjs#recogniseBehaviour\",", "replace": "\"css-function:skewx\": {\n\t\t\t\"recognise\": null,", "why": "skewX would be a gap again" },
+	{ "file": "lib/fill-behaviour.mjs", "find": "refuse( r.id, `${ e.effect }: ${ w.refused }` );", "replace": "", "why": "an effect the block does not offer would be dropped without a row" },
+	{ "file": "lib/motion-clip.mjs", "find": "const [ edges, radius ] = m ? m[ 1 ].split( /\\s+round\\s+/ ) : [ '', undefined ];", "replace": "const [ edges, radius ] = m ? [ m[ 1 ], undefined ] : [ '', undefined ];", "why": "a rounded clip reveal would not be written" },
+	{ "file": "lib/motion-behaviours.mjs", "find": "return { effect: 'sheen', panel: 'hover', trigger: 'hover',", "replace": "return { effect: 'sheen', panel: 'effects', trigger: 'hover',", "why": "the sheen would be put in the wrong panel and refused" },
+	{ "file": "lib/motion-behaviours.mjs", "find": "return { effect: 'ripple', panel: 'effects', trigger: 'pointerdown',", "replace": "return { effect: 'ripple', panel: 'hover', trigger: 'pointerdown',", "why": "the ripple would be put in the wrong panel and refused" },
+	{ "file": "lib/motion-behaviours.mjs", "find": "return { effect: 'scroll-progress', panel: 'effects', trigger: 'scroll',", "replace": "return { effect: 'scroll-progress', panel: 'hover', trigger: 'scroll',", "why": "the scroll progress would be put in the wrong panel and refused" },
+	{ "file": "lib/motion-behaviours.mjs", "find": "const effects = [ { effect: 'magnet', panel: 'hover', trigger: 'hover', values: magnet.values } ];", "replace": "const effects = [];", "why": "the magnet would not be written" }
+]

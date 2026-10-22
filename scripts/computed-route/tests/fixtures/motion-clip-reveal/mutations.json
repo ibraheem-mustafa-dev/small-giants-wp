@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/motion-clip.mjs",
+		"find": "const [ edges, radius ] = m ? m[ 1 ].split( /\\s+round\\s+/ ) : [ '', undefined ];",
+		"replace": "const [ edges, radius ] = m ? [ m[ 1 ], undefined ] : [ '', undefined ];",
+		"why": "a round tail would be read as an edge and the whole clip refused again"
+	},
+	{
+		"file": "lib/motion-clip.mjs",
+		"find": "const ignored = undefined === radius ? [] : [ 'corner radius' ];",
+		"replace": "const ignored = [];",
+		"why": "the dropped radius would not be named"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "const rounded = ( record.properties || [] ).filter( ( p ) => 'clip-path' === p.property && /\\sround\\s/.test( `${ p.from } ${ p.to }` ) );",
+		"replace": "const rounded = [];",
+		"why": "the reveal would not say that no corner radius is built"
+	},
+	{
+		"file": "lib/motion-clip.mjs",
+		"find": "return { channels: { clip: t }, unsupported: [], ...( ignored.length ? { ignored } : {} ) };",
+		"replace": "return { channels: { clip: t + 1 }, unsupported: [], ...( ignored.length ? { ignored } : {} ) };",
+		"why": "the clip amount written would be wrong"
+	}
+]

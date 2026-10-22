@@ -23,7 +23,7 @@ const fixture = ( over = {} ) => ( {
 	manifest: { schema_version: '1', files: { 'Site.dc.html': 'a'.repeat( 64 ) } },
 	tools: { playwright: '1.50.0', browser: 'chromium 133', runtime: 'support.js 1' },
 	harness: { clock: '2026-01-01T00:00:00Z', seed: 1, stepMs: 16 },
-	census: [], inventory: { animations: [], surfaces: [], diff: [ { rowId: 'inventory:hero-fade', draftId: 'hero-fade', field: 'duration', ours: '600ms', theirs: '400ms' } ] },
+	census: [], inventory: { animations: { records: [ { id: 'J-1', name: 'Pointer pull', mechanism: 'js-style-write', status: 'active', element: { selector: 'closest(\'[data-pull]\')' }, trigger: { type: 'pointer-move', detail: 'document pointermove over a [data-pull] element' }, properties: [ { property: 'translate', formula: '((x − 0.5) × 10)px ((y − 0.5) × 8)px, x,y = pointer position in element (0..1)' } ], duration_ms: 250, easing: 'ease-out' } ] }, surfaces: [], diff: [ { rowId: 'inventory:hero-fade', draftId: 'hero-fade', field: 'duration', ours: '600ms', theirs: '400ms' } ] },
 	routing: { adapter: 'hash', routes: [], links: [] }, breakpoints: [],
 	pageMap: [
 		{ route: '#/', slug: 'home', title: 'Home', parent: null, template: null, postType: 'page', collection: 'static', id: null, menus: [ { menu: 'primary', position: 1 } ] },
@@ -159,7 +159,7 @@ test( 'MUST FAIL an unknown row ID, a row in the wrong section and a malformed l
 	assert.ok( r.problems.some( ( p ) => /row palette:ink is not in review\.md/.test( p ) ) );
 	const moved = applyReview( fixture(), renderReview( fixture() ).replace( /(\| `palette:ink` \|[^\n]*\n)/, '' ).replace( '| `page:page:home` |', '| `palette:ink` | x | y | z | |\n| `page:page:home` |' ), { today: TODAY } );
 	assert.ok( moved.problems.some( ( p ) => /palette:ink sits in the page-map section but is a palette-role row/.test( p ) ) );
-	assert.deepEqual( parseReview( '## Odd heading\n' ).problems, [ 'line 1: section heading "## Odd heading" names no row type (page-map, palette-role, site-info, flag, draft-defect, not-a-defect, missing-feature, skeleton-block, inventory-diff, notice)' ] );
+	assert.deepEqual( parseReview( '## Odd heading\n' ).problems, [ 'line 1: section heading "## Odd heading" names no row type (page-map, palette-role, site-info, flag, draft-defect, not-a-defect, missing-feature, effect, skeleton-block, inventory-diff, notice)' ] );
 } );
 
 test( 'MUST FAIL carry-over keeps a mark when draft ID and hash match, drops it (changed, listed first) when the hash changes', () => {

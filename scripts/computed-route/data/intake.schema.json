@@ -541,6 +541,7 @@
               "draft-defect",
               "not-a-defect",
               "missing-feature",
+              "effect",
               "skeleton-block",
               "inventory-diff",
               "notice"

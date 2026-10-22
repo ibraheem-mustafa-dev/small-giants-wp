@@ -8,7 +8,8 @@
 import { validateMotionWrite } from './motion-validate.mjs';
 import { classify, entranceLayer, stateTransitionLayer, hoverLayer, matchByPose } from './motion-layers.mjs';
 import { snapToken, presetFor, intensityPresetFor, effectPresetFor, tokenTypes, clientTokens, clientPalette, tokenises } from './motion-tokens.mjs';
-import { writeEffect, loadEffectOffers } from './motion-effects.mjs';
+import { writeEffect, loadEffectOffers, PANEL_LISTS } from './motion-effects.mjs';
+import { applyBehaviours, applyControls, behaviourIndex } from './fill-behaviour.mjs';
 import { loopEffect, loopCheck, chooseEffect, runtimeLoopsFor, smilLoop, marqueeTag, measuredLoopOf } from './motion-loops.mjs';
 import { loopKeyframesCss, loopName, isLoopRecord } from './motion-loop-css.mjs';
 import { entranceCheck } from './motion-check.mjs';
@@ -213,7 +214,7 @@ export function elementMotion( records, { mdb, ctx, sampled, runtime = [], offer
 		if ( s ) {
 			named.set( r.id, s );
 		}
-		return { r, c: s ? { kind: 'entrance' } : classify( r ) };
+		return { r, c: s ? { kind: 'entrance' } : classify( r, { css: ctx.css } ) };
 	} );
 	const unmapped = kinds.filter( ( x ) => 'skip' === x.c.kind ).map( ( x ) => ( { record: x.r.id, reason: x.c.reason } ) );
 	const pick = pickEntrance( kinds.filter( ( x ) => 'entrance' === x.c.kind ).map( ( x ) => x.r ), sampled?.[ 1440 ] || null, runtime, kinds.filter( ( x ) => 'skip' === x.c.kind ).map( ( x ) => x.r ) );
@@ -291,15 +292,16 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [] 
 // intensity preset named before token snapping (a preset stamps literal values), then durations, curves and travel
 // snapped to the client's tokens. Returns { target, list, layer, dropped } or { refused }.
 function finishedEffect( e, { block, target, mdb, schema, offers, ctx, id } ) {
-	const w = writeEffect( { block, target, effect: e.effect, trigger: e.trigger, values: e.values, devices: e.devices, id }, { mdb, schema, offers } );
+	const panel = e.panel || 'effects';
+	const w = writeEffect( { block, target, effect: e.effect, panel, trigger: e.trigger, values: e.values, devices: e.devices, id }, { mdb, schema, offers } );
 	if ( w.refused ) {
 		return w;
 	}
-	const preset = effectPresetFor( w.layer, mdb.presets( 'effects' ) );
+	const preset = 'effects' === panel ? effectPresetFor( w.layer, mdb.presets( 'effects' ) ) : null;
 	if ( preset ) {
 		w.layer.preset = preset;
 	}
-	snapLayer( w.layer, ( p ) => mdb.field( 'effects', p, e.effect ), ctx, [ 'duration', 'easing', 'distance' ] );
+	snapLayer( w.layer, ( p ) => mdb.field( PANEL_LISTS[ panel ].layer, p, e.effect ), ctx, [ 'duration', 'easing', 'distance' ] );
 	return w;
 }
 
@@ -346,13 +348,17 @@ function writeLoopCss( n, items, { flat, ref, out } ) {
 // the entry draft's component (lib/fill-motion.mjs::elementKey); loops: sampleMotion()'s loops by target id; offers:
 // lib/motion-effects.mjs::loadEffectOffers; stateVocab: the `states` table rows that give the words meaning "open"
 // (default: the framework DB's). Returns { writes, unmapped, notes } in the shapes fill-resolve.mjs uses.
-export function motionWrites( { nodes, flat, refOf, records, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null } ) {
-	const out = { writes: [], unmapped: [], notes: [] };
+export function motionWrites( { nodes, flat, refOf, records, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr = undefined } ) {
+	const out = { writes: [], unmapped: [], notes: [], site: [] };
 	const byElement = recordsByElement( records );
 	const unplaced = ( records || [] ).filter( ( r ) => null === ( r.element?.template_tpl_id ?? null ) );
 	const runtime = unplaced.filter( ( r ) => 'entrance' === classify( r ).kind );
 	const runtimeLoops = unplaced.filter( ( r ) => 'effect' === classify( r ).kind );
-	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ), palette: clientPalette( rawSnapshot ) };
+	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ), palette: clientPalette( rawSnapshot ), css: draftCss };
+	const idx = behaviourIndex( { records, template, css: draftCss } );
+	const written = new Map();
+	const controls = [ ...idx.controls ];
+	const deferred = [];
 	let words = null;
 	for ( const n of nodes ) {
 		const stateOffers = { names: mdb.statesOf( n.name ), opens: mdb.opensOf( n.name ), openWords: () => ( words ??= openWords( stateVocab || stateRows() ) ) };
@@ -363,7 +369,7 @@ export function motionWrites( { nodes, flat, refOf, records, sampled = {}, loops
 		const boxes = [];
 		for ( const t of n.targets ) {
 			const sets = ( loops[ t.id ]?.[ 1440 ]?.smil || [] ).map( ( a, i ) => ( 'set' === a.tag ? setRecord( a, i ) : null ) ).filter( Boolean );
-			const own = [ ...( byElement.get( elementKey( t.finder, rootComponent ) ) || [] ), ...sets.flatMap( ( s ) => ( s.record ? [ s.record ] : [] ) ) ];
+			const own = [ ...( byElement.get( elementKey( t.finder, rootComponent ) ) || [] ), ...idx.hostedFor( elementKey( t.finder, rootComponent ) ).map( ( x ) => x.r ), ...sets.flatMap( ( s ) => ( s.record ? [ s.record ] : [] ) ) ];
 			if ( ! own.length && ! sampled[ t.id ]?.[ 1440 ] && ! loops[ t.id ] ) {
 				continue;
 			}
@@ -403,16 +409,23 @@ export function motionWrites( { nodes, flat, refOf, records, sampled = {}, loops
 					continue;
 				}
 				doc.elements[ w.target ] = { ...( doc.elements[ w.target ] || {} ), effects: [ ...list( w.target ), w.layer ] };
+				written.set( e.record, { at: w.target, layer: w.layer } );
 				pending.push( w.target );
 				out.notes.push( ...[ ...e.notes, ...( w.dropped.length ? [ `no ${ e.effect } field for ${ w.dropped.join( ', ' ) }` ] : [] ), ...( w.target !== target ? [ `${ e.effect } sits on the block, so the ${ target } loop is written on root` ] : [] ) ].map( ( text ) => ( { ...where, text: `${ e.record }: ${ text }` } ) ) );
+			}
+			const behaviours = own.map( ( r ) => idx.found.find( ( x ) => x.r === r ) ).filter( Boolean );
+			if ( behaviours.length ) {
+				applyBehaviours( { items: behaviours, n, target, doc, pending, written, controls, out, where, flat, finish: ( e, id ) => finishedEffect( e, { block: n.name, target, mdb, schema, offers, ctx, id } ), mdb, hasAttr } );
 			}
 		}
 		if ( boxes.length ) {
 			writeLoopCss( n, boxes, { flat, ref, out } );
 		}
 		if ( pending.length ) {
-			writeNode( n, doc, [ ...new Set( pending ) ], { flat, ref, schema, out } );
+			deferred.push( () => writeNode( n, doc, [ ...new Set( pending ) ], { flat, ref, schema, out } ) );
 		}
 	}
+	applyControls( { controls, written, out } );
+	deferred.forEach( ( write ) => write() );
 	return out;
 }

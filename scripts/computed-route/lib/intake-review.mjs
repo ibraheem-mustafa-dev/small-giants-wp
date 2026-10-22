@@ -20,11 +20,12 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { isUnwiredEntry } from './intake-defects-static.mjs';
 import { realign, fingerprintDiff } from './identity.mjs';
+import { effectRows } from './motion-behaviours.mjs';
 
-export const ROW_TYPES = [ 'page-map', 'palette-role', 'site-info', 'flag', 'draft-defect', 'not-a-defect', 'missing-feature', 'skeleton-block', 'inventory-diff', 'notice' ];
+export const ROW_TYPES = [ 'page-map', 'palette-role', 'site-info', 'flag', 'draft-defect', 'not-a-defect', 'missing-feature', 'effect', 'skeleton-block', 'inventory-diff', 'notice' ];
 export const SECTION_TITLES = {
 	'page-map': 'Page map', 'palette-role': 'Palette roles', 'site-info': 'Site Info', flag: 'Flags', 'draft-defect': 'Draft defects', 'not-a-defect': 'Not defects: unwired code',
-	'missing-feature': 'Missing features', 'skeleton-block': 'Skeleton block choices', 'inventory-diff': 'Inventory diffs', notice: 'Notices',
+	'missing-feature': 'Missing features', effect: 'Script effects', 'skeleton-block': 'Skeleton block choices', 'inventory-diff': 'Inventory diffs', notice: 'Notices',
 };
 
 const SLUG = /^[a-z0-9-]+$/;
@@ -61,6 +62,8 @@ export const MARKS = {
 	'not-a-defect': [ { value: 'not-a-defect' }, { value: 'defect' } ],
 	'missing-feature': [ { shape: 'map:<block>', re: /^map:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'difference' }, { value: 'build' },
 		{ shape: 'gap:<wave>', re: /^gap:(.*)$/, check: ( m ) => ( m[ 1 ].trim() ? null : 'the wave is empty' ) } ],
+	// A script-driven effect the recogniser (lib/motion-behaviours.mjs, FR-48-77) maps to an SGS effect: `accept` writes it where the skeleton put the element, `block:<slug>` writes it on that block instead, `difference` records the effect as a deliberate difference and writes nothing.
+	effect: [ { value: 'accept' }, { shape: 'block:<slug>', re: /^block:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'difference' } ],
 	'skeleton-block': [ { value: 'accept' }, { shape: 'block:<slug>', re: /^block:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'remove' } ],
 	'inventory-diff': [ { value: 'ours' }, { value: 'theirs' } ],
 	notice: [ { value: 'noted' } ],
@@ -93,6 +96,7 @@ export const HASH_FIELDS = {
 	'not-a-defect': [ 'censusId', 'why', 'note' ],
 	// What a diff row states, never its `text` or row ID (both name record IDs, which renumber across a re-export).
 	'inventory-diff': [ 'draftId', 'field', 'ours', 'theirs' ],
+	effect: [ 'record', 'effect', 'kind', 'unmapped' ],
 	'skeleton-block': [ 'surface', 'key', 'tag', 'words', 'block', 'action' ], // action only when it removes or absorbs
 	notice: [ 'kind', 'file', 'text', 'host', 'reasons' ],
 };
@@ -209,6 +213,8 @@ export function reviewRows( intake ) {
 		const acceptAll = tracked ?? ( block && BLOCK.test( block ) ? `map:${ block }` : null );
 		add( 'missing-feature', r, r.draftId, describe( r ), tracked ?? ( block ? `map:${ block }` : 'no block proposed' ), text( r.why ?? r.reason ), acceptAll, r.mainFlow ? 'main-flow' : acceptAll ? null : 'no-block' );
 	} );
+	// FR-48-77: one row per script-driven effect the recogniser maps to an SGS effect, and one per script effect no SGS effect expresses.
+	effectRows( intake.inventory?.animations?.records ).forEach( ( r ) => add( 'effect', r, r.draftId, r.text, r.unmapped ? 'difference' : 'accept', r.unmapped ? 'a Spec 38 gap: ' + r.unmapped : '', r.unmapped ? 'difference' : 'accept' ) );
 	const sk = intake.skeletons || {};
 	( Array.isArray( sk ) ? sk : Object.entries( sk ).map( ( [ surface, s ] ) => ( { surface, ...s } ) ) ).forEach( ( s ) => ( s.rows || [] ).forEach( ( r ) => add( 'skeleton-block',
 		{ surface: s.surface, ...r, action: r.action && 'unresolved' !== r.action ? r.action : undefined, rowId: r.rowId || `skeleton:${ s.surface }:${ r.key }` }, r.key,

@@ -11,6 +11,7 @@
 import { round, lengthOf, propertyChannels, poseOf, keyframeStops } from './motion-channels.mjs';
 import { shadowParts } from './motion-shadow.mjs';
 import { colourHex } from './tokens.mjs';
+import { recogniseBehaviour } from './motion-behaviours.mjs';
 
 // Each layer keeps only fields the framework DB lists for it; the rest are reported.
 function keepFields( mdb, layer, base, obj, dropped ) {
@@ -30,13 +31,17 @@ const INTERACTION = /^(?:hover|pointer|press|click|focus|key|touch|drag|scroll(?
 
 // How a record is handled: { kind: 'entrance' | 'hover' | 'effect' | 'skip', reason }; an endless or repeating
 // animation is an effect (lib/motion-effects.mjs::loopEffect). `reason` names who owns a skipped record.
-export function classify( record ) {
+export function classify( record, ctx = {} ) {
 	const t = record.trigger?.type;
 	if ( 'active' !== record.status ) {
 		return { kind: 'skip', reason: `status ${ record.status }: the draft never runs it` };
 	}
 	if ( 'css-media' === record.mechanism ) {
 		return { kind: 'skip', reason: 'a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)' };
+	}
+	// A behaviour the draft's own script builds (lib/motion-behaviours.mjs, FR-48-77): written by lib/fill-behaviour.mjs.
+	if ( recogniseBehaviour( record, ctx ) ) {
+		return { kind: 'behaviour' };
 	}
 	if ( /^js-|^waapi-control$/.test( record.mechanism ) ) {
 		return { kind: 'skip', reason: `a script-written ${ record.mechanism } on ${ t }: recognised by the behaviour recognisers wave (FR-48-77)` };
@@ -208,6 +213,11 @@ export function entranceLayer( given, mdb, measured = null, named = null ) {
 	}
 	if ( other.length ) {
 		notes.push( `${ other.join( ', ' ) } is not an entrance channel and is left to the block's own settings` );
+	}
+	// A clip reveal's `round <radius>` is not a channel: the image's own border radius gives the end shape (FR-48-77).
+	const rounded = ( record.properties || [] ).filter( ( p ) => 'clip-path' === p.property && /\sround\s/.test( `${ p.from } ${ p.to }` ) );
+	if ( rounded.length ) {
+		notes.push( `clip-path ${ rounded.map( ( p ) => `${ p.from } to ${ p.to }` ).join( ', ' ) }: the corner radius has no entrance channel and is not built, the image's own border radius gives the end shape` );
 	}
 	const dropped = [];
 	const values = kf
