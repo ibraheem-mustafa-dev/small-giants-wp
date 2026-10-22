@@ -39,21 +39,25 @@ export function initRevealOpen( el ) {
 	};
 
 	// A tap sets the flag; the focus it causes must neither close it nor keep it open on the next tap, so focus and
-	// tap own separate state and a focus that follows a tap is ignored until the next key press.
+	// tap own separate state. Only keyboard focus opens it: the last input anywhere on the page decides, so a mouse
+	// click on a link inside the card never opens it, and a Tab in from elsewhere after a tap does.
 	let focused = false;
 	let tapped = false;
-	let lastInputWasTap = false;
+	let lastInputWasPointer = false;
 	const sync = () => setOpen( focused || tapped );
 
 	const onFocusIn = () => {
-		if ( lastInputWasTap ) {
+		if ( lastInputWasPointer ) {
 			return;
 		}
 		focused = true;
 		sync();
 	};
 	const onKeyDown = () => {
-		lastInputWasTap = false;
+		lastInputWasPointer = false;
+	};
+	const onPointerDown = () => {
+		lastInputWasPointer = true;
 	};
 	const onFocusOut = ( event ) => {
 		if ( event.relatedTarget && el.contains( event.relatedTarget ) ) {
@@ -66,7 +70,7 @@ export function initRevealOpen( el ) {
 		if ( ! isTapPointer( event ) ) {
 			return;
 		}
-		lastInputWasTap = true;
+		lastInputWasPointer = true;
 		focused = false;
 		tapped = ! tapped;
 		sync();
@@ -80,14 +84,16 @@ export function initRevealOpen( el ) {
 	};
 
 	el.addEventListener( 'focusin', onFocusIn );
-	el.addEventListener( 'keydown', onKeyDown );
+	doc.addEventListener( 'keydown', onKeyDown, true );
+	doc.addEventListener( 'pointerdown', onPointerDown, true );
 	el.addEventListener( 'focusout', onFocusOut );
 	el.addEventListener( 'pointerup', onPointerUp );
 	doc.addEventListener( 'pointerdown', onOutside, true );
 
 	return () => {
 		el.removeEventListener( 'focusin', onFocusIn );
-		el.removeEventListener( 'keydown', onKeyDown );
+		doc.removeEventListener( 'keydown', onKeyDown, true );
+		doc.removeEventListener( 'pointerdown', onPointerDown, true );
 		el.removeEventListener( 'focusout', onFocusOut );
 		el.removeEventListener( 'pointerup', onPointerUp );
 		doc.removeEventListener( 'pointerdown', onOutside, true );

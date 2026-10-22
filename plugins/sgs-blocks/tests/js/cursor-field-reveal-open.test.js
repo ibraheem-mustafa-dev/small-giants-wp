@@ -44,6 +44,22 @@ test( 'a touch tap toggles and a tap outside closes', () => {
 	expect( el.hasAttribute( OPEN ) ).toBe( false );
 } );
 
+test( 'a mouse click on a link inside the card does not open it', () => {
+	const link = document.getElementById( 'a' );
+	pointer( link, 'pointerdown', 'mouse' );
+	link.focus();
+	expect( el.hasAttribute( OPEN ) ).toBe( false );
+} );
+
+test( 'a Tab in from elsewhere after a tap opens it (the key press lands outside the card)', () => {
+	pointer( el, 'pointerup', 'touch' );
+	pointer( el, 'pointerup', 'touch' );
+	expect( el.hasAttribute( OPEN ) ).toBe( false );
+	document.getElementById( 'out' ).dispatchEvent( new KeyboardEvent( 'keydown', { key: 'Tab', bubbles: true } ) );
+	document.getElementById( 'b' ).focus();
+	expect( el.hasAttribute( OPEN ) ).toBe( true );
+} );
+
 test( 'the mouse never opens the full reveal', () => {
 	pointer( el, 'pointerup', 'mouse' );
 	expect( el.hasAttribute( OPEN ) ).toBe( false );
