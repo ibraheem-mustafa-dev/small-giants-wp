@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9313,
+    "row_count": 9316,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -3180,6 +3180,7 @@
     "sgs/form-field-tiles::tiles": "content",
     "sgs/form-field-tiles::width": "layout",
     "sgs/form-review::cardBackgroundColour": "color",
+    "sgs/form-review::cardBackgroundColourGradient": "colour-gradient",
     "sgs/form-review::cardBorderColour": "color",
     "sgs/form-review::cardBorderRadius": "visual",
     "sgs/form-review::cardBorderStyle": "visual",
@@ -3217,7 +3218,9 @@
     "sgs/form-review::sgsHideOnTablet": "boolean-visibility",
     "sgs/form-review::showEditLinks": "boolean-visibility",
     "sgs/form-review::termColour": "color",
+    "sgs/form-review::termColourGradient": "colour-gradient",
     "sgs/form-review::valueColour": "color",
+    "sgs/form-review::valueColourGradient": "colour-gradient",
     "sgs/form-step::backgroundColour": "color",
     "sgs/form-step::backgroundColourGradient": "colour-gradient",
     "sgs/form-step::backgroundColourHover": "color",

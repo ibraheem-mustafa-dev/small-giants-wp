@@ -33333,6 +33333,14 @@
     },
     {
       "slug": "sgs/form-review",
+      "attr": "cardBackgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
       "attr": "cardBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -33447,10 +33455,26 @@
     },
     {
       "slug": "sgs/form-review",
+      "attr": "termColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "term"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
       "attr": "valueColour",
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_element": "value"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "valueColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
         "css_element": "value"
       }
     },
