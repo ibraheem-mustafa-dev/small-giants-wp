@@ -88,6 +88,27 @@ export function recordsByElement( records ) {
 	return out;
 }
 
+// A recognised behaviour whose element has no target of its own (an element a block draws, such as a nav item's label inside
+// the nav block) is keyed under its nearest template ancestor that is a target, so the block that draws the element writes
+// it. `targetKeys`: the element keys of every target; `template`: lib/fill-behaviour.mjs::templateOf; `isBehaviour( r )`.
+export function adoptDrawnBehaviours( byElement, { targetKeys, template, isBehaviour } ) {
+	const parentOf = ( key ) => template?.elements?.[ key ]?.parent ?? null;
+	for ( const [ key, list ] of [ ...byElement ] ) {
+		if ( targetKeys.has( key ) ) {
+			continue;
+		}
+		let up = parentOf( key );
+		while ( up && ! targetKeys.has( up ) ) {
+			up = parentOf( up );
+		}
+		const moved = up ? list.filter( isBehaviour ) : [];
+		if ( moved.length ) {
+			byElement.set( up, [ ...( byElement.get( up ) || [] ), ...moved.filter( ( r ) => ! ( byElement.get( up ) || [] ).includes( r ) ) ] );
+		}
+	}
+	return byElement;
+}
+
 // The declared part a slot finder's element is: the part whose class (its declared `css_element` selector, else
 // `sgs-<slug>__<part>`) is a class of the slot selector's last compound. Returns the target name or null.
 export function partForSlot( block, slotFinder, targets ) {
@@ -386,6 +407,9 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 	const used = [];
 	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ), palette: clientPalette( rawSnapshot ), css: draftCss };
 	const idx = behaviourIndex( { records, template, css: draftCss } );
+	const targetKeys = new Set( nodes.flatMap( ( n ) => n.targets.map( ( t ) => elementKey( t.finder, rootComponent ) ) ).filter( Boolean ) );
+	adoptDrawnBehaviours( byElement, { targetKeys, template, isBehaviour: ( r ) => idx.found.some( ( x ) => x.r === r ) } );
+	const blockDone = new Set();
 	const written = new Map();
 	const controls = [ ...idx.controls ];
 	const deferred = [];
@@ -408,6 +432,15 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			if ( settings.length ) {
 				applySettings( { items: settings, n, out, where, flat, hasAttr, palette: ctx.palette } );
 				own = own.filter( ( r ) => ! settings.some( ( x ) => x.r === r ) );
+			}
+			// A behaviour the block expresses as its own settings (a nav label's magnet as the nav's item magnet) needs no declared
+			// part; it is written once per record however many of the block's slots it reaches.
+			const blockLevel = own.map( ( r ) => idx.found.find( ( x ) => x.r === r ) ).filter( ( x ) => x && x.b.alt?.settings.every( ( s ) => hasAttr?.( n.name, s.attr ) ) );
+			if ( blockLevel.length ) {
+				const fresh = blockLevel.filter( ( x ) => ! blockDone.has( x.r.id ) );
+				fresh.length && applyBehaviours( { items: fresh, n, target: null, doc, pending, written, controls, out, where, flat, finish: () => ( { refused: 'a block-level setting' } ), mdb, hasAttr } );
+				fresh.forEach( ( x ) => blockDone.add( x.r.id ) );
+				own = own.filter( ( r ) => ! blockLevel.some( ( x ) => x.r === r ) );
 			}
 			if ( ! own.length && ! sampled[ t.id ]?.[ 1440 ] && ! loops[ t.id ] ) {
 				continue;

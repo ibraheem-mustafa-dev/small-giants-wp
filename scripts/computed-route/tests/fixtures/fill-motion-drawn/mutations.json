@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "\tadoptDrawnBehaviours( byElement, { targetKeys, template, isBehaviour: ( r ) => idx.found.some( ( x ) => x.r === r ) } );\n",
+		"replace": "",
+		"why": "a behaviour on an element the block draws would never reach the block"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "while ( up && ! targetKeys.has( up ) ) {",
+		"replace": "while ( false ) {",
+		"why": "only the direct parent would be tried"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const moved = up ? list.filter( isBehaviour ) : [];",
+		"replace": "const moved = up ? list : [];",
+		"why": "entrances and loops of a drawn element would move onto its block"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const fresh = blockLevel.filter( ( x ) => ! blockDone.has( x.r.id ) );",
+		"replace": "const fresh = blockLevel;",
+		"why": "the block setting would be written once per slot"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "if ( blockLevel.length ) {",
+		"replace": "if ( false ) {",
+		"why": "a block-level behaviour would be refused as an undeclared part"
+	}
+]
