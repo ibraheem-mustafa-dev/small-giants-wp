@@ -1,7 +1,57 @@
 {
-	"generated": "2026-10-21T03:32:11.794Z",
-	"source": "http://127.0.0.1:63470/",
+	"generated": "2026-10-22T18:20:25.761Z",
+	"source": "http://127.0.0.1:51092/",
 	"root": "header",
+	"beside": [
+		{
+			"key": "Root/38#0",
+			"side": "before",
+			"distance": 1,
+			"position": "fixed",
+			"renders": true,
+			"holdsOtherRoot": false
+		},
+		{
+			"key": "Root/106#0",
+			"side": "after",
+			"distance": 1,
+			"position": "fixed",
+			"renders": false,
+			"holdsOtherRoot": true
+		},
+		{
+			"key": "Root/9#0",
+			"side": "before",
+			"distance": 2,
+			"position": "relative",
+			"renders": true,
+			"holdsOtherRoot": false
+		},
+		{
+			"key": "Root/201#0",
+			"side": "after",
+			"distance": 2,
+			"position": "relative",
+			"renders": true,
+			"holdsOtherRoot": true
+		},
+		{
+			"key": "Root/653#0",
+			"side": "after",
+			"distance": 3,
+			"position": "relative",
+			"renders": true,
+			"holdsOtherRoot": true
+		},
+		{
+			"key": "Root/728#0",
+			"side": "after",
+			"distance": 4,
+			"position": "fixed",
+			"renders": true,
+			"holdsOtherRoot": false
+		}
+	],
 	"keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
 	"checks": {
 		"rootName": "Root",
@@ -421,15 +471,40 @@
 				"tag": "span",
 				"cls": "sc-interp",
 				"text": "Contact"
+			},
+			{
+				"tag": "svg",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "svg",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "rect",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "polyline",
+				"cls": "",
+				"text": ""
 			}
 		],
 		"duplicateKeys": 0,
 		"perWidthCounts": {
-			"375": 10,
-			"768": 11,
-			"1440": 24
+			"375": 16,
+			"768": 33,
+			"1440": 46
 		},
-		"tagAgree": 24,
+		"tagAgree": 46,
 		"tagDisagree": [],
 		"keysMissingAt": {
 			"375": [
@@ -451,7 +526,25 @@
 				"Root/50#3",
 				"Root/47#5",
 				"Root/48#5",
-				"Root/54#0"
+				"Root/54#0",
+				"Root/16#0",
+				"Root/20#0",
+				"Root/22#0",
+				"Root/23#0",
+				"Root/24#0",
+				"Root/25#0",
+				"Root/26#0",
+				"Root/27#0",
+				"Root/28#0",
+				"Root/29#0",
+				"Root/30#0",
+				"Root/31#0",
+				"Root/32#0",
+				"Root/33#0",
+				"Root/34#0",
+				"Root/35#0",
+				"Root/36#0",
+				"Root/37#0"
 			],
 			"768": [
 				"Root/45#0",
@@ -491,6 +584,7 @@
 			},
 			"words": "",
 			"allText": "Home About Sectors Brands Trade Contact Register For A Trade Account",
+			"srcLine": 37,
 			"membership": [],
 			"srcTag": "header",
 			"srcOwnText": "",
@@ -498,19 +592,19 @@
 			"box": {
 				"375": {
 					"x": 0,
-					"y": 8637,
+					"y": 46,
 					"w": 375,
 					"h": 75
 				},
 				"768": {
 					"x": 0,
-					"y": 6622,
+					"y": 46,
 					"w": 768,
 					"h": 75
 				},
 				"1440": {
 					"x": 0,
-					"y": 4595,
+					"y": 46,
 					"w": 1440,
 					"h": 87
 				}
@@ -521,6 +615,11 @@
 				"1440": true
 			},
 			"display": "block",
+			"position": {
+				"375": "sticky",
+				"768": "sticky",
+				"1440": "sticky"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": true,
 			"screenshots": {
@@ -540,6 +639,7 @@
 			},
 			"words": "",
 			"allText": "Home About Sectors Brands Trade Contact Register For A Trade Account",
+			"srcLine": 38,
 			"membership": [],
 			"srcTag": "div",
 			"srcOwnText": "",
@@ -547,19 +647,19 @@
 			"box": {
 				"375": {
 					"x": 0,
-					"y": 8637,
+					"y": 46,
 					"w": 375,
 					"h": 75
 				},
 				"768": {
 					"x": 0,
-					"y": 6622,
+					"y": 46,
 					"w": 768,
 					"h": 75
 				},
 				"1440": {
 					"x": 0,
-					"y": 4595,
+					"y": 46,
 					"w": 1440,
 					"h": 87
 				}
@@ -570,6 +670,11 @@
 				"1440": true
 			},
 			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": true,
 			"screenshots": {
@@ -589,6 +694,7 @@
 			},
 			"words": "",
 			"allText": "Home About Sectors Brands Trade Contact Register For A Trade Account",
+			"srcLine": 39,
 			"membership": [],
 			"srcTag": "div",
 			"srcOwnText": "",
@@ -596,19 +702,19 @@
 			"box": {
 				"375": {
 					"x": 0,
-					"y": 8637,
+					"y": 46,
 					"w": 375,
 					"h": 72
 				},
 				"768": {
 					"x": 0,
-					"y": 6622,
+					"y": 46,
 					"w": 768,
 					"h": 72
 				},
 				"1440": {
 					"x": 60,
-					"y": 4595,
+					"y": 46,
 					"w": 1320,
 					"h": 84
 				}
@@ -619,6 +725,11 @@
 				"1440": true
 			},
 			"display": "flex",
+			"position": {
+				"375": "relative",
+				"768": "relative",
+				"1440": "relative"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": true,
 			"screenshots": {
@@ -640,6 +751,7 @@
 			},
 			"words": "",
 			"allText": "",
+			"srcLine": 40,
 			"membership": [],
 			"srcTag": "a",
 			"srcOwnText": "",
@@ -647,19 +759,19 @@
 			"box": {
 				"375": {
 					"x": 20,
-					"y": 8646,
+					"y": 55,
 					"w": 238.2,
 					"h": 54
 				},
 				"768": {
 					"x": 32,
-					"y": 6630,
+					"y": 54,
 					"w": 247,
 					"h": 56
 				},
 				"1440": {
 					"x": 100,
-					"y": 4605.3,
+					"y": 56.3,
 					"w": 279.5,
 					"h": 63.4
 				}
@@ -670,6 +782,11 @@
 				"1440": true
 			},
 			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": true,
 			"screenshots": {
@@ -690,6 +807,7 @@
 			},
 			"words": "",
 			"allText": "",
+			"srcLine": 41,
 			"membership": [],
 			"srcTag": "indus-logo",
 			"srcOwnText": "",
@@ -697,19 +815,19 @@
 			"box": {
 				"375": {
 					"x": 20,
-					"y": 8646,
+					"y": 55,
 					"w": 238.2,
 					"h": 54
 				},
 				"768": {
 					"x": 32,
-					"y": 6630,
+					"y": 54,
 					"w": 247,
 					"h": 56
 				},
 				"1440": {
 					"x": 100,
-					"y": 4605.3,
+					"y": 56.3,
 					"w": 279.5,
 					"h": 63.4
 				}
@@ -720,6 +838,11 @@
 				"1440": true
 			},
 			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": true,
 			"screenshots": {
@@ -739,6 +862,7 @@
 			},
 			"words": "",
 			"allText": "Home About Sectors Brands Trade Contact",
+			"srcLine": 45,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -754,7 +878,7 @@
 				"768": null,
 				"1440": {
 					"x": 460.4,
-					"y": 4595,
+					"y": 46,
 					"w": 543.8,
 					"h": 84
 				}
@@ -765,6 +889,11 @@
 				"1440": true
 			},
 			"display": "flex",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "static"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -783,6 +912,7 @@
 			},
 			"words": "",
 			"allText": "Home",
+			"srcLine": 47,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -804,7 +934,7 @@
 				"768": null,
 				"1440": {
 					"x": 460.4,
-					"y": 4616,
+					"y": 67,
 					"w": 72.9,
 					"h": 42
 				}
@@ -815,6 +945,11 @@
 				"1440": true
 			},
 			"display": "flex",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "relative"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -833,6 +968,7 @@
 			},
 			"words": "Home",
 			"allText": "Home",
+			"srcLine": 48,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -854,7 +990,7 @@
 				"768": null,
 				"1440": {
 					"x": 475.4,
-					"y": 4625,
+					"y": 76,
 					"w": 42.9,
 					"h": 24
 				}
@@ -865,6 +1001,11 @@
 				"1440": true
 			},
 			"display": "flex",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "static"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -883,6 +1024,7 @@
 			},
 			"words": "",
 			"allText": "",
+			"srcLine": 55,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -909,7 +1051,7 @@
 				"768": null,
 				"1440": {
 					"x": 475.4,
-					"y": 4653,
+					"y": 104,
 					"w": 42.9,
 					"h": 2
 				}
@@ -920,6 +1062,11 @@
 				"1440": true
 			},
 			"display": "block",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "absolute"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -938,6 +1085,7 @@
 			},
 			"words": "",
 			"allText": "About",
+			"srcLine": 47,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -959,7 +1107,7 @@
 				"768": null,
 				"1440": {
 					"x": 535.3,
-					"y": 4616,
+					"y": 67,
 					"w": 90.1,
 					"h": 42
 				}
@@ -970,6 +1118,11 @@
 				"1440": true
 			},
 			"display": "flex",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "relative"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -988,6 +1141,7 @@
 			},
 			"words": "About",
 			"allText": "About",
+			"srcLine": 48,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -1009,7 +1163,7 @@
 				"768": null,
 				"1440": {
 					"x": 550.3,
-					"y": 4625,
+					"y": 76,
 					"w": 60.1,
 					"h": 24
 				}
@@ -1020,6 +1174,11 @@
 				"1440": true
 			},
 			"display": "flex",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "static"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -1038,6 +1197,7 @@
 			},
 			"words": "",
 			"allText": "",
+			"srcLine": 51,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -1064,7 +1224,7 @@
 				"768": null,
 				"1440": {
 					"x": 599.4,
-					"y": 4631.5,
+					"y": 82.5,
 					"w": 11,
 					"h": 11
 				}
@@ -1075,6 +1235,11 @@
 				"1440": true
 			},
 			"display": "block",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "static"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -1093,6 +1258,7 @@
 			},
 			"words": "",
 			"allText": "Sectors",
+			"srcLine": 47,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -1114,7 +1280,7 @@
 				"768": null,
 				"1440": {
 					"x": 627.4,
-					"y": 4616,
+					"y": 67,
 					"w": 100.2,
 					"h": 42
 				}
@@ -1125,6 +1291,11 @@
 				"1440": true
 			},
 			"display": "flex",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "relative"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -1143,6 +1314,7 @@
 			},
 			"words": "Sectors",
 			"allText": "Sectors",
+			"srcLine": 48,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -1164,7 +1336,7 @@
 				"768": null,
 				"1440": {
 					"x": 642.4,
-					"y": 4625,
+					"y": 76,
 					"w": 70.2,
 					"h": 24
 				}
@@ -1175,6 +1347,11 @@
 				"1440": true
 			},
 			"display": "flex",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "static"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -1193,6 +1370,7 @@
 			},
 			"words": "",
 			"allText": "",
+			"srcLine": 51,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -1219,7 +1397,7 @@
 				"768": null,
 				"1440": {
 					"x": 701.6,
-					"y": 4631.5,
+					"y": 82.5,
 					"w": 11,
 					"h": 11
 				}
@@ -1230,6 +1408,11 @@
 				"1440": true
 			},
 			"display": "block",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "static"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -1248,6 +1431,7 @@
 			},
 			"words": "",
 			"allText": "Brands",
+			"srcLine": 47,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -1269,7 +1453,7 @@
 				"768": null,
 				"1440": {
 					"x": 729.6,
-					"y": 4616,
+					"y": 67,
 					"w": 97.3,
 					"h": 42
 				}
@@ -1280,6 +1464,11 @@
 				"1440": true
 			},
 			"display": "flex",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "relative"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -1298,6 +1487,7 @@
 			},
 			"words": "Brands",
 			"allText": "Brands",
+			"srcLine": 48,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -1319,7 +1509,7 @@
 				"768": null,
 				"1440": {
 					"x": 744.6,
-					"y": 4625,
+					"y": 76,
 					"w": 67.3,
 					"h": 24
 				}
@@ -1330,6 +1520,11 @@
 				"1440": true
 			},
 			"display": "flex",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "static"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -1348,6 +1543,7 @@
 			},
 			"words": "",
 			"allText": "",
+			"srcLine": 51,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -1374,7 +1570,7 @@
 				"768": null,
 				"1440": {
 					"x": 800.8,
-					"y": 4631.5,
+					"y": 82.5,
 					"w": 11,
 					"h": 11
 				}
@@ -1385,6 +1581,11 @@
 				"1440": true
 			},
 			"display": "block",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "static"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -1403,6 +1604,7 @@
 			},
 			"words": "",
 			"allText": "Trade",
+			"srcLine": 47,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -1424,7 +1626,7 @@
 				"768": null,
 				"1440": {
 					"x": 828.8,
-					"y": 4616,
+					"y": 67,
 					"w": 87.6,
 					"h": 42
 				}
@@ -1435,6 +1637,11 @@
 				"1440": true
 			},
 			"display": "flex",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "relative"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -1453,6 +1660,7 @@
 			},
 			"words": "Trade",
 			"allText": "Trade",
+			"srcLine": 48,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -1474,7 +1682,7 @@
 				"768": null,
 				"1440": {
 					"x": 843.8,
-					"y": 4625,
+					"y": 76,
 					"w": 57.6,
 					"h": 24
 				}
@@ -1485,6 +1693,11 @@
 				"1440": true
 			},
 			"display": "flex",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "static"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -1503,6 +1716,7 @@
 			},
 			"words": "",
 			"allText": "",
+			"srcLine": 51,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -1529,7 +1743,7 @@
 				"768": null,
 				"1440": {
 					"x": 890.4,
-					"y": 4631.5,
+					"y": 82.5,
 					"w": 11,
 					"h": 11
 				}
@@ -1540,6 +1754,11 @@
 				"1440": true
 			},
 			"display": "block",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "static"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -1558,6 +1777,7 @@
 			},
 			"words": "",
 			"allText": "Contact",
+			"srcLine": 47,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -1579,7 +1799,7 @@
 				"768": null,
 				"1440": {
 					"x": 918.4,
-					"y": 4616,
+					"y": 67,
 					"w": 85.8,
 					"h": 42
 				}
@@ -1590,6 +1810,11 @@
 				"1440": true
 			},
 			"display": "flex",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "relative"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -1608,6 +1833,7 @@
 			},
 			"words": "Contact",
 			"allText": "Contact",
+			"srcLine": 48,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -1629,7 +1855,7 @@
 				"768": null,
 				"1440": {
 					"x": 933.4,
-					"y": 4625,
+					"y": 76,
 					"w": 55.8,
 					"h": 24
 				}
@@ -1640,6 +1866,11 @@
 				"1440": true
 			},
 			"display": "flex",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "static"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
@@ -1660,6 +1891,7 @@
 			},
 			"words": "Register For A Trade Account",
 			"allText": "Register For A Trade Account",
+			"srcLine": 61,
 			"membership": [
 				{
 					"kind": "sc-if",
@@ -1680,7 +1912,7 @@
 				"768": null,
 				"1440": {
 					"x": 1085.2,
-					"y": 4609.8,
+					"y": 60.8,
 					"w": 254.8,
 					"h": 54.3
 				}
@@ -1691,10 +1923,1233 @@
 				"1440": true
 			},
 			"display": "flex",
+			"position": {
+				"375": null,
+				"768": null,
+				"1440": "static"
+			},
 			"flexDirection": "row",
 			"layoutChanged375": null,
 			"screenshots": {
 				"1440": "shots/Root_54_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/9#0",
+			"parentKey": null,
+			"strip": {
+				"side": "before",
+				"distance": 2
+			},
+			"depth": 1,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 9,
+			"attrs": {
+				"style": "position: relative; z-index: 201; background: rgb(10, 126, 168); color: rgb(255, 255, 255);"
+			},
+			"words": "",
+			"allText": "0121 771 4330 amir@indusfoodsltd.com",
+			"srcLine": 25,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"position:relative;z-index:201;background:#0A7EA8;color:#FFFFFF;\" data-dc-tpl=\"9\"> <div style=\"max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:46px;display:flex;align-items:center;justify-content:space-between;gap:12px;\" data-dc-tpl=\"10\"> <div style=\"display:flex;align-items:center;gap:10px;min-width:0;\" data-dc-tpl=\"11\"> <sc-if value=\"{{ isM }}\" hint-placeholder-val=\"{{ fals",
+			"box": {
+				"375": {
+					"x": 0,
+					"y": 0,
+					"w": 375,
+					"h": 46
+				},
+				"768": {
+					"x": 0,
+					"y": 0,
+					"w": 768,
+					"h": 46
+				},
+				"1440": {
+					"x": 0,
+					"y": 0,
+					"w": 1440,
+					"h": 46
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "relative",
+				"768": "relative",
+				"1440": "relative"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_9_0@375.png",
+				"1440": "shots/Root_9_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/10#0",
+			"parentKey": "Root/9#0",
+			"depth": 2,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 10,
+			"attrs": {
+				"style": "max-width: 1320px; margin: 0px auto; padding: 0px 40px; height: 46px; display: flex; align-items: center; justify-content: space-between; gap: 12px;"
+			},
+			"words": "",
+			"allText": "0121 771 4330 amir@indusfoodsltd.com",
+			"srcLine": 26,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:46px;display:flex;align-items:center;justify-content:space-between;gap:12px;\" data-dc-tpl=\"10\"> <div style=\"display:flex;align-items:center;gap:10px;min-width:0;\" data-dc-tpl=\"11\"> <sc-if value=\"{{ isM }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"12\"><a href=\"#/apply\" style=\"display:inline-flex;align-items:center;gap:7px",
+			"box": {
+				"375": {
+					"x": 0,
+					"y": 0,
+					"w": 375,
+					"h": 46
+				},
+				"768": {
+					"x": 0,
+					"y": 0,
+					"w": 768,
+					"h": 46
+				},
+				"1440": {
+					"x": 60,
+					"y": 0,
+					"w": 1320,
+					"h": 46
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_10_0@375.png",
+				"1440": "shots/Root_10_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/11#0",
+			"parentKey": "Root/10#0",
+			"depth": 3,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 11,
+			"attrs": {
+				"style": "display: flex; align-items: center; gap: 10px; min-width: 0px;"
+			},
+			"words": "",
+			"allText": "0121 771 4330 amir@indusfoodsltd.com",
+			"srcLine": 27,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;align-items:center;gap:10px;min-width:0;\" data-dc-tpl=\"11\"> <sc-if value=\"{{ isM }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"12\"><a href=\"#/apply\" style=\"display:inline-flex;align-items:center;gap:7px;background:#FFFFFF;color:#0A7EA8;border-radius:999px;padding:6px 14px;font-size:15px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.15);transitio",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 5.4,
+					"w": 300.6,
+					"h": 35.3
+				},
+				"768": {
+					"x": 32,
+					"y": 5.4,
+					"w": 371.4,
+					"h": 35.3
+				},
+				"1440": {
+					"x": 100,
+					"y": 5.4,
+					"w": 371.4,
+					"h": 35.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_11_0@375.png",
+				"1440": "shots/Root_11_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/14#0",
+			"parentKey": "Root/11#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 14,
+			"attrs": {
+				"href": "tel:01217714330",
+				"class": "scp0",
+				"style": "display: inline-flex; align-items: center; gap: 7px; background: rgb(255, 255, 255); color: rgb(10, 126, 168); border-radius: 999px; padding: 6px 14px; font-size: 15px; font-weight: 700; white-space: nowrap; box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 6px; transition: transform 0.2s, box-shadow 0.25s, background 0.2s, color 0.2s;"
+			},
+			"words": "",
+			"allText": "0121 771 4330",
+			"srcLine": 29,
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "{{ phoneIcon }}",
+			"snippet": "<a href=\"tel:01217714330\" style=\"display:inline-flex;align-items:center;gap:7px;background:#FFFFFF;color:#0A7EA8;border-radius:999px;padding:6px 14px;font-size:15px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.15);transition:transform .2s,box-shadow .25s,background .2s,color .2s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2);backgr",
+			"box": {
+				"375": {
+					"x": 245.4,
+					"y": 5.4,
+					"w": 75.2,
+					"h": 35.3
+				},
+				"768": {
+					"x": 32,
+					"y": 5.4,
+					"w": 143.1,
+					"h": 35.3
+				},
+				"1440": {
+					"x": 100,
+					"y": 5.4,
+					"w": 143.1,
+					"h": 35.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_14_0@375.png",
+				"1440": "shots/Root_14_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/16#0",
+			"parentKey": "Root/14#0",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 16,
+			"attrs": {},
+			"words": "0121 771 4330",
+			"allText": "0121 771 4330",
+			"srcLine": 29,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "15"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "0121 771 4330",
+			"snippet": "<span data-dc-tpl=\"16\">0121 771 4330</span>",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 68,
+					"y": 11.4,
+					"w": 93.1,
+					"h": 23.3
+				},
+				"1440": {
+					"x": 136,
+					"y": 11.4,
+					"w": 93.1,
+					"h": 23.3
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_16_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/20#0",
+			"parentKey": "Root/11#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 20,
+			"attrs": {
+				"href": "mailto:amir@indusfoodsltd.com",
+				"class": "scp0",
+				"style": "display: inline-flex; align-items: center; gap: 7px; background: rgb(255, 255, 255); color: rgb(10, 126, 168); border-radius: 999px; padding: 6px 14px; font-size: 15px; font-weight: 700; white-space: nowrap; box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 6px; transition: transform 0.2s, box-shadow 0.25s, background 0.2s, color 0.2s;"
+			},
+			"words": "amir@indusfoodsltd.com",
+			"allText": "amir@indusfoodsltd.com",
+			"srcLine": 30,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "19"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "{{ mailIcon }} amir@indusfoodsltd.com",
+			"snippet": "<a href=\"mailto:amir@indusfoodsltd.com\" style=\"display:inline-flex;align-items:center;gap:7px;background:#FFFFFF;color:#0A7EA8;border-radius:999px;padding:6px 14px;font-size:15px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.15);transition:transform .2s,box-shadow .25s,background .2s,color .2s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 6px 20px rgba(0,",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 185.1,
+					"y": 5.4,
+					"w": 218.3,
+					"h": 35.3
+				},
+				"1440": {
+					"x": 253.1,
+					"y": 5.4,
+					"w": 218.3,
+					"h": 35.3
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_20_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/22#0",
+			"parentKey": "Root/10#0",
+			"depth": 3,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 22,
+			"attrs": {
+				"style": "display: flex; align-items: center; gap: 10px;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 32,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "21"
+				}
+			],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;align-items:center;gap:10px;\" data-dc-tpl=\"22\"><a href=\"#/\" aria-label=\"LinkedIn\" style=\"width:34px;height:34px;border-radius:50%;background:#0A66C2;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 570,
+					"y": 6,
+					"w": 166,
+					"h": 34
+				},
+				"1440": {
+					"x": 1174,
+					"y": 6,
+					"w": 166,
+					"h": 34
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_22_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/23#0",
+			"parentKey": "Root/22#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 23,
+			"attrs": {
+				"href": "#/",
+				"aria-label": "LinkedIn",
+				"class": "scp1",
+				"style": "width: 34px; height: 34px; border-radius: 50%; background: rgb(10, 102, 194); color: rgb(255, 255, 255); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 32,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "21"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"#/\" aria-label=\"LinkedIn\" style=\"width:34px;height:34px;border-radius:50%;background:#0A66C2;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px -6px rgba(0,0,0,.45);color:#FFFFFF\" data-dc-tpl=\"23\">",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 570,
+					"y": 6,
+					"w": 34,
+					"h": 34
+				},
+				"1440": {
+					"x": 1174,
+					"y": 6,
+					"w": 34,
+					"h": 34
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_23_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/24#0",
+			"parentKey": "Root/23#0",
+			"depth": 5,
+			"tag": "svg",
+			"template": "Root",
+			"tpl": 24,
+			"attrs": {
+				"aria-hidden": "true",
+				"viewBox": "0 0 24 24"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 32,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "21"
+				}
+			],
+			"srcTag": "svg",
+			"srcOwnText": "",
+			"snippet": "<svg sc-camel-view-box=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"#FFFFFF\" aria-hidden=\"true\" data-dc-tpl=\"24\"><path d=\"M6.94 5a2 2 0 1 1-4-.002 2 2 0 0 1 4 .002zM7 8.48H3V21h4V8.48zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91l.04-1.68z\" data-dc-tpl=\"25\"></path></svg>",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 578.5,
+					"y": 14.5,
+					"w": 17,
+					"h": 17
+				},
+				"1440": {
+					"x": 1182.5,
+					"y": 14.5,
+					"w": 17,
+					"h": 17
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_24_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/25#0",
+			"parentKey": "Root/24#0",
+			"depth": 6,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 25,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"srcLine": 32,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "21"
+				}
+			],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path d=\"M6.94 5a2 2 0 1 1-4-.002 2 2 0 0 1 4 .002zM7 8.48H3V21h4V8.48zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91l.04-1.68z\" data-dc-tpl=\"25\"></path>",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 580.6,
+					"y": 16.6,
+					"w": 13.5,
+					"h": 12.8
+				},
+				"1440": {
+					"x": 1184.6,
+					"y": 16.6,
+					"w": 13.5,
+					"h": 12.8
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_25_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/26#0",
+			"parentKey": "Root/22#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 26,
+			"attrs": {
+				"href": "#/",
+				"aria-label": "Facebook",
+				"class": "scp1",
+				"style": "width: 34px; height: 34px; border-radius: 50%; background: rgb(24, 119, 242); color: rgb(255, 255, 255); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 32,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "21"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"#/\" aria-label=\"Facebook\" style=\"width:34px;height:34px;border-radius:50%;background:#1877F2;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px -6px rgba(0,0,0,.45);color:#FFFFFF\" data-dc-tpl=\"26\">",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 614,
+					"y": 6,
+					"w": 34,
+					"h": 34
+				},
+				"1440": {
+					"x": 1218,
+					"y": 6,
+					"w": 34,
+					"h": 34
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_26_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/27#0",
+			"parentKey": "Root/26#0",
+			"depth": 5,
+			"tag": "svg",
+			"template": "Root",
+			"tpl": 27,
+			"attrs": {
+				"aria-hidden": "true",
+				"viewBox": "0 0 24 24"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 32,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "21"
+				}
+			],
+			"srcTag": "svg",
+			"srcOwnText": "",
+			"snippet": "<svg sc-camel-view-box=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"#FFFFFF\" aria-hidden=\"true\" data-dc-tpl=\"27\"><path d=\"M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.25-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.9v3h2.5V21h3.1z\" data-dc-tpl=\"28\"></path></svg>",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 622.5,
+					"y": 14.5,
+					"w": 17,
+					"h": 17
+				},
+				"1440": {
+					"x": 1226.5,
+					"y": 14.5,
+					"w": 17,
+					"h": 17
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_27_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/28#0",
+			"parentKey": "Root/27#0",
+			"depth": 6,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 28,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"srcLine": 32,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "21"
+				}
+			],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path d=\"M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.25-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.9v3h2.5V21h3.1z\" data-dc-tpl=\"28\"></path>",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 628.1,
+					"y": 17.5,
+					"w": 6.2,
+					"h": 11.8
+				},
+				"1440": {
+					"x": 1232.1,
+					"y": 17.5,
+					"w": 6.2,
+					"h": 11.8
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_28_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/29#0",
+			"parentKey": "Root/22#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 29,
+			"attrs": {
+				"href": "#/",
+				"aria-label": "Google",
+				"class": "scp1",
+				"style": "width: 34px; height: 34px; border-radius: 50%; background: rgb(255, 255, 255); color: rgb(255, 255, 255); box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 32,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "21"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"#/\" aria-label=\"Google\" style=\"width:34px;height:34px;border-radius:50%;background:#FFFFFF;color:#FFFFFF;box-shadow:0 2px 6px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px -6px rgba(0,0,0,.4",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 658,
+					"y": 6,
+					"w": 34,
+					"h": 34
+				},
+				"1440": {
+					"x": 1262,
+					"y": 6,
+					"w": 34,
+					"h": 34
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_29_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/30#0",
+			"parentKey": "Root/29#0",
+			"depth": 5,
+			"tag": "svg",
+			"template": "Root",
+			"tpl": 30,
+			"attrs": {
+				"aria-hidden": "true",
+				"viewBox": "0 0 48 48"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 32,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "21"
+				}
+			],
+			"srcTag": "svg",
+			"srcOwnText": "",
+			"snippet": "<svg sc-camel-view-box=\"0 0 48 48\" width=\"15\" height=\"15\" aria-hidden=\"true\" data-dc-tpl=\"30\"><path fill=\"#EA4335\" d=\"M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z\" data-dc-tpl=\"31\"></path><path fill=\"#4285F4\" d=\"M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.1",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 667.5,
+					"y": 15.5,
+					"w": 15,
+					"h": 15
+				},
+				"1440": {
+					"x": 1271.5,
+					"y": 15.5,
+					"w": 15,
+					"h": 15
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_30_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/31#0",
+			"parentKey": "Root/30#0",
+			"depth": 6,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 31,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"srcLine": 32,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "21"
+				}
+			],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path fill=\"#EA4335\" d=\"M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z\" data-dc-tpl=\"31\"></path>",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 668.3,
+					"y": 15.5,
+					"w": 11.7,
+					"h": 6.1
+				},
+				"1440": {
+					"x": 1272.3,
+					"y": 15.5,
+					"w": 11.7,
+					"h": 6.1
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_31_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/32#0",
+			"parentKey": "Root/30#0",
+			"depth": 6,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 32,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"srcLine": 32,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "21"
+				}
+			],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path fill=\"#4285F4\" d=\"M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z\" data-dc-tpl=\"32\"></path>",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 675,
+					"y": 21.8,
+					"w": 7.2,
+					"h": 6.9
+				},
+				"1440": {
+					"x": 1279,
+					"y": 21.8,
+					"w": 7.2,
+					"h": 6.9
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_32_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/33#0",
+			"parentKey": "Root/30#0",
+			"depth": 6,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 33,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"srcLine": 32,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "21"
+				}
+			],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path fill=\"#FBBC05\" d=\"M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z\" data-dc-tpl=\"33\"></path>",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 667.5,
+					"y": 19.6,
+					"w": 3.3,
+					"h": 6.7
+				},
+				"1440": {
+					"x": 1271.5,
+					"y": 19.6,
+					"w": 3.3,
+					"h": 6.7
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_33_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/34#0",
+			"parentKey": "Root/30#0",
+			"depth": 6,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 34,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"srcLine": 32,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "21"
+				}
+			],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path fill=\"#34A853\" d=\"M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z\" data-dc-tpl=\"34\"></path>",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 668.3,
+					"y": 24.4,
+					"w": 11.7,
+					"h": 6.1
+				},
+				"1440": {
+					"x": 1272.3,
+					"y": 24.4,
+					"w": 11.7,
+					"h": 6.1
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_34_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/35#0",
+			"parentKey": "Root/22#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 35,
+			"attrs": {
+				"href": "#/",
+				"aria-label": "Instagram",
+				"class": "scp1",
+				"style": "width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 30% 107%, rgb(253, 244, 151) 0%, rgb(253, 89, 73) 45%, rgb(214, 36, 159) 60%, rgb(40, 90, 235) 90%); color: rgb(255, 255, 255); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 32,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "21"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"#/\" aria-label=\"Instagram\" style=\"width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 30% 107%,#FDF497 0%,#FD5949 45%,#D6249F 60%,#285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 702,
+					"y": 6,
+					"w": 34,
+					"h": 34
+				},
+				"1440": {
+					"x": 1306,
+					"y": 6,
+					"w": 34,
+					"h": 34
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_35_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/36#0",
+			"parentKey": "Root/35#0",
+			"depth": 5,
+			"tag": "svg",
+			"template": "Root",
+			"tpl": 36,
+			"attrs": {
+				"aria-hidden": "true",
+				"viewBox": "0 0 24 24"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 32,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "21"
+				}
+			],
+			"srcTag": "svg",
+			"srcOwnText": "",
+			"snippet": "<svg sc-camel-view-box=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"#FFFFFF\" aria-hidden=\"true\" data-dc-tpl=\"36\"><path d=\"M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zm5.5-4a1 1 0 1 1 0 2 1 1 0 0 1 0-2z\" data-dc-tpl=\"37\"></",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 710.5,
+					"y": 14.5,
+					"w": 17,
+					"h": 17
+				},
+				"1440": {
+					"x": 1314.5,
+					"y": 14.5,
+					"w": 17,
+					"h": 17
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_36_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/37#0",
+			"parentKey": "Root/36#0",
+			"depth": 6,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 37,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"srcLine": 32,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "21"
+				}
+			],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path d=\"M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zm5.5-4a1 1 0 1 1 0 2 1 1 0 0 1 0-2z\" data-dc-tpl=\"37\"></path>",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 711.9,
+					"y": 15.9,
+					"w": 14.2,
+					"h": 14.2
+				},
+				"1440": {
+					"x": 1315.9,
+					"y": 15.9,
+					"w": 14.2,
+					"h": 14.2
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_37_0@1440.png"
 			}
 		}
 	]

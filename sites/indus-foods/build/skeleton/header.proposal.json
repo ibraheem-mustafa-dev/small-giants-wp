@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-21T23:15:41.670Z",
-	"inventory": "2026-10-21T03:32:11.794Z",
-	"source": "http://127.0.0.1:63470/",
+	"generated": "2026-10-22T18:20:26.479Z",
+	"inventory": "2026-10-22T18:20:25.761Z",
+	"source": "http://127.0.0.1:51092/",
 	"surface": "sticky-header",
 	"siteName": null,
 	"surfaceParts": [
@@ -46,7 +46,11 @@
 			]
 		}
 	],
+	"stripRoots": [
+		"Root/9#0"
+	],
 	"recordDisagreements": [],
+	"recordUntranslated": [],
 	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
 	"weights": {
 		"tag": 0.5,
@@ -66,16 +70,16 @@
 		"title": "QA copy Indus mega menu"
 	},
 	"counts": {
-		"inventoryElements": 24,
-		"parts": 0,
-		"rows": 24,
-		"skeletonNodes": 5,
-		"expandedNodes": 5,
+		"inventoryElements": 46,
+		"parts": 11,
+		"rows": 35,
+		"skeletonNodes": 11,
+		"expandedNodes": 15,
 		"low": 0,
-		"removed": 19,
+		"removed": 25,
 		"unresolved": 0,
 		"byRule": {
-			"clientBuiltSurface": 24
+			"clientBuiltSurface": 35
 		}
 	},
 	"problems": [],
@@ -133,6 +137,516 @@
 		},
 		{
 			"order": 1,
+			"key": "Root/9#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/site-header-row",
+			"action": null,
+			"reason": "a strip above the header's main bar is its top row",
+			"source": "rule headerSlots",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/site-header-row",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule headerSlots: a header is always three rows: the main bar is the middle row and a strip above or below it (a top bar, an announcement or utility strip) is the top or bottom row, whether the draft draws it inside the header or beside it (Bean, 2026-10-22)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_9_0@375.png",
+				"1440": "shots/Root_9_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;z-index:201;background:#0A7EA8;color:#FFFFFF;\" data-dc-tpl=\"9\"> <div style=\"max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:46px;display:flex;align-items:center;justify-content:space-between;gap:12px;\" data-dc-tpl=\"10\"> <div style=\"display:flex;align-items:center;gap:10px;min-width:0;\" data-dc-tpl=\"11\"> <sc-if value=\"{{ isM }}\" hint-placeholder-val=\"{{ fals",
+			"attributes": {
+				"rowSlot": "top"
+			},
+			"strip": "Root/9#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root/10#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there",
+			"source": "rule widthWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_10_0@375.png",
+				"1440": "shots/Root_10_0@1440.png"
+			},
+			"snippet": "<div style=\"max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:46px;display:flex;align-items:center;justify-content:space-between;gap:12px;\" data-dc-tpl=\"10\"> <div style=\"display:flex;align-items:center;gap:10px;min-width:0;\" data-dc-tpl=\"11\"> <sc-if value=\"{{ isM }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"12\"><a href=\"#/apply\" style=\"display:inline-flex;align-items:center;gap:7px",
+			"attributes": {},
+			"strip": "Root/9#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root/11#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/multi-button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.51,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/multi-button",
+					"score": 0.75,
+					"share": 0.682,
+					"evidence": [
+						"block_composition: sgs/multi-button is a content-block accepting exactly [\"sgs/button\"]; all 2 children propose sgs/button",
+						"a row of 2 sgs/button"
+					]
+				},
+				{
+					"block": "sgs/container",
+					"score": 0.35,
+					"share": 0.318,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_11_0@375.png",
+				"1440": "shots/Root_11_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center;gap:10px;min-width:0;\" data-dc-tpl=\"11\"> <sc-if value=\"{{ isM }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"12\"><a href=\"#/apply\" style=\"display:inline-flex;align-items:center;gap:7px;background:#FFFFFF;color:#0A7EA8;border-radius:999px;padding:6px 14px;font-size:15px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.15);transitio",
+			"attributes": {
+				"layout": "flex"
+			},
+			"strip": "Root/9#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/14#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
+			"source": "rule pillButton",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_14_0@375.png",
+				"1440": "shots/Root_14_0@1440.png"
+			},
+			"snippet": "<a href=\"tel:01217714330\" style=\"display:inline-flex;align-items:center;gap:7px;background:#FFFFFF;color:#0A7EA8;border-radius:999px;padding:6px 14px;font-size:15px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.15);transition:transform .2s,box-shadow .25s,background .2s,color .2s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2);backgr",
+			"attributes": {
+				"label": "0121 771 4330",
+				"linkSource": "phone",
+				"labelFromSiteInfo": true
+			},
+			"strip": "Root/9#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 5,
+			"key": "Root/16#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "0121 771 4330",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/button: rule pillButton",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/14#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_16_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"16\">0121 771 4330</span>",
+			"attributes": {},
+			"strip": "Root/9#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 6,
+			"key": "Root/20#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "amir@indusfoodsltd.com",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself",
+			"source": "rule siteInfoLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule siteInfoLink: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_20_0@1440.png"
+			},
+			"snippet": "<a href=\"mailto:amir@indusfoodsltd.com\" style=\"display:inline-flex;align-items:center;gap:7px;background:#FFFFFF;color:#0A7EA8;border-radius:999px;padding:6px 14px;font-size:15px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.15);transition:transform .2s,box-shadow .25s,background .2s,color .2s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 6px 20px rgba(0,",
+			"attributes": {
+				"label": "amir@indusfoodsltd.com",
+				"url": "mailto:amir@indusfoodsltd.com",
+				"linkSource": "email",
+				"labelFromSiteInfo": true
+			},
+			"strip": "Root/9#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 7,
+			"key": "Root/22#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/social-icons",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.74,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/social-icons",
+					"score": 1,
+					"share": 0.741,
+					"evidence": [
+						"block_composition: sgs/social-icons is a content-block accepting exactly [\"sgs/icon\"]; all 4 children propose sgs/icon",
+						"a row of 4 sgs/icon",
+						"block_capabilities: sgs/social-icons lists facebook, instagram"
+					]
+				},
+				{
+					"block": "sgs/container",
+					"score": 0.35,
+					"share": 0.259,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_22_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center;gap:10px;\" data-dc-tpl=\"22\"><a href=\"#/\" aria-label=\"LinkedIn\" style=\"width:34px;height:34px;border-radius:50%;background:#0A66C2;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-",
+			"attributes": {},
+			"rowNote": "icons generated by Fill from siteInfoRow [\"linkedin\",\"facebook\",\"google\",\"instagram\"]",
+			"strip": "Root/9#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 8,
+			"key": "Root/23#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/icon",
+			"action": "absorbed",
+			"reason": "drawn by sgs/social-icons: Fill generates its icons from the Site Info row",
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/22#0",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
+						"brand-registry label \"LinkedIn\" in aria-label/title"
+					]
+				}
+			],
+			"parts": [
+				"Root/24#0"
+			],
+			"screenshots": {
+				"1440": "shots/Root_23_0@1440.png"
+			},
+			"snippet": "<a href=\"#/\" aria-label=\"LinkedIn\" style=\"width:34px;height:34px;border-radius:50%;background:#0A66C2;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px -6px rgba(0,0,0,.45);color:#FFFFFF\" data-dc-tpl=\"23\">",
+			"attributes": {
+				"iconSource": "brand",
+				"brandName": "linkedin",
+				"metadata": {
+					"bindings": {
+						"linkUrl": {
+							"source": "sgs/site-info",
+							"args": {
+								"key": "socials.linkedin"
+							}
+						}
+					}
+				}
+			},
+			"generatedBy": "Root/22#0",
+			"strip": "Root/9#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root/26#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/icon",
+			"action": "absorbed",
+			"reason": "drawn by sgs/social-icons: Fill generates its icons from the Site Info row",
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/22#0",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
+						"brand-registry label \"Facebook\" in aria-label/title"
+					]
+				}
+			],
+			"parts": [
+				"Root/27#0"
+			],
+			"screenshots": {
+				"1440": "shots/Root_26_0@1440.png"
+			},
+			"snippet": "<a href=\"#/\" aria-label=\"Facebook\" style=\"width:34px;height:34px;border-radius:50%;background:#1877F2;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px -6px rgba(0,0,0,.45);color:#FFFFFF\" data-dc-tpl=\"26\">",
+			"attributes": {
+				"iconSource": "brand",
+				"brandName": "facebook",
+				"metadata": {
+					"bindings": {
+						"linkUrl": {
+							"source": "sgs/site-info",
+							"args": {
+								"key": "socials.facebook"
+							}
+						}
+					}
+				}
+			},
+			"generatedBy": "Root/22#0",
+			"strip": "Root/9#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 10,
+			"key": "Root/29#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/icon",
+			"action": "absorbed",
+			"reason": "drawn by sgs/social-icons: Fill generates its icons from the Site Info row",
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/22#0",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
+						"brand-registry label \"Google\" in aria-label/title"
+					]
+				}
+			],
+			"parts": [
+				"Root/30#0"
+			],
+			"screenshots": {
+				"1440": "shots/Root_29_0@1440.png"
+			},
+			"snippet": "<a href=\"#/\" aria-label=\"Google\" style=\"width:34px;height:34px;border-radius:50%;background:#FFFFFF;color:#FFFFFF;box-shadow:0 2px 6px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px -6px rgba(0,0,0,.4",
+			"attributes": {
+				"iconSource": "brand",
+				"brandName": "google",
+				"metadata": {
+					"bindings": {
+						"linkUrl": {
+							"source": "sgs/site-info",
+							"args": {
+								"key": "socials.google"
+							}
+						}
+					}
+				}
+			},
+			"generatedBy": "Root/22#0",
+			"strip": "Root/9#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Root/35#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/icon",
+			"action": "absorbed",
+			"reason": "drawn by sgs/social-icons: Fill generates its icons from the Site Info row",
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/22#0",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
+						"brand-registry label \"Instagram\" in aria-label/title"
+					]
+				}
+			],
+			"parts": [
+				"Root/36#0"
+			],
+			"screenshots": {
+				"1440": "shots/Root_35_0@1440.png"
+			},
+			"snippet": "<a href=\"#/\" aria-label=\"Instagram\" style=\"width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 30% 107%,#FDF497 0%,#FD5949 45%,#D6249F 60%,#285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);",
+			"attributes": {
+				"iconSource": "brand",
+				"brandName": "instagram",
+				"metadata": {
+					"bindings": {
+						"linkUrl": {
+							"source": "sgs/site-info",
+							"args": {
+								"key": "socials.instagram"
+							}
+						}
+					}
+				}
+			},
+			"generatedBy": "Root/22#0",
+			"strip": "Root/9#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 12,
 			"key": "Root/40#0",
 			"tag": "div",
 			"depth": 1,
@@ -163,11 +677,8 @@
 				"1440": "shots/Root_40_0@1440.png"
 			},
 			"snippet": "<div style=\"background:#FFFFFF;border-bottom:3px solid #D8CA50;\" data-dc-tpl=\"40\"> <div style=\"max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:{{ R.headH }};display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;\" data-dc-tpl=\"41\"> <a href=\"#/\" sc-camel-on-click=\"{{ closeAll }}\" aria-label=\"Indus Foods home\" style=\"display:flex;align-items:center;flex-s",
-			"attributes": {},
-			"slots": {
-				".sgs-container__inner": {
-					"tpl": "Root/41#0"
-				}
+			"attributes": {
+				"rowSlot": "middle"
 			},
 			"builtPost": {
 				"site": "sandybrown",
@@ -177,7 +688,7 @@
 			}
 		},
 		{
-			"order": 2,
+			"order": 13,
 			"key": "Root/41#0",
 			"tag": "div",
 			"depth": 2,
@@ -206,7 +717,7 @@
 			}
 		},
 		{
-			"order": 3,
+			"order": 14,
 			"key": "Root/42#0",
 			"tag": "a",
 			"depth": 3,
@@ -235,7 +746,7 @@
 			}
 		},
 		{
-			"order": 4,
+			"order": 15,
 			"key": "Root/43#0",
 			"tag": "indus-logo",
 			"depth": 4,
@@ -278,7 +789,7 @@
 			}
 		},
 		{
-			"order": 5,
+			"order": 16,
 			"key": "Root/45#0",
 			"tag": "nav",
 			"depth": 3,
@@ -313,14 +824,10 @@
 			"carried": {
 				"ref": "menu-map.json: the header menu"
 			},
-			"slots": {
-				".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": {
-					"tpl": "Root/47#1"
-				},
-				".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link": {
-					"tpl": "Root/47#0"
-				}
-			},
+			"slotNotes": [
+				"the calibration has no slot for itemColour, so no resting child slot",
+				"the calibration has no slot for itemColourCurrent, so no current child slot"
+			],
 			"builtPost": {
 				"site": "sandybrown",
 				"postType": "sgs_header",
@@ -329,7 +836,7 @@
 			}
 		},
 		{
-			"order": 6,
+			"order": 17,
 			"key": "Root/47#0",
 			"tag": "button",
 			"depth": 4,
@@ -358,7 +865,7 @@
 			}
 		},
 		{
-			"order": 7,
+			"order": 18,
 			"key": "Root/48#0",
 			"tag": "span",
 			"depth": 5,
@@ -387,7 +894,7 @@
 			}
 		},
 		{
-			"order": 8,
+			"order": 19,
 			"key": "Root/52#0",
 			"tag": "span",
 			"depth": 5,
@@ -416,7 +923,7 @@
 			}
 		},
 		{
-			"order": 9,
+			"order": 20,
 			"key": "Root/47#1",
 			"tag": "button",
 			"depth": 4,
@@ -445,7 +952,7 @@
 			}
 		},
 		{
-			"order": 10,
+			"order": 21,
 			"key": "Root/48#1",
 			"tag": "span",
 			"depth": 5,
@@ -474,7 +981,7 @@
 			}
 		},
 		{
-			"order": 11,
+			"order": 22,
 			"key": "Root/50#0",
 			"tag": "span",
 			"depth": 6,
@@ -503,7 +1010,7 @@
 			}
 		},
 		{
-			"order": 12,
+			"order": 23,
 			"key": "Root/47#2",
 			"tag": "button",
 			"depth": 4,
@@ -532,7 +1039,7 @@
 			}
 		},
 		{
-			"order": 13,
+			"order": 24,
 			"key": "Root/48#2",
 			"tag": "span",
 			"depth": 5,
@@ -561,7 +1068,7 @@
 			}
 		},
 		{
-			"order": 14,
+			"order": 25,
 			"key": "Root/50#1",
 			"tag": "span",
 			"depth": 6,
@@ -590,7 +1097,7 @@
 			}
 		},
 		{
-			"order": 15,
+			"order": 26,
 			"key": "Root/47#3",
 			"tag": "button",
 			"depth": 4,
@@ -619,7 +1126,7 @@
 			}
 		},
 		{
-			"order": 16,
+			"order": 27,
 			"key": "Root/48#3",
 			"tag": "span",
 			"depth": 5,
@@ -648,7 +1155,7 @@
 			}
 		},
 		{
-			"order": 17,
+			"order": 28,
 			"key": "Root/50#2",
 			"tag": "span",
 			"depth": 6,
@@ -677,7 +1184,7 @@
 			}
 		},
 		{
-			"order": 18,
+			"order": 29,
 			"key": "Root/47#4",
 			"tag": "button",
 			"depth": 4,
@@ -706,7 +1213,7 @@
 			}
 		},
 		{
-			"order": 19,
+			"order": 30,
 			"key": "Root/48#4",
 			"tag": "span",
 			"depth": 5,
@@ -735,7 +1242,7 @@
 			}
 		},
 		{
-			"order": 20,
+			"order": 31,
 			"key": "Root/50#3",
 			"tag": "span",
 			"depth": 6,
@@ -764,7 +1271,7 @@
 			}
 		},
 		{
-			"order": 21,
+			"order": 32,
 			"key": "Root/47#5",
 			"tag": "button",
 			"depth": 4,
@@ -793,7 +1300,7 @@
 			}
 		},
 		{
-			"order": 22,
+			"order": 33,
 			"key": "Root/48#5",
 			"tag": "span",
 			"depth": 5,
@@ -822,7 +1329,7 @@
 			}
 		},
 		{
-			"order": 23,
+			"order": 34,
 			"key": "Root/54#0",
 			"tag": "a",
 			"depth": 3,

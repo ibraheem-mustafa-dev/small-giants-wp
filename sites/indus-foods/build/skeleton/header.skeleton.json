@@ -10,12 +10,134 @@
 			"cls": "",
 			"styleHash": "5faf966e",
 			"parentTags": [],
-			"textHash": "1505"
+			"textHash": "1505",
+			"line": 37
 		},
 		"innerBlocks": [
 			{
 				"name": "sgs/site-header-row",
-				"attributes": {},
+				"attributes": {
+					"rowSlot": "top"
+				},
+				"draftRef": {
+					"tpl": "Root/9#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "e7c51858",
+					"parentTags": [],
+					"textHash": "1505",
+					"line": 25
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/multi-button",
+						"attributes": {
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root/11#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "82e8f8c3",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 27
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "0121 771 4330",
+									"linkSource": "phone",
+									"labelFromSiteInfo": true
+								},
+								"draftRef": {
+									"tpl": "Root/14#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scp0",
+									"styleHash": "a8233049",
+									"parentTags": [
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 29
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "amir@indusfoodsltd.com",
+									"url": "mailto:amir@indusfoodsltd.com",
+									"linkSource": "email",
+									"labelFromSiteInfo": true
+								},
+								"draftRef": {
+									"tpl": "Root/20#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scp0",
+									"styleHash": "a8233049",
+									"parentTags": [
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "f9b825f5",
+									"line": 30
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/social-icons",
+						"attributes": {},
+						"draftRef": "div[data-dc-tpl=\"9\"] [data-dc-tpl=\"22\"]",
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "f4aede7b",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 32
+						},
+						"innerBlocks": [],
+						"siteInfoRow": [
+							"linkedin",
+							"facebook",
+							"google",
+							"instagram"
+						],
+						"childRefs": {
+							"linkedin": "[data-dc-tpl=\"23\"]",
+							"facebook": "[data-dc-tpl=\"26\"]",
+							"google": "[data-dc-tpl=\"29\"]",
+							"instagram": "[data-dc-tpl=\"35\"]"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/site-header-row",
+				"attributes": {
+					"rowSlot": "middle"
+				},
 				"draftRef": {
 					"tpl": "Root/40#0"
 				},
@@ -26,7 +148,8 @@
 					"parentTags": [
 						"header"
 					],
-					"textHash": "1505"
+					"textHash": "1505",
+					"line": 38
 				},
 				"innerBlocks": [
 					{
@@ -47,7 +170,8 @@
 								"div",
 								"a"
 							],
-							"textHash": "1505"
+							"textHash": "1505",
+							"line": 41
 						},
 						"innerBlocks": [],
 						"handover": [
@@ -76,17 +200,10 @@
 								"div",
 								"div"
 							],
-							"textHash": "1505"
+							"textHash": "1505",
+							"line": 45
 						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": {
-								"tpl": "Root/47#1"
-							},
-							".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link": {
-								"tpl": "Root/47#0"
-							}
-						}
+						"innerBlocks": []
 					},
 					{
 						"name": "sgs/button",
@@ -106,16 +223,19 @@
 								"div",
 								"div"
 							],
-							"textHash": "61ec7831"
+							"textHash": "61ec7831",
+							"line": 61
 						},
 						"innerBlocks": []
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner": {
-						"tpl": "Root/41#0"
-					}
-				}
+				]
+			},
+			{
+				"name": "sgs/site-header-row",
+				"attributes": {
+					"rowSlot": "bottom"
+				},
+				"innerBlocks": []
 			}
 		]
 	}
