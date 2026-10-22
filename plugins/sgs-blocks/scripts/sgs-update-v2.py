@@ -3125,6 +3125,77 @@ def _populate_emit_shape(
     }
 
 
+def _populate_setting_meanings(
+    blocks_dir: Path,
+    conn: "sqlite3.Connection",
+    dry_run: bool,
+) -> dict:
+    """Stage 1 sub-step D2: seed block_attributes.meaning from each attribute's `sgs.meaning`
+    in its block.json (U11, FR-2-12): what the setting does, what triggers it, and its
+    parameters with units, stored as sorted-key JSON so the computed route can pick a setting
+    by meaning. plugins/sgs-blocks/scripts/check-setting-meanings.py checks the listed settings
+    carry one.
+
+    Every run CLEARS the column first and reseeds it in the same transaction, so a meaning
+    removed from block.json never survives in the DB. A meaning on an attribute with no
+    block_attributes row is reported, never inserted (Stage 1 owns the rows).
+    """
+    c = conn.cursor()
+    has_column = "meaning" in [r[1] for r in c.execute("PRAGMA table_info(block_attributes)").fetchall()]
+    if not has_column and not dry_run:
+        c.execute("ALTER TABLE block_attributes ADD COLUMN meaning TEXT")
+        has_column = True
+
+    stored_before = c.execute(
+        "SELECT COUNT(*) FROM block_attributes WHERE meaning IS NOT NULL"
+    ).fetchone()[0] if has_column else 0
+    if not dry_run:
+        c.execute("UPDATE block_attributes SET meaning = NULL WHERE meaning IS NOT NULL")
+
+    seeded = 0
+    no_row: list = []
+    for block_dir in sorted(blocks_dir.iterdir()):
+        bj_path = block_dir / "block.json"
+        if not block_dir.is_dir() or block_dir.name in EXCLUDED_DIRS or not bj_path.exists():
+            continue
+        try:
+            with open(bj_path, encoding="utf-8") as f:
+                block_json = json.load(f)
+        except Exception as exc:  # noqa: BLE001
+            print(f"Stage 1 (meaning): WARN unreadable {bj_path}: {exc}")
+            continue
+        slug = block_json.get("name", f"sgs/{block_dir.name}")
+        if not slug.startswith("sgs/"):
+            continue
+        for attr, spec in (block_json.get("attributes") or {}).items():
+            meaning = ((spec or {}).get("sgs") or {}).get("meaning") if isinstance(spec, dict) else None
+            if not isinstance(meaning, dict):
+                continue
+            value = json.dumps(meaning, sort_keys=True, ensure_ascii=False)
+            if dry_run:
+                print(f"[dry-run meaning] {slug}.{attr}: {value}")
+                seeded += 1
+                continue
+            c.execute(
+                "UPDATE block_attributes SET meaning = ? WHERE block_slug = ? AND attr_name = ?",
+                (value, slug, attr),
+            )
+            if c.rowcount:
+                seeded += 1
+            else:
+                no_row.append(f"{slug}.{attr}")
+
+    for name in no_row:
+        print(f"Stage 1 (meaning): WARN {name} carries sgs.meaning but has no block_attributes row")
+    if not dry_run:
+        conn.commit()
+    return {
+        "meaning_cleared": 0 if dry_run else stored_before,
+        "meaning_seeded": seeded,
+        "meaning_no_row": no_row,
+    }
+
+
 def _populate_allowed_blocks(
     blocks_dir: Path,
     c: "sqlite3.Cursor",
@@ -3321,6 +3392,13 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             f"cleared={es_counts['emit_cleared']}, reseeded={es_counts['emit_updated']}, "
             + ", ".join(f"{k}={v}" for k, v in sorted(es_counts["emit_by_shape"].items()))
             + "."
+        )
+
+        # --- Stage 1 sub-step D2: seed block_attributes.meaning (U11, FR-2-12) ---
+        sm_counts = _populate_setting_meanings(blocks_dir, conn, dry_run=False)
+        print(
+            f"Stage 1 (meaning): cleared={sm_counts['meaning_cleared']}, "
+            f"seeded={sm_counts['meaning_seeded']}, no_row={len(sm_counts['meaning_no_row'])}."
         )
 
         # --- Stage 1 tail: apply composition_role corrections (seed data, no
