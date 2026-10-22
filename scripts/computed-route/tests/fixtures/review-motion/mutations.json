@@ -1,0 +1,128 @@
+[
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "client([XY])\\\\s*${ MINUS }[^\\\\u00d7*]*${ TIMES }",
+		"replace": "client([XY])\\\\s*${ MINUS }[^)]*\\\\)\\\\s*${ TIMES }",
+		"why": "the label shift's formula (an offset from the centre inside brackets) would not be read"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "[\\\\s\\\\S]*?(?:height|\\\\by)",
+		"replace": "[\\\\s\\\\S]*?(?:never)",
+		"why": "the normalised magnet's y travel would not be read from the pointer's offset over the height"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "returnDuration: durationOf( r ) || null",
+		"replace": "returnDuration: durationOf( r )",
+		"why": "a 0 duration would be written as the return time"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "'pointer-move' === triggerOf( r ) && 'transition' === nameOf( p )",
+		"replace": "false",
+		"why": "the transition the handler sets would end silent"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "'string' === typeof p.to && '' === p.to.trim() && null == p.formula",
+		"replace": "true",
+		"why": "a leave handler writing a real value would be read as a reset"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "CLOSE_WORDS.has( w )",
+		"replace": "w.startsWith( 'clos' )",
+		"why": "closest( in a record name would be a close"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "ENTERING.has( triggerOf( r ) ) || ! namesClose( r )",
+		"replace": "! namesClose( r )",
+		"why": "an entrance trigger could be an exit"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "! ctx.css?.length ?",
+		"replace": "undefined === ctx.css ?",
+		"why": "an empty CSS list would refuse every pointer reveal"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const blank = ( v ) => null === v || undefined === v || '' === v || ( Array.isArray( v ) && ! v.length );",
+		"replace": "const blank = ( v ) => false;",
+		"why": "a null field would override the referenced trigger"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const base = triggerOf( ref, new Set( [ ...seen, r.id ] ) ) || {};",
+		"replace": "const base = ref.trigger || {};",
+		"why": "a chain would resolve one hop"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "'skip' === classify( r, cls ).kind ?",
+		"replace": "'skip' === classify( r ).kind ?",
+		"why": "the no-target reason would classify without the draft CSS"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const hasAttr = givenHasAttr ?? ( db ? hasAttrOf( db ) : undefined );",
+		"replace": "const hasAttr = givenHasAttr;",
+		"why": "the DB handle given would be ignored"
+	},
+	{
+		"file": "lib/fill-motion-account.mjs",
+		"find": ".filter( ( r ) => ! accounted.has( r.id ) )",
+		"replace": ".filter( () => false )",
+		"why": "no silent record would be named"
+	},
+	{
+		"file": "lib/fill-motion-account.mjs",
+		"find": "scriptFile( r ) ? fileHome.get( scriptFile( r ) ) ?? null : null",
+		"replace": "null",
+		"why": "a custom element's script records would be silent"
+	},
+	{
+		"file": "lib/fill-motion-account.mjs",
+		"find": "[ r.element?.template_tpl_id, r.element?.nearest_tpl_id ]",
+		"replace": "[ r.element?.template_tpl_id ]",
+		"why": "the nearest template element would not place a record"
+	},
+	{
+		"file": "lib/fill-motion-account.mjs",
+		"find": "&& ! homeOf( r ) )",
+		"replace": ")",
+		"why": "a bar a target holds would also be handed over"
+	},
+	{
+		"file": "lib/fill-motion-account.mjs",
+		"find": "'page' === e.values?.source",
+		"replace": "false",
+		"why": "the reading progress bar would raise no handover"
+	},
+	{
+		"file": "lib/fill-behaviour.mjs",
+		"find": "const verdict = undefined === schema ? { valid: true } : validateMotionWrite(",
+		"replace": "const verdict = true ? { valid: true } : validateMotionWrite(",
+		"why": "a refused control value would be kept"
+	},
+	{
+		"file": "lib/fill-behaviour.mjs",
+		"find": "const at = target?.where ?? ( held ? { node: held.node, block: held.block, slot: held.slot } : where );",
+		"replace": "const at = where;",
+		"why": "a control row would carry node null"
+	},
+	{
+		"file": "lib/fill-behaviour.mjs",
+		"find": "const handle = db || ( attrDb ||= openDb() );",
+		"replace": "const handle = ( attrDb ||= openDb() );",
+		"why": "the DB handle given would be ignored"
+	},
+	{
+		"file": "lib/fill-behaviour.mjs",
+		"find": "target.layer.values = merged.values;",
+		"replace": "",
+		"why": "a valid control would not be applied"
+	}
+]

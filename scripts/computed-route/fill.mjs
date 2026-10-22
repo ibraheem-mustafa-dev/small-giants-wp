@@ -6,7 +6,7 @@
 //        [--out <dir>] [--open <regex>] [--cache <dir>] [--no-sweep] [--headed] [--allow-external] [--mirror <url> <file>]...
 //   node scripts/computed-route/fill.mjs --serve <folder> [--draft-index <file>]    serve a draft folder until Ctrl-C
 // Reads sites/<client>/build/surfaces.json (the surface's walker states), sites/<client>/theme-snapshot.json and the
-// divergence ledger; writes only into --out: filled.tree.json, fill-report.md, fill-report.json, unmapped.json,
+// divergence ledger; writes into --out (and adds each width-threshold snap to that ledger as a `breakpoint-snap` entry): filled.tree.json, fill-report.md, fill-report.json, unmapped.json,
 // handover.json, binding-groups.json, breakpoints.json, the generated walker config and, when the draft's focus, press or link-state looks
 // live in the theme, theme-snapshot.patch.json (the keys to merge into the client's theme-snapshot.json: Fill never
 // edits it). It never builds a page and never writes the surface's own tree file. Beside the tree it writes <surface>.origin.json (cr-ref to tpl key and fingerprint) when the
@@ -18,7 +18,7 @@ import { openDb, statesVocabulary } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { readTree, addRefs, refOf, walk } from './lib/tree.mjs';
 import { lintSkeleton } from './lint.mjs';
-import { load as loadLedger } from './lib/ledger.mjs';
+import { load as loadLedger, addEntries } from './lib/ledger.mjs';
 import { assertDraftPage, draftPageProblem, serveDraft } from './lib/draft.mjs';
 import { skeletonNodes, skeletonProblems, cleanTree, expandSiteInfoRows, originMap } from './lib/fill-skeleton.mjs';
 import { readDraft } from './lib/fill-read.mjs';
@@ -181,8 +181,9 @@ export async function fillSurface( o ) {
 		result.unmapped = logos.unmapped;
 		result.notes.push( ...logos.notes );
 		// FR-48-50: content the draft's logic shows or hides by width, written as hiding settings (lib/fill-width-gate.mjs); a snapped
-		// threshold's `breakpoint-snap` ledger entry is written beside the other outputs for the client's ledger.
+		// threshold's `breakpoint-snap` entry is added to the client's divergence ledger (the file Fill reads), once.
 		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, entries: loadLedger( ledgerFile ), rootComponent: intakeParts.rootComponent } );
+		addEntries( ledgerFile, gates.ledger );
 		result.writes.push( ...gates.writes );
 		result.unmapped.push( ...gates.unmapped );
 		result.notes.push( ...gates.notes );
@@ -209,9 +210,10 @@ export async function fillSurface( o ) {
 		const jobs = nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) );
 		const { entrances: sampled, loops } = await sampleMotion( { url, jobs, open: o.open || null, headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {} } );
 		const entrances = nodes.filter( ( x ) => x.targets.length ).map( ( n ) => ( { node: refOf( flat[ n.index ] ), block: n.name, measured: sampled[ n.targets[ 0 ].id ]?.[ 1440 ] ?? null } ) );
-		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ) } );
+		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ) } );
 		result.writes.push( ...motion.writes );
 		result.unmapped.push( ...motion.unmapped );
+		result.handover.push( ...motion.handover );
 		result.notes.push( ...motion.notes.map( ( x ) => `${ x.node } ${ x.block }${ x.slot ? ` (${ x.slot })` : '' }: ${ x.text }` ) );
 		// The site-wide options the draft's behaviours set (the route fade): `sgs_motion_settings` keys, merged over what the site holds when site-build applies them.
 		const siteOptions = motion.site.length ? { option: 'sgs_motion_settings', records: motion.site.map( ( s ) => s.record ), value: Object.assign( {}, ...motion.site.map( ( s ) => s.settings ) ) } : null;
@@ -240,7 +242,6 @@ export async function fillSurface( o ) {
 ` );
 		}
 		put( 'unmapped.json', JSON.stringify( unmappedList( result.unmapped ), null, 1 ) );
-		gates.ledger.length && put( 'breakpoint-snaps.json', JSON.stringify( gates.ledger, null, 1 ) );
 		put( 'binding-groups.json', JSON.stringify( bound, null, 1 ) );
 		put( 'handover.json', JSON.stringify( result.handover, null, 1 ) );
 		put( 'breakpoints.json', JSON.stringify( steps, null, 1 ) );

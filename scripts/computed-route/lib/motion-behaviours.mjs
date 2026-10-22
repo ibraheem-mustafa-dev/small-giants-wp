@@ -57,17 +57,37 @@ function magnetOf( r ) {
 	}
 	const f = words( p.formula );
 	const engage = /closest\(|over|onMouseEnter|onMouseMove/i.test( words( r.trigger?.detail, r.element?.selector ) ) ? 'over' : 'proximity';
-	const timing = compact( { returnDuration: durationOf( r ), returnEasing: easingOf( r ) } );
-	const norm = new RegExp( `\\(\\(?\\s*x\\s*${ MINUS }\\s*0?\\.5\\s*\\)?\\s*${ TIMES }\\s*${ NUMBER }\\s*\\)?\\s*px[^,]*?\\(\\(?\\s*y\\s*${ MINUS }\\s*0?\\.5\\s*\\)?\\s*${ TIMES }\\s*${ NUMBER }`, 'i' ).exec( f );
+	// A handler that writes the position at once (a 0 duration) has no return time of its own; the transition set beside it does.
+	const timing = compact( { returnDuration: durationOf( r ) || null, returnEasing: easingOf( r ) } );
+	// A position in the element (0..1) minus a half, times the size: `(x - 0.5) * 10` over the element's own x and y, or
+	// the pointer's offset in the element over its width and height (`(clientX - r.left) / r.width - 0.5) * 10`).
+	const norm = new RegExp( `(?:width|\\bx)\\s*${ MINUS }\\s*0?\\.5\\s*\\)*\\s*${ TIMES }\\s*${ NUMBER }[\\s\\S]*?(?:height|\\by)\\s*${ MINUS }\\s*0?\\.5\\s*\\)*\\s*${ TIMES }\\s*${ NUMBER }`, 'i' ).exec( f );
 	if ( norm ) {
 		return { values: { engage, pullModel: 'normalised', maxPullX: number( norm[ 1 ] ), maxPullY: number( norm[ 2 ] ), ...timing }, axis: 'both', pullModel: 'normalised' };
 	}
-	const dist = new RegExp( `client([XY])\\s*${ MINUS }[^)]*\\)\\s*${ TIMES }\\s*${ NUMBER }`, 'i' ).exec( f );
+	const dist = new RegExp( `client([XY])\\s*${ MINUS }[^\\u00d7*]*${ TIMES }\\s*${ NUMBER }`, 'i' ).exec( f );
 	if ( dist ) {
 		const axis = dist[ 1 ].toLowerCase();
 		return { values: { engage, pullModel: 'distance', axis, factor: number( dist[ 2 ] ), ...timing }, axis, pullModel: 'distance' };
 	}
 	return { unmapped: `a pointer handler moves the element toward the pointer, but its formula "${ f }" is neither a position in the element times a size nor an offset from its centre times a factor` };
+}
+
+// The two small writes that go with a pointer-written translate: the transition the handler sets on the element it moves
+// (the return timing, which the magnet effect holds as its return duration) and the handler that clears the written
+// transform when the pointer leaves (the magnet returns to rest itself). { reason } or null.
+function magnetCompanionOf( r ) {
+	const p = props( r ).find( ( q ) => /^(?:transition|translate|transform)$/.test( nameOf( q ) ) );
+	if ( 'js-style-write' !== r.mechanism || ! p ) {
+		return null;
+	}
+	if ( 'pointer-move' === triggerOf( r ) && 'transition' === nameOf( p ) && /\btranslate\s+\.?\d/.test( words( p.formula, p.to, r.source?.code ) ) ) {
+		return { reason: 'the handler sets the transition of the translate it writes toward the pointer: the magnet effect holds that return timing' };
+	}
+	if ( 'pointer-leave' === triggerOf( r ) && 'transition' !== nameOf( p ) && 'string' === typeof p.to && '' === p.to.trim() && null == p.formula ) {
+		return { reason: 'the handler clears the pointer-written position when the pointer leaves: the magnet effect returns the element to rest itself' };
+	}
+	return null;
 }
 
 // A script-written rotation from the pointer's position: a tilt (the hover state's followPointer), with a glare layer
@@ -149,8 +169,8 @@ function peekOf( r, ctx ) {
 	if ( 'js-style-write' !== r.mechanism || 'pointer-move' !== triggerOf( r ) || ! names.length || names.length < list.flatMap( ( q ) => String( q.property ).split( /\s*\/\s*/ ) ).length ) {
 		return null;
 	}
-	// With no draft CSS given at all (the intake review) the pointer-written custom properties alone are the evidence.
-	const use = undefined === ctx.css ? { text: '', radiusRest: null, duration: null, easing: null } : circleConsumer( names, ctx.css );
+	// With no draft CSS given at all (the intake review, or a draft served from a URL: an empty list) the pointer-written custom properties alone are the evidence.
+	const use = ! ctx.css?.length ? { text: '', radiusRest: null, duration: null, easing: null } : circleConsumer( names, ctx.css );
 	if ( ! use ) {
 		return null;
 	}
@@ -343,8 +363,15 @@ function pinnedTimelineOf( r ) {
 }
 
 // The exit of an element's open entrance: a Web Animation on close, from the resting pose to another, held at the end.
+const CLOSE_WORDS = new Set( [ 'close', 'closes', 'closed', 'closing', 'dismiss', 'dismisses', 'dismissed', 'exit', 'exits', 'exiting' ] );
+const ENTERING = new Set( [ 'mount', 'load', 'scroll-into-view' ] );
+
+// Whether the record's own function or name says it closes: whole words only, so `closest(` in a trigger's detail is not
+// a close, and the camel-case parts of a function name (`closeDrawer`, `onDismiss`) each count.
+const namesClose = ( r ) => words( r.source?.function, r.name ).replace( /([a-z])([A-Z])/g, '$1 $2' ).toLowerCase().split( /[^a-z]+/ ).some( ( w ) => CLOSE_WORDS.has( w ) );
+
 function closeOf( r ) {
-	if ( 'waapi' !== r.mechanism || 'forwards' !== r.fill || ! /clos|dismiss|exit/i.test( words( r.source?.function, r.trigger?.detail, r.name ) ) ) {
+	if ( 'waapi' !== r.mechanism || 'forwards' !== r.fill || ENTERING.has( triggerOf( r ) ) || ! namesClose( r ) ) {
 		return null;
 	}
 	const pose = poseOf( props( r ) );
@@ -422,6 +449,10 @@ export function recogniseBehaviour( record, ctx = {} ) {
 		// A magnet that pulls along one axis by a factor, on a label inside a nav item, is the nav bar's item magnet setting.
 		const alt = 'distance' === magnet.pullModel && 'x' === magnet.axis ? { settings: [ { attr: 'itemMagnetEnabled', value: true }, { attr: 'itemMagnetStrength', value: magnet.values.factor } ] } : null;
 		return done( r, { kind: 'effect', effects, ...( alt ? { alt } : {} ) } );
+	}
+	const companion = magnetCompanionOf( r );
+	if ( companion ) {
+		return done( r, { kind: 'covered', by: 'magnet', reason: companion.reason } );
 	}
 	const tilt = tiltOf( r );
 	if ( tilt ) {

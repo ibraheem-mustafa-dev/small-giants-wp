@@ -9,7 +9,8 @@ import { validateMotionWrite } from './motion-validate.mjs';
 import { classify, entranceLayer, stateTransitionLayer, hoverLayer, matchByPose } from './motion-layers.mjs';
 import { snapToken, presetFor, intensityPresetFor, effectPresetFor, tokenTypes, clientTokens, clientPalette, tokenises } from './motion-tokens.mjs';
 import { writeEffect, loadEffectOffers, PANEL_LISTS } from './motion-effects.mjs';
-import { applyBehaviours, applyControls, applyGlobals, applySettings, applyStrip, behaviourIndex } from './fill-behaviour.mjs';
+import { applyBehaviours, applyControls, applyGlobals, applySettings, applyStrip, behaviourIndex, hasAttrOf } from './fill-behaviour.mjs';
+import { accountedIds, silentRows, makeHomeOf, readingProgressHandover } from './fill-motion-account.mjs';
 import { loopEffect, loopCheck, chooseEffect, runtimeLoopsFor, smilLoop, marqueeTag, measuredLoopOf } from './motion-loops.mjs';
 import { loopKeyframesCss, loopName, isLoopRecord } from './motion-loop-css.mjs';
 import { entranceCheck } from './motion-check.mjs';
@@ -219,6 +220,7 @@ export function elementMotion( records, { mdb, ctx, sampled, runtime = [], offer
 	const unmapped = kinds.filter( ( x ) => 'skip' === x.c.kind ).map( ( x ) => ( { record: x.r.id, reason: x.c.reason } ) );
 	const pick = pickEntrance( kinds.filter( ( x ) => 'entrance' === x.c.kind ).map( ( x ) => x.r ), sampled?.[ 1440 ] || null, runtime, kinds.filter( ( x ) => 'skip' === x.c.kind ).map( ( x ) => x.r ) );
 	const notes = [ ...pick.notes ];
+	const used = [];
 	unmapped.push( ...pick.unmapped );
 	if ( pick.record ) {
 		const e = finishedEntrance( pick.record, { mdb, ctx, sampled, named: named.get( pick.record.id ) || null } );
@@ -226,6 +228,7 @@ export function elementMotion( records, { mdb, ctx, sampled, runtime = [], offer
 			unmapped.push( { record: pick.record.id, reason: e.unmapped } );
 		} else {
 			element.entrance = { base: e.layer };
+			used.push( pick.record.id );
 			notes.push( ...e.notes.map( ( n ) => `${ pick.record.id }: ${ n }` ) );
 		}
 	}
@@ -236,9 +239,10 @@ export function elementMotion( records, { mdb, ctx, sampled, runtime = [], offer
 		notes.push( ...h.notes );
 		if ( h.layer ) {
 			element.hover = { state: h.layer };
+			used.push( ...hovers.map( ( x ) => x.id ) );
 		}
 	}
-	return { element, notes, unmapped };
+	return { element, notes, unmapped, used };
 }
 
 // The effects one draft element's endless animations make: its own loop records, else the run-time loop records the
@@ -246,10 +250,10 @@ export function elementMotion( records, { mdb, ctx, sampled, runtime = [], offer
 // `loops` is the element's sampleMotion() loops by width. Returns { effects: [{ record, effect, values, devices,
 // trigger, notes }], css: [{ record, name, css }], unmapped: [{ record, reason }], notes }. An endless keyframe animation
 // no effect draws becomes `css` (the block's Additional CSS box, lib/motion-loop-css.mjs) when its values are literal.
-export function elementEffects( records, { mdb, loops = null, runtimeLoops = [] } ) {
+export function elementEffects( records, { mdb, loops = null, runtimeLoops = [], cls = {} } ) {
 	const out = { effects: [], css: [], unmapped: [], notes: [] };
 	const wide = loops?.[ 1440 ] || null;
-	let own = records.filter( ( r ) => 'effect' === classify( r ).kind );
+	let own = records.filter( ( r ) => 'effect' === classify( r, cls ).kind );
 	if ( ! own.length && wide?.loops?.length ) {
 		own = wide.loops.flatMap( ( l ) => runtimeLoopsFor( runtimeLoops, { ...wide, loops: [ l ] } ).slice( 0, 1 ) );
 		out.notes.push( ...own.map( ( r ) => `${ r.id }: the code picks this element at run time, and the endless animation on it matched` ) );
@@ -257,7 +261,7 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [] 
 	const keep = ( record, e ) => ( e.unmapped ? out.unmapped.push( { record, reason: e.unmapped } ) : out.effects.push( { record, ...e } ) );
 	for ( const r of own ) {
 		const t = r.trigger?.type;
-		if ( classify( r ).confirm && ! measuredLoopOf( r, wide ) ) {
+		if ( classify( r, cls ).confirm && ! measuredLoopOf( r, wide ) ) {
 			keep( r.id, { unmapped: `the draft's code starts this loop on ${ t }, and the render showed it not running on an untouched page, so nothing is written` } );
 			continue;
 		}
@@ -342,13 +346,24 @@ function writeLoopCss( n, items, { flat, ref, out } ) {
 	}
 }
 
-// A record whose trigger detail only says "Same as A-12" takes that record's trigger detail and state keys.
+const blank = ( v ) => null === v || undefined === v || '' === v || ( Array.isArray( v ) && ! v.length );
+
+// A record whose trigger detail only says "Same as A-12" takes that record's trigger (its type, detail and state keys).
+// A chain of "Same as" is followed to its end (a cycle stops), and a field the record states itself (not null, not empty)
+// is laid over the referenced trigger.
 export function sameTriggerResolved( records ) {
 	const byId = new Map( ( records || [] ).map( ( r ) => [ r.id, r ] ) );
-	return ( records || [] ).map( ( r ) => {
-		const ref = byId.get( /^Same as ([A-Za-z]+-\d+)\b/.exec( String( r.trigger?.detail ?? '' ) )?.[ 1 ] );
-		return ref ? { ...r, trigger: { ...ref.trigger, ...r.trigger, detail: `${ ref.trigger?.detail ?? '' } (${ r.trigger.detail })`, state_keys: r.trigger.state_keys ?? ref.trigger?.state_keys } } : r;
-	} );
+	const refOf = ( r ) => byId.get( /^Same as ([A-Za-z]+-\d+)\b/.exec( String( r.trigger?.detail ?? '' ) )?.[ 1 ] );
+	const triggerOf = ( r, seen = new Set() ) => {
+		const ref = refOf( r );
+		if ( ! ref || seen.has( r.id ) ) {
+			return r.trigger;
+		}
+		const base = triggerOf( ref, new Set( [ ...seen, r.id ] ) ) || {};
+		const own = Object.fromEntries( Object.entries( r.trigger || {} ).filter( ( [ , v ] ) => ! blank( v ) ) );
+		return { ...base, ...own, detail: `${ base.detail ?? '' } (${ r.trigger.detail })` };
+	};
+	return ( records || [] ).map( ( r ) => ( refOf( r ) ? { ...r, trigger: triggerOf( r ) } : r ) );
 }
 
 // Writes every node's sgsMotion. nodes: skeletonNodes() records; flat: tree nodes by index; refOf: tree node to ref;
@@ -357,13 +372,18 @@ export function sameTriggerResolved( records ) {
 // the entry draft's component (lib/fill-motion.mjs::elementKey); loops: sampleMotion()'s loops by target id; offers:
 // lib/motion-effects.mjs::loadEffectOffers; stateVocab: the `states` table rows that give the words meaning "open"
 // (default: the framework DB's). Returns { writes, unmapped, notes } in the shapes fill-resolve.mjs uses.
-export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr = undefined } ) {
-	const out = { writes: [], unmapped: [], notes: [], site: [] };
+export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null } ) {
+	const out = { writes: [], unmapped: [], notes: [], site: [], handover: [] };
+	// Every settings write is checked against the framework DB's attributes: the handle given, else the framework DB itself.
+	const hasAttr = givenHasAttr ?? ( db ? hasAttrOf( db ) : undefined );
 	const records = sameTriggerResolved( given );
 	const byElement = recordsByElement( records );
+	// One classification context everywhere: an empty CSS list is no CSS given (a draft served from a URL), not CSS with no consumer.
+	const cls = { css: draftCss, template };
 	const unplaced = ( records || [] ).filter( ( r ) => null === ( r.element?.template_tpl_id ?? null ) );
-	const runtime = unplaced.filter( ( r ) => 'entrance' === classify( r ).kind );
-	const runtimeLoops = unplaced.filter( ( r ) => 'effect' === classify( r ).kind );
+	const runtime = unplaced.filter( ( r ) => 'entrance' === classify( r, cls ).kind );
+	const runtimeLoops = unplaced.filter( ( r ) => 'effect' === classify( r, cls ).kind );
+	const used = [];
 	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ), palette: clientPalette( rawSnapshot ), css: draftCss };
 	const idx = behaviourIndex( { records, template, css: draftCss } );
 	const written = new Map();
@@ -395,7 +415,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			const target = targetName( n, t, targets );
 			if ( ! target ) {
 				const reason = targets.length ? `no declared part of ${ n.name } is this element (${ t.slot })` : `${ n.name } has no motion support`;
-				out.unmapped.push( ...own.map( ( r ) => ( { ...where, property: 'motion', value: r.id, reason: 'skip' === classify( r ).kind ? `${ reason }; the record is also skipped: ${ classify( r ).reason }` : reason } ) ) );
+				out.unmapped.push( ...own.map( ( r ) => ( { ...where, property: 'motion', value: r.id, reason: 'skip' === classify( r, cls ).kind ? `${ reason }; the record is also skipped: ${ classify( r, cls ).reason }` : reason } ) ) );
 				const shown = Object.values( loops[ t.id ] || {} ).some( ( l ) => l.loops?.length || l.marquee || l.smil?.length );
 				if ( shown && ! own.length ) {
 					out.unmapped.push( { ...where, property: 'motion', value: t.id, reason: `the render shows motion (an endless animation, a marquee or an SVG animation) on this element, whose block has no motion support to write it to (${ reason })` } );
@@ -404,13 +424,15 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			}
 			const m = elementMotion( own, { mdb, ctx, sampled: sampled[ t.id ], runtime, offers: stateOffers, target } );
 			m.unmapped.push( ...sets.filter( ( s ) => s.reason ).map( ( s ) => ( { record: '<set>', reason: s.reason } ) ) );
+			used.push( ...m.used );
 			out.notes.push( ...m.notes.map( ( text ) => ( { ...where, text } ) ) );
 			out.unmapped.push( ...m.unmapped.map( ( u ) => ( { ...where, property: 'motion', value: u.record, reason: u.reason } ) ) );
 			if ( Object.keys( m.element ).length ) {
 				doc.elements[ target ] = { ...( doc.elements[ target ] || {} ), ...m.element };
 				pending.push( target );
 			}
-			const fx = elementEffects( own, { mdb, loops: loops[ t.id ] || null, runtimeLoops } );
+			const fx = elementEffects( own, { mdb, loops: loops[ t.id ] || null, runtimeLoops, cls } );
+			used.push( ...fx.css.map( ( c ) => c.record.id ) );
 			out.notes.push( ...fx.notes.map( ( text ) => ( { ...where, text } ) ) );
 			out.unmapped.push( ...fx.unmapped.map( ( u ) => ( { ...where, property: 'motion', value: u.record, reason: u.reason } ) ) );
 			if ( 'root' === target ) {
@@ -427,7 +449,8 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 					continue;
 				}
 				doc.elements[ w.target ] = { ...( doc.elements[ w.target ] || {} ), effects: [ ...list( w.target ), w.layer ] };
-				written.set( e.record, { at: w.target, layer: w.layer } );
+				written.set( e.record, { at: w.target, layer: w.layer, list: w.list, where } );
+				used.push( e.record );
 				pending.push( w.target );
 				out.notes.push( ...[ ...e.notes, ...( w.dropped.length ? [ `no ${ e.effect } field for ${ w.dropped.join( ', ' ) }` ] : [] ), ...( w.target !== target ? [ `${ e.effect } sits on the block, so the ${ target } loop is written on root` ] : [] ) ].map( ( text ) => ( { ...where, text: `${ e.record }: ${ text }` } ) ) );
 			}
@@ -443,8 +466,12 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			deferred.push( () => writeNode( n, doc, [ ...new Set( pending ) ], { flat, ref, schema, out } ) );
 		}
 	}
-	applyControls( { controls, written, out } );
+	applyControls( { controls, written, out, schema } );
 	applyGlobals( { found: idx.found, out } );
+	// A record on this surface that nothing above wrote, reported or noted is named, never left silent.
+	const homeOf = makeHomeOf( { records, nodes, keyOf: ( finder ) => elementKey( finder, rootComponent ), idx } );
+	out.unmapped.push( ...silentRows( { records, accounted: accountedIds( { used, written, out } ), refOf: ( n ) => refOf( flat[ n.index ] ), homeOf } ) );
+	out.handover.push( ...readingProgressHandover( { found: idx.found, homeOf } ) );
 	deferred.forEach( ( write ) => write() );
 	return out;
 }

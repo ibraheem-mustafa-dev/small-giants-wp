@@ -9,6 +9,7 @@ import path from 'path';
 import { openDb } from './db.mjs';
 import { setAttr } from './tree.mjs';
 import { recogniseBehaviour, hostsFromTemplate } from './motion-behaviours.mjs';
+import { validateMotionWrite } from './motion-validate.mjs';
 
 export const COVERAGE_WRITES = [
 	'css-function:circle',
@@ -22,15 +23,19 @@ export const COVERAGE_WRITES = [
 
 let attrDb = null;
 
-// Whether the framework DB declares the attribute on the block (read-only).
-export function declaredAttr( block, attr ) {
+// Whether the framework DB declares the attribute on the block (read-only). `db` is the handle the caller already holds
+// (the default opens the framework DB once). A DB that cannot be read declares nothing: the write is refused, never assumed.
+export function declaredAttr( block, attr, db = null ) {
 	try {
-		attrDb ||= openDb();
-		return !! attrDb.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );
+		const handle = db || ( attrDb ||= openDb() );
+		return !! handle.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );
 	} catch {
 		return false;
 	}
 }
+
+// The attribute check of a framework DB handle, the shape `hasAttr( block, attr )` the writers take.
+export const hasAttrOf = ( db ) => ( block, attr ) => declaredAttr( block, attr, db );
 
 // The recognised behaviours of the records, keyed for placement: those a record names by template element are found
 // through `recordsByElement`; those a script finds by a `[data-*]` hook (no template element of their own) are held
@@ -161,7 +166,7 @@ export function applyBehaviours( { items, n, target, doc, pending, written, cont
 				}
 				place( doc, w.target, w );
 				pending.push( w.target );
-				written.set( r.id, { at: w.target, layer: w.layer } );
+				written.set( r.id, { at: w.target, layer: w.layer, list: w.list, where } );
 				note( r.id, `${ e.effect } is written from the draft's script${ w.dropped.length ? `; no ${ e.effect } field for ${ w.dropped.join( ', ' ) }` : '' }` );
 			}
 			if ( b.hoverState ) {
@@ -201,15 +206,26 @@ export function draftCssOf( draftDir, draftIndex = null ) {
 // A fact record's template in the shape behaviourIndex reads: { elements: { <key>: { attrs } } }.
 export const templateOf = ( facts ) => ( facts ? { elements: Object.fromEntries( Object.entries( facts.elements || {} ).map( ( [ key, e ] ) => [ key, e.template || {} ] ) ) } : null );
 
-// The second pass: each control sets values on the layer of the record it controls (the marquee's hover rate).
-export function applyControls( { controls, written, out } ) {
+// The second pass: each control sets values on the layer of the record it controls (the marquee's hover rate). The merged
+// layer is validated on its own before it is kept, so a control value the schema refuses names the control instead of
+// failing the whole node's document; the row carries the controlled record's node (where its layer, or its own row, sits).
+export function applyControls( { controls, written, out, schema = undefined } ) {
 	for ( const { r, b, where } of controls ) {
 		const target = written.get( b.of );
+		const held = out.unmapped.find( ( u ) => u.value === b.of && u.node );
+		const at = target?.where ?? ( held ? { node: held.node, block: held.block, slot: held.slot } : where );
 		if ( ! target || target.layer.effect !== b.effect ) {
-			out.unmapped.push( { ...where, property: 'motion', value: r.id, reason: `${ b.of } is not written as a ${ b.effect } layer, so its control has nothing to set` } );
-		} else {
-			target.layer.values = { ...target.layer.values, ...b.values };
-			out.notes.push( { ...where, text: `${ r.id }: ${ b.effect } ${ JSON.stringify( b.values ) } on ${ b.of }'s layer` } );
+			out.unmapped.push( { ...at, property: 'motion', value: r.id, reason: `${ b.of } is not written as a ${ b.effect } layer, so its control has nothing to set` } );
+			continue;
 		}
+		const merged = { ...target.layer, values: { ...target.layer.values, ...b.values } };
+		const element = 'hover.effects' === target.list ? { hover: { effects: [ merged ] } } : { effects: [ merged ] };
+		const verdict = undefined === schema ? { valid: true } : validateMotionWrite( { v: 1, elements: { [ target.at ]: element } }, schema );
+		if ( ! verdict.valid ) {
+			out.unmapped.push( { ...at, property: 'motion', value: r.id, reason: `${ b.effect } ${ JSON.stringify( b.values ) } on ${ b.of }'s layer is refused: ${ [ ...verdict.errors, ...verdict.refusals ].join( '; ' ) }` } );
+			continue;
+		}
+		target.layer.values = merged.values;
+		out.notes.push( { ...at, text: `${ r.id }: ${ b.effect } ${ JSON.stringify( b.values ) } on ${ b.of }'s layer` } );
 	}
 }
