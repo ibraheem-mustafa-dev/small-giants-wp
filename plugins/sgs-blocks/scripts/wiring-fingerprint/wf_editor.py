@@ -124,7 +124,7 @@ class EditorModel:
         seen: set[str] = set()
         queue = [(f, 0) for f in canvas_files]
         while queue:
-            rel, depth = queue.pop()
+            rel, depth = queue.pop(0)
             if rel in seen:
                 continue
             seen.add(rel)

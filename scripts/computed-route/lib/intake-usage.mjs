@@ -296,7 +296,10 @@ export function elementUsage( { tag, attrs = [], svg = null }, t, draftId, known
 export function markupUsage( text, t, draftId, known = new Set(), { svgFile = false } = {} ) {
 	const problems = [];
 	const tags = scanTags( text );
-	const closes = ( name, from, to ) => text.slice( from, to ).toLowerCase().includes( `</${ name }` );
+	const closes = ( name, from, to ) => {
+		const opens = tags.filter( ( x ) => x.name === name && x.index >= from && x.index < to && ! text.slice( x.index, x.end ).endsWith( '/>' ) ).length;
+		return text.slice( from, to ).toLowerCase().split( `</${ name }` ).length - 1 > opens;
+	};
 	tags.forEach( ( tag, i ) => {
 		if ( '?xml' === tag.name || tag.name.startsWith( '!' ) ) {
 			return;

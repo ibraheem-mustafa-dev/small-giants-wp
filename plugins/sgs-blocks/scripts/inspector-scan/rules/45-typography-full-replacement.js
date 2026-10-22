@@ -119,6 +119,14 @@ const REAL_TYPOGRAPHY_SUBFLAGS = [
 	'textAlign',
 	'textDecoration',
 	'textTransform',
+	// WordPress's experimental spellings of the keys above. Core still reads
+	// these, so a block declaring them has native typography.
+	'__experimentalFontFamily',
+	'__experimentalFontStyle',
+	'__experimentalFontWeight',
+	'__experimentalLetterSpacing',
+	'__experimentalTextDecoration',
+	'__experimentalTextTransform',
 ];
 
 /** True when `supports.typography` grants at least one real capability. */

@@ -14,7 +14,7 @@ import pathlib
 import re
 
 HEX_RE = re.compile(r"#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{3})(?![0-9a-zA-Z])")
-_LENGTH_RE = re.compile(r"\d+(?:\.\d+)?(?:px|rem|em|vw|%)")
+_LENGTH_RE = re.compile(r"(?<![\d,.])(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:px|rem|em|vw|%)")
 
 # Vocabulary kept as data, not scattered conditionals. A header matches when it CONTAINS a word.
 _NAME_HEADERS = ("token", "colour", "color", "name", "swatch", "variable", "slug", "palette")
@@ -181,7 +181,7 @@ def _layout_fact(label: str, rest: str, layout: dict) -> bool:
     if key == "max_content_width":
         length = _LENGTH_RE.search(rest)
         if length:
-            layout.setdefault(key, length.group(0))
+            layout.setdefault(key, length.group(0).replace(",", ""))
     elif key == "border_radius":
         layout.setdefault(key, rest)
     elif key == "shadows":

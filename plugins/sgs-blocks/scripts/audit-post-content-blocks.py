@@ -551,13 +551,9 @@ def main():
             print(f'  (+{len(baselined)} baselined finding(s) — documented debt, see the baseline file)\n')
         if high:
             print('NEW HIGH findings mean stored content will silently fail to render or be')
-            print('deleted on the next editor save. Migrate the stored shape via the block')
-            # REPO-ROOT scripts/, not plugins/sgs-blocks/scripts/ — this file lives in
-            # the latter, and a bare `scripts/` here has already been read as the
-            # wrong one and reported as a missing file. Two dirs share the name.
-            print('editor (REPO-ROOT scripts/wp-migrate-oldshape-blocks.js — dry-run by')
-            print('default) BEFORE')
-            print('deploying, or baseline WITH a register reference if genuinely accepted.')
+            print('deleted on the next editor save. Migrate the stored shape in the block')
+            print('editor (or make the schema change backwards-compatible) BEFORE deploying,')
+            print('or baseline WITH a register reference if genuinely accepted.')
     return 1 if (check and high) else 0
 
 

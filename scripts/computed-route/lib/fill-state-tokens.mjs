@@ -77,11 +77,17 @@ export function createPatch() {
 	const conflicts = [];
 	const set = ( path, value, from ) => {
 		let at = patch;
-		for ( const k of path.slice( 0, -1 ) ) {
+		const name = path.join( '.' );
+		for ( const [ i, k ] of path.slice( 0, -1 ).entries() ) {
+			// A leaf already set on the way down: the path cannot run under it.
+			if ( undefined !== at[ k ] && ( 'object' !== typeof at[ k ] || null === at[ k ] ) ) {
+				const above = path.slice( 0, i + 1 ).join( '.' );
+				conflicts.push( { path: name, kept: at[ k ], dropped: value, from, keptFrom: entries.find( ( e ) => e.path === above ) } );
+				return;
+			}
 			at = at[ k ] ??= {};
 		}
 		const key = path[ path.length - 1 ];
-		const name = path.join( '.' );
 		if ( key in at ) {
 			if ( JSON.stringify( at[ key ] ) !== JSON.stringify( value ) ) {
 				conflicts.push( { path: name, kept: at[ key ], dropped: value, from, keptFrom: entries.find( ( e ) => e.path === name ) } );

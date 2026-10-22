@@ -429,7 +429,7 @@ def _seed_property_equivalents(conn: sqlite3.Connection) -> None:
     marks = ", ".join("?" for _ in _PROPERTY_EQUIVALENTS_COLUMNS)
     conn.executemany(
         f"INSERT INTO property_equivalents ({cols}) VALUES ({marks})",  # noqa: S608 - fixed column names only
-        [tuple(r[c] for c in _PROPERTY_EQUIVALENTS_COLUMNS) for r in rows],
+        [tuple(r.get(c) for c in _PROPERTY_EQUIVALENTS_COLUMNS) for r in rows],
     )
     conn.commit()
 

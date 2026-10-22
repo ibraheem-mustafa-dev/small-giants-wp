@@ -51,7 +51,13 @@ export function draftPath( src, origin = '' ) {
 		}
 		s = u.pathname;
 	}
-	s = decodeURI( s ).replace( /^(?:\.{0,2}\/)+/, '' );
+	// A malformed escape (`%E0` on its own) is not a URL-encoded name: the path is kept as written.
+	try {
+		s = decodeURI( s );
+	} catch {
+		// keep `s` as written
+	}
+	s = s.replace( /^(?:\.{0,2}\/)+/, '' );
 	return s || null;
 }
 

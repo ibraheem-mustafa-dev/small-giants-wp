@@ -16,7 +16,7 @@ from pathlib import Path
 
 LITERAL_RE = re.compile(r"""(['"])([A-Za-z_][A-Za-z0-9_]*)\1""")
 VAR_RE = re.compile(r"\$([A-Za-z_]\w*)")
-FUNC_RE = re.compile(r"function\s+&?\s*(\w+)\s*\(([^)]*)\)[^{;]*\{")
+FUNC_RE = re.compile(r"function\s+&?\s*(\w+)\s*\(((?:[^()]|\([^()]*\))*)\)[^{;]*\{")
 CLASS_RE = re.compile(r"\bclass\s+(\w+)")
 CALL_RE = re.compile(r"\b([A-Za-z_]\w*)\s*\(")
 STATIC_RE = re.compile(r"\b([A-Z]\w*)::(\w+)\s*\(")

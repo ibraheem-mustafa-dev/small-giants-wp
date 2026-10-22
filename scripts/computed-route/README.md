@@ -149,7 +149,6 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/resolve-declared.mjs` | FR-48-36: the declared value a confirmed row writes, in the form the setting holds (a unit setting switches unit; a setting with no unit partner holds a relative length only where calibration proved a string form). |
 | `lib/tree.mjs` | Trees: read, write, refs, setting writes, live-site safety. |
 | `lib/cache.mjs` | The calibration cache's two outputs: the library-wide slot map and each site's own default paint; reading, writing, the split of one into the other and the per-output skip rules (a file read under another `READ_KEY` is due on every site). |
-| `split-cache.mjs` | One-off, idempotent migration: moves each pre-split `cache/<block>.json`'s default paint into `cache/<site>/<block>.paint.json` and rewrites the slot map without it, then moves mirror folders' paint into their test site's folder; `--dry-run` prints what it would do. |
 | `lib/calibrate.mjs` | Calibration library: calibration trees, slot detection, default paint; re-exports the calibration modules below. |
 | `lib/calibrate-props.mjs` | What calibration reads: the read and pseudo-layer properties, `READ_KEY` (the key of those lists, carried by every cache file) and how a css_property maps onto them. |
 | `lib/calibrate-markers.mjs` | Marker values per setting shape (Spec 48 §3.2 marker table). |
@@ -573,10 +572,6 @@ Measures a rendered design draft and writes block settings through the framework
 - `paintSkip(dir, block, site, paintKey, recalibrate?)` → why the site's paint is kept (its own file carries the current key), or null. `paintStale(dir, block, site, paintKey)` → true when the site's paint exists with a different key.
 - `slotMapLosses(prev, next, allowed?)` → the sorted settings (and `discovered:<attr>` keys) the existing slot map reaches that a new one drops, minus `allowed`; none without an existing map. `lossDestination(name, next)` → where a lost setting went in the new map: `dead`, `oneWidth`, `noMarker`, `rejected`, `untestedStates` or `absent`.
 - `slotMapWriteDecision(prev, next, allowed?)` → `{ write, lost: [ { setting, wentTo } ] }`: a slot map is shared by every client, so `calibrate.mjs` refuses one that drops a reached setting unless `--allow-loss` names it. `parseAllowLoss(list)` → `{ 'sgs/a': [ names ] }` from `sgs/a:setting,…` (split on the first colon). `refusedFile(dir, block)` → `cache/<block>.refused.json`, where a refused candidate is kept with `refusedBecause.lost`.
-
-### `split-cache.mjs`
-- `splitCache(dir, { dryRun, log })` → `{ split, unchanged, problems }`: splits every combined cache file in `dir`; a file already split is left alone.
-- `placeMirrorPaint(dir, { dryRun, log })` → `{ moved, dropped }`: moves paint files out of a mirror's folder into its test site's, keeping the newer `measured`.
 
 ### `lib/calibrate-props.mjs` (imports `scripts/parity/lib/collect.mjs` and `ref-trace.mjs`)
 - `WIDTHS`: 375, 768, 1440. `MARKER_HEX`, `MARKER_RGB`: the colour marker. `MARKER_GRADIENT`: the gradient marker. `CAL_PREFIX`: `cr-ref-cal-`.

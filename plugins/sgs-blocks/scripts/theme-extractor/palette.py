@@ -91,7 +91,8 @@ def _measured_token_values(root_tokens, resting_rules, facts):
             continue
         rest = b.get("rest", {})
         for sel, prop, value, _imp, _off in resting_rules:
-            if "primary" not in sel.lower() or _STATE_RE.search(sel):
+            sel_l = sel.lower()
+            if "primary" not in sel_l or not ("button" in sel_l or "btn" in sel_l) or _STATE_RE.search(sel):
                 continue
             t = token_of(value)
             if not t:

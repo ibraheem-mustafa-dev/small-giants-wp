@@ -207,7 +207,7 @@ export function collectAuto( [ scope, exclude, maxWords ] ) {
 			const acs = getComputedStyle( a );
 			if ( 'visible' !== acs.overflowX || 'visible' !== acs.overflowY ) {
 				const c = a.getBoundingClientRect();
-				let bg = 'rgba(0,0,0,0)';
+				let bg = 'rgba(0, 0, 0, 0)';
 				for ( let g = a; g && /rgba\(0, 0, 0, 0\)|transparent/.test( bg ); g = g.parentElement ) {
 					bg = getComputedStyle( g ).backgroundColor;
 				}

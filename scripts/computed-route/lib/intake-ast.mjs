@@ -247,7 +247,7 @@ export function fnBinding( idx, fn ) {
 export function callsOf( idx, binding ) {
 	return idx.all.filter( ( n ) => 'CallExpression' === n.type && ( binding.local
 		? 'Identifier' === n.callee.type && n.callee.name === binding.local && resolveName( idx, n.callee )?.decl === binding.decl
-		: propName( n.callee ) === binding.member ) );
+		: null != binding.member && propName( n.callee ) === binding.member ) );
 }
 
 const empty = () => ( { values: [], partial: [], unresolved: [] } );
@@ -339,7 +339,7 @@ export function readBinding( value ) {
 		return null;
 	}
 	const close = value.lastIndexOf( '}}' );
-	if ( open > 0 || close !== value.length - 2 ) {
+	if ( open > 0 || close !== value.length - 2 || value.indexOf( '{{', 2 ) >= 0 ) {
 		return { prefix: value.slice( 0, open ), text: value };
 	}
 	const text = value.slice( 2, -2 ).trim();

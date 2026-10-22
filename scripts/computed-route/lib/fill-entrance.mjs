@@ -229,7 +229,7 @@ export function translationOf( pose ) {
 	return { x: Math.round( x * 100 ) / 100, y: Math.round( y * 100 ) / 100 };
 }
 
-const atRest = ( p ) => p.opacity >= 0.95 && 0 === translationOf( p ).x && 0 === translationOf( p ).y && ( 'none' === p.scale || '1' === p.scale );
+const atRest = ( p ) => p.opacity >= 0.95 && 0 === translationOf( p ).x && 0 === translationOf( p ).y && 1 === scaleOf( p ) && 0 === rotateOf( p ) && [ p.filter, p.clipPath ].every( ( v ) => ! v || 'none' === v );
 
 // One probe result as an entrance, or null when the element did not move (static) or is still moving at the end (a loop,
 // not an entrance). An element that was off-screen when first seen and started moving once it met the viewport is a

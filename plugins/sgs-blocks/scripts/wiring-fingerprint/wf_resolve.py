@@ -78,7 +78,7 @@ class Resolver:
             # State utility modifiers the framework styles (`sgs-on-dark`, `sgs-has-hover-overlay`).
             "utility_class_rule": any(css.has_class(c) for c in ch.classes if own_utility(c)),
             "toggle_paint": toggle,
-            "data_consumed": data_consumed(ch.fx_data, css, js),
+            "data_consumed": data_consumed(ch.data, css, js),
             "fx_data_consumed": data_consumed(ch.fx_data, css, js),
         }
 

@@ -355,7 +355,7 @@ def step_oldshape_audit(dry_run: bool, use_alias: bool, target_key: str,
         rc = subprocess.call(cmd)
     if rc != 0:
         log("[oldshape-audit] FAIL: deploying these schemas would strand or delete "
-            "stored content — migrate it first (scripts/wp-migrate-oldshape-blocks.js)")
+            "stored content: migrate it in the block editor (or make the schema change backwards-compatible) first")
     else:
         log("[oldshape-audit] PASS: stored content is compatible with the schemas "
             "being deployed")

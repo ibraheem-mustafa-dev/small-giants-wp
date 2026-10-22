@@ -79,7 +79,7 @@ export function pageBaseline( raw, tag ) {
 				return lineHeightPx( v, ownFontPx );
 			}
 			const r = resolveRaw( prop, v );
-			if ( 'letter-spacing' === prop && /em$/.test( String( r ) ) ) {
+			if ( 'letter-spacing' === prop && /(?<!r)em$/.test( String( r ) ) ) {
 				return ownFontPx ? `${ round( parseFloat( r ) * ownFontPx ) }px` : r;
 			}
 			return undefined === r ? INITIAL[ prop ] : r;

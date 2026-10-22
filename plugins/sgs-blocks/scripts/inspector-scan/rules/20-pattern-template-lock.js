@@ -40,7 +40,7 @@ const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
 
 const TEMPLATE_LOCK_RE = /"templateLock"\s*:\s*"[^"]+"/;
-const POST_TYPES_HEADER_RE = /Post Types:\s*([^\r\n]*)/;
+const POST_TYPES_HEADER_RE = /Post Types:[ \t]*([^\r\n]*)/;
 
 module.exports = {
 	id: '20-pattern-template-lock',

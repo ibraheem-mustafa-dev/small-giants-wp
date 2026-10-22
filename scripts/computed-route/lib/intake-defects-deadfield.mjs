@@ -147,7 +147,7 @@ export function deadFieldVerdict( source, off, census ) {
 		if ( foreign.has( field ) ) {
 			continue;
 		}
-		if ( own && ! ( 'ClassProperty' === own.type && ( ! own.value || 'NullLiteral' === own.value.type || ( 'BooleanLiteral' === own.value.type && ! own.value.value ) || ( 'Identifier' === own.value.type && 'undefined' === own.value.name ) ) ) ) {
+		if ( own && ! ( 'ClassProperty' === own.type && ( ! own.value || 'NullLiteral' === own.value.type || ( 'BooleanLiteral' === own.value.type && ! own.value.value ) || ( 'NumericLiteral' === own.value.type && ! own.value.value ) || ( 'StringLiteral' === own.value.type && ! own.value.value ) || ( 'Identifier' === own.value.type && 'undefined' === own.value.name ) ) ) ) {
 			continue;
 		}
 		const at = writes.get( field ) || [];

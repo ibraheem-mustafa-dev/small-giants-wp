@@ -122,7 +122,11 @@ function updateBaseline( ruleId, findings, opts = {} ) {
 	const seenKeys = new Set( existing.entries.map( ( e ) => e.key ) );
 	const today = new Date().toISOString().slice( 0, 10 );
 	const additions = findings
-		.filter( ( f ) => ! seenKeys.has( f.key ) )
+		.filter( ( f ) => {
+			if ( seenKeys.has( f.key ) ) return false;
+			seenKeys.add( f.key );
+			return true;
+		} )
 		.map( ( f ) => ( {
 			key: f.key,
 			reason: `seeded on ${ today }`,

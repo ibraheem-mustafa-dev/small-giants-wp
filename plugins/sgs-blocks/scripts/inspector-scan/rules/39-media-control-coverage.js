@@ -545,7 +545,24 @@ module.exports = {
 					);
 					dumpRows = [];
 				}
-				const storedNames = resolveStoredNames( block.slug, pairs );
+				let storedNames;
+				try {
+					storedNames = resolveStoredNames( block.slug, pairs );
+				} catch ( e ) {
+					findings.push(
+						makeFinding( {
+							rule: ruleId,
+							block: block.slug,
+							file: blockJsonFile,
+							severity: 'error',
+							kind: 'stored-names-resolve-failed',
+							detail: `The PHP helper sgs_media_element_stored_attr() could not run to resolve stored attribute names: ${ e.message }`,
+							fix: 'Make `php` available on the PATH (run `php -v`), then re-run the inspector scan.',
+							keyParts: [ 'stored-names-resolve-failed' ],
+						} )
+					);
+					storedNames = [];
+				}
 				for ( const attrName of storedNames ) {
 					const row = dumpRows.find( ( r ) => r.block === block.slug && r.attr === attrName );
 					if ( ! row ) continue; // the dump never scanned this (block,attr) — not this rule's business
@@ -575,10 +592,14 @@ module.exports = {
 			// ── Part B: a media type the enum offers, no declared atom supports ──
 			const typeAttr = findMediaTypeAttr( data.attributes || {}, prefix );
 			if ( ! typeAttr ) continue; // no type-selector found for this entry — not this rule's business
+			// A type is covered when ANY declared atom supports it; atoms split the work.
+			const coveredTypes = new Set(
+				atomIds.flatMap( ( atomId ) => ( registry[ atomId ] ? registry[ atomId ].types : [] ) )
+			);
 			for ( const atomId of atomIds ) {
 				const atom = registry[ atomId ];
 				if ( ! atom ) continue;
-				const missing = typeAttr.types.filter( ( t ) => ! atom.types.includes( t ) );
+				const missing = typeAttr.types.filter( ( t ) => ! coveredTypes.has( t ) );
 				if ( ! missing.length ) continue;
 				findings.push(
 					makeFinding( {

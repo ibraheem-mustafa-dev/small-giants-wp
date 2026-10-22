@@ -149,21 +149,28 @@ export function propRefs( idx, objs, name, depth = 0, stack = new Map() ) {
 			}
 		} else if ( 'ObjectExpression' === t.node?.type ) {
 			out.push( ...writtenRefs( idx, t.node, name, depth, stack ) );
-			const p = [ ...t.node.properties ].reverse().find( ( x ) => 'SpreadElement' !== x.type && keyName( x ) === name );
-			if ( 'ObjectProperty' === p?.type ) {
-				out.push( ...resolveRefs( idx, ref( p.value, t.env ), depth + 1, stack ) );
-			} else if ( p ) {
-				out.push( ...( 'get' === p.kind ? returnsOf( idx, p ).flatMap( ( e ) => resolveRefs( idx, ref( e, t.env ), depth + 1, stack ) ) : [ ref( p, t.env ) ] ) );
-			} else {
-				for ( const s of [ ...t.node.properties ].reverse().filter( ( x ) => 'SpreadElement' === x.type ) ) {
-					const hit = propRefs( idx, resolveRefs( idx, ref( s.argument, t.env ), depth + 1, stack ), name, depth + 1, stack );
+			for ( const p of [ ...t.node.properties ].reverse() ) {
+				if ( 'SpreadElement' === p.type ) {
+					const hit = propRefs( idx, resolveRefs( idx, ref( p.argument, t.env ), depth + 1, stack ), name, depth + 1, stack );
 					if ( hit.length ) {
 						out.push( ...hit );
 						break;
 					}
+				} else if ( null != keyName( p ) && String( keyName( p ) ) === name ) {
+					if ( 'ObjectProperty' === p.type ) {
+						out.push( ...resolveRefs( idx, ref( p.value, t.env ), depth + 1, stack ) );
+					} else {
+						out.push( ...( 'get' === p.kind ? returnsOf( idx, p ).flatMap( ( e ) => resolveRefs( idx, ref( e, t.env ), depth + 1, stack ) ) : [ ref( p, t.env ) ] ) );
+					}
+					break;
 				}
 			}
 		} else if ( /^\d+$/.test( name ) ) {
+			const lead = 'ArrayExpression' === t.node?.type ? t.node.elements.slice( 0, Number( name ) + 1 ) : null;
+			if ( lead && lead.length === Number( name ) + 1 && lead.every( ( el ) => el && 'SpreadElement' !== el.type ) ) {
+				out.push( ...resolveRefs( idx, ref( lead[ Number( name ) ], t.env ), depth + 1, stack ) );
+				continue;
+			}
 			const els = elementsOf( idx, t, depth + 1, stack );
 			if ( els[ Number( name ) ] ) {
 				out.push( els[ Number( name ) ] );

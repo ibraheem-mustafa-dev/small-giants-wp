@@ -55,7 +55,7 @@ def build_draft_root_token_map(css: str) -> dict:
         return {}
     for selector, decls, _off in _iter_qualified_rules(css):
         # A rule may be ``:root`` or ``:root, html`` etc. — accept any selector list containing :root.
-        if ":root" not in selector.replace(" ", ""):
+        if not any(s.strip() == ":root" for s in selector.split(",")):
             continue
         for d in decls:
             if d.type != "declaration" or not d.name.startswith("--"):

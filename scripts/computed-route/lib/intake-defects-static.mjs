@@ -41,7 +41,7 @@ function constValue( n, consts ) {
 		if ( undefined === a || undefined === b ) {
 			return undefined;
 		}
-		const eq = 3 === n.operator.length ? a === b : String( a ) === String( b );
+		const eq = 3 === n.operator.length ? a === b : a == b;
 		return n.operator.startsWith( '=' ) ? eq : ! eq;
 	}
 	return undefined;
@@ -53,6 +53,7 @@ const exits = ( st ) => 'ReturnStatement' === st?.type || 'ThrowStatement' === s
 // skips the branch holding it. Follows the block that holds `off`; `const` literals accumulate in scope.
 function deadIn( body, off, text, consts = new Map() ) {
 	const scope = new Map( consts );
+	body.filter( ( st ) => 'VariableDeclaration' === st.type ).forEach( ( st ) => st.declarations.forEach( ( d ) => 'Identifier' === d.id.type && scope.delete( d.id.name ) ) );
 	for ( const st of body ) {
 		if ( st.start > off ) {
 			break;

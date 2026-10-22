@@ -137,7 +137,10 @@ function compound( sel ) {
 	while ( at < sel.length && ( re.lastIndex = at, m = re.exec( sel ) ) ) {
 		at = re.lastIndex;
 		if ( m[ 1 ] ) {
-			tests.push( ( e ) => e.tag === m[ 1 ] || e.tag === `sc-raw-${ m[ 1 ] }` );
+			const tag = m[ 1 ];
+			tests.push( ( e ) => e.tag === tag || e.tag === `sc-raw-${ tag }` );
+		} else if ( m[ 7 ] ) {
+			tests.push( () => true );
 		} else if ( m[ 2 ] ) {
 			const c = m[ 2 ];
 			tests.push( ( e ) => ( attrOf( e, 'class' ) || '' ).split( /\s+/ ).includes( c ) );
@@ -160,13 +163,34 @@ function compound( sel ) {
 
 const attrOf = ( e, name ) => e.attrs.find( ( [ a ] ) => a === name )?.[ 1 ] ?? null;
 
+// A selector's compounds, split at combinators outside `[...]` and `(...)`.
+function splitCompounds( sel ) {
+	const parts = [];
+	let depth = 0;
+	let cur = '';
+	for ( const ch of sel ) {
+		if ( '[('.includes( ch ) ) {
+			depth++;
+		} else if ( '])'.includes( ch ) ) {
+			depth = Math.max( 0, depth - 1 );
+		}
+		if ( ! depth && /[\s>+~]/.test( ch ) ) {
+			parts.push( cur );
+			cur = '';
+		} else {
+			cur += ch;
+		}
+	}
+	return [ ...parts, cur ].filter( Boolean );
+}
+
 // The stamped elements a selector list matches: { tpl: [n], rule? }. Each selector is matched on its last compound
 // only (a descendant or pseudo part is kept as `rule`); a selector with an unsupported part matches nothing.
 export function matchSelector( elements, selector ) {
 	const tpl = new Set();
 	let rule = null;
 	for ( const sel of splitTop( selector ) ) {
-		const parts = sel.split( /\s*[\s>+~]\s*/ ).filter( Boolean );
+		const parts = splitCompounds( sel );
 		const last = parts[ parts.length - 1 ].replace( /::?[a-z-]+(\(.*\))?$/i, '' );
 		if ( parts.length > 1 || last !== parts[ parts.length - 1 ] ) {
 			rule = `matched on the last compound of ${ selector }`;

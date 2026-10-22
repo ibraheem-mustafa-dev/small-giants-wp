@@ -92,11 +92,31 @@ export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 		}
 		return sel.includes( '&' ) ? sel.replaceAll( '&', `:is(${ parent })` ) : `:is(${ parent }) ${ sel }`;
 	};
+	// Whether position `at` sits inside a bracket whose opener is preceded by `fn` (`:not` or `:has`), at any depth:
+	// an `:is( … )` between the two is walked past, so `.b:not(:is(:hover))` is inside `:not`.
+	const enclosedBy = ( sel, at, fn ) => {
+		let depth = 0;
+		for ( let k = at - 1; k >= 0; k-- ) {
+			depth += ')' === sel[ k ] ? 1 : '(' === sel[ k ] ? -1 : 0;
+			if ( depth < 0 ) {
+				if ( fn.test( sel.slice( 0, k ) ) ) {
+					return true;
+				}
+				depth = 0;
+			}
+		}
+		return false;
+	};
 	// `:is()` and `:where()` list alternatives: `.a:is(:hover, :focus-visible)` is a hover look and a focus look, never
 	// one look needing both, so each argument becomes its own part, wrapped in the function it came from (`:where()`
-	// keeps counting nothing toward the part's specificity).
+	// keeps counting nothing toward the part's specificity). Inside `:not()` or `:has()` the list is not split: the
+	// alternatives of `:not(:is(.x, .y))` are not alternatives of the look.
 	const alternatives = ( sel, budget = 32 ) => {
-		const m = /:(?:is|where)\(/.exec( sel );
+		const re = /:(?:is|where)\(/g;
+		let m = re.exec( sel );
+		while ( m && enclosedBy( sel, m.index, /:(?:not|has)$/ ) ) {
+			m = re.exec( sel );
+		}
 		if ( ! m ) {
 			return [ sel ];
 		}
@@ -157,16 +177,7 @@ export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 		return out.replace( /\u0000+/g, ( m, at, s ) => ( /^$|[\s>+~(,]$/.test( s.slice( Math.max( 0, at - 1 ), at ) ) && /^$|^[\s>+~),]/.test( s.slice( at + m.length, at + m.length + 1 ) ) ? '*' : '' ) ).trim();
 	};
 	// A token inside :not( … ) says "not in that state": it is not a state to enter.
-	const negated = ( sel, at ) => {
-		let depth = 0;
-		for ( let k = at - 1; k >= 0; k-- ) {
-			depth += ')' === sel[ k ] ? 1 : '(' === sel[ k ] ? -1 : 0;
-			if ( depth < 0 ) {
-				return /:not$/.test( sel.slice( 0, k ) );
-			}
-		}
-		return false;
-	};
+	const negated = ( sel, at ) => enclosedBy( sel, at, /:not$/ );
 	// Where the compound holding position `from` ends: the first combinator outside every bracket, with the depth counted
 	// from the selector's start, so a token inside `:is( … )` ends at its own compound, not at the selector's end.
 	const compoundEnd = ( sel, from ) => {

@@ -158,7 +158,7 @@ A setting that paints a parent while a rule on a child overrides it is recorded 
 
 **Done when:** calibrating `sgs/heading` on eye-care-test produces a file in which `lineHeight` maps to the heading element at all three widths and `margin` maps as a box, the calibration page is empty afterwards, and a planted mismatch fails the run before any write. The planted mismatch is a local `build/blocks/heading/style-index.css` differing from the deployed one.
 
-Status: partly built (`calibrate.mjs`, `lib/calibrate*.mjs`, `lib/deploy-hash.mjs`, `lib/calibration-lock.mjs`; 94 block caches in `scripts/computed-route/cache/`). The two outputs are stored apart (2026-10-11: `lib/cache.mjs`, readers take the site through `solve.mjs::calibrationFor`, `tests/cache.test.mjs`; existing caches split by `split-cache.mjs`). `overriddenBy`'s rendered-box guard not built; `layout` and `select-from-enum` presence reads not built.
+Status: partly built (`calibrate.mjs`, `lib/calibrate*.mjs`, `lib/deploy-hash.mjs`, `lib/calibration-lock.mjs`; 94 block caches in `scripts/computed-route/cache/`). The two outputs are stored apart (2026-10-11: `lib/cache.mjs`, readers take the site through `solve.mjs::calibrationFor`, `tests/cache.test.mjs`). `overriddenBy`'s rendered-box guard not built; `layout` and `select-from-enum` presence reads not built.
 
 ### FR-48-2 -- Accepted value forms
 
@@ -502,7 +502,6 @@ All in `scripts/computed-route/`. The README lists every file and every exported
 | `register-sweep.mjs`, `lib/register-sweep.mjs` | Eye Care's fix-register bundling for the sweep's status agents (a client tool, indexed; no requirement here) | none |
 | `handoff-repackage.mjs` | Brings an export made before `MANIFEST.json` to the Spec 48A format after proving every file against its old `MANIFEST.md` hash | Spec 48A FR-48A-1 |
 | `stage0.mjs`, `lib/stage0.mjs`, `data/calibration-baseline.schema.json` | Stage 0: the handoff check, the fixed block set, slot-map-only recalibration of stale blocks, `calibration-baseline.json` | FR-48-3, FR-48-16 |
-| `split-cache.mjs` | One-off, idempotent split of pre-§3.2 cache files into slot map and per-site default paint, and mirror paint moved to its test site's folder | §3.2 |
 | `lib/calibration-refs.mjs`, `fixture-refs.mjs`, `lib/fixture-refs.mjs` | Fixture tokens resolved per calibration target, the existence guard, and the detector proving no bare site ID remains in a fixture (run by `lint.mjs`) | §3.2 |
 | `provision-calibration-refs.mjs`, `lib/provision-refs.mjs` | Creates a test site's calibration menu, panel, drawer and media and writes their IDs to its `refs` | §3.2, Appendix A step 13 |
 | `tests/` | `node --test "scripts/computed-route/tests/*.test.mjs"` (Node 24 runs a glob, not a bare folder); each file names the rule it proves and has one case that must fail. `tests/check-lane-collisions.mjs` is a parallel-lane process gate, not route behaviour | all |
