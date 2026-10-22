@@ -23,10 +23,14 @@ $sgs_fr_css   = '';
 
 $sgs_fr_card_sel   = $sgs_fr_scope . ' .sgs-form-review__card';
 $sgs_fr_card_decls = array();
-$sgs_fr_bg         = sgs_colour_value( (string) ( $attributes['cardBackgroundColour'] ?? '' ) );
-if ( '' !== $sgs_fr_bg ) {
-	$sgs_fr_card_decls[] = 'background-color:' . $sgs_fr_bg;
-}
+$sgs_fr_fill       = sgs_fill_decls(
+	$attributes,
+	array(
+		'base'     => 'cardBackgroundColour',
+		'gradient' => 'cardBackgroundColourGradient',
+	)
+);
+$sgs_fr_card_decls = array_merge( $sgs_fr_card_decls, $sgs_fr_fill['normal'] );
 $sgs_fr_padding = sgs_css_length_value( $attributes['cardPadding'] ?? '' );
 if ( '' !== $sgs_fr_padding ) {
 	$sgs_fr_card_decls[] = 'padding:' . $sgs_fr_padding;
@@ -54,9 +58,14 @@ foreach ( array(
 	'termColour'  => '.sgs-form-review__term',
 	'valueColour' => '.sgs-form-review__detail',
 ) as $sgs_fr_attr => $sgs_fr_target ) {
-	$sgs_fr_colour = sgs_colour_value( (string) ( $attributes[ $sgs_fr_attr ] ?? '' ) );
-	if ( '' !== $sgs_fr_colour ) {
-		$sgs_fr_css .= $sgs_fr_scope . ' ' . $sgs_fr_target . '{color:' . $sgs_fr_colour . ';}';
+	$sgs_fr_text = sgs_resolve_text_colour_or_gradient(
+		sgs_colour_value( (string) ( $attributes[ $sgs_fr_attr ] ?? '' ) ),
+		(string) ( $attributes[ $sgs_fr_attr . 'Gradient' ] ?? '' )
+	);
+	$sgs_fr_sel  = $sgs_fr_scope . ' ' . $sgs_fr_target;
+	if ( '' !== $sgs_fr_text ) {
+		$sgs_fr_css .= $sgs_fr_sel . '{' . sgs_text_colour_decl( $sgs_fr_text ) . ';}';
+		$sgs_fr_css .= sgs_text_colour_gradient_fallback_rule( $sgs_fr_sel, $sgs_fr_text );
 	}
 }
 

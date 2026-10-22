@@ -83,6 +83,19 @@ review_check( 'row value colour is emitted', 1 === preg_match( '~__detail\{color
 review_check( 'card title typography is emitted', 1 === preg_match( '~__card-title\{[^}]*font-weight:800~', $html ) );
 review_check( 'no inline style attribute', ! preg_match( '~ style="~', $html ) );
 
+$grad = review_render(
+	$harness,
+	array(
+		'cardBackgroundColourGradient' => 'linear-gradient(90deg,#102030,#405060)',
+		'termColourGradient'           => 'linear-gradient(90deg,#112233,#334455)',
+		'valueColourGradient'          => 'linear-gradient(90deg,#445566,#667788)',
+	)
+);
+review_check( 'card background gradient paints background-image', 1 === preg_match( '~__card\{[^}]*background-image:linear-gradient\(90deg,#102030,#405060\)~', $grad ) );
+review_check( 'row label gradient paints clipped text', 1 === preg_match( '~__term\{[^}]*background-image:linear-gradient\(90deg,#112233,#334455\)[^}]*background-clip:text~', $grad ) );
+review_check( 'row value gradient paints clipped text', 1 === preg_match( '~__detail\{[^}]*background-image:linear-gradient\(90deg,#445566,#667788\)[^}]*background-clip:text~', $grad ) );
+review_check( 'text gradient carries the no-clip fallback', str_contains( $grad, '@supports not' ) );
+
 echo $failed > 0 ? "
 $failed failed
 " : "

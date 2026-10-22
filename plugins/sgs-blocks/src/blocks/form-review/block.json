@@ -48,10 +48,14 @@
                 "card": {
                     "label": "Review card",
                     "order": 4,
-                    "clusters": [],
+                    "clusters": [
+                        "fill",
+                        "layout"
+                    ],
                     "prefix": "card",
                     "attrMap": {
                         "css:background-color": "cardBackgroundColour",
+                        "css:background-image": "cardBackgroundColourGradient",
                         "css:border-color": "cardBorderColour",
                         "css:border-style": "cardBorderStyle",
                         "css:border-width": "cardBorderWidth",
@@ -86,7 +90,8 @@
                     ],
                     "prefix": "term",
                     "attrMap": {
-                        "css:color": "termColour"
+                        "css:color": "termColour",
+                        "css:color-gradient": "termColourGradient"
                     },
                     "_note": "The <dt class=\"sgs-form-review__term\"> label in each card row; typography is the parent form's reviewTerm family."
                 },
@@ -98,7 +103,8 @@
                     ],
                     "prefix": "value",
                     "attrMap": {
-                        "css:color": "valueColour"
+                        "css:color": "valueColour",
+                        "css:color-gradient": "valueColourGradient"
                     },
                     "_note": "The <dd class=\"sgs-form-review__detail\"> answer in each card row; typography is the parent form's reviewDetail family."
                 }
@@ -141,6 +147,10 @@
             "type": "string",
             "default": ""
         },
+        "cardBackgroundColourGradient": {
+            "type": "string",
+            "default": ""
+        },
         "cardBorderColour": {
             "type": "string",
             "default": ""
@@ -173,7 +183,15 @@
             "type": "string",
             "default": ""
         },
+        "termColourGradient": {
+            "type": "string",
+            "default": ""
+        },
         "valueColour": {
+            "type": "string",
+            "default": ""
+        },
+        "valueColourGradient": {
             "type": "string",
             "default": ""
         },
