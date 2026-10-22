@@ -144,6 +144,8 @@ export async function fillSurface( o ) {
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
 		const result = fillTree( {
 			tree, nodes, reads, db, calFor, origin: reads.origin,
+			// FR-48-30: the confirmed page map (a draft's #/route link is written as that page's permalink); null before intake.
+			pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null,
 			// FR-48-39: the uploaded images of the surface's site (a null map when media-upload has not run).
 			media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site },
 			snapshot, rawSnapshot,

@@ -18,7 +18,7 @@ const MOTION = /^(?:transition|animation)(?:-|$)/;
 
 // The properties whose rendered value is a used value (CSSOM's resolved value: the laid-out size or offset), so a
 // rendered pixel figure is never the draft's intent: they are written only from a declared value the code states.
-// `width` keeps its own rule (lib/fill-resolve.mjs, usedValueTarget) and the column tracks theirs (the computed tracks
+// `width` keeps its own rule (lib/fill-resolve-element.mjs, usedValueTarget) and the column tracks theirs (the computed tracks
 // read as ratios, lib/normalise.mjs::tracksSetting).
 export const USED_VALUE = [ 'height', 'top', 'right', 'bottom', 'left', 'grid-template-rows' ];
 

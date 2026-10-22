@@ -4,7 +4,8 @@
 // from the parent), R-47-8 (the ledger), FR-47-4 step 3 (spacing ownership).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { fillTree, valueText } from '../lib/fill-resolve.mjs';
+import { fillTree } from '../lib/fill-resolve.mjs';
+import { valueText } from '../lib/fill-resolve-state.mjs';
 import { skeletonNodes, cleanTree } from '../lib/fill-skeleton.mjs';
 import { addRefs } from '../lib/tree.mjs';
 import { openDb } from '../lib/db.mjs';

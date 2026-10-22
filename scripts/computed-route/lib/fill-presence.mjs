@@ -7,6 +7,7 @@
 // A path is a selector path from the block root, BEM classes joined by ' > ' (the format of `elements` keys). Each
 // function returns { writes: [{ attr, value, merge }], unmapped: [{ property, value, slot, reason }], notes }.
 import { LOOSE } from './resolve.mjs';
+import { hashRoutePermalink } from './fill-route.mjs';
 
 export const COVERAGE_WRITES = [
 	'block-setting:boolean-visibility:boolean',
@@ -144,9 +145,13 @@ export function textDecisions( { calibration, attributes = {}, slots = {}, leaf 
 }
 
 // A draft href as a WordPress site can hold it, or null for one that links nowhere (#, empty, javascript:) or to a draft
-// file (a relative page name). A link into the draft's own origin keeps its path, query and fragment.
-export function normaliseHref( href, origin ) {
+// file (a relative page name). A hash route (`#/apply`) is the permalink of the page map's page for that route, or null
+// with no such page (lib/fill-route.mjs). A link into the draft's own origin keeps its path, query and fragment.
+export function normaliseHref( href, origin, pages = null ) {
 	const h = String( href ?? '' ).trim();
+	if ( h.startsWith( '#/' ) ) {
+		return hashRoutePermalink( h, pages );
+	}
 	if ( ! h || h.startsWith( '#' ) || /^javascript:/i.test( h ) ) {
 		return null;
 	}
@@ -171,13 +176,13 @@ const siteInfoKey = ( attributes, attr ) => {
 // The draft's links into the link settings calibration's `link` ties to each element. slots: { path: href | null }.
 // A setting bound to Site Info still receives the draft address (it is the fallback shown when Site Info is blank) and
 // also yields a `handover` row { attr, slot, siteInfoKey, address } so the clone reports the address for Site Info.
-export function linkDecisions( { calibration, attributes = {}, slots = {}, origin = '' } ) {
+export function linkDecisions( { calibration, attributes = {}, slots = {}, origin = '', pages = null } ) {
 	const out = { ...empty(), handover: [] };
 	const link = calibration?.link;
 	if ( ! link ) {
 		return out;
 	}
-	const draft = Object.entries( slots ).map( ( [ p, h ] ) => [ p, normaliseHref( h, origin ) ] ).filter( ( [ , h ] ) => null !== h );
+	const draft = Object.entries( slots ).map( ( [ p, h ] ) => [ p, normaliseHref( h, origin, pages ) ] ).filter( ( [ , h ] ) => null !== h );
 	const claimed = new Set();
 	// A block with one link element (one distinct path) takes the address the draft's root element carries when no slot
 	// names that element: the draft's own anchor IS the element the node copies, while the block nests its anchor.
