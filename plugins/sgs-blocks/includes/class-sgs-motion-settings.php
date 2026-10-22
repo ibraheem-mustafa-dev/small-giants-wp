@@ -91,6 +91,8 @@ final class Sgs_Motion_Settings {
 					'smooth_scroll_strength'    => 3,
 					'page_transitions'          => false,
 					'page_transition_style'     => 'fade',
+					'page_transition_duration'  => 0,
+					'page_transition_easing'    => '',
 					'animate_product_filtering' => false,
 					'treatment_palette_base'    => 'primary',
 				),
@@ -159,6 +161,9 @@ final class Sgs_Motion_Settings {
 			'smooth_touch_strength'     => $touch_strength,
 			'page_transitions'          => ! empty( $value['page_transitions'] ),
 			'page_transition_style'     => $style,
+			// A custom duration and easing always win over the style's own; 0 and '' mean "use the style".
+			'page_transition_duration'  => SGS_Motion_Registry::sanitise_transition_duration( $value['page_transition_duration'] ?? 0 ),
+			'page_transition_easing'    => SGS_Motion_Registry::sanitise_transition_easing( $value['page_transition_easing'] ?? '' ),
 			// Shared with the read side rather than duplicated: one definition
 			// of what a valid override is, so the two can never disagree.
 			'page_transition_templates' => SGS_Motion_Registry::sanitise_template_styles(
@@ -457,6 +462,53 @@ final class Sgs_Motion_Settings {
 								</select>
 								<p class="description" style="max-width:44rem">
 									<?php \esc_html_e( 'Fade is the recommended choice — it signals that a new page has arrived without moving anything across the screen, which is the part that can make people feel unwell. Slide adds a small sideways shift as well; it is more noticeable, and better kept for one or two templates than used everywhere.', 'sgs-blocks' ); ?>
+								</p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label for="sgs-page-transition-duration"><?php \esc_html_e( 'Custom duration (ms)', 'sgs-blocks' ); ?></label>
+							</th>
+							<td>
+								<input
+									type="number"
+									id="sgs-page-transition-duration"
+									class="sgs-page-transition-style small-text"
+									name="<?php echo \esc_attr( self::OPTION_KEY ); ?>[page_transition_duration]"
+									value="<?php echo \esc_attr( $settings['page_transition_duration'] > 0 ? (string) $settings['page_transition_duration'] : '' ); ?>"
+									min="1"
+									max="<?php echo \esc_attr( (string) SGS_Motion_Registry::MAX_TRANSITION_DURATION ); ?>"
+									step="1"
+									placeholder="<?php echo \esc_attr__( 'Style default', 'sgs-blocks' ); ?>"
+								>
+								<p class="description" style="max-width:44rem">
+									<?php \esc_html_e( 'Optional. How long the transition lasts, in milliseconds (1 to 5000). Leave empty to use the length that belongs to the style (fade 220, slide 260). When set, it always wins over the style.', 'sgs-blocks' ); ?>
+								</p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label for="sgs-page-transition-easing"><?php \esc_html_e( 'Custom easing', 'sgs-blocks' ); ?></label>
+							</th>
+							<td>
+								<input
+									type="text"
+									id="sgs-page-transition-easing"
+									class="sgs-page-transition-style regular-text"
+									list="sgs-page-transition-easing-options"
+									name="<?php echo \esc_attr( self::OPTION_KEY ); ?>[page_transition_easing]"
+									value="<?php echo \esc_attr( $settings['page_transition_easing'] ); ?>"
+									maxlength="80"
+									autocomplete="off"
+									placeholder="<?php echo \esc_attr__( 'Site default', 'sgs-blocks' ); ?>"
+								>
+								<datalist id="sgs-page-transition-easing-options">
+									<?php foreach ( \array_diff( \sgs_motion_easing_values(), array( 'custom' ) ) as $easing_name ) : ?>
+										<option value="<?php echo \esc_attr( $easing_name ); ?>"></option>
+									<?php endforeach; ?>
+								</datalist>
+								<p class="description" style="max-width:44rem">
+									<?php \esc_html_e( 'Optional. Pick a named curve (for example ease-out) or type your own, such as cubic-bezier(0.22, 1, 0.36, 1). The two horizontal values must be between 0 and 1. Leave empty for the site easing. When set, it always wins over the style.', 'sgs-blocks' ); ?>
 								</p>
 							</td>
 						</tr>

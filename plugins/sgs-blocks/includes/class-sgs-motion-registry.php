@@ -570,6 +570,116 @@ class SGS_Motion_Registry {
 	}
 
 	/**
+	 * The longest custom page-transition duration, in ms.
+	 */
+	public const MAX_TRANSITION_DURATION = 5000;
+
+	/**
+	 * Sanitise a custom page-transition duration.
+	 *
+	 * A whole number of milliseconds from 1 to MAX_TRANSITION_DURATION. Anything
+	 * else (empty, zero, negative, a unit, a decimal, too long) is 0, which means
+	 * "use the style's own duration".
+	 *
+	 * @param mixed $value Submitted or stored value.
+	 * @return int Milliseconds, or 0 for the preset.
+	 */
+	public static function sanitise_transition_duration( $value ): int {
+		if ( \is_int( $value ) ) {
+			$ms = $value;
+		} elseif ( \is_string( $value ) && \preg_match( '/^\d{1,5}\z/', \trim( $value ) ) ) {
+			$ms = (int) \trim( $value );
+		} else {
+			return 0;
+		}
+
+		return ( $ms >= 1 && $ms <= self::MAX_TRANSITION_DURATION ) ? $ms : 0;
+	}
+
+	/**
+	 * Sanitise a custom page-transition easing.
+	 *
+	 * Either one of the project's named easings (`sgs_motion_easing_values()`
+	 * without `custom`) or a `cubic-bezier(x1, y1, x2, y2)` literal of four
+	 * plain numbers whose x values lie in 0 to 1. Anything else is an empty
+	 * string, which means "use the site easing".
+	 *
+	 * @param mixed $value Submitted or stored value.
+	 * @return string The named easing, a normalised cubic-bezier literal, or ''.
+	 */
+	public static function sanitise_transition_easing( $value ): string {
+		if ( ! \is_string( $value ) ) {
+			return '';
+		}
+
+		$value = \trim( $value );
+
+		if ( '' !== $value && \function_exists( 'sgs_motion_easing_values' )
+			&& 'custom' !== $value && \in_array( $value, \sgs_motion_easing_values(), true ) ) {
+			return $value;
+		}
+
+		$number = '(-?(?:\d+\.?\d*|\.\d+))';
+		if ( ! \preg_match( '/^cubic-bezier\(\s*' . $number . '\s*,\s*' . $number . '\s*,\s*' . $number . '\s*,\s*' . $number . '\s*\)\z/', $value, $m ) ) {
+			return '';
+		}
+
+		if ( (float) $m[1] < 0 || (float) $m[1] > 1 || (float) $m[3] < 0 || (float) $m[3] > 1 ) {
+			return '';
+		}
+
+		return \sprintf( 'cubic-bezier(%s, %s, %s, %s)', $m[1], $m[2], $m[3], $m[4] );
+	}
+
+	/**
+	 * The CSS easing function for a stored custom easing, or '' for none.
+	 *
+	 * @param string $easing A value from sanitise_transition_easing().
+	 * @return string
+	 */
+	public static function transition_easing_css( string $easing ): string {
+		if ( '' === $easing ) {
+			return '';
+		}
+
+		if ( 0 === \strpos( $easing, 'cubic-bezier(' ) ) {
+			return $easing;
+		}
+
+		return \function_exists( 'sgs_motion_easing_css' ) ? \sgs_motion_easing_css( $easing ) : '';
+	}
+
+	/**
+	 * The inline CSS that plays a page transition.
+	 *
+	 * A custom duration or easing always wins over the style's own value.
+	 *
+	 * @param string $style    A TRANSITION_STYLES key.
+	 * @param int    $duration Custom duration in ms, 0 for the style's own.
+	 * @param string $easing   Custom easing from sanitise_transition_easing(), '' for the site easing.
+	 * @return string
+	 */
+	public static function transition_css( string $style, int $duration, string $easing ): string {
+		if ( ! isset( self::TRANSITION_STYLES[ $style ] ) ) {
+			return '';
+		}
+
+		$ms   = $duration > 0 ? $duration : self::TRANSITION_STYLES[ $style ];
+		$ease = self::transition_easing_css( $easing );
+		if ( '' === $ease ) {
+			$ease = 'var(--wp--custom--easing--default, cubic-bezier(0.4,0,0.2,1))';
+		}
+
+		return \sprintf(
+			'::view-transition-old(root){animation:%1$dms %3$s both sgs-vt-%2$s-out}'
+				. '::view-transition-new(root){animation:%1$dms %3$s both sgs-vt-%2$s-in}',
+			$ms,
+			$style,
+			$ease
+		);
+	}
+
+	/**
 	 * Spec §6.1 `plugin_set` vocabulary => the script module that provides it.
 	 *
 	 * The DB stores GSAP's own plugin names because that is what the spec's
@@ -668,7 +778,7 @@ class SGS_Motion_Registry {
 	 * before a key existed (or hand-edited via WP-CLI) must not be able to put
 	 * an out-of-range value into the frontend.
 	 *
-	 * @return array{smooth_scroll: bool, smooth_scroll_strength: int, page_transitions: bool, page_transition_style: string, page_transition_templates: array<string, string>}
+	 * @return array{smooth_scroll: bool, smooth_scroll_strength: int, page_transitions: bool, page_transition_style: string, page_transition_duration: int, page_transition_easing: string, page_transition_templates: array<string, string>}
 	 */
 	public static function settings(): array {
 		$raw = \get_option( self::SETTINGS_OPTION, array() );
@@ -706,6 +816,9 @@ class SGS_Motion_Registry {
 			$style = 'fade';
 		}
 
+		$transition_duration = self::sanitise_transition_duration( $raw['page_transition_duration'] ?? 0 );
+		$transition_easing   = self::sanitise_transition_easing( $raw['page_transition_easing'] ?? '' );
+
 		/*
 		 * FR-38-29 — which palette slug the surface treatments derive every
 		 * colour from. It reaches a CSS custom-property NAME
@@ -736,6 +849,8 @@ class SGS_Motion_Registry {
 			'smooth_touch_strength'     => $touch_strength,
 			'page_transitions'          => ! empty( $raw['page_transitions'] ),
 			'page_transition_style'     => $style,
+			'page_transition_duration'  => $transition_duration,
+			'page_transition_easing'    => $transition_easing,
 			'page_transition_templates' => self::sanitise_template_styles(
 				$raw['page_transition_templates'] ?? array()
 			),
@@ -899,15 +1014,12 @@ class SGS_Motion_Registry {
 		 * full opacity for the frame between the animation ending and the
 		 * snapshot being discarded.
 		 */
-		$duration = self::TRANSITION_STYLES[ $style ];
-
 		\wp_add_inline_style(
 			'sgs-view-transitions',
-			\sprintf(
-				'::view-transition-old(root){animation:%1$dms var(--wp--custom--easing--default, cubic-bezier(0.4,0,0.2,1)) both sgs-vt-%2$s-out}'
-					. '::view-transition-new(root){animation:%1$dms var(--wp--custom--easing--default, cubic-bezier(0.4,0,0.2,1)) both sgs-vt-%2$s-in}',
-				$duration,
-				$style
+			self::transition_css(
+				$style,
+				(int) $settings['page_transition_duration'],
+				(string) $settings['page_transition_easing']
 			)
 		);
 	}
