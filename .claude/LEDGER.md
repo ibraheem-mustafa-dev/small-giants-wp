@@ -40,7 +40,7 @@ last_updated: 2026-10-22
 
 **Container band layers and the nav caret** (Bean, 2026-10-22): every block has one Padding and one Margin; on every block with `contentWidth` its `max-width` and `padding` paint the content band and `margin` the outer element (`contentBandPadding` and `contentBandMargin` removed, gate `check-container-band-layers`), and a nav submenu item draws its caret inside the item with a 44px tap target. All four test sites run it (deploy marker `d743fc29f`) and `wp sgs band-padding-migrate` has folded every saved post. Next: wave 3 of `plans/2026-10-21-handoff-readers.md` (its Status lists the items in order).
 
-**Resume from:** `plans/2026-10-21-handoff-readers.md`, Status: Track T's next wave item in the handoff readers session, Track F from `.claude/prompts/2026-10-22-track-f-framework.md`, then Stage S.
+**Resume from:** `plans/2026-10-21-handoff-readers.md`, Status, Next. Track T (the handoff readers session): T1 in progress. Track F: not started; it starts from `.claude/prompts/2026-10-22-track-f-framework.md`. The tracks signal each other through `.claude/queue.md`.
 
 ### Front F: Eye Care Birmingham, built by hand (D1149)
 
