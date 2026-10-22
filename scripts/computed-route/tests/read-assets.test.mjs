@@ -8,7 +8,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { readAssets, svgFacts, rasterSize, refPath } from '../lib/read-assets.mjs';
-import { joinFacts, countsOf } from '../lib/fact-record.mjs';
+import { joinFacts, countsOf, FACTS_SCHEMA_VERSION } from '../lib/fact-record.mjs';
 import { sourcesOf, assertCurrent, StaleRecordError } from '../lib/freshness.mjs';
 
 const png = ( w, h ) => {
@@ -131,7 +131,7 @@ test( 'MUST FAIL (join): joinFacts puts assets and alt evidence on each element,
 	const tpl = { ...template, elements: Object.fromEntries( Object.entries( template.elements ).map( ( [ k, v ] ) => [ k, { ...v, parentChain: [], fingerprint: { tag: v.tag, parentTags: [], textHash: '' } } ] ) ) };
 	const empty = { gaps: [], byElement: {}, surfaces: {}, byTemplate: new Map(), conditions: {}, holes: {}, mounted: {}, records: 0, unjoined: [] };
 	const joined = joinFacts( { client: 'fixture', sources: { files: {}, route: { commit: null } }, widths: [ 375 ], template: tpl, logic: empty, surfaces: empty, animations: empty, assets, instances: empty } );
-	assert.equal( joined.schema, '3' );
+	assert.equal( joined.schema, FACTS_SCHEMA_VERSION );
 	assert.deepEqual( joined.elements[ 'Page/0' ].assets.map( ( a ) => a.path ), [ 'assets/photo.png' ] );
 	assert.equal( joined.elements[ 'Page/2' ].alt.placeholder, 'Team photo' );
 	assert.deepEqual( joined.elements[ 'Page/4' ].assets, [] );

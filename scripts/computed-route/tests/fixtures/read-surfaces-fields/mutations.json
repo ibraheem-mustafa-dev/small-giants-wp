@@ -1,0 +1,12 @@
+[
+ { "file": "lib/read-surfaces.mjs", "find": "in_sc_if: inIf( st )", "replace": "in_sc_if: true", "why": "every state marked as listing the element" },
+ { "file": "lib/read-surfaces.mjs", "find": "otherStates: s.states.filter( ( st ) => ! inIf( st ) ).map( stateOf ),", "replace": "otherStates: [],", "why": "states without the element dropped" },
+ { "file": "lib/read-surfaces.mjs", "find": "name: st.name, state_keys: st.state_keys, in_sc_if", "replace": "name: st.name, state_keys: {}, in_sc_if", "why": "state_keys dropped" },
+ { "file": "lib/read-surfaces.mjs", "find": "animation_ids: idsOf( s.animation_ids ) } ) )", "replace": "animation_ids: [] } ) )", "why": "animation_ids dropped" },
+ { "file": "lib/read-surfaces.mjs", "find": "closed_by: r.closed_by ?? null,", "replace": "closed_by: null,", "why": "closed_by dropped" },
+ { "file": "lib/read-surfaces.mjs", "find": "time_dependent: r.time_dependent ?? null, unresolved", "replace": "time_dependent: null, unresolved", "why": "time_dependent dropped" },
+ { "file": "lib/read-surfaces.mjs", "find": "unresolved: r.unresolved ?? null };", "replace": "unresolved: null };", "why": "unresolved dropped" },
+ { "file": "lib/read-surfaces.mjs", "find": "closed_by: s.closed_by, time_dependent: s.time_dependent, unresolved: s.unresolved,", "replace": "", "why": "record fields not on the membership" },
+ { "file": "lib/read-surfaces.mjs", "find": "records.filter( ( r ) => Array.isArray( r.blocks ) )", "replace": "records.filter( ( r ) => false )", "why": "page blocks dropped" },
+ { "file": "lib/read-surfaces.mjs", "find": "route: r.route ?? null, blocks: r.blocks.map( String )", "replace": "route: null, blocks: r.blocks.map( String )", "why": "page route dropped" }
+]
