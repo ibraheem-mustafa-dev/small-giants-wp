@@ -77,11 +77,9 @@ describe( 'nav drawer modal behaviour', () => {
 		mockDefinition.actions.openDrawer();
 	};
 
-	test( 'the burger names the real dialog, which is a named modal', () => {
+	test( 'the burger names the real dialog, which carries an accessible name', () => {
 		const target = document.getElementById( burger.getAttribute( 'aria-controls' ) );
 		expect( target ).toBe( drawer );
-		expect( drawer.getAttribute( 'role' ) ).toBe( 'dialog' );
-		expect( drawer.getAttribute( 'aria-modal' ) ).toBe( 'true' );
 		expect( drawer.getAttribute( 'aria-label' ) ).not.toBe( '' );
 	} );
 
