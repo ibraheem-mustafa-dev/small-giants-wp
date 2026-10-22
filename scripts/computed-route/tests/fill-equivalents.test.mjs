@@ -213,6 +213,15 @@ test( 'MUST FAIL: an element of intrinsic ratio gets max-height at every width, 
 	assert.deepEqual( x.calls.apply, [ { at: 0, prop: 'height', how: 'equivalent:self', slot: '' } ] );
 } );
 
+test( 'MUST FAIL: an intrinsic-ratio row offers the slots where the block\'s own max-height setting paints (its image), after the element\'s own', () => {
+	const st = ratioState( { intrinsic: { ratio: RATIO } } );
+	const img = '.sgs-responsive-logo__link > .sgs-responsive-logo__picture > .sgs-responsive-logo__image';
+	st.calFor = () => ( { settings: { maxHeight: { property: 'max-height', slot: img, slots: [ img ], state: null } } } );
+	const x = hooks();
+	fillEquivalent( st, st.nodes[ 0 ], { slot: '', id: '0:' }, 'height', { 768: '56px' }, { ...x.h, rendered: HEIGHTS } );
+	assert.deepEqual( x.calls.resolve[ 0 ].slots, [ '', img ], 'the image slot is offered, so a setting calibrated on the image is tied' );
+} );
+
 test( 'MUST FAIL: an element with no intrinsic ratio, or a stretched one, never gets max-height from a height', () => {
 	const plain = ratioState( { intrinsic: null } );
 	const a = hooks();

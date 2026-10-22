@@ -635,7 +635,7 @@ Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.
 - `renderedNothingReason(block, snapshot)` → why a block's render returns early on this site (its gating global custom setting is absent), so the run names it instead of waiting out a selector that will never appear.
 
 ### `lib/deploy-hash.mjs` (ssh)
-- `REMOTE_PLUGIN`: the plugin folder on the host per site. `md5(s)`.
+- `hostedRoot(site, repo)` → the WordPress root of a hosted test site relative to the SSH home, from `deploy_common.py` TARGETS (read as text); `remotePlugin(site, repo)` → its plugin folder, so every hosted target (eye-care-test, sandybrown, indus-test, mamas-test) is hashed without a list of its own. `md5(s)`.
 - `EDITOR_ONLY`: the editor bundles left out of the key (the same commit built in another folder gives a different `index.js`).
 - `BUNDLE_TEXT`, `normaliseBundle(rel, text)`: view bundles and asset files with webpack's folder-dependent module numbers and the asset version blanked (the same commit built in two folders numbers its modules differently).
 - `TEXT_FILE`, `lfText(buf)`: local text files read with LF endings (the deploy builds from a clean LF checkout; a working copy may carry CRLF).
@@ -662,7 +662,7 @@ A whole-string token becomes the id as a number (`:text` keeps it a string); a t
 - `existencePhp(checks)` → read-only PHP reporting per role true or why not; `checkRefsExist(refs, roles, runPhp)` → `{ role: true | reason }` (a site that cannot be asked gives a reason for every role).
 - `refsProblem(fixture, refs, exists, site)` → why the block cannot be calibrated on the target, or ''.
 - `refGate(blocks, fixtures, refs, exists, site)` → `{ ready: { block: resolved fixture }, blocked: [ { block, error } ] }`.
-- `hostedRoot(site, repo)` → the WordPress root relative to the SSH home, from `build-deploy.py` TARGETS (read as text).
+- `hostedRoot(site, repo)`: re-exported from `lib/deploy-hash.mjs`.
 - `wpCommand(target, site, repo)` → `(args, input) => output` running `wp` in a WSL mirror or over SSH as user Claude; `wpEvalRunner(target, site, repo)` → the `runPhp` for `checkRefsExist` (`wp eval-file -`, PHP on stdin).
 
 ### `lib/fixture-refs.mjs`
@@ -1040,7 +1040,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `ratioOf(raw)` → the width over height a declared `aspect-ratio` states (`3741 / 848`, `auto 3741 / 848`, `1.5`), or null.
 - `intrinsicRatio(widths, snapOf, declaredOf)` → whether the element states a ratio (the page-read `intrinsic.ratio` of its image or SVG, else its declared `aspect-ratio`) and its measured box keeps it within `RATIO_TOL` at every width.
 - `CONDITIONS`: the conditions `fillEquivalent` evaluates (`every-child-same`, `render-matches`, `intrinsic-ratio`); a row naming another is skipped and named, never applied.
-- `fillEquivalent(st, rec, target, prop, draft, hooks)` → after a `no-setting` gap, the write through a setting for another property on the element (`self`) or its parent (`parent`, once per parent, a later sibling `held`) with the row's `condition`, `{ status: 'gap', gap: 'unknown-condition' }` when only rows with an unknown condition matched, or null; writes carry `how: 'equivalent:<hop>'`. `hooks.rendered` is the property's rendered value per width before a used-value property was cut to its plain declared widths; an `intrinsic-ratio` row writes from it.
+- `fillEquivalent(st, rec, target, prop, draft, hooks)` → after a `no-setting` gap, the write through a setting for another property on the element (`self`) or its parent (`parent`, once per parent, a later sibling `held`) with the row's `condition`, `{ status: 'gap', gap: 'unknown-condition' }` when only rows with an unknown condition matched, or null; writes carry `how: 'equivalent:<hop>'`. `hooks.rendered` is the property's rendered value per width before a used-value property was cut to its plain declared widths; an `intrinsic-ratio` row writes from it. An `intrinsic-ratio` row also offers the slots where the block's own setting for that property paints (a logo block's image), after the element's own slot.
 
 ### `lib/fill-resolve.mjs`
 - `valueText(draft)` → a readable value for a per-width map.

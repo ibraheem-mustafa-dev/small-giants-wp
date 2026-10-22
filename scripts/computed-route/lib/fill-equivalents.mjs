@@ -116,7 +116,9 @@ export function fillEquivalent( st, rec, target, prop, draft, h ) {
 			continue;
 		}
 		// The parent's setting paints the element that lays out its children (sgs/container's alignItems: its inner).
-		const slots = onParent ? [ ...new Set( [ ...layoutSlots( cal, row.setting_property ), '' ] ) ] : [ target.slot ];
+		// An element of intrinsic ratio is drawn by the block's image: the setting may paint that image inside the block.
+		const ownSlots = 'intrinsic-ratio' === row.condition ? [ target.slot, ...layoutSlots( cal, row.setting_property ) ] : [ target.slot ];
+		const slots = onParent ? [ ...new Set( [ ...layoutSlots( cal, row.setting_property ), '' ] ) ] : [ ...new Set( ownSlots ) ];
 		const res = resolve( { node: st.flat[ at.index ], block: at.name, prop: row.setting_property, draft: forRow, baseline: h.baselineFn( st, at, cal, row.setting_property ), slots, calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx: {}, siblings: {} } );
 		if ( 'gap' === res.status ) {
 			continue;

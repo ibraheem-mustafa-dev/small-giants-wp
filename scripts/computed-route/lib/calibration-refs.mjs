@@ -10,7 +10,9 @@
 import fs from 'fs';
 import path from 'path';
 import { execFileSync } from 'child_process';
-import { SSH } from './deploy-hash.mjs';
+import { SSH, hostedRoot } from './deploy-hash.mjs';
+
+export { hostedRoot };
 
 // The token vocabulary: each role and the object kind its id must name on the site.
 export const ROLES = {
@@ -179,17 +181,6 @@ export function refGate( blocks, fixtures, refs, exists, site ) {
 		why ? blocked.push( { block: b, error: why } ) : ( ready[ b ] = resolveFixture( fixtures[ b ], refs ).fixture );
 	}
 	return { ready, blocked };
-}
-
-// The WordPress root of a hosted test site, relative to the SSH home: deploy_common.py's TARGETS[<site>].wp_content
-// without "/wp-content" (read as text; the route imports nothing from the converter's scripts).
-export function hostedRoot( site, repo ) {
-	const src = fs.readFileSync( path.join( repo, 'plugins', 'sgs-blocks', 'scripts', 'deploy_common.py' ), 'utf8' );
-	const m = src.match( new RegExp( `"${ site.replace( /[-]/g, '\\-' ) }"\\s*:\\s*\\{[^}]*?"wp_content"\\s*:\\s*"([^"]+)"` ) );
-	if ( ! m ) {
-		throw new Error( `${ site } has no wp_content in deploy_common.py TARGETS` );
-	}
-	return m[ 1 ].replace( /\/wp-content\/?$/, '' );
 }
 
 // How to run `wp` on a target: a WSL mirror (its pluginDir names the distro and root) or a hosted site over SSH.

@@ -4,14 +4,25 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { execFileSync } from 'child_process';
+import { fileURLToPath } from 'url';
 
 // The SSH arguments for the shared host (every hosted test site lives on it).
 export const SSH = [ '-i', path.join( process.env.USERPROFILE || process.env.HOME, '.ssh', 'id_ed25519' ), '-p', '65002', '-o', 'ConnectTimeout=20', 'u945238940@141.136.39.73' ];
-// Remote plugin roots per site (the deploy script's TARGETS hold the same paths).
-export const REMOTE_PLUGIN = {
-	'eye-care-test': 'domains/darkcyan-grouse-898606.hostingersite.com/public_html/wp-content/plugins/sgs-blocks',
-	sandybrown: 'domains/sandybrown-nightingale-600381.hostingersite.com/public_html/wp-content/plugins/sgs-blocks',
-};
+const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
+
+// The WordPress root of a hosted test site, relative to the SSH home: deploy_common.py's TARGETS[<site>].wp_content
+// without "/wp-content" (read as text; the route imports nothing from the converter's scripts).
+export function hostedRoot( site, repo = REPO ) {
+	const src = fs.readFileSync( path.join( repo, 'plugins', 'sgs-blocks', 'scripts', 'deploy_common.py' ), 'utf8' );
+	const m = src.match( new RegExp( `"${ site.replace( /[-]/g, '\\-' ) }"\\s*:\\s*\\{[^}]*?"wp_content"\\s*:\\s*"([^"]+)"` ) );
+	if ( ! m ) {
+		throw new Error( `${ site } has no wp_content in deploy_common.py TARGETS` );
+	}
+	return m[ 1 ].replace( /\/wp-content\/?$/, '' );
+}
+
+// The plugin folder on the host for a hosted test site, relative to the SSH home.
+export const remotePlugin = ( site, repo = REPO ) => `${ hostedRoot( site, repo ) }/wp-content/plugins/sgs-blocks`;
 
 export const md5 = ( s ) => crypto.createHash( 'md5' ).update( s ).digest( 'hex' );
 
@@ -62,7 +73,7 @@ export function localBlockHash( dir ) {
 }
 
 export function remoteBlockHash( site, short ) {
-	const dir = `${ REMOTE_PLUGIN[ site ] }/build/blocks/${ short }`;
+	const dir = `${ remotePlugin( site ) }/build/blocks/${ short }`;
 	const listed = execFileSync( 'ssh', [ ...SSH, `cd ${ dir } && find . -type f -exec md5sum {} +` ], { encoding: 'utf8', timeout: 60000 } ).trim().split( '\n' ).map( ( l ) => l.trim() );
 	const lines = listed.filter( ( l ) => ! BUNDLE_TEXT.test( l.slice( 34 ) ) );
 	for ( const rel of listed.map( ( l ) => l.slice( 34 ) ).filter( ( r ) => BUNDLE_TEXT.test( r ) && ! EDITOR_ONLY.test( r ) ) ) {
