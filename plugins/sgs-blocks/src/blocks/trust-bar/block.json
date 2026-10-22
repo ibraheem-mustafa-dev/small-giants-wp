@@ -325,7 +325,7 @@
 					"clusters": [
 						"layout"
 					],
-					"prefix": "",
+					"prefix": "contentBand",
 					"attrMap": {
 						"css:max-width": "contentWidth",
 						"css:padding": "padding"
