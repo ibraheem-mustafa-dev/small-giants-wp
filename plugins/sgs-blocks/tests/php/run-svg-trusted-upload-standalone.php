@@ -256,12 +256,17 @@ ok( false !== strpos( $both, 'xlink:href="#inst4-a"' ) && false !== strpos( $bot
 $content = sgs_svg_scope_instance( str_replace( 'viewBox', 'id="content" viewBox', $svg( '<style>*{display:none}</style><script>x()</script>' ) ), 'inst5' );
 ok( false !== strpos( $content, ':where([data-sgs-svg="inst5"]) *{display:none}' ) && false === strpos( $content, ':where(#content)' ) && false !== strpos( $content, 'id="content"' ), 'MUST FAIL: a scripted SVG\'s style is not scoped by its own id', $content );
 
-// Review fix 6: wp_upload_bits sanitises an SVG, never trusts it, and refuses .svgz.
+// Review fix 6: wp_upload_bits() writes the original bits whatever a filter returns, so an SVG that would need
+// cleaning is refused there, never trusted; a clean SVG passes unchanged; .svgz and gzipped .svg are refused.
 $bits = sgs_svg_upload_bits( array( 'name' => 'x.svg', 'bits' => $scripted, 'time' => null ) );
-ok( is_array( $bits ) && false === stripos( $bits['bits'], 'script' ), 'MUST FAIL: wp_upload_bits strips an SVG\'s script even for an unfiltered_html user', is_array( $bits ) ? $bits['bits'] : (string) $bits );
+ok( is_string( $bits ), 'MUST FAIL: wp_upload_bits refuses a scripted SVG even for an unfiltered_html user (core would write it raw)' );
+$clean = sgs_svg_sanitise_document( $svg( '<rect width="1" height="1"/>' ) )['svg'];
+$bits_pass = sgs_svg_upload_bits( array( 'name' => 'x.svg', 'bits' => $clean, 'time' => null ) );
+ok( is_array( $bits_pass ) && $clean === $bits_pass['bits'], 'wp_upload_bits passes an SVG the sanitiser leaves unchanged' );
 ok( is_string( sgs_svg_upload_bits( array( 'name' => 'x.svg', 'bits' => $svg( '<path onclick="x()"/>' ), 'time' => null ) ) ), 'MUST FAIL: wp_upload_bits refuses a refused SVG with a message' );
 ok( is_string( sgs_svg_upload_bits( array( 'name' => 'x.svgz', 'bits' => $gz, 'time' => null ) ) ), 'MUST FAIL: wp_upload_bits refuses .svgz' );
-ok( is_string( sgs_svg_upload_bits( array( 'name' => 'x.svg', 'bits' => $gz, 'time' => null ) ) ), 'MUST FAIL: wp_upload_bits refuses a gzipped .svg' );
+$gzmsg = sgs_svg_upload_bits( array( 'name' => 'x.svg', 'bits' => $gz, 'time' => null ) );
+ok( is_string( $gzmsg ) && false !== stripos( $gzmsg, 'Compressed' ), 'MUST FAIL: wp_upload_bits refuses a gzipped .svg as compressed (the gzip magic matches)' );
 ok( is_array( sgs_svg_upload_bits( array( 'name' => 'x.png', 'bits' => 'x', 'time' => null ) ) ), 'wp_upload_bits leaves a non-SVG alone' );
 
 // Review fix 7: the guard re-installs when the block in the file no longer matches, not only on a version change.

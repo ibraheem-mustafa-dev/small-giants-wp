@@ -126,11 +126,12 @@ add_filter( 'wp_handle_upload_prefilter', 'sgs_svg_upload_prefilter' );
 add_filter( 'wp_handle_sideload_prefilter', 'sgs_svg_upload_prefilter' );
 
 /**
- * Sanitise an SVG written through wp_upload_bits() (XML-RPC uploads), which never runs the upload prefilters. Never
- * trusted: there is no person-upload context here. A refused file makes wp_upload_bits() return the message.
+ * Check an SVG written through wp_upload_bits() (XML-RPC uploads), which never runs the upload prefilters. Never
+ * trusted: there is no person-upload context here. wp_upload_bits() ignores returned bits, so a file passes only when
+ * the sanitiser would leave it unchanged; any other file makes wp_upload_bits() return the refusal message.
  *
  * @param array $args Array with 'name', 'bits' and 'time'.
- * @return array|string The args with sanitised bits, or the refusal message.
+ * @return array|string The args unchanged, or the refusal message.
  */
 function sgs_svg_upload_bits( $args ) {
 	if ( ! is_array( $args ) ) {
@@ -144,7 +145,7 @@ function sgs_svg_upload_bits( $args ) {
 		return $args;
 	}
 	$bits = (string) ( $args['bits'] ?? '' );
-	if ( 0 === strncmp( $bits, "", 2 ) ) {
+	if ( 0 === strncmp( $bits, "\x1f\x8b", 2 ) ) {
 		return __( 'Compressed SVG files (.svgz or gzipped) are not accepted. Upload a plain .svg file.', 'sgs-blocks' );
 	}
 	$result = sgs_svg_sanitise_document( $bits );
@@ -152,7 +153,11 @@ function sgs_svg_upload_bits( $args ) {
 		/* translators: %s: why the file was refused, e.g. "holds a CSS @import". */
 		return sprintf( __( 'This SVG was not uploaded because it %s.', 'sgs-blocks' ), esc_html( $result['error'] ) );
 	}
-	$args['bits'] = $result['svg'];
+	// wp_upload_bits() writes the original bits whatever a filter returns, so a file that would need cleaning is
+	// refused here rather than cleaned.
+	if ( $result['svg'] !== $bits ) {
+		return __( 'This SVG holds content that is removed on upload (such as a script). Upload it through the media library instead.', 'sgs-blocks' );
+	}
 	return $args;
 }
 add_filter( 'wp_upload_bits', 'sgs_svg_upload_bits' );
