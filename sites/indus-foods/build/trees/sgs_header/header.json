@@ -119,6 +119,7 @@
                   "className": "cr-ref-header-4",
                   "url": "tel:01217714330",
                   "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\"><path d=\"M5 3h2.6l1.3 3.6-1.8 1.2a9 9 0 0 0 5 5l1.2-1.8 3.7 1.3V15a2 2 0 0 1-2 2A13.5 13.5 0 0 1 3 5a2 2 0 0 1 2-2z\" stroke=\"currentColor\" stroke-width=\"1.7px\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"></path></svg>",
+                  "iconPosition": "before",
                   "fontSize": {
                     "desktop": 15
                   },
@@ -174,6 +175,7 @@
                   "labelFromSiteInfo": true,
                   "className": "cr-ref-header-5",
                   "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\"><rect x=\"2.5\" y=\"4\" width=\"15\" height=\"12\" rx=\"2\" stroke=\"currentColor\" stroke-width=\"1.7px\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"></rect><polyline points=\"3.5,5.5 10,10.5 16.5,5.5\" stroke=\"currentColor\" stroke-width=\"1.7px\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"></polyline></svg>",
+                  "iconPosition": "before",
                   "fontSize": {
                     "desktop": 15
                   },
@@ -439,7 +441,20 @@
                               "duration": "token:duration.fast",
                               "easing": "cubic-bezier(.2,.8,.2,1)"
                             }
-                          }
+                          },
+                          "effects": [
+                            {
+                              "id": "magnet-1",
+                              "effect": "magnet",
+                              "trigger": "hover",
+                              "values": {
+                                "engage": "over",
+                                "pullModel": "normalised",
+                                "maxPullX": 10,
+                                "maxPullY": 8
+                              }
+                            }
+                          ]
                         }
                       }
                     }
@@ -488,7 +503,9 @@
                 "desktop": "42px"
               },
               "itemMotionEasing": "ease",
-              "itemColourCurrent": "primary"
+              "itemColourCurrent": "primary",
+              "itemMagnetEnabled": true,
+              "itemMagnetStrength": 0.14
             },
             "innerBlocks": []
           },
@@ -540,7 +557,20 @@
                           "duration": "token:duration.fast",
                           "easing": "cubic-bezier(.2,.8,.2,1)"
                         }
-                      }
+                      },
+                      "effects": [
+                        {
+                          "id": "magnet-1",
+                          "effect": "magnet",
+                          "trigger": "hover",
+                          "values": {
+                            "engage": "over",
+                            "pullModel": "normalised",
+                            "maxPullX": 10,
+                            "maxPullY": 8
+                          }
+                        }
+                      ]
                     }
                   }
                 }
