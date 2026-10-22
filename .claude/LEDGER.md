@@ -79,7 +79,7 @@ Governing documents: fix register `plans/2026-10-02-eye-care-fix-register.md` (w
 - Forms and choice flows created by the cloning system, and their analytics: `plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md`.
 - Mama's Munches clone, after the Indus sign-off: `plans/2026-10-22-mamas-delivery.md`.
 - Snooza product configurator, planned and not started: `plans/2026-08-03-snooza-configurator-build-plan.md`.
-- Pipeline tooling bug-hunt follow-ups (unscanned slices, multi-button scraper and its failing test, decorative-image roster): `plans/2026-10-22-pipeline-tooling-bughunt-followups.md`.
+- Pipeline tooling bug-hunt follow-ups (all fixed; open: the next reseed picks up the decorative-image roster and core block type changes): `plans/2026-10-22-pipeline-tooling-bughunt-followups.md`.
 - Gate 3C item 4's G8 gap (lamalama corner pin): `plans/2026-10-01-header-nav-thread-plan.md` §7.
 
 ## Live state
