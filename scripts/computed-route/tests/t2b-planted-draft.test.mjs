@@ -5,13 +5,13 @@
 // raised as an unmapped row instead; (3) raises one `effect` review row per recognised effect. The draft is read through
 // the real usage read (lib/intake-usage.mjs::draftUsage) and judged against the real coverage map (data/clone-coverage.json)
 // by intake's missing-features rule (lib/intake-missing.mjs::coverageMissing), as tests/motion-planted-draft.test.mjs does.
-import test from 'node:test';
+import test, { describe } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
 import { allEntries, readInventoryFile } from '../lib/capabilities.mjs';
 import { draftUsage } from '../lib/intake-usage.mjs';
 import { coverageMissing } from '../lib/intake-missing.mjs';
-import { loadCoverage, statusOf } from '../lib/clone-coverage.mjs';
+import { loadCoverage, statusOf, declaredWrites } from '../lib/clone-coverage.mjs';
 import { openDb } from '../lib/db.mjs';
 import { motionDb } from '../lib/motion-db.mjs';
 import { loadMotionSchema } from '../lib/motion-schema.mjs';
@@ -20,6 +20,7 @@ import { motionWrites } from '../lib/fill-motion.mjs';
 import { reviewRows, MARKS, ROW_TYPES } from '../lib/intake-review.mjs';
 import { SPEC_FILE, DATA_DIR } from '../lib/intake-spec-sync.mjs';
 import { motionFixtureDb } from './fixtures/motion-fixture-db.mjs';
+import { allowedSvg } from '../lib/fill-icon.mjs';
 
 const KNOWN = new Set( allEntries( readInventoryFile() ).map( ( e ) => e.id ) );
 const CSS = [
@@ -180,3 +181,65 @@ test( 'MUST FAIL: each planted settings behaviour is written, and with its setti
 		assert.match( nulled.out.unmapped.map( ( u ) => u.reason ).join( '\n' ), new RegExp( `${ block } declares no ` ), `${ record.id } is raised again` );
 	}
 } );
+
+// ---- Track T wave T2b, the media, icon, safe-area and styling writers (U5, U6, U4b, U8) ----
+// A planted draft that holds an image in a figure, a map iframe, an inline SVG icon, the drawer foot's env() padding and a
+// scroller's own scrollbar raises no seen-but-unsupported row for the capabilities this wave closes, and raises the row
+// again with that one entry's write reference nulled.
+describe( 'T2b media, icon, safe-area and scrollbar writers', () => {
+	const MEDIA_CSS = '.foot{padding:14px 20px calc(16px + env(safe-area-inset-bottom))}.scroll::-webkit-scrollbar{width:8px}.scroll::-webkit-scrollbar-track{background:transparent}.scroll::-webkit-scrollbar-thumb{background:red}';
+	const MEDIA_DRAFT = [ { component: 'Page', stamped: { elements: [
+		{ n: '1', tag: 'style', attrs: [], body: MEDIA_CSS },
+		{ n: '2', tag: 'figure', attrs: [] },
+		{ n: '3', tag: 'img', attrs: [ [ 'src', 'assets/a.png' ], [ 'alt', 'A loaf' ] ] },
+		{ n: '4', tag: 'figcaption', attrs: [] },
+		{ n: '5', tag: 'iframe', attrs: [ [ 'src', 'https://www.google.com/maps?q=1+High+Street&z=14&output=embed' ] ] },
+		{ n: '6', tag: 'svg', svg: 'svg', attrs: [ [ 'viewBox', '0 0 24 24' ] ] },
+		{ n: '7', tag: 'path', svg: 'path', attrs: [ [ 'd', 'M0 0h24' ] ] },
+		{ n: '8', tag: 'circle', svg: 'circle', attrs: [ [ 'cx', '12' ] ] },
+		{ n: '9', tag: 'g', svg: 'g', attrs: [] },
+	] } } ];
+	const MEDIA_IDS = [ 'html:img', 'html-attr:img.alt', 'html-attr:img.src', 'html:figure', 'html:figcaption', 'html:iframe', 'html-attr:iframe.src', 'css-function:env', 'css-pseudo-element:-webkit-scrollbar', 'css-pseudo-element:-webkit-scrollbar-thumb', 'css-pseudo-element:-webkit-scrollbar-track' ];
+	const mediaRows = ( coverage ) => coverageMissing( { census: { rows: [] }, coverage, usage: draftUsage( { sources: MEDIA_DRAFT, known: KNOWN } ).usage } );
+
+	test( 'the planted draft uses each capability this wave closes', () => {
+		const usage = draftUsage( { sources: MEDIA_DRAFT, known: KNOWN } ).usage;
+		for ( const id of MEDIA_IDS ) {
+			assert.ok( usage.has( id ), `${ id } is read from the draft` );
+		}
+	} );
+
+	test( 'MUST FAIL: the media, map, safe-area and scrollbar entries raise no row while covered, and raise it again with that one write reference nulled', () => {
+		const coverage = loadCoverage();
+		const raised = new Set( mediaRows( coverage ).map( ( r ) => r.construct ) );
+		for ( const id of MEDIA_IDS ) {
+			assert.equal( statusOf( coverage.entries[ id ] ), 'covered', id );
+			assert.ok( declaredWrites()[ coverage.entries[ id ].write.split( '#' )[ 0 ] ].includes( id ), `the writer declares ${ id }` );
+			assert.ok( ! raised.has( id ), `${ id } raises no row while it is covered` );
+			const nulled = { ...coverage, entries: { ...coverage.entries, [ id ]: { ...coverage.entries[ id ], write: null } } };
+			const row = mediaRows( nulled ).find( ( r ) => r.construct === id );
+			assert.ok( row, `${ id } raises its row again with its write ref nulled` );
+		}
+	} );
+
+	test( 'MUST FAIL: every inline SVG tag the block\'s sanitiser keeps names the one subtree writer, and is a gap with that write ref nulled', () => {
+		const coverage = loadCoverage();
+		const kept = Object.keys( allowedSvg() );
+		const ids = Object.keys( coverage.entries ).filter( ( id ) => id.startsWith( 'svg:' ) && kept.includes( id.slice( 4 ).toLowerCase() ) && ! coverage.entries[ id ].excluded && 'svg:animate' !== id );
+		assert.ok( ids.length >= 30, `${ ids.length } svg entries` );
+		for ( const id of ids ) {
+			const e = coverage.entries[ id ];
+			assert.match( e.write, /lib\/fill-icon\.mjs#iconDecisions$/, id );
+			assert.ok( declaredWrites()[ 'scripts/computed-route/lib/fill-icon.mjs' ].includes( id ), `the writer declares ${ id }` );
+			assert.equal( statusOf( e ), 'covered', id );
+			assert.equal( statusOf( { ...e, write: null } ), 'gap', id );
+		}
+		const usage = draftUsage( { sources: MEDIA_DRAFT, known: KNOWN } ).usage;
+		for ( const id of [ 'svg:svg', 'svg:path', 'svg:circle', 'svg:g' ] ) {
+			assert.ok( usage.has( id ), `${ id } is read from the draft` );
+			const nulled = { ...coverage, entries: { ...coverage.entries, [ id ]: { ...coverage.entries[ id ], write: null } } };
+			assert.ok( mediaRows( nulled ).some( ( r ) => r.construct === id ), `${ id } raises its row again with its write ref nulled` );
+		}
+	} );
+} );
+

@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
-import { mediaDecisions, imageSlots, draftPath, paintedImageCheck } from '../lib/fill-media.mjs';
+import { mediaDecisions, imageSlots, draftPath, paintedImageCheck, factImage, nestedImage } from '../lib/fill-media.mjs';
 
 const MAP = { sites: { 'acme-test': { files: [
 	{ asset: 'sites/acme/handoff/assets/hero.png', id: 101, url: 'https://acme.test/wp-content/uploads/hero.png' },
@@ -68,7 +68,7 @@ test( 'a missing media map, an external or data address and an ambiguous name ar
 test( 'a block with no image setting is untouched for a figure and named for a bare img; several settings are a gap', () => {
 	const fig = run( { tag: 'figure', src: 'assets/hero.png', alt: 'x', caption: 'c' }, { slots: [] } );
 	assert.deepEqual( [ fig.writes, fig.unmapped, fig.notes ], [ [], [], [] ] );
-	assert.deepEqual( run( null, { slots: [] } ), { writes: [], unmapped: [], notes: [] } );
+	assert.deepEqual( run( null, { slots: [] } ), { writes: [], unmapped: [], notes: [], checks: [] } );
 	const bare = run( { tag: 'img', src: 'assets/hero.png', alt: 'x' }, { slots: [] } );
 	assert.equal( bare.writes.length, 0 );
 	assert.match( bare.unmapped[ 0 ].reason, /no image setting/ );
@@ -114,4 +114,29 @@ test( 'the painted-asset check passes the mapped attachment (a WordPress size to
 	assert.equal( wrong.ok, false );
 	assert.match( wrong.reason, /attachment 102.*wrote attachment 101/ );
 	assert.equal( paintedImageCheck( { map: MAP, site: 'acme-test', painted: 'https://elsewhere/x.png', id: 101 } ).ok, false );
+} );
+
+test( 'MUST FAIL: the image check names the attachment, and a stated ratio the painted image does not have fails', () => {
+	const ok = paintedImageCheck( { map: MAP, site: 'acme-test', painted: 'https://acme.test/wp-content/uploads/hero.png', id: 101, ratio: 1.5, natural: { w: 1500, h: 1000 } } );
+	assert.equal( ok.ok, true );
+	const squashed = paintedImageCheck( { map: MAP, site: 'acme-test', painted: 'https://acme.test/wp-content/uploads/hero.png', id: 101, ratio: 1.5, natural: { w: 1000, h: 1000 } } );
+	assert.equal( squashed.ok, false );
+	assert.match( squashed.reason, /states ratio 1\.500/ );
+} );
+
+test( 'MUST FAIL: the alt falls back to the fact record\'s placeholder, and every mapped image raises a live-check row', () => {
+	const r = run( { tag: 'img', src: 'assets/hero.png', alt: null }, { fact: { alt: 'A sunlit loaf', ratio: 1.5, asset: 'assets/hero.png' } } );
+	assert.equal( val( r, 'imageAlt' ), 'A sunlit loaf' );
+	assert.deepEqual( r.checks.map( ( c ) => [ c.attr, c.id, c.ratio, c.alt ] ), [ [ 'imageUrl', 101, 1.5, 'A sunlit loaf' ] ] );
+	assert.equal( run( { tag: 'img', src: 'assets/missing.png', alt: 'x' } ).checks.length, 0, 'an unmapped image has nothing to check' );
+} );
+
+test( 'MUST FAIL: factImage reads the placeholder (never a {{ }} hole) and the file\'s ratio by template key; nestedImage takes a single descendant slot', () => {
+	const facts = { elements: { 'Page/7': { alt: { source: 'image-slot', placeholder: ' Loaf ', hole: false, id: null }, assets: [ { path: 'assets/hero.png', ratio: 1.5 } ] }, 'Page/8': { alt: { source: 'image-slot', placeholder: '{{ a }}', hole: true, id: null }, assets: [] } } };
+	assert.deepEqual( factImage( facts, 'Root/7#0', 'Page' ), { alt: 'Loaf', ratio: 1.5, asset: 'assets/hero.png' } );
+	assert.equal( factImage( facts, 'Root/8#0', 'Page' ).alt, null );
+	assert.equal( factImage( facts, 'Root/9#0', 'Page' ), null );
+	const img = { tag: 'div', src: 'a.png', alt: 'x' };
+	assert.equal( nestedImage( { '': { img: null }, '.inner': { img } } ).slot, '.inner' );
+	assert.equal( nestedImage( { '': {}, '.a': { img }, '.b': { img } } ), null );
 } );

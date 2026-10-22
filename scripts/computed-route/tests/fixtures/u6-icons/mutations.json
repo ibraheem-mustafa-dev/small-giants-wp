@@ -1,0 +1,12 @@
+[
+	{ "file": "lib/fill-icon.mjs", "find": "const lucide = lucideStyle ? lucideSignatures().get( sig ) : null;", "replace": "const lucide = null;", "why": "a Lucide-drawn mark is no longer recognised as the Lucide icon" },
+	{ "file": "lib/fill-icon.mjs", "find": "const lucide = lucideStyle ? lucideSignatures().get( sig ) : null;", "replace": "const lucide = lucideSignatures().get( sig ) ?? null;", "why": "the Lucide drawing style (width 2, round caps) is no longer required" },
+	{ "file": "lib/fill-icon.mjs", "find": "const brand = brandSignatures().bySig.get( sig );", "replace": "const brand = null;", "why": "a registry brand glyph is no longer recognised" },
+	{ "file": "lib/fill-icon.mjs", "find": "'filled' === kind && 'iconFill' in schema && put( 'iconFill', true );", "replace": "void 0;", "why": "a filled mark is written without iconFill" },
+	{ "file": "lib/fill-icon.mjs", "find": "if ( ! allowed[ lower ] ) {", "replace": "if ( false ) {", "why": "a tag the sanitiser drops is written into the markup" },
+	{ "file": "lib/fill-icon.mjs", "find": "|| ( top && [ 'width', 'height' ].includes( name ) )", "replace": "", "why": "the root width and height are kept" },
+	{ "file": "lib/fill-icon.mjs", "find": "refused.add( el.name );", "replace": "void 0;", "why": "a dropped tag raises no named row" },
+	{ "file": "lib/fill-icon.mjs", "find": "if ( 'brand' === attributes.iconSource ) {", "replace": "if ( false ) {", "why": "a skeleton-made brand icon is rewritten" },
+	{ "file": "lib/fill-icon.mjs", "find": "if ( ! svg?.markup || ! schema || ! ( 'iconSvg' in schema ) ) {", "replace": "if ( ! svg?.markup ) {", "why": "a block with no iconSvg setting is written to" },
+	{ "file": "lib/fill-icon.mjs", "find": "return bad || 1 !== root.children.length ? null : root.children[ 0 ];", "replace": "return root.children[ 0 ] ?? null;", "why": "malformed markup is accepted" }
+]

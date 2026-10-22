@@ -2434,11 +2434,11 @@
 			"note": "ellipse(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:env": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "env(safe-area-inset-bottom): Fill reads the computed padding, where env() is 0 off a notched phone; the safe-area part is the block's own default (sgs/buybox's phone bar, Spec 02 FR-2-3), and sgs/nav-drawer's footer has none yet (coverage plan Order item 2(d) remaining)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-safe-area.mjs#safeAreaRead",
+			"check": "scripts/computed-route/lib/confirm-live.mjs#compareRL",
+			"note": "env(safe-area-inset-*): a draft without viewport-fit=cover renders only the fixed part (the drawer foot's calc(16px + env(safe-area-inset-bottom)) is 16px), so Fill writes the rendered value and the confirm record names the safe-area read (lib/fill-safe-area.mjs); the live check compares the rendered value with the built page. The inset itself is the block's own default (sgs/buybox's phone bar, Spec 02 FR-2-3)",
+			"test": "scripts/computed-route/tests/fill-safe-area.test.mjs#the drawer foot renders 16px"
 		},
 		"css-function:exp": {
 			"recognise": null,
@@ -5232,11 +5232,11 @@
 			"note": "-webkit-resizer: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
 		},
 		"css-pseudo-element:-webkit-scrollbar": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "-webkit-scrollbar: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-scrollbar.mjs#scrollbarTokens",
+			"check": "scripts/computed-route/lib/fill-scrollbar.mjs#scrollbarPatch",
+			"note": "a scroller's scrollbar: Fill reads the scroller's colours, width and ground and writes the colours to the theme's scrollbar tokens (theme-snapshot.patch.json), a colour the site already has as a note; the width is one value site-wide, so another width is a named row",
+			"test": "scripts/computed-route/tests/fill-u8-writers.test.mjs#a width other than auto"
 		},
 		"css-pseudo-element:-webkit-scrollbar-button": {
 			"recognise": null,
@@ -5253,18 +5253,18 @@
 			"note": "-webkit-scrollbar-corner: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
 		},
 		"css-pseudo-element:-webkit-scrollbar-thumb": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "-webkit-scrollbar-thumb: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-scrollbar.mjs#scrollbarTokens",
+			"check": "scripts/computed-route/lib/fill-scrollbar.mjs#scrollbarPatch",
+			"note": "the scrollbar thumb: written to the theme's scrollbar thumb token (thumbOnDark on a dark ground); the draft's ::-webkit-scrollbar-thumb paint is read beside its scrollbar-color and a difference is named",
+			"test": "scripts/computed-route/tests/fill-u8-writers.test.mjs#a draft thumb that differs"
 		},
 		"css-pseudo-element:-webkit-scrollbar-track": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "modes and values with no CSS property",
-			"note": "-webkit-scrollbar-track: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-scrollbar.mjs#scrollbarTokens",
+			"check": "scripts/computed-route/lib/fill-scrollbar.mjs#scrollbarPatch",
+			"note": "the scrollbar track: written to the theme's scrollbar track token; a transparent track is the theme's own",
+			"test": "scripts/computed-route/tests/fill-u8-writers.test.mjs#a colour the site"
 		},
 		"css-pseudo-element:-webkit-scrollbar-track-piece": {
 			"recognise": null,
@@ -7567,11 +7567,11 @@
 			"note": "Origits embed (origits.com): a third-party embed; no embed writer (core/embed where WordPress supports the host)"
 		},
 		"embed:other": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "an embed from a host the oEmbed list does not name (a Google Maps iframe): no embed writer (FR-48-39); map embeds are a named site surface"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-map.mjs#mapDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "an embed from a host the oEmbed list does not name (a Google Maps iframe): the map display is written to sgs/business-info; any other host raises the skeleton's named gap",
+			"test": "scripts/computed-route/tests/fill-map.test.mjs#a block without the map settings"
 		},
 		"embed:outplayed.tv": {
 			"recognise": null,
@@ -10497,11 +10497,11 @@
 			"note": "<iframe scrolling>: still honoured by browsers for the embedded page (scrollbars, its body margin); no embed writer"
 		},
 		"html-attr:iframe.src": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<iframe src>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-map.mjs#mapDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<iframe src> of a map: the zoom (z=) is written as mapZoom; the searched address is the Site Info address, so it is never a setting (the skeleton hands it to Site Info)",
+			"test": "scripts/computed-route/tests/fill-map.test.mjs#the zoom is the embed address"
 		},
 		"html-attr:iframe.srcdoc": {
 			"recognise": null,
@@ -10526,9 +10526,9 @@
 		"html-attr:img.alt": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/fill-media.mjs#mediaDecisions",
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<img alt>: Fill writes it to the block's image-alt setting (tests/fill-media.test.mjs); the painted-asset check (lib/fill-media.mjs::paintedImageCheck) is not yet called from the live check"
+			"check": "scripts/computed-route/lib/confirm-live.mjs#imageLive",
+			"note": "<img alt>: Fill writes it to the block's image-alt setting (the draft's alt, else the fact record's non-hole placeholder); the live check compares it with the painted image's alt",
+			"test": "scripts/computed-route/tests/confirm-live.test.mjs#an image record is confirmed only when"
 		},
 		"html-attr:img.attributionsrc": {
 			"excluded": {
@@ -10622,9 +10622,9 @@
 		"html-attr:img.src": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/fill-media.mjs#mediaDecisions",
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<img src>: Fill writes it as the block's image URL and attachment id from the media map (tests/fill-media.test.mjs); the painted-asset check (lib/fill-media.mjs::paintedImageCheck) is not yet called from the live check"
+			"check": "scripts/computed-route/lib/confirm-live.mjs#imageLive",
+			"note": "<img src>: Fill writes it as the block's image URL and attachment id from the media map; the live check (lib/confirm-live.mjs::imageLive) names the attachment the page paints and refuses any other",
+			"test": "scripts/computed-route/tests/confirm-live.test.mjs#an image record is confirmed only when"
 		},
 		"html-attr:img.srcset": {
 			"recognise": null,
@@ -12929,16 +12929,16 @@
 		"html:figcaption": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/fill-media.mjs#mediaDecisions",
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "media element: Fill writes the caption's words to the block's caption setting, or names the gap (tests/fill-media.test.mjs); the painted-asset check (lib/fill-media.mjs::paintedImageCheck) is not yet called from the live check"
+			"check": "scripts/computed-route/lib/confirm-live.mjs#imageLive",
+			"note": "media element: Fill writes the caption's words to the block's caption setting, or names the gap; the figure's image is settled by the live check (lib/confirm-live.mjs::imageLive)",
+			"test": "scripts/computed-route/tests/confirm-live.test.mjs#an image record is confirmed only when"
 		},
 		"html:figure": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/fill-media.mjs#mediaDecisions",
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "media element: Fill writes the image a figure holds, or names the gap when the block has no image setting (tests/fill-media.test.mjs); the painted-asset check (lib/fill-media.mjs::paintedImageCheck) is not yet called from the live check"
+			"check": "scripts/computed-route/lib/confirm-live.mjs#imageLive",
+			"note": "media element: Fill writes the image a figure holds, or names the gap when the block has no image setting; the live check settles the painted image",
+			"test": "scripts/computed-route/tests/confirm-live.test.mjs#an image record is confirmed only when"
 		},
 		"html:font": {
 			"recognise": null,
@@ -13049,11 +13049,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:iframe": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-map.mjs#mapDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "a map iframe is the sgs/business-info map: Fill reads the iframe's height at each width, its zoom and the whole filter it paints, and writes mapHeight (per device), mapZoom and mapFilter (a custom value); the rendered height and filter are compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-map.test.mjs#every function kept"
 		},
 		"html:image": {
 			"excluded": {
@@ -13065,9 +13065,9 @@
 		"html:img": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/fill-media.mjs#mediaDecisions",
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "media element: Fill writes the block's image URL and attachment id from the media map lib/media-upload.mjs wrote (tests/fill-media.test.mjs); the check that the painted image is the draft's asset (lib/fill-media.mjs::paintedImageCheck) is built and not yet called from the live check"
+			"check": "scripts/computed-route/lib/confirm-live.mjs#imageLive",
+			"note": "media element: Fill writes the block's image URL, attachment id and alt from the media map lib/media-upload.mjs wrote, reading the image on the element, in a wrapper or in one nested slot, and the alt and ratio the fact record states; every mapped image raises an image confirm record, and the live check (lib/confirm-live.mjs::imageLive, through lib/fill-media.mjs::paintedImageCheck) settles it against the painted image: the written attachment, its alt and the stated ratio",
+			"test": "scripts/computed-route/tests/confirm-live.test.mjs#an image record is confirmed only when"
 		},
 		"html:input": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -15326,11 +15326,11 @@
 			"note": "site tokens: intake proposes the palette and Site Info; no snapshot writer or site-level check in this route (FR-48-48)"
 		},
 		"svg:a": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <a>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<a> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:animate": {
 			"recognise": "scripts/computed-route/lib/fill-entrance.mjs#sampleMotion",
@@ -15352,53 +15352,53 @@
 			"note": "an endlessly repeating <animateTransform> is read as a loop of its unitless values (rotate in degrees, translate in px, scale as a ratio; a rotate centre other than 0 0 and skews are reported) and written as the effect that draws it, or reported by name"
 		},
 		"svg:circle": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <circle>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<circle> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:clipPath": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <clipPath>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<clipPath> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:defs": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <defs>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<defs> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:desc": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <desc>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<desc> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:ellipse": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <ellipse>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<ellipse> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:feBlend": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <feBlend>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<feBlend> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:feColorMatrix": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <feColorMatrix>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<feColorMatrix> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:feComponentTransfer": {
 			"recognise": null,
@@ -15408,11 +15408,11 @@
 			"note": "SVG <feComponentTransfer>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
 		},
 		"svg:feComposite": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <feComposite>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<feComposite> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:feConvolveMatrix": {
 			"recognise": null,
@@ -15429,11 +15429,11 @@
 			"note": "SVG <feDiffuseLighting>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
 		},
 		"svg:feDisplacementMap": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <feDisplacementMap>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<feDisplacementMap> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:feDistantLight": {
 			"recognise": null,
@@ -15485,11 +15485,11 @@
 			"note": "SVG <feFuncR>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
 		},
 		"svg:feGaussianBlur": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <feGaussianBlur>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<feGaussianBlur> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:feImage": {
 			"recognise": null,
@@ -15499,18 +15499,18 @@
 			"note": "SVG <feImage>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
 		},
 		"svg:feMerge": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <feMerge>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<feMerge> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:feMergeNode": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <feMergeNode>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<feMergeNode> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:feMorphology": {
 			"recognise": null,
@@ -15520,11 +15520,11 @@
 			"note": "SVG <feMorphology>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
 		},
 		"svg:feOffset": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <feOffset>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<feOffset> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:fePointLight": {
 			"recognise": null,
@@ -15562,11 +15562,11 @@
 			"note": "SVG <feTurbulence>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
 		},
 		"svg:filter": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <filter>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<filter> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:foreignObject": {
 			"recognise": null,
@@ -15576,46 +15576,46 @@
 			"note": "SVG <foreignObject>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
 		},
 		"svg:g": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <g>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<g> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:image": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <image>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<image> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:line": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <line>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<line> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:linearGradient": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <linearGradient>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<linearGradient> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:marker": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <marker>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<marker> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:mask": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <mask>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<mask> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:metadata": {
 			"excluded": {
@@ -15632,46 +15632,46 @@
 			"note": "movement along a path is the motion-path effect; recognising the draft's path is FR-48-77"
 		},
 		"svg:path": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <path>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<path> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:pattern": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <pattern>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<pattern> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:polygon": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <polygon>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<polygon> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:polyline": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <polyline>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<polyline> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:radialGradient": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <radialGradient>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<radialGradient> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:rect": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <rect>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<rect> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:script": {
 			"excluded": {
@@ -15687,11 +15687,11 @@
 			"note": "an SVG <set> that switches opacity (or visibility) once at a clock time after load and keeps it is the held entrance { from, to, duration 0, delay: begin }; one that begins on an event or another element, reverts, or switches any other attribute is reported with its reason (no entrance channel holds it); SMIL is not an Animation object, so the entrance is checked by the schema, not by the load-time sample"
 		},
 		"svg:stop": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <stop>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<stop> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:style": {
 			"recognise": null,
@@ -15701,11 +15701,11 @@
 			"note": "SVG <style>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
 		},
 		"svg:svg": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <svg>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<svg> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:switch": {
 			"recognise": null,
@@ -15715,39 +15715,39 @@
 			"note": "SVG <switch>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
 		},
 		"svg:symbol": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <symbol>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<symbol> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:text": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <text>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<text> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:textPath": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <textPath>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<textPath> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:title": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <title>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<title> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:tspan": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <tspan>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<tspan> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:unlisted": {
 			"excluded": {
@@ -15757,11 +15757,11 @@
 			}
 		},
 		"svg:use": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "SVG <use>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-icon.mjs#iconDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<use> inside an inline SVG: the draft's SVG is read with its painted values resolved and written by the one subtree writer (lib/fill-icon.mjs) as the matching brand or Lucide icon, or as the client's own mark (iconSvg) kept to the tags and attributes the block's sanitiser keeps; the rendered icon is compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-icon.test.mjs#gradients, filters and groups the sanitiser keeps"
 		},
 		"svg:view": {
 			"recognise": null,

@@ -1,0 +1,15 @@
+[
+	{ "file": "lib/fill-scrollbar.mjs", "find": "const thumbKey = isDark( it.ground ) ? 'thumbOnDark' : 'thumb';", "replace": "const thumbKey = 'thumb';", "why": "the thumb token no longer follows the ground" },
+	{ "file": "lib/fill-scrollbar.mjs", "find": "return 0.2126 * lin( c.r ) + 0.7152 * lin( c.g ) + 0.0722 * lin( c.b ) < 0.4;", "replace": "return false;", "why": "no ground is dark" },
+	{ "file": "lib/fill-scrollbar.mjs", "find": "if ( same( colour, current ) ) {", "replace": "if ( false ) {", "why": "a colour the site's token already gives is written again" },
+	{ "file": "lib/fill-scrollbar.mjs", "find": "sink.set( [ 'settings', 'custom', 'scrollbar', key ], asToken( colour, snapshot ), { ...it.from, state: 'scrollbar' } );", "replace": "void 0;", "why": "a differing colour is never written to the token" },
+	{ "file": "lib/fill-scrollbar.mjs", "find": "return slug ? snapshot.palette.find( ( t ) => t.slug === slug )?.colour ?? null : parseColour( value );", "replace": "return parseColour( value );", "why": "a palette variable token is not resolved to its colour" },
+	{ "file": "lib/fill-scrollbar.mjs", "find": "if ( it.width && ! [ 'auto', 'none' ].includes( it.width ) ) {", "replace": "if ( false ) {", "why": "a scroller asking another width raises no named row" },
+	{ "file": "lib/fill-scrollbar.mjs", "find": "if ( sb && ! seen.has( key ) ) {", "replace": "if ( sb ) {", "why": "one scroller seen from several targets is listed once per target" },
+	{ "file": "lib/fill-scrollbar.mjs", "find": "return parts && 2 === parts.length ? { thumb: parseColour( parts[ 0 ] ), track: parseColour( parts[ 1 ] ) } : null;", "replace": "return parts ? { thumb: parseColour( parts[ 0 ] ), track: parseColour( parts[ 0 ] ) } : null;", "why": "the track is read as the thumb" },
+	{ "file": "lib/fill-logo-size.mjs", "find": "if ( px !== carried ) {", "replace": "if ( true ) {", "why": "every tier is written, including ones equal to the wider tier" },
+	{ "file": "lib/fill-logo-size.mjs", "find": "'width' === row.property && GAP.test( row.reason ?? '' ) && '' === ( row.slot ?? '' )", "replace": "GAP.test( row.reason ?? '' ) && '' === ( row.slot ?? '' )", "why": "a gap on another property is turned into a width write" },
+	{ "file": "lib/fill-logo-size.mjs", "find": "const max = rows.find( ( r ) => 'max-width' === r.css_property && r.is_responsive && 'tier_object' === r.tier_shape );", "replace": "const max = rows.find( ( r ) => 'max-width' === r.css_property );", "why": "a block with an untiered max width is written to as a tier object" },
+	{ "file": "lib/fill-logo-size.mjs", "find": "if ( ! settings || ! widths.length ) {", "replace": "if ( ! settings ) {", "why": "a logo with no measured width is written empty" },
+	{ "file": "lib/fill-logo-size.mjs", "find": "out.unmapped.push( row );\n\t\t\tcontinue;", "replace": "continue;", "why": "a gap that is not turned into a write is dropped" }
+]

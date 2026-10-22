@@ -1,0 +1,8 @@
+[
+	{ "file": "lib/fill-map.mjs", "find": "\t'html:iframe',\n", "replace": "", "why": "the map writer stops declaring html:iframe, so its entry fails the declared-writes rule" },
+	{ "file": "lib/fill-safe-area.mjs", "find": "\t'css-function:env',\n", "replace": "", "why": "the safe-area writer stops declaring css-function:env" },
+	{ "file": "lib/fill-scrollbar.mjs", "find": "\t'css-pseudo-element:-webkit-scrollbar-thumb',\n", "replace": "", "why": "the scrollbar writer stops declaring the thumb" },
+	{ "file": "lib/fill-media.mjs", "find": "\t'html:figure',\n", "replace": "", "why": "the image writer stops declaring html:figure" },
+	{ "file": "lib/fill-icon.mjs", "find": "\t'svg:path',\n", "replace": "", "why": "the icon writer stops declaring svg:path" },
+	{ "file": "data/clone-coverage.json", "find": "\"check\": \"scripts/computed-route/lib/confirm-live.mjs#compareRL\"", "replace": "\"check\": null", "why": "the safe-area entry loses its check, so it is a gap again" }
+]

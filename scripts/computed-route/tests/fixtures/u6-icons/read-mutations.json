@@ -1,0 +1,8 @@
+[
+	{ "file": "lib/fill-read.mjs", "find": "c.setAttribute( p, v === own ? 'currentColor' : v );", "replace": "c.setAttribute( p, v );", "why": "a colour equal to the icon's own colour is written as a literal, not currentColor" },
+	{ "file": "lib/fill-read.mjs", "find": "if ( drawn.test( o.localName ) ) {", "replace": "if ( false ) {", "why": "the CSS paint is never written onto the drawing elements" },
+	{ "file": "lib/fill-read.mjs", "find": "snap.svg = { markup: new XMLSerializer().serializeToString( copy ) };", "replace": "snap.svg = null;", "why": "the SVG is not read" },
+	{ "file": "lib/fill-read.mjs", "find": "filter: getComputedStyle( frames[ 0 ] ).filter,", "replace": "filter: 'none',", "why": "the map's filter is not read" },
+	{ "file": "lib/fill-read.mjs", "find": "h: frames[ 0 ].getBoundingClientRect().height }", "replace": "h: 400 }", "why": "the map's height is not read" },
+	{ "file": "lib/fill-read.mjs", "find": "const imgs = el.matches( 'img' ) ? [ el ] : [ ...el.querySelectorAll( 'img' ) ];", "replace": "const imgs = el.matches( 'img' ) ? [ el ] : ( el.matches( 'figure, picture' ) ? [ ...el.querySelectorAll( 'img' ) ] : [] );", "why": "an image nested in wrapper elements is not read" }
+]

@@ -157,9 +157,59 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 			return f;
 		} )();
 		// The one image this element is (an <img>, or a <figure> / <picture> holding exactly one) and its figcaption's words.
-		const imgs = el.matches( 'img' ) ? [ el ] : ( el.matches( 'figure, picture' ) ? [ ...el.querySelectorAll( 'img' ) ] : [] );
+		const imgs = el.matches( 'img' ) ? [ el ] : [ ...el.querySelectorAll( 'img' ) ];
 		const cap = el.matches( 'figure' ) ? el.querySelector( 'figcaption' ) : null;
 		snap.img = 1 === imgs.length ? { tag: el.localName, src: imgs[ 0 ].getAttribute( 'src' ) ?? imgs[ 0 ].getAttribute( 'data-src' ) ?? '', alt: imgs[ 0 ].getAttribute( 'alt' ), caption: cap ? ( cap.textContent || '' ).replace( /\s+/g, ' ' ).trim() : null } : null;
+		// The one embedded frame this element is or holds (a map): its address, the filter it paints and its height.
+		const frames = el.matches( 'iframe' ) ? [ el ] : [ ...el.querySelectorAll( 'iframe' ) ];
+		snap.embed = 1 === frames.length ? { src: frames[ 0 ].getAttribute( 'src' ) ?? '', filter: getComputedStyle( frames[ 0 ] ).filter, h: frames[ 0 ].getBoundingClientRect().height } : null;
+		// The first scroller in this element (or inside it) that sets its own scrollbar colour: the colours it paints, the width
+		// it asks, the parts the draft declares beside them and the ground it sits on, for the theme's scrollbar tokens.
+		const scroller = [ el, ...[ ...el.querySelectorAll( '*' ) ].slice( 0, 400 ) ].find( ( n ) => 'auto' !== getComputedStyle( n ).scrollbarColor );
+		snap.scrollbar = null;
+		if ( scroller ) {
+			const sc = getComputedStyle( scroller );
+			let ground = 'rgba(0, 0, 0, 0)';
+			for ( let a = scroller; a && 'rgba(0, 0, 0, 0)' === ground; a = a.parentElement ) {
+				ground = getComputedStyle( a ).backgroundColor;
+			}
+			const part = ( name ) => {
+				try {
+					return getComputedStyle( scroller, `::-webkit-scrollbar-${ name }` ).backgroundColor || null;
+				} catch {
+					return null;
+				}
+			};
+			snap.scrollbar = { color: sc.scrollbarColor, width: sc.scrollbarWidth, ground, thumbPart: part( 'thumb' ), trackPart: part( 'track' ) };
+		}
+		// The one inline SVG this element is or holds, as XML with the paint the draft's CSS gave each drawing element written onto it
+		// (fill, stroke and stroke width, a colour equal to the SVG's own colour as currentColor), for the icon writer.
+		const svgs = el.matches( 'svg' ) ? [ el ] : [ ...el.querySelectorAll( 'svg' ) ];
+		snap.svg = null;
+		if ( 1 === svgs.length ) {
+			const [ from ] = svgs;
+			const copy = from.cloneNode( true );
+			const own = getComputedStyle( from ).color;
+			const pairs = [ [ from, copy ], ...[ ...from.querySelectorAll( '*' ) ].map( ( o, i ) => [ o, copy.querySelectorAll( '*' )[ i ] ] ) ];
+			const drawn = /^(?:path|circle|ellipse|rect|line|polyline|polygon)$/;
+			for ( const [ o, c ] of pairs ) {
+				if ( drawn.test( o.localName ) ) {
+					const cs = getComputedStyle( o );
+					for ( const p of [ 'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'stroke-dasharray', 'fill-rule', 'opacity' ] ) {
+						const v = cs.getPropertyValue( p ).trim();
+						const plain = { 'stroke-linecap': 'butt', 'stroke-linejoin': 'miter', 'stroke-dasharray': 'none', 'fill-rule': 'nonzero', opacity: '1' }[ p ];
+						if ( v && v !== plain ) {
+							c.setAttribute( p, v === own ? 'currentColor' : v );
+						}
+					}
+				}
+			}
+			if ( ! copy.getAttribute( 'viewBox' ) ) {
+				const b = from.getBoundingClientRect();
+				copy.setAttribute( 'viewBox', `0 0 ${ Math.round( b.width ) } ${ Math.round( b.height ) }` );
+			}
+			snap.svg = { markup: new XMLSerializer().serializeToString( copy ) };
+		}
 		// The intrinsic ratio of the image or SVG this element is, or of the one it wraps: an image's natural size, else its
 		// width and height attributes, else an SVG's viewBox. A wrapper is media only when that image is its only rendered
 		// content (no words, no other element) and fills its box; a button or card holding one icon is not media. null when

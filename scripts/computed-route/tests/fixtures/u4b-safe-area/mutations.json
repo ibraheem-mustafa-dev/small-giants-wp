@@ -1,0 +1,8 @@
+[
+	{ "file": "lib/fill-safe-area.mjs", "find": "const sum = /^calc\\(([^()]*)\\)$/i.exec( d );", "replace": "const sum = null;", "why": "the fixed part of a calc sum is not evaluated" },
+	{ "file": "lib/fill-safe-area.mjs", "find": "return terms.every( ( t ) => null !== t ) ? Math.max( ...terms ) : null;", "replace": "return terms.every( ( t ) => null !== t ) ? Math.min( ...terms ) : null;", "why": "a maximum is evaluated as a minimum" },
+	{ "file": "lib/fill-safe-area.mjs", "find": "Math.abs( renderedPx - fixedPx ) <= 0.5", "replace": "true", "why": "a render that shows an inset is read as no inset" },
+	{ "file": "lib/fill-safe-area.mjs", "find": "if ( ! sides.length ) {", "replace": "if ( false ) {", "why": "a declaration with no safe-area inset is read as one" },
+	{ "file": "lib/fill-safe-area.mjs", "find": ".map( ( m ) => m[ 1 ].toLowerCase() )", "replace": ".map( () => 'bottom' )", "why": "every side is read as bottom" },
+	{ "file": "lib/fill-confirm.mjs", "find": "const safeArea = layer ? null : safeAreaRead( declared, rendered );", "replace": "const safeArea = null;", "why": "the confirm record carries no safe-area read" }
+]

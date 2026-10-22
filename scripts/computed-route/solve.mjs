@@ -19,6 +19,7 @@ import { readTree, writeTree, addRefs, nodeByRef, setAttr, assertWritable, asser
 import { writableGroups, draftValues, usedValueTarget, classify, openRows, rowDistance, intendedCount, regressedRows, groupKey, settingState, cssProp, knownPaths, resolveContent, handoverOf, HANDOVER_OWNERS } from './lib/solve-rows.mjs';
 import { writeSolveReport } from './lib/solve-report.mjs';
 import { writeConfirmLive } from './lib/confirm-live.mjs';
+import { readMediaMap } from './lib/fill-media.mjs';
 import { guardRound, closeTrials } from './lib/guard.mjs';
 import { readWinningRules } from './lib/winning-rule.mjs';
 import { detectReferences, referenceOf, BLOCKS_SRC } from './lib/references.mjs';
@@ -615,7 +616,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	// FR-48-36: with --fill-report <fill-report.json>, the confirm records get their rendered-live half from the final walk
 	// (confirm-live.json beside the report).
 	if ( flag( '--fill-report' ) ) {
-		const cl = writeConfirmLive( outDir, path.resolve( flag( '--fill-report' ) ), report, { stateMap: s.states } );
+		const cl = writeConfirmLive( outDir, path.resolve( flag( '--fill-report' ) ), report, { stateMap: s.states, media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: s.site } } );
 		console.log( `confirm-live: ${ JSON.stringify( cl.counts ) } -> ${ cl.file }` );
 	}
 	console.log( `solve ${ surface }: ${ allWrites.length } writes over ${ rounds } round(s); hardcode ${ classes.hardcode.length }, missing ${ classes.missing.length }, unresolved ${ classes.unresolved.length }, derived ${ classes.derived.length }, unmapped-state ${ unmappedState }, handover ${ handover.length }; wrong writes ${ wrong.length } (settings ${ settingRatio( wrong, allWrites ).wrong } of ${ settingRatio( wrong, allWrites ).total }). Report: ${ path.join( outDir, 'solve-report.md' ) }` );

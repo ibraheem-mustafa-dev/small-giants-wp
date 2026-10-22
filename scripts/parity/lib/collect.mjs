@@ -280,8 +280,11 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		}
 	}
 	const hiddenText = hiddenEls.map( ( h ) => h.textContent || '' ).join( ' ' );
+	// The one image this element is or holds (its painted address, alt and natural size), for the image check.
+	const imgEl = el.matches( 'img' ) ? el : ( 1 === el.querySelectorAll( 'img' ).length ? el.querySelector( 'img' ) : null );
 	return {
 		trace,
+		img: imgEl ? { src: imgEl.currentSrc || imgEl.getAttribute( 'src' ) || '', alt: imgEl.getAttribute( 'alt' ), w: imgEl.naturalWidth, h: imgEl.naturalHeight } : null,
 		text: ( paintedText.trim() || el.getAttribute( 'aria-label' ) || hiddenText ).replace( /\s+/g, ' ' ).trim().slice( 0, 400 ),
 		keyframes: cs.animationName.split( ',' ).every( ( n ) => 'none' === n.trim() ) ? 'none' : cs.animationName.split( ',' ).map( ( n ) => keyframes( n.trim() ) ).join( ' | ' ),
 		box: run ? run.box : { x: Math.round( r.x ), y: Math.round( r.y + window.scrollY ), w: Math.round( r.width ), h: Math.round( r.height ) },

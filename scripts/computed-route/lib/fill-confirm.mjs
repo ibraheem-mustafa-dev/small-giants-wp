@@ -8,6 +8,7 @@ import { parseColour, deltaE, toPx, COLOUR_DE } from './normalise.mjs';
 import { transformMatrix, sameMatrix } from './css-matrix.mjs';
 import { templateKeyOfSelector } from './fact-key.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
+import { safeAreaRead } from './fill-safe-area.mjs';
 
 // FR-48-36's tolerances by property type (provisional until calibrated on the first client clone).
 export const TOLERANCE = { colour: `ΔE ${ COLOUR_DE }, alpha 0.02`, length: '0.5px', 'font-family': 'first family', 'font-weight': 'exact', 'line-height': '0.5px', transform: 'matrix entries 0.01', time: '10ms', keyword: 'exact' };
@@ -180,7 +181,8 @@ export function confirmRecords( { writes, nodes, reads, defects = new Map(), roo
 			const declared = layer ? null : reads.declared?.[ width ]?.[ target.id ]?.[ w.prop ] ?? null;
 			const rendered = ( layer ? snap.pseudo?.[ layer ]?.[ w.prop ] : snap.styles?.[ w.prop ] ) ?? null;
 			const c = compareDR( w.prop, declared, rendered, parseFloat( snap.styles?.[ 'font-size' ] ) || 16 );
-			out.push( { ...record, draftId, width, declared, renderedDraft: rendered, dr: c.dr, tolerance: c.tolerance, verdict: verdictOf( c.dr, defects.get( draftId )?.has( w.prop ) ) } );
+			const safeArea = layer ? null : safeAreaRead( declared, rendered );
+			out.push( { ...record, draftId, width, declared, renderedDraft: rendered, dr: c.dr, tolerance: c.tolerance, verdict: verdictOf( c.dr, defects.get( draftId )?.has( w.prop ) ), ...( safeArea ? { safeArea } : {} ) } );
 		}
 	}
 	return out;

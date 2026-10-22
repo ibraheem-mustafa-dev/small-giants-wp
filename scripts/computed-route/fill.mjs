@@ -26,6 +26,9 @@ import { fillTree } from './lib/fill-resolve.mjs';
 import { fillStates } from './lib/fill-state.mjs';
 import { sampleMotion } from './lib/fill-entrance.mjs';
 import { confirmRecords, defectIndex } from './lib/fill-confirm.mjs';
+import { imageRecords } from './lib/fill-media.mjs';
+import { logoSizeWrites } from './lib/fill-logo-size.mjs';
+import { scrollbarPatch, mergePatch } from './lib/fill-scrollbar.mjs';
 import { motionWrites } from './lib/fill-motion.mjs';
 import { draftCssOf, templateOf } from './lib/fill-behaviour.mjs';
 import { groupBindings, noFactsWarning } from './lib/fill-binding-group.mjs';
@@ -162,7 +165,7 @@ export async function fillSurface( o ) {
 			pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null,
 			// FR-48-39: the uploaded images of the surface's site (a null map when media-upload has not run).
 			media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site },
-			snapshot, rawSnapshot,
+			snapshot, rawSnapshot, facts, rootComponent: intakeParts.rootComponent,
 			fixtures: JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) ),
 			ledger: loadLedger( ledgerFile ),
 			ledgerStates: Object.entries( entry.states || {} ).filter( ( [ , v ] ) => null === v ).map( ( [ k ] ) => k ),
@@ -172,6 +175,11 @@ export async function fillSurface( o ) {
 		result.writes.push( ...states.writes );
 		result.notes.push( ...defectLooks.listed.map( ( d ) => `draft defect ${ d.draftId } (${ d.state } ${ d.prop }, ${ d.declared }): the draft never paints it; built from the code value ${ JSON.stringify( d.built ) } by width; listed for Bean (intake.json draftDefects, FR-48-69)` ), ...defectLooks.gaps.map( ( g ) => `draft defect ${ g.draftId } (${ g.state } ${ g.prop }${ g.width ? ` at ${ g.width }px` : '' }): not built: ${ g.reason }` ) );
 		result.unmapped.push( ...states.unmapped );
+		// A logo whose width changes with the screen is written as its per-device size (lib/fill-logo-size.mjs).
+		const logos = logoSizeWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped } );
+		result.writes.push( ...logos.writes );
+		result.unmapped = logos.unmapped;
+		result.notes.push( ...logos.notes );
 		// FR-48-50: content the draft's logic shows or hides by width, written as hiding settings (lib/fill-width-gate.mjs); a snapped
 		// threshold's `breakpoint-snap` ledger entry is written beside the other outputs for the client's ledger.
 		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, entries: loadLedger( ledgerFile ), rootComponent: intakeParts.rootComponent } );
@@ -187,6 +195,12 @@ export async function fillSurface( o ) {
 		result.writes.push( ...forms.writes );
 		result.unmapped.push( ...forms.unmapped );
 		result.notes.push( ...forms.notes );
+		// FR-48-8: the draft's scrollbar colours, written to the theme's scrollbar tokens (the same snapshot patch).
+		const bars = scrollbarPatch( { nodes, flat, refOf, reads, snapshot, site: rawSnapshot?.settings?.custom?.scrollbar } );
+		states.patch = mergePatch( states.patch, bars.patch );
+		states.patchEntries.push( ...bars.entries );
+		result.unmapped.push( ...bars.unmapped );
+		result.notes.push( ...bars.notes );
 		const patchFile = states.patchEntries.length ? 'theme-snapshot.patch.json' : null;
 		result.notes.push( ...states.held.map( ( h ) => `${ h.node } (${ h.slot }) ${ h.prop } ${ h.state }: ${ h.reason }` ) );
 		// Motion (Spec 48 FR-48-78): the draft's motion records from intake's re-derived inventory, written as each
@@ -209,6 +223,9 @@ export async function fillSurface( o ) {
 		// FR-48-8: every written style value against what the draft's code declares, at each read width.
 		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.
 		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset' ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent } );
+		// FR-48-8: a declaration that asks the device safe-area inset is named once per element and property.
+		result.notes.push( ...[ ...new Set( result.confirm.filter( ( r ) => r.safeArea ).map( ( r ) => `${ r.node } ${ r.block } ${ r.property }: ${ r.safeArea.note }` ) ) ] );
+		result.confirm.push( ...imageRecords( { images: result.images } ) );
 		const steps = sweepSteps( reads.sweep, ( id ) => ( { node: refOf( flat[ Number( id.split( ':' )[ 0 ] ) ] ), slot: id.slice( id.indexOf( ':' ) + 1 ) } ) );
 		const report = fillReport( { client: o.client, surface: o.surface, draft: o.draftDir ? `${ o.draftDir } (served locally)` : url, nodes: nodes.length, targets: nodes.reduce( ( t, n ) => t + n.targets.length, 0 ), ...result, steps, entrances, snapshotPatch: { file: patchFile, entries: states.patchEntries }, sweepSkipped: false === o.sweep } );
 		const divergences = fs.existsSync( ledgerFile ) ? path.relative( outDir, ledgerFile ).split( path.sep ).join( '/' ) : null;

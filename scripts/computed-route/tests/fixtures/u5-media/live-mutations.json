@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/confirm-live.mjs", "find": "const ok = check.ok && altOk;", "replace": "const ok = check.ok;", "why": "the written alt is no longer compared with the live alt" },
+	{ "file": "lib/confirm-live.mjs", "find": "const ok = check.ok && altOk;", "replace": "const ok = altOk;", "why": "the painted attachment is no longer compared" },
+	{ "file": "lib/confirm-live.mjs", "find": "ratio: rec.ratio, natural: { w: img.w, h: img.h } }", "replace": "ratio: null, natural: null }", "why": "the stated ratio is not passed to the check" },
+	{ "file": "lib/confirm-live.mjs", "find": "if ( ! img || ! img.src ) {", "replace": "if ( false ) {", "why": "an unreadable live image is no longer left open" },
+	{ "file": "lib/confirm-live.mjs", "find": "if ( 'image' === rec.kind ) {", "replace": "if ( false ) {", "why": "image records are no longer settled by the painted image" }
+]
