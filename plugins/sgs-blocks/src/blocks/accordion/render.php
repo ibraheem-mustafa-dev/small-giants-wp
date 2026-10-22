@@ -131,6 +131,13 @@ $extra_attrs = array(
 	'data-allow-multiple' => $allow_multi ? 'true' : 'false',
 	'data-default-open'   => (string) $default_open,
 );
+if ( ! empty( $attributes['scrollToOpened'] ) ) {
+	$extra_attrs['data-scroll-to-opened'] = 'true';
+	$scroll_gap                           = sgs_css_length_value( $attributes['scrollToOpenedGap'] ?? '' );
+	if ( '' !== $scroll_gap ) {
+		$extra_attrs['data-scroll-gap'] = $scroll_gap;
+	}
+}
 
 // Own scoped <style> (composite caveat — printed BEFORE the wrapper call, which
 // emits its own separate <style id="{uid}"> for the layers it owns: base

@@ -52,6 +52,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		allowMultiple,
 		defaultOpen,
+		scrollToOpened,
+		scrollToOpenedGap,
 		iconPosition,
 		accordionStyle,
 		borderWidth,
@@ -353,6 +355,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<ToggleControl
+						label={ __( 'Scroll to opened item', 'sgs-blocks' ) }
+						help={ __(
+							'When an item opens, scroll its header below the sticky site header unless it is already fully in view.',
+							'sgs-blocks'
+						) }
+						checked={ !! scrollToOpened }
+						onChange={ ( val ) =>
+							setAttributes( { scrollToOpened: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ scrollToOpened && (
+						<SgsLengthControl
+							presets
+							label={ __( 'Gap below the site header', 'sgs-blocks' ) }
+							value={ scrollToOpenedGap ?? '' }
+							onChange={ ( val ) =>
+								setAttributes( { scrollToOpenedGap: val } )
+							}
+						/>
+					) }
 				</PanelBody>
 
 				<PanelBody

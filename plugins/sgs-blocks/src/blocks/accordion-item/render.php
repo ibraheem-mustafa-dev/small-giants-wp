@@ -397,16 +397,19 @@ $aria_expanded = $is_open ? 'true' : 'false';
 // This entire blob becomes $inner_html for SGS_Container_Wrapper::render().
 // The <details> open attribute travels via extra_attrs on the OUTER wrapper.
 // ---------------------------------------------------------------------------
+$panel_id      = wp_unique_id( 'sgs-accordion-panel-' );
 $summary_open  = sprintf(
-	'<summary class="sgs-accordion-item__header" aria-expanded="%s">',
-	esc_attr( $aria_expanded )
+	'<summary class="sgs-accordion-item__header" aria-expanded="%s" aria-controls="%s">',
+	esc_attr( $aria_expanded ),
+	esc_attr( $panel_id )
 );
 $summary_left  = 'left' === $icon_pos ? $icon_html : '';
 $summary_title = sprintf( '<span class="sgs-accordion-item__title">%s</span>', sgs_rich_text_kses( $sgs_title ) );
 $summary_right = 'right' === $icon_pos ? $icon_html : '';
 $summary_close = '</summary>';
 $content_panel = sprintf(
-	'<div class="sgs-accordion-item__content">%s</div>',
+	'<div class="sgs-accordion-item__content" id="%s">%s</div>',
+	esc_attr( $panel_id ),
 	$content // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inner blocks are already escaped.
 );
 
