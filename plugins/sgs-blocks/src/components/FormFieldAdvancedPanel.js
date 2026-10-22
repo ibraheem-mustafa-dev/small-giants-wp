@@ -11,13 +11,8 @@
 
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
-import {
-	PanelBody,
-	SelectControl,
-	TextControl,
-	ToggleControl,
-	__experimentalNumberControl as NumberControl,
-} from '@wordpress/components';
+import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
+import { NumberControl } from './primitives';
 
 /** HTML autofill tokens people actually use on a site form, with a plain label each. */
 export const AUTOCOMPLETE_TOKENS = [
