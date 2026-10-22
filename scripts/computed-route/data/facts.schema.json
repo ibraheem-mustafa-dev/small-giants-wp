@@ -38,6 +38,16 @@
         "missing": { "type": "array", "items": { "type": "string" } }
       }
     },
+    "logic": {
+      "type": "object",
+      "description": "the logic instances' data: statics, getters and instance fields holding arrays and plain objects, per component (lib/read-logic-statics.mjs)",
+      "properties": {
+        "statics": { "type": "object", "additionalProperties": { "type": "object", "required": [ "entries", "functions" ], "properties": {
+          "entries": { "type": "array", "items": { "type": "object", "required": [ "name", "source", "kind", "length", "value" ], "properties": { "name": { "type": "string" }, "source": { "enum": [ "static", "getter", "field" ] }, "kind": { "enum": [ "array", "object" ] }, "length": { "type": "integer", "minimum": 0 }, "value": {}, "dropped": { "type": "array", "items": { "type": "string" } }, "truncated": { "const": true }, "err": { "type": "string" } } } },
+          "functions": { "type": "array", "items": { "type": "string" } }
+        } } }
+      }
+    },
     "mounted": { "type": "object", "additionalProperties": { "type": "object", "additionalProperties": { "type": "boolean" } } },
     "state": { "type": "object", "additionalProperties": { "type": "object", "required": [ "keys", "widthKeys" ], "properties": { "keys": { "type": "array", "items": { "type": "string" } }, "widthKeys": { "type": "array", "items": { "type": "string" } } } } },
     "gaps": { "type": "array", "items": { "$ref": "#/$defs/gap" } },
@@ -217,6 +227,7 @@
           "required": [ "holes" ],
           "properties": {
             "holes": { "type": "object", "additionalProperties": { "type": "object", "additionalProperties": { "$ref": "#/$defs/answer" } } },
+            "holesByState": { "type": "object", "description": "keyed <surface id>:<state name>, then hole id, then width: only the values that differ from the resting ones", "additionalProperties": { "type": "object", "additionalProperties": { "type": "object", "additionalProperties": { "$ref": "#/$defs/answer" } } } },
             "width": { "$ref": "#/$defs/condition" },
             "via": { "type": "string" }
           }

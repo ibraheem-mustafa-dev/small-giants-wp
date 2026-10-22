@@ -151,7 +151,8 @@ export function scriptMaps( folder, files ) {
 // id } }, assets: { files, unused, missing }, gaps } from the folder and lib/read-template.mjs's result. An element's `assets`
 // entry is { path, ratio, kind, sha256, animated, via }. `unused`: files no element and no project script names. `missing`:
 // a referenced path under `assets/` (or a script's asset literal) that has no file, with the element or script that names it.
-export function readAssets( { folder, template } ) {
+// `logicPaths`: [ { path, by } ] the logic's hole values and statics name; the file is used, a path with no file is missing.
+export function readAssets( { folder, template, logicPaths = [] } ) {
 	const all = walkFolder( folder ).files;
 	const names = all.filter( ( f ) => f.startsWith( 'assets/' ) );
 	const gaps = [];
@@ -173,6 +174,10 @@ export function readAssets( { folder, template } ) {
 		for ( const p of m.paths ) {
 			files[ p ] ? scriptNamed.add( p ) : missing.push( { path: p, by: script } );
 		}
+	}
+	// A path the draft's logic builds by string (a hole's value, a static: lib/read-logic-statics.mjs::logicAssetPaths) names its file.
+	for ( const { path: p, by } of logicPaths ) {
+		files[ p ] ? scriptNamed.add( p ) : missing.push( { path: p, by, via: 'logic' } );
 	}
 	for ( const key of template.order ) {
 		const rec = template.elements[ key ];

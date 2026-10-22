@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "project": "Read logic statics fixture",
+  "generated": "2026-10-22",
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "records": [
+    {
+      "id": "S-01",
+      "kind": "page",
+      "name": "Home",
+      "dc": "Home",
+      "template_tpl_id": [ "0" ],
+      "route": "*",
+      "breakpoints": [ "desktop" ],
+      "parent": null,
+      "states": [
+        { "name": "first", "state_keys": {}, "how_to_reach": "default" },
+        { "name": "second", "state_keys": { "tab": "two" }, "how_to_reach": "set tab" }
+      ],
+      "time_dependent": { "value": false, "reason": "" }
+    }
+  ],
+  "counts": {},
+  "unresolved": []
+}
