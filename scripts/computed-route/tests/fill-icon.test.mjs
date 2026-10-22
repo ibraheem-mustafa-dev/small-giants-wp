@@ -87,3 +87,10 @@ test( 'a mark the node already holds is not written again', () => {
 	assert.deepEqual( r.writes, [] );
 	assert.equal( signature( { name: 'svg', attrs: {}, children: [ { name: 'path', attrs: { d: 'M0 0', fill: 'red' }, children: [] } ] } ), 'pathd=M0 0' );
 } );
+
+test( 'MUST FAIL: a block that draws an inline icon but declares no iconSource (a button) is written only the icon settings it declares; the rest are named rows', () => {
+	const out = iconDecisions( { svg: { markup: '<svg viewBox="0 0 24 24"><path d="M3 3h7v7H3z" fill="currentColor"/></svg>' }, schema: { iconSvg: {} } } );
+	assert.ok( ! out.writes.some( ( w ) => 'iconSource' === w.attr ), 'no iconSource is written on a block without it' );
+	assert.ok( out.writes.some( ( w ) => 'iconSvg' === w.attr ), 'the markup is written to the block\'s own iconSvg' );
+	assert.ok( out.unmapped.some( ( u ) => 'iconSource' === u.value ), 'iconSource is a named row' );
+} );
