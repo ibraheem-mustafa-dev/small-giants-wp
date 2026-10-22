@@ -473,6 +473,10 @@
     "_wp_relative_upload_path",
     "woocommerce_store_api_register_endpoint_data",
     "has_blocks",
-    "serialize_block_attributes"
+    "serialize_block_attributes",
+    "doing_filter",
+    "extract_from_markers",
+    "insert_with_markers",
+    "user_can"
   ]
 }
