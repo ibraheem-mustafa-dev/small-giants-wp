@@ -74,6 +74,9 @@ function field_open( array $attributes, string $type, string $extra_class = '' )
 	// inside it. Absent or true keeps the default floating label.
 	if ( array_key_exists( 'floatingLabel', $attributes ) && false === $attributes['floatingLabel'] ) {
 		$classes[] = 'sgs-form-field--static-label';
+	} elseif ( 'inside' === ( $attributes['floatingLabelPosition'] ?? 'above' ) ) {
+		// floatingLabelPosition 'inside': the floating label rests and lifts inside the box instead of above it.
+		$classes[] = 'sgs-form-field--label-inside';
 	}
 
 	if ( ! empty( $extra_class ) ) {
@@ -456,7 +459,7 @@ function field_counter( string $field_id, array $attributes ): string {
 	$default = field_default_value( $attributes, true );
 	$start   = function_exists( 'mb_strlen' ) ? mb_strlen( $default ) : strlen( $default );
 	return sprintf(
-		'<span class="sgs-form-field__counter" aria-live="polite" data-sgs-counter-for="%s" data-sgs-counter-max="%d">%d / %d</span>',
+		'<span class="sgs-form-field__counter" data-sgs-counter-for="%s" data-sgs-counter-max="%d">%d / %d</span>',
 		esc_attr( $field_id ),
 		$max,
 		min( $start, $max ),

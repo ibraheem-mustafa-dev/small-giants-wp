@@ -491,7 +491,8 @@
  * ========================================================================== */
 
 @media not all and (hover: hover) and (pointer: fine) {
-	[data-sgs-cursor-field]::before {
+	/* The tap reveal of image-reveal paints this layer, so it stays while the flag is set. */
+	[data-sgs-cursor-field]:not([data-sgs-cursor-field="image-reveal"][data-sgs-reveal-open])::before {
 		display: none;
 	}
 

@@ -130,6 +130,11 @@
         "floatingLabel": {
             "type": "boolean",
             "default": true
+        },
+        "floatingLabelPosition": {
+            "type": "string",
+            "enum": [ "above", "inside" ],
+            "default": "above"
         }
     },
     "render": "file:./render.php",

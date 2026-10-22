@@ -8,6 +8,7 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
+import { fieldLabelClasses, fieldDefaultValue, FieldCounterPreview } from '../../components/form-field-preview';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const WIDTH_OPTIONS = [
@@ -24,6 +25,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		'sgs-form-field',
 		'sgs-form-field--textarea',
 		`sgs-form-field--${ width }`,
+		...fieldLabelClasses( attributes ),
 	].join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
@@ -178,10 +180,13 @@ export default function Edit( { attributes, setAttributes } ) {
 				) }
 				<textarea
 					className="sgs-form-field__input"
-					placeholder={ placeholder }
+					placeholder={ placeholder || ' ' }
+					value={ fieldDefaultValue( attributes ) }
+					readOnly
 					rows={ rows }
 					disabled
 				/>
+				<FieldCounterPreview attributes={ attributes } />
 				{ helpText && (
 					<p className="sgs-form-field__help">{ helpText }</p>
 				) }

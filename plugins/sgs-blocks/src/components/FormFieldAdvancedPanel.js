@@ -11,13 +11,8 @@
 
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
-import {
-	PanelBody,
-	SelectControl,
-	TextControl,
-	ToggleControl,
-	__experimentalNumberControl as NumberControl,
-} from '@wordpress/components';
+import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
+import { NumberControl } from './primitives';
 
 /** HTML autofill tokens people actually use on a site form, with a plain label each. */
 export const AUTOCOMPLETE_TOKENS = [
@@ -126,6 +121,19 @@ export default function FormFieldAdvancedPanel( { attributes, setAttributes, fea
 					onChange={ set( 'floatingLabel' ) }
 					help={ __( 'On: the label sits inside the box and lifts above it on focus or once filled. Off: the label stays above the box.', 'sgs-blocks' ) }
 					__nextHasNoMarginBottom
+				/>
+			) }
+			{ has( 'floatingLabel' ) && false !== attributes.floatingLabel && (
+				<SelectControl
+					label={ __( 'Floating label position', 'sgs-blocks' ) }
+					value={ 'inside' === attributes.floatingLabelPosition ? 'inside' : 'above' }
+					options={ [
+						{ label: __( 'Lifts above the box', 'sgs-blocks' ), value: 'above' },
+						{ label: __( 'Stays inside the box, shrinks on focus', 'sgs-blocks' ), value: 'inside' },
+					] }
+					onChange={ set( 'floatingLabelPosition' ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			) }
 			{ has( 'autocomplete' ) && (

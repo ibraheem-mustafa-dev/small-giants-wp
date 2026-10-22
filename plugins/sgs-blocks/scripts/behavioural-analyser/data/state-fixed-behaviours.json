@@ -993,27 +993,27 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
-   "selector": ".sgs-form-field--email:has(.sgs-form-field__input:focus) .sgs-form-field__label",
+   "selector": ".sgs-form-field--email:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
-   "selector": ".sgs-form-field--number:has(.sgs-form-field__input:focus) .sgs-form-field__label",
+   "selector": ".sgs-form-field--number:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
-   "selector": ".sgs-form-field--phone:has(.sgs-form-field__input:focus) .sgs-form-field__label",
+   "selector": ".sgs-form-field--phone:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
-   "selector": ".sgs-form-field--text:has(.sgs-form-field__input:focus) .sgs-form-field__label",
+   "selector": ".sgs-form-field--text:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
-   "selector": ".sgs-form-field--textarea:has(.sgs-form-field__input:focus) .sgs-form-field__label",
+   "selector": ".sgs-form-field--textarea:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1053,27 +1053,27 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
-   "selector": ":where(.sgs-form-field--email:has(.sgs-form-field__input:focus)) .sgs-form-field__label",
+   "selector": ":where(.sgs-form-field--email:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus)) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
-   "selector": ":where(.sgs-form-field--number:has(.sgs-form-field__input:focus)) .sgs-form-field__label",
+   "selector": ":where(.sgs-form-field--number:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus)) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
-   "selector": ":where(.sgs-form-field--phone:has(.sgs-form-field__input:focus)) .sgs-form-field__label",
+   "selector": ":where(.sgs-form-field--phone:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus)) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
-   "selector": ":where(.sgs-form-field--text:has(.sgs-form-field__input:focus)) .sgs-form-field__label",
+   "selector": ":where(.sgs-form-field--text:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus)) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
-   "selector": ":where(.sgs-form-field--textarea:has(.sgs-form-field__input:focus)) .sgs-form-field__label",
+   "selector": ":where(.sgs-form-field--textarea:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus)) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -2760,6 +2760,16 @@
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
    "selector": "dialog.sgs-shop-filters[open]::backdrop",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/field-features/style.css",
+   "selector": ".sgs-form-field.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--label-inside:has(.sgs-form-field__input:focus) .sgs-form-field__label",
+   "reason": "the inside floating label's lifted position under focus or a filled box: layout, no colour or setting"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/saved-progress/style.css",
+   "selector": ".sgs-form-review__edit:hover",
+   "reason": "the review card Edit button's hover fill: fixed surface tint, no setting"
   }
  ]
 }

@@ -15,8 +15,6 @@ use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
 use function SGS\Blocks\Forms\field_input_attrs;
 use function SGS\Blocks\Forms\field_select_default;
-use function SGS\Blocks\Forms\field_message_attrs;
-use function SGS\Blocks\Forms\field_value_param_attr;
 
 $fid     = field_id( $attributes['fieldName'] ?? 'unnamed' );
 $options = $attributes['options'] ?? array();
@@ -54,9 +52,8 @@ $default = field_select_default(
 		$options
 	)
 );
-$extra   = array_merge( field_message_attrs( $attributes ), array_filter( array( field_value_param_attr( $attributes ) ) ) );
 
-echo '<select class="sgs-form-field__input" ' . field_input_attrs( $fid, $attributes, false ) . ( $extra ? ' ' . implode( ' ', $extra ) : '' ) . '>';
+echo '<select class="sgs-form-field__input" ' . field_input_attrs( $fid, $attributes, false ) . '>';
 echo '<option value="">' . esc_html( $attributes['placeholder'] ?? __( 'Select…', 'sgs-blocks' ) ) . '</option>';
 foreach ( $options as $option ) {
 	$opt = $normalise_option( $option );

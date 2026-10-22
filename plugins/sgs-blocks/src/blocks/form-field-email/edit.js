@@ -7,6 +7,7 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
+import { fieldLabelClasses, fieldDefaultValue } from '../../components/form-field-preview';
 
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
@@ -22,6 +23,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		'sgs-form-field',
 		'sgs-form-field--email',
 		`sgs-form-field--${ width }`,
+		...fieldLabelClasses( attributes ),
 	].join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
@@ -106,7 +108,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				<input
 					type="email"
 					className="sgs-form-field__input"
-					placeholder={ placeholder }
+					placeholder={ placeholder || ' ' }
+					value={ fieldDefaultValue( attributes ) }
+					readOnly
 					disabled
 				/>
 				{ helpText && (

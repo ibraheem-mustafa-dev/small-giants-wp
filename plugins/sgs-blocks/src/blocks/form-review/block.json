@@ -44,6 +44,63 @@
                     "order": 3,
                     "clusters": [],
                     "_note": "Renders as an empty cards mount <div class=\"sgs-form-review__cards\"> — populated client-side by view.js (review-cards.js) with one card per section, each holding a <dl class=\"sgs-form-review__list\"> of the answered field rows. No per-instance style attribute exists on this block for the list or its rows; styling is shared framework CSS. clusters: [] is a genuine gap."
+                },
+                "card": {
+                    "label": "Review card",
+                    "order": 4,
+                    "clusters": [],
+                    "prefix": "card",
+                    "attrMap": {
+                        "css:background-color": "cardBackgroundColour",
+                        "css:border-color": "cardBorderColour",
+                        "css:border-style": "cardBorderStyle",
+                        "css:border-width": "cardBorderWidth",
+                        "css:border-radius": "cardBorderRadius",
+                        "css:padding": "cardPadding"
+                    },
+                    "_note": "Each section's card, built client-side by review-cards.js as <section class=\"sgs-form-review__card\">. Painted by render.php under a scoped uid class."
+                },
+                "card-title": {
+                    "label": "Card title",
+                    "order": 5,
+                    "clusters": [
+                        "text"
+                    ],
+                    "prefix": "cardTitle",
+                    "attrMap": {
+                        "css:font-size": "cardTitleFontSize",
+                        "css:font-weight": "cardTitleFontWeight",
+                        "css:font-style": "cardTitleFontStyle",
+                        "css:font-family": "cardTitleFontFamily",
+                        "css:text-transform": "cardTitleTextTransform",
+                        "css:line-height": "cardTitleLineHeight",
+                        "css:letter-spacing": "cardTitleLetterSpacing"
+                    },
+                    "_note": "The card's title line, <p class=\"sgs-form-review__card-title\">, typography through sgs_typography_css_rule()."
+                },
+                "term": {
+                    "label": "Row label",
+                    "order": 6,
+                    "clusters": [
+                        "text"
+                    ],
+                    "prefix": "term",
+                    "attrMap": {
+                        "css:color": "termColour"
+                    },
+                    "_note": "The <dt class=\"sgs-form-review__term\"> label in each card row; typography is the parent form's reviewTerm family."
+                },
+                "value": {
+                    "label": "Row value",
+                    "order": 7,
+                    "clusters": [
+                        "text"
+                    ],
+                    "prefix": "value",
+                    "attrMap": {
+                        "css:color": "valueColour"
+                    },
+                    "_note": "The <dd class=\"sgs-form-review__detail\"> answer in each card row; typography is the parent form's reviewDetail family."
                 }
             }
         }
@@ -56,7 +113,14 @@
         },
         "headingLevel": {
             "type": "string",
-            "enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
+            "enum": [
+                "h2",
+                "h3",
+                "h4",
+                "h5",
+                "h6",
+                "p"
+            ],
             "default": "h3"
         },
         "intro": {
@@ -72,6 +136,93 @@
             "type": "string",
             "default": "Edit",
             "role": "content"
+        },
+        "cardBackgroundColour": {
+            "type": "string",
+            "default": ""
+        },
+        "cardBorderColour": {
+            "type": "string",
+            "default": ""
+        },
+        "cardBorderStyle": {
+            "type": "string",
+            "enum": [
+                "none",
+                "solid",
+                "dashed",
+                "dotted"
+            ],
+            "default": "solid"
+        },
+        "cardBorderWidth": {
+            "type": "object",
+            "default": {}
+        },
+        "cardBorderRadius": {
+            "type": "object",
+            "default": {
+                "desktop": {}
+            }
+        },
+        "cardPadding": {
+            "type": "string",
+            "default": ""
+        },
+        "termColour": {
+            "type": "string",
+            "default": ""
+        },
+        "valueColour": {
+            "type": "string",
+            "default": ""
+        },
+        "cardTitleFontSize": {
+            "type": "object",
+            "default": {}
+        },
+        "cardTitleFontSizeUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "cardTitleFontWeight": {
+            "type": "string",
+            "default": ""
+        },
+        "cardTitleFontStyle": {
+            "type": "string",
+            "default": ""
+        },
+        "cardTitleFontFamily": {
+            "type": "string",
+            "default": ""
+        },
+        "cardTitleTextTransform": {
+            "type": "string",
+            "enum": [
+                "",
+                "none",
+                "uppercase",
+                "lowercase",
+                "capitalize"
+            ],
+            "default": ""
+        },
+        "cardTitleLineHeight": {
+            "type": "object",
+            "default": {}
+        },
+        "cardTitleLineHeightUnit": {
+            "type": "string",
+            "default": "em"
+        },
+        "cardTitleLetterSpacing": {
+            "type": "object",
+            "default": {}
+        },
+        "cardTitleLetterSpacingUnit": {
+            "type": "string",
+            "default": "em"
         }
     },
     "render": "file:./render.php",

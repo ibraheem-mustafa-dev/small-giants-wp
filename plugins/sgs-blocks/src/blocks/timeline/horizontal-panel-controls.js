@@ -1,16 +1,12 @@
 import { __ } from '@wordpress/i18n';
-import {
-	PanelBody,
-	SelectControl,
-	ToggleControl,
-	__experimentalNumberControl as NumberControl,
-} from '@wordpress/components';
+import { PanelBody, ToggleControl } from '@wordpress/components';
+import { NumberControl, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { DesignTokenPicker, ResponsiveOverride } from '../../components';
 
 const COUNTER_FORMATS = [
 	{ value: 'padded-index-of-total', label: __( '01 / 12', 'sgs-blocks' ) },
 	{ value: 'index-of-total', label: __( '1 / 12', 'sgs-blocks' ) },
-	{ value: 'percent', label: __( 'Percentage', 'sgs-blocks' ) },
+	{ value: 'percent', label: __( '%', 'sgs-blocks' ), title: __( 'Percentage', 'sgs-blocks' ) },
 ];
 
 /**
@@ -76,14 +72,18 @@ export default function HorizontalPanelControls( { attributes, setAttributes } )
 				__nextHasNoMarginBottom
 			/>
 			{ panelCounter && (
-				<SelectControl
+				<ToggleGroupControl
 					label={ __( 'Counter style', 'sgs-blocks' ) }
 					value={ panelCounterFormat }
-					options={ COUNTER_FORMATS }
 					onChange={ ( next ) => setAttributes( { panelCounterFormat: next } ) }
+					isBlock
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
-				/>
+				>
+					{ COUNTER_FORMATS.map( ( format ) => (
+						<ToggleGroupControlOption key={ format.value } value={ format.value } label={ format.label } aria-label={ format.title } />
+					) ) }
+				</ToggleGroupControl>
 			) }
 			<ToggleControl
 				label={ __( 'Focus the entry nearest the centre', 'sgs-blocks' ) }

@@ -65,11 +65,6 @@
 	background-color: var(--wp--preset--color--surface, transparent);
 }
 
-.sgs-form-review__edit:focus-visible {
-	outline: 2px solid currentColor;
-	outline-offset: 2px;
-}
-
 /* The section name that completes the button's accessible name ("Edit Business details"). */
 .sgs-form-review__edit-context {
 	position: absolute;

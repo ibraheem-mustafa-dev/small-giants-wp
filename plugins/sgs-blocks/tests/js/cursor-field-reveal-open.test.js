@@ -2,6 +2,8 @@
  * `image-reveal` full reveal on keyboard focus and on touch or pen tap (Spec 38A). The paint is CSS; this proves the flag
  * `data-sgs-reveal-open` the stylesheet reads, and that the mouse never sets it.
  */
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { initRevealOpen } from '../../src/shared/effects/cursor-field-reveal';
 
 const OPEN = 'data-sgs-reveal-open';
@@ -51,4 +53,28 @@ test( 'teardown removes the flag', () => {
 	pointer( el, 'pointerup', 'touch' );
 	stop();
 	expect( el.hasAttribute( OPEN ) ).toBe( false );
+} );
+
+test( 'a tap on a link inside the card opens it and a second tap closes it although the link keeps focus', () => {
+	const link = document.getElementById( 'a' );
+	pointer( link, 'pointerup', 'touch' );
+	link.focus();
+	expect( el.hasAttribute( OPEN ) ).toBe( true );
+	pointer( link, 'pointerup', 'touch' );
+	expect( el.hasAttribute( OPEN ) ).toBe( false );
+} );
+
+test( 'keyboard focus after a tap counts again', () => {
+	pointer( el, 'pointerup', 'touch' );
+	pointer( el, 'pointerup', 'touch' );
+	el.dispatchEvent( new Event( 'keydown', { bubbles: true } ) );
+	document.getElementById( 'b' ).focus();
+	expect( el.hasAttribute( OPEN ) ).toBe( true );
+} );
+
+test( 'the touch stylesheet keeps the image layer while the reveal is open', () => {
+	const css = readFileSync( join( __dirname, '../../assets/css/fx-cursor-field.css' ), 'utf8' );
+	const touch = css.slice( css.indexOf( '@media not all and (hover: hover) and (pointer: fine)' ) );
+	const rule = touch.slice( 0, touch.indexOf( '}' ) );
+	expect( rule ).toContain( ':not([data-sgs-cursor-field="image-reveal"][data-sgs-reveal-open])::before' );
 } );

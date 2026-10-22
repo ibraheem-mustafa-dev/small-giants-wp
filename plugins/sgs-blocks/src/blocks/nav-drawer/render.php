@@ -1120,7 +1120,8 @@ if ( $bg_image_needs_note ) {
 	$wrapper_args['aria-describedby'] = $drawer_ref . '-bg-note';
 }
 // The dialog role is explicit and `aria-modal` follows the resolved modality: a non-modal drawer
-// (a `header-box` anchor, or the operator's choice) leaves the page behind it reachable.
+// (a `header-box` anchor, or the operator's choice) reports `aria-modal="false"`, and the open drawer still freezes
+// everything except the header region (`store.js::freezeBackground`), so only the header stays reachable behind it.
 $wrapper_args['role']       = 'dialog';
 $wrapper_args['aria-modal'] = 'modal' === $modality ? 'true' : 'false';
 $wrapper_attributes         = get_block_wrapper_attributes( $wrapper_args );

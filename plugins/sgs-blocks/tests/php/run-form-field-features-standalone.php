@@ -87,7 +87,7 @@ features_check( 'FR-4-4 floating off adds the static modifier', str_contains( $t
 $ta   = static fn( array $a ): string => features_render( $harness, 'sgs/form-field-textarea', array_merge( array( 'fieldName' => 'msg', 'label' => 'Message' ), $a ) );
 $html = $ta( array( 'maxLength' => 800 ) );
 features_check( 'FR-4-5 maxlength on the textarea', 1 === preg_match( '#<textarea[^>]* maxlength="800"#', $html ) );
-features_check( 'FR-4-5 counter span', str_contains( $html, 'class="sgs-form-field__counter" aria-live="polite"' ) && str_contains( $html, '>0 / 800</span>' ) );
+features_check( 'FR-4-5 counter span', str_contains( $html, 'class="sgs-form-field__counter" data-sgs-counter-for=' ) && str_contains( $html, '>0 / 800</span>' ) );
 features_check( 'FR-4-5 counter points at the textarea', 1 === preg_match( '#<textarea[^>]* id="(sgs-field-msg)"#', $html ) && str_contains( $html, 'data-sgs-counter-for="sgs-field-msg"' ) );
 features_check( 'FR-4-5 counter off', ! str_contains( $ta( array( 'maxLength' => 800, 'showCounter' => false ) ), 'sgs-form-field__counter' ) );
 features_check( 'FR-4-5 no max, no counter, no maxlength', ! str_contains( $ta( array() ), 'sgs-form-field__counter' ) && ! str_contains( $ta( array() ), 'maxlength' ) );
@@ -130,6 +130,18 @@ features_check( 'param absent when empty', ! str_contains( $text( array() ), 'da
 features_check( 'param on select', str_contains( $sel( array( 'valueFromParam' => 'team' ) ), '<select class="sgs-form-field__input"' ) && str_contains( $sel( array( 'valueFromParam' => 'team' ) ), 'data-sgs-value-param="team"' ) );
 $rad = features_render( $harness, 'sgs/form-field-radio', array( 'fieldName' => 'r', 'label' => 'R', 'valueFromParam' => 'pick', 'options' => array( 'a', 'b' ) ) );
 features_check( 'param on the radio group', str_contains( $rad, '<fieldset class="sgs-form-field__group" data-sgs-value-param="pick">' ) );
+
+// Each message and link-parameter attribute prints once on a select (it was appended twice).
+$html = features_render( $harness, 'sgs/form-field-select', array( 'fieldName' => 'f', 'label' => 'F', 'options' => array( 'a' ), 'msgRequired' => 'Needed', 'valueFromParam' => 'team' ) );
+features_check( 'select prints data-sgs-msg-required once', 1 === substr_count( $html, 'data-sgs-msg-required=' ) );
+features_check( 'select prints data-sgs-value-param once', 1 === substr_count( $html, 'data-sgs-value-param=' ) );
+foreach ( array( 'radio', 'checkbox', 'consent' ) as $type ) {
+	$html = features_render( $harness, "sgs/form-field-$type", array( 'fieldName' => 'f', 'label' => 'F', 'options' => array( 'a' ), 'msgRequired' => 'Needed' ) );
+	features_check( "$type prints data-sgs-msg-required once per control", substr_count( $html, 'data-sgs-msg-required=' ) === substr_count( $html, '<input' ) );
+}
+// The live counter is not an aria-live region: it would read the count after every keystroke.
+$html = features_render( $harness, 'sgs/form-field-textarea', array( 'fieldName' => 'f', 'label' => 'F', 'maxLength' => 800 ) );
+features_check( 'counter prints and is not aria-live', str_contains( $html, 'sgs-form-field__counter' ) && ! preg_match( '#sgs-form-field__counter"[^>]*aria-live#', $html ) );
 
 echo "\n$passed passed, $failed failed\n";
 exit( $failed > 0 ? 1 : 0 );

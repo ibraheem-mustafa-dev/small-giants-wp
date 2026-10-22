@@ -1712,11 +1712,11 @@
 }
 
 @media (min-width: 768px) {
-	.sgs-timeline[data-sgs-fx="horizontal-panel"] {
+	.sgs-timeline[data-sgs-fx~='horizontal-panel'] {
 		position: relative;
 	}
 
-	.sgs-timeline[data-sgs-fx="horizontal-panel"] > .sgs-timeline__counter {
+	.sgs-timeline[data-sgs-fx~='horizontal-panel'] > .sgs-timeline__counter {
 		display: block;
 		position: absolute;
 		inset-block-start: var(--wp--preset--spacing--30, 1rem);

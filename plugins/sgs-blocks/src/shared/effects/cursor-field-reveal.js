@@ -38,14 +38,22 @@ export function initRevealOpen( el ) {
 		el.removeAttribute( OPEN_ATTR );
 	};
 
-	// A tap sets the flag; the focus it causes must not close it again, so focus and tap own separate state.
+	// A tap sets the flag; the focus it causes must neither close it nor keep it open on the next tap, so focus and
+	// tap own separate state and a focus that follows a tap is ignored until the next key press.
 	let focused = false;
 	let tapped = false;
+	let lastInputWasTap = false;
 	const sync = () => setOpen( focused || tapped );
 
 	const onFocusIn = () => {
+		if ( lastInputWasTap ) {
+			return;
+		}
 		focused = true;
 		sync();
+	};
+	const onKeyDown = () => {
+		lastInputWasTap = false;
 	};
 	const onFocusOut = ( event ) => {
 		if ( event.relatedTarget && el.contains( event.relatedTarget ) ) {
@@ -58,6 +66,8 @@ export function initRevealOpen( el ) {
 		if ( ! isTapPointer( event ) ) {
 			return;
 		}
+		lastInputWasTap = true;
+		focused = false;
 		tapped = ! tapped;
 		sync();
 	};
@@ -70,12 +80,14 @@ export function initRevealOpen( el ) {
 	};
 
 	el.addEventListener( 'focusin', onFocusIn );
+	el.addEventListener( 'keydown', onKeyDown );
 	el.addEventListener( 'focusout', onFocusOut );
 	el.addEventListener( 'pointerup', onPointerUp );
 	doc.addEventListener( 'pointerdown', onOutside, true );
 
 	return () => {
 		el.removeEventListener( 'focusin', onFocusIn );
+		el.removeEventListener( 'keydown', onKeyDown );
 		el.removeEventListener( 'focusout', onFocusOut );
 		el.removeEventListener( 'pointerup', onPointerUp );
 		doc.removeEventListener( 'pointerdown', onOutside, true );

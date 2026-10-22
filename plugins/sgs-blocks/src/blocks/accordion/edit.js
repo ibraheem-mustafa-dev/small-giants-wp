@@ -111,6 +111,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			.filter( Boolean )
 			.join( ' ' ),
 		style: preview.style,
+		// Mirrors render.php's data-scroll-to-opened and data-scroll-gap, so the canvas carries what the front end does.
+		...( scrollToOpened
+			? {
+					'data-scroll-to-opened': 'true',
+					...( scrollToOpenedGap ? { 'data-scroll-gap': String( scrollToOpenedGap ) } : {} ),
+			  }
+			: {} ),
 	} );
 	const innerBlocksProps = useInnerBlocksProps(
 		preview.hasBandProps

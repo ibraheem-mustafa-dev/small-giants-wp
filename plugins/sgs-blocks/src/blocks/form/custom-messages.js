@@ -2,7 +2,7 @@
  * SGS Form — per-field validation copy.
  *
  * A field may carry `data-sgs-msg-<reason>` attributes (`required`, `type`, `email`, `url`, `pattern`, `minlength`,
- * `maxlength`, `min`, `max`, `step`, `invalid`). The message for the reason that failed replaces the browser's text.
+ * `maxlength`, `min`, `max`, `step`, `badinput`, `invalid`, `toolong`). The message for the reason that failed replaces the browser's text.
  *
  * @package SGS\Blocks
  */
@@ -13,7 +13,7 @@
  * @param {HTMLElement} field Control.
  * @return {string[]} Reason suffixes.
  */
-function reasons( field ) {
+export function reasons( field ) {
 	const v = field.validity;
 	const out = [];
 	if ( v.valueMissing ) {
@@ -41,7 +41,14 @@ function reasons( field ) {
 		out.push( 'step' );
 	}
 	if ( v.badInput ) {
+		out.push( 'badinput' );
+	}
+	// PHP prints data-sgs-msg-invalid and data-sgs-msg-toolong: every failure other than a missing value is "invalid", and an over-long value is "toolong".
+	if ( v.typeMismatch || v.patternMismatch || v.tooShort || v.rangeUnderflow || v.rangeOverflow || v.stepMismatch || v.badInput ) {
 		out.push( 'invalid' );
+	}
+	if ( v.tooLong ) {
+		out.push( 'toolong' );
 	}
 	return out;
 }
