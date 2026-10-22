@@ -8,6 +8,7 @@ import { knownPaths } from './fill-prop.mjs';
 import { presenceDecisions, textDecisions, linkDecisions } from './fill-presence.mjs';
 import { linkAttrDecisions, blockSupportsAnchor } from './fill-link-attrs.mjs';
 import { imageSlots, mediaDecisions, nestedImage, factImage } from './fill-media.mjs';
+import { mapDecisions } from './fill-map.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { unreadOf } from './fill-unread.mjs';
 import { hasRow } from './fill-skeleton.mjs';
@@ -52,6 +53,10 @@ function fillContent( st, rec, ref, cal ) {
 	take( linkDecisions( { calibration: cal, attributes: node.attributes || {}, slots: hrefs, origin: st.origin, pages: st.pages } ) );
 	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts } ) );
 	take( mediaDecisions( { slots: imageSlots( st.db, rec.name ), schema: blockSchema( rec.name ), attributes: node.attributes || {}, img: nestedImage( atDesktop ), media: { ...st.media, origin: st.origin }, fact: factImage( st.facts, rec.targets.find( ( t ) => t.finder?.tpl )?.finder.tpl, st.rootComponent ) } ) );
+	if ( 'map' === node.attributes?.displayType ) {
+		const embeds = Object.fromEntries( [ 1440, 768, 375 ].map( ( w ) => [ w, st.reads.widths[ w ]?.[ rec.targets.find( ( t ) => '' === t.slot )?.id ]?.embed ] ).filter( ( [ , e ] ) => e ) );
+		take( mapDecisions( { schema: blockSchema( rec.name ), attributes: node.attributes || {}, embeds } ) );
+	}
 	// A skeleton's own statement that something lives outside the tree turns the matching UNMAPPED row into handover.
 	for ( const h of skeletonNode.handover || [] ) {
 		const slot = h.slot ?? '';

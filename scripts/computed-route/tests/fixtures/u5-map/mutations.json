@@ -1,0 +1,10 @@
+[
+	{ "file": "lib/fill-map.mjs", "find": "&& `${ h }px` !== carried ) {", "replace": ") {", "why": "every tier is written, including ones equal to the wider tier" },
+	{ "file": "lib/fill-map.mjs", "find": "heights[ tier ] = `${ h }px`;", "replace": "heights.desktop = `${ h }px`;", "why": "the height is written for desktop only" },
+	{ "file": "lib/fill-map.mjs", "find": "n >= 1 && n <= 20 ? n : null", "replace": "n >= 1 ? n : null", "why": "a zoom above 20 is accepted" },
+	{ "file": "lib/fill-map.mjs", "find": "put( 'mapFilter', painted[ 0 ] );", "replace": "put( 'mapFilter', painted[ 0 ].split( ' ' )[ 0 ] );", "why": "only the first filter function is kept, not the draft's whole string" },
+	{ "file": "lib/fill-map.mjs", "find": "} else if ( ! names || names.some( ( n ) => ! FILTER_FUNCTIONS.includes( n ) ) ) {", "replace": "} else if ( false ) {", "why": "a filter function the block drops is written anyway" },
+	{ "file": "lib/fill-map.mjs", "find": "if ( filters.length > 1 ) {", "replace": "if ( false ) {", "why": "a filter that differs by width is written from the first width" },
+	{ "file": "lib/fill-map.mjs", "find": "const declared = ( attr ) => schema && attr in schema;", "replace": "const declared = () => true;", "why": "a setting the block does not declare is written" },
+	{ "file": "lib/fill-map.mjs", "find": "put( 'mapFilter', '' );", "replace": "void 0;", "why": "a filter the draft no longer paints is not cleared" }
+]

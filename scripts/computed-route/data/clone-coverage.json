@@ -7567,11 +7567,11 @@
 			"note": "Origits embed (origits.com): a third-party embed; no embed writer (core/embed where WordPress supports the host)"
 		},
 		"embed:other": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "an embed from a host the oEmbed list does not name (a Google Maps iframe): no embed writer (FR-48-39); map embeds are a named site surface"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-map.mjs#mapDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "an embed from a host the oEmbed list does not name (a Google Maps iframe): the map display is written to sgs/business-info; any other host raises the skeleton's named gap",
+			"test": "scripts/computed-route/tests/fill-map.test.mjs#a block without the map settings"
 		},
 		"embed:outplayed.tv": {
 			"recognise": null,
@@ -10497,11 +10497,11 @@
 			"note": "<iframe scrolling>: still honoured by browsers for the embedded page (scrollbars, its body margin); no embed writer"
 		},
 		"html-attr:iframe.src": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<iframe src>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-map.mjs#mapDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<iframe src> of a map: the zoom (z=) is written as mapZoom; the searched address is the Site Info address, so it is never a setting (the skeleton hands it to Site Info)",
+			"test": "scripts/computed-route/tests/fill-map.test.mjs#the zoom is the embed address"
 		},
 		"html-attr:iframe.srcdoc": {
 			"recognise": null,
@@ -13049,11 +13049,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:iframe": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-map.mjs#mapDecisions",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "a map iframe is the sgs/business-info map: Fill reads the iframe's height at each width, its zoom and the whole filter it paints, and writes mapHeight (per device), mapZoom and mapFilter (a custom value); the rendered height and filter are compared with the draft by Solve's walker (lib/triage.mjs)",
+			"test": "scripts/computed-route/tests/fill-map.test.mjs#every function kept"
 		},
 		"html:image": {
 			"excluded": {

@@ -117,6 +117,9 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 		const imgs = el.matches( 'img' ) ? [ el ] : [ ...el.querySelectorAll( 'img' ) ];
 		const cap = el.matches( 'figure' ) ? el.querySelector( 'figcaption' ) : null;
 		snap.img = 1 === imgs.length ? { tag: el.localName, src: imgs[ 0 ].getAttribute( 'src' ) ?? imgs[ 0 ].getAttribute( 'data-src' ) ?? '', alt: imgs[ 0 ].getAttribute( 'alt' ), caption: cap ? ( cap.textContent || '' ).replace( /\s+/g, ' ' ).trim() : null } : null;
+		// The one embedded frame this element is or holds (a map): its address, the filter it paints and its height.
+		const frames = el.matches( 'iframe' ) ? [ el ] : [ ...el.querySelectorAll( 'iframe' ) ];
+		snap.embed = 1 === frames.length ? { src: frames[ 0 ].getAttribute( 'src' ) ?? '', filter: getComputedStyle( frames[ 0 ] ).filter, h: frames[ 0 ].getBoundingClientRect().height } : null;
 		// The intrinsic ratio of the image or SVG this element is, or of the one it wraps: an image's natural size, else its
 		// width and height attributes, else an SVG's viewBox. A wrapper is media only when that image is its only rendered
 		// content (no words, no other element) and fills its box; a button or card holding one icon is not media. null when
