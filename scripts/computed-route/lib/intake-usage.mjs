@@ -40,6 +40,11 @@ const REACT_PROP = { defaultValue: 'value', defaultChecked: 'checked', className
 const EMBED_TAGS = new Set( [ 'iframe', 'embed', 'object' ] );
 const LEGACY_PSEUDO_ELEMENTS = new Set( [ 'before', 'after', 'first-line', 'first-letter' ] );
 const MARKUP = /<[a-z][\w-]*[\s/>]/i;
+// A media query that is only `(prefers-reduced-motion: reduce)`.
+const REDUCED_MOTION_ONLY = /^\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)$/i;
+// The Spec 48A runtime files an export carries (FR-48A-1): the draft runtime and its image-slot element. Their own code
+// is the runtime's, not the draft's, so the usage read skips them.
+export const RUNTIME_FILES = new Set( [ 'support.js', 'image-slot.js' ] );
 const ASSET = /\.(?:svg|css)$/i;
 
 // A usage tally: id → { count, draftId (the first place it was seen), props? (a CSS property group's properties the
@@ -128,10 +133,17 @@ export function cssUsage( text, t, draftId, known = new Set(), context = 'styles
 		return [ `${ draftId }: ${ e.message }` ];
 	}
 	const inMedia = [];
+	const reduced = [];
 	csstree.walk( ast, {
 		enter( n ) {
 			if ( 'Atrule' === n.type ) {
-				note( t, `css-at:${ n.name.toLowerCase() }`, draftId );
+				// A `@media (prefers-reduced-motion: reduce)` block, and the pseudo-elements inside it, are covered by SGS's own
+				// reduced-motion handling (`fx_effects.reduced_motion`), so they are not capabilities the draft asks for.
+				const rm = REDUCED_MOTION_ONLY.test( n.prelude ? csstree.generate( n.prelude ) : '' ) && 'media' === n.name.toLowerCase();
+				reduced.push( rm );
+				if ( ! rm ) {
+					note( t, `css-at:${ n.name.toLowerCase() }`, draftId );
+				}
 				inMedia.push( 'media' === n.name.toLowerCase() );
 			} else if ( ( 'Feature' === n.type || 'MediaFeature' === n.type ) && inMedia.at( -1 ) ) {
 				note( t, `css-media-feature:${ n.name.toLowerCase().replace( /^(?:min|max)-/, '' ) }`, draftId );
@@ -142,7 +154,9 @@ export function cssUsage( text, t, draftId, known = new Set(), context = 'styles
 			} else if ( 'PseudoClassSelector' === n.type ) {
 				note( t, pseudoId( n.name.toLowerCase(), known ), draftId );
 			} else if ( 'PseudoElementSelector' === n.type ) {
-				note( t, `css-pseudo-element:${ n.name.toLowerCase() }`, draftId );
+				if ( ! reduced.includes( true ) ) {
+					note( t, `css-pseudo-element:${ n.name.toLowerCase() }`, draftId );
+				}
 			} else if ( 'Function' === n.type ) {
 				note( t, `css-function:${ n.name.toLowerCase() }`, draftId );
 			} else if ( 'Dimension' === n.type ) {
@@ -153,6 +167,7 @@ export function cssUsage( text, t, draftId, known = new Set(), context = 'styles
 		},
 		leave( n ) {
 			if ( 'Atrule' === n.type ) {
+				reduced.pop();
 				inMedia.pop();
 			}
 		},
@@ -486,7 +501,7 @@ export function draftUsage( { sources = [], folder = null, known = new Set() } )
 			e.attrs?.forEach( ( [ , v ] ) => said.push( String( v ?? '' ) ) );
 		}
 		said.push( s.template || '', s.logic || '' );
-		const logics = [ ...( s.logic ? [ { text: s.logic, opts: { startLine: s.logicLine || 1, startColumn: s.logicColumn || 0 }, types: [ 'module' ], comp: s.component } ] : [] ), ...( s.scripts || [] ).filter( ( x ) => x.text ).map( ( x ) => ( { text: x.text, opts: {}, types: [ 'script', 'module' ], comp: x.src } ) ) ];
+		const logics = [ ...( s.logic ? [ { text: s.logic, opts: { startLine: s.logicLine || 1, startColumn: s.logicColumn || 0 }, types: [ 'module' ], comp: s.component } ] : [] ), ...( s.scripts || [] ).filter( ( x ) => x.text && ! RUNTIME_FILES.has( path.posix.basename( String( x.src || '' ).split( /[?#]/ )[ 0 ] ) ) ).map( ( x ) => ( { text: x.text, opts: {}, types: [ 'script', 'module' ], comp: x.src } ) ) ];
 		for ( const l of logics ) {
 			said.push( l.text );
 			const ast = l.types.map( ( sourceType ) => {
