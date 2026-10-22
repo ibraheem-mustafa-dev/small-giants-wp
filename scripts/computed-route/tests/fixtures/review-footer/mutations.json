@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "return ( before && rowHolding( before ) ) || [",
+		"replace": "return [",
+		"why": "a width-only child would always follow the first row"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "row.innerBlocks.push( ...alternatives(), ...floated() );",
+		"replace": "row.innerBlocks.push( ...floated() );",
+		"why": "a row that is one element would drop its width alternatives"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "...( els.length ? c.buildChildren( e, parent, els ) : [] ), ...alternatives(), ...floated()",
+		"replace": "...( els.length ? c.buildChildren( e, parent, els ) : [] ), ...floated()",
+		"why": "a keyless row would drop its width alternatives"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "const wides = m.widthKids( e );",
+		"replace": "const wides = [];",
+		"why": "no width alternative would be built"
+	}
+]
