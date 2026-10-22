@@ -142,3 +142,23 @@ test( 'MUST FAIL: a pair is the record\'s only by its full ref and its stated dr
 	assert.equal( livePair( named( 'Sec:9' ), rec( { draftId: 'Sec:2' } ), 1440, null ).why, 'no-live-element' );
 	assert.ok( livePair( named( 'Sec:2' ), rec( { draftId: 'Sec:2' } ), 1440, null ).live );
 } );
+
+// FR-48-36's image part: an image record is settled by the painted image on the built page.
+const IMG_MAP = { sites: { 'acme-test': { files: [ { asset: 'sites/acme/assets/hero.png', id: 101, url: 'https://acme.test/wp-content/uploads/hero.png' }, { asset: 'sites/acme/assets/other.png', id: 102, url: 'https://acme.test/wp-content/uploads/other.png' } ] } } };
+const imgRec = ( over = {} ) => ( { node: 'cr-ref-f-2', slot: '', property: 'image', kind: 'image', width: 1440, state: 'default', imageId: 101, ratio: 1.5, alt: 'A loaf', dr: 'agree', verdict: 'confirmed', ...over } );
+const imgReport = ( img ) => report( { 'sgs/media': { live: { trace: { ref: 'cr-ref-f-2', path: '' }, styles: {}, img }, diffs: [] } } );
+const liveImg = ( over = {} ) => fillLive( [ imgRec() ], imgReport( { src: 'https://acme.test/wp-content/uploads/hero.png', alt: 'A loaf', w: 1500, h: 1000, ...over } ), { media: { map: IMG_MAP, site: 'acme-test' } } )[ 0 ];
+
+test( 'MUST FAIL: an image record is confirmed only when the painted image is the written attachment, with the written alt and the stated ratio', () => {
+	assert.equal( liveImg().verdict, 'confirmed' );
+	assert.equal( liveImg( { src: 'https://acme.test/wp-content/uploads/other.png' } ).verdict, 'open' );
+	assert.match( liveImg( { src: 'https://acme.test/wp-content/uploads/other.png' } ).reason, /\(attachment 102\); Fill wrote attachment 101/ );
+	assert.match( liveImg( { alt: '' } ).reason, /alt/ );
+	assert.match( liveImg( { w: 1000, h: 1000 } ).reason, /ratio/ );
+} );
+
+test( 'MUST FAIL: an image record whose live image cannot be read stays open, never confirmed', () => {
+	const r = fillLive( [ imgRec() ], imgReport( null ), { media: { map: IMG_MAP, site: 'acme-test' } } )[ 0 ];
+	assert.equal( r.verdict, 'open' );
+	assert.equal( r.rl, 'unreadable' );
+} );

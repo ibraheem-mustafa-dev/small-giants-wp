@@ -10526,9 +10526,9 @@
 		"html-attr:img.alt": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/fill-media.mjs#mediaDecisions",
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<img alt>: Fill writes it to the block's image-alt setting (tests/fill-media.test.mjs); the painted-asset check (lib/fill-media.mjs::paintedImageCheck) is not yet called from the live check"
+			"check": "scripts/computed-route/lib/confirm-live.mjs#imageLive",
+			"note": "<img alt>: Fill writes it to the block's image-alt setting (the draft's alt, else the fact record's non-hole placeholder); the live check compares it with the painted image's alt",
+			"test": "scripts/computed-route/tests/confirm-live.test.mjs#an image record is confirmed only when"
 		},
 		"html-attr:img.attributionsrc": {
 			"excluded": {
@@ -10622,9 +10622,9 @@
 		"html-attr:img.src": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/fill-media.mjs#mediaDecisions",
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<img src>: Fill writes it as the block's image URL and attachment id from the media map (tests/fill-media.test.mjs); the painted-asset check (lib/fill-media.mjs::paintedImageCheck) is not yet called from the live check"
+			"check": "scripts/computed-route/lib/confirm-live.mjs#imageLive",
+			"note": "<img src>: Fill writes it as the block's image URL and attachment id from the media map; the live check (lib/confirm-live.mjs::imageLive) names the attachment the page paints and refuses any other",
+			"test": "scripts/computed-route/tests/confirm-live.test.mjs#an image record is confirmed only when"
 		},
 		"html-attr:img.srcset": {
 			"recognise": null,
@@ -12929,16 +12929,16 @@
 		"html:figcaption": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/fill-media.mjs#mediaDecisions",
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "media element: Fill writes the caption's words to the block's caption setting, or names the gap (tests/fill-media.test.mjs); the painted-asset check (lib/fill-media.mjs::paintedImageCheck) is not yet called from the live check"
+			"check": "scripts/computed-route/lib/confirm-live.mjs#imageLive",
+			"note": "media element: Fill writes the caption's words to the block's caption setting, or names the gap; the figure's image is settled by the live check (lib/confirm-live.mjs::imageLive)",
+			"test": "scripts/computed-route/tests/confirm-live.test.mjs#an image record is confirmed only when"
 		},
 		"html:figure": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/fill-media.mjs#mediaDecisions",
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "media element: Fill writes the image a figure holds, or names the gap when the block has no image setting (tests/fill-media.test.mjs); the painted-asset check (lib/fill-media.mjs::paintedImageCheck) is not yet called from the live check"
+			"check": "scripts/computed-route/lib/confirm-live.mjs#imageLive",
+			"note": "media element: Fill writes the image a figure holds, or names the gap when the block has no image setting; the live check settles the painted image",
+			"test": "scripts/computed-route/tests/confirm-live.test.mjs#an image record is confirmed only when"
 		},
 		"html:font": {
 			"recognise": null,
@@ -13065,9 +13065,9 @@
 		"html:img": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/fill-media.mjs#mediaDecisions",
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "media element: Fill writes the block's image URL and attachment id from the media map lib/media-upload.mjs wrote (tests/fill-media.test.mjs); the check that the painted image is the draft's asset (lib/fill-media.mjs::paintedImageCheck) is built and not yet called from the live check"
+			"check": "scripts/computed-route/lib/confirm-live.mjs#imageLive",
+			"note": "media element: Fill writes the block's image URL, attachment id and alt from the media map lib/media-upload.mjs wrote, reading the image on the element, in a wrapper or in one nested slot, and the alt and ratio the fact record states; every mapped image raises an image confirm record, and the live check (lib/confirm-live.mjs::imageLive, through lib/fill-media.mjs::paintedImageCheck) settles it against the painted image: the written attachment, its alt and the stated ratio",
+			"test": "scripts/computed-route/tests/confirm-live.test.mjs#an image record is confirmed only when"
 		},
 		"html:input": {
 			"recognise": null,

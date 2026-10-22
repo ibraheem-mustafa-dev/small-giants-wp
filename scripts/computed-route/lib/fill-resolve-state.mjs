@@ -46,7 +46,7 @@ export function makeState( o ) {
 	} );
 	return {
 		...o, flat,
-		out: { writes: [], unmapped: [], notes: [], handover: [], spacing: [], fluid: [], held: [], unread: [] },
+		out: { writes: [], unmapped: [], notes: [], handover: [], spacing: [], fluid: [], held: [], unread: [], images: [] },
 		shown: new Map(), // `${index}|${prop}` -> { width: value } for the node's own element, once resolved
 		gapSet: new Map(), // `${index}|${prop}` -> { width: value } the parent decided from rendered gaps
 		margins: new Map(), // child index -> { width: [margin sides the parent owns] }

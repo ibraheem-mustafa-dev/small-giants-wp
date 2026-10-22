@@ -7,6 +7,7 @@
 import fs from 'fs';
 import path from 'path';
 import { compareDR, TOLERANCE } from './fill-confirm.mjs';
+import { paintedImageCheck } from './fill-media.mjs';
 
 // The rendered tolerance (FR-48-36): ±1px for lengths in place of the declared ±0.5px.
 export const RENDERED_TOL = 1;
@@ -89,11 +90,28 @@ export function livePair( report, record, width, rest ) {
 
 // The records with the live half filled: renderedLive, rl, rlTolerance, the verdict from the table and, where the table
 // says so, pending. Records with no width (no target) pass through open.
-export function fillLive( records, report, { stateMap = null } = {} ) {
+// An image record's live half (FR-48-36, the image part): the painted image on the built page is the attachment Fill
+// wrote (lib/fill-media.mjs::paintedImageCheck, which also holds the stated ratio) and carries the alt Fill wrote.
+// media: { map, site }. An unreadable live image leaves the row open; it never confirms.
+export function imageLive( rec, hit, media = {} ) {
+	const img = hit.live?.img ?? null;
+	if ( ! img || ! img.src ) {
+		return { ...rec, rl: 'unreadable', liveWhy: hit.why ?? 'no-live-image', verdict: 'open', reason: 'the live image could not be read' };
+	}
+	const check = paintedImageCheck( { map: media.map, site: media.site, painted: img.src, id: rec.imageId, ratio: rec.ratio, natural: { w: img.w, h: img.h } } );
+	const altOk = ! rec.alt || String( img.alt ?? '' ).trim() === rec.alt;
+	const ok = check.ok && altOk;
+	return { ...rec, renderedLive: img.src, rl: ok ? 'agree' : 'disagree', rlTolerance: null, verdict: ok ? 'confirmed' : 'open', ...( ok ? {} : { reason: check.ok ? `the live image alt is "${ img.alt ?? '' }"; Fill wrote "${ rec.alt }"` : check.reason } ) };
+}
+
+export function fillLive( records, report, { stateMap = null, media = {} } = {} ) {
 	const rest = restStates( stateMap );
 	return records.map( ( rec ) => {
 		if ( null == rec.width || 'no-target' === rec.dr ) {
 			return { ...rec };
+		}
+		if ( 'image' === rec.kind ) {
+			return imageLive( rec, livePair( report, rec, rec.width, rest ), media );
 		}
 		const layer = /::(?:before|after)$/.exec( String( rec.slot ?? '' ) )?.[ 0 ] ?? null;
 		const hit = livePair( report, rec, rec.width, rest );

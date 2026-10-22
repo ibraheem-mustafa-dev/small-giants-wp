@@ -1,0 +1,8 @@
+[
+	{ "file": "lib/fill-media.mjs", "find": "if ( ratio && natural?.w > 0 && natural?.h > 0 && Math.abs( natural.w / natural.h - ratio ) / ratio > 0.02 ) {", "replace": "if ( false ) {", "why": "the stated-ratio check is gone, so a squashed image passes" },
+	{ "file": "lib/fill-media.mjs", "find": "const alt = 'string' === typeof img.alt && '' !== img.alt.trim() ? img.alt.trim() : fact?.alt ?? null;", "replace": "const alt = 'string' === typeof img.alt && '' !== img.alt.trim() ? img.alt.trim() : null;", "why": "the alt no longer falls back to the fact record" },
+	{ "file": "lib/fill-media.mjs", "find": "out.checks.push( { slot: img.slot ?? '',", "replace": "false && out.checks.push( { slot: img.slot ?? '',", "why": "a mapped image raises no live-check row" },
+	{ "file": "lib/fill-media.mjs", "find": "el.alt && ! el.alt.hole && String", "replace": "el.alt && String", "why": "a {{ }} hole is taken as the alt" },
+	{ "file": "lib/fill-media.mjs", "find": "return 1 === inner.length ? inner[ 0 ] : null;", "replace": "return inner[ 0 ] ?? null;", "why": "two image slots are no longer ambiguous" },
+	{ "file": "lib/fill-media.mjs", "find": "const asset = ( el.assets || [] )[ 0 ] ?? null;", "replace": "const asset = null;", "why": "the ratio is no longer read from the fact record" }
+]

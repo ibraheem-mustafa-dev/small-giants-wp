@@ -9,6 +9,7 @@
 // Returns { writes: [{ attr, value, merge }], unmapped: [{ property, value, slot, reason }], notes }.
 import fs from 'fs';
 import { paintedAsset } from './media-upload.mjs';
+import { templateKeyOf } from './fact-key.mjs';
 
 // The clone-coverage IDs this module writes (lib/clone-coverage.mjs::declaredWrites holds each entry's write to it).
 export const COVERAGE_WRITES = [
@@ -19,7 +20,7 @@ export const COVERAGE_WRITES = [
 	'html:img',
 ];
 
-const empty = () => ( { writes: [], unmapped: [], notes: [] } );
+const empty = () => ( { writes: [], unmapped: [], notes: [], checks: [] } );
 const unset = ( v ) => undefined === v || null === v || '' === v || 0 === v;
 const escapeText = ( s ) => String( s ).replace( /&/g, '&amp;' ).replace( /</g, '&lt;' ).replace( />/g, '&gt;' );
 
@@ -73,11 +74,36 @@ export function idSetting( schema, urlAttr ) {
 	return schema && id in schema ? id : null;
 }
 
+// What the fact record states about the image a draft element is (lib/fact-record.mjs: `elements[key].assets` holds the
+// file's intrinsic ratio, `elements[key].alt` the placeholder an image-slot element carries as its alt): { alt, ratio,
+// asset } for the element's template key, each null when the record does not state it. A placeholder that is a `{{ }}`
+// hole is run-time text, so it is no alt.
+export function factImage( facts, finderTpl, rootComponent = null ) {
+	const el = facts?.elements?.[ templateKeyOf( finderTpl, rootComponent ) ];
+	if ( ! el ) {
+		return null;
+	}
+	const alt = el.alt && ! el.alt.hole && String( el.alt.placeholder ?? '' ).trim() ? String( el.alt.placeholder ).trim() : null;
+	const asset = ( el.assets || [] )[ 0 ] ?? null;
+	return { alt, ratio: asset?.ratio ?? null, asset: asset?.path ?? null };
+}
+
+// The image a node holds: the node's own element when it is one, else the single image any one of its descendant
+// elements (a nested slot) reads. snaps: { slot: the element's desktop read }. null when none or when two slots each hold one.
+export function nestedImage( snaps ) {
+	const own = snaps[ '' ]?.img;
+	if ( own ) {
+		return own;
+	}
+	const inner = Object.entries( snaps ).filter( ( [ , s ] ) => s && ! s.missing && s.img ).map( ( [ slot, s ] ) => ( { ...s.img, slot } ) );
+	return 1 === inner.length ? inner[ 0 ] : null;
+}
+
 // img: the draft element's image read { tag, src, alt, caption } (null when the element holds no single image). A
 // <figure> or <picture> mapped to a block with no image setting is a wrapper, not a gap; a bare <img> there is one.
 // media: { map, site, origin } (map null when media-map.json is missing). attributes: what the node already holds
 // (a setting that holds a value is kept; a difference is a note).
-export function mediaDecisions( { slots, schema, attributes = {}, img, media = {} } ) {
+export function mediaDecisions( { slots, schema, attributes = {}, img, media = {}, fact = null } ) {
 	const out = empty();
 	if ( ! img ) {
 		return out;
@@ -120,11 +146,14 @@ export function mediaDecisions( { slots, schema, attributes = {}, img, media = {
 	put( slot.url, hit.url );
 	const idAttr = idSetting( schema, slot.url );
 	idAttr && put( idAttr, hit.id );
-	if ( 'string' === typeof img.alt && '' !== img.alt.trim() ) {
-		put( slot.alt, img.alt.trim() );
+	const alt = 'string' === typeof img.alt && '' !== img.alt.trim() ? img.alt.trim() : fact?.alt ?? null;
+	if ( alt ) {
+		put( slot.alt, alt );
 	} else {
 		out.notes.push( `the draft image "${ p }" has ${ null === img.alt ? 'no alt' : 'an empty alt' }, so ${ slot.alt } is left as it is` );
 	}
+	// The live check's input: the attachment Fill wrote (or the setting already held) and the image's stated ratio.
+	out.checks.push( { slot: img.slot ?? '', attr: slot.url, idAttr, id: hit.id, url: hit.url, asset: hit.asset, ratio: fact?.ratio ?? null, alt: alt ?? null } );
 	if ( img.caption ) {
 		if ( schema && 'string' === [].concat( schema.caption?.type || [] )[ 0 ] ) {
 			put( 'caption', escapeText( img.caption ) );
@@ -137,10 +166,31 @@ export function mediaDecisions( { slots, schema, attributes = {}, img, media = {
 
 // The render check (FR-48-58's identity): the painted image URL on the built page is the attachment the clone mapped.
 // painted: the URL the page paints; id: the attachment id Fill wrote. Returns { ok, reason }.
-export function paintedImageCheck( { map, site, painted, id } ) {
+// ratio: the fact record's stated intrinsic ratio of the draft's file; natural: the painted image's naturalWidth and
+// naturalHeight. When both are given the painted ratio must match the stated one within 2%.
+export function paintedImageCheck( { map, site, painted, id, ratio = null, natural = null } ) {
 	const hit = paintedAsset( map, site, painted );
 	if ( ! hit ) {
 		return { ok: false, reason: `the painted image ${ painted } is no file in the media map for ${ site }` };
 	}
-	return hit.id === id ? { ok: true, reason: `the painted image is ${ hit.asset } (attachment ${ id })` } : { ok: false, reason: `the painted image is ${ hit.asset } (attachment ${ hit.id }); Fill wrote attachment ${ id }` };
+	if ( hit.id !== id ) {
+		return { ok: false, reason: `the painted image is ${ hit.asset } (attachment ${ hit.id }); Fill wrote attachment ${ id }` };
+	}
+	if ( ratio && natural?.w > 0 && natural?.h > 0 && Math.abs( natural.w / natural.h - ratio ) / ratio > 0.02 ) {
+		return { ok: false, reason: `the painted image ${ hit.asset } is ${ natural.w }x${ natural.h } (ratio ${ ( natural.w / natural.h ).toFixed( 3 ) }); the draft's file states ratio ${ ratio.toFixed( 3 ) }` };
+	}
+	return { ok: true, reason: `the painted image is ${ hit.asset } (attachment ${ id })` };
+}
+
+// The image rows of the confirm record (FR-48-36): one per image Fill mapped, read at the desktop width, for the live
+// check to settle with paintedImageCheck. images: Fill's `images` list ({ node, index, block, attr, idAttr, id, url,
+// asset, ratio, alt }). Draft side and declared side are both the draft's own file (the media map entry), so D–R agrees
+// by construction; the live half decides.
+export function imageRecords( { images } ) {
+	return ( images || [] ).map( ( c ) => ( {
+		node: c.node, block: c.block, attribute: c.attr, property: 'image', kind: 'image', state: 'default',
+		slot: c.slot ?? '', draftId: c.draftId ?? null, width: 1440,
+		emitted: c.url, imageId: c.id, asset: c.asset, ratio: c.ratio ?? null, alt: c.alt ?? null,
+		declared: c.asset, renderedDraft: c.asset, dr: 'agree', tolerance: null, verdict: 'confirmed', renderedLive: null,
+	} ) );
 }
