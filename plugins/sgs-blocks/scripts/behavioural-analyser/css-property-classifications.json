@@ -1382,8 +1382,7 @@
       "slug": "sgs/before-after",
       "attr": "startPosition",
       "fields": {
-        "css_property": "clip-path,left,top",
-        "css_element": "divider"
+        "css_property": "clip-path,left,top"
       }
     },
     {
@@ -2152,6 +2151,13 @@
     },
     {
       "slug": "sgs/business-info",
+      "attr": "hoursTodayBackground",
+      "fields": {
+        "css_property": "background-color"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
@@ -2263,10 +2269,25 @@
     },
     {
       "slug": "sgs/business-info",
+      "attr": "mapHeight",
+      "fields": {
+        "css_property": "height"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "openStatusDotPulseDuration",
+      "fields": {
+        "css_property": "animation",
+        "css_state": "status"
       }
     },
     {
@@ -4929,7 +4950,9 @@
       "slug": "sgs/card-grid",
       "attr": "scaleHover",
       "fields": {
-        "css_property": "transform"
+        "css_property": "transform",
+        "css_element": "item",
+        "css_state": "hover"
       }
     },
     {
@@ -5924,6 +5947,13 @@
         "css_property": "max-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "optionMediaSize",
+      "fields": {
+        "css_property": "width"
       }
     },
     {
@@ -9819,6 +9849,15 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "savedProgressDotColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "saved-dot"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "stepLabelFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -10747,7 +10786,10 @@
       "slug": "sgs/gallery",
       "attr": "scaleHover",
       "fields": {
-        "css_property": "transform"
+        "css_property": "transform",
+        "css_layer": "GRID_AREA",
+        "css_element": "item",
+        "css_state": "hover"
       }
     },
     {
@@ -15388,7 +15430,9 @@
       "slug": "sgs/info-box",
       "attr": "scaleHover",
       "fields": {
-        "css_property": "transform"
+        "css_property": "transform",
+        "css_element": "media",
+        "css_state": "hover"
       }
     },
     {
@@ -17654,6 +17698,14 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "anchor",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "anchorOffset",
       "fields": {
         "css_property": "top",
@@ -17926,7 +17978,7 @@
       "slug": "sgs/nav-drawer",
       "attr": "closeStyle",
       "fields": {
-        "css_property": "display,min-height",
+        "css_property": "display",
         "css_element": "close-variant"
       }
     },
@@ -18272,7 +18324,9 @@
       "slug": "sgs/nav-drawer-menu",
       "attr": "itemOrnamentFrames",
       "fields": {
-        "css_property": "animation"
+        "css_property": "animation",
+        "css_element": "ornament-glyph",
+        "css_state": "focus"
       }
     },
     {
@@ -22914,7 +22968,7 @@
       "slug": "sgs/product-card",
       "attr": "productId",
       "fields": {
-        "css_property": "grid-template-columns",
+        "css_property": "grid-template-columns,text-align",
         "css_layer": "GRID"
       }
     },
@@ -25457,6 +25511,15 @@
     },
     {
       "slug": "sgs/site-footer-row",
+      "attr": "minHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
       "attr": "padding",
       "fields": {
         "css_property": "padding",
@@ -25860,6 +25923,15 @@
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "minHeight",
+      "fields": {
+        "css_property": "min-height",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -27303,7 +27375,8 @@
       "slug": "sgs/team-member",
       "attr": "scaleHover",
       "fields": {
-        "css_property": "transform"
+        "css_property": "transform",
+        "css_state": "hover"
       }
     },
     {
@@ -27973,7 +28046,8 @@
       "slug": "sgs/testimonial",
       "attr": "scaleHover",
       "fields": {
-        "css_property": "transform"
+        "css_property": "transform",
+        "css_state": "hover"
       }
     },
     {
@@ -28168,8 +28242,7 @@
       "slug": "sgs/testimonial-slider",
       "attr": "slidesVisible",
       "fields": {
-        "css_property": "flex",
-        "css_element": "track"
+        "css_property": "flex"
       }
     },
     {
@@ -28704,6 +28777,35 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateActiveColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "dateActive",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateActiveTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "dateActive",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateActiveTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "dateActive",
+        "css_state": "current"
       }
     },
     {
@@ -30265,6 +30367,14 @@
       }
     },
     {
+      "slug": "sgs/wishlist-link",
+      "attr": "iconSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_element": "icon"
+      }
+    },
+    {
       "slug": "sgs/wishlist-panel",
       "attr": "barBackgroundColour",
       "fields": {
@@ -30312,7 +30422,8 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_layer": "GRID"
+        "css_layer": "GRID",
+        "css_element": "items"
       }
     },
     {
