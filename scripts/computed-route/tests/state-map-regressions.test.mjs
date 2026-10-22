@@ -13,3 +13,8 @@ test( 'a class token is still matched by its stem', () => {
 	const vocab = [ { token: '--done', state: 'complete' } ];
 	assert.equal( vocabStateFor( { state_keys: { done: true } }, vocab ), 'complete' );
 } );
+
+test( 'a pseudo-class token with no kind recorded is never matched by a key word', () => {
+	const vocab = [ { token: ':hover', state: 'hovered' } ];
+	assert.equal( vocabStateFor( { state_keys: { hover: true } }, vocab ), null );
+} );

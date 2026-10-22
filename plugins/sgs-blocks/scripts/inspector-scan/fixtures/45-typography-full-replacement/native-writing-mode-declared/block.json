@@ -1,0 +1,12 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/native-writing-mode-declared",
+	"title": "Fixture: declares only core's writing-mode typography support — must flag (case A)",
+	"category": "sgs",
+	"supports": {
+		"typography": {
+			"writingMode": true
+		}
+	},
+	"attributes": {}
+}

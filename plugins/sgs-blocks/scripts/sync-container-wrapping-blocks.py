@@ -499,6 +499,10 @@ def main() -> int:
             # `InnerBlocks` alone, like sgs/mega-group above. The roster had not been refreshed
             # since the rebuild; it does not assert wrapper delegation.
             "sgs/social-icons",
+            # sgs/decorative-image added 2026-10-22: the floating layer hosts text, labels and
+            # badges through InnerBlocks, so detection reads it on `InnerBlocks` alone. The roster
+            # had not been refreshed since it gained that slot; it does not assert wrapper delegation.
+            "sgs/decorative-image",
             # product-faq + product-faq-item added 2026-06-10 (new since D160 — F2/D197).
             "sgs/product-faq", "sgs/product-faq-item",
             # product-card REMOVED 2026-06-10: the D204 built-in-element rebuild made it

@@ -119,6 +119,7 @@ const REAL_TYPOGRAPHY_SUBFLAGS = [
 	'textAlign',
 	'textDecoration',
 	'textTransform',
+	'writingMode',
 	// WordPress's experimental spellings of the keys above. Core still reads
 	// these, so a block declaring them has native typography.
 	'__experimentalFontFamily',
@@ -127,6 +128,7 @@ const REAL_TYPOGRAPHY_SUBFLAGS = [
 	'__experimentalLetterSpacing',
 	'__experimentalTextDecoration',
 	'__experimentalTextTransform',
+	'__experimentalWritingMode',
 ];
 
 /** True when `supports.typography` grants at least one real capability. */
@@ -321,6 +323,7 @@ module.exports = {
 		fixture: 'fixtures/45-typography-full-replacement',
 		mustFlag: [
 			'native-typography-declared',
+			'native-writing-mode-declared',
 			'typography-gap-no-mechanism',
 			'typography-component-partial-edit-only',
 			'typography-component-partial-render-only',

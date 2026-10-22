@@ -2099,12 +2099,13 @@ def _run_motion_fields_seed(conn: sqlite3.Connection) -> None:
 #   1. Named const whose identifier contains "ALLOWED" (case-sensitive):
 #      ALLOWED_BLOCKS = [  or  CTA_ALLOWED_BLOCKS = [
 #   2. Inline object property:  allowedBlocks: [
+#   3. Local variable:  const allowedBlocks = [
 _ALLOWED_BLOCKS_OPEN_RE = re.compile(
     r"""
     (?:
         \b[A-Z0-9_]*ALLOWED[A-Z0-9_]*\s*=\s*\[   # named const: *ALLOWED* = [
         |
-        allowedBlocks\s*:\s*\[                    # inline prop:  allowedBlocks: [
+        allowedBlocks\s*[:=]\s*\[                 # inline prop or local variable: allowedBlocks: [  /  allowedBlocks = [
     )
     """,
     re.VERBOSE,
@@ -3780,6 +3781,12 @@ def _process_gutenberg_block_dir(
     a_delta = 0
     s_delta = 0
     if not dry_run:
+        # INSERT OR IGNORE keeps an existing row, so a core block that gained or lost its
+        # `render` key since the first insert would keep its old type: follow the source.
+        c.execute(
+            "UPDATE blocks SET type = ? WHERE slug = ? AND source = 'native_wp' AND type IS NOT ?",
+            (block_type, slug, block_type),
+        )
         a_delta, s_delta = _insert_block_attrs_and_supports(
             c, slug, block_data, new_rows, dry_run
         )

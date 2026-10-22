@@ -189,6 +189,17 @@ const ALLOWED_BLOCKS = [
 
     # --- Dynamic expressions → skip ---
 
+    def test_local_variable_assignment(self, tmp_path: Path) -> None:
+        """`const allowedBlocks = [...]` (a local, not a property) is read; a dynamic one is skipped."""
+        edit = _write_edit_js(tmp_path, """
+            const allowedBlocks = [ 'sgs/button' ];
+        """)
+        assert scrape_allowed_blocks(edit) == ["sgs/button"]
+        edit = _write_edit_js(tmp_path, """
+            const allowedBlocks = [ ...extra, 'sgs/button' ];
+        """)
+        assert scrape_allowed_blocks(edit) is _DYNAMIC_SKIP
+
     def test_dynamic_conditional_returns_skip_sentinel(self, tmp_path: Path) -> None:
         """allowedBlocks assigned via a ternary/conditional → _DYNAMIC_SKIP sentinel."""
         edit = _write_edit_js(tmp_path, """

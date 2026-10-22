@@ -147,3 +147,18 @@ def test_literal_allowed_blocks_is_written(tmp_path):
     mod._populate_allowed_blocks(tmp_path, conn.cursor(), dry_run=False)
     assert json.loads(conn.execute("SELECT accepts_allowed_blocks FROM block_composition").fetchone()[0]) == ["core/paragraph"]
 
+
+
+def test_core_block_type_follows_render_key_after_first_insert(monkeypatch):
+    conn = sqlite3.connect(":memory:")
+    conn.execute("CREATE TABLE blocks (slug TEXT PRIMARY KEY, title TEXT, description TEXT, category TEXT, type TEXT, source TEXT)")
+    conn.execute("INSERT INTO blocks VALUES ('core/paragraph', 'Paragraph', '', 'text', 'static', 'native_wp')")
+    conn.execute("INSERT INTO blocks VALUES ('sgs/own', 'Own', '', 'x', 'static', 'sgs')")
+    block_json = {"name": "core/paragraph", "title": "Paragraph", "render": "file:./render.php"}
+    payload = {"content": base64.b64encode(json.dumps(block_json).encode()).decode()}
+    monkeypatch.setattr(mod, "_github_api_get", lambda url, tok: payload)
+    monkeypatch.setattr(mod, "_insert_block_attrs_and_supports", lambda *a, **k: (0, 0))
+    new_rows = {"blocks": 0}
+    mod._process_gutenberg_block_dir(conn.cursor(), None, {"name": "paragraph"}, "v1", new_rows, False)
+    assert conn.execute("SELECT type FROM blocks WHERE slug = 'core/paragraph'").fetchone()[0] == "dynamic"
+    assert conn.execute("SELECT type FROM blocks WHERE slug = 'sgs/own'").fetchone()[0] == "static"

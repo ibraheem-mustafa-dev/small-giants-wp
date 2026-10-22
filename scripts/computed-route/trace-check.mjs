@@ -6,6 +6,7 @@
 // Negative control: --shift=7 adds 7ms to every record's duration, so a sound match count drops to 0.
 import { fileURLToPath } from 'node:url'; import fs from 'node:fs'; import path from 'node:path';
 import { serveDraft } from './lib/draft.mjs';
+import { eventKey, matchFor } from './lib/trace-match.mjs';
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const { chromium } = await import( 'playwright' );
 
@@ -56,24 +57,11 @@ await page.waitForTimeout(1500);
 const log = await page.evaluate(() => window.__log);
 await browser.close(); await srv.close();
 
-// A record names its element by template_tpl_id, by nearest_tpl_id, or (structural targets) inside element/trace text.
-const names = (r, t) => String(r.element?.template_tpl_id) === t
-  || [].concat(r.element?.nearest_tpl_id ?? []).map(String).includes(t)
-  || JSON.stringify(r.element || {}).includes(`"${t}"`)
-  || JSON.stringify(r.trace || {}).includes(t);
-// duration_ms is a number, or text: "per property" (each properties[] entry carries its own duration_ms) or a formula.
-const durOk = (r, dur) => {
-  if (typeof r.duration_ms !== 'string') return Number(r.duration_ms) + shift === Number(dur);
-  const perProp = (r.properties || []).map((p) => p.duration_ms).filter((d) => typeof d === 'number');
-  if (perProp.length) return perProp.some((d) => d + shift === Number(dur));
-  return shift === 0 && !Number.isInteger(Number(dur));
-};
 const combos = new Map();
-for (const c of log) { const k = `${c.kind}|${c.tpl || '-'}|${c.near || '-'}|${c.dur}`; combos.set(k, (combos.get(k) || 0) + 1); }
+for (const c of log) { const k = eventKey(c); combos.set(k, (combos.get(k) || 0) + 1); }
 let matched = 0; const miss = [];
 for (const [k, n] of combos) {
-  const [, tpl, near, dur] = k.split('|');
-  const hit = recs.find((r) => durOk(r, dur) && [tpl, near].some((t) => t && t !== '-' && names(r, t)));
+  const hit = matchFor(k, recs, shift);
   if (hit) matched++; else miss.push(`${k} x${n}`);
 }
 console.log(`[${index} shift=${shift}] records ${recs.length}, events ${log.length}, distinct ${combos.size}, matched ${matched}`);
