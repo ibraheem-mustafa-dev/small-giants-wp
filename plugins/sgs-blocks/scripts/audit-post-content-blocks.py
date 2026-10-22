@@ -359,7 +359,9 @@ def populated_content(attrs, schema):
 def _type_matches(val, wp_type):
     """Check if a Python value matches a WordPress type declaration.
 
-    Type mapping: object→dict, array→list, string→str, number→int/float,
+    Type mapping: object→dict, a list or '' (WordPress's rest_is_object()
+    accepts any PHP array and the empty string, and json_decode makes both
+    [] and {} an array), array→list, string→str, number→int/float,
     boolean→bool, integer→int. Check bool BEFORE number/integer, since bool
     is a subclass of int in Python.
     """
@@ -374,7 +376,7 @@ def _type_matches(val, wp_type):
     elif wp_type == 'array':
         return isinstance(val, list)
     elif wp_type == 'object':
-        return isinstance(val, dict)
+        return isinstance(val, (dict, list)) or val == ''
     return False
 
 
