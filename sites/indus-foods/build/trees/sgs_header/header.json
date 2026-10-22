@@ -3,7 +3,7 @@
     "name": "sgs/site-header",
     "attributes": {
       "className": "cr-ref-header-0",
-      "textColour": "primary"
+      "textColour": "custom-ink"
     },
     "innerBlocks": [
       {
@@ -65,7 +65,7 @@
               "itemLineHeight": 1.412,
               "navColour": "primary",
               "gap": {
-                "desktop": "6px"
+                "desktop": "2px"
               },
               "burgerSize": "100%",
               "itemFontSize": {
@@ -88,6 +88,7 @@
                   "left": "15px"
                 }
               },
+              "submenuCaretGap": "6px",
               "itemMotionDuration": 220,
               "itemMinHeight": {
                 "desktop": "42px"
@@ -145,9 +146,7 @@
                     }
                   }
                 }
-              },
-              "colourTextHover": "surface",
-              "borderColourHover": "primary"
+              }
             },
             "innerBlocks": []
           }
