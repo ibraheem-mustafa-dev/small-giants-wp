@@ -79,6 +79,7 @@
 						"css:border-radius": "borderRadius",
 						"css:margin": "margin",
 						"css:max-width": "maxWidth",
+						"css:min-height": "minHeight",
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
 						"css:grid-template-rows": "gridTemplateRows",
@@ -226,6 +227,11 @@
 		"padding": {
 			"type": "object",
 			"default": {}
+		},
+		"minHeight": {
+			"type": "object",
+			"default": {},
+			"description": "The row's minimum height per device ({desktop,tablet,mobile}, each a CSS length). Empty adds no minimum. The shared wrapper emits it because this block declares the attribute; the row's content stays aligned inside the taller box by Align items."
 		},
 		"margin": {
 			"type": "object",
