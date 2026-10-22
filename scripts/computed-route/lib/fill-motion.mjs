@@ -9,7 +9,7 @@ import { validateMotionWrite } from './motion-validate.mjs';
 import { classify, entranceLayer, stateTransitionLayer, hoverLayer, matchByPose } from './motion-layers.mjs';
 import { snapToken, presetFor, intensityPresetFor, effectPresetFor, tokenTypes, clientTokens, clientPalette, tokenises } from './motion-tokens.mjs';
 import { writeEffect, loadEffectOffers, PANEL_LISTS } from './motion-effects.mjs';
-import { applyBehaviours, applyControls, behaviourIndex } from './fill-behaviour.mjs';
+import { applyBehaviours, applyControls, applyGlobals, applySettings, applyStrip, behaviourIndex } from './fill-behaviour.mjs';
 import { loopEffect, loopCheck, chooseEffect, runtimeLoopsFor, smilLoop, marqueeTag, measuredLoopOf } from './motion-loops.mjs';
 import { loopKeyframesCss, loopName, isLoopRecord } from './motion-loop-css.mjs';
 import { entranceCheck } from './motion-check.mjs';
@@ -342,14 +342,24 @@ function writeLoopCss( n, items, { flat, ref, out } ) {
 	}
 }
 
+// A record whose trigger detail only says "Same as A-12" takes that record's trigger detail and state keys.
+export function sameTriggerResolved( records ) {
+	const byId = new Map( ( records || [] ).map( ( r ) => [ r.id, r ] ) );
+	return ( records || [] ).map( ( r ) => {
+		const ref = byId.get( /^Same as ([A-Za-z]+-\d+)\b/.exec( String( r.trigger?.detail ?? '' ) )?.[ 1 ] );
+		return ref ? { ...r, trigger: { ...ref.trigger, ...r.trigger, detail: `${ ref.trigger?.detail ?? '' } (${ r.trigger.detail })`, state_keys: r.trigger.state_keys ?? ref.trigger?.state_keys } } : r;
+	} );
+}
+
 // Writes every node's sgsMotion. nodes: skeletonNodes() records; flat: tree nodes by index; refOf: tree node to ref;
 // records: the inventory's animation records; sampled: { '<target id>': { 375, 768, 1440: shapeEntrance() result } };
 // mdb: lib/motion-db.mjs::motionDb; schema: the motion schema; rawSnapshot: the client's theme snapshot; rootComponent:
 // the entry draft's component (lib/fill-motion.mjs::elementKey); loops: sampleMotion()'s loops by target id; offers:
 // lib/motion-effects.mjs::loadEffectOffers; stateVocab: the `states` table rows that give the words meaning "open"
 // (default: the framework DB's). Returns { writes, unmapped, notes } in the shapes fill-resolve.mjs uses.
-export function motionWrites( { nodes, flat, refOf, records, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr = undefined } ) {
+export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr = undefined } ) {
 	const out = { writes: [], unmapped: [], notes: [], site: [] };
+	const records = sameTriggerResolved( given );
 	const byElement = recordsByElement( records );
 	const unplaced = ( records || [] ).filter( ( r ) => null === ( r.element?.template_tpl_id ?? null ) );
 	const runtime = unplaced.filter( ( r ) => 'entrance' === classify( r ).kind );
@@ -369,11 +379,19 @@ export function motionWrites( { nodes, flat, refOf, records, sampled = {}, loops
 		const boxes = [];
 		for ( const t of n.targets ) {
 			const sets = ( loops[ t.id ]?.[ 1440 ]?.smil || [] ).map( ( a, i ) => ( 'set' === a.tag ? setRecord( a, i ) : null ) ).filter( Boolean );
-			const own = [ ...( byElement.get( elementKey( t.finder, rootComponent ) ) || [] ), ...idx.hostedFor( elementKey( t.finder, rootComponent ) ).map( ( x ) => x.r ), ...sets.flatMap( ( s ) => ( s.record ? [ s.record ] : [] ) ) ];
+			const key = elementKey( t.finder, rootComponent );
+			let own = [ ...( byElement.get( key ) || [] ), ...idx.hostedFor( key ).map( ( x ) => x.r ), ...sets.flatMap( ( s ) => ( s.record ? [ s.record ] : [] ) ) ];
+			const where = { node: ref, block: n.name, slot: t.slot };
+			applyStrip( { n, target: t, key, idx, out, where, flat, hasAttr } );
+			// Settings behaviours (the header's scrolled shadow, the timeline's pinned track, ...) write block settings, not motion layers.
+			const settings = own.map( ( r ) => idx.found.find( ( x ) => x.r === r ) ).filter( ( x ) => x && 'settings' === x.b.kind );
+			if ( settings.length ) {
+				applySettings( { items: settings, n, out, where, flat, hasAttr, palette: ctx.palette } );
+				own = own.filter( ( r ) => ! settings.some( ( x ) => x.r === r ) );
+			}
 			if ( ! own.length && ! sampled[ t.id ]?.[ 1440 ] && ! loops[ t.id ] ) {
 				continue;
 			}
-			const where = { node: ref, block: n.name, slot: t.slot };
 			const target = targetName( n, t, targets );
 			if ( ! target ) {
 				const reason = targets.length ? `no declared part of ${ n.name } is this element (${ t.slot })` : `${ n.name } has no motion support`;
@@ -426,6 +444,7 @@ export function motionWrites( { nodes, flat, refOf, records, sampled = {}, loops
 		}
 	}
 	applyControls( { controls, written, out } );
+	applyGlobals( { found: idx.found, out } );
 	deferred.forEach( ( write ) => write() );
 	return out;
 }

@@ -68,7 +68,7 @@ export function classify( record, ctx = {} ) {
 	if ( starts ) {
 		return { kind: 'entrance' };
 	}
-	return { kind: 'skip', reason: `a one-shot animation on a ${ t } trigger: the draft's ${ t } drives it, recognised by the behaviour recognisers wave (FR-48-80)` };
+	return { kind: 'skip', reason: 'state' === t ? `a one-shot animation the draft's state starts: the block publishes no open or named state for this element to play it on (Spec 38A, FR-48-80)` : `a one-shot animation on a ${ t } trigger: the draft's ${ t } drives it, which no layer or setting holds yet` };
 }
 
 // The most keyframes an entrance holds (schema $defs.EntranceKeyframeList).
