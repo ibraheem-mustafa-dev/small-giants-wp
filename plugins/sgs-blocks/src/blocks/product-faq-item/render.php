@@ -229,8 +229,9 @@ $scoped_css = array_merge( $scoped_css, $border['rules'] );
 	<?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 </style>
 <?php endif; ?>
+<?php $sgs_faq_panel_id = wp_unique_id( 'sgs-product-faq-panel-' ); ?>
 <details <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is pre-escaped. ?><?php echo $is_open ? ' open' : ''; ?>>
-	<summary class="sgs-product-faq-item__question" aria-expanded="<?php echo esc_attr( $aria_expanded ); ?>">
+	<summary class="sgs-product-faq-item__question" aria-expanded="<?php echo esc_attr( $aria_expanded ); ?>" aria-controls="<?php echo esc_attr( $sgs_faq_panel_id ); ?>">
 		<?php if ( 'left' === $icon_pos ) : ?>
 			<?php echo $icon_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static SVG built above. ?>
 		<?php endif; ?>
@@ -239,7 +240,7 @@ $scoped_css = array_merge( $scoped_css, $border['rules'] );
 			<?php echo $icon_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static SVG built above. ?>
 		<?php endif; ?>
 	</summary>
-	<div class="sgs-product-faq-item__answer">
+	<div class="sgs-product-faq-item__answer" id="<?php echo esc_attr( $sgs_faq_panel_id ); ?>">
 		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inner blocks are already escaped. ?>
 	</div>
 </details>

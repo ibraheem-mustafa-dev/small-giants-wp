@@ -238,6 +238,16 @@
       "type": "number",
       "default": -1
     },
+    "scrollToOpened": {
+      "type": "boolean",
+      "default": false,
+      "description": "When a visitor opens an item, scroll its header below the sticky site header unless it is already fully in view. Reduced motion jumps instead of scrolling smoothly."
+    },
+    "scrollToOpenedGap": {
+      "type": "string",
+      "default": "6px",
+      "description": "Extra space between the site header and the scrolled-to item header. Added to the published site header height (--sgs-header-height)."
+    },
     "iconPosition": {
       "type": "string",
       "default": "right"

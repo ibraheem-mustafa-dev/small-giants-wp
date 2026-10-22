@@ -9,6 +9,9 @@
  *   animation (style.css animates natively where it is supported), so the
  *   two animations never run together.
  *
+ * With `data-scroll-to-opened="true"` an item the visitor opens scrolls its header below the sticky site header
+ * (scroll-to-opened.js).
+ *
  * Uses a WeakSet to track programmatic toggles, preventing
  * re-entrant animation loops when closing siblings.
  *
@@ -26,6 +29,7 @@ import {
 	restState,
 	setState,
 } from '../../shared/motion-state-publish';
+import { scheduleScrollToOpened } from './scroll-to-opened';
 
 const NATIVE_ANIMATION =
 	typeof CSS !== 'undefined' &&
@@ -74,6 +78,7 @@ function publishExpanded( details, initial = false ) {
  * siblings of a newly opened item.
  */
 function initNativeItems( accordion, items, allowMultiple ) {
+	const visitorOpened = new WeakSet();
 	groupCounter += 1;
 	const groupName = 'sgs-accordion-group-' + groupCounter;
 
@@ -81,9 +86,20 @@ function initNativeItems( accordion, items, allowMultiple ) {
 		syncAriaExpanded( details );
 		preloadMotionState( details );
 		publishExpanded( details, true );
+		const summary = details.querySelector( ':scope > summary' );
+		if ( summary ) {
+			summary.addEventListener( 'click', () => {
+				if ( ! details.open ) {
+					visitorOpened.add( details );
+				}
+			} );
+		}
 		details.addEventListener( 'toggle', () => {
 			syncAriaExpanded( details );
 			publishExpanded( details );
+			if ( details.open && visitorOpened.delete( details ) ) {
+				scheduleScrollToOpened( details, accordion );
+			}
 			if ( allowMultiple || NATIVE_GROUPS || ! details.open ) {
 				return;
 			}
@@ -202,6 +218,7 @@ function initAccordions() {
 						} );
 					}
 					openItem( details, content, wrapper, animatingItems );
+					scheduleScrollToOpened( details, accordion );
 				}
 			} );
 		} );
