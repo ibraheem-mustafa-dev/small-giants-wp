@@ -1,0 +1,1 @@
+{ "name": "sgs/demo", "attributes": { "scrollEffect": { "type": "string", "default": "none", "sgs": { "meaning": { "what": "Picks the scroll effect.", "trigger": "scroll", "parameters": { "distance": { "unit": "px" } } } } } } }
