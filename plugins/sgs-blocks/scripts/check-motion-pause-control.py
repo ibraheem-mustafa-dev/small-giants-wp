@@ -84,6 +84,7 @@ EXEMPT: dict[tuple[str, str], tuple[str, str]] = {
     ("hero", "video-autoplay"): ("deferred", "muted looping background video, aria-hidden"),
     ("media", "video-autoplay"): ("deferred", "autoplaying video; native controls when the block shows them"),
     ("nav-drawer", "css-loop"): ("deferred", "decorative drift on .sgs-drift shapes in the drawer"),
+    ("business-info", "css-loop"): ("deferred", "decorative open-status dot pulse; the draft has no pause control (Ruling: WCAG 2.2 items follow the draft)"),
 }
 
 SIGNALS = (
