@@ -47,6 +47,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-business-info-map.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-business-info-open-status.php';
+require_once __DIR__ . '/options.php';
 
 use SGS\Blocks\Sgs_Site_Info;
 use SGS\Blocks\Sgs_Site_Info_Binding;
@@ -248,11 +249,16 @@ switch ( $display_type ) {
 			// with sgs/icon-list's Site Info items (includes/helpers-site-info-items.php).
 			$hours_condensed_groups = sgs_site_info_hours_groups( $hours_show_closed, $hours_closed_label );
 
+			$hours_slugs  = array( 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun' );
+			$hours_shorts = array( __( 'Mon', 'sgs-blocks' ), __( 'Tue', 'sgs-blocks' ), __( 'Wed', 'sgs-blocks' ), __( 'Thu', 'sgs-blocks' ), __( 'Fri', 'sgs-blocks' ), __( 'Sat', 'sgs-blocks' ), __( 'Sun', 'sgs-blocks' ) );
 			foreach ( $hours_condensed_groups as $hours_group ) {
+				$hours_first = (int) array_search( $hours_group['start'], $hours_shorts, true );
+				$hours_last  = (int) array_search( $hours_group['end'], $hours_shorts, true );
 				$hours_day_text = sgs_site_info_hours_day_text( $hours_group );
 				$has_rows       = true;
 				$rows          .= sprintf(
-					'<div class="sgs-business-hours__row"><dt class="sgs-business-hours__day">%s</dt><dd class="sgs-business-hours__time">%s</dd></div>',
+					'<div class="sgs-business-hours__row" data-days="%s"><dt class="sgs-business-hours__day">%s</dt><dd class="sgs-business-hours__time">%s</dd></div>',
+					esc_attr( implode( ' ', array_slice( $hours_slugs, $hours_first, $hours_last - $hours_first + 1 ) ) ),
 					esc_html( $hours_day_text ),
 					esc_html( $hours_group['value'] )
 				);
@@ -265,7 +271,8 @@ switch ( $display_type ) {
 				}
 				$has_rows = true;
 				$rows    .= sprintf(
-					'<div class="sgs-business-hours__row"><dt class="sgs-business-hours__day">%s</dt><dd class="sgs-business-hours__time">%s</dd></div>',
+					'<div class="sgs-business-hours__row" data-days="%s"><dt class="sgs-business-hours__day">%s</dt><dd class="sgs-business-hours__time">%s</dd></div>',
+					esc_attr( $slug ),
 					esc_html( $label ),
 					Sgs_Site_Info::get_esc_html( "opening_hours.{$slug}" )
 				);
@@ -281,7 +288,12 @@ switch ( $display_type ) {
 		}
 
 		if ( $has_rows ) {
-			$html = sprintf( '<dl class="%s">%s</dl>', esc_attr( $hours_wrap_classes ), $rows );
+			$html = sprintf(
+				'<dl class="%s" data-sgs-hours-today data-timezone="%s">%s</dl>',
+				esc_attr( $hours_wrap_classes ),
+				esc_attr( function_exists( 'wp_timezone_string' ) ? (string) wp_timezone_string() : 'UTC' ),
+				$rows
+			);
 		} else {
 			$html = $sgs_is_editor_render ? '<dl class="' . esc_attr( $hours_wrap_classes ) . '"><div class="sgs-business-hours__row">' . $placeholder . '</div></dl>' : '';
 		}
@@ -451,7 +463,7 @@ switch ( $display_type ) {
 				$map_name = trim( (string) get_bloginfo( 'name' ) );
 			}
 		}
-		$map_url = ( '' !== $address_raw || '' !== $map_name ) ? sgs_business_info_map_url( $map_source, $address_raw, $map_name ) : '';
+		$map_url = ( '' !== $address_raw || '' !== $map_name ) ? sgs_business_info_map_url_with_zoom( sgs_business_info_map_url( $map_source, $address_raw, $map_name ), sgs_business_info_map_zoom( $attributes ) ) : '';
 		if ( '' !== $map_url ) {
 			// NO-INLINE: `border:0` lives in the .sgs-business-map iframe rule in
 			// style.css (frontend-only concern, not user-configurable) — the
@@ -529,6 +541,25 @@ if ( 'open-status' === $display_type ) {
 	$sgs_bi_os_css = sgs_business_info_open_status_css( $attributes, $root_sel );
 	if ( '' !== $sgs_bi_os_css ) {
 		$scoped_css[] = $sgs_bi_os_css;
+	}
+}
+
+if ( 'map' === $display_type ) {
+	$sgs_bi_map_css = sgs_business_info_map_css( $attributes, $root_sel );
+	if ( '' !== $sgs_bi_map_css ) {
+		$scoped_css[] = $sgs_bi_map_css;
+	}
+}
+if ( 'open-status' === $display_type ) {
+	$sgs_bi_pulse_css = sgs_business_info_pulse_css( $attributes, $root_sel );
+	if ( '' !== $sgs_bi_pulse_css ) {
+		$scoped_css[] = $sgs_bi_pulse_css;
+	}
+}
+if ( 'hours' === $display_type ) {
+	$sgs_bi_today_css = sgs_business_info_today_css( $attributes, $root_sel );
+	if ( '' !== $sgs_bi_today_css ) {
+		$scoped_css[] = $sgs_bi_today_css;
 	}
 }
 
@@ -897,6 +928,10 @@ $root_classes = array(
 	'sgs-business-info-wrap--' . esc_attr( $display_type ),
 	$uid,
 );
+
+if ( 'open-status' === $display_type && ! empty( $attributes['openStatusDotPulse'] ) ) {
+	$root_classes[] = 'sgs-business-info-wrap--pulse';
+}
 
 if ( '' !== $preset_text_slug ) {
 	$root_classes[] = 'has-text-color';

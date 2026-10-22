@@ -124,6 +124,53 @@
 			"default": "",
 			"description": "Only read by displayType 'open-status'. Pill background while closed. Empty keeps a faint tint of the text colour."
 		},
+		"openStatusDotPulse": {
+			"type": "boolean",
+			"default": false,
+			"description": "Only read by displayType 'open-status'. Pulses the dot with an endless expanding ring while the business is open. No pulse under reduced motion."
+		},
+		"openStatusDotPulseDuration": {
+			"type": "number",
+			"default": 1600,
+			"description": "Only read by displayType 'open-status'. Length of one pulse in milliseconds (200 to 10000)."
+		},
+		"hoursTodayColour": {
+			"type": "string",
+			"default": "",
+			"description": "Only read by displayType 'hours'. Text colour of today's row; view.js adds sgs-business-info__hours-row--today in the visitor's browser. Empty leaves it unstyled."
+		},
+		"hoursTodayBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Only read by displayType 'hours'. Background of today's row. Empty leaves it unstyled."
+		},
+		"hoursTodayWeight": {
+			"type": "string",
+			"default": "",
+			"enum": [ "", "300", "400", "500", "600", "700", "800", "900" ],
+			"description": "Only read by displayType 'hours'. Font weight of today's row. Empty keeps the row's own weight."
+		},
+		"mapHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Only read by displayType 'map'. Per-device height of the map (CSS length). Tier object {desktop,tablet,mobile}; empty keeps 400px."
+		},
+		"mapZoom": {
+			"type": "number",
+			"default": 15,
+			"description": "Only read by displayType 'map'. Map zoom, a whole number from 1 (world) to 20 (building), sent to the embed URL."
+		},
+		"mapFilterPreset": {
+			"type": "string",
+			"default": "none",
+			"enum": [ "none", "greyscale", "muted", "sepia", "high-contrast", "dark" ],
+			"description": "Only read by displayType 'map'. A CSS filter painted over the map. A valid mapFilter wins over it."
+		},
+		"mapFilter": {
+			"type": "string",
+			"default": "",
+			"description": "Only read by displayType 'map'. A custom CSS filter such as 'grayscale(.35) contrast(1.05)'; only blur, brightness, contrast, grayscale, hue-rotate, invert, opacity, saturate and sepia with numeric arguments are kept. Wins over mapFilterPreset."
+		},
 		"showIcon": {
 			"type": "boolean",
 			"default": true
