@@ -378,8 +378,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		margin: attributes.margin,
 	}, previewTier );
 
+	// `alignfull` is canvas-only (the block saves nothing and render.php prints its own
+	// classes): without it the editor's root layout caps the header at the content width
+	// (`.is-root-container > :where(:not(.alignfull))`, max-width plus auto margins) and
+	// pads it by the root padding, so the rows lay out narrower than the front end's
+	// full-width `.sgs-site-header` (style.css, max-width 100%).
 	const blockProps = useBlockProps( {
-		className: [ 'sgs-site-header', `sgs-site-header-ed-${ clientId }`, bgPreview.className, ...svgPreview.className ]
+		className: [ 'sgs-site-header', 'alignfull', `sgs-site-header-ed-${ clientId }`, bgPreview.className, ...svgPreview.className ]
 			.filter( Boolean )
 			.join( ' ' ),
 		// The pill preview is spread LAST so its width/margin-inline win over the

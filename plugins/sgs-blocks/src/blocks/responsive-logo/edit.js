@@ -277,8 +277,18 @@ export default function Edit( { attributes, setAttributes } ) {
 	// an alt attr to a sibling image attr via `alt_companion_attr`, and
 	// walk.py only captures alt when that companion is
 	// `attr_type='string'`. Three bare attachment IDs could never satisfy it.
+	// The wrapper carries `--logo-width` exactly as the front-end root does:
+	// site-header-row/style.css floors `.wp-block-sgs-responsive-logo` with
+	// `min-width: min(100%, var(--logo-width, 7.5rem), 7.5rem)`. In the canvas the
+	// scoped `--logo-width` rule lands on the server-rendered inner root, not on this
+	// wrapper, so without the property here the floor resolves to 7.5rem (120px)
+	// and a 48px logo's box is 120px wide.
 	const blockProps = useBlockProps( {
 		className: 'sgs-responsive-logo-editor',
+		style:
+			width !== undefined && width !== null && width !== ''
+				? { '--logo-width': `${ Math.abs( parseInt( width, 10 ) || 0 ) }px` }
+				: undefined,
 	} );
 
 	const onSelectDesktop = ( media ) => {

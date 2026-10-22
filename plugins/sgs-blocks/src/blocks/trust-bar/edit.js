@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, RichText, useSettings } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
+import '../../../assets/css/fx-marquee.css';
 import { useEffect, useMemo } from '@wordpress/element';
 import {
 	PanelBody,
@@ -484,6 +485,24 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		! [ 'mobile', 'tablet' ].includes( marqueeLayer.values?.belowBreakpoint );
 	const isOverflowDrop = 'drop' === overflowMode && ! marqueeAlways;
 
+	// Marquee canvas reflection. The motion runtime (fx-marquee.js) never runs in the
+	// canvas, so the strip is previewed paused: at the device tier where the layer's
+	// `belowBreakpoint` range applies (always / tablet = tablet and mobile / mobile =
+	// mobile only, the same 1023px and 767px split the runtime uses) the bar gets the
+	// attributes the runtime sets on the front end (`data-sgs-marquee="on"` on the root,
+	// `data-sgs-marquee-lane="on"` on the lane), and fx-marquee.css (index.css) lays the
+	// lane out as the single clipped row. No copies are cloned and nothing moves.
+	// A layer switched off at this tier (`devices` off switch) keeps the static layout.
+	const marqueeRange = marqueeLayer?.values?.belowBreakpoint;
+	const marqueeTierOff = !! marqueeLayer?.off?.includes?.( previewTier );
+	const marqueeActive =
+		!! marqueeLayer &&
+		! marqueeTierOff &&
+		( marqueeAlways ||
+			( 'tablet' === marqueeRange && 'desktop' !== previewTier ) ||
+			( 'mobile' === marqueeRange && 'mobile' === previewTier ) );
+	const marqueeValues = marqueeLayer?.values ?? {};
+
 	// Build className based on active variant.
 	const blockClassName = [
 		'sgs-trust-bar',
@@ -527,7 +546,18 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 	const blockProps = useBlockProps( {
 		className: [ blockClassName, section.className ].filter( Boolean ).join( ' ' ),
+		...( marqueeActive
+			? {
+					'data-sgs-fx': 'marquee',
+					'data-sgs-marquee': 'on',
+					'data-sgs-fx-marquee-direction': [ 'left', 'right', 'up', 'down' ].includes( marqueeValues.direction ) ? marqueeValues.direction : 'left',
+					'data-sgs-fx-marquee-edge-fade': marqueeValues.edgeFade ? 'true' : undefined,
+			  }
+			: {} ),
 		style: {
+			...( marqueeActive && marqueeValues.edgeFade && Number.isFinite( Number( marqueeValues.edgeFadeWidth ) )
+				? { '--sgs-marquee-fade-size': `${ Number( marqueeValues.edgeFadeWidth ) }%` }
+				: {} ),
 			...wrapper.style,
 			...rootBgPaint,
 			...rootTextPaint,
@@ -618,6 +648,100 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				: { label: '', url: '', _key: generateItemKey() };
 		setAttributes( { items: [ ...items, newItem ] } );
 	};
+
+	const badgeItems = items.length === 0 ? (
+						<p style={ { color: '#757575', fontStyle: 'italic' } }>
+							{ __( 'Add badges in the sidebar panel.', 'sgs-blocks' ) }
+						</p>
+					) : (
+						items.map( ( item, index ) => {
+							if ( badgeStyle === 'icon-bare' ) {
+								return (
+									<div key={ item._key || index } className="sgs-trust-bar__badge" style={ itemPreviewStyle }>
+										<EditorIconBare
+											size={ iconBareSize }
+											iconSlug={ item.icon || 'check' }
+											gradient={ iconColourGradient }
+											filled={ item.fillStyle === 'filled' }
+											fillColour={ item.fillColour ? colourVar( item.fillColour ) : undefined }
+										/>
+										<span className="sgs-trust-bar__label" style={ { ...labelTypography, color: textColourValue } }>
+											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
+										</span>
+									</div>
+								);
+							}
+
+							if ( badgeStyle === 'icon-circle' ) {
+								return (
+									<div
+										key={ item._key || index }
+										className="sgs-trust-bar__badge"
+										style={ itemPreviewStyle }
+									>
+										<EditorIconCircle
+											size={ iconCircleSize }
+											circleBg={ circleBgValue }
+											iconColour={ iconColourValue }
+											iconGradient={ iconColourGradient }
+											iconSlug={ item.icon || 'check' }
+											borderRadius={ iconCircleBorderRadius !== '50%' ? iconCircleBorderRadius : undefined }
+											border={ circleBorderPreview }
+											boxShadow={ circleShadowValue }
+											filled={ item.fillStyle === 'filled' }
+											fillColour={ item.fillColour }
+										/>
+										<span className="sgs-trust-bar__label" style={ { ...labelTypography, color: textColourValue } }>
+											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
+										</span>
+									</div>
+								);
+							}
+
+							if ( badgeStyle === 'text-only' ) {
+								return (
+									<div key={ item._key || index } className="sgs-trust-bar__badge">
+										<span
+											className="sgs-trust-bar__badge-label"
+											style={ { ...labelTypography, ...labelStyle } }
+										>
+											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
+										</span>
+									</div>
+								);
+							}
+
+							// image-badge
+							const mediaUrl = item.media?.url || item.image?.url || '';
+							const mediaAlt = item.media?.alt || item.label || '';
+							return (
+								<div key={ item._key || index } className="sgs-trust-bar__badge">
+									{ mediaUrl && (
+										<img
+											src={ mediaUrl }
+											alt={ mediaAlt }
+											className="sgs-trust-bar__badge-img"
+											style={ {
+												width: `${ badgeImageSize }px`,
+												height: `${ badgeImageSize }px`,
+												objectFit: item.objectFit || badgeImageObjectFit,
+												borderRadius: badgeImageBorderRadius || undefined,
+												boxShadow: resolveShadowPreviewComposed( badgeImageShadow, badgeImageShadowColour ),
+											} }
+										/>
+									) }
+									{ item.label && (
+										<span
+											className="sgs-trust-bar__badge-label"
+											style={ { ...labelTypography, ...labelStyle } }
+										>
+											{ item.label }
+										</span>
+									) }
+								</div>
+							);
+						} )
+					);
 
 	return (
 		<>
@@ -1283,100 +1407,18 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				) }
 
 				{ /* ── Curated items preview ───────────────────────────────── */ }
-				{ items.length === 0 ? (
-						<p style={ { color: '#757575', fontStyle: 'italic' } }>
-							{ __( 'Add badges in the sidebar panel.', 'sgs-blocks' ) }
-						</p>
-					) : (
-						items.map( ( item, index ) => {
-							if ( badgeStyle === 'icon-bare' ) {
-								return (
-									<div key={ item._key || index } className="sgs-trust-bar__badge" style={ itemPreviewStyle }>
-										<EditorIconBare
-											size={ iconBareSize }
-											iconSlug={ item.icon || 'check' }
-											gradient={ iconColourGradient }
-											filled={ item.fillStyle === 'filled' }
-											fillColour={ item.fillColour ? colourVar( item.fillColour ) : undefined }
-										/>
-										<span className="sgs-trust-bar__label" style={ { ...labelTypography, color: textColourValue } }>
-											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
-										</span>
-									</div>
-								);
-							}
-
-							if ( badgeStyle === 'icon-circle' ) {
-								return (
-									<div
-										key={ item._key || index }
-										className="sgs-trust-bar__badge"
-										style={ itemPreviewStyle }
-									>
-										<EditorIconCircle
-											size={ iconCircleSize }
-											circleBg={ circleBgValue }
-											iconColour={ iconColourValue }
-											iconGradient={ iconColourGradient }
-											iconSlug={ item.icon || 'check' }
-											borderRadius={ iconCircleBorderRadius !== '50%' ? iconCircleBorderRadius : undefined }
-											border={ circleBorderPreview }
-											boxShadow={ circleShadowValue }
-											filled={ item.fillStyle === 'filled' }
-											fillColour={ item.fillColour }
-										/>
-										<span className="sgs-trust-bar__label" style={ { ...labelTypography, color: textColourValue } }>
-											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
-										</span>
-									</div>
-								);
-							}
-
-							if ( badgeStyle === 'text-only' ) {
-								return (
-									<div key={ item._key || index } className="sgs-trust-bar__badge">
-										<span
-											className="sgs-trust-bar__badge-label"
-											style={ { ...labelTypography, ...labelStyle } }
-										>
-											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
-										</span>
-									</div>
-								);
-							}
-
-							// image-badge
-							const mediaUrl = item.media?.url || item.image?.url || '';
-							const mediaAlt = item.media?.alt || item.label || '';
-							return (
-								<div key={ item._key || index } className="sgs-trust-bar__badge">
-									{ mediaUrl && (
-										<img
-											src={ mediaUrl }
-											alt={ mediaAlt }
-											className="sgs-trust-bar__badge-img"
-											style={ {
-												width: `${ badgeImageSize }px`,
-												height: `${ badgeImageSize }px`,
-												objectFit: item.objectFit || badgeImageObjectFit,
-												borderRadius: badgeImageBorderRadius || undefined,
-												boxShadow: resolveShadowPreviewComposed( badgeImageShadow, badgeImageShadowColour ),
-											} }
-										/>
-									) }
-									{ item.label && (
-										<span
-											className="sgs-trust-bar__badge-label"
-											style={ { ...labelTypography, ...labelStyle } }
-										>
-											{ item.label }
-										</span>
-									) }
-								</div>
-							);
-						} )
-					)
-				}
+				{ marqueeLayer && items.length > 0 ? (
+					<div
+						className="sgs-trust-bar__lane"
+						data-sgs-marquee-lane={ marqueeActive ? 'on' : undefined }
+					>
+						<div className="sgs-trust-bar__track" data-sgs-marquee-set>
+							{ badgeItems }
+						</div>
+					</div>
+				) : (
+					badgeItems
+				) }
 				</BandWrap>
 			</div>
 		</>

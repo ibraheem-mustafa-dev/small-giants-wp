@@ -9,6 +9,14 @@
 	box-sizing: border-box;
 }
 
+/* The canvas root pads its children and an `alignfull` child cancels that with negative
+   side margins (core, `.has-global-padding > .alignfull`); a fixed `width: 100%` would
+   keep the header one root-padding narrower than the canvas, so the margins widen a
+   `width: auto` header instead — the full-width header the front end renders. */
+.editor-styles-wrapper .has-global-padding > .sgs-site-header.alignfull {
+	width: auto;
+}
+
 /* FR-37-47 — starter-look preset (StarterLookPresetControl). This is
    Inspector-sidebar chrome, not canvas content — it never appears inside
    `.editor-styles-wrapper`, so these rules are deliberately unscoped. */
