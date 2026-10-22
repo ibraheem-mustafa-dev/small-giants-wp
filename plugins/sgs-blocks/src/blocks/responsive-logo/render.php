@@ -563,19 +563,20 @@ $wrapper_attributes = get_block_wrapper_attributes( $sgs_rl_wrapper_args );
 
 // ── SVG inline render (draw layer, or the inlineSvg setting) ─────────────────
 
+// Both inline SVGs (the draw layer's and the inline logo) have their ids, keyframes and <style> rules scoped to this
+// instance (a unique root id), so the file's CSS never reaches the rest of the page and two logos never share an id.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-svg-inline-attachment.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-svg-instance-scope.php';
 $svg_html          = '';
 $has_svg_animation = $svg_animation_id > 0;
 if ( $has_svg_animation ) {
-	$svg_html = sgs_svg_inline_attachment( $svg_animation_id );
+	$svg_html = sgs_svg_scope_instance( sgs_svg_inline_attachment( $svg_animation_id ), wp_unique_id( 'sgs-logo-svg-' ) );
 }
 
 // The inline logo carries the logo's accessible name as the <img> would (role="img" + aria-label), or is hidden
-// from assistive tech when the logo is decorative. Its ids, keyframes and <style> rules are scoped to this instance
-// (a unique root id), so the file's CSS never reaches the rest of the page and two logos never share an id.
+// from assistive tech when the logo is decorative.
 $inline_logo_html = '';
 if ( ! $has_svg_animation && $inline_svg_on && $desktop_logo_id > 0 ) {
-	require_once dirname( __DIR__, 3 ) . '/includes/helpers-svg-instance-scope.php';
 	$inline_logo_html = sgs_svg_inline_root_attributes(
 		sgs_svg_scope_instance( sgs_svg_inline_attachment( $desktop_logo_id ), wp_unique_id( 'sgs-logo-svg-' ) ),
 		$logo_decorative
