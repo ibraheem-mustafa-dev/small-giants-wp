@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "sgs/boolean-svg-flag-silent",
+	"title": "Fixture: a boolean attribute named after SVG holds no markup (silent)",
+	"category": "sgs-content",
+	"attributes": {
+		"inlineSvg": { "type": "boolean", "default": false }
+	}
+}

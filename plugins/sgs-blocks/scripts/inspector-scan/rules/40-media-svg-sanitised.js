@@ -336,8 +336,12 @@ module.exports = {
 			const blockJsonFile = path.join( blockDir, 'block.json' );
 			const blockJson = ctx.json( blockJsonFile );
 			if ( blockJson.ok && blockJson.data ) {
-				Object.keys( blockJson.data.attributes || {} ).forEach( ( name ) => {
-					if ( isSvgMarkupAttrName( name ) ) svgAttrsInBlockJson.add( name );
+				// SVG markup is always a string attribute; a boolean such as responsive-logo's
+				// `inlineSvg` (print the uploaded file inline) names SVG but holds no markup.
+				Object.entries( blockJson.data.attributes || {} ).forEach( ( [ name, def ] ) => {
+					const type = def && def.type;
+					const holdsText = ! type || 'string' === type || ( Array.isArray( type ) && type.includes( 'string' ) );
+					if ( holdsText && isSvgMarkupAttrName( name ) ) svgAttrsInBlockJson.add( name );
 				} );
 			}
 
@@ -389,6 +393,7 @@ module.exports = {
 			'sanitised-both-silent',
 			'no-svg-block-silent',
 			'svg-background-preview-silent',
+			'boolean-svg-flag-silent',
 		],
 	},
 };
