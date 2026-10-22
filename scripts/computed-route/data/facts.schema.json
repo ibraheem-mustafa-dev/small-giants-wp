@@ -3,7 +3,7 @@
   "$id": "https://sgs.local/computed-route/facts.schema.json",
   "title": "Handoff fact record (Spec 48 FR-48-7)",
   "type": "object",
-  "required": [ "schema", "client", "generated", "widths", "sources", "elements", "surfaces", "animations", "assets", "gaps", "counts" ],
+  "required": [ "schema", "client", "generated", "widths", "sources", "elements", "surfaces", "pages", "animations", "assets", "gaps", "counts" ],
   "properties": {
     "schema": { "const": "3" },
     "client": { "type": "string", "pattern": "^[a-z0-9-]+$" },
@@ -19,6 +19,7 @@
     },
     "elements": { "type": "object", "additionalProperties": { "$ref": "#/$defs/element" } },
     "surfaces": { "type": "object", "additionalProperties": { "$ref": "#/$defs/surface" } },
+    "pages": { "type": "array", "items": { "type": "object", "required": [ "surface", "route", "blocks" ], "properties": { "surface": { "type": "string" }, "route": { "type": [ "string", "null" ] }, "blocks": { "type": "array", "items": { "type": "string" } } } } },
     "animations": { "type": "object", "required": [ "records", "unjoined" ], "properties": { "records": { "type": "integer" }, "unjoined": { "type": "array", "items": { "type": "object", "required": [ "id", "reason" ], "properties": { "id": { "type": "string" }, "reason": { "type": "string" } } } } } },
     "assets": { "type": "object", "required": [ "files", "unused", "missing" ], "properties": { "files": { "type": "integer" }, "unused": { "type": "array", "items": { "type": "string" } }, "missing": { "type": "array", "items": { "type": "object", "required": [ "path", "by" ], "properties": { "path": { "type": "string" }, "by": { "type": "string" }, "via": { "type": "string" } } } } } },
     "mounted": { "type": "object", "additionalProperties": { "type": "object", "additionalProperties": { "type": "boolean" } } },
@@ -126,13 +127,25 @@
     },
     "membership": {
       "type": "object",
-      "required": [ "id", "kind", "parent", "root", "states" ],
+      "required": [ "id", "kind", "parent", "root", "states", "otherStates", "closed_by", "time_dependent", "unresolved" ],
       "properties": {
         "id": { "type": "string" },
         "kind": { "type": "string" },
         "parent": { "type": [ "string", "null" ] },
         "root": { "type": "boolean" },
-        "states": { "type": "array", "items": { "type": "object", "required": [ "name", "state_keys" ], "properties": { "name": { "type": "string" }, "state_keys": { "type": "object" } } } }
+        "states": { "$ref": "#/$defs/membershipStates" },
+        "otherStates": { "$ref": "#/$defs/membershipStates" },
+        "closed_by": { "type": [ "string", "null" ] },
+        "time_dependent": { "type": [ "object", "null" ], "properties": { "value": { "type": "boolean" }, "reason": { "type": "string" } } },
+        "unresolved": {}
+      }
+    },
+    "membershipStates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [ "name", "state_keys", "in_sc_if", "animation_ids" ],
+        "properties": { "name": { "type": "string" }, "state_keys": { "type": "object" }, "in_sc_if": { "type": "boolean" }, "animation_ids": { "type": "array", "items": { "type": "string" } } }
       }
     },
     "effect": {
@@ -170,7 +183,10 @@
         "parent": { "type": [ "string", "null" ] },
         "roots": { "type": "array", "items": { "type": "string" } },
         "parts": { "type": "array", "items": { "type": "object", "required": [ "id", "kind", "roots" ], "properties": { "id": { "type": "string" }, "kind": { "type": "string" }, "roots": { "type": "array", "items": { "type": "string" } } } } },
-        "states": { "type": "array", "items": { "type": "object", "required": [ "name", "state_keys", "sc_if_tpl_ids" ] } }
+        "states": { "type": "array", "items": { "type": "object", "required": [ "name", "state_keys", "sc_if_tpl_ids", "animation_ids" ] } },
+        "closed_by": { "type": [ "string", "null" ] },
+        "time_dependent": { "type": [ "object", "null" ], "properties": { "value": { "type": "boolean" }, "reason": { "type": "string" } } },
+        "unresolved": {}
       }
     },
     "element": {

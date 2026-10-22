@@ -123,7 +123,7 @@ export function joinFacts( { client, sources, widths, template, logic, surfaces,
 		elements[ key ] || gaps.push( { construct: 'instance', draftId: key, error: `${ list.length } instance key(s) of a template element the annotated template does not hold (first ${ list[ 0 ].key } in ${ list[ 0 ].state })` } );
 	}
 	return {
-		schema: FACTS_SCHEMA_VERSION, client, generated, widths, sources, elements, surfaces: surfaces.surfaces, animations: { records: animations.records, unjoined: animations.unjoined }, assets: assets.assets, mounted: logic.mounted, state: logic.state || {}, gaps,
+		schema: FACTS_SCHEMA_VERSION, client, generated, widths, sources, elements, surfaces: surfaces.surfaces, pages: surfaces.pages, animations: { records: animations.records, unjoined: animations.unjoined }, assets: assets.assets, mounted: logic.mounted, state: logic.state || {}, gaps,
 		counts: countsOf( elements, widths, gaps, animations, assets ),
 	};
 }
