@@ -23,14 +23,14 @@ const read = ( ...parts ) => fs.readFileSync( path.join( ...parts ), 'utf8' );
  * Run snapshot_selection_tokens against a snapshot and return its two answers.
  *
  * @param {Object} custom settings.custom of the snapshot.
- * @return {{incomplete: string[], problems: string[]}} The helper results.
+ * @return {{incomplete: string[], problems: string[], warnings: string[]}} The helper results.
  */
 function check( custom ) {
 	const code = [
 		'import json, sys',
 		'import snapshot_selection_tokens as st',
 		'snap = json.loads(sys.argv[1])',
-		'print(json.dumps({"incomplete": st.incomplete_selection_keys(snap), "problems": st.check_snapshot(snap)}))',
+		'print(json.dumps({"incomplete": st.incomplete_selection_keys(snap), "problems": st.check_snapshot(snap), "warnings": st.contrast_warnings(snap)}))',
 	].join( '\n' );
 	const snapshot = JSON.stringify( {
 		settings: {
@@ -75,7 +75,7 @@ describe( 'selection enqueue', () => {
 
 describe( 'push guard', () => {
 	it( 'accepts neither key', () => {
-		expect( check( {} ) ).toEqual( { incomplete: [], problems: [] } );
+		expect( check( {} ) ).toEqual( { incomplete: [], problems: [], warnings: [] } );
 	} );
 
 	it( 'accepts a readable pair', () => {
@@ -87,8 +87,13 @@ describe( 'push guard', () => {
 		expect( check( { selection: { colour: '#ffffff' } } ).incomplete ).toEqual( [ 'background' ] );
 	} );
 
-	it( 'refuses an unreadable pair', () => {
-		const { problems } = check( { selection: { background: '#777777', colour: '#888888' } } );
-		expect( problems.join() ).toMatch( /under 4\.5:1/ );
+	it( 'warns about a low-contrast pair and never refuses it', () => {
+		const { problems, warnings } = check( { selection: { background: '#777777', colour: '#888888' } } );
+		expect( problems ).toEqual( [] );
+		expect( warnings.join() ).toMatch( /under 4\.5:1/ );
+	} );
+
+	it( 'does not warn about a readable pair', () => {
+		expect( check( { selection: { background: '#000000', colour: '#ffffff' } } ).warnings ).toEqual( [] );
 	} );
 } );
