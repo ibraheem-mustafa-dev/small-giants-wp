@@ -1,0 +1,13 @@
+[
+ { "file": "lib/read-animations.mjs", "find": "for ( const up of template.elements[ target ].parentChain ) {", "replace": "for ( const up of [] ) {", "why": "ancestors never receive a descendant's record" },
+ { "file": "lib/read-animations.mjs", "find": "for ( const up of template.elements[ target ].parentChain ) {", "replace": "for ( const up of template.order ) {", "why": "siblings receive the record" },
+ { "file": "lib/read-animations.mjs", "find": "} else if ( 'self' === entry.reach && 'self' !== list[ held ].reach ) {", "replace": "} else if ( false ) {", "why": "a descendant entry keeps the place of a self entry" },
+ { "file": "lib/read-animations.mjs", "find": "const ids = own.length ? own : idsOf( r.element?.nearest_tpl_id );", "replace": "const ids = own;", "why": "nearest_tpl_id never read" },
+ { "file": "lib/read-animations.mjs", "find": "const idsOf = ( v ) => ( null == v ? [] : [ v ].flat().map( String ) );", "replace": "const idsOf = ( v ) => ( null == v ? [] : [ v ].flat().slice( 0, 1 ).map( String ) );", "why": "only the first of a list of ids read" },
+ { "file": "lib/read-animations.mjs", "find": "flagged: 'active' === r.status ? null : r.status,", "replace": "flagged: null,", "why": "dead-code records not flagged" },
+ { "file": "lib/read-animations.mjs", "find": "if ( ! ids.length ) {", "replace": "if ( false ) {", "why": "records with no element not listed with their reason" },
+ { "file": "lib/read-animations.mjs", "find": "if ( ! template.elements[ target ] ) {", "replace": "if ( false ) {", "why": "a missing template element not reported" },
+ { "file": "lib/fact-record.mjs", "find": "effects: animations.byElement[ key ] || [],", "replace": "effects: [],", "why": "effects not joined onto the element" },
+ { "file": "lib/fact-record.mjs", "find": "joined: a.records - a.unjoined.length,", "replace": "joined: a.records,", "why": "unjoined records counted as joined" },
+ { "file": "lib/freshness.mjs", "find": "[ 'support.js', 'surfaces.json', 'animations.json' ].includes( rel )", "replace": "[ 'support.js', 'surfaces.json' ].includes( rel )", "why": "a changed animations.json leaves the record current" }
+]
