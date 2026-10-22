@@ -2434,11 +2434,11 @@
 			"note": "ellipse(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:env": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "env(safe-area-inset-bottom): Fill reads the computed padding, where env() is 0 off a notched phone; the safe-area part is the block's own default (sgs/buybox's phone bar, Spec 02 FR-2-3), and sgs/nav-drawer's footer has none yet (coverage plan Order item 2(d) remaining)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-safe-area.mjs#safeAreaRead",
+			"check": "scripts/computed-route/lib/confirm-live.mjs#compareRL",
+			"note": "env(safe-area-inset-*): a draft without viewport-fit=cover renders only the fixed part (the drawer foot's calc(16px + env(safe-area-inset-bottom)) is 16px), so Fill writes the rendered value and the confirm record names the safe-area read (lib/fill-safe-area.mjs); the live check compares the rendered value with the built page. The inset itself is the block's own default (sgs/buybox's phone bar, Spec 02 FR-2-3)",
+			"test": "scripts/computed-route/tests/fill-safe-area.test.mjs#the drawer foot renders 16px"
 		},
 		"css-function:exp": {
 			"recognise": null,
