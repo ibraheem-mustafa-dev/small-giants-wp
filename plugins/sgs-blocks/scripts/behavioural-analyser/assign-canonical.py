@@ -100,11 +100,12 @@ def load_slot_aliases(conn: sqlite3.Connection) -> dict[str, dict]:
         if nh and nh != key and nh not in mapping:
             mapping[nh] = info
 
+    # Two passes: every canonical name first, so an alias never takes a
+    # canonical's key whatever order the rows come back in.
+    for slot_name, _aliases_json in rows:
+        _add(slot_name, {"canonical_slot": slot_name, "role": None})
     for slot_name, aliases_json in rows:
         info = {"canonical_slot": slot_name, "role": None}
-        # Canonical itself
-        _add(slot_name, info)
-        # Each alias
         try:
             aliases = json.loads(aliases_json) if aliases_json else []
         except json.JSONDecodeError:
@@ -219,13 +220,10 @@ def peel_property_suffix(
                 # Entire name IS the property suffix (no slot stem). Still return
                 # the suffix + info so role can be assigned; stem stays empty.
                 return "", suffix, property_suffixes[suffix]
-            # Require a camelCase boundary: either preceding char is lowercase/digit,
-            # or the property word starts with an uppercase letter (camelCase join).
-            boundary_ok = (
-                prefix[-1].islower()
-                or prefix[-1].isdigit()
-                or name[len(prefix)].isupper()
-            )
+            # Require a camelCase boundary: the property word starts with an
+            # uppercase letter. A lowercase join (`context` -> `con` + `text`)
+            # is a word fragment, not a property suffix.
+            boundary_ok = name[len(prefix)].isupper()
             if boundary_ok:
                 return prefix, suffix, property_suffixes[suffix]
     return name, None, None
@@ -292,8 +290,8 @@ def _singularise(plural: str) -> str:
 
     Rules (applied in order, first-match-wins):
       - "ies" ->"y"  (entries ->entry, stories ->story)
-      - "ses" ->"s"  (addresses ->address — preserves 'ss' stems)
-      - trailing "s"  (testimonials ->testimonial, logos ->logo)
+      - "sses" ->"ss" (addresses ->address, classes ->class)
+      - trailing "s"  (testimonials ->testimonial, logos ->logo, courses ->course)
       - "ss" stems stay  (process ->process — never strip from -ss)
 
     Returns the input unchanged if no rule applies.
@@ -303,7 +301,7 @@ def _singularise(plural: str) -> str:
     p = plural
     if p.endswith("ies") and len(p) > 3:
         return p[:-3] + "y"
-    if p.endswith("ses") and len(p) > 3:
+    if p.endswith("sses") and len(p) > 4:
         return p[:-2]  # addresses ->address
     if p.endswith("s") and not p.endswith("ss"):
         return p[:-1]
@@ -983,7 +981,7 @@ TIER_B_SNAPSHOT_DIR = (
 
 # BEM element extractor: matches the FIRST __element segment in a selector.
 # e.g. '.sgs-product-card__image' -> 'image'; 'audio' / 'figure > a' / 'h1,h2,h3' -> no match.
-_TIER_B_BEM_ELEMENT_RE = re.compile(r"__([a-z0-9-]+)")
+_TIER_B_BEM_ELEMENT_RE = re.compile(r"__([a-z0-9]+(?:-[a-z0-9]+)*)")
 
 
 def _get_bem_regex():
@@ -1383,7 +1381,7 @@ def detect_role_from_block_json(
     # when the attr already looks like an enum (likely styling select).
     if description and not has_enum:
         for substring, role in _DESCRIPTION_RULES:
-            if substring in description:
+            if re.search(r"\b" + re.escape(substring) + r"s?\b", description):
                 return (role, f"description_substring:{substring!r}", "low")
 
     # No heuristic matched — operator must populate manually.

@@ -1023,8 +1023,10 @@ module.exports = {
 					? hasGradientOverride
 					: gradientCapable === true || statesHasGradient;
 			// Shadow and underline colours take no gradient (the same exemption as the shared-row walk).
+			// Every resolved mechanism must be shadow or decoration: a mixed text row still needs its gradient path.
 			const isShadowMechanism =
-				mechanismInfo.mechanisms.includes( 'shadow' ) || mechanismInfo.mechanisms.includes( 'decoration' );
+				mechanismInfo.mechanisms.length > 0 &&
+				mechanismInfo.mechanisms.every( ( m ) => 'shadow' === m || 'decoration' === m );
 
 			if ( ! isShadowMechanism ) {
 				const mechanismKnown = ! mechanismInfo.unresolved;

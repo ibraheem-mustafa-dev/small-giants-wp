@@ -225,7 +225,7 @@ def _detect_conditional_gates_php(lines: list[str], idx: int, window: int = 10) 
         gates.add("not_empty")
     if re.search(r'\bisset\s*\(', chunk):
         gates.add("isset")
-    if re.search(r'\?\s*.+\s*:\s*', chunk):
+    if re.search(r'(?<![<?])\?(?!php\b|>|\?)[^:\n]*?\S\s*:(?!:)', chunk):
         gates.add("ternary")
     if re.search(r'\?\?', chunk):
         gates.add("null_coalesce")
@@ -864,6 +864,9 @@ def _iter_rule_blocks(css_src: str) -> "list[tuple[str, str]]":
         if brace_pos == -1:
             break
         header = css_src[i:brace_pos].strip()
+        if header.startswith("@") and ";" in header:
+            # `@charset`/`@import` statements precede the rule; keep only what follows the last `;`.
+            header = header[header.rindex(";") + 1:].strip()
         depth = 1
         j = brace_pos + 1
         while j < n and depth > 0:
@@ -902,23 +905,26 @@ def _top_level_vars(value: str) -> set[str]:
     (or none) their OWN declaration site assigns.
     """
     top: set[str] = set()
-    depth = 0
+    # One entry per open "(": True when opened by a `var(` call. Only `var(` calls
+    # count towards nesting, so `calc(var(--a) * 2)` still sees `--a` as top level.
+    stack: list[bool] = []
     i = 0
     n = len(value)
     var_call_re = re.compile(r"var\(\s*(" + CUSTOM_PROP_RE + r")", re.IGNORECASE)
     while i < n:
         m = var_call_re.match(value, i)
         if m:
-            if depth == 0:
+            if not any(stack):
                 top.add(m.group(1))
-            depth += 1
+            stack.append(True)
             i = m.end()
             continue
         ch = value[i]
         if ch == "(":
-            depth += 1
+            stack.append(False)
         elif ch == ")":
-            depth = max(0, depth - 1)
+            if stack:
+                stack.pop()
         i += 1
     return top
 
@@ -1130,18 +1136,19 @@ def _custom_props_consumed(
             is_gradient_value = bool(_GRADIENT_FN_RE.search(value))
             var_occurrences = re.findall(CUSTOM_PROP_RE, value)
             distinct_vars_in_order = list(dict.fromkeys(var_occurrences))  # de-dup, keep first-seen order
+            slot_vars = [v for v in distinct_vars_in_order if v in _top_level_vars(value)]
             mixed_border_outline = (
                 prop in ("border", "outline")
                 and not is_gradient_value
-                and len(distinct_vars_in_order) >= 2
+                and len(slot_vars) >= 2
             )
             top_level = _top_level_vars(value) if (state or element) else set()
             for var in var_occurrences:
                 out[var].add(prop)
                 if is_gradient_value:
                     gradient_props[var].add(prop)
-                if mixed_border_outline:
-                    is_last = var == distinct_vars_in_order[-1]
+                if mixed_border_outline and var in slot_vars:
+                    is_last = var == slot_vars[-1]
                     shorthand_slot[(var, prop)] = "colour" if is_last else "width"
                 if state and var in top_level:
                     state_of[(var, prop)] = state
@@ -1370,7 +1377,7 @@ def _build_php_var_attr_map(php_src: str) -> dict[str, str]:
     # DOTALL so a genuine multi-line assignment RHS is captured too (the non-greedy
     # `.+?` still stops at the FIRST `;`, so this cannot over-match past one
     # statement even with DOTALL enabled).
-    assign_re = re.compile(r"\$(\w+)\s*=\s*(.+?);", re.MULTILINE | re.DOTALL)
+    assign_re = re.compile(r"\$(\w+)\s*(?<![=!<>])=(?![=>])\s*(.+?);", re.MULTILINE | re.DOTALL)
     for m in assign_re.finditer(php_src):
         var_name, rhs = m.group(1), m.group(2)
         # Bug found + fixed 2026-07-21 (sgs/separator::contentIconSize): a variable
@@ -3786,10 +3793,10 @@ def _attrs_referenced(text: str, destructure_map: dict[str, str], valid_attrs: "
     word "description" as a token."""
     text = re.sub(r"'[^']*'|\"[^\"]*\"", " ", text)
     found: set[str] = set()
-    for m in re.finditer(r"attributes\??\.(\w+)(?![.\[])", text):
+    for m in re.finditer(r"attributes\??\.(\w+)\b(?![.\[])", text):
         if m.group(1) in valid_attrs:
             found.add(m.group(1))
-    for m in re.finditer(r"\b([A-Za-z_$][\w$]*)\b(?![.\[])", text):
+    for m in re.finditer(r"(?<![.\w$])([A-Za-z_$][\w$]*)\b(?![.\[])", text):
         ident = m.group(1)
         attr = destructure_map.get(ident)
         if attr and attr in valid_attrs:

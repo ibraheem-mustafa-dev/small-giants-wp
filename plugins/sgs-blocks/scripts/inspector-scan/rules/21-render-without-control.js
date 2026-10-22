@@ -697,6 +697,14 @@ function exportBody( source, name ) {
 		const ch = source[ i ];
 		if ( ch === '(' ) parens++;
 		else if ( ch === ')' ) parens--;
+		else if ( ch === ';' && parens === 0 ) return null;
+		else if ( ch === '=' && source[ i + 1 ] === '>' && parens === 0 ) {
+			// An expression-bodied arrow has no body brace of its own; the next `{` belongs to another declaration.
+			const next = i + 2 + source.slice( i + 2 ).search( /\S/ );
+			if ( source[ next ] !== '{' ) return null;
+			open = next;
+			break;
+		}
 		else if ( ch === '{' && parens === 0 ) {
 			open = i;
 			break;

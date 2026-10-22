@@ -375,9 +375,8 @@ def collect_leaves(obj, prefix: str = "") -> dict[str, object]:
             path = f"{prefix}.{k}" if prefix else k
             leaves.update(collect_leaves(v, path))
     elif isinstance(obj, list):
-        path = f"{prefix}[]"
-        for item in obj:
-            leaves.update(collect_leaves(item, path))
+        for i, item in enumerate(obj):
+            leaves.update(collect_leaves(item, f"{prefix}[{i}]"))
     else:
         leaves[prefix] = obj
     return leaves
@@ -1059,11 +1058,16 @@ def do_rollback(args) -> int:
     print(f"[push-theme-snapshot] ROLLBACK: restoring {path.name} → {args.target_domain}")
     if not push_snapshot(args.target, args.port, server_path, tmp):
         return 1
-    creds = resolve_app_credentials(args.target_domain, args.app_user, args.app_password)
-    if creds and gstyles:
-        post_id = discover_global_styles_post_id(args.target, args.port, wp_root)
-        if post_id is not None:
-            post_global_styles(args.target_domain, post_id, gstyles, _basic_auth_header(*creds))
+    if gstyles:
+        creds = resolve_app_credentials(args.target_domain, args.app_user, args.app_password)
+        post_id = discover_global_styles_post_id(args.target, args.port, wp_root) if creds else None
+        if not creds or post_id is None or not post_global_styles(
+            args.target_domain, post_id, gstyles, _basic_auth_header(*creds)
+        ):
+            print("[push-theme-snapshot] ROLLBACK INCOMPLETE: the disk theme.json was restored but the "
+                  "wp_global_styles layer was NOT (no credentials, no post ID, or the REST POST failed).",
+                  file=sys.stderr)
+            return 1
     flush_cache(args.target, args.port, wp_root)
     print("[push-theme-snapshot] rollback complete.")
     return 0

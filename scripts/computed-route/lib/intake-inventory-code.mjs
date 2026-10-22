@@ -405,7 +405,7 @@ function guardTrigger( p, node ) {
 		}
 		const test = textOf( p, a.test );
 		// An error map that is non-empty (not `! errs`, `=== 0`, `< 1`) is the validation-fail branch.
-		if ( /\b(errs?|errors?|err|invalid)\b/i.test( test ) && ! /^\s*!(?!=)|(?:===?|<=?)\s*[01]\b/.test( test ) ) {
+		if ( /\b(errs?|errors?|err|invalid)\b/i.test( test ) && ! /^\s*!(?!=)|(?:(?<!!)===?|<=?)\s*[01]\b/.test( test ) ) {
 			return { type: 'validation-fail', detail: `guarded by ${ test }` };
 		}
 		// `this.X !== t` where t is another tracked value (not null, undefined, a literal or a deeper member).
