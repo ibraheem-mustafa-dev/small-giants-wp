@@ -1,39 +1,25 @@
 {
   "rule": "contentWidth is max-width on the content band; padding paints the content band; no contentBandPadding",
   "plan": ".claude/plans/2026-10-21-handoff-readers.md (Status, Container band layers)",
-  "wrapper_code_path": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper::render: `padding` paints the OUTER element; `contentBandPadding` is the only band padding (emitted via $base_band_decls on .sgs-container__inner). The band renders ($do_wrap) whenever contentWidth or any band prop is set, whatever the block kind.",
+  "wrapper_code_path": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper::render: on a block that declares contentWidth, `padding` paints the content band (.sgs-container__inner, via $obj_band_props and the native-padding rule), the outer element keeps no padding. The band renders ($do_wrap) whenever contentWidth or any band prop (padding included) is set.",
   "totals": {
     "blocks_with_contentWidth": 24,
     "contentWidth_state": {
-      "css-width-on-band": 7,
-      "css-width-on-wrapper": 3,
-      "undeclared-band-present": 5,
-      "undeclared-no-band": 9
+      "ok": 24
     },
     "padding_state": {
       "none": 4,
-      "on-wrapper": 20
+      "on-band": 20
     },
-    "blocks_with_manifest_band_element": 12,
-    "blocks_with_contentBandPadding_attr": 6,
-    "blocks_mechanically_fixable": 7,
+    "blocks_with_manifest_band_element": 24,
+    "blocks_with_contentBandPadding_attr": 0,
+    "blocks_mechanically_fixable": 0,
     "padding_exempt_blocks": 4,
     "token_files_by_status": {
       "derived": 4,
-      "exempt": 38,
-      "target": 33
+      "exempt": 35
     },
-    "token_files_target_by_mechanism": {
-      "editors": 10,
-      "manifests": 6,
-      "per-block-render": 1,
-      "route-data": 1,
-      "saved-trees": 1,
-      "shared-includes": 1,
-      "shared-wrapper": 1,
-      "tooling-and-tests": 10,
-      "utils": 2
-    },
+    "token_files_target_by_mechanism": {},
     "unrecognised": 0,
     "refused": 0
   },
@@ -41,7 +27,14 @@
     "db_available": true,
     "db_only": [],
     "disk_only": [],
-    "cbp_db_vs_disk": []
+    "cbp_db_vs_disk": [
+      "sgs/container",
+      "sgs/hero",
+      "sgs/physics-canvas",
+      "sgs/site-footer",
+      "sgs/site-header",
+      "sgs/trust-bar"
+    ]
   },
   "blocks": [
     {
@@ -51,7 +44,7 @@
       "renders_via_shared_wrapper": true,
       "band": {
         "rendered_by": "shared-wrapper (.sgs-container__inner), only when contentWidth or a band prop is set",
-        "manifest_band_element": null,
+        "manifest_band_element": "content-band",
         "own_markup": [],
         "notes": []
       },
@@ -61,8 +54,14 @@
         "exempt": "declares no padding attribute in its manifest"
       },
       "contentWidth": {
-        "state": "undeclared-no-band",
-        "declared_on": [],
+        "state": "ok",
+        "declared_on": [
+          {
+            "element": "content-band",
+            "band": true,
+            "prop": "css:max-width"
+          }
+        ],
         "mechanical": false
       },
       "has_contentBandPadding": false
@@ -79,18 +78,24 @@
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "wrapper",
-            "wrapper"
+            "inner",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "undeclared-band-present",
-        "declared_on": [],
+        "state": "ok",
+        "declared_on": [
+          {
+            "element": "inner",
+            "band": true,
+            "prop": "css:max-width"
+          }
+        ],
         "mechanical": false
       },
       "has_contentBandPadding": false
@@ -102,23 +107,29 @@
       "renders_via_shared_wrapper": true,
       "band": {
         "rendered_by": "shared-wrapper (.sgs-container__inner), only when contentWidth or a band prop is set",
-        "manifest_band_element": null,
+        "manifest_band_element": "content-band",
         "own_markup": [],
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "grid",
-            "wrapper"
+            "content-band",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "undeclared-no-band",
-        "declared_on": [],
+        "state": "ok",
+        "declared_on": [
+          {
+            "element": "content-band",
+            "band": true,
+            "prop": "css:max-width"
+          }
+        ],
         "mechanical": false
       },
       "has_contentBandPadding": false
@@ -135,27 +146,27 @@
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "wrapper",
-            "wrapper"
+            "content-band",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "css-width-on-band",
+        "state": "ok",
         "declared_on": [
           {
             "element": "content-band",
             "band": true,
-            "prop": "css:width"
+            "prop": "css:max-width"
           }
         ],
-        "mechanical": true
+        "mechanical": false
       },
-      "has_contentBandPadding": true
+      "has_contentBandPadding": false
     },
     {
       "block": "sgs/feature-grid",
@@ -164,23 +175,29 @@
       "renders_via_shared_wrapper": true,
       "band": {
         "rendered_by": "shared-wrapper (.sgs-container__inner), only when contentWidth or a band prop is set",
-        "manifest_band_element": null,
+        "manifest_band_element": "content-band",
         "own_markup": [],
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "grid",
-            "wrapper"
+            "content-band",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "undeclared-no-band",
-        "declared_on": [],
+        "state": "ok",
+        "declared_on": [
+          {
+            "element": "content-band",
+            "band": true,
+            "prop": "css:max-width"
+          }
+        ],
         "mechanical": false
       },
       "has_contentBandPadding": false
@@ -192,7 +209,7 @@
       "renders_via_shared_wrapper": true,
       "band": {
         "rendered_by": "shared-wrapper (.sgs-container__inner), only when contentWidth or a band prop is set",
-        "manifest_band_element": null,
+        "manifest_band_element": "content-band",
         "own_markup": [],
         "notes": []
       },
@@ -202,12 +219,12 @@
         "exempt": "declares no padding attribute in its manifest"
       },
       "contentWidth": {
-        "state": "css-width-on-wrapper",
+        "state": "ok",
         "declared_on": [
           {
-            "element": "wrapper",
-            "band": false,
-            "prop": "css:width"
+            "element": "content-band",
+            "band": true,
+            "prop": "css:max-width"
           }
         ],
         "mechanical": false
@@ -221,27 +238,27 @@
       "renders_via_shared_wrapper": true,
       "band": {
         "rendered_by": "shared-wrapper (.sgs-container__inner), only when contentWidth or a band prop is set",
-        "manifest_band_element": null,
+        "manifest_band_element": "content-band",
         "own_markup": [],
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "wrapper",
-            "wrapper"
+            "content-band",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "css-width-on-wrapper",
+        "state": "ok",
         "declared_on": [
           {
-            "element": "wrapper",
-            "band": false,
-            "prop": "css:width"
+            "element": "content-band",
+            "band": true,
+            "prop": "css:max-width"
           }
         ],
         "mechanical": false
@@ -255,29 +272,29 @@
       "renders_via_shared_wrapper": true,
       "band": {
         "rendered_by": "shared-wrapper (.sgs-container__inner), only when contentWidth or a band prop is set",
-        "manifest_band_element": null,
+        "manifest_band_element": "content-band",
         "own_markup": [
           "sgs-form__inner"
         ],
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "wrapper",
-            "wrapper"
+            "content-band",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "css-width-on-wrapper",
+        "state": "ok",
         "declared_on": [
           {
-            "element": "wrapper",
-            "band": false,
-            "prop": "css:width"
+            "element": "content-band",
+            "band": true,
+            "prop": "css:max-width"
           }
         ],
         "mechanical": false
@@ -291,23 +308,29 @@
       "renders_via_shared_wrapper": true,
       "band": {
         "rendered_by": "shared-wrapper (.sgs-container__inner), only when contentWidth or a band prop is set",
-        "manifest_band_element": null,
+        "manifest_band_element": "content-band",
         "own_markup": [],
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "grid",
-            "wrapper"
+            "content-band",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "undeclared-no-band",
-        "declared_on": [],
+        "state": "ok",
+        "declared_on": [
+          {
+            "element": "content-band",
+            "band": true,
+            "prop": "css:max-width"
+          }
+        ],
         "mechanical": false
       },
       "has_contentBandPadding": false
@@ -324,18 +347,24 @@
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "wrapper",
-            "wrapper"
+            "inner",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "undeclared-band-present",
-        "declared_on": [],
+        "state": "ok",
+        "declared_on": [
+          {
+            "element": "inner",
+            "band": true,
+            "prop": "css:max-width"
+          }
+        ],
         "mechanical": false
       },
       "has_contentBandPadding": false
@@ -354,27 +383,27 @@
         ]
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "wrapper",
-            "wrapper"
+            "content-band",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "css-width-on-band",
+        "state": "ok",
         "declared_on": [
           {
             "element": "content-band",
             "band": true,
-            "prop": "css:width"
+            "prop": "css:max-width"
           }
         ],
-        "mechanical": true
+        "mechanical": false
       },
-      "has_contentBandPadding": true
+      "has_contentBandPadding": false
     },
     {
       "block": "sgs/multi-button",
@@ -383,23 +412,29 @@
       "renders_via_shared_wrapper": true,
       "band": {
         "rendered_by": "shared-wrapper (.sgs-container__inner), only when contentWidth or a band prop is set",
-        "manifest_band_element": null,
+        "manifest_band_element": "content-band",
         "own_markup": [],
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "group",
-            "wrapper"
+            "content-band",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "undeclared-no-band",
-        "declared_on": [],
+        "state": "ok",
+        "declared_on": [
+          {
+            "element": "content-band",
+            "band": true,
+            "prop": "css:max-width"
+          }
+        ],
         "mechanical": false
       },
       "has_contentBandPadding": false
@@ -418,27 +453,27 @@
         ]
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "wrapper",
-            "wrapper"
+            "content-band",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "css-width-on-band",
+        "state": "ok",
         "declared_on": [
           {
             "element": "content-band",
             "band": true,
-            "prop": "css:width"
+            "prop": "css:max-width"
           }
         ],
-        "mechanical": true
+        "mechanical": false
       },
-      "has_contentBandPadding": true
+      "has_contentBandPadding": false
     },
     {
       "block": "sgs/post-grid",
@@ -447,25 +482,31 @@
       "renders_via_shared_wrapper": true,
       "band": {
         "rendered_by": "shared-wrapper (.sgs-container__inner), only when contentWidth or a band prop is set",
-        "manifest_band_element": null,
+        "manifest_band_element": "content-band",
         "own_markup": [
           "sgs-post-grid__inner"
         ],
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "grid",
-            "wrapper"
+            "content-band",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "undeclared-no-band",
-        "declared_on": [],
+        "state": "ok",
+        "declared_on": [
+          {
+            "element": "content-band",
+            "band": true,
+            "prop": "css:max-width"
+          }
+        ],
         "mechanical": false
       },
       "has_contentBandPadding": false
@@ -482,18 +523,24 @@
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "wrapper",
-            "wrapper"
+            "inner",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "undeclared-band-present",
-        "declared_on": [],
+        "state": "ok",
+        "declared_on": [
+          {
+            "element": "inner",
+            "band": true,
+            "prop": "css:max-width"
+          }
+        ],
         "mechanical": false
       },
       "has_contentBandPadding": false
@@ -510,25 +557,25 @@
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "row",
-            "wrapper"
+            "content-band",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "css-width-on-band",
+        "state": "ok",
         "declared_on": [
           {
             "element": "content-band",
             "band": true,
-            "prop": "css:width"
+            "prop": "css:max-width"
           }
         ],
-        "mechanical": true
+        "mechanical": false
       },
       "has_contentBandPadding": false
     },
@@ -544,27 +591,27 @@
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "wrapper",
-            "wrapper"
+            "content-band",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "css-width-on-band",
+        "state": "ok",
         "declared_on": [
           {
             "element": "content-band",
             "band": true,
-            "prop": "css:width"
+            "prop": "css:max-width"
           }
         ],
-        "mechanical": true
+        "mechanical": false
       },
-      "has_contentBandPadding": true
+      "has_contentBandPadding": false
     },
     {
       "block": "sgs/site-header-row",
@@ -578,25 +625,25 @@
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "row",
-            "wrapper"
+            "content-band",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "css-width-on-band",
+        "state": "ok",
         "declared_on": [
           {
             "element": "content-band",
             "band": true,
-            "prop": "css:width"
+            "prop": "css:max-width"
           }
         ],
-        "mechanical": true
+        "mechanical": false
       },
       "has_contentBandPadding": false
     },
@@ -612,27 +659,27 @@
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "wrapper",
-            "wrapper"
+            "content-band",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "css-width-on-band",
+        "state": "ok",
         "declared_on": [
           {
             "element": "content-band",
             "band": true,
-            "prop": "css:width"
+            "prop": "css:max-width"
           }
         ],
-        "mechanical": true
+        "mechanical": false
       },
-      "has_contentBandPadding": true
+      "has_contentBandPadding": false
     },
     {
       "block": "sgs/tab",
@@ -641,7 +688,7 @@
       "renders_via_shared_wrapper": true,
       "band": {
         "rendered_by": "shared-wrapper (.sgs-container__inner), only when contentWidth or a band prop is set",
-        "manifest_band_element": null,
+        "manifest_band_element": "content-band",
         "own_markup": [
           "sgs-tab__inner"
         ],
@@ -653,8 +700,14 @@
         "exempt": "declares no padding attribute in its manifest"
       },
       "contentWidth": {
-        "state": "undeclared-no-band",
-        "declared_on": [],
+        "state": "ok",
+        "declared_on": [
+          {
+            "element": "content-band",
+            "band": true,
+            "prop": "css:max-width"
+          }
+        ],
         "mechanical": false
       },
       "has_contentBandPadding": false
@@ -671,18 +724,24 @@
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "wrapper",
-            "wrapper"
+            "inner",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "undeclared-band-present",
-        "declared_on": [],
+        "state": "ok",
+        "declared_on": [
+          {
+            "element": "inner",
+            "band": true,
+            "prop": "css:max-width"
+          }
+        ],
         "mechanical": false
       },
       "has_contentBandPadding": false
@@ -694,23 +753,29 @@
       "renders_via_shared_wrapper": true,
       "band": {
         "rendered_by": "shared-wrapper (.sgs-container__inner), only when contentWidth or a band prop is set",
-        "manifest_band_element": null,
+        "manifest_band_element": "content-band",
         "own_markup": [],
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "slider",
-            "wrapper"
+            "content-band",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "undeclared-no-band",
-        "declared_on": [],
+        "state": "ok",
+        "declared_on": [
+          {
+            "element": "content-band",
+            "band": true,
+            "prop": "css:max-width"
+          }
+        ],
         "mechanical": false
       },
       "has_contentBandPadding": false
@@ -722,26 +787,32 @@
       "renders_via_shared_wrapper": true,
       "band": {
         "rendered_by": "shared-wrapper (.sgs-container__inner), only when contentWidth or a band prop is set",
-        "manifest_band_element": null,
+        "manifest_band_element": "content-band",
         "own_markup": [],
         "notes": []
       },
       "padding": {
-        "state": "on-wrapper",
+        "state": "on-band",
         "declared_on": [
           [
-            "wrapper",
-            "wrapper"
+            "content-band",
+            "band"
           ]
         ],
         "exempt": null
       },
       "contentWidth": {
-        "state": "undeclared-no-band",
-        "declared_on": [],
+        "state": "ok",
+        "declared_on": [
+          {
+            "element": "content-band",
+            "band": true,
+            "prop": "css:max-width"
+          }
+        ],
         "mechanical": false
       },
-      "has_contentBandPadding": true
+      "has_contentBandPadding": false
     },
     {
       "block": "sgs/trustpilot-reviews",
@@ -760,8 +831,14 @@
         "exempt": "declares no padding attribute in its manifest"
       },
       "contentWidth": {
-        "state": "undeclared-band-present",
-        "declared_on": [],
+        "state": "ok",
+        "declared_on": [
+          {
+            "element": "inner",
+            "band": true,
+            "prop": "css:max-width"
+          }
+        ],
         "mechanical": false
       },
       "has_contentBandPadding": false
@@ -846,34 +923,6 @@
       "reason": "plan, spec, catalogue or dated report"
     },
     {
-      "path": ".claude/specs/02-SGS-BLOCKS.md",
-      "mentions": 1,
-      "status": "exempt",
-      "mechanism": null,
-      "reason": "documentation"
-    },
-    {
-      "path": ".claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md",
-      "mentions": 1,
-      "status": "exempt",
-      "mechanism": null,
-      "reason": "documentation"
-    },
-    {
-      "path": ".claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md",
-      "mentions": 1,
-      "status": "exempt",
-      "mechanism": null,
-      "reason": "documentation"
-    },
-    {
-      "path": ".claude/specs/37-HEADER-FOOTER-BUILDER.md",
-      "mentions": 1,
-      "status": "exempt",
-      "mechanism": null,
-      "reason": "documentation"
-    },
-    {
       "path": ".claude/specs/archive/32-COMPONENT-STYLING-TOKEN-CONTRACT-v2.0.md",
       "mentions": 1,
       "status": "exempt",
@@ -881,18 +930,11 @@
       "reason": "documentation"
     },
     {
-      "path": "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php",
-      "mentions": 6,
-      "status": "target",
-      "mechanism": "shared-wrapper",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/includes/container-scroll-row-css.php",
-      "mentions": 1,
-      "status": "target",
-      "mechanism": "shared-includes",
-      "reason": null
+      "path": ".claude/wp-sgs-cli.md",
+      "mentions": 2,
+      "status": "exempt",
+      "mechanism": null,
+      "reason": "documentation"
     },
     {
       "path": "plugins/sgs-blocks/reports/no-inline-track-D-report.md",
@@ -917,17 +959,10 @@
     },
     {
       "path": "plugins/sgs-blocks/scripts/check-container-band-layers.py",
-      "mentions": 14,
+      "mentions": 13,
       "status": "exempt",
       "mechanism": null,
       "reason": "this detector, its baseline and its census"
-    },
-    {
-      "path": "plugins/sgs-blocks/scripts/check-shared-panel-schema.js",
-      "mentions": 1,
-      "status": "target",
-      "mechanism": "tooling-and-tests",
-      "reason": null
     },
     {
       "path": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
@@ -951,13 +986,6 @@
       "reason": "generated from block.json; regenerates once the source changes"
     },
     {
-      "path": "plugins/sgs-blocks/scripts/data/property-suffixes.json",
-      "mentions": 4,
-      "status": "target",
-      "mechanism": "tooling-and-tests",
-      "reason": null
-    },
-    {
       "path": "plugins/sgs-blocks/scripts/inspector-scan/fixtures/29-duplicate-visible-label/kind1-boxcontrol-with-suppression/edit.js",
       "mentions": 2,
       "status": "exempt",
@@ -977,195 +1005,6 @@
       "status": "exempt",
       "mechanism": null,
       "reason": "detector fixture: the token is the input under test"
-    },
-    {
-      "path": "plugins/sgs-blocks/scripts/inspector-scan/rules/30-raw-box-control.js",
-      "mentions": 3,
-      "status": "target",
-      "mechanism": "tooling-and-tests",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/scripts/lib/object_attr_shape.py",
-      "mentions": 1,
-      "status": "target",
-      "mechanism": "tooling-and-tests",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/scripts/migrate-box-control-presets.py",
-      "mentions": 1,
-      "status": "target",
-      "mechanism": "tooling-and-tests",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/scripts/migrate-tier-object.py",
-      "mentions": 3,
-      "status": "target",
-      "mechanism": "tooling-and-tests",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/scripts/programme-progress.py",
-      "mentions": 1,
-      "status": "target",
-      "mechanism": "tooling-and-tests",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/scripts/sgs-update-v2.py",
-      "mentions": 1,
-      "status": "target",
-      "mechanism": "tooling-and-tests",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/container/block.json",
-      "mentions": 3,
-      "status": "target",
-      "mechanism": "manifests",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/container/components/GridItemDefaultsPanel.js",
-      "mentions": 6,
-      "status": "target",
-      "mechanism": "editors",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/container/edit.js",
-      "mentions": 8,
-      "status": "target",
-      "mechanism": "editors",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/gallery/edit.js",
-      "mentions": 2,
-      "status": "target",
-      "mechanism": "editors",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/hero/block.json",
-      "mentions": 4,
-      "status": "target",
-      "mechanism": "manifests",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/hero/edit.js",
-      "mentions": 7,
-      "status": "target",
-      "mechanism": "editors",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/hero/render.php",
-      "mentions": 2,
-      "status": "target",
-      "mechanism": "per-block-render",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/physics-canvas/block.json",
-      "mentions": 3,
-      "status": "target",
-      "mechanism": "manifests",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/physics-canvas/edit.js",
-      "mentions": 4,
-      "status": "target",
-      "mechanism": "editors",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/site-footer-row/edit.js",
-      "mentions": 1,
-      "status": "target",
-      "mechanism": "editors",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/site-footer/block.json",
-      "mentions": 3,
-      "status": "target",
-      "mechanism": "manifests",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/site-footer/edit.js",
-      "mentions": 3,
-      "status": "target",
-      "mechanism": "editors",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/site-header-row/edit.js",
-      "mentions": 1,
-      "status": "target",
-      "mechanism": "editors",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/site-header/block.json",
-      "mentions": 4,
-      "status": "target",
-      "mechanism": "manifests",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/site-header/edit.js",
-      "mentions": 5,
-      "status": "target",
-      "mechanism": "editors",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/trust-bar/block.json",
-      "mentions": 3,
-      "status": "target",
-      "mechanism": "manifests",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/blocks/trust-bar/edit.js",
-      "mentions": 6,
-      "status": "target",
-      "mechanism": "editors",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/utils/container-wrapper-preview.js",
-      "mentions": 5,
-      "status": "target",
-      "mechanism": "utils",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/src/utils/section-padding.js",
-      "mentions": 1,
-      "status": "target",
-      "mechanism": "utils",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/tests/js/section-padding.test.js",
-      "mentions": 2,
-      "status": "target",
-      "mechanism": "tooling-and-tests",
-      "reason": null
-    },
-    {
-      "path": "plugins/sgs-blocks/tests/php/run-container-wrapper-standalone.php",
-      "mentions": 1,
-      "status": "target",
-      "mechanism": "tooling-and-tests",
-      "reason": null
     },
     {
       "path": "reports/2026-08-26-check-a-exemption-differential.json",
@@ -1252,20 +1091,6 @@
       "reason": "documentation"
     },
     {
-      "path": "scripts/computed-route/tests/confirm-canvas.test.mjs",
-      "mentions": 4,
-      "status": "target",
-      "mechanism": "route-data",
-      "reason": null
-    },
-    {
-      "path": "sites/eye-care-ward-end/build/home.tree.json",
-      "mentions": 5,
-      "status": "target",
-      "mechanism": "saved-trees",
-      "reason": null
-    },
-    {
       "path": "sites/eye-care-ward-end/build/qa/canvas-confirm.json",
       "mentions": 12,
       "status": "exempt",
@@ -1303,93 +1128,6 @@
         "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
         "plugins/sgs-blocks/scripts/consistency/setting-registry-css.json",
         "plugins/sgs-blocks/scripts/consistency/setting-registry.json"
-      ]
-    },
-    "editors": {
-      "files": 10,
-      "mentions": 43,
-      "paths": [
-        "plugins/sgs-blocks/src/blocks/container/components/GridItemDefaultsPanel.js",
-        "plugins/sgs-blocks/src/blocks/container/edit.js",
-        "plugins/sgs-blocks/src/blocks/gallery/edit.js",
-        "plugins/sgs-blocks/src/blocks/hero/edit.js",
-        "plugins/sgs-blocks/src/blocks/physics-canvas/edit.js",
-        "plugins/sgs-blocks/src/blocks/site-footer-row/edit.js",
-        "plugins/sgs-blocks/src/blocks/site-footer/edit.js",
-        "plugins/sgs-blocks/src/blocks/site-header-row/edit.js",
-        "plugins/sgs-blocks/src/blocks/site-header/edit.js",
-        "plugins/sgs-blocks/src/blocks/trust-bar/edit.js"
-      ]
-    },
-    "manifests": {
-      "files": 6,
-      "mentions": 20,
-      "paths": [
-        "plugins/sgs-blocks/src/blocks/container/block.json",
-        "plugins/sgs-blocks/src/blocks/hero/block.json",
-        "plugins/sgs-blocks/src/blocks/physics-canvas/block.json",
-        "plugins/sgs-blocks/src/blocks/site-footer/block.json",
-        "plugins/sgs-blocks/src/blocks/site-header/block.json",
-        "plugins/sgs-blocks/src/blocks/trust-bar/block.json"
-      ]
-    },
-    "per-block-render": {
-      "files": 1,
-      "mentions": 2,
-      "paths": [
-        "plugins/sgs-blocks/src/blocks/hero/render.php"
-      ]
-    },
-    "route-data": {
-      "files": 1,
-      "mentions": 4,
-      "paths": [
-        "scripts/computed-route/tests/confirm-canvas.test.mjs"
-      ]
-    },
-    "saved-trees": {
-      "files": 1,
-      "mentions": 5,
-      "paths": [
-        "sites/eye-care-ward-end/build/home.tree.json"
-      ]
-    },
-    "shared-includes": {
-      "files": 1,
-      "mentions": 1,
-      "paths": [
-        "plugins/sgs-blocks/includes/container-scroll-row-css.php"
-      ]
-    },
-    "shared-wrapper": {
-      "files": 1,
-      "mentions": 6,
-      "paths": [
-        "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php"
-      ]
-    },
-    "tooling-and-tests": {
-      "files": 10,
-      "mentions": 18,
-      "paths": [
-        "plugins/sgs-blocks/scripts/check-shared-panel-schema.js",
-        "plugins/sgs-blocks/scripts/data/property-suffixes.json",
-        "plugins/sgs-blocks/scripts/inspector-scan/rules/30-raw-box-control.js",
-        "plugins/sgs-blocks/scripts/lib/object_attr_shape.py",
-        "plugins/sgs-blocks/scripts/migrate-box-control-presets.py",
-        "plugins/sgs-blocks/scripts/migrate-tier-object.py",
-        "plugins/sgs-blocks/scripts/programme-progress.py",
-        "plugins/sgs-blocks/scripts/sgs-update-v2.py",
-        "plugins/sgs-blocks/tests/js/section-padding.test.js",
-        "plugins/sgs-blocks/tests/php/run-container-wrapper-standalone.php"
-      ]
-    },
-    "utils": {
-      "files": 2,
-      "mentions": 6,
-      "paths": [
-        "plugins/sgs-blocks/src/utils/container-wrapper-preview.js",
-        "plugins/sgs-blocks/src/utils/section-padding.js"
       ]
     }
   },

@@ -55,9 +55,6 @@
 				"margin": [
 					"margin"
 				],
-				"contentBandPadding": [
-					"contentBandPadding"
-				],
 				"contentBandMargin": [
 					"contentBandMargin"
 				],
@@ -94,7 +91,6 @@
 						"css:line-height": "lineHeight",
 						"css:font-style": "fontStyle",
 						"css:text-align": "textAlign",
-						"css:padding": "padding",
 						"css:margin": "margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
@@ -159,7 +155,8 @@
 					],
 					"prefix": "contentBand",
 					"attrMap": {
-						"css:width": "contentWidth"
+						"css:max-width": "contentWidth",
+						"css:padding": "padding"
 					}
 				},
 				"grid-item": {
@@ -733,12 +730,6 @@
 				"outset"
 			],
 			"description": "Wrapper root border style. Empty = solid once any side has a width (sgs_border_box_decls); 'none' = no border rendered regardless of colour/width."
-		},
-		"contentBandPadding": {
-			"type": "object",
-			"default": {
-				"desktop": {}
-			}
 		},
 		"contentBandMargin": {
 			"type": "object",

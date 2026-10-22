@@ -64,7 +64,7 @@ if ( ! function_exists( 'sgs_container_scroll_row_css' ) ) {
 	 * @param string $row_sel        Selector of the element whose direct children are the items.
 	 * @param array  $attributes     Block attributes.
 	 * @param bool   $with_container Also emit each rule as an `@container` query.
-	 * @param mixed  $band_padding   The container's `contentBandPadding` tier object.
+	 * @param mixed  $band_padding   The container's `padding` tier object, which paints the band.
 	 * @param mixed  $band_margin    The container's `contentBandMargin` tier object.
 	 * @return string CSS.
 	 */

@@ -862,36 +862,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						</ResponsiveOverride>
 					</ToolsPanelItem>
 
-					{ /* contentBandPadding is a TIER OBJECT — ONE attr holding
-					     {desktop,tablet,mobile}, each tier itself a {top,right,bottom,left}
-					     box. It therefore uses
-					     ResponsiveOverride, which reads and writes the object, NOT the
-					     flat-sibling ResponsiveBoxControl. Mirrors container's own
-					     implementation. */ }
-					<ToolsPanelItem
-						label={ __( 'Band padding', 'sgs-blocks' ) }
-						hasValue={ () =>
-							Object.keys( attributes.contentBandPadding ?? {} ).length > 0
-						}
-						onDeselect={ () =>
-							setAttributes( { contentBandPadding: {} } )
-						}
-					>
-						<ResponsiveOverride
-							value={ attributes.contentBandPadding }
-							onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
-						>
-							{ ( { ownValue, setOwnValue } ) => (
-								<SgsBoxControl
-									label={ __( 'Band padding', 'sgs-blocks' ) }
-									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
-									units={ BOX_UNITS }
-									presets
-									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-								/>
-							) }
-						</ResponsiveOverride>
-					</ToolsPanelItem>
 
 					{ /* zIndex is a TIER OBJECT written by includes/sgs-header-z-index.php
 					     (the header's single z-index writer). Empty = inherit the wider

@@ -15,8 +15,8 @@
  *
  * Three real, separately-shipped bugs this session were all this ONE root
  * cause:
- *   1. sgs/gallery mounted ContentBandPanel (writes contentBandBackground /
- *      contentBandPadding) with NEITHER attribute declared in its own
+ *   1. sgs/gallery mounted ContentBandPanel (writes a flat band
+ *      background and band padding) with NEITHER attribute declared in its own
  *      block.json at all. Fixed by removing the mount (69d1a3d8).
  *   2. 15 blocks mounted WidthPanel (writes maxWidth/contentWidth as OBJECTS
  *      via ResponsiveOverride) while declaring both as "type":"string" in

@@ -85,7 +85,8 @@
 						"css:align-content": "alignContent",
 						"css:align-items": "alignItems",
 						"css:flex-direction": "flexDirection",
-						"css:flex-wrap": "flexWrap"
+						"css:flex-wrap": "flexWrap",
+						"css:max-width": "contentWidth"
 					},
 					"_note": "Mirrors sgs/container's `inner` element (block.json). Added 2026-08-05 (Bean): gaps are GRID-element properties — they sit between a block's internal pieces, inside both the OUTER layer and the content-width layer, so they belong to neither. Before this, gap/gapTablet/gapMobile on this block resolved to NO css_property at all: the shared SGS_Container_Wrapper renders them (class-sgs-container-wrapper.php:166-169) but the emission scanner only reads each block's OWN render.php/style.css, and this block declared no explicit attrMap to fall back on. The prefix convention could not have covered it either — with an empty prefix the candidate is built as prefix + PascalCase suffix (\"\" + \"Gap\" = \"Gap\"), which never matches the real lowercase attribute name. That is the same limitation sgs/container's own inner `_note` documents. Explicit mapping is the established fix, not a workaround."
 				},

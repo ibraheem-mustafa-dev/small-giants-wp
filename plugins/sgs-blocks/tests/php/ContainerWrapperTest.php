@@ -204,7 +204,7 @@ final class ContainerWrapperTest extends TestCase {
 		$html = SGS_Container_Wrapper::render( $attrs, null, '<p>x</p>', 'section' );
 
 		$this->assertStringContainsString( 'margin-top:40px !important;margin-left:8px !important;', $html, 'base margin declarations carry !important' );
-		$this->assertStringContainsString( 'padding-top:40px;padding-right:20px;padding-bottom:40px;padding-left:20px;', $html, 'base padding is unchanged and not !important' );
+		$this->assertStringContainsString( '>.sgs-container__inner{padding-top:40px;padding-right:20px;padding-bottom:40px;padding-left:20px;}', $html, 'base padding paints the content band and is not !important' );
 		$this->assertStringNotContainsString( 'padding-top:40px !important', $html, 'base padding never takes !important' );
 	}
 
@@ -217,8 +217,8 @@ final class ContainerWrapperTest extends TestCase {
 		$html = SGS_Container_Wrapper::render( $this->section_attrs(), null, '<p>inner</p>', 'section' );
 
 		$this->assertStringContainsString( '<style id="sgs-container-', $html, 'scoped <style> tag present' );
-		$this->assertStringContainsString( '<section class="sgs-container has-global-padding sgs-container--flex sgs-container-', $html, 'exact class-list prefix (core gutter class + flex + uid)' );
-		$this->assertStringContainsString( 'padding-top:40px;padding-right:20px;padding-bottom:40px;padding-left:20px;', $html, 'base spacing golden rule' );
+		$this->assertStringContainsString( '<section class="sgs-container sgs-container--flex sgs-container-', $html, 'exact class-list prefix (a horizontal padding replaces the core gutter class; flex + uid)' );
+		$this->assertStringContainsString( '>.sgs-container__inner{padding-top:40px;padding-right:20px;padding-bottom:40px;padding-left:20px;}', $html, 'base spacing golden rule (painted on the content band)' );
 		$this->assertStringContainsString( '{max-width:1200px;margin-inline:auto}', $html, 'base outer max-width golden rule' );
 		$this->assertStringContainsString( '>.sgs-container__inner{max-width:var(--wp--style--global--content-size,1200px);margin-inline:auto}', $html, 'base content-band golden rule' );
 		$this->assertStringContainsString( '>.sgs-container__inner{gap:24px;display:flex}', $html, 'base grid/flex golden rule (grid-on-inner); flex-wrap is a block.json default, emitted only when the attribute is set' );
@@ -238,7 +238,7 @@ final class ContainerWrapperTest extends TestCase {
 			'exact class-list prefix (core gutter class + grid + uid)'
 		);
 		$this->assertStringNotContainsString( 'sgs-cols-', $html, 'column counts come from the scoped grid rule on __inner, never shorthand classes' );
-		$this->assertStringContainsString( 'padding-top:32px;padding-bottom:32px;', $html, 'base spacing golden rule (top+bottom only)' );
+		$this->assertStringContainsString( '>.sgs-container__inner{padding-top:32px;padding-bottom:32px;}', $html, 'base spacing golden rule (top+bottom only, on the content band)' );
 		$this->assertStringContainsString( '{max-width:960px;margin-inline:auto}', $html, 'base outer max-width golden rule' );
 		$this->assertStringContainsString( '>.sgs-container__inner{max-width:var(--wp--style--global--wide-size,1400px);margin-inline:auto}', $html, 'base content-band golden rule (wide token)' );
 		$this->assertStringContainsString( '>.sgs-container__inner{gap:16px;display:grid;grid-template-columns:repeat(3,1fr)}', $html, 'base grid golden rule (3 columns, grid-on-inner)' );
@@ -252,7 +252,7 @@ final class ContainerWrapperTest extends TestCase {
 		$html = SGS_Container_Wrapper::render( $this->content_attrs(), null, '<p>text</p>', 'content' );
 
 		$this->assertStringContainsString( '<section class="sgs-container has-global-padding sgs-container-', $html, 'default tag=section, no layout class (content kind has no grid/flex)' );
-		$this->assertStringContainsString( 'padding-top:16px;padding-bottom:16px;', $html, 'base spacing golden rule (WP-native style.spacing.padding, applied to the OUTER)' );
+		$this->assertStringContainsString( '>.sgs-container__inner{padding-top:16px;padding-bottom:16px;}', $html, 'base spacing golden rule (WP-native style.spacing.padding, painted on the content band)' );
 		$this->assertStringContainsString( '{max-width:800px;margin-inline:auto}', $html, 'base outer max-width golden rule' );
 		$this->assertStringContainsString( '>.sgs-container__inner{max-width:var(--wp--style--global--content-size,1200px);margin-inline:auto}', $html, 'base content-band golden rule (contentWidth only)' );
 		$this->assertStringNotContainsString( 'display:grid', $html, 'NO grid layer (content kind has no __inner grid/flex, Spec 31 §13.6)' );

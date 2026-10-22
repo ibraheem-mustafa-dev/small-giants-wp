@@ -78,7 +78,6 @@
 					"attrMap": {
 						"css:color": "native:color.text",
 						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
@@ -108,7 +107,9 @@
 						"css:justify-content": "justifyContent",
 						"css:align-content": "alignContent",
 						"css:flex-direction": "flexDirection",
-						"css:flex-wrap": "flexWrap"
+						"css:flex-wrap": "flexWrap",
+						"css:max-width": "contentWidth",
+						"css:padding": "native:spacing.padding"
 					},
 					"_note": "composite wrapper grid capability (shared SGS_Container_Wrapper, kind='layout'). Maps explicitly — no `prefix` declared (ROLLOUT REQUIREMENT 1). This block has NO `alignItems` attribute — an honest gap."
 				},

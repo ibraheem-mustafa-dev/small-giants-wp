@@ -116,7 +116,7 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 			{ /* gridItemPadding is a TIER OBJECT — ONE attr holding
 			     {desktop,tablet,mobile}, each tier itself a
 			     {top,right,bottom,left} box (brought in line with
-			     contentBandPadding's shape, 2026-08-13 — it was the one
+			     `padding`'s shape — it was the one
 			     tiered box-object property in this wrapper with no
 			     tablet/mobile variant). It therefore uses ResponsiveOverride,
 			     which reads and writes the object, NOT a plain BoxControl
@@ -124,7 +124,7 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 			     WordPress SILENTLY DISCARDS an attribute a block does not
 			     declare (D338), and the block.json default is now
 			     {desktop:{}}, not {}. Mirrors container/edit.js's
-			     contentBandPadding control exactly. */ }
+			     `padding` control exactly. */ }
 			{ /* ⛔ NO `label` on the wrapper, and NO `hideLabelFromVision` on the
 			     BoxControl — core's BoxControl ignores that prop and always renders
 			     its own label, so both painted. Keep BoxControl's (BaseControl
@@ -388,9 +388,9 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 // triage). EVERY ONE of its 13 controls was dead, on EVERY block that mounted
 // it. Measured, not assumed:
 //
-//  1. Band padding (12 controls) wrote FLAT `contentBandPaddingTop` /
-//     `…TopTablet` / `…TopMobile` etc. The D580 box-tier migration moved every
-//     block to ONE object-typed `contentBandPadding`, so as of that commit
+//  1. Band padding (12 controls) wrote FLAT per-side, per-tier keys
+//     (a `…Top`, `…TopTablet`, `…TopMobile` family). The D580 box-tier migration moved every
+//     block to ONE object-typed padding attribute, so as of that commit
 //     ZERO block.json anywhere declares a single flat key this panel wrote —
 //     and WordPress SILENTLY DISCARDS a write to an undeclared attribute
 //     (D338). Known,
@@ -407,16 +407,12 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 //     Zero stored instances existed on the canary (verified by DB query before
 //     deletion), so nothing to migrate.
 //
-// The blocks that genuinely HAVE a content band (container, hero,
-// physics-canvas, site-header, site-footer, trust-bar) never mounted this panel
-// — each controls its own `contentBandPadding` locally with the canonical
-// <ResponsiveBoxControl> against the object-shaped attr. That is the working
-// path and it is untouched.
+// The padding of a block with a content band is its one `padding` attribute,
+// which paints the band; the block's own Padding control writes it with the
+// canonical <ResponsiveOverride> against the object-shaped attr.
 //
-// ⛔ Do not reintroduce a shared band panel writing flat per-side tier keys.
-// If band padding is ever wanted on a layout-kind composite, the additive fix
-// is a <ResponsiveBoxControl> against a declared object-typed
-// `contentBandPadding` — same shape those seven blocks already use.
+// ⛔ Do not reintroduce a shared band panel writing flat per-side tier keys,
+// and do not add a second padding attribute for the band.
 //
 // Same defect class + same remedy as `sgs/gallery`'s mount (D586, `69d1a3d8`)
 // and ResponsiveSpacingPanel's tombstone above.

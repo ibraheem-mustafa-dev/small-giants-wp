@@ -60,7 +60,6 @@
 					"attrMap": {
 						"css:background-color": "backgroundColour",
 						"css:color": "textColour",
-						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
 						"css:border-width": "borderWidth",
@@ -91,6 +90,19 @@
 						}
 					},
 					"_note": "No `display`/`order`/`overflow` attribute exists on this block — honest GAPs. Children are sgs/info-box InnerBlocks (allowedBlocks) which own their own typography/fill — this block declares no per-item element. textColourHover/textColourHoverGradient (2026-09-07, colour-conformance): textColour and backgroundColour share this SAME element, so render.php conditionally moves the background onto its own ::after layer via sgs_block_background_layer_css() whenever the resolved hover text value is a gradient (CLAUDE.md's text+background-on-one-selector precondition)."
+				},
+				"content-band": {
+					"label": "Content band",
+					"layer": "CONTENT",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:max-width": "contentWidth",
+						"css:padding": "native:spacing.padding"
+					}
 				}
 			},
 			"boxFamilies": {

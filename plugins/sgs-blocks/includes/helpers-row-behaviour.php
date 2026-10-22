@@ -56,7 +56,7 @@ if ( ! function_exists( 'sgs_row_shrink_css' ) ) {
 	 *    number (a stored `24` would otherwise become the invalid, silently
 	 *    dropped `calc(24 / 2)`) and sanitise before interpolating.
 	 *
-	 * @param string $selector Fully-formed, already-safe CSS selector for the shrunk state.
+	 * @param string $selector Fully-formed, already-safe CSS selector for the shrunk state: the row's content band, which carries the row's padding.
 	 * @param mixed  $padding  The row's `padding` attribute ({desktop:{top,…},…}).
 	 * @return string CSS text (no <style> wrapper); '' when the row has no vertical padding to reduce.
 	 */
@@ -181,7 +181,7 @@ if ( ! function_exists( 'sgs_row_shrink_settings_css' ) ) {
 		$padding = $attributes['rowShrinkPadding'] ?? null;
 		if ( is_array( $padding ) && array() !== $padding && function_exists( 'sgs_emit_responsive_css' ) ) {
 			$css .= sgs_emit_responsive_css(
-				$root_sel . '.is-row-shrunk',
+				$root_sel . '.is-row-shrunk>.sgs-container__inner',
 				array(
 					array(
 						'value'        => $padding,
@@ -202,9 +202,10 @@ if ( ! function_exists( 'sgs_row_shrink_settings_css' ) ) {
 				: 'ease';
 			$t    = $ms . 'ms ' . $ease;
 			$css .= $root_sel . '{--sgs-row-shrink-duration:' . $ms . 'ms;--sgs-row-shrink-easing:' . $ease . ';}';
-			$css .= $root_sel . '.is-row-shrink-active{transition:background-color ' . $t . ',transform ' . $t
-				. ',padding-top ' . $t . ',padding-bottom ' . $t . ',padding-left ' . $t . ',padding-right ' . $t . ';}';
-			$css .= '@media (prefers-reduced-motion: reduce){' . $root_sel . '.is-row-shrink-active{transition:none;}}';
+			$css .= $root_sel . '.is-row-shrink-active{transition:background-color ' . $t . ',transform ' . $t . ';}';
+			$css .= $root_sel . '.is-row-shrink-active>.sgs-container__inner{transition:padding-top ' . $t . ',padding-bottom ' . $t
+				. ',padding-left ' . $t . ',padding-right ' . $t . ';}';
+			$css .= '@media (prefers-reduced-motion: reduce){' . $root_sel . '.is-row-shrink-active,' . $root_sel . '.is-row-shrink-active>.sgs-container__inner{transition:none;}}';
 		}
 		return $css;
 	}

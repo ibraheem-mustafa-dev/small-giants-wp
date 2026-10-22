@@ -34,7 +34,6 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:gap": "gap",
-						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
 						"css:border-width": "borderWidth",
@@ -108,6 +107,19 @@
 						"css:transition-timing-function": "transitionEasing"
 					},
 					"_note": "The slide strip view.js builds inside `__track` (view.js moves the real slides into it). transitionDuration/transitionEasing time its `transform` slide change (style.css `.sgs-testimonial-slider__list`) and the pause button's colour change; they are no state timing."
+				},
+				"content-band": {
+					"label": "Content band",
+					"layer": "CONTENT",
+					"order": 7,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:max-width": "contentWidth",
+						"css:padding": "native:spacing.padding"
+					}
 				}
 			},
 			"_ownership_note": "OWNERSHIP BOUNDARY (Spec 35): each slide is rendered by iterating $block->inner_blocks and calling $inner_block->render() — a genuine child-block render, not a scalar array. Quote text, author name, role, rating, avatar and card-style all belong ENTIRELY to the child sgs/testimonial block's own manifest and are deliberately NOT declared here — declaring them would cross the delegated-rendering ownership boundary. Only the carousel chrome this block itself emits (slider wrapper, arrows, dots) is declared above.",

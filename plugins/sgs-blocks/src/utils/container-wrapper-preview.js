@@ -3,7 +3,7 @@
  * outer element of any block routed through it: gap, border (style, width,
  * colour or gradient, per-tier corner radius), max-width, the grid/flex/stack
  * layout switch with its layout class, grid rows, and the content band
- * (`.sgs-container__inner`: contentWidth + contentBandPadding, with the layout
+ * (`.sgs-container__inner`: contentWidth + padding, with the layout
  * moved onto the band when one exists, as the wrapper's `$grid_on_inner` does).
  *
  * Every tiered value resolves at the previewed device tier, so the canvas shows
@@ -28,7 +28,7 @@ const LAYOUTS = [ 'grid', 'flex', 'stack' ];
 /**
  * @param {Object} attributes Block attributes (the wrapper family: layout, columns,
  *                            gap, grid*, justify*, align*, flex*, maxWidth, contentWidth,
- *                            contentBandPadding, border*).
+ *                            padding, border*).
  * @param {string} [tier]     Previewed device tier from `usePreviewTier()`.
  * @param {Array}  [palette]  Theme colour palette, to resolve a border colour slug.
  * @param {Object} [extraStyle] Block-own outer declarations (a bespoke grid, say) that
@@ -72,10 +72,16 @@ export function containerWrapperPreview( attributes, tier = 'desktop', palette =
 		Object.assign( style, separatorsFlowPreview( attrs.separators, tier ) );
 	}
 
-	const band = attrs.contentBandPadding && 'object' === typeof attrs.contentBandPadding ? attrs.contentBandPadding : {};
+	// `padding` paints the band, as the wrapper's `$padding_on_band` does: the block's tier-of-boxes
+	// `padding`, or the flat native `style.spacing.padding` box of a block without that attribute.
+	const nativePadding = attrs.style?.spacing?.padding;
+	const band = attrs.padding && 'object' === typeof attrs.padding && ! Array.isArray( attrs.padding ) ? attrs.padding : {};
+	const hasTiers = [ 'desktop', 'tablet', 'mobile' ].some( ( key ) => band[ key ] && 'object' === typeof band[ key ] && Object.keys( band[ key ] ).length );
 	const { hasBandProps, bandStyle } = contentBandPreview( {
 		contentWidth: resolveContentWidthPreview( tierValueOf( attrs.contentWidth, tier ) || '' ),
-		bandPadding: resolveBoxTierPreview( band.desktop, band.tablet, band.mobile, tier ),
+		bandPadding: hasTiers || ! nativePadding || 'object' !== typeof nativePadding
+			? resolveBoxTierPreview( band.desktop, band.tablet, band.mobile, tier )
+			: resolveBoxTierPreview( nativePadding, undefined, undefined, tier ),
 		style,
 		layout,
 	} );

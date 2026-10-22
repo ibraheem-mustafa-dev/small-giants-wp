@@ -41,12 +41,10 @@
 // ignores the label-hiding prop, so keep BoxControl's own label; BaseControl associates it with the
 // inputs." That raw `<BoxControl>`, nested inside `<ResponsiveOverride>`, IS the canonical shape for
 // an object-typed attribute — flagging it would tell an agent to delete a correct, documented,
-// spec-mandated pairing. Verified live for all 6 `contentBandPadding` sites (`container`,
-// `hero`, `physics-canvas`, `site-footer`, `site-header`, `trust-bar` — each
-// `block.json` declares `contentBandPadding` as `{"type":"object","default":{"desktop":{}}}`, the
-// tiered-object shape) and the 1 `gridItemPadding` site
-// (`container/components/GridItemDefaultsPanel.js:128`, same object shape) — 8 sites total, matches
-// the population predicted before this rule's code was written.
+// spec-mandated pairing. Verified live for the `padding` sites of `container`, `hero`,
+// `physics-canvas`, `site-footer`, `site-header` and `trust-bar` (each `block.json` declares `padding`
+// as `{"type":"object","default":{"desktop":{}}}`, the tiered-object shape) and the `gridItemPadding`
+// site (`container/components/GridItemDefaultsPanel.js`, same object shape).
 //
 // EXPECTED POPULATION, stated BEFORE trusting a live run (rules.json _meta.zeroIsAClaim): 16 raw
 // `<BoxControl` sites tree-wide, minus 4 out-of-scope (the two wrapper files), minus 8 mandated
@@ -205,7 +203,7 @@ module.exports = {
 							'<ResponsiveBoxControl> and add the Tablet/Mobile sibling attributes to block.json, ' +
 							'or change the attribute to the tiered-object shape ({desktop,tablet,mobile}) and ' +
 							'wrap this <BoxControl> in <ResponsiveOverride> (mirrors container/' +
-							'hero\'s contentBandPadding pattern); (b) if it is deliberately NOT responsive, ' +
+							'hero\'s padding pattern); (b) if it is deliberately NOT responsive, ' +
 							'register it in baselines/30-raw-box-control.json with that specific reason — do ' +
 							'not leave it silently matching neither sanctioned shape.',
 						keyParts: [ 'raw-box-control', String( line ) ],

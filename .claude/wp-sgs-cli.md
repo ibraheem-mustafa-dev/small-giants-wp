@@ -99,6 +99,10 @@ Replaces the site-wide add-on price list from a JSON file, through the same norm
 
 Moves stored old motion attributes onto the block's `sgsMotion` document (Spec 38A FR-38A-32), through the mappers in `plugins/sgs-blocks/includes/motion/migrate/mappers/` (one file per family, `class-sgs-motion-map-<family>.php`; `--list-families` lists them). `--dry-run` is the default and writes nothing: it prints each post's per-block change and every flag (a value the schema sanitiser dropped, or a stored value that overrides a mapped one). `--apply` backs every post up first to a randomly named JSON file outside the web root, skips flagged posts unless `--allow-flagged` and posts open in the editor, replaces only the migrated block comments' attribute JSON, writes through `$wpdb->update` plus `clean_post_cache` (never `wp_update_post`, so a product is never re-saved into draft), reads each write back and compares published counts per post type. `--rollback=<file>` restores a backup. Post types are every registered type minus `deploy_common.py::NON_BLOCK_POST_TYPES`. The read-only census of what remains is `python plugins/sgs-blocks/scripts/migrate-motion/migrate_motion.py --survey --target <site>`.
 
+### `wp sgs band-padding-migrate [--dry-run | --apply | --rollback=<file>] [--post=<id>] [--post_type=<types>]`
+
+Folds a stored `contentBandPadding` into `padding` in every post's block comments (`plugins/sgs-blocks/includes/class-sgs-band-padding-migrate-command.php`, fold in `class-sgs-band-padding-folder.php`): a block that declares `contentWidth` has one padding control, which paints its content band. The fold is per device and per side; where `padding` and `contentBandPadding` set the same side of the same device to different values the band's value wins and the command prints a CONFLICT line. `--dry-run` is the default and writes nothing. `--apply` and `--rollback` work as in `motion-migrate` (backup outside the web root, `$wpdb->update`, read-back, published counts per post type, posts open in the editor skipped). Only the attribute JSON of the folded block comments changes.
+
 ## Cheatsheet
 
 ```bash

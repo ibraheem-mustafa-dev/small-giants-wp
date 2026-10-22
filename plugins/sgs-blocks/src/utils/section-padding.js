@@ -11,7 +11,7 @@ const BAND_BOX_SIDES = [ 'top', 'right', 'bottom', 'left' ];
 
 /**
  * Whether a container's attributes give it a content band, as the wrapper's `$has_band_props` decides on the
- * desktop tier: a content width other than full, or any band padding or margin side.
+ * desktop tier: a content width other than full, or any padding or band margin side.
  *
  * @param {Object} attributes Container attributes.
  * @return {boolean} Has a content band.
@@ -26,7 +26,7 @@ export function hasContentBand( attributes ) {
 		return true;
 	}
 	return [
-		attributes?.contentBandPadding?.desktop,
+		attributes?.padding?.desktop,
 		attributes?.contentBandMargin?.desktop,
 	].some(
 		( box ) =>

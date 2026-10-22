@@ -101,7 +101,7 @@ STILL STRUCTURALLY VISIBLE AS FLAT today, how much of it has been fixed?" —
 which is necessarily 0 by construction (a fixed family stops being visible).
 True whole-programme completion is >= the number below; decisions.md already
 records several properties fixed that are invisible to this query by design
-(`gap`, `columns` on at least one block, `contentBandPadding`, `fontSize`,
+(`gap`, `columns` on at least one block, `fontSize`,
 `sgs/media.order`, `decorative-image.positionX/Y` — cloning-pipeline-tier-migration-requirements.md
 line 271). The two numbers that ARE fully reliable, and are the actual
 burn-down signal to watch run over run, are "properties remaining" and

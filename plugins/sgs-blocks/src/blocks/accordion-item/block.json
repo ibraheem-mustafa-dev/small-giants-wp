@@ -70,6 +70,18 @@
 					"order": 3,
 					"clusters": [],
 					"_note": "Panel body is native InnerBlocks children (any block type) — each child owns its own typography/colour controls. Mirrors sgs/quote's quote-body element."
+				},
+				"content-band": {
+					"label": "Content band",
+					"layer": "CONTENT",
+					"order": 4,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:max-width": "contentWidth"
+					}
 				}
 			},
 			"boxFamilies": {

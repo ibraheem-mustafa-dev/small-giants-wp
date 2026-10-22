@@ -88,7 +88,6 @@
             "css:border-style": "borderStyle",
             "css:border-color": "borderColour",
             "css:border-radius": "borderRadius",
-            "css:padding": "padding",
             "css:background-image": "backgroundImage",
             "css:max-width": "maxWidth",
             "css:gap": "gap",
@@ -133,6 +132,19 @@
           "order": 4,
           "clusters": [],
           "_note": "`.sgs-container__svg-bg`, the wrapper SGS_Container_Wrapper prints around a background or foreground SVG (bgSvg*). A motion target so an SVG loop or `draw` effect layer reaches the SVG alone; it declares no style clusters because its look is governed by the bgSvg* controls."
+        },
+        "content-band": {
+        	"label": "Content band",
+        	"layer": "CONTENT",
+        	"order": 5,
+        	"clusters": [
+        		"layout"
+        	],
+        	"prefix": "",
+        	"attrMap": {
+        		"css:max-width": "contentWidth",
+        		"css:padding": "padding"
+        	}
         }
       }
     }

@@ -39,7 +39,7 @@ import {
 // No-inline migration: hero no longer uses the default
 // <ContainerWrapperControls> aggregator — its unconditional "Content band" /
 // per-grid-area panels write to LEGACY FLAT attrs, which would become dead
-// controls once contentBandPadding / contentPadding / mediaPadding become box
+// controls once contentPadding / mediaPadding become box
 // objects. Import the individual panels still needed instead (mirrors
 // sgs/container's own edit.js, which took the same approach); hero rolls its
 // own "Content band" / "Content area" / "Media area" panels below using
@@ -298,9 +298,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		mediaBackground,
 		mediaBackgroundGradient,
 		mediaPadding,
-		// contentBandPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} —
-		// ONE attr; each tier is a {top,right,bottom,left} box.
-		contentBandPadding,
 		// Phase 1 — layout grid. splitColumnRatio* retired (Step 6, 2026-06-11);
 		// render.php now reads gridTemplateColumns* for the split variant.
 		gridTemplateColumns,
@@ -1746,7 +1743,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 
 				{ /* Content band (Layer 2 __inner) — box-object family, rendered
 				   entirely by SGS_Container_Wrapper (mirrors sgs/container's own
-				   local panel; contentBandPadding/Tablet/Mobile). */ }
+				   local panel). */ }
 				<PanelBody title={ __( 'Content band', 'sgs-blocks' ) } initialOpen={ false }>
 					<p className="components-base-control__help">
 						{ __( 'Styles the inner content band (the max-width wrapper set by Content width). Only active when Content width is set.', 'sgs-blocks' ) }
@@ -1757,30 +1754,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						inner content layer (Bean-ruled). Use the hero's own
 						media/content background controls instead. Do NOT re-add a
 						band-scoped background. */ }
-					{ /* contentBandPadding is a TIER OBJECT — ONE attr holding
-						{desktop,tablet,mobile}, each tier itself a
-						{top,right,bottom,left} box. Uses ResponsiveOverride,
-						which writes the whole tier object back to the one attr.
-						Mirrors sgs/container's own edit.js. */ }
-					{ /* ⛔ NO `label` on the wrapper, and NO `hideLabelFromVision` on the
-					     BoxControl — core's BoxControl ignores that prop and always renders its
-					     own label, so both painted (sentence case + WP's uppercase). Keep
-					     BoxControl's; BaseControl associates it with the inputs. Full reasoning
-					     at components/ResponsiveBoxControls.js. */ }
-					<ResponsiveOverride
-						value={ contentBandPadding }
-						onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Band padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-							/>
-						) }
-					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* Root padding & margin — box-object interface contract (mirrors

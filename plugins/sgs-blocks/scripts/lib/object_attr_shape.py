@@ -14,7 +14,7 @@ shapes (`.claude/plans/cloning-pipeline-tier-migration-requirements.md` G5):
      consumed via `sgs_responsive_normalise_object()` /
      `sgs_emit_responsive_css()` / `sgs_typography_css_rule()` /
      `sgs_resolve_on_tiers()` (e.g. `sgs/container.gap`, `.maxWidth`,
-     `.contentBandPadding`).
+     `.gridItemPadding`).
   3. box_only     — object-typed, represents `{top,right,bottom,left}` box
      sides, decomposed in PHP into box sides, nothing to do with device
      tiers (e.g. `sgs/text.borderWidth`).

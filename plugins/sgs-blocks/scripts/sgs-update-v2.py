@@ -724,7 +724,7 @@ if not _CONTAINER_WRAPPER_PHP_PATH.is_file():
         f"is_responsive mechanism 2 positive control failed: shared wrapper "
         f"file not found at {_CONTAINER_WRAPPER_PHP_PATH}. This file is the "
         f"render-evidence source for every wrapper-routed composite block's "
-        f"tier-object attrs (minHeight/contentWidth/contentBandPadding/"
+        f"tier-object attrs (minHeight/contentWidth/padding/"
         f"gridItemPadding/...). A missing/renamed file must fail the reseed, "
         f"not silently seed those attrs as non-responsive."
     )

@@ -36,9 +36,6 @@
 				"background"
 			],
 			"boxFamilies": {
-				"contentBandPadding": [
-					"contentBandPadding"
-				],
 				"padding": [
 					"padding"
 				],
@@ -68,7 +65,6 @@
 						"css:color": "textColour",
 						"css:background-color": "backgroundColour",
 						"css:background-color-gradient": "backgroundColourGradient",
-						"css:padding": "padding",
 						"css:margin": "margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
@@ -121,7 +117,8 @@
 					],
 					"prefix": "contentBand",
 					"attrMap": {
-						"css:width": "contentWidth"
+						"css:max-width": "contentWidth",
+						"css:padding": "padding"
 					}
 				},
 				"decorative": {
@@ -315,12 +312,6 @@
 				"desktop": 2,
 				"tablet": 2,
 				"mobile": 1
-			}
-		},
-		"contentBandPadding": {
-			"type": "object",
-			"default": {
-				"desktop": {}
 			}
 		},
 		"flexDirection": {

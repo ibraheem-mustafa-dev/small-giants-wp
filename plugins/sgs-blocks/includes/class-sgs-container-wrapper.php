@@ -699,7 +699,49 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Computed once here and reused at ~:1931 for the base/desktop tier.
 			$sgs_wrap_padding_tiers = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
 			$sgs_wrap_margin_tiers  = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
-			$padding_tablet_obj     = is_array( $sgs_wrap_padding_tiers['tablet'] ) ? $sgs_wrap_padding_tiers['tablet'] : array();
+
+			// Content-band padding. On a block that declares `contentWidth` and renders a
+			// content band (`wrap_inner` not false), `padding` paints the band
+			// (`.sgs-container__inner`), the element that also carries the `contentWidth`
+			// max-width, so the cap and the padding sit on one `box-sizing:border-box`
+			// element. The outer element keeps no padding; the full-bleed ground paints
+			// edge to edge behind the band. The padding is emitted with the tier-of-boxes
+			// emitter among the band properties (`$obj_band_props`); a block with native
+			// `supports.spacing` padding and no `padding` attribute puts its flat native
+			// box on the band the same way.
+			$padding_on_band = false !== $opt_wrap_inner && (
+				( $block instanceof \WP_Block && isset( $block->block_type->attributes['contentWidth'] ) )
+				|| array_key_exists( 'contentWidth', $attributes )
+			);
+			$band_padding_has_value    = false;
+			$band_padding_has_vertical   = false;
+			$band_padding_has_horizontal = false;
+			if ( $padding_on_band ) {
+				$band_padding_boxes = array_values( array_filter( $sgs_wrap_padding_tiers, 'is_array' ) );
+				if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+					$band_padding_boxes[] = $attributes['style']['spacing']['padding'];
+				}
+				foreach ( $band_padding_boxes as $band_padding_box ) {
+					foreach ( $band_padding_box as $band_padding_side => $band_padding_value ) {
+						if ( is_string( $band_padding_value ) && '' !== $band_padding_value ) {
+							$band_padding_has_value = true;
+							if ( 'top' === $band_padding_side || 'bottom' === $band_padding_side ) {
+								$band_padding_has_vertical = true;
+							}
+							if ( 'left' === $band_padding_side || 'right' === $band_padding_side ) {
+								$band_padding_has_horizontal = true;
+							}
+						}
+					}
+				}
+				// The outer element carries no padding of its own.
+				$sgs_wrap_padding_tiers = array(
+					'desktop' => null,
+					'tablet'  => null,
+					'mobile'  => null,
+				);
+			}
+			$padding_tablet_obj     =is_array( $sgs_wrap_padding_tiers['tablet'] ) ? $sgs_wrap_padding_tiers['tablet'] : array();
 			$padding_mobile_obj     = is_array( $sgs_wrap_padding_tiers['mobile'] ) ? $sgs_wrap_padding_tiers['mobile'] : array();
 			$padding_top_tablet     = $sgs_css_length( $padding_tablet_obj['top'] ?? '' );
 			$padding_right_tablet   = $sgs_css_length( $padding_tablet_obj['right'] ?? '' );
@@ -726,41 +768,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$has_responsive_margin  = ( '' !== $margin_top_tablet || '' !== $margin_right_tablet || '' !== $margin_bottom_tablet || '' !== $margin_left_tablet
 				|| '' !== $margin_top_mobile || '' !== $margin_right_mobile || '' !== $margin_bottom_mobile || '' !== $margin_left_mobile );
 
-			// Content-band (Layer 2: __inner) attrs — section + layout kinds only, since
-			// those are the only kinds that can emit the __inner wrapper (content kind
-			// uses contentWidth/padding natively; no __inner layer is emitted).
-			// Box-object interface contract §2: contentBandPadding is a TIER-of-BOXES
-			// object { desktop: {top,right,bottom,left}, tablet: {...}, mobile: {...} }
-			// (SGS custom attr, not WP-native style.*) — migrated from 3 sibling flat-box
-			// attrs to 1 nested attr, same shape as the $columns_obj / $min_height_obj
-			// precedent above: read once via sgs_responsive_normalise_object(), every
-			// downstream variable name/type is unchanged. $is_box=true so a legacy
-			// un-migrated instance whose raw value is still a flat box (no tier keys)
-			// is treated as the desktop tier rather than discarded. Tablet/mobile stay
-			// gated to section+layout kinds — a content-kind composite has no __inner
-			// band to apply them to.
-			$band_padding_tiers  = sgs_responsive_normalise_object( $attributes['contentBandPadding'] ?? null, true );
-			$band_padding_obj    = is_array( $band_padding_tiers['desktop'] ?? null ) ? $band_padding_tiers['desktop'] : array();
-			$band_padding_top    = $sgs_css_length( $band_padding_obj['top'] ?? '' );
-			$band_padding_right  = $sgs_css_length( $band_padding_obj['right'] ?? '' );
-			$band_padding_bottom = $sgs_css_length( $band_padding_obj['bottom'] ?? '' );
-			$band_padding_left   = $sgs_css_length( $band_padding_obj['left'] ?? '' );
-
-			$band_padding_tablet_obj = ( $is_section || $is_layout ) && is_array( $band_padding_tiers['tablet'] ?? null ) ? $band_padding_tiers['tablet'] : array();
-			$band_padding_mobile_obj = ( $is_section || $is_layout ) && is_array( $band_padding_tiers['mobile'] ?? null ) ? $band_padding_tiers['mobile'] : array();
-
-			$band_padding_top_tablet    = $sgs_css_length( $band_padding_tablet_obj['top'] ?? '' );
-			$band_padding_right_tablet  = $sgs_css_length( $band_padding_tablet_obj['right'] ?? '' );
-			$band_padding_bottom_tablet = $sgs_css_length( $band_padding_tablet_obj['bottom'] ?? '' );
-			$band_padding_left_tablet   = $sgs_css_length( $band_padding_tablet_obj['left'] ?? '' );
-
-			$band_padding_top_mobile    = $sgs_css_length( $band_padding_mobile_obj['top'] ?? '' );
-			$band_padding_right_mobile  = $sgs_css_length( $band_padding_mobile_obj['right'] ?? '' );
-			$band_padding_bottom_mobile = $sgs_css_length( $band_padding_mobile_obj['bottom'] ?? '' );
-			$band_padding_left_mobile   = $sgs_css_length( $band_padding_mobile_obj['left'] ?? '' );
-
-			// contentBandMargin — same tier-of-boxes shape as contentBandPadding
-			// immediately above, read the same way. Completes a wire-up that was
+			// contentBandMargin — a tier-of-boxes object {desktop,tablet,mobile}, read via
+			// sgs_responsive_normalise_object(). Completes a wire-up that was
 			// previously write-only: the Universal Cloning Pipeline's
 			// content_band.py resolver already writes real values here for the
 			// "sole passthrough child" fold case (Defect 3, qc-council-validated
@@ -820,10 +829,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$content_width_mobile = ( $is_section || $is_layout ) ? $sgs_resolve_content_width( $attributes['contentWidthMobile'] ?? '' ) : '';
 
 			$has_band_responsive = ( $is_section || $is_layout ) && (
-				'' !== $band_padding_top_tablet || '' !== $band_padding_right_tablet ||
-				'' !== $band_padding_bottom_tablet || '' !== $band_padding_left_tablet ||
-				'' !== $band_padding_top_mobile || '' !== $band_padding_right_mobile ||
-				'' !== $band_padding_bottom_mobile || '' !== $band_padding_left_mobile ||
 				'' !== $band_margin_top_tablet || '' !== $band_margin_right_tablet ||
 				'' !== $band_margin_bottom_tablet || '' !== $band_margin_left_tablet ||
 				'' !== $band_margin_top_mobile || '' !== $band_margin_right_mobile ||
@@ -1055,13 +1060,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Drives both grid-on-inner folding and __inner existence so band CSS
 			// survives cloning regardless of which draft layer it came from or the
 			// block's kind. Defined here because all five band vars are read above
-			// ( $content_width ~L196, $band_padding_* ~L251-254, $band_background ~L268 ).
+			// ( $content_width, $band_padding_has_value, the band margin ).
 			$has_band_props = (
 				'' !== $content_width ||
-				'' !== $band_padding_top ||
-				'' !== $band_padding_right ||
-				'' !== $band_padding_bottom ||
-				'' !== $band_padding_left ||
+				$band_padding_has_value ||
 				'' !== $band_margin_top ||
 				'' !== $band_margin_right ||
 				'' !== $band_margin_bottom ||
@@ -1632,7 +1634,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// REOPEN IT only on a real case: a container that needs a side margin its
 			// band-state will not give it, and cannot simply author `padding`. Until then
 			// this is settled — do not re-investigate it.
-			if ( $has_band_props && false !== $opt_wrap_inner ) {
+			// A horizontal padding the client sets paints the band and replaces the gutter, as it did
+			// when the padding painted this element.
+			if ( $has_band_props && false !== $opt_wrap_inner && ! $band_padding_has_horizontal ) {
 				$classes[] = 'has-global-padding';
 			}
 
@@ -1642,7 +1646,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// `--wp--custom--section--padding--{tier}` as its top and bottom padding through
 			// theme/sgs-theme/assets/css/layout-tokens.css. That rule is zero-specificity, so padding
 			// the client sets wins, and it skips a section nested in another, so nesting never compounds.
-			if ( $is_section && $has_band_props && false !== $opt_wrap_inner && self::has_sgs_support( $block, 'sectionPadding' ) ) {
+			if ( $is_section && $has_band_props && false !== $opt_wrap_inner && ! $band_padding_has_vertical && self::has_sgs_support( $block, 'sectionPadding' ) ) {
 				$classes[] = 'sgs-container--section-pad';
 			}
 
@@ -2228,7 +2232,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// uid also needed whenever an OBJECT-MODEL tier property (Spec 37 FR-37-16)
 			// carries a real value — maxWidth / contentWidth / gap / gridTemplateColumns /
-			// gridTemplateRows / columns / contentBandPadding, the properties the
+			// gridTemplateRows / columns / padding, the properties the
 			// object-model emission block below (`if ( $uid ) { … }`) actually reads.
 			// ⛔ BUG FIX (2026-08-12, D587): none of the flags above cover this case on
 			// their own. $has_base_max_width/$has_responsive_attr's gap/max-width legs
@@ -2265,7 +2269,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| $sgs_needs_uid_object_tier( $attributes['gridTemplateColumns'] ?? null )
 				|| $sgs_needs_uid_object_tier( $attributes['gridTemplateRows'] ?? null )
 				|| $sgs_needs_uid_object_tier( $attributes['columns'] ?? null )
-				|| $sgs_needs_uid_object_tier( $attributes['contentBandPadding'] ?? null )
 				|| $sgs_needs_uid_object_tier( $attributes['contentBandMargin'] ?? null )
 				// Phase 2 fix (2026-09-06): on a block whose `padding`/`margin`
 				// has migrated to the tier-of-boxes shape (D555 + the Phase 2
@@ -2438,7 +2441,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				if ( ! empty( $base_spacing_padding ) ) {
 					$base_padding_styles = wp_style_engine_get_styles(
 						array( 'spacing' => array( 'padding' => $base_spacing_padding ) ),
-						array( 'selector' => '.' . $uid )
+						array( 'selector' => '.' . $uid . ( $padding_on_band ? '>.sgs-container__inner' : '' ) )
 					);
 					if ( ! empty( $base_padding_styles['css'] ) ) {
 						$responsive_css .= $base_padding_styles['css'];
@@ -2594,18 +2597,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				if ( '' !== $content_width ) {
 					$base_band_decls[] = 'max-width:' . $content_width;
 					$base_band_decls[] = 'margin-inline:auto';
-				}
-				if ( '' !== $band_padding_top ) {
-					$base_band_decls[] = 'padding-top:' . $band_padding_top;
-				}
-				if ( '' !== $band_padding_right ) {
-					$base_band_decls[] = 'padding-right:' . $band_padding_right;
-				}
-				if ( '' !== $band_padding_bottom ) {
-					$base_band_decls[] = 'padding-bottom:' . $band_padding_bottom;
-				}
-				if ( '' !== $band_padding_left ) {
-					$base_band_decls[] = 'padding-left:' . $band_padding_left;
 				}
 				// contentBandMargin — emitted AFTER margin-inline:auto above (when
 				// content_width set it), so an explicit side here wins by plain CSS
@@ -2919,18 +2910,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$band_base_decls[] = 'max-width:' . $content_width;
 						$band_base_decls[] = 'margin-inline:auto';
 					}
-					if ( '' !== $band_padding_top ) {
-						$band_base_decls[] = 'padding-top:' . $band_padding_top;
-					}
-					if ( '' !== $band_padding_right ) {
-						$band_base_decls[] = 'padding-right:' . $band_padding_right;
-					}
-					if ( '' !== $band_padding_bottom ) {
-						$band_base_decls[] = 'padding-bottom:' . $band_padding_bottom;
-					}
-					if ( '' !== $band_padding_left ) {
-						$band_base_decls[] = 'padding-left:' . $band_padding_left;
-					}
 					// contentBandMargin — same declaration-order-wins-over-auto-
 					// centring reasoning as the $base_band_decls twin above.
 					if ( '' !== $band_margin_top ) {
@@ -2960,18 +2939,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 					// Band padding — tablet tier (≤1023px).
 					$band_tablet_decls = array();
-					if ( '' !== $band_padding_top_tablet ) {
-						$band_tablet_decls[] = 'padding-top:' . $band_padding_top_tablet;
-					}
-					if ( '' !== $band_padding_right_tablet ) {
-						$band_tablet_decls[] = 'padding-right:' . $band_padding_right_tablet;
-					}
-					if ( '' !== $band_padding_bottom_tablet ) {
-						$band_tablet_decls[] = 'padding-bottom:' . $band_padding_bottom_tablet;
-					}
-					if ( '' !== $band_padding_left_tablet ) {
-						$band_tablet_decls[] = 'padding-left:' . $band_padding_left_tablet;
-					}
 					if ( '' !== $band_margin_top_tablet ) {
 						$band_tablet_decls[] = 'margin-top:' . $band_margin_top_tablet;
 					}
@@ -2990,18 +2957,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 					// Band padding — mobile tier (≤767px).
 					$band_mobile_decls = array();
-					if ( '' !== $band_padding_top_mobile ) {
-						$band_mobile_decls[] = 'padding-top:' . $band_padding_top_mobile;
-					}
-					if ( '' !== $band_padding_right_mobile ) {
-						$band_mobile_decls[] = 'padding-right:' . $band_padding_right_mobile;
-					}
-					if ( '' !== $band_padding_bottom_mobile ) {
-						$band_mobile_decls[] = 'padding-bottom:' . $band_padding_bottom_mobile;
-					}
-					if ( '' !== $band_padding_left_mobile ) {
-						$band_mobile_decls[] = 'padding-left:' . $band_padding_left_mobile;
-					}
 					if ( '' !== $band_margin_top_mobile ) {
 						$band_mobile_decls[] = 'margin-top:' . $band_margin_top_mobile;
 					}
@@ -3383,6 +3338,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						'transform' => $sgs_resolve_content_width,
 					);
 				}
+				// Band padding (see $padding_on_band): the same tier-of-boxes spec the outer used.
+				if ( $padding_on_band && isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) ) {
+					$obj_band_props[] = array(
+						'value'        => $attributes['padding'],
+						'css'          => 'padding',
+						'box'          => true,
+						'unit_default' => 'px',
+					);
+				}
 				// ------------------------------------------------------------
 				// LAYOUT properties — tier-capable (Spec 35 Phase 1.4, 2026-08-10).
 				//
@@ -3692,7 +3656,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						},
 					);
 				}
-				if ( isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) ) {
+				if ( ! $padding_on_band && isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) ) {
 					$obj_outer_props[] = array(
 						'value'        => $attributes['padding'],
 						'css'          => 'padding',
@@ -3731,7 +3695,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// "Scroll sideways" goes LAST, so at equal specificity it wins over the
 			// grid/flex rules written above on the same selector.
 			if ( $sgs_scroll_row_on && $uid ) {
-				$responsive_css .= sgs_container_scroll_row_css( $grid_sel, $attributes, $container_queries, $attributes['contentBandPadding'] ?? array(), $attributes['contentBandMargin'] ?? array() );
+				$responsive_css .= sgs_container_scroll_row_css( $grid_sel, $attributes, $container_queries, $padding_on_band ? ( $attributes['padding'] ?? array() ) : array(), $attributes['contentBandMargin'] ?? array() );
 			}
 
 			$style_tag = '';

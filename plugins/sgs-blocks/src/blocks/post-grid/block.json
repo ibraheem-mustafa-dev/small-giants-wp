@@ -141,7 +141,6 @@
           "attrMap": {
             "css:background-color": "native:color.background",
             "css:color": "native:color.text",
-            "css:padding": "native:spacing.padding",
             "css:margin": "native:spacing.margin",
             "css:max-width": "maxWidth",
             "css:border-width": "borderWidth",
@@ -340,6 +339,19 @@
             "css:grid-template-columns": "columns"
           },
           "_note": "The scroll/grid track (.sgs-post-grid__inner, render.php line 331) - the element that actually scrolls in carousel mode and carries the real grid-template-columns (render.php line 509-536), distinct from the 'grid' (root) element above. columns is claimed via explicit attrMap rather than declaring 'layout' in clusters: a first draft used clusters:[\"layout\"] with layer:\"GRID\", which reached the SAME bare (no-prefix) arrangement members the 'grid' element also reaches (both bare-prefix, both layer OUTER/GRID) and produced 3 CONTESTED findings - including 'order', which on this block is the WP_Query sort-order attribute (asc/desc), nothing to do with CSS order, a coincidental bare-name collision this element's clusters declaration would otherwise have manufactured. clusters:[] + explicit attrMap avoids all of it while still claiming columns cleanly. Found live 2026-08-15: DB tagged 1 attr css_element='inner', undeclared until now."
+        },
+        "content-band": {
+        	"label": "Content band",
+        	"layer": "CONTENT",
+        	"order": 13,
+        	"clusters": [
+        		"layout"
+        	],
+        	"prefix": "",
+        	"attrMap": {
+        		"css:max-width": "contentWidth",
+        		"css:padding": "native:spacing.padding"
+        	}
         }
       },
       "fx": {

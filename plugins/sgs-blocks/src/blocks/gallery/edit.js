@@ -23,7 +23,7 @@ import {
 // NOT imported: ContentBandPanel. It targets the `.sgs-container__inner` band, which
 // only section/layout containerKind blocks render — gallery declares no containerKind
 // at all and has no such band (confirmed in render.php). Mounting it here was dead on
-// arrival: every field wrote to contentBandBackground/contentBandPaddingTop* etc.,
+// arrival: every field wrote to flat band background and band padding keys,
 // none of which gallery's block.json ever declared, so WordPress silently discarded
 // every value a client entered. Same defect class as the ResponsiveSpacingPanel this
 // file already removed (see the Spec 37 note below).
@@ -43,6 +43,7 @@ import {
 	resolveResponsiveTier,
 	withStableItemKeys,
 	tierBoxLonghands,
+	resolveBoxTierPreview,
 	resolveContentWidthPreview,
 	contentBandPreview,
 	applyGridLayoutPreview,
@@ -202,7 +203,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			: {};
 	Object.assign(
 		inlineStyles,
-		tierBoxLonghands( galleryPaddingObj, previewTier, 'padding' ),
 		tierBoxLonghands( galleryMarginObj, previewTier, 'margin' )
 	);
 
@@ -218,9 +218,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 
 	// contentWidth band (Layer 2 / `.sgs-container__inner`) — this block
-	// declares no `contentBandPadding` sibling attribute, so band padding is
-	// always empty; the band still exists whenever contentWidth resolves to a
-	// real cap. Must run BEFORE useBlockProps(): contentBandPreview() mutates
+	// `padding` paints the band, which exists whenever contentWidth resolves to
+	// a real cap or the block has padding. Must run BEFORE useBlockProps(): contentBandPreview() mutates
 	// `inlineStyles` in place, migrating any grid/flex declarations just
 	// written above onto the band (mirrors the wrapper's own $grid_on_inner
 	// re-routing), so blockProps must be built from the ALREADY-migrated
@@ -230,7 +229,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	);
 	const { hasBandProps, bandStyle } = contentBandPreview( {
 		contentWidth: galleryBandMaxWidth,
-		bandPadding: {},
+		bandPadding: resolveBoxTierPreview( galleryPaddingObj.desktop, galleryPaddingObj.tablet, galleryPaddingObj.mobile, previewTier ),
 		style: inlineStyles,
 		// render.php hands the wrapper no `layout`: the outer element is never a grid.
 		layout: '',

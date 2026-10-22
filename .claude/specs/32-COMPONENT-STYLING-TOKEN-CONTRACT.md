@@ -273,7 +273,7 @@ Block membership per family is DB-authoritative: `python ~/.claude/skills/sgs-wp
 | WP-native root (4-side) | `padding{side}` | every block declaring root padding | base → `style.spacing.padding` object; tiers → SGS `paddingTablet`/`paddingMobile` object |
 | WP-native root (4-side) | `margin{side}` | every block declaring root margin | base → `style.spacing.margin` object; tiers → `marginTablet`/`marginMobile` object |
 | SGS custom (4-side) | `borderWidth{side}` | every block with a border-width control | SGS object `borderWidth:{...}` — colour/style stay single scalar attrs (no per-side colour/style family exists) |
-| SGS custom (4-side) | `contentBandPadding{side}` | `container`, `hero`, `physics-canvas`, `site-footer`, `site-header`, `trust-bar` | SGS object + tiers + BoxControl (per-band, not root) |
+| SGS custom (4-side) | `padding{side}` | every block that declares `contentWidth` | SGS object + tiers + BoxControl (paints the content band) |
 | SGS custom (4-side) | per-area families: `contentPadding`, `mediaPadding`, `splitMediaPadding`, `splitMediaBorderWidth` | `hero` | SGS object + tiers + BoxControl |
 | SGS custom root (4-corner) | `borderRadius` | every block with a root radius | one tier object `{desktop,tablet,mobile}`, each a corner object `{topLeft,…}` (read by `sgs_border_radius_tiers()`); WordPress's native `style.border` is never read |
 | SGS custom (4-corner) | `splitMediaBorderRadius{TL,TR,BL,BR}` | `hero` | SGS custom corner object + corner control |
