@@ -100,3 +100,8 @@ def test_shared_text_seeds_one_word_names_only_from_attribute_reads(tmp_path):
     assert len(shared) == 1 and text.src[shared[0] - 12:shared[0]].endswith("$attributes[")
     assert len(attr_seeds(text, "width", own=True)) == 2
     assert attr_seeds(text, "panelFooterBorderColour", own=False)
+
+def test_text_stroke_declaration_is_a_declaration(tmp_path):
+    php = "$c = sgs_colour_value( $attributes['yearStrokeColour'] );\n$decls[] = '-webkit-text-stroke-color:' . $c;\n"
+    ch = channel(tmp_path, php, "yearStrokeColour")
+    assert ch.decl and ch.decl_props == {"-webkit-text-stroke-color"}
