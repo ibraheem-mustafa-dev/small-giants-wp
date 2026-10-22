@@ -6,10 +6,69 @@
       "cls": "",
       "styleHash": "5faf966e",
       "parentTags": [],
-      "textHash": "1505"
+      "textHash": "1505",
+      "line": 37
     }
   },
   "cr-ref-header-1": {
+    "tpl": "Root/9#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "e7c51858",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 25
+    },
+    "slots": {
+      ".sgs-container__inner": "Root/10#0"
+    }
+  },
+  "cr-ref-header-2": {
+    "tpl": "Root/11#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "82e8f8c3",
+      "parentTags": [
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 27
+    }
+  },
+  "cr-ref-header-3": {
+    "tpl": "Root/14#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp0",
+      "styleHash": "a8233049",
+      "parentTags": [
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 29
+    }
+  },
+  "cr-ref-header-4": {
+    "tpl": "Root/20#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp0",
+      "styleHash": "a8233049",
+      "parentTags": [
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "f9b825f5",
+      "line": 30
+    }
+  },
+  "cr-ref-header-10": {
     "tpl": "Root/40#0",
     "fingerprint": {
       "tag": "div",
@@ -18,13 +77,14 @@
       "parentTags": [
         "header"
       ],
-      "textHash": "1505"
+      "textHash": "1505",
+      "line": 38
     },
     "slots": {
       ".sgs-container__inner": "Root/41#0"
     }
   },
-  "cr-ref-header-2": {
+  "cr-ref-header-11": {
     "tpl": "Root/43#0",
     "fingerprint": {
       "tag": "indus-logo",
@@ -36,10 +96,11 @@
         "div",
         "a"
       ],
-      "textHash": "1505"
+      "textHash": "1505",
+      "line": 41
     }
   },
-  "cr-ref-header-3": {
+  "cr-ref-header-12": {
     "tpl": "Root/45#0",
     "fingerprint": {
       "tag": "nav",
@@ -50,14 +111,15 @@
         "div",
         "div"
       ],
-      "textHash": "1505"
+      "textHash": "1505",
+      "line": 45
     },
     "slots": {
       ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": "Root/47#1",
       ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link": "Root/47#0"
     }
   },
-  "cr-ref-header-4": {
+  "cr-ref-header-13": {
     "tpl": "Root/54#0",
     "fingerprint": {
       "tag": "a",
@@ -68,7 +130,8 @@
         "div",
         "div"
       ],
-      "textHash": "61ec7831"
+      "textHash": "61ec7831",
+      "line": 61
     }
   }
 }

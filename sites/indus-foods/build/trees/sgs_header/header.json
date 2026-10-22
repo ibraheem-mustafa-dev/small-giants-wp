@@ -9,7 +9,261 @@
       {
         "name": "sgs/site-header-row",
         "attributes": {
+          "rowSlot": "top",
           "className": "cr-ref-header-1",
+          "textColour": "primary",
+          "backgroundColour": "primary",
+          "gap": {
+            "mobile": "10px",
+            "desktop": "12px"
+          },
+          "padding": {
+            "mobile": {
+              "right": "20px",
+              "left": "20px"
+            },
+            "tablet": {
+              "right": "32px",
+              "left": "32px"
+            },
+            "desktop": {
+              "right": "40px",
+              "left": "40px"
+            }
+          },
+          "contentWidth": {
+            "desktop": "1320px"
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/multi-button",
+            "attributes": {
+              "layout": "flex",
+              "className": "cr-ref-header-2",
+              "childBtnFontSize": "19px",
+              "gap": {
+                "desktop": "10px"
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/button",
+                "attributes": {
+                  "label": "0121 771 4330",
+                  "linkSource": "phone",
+                  "labelFromSiteInfo": true,
+                  "className": "cr-ref-header-3",
+                  "url": "tel:01217714330",
+                  "fontSize": {
+                    "desktop": 15
+                  },
+                  "fontWeight": "700",
+                  "lineHeight": {
+                    "desktop": 1.55
+                  },
+                  "colourText": "primary",
+                  "colourBackground": "surface",
+                  "borderStyle": "none",
+                  "boxShadow": "rgba(0, 0, 0, 0.15) 0px 2px 6px 0px",
+                  "padding": {
+                    "desktop": {
+                      "top": "6px",
+                      "right": "14px",
+                      "bottom": "6px",
+                      "left": "14px"
+                    }
+                  },
+                  "iconGap": {
+                    "desktop": "7px"
+                  },
+                  "textWrap": "nowrap",
+                  "colourBackgroundHover": "accent",
+                  "boxShadowHover": "rgba(0, 0, 0, 0.2) 0px 6px 20px 0px",
+                  "colourTextHover": "accent-text",
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "root": {
+                        "hover": {
+                          "state": {
+                            "values": {
+                              "scale": 1.05,
+                              "translateY": -2.1,
+                              "duration": 200,
+                              "easing": "token:easing.ease"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "innerBlocks": []
+              },
+              {
+                "name": "sgs/button",
+                "attributes": {
+                  "label": "amir@indusfoodsltd.com",
+                  "url": "mailto:amir@indusfoodsltd.com",
+                  "linkSource": "email",
+                  "labelFromSiteInfo": true,
+                  "className": "cr-ref-header-4",
+                  "fontSize": {
+                    "desktop": 15
+                  },
+                  "fontWeight": "700",
+                  "lineHeight": {
+                    "desktop": 1.55
+                  },
+                  "colourText": "primary",
+                  "colourBackground": "surface",
+                  "borderStyle": "none",
+                  "boxShadow": "rgba(0, 0, 0, 0.15) 0px 2px 6px 0px",
+                  "padding": {
+                    "desktop": {
+                      "top": "6px",
+                      "right": "14px",
+                      "bottom": "6px",
+                      "left": "14px"
+                    }
+                  },
+                  "iconGap": {
+                    "desktop": "7px"
+                  },
+                  "textWrap": "nowrap",
+                  "colourBackgroundHover": "accent",
+                  "boxShadowHover": "rgba(0, 0, 0, 0.2) 0px 6px 20px 0px",
+                  "colourTextHover": "accent-text",
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "root": {
+                        "hover": {
+                          "state": {
+                            "values": {
+                              "scale": 1.05,
+                              "translateY": -2.1,
+                              "duration": 200,
+                              "easing": "token:easing.ease"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "innerBlocks": []
+              }
+            ]
+          },
+          {
+            "name": "sgs/social-icons",
+            "attributes": {
+              "className": "cr-ref-header-5",
+              "gap": {
+                "desktop": "10px"
+              },
+              "childIconShapeSize": {
+                "desktop": {
+                  "width": "34px"
+                }
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/icon",
+                "attributes": {
+                  "iconSource": "brand",
+                  "brandName": "linkedin",
+                  "metadata": {
+                    "bindings": {
+                      "linkUrl": {
+                        "source": "sgs/site-info",
+                        "args": {
+                          "key": "socials.linkedin"
+                        }
+                      }
+                    }
+                  },
+                  "className": "cr-ref-header-6",
+                  "linkUrl": "/",
+                  "ariaLabel": "LinkedIn"
+                },
+                "innerBlocks": []
+              },
+              {
+                "name": "sgs/icon",
+                "attributes": {
+                  "iconSource": "brand",
+                  "brandName": "facebook",
+                  "metadata": {
+                    "bindings": {
+                      "linkUrl": {
+                        "source": "sgs/site-info",
+                        "args": {
+                          "key": "socials.facebook"
+                        }
+                      }
+                    }
+                  },
+                  "className": "cr-ref-header-7",
+                  "linkUrl": "/",
+                  "ariaLabel": "Facebook"
+                },
+                "innerBlocks": []
+              },
+              {
+                "name": "sgs/icon",
+                "attributes": {
+                  "iconSource": "brand",
+                  "brandName": "google",
+                  "metadata": {
+                    "bindings": {
+                      "linkUrl": {
+                        "source": "sgs/site-info",
+                        "args": {
+                          "key": "socials.google"
+                        }
+                      }
+                    }
+                  },
+                  "className": "cr-ref-header-8",
+                  "linkUrl": "/",
+                  "ariaLabel": "Google"
+                },
+                "innerBlocks": []
+              },
+              {
+                "name": "sgs/icon",
+                "attributes": {
+                  "iconSource": "brand",
+                  "brandName": "instagram",
+                  "metadata": {
+                    "bindings": {
+                      "linkUrl": {
+                        "source": "sgs/site-info",
+                        "args": {
+                          "key": "socials.instagram"
+                        }
+                      }
+                    }
+                  },
+                  "className": "cr-ref-header-9",
+                  "linkUrl": "/",
+                  "ariaLabel": "Instagram"
+                },
+                "innerBlocks": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "sgs/site-header-row",
+        "attributes": {
+          "rowSlot": "middle",
+          "className": "cr-ref-header-10",
           "backgroundColour": "surface",
           "borderWidth": {
             "top": "0px",
@@ -46,7 +300,7 @@
             "name": "sgs/responsive-logo",
             "attributes": {
               "logoId": 81,
-              "className": "cr-ref-header-2",
+              "className": "cr-ref-header-11",
               "maxHeight": {
                 "mobile": 54,
                 "tablet": 56,
@@ -60,7 +314,7 @@
             "attributes": {
               "ref": 5,
               "collapsePoint": 1024,
-              "className": "cr-ref-header-3",
+              "className": "cr-ref-header-12",
               "itemFontWeight": "600",
               "itemLineHeight": 1.412,
               "navColour": "primary",
@@ -102,7 +356,7 @@
             "attributes": {
               "label": "Register For A Trade Account",
               "url": "#/apply",
-              "className": "cr-ref-header-4",
+              "className": "cr-ref-header-13",
               "fontSize": {
                 "desktop": 17
               },
@@ -151,6 +405,14 @@
             "innerBlocks": []
           }
         ]
+      },
+      {
+        "name": "sgs/site-header-row",
+        "attributes": {
+          "rowSlot": "bottom",
+          "className": "cr-ref-header-14"
+        },
+        "innerBlocks": []
       }
     ]
   }

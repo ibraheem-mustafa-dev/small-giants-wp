@@ -4,10 +4,19 @@ import base from './header.fill-base.mjs';
 
 const generated = [
 	{ name: "gen-header-0", text: false, structure: false, draft: {"tpl":"Root/39#0"}, live: ".cr-ref-header-0" },
-	{ name: "gen-header-1", text: false, structure: false, draft: {"tpl":"Root/40#0"}, live: ".cr-ref-header-1" },
-	{ name: "gen-header-2", text: false, structure: false, draft: {"tpl":"Root/43#0"}, live: ".cr-ref-header-2" },
-	{ name: "gen-header-3", text: false, structure: false, draft: {"tpl":"Root/45#0"}, live: ".cr-ref-header-3" },
-	{ name: "gen-header-4", text: false, structure: false, draft: {"tpl":"Root/54#0"}, live: ".cr-ref-header-4" },
+	{ name: "gen-header-1", text: false, structure: false, draft: {"tpl":"Root/9#0"}, live: ".cr-ref-header-1" },
+	{ name: "gen-header-2", text: false, structure: false, draft: {"tpl":"Root/11#0"}, live: ".cr-ref-header-2" },
+	{ name: "gen-header-3", text: false, structure: false, draft: {"tpl":"Root/14#0"}, live: ".cr-ref-header-3" },
+	{ name: "gen-header-4", text: false, structure: false, draft: {"tpl":"Root/20#0"}, live: ".cr-ref-header-4" },
+	{ name: "gen-header-5", text: false, structure: false, draft: "div[data-dc-tpl=\"9\"] [data-dc-tpl=\"22\"]", live: ".cr-ref-header-5" },
+	{ name: "gen-header-6", text: false, structure: false, draft: "div[data-dc-tpl=\"9\"] [data-dc-tpl=\"22\"] [data-dc-tpl=\"23\"]", live: ".cr-ref-header-6" },
+	{ name: "gen-header-7", text: false, structure: false, draft: "div[data-dc-tpl=\"9\"] [data-dc-tpl=\"22\"] [data-dc-tpl=\"26\"]", live: ".cr-ref-header-7" },
+	{ name: "gen-header-8", text: false, structure: false, draft: "div[data-dc-tpl=\"9\"] [data-dc-tpl=\"22\"] [data-dc-tpl=\"29\"]", live: ".cr-ref-header-8" },
+	{ name: "gen-header-9", text: false, structure: false, draft: "div[data-dc-tpl=\"9\"] [data-dc-tpl=\"22\"] [data-dc-tpl=\"35\"]", live: ".cr-ref-header-9" },
+	{ name: "gen-header-10", text: false, structure: false, draft: {"tpl":"Root/40#0"}, live: ".cr-ref-header-10" },
+	{ name: "gen-header-11", text: false, structure: false, draft: {"tpl":"Root/43#0"}, live: ".cr-ref-header-11" },
+	{ name: "gen-header-12", text: false, structure: false, draft: {"tpl":"Root/45#0"}, live: ".cr-ref-header-12" },
+	{ name: "gen-header-13", text: false, structure: false, draft: {"tpl":"Root/54#0"}, live: ".cr-ref-header-13" },
 ];
 
 // Hand pairs measuring a paired block's draft element on an element inside the block: moved to the block root.

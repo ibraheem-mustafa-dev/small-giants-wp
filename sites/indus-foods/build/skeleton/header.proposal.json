@@ -1,5 +1,5 @@
 {
-	"generated": "2026-10-22T18:20:26.479Z",
+	"generated": "2026-10-22T18:36:21.208Z",
 	"inventory": "2026-10-22T18:20:25.761Z",
 	"source": "http://127.0.0.1:51092/",
 	"surface": "sticky-header",
@@ -167,6 +167,11 @@
 			"snippet": "<div style=\"position:relative;z-index:201;background:#0A7EA8;color:#FFFFFF;\" data-dc-tpl=\"9\"> <div style=\"max-width:1320px;margin:0 auto;padding:0 {{ R.px }};height:46px;display:flex;align-items:center;justify-content:space-between;gap:12px;\" data-dc-tpl=\"10\"> <div style=\"display:flex;align-items:center;gap:10px;min-width:0;\" data-dc-tpl=\"11\"> <sc-if value=\"{{ isM }}\" hint-placeholder-val=\"{{ fals",
 			"attributes": {
 				"rowSlot": "top"
+			},
+			"slots": {
+				".sgs-container__inner": {
+					"tpl": "Root/10#0"
+				}
 			},
 			"strip": "Root/9#0",
 			"builtPost": {
@@ -680,6 +685,11 @@
 			"attributes": {
 				"rowSlot": "middle"
 			},
+			"slots": {
+				".sgs-container__inner": {
+					"tpl": "Root/41#0"
+				}
+			},
 			"builtPost": {
 				"site": "sandybrown",
 				"postType": "sgs_header",
@@ -824,10 +834,14 @@
 			"carried": {
 				"ref": "menu-map.json: the header menu"
 			},
-			"slotNotes": [
-				"the calibration has no slot for itemColour, so no resting child slot",
-				"the calibration has no slot for itemColourCurrent, so no current child slot"
-			],
+			"slots": {
+				".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": {
+					"tpl": "Root/47#1"
+				},
+				".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link": {
+					"tpl": "Root/47#0"
+				}
+			},
 			"builtPost": {
 				"site": "sandybrown",
 				"postType": "sgs_header",

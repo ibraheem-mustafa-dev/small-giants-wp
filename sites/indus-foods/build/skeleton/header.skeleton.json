@@ -131,7 +131,12 @@
 							"instagram": "[data-dc-tpl=\"35\"]"
 						}
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner": {
+						"tpl": "Root/10#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/site-header-row",
@@ -203,7 +208,15 @@
 							"textHash": "1505",
 							"line": 45
 						},
-						"innerBlocks": []
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": {
+								"tpl": "Root/47#1"
+							},
+							".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link": {
+								"tpl": "Root/47#0"
+							}
+						}
 					},
 					{
 						"name": "sgs/button",
@@ -228,7 +241,12 @@
 						},
 						"innerBlocks": []
 					}
-				]
+				],
+				"draftSlots": {
+					".sgs-container__inner": {
+						"tpl": "Root/41#0"
+					}
+				}
 			},
 			{
 				"name": "sgs/site-header-row",
