@@ -40,3 +40,4 @@ The signal between the cloning tool plan's two orchestrator sessions (`.claude/p
 - 2026-10-22 F reseed-done eb57a037c blocks: nav-bar-menu, nav-drawer-menu, nav-drawer, site-header, site-header-row, container, timeline, business-info, accordion, testimonial-slider, post-grid settings: block_attributes.meaning (new column; 50 sgs.meaning values, every effect-settings.json entry included); no other attribute row changed. Track T may read the framework DB again
 - 2026-10-22 F built U11 eb57a037c (check-setting-meanings.py --check 0 of 27; the reseeded DB holds each sgs.meaning)
 - 2026-10-22 F deployed indus-test d976224be (host marker names d976224be; payload-verify 97 of 97; carries the button custom-icon fix: the email pill's envelope now renders its stroke attributes, and the council fixes bf31e54df and 8d84c2949)
+- 2026-10-23 T site-run-start header post 201 (Fill with the wave review's fixes, build; reads the framework DB)
