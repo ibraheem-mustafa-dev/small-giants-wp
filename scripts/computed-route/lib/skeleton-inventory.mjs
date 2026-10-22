@@ -334,11 +334,32 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 	return summarise( { runs, shots, skipped, url, root } );
 }
 
+// The 1440 records plus the elements that render only at another width (an sc-if on a width, a branch shown only on a phone
+// or a tablet): each is inserted in document order after the record that precedes it in its own width's read, so a width
+// alternative sits beside its sibling branch. An element read at 1440 keeps its place and its record unchanged.
+export function withWidthOnly( runs ) {
+	const out = [ ...runs[ 1440 ].records ];
+	const have = new Set( out.map( ( r ) => r.key ) );
+	for ( const w of INVENTORY_WIDTHS.filter( ( x ) => 1440 !== x ) ) {
+		const recs = runs[ w ]?.records || [];
+		recs.forEach( ( r, i ) => {
+			if ( have.has( r.key ) ) {
+				return;
+			}
+			const prev = recs.slice( 0, i ).reverse().find( ( x ) => have.has( x.key ) );
+			const at = prev ? out.findIndex( ( x ) => x.key === prev.key ) + 1 : 0;
+			out.splice( at, 0, { ...r, box: null, visible: false, position: null } );
+			have.add( r.key );
+		} );
+	}
+	return out;
+}
+
 // The inventory from the per-width reads ({ width: collect result }).
 function summarise( { runs, shots, skipped, url, root } ) {
 	const base = runs[ 1440 ];
 	const at = ( w, key ) => runs[ w ].records.find( ( x ) => x.key === key );
-	const elements = base.records.map( ( r ) => {
+	const elements = withWidthOnly( runs ).map( ( r ) => {
 		const { i, ...rest } = r;
 		return { ...rest, box: { 375: at( 375, r.key )?.box ?? null, 768: at( 768, r.key )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, r.key )?.visible ?? false, 768: at( 768, r.key )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, r.key )?.position ?? null, 768: at( 768, r.key )?.position ?? null, 1440: r.position ?? null }, layoutChanged375: at( 375, r.key )?.layoutChanged ?? null, screenshots: shots[ r.key ] || {} };
 	} );

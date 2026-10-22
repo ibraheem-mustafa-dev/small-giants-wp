@@ -1,0 +1,5 @@
+[
+	{"file":"lib/skeleton-inventory.mjs","find":"for ( const w of INVENTORY_WIDTHS.filter( ( x ) => 1440 !== x ) ) {","replace":"for ( const w of [] ) {","why":"a width-only element would never join the inventory"},
+	{"file":"lib/skeleton-inventory.mjs","find":"const at = prev ? out.findIndex( ( x ) => x.key === prev.key ) + 1 : 0;","replace":"const at = out.length;","why":"a width-only element would land at the end, not beside its sibling"},
+	{"file":"lib/skeleton-inventory.mjs","find":"out.splice( at, 0, { ...r, box: null, visible: false, position: null } );","replace":"out.splice( at, 0, r );","why":"the 375 box and visibility would be claimed at 1440"}
+]
