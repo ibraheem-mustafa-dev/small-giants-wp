@@ -1,0 +1,21 @@
+[
+	{ "file": "lib/skeleton-header-slots.mjs", "find": "if ( outOfFlow( b.position, el && declared( el ) ) ) {", "replace": "if ( false ) {", "why": "a fixed or absolute sibling would be a strip" },
+	{ "file": "lib/skeleton-header-slots.mjs", "find": "} else if ( ! b.renders ) {", "replace": "} else if ( false ) {", "why": "a sibling that does not render would be a strip" },
+	{ "file": "lib/skeleton-header-slots.mjs", "find": "} else if ( b.holdsOtherRoot ) {", "replace": "} else if ( false ) {", "why": "the sibling holding a page root would be a strip and the walk would not end" },
+	{ "file": "lib/skeleton-header-slots.mjs", "find": "} else if ( ! sameParent( el ) ) {", "replace": "} else if ( false ) {", "why": "a sibling in another template parent would be a strip" },
+	{ "file": "lib/skeleton-header-slots.mjs", "find": "top: kids.filter( ( k, i ) => i < first && strip( k, i ) ).reverse(),", "replace": "top: [],", "why": "an inside strip above the main bar would not be the top row" },
+	{ "file": "lib/skeleton-header-slots.mjs", "find": "bottom: kids.filter( ( k, i ) => i > last && strip( k, i ) ),", "replace": "bottom: [],", "why": "an inside strip below the main bar would not be the bottom row" },
+	{ "file": "lib/skeleton-header-slots.mjs", "find": "const strip = ( k, i ) => ! outOfFlow( declared( k ) ) && ( i < first || i > last );", "replace": "const strip = ( k, i ) => ( i < first || i > last );", "why": "a fixed child of the header would be a strip" },
+	{ "file": "lib/skeleton-header-slots.mjs", "find": "const mains = kids.filter( holdsMain );", "replace": "const mains = kids.filter( holdsMain ).slice( 0, 1 );", "why": "a width alternative after the first main bar would be a bottom strip" },
+	{ "file": "lib/skeleton-header-slots.mjs", "find": "const [ first, ...rest ] = [ ...a, ...b ];", "replace": "const [ first, ...rest ] = [ ...a, ...b ].reverse();", "why": "the farther of two strips on a side would be the row" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "a[ H.slotAttribute ] = slot;", "replace": "void slot;", "why": "a strip's row would carry no slot" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "middle.attributes[ H.slotAttribute ] = 'middle';", "replace": "void middle;", "why": "the main bar's row would carry no slot" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "return [ top || emptyRow( 'top' ), middle, bottom || emptyRow( 'bottom' ) ];", "replace": "return [ top, middle, bottom ].filter( Boolean );", "why": "a header without a strip would hold fewer than three rows" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "plan.extras.forEach( leaveStrip );", "replace": "plan.extras.length;", "why": "a second strip on a side would be neither built nor named in a problem" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "return 'nav' === d.tag || d.tag.endsWith", "replace": "return d.tag.endsWith", "why": "a child holding the navigation would not be the main bar" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "if ( ! H.slotAttribute ) {", "replace": "if ( false ) {", "why": "an unplaceable strip would be written with no slot and no problem" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "stripRoots = [ ...beside.before, ...beside.after ].map( ( x ) => x.key );", "replace": "stripRoots = [];", "why": "the header would not report the strips it took, so a global surface for one would not be absorbed" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "top !== m.root && ( x.strip = top.key );", "replace": "void top;", "why": "a strip's rows would not say which strip they sit in" },
+	{ "file": "lib/approved-check.mjs", "find": "mine.forEach( ( r ) => ( rows[ `skeleton:${ slug }:${ r.key }` ] = r ) );", "replace": "void mine;", "why": "an approval of an absorbed surface's row would find no row" },
+	{ "file": "lib/approved-check.mjs", "find": "r.surface === a.into && r.strip === a.root", "replace": "r.surface === a.into", "why": "every row of the header would answer for the absorbed surface" }
+]

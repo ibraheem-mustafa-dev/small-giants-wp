@@ -13,8 +13,12 @@ export const INVENTORY_WIDTHS = [ 1440, 375, 768 ];
 // (the fingerprint Fill's origin map keeps).
 const ATTRS = [ 'href', 'aria-label', 'alt', 'role', 'type', 'title', 'target', 'aria-hidden', 'viewBox', 'class', 'style' ];
 
-// In-page. in: [ rootSelector, tplKeyOfSource, attrs, tplLineOfSource ]. Returns { records } or { error }.
-function collect( [ rootSelector, keySrc, attrNames, lineSrc ] ) {
+// In-page. in: [ rootSelector, tplKeyOfSource, attrs, tplLineOfSource, strips ]. `strips` is null, or { exclude: [ [ component,
+// tpl ] ], pages } (the roots of the other surfaces that are not global; `pages` is true when the export has page surfaces, whose
+// root is the route's <main>, so a sibling that is or holds a <main> holds a page root): the root's siblings are then read too, as `beside`, and the
+// elements of those in the chain of strips next to the root are inventoried under `strip` roots (rules.headerSlots decides
+// which are rows: lib/skeleton-header-slots.mjs::besideStrips). Returns { records, beside } or { error }.
+function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips ] ) {
 	// eslint-disable-next-line no-new-func
 	const keyOf = new Function( `return (${ keySrc });` )();
 	const lineOf = new Function( `return (${ lineSrc });` )();
@@ -22,7 +26,30 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc ] ) {
 	if ( ! root ) {
 		return { error: `no element matches ${ rootSelector }` };
 	}
-	const els = [ root, ...root.querySelectorAll( '*' ) ];
+	document.querySelectorAll( '[data-inv-strip]' ).forEach( ( x ) => x.removeAttribute( 'data-inv-strip' ) );
+	const stampedAt = ( x ) => x.hasAttribute( 'data-dc-tpl' );
+	const hostName = ( x ) => x.parentElement?.closest( '.sc-host' )?.dataset.scName;
+	const holdsOther = ( s ) => ( strips?.pages && ( s.matches( 'main' ) || !! s.querySelector( 'main' ) ) ) || ( strips?.exclude || [] ).some( ( [ dc, tpl ] ) => [ s, ...s.querySelectorAll( `[data-dc-tpl="${ tpl }"]` ) ].some( ( x ) => x.matches( `[data-dc-tpl="${ tpl }"]` ) && [ dc, window.__dcRootName() ].includes( hostName( x ) ) ) );
+	const beside = [];
+	const stripRoots = new Map();
+	if ( strips && root.parentElement ) {
+		const sibs = [ ...root.parentElement.children ];
+		const at = sibs.indexOf( root );
+		const read = sibs.map( ( s, i ) => ( { s, i } ) ).filter( ( { s, i } ) => i !== at && stampedAt( s ) ).map( ( { s, i } ) => ( { s, side: i < at ? 'before' : 'after', distance: Math.abs( i - at ) } ) ).sort( ( a, b ) => a.distance - b.distance );
+		let open = { before: true, after: true };
+		read.forEach( ( { s, side, distance } ) => {
+			const r = s.getBoundingClientRect();
+			const position = getComputedStyle( s ).position;
+			const renders = s.getClientRects().length > 0 && r.width > 0 && r.height > 0 && s.checkVisibility( { opacityProperty: true, visibilityProperty: true } );
+			const holdsOtherRoot = holdsOther( s );
+			beside.push( { key: keyOf( s ), side, distance, position, renders, holdsOtherRoot } );
+			if ( open[ side ] && ! [ 'fixed', 'absolute' ].includes( position ) && renders ) {
+				holdsOtherRoot ? ( open[ side ] = false ) : stripRoots.set( s, { side, distance } );
+			}
+		} );
+	}
+	stripRoots.forEach( ( v, s ) => s.setAttribute( 'data-inv-strip', v.side ) );
+	const els = [ root, ...root.querySelectorAll( '*' ), ...[ ...stripRoots.keys() ].flatMap( ( s ) => [ s, ...s.querySelectorAll( '*' ) ] ) ];
 	const parsed = {};
 	const srcDoc = ( name ) => {
 		if ( ! parsed[ name ] ) {
@@ -48,8 +75,9 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc ] ) {
 		while ( p && ! p.hasAttribute( 'data-dc-tpl' ) ) {
 			p = p.parentElement;
 		}
-		let depth = 0;
-		for ( let a = e; a !== root; ) {
+		const top = e.closest( '[data-inv-strip]' ) || root;
+		let depth = top === root ? 0 : 1;
+		for ( let a = e; a !== top; ) {
 			a = a.parentElement;
 			if ( a.hasAttribute( 'data-dc-tpl' ) ) {
 				depth++;
@@ -102,11 +130,11 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc ] ) {
 		const r = e.getBoundingClientRect();
 		const box = e.getClientRects().length ? { x: +( r.left + scrollX ).toFixed( 1 ), y: +( r.top + scrollY ).toFixed( 1 ), w: +r.width.toFixed( 1 ), h: +r.height.toFixed( 1 ) } : null;
 		out.push( {
-			i: out.length, key: keyOf( e ), parentKey: p ? keyOf( p ) : null, depth, tag: e.tagName.toLowerCase(), template: tname, tpl: Number( n ), attrs, words: ws( own ), allText: ws( e.textContent ).slice( 0, 120 ),
+			i: out.length, key: keyOf( e ), parentKey: p && ! stripRoots.has( e ) ? keyOf( p ) : null, ...( stripRoots.has( e ) ? { strip: stripRoots.get( e ) } : {} ), depth, tag: e.tagName.toLowerCase(), template: tname, tpl: Number( n ), attrs, words: ws( own ), allText: ws( e.textContent ).slice( 0, 120 ),
 			srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, flexDirection: getComputedStyle( e ).flexDirection,
 		} );
 	} );
-	return { records: out, unstamped, rootKey: out[ 0 ]?.key ?? null, rootName: window.__dcRootName() };
+	return { records: out, beside, unstamped, rootKey: out[ 0 ]?.key ?? null, rootName: window.__dcRootName() };
 }
 
 const safe = ( k ) => k.replace( /[^A-Za-z0-9]+/g, '_' ).replace( /^_|_$/g, '' );
@@ -129,7 +157,7 @@ async function settle( page, rootSelector ) {
 function hideOverlays( sel ) {
 	const r = document.querySelector( sel );
 	for ( const e of document.body.querySelectorAll( '*' ) ) {
-		if ( ! r.contains( e ) && ! e.contains( r ) && [ 'fixed', 'sticky' ].includes( getComputedStyle( e ).position ) ) {
+		if ( ! r.contains( e ) && ! e.contains( r ) && ! e.closest( '[data-inv-strip]' ) && ! e.querySelector( '[data-inv-strip]' ) && [ 'fixed', 'sticky' ].includes( getComputedStyle( e ).position ) ) {
 			e.hasAttribute( 'data-inv-hidden' ) || e.setAttribute( 'data-inv-hidden', JSON.stringify( [ e.style.getPropertyValue( 'visibility' ), e.style.getPropertyPriority( 'visibility' ) ] ) );
 			e.style.setProperty( 'visibility', 'hidden', 'important' );
 		}
@@ -147,7 +175,7 @@ function restoreOverlays() {
 
 // The read on a page the caller prepared (readInventory with `page`): per width, resize, `settle( page, width )`, clear
 // the previous read's data-inv-i marks, read; screenshots only with `shotsDir`; overlays hidden for crops are restored.
-async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt } ) {
+async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, strips } ) {
 	if ( 'function' !== typeof settleAt ) {
 		throw new Error( 'readInventory with a page needs settle( page, width ): the caller drives settling' );
 	}
@@ -160,7 +188,7 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt } 
 		await page.setViewportSize( { width: w, height } );
 		await settleAt( page, w );
 		await page.evaluate( () => document.querySelectorAll( '[data-inv-i]' ).forEach( ( e ) => e.removeAttribute( 'data-inv-i' ) ) );
-		const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString() ] );
+		const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips ] );
 		if ( res.error ) {
 			throw new Error( `${ res.error } at ${ w }px` );
 		}
@@ -209,9 +237,9 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt } 
 // opened and settled, such as intake's sandboxed harness page), nothing is launched or navigated: readOnPage resizes it
 // to each width and the caller's `settle( page, width )` settles it; `shotsDir` may be null (no screenshots) and `url`
 // only labels the result (default: the page's url).
-export async function readInventory( { url, root, shotsDir, log = () => {}, page = null, settle: settleAt = null } ) {
+export async function readInventory( { url, root, shotsDir, log = () => {}, page = null, settle: settleAt = null, strips = null } ) {
 	if ( page ) {
-		return readOnPage( { page, url, root, shotsDir, log, settle: settleAt } );
+		return readOnPage( { page, url, root, shotsDir, log, settle: settleAt, strips } );
 	}
 	const { chromium } = await loadChromium();
 	const browser = await chromium.launch( { headless: true } );
@@ -225,7 +253,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			const page = await ctx.newPage();
 			await page.goto( url, { waitUntil: 'networkidle', timeout: 90000 } );
 			await settle( page, root );
-			const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString() ] );
+			const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips ] );
 			if ( res.error ) {
 				throw new Error( `${ res.error } at ${ w }px` );
 			}
@@ -236,7 +264,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 				await page.evaluate( ( sel ) => {
 					const r = document.querySelector( sel );
 					for ( const e of document.body.querySelectorAll( '*' ) ) {
-						if ( ! r.contains( e ) && ! e.contains( r ) && [ 'fixed', 'sticky' ].includes( getComputedStyle( e ).position ) ) {
+						if ( ! r.contains( e ) && ! e.contains( r ) && ! e.closest( '[data-inv-strip]' ) && ! e.querySelector( '[data-inv-strip]' ) && [ 'fixed', 'sticky' ].includes( getComputedStyle( e ).position ) ) {
 							e.style.setProperty( 'visibility', 'hidden', 'important' );
 						}
 					}
@@ -289,5 +317,5 @@ function summarise( { runs, shots, skipped, url, root } ) {
 		perWidthCounts: Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, runs[ w ].records.length ] ) ), tagAgree: elements.filter( tagOk ).length, tagDisagree: elements.filter( ( r ) => ! tagOk( r ) ).map( ( r ) => [ r.key, r.srcTag, r.tag ] ),
 		keysMissingAt: Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, elements.filter( ( r ) => ! at( w, r.key ) ).map( ( r ) => r.key ) ] ) ), screenshotSkips: skipped,
 	};
-	return { generated: new Date().toISOString(), source: url, root, keyFormat: 'importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)', checks, elements };
+	return { generated: new Date().toISOString(), source: url, root, ...( base.beside?.length ? { beside: base.beside } : {} ), keyFormat: 'importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)', checks, elements };
 }

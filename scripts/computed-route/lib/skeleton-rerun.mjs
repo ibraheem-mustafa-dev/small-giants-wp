@@ -35,7 +35,7 @@ const savedBreakpoints = ( repo, client ) => {
 // decision } }), useBuilt? (false proposes even a surface the client built, to measure the rules on it), breakpoints? (intake.json's
 // `breakpoints`; the saved file's by default), propose? (the proposer; proposeSkeleton by default) }. Each surface is proposed with the context `skeleton.mjs propose` passes
 // (lib/skeleton-context.mjs::proposalContext): its handoff states, the thresholds, and the calibration keys and settings.
-// Returns { surfaces: { <slug>: { kind, name, built, rows, counts, problems, skeleton } }, missing: [slug] }; throws when
+// Returns { surfaces: { <slug>: { kind, name, built, rows, counts, problems, skeleton } }, missing: [slug], absorbed: { <slug>: { into (the header surface's slug), root (the strip's root key) } } }; throws when
 // the decisions data is not sound (lib/skeleton-facts.mjs::decisionsProblems), as the intake run refuses it.
 export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = new Set(), picks = {}, useBuilt = true, breakpoints = savedBreakpoints( repo, client ), propose = proposeSkeleton } ) {
 	const dir = path.join( repo, 'sites', client, 'build', 'intake', 'inventories' );
@@ -58,7 +58,11 @@ export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = n
 	const unchecked = [];
 	// The export is hashed once per run, not once per surface.
 	const current = fs.existsSync( handoffRoot ) ? sourcesOf( handoffRoot ) : null;
-	for ( const s of surfaces ) {
+	// A header surface is proposed first: the strips it reads beside itself (rules.headerSlots) are its rows, so a global
+	// surface whose root is one of them is that header's, never a surface of its own.
+	const absorbedKeys = new Map();
+	const absorbed = {};
+	for ( const s of [ ...surfaces ].sort( ( a, b ) => Number( 'header' !== a.kind ) - Number( 'header' !== b.kind ) ) ) {
 		const file = path.join( dir, `${ s.slug }.json` );
 		if ( ! fs.existsSync( file ) ) {
 			missing.push( s.slug );
@@ -66,14 +70,20 @@ export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = n
 		}
 		const inventory = JSON.parse( fs.readFileSync( file, 'utf8' ) );
 		assertCurrent( inventory, handoffRoot, { label: `${ client } inventory ${ s.slug }`, warn: () => unchecked.push( s.slug ), ...( current ? { current } : {} ) } );
+		if ( 'global' === s.kind && absorbedKeys.has( inventory.checks?.rootKey ) ) {
+			absorbed[ s.slug ] = { into: absorbedKeys.get( inventory.checks.rootKey ), root: inventory.checks.rootKey };
+			continue;
+		}
 		const b = built[ s.id ] || built[ s.slug ] || null;
 		const ctx = proposalContext( { repo, client, slug: s.slug, id: s.id, breakpoints } );
 		const r = propose( { inventory, facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: b, motion, clientDecisions, picks: picks[ s.slug ] || {}, ...ctx, db } );
+		r.proposal.stripRoots?.forEach( ( k ) => absorbedKeys.set( k, s.slug ) );
 		out[ s.slug ] = { kind: s.kind, name: s.name, built: b, rows: r.proposal.rows, counts: r.proposal.counts, problems: r.problems, skeleton: r.skeleton, entry: entryOf( s.slug, skeletons[ s.slug ], r, inventory ), fingerprints: fingerprintsOf( inventory ) };
 	}
 	Object.entries( skeletons ).filter( ( [ , x ] ) => ! read( x ) ).forEach( ( [ slug ] ) => missing.push( slug ) );
+	const ordered = Object.fromEntries( Object.keys( skeletons ).filter( ( k ) => out[ k ] ).map( ( k ) => [ k, out[ k ] ] ) );
 	unchecked.length && console.warn( `freshness: ${ unchecked.length } saved inventor${ 1 === unchecked.length ? 'y has' : 'ies have' } no sources (written before the route recorded them); currency is not checked` );
-	return { surfaces: out, missing };
+	return { surfaces: ordered, missing, absorbed };
 }
 
 // One surface's entry in the shape the intake run writes (lib/intake-skeletons.mjs::proposeSkeletons), keeping the root
@@ -87,7 +97,7 @@ const entryOf = ( slug, was, r, inventory ) => ( {
 // whose inventory was not saved keeps its old entry and is listed in `missing`. Returns { intake, missing, before, after }.
 export function refreshIntakeSkeletons( { intake, client, db, repo = REPO } ) {
 	const run = rerunSkeletons( { client, db, repo, skeletons: intake.skeletons, motion: loopingKeys( intake.inventory?.animations ), breakpoints: intake.breakpoints || [] } );
-	const entries = Object.keys( intake.skeletons ).map( ( slug ) => run.surfaces[ slug ]?.entry || { surface: slug, ...intake.skeletons[ slug ] } );
+	const entries = Object.keys( intake.skeletons ).filter( ( slug ) => ! run.absorbed[ slug ] ).map( ( slug ) => run.surfaces[ slug ]?.entry || { surface: slug, ...intake.skeletons[ slug ] } );
 	const c = collapseSkeletons( entries );
 	return { intake: { ...intake, skeletons: c.skeletons }, missing: run.missing, before: c.before, after: c.after };
 }
