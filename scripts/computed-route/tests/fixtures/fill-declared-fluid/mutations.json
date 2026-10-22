@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/fill-prop.mjs", "find": "...( declaredFluid ? { declared: declaredFluid } : {} )", "replace": "", "why": "the declared clamp would never reach the resolver" },
+	{ "file": "lib/fill-prop.mjs", "find": "if ( r.fluid?.accepted ) {", "replace": "if ( false ) {", "why": "the sampled fit would overwrite the declared clamp" },
+	{ "file": "lib/fill-prop.mjs", "find": "fluid: { clamp: r.fluid.declared, accepted: true, declared: true }", "replace": "fluid: { clamp: r.fluid.declared, accepted: true }", "why": "the report could not tell a declared clamp from a fitted one" },
+	{ "file": "lib/fill-resolve-element.mjs", "find": "return form && by.every( ( v ) => v === by[ 0 ] )", "replace": "return form", "why": "a value that changes with the width would be held as one" },
+	{ "file": "lib/fill-resolve-element.mjs", "find": "const form = fluidForm( by[ 0 ] );", "replace": "const form = by[ 0 ] ? 'clamp' : null;", "why": "a plain length would be held as a fluid value" }
+]

@@ -1,7 +1,7 @@
 // Fill resolution of one element (FR-47-4 step 2): every property that differs from what the element already shows,
 // written through the resolver, with the not-plain, conflict and fluid records.
 import { PSEUDO_PROPS } from '../../parity/lib/collect.mjs';
-import { blockSchema } from './resolve.mjs';
+import { blockSchema, fluidForm } from './resolve.mjs';
 import { setAttr } from './tree.mjs';
 import { usedValueTarget } from './solve-rows.mjs';
 import { PROPS, READ_WIDTHS } from './fill-read.mjs';
@@ -121,7 +121,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			}
 		}
 		const fluid = fluidSamples( st, target, layer, prop );
-		const res = resolveProperty( { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...( layer ? [] : alternateSlots( cal, prop, draft ).filter( ( s ) => s !== slot ) ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declared: layer ? {} : agreedDeclared( st, target, prop, draft, fontPx ) } );
+		const res = resolveProperty( { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...( layer ? [] : alternateSlots( cal, prop, draft ).filter( ( s ) => s !== slot ) ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declaredFluid: layer ? null : declaredFluid( st, target, prop, draft ), declared: layer ? {} : agreedDeclared( st, target, prop, draft, fontPx ) } );
 		const { eq, landed } = 'gap' === res.status && 'no-setting' === res.gap && ! layer ? ratioWrite( st, rec, target, prop, draft, notPlain, { baselineFn, apply, rendered } ) : { eq: null, landed: false };
 		// A maximum height written from the rendered heights replaces the not-plain rows (each width's height is what it
 		// paints) and carries their values on its note; a result that wrote nothing keeps them as rows.
@@ -143,7 +143,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 				apply( st, rec, ref, target, prop, res, res.slot );
 			}
 			if ( res.fluid ) {
-				st.out.fluid.push( { node: ref, slot, prop, clamp: res.fluid.clamp, written: res.fluid.accepted ? 'clamp' : 'per-tier', reason: res.fluid.accepted ? 'every sample lies on one line and calibration lists clamp among the setting\'s forms' : `${ attrs.join( ', ' ) } accepts no clamp() (calibration forms): per-tier values from 375, 768 and 1440` } );
+				st.out.fluid.push( { node: ref, slot, prop, clamp: res.fluid.clamp, written: res.fluid.accepted ? 'clamp' : 'per-tier', reason: res.fluid.declared ? 'the code declares it as one value and calibration lists its form among the forms the setting takes: held as that one value' : res.fluid.accepted ? 'every sample lies on one line and calibration lists clamp among the setting\'s forms' : `${ attrs.join( ', ' ) } accepts no clamp() (calibration forms): per-tier values from 375, 768 and 1440` } );
 			}
 		}
 		// What the element shows from here on, for the descendants that inherit it.
@@ -159,6 +159,14 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 function agreedDeclared( st, target, prop, draft, fontPx ) {
 	return Object.fromEntries( Object.keys( draft ).map( ( w ) => [ w, st.reads.declared?.[ w ]?.[ target.id ]?.[ prop ] ] )
 		.filter( ( [ w, d ] ) => null != d && 'agree' === compareDR( prop, d, draft[ w ], fontPx[ w ] || 16 ).dr ) );
+}
+
+// The fluid value the code declares for a property when it declares the same clamp(), min() or max() at every read width
+// ({ width: value }), else null: a value that changes with the width is a per-tier one.
+export function declaredFluid( st, target, prop, draft ) {
+	const by = Object.keys( draft ).map( ( w ) => String( st.reads.declared?.[ w ]?.[ target.id ]?.[ prop ] ?? '' ).trim() );
+	const form = fluidForm( by[ 0 ] );
+	return form && by.every( ( v ) => v === by[ 0 ] ) ? Object.fromEntries( Object.keys( draft ).map( ( w ) => [ w, by[ 0 ] ] ) ) : null;
 }
 
 // The samples of a fluid candidate at the five widths ({ width: value }), or null when any is missing.
