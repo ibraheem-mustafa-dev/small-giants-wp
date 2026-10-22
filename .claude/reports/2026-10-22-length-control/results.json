@@ -1,0 +1,665 @@
+[
+  {
+    "id": "icon-size",
+    "scale": "font-size",
+    "block": "sgs/icon",
+    "rows": [
+      {
+        "step": "initial",
+        "canvas": "32px"
+      },
+      {
+        "tier": "Desktop",
+        "steps": [
+          {
+            "step": "structure",
+            "gear": true,
+            "dropdown": true,
+            "header": "FONT SIZE | Font size | Default"
+          },
+          {
+            "step": "preset names",
+            "options": [
+              "Default",
+              "Small\n14px",
+              "Regular\n16px",
+              "Large\n20px",
+              "XL\n24px",
+              "XXL\n36px",
+              "Hero\n50px"
+            ]
+          },
+          {
+            "step": "preset Large",
+            "canvas": "20px",
+            "changed": true
+          },
+          {
+            "step": "custom mode",
+            "controls": [
+              "BUTTON:Use size preset",
+              "INPUT:number",
+              "SELECT:Select unit",
+              "INPUT:Font size"
+            ]
+          },
+          {
+            "step": "custom 40px",
+            "canvas": "40px",
+            "changed": true
+          },
+          {
+            "step": "custom 2rem",
+            "canvas": "32px",
+            "changed": true
+          },
+          {
+            "step": "custom 3em",
+            "canvas": "48px",
+            "changed": true
+          },
+          {
+            "step": "custom 4vw",
+            "canvas": "40px",
+            "changed": true
+          },
+          {
+            "step": "custom 5vh",
+            "canvas": "36.95px",
+            "changed": true
+          },
+          {
+            "step": "slider drag",
+            "canvas": "47.3px",
+            "changed": true
+          }
+        ],
+        "canvasFinal": "47.3px"
+      },
+      {
+        "tier": "Tablet",
+        "steps": [
+          {
+            "step": "Tablet 18px",
+            "canvas": "18px",
+            "changed": true
+          }
+        ],
+        "canvasFinal": "18px"
+      },
+      {
+        "tier": "Mobile",
+        "steps": [
+          {
+            "step": "Mobile 12px",
+            "canvas": "12px",
+            "changed": true
+          }
+        ],
+        "canvasFinal": "12px"
+      }
+    ],
+    "tiers": {
+      "Desktop": {
+        "canvasFinal": "47.3px",
+        "live1440": "57.6px"
+      },
+      "Tablet": {
+        "canvasFinal": "18px",
+        "live768": "18px"
+      },
+      "Mobile": {
+        "canvasFinal": "12px",
+        "live375": "12px"
+      }
+    }
+  },
+  {
+    "id": "social-icons-size",
+    "scale": "font-size",
+    "block": "sgs/social-icons",
+    "rows": [
+      {
+        "step": "initial",
+        "canvas": "32px"
+      },
+      {
+        "tier": "Desktop",
+        "steps": [
+          {
+            "step": "structure",
+            "gear": true,
+            "dropdown": true,
+            "header": "FONT SIZE | Font size | Default"
+          },
+          {
+            "step": "preset names",
+            "options": [
+              "Default",
+              "Small\n14px",
+              "Regular\n16px",
+              "Large\n20px",
+              "XL\n24px",
+              "XXL\n36px",
+              "Hero\n50px",
+              "Default",
+              "Small14px",
+              "Regular16px",
+              "Large20px",
+              "XL24px",
+              "XXL36px",
+              "Hero50px",
+              "Default",
+              "Body",
+              "Heading (Fraunces)",
+              "Display (Fraunces)",
+              "DM Sans",
+              "Geist Mono",
+              "SuisseBPIntl",
+              "Plus Jakarta Sans",
+              "Sometype Mono",
+              "Default",
+              "Thin",
+              "Extra Light",
+              "Light",
+              "Regular",
+              "Medium",
+              "Semi Bold",
+              "Bold",
+              "Extra Bold",
+              "Black",
+              "Extra Black",
+              "Thin Italic",
+              "Extra Light Italic",
+              "Light Italic",
+              "Regular Italic",
+              "Medium Italic",
+              "Semi Bold Italic",
+              "Bold Italic",
+              "Extra Bold Italic",
+              "Black Italic",
+              "Extra Black Italic"
+            ]
+          },
+          {
+            "step": "preset Large",
+            "canvas": "20px",
+            "changed": true
+          },
+          {
+            "step": "custom mode",
+            "controls": [
+              "BUTTON:Use size preset",
+              "INPUT:number",
+              "SELECT:Select unit",
+              "INPUT:Font size"
+            ]
+          },
+          {
+            "step": "custom 40px",
+            "canvas": "40px",
+            "changed": true
+          },
+          {
+            "step": "custom 2rem",
+            "canvas": "32px",
+            "changed": true
+          },
+          {
+            "step": "custom 3em",
+            "canvas": "48px",
+            "changed": true
+          },
+          {
+            "step": "custom 4vw",
+            "canvas": "40px",
+            "changed": true
+          },
+          {
+            "step": "custom 5vh",
+            "canvas": "36.95px",
+            "changed": true
+          },
+          {
+            "step": "slider drag",
+            "canvas": "47.3px",
+            "changed": true
+          }
+        ],
+        "canvasFinal": "47.3px"
+      },
+      {
+        "tier": "Tablet",
+        "steps": [
+          {
+            "step": "Tablet 18px",
+            "canvas": "18px",
+            "changed": true
+          }
+        ],
+        "canvasFinal": "18px"
+      },
+      {
+        "tier": "Mobile",
+        "steps": [
+          {
+            "step": "Mobile 12px",
+            "canvas": "12px",
+            "changed": true
+          }
+        ],
+        "canvasFinal": "12px"
+      }
+    ],
+    "tiers": {
+      "Desktop": {
+        "canvasFinal": "47.3px",
+        "live1440": "57.6px"
+      },
+      "Tablet": {
+        "canvasFinal": "18px",
+        "live768": "18px"
+      },
+      "Mobile": {
+        "canvasFinal": "12px",
+        "live375": "12px"
+      }
+    }
+  },
+  {
+    "id": "social-icons-gap",
+    "scale": "spacing",
+    "block": "sgs/social-icons",
+    "rows": [
+      {
+        "step": "initial",
+        "canvas": "8px"
+      },
+      {
+        "tier": "Desktop",
+        "steps": [
+          {
+            "step": "structure",
+            "preset": true,
+            "unitBox": true,
+            "slider": true
+          },
+          {
+            "step": "preset names",
+            "options": [
+              "— none —",
+              "XXS",
+              "XS",
+              "S",
+              "M",
+              "L",
+              "XL",
+              "XXL",
+              "XXXL",
+              "Custom…"
+            ]
+          },
+          {
+            "step": "preset M",
+            "canvas": "24px",
+            "changed": true
+          },
+          {
+            "step": "box after preset",
+            "boxValue": "1.5",
+            "unit": "rem"
+          },
+          {
+            "step": "units offered",
+            "offered": [
+              "px",
+              "rem",
+              "em"
+            ]
+          },
+          {
+            "step": "custom 24px",
+            "canvas": "24px",
+            "changed": false
+          },
+          {
+            "step": "custom 2rem",
+            "canvas": "32px",
+            "changed": true
+          },
+          {
+            "step": "custom 3em",
+            "canvas": "48px",
+            "changed": true
+          },
+          {
+            "step": "slider drag",
+            "canvas": "105.6px",
+            "changed": true
+          },
+          {
+            "step": "stored after slider",
+            "box": "6.6",
+            "unit": "em"
+          }
+        ],
+        "canvasFinal": "105.6px"
+      },
+      {
+        "tier": "Tablet",
+        "steps": [
+          {
+            "step": "Tablet 18px",
+            "canvas": "18px",
+            "changed": true
+          }
+        ],
+        "canvasFinal": "18px"
+      },
+      {
+        "tier": "Mobile",
+        "steps": [
+          {
+            "step": "Mobile 12px",
+            "canvas": "12px",
+            "changed": true
+          }
+        ],
+        "canvasFinal": "12px"
+      }
+    ],
+    "tiers": {
+      "Desktop": {
+        "canvasFinal": "105.6px",
+        "live1440": "105.6px"
+      },
+      "Tablet": {
+        "canvasFinal": "18px",
+        "live768": "18px"
+      },
+      "Mobile": {
+        "canvasFinal": "12px",
+        "live375": "12px"
+      }
+    }
+  },
+  {
+    "id": "label-radius",
+    "scale": "spacing",
+    "block": "sgs/label",
+    "rows": [
+      {
+        "step": "initial",
+        "canvas": "0px"
+      },
+      {
+        "tier": "Desktop",
+        "steps": [
+          {
+            "step": "structure",
+            "preset": false,
+            "unitBox": true,
+            "slider": true
+          },
+          {
+            "step": "units offered",
+            "offered": [
+              "px",
+              "rem",
+              "em",
+              "%"
+            ]
+          },
+          {
+            "step": "custom 24px",
+            "canvas": "24px",
+            "changed": true
+          },
+          {
+            "step": "custom 2rem",
+            "canvas": "32px",
+            "changed": true
+          },
+          {
+            "step": "custom 3em",
+            "canvas": "36px",
+            "changed": true
+          },
+          {
+            "step": "custom 30%",
+            "canvas": "30%",
+            "changed": true
+          },
+          {
+            "step": "slider drag",
+            "canvas": "64%",
+            "changed": true
+          },
+          {
+            "step": "stored after slider",
+            "box": "64",
+            "unit": "%"
+          }
+        ],
+        "canvasFinal": "64%"
+      }
+    ],
+    "tiers": {
+      "Desktop": {
+        "canvasFinal": "64%",
+        "live375": "64%",
+        "live768": "64%",
+        "live1440": "64%"
+      }
+    }
+  },
+  {
+    "id": "container-gap",
+    "scale": "spacing",
+    "block": "sgs/container",
+    "rows": [
+      {
+        "step": "initial",
+        "canvas": "normal"
+      },
+      {
+        "tier": "Desktop",
+        "steps": [
+          {
+            "step": "structure",
+            "preset": false,
+            "unitBox": true,
+            "slider": true
+          },
+          {
+            "step": "units offered",
+            "offered": [
+              "px",
+              "rem",
+              "em",
+              "%",
+              "vw",
+              "vh"
+            ]
+          },
+          {
+            "step": "custom 24px",
+            "canvas": "24px",
+            "changed": true
+          },
+          {
+            "step": "custom 2rem",
+            "canvas": "32px",
+            "changed": true
+          },
+          {
+            "step": "custom 3em",
+            "canvas": "48px",
+            "changed": true
+          },
+          {
+            "step": "custom 30%",
+            "canvas": "30%",
+            "changed": true
+          },
+          {
+            "step": "custom 4vw",
+            "canvas": "40px",
+            "changed": true
+          },
+          {
+            "step": "slider drag",
+            "canvas": "640px",
+            "changed": true
+          },
+          {
+            "step": "stored after slider",
+            "box": "64",
+            "unit": "vw"
+          }
+        ],
+        "canvasFinal": "640px"
+      },
+      {
+        "tier": "Tablet",
+        "steps": [
+          {
+            "step": "Tablet 18px",
+            "canvas": "18px",
+            "changed": true
+          }
+        ],
+        "canvasFinal": "18px"
+      },
+      {
+        "tier": "Mobile",
+        "steps": [
+          {
+            "step": "Mobile 12px",
+            "canvas": "12px",
+            "changed": true
+          }
+        ],
+        "canvasFinal": "12px"
+      }
+    ],
+    "tiers": {
+      "Desktop": {
+        "canvasFinal": "640px",
+        "live1440": "921.6px"
+      },
+      "Tablet": {
+        "canvasFinal": "18px",
+        "live768": "18px"
+      },
+      "Mobile": {
+        "canvasFinal": "12px",
+        "live375": "12px"
+      }
+    }
+  },
+  {
+    "id": "container-width",
+    "scale": "spacing",
+    "block": "sgs/container",
+    "rows": [
+      {
+        "step": "initial",
+        "canvas": "1280px"
+      },
+      {
+        "tier": "Desktop",
+        "steps": [
+          {
+            "step": "structure",
+            "preset": false,
+            "unitBox": true,
+            "slider": true
+          },
+          {
+            "step": "units offered",
+            "offered": [
+              "px",
+              "rem",
+              "em",
+              "%",
+              "vw"
+            ]
+          },
+          {
+            "step": "custom 24px",
+            "canvas": "24px",
+            "changed": true
+          },
+          {
+            "step": "custom 2rem",
+            "canvas": "32px",
+            "changed": true
+          },
+          {
+            "step": "custom 3em",
+            "canvas": "48px",
+            "changed": true
+          },
+          {
+            "step": "custom 30%",
+            "canvas": "30%",
+            "changed": true
+          },
+          {
+            "step": "custom 4vw",
+            "canvas": "40px",
+            "changed": true
+          },
+          {
+            "step": "slider drag",
+            "canvas": "640px",
+            "changed": true
+          },
+          {
+            "step": "stored after slider",
+            "box": "64",
+            "unit": "vw"
+          }
+        ],
+        "canvasFinal": "640px"
+      },
+      {
+        "tier": "Tablet",
+        "steps": [
+          {
+            "step": "Tablet 18px",
+            "canvas": "18px",
+            "changed": true
+          }
+        ],
+        "canvasFinal": "18px"
+      },
+      {
+        "tier": "Mobile",
+        "steps": [
+          {
+            "step": "Mobile 12px",
+            "canvas": "12px",
+            "changed": true
+          }
+        ],
+        "canvasFinal": "12px"
+      }
+    ],
+    "tiers": {
+      "Desktop": {
+        "canvasFinal": "640px",
+        "live1440": "921.6px"
+      },
+      "Tablet": {
+        "canvasFinal": "18px",
+        "live768": "18px"
+      },
+      "Mobile": {
+        "canvasFinal": "12px",
+        "live375": "12px"
+      }
+    }
+  }
+]

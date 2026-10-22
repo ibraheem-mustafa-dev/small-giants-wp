@@ -1,0 +1,119 @@
+[
+  {
+    "id": "social-icons-gap",
+    "scale": "spacing",
+    "block": "sgs/social-icons",
+    "rows": [
+      {
+        "step": "initial",
+        "canvas": "105.6px"
+      },
+      {
+        "tier": "Desktop",
+        "steps": [
+          {
+            "step": "structure",
+            "preset": true,
+            "unitBox": true,
+            "slider": true
+          },
+          {
+            "step": "preset names",
+            "options": [
+              "— none —",
+              "XXS",
+              "XS",
+              "S",
+              "M",
+              "L",
+              "XL",
+              "XXL",
+              "XXXL",
+              "Custom…"
+            ]
+          },
+          {
+            "step": "preset M",
+            "canvas": "24px",
+            "changed": true
+          },
+          {
+            "step": "box after preset",
+            "boxValue": "1.5",
+            "unit": "rem"
+          },
+          {
+            "step": "units offered",
+            "offered": [
+              "px",
+              "rem",
+              "em"
+            ]
+          },
+          {
+            "step": "custom 24px",
+            "canvas": "24px",
+            "changed": false
+          },
+          {
+            "step": "custom 2rem",
+            "canvas": "32px",
+            "changed": true
+          },
+          {
+            "step": "custom 3em",
+            "canvas": "48px",
+            "changed": true
+          },
+          {
+            "step": "slider drag",
+            "canvas": "105.6px",
+            "changed": true
+          },
+          {
+            "step": "stored after slider",
+            "box": "6.6",
+            "unit": "em"
+          }
+        ],
+        "canvasFinal": "105.6px"
+      },
+      {
+        "tier": "Tablet",
+        "steps": [
+          {
+            "step": "Tablet 18px",
+            "canvas": "18px",
+            "changed": false
+          }
+        ],
+        "canvasFinal": "18px"
+      },
+      {
+        "tier": "Mobile",
+        "steps": [
+          {
+            "step": "Mobile 12px",
+            "canvas": "12px",
+            "changed": false
+          }
+        ],
+        "canvasFinal": "12px"
+      }
+    ],
+    "tiers": {
+      "Desktop": {
+        "canvasFinal": "105.6px",
+        "live1440": "105.6px"
+      },
+      "Tablet": {
+        "canvasFinal": "18px",
+        "live768": "18px"
+      },
+      "Mobile": {
+        "canvasFinal": "12px",
+        "live375": "12px"
+      }
+    }
+  }
+]
