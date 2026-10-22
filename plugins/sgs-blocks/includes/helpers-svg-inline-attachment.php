@@ -1,7 +1,8 @@
 <?php
 /**
  * An uploaded SVG attachment's markup, ready to print inline: read from the attachment's file, rebuilt through
- * sgs_svg_sanitise_document() and cached per attachment and file modification time (a replaced file is re-read).
+ * sgs_svg_sanitise_document() (or, for a file sgs_svg_attachment_is_trusted() vouches for, kept as uploaded) and cached
+ * per attachment, file modification time and trust (a replaced file or a change of trust is re-read).
  *
  * @package SGS\Blocks
  */
@@ -9,6 +10,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-svg-document.php';
+require_once __DIR__ . '/helpers-svg-trust.php';
 
 if ( ! function_exists( 'sgs_svg_inline_attachment' ) ) {
 	/**
@@ -25,14 +27,19 @@ if ( ! function_exists( 'sgs_svg_inline_attachment' ) ) {
 		if ( '' === $path || 'svg' !== strtolower( pathinfo( $path, PATHINFO_EXTENSION ) ) || ! is_readable( $path ) ) {
 			return '';
 		}
-		$stamp  = (int) filemtime( $path ) . ':' . (int) filesize( $path ) . ':' . md5_file( __DIR__ . '/helpers-svg-document.php' ) . md5_file( __DIR__ . '/helpers-svg-kses.php' );
-		$key    = 'sgs_svg_inline_' . $attachment_id;
-		$cached = get_transient( $key );
+		$raw     = (string) file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local attachment file.
+		$trusted = sgs_svg_attachment_is_trusted( $attachment_id, $raw );
+		$stamp   = (int) filemtime( $path ) . ':' . (int) filesize( $path ) . ':' . ( $trusted ? 'trusted' : 'sanitised' ) . ':' . md5_file( __DIR__ . '/helpers-svg-document.php' ) . md5_file( __DIR__ . '/helpers-svg-kses.php' );
+		$key     = 'sgs_svg_inline_' . $attachment_id;
+		$cached  = get_transient( $key );
 		if ( is_array( $cached ) && ( $cached['stamp'] ?? '' ) === $stamp && is_string( $cached['svg'] ?? null ) ) {
 			return $cached['svg'];
 		}
-		$raw = (string) file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local attachment file.
-		$svg = sgs_svg_sanitise_document( $raw )['svg'];
+		// A trusted file prints as uploaded (sgs_svg_attachment_is_trusted() has just re-verified it); any other file is rebuilt.
+		$svg = $trusted ? sgs_svg_trusted_inline_markup( $raw ) : '';
+		if ( '' === $svg ) {
+			$svg = sgs_svg_sanitise_document( $raw )['svg'];
+		}
 		set_transient(
 			$key,
 			array(
