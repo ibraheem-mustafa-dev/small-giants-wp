@@ -149,12 +149,14 @@ export function declaredWrites( root = REPO ) {
 // Every reason the coverage map does not cover the inventory, as sentences; empty when it does. A DB section the
 // inventory records as absent (it was written without the DB) is not checked for unknown IDs. An ID a module declares
 // it writes must be one the inventory holds and have an entry whose write names that module, so a gap cannot outlive
-// the writer that closes it.
+// the writer that closes it, and an entry whose write names a lib module must appear in that module's declaration
+// (checked against the declarations on disk, so a test that passes its own `writes` exercises the first rule only).
 export function coverageProblems( inventory, coverage, { root = REPO, registry, baseline, writes } = {} ) {
 	const reg = registry || loadRegistry();
 	const problems = [];
 	const grandfathered = new Set( baseline || loadBaseline() );
 	const entries = coverage.entries || {};
+	const declared = writes || declaredWrites( root );
 	const ids = new Set( allEntries( inventory ).map( ( e ) => e.id ) );
 	const absent = new Set( Object.entries( inventory.sections ).filter( ( [ , s ] ) => 'absent' === s.status ).map( ( [ n ] ) => n ) );
 	for ( const id of ids ) {
@@ -171,6 +173,10 @@ export function coverageProblems( inventory, coverage, { root = REPO, registry, 
 				problems.push( `${ id }: an exclusion needs a reason, signedBy "Bean" and a YYYY-MM-DD date` );
 			}
 			continue;
+		}
+		const writer = /^(scripts\/computed-route\/lib\/[^#]+\.mjs)#/.exec( e.write || '' );
+		if ( ! writes && writer && ! ( declared[ writer[ 1 ] ] || [] ).includes( id ) ) {
+			problems.push( `${ id }: its write names ${ writer[ 1 ] }, but that module's COVERAGE_WRITES does not declare it (add it there, or point write at the module that writes it)` );
 		}
 		for ( const s of STEPS ) {
 			const p = e[ s ] ? referenceProblem( e[ s ], { root, registry: reg } ) : null;
@@ -201,7 +207,7 @@ export function coverageProblems( inventory, coverage, { root = REPO, registry, 
 			problems.push( `${ id }: in coverage-test-baseline.json but it now names a test (remove it from the baseline)` );
 		}
 	}
-	for ( const [ file, list ] of Object.entries( writes || declaredWrites( root ) ) ) {
+	for ( const [ file, list ] of Object.entries( declared ) ) {
 		for ( const id of list ) {
 			const e = entries[ id ];
 			if ( ! ids.has( id ) ) {

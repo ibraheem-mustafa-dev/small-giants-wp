@@ -13,6 +13,10 @@ import { renderedOf } from './fill-state-apply.mjs';
 import { vocabStateFor } from './state-map.mjs';
 import { declaredDiff } from './fill-state-read.mjs';
 
+export const COVERAGE_WRITES = [
+	'construct:sc-if',
+];
+
 const SLOT = 'logic-state-read';
 
 // The state map's set-state rows grouped by what they set: [{ component, keys, ids, settingState, gap }]. Several sc-ifs

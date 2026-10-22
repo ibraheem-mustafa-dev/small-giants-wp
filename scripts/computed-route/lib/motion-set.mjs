@@ -7,6 +7,10 @@
 
 import { msOf } from './motion-tokens.mjs';
 
+export const COVERAGE_WRITES = [
+	'svg:set',
+];
+
 const VISIBILITY = { visible: 1, hidden: 0 };
 
 // A SMIL clock value (`2s`, `500ms`, `0.5`; no unit is seconds) as ms; null for an event, a sync-base or `indefinite`.

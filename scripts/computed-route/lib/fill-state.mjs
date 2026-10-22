@@ -23,6 +23,22 @@ import { READ_WIDTHS } from './fill-read.mjs';
 import { TIMING_PROPS, timingWrites } from './fill-timing.mjs';
 import { createPatch, tokenRoute, pickValue, pressVariant, ownedBySetting, applyTokenLooks, conflictRow } from './fill-state-tokens.mjs';
 
+export const COVERAGE_WRITES = [
+	'aria-attr:aria-checked',
+	'aria-attr:aria-current',
+	'aria-attr:aria-expanded',
+	'aria-attr:aria-pressed',
+	'aria-attr:aria-selected',
+	'construct:style-hover',
+	'css-pseudo-class:checked',
+	'css-pseudo-class:disabled',
+	'css-pseudo-class:hover',
+	'css-pseudo-class:modal',
+	'css-pseudo-class:open',
+	'css-pseudo-class:popover-open',
+	'css-pseudo-class:target',
+];
+
 // The blocks whose panel is hidden until a trigger opens it (their open look is their own look).
 export const SURFACE_BLOCKS = [ 'sgs/modal', 'sgs/nav-drawer', 'sgs/mega-panel' ];
 

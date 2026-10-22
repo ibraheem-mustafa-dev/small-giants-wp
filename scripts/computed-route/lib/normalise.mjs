@@ -5,6 +5,12 @@ import fs from 'fs';
 import path from 'path';
 import { parseRatio, sameRatio, trackRatios } from '../../parity/lib/ratio.mjs';
 
+export const COVERAGE_WRITES = [
+	'css-function:minmax',
+	'css-function:repeat',
+	'css-unit:fr',
+];
+
 export const COLOUR_DE = 2;
 export const LENGTH_TOL = 0.5;
 const ROOT_PX = 16;

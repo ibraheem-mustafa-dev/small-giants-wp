@@ -14,6 +14,10 @@ import { candidates } from './db.mjs';
 import { easingOf } from './motion-tokens.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 
+export const COVERAGE_WRITES = [
+	'block-setting:motion:motion',
+];
+
 export const TIMING_PROPS = [ 'transition-duration', 'transition-timing-function' ];
 
 // The order a single both-ways timing is taken from when several states time entering: hover, focus, then the rest.

@@ -7,6 +7,46 @@ import fs from 'fs';
 import path from 'path';
 import { REPO } from './motion-schema.mjs';
 
+export const COVERAGE_WRITES = [
+	'css-function:scroll',
+	'css-function:view',
+	'css-group:motion-path',
+	'css-group:scroll-driven-animations',
+	'fx:ambient-float',
+	'fx:cursor-field',
+	'fx:curtain',
+	'fx:draggable',
+	'fx:draw',
+	'fx:flip',
+	'fx:follow-pointer',
+	'fx:generative-background',
+	'fx:glare',
+	'fx:grid-dots',
+	'fx:horizontal-panel',
+	'fx:image-sequence',
+	'fx:ken-burns',
+	'fx:lottie',
+	'fx:magnet',
+	'fx:marquee',
+	'fx:morph',
+	'fx:motion-path',
+	'fx:parallax',
+	'fx:particles',
+	'fx:pin-scrub',
+	'fx:ripple',
+	'fx:scramble',
+	'fx:scroll-progress',
+	'fx:scrub',
+	'fx:sheen',
+	'fx:split-reveal',
+	'fx:surface-treatment',
+	'fx:svg-loop',
+	'fx:wave-gradient',
+	'html:marquee',
+	'svg:animateMotion',
+	'svg:mpath',
+];
+
 const BLOCKS_DIR = path.join( REPO, 'plugins', 'sgs-blocks', 'src', 'blocks' );
 
 // The editor's offer data: which effects each block qualifies for (generated-fx-qualifying-blocks.json) and each
