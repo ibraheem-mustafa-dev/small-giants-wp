@@ -64,10 +64,13 @@ function statesValues( record ) {
 // { unmapped }. A loop: { frames: [channels], duration, delay, direction, easing, box, other, unsupported }.
 export function resolvedLoop( record, measured ) {
 	const texts = [ record.duration_ms, record.delay_ms, ...( record.properties || [] ).flatMap( ( p ) => [ p.from, p.to, p.formula ] ) ].filter( ( x ) => 'string' === typeof x );
-	if ( texts.some( ( t ) => RANDOM.test( t ) ) ) {
-		return { unmapped: 'the draft randomises this loop per element (Math.random in its values or timing); no effect randomises its values, a Spec 38 gap' };
+	// A loop the draft randomises per element is stored as the values sampled on this element (FR-48-77: rings); with no
+	// matching endless animation measured on the element there is nothing to sample.
+	const random = texts.some( ( t ) => RANDOM.test( t ) );
+	if ( random && ! measuredLoopOf( record, measured ) ) {
+		return { unmapped: 'the draft randomises this loop per element (Math.random in its values or timing), and the render showed no matching endless animation on this element to sample its values from; no effect randomises its values, a Spec 38 gap' };
 	}
-	const computed = ! statesValues( record ) || 'number' !== typeof record.duration_ms;
+	const computed = random || ! statesValues( record ) || 'number' !== typeof record.duration_ms;
 	const m = measuredLoopOf( record, measured );
 	if ( computed && ! m ) {
 		return { unmapped: 'its values are computed in the code and the render showed no matching endless animation on this element' };
@@ -112,6 +115,7 @@ export function resolvedLoop( record, measured ) {
 			direction: record.direction || m?.direction || 'normal',
 			easing: record.easing ?? m?.easing ?? ( 'css-animation' === record.mechanism ? 'ease' : 'linear' ),
 			box: measured?.box || null,
+				...( random ? { sampled: true } : {} ),
 			other: [ ...new Set( other ) ],
 			unsupported: [ ...new Set( unsupported ) ],
 		},
@@ -262,6 +266,15 @@ export function loopEffect( record, measuredByWidth, { mdb } ) {
 	const wide = at( 1440 );
 	if ( wide.unmapped ) {
 		return wide;
+	}
+	if ( wide.loop.sampled ) {
+		// Each width is its own page load with its own random numbers, so the 1440 sample is stored for every width. The
+		// float effect holds the drift (translate) only; a moving scale or turn is named, not kept.
+		const kept = ( k ) => /^translate[XY]$/.test( k );
+		const lost = loopFamilies( wide.loop ).moving.filter( ( k ) => ! kept( k ) );
+		const drift = { ...wide.loop, frames: wide.loop.frames.map( ( f ) => Object.fromEntries( Object.entries( f ).filter( ( [ k ] ) => kept( k ) ) ) ) };
+		const e = chooseEffect( drift, null, { mdb } );
+		return e.unmapped ? e : { ...e, notes: [ `the draft randomises this loop per element; the values sampled on this element are stored (${ Object.entries( e.values ).map( ( [ k, v ] ) => `${ k } ${ v }` ).join( ', ' ) })`, ...( lost.length ? [ `the draft's moving ${ lost.join( ', ' ) } is not held by ${ e.effect } (a Spec 38 gap)` ] : [] ), ...e.notes ] };
 	}
 	return chooseEffect( wide.loop, { tablet: at( 768 ).loop || null, mobile: at( 375 ).loop || null }, { mdb } );
 }

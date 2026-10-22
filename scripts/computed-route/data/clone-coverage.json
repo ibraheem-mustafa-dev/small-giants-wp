@@ -2332,11 +2332,11 @@
 			"note": "character-variant(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:circle": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "behaviour recognisers",
-			"note": "circle(): the drafts' one use is the pointer-following reveal, the cursor-field effect's image reveal (fx:cursor-field, recognised by FR-48-77); as a static clip-path it is reported (tests/css-functions.test.mjs)"
+			"recognise": "scripts/computed-route/lib/motion-behaviours.mjs#recogniseBehaviour",
+			"write": "scripts/computed-route/lib/fill-behaviour.mjs#applyBehaviours",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"note": "circle() as the clip-path of a layer whose radius and centre custom properties a pointer handler writes is the cursor field's image reveal (lib/motion-behaviours.mjs::peekOf); as a static clip-path it is reported (tests/css-functions.test.mjs)",
+			"test": "scripts/computed-route/tests/motion-behaviours.test.mjs"
 		},
 		"css-function:clamp": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -2896,11 +2896,11 @@
 			"note": "a slant (a parallelogram, which a perspective tilt cannot draw); the value is Spec 38A FR-38A-57, built after the three test sites are fully cloned (Bean, 2026-10-19), and until then the writer reports it by name"
 		},
 		"css-function:skewx": {
-			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
-			"write": null,
-			"check": null,
-			"wave": "behaviour recognisers",
-			"note": "a draft's sheen sweep on magnet buttons (a stripe slanted by a constant skewX(-18deg) slides across on pointer enter), so it is the sgs sheen effect, recognised with the magnet in the behaviour recognisers wave; no animated slant, so not Spec 38A FR-38A-57"
+			"recognise": "scripts/computed-route/lib/motion-behaviours.mjs#recogniseBehaviour",
+			"write": "scripts/computed-route/lib/fill-behaviour.mjs#applyBehaviours",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"note": "a stripe slanted by a constant skewX(-18deg) that slides across on pointer entry is the sheen effect with its angle (lib/motion-behaviours.mjs::sheenOf); an animated slant is still Spec 38A FR-38A-57",
+			"test": "scripts/computed-route/tests/motion-behaviours.test.mjs"
 		},
 		"css-function:skewy": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
@@ -8742,11 +8742,11 @@
 			"note": "a carousel's loop is a setting of the carousel (fx_effects.panels is empty: no motion panel holds it); FR-48-80 recognises the carousel"
 		},
 		"fx:cursor-field": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-behaviours.mjs#recogniseBehaviour",
 			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
 			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
-			"wave": "behaviour recognisers",
-			"note": "a draft builds cursor-field in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
+			"note": "a pointer handler writing the pointer position into custom properties that a clip-path or mask circle consumes is the cursor field's image reveal with its rest and hover radius, radius duration and easing, and ring (lib/motion-behaviours.mjs::peekOf); the full reveal on keyboard focus and tap is the framework's (Ruling 8)",
+			"test": "scripts/computed-route/tests/motion-behaviours.test.mjs"
 		},
 		"fx:curtain": {
 			"recognise": null,
@@ -8777,11 +8777,11 @@
 			"note": "a draft builds flip in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:follow-pointer": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-behaviours.mjs#recogniseBehaviour",
 			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
 			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
-			"wave": "behaviour recognisers",
-			"note": "a draft builds follow-pointer in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
+			"note": "a pointer handler writing rotate from the pointer's position is the hover state's follow-pointer (tilt) with its maximum angle, and the spring back on pointer leave its reset duration and easing (lib/motion-behaviours.mjs::tiltOf, ::tiltResetOf)",
+			"test": "scripts/computed-route/tests/motion-behaviours.test.mjs"
 		},
 		"fx:generative-background": {
 			"recognise": null,
@@ -8791,11 +8791,11 @@
 			"note": "a draft builds generative-background in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:glare": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-behaviours.mjs#recogniseBehaviour",
 			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
 			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
-			"wave": "behaviour recognisers",
-			"note": "a draft builds glare in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
+			"note": "a pointer handler that writes the pointer position into custom properties for a highlight, beside a tilt, is the glare effect (lib/motion-behaviours.mjs::tiltOf)",
+			"test": "scripts/computed-route/tests/motion-behaviours.test.mjs"
 		},
 		"fx:grid-dots": {
 			"recognise": null,
@@ -8832,11 +8832,11 @@
 			"note": "a draft builds lottie in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:magnet": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-behaviours.mjs#recogniseBehaviour",
 			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
 			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
-			"wave": "behaviour recognisers",
-			"note": "a draft builds magnet in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
+			"note": "a pointer handler writing a translate toward the pointer is the magnet effect (normalised pull from a position times a size, distance pull from an offset times a factor); on a nav label it is the nav bar's item magnet settings (lib/motion-behaviours.mjs::magnetOf, FR-48-77)",
+			"test": "scripts/computed-route/tests/motion-behaviours.test.mjs"
 		},
 		"fx:marquee": {
 			"recognise": "scripts/computed-route/lib/motion-loops.mjs#loopEffect",
@@ -8866,11 +8866,11 @@
 			"note": "view transitions are page transitions, a site-level setting (fx_effects page-transitions lists no panel); the site wave (FR-48-84) writes it"
 		},
 		"fx:parallax": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-behaviours.mjs#recogniseBehaviour",
 			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
 			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
-			"wave": "behaviour recognisers",
-			"note": "a draft builds parallax in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
+			"note": "a scroll handler writing a translate by scrollY times a factor is the parallax effect on the page basis with the signed speed ratio, by an offset from the element's place in the view the view basis (lib/motion-behaviours.mjs::scrollOf)",
+			"test": "scripts/computed-route/tests/motion-behaviours.test.mjs"
 		},
 		"fx:particles": {
 			"recognise": null,
@@ -8887,11 +8887,11 @@
 			"note": "a draft builds pin-scrub in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:ripple": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-behaviours.mjs#recogniseBehaviour",
 			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
 			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
-			"wave": "behaviour recognisers",
-			"note": "a draft builds ripple in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
+			"note": "a circle that grows from scale 0 and fades on pointerdown is the ripple effect, its size factor, peak opacity, colour, duration and easing stored (lib/motion-behaviours.mjs::rippleOf)",
+			"test": "scripts/computed-route/tests/motion-behaviours.test.mjs"
 		},
 		"fx:scramble": {
 			"recognise": null,
@@ -8901,11 +8901,11 @@
 			"note": "a draft builds scramble in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:scroll-progress": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-behaviours.mjs#recogniseBehaviour",
 			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
 			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
-			"wave": "behaviour recognisers",
-			"note": "a draft builds scroll-progress in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
+			"note": "a scroll handler writing a scale of the scroll fraction is the scroll progress effect, source page (pin when the handler works on a pinned section) and output bar-x or bar-y (lib/motion-behaviours.mjs::scrollOf)",
+			"test": "scripts/computed-route/tests/motion-behaviours.test.mjs"
 		},
 		"fx:scroll-smoother": {
 			"recognise": null,
@@ -8922,11 +8922,11 @@
 			"note": "a draft builds scrub in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:sheen": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-behaviours.mjs#recogniseBehaviour",
 			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
 			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
-			"wave": "behaviour recognisers",
-			"note": "a draft builds sheen in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
+			"note": "a stripe slanted by a constant skewX that slides across its host on pointer entry is the sheen effect, its angle, band width, duration and easing stored (lib/motion-behaviours.mjs::sheenOf)",
+			"test": "scripts/computed-route/tests/motion-behaviours.test.mjs"
 		},
 		"fx:split-reveal": {
 			"recognise": null,

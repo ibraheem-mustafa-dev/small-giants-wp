@@ -27,6 +27,7 @@ import { fillStates } from './lib/fill-state.mjs';
 import { sampleMotion } from './lib/fill-entrance.mjs';
 import { confirmRecords, defectIndex } from './lib/fill-confirm.mjs';
 import { motionWrites } from './lib/fill-motion.mjs';
+import { draftCssOf, templateOf } from './lib/fill-behaviour.mjs';
 import { groupBindings, noFactsWarning } from './lib/fill-binding-group.mjs';
 import { factsFile, loadFacts } from './lib/fact-record.mjs';
 import { motionDb } from './lib/motion-db.mjs';
@@ -168,7 +169,7 @@ export async function fillSurface( o ) {
 		const { entrances: sampled, loops } = await sampleMotion( { url, jobs, open: o.open || null, headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {} } );
 		const entrances = nodes.filter( ( x ) => x.targets.length ).map( ( n ) => ( { node: refOf( flat[ n.index ] ), block: n.name, measured: sampled[ n.targets[ 0 ].id ]?.[ 1440 ] ?? null } ) );
 		const intakeParts = animationInventory( buildDir, o.draftIndex, log );
-		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), schema: loadMotionSchema(), rawSnapshot } );
+		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), schema: loadMotionSchema(), rawSnapshot, template: templateOf( fs.existsSync( factsFile( repo, o.client ) ) ? loadFacts( o.client, { repo } ) : null ), draftCss: draftCssOf( o.draftDir, o.draftIndex ) } );
 		result.writes.push( ...motion.writes );
 		result.unmapped.push( ...motion.unmapped );
 		result.notes.push( ...motion.notes.map( ( x ) => `${ x.node } ${ x.block }${ x.slot ? ` (${ x.slot })` : '' }: ${ x.text }` ) );

@@ -7,6 +7,9 @@ import { fixtureDb } from './framework-db.mjs';
 // The triggers the framework DB's fx_effects rows hold for the effects the recogniser writes; any other effect gets the loop triggers.
 const TRIGGERS = { magnet: 'hover', sheen: 'hover', glare: 'hover', 'follow-pointer': 'hover', 'cursor-field': 'hover', ripple: 'pointerdown,click', parallax: 'scroll', 'scroll-progress': 'scroll' };
 
+// The channels the framework DB's fx_effects rows own for the effects the loop writer chooses between.
+const OWNED = { 'ambient-float': [ 'translate' ], 'ken-burns': [ 'translate', 'scale' ], 'svg-loop': [ 'rotate', 'scale', 'opacity' ], magnet: [ 'translate' ], parallax: [ 'translate', 'background-position' ], 'scroll-progress': [ 'scale' ] };
+
 // blocks: { 'sgs/x': [ { target, css_element } ] } (the root is always added).
 export function motionFixtureDb( blocks = { 'sgs/container': [] } ) {
 	const schema = loadMotionSchema();
@@ -24,7 +27,7 @@ export function motionFixtureDb( blocks = { 'sgs/container': [] } ) {
 	} ) );
 	const fx = Object.entries( schema[ 'x-sgs-effects' ] ).map( ( [ effect, meta ] ) => ( {
 		effect, tier: 'vanilla', plugin_set: 'none', reduced_motion: 'off', editor_story: 'static',
-		triggers: TRIGGERS[ effect ] || 'load,visible', owned_properties: JSON.stringify( { channels: [], properties: [], slots: [] } ), panels: JSON.stringify( meta.panels ),
+		triggers: TRIGGERS[ effect ] || 'load,visible', owned_properties: JSON.stringify( { channels: OWNED[ effect ] || [], properties: [], slots: [] } ), panels: JSON.stringify( meta.panels ),
 	} ) );
 	const targets = Object.entries( blocks ).flatMap( ( [ slug, parts ] ) => [ { block_slug: slug, target: 'root', css_element: 'root', kind: 'root' }, ...parts.map( ( p ) => ( { block_slug: slug, kind: 'part', ...p } ) ) ] );
 	return fixtureDb( { motion_fields: fields, fx_effects: fx, motion_targets: targets } );
