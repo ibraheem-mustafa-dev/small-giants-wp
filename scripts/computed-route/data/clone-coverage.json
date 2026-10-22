@@ -1446,7 +1446,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media and logo library IDs: no media upload or attachment map yet (FR-48-39)"
+			"note": "media and logo library IDs: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"block-setting:enum-mode:mode": {
 			"recognise": null,
@@ -1557,7 +1557,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "background images and video: no media upload or attachment map yet (FR-48-39)"
+			"note": "background images and video: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"block-setting:layout:boolean": {
 			"recognise": null,
@@ -3067,7 +3067,7 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 6 of 16 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:animations": {
 			"recognise": "construct:keyframes",
@@ -3080,49 +3080,49 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 16 of 61 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:basic-user-interface": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 4 of 22 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:box-alignment": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads 4 of 12 of these properties (lib/fill-read.mjs PROPS)"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "Fill reads each value the draft declares (lib/fill-declared.mjs), writes it through calibration to the setting that paints it and confirms it against the render (lib/fill-confirm.mjs); proven on a draft header's Fill run for justify-content; a property no setting paints is an unmapped row",
+			"test": "scripts/computed-route/tests/fill-prop.test.mjs#css-group:"
 		},
 		"css-group:box-model": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 8 of 11 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:box-sizing": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 4 of 17 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:cascading-and-inheritance": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 1 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:color": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 2 of 6 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:compositing-and-blending": {
 			"excluded": {
@@ -3136,56 +3136,56 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 3 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:containment": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 2 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:custom-properties-for-cascading-variables": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 1 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:display": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 1 of 5 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:filter-effects": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 1 of 6 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:flexible-box-layout": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 5 of 12 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:fonts": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads 4 of 28 of these properties (lib/fill-read.mjs PROPS)"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "Fill reads each value the draft declares (lib/fill-declared.mjs), writes it through calibration to the setting that paints it and confirms it against the render (lib/fill-confirm.mjs); proven on a draft header's Fill run for font-size and font-weight; a property no setting paints is an unmapped row",
+			"test": "scripts/computed-route/tests/fill-prop.test.mjs#css-group:"
 		},
 		"css-group:fragmentation": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 6 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:generated-content": {
 			"excluded": {
@@ -3199,42 +3199,42 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 1 of 23 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:images": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 1 of 6 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:inline": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads 1 of 11 of these properties (lib/fill-read.mjs PROPS)"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "Fill reads each value the draft declares (lib/fill-declared.mjs), writes it through calibration to the setting that paints it and confirms it against the render (lib/fill-confirm.mjs); proven on a draft header's Fill run for line-height; a property no setting paints is an unmapped row",
+			"test": "scripts/computed-route/tests/fill-prop.test.mjs#css-group:"
 		},
 		"css-group:lists-and-counters": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 7 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:logical-properties-and-values": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 53 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:masking": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 20 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:mathml": {
 			"excluded": {
@@ -3276,21 +3276,21 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 1 of 12 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:overflow": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 15 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:overscroll-behavior": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 5 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:paged-media": {
 			"excluded": {
@@ -3311,35 +3311,35 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 2 of 16 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:rhythmic-sizing": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 1 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:ruby": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 4 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:scalable-vector-graphics": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 34 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:scroll-anchoring": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 1 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:scroll-driven-animations": {
 			"recognise": null,
@@ -3353,21 +3353,21 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 32 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:scrollbars-styling": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 2 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:shapes": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 3 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:speech": {
 			"excluded": {
@@ -3381,28 +3381,28 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 5 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:text": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "Fill reads 4 of 24 of these properties (lib/fill-read.mjs PROPS)"
+			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "Fill reads each value the draft declares (lib/fill-declared.mjs), writes it through calibration to the setting that paints it and confirms it against the render (lib/fill-confirm.mjs); proven on a draft header's Fill run for text-align and text-wrap; a property no setting paints is an unmapped row",
+			"test": "scripts/computed-route/tests/fill-prop.test.mjs#css-group:"
 		},
 		"css-group:text-decoration": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 5 of 15 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:transforms": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 4 of 10 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:transitions": {
 			"recognise": "construct:transition",
@@ -3415,7 +3415,7 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 2 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:view-transitions": {
 			"recognise": null,
@@ -3429,14 +3429,14 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Fill reads 0 of 1 of these properties (lib/fill-read.mjs PROPS)"
+			"note": "Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group"
 		},
 		"css-group:webkit-extensions": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "WebKit extensions (-webkit-line-clamp, -webkit-text-fill-color, -webkit-text-stroke, -webkit-mask, -webkit-appearance and the rest, 50 properties): common in modern designs; Fill reads none of them (re-opened by Bean 2026-10-18)"
+			"note": "WebKit extensions (-webkit-line-clamp, -webkit-text-fill-color, -webkit-text-stroke, -webkit-mask, -webkit-appearance and the rest, 50 properties): common in modern designs; Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps); no draft run has proven a write and confirm for this group (re-opened by Bean 2026-10-18)"
 		},
 		"css-group:will-change": {
 			"excluded": {
@@ -3771,252 +3771,252 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-app-region: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-app-region: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-border-horizontal-spacing": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-border-horizontal-spacing: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-border-horizontal-spacing: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-border-vertical-spacing": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-border-vertical-spacing: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-border-vertical-spacing: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-column-axis": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-column-axis: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-column-axis: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-column-break-after": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-column-break-after: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-column-break-after: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-column-break-before": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-column-break-before: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-column-break-before: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-column-break-inside": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-column-break-inside: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-column-break-inside: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-column-progression": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-column-progression: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-column-progression: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-cursor-visibility": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-cursor-visibility: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-cursor-visibility: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-hyphenate-limit-after": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-hyphenate-limit-after: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-hyphenate-limit-after: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-hyphenate-limit-before": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-hyphenate-limit-before: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-hyphenate-limit-before: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-hyphenate-limit-lines": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-hyphenate-limit-lines: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-hyphenate-limit-lines: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-line-align": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-line-align: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-line-align: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-line-box-contain": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-line-box-contain: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-line-box-contain: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-line-grid": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-line-grid: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-line-grid: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-line-snap": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-line-snap: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-line-snap: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-locale": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-locale: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-locale: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-logical-height": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-logical-height: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-logical-height: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-logical-width": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-logical-width: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-logical-width: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-mask-box-image": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-mask-box-image: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-mask-box-image: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-mask-source-type": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-mask-source-type: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-mask-source-type: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-max-logical-height": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-max-logical-height: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-max-logical-height: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-max-logical-width": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-max-logical-width: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-max-logical-width: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-min-logical-height": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-min-logical-height: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-min-logical-height: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-min-logical-width": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-min-logical-width: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-min-logical-width: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-nbsp-mode": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-nbsp-mode: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-nbsp-mode: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-perspective-origin-x": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-perspective-origin-x: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-perspective-origin-x: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-perspective-origin-y": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-perspective-origin-y: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-perspective-origin-y: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-rtl-ordering": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-rtl-ordering: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-rtl-ordering: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-text-combine": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-text-combine: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-text-combine: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-text-decorations-in-effect": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-text-decorations-in-effect: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-text-decorations-in-effect: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-text-security": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-text-security: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-text-security: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-text-zoom": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-text-zoom: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-text-zoom: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-transform-origin-x": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-transform-origin-x: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-transform-origin-x: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-transform-origin-y": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-transform-origin-y: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-transform-origin-y: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-transform-origin-z": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "-webkit-transform-origin-z: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "-webkit-transform-origin-z: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:-webkit-user-drag": {
 			"excluded": {
@@ -4037,21 +4037,21 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "background-repeat-x: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "background-repeat-x: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:background-repeat-y": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "background-repeat-y: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "background-repeat-y: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:block-ellipsis": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "block-ellipsis: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "block-ellipsis: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:buffered-rendering": {
 			"excluded": {
@@ -4072,7 +4072,7 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "color-interpolation: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "color-interpolation: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:color-rendering": {
 			"excluded": {
@@ -4086,98 +4086,98 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "column-rule-break: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "column-rule-break: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:column-rule-inset": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "column-rule-inset: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "column-rule-inset: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:column-rule-inset-cap": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "column-rule-inset-cap: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "column-rule-inset-cap: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:column-rule-inset-cap-end": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "column-rule-inset-cap-end: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "column-rule-inset-cap-end: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:column-rule-inset-cap-start": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "column-rule-inset-cap-start: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "column-rule-inset-cap-start: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:column-rule-inset-end": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "column-rule-inset-end: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "column-rule-inset-end: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:column-rule-inset-junction": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "column-rule-inset-junction: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "column-rule-inset-junction: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:column-rule-inset-junction-end": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "column-rule-inset-junction-end: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "column-rule-inset-junction-end: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:column-rule-inset-junction-start": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "column-rule-inset-junction-start: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "column-rule-inset-junction-start: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:column-rule-inset-start": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "column-rule-inset-start: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "column-rule-inset-start: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:column-rule-visibility-items": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "column-rule-visibility-items: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "column-rule-visibility-items: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:continue": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "continue: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "continue: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:custom-property": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "custom-property: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "custom-property: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:flow-tolerance": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "flow-tolerance: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "flow-tolerance: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:glyph-orientation-vertical": {
 			"excluded": {
@@ -4191,217 +4191,217 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "hyphenate-limit-lines: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "hyphenate-limit-lines: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:row-rule": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "row-rule: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "row-rule: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:row-rule-break": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "row-rule-break: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "row-rule-break: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:row-rule-color": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "row-rule-color: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "row-rule-color: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:row-rule-inset": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "row-rule-inset: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "row-rule-inset: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:row-rule-inset-cap": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "row-rule-inset-cap: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "row-rule-inset-cap: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:row-rule-inset-cap-end": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "row-rule-inset-cap-end: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "row-rule-inset-cap-end: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:row-rule-inset-cap-start": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "row-rule-inset-cap-start: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "row-rule-inset-cap-start: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:row-rule-inset-end": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "row-rule-inset-end: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "row-rule-inset-end: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:row-rule-inset-junction": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "row-rule-inset-junction: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "row-rule-inset-junction: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:row-rule-inset-junction-end": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "row-rule-inset-junction-end: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "row-rule-inset-junction-end: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:row-rule-inset-junction-start": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "row-rule-inset-junction-start: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "row-rule-inset-junction-start: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:row-rule-inset-start": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "row-rule-inset-start: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "row-rule-inset-start: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:row-rule-style": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "row-rule-style: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "row-rule-style: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:row-rule-visibility-items": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "row-rule-visibility-items: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "row-rule-visibility-items: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:row-rule-width": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "row-rule-width: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "row-rule-width: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:rule": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "rule: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "rule: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:rule-break": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "rule-break: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "rule-break: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:rule-color": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "rule-color: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "rule-color: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:rule-inset": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "rule-inset: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "rule-inset: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:rule-inset-cap": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "rule-inset-cap: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "rule-inset-cap: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:rule-inset-end": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "rule-inset-end: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "rule-inset-end: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:rule-inset-junction": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "rule-inset-junction: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "rule-inset-junction: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:rule-inset-start": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "rule-inset-start: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "rule-inset-start: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:rule-overlap": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "rule-overlap: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "rule-overlap: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:rule-style": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "rule-style: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "rule-style: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:rule-visibility-items": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "rule-visibility-items: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "rule-visibility-items: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:rule-width": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "rule-width: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "rule-width: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:size": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "size: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "size: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:speak": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "speak: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "speak: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:text-decoration-skip-spaces": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "text-decoration-skip-spaces: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "text-decoration-skip-spaces: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:unlisted": {
 			"excluded": {
@@ -4422,21 +4422,21 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "view-transition-group: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "view-transition-group: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:white-space-trim": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "white-space-trim: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "white-space-trim: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-property:wrap-inside": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "wrap-inside: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+			"note": "wrap-inside: a vendor or legacy CSS property mdn-data's groups do not hold; lib/fill-declared.mjs reads it only where a draft declares it, and no setting is proven to write it"
 		},
 		"css-pseudo-class:-moz-first-node": {
 			"excluded": {
@@ -9153,7 +9153,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<area alt>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<area alt>: an image-map area: no SGS block holds an image map, so nothing writes it"
 		},
 		"html-attr:area.attributionsrc": {
 			"excluded": {
@@ -9167,35 +9167,35 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<area coords>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<area coords>: an image-map area: no SGS block holds an image map, so nothing writes it"
 		},
 		"html-attr:area.download": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<area download>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<area download>: an image-map area: no SGS block holds an image map, so nothing writes it"
 		},
 		"html-attr:area.href": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<area href>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<area href>: an image-map area: no SGS block holds an image map, so nothing writes it"
 		},
 		"html-attr:area.hreflang": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<area hreflang>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<area hreflang>: an image-map area: no SGS block holds an image map, so nothing writes it"
 		},
 		"html-attr:area.interestfor": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<area interestfor>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<area interestfor>: an image-map area: no SGS block holds an image map, so nothing writes it"
 		},
 		"html-attr:area.nohref": {
 			"excluded": {
@@ -9209,112 +9209,112 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<area ping>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<area ping>: an image-map area: no SGS block holds an image map, so nothing writes it"
 		},
 		"html-attr:area.referrerpolicy": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<area referrerpolicy>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<area referrerpolicy>: an image-map area: no SGS block holds an image map, so nothing writes it"
 		},
 		"html-attr:area.rel": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<area rel>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<area rel>: an image-map area: no SGS block holds an image map, so nothing writes it"
 		},
 		"html-attr:area.shape": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<area shape>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<area shape>: an image-map area: no SGS block holds an image map, so nothing writes it"
 		},
 		"html-attr:area.target": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<area target>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<area target>: an image-map area: no SGS block holds an image map, so nothing writes it"
 		},
 		"html-attr:area.type": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<area type>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<area type>: an image-map area: no SGS block holds an image map, so nothing writes it"
 		},
 		"html-attr:audio.autoplay": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio autoplay>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<audio autoplay>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:audio.controls": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio controls>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<audio controls>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:audio.controlslist": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio controlslist>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<audio controlslist>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:audio.crossorigin": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio crossorigin>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<audio crossorigin>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:audio.disableremoteplayback": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio disableremoteplayback>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<audio disableremoteplayback>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:audio.loading": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio loading>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<audio loading>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:audio.loop": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio loop>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<audio loop>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:audio.muted": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio muted>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<audio muted>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:audio.preload": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio preload>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<audio preload>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:audio.src": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<audio src>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<audio src>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:base.href": {
 			"excluded": {
@@ -9759,14 +9759,14 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<embed src>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<embed src>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:embed.type": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<embed type>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<embed type>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:embed.vspace": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -10374,14 +10374,14 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe allow>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<iframe allow>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:iframe.allowfullscreen": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe allowfullscreen>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<iframe allowfullscreen>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:iframe.allowpaymentrequest": {
 			"excluded": {
@@ -10395,7 +10395,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe allowusermedia>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<iframe allowusermedia>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:iframe.browsingtopics": {
 			"excluded": {
@@ -10409,14 +10409,14 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe credentialless>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<iframe credentialless>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:iframe.csp": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe csp>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<iframe csp>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:iframe.frameborder": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -10464,28 +10464,28 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe name>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<iframe name>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:iframe.privateToken": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe privateToken>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<iframe privateToken>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:iframe.referrerpolicy": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe referrerpolicy>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<iframe referrerpolicy>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:iframe.sandbox": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe sandbox>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<iframe sandbox>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:iframe.scrolling": {
 			"recognise": null,
@@ -10499,14 +10499,14 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe src>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<iframe src>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:iframe.srcdoc": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<iframe srcdoc>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<iframe srcdoc>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:iframe.width": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -10522,11 +10522,11 @@
 			"note": "<img align>: a presentational attribute the browser turns into float, margin-left, margin-right, vertical-align (WHATWG presentational hints); Fill does not read float, vertical-align"
 		},
 		"html-attr:img.alt": {
-			"recognise": null,
-			"write": null,
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-media.mjs#mediaDecisions",
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img alt>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<img alt>: Fill writes it to the block's image-alt setting (tests/fill-media.test.mjs); the painted-asset check (lib/fill-media.mjs::paintedImageCheck) is not yet called from the live check"
 		},
 		"html-attr:img.attributionsrc": {
 			"excluded": {
@@ -10546,21 +10546,21 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img crossorigin>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<img crossorigin>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:img.decoding": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img decoding>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<img decoding>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:img.fetchpriority": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img fetchpriority>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<img fetchpriority>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:img.height": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -10580,14 +10580,14 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img ismap>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<img ismap>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:img.loading": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img loading>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<img loading>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:img.longdesc": {
 			"excluded": {
@@ -10608,35 +10608,35 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img referrerpolicy>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<img referrerpolicy>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:img.sizes": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img sizes>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<img sizes>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:img.src": {
-			"recognise": null,
-			"write": null,
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-media.mjs#mediaDecisions",
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img src>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<img src>: Fill writes it as the block's image URL and attachment id from the media map (tests/fill-media.test.mjs); the painted-asset check (lib/fill-media.mjs::paintedImageCheck) is not yet called from the live check"
 		},
 		"html-attr:img.srcset": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img srcset>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<img srcset>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:img.usemap": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<img usemap>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<img usemap>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:img.vspace": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -11153,7 +11153,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<map name>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<map name>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:marquee.behavior": {
 			"recognise": "scripts/computed-route/lib/fill-entrance.mjs#sampleMotion",
@@ -11400,7 +11400,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<object data>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<object data>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:object.declare": {
 			"excluded": {
@@ -11414,7 +11414,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<object form>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<object form>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:object.height": {
 			"recognise": null,
@@ -11434,7 +11434,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<object name>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<object name>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:object.standby": {
 			"excluded": {
@@ -11448,14 +11448,14 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<object type>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<object type>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:object.typemustmatch": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<object typemustmatch>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<object typemustmatch>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:object.usemap": {
 			"excluded": {
@@ -11787,49 +11787,49 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<source height>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<source height>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:source.media": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<source media>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<source media>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:source.sizes": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<source sizes>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<source sizes>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:source.src": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<source src>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<source src>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:source.srcset": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<source srcset>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<source srcset>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:source.type": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<source type>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<source type>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:source.width": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<source width>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<source width>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:style.blocking": {
 			"excluded": {
@@ -12475,35 +12475,35 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<track default>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<track default>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:track.kind": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<track kind>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<track kind>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:track.label": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<track label>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<track label>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:track.src": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<track src>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<track src>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:track.srclang": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<track srclang>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<track srclang>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:ul.compact": {
 			"excluded": {
@@ -12524,42 +12524,42 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video autoplay>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<video autoplay>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:video.controls": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video controls>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<video controls>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:video.controlslist": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video controlslist>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<video controlslist>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:video.crossorigin": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video crossorigin>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<video crossorigin>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:video.disablepictureinpicture": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video disablepictureinpicture>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<video disablepictureinpicture>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:video.disableremoteplayback": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video disableremoteplayback>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<video disableremoteplayback>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:video.height": {
 			"recognise": null,
@@ -12573,49 +12573,49 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video loading>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<video loading>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:video.loop": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video loop>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<video loop>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:video.muted": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video muted>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<video muted>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:video.playsinline": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video playsinline>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<video playsinline>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:video.poster": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video poster>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<video poster>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:video.preload": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video preload>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<video preload>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:video.src": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "<video src>: media; no media upload or attachment map yet (FR-48-39)"
+			"note": "<video src>: media; the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html-attr:video.width": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -12660,7 +12660,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: no media upload or attachment map yet (FR-48-39)"
+			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html:article": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -12679,7 +12679,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: no media upload or attachment map yet (FR-48-39)"
+			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html:b": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -12765,7 +12765,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: no media upload or attachment map yet (FR-48-39)"
+			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html:caption": {
 			"recognise": null,
@@ -12915,7 +12915,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: no media upload or attachment map yet (FR-48-39)"
+			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html:fieldset": {
 			"recognise": null,
@@ -12925,18 +12925,18 @@
 			"note": "form element: no form-field writer (FR-48-48)"
 		},
 		"html:figcaption": {
-			"recognise": null,
-			"write": null,
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-media.mjs#mediaDecisions",
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: no media upload or attachment map yet (FR-48-39)"
+			"note": "media element: Fill writes the caption's words to the block's caption setting, or names the gap (tests/fill-media.test.mjs); the painted-asset check (lib/fill-media.mjs::paintedImageCheck) is not yet called from the live check"
 		},
 		"html:figure": {
-			"recognise": null,
-			"write": null,
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-media.mjs#mediaDecisions",
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: no media upload or attachment map yet (FR-48-39)"
+			"note": "media element: Fill writes the image a figure holds, or names the gap when the block has no image setting (tests/fill-media.test.mjs); the painted-asset check (lib/fill-media.mjs::paintedImageCheck) is not yet called from the live check"
 		},
 		"html:font": {
 			"recognise": null,
@@ -13051,7 +13051,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: no media upload or attachment map yet (FR-48-39)"
+			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html:image": {
 			"excluded": {
@@ -13061,11 +13061,11 @@
 			}
 		},
 		"html:img": {
-			"recognise": null,
-			"write": null,
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-media.mjs#mediaDecisions",
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: no media upload or attachment map yet (FR-48-39)"
+			"note": "media element: Fill writes the block's image URL and attachment id from the media map lib/media-upload.mjs wrote (tests/fill-media.test.mjs); the check that the painted image is the draft's asset (lib/fill-media.mjs::paintedImageCheck) is built and not yet called from the live check"
 		},
 		"html:input": {
 			"recognise": null,
@@ -13144,7 +13144,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: no media upload or attachment map yet (FR-48-39)"
+			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html:mark": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -13245,7 +13245,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: no media upload or attachment map yet (FR-48-39)"
+			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html:ol": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -13291,7 +13291,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: no media upload or attachment map yet (FR-48-39)"
+			"note": "media element: Fill writes the <img> a <picture> holds (lib/fill-media.mjs::mediaDecisions); the <picture> and its <source> art direction are not written, and no test covers a <picture> (FR-48-39)"
 		},
 		"html:plaintext": {
 			"excluded": {
@@ -13420,7 +13420,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: no media upload or attachment map yet (FR-48-39)"
+			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html:spacer": {
 			"excluded": {
@@ -13478,7 +13478,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: no media upload or attachment map yet (FR-48-39)"
+			"note": "inline SVG: no writer for a whole <svg> subtree yet (a draft icon is not an image upload); a row of Site Info brand icons shares one look through lib/fill-row-lift.mjs"
 		},
 		"html:table": {
 			"recognise": null,
@@ -13560,7 +13560,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: no media upload or attachment map yet (FR-48-39)"
+			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html:tt": {
 			"recognise": null,
@@ -13592,7 +13592,7 @@
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "media element: no media upload or attachment map yet (FR-48-39)"
+			"note": "media element: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"html:wbr": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -14124,56 +14124,56 @@
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"part:header": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"part:sgs-archive-toolbar": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"part:sgs-cart-content": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"part:sgs-checkout-content": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"part:sgs-order-confirmation-content": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"part:sgs-pdp-buybox": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"part:sgs-pdp-content": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"pattern:about-image-left": {
 			"excluded": {
@@ -15773,112 +15773,112 @@
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"template:archive": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"template:archive-product": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"template:cart": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"template:checkout": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"template:front-page": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"template:home": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"template:index": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"template:order-confirmation": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"template:page": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"template:page-no-title": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"template:product-search-results": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"template:search": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"template:single": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"template:single-product": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
 		"template:taxonomy-product_attribute": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
+			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		}
 	}
 }

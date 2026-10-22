@@ -113,3 +113,18 @@ test( 'token snaps are logged only for the call whose write is kept', () => {
 	resolveProperty( { node: { attributes: {} }, block: 'sgs/container', prop: 'background-color', draft: { 1440: 'rgb(255, 0, 0)', 768: 'rgb(255, 0, 0)', 375: 'rgb(255, 0, 0)' }, baseline: () => 'rgba(0, 0, 0, 0)', slots: [ '' ], calibration: cal, db, snapshot, log } );
 	assert.equal( log.length, 3, 'one per tier of the final call, none from the first probe' );
 } );
+
+// The CSS groups lib/fill-prop.mjs declares in COVERAGE_WRITES, one property each, on the block and setting a draft
+// header's Fill run wrote it to: a draft value that differs from what the block shows is written to that setting.
+for ( const [ group, block, attr, prop, value, baseline, slot ] of [
+	[ 'box-alignment', 'sgs/site-header-row', 'justifyContent', 'justify-content', 'space-between', 'normal', '.sgs-container__inner' ],
+	[ 'fonts', 'sgs/button', 'fontWeight', 'font-weight', '600', '400', '' ],
+	[ 'inline', 'sgs/button', 'lineHeight', 'line-height', '24.8px', '19.2px', '' ],
+	[ 'text', 'sgs/button', 'textWrap', 'text-wrap', 'nowrap', 'wrap', '' ],
+] ) {
+	test( `css-group:${ group } is written: ${ prop } on ${ block } reaches ${ attr }`, () => {
+		const r = call( { block, prop, draft: { 1440: value, 768: value, 375: value }, baseline: () => baseline, slots: [ slot ], calibration: { elements: { '': {}, [ slot ]: {} }, settings: { [ attr ]: setting( prop, { slots: [ slot ], reaches: [] } ) } } } );
+		assert.equal( r.status, 'written', `${ r.gap || '' } ${ r.detail || '' }` );
+		assert.equal( r.writes[ 0 ].attr, attr );
+	} );
+}

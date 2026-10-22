@@ -6,6 +6,9 @@ import { sameValue } from '../../parity/lib/compare.mjs';
 import { fitFluid, acceptsClamp, applyClamp, LENGTH_PROPS } from './fill-values.mjs';
 import { INHERITED } from './calibrate-props.mjs';
 
+// The clone-coverage IDs this module writes (lib/clone-coverage.mjs::declaredWrites holds each entry's write to it):
+// the CSS groups whose declared values a draft header's Fill run wrote and confirmed.
+export const COVERAGE_WRITES = [ 'css-group:box-alignment', 'css-group:fonts', 'css-group:inline', 'css-group:text' ];
 // The tiers, widest first: an empty tier shows the nearest wider tier's value.
 export const TIER_WIDTHS = [ 1440, 768, 375 ];
 // Inherited properties (R-47-5): their baseline is the parent's measured value, not a recorded default. The list is

@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/clone-coverage.mjs",
+		"find": "} else if ( ! String( e.write || '' ).startsWith( `${ file }#` ) ) {",
+		"replace": "} else if ( ! e.write ) {",
+		"why": "a write naming another module would pass"
+	},
+	{
+		"file": "lib/clone-coverage.mjs",
+		"find": "} else if ( ! e || e.excluded ) {",
+		"replace": "} else if ( false ) {",
+		"why": "a declared ID with no entry would pass"
+	},
+	{
+		"file": "lib/clone-coverage.mjs",
+		"find": "for ( const id of list ) {",
+		"replace": "for ( const id of [] ) {",
+		"why": "declarations would never be checked"
+	},
+	{
+		"file": "lib/clone-coverage.mjs",
+		"find": "problems.push( `${ id }: ${ file } declares it writes this ID, but the inventory holds no such ID` );",
+		"replace": "",
+		"why": "a mistyped declared ID would pass"
+	},
+	{
+		"file": "lib/clone-coverage.mjs",
+		"find": "const m = src.match( /^export",
+		"replace": "const m = src.match( /^noexport",
+		"why": "no module's declaration would be read"
+	},
+	{
+		"file": "lib/clone-coverage.mjs",
+		"find": "const ids = m ? [ ...m[ 1 ].matchAll( quoted ) ]",
+		"replace": "const ids = m ? [ ...m[ 1 ].matchAll( /(')([^']+)'/g ) ]",
+		"why": "double-quoted and backtick IDs would be dropped"
+	},
+	{
+		"file": "lib/clone-coverage.mjs",
+		"find": "throw new Error( `${ rel }: COVERAGE_WRITES",
+		"replace": "continue; new Error( `${ rel }: COVERAGE_WRITES",
+		"why": "an unreadable declaration would declare nothing silently"
+	},
+	{
+		"file": "lib/clone-coverage.mjs",
+		"find": "if ( ! [ 'node_modules', 'tests', 'cache', 'data' ].includes( d.name ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a writer in a subfolder would be missed"
+	}
+]

@@ -33,8 +33,8 @@ Pull origin/main before each change to lib/skeleton-rules.mjs or data/skeleton-d
 QC: /qc-council before /handoff.
 
 GUARDRAILS
-- `node --test "scripts/computed-route/tests/*.test.mjs"`: only the 3 known lint.test.mjs brand failures ("carries style value brandName"); `check-approved.mjs indus-foods` stays exit 0 after any rule change.
+- `node --test "scripts/computed-route/tests/*.test.mjs"`: all pass in the main checkout (tests/lint.test.mjs passes 24 of 24 on 2026-10-22); `check-approved.mjs indus-foods` stays exit 0 after any rule change.
 - `python plugins/sgs-blocks/scripts/run-gates.py --tier fast` passes. Deploys only via build-deploy.py through the serial queue, proven by the host marker.
-- Eleven route tests read Eye Care's build files directly (`grep -l eye-care-ward-end/build scripts/computed-route/tests/*.mjs`); when task 2's edits break one, update the test to the new truth (Bean, 2026-10-17: no frozen fixture copies).
+- Route tests read Eye Care's build files directly (`grep -l eye-care-ward-end/build scripts/computed-route/tests/*.mjs` lists them); when task 2's edits break one, update the test to the new truth (Bean, 2026-10-17: no frozen fixture copies).
 - Only Eye Care's handoff/ is edited, and only in task 2; never the Indus or Mama's exports. Never touch sites/mamas-munches/theme-snapshot.json.
 - DB read-only outside the seeder; after any reseed run seed_reference_data.py and generate-attr-role-map.py.

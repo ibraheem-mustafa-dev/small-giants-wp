@@ -10,6 +10,9 @@
 import fs from 'fs';
 import { paintedAsset } from './media-upload.mjs';
 
+// The clone-coverage IDs this module writes (lib/clone-coverage.mjs::declaredWrites holds each entry's write to it).
+export const COVERAGE_WRITES = [ 'html:img', 'html-attr:img.src', 'html-attr:img.alt', 'html:figure', 'html:figcaption' ];
+
 const empty = () => ( { writes: [], unmapped: [], notes: [] } );
 const unset = ( v ) => undefined === v || null === v || '' === v || 0 === v;
 const escapeText = ( s ) => String( s ).replace( /&/g, '&amp;' ).replace( /</g, '&lt;' ).replace( />/g, '&gt;' );

@@ -3,8 +3,11 @@
 // (covered, a gap with its wave, or Bean's exclusion) turns this red.
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import { buildInventory, readInventoryFile } from '../lib/capabilities.mjs';
-import { loadCoverage, loadBaseline, coverageProblems, statusOf, referenceProblem, testProblem, seedGaps, gapList, COVERAGE_SCHEMA } from '../lib/clone-coverage.mjs';
+import { loadCoverage, loadBaseline, coverageProblems, declaredWrites, statusOf, referenceProblem, testProblem, seedGaps, gapList, COVERAGE_SCHEMA } from '../lib/clone-coverage.mjs';
 import { likeEntries, draftGaps, reviewCoverageIds, backfillTests } from '../lib/coverage-register.mjs';
 import { loadAjv, schemaProblems } from '../lib/handoff.mjs';
 import { fixtureDb, BASE_ROWS } from './fixtures/framework-db.mjs';
@@ -20,9 +23,10 @@ test( 'THE GATE: every capability in data/capabilities.json has a sound coverage
 test( 'MUST FAIL (control 1): a planted new block setting has no coverage entry', () => {
 	const base = buildInventory( { dbFile: fixtureDb( BASE_ROWS ) } );
 	const { coverage } = seedGaps( base, { _meta: {}, entries: {} }, 'test' );
-	assert.deepEqual( coverageProblems( base, coverage, { baseline: [] } ), [] );
+	// A freshly seeded map is all gaps, so no module's declared writes apply to it (control 2b covers them).
+	assert.deepEqual( coverageProblems( base, coverage, { baseline: [], writes: {} } ), [] );
 	const planted = buildInventory( { dbFile: fixtureDb( { ...BASE_ROWS, block_attributes: [ ...BASE_ROWS.block_attributes, { block_slug: 'sgs/hero', attr_name: 'autoplay', attr_type: 'boolean', role: 'carousel' } ] } ) } );
-	const problems = coverageProblems( planted, coverage, { baseline: [] } );
+	const problems = coverageProblems( planted, coverage, { baseline: [], writes: {} } );
 	assert.equal( problems.length, 1 );
 	assert.match( problems[ 0 ], /^block-setting:carousel:boolean: in the inventory with no coverage entry/ );
 } );
@@ -31,6 +35,39 @@ test( 'MUST FAIL (control 2): a planted draft tag has no coverage entry', () => 
 	const inv = clone( committed.inventory );
 	inv.sections.html.entries.push( { id: 'html:sgs-planted-element', label: '<sgs-planted-element>', count: 1, examples: [], motion: false } );
 	assert.deepEqual( coverageProblems( inv, committed.coverage ).map( ( p ) => p.split( ':' ).slice( 0, 2 ).join( ':' ) ), [ 'html:sgs-planted-element' ] );
+} );
+
+test( 'MUST FAIL (control 2b): a module that declares it writes an ID whose entry is still a gap, or names another writer', () => {
+	const file = 'scripts/computed-route/lib/fill-media.mjs';
+	const coverage = clone( committed.coverage );
+	coverage.entries[ 'html:sgs-planted-element' ] = { recognise: null, write: null, check: null, wave: 'unassigned', note: 'planted' };
+	const inv = clone( committed.inventory );
+	inv.sections.html.entries.push( { id: 'html:sgs-planted-element', label: '<sgs-planted-element>', count: 1, examples: [], motion: false } );
+	const writes = { [ file ]: [ 'html:sgs-planted-element' ] };
+	assert.deepEqual( coverageProblems( inv, coverage, { writes } ), [ `html:sgs-planted-element: ${ file } declares it writes this ID, but its entry's write is empty (set it to ${ file }#<symbol>)` ] );
+	coverage.entries[ 'html:sgs-planted-element' ].write = 'scripts/computed-route/lib/fill-prop.mjs#resolveProperty';
+	assert.equal( coverageProblems( inv, coverage, { writes } ).length, 1, 'a write naming a different module is refused' );
+	coverage.entries[ 'html:sgs-planted-element' ].write = `${ file }#mediaDecisions`;
+	assert.deepEqual( coverageProblems( inv, coverage, { writes } ), [] );
+	delete coverage.entries[ 'html:sgs-planted-element' ];
+	assert.ok( coverageProblems( inv, coverage, { writes } ).some( ( p ) => /declares it writes this ID, but the coverage map has it missing/.test( p ) ) );
+	assert.deepEqual( coverageProblems( committed.inventory, committed.coverage, { writes: { [ file ]: [ 'html:sgs-typo' ] } } ), [ `html:sgs-typo: ${ file } declares it writes this ID, but the inventory holds no such ID` ] );
+	assert.ok( Object.keys( declaredWrites() ).includes( file ), 'the image writer declares its IDs' );
+} );
+
+test( 'MUST FAIL: a COVERAGE_WRITES declaration that is not a literal list of quoted IDs throws instead of declaring nothing', () => {
+	const root = fs.mkdtempSync( path.join( os.tmpdir(), 'declared-writes-' ) );
+	const lib = path.join( root, 'scripts', 'computed-route', 'lib', 'sub' );
+	fs.mkdirSync( lib, { recursive: true } );
+	fs.mkdirSync( path.join( root, 'scripts', 'computed-route', 'tests' ) );
+	fs.writeFileSync( path.join( root, 'scripts', 'computed-route', 'tests', 'x.mjs' ), 'export const COVERAGE_WRITES = IGNORED;\n' );
+	fs.writeFileSync( path.join( lib, 'a.mjs' ), 'export const COVERAGE_WRITES = [ "html:a", `html:b` ];\n' );
+	assert.deepEqual( declaredWrites( root ), { 'scripts/computed-route/lib/sub/a.mjs': [ 'html:a', 'html:b' ] }, 'double quotes, backticks and a subfolder are read; tests are not' );
+	for ( const bad of [ 'export const COVERAGE_WRITES = [];\n', 'export const COVERAGE_WRITES = IDS.map( ( x ) => x );\n', "export const COVERAGE_WRITES = [ html, 'html:a' ];\n" ] ) {
+		fs.writeFileSync( path.join( lib, 'a.mjs' ), bad );
+		assert.throws( () => declaredWrites( root ), /must be a literal array of quoted coverage IDs/, bad );
+	}
+	fs.rmSync( root, { recursive: true, force: true } );
 } );
 
 test( 'MUST FAIL (control 3): a reference to a writer, file or construct reader that does not exist', () => {
@@ -108,11 +145,11 @@ test( 'the committed baseline is sorted, and every covered entry names a test or
 } );
 
 test( 'MUST FAIL: a covered entry with no test that is not in the baseline', () => {
-	const p = coverageProblems( ONE, withEntry( COVERED ), { baseline: [] } );
+	const p = coverageProblems( ONE, withEntry( COVERED ), { baseline: [], writes: {} } );
 	assert.equal( p.length, 1 );
 	assert.match( p[ 0 ], /^html:planted: a covered entry names the test that proves it/ );
-	assert.deepEqual( coverageProblems( ONE, withEntry( COVERED ), { baseline: [ 'html:planted' ] } ), [] );
-	assert.deepEqual( coverageProblems( ONE, withEntry( { ...COVERED, test: TEST_FILE } ), { baseline: [] } ), [] );
+	assert.deepEqual( coverageProblems( ONE, withEntry( COVERED ), { baseline: [ 'html:planted' ], writes: {} } ), [] );
+	assert.deepEqual( coverageProblems( ONE, withEntry( { ...COVERED, test: TEST_FILE } ), { baseline: [], writes: {} } ), [] );
 } );
 
 test( 'MUST FAIL: a test path that does not exist, or a #name the file never mentions', () => {

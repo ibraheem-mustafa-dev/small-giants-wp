@@ -107,9 +107,50 @@ export function testProblem( ref, { root = REPO } = {} ) {
 	return null;
 }
 
+// The coverage IDs each route module declares it writes (`export const COVERAGE_WRITES = [ '<id>', … ]`, a literal
+// array of quoted IDs, in any .mjs file under scripts/computed-route outside node_modules, tests, cache and data), read
+// from the source so no module is imported: { '<repo path>': [ ids ] }. The declaration sits in the writer itself, so a
+// new writer and the register entry it owes change together. A declaration that is not a literal list of quoted IDs
+// throws rather than declaring nothing.
+export function declaredWrites( root = REPO ) {
+	const route = path.join( root, 'scripts', 'computed-route' );
+	const out = {};
+	const walk = ( dir ) => {
+		for ( const d of fs.readdirSync( dir, { withFileTypes: true } ).sort( ( a, b ) => a.name.localeCompare( b.name ) ) ) {
+			const full = path.join( dir, d.name );
+			if ( d.isDirectory() ) {
+				if ( ! [ 'node_modules', 'tests', 'cache', 'data' ].includes( d.name ) ) {
+					walk( full );
+				}
+				continue;
+			}
+			if ( ! d.name.endsWith( '.mjs' ) ) {
+				continue;
+			}
+			const src = fs.readFileSync( full, 'utf8' );
+			if ( ! /^export\s+const\s+COVERAGE_WRITES\b/m.test( src ) ) {
+				continue;
+			}
+			const rel = path.relative( root, full ).split( path.sep ).join( '/' );
+			const m = src.match( /^export\s+const\s+COVERAGE_WRITES\s*=\s*\[([^\]]*)\]\s*;/m );
+			const quoted = /(['"`])([^'"`]+)\1/g;
+			const ids = m ? [ ...m[ 1 ].matchAll( quoted ) ].map( ( x ) => x[ 2 ] ) : [];
+			const rest = m ? m[ 1 ].replace( quoted, '' ).replace( /\/\/[^\n]*|\/\*[\s\S]*?\*\//g, '' ) : '';
+			if ( ! ids.length || /[^\s,]/.test( rest ) ) {
+				throw new Error( `${ rel }: COVERAGE_WRITES must be a literal array of quoted coverage IDs` );
+			}
+			out[ rel ] = ids;
+		}
+	};
+	walk( route );
+	return out;
+}
+
 // Every reason the coverage map does not cover the inventory, as sentences; empty when it does. A DB section the
-// inventory records as absent (it was written without the DB) is not checked for unknown IDs.
-export function coverageProblems( inventory, coverage, { root = REPO, registry, baseline } = {} ) {
+// inventory records as absent (it was written without the DB) is not checked for unknown IDs. An ID a module declares
+// it writes must be one the inventory holds and have an entry whose write names that module, so a gap cannot outlive
+// the writer that closes it.
+export function coverageProblems( inventory, coverage, { root = REPO, registry, baseline, writes } = {} ) {
 	const reg = registry || loadRegistry();
 	const problems = [];
 	const grandfathered = new Set( baseline || loadBaseline() );
@@ -158,6 +199,20 @@ export function coverageProblems( inventory, coverage, { root = REPO, registry, 
 			problems.push( `${ id }: in coverage-test-baseline.json but no longer covered (remove it from the baseline)` );
 		} else if ( e.test ) {
 			problems.push( `${ id }: in coverage-test-baseline.json but it now names a test (remove it from the baseline)` );
+		}
+	}
+	for ( const [ file, list ] of Object.entries( writes || declaredWrites( root ) ) ) {
+		for ( const id of list ) {
+			const e = entries[ id ];
+			if ( ! ids.has( id ) ) {
+				if ( ! absent.has( sectionOf( id ) ) ) {
+					problems.push( `${ id }: ${ file } declares it writes this ID, but the inventory holds no such ID` );
+				}
+			} else if ( ! e || e.excluded ) {
+				problems.push( `${ id }: ${ file } declares it writes this ID, but the coverage map has it ${ e ? 'excluded' : 'missing' }` );
+			} else if ( ! String( e.write || '' ).startsWith( `${ file }#` ) ) {
+				problems.push( `${ id }: ${ file } declares it writes this ID, but its entry's write is ${ e.write || 'empty' } (set it to ${ file }#<symbol>)` );
+			}
 		}
 	}
 	return problems;

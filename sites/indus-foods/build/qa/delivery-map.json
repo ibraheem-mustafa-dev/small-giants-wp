@@ -283,7 +283,10 @@
 		"coverage:css-function:skewx": "U13",
 		"coverage:css-group:backgrounds-and-borders": "U2",
 		"coverage:css-group:basic-user-interface": "U2",
-		"coverage:css-group:box-alignment": "U2",
+		"coverage:css-group:box-alignment": {
+			"done": "prior",
+			"unit": "U2"
+		},
 		"coverage:css-group:box-sizing": "U2",
 		"coverage:css-group:compositing-and-blending": {
 			"accepted": "excluded by Bean in clone-coverage.json: the drafts use only isolation, the internal plumbing of the highlight stripe, which is built (Spec 02 FR-2-4); no mix-blend-mode in either draft",
@@ -292,13 +295,19 @@
 		"coverage:css-group:display": "U2",
 		"coverage:css-group:filter-effects": "U2",
 		"coverage:css-group:flexible-box-layout": "U2",
-		"coverage:css-group:fonts": "U2",
+		"coverage:css-group:fonts": {
+			"done": "prior",
+			"unit": "U2"
+		},
 		"coverage:css-group:generated-content": {
 			"accepted": "excluded by Bean in clone-coverage.json: the drafts use content only on empty decorative pseudo-elements, whose paint is read already; no generated text",
 			"unit": "U2"
 		},
 		"coverage:css-group:grid-layout": "U2",
-		"coverage:css-group:inline": "U2",
+		"coverage:css-group:inline": {
+			"done": "prior",
+			"unit": "U2"
+		},
 		"coverage:css-group:logical-properties-and-values": "U2",
 		"coverage:css-group:masking": "U2",
 		"coverage:css-group:overflow": "U2",
@@ -311,7 +320,10 @@
 		"coverage:css-group:scalable-vector-graphics": "U2",
 		"coverage:css-group:scroll-snap": "U2",
 		"coverage:css-group:scrollbars-styling": "U2",
-		"coverage:css-group:text": "U2",
+		"coverage:css-group:text": {
+			"done": "prior",
+			"unit": "U2"
+		},
 		"coverage:css-group:text-decoration": "U2",
 		"coverage:css-group:transforms": "U2",
 		"coverage:css-group:webkit-extensions": "U2",

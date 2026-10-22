@@ -37,7 +37,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/intake-usage.test.mjs` | Step 1.6's usage read: each mapper (CSS, elements, the runtime's encodings, code strings and calls, bound values, assets), the runtime check in a real browser (an @import sheet, a script-set inline style, a shadow root, the runtime shell and markers excluded), and the done-when row for each listed capability; MUST FAIL: prose never read as CSS, an unknown property kept as itself, an asset the draft never names not read, the runtime's own shell and markers not counted. |
 | `tests/capabilities.test.mjs` | Phase 1 steps 1.1 and 1.2: sections derived from a fixture DB and the code; MUST FAIL: a planted block setting and a planted draft tag each become a new entry. |
 | `tests/delivery-map.test.mjs` | The delivery map check: the expected keys (each review coverage id once, active animation records only, every surface state), a positive control, and MUST FAIL cases for a missing, invented, dead-code or repeated key, a unit the plan lacks, a done commit that does not exist, an empty accepted reason, a value both done and accepted or of the wrong shape, coverage marks that disagree with the coverage map (an accepted id must be excluded there); the duplicate scan ignores names inside values; plan units come from the work table only; repeated state names get their own keys (15 of 15 mutations killed with `tools/mutate.mjs`). |
-| `tests/clone-coverage.test.mjs` | Phase 1 step 1.4, the gate over the committed inventory and map; MUST FAIL controls 1 to 4: a planted setting, a planted tag, a missing writer or reader, an unsigned exclusion, a wave-less gap, an unknown ID; and a gap carrying a Phase 0 marker, which the schema refuses. |
+| `tests/clone-coverage.test.mjs`, `tests/fixtures/declared-writes/mutations.json` | The gate over the committed inventory and map; MUST FAIL controls 1 to 4: a planted setting, a planted tag, a missing writer or reader, an unsigned exclusion, a wave-less gap, an unknown ID; control 2b: an ID a module declares in `COVERAGE_WRITES` whose entry is a gap, missing or names another writer, and every declared ID is one the inventory holds; and a gap carrying a Phase 0 marker, which the schema refuses. `mutations.json` is the 4-mutation list for `tools/mutate.mjs` (all red). |
 | `tests/intake-coverage-rows.test.mjs` | `lib/intake-missing.mjs` rule 3: one seen-but-unsupported row per uncovered capability; MUST FAIL: an uncovered element is never dropped. |
 | `tests/fixtures/framework-db.mjs` | A temp framework DB built from `plugins/sgs-blocks/scripts/dbschema/schema.sql` for tests that cannot use the real one. |
 | `tests/fixtures/motion-loop-css/records.json`, `tests/fixtures/motion-loop-css/A-02.expected.css` | Two minimal endless-loop inventory records, and the box content proven against the draft's own Web Animations call for Mama's A-02 (`.claude/qa/control-gaps/sparkle/compare-twinkle.mjs`). |
@@ -1026,6 +1026,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `declaredLength({ prop, declared, def, unit, forms, box })` → `{ value }` in the setting's form, or null to format as rendered. `resolveWeightKeyword(prop, declared)` → a declared `bold`/`normal` weight as `700`/`400`. `declaredUnit` also takes `defaultValue`, the schema default whose tiers count as held.
 
 ### `lib/fill-prop.mjs`
+- `COVERAGE_WRITES`: the coverage IDs this module writes (the CSS groups a draft header's Fill run wrote and confirmed); `coverageProblems` holds each entry's write to this module.
 - `TIER_WIDTHS`: 1440, 768, 375. `INHERITED`: calibration's inherited list, re-exported rather than copied. `CARRIED`: properties read from a text or layout carrier.
 - `knownPaths(cal)` → every path a calibration knows for a block.
 - `canon(prop, v)` → the value as painted, for comparison. `notPainted(prop, styles)` → whether the property paints nothing here.
@@ -1078,6 +1079,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/fill-media.mjs`
 
+- `COVERAGE_WRITES`: the image coverage IDs this module writes (`html:img`, `img.src`, `img.alt`, `figure`, `figcaption`); `coverageProblems` holds each entry's write to this module.
 - `readMediaMap(file)` → `sites/<client>/build/media-map.json` or null. `imageSlots(db, block)` → `[{ alt, url }]` from the block's DB `image-alt` rows (`alt_companion_attr` names the URL setting). `draftPath(src, origin)` → the draft file an image address names, or null (data:, another origin). `mapEntries(map, site, path)` → the media-map files whose repo path is, or ends at a folder boundary with, that path.
 - `idSetting(schema, urlAttr)` → the attachment id setting for a URL setting (`imageUrl` to `imageId`, else `<attr>Id`) when block.json declares it.
 - `mediaDecisions(input)` → `{ writes, unmapped, notes }`: URL, id, alt and (from a figcaption) caption for a block with exactly one image setting; a held setting is kept; every miss (no map, not in the map, ambiguous, external, several image settings, a bare `<img>` on a block with none) is an `image` row in UNMAPPED and the draft's own address is never written. Called from `fill-resolve.mjs::fillContent`.
@@ -1484,7 +1486,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 ### `lib/clone-coverage.mjs`
 - `COVERAGE_FILE`, `COVERAGE_SCHEMA`, `STEPS`; `loadCoverage(file?)` throws listing every schema problem.
 - `statusOf(entry)` → `covered`, `gap` or `excluded`; `referenceProblem(ref, { root?, registry? })` → a sentence or null.
-- `coverageProblems(inventory, coverage, { root?, registry? })` → every gate problem as a sentence; `gapList(inventory, coverage)`; `seedGaps(inventory, coverage, note)` → `{ coverage, added }`.
+- `coverageProblems(inventory, coverage, { root?, registry?, baseline?, writes? })` → every gate problem as a sentence, including an ID a module declares it writes (`writes`, default `declaredWrites()`) whose entry is missing, excluded or names another writer; `declaredWrites(root?)` → `{ '<repo path>': [ ids ] }` from each `lib/*.mjs` file's `export const COVERAGE_WRITES`; `gapList(inventory, coverage)`; `seedGaps(inventory, coverage, note)` → `{ coverage, added }`.
 
 ### `tests/fixtures/framework-db.mjs`
 - `fixtureDb(rows)` → the path of a temp DB built from the committed schema and filled with `rows`; `BASE_ROWS`.
