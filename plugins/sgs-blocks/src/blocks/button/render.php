@@ -774,83 +774,9 @@ if ( $icon ) {
 			$scoped_css_parts = array_merge( $scoped_css_parts, $sgs_button_stroke_grad['css'] );
 		}
 
-		// wp_kses with SVG allowance for the icon.
-		// Deliberately narrower than the shared sgs_svg_kses_allowed_tags()
-		// (includes/helpers-svg-kses.php): icons here are static Lucide glyphs
-		// (path/circle/rect/line/polyline/polygon/ellipse/g/title), never gradient-
-		// filled, filtered, masked, referenced (<use>/<symbol>), or animated. This
-		// list excludes the shared helper's defs/use/symbol/text/tspan/textpath/
-		// image/clippath/mask/marker/pattern/*gradient/stop/filter + filter-primitive
-		// tags/desc/metadata/animate/a. If a future icon set needs any of those,
-		// diff against sgs_svg_kses_allowed_tags() again rather than widening ad hoc.
-		$allowed_svg = array(
-			'svg'      => array(
-				'class'           => true,
-				'xmlns'           => true,
-				'width'           => true,
-				'height'          => true,
-				'viewbox'         => true,
-				'fill'            => true,
-				'stroke'          => true,
-				'stroke-width'    => true,
-				'stroke-linecap'  => true,
-				'stroke-linejoin' => true,
-				'aria-hidden'     => true,
-			),
-			'path'     => array(
-				'd'      => true,
-				'fill'   => true,
-				'stroke' => true,
-			),
-			'circle'   => array(
-				'cx'     => true,
-				'cy'     => true,
-				'r'      => true,
-				'fill'   => true,
-				'stroke' => true,
-			),
-			'rect'     => array(
-				'x'      => true,
-				'y'      => true,
-				'width'  => true,
-				'height' => true,
-				'rx'     => true,
-				'ry'     => true,
-				'fill'   => true,
-				'stroke' => true,
-			),
-			'line'     => array(
-				'x1'     => true,
-				'y1'     => true,
-				'x2'     => true,
-				'y2'     => true,
-				'stroke' => true,
-			),
-			'polyline' => array(
-				'points' => true,
-				'fill'   => true,
-				'stroke' => true,
-			),
-			'polygon'  => array(
-				'points' => true,
-				'fill'   => true,
-				'stroke' => true,
-			),
-			'ellipse'  => array(
-				'cx'     => true,
-				'cy'     => true,
-				'rx'     => true,
-				'ry'     => true,
-				'fill'   => true,
-				'stroke' => true,
-			),
-			'title'    => array(),
-			'g'        => array(
-				'fill'      => true,
-				'stroke'    => true,
-				'transform' => true,
-			),
-		);
+		// The icon's tags stay narrow (shapes and a title), each with the shared helper's attributes
+		// (includes/helpers-button-inner-kses.php::sgs_button_icon_svg_allowed).
+		$allowed_svg = sgs_button_icon_svg_allowed();
 
 		$icon_html = sprintf(
 			'<span class="sgs-button__icon" aria-hidden="true">%s</span>',
