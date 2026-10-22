@@ -684,6 +684,9 @@ if ( 'carousel' === $mobile_layout ) {
 	$wrapper_args['data-carousel-label'] = __( 'Timeline milestones', 'sgs-blocks' );
 }
 
+require __DIR__ . '/horizontal-panel.php';
+$wrapper_args = array_merge( $wrapper_args, $hp_wrapper_args );
+
 $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 
 // Item-array stagger (Spec 38A FR-38A-26): the entries come from the `entries` attribute, so the container's stored
@@ -723,6 +726,7 @@ $sgs_tl_loop_i     = 0;
 	 * which may only contain `<li>`/`<script>`/`<template>`.
 	 */
 	?>
+	<?php echo $hp_counter_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped where built in horizontal-panel.php ?>
 		<ol class="sgs-timeline__list"<?php echo 'pinned-horizontal' === $scroll_effect ? ' data-sgs-fx-track' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static string literal, no user input ?>>
 			<?php foreach ( $entries as $index => $entry ) : ?>
 				<?php

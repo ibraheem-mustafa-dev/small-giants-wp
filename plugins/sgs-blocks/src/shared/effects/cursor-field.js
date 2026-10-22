@@ -78,6 +78,7 @@ import {
 	supportsFinePointer,
 	isTouchInput,
 } from './motion-utils';
+import { initRevealOpen } from './cursor-field-reveal';
 
 /** Viewport-space custom properties, inherited by every participant. */
 const VAR_X = '--sgs-cursor-x';
@@ -432,8 +433,19 @@ export function initCursorField( el, opts = {} ) {
 
 	// Reduced motion (SIMPLIFY) and coarse pointers both keep the painted
 	// field and drop only the tracking. Checked live, not at module load.
+	// `image-reveal` also opens in full on keyboard focus and on a touch or pen tap, whatever the pointer or motion setting.
+	const closeReveal = revealMode ? initRevealOpen( el ) : null;
+	const teardownReveal = () => {
+		if ( closeReveal ) {
+			closeReveal();
+		}
+	};
+
 	if ( prefersReducedMotion() || ! supportsFinePointer() ) {
-		return unmark;
+		return () => {
+			teardownReveal();
+			unmark();
+		};
 	}
 
 	/**
@@ -628,6 +640,7 @@ export function initCursorField( el, opts = {} ) {
 		el.removeEventListener( 'mouseenter', onEnter );
 		el.removeEventListener( 'mouseleave', onLeave );
 		el.style.removeProperty( '--sgs-cursor-field-opacity' );
+		teardownReveal();
 		unmark();
 	};
 }

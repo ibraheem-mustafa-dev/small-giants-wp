@@ -1701,3 +1701,26 @@
 		}
 	}
 }
+
+// The pinned-horizontal progress counter (`panelCounter`): fx-scroll-progress.js rewrites its text from the pin's progress.
+// The pin only runs from 768px up, so below that the carousel shows no counter.
+.sgs-timeline__counter {
+	display: none;
+	margin: 0;
+	font-variant-numeric: tabular-nums;
+	text-align: end;
+}
+
+@media (min-width: 768px) {
+	.sgs-timeline[data-sgs-fx="horizontal-panel"] {
+		position: relative;
+	}
+
+	.sgs-timeline[data-sgs-fx="horizontal-panel"] > .sgs-timeline__counter {
+		display: block;
+		position: absolute;
+		inset-block-start: var(--wp--preset--spacing--30, 1rem);
+		inset-inline-end: var(--wp--preset--spacing--40, 1.5rem);
+		z-index: 2;
+	}
+}

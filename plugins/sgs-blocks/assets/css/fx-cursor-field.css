@@ -579,6 +579,11 @@
 	--sgs-cursor-field-wash: 0.3;
 }
 
+/* Keyboard focus and a touch or pen tap open the whole image (cursor-field-reveal.js sets the flag). The repeated attribute out-ranks the renderer's per-instance rest and hover radius rules; reduced motion drops the transition, so the image appears without the growth. */
+[data-sgs-cursor-field="image-reveal"][data-sgs-reveal-open][data-sgs-reveal-open][data-sgs-reveal-open]::before {
+	--sgs-cursor-field-radius: 150vmax;
+}
+
 /* The revealed circle follows the pointer with the ring's own lag and easing, so the ring and the image inside the circle stay
  * together. Without a ring there is no lag value, so the circle centres on the pointer exactly. The transition starts once the
  * first pointer position has been seeded (`data-sgs-ring-live`, set by cursor-field-ring.js), so the circle never slides in from the rest point. */
