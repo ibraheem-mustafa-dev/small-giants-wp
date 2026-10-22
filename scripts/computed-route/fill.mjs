@@ -30,6 +30,7 @@ import { motionWrites } from './lib/fill-motion.mjs';
 import { groupBindings, noFactsWarning } from './lib/fill-binding-group.mjs';
 import { factsFile, loadFacts } from './lib/fact-record.mjs';
 import { currentItemGroups } from './lib/fill-current-item.mjs';
+import { widthGateWrites } from './lib/fill-width-gate.mjs';
 import { motionDb } from './lib/motion-db.mjs';
 import { loadMotionSchema } from './lib/motion-schema.mjs';
 import { sweepSteps } from './lib/fill-values.mjs';
@@ -142,7 +143,8 @@ export async function fillSurface( o ) {
 		// states (lib/fill-logic-state.mjs); none when intake has not run.
 		const intakeFile = path.join( buildDir, 'intake', 'intake.json' );
 		const logicRows = fs.existsSync( intakeFile ) && vocab.rows.length ? stateMap( { surfaces, surface: o.surface, intake: JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ), vocab: vocab.rows } ).scIf : [];
-		const currentGroups = fs.existsSync( factsFile( repo, o.client ) ) ? currentItemGroups( loadFacts( o.client, { repo } ) ) : [];
+		const facts = fs.existsSync( factsFile( repo, o.client ) ) ? loadFacts( o.client, { repo } ) : null;
+		const currentGroups = facts ? currentItemGroups( facts ) : [];
 		const reads = await readDraft( { url, nodes, open: o.open || null, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, log } );
 		const calFor = calibrationLoader( entry.site, o.cache );
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
@@ -161,6 +163,12 @@ export async function fillSurface( o ) {
 		const states = fillStates( { tree, nodes, reads, calFor, db, snapshot } );
 		result.writes.push( ...states.writes );
 		result.unmapped.push( ...states.unmapped );
+		// FR-48-50: content the draft's logic shows or hides by width, written as hiding settings (lib/fill-width-gate.mjs); a snapped
+		// threshold's `breakpoint-snap` ledger entry is written beside the other outputs for the client's ledger.
+		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, entries: loadLedger( ledgerFile ) } );
+		result.writes.push( ...gates.writes );
+		result.unmapped.push( ...gates.unmapped );
+		result.notes.push( ...gates.notes );
 		const patchFile = states.patchEntries.length ? 'theme-snapshot.patch.json' : null;
 		result.notes.push( ...states.held.map( ( h ) => `${ h.node } (${ h.slot }) ${ h.prop } ${ h.state }: ${ h.reason }` ) );
 		// Motion (Spec 48 FR-48-78): the draft's motion records from intake's re-derived inventory, written as each
@@ -181,7 +189,7 @@ export async function fillSurface( o ) {
 		result.notes.push( ...bound.groups.map( ( g ) => `binding ${ g.binding } sets ${ g.attr } to ${ JSON.stringify( g.value ) } on ${ g.members.length } elements in ${ g.sections } sections: one shared setting` ), ...bound.split.map( ( x ) => `binding ${ x.binding } sets ${ x.attr } to ${ x.values.length } different values: not grouped` ) );
 		// FR-48-8: every written style value against what the draft's code declares, at each read width.
 		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.
-		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => 'motion' !== w.how && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent } );
+		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate' ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent } );
 		const steps = sweepSteps( reads.sweep, ( id ) => ( { node: refOf( flat[ Number( id.split( ':' )[ 0 ] ) ] ), slot: id.slice( id.indexOf( ':' ) + 1 ) } ) );
 		const report = fillReport( { client: o.client, surface: o.surface, draft: o.draftDir ? `${ o.draftDir } (served locally)` : url, nodes: nodes.length, targets: nodes.reduce( ( t, n ) => t + n.targets.length, 0 ), ...result, steps, entrances, snapshotPatch: { file: patchFile, entries: states.patchEntries }, sweepSkipped: false === o.sweep } );
 		const divergences = fs.existsSync( ledgerFile ) ? path.relative( outDir, ledgerFile ).split( path.sep ).join( '/' ) : null;
@@ -195,6 +203,7 @@ export async function fillSurface( o ) {
 ` );
 		}
 		put( 'unmapped.json', JSON.stringify( unmappedList( result.unmapped ), null, 1 ) );
+		gates.ledger.length && put( 'breakpoint-snaps.json', JSON.stringify( gates.ledger, null, 1 ) );
 		put( 'binding-groups.json', JSON.stringify( bound, null, 1 ) );
 		put( 'handover.json', JSON.stringify( result.handover, null, 1 ) );
 		put( 'breakpoints.json', JSON.stringify( steps, null, 1 ) );

@@ -1,0 +1,11 @@
+[
+	{ "file": "lib/fill-width-gate.mjs", "find": "near.distance > 0 && near.distance <= SNAP_TOLERANCE * near.tier", "replace": "near.distance > 0 && near.distance <= 0.2 * near.tier", "why": "the snap tolerance would be 20%, snapping 1260" },
+	{ "file": "lib/fill-width-gate.mjs", "find": "near.distance > 0 && near.distance <= SNAP_TOLERANCE * near.tier", "replace": "near.distance > 0 && near.distance <= SNAP_TOLERANCE * near.tier - 1", "why": "the 5% edge would exclude 1075" },
+	{ "file": "lib/fill-width-gate.mjs", "find": "const e = snapEntry( { scope, ref, snap: s, entries: [ ...entries, ...out.ledger ], date } );\n\t\t\te && out.ledger.push( e );", "replace": "void s;", "why": "a snap would write no ledger entry" },
+	{ "file": "lib/fill-width-gate.mjs", "find": "return c.is ? holds( c.when, w ) : ! holds( c.when, w );", "replace": "return holds( c.when, w );", "why": "the not-mobile branch would be read as the mobile one" },
+	{ "file": "lib/fill-width-gate.mjs", "find": "if ( own && 1 === new Set( edges ).size ) {", "replace": "if ( false ) {", "why": "a block's own breakpoint setting would never be used" },
+	{ "file": "lib/fill-width-gate.mjs", "find": "const css = hidden.map( mediaRule ).join( ' ' );", "replace": "const css = hidden.map( ( [ lo ] ) => `@media (min-width: ${ lo }px) { & { display: none; } }` ).join( ' ' );", "why": "the off-tier rule would hide the wrong range" },
+	{ "file": "lib/fill-width-gate.mjs", "find": "put( 'sgsCustomCssNote',", "replace": "void ( 'sgsCustomCssNote',", "why": "the route-written CSS would carry no label" },
+	{ "file": "lib/fill-width-gate.mjs", "find": "JSON.stringify( up.shown ) === JSON.stringify( at.shown )", "replace": "false", "why": "a child would repeat its parent's gate" },
+	{ "file": "lib/fill-width-gate.mjs", "find": "tiers.forEach( ( t ) => put( HIDE_ATTR[ t ], true,", "replace": "tiers.slice( 1 ).forEach( ( t ) => put( HIDE_ATTR[ t ], true,", "why": "a tier flag would be dropped" }
+]

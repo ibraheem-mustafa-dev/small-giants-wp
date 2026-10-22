@@ -170,7 +170,7 @@ export function registerIds( markdown ) {
 }
 
 // Rules that are house rules (CLAUDE.md non-negotiables), not decisions: their entries cite no register item.
-export const HOUSE_RULES = [ 'touch-target', 'accessibility' ];
+export const HOUSE_RULES = [ 'touch-target', 'accessibility', 'breakpoint-snap' ];
 
 // B4: every divergence-ledger entry is a decision Bean made, so each cites the register items it implements
 // (`register: [ids]`), and every id is in the register. House-rule entries are exempt.
