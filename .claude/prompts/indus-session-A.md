@@ -2,15 +2,14 @@ Invoke /autopilot before doing anything else.
 
 # Indus delivery, Session A (opener)
 
-Context: the Indus Foods clone (the client draft in `sites/indus-foods/handoff/`, built on the test site indus-test) is being finished under one plan. This session opens it: it archives the two plans the new one replaced, and closes the declared-values work (Fill writing every value the draft's code declares, with a confirm record per value) and the drawer's safe-area value. Runs beside Sessions G, B and C.
+Context: the Indus Foods clone (the client draft in `sites/indus-foods/handoff/`, built on the test site indus-test) is being finished under one plan. This session opens it: it closes the declared-values work (Fill writing every value the draft's code declares, with a confirm record per value) and the drawer's safe-area value. Runs beside Sessions G, B and C.
 
 Read first: `.claude/plans/2026-10-21-indus-delivery.md` in full (it is the approved plan for its units; you need no separate plan-mode approval), then `.claude/LEDGER.md`'s Indus front. Before touching a surface, read the governing spec section the plan names (Spec 48 `.claude/specs/48-CLONING-SYSTEM.md`, Spec 38 and 38A for motion, Spec 04 for forms, Spec 01 and 36 for the logo and SVG upload); grep large specs to the FR, never read them whole.
 
 ## Tasks, in order
-1. Step 0 (the plan's "Step 0" section, 5 min, inline): archive the two old plans, repoint links until the plan's `git grep` lists only archive files, and merge LEDGER's Front M and the Indus front into one front pointing at the plan.
-2. U0 (5 min, inline): confirm its done-when still holds after `git pull` (the header tree path the plan names). Its 10 delivery-map keys stay open: Session R flips them after the header's gate chain and Bean's eye.
-3. U2 (declared values close): follow `.claude/prompts/Declared-values-final-session-prompt.md` tasks 2 to 4. Delegate the fill and calibration runs to one Sonnet operator subagent (serial: one calibration and one browser at a time) and judge its results in the main thread against `fill-report.json`. Bean reviews step 6's surface proof (about 20 min): show him the cropped pairs and the confirm record's disagreements. Mark the 22 open U2 delivery-map keys done as their entries become covered. Delete the declared-values prompt file when its tasks are done.
-4. U4b (safe-area, about 15 min, inline or one Sonnet subagent in a worktree): its done-when in the plan.
+1. U0 (5 min, inline): confirm its done-when still holds after `git pull` (the header tree path the plan names). Its 10 delivery-map keys stay open: Session R flips them after the header's gate chain and Bean's eye.
+2. U2 (declared values close): follow `.claude/prompts/Declared-values-final-session-prompt.md` tasks 2 to 4. Delegate the fill and calibration runs to one Sonnet operator subagent (serial: one calibration and one browser at a time) and judge its results in the main thread against `fill-report.json`. Bean reviews step 6's surface proof (about 20 min): show him the cropped pairs and the confirm record's disagreements. Mark the 22 open U2 delivery-map keys done as their entries become covered. Delete the declared-values prompt file when its tasks are done.
+3. U4b (safe-area, about 15 min, inline or one Sonnet subagent in a worktree): its done-when in the plan.
 
 ## Skills
 - `/autopilot` first (routing, orchestration, docs current).

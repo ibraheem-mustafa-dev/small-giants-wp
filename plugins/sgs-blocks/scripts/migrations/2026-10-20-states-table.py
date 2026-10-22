@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""2026-10-20-states-table.py -- Spec 48 FR-48-81, the states wave (plan .claude/plans/2026-10-20-states-wave.md).
+"""2026-10-20-states-table.py -- Spec 48 FR-48-81, the states wave (plan .claude/plans/archive/2026-10-20-states-wave.md).
 
 WHAT AND WHY
 ------------

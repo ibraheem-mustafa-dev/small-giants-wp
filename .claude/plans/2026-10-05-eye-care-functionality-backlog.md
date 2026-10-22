@@ -85,7 +85,6 @@ The block is built and live (plan `plans/archive/2026-10-07-measured-diagram-blo
 | Ref | The dead control | Where |
 |---|---|---|
 | **CR13** | **Spacing presets render as pixels, framework-wide (found 2026-10-13).** `includes/helpers-css-safety.php::sgs_css_length_value_preset_slugs` reads `slug` at the top level of `wp_get_global_settings( array( 'spacing', 'spacingSizes' ) )`, which WordPress returns grouped by origin (`{default: [...], theme: [...]}`), so the slug list is empty and every bare-number spacing value meant as a preset ("20") renders as pixels (20px) in the helper's 79 caller files since `8ae3efffa` (2026-09-08); proven live on sandybrown. Its tests stub a flat slug list, which hides it. `sgs/label`'s dot gap no longer depends on it (`8c34187eb`, default 8px) | Diagnose first, then fix: (1) establish which meaning each writer intended (Solve and Fill wrote and measured pages against the pixel behaviour; read the writers and diff the Eye Care trees' bare-number spacing values against the draft); (2) flatten the origin groups in the helper, accepting both shapes, with a PHPUnit case on the real shape; (3) re-measure Eye Care (the finished answer key) before and after, and migrate any value whose intended meaning changes |
-| **CR12** | **The dark-mode toggle renders nothing for any current client.** `theme-toggle/render.php` returns early with no derived dark palette, and no `sites/*/theme-snapshot.json` has one | Decide whether to derive a dark palette per client or hide the toggle until one exists |
 | **71** | The product block does not pass text styling through to the colour and size options, so swatch names cannot be sized or weighted | Control plumbing |
 | **CR10** | `sgs/media`'s `aspectRatio` has no `css_property` in the framework DB, so it can never be resolved or written | Small, DB-side |
 
@@ -100,7 +99,6 @@ The block is built and live (plan `plans/archive/2026-10-07-measured-diagram-blo
 | **Card-grid zoom** | A zoom amount control on `sgs/card-grid`: the card has a hover scale, and the image zoom amount is the scale of the image part in the `sgsMotion` Hover panel (Spec 38A), so check that its scale control covers the zoom size |
 | **77** | A selected-tile border width setting (Eye Care wants 2px against 1px) |
 | **49** | A "collapsed icon size" setting on the floating WhatsApp button, so the icon stays 28px or larger once it collapses to a circle |
-| **19** | A bar fill duration setting on the free-delivery bar |
 | **117, 123, 69, 81, N29** | The size pop-up: a **padding setting**, a header bar built as a container in the pop-up's own layout file (title, divider, sticky), a **screen-edge gap token** (32px above phone, 16px on a phone), and a square transparent close button |
 | **9** | The Ferrari brand tile reads its name twice to screen readers: clear either its title or its image's text alternative |
 | **152** | Confirm coupon, order note and terms can each be switched off without code (order notes is a checkout block setting, coupons a WooCommerce setting, terms an inner block in the shared part). A verification task, not a build |

@@ -1,4 +1,4 @@
-// State transition timing for Fill (Spec 48 FR-48-81; .claude/plans/2026-10-20-states-wave.md "Motion timings and states"):
+// State transition timing for Fill (Spec 48 FR-48-81; .claude/plans/archive/2026-10-20-states-wave.md "Motion timings and states"):
 // what the draft's code declares as `transition-duration` and `transition-timing-function`, written into the block's
 // role-`motion` settings that hold them (block_attributes: css_property, css_element, css_state), found by the same
 // resolver every other setting goes through. CSS semantics decide the direction: a timing on the resting rule times

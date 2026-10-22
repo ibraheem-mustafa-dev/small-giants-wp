@@ -1657,9 +1657,9 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `migrations/2026-09-11-add-co-animates-opacity-column.py` | manifest | add |
 | `migrations/2026-10-13-motion-fields-tables.py` | manifest+script-call | - Spec 38A FR-38A-3 (DB clause), decision 3 option B. |
 | `migrations/2026-10-13-motion-presets-and-fx-columns.py` | manifest+script-call | - Spec 38A FR-38A-6 (DB clauses). |
-| `migrations/2026-10-20-drop-css-state-selector.py` | manifest | - Spec 48 FR-48-81, the states wave (plan .claude/plans/2026-10-20-states-wave.md). |
+| `migrations/2026-10-20-drop-css-state-selector.py` | manifest | - Spec 48 FR-48-81, the states wave (plan .claude/plans/archive/2026-10-20-states-wave.md). |
 | `migrations/2026-10-20-property-equivalents-table.py` | manifest+script-call | - Spec 48 FR-48-8 step 5 (Bean, 2026-10-19). |
-| `migrations/2026-10-20-states-table.py` | manifest | - Spec 48 FR-48-81, the states wave (plan .claude/plans/2026-10-20-states-wave.md). |
+| `migrations/2026-10-20-states-table.py` | manifest | - Spec 48 FR-48-81, the states wave (plan .claude/plans/archive/2026-10-20-states-wave.md). |
 | `migrations/2026-10-21-property-equivalents-intrinsic-ratio.py` | manifest | - Spec 48 FR-48-8 step 5, the `intrinsic-ratio` condition. |
 | `motion-qa/lib/form-states-judges.mjs` | script-call | Pure judges, self-test and argument parsing for `probe-motion-form-states.mjs`. |
 | `motion-qa/lib/form-states-readers.mjs` | script-call | Page actions and reads for `probe-motion-form-states.mjs`: animation tagging, the shake and slide readers. |
@@ -2022,7 +2022,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/fill-state-reason.mjs` | script-call | Why the page cannot be put into a state combination (lib/fill-state-read.mjs): the first token that has no host or is never exposed to scripts. |
 | `computed-route/lib/fill-state-tokens.mjs` | manifest+script-call | Fill's theme-token writes (Spec 48 FR-48-81, Spec 32 FR-32-19): three state looks live in the client's theme-snapshot.json, not in a block setting… |
 | `computed-route/lib/fill-state.mjs` | manifest+script-call | Fill's state pass (Spec 48 FR-48-81): writes each target's state looks (lib/fill-state-read.mjs::readStates, read into readDraft's `states`) into the… |
-| `computed-route/lib/fill-timing.mjs` | manifest+script-call | State transition timing for Fill (Spec 48 FR-48-81; .claude/plans/2026-10-20-states-wave.md "Motion timings and states"): what the draft's code… |
+| `computed-route/lib/fill-timing.mjs` | manifest+script-call | State transition timing for Fill (Spec 48 FR-48-81; .claude/plans/archive/2026-10-20-states-wave.md "Motion timings and states"): what the draft's… |
 | `computed-route/lib/fill-unread.mjs` | script-call | What Fill leaves unjudged on one measured node (FR-47-4 step 5): every setting the block's calibration or the framework database knows that no read… |
 | `computed-route/lib/fill-values.mjs` | script-call | The values FR-47-4 says need care. Fluid sizes: sampled at five widths, linear within 0.5px means fluid, written as clamp() only where calibration… |
 | `computed-route/lib/fixture-refs.mjs` | script-call | The detector for site references in calibration-fixtures.json (Spec 48 §3.2; the migration method's survey, fix, check and self-test). Every value… |

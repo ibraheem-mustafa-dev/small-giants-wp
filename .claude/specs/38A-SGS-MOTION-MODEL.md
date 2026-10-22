@@ -23,7 +23,7 @@ references:
   - .claude/reports/2026-10-12-motion-system-research.md
   - .claude/reports/2026-10-12-motion-effects-audit.md
   - .claude/reports/2026-09-24-u5-motion-design.md
-  - .claude/plans/2026-10-12-clone-coverage-foundation.md
+  - .claude/plans/archive/2026-10-12-clone-coverage-foundation.md
   - .claude/specs/38-SGS-MOTION-SYSTEM.md
   - .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md
   - .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md
@@ -38,7 +38,7 @@ lock_reason: null
 
 > **One-liner:** every compatible SGS block gets three motion panels (Hover, Entrance and reveal, Effects), each holding stackable layers that store real values per element, per device and per motion type, with presets that stamp token-backed values, a container helper that writes stagger delays, and a mostly CSS runtime.
 
-Spec 38 keeps the tier doctrine (V, G, H, W), the effect roster, the `fx_effects` registry and the `data-sgs-fx-*` grammar. This spec owns how motion is modelled, stored, edited, emitted and played: entrance presets, the hover suite, stagger, effect parameters and the per-block reveal systems. The evidence and the owner's decisions are in `.claude/reports/2026-10-12-motion-system-research.md` (revision 3, section 1); the build sits under Phase 0, step 0.3 of `.claude/plans/2026-10-12-clone-coverage-foundation.md`.
+Spec 38 keeps the tier doctrine (V, G, H, W), the effect roster, the `fx_effects` registry and the `data-sgs-fx-*` grammar. This spec owns how motion is modelled, stored, edited, emitted and played: entrance presets, the hover suite, stagger, effect parameters and the per-block reveal systems. The evidence and the owner's decisions are in `.claude/reports/2026-10-12-motion-system-research.md` (revision 3, section 1); the build sits under Phase 0, step 0.3 of `.claude/plans/archive/2026-10-12-clone-coverage-foundation.md`.
 
 ## 0. Plain English
 

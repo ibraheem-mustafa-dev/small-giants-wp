@@ -3,7 +3,7 @@ Invoke /autopilot before doing anything else.
 CONTEXT (plain English) SGS clones Claude Design drafts into WordPress through the "computed route" (scripts/computed-route/, Spec 48). "Fill" writes each draft element's measured styling into block settings and keeps a "confirm record" per written value (declared code value vs rendered value, verdict confirmed / render-wins / draft-defect / open). The FR-48-8 plan (Fill reads declared values with a confirm record) is done except its final step 6: every earlier step shipped on 2026-10-20/21 (declared-value write, justify-items read, the menus' current-page item, the Indus recalibration under read key 5dc0f761b1c9, the 13 non-Indus re-measures). Step 6 needs an Indus "surface" (a skeleton tree Fill can run on), which arrives with Indus step 20 (the Indus header clone, being run by another session).
 
 READ FIRST
-- C:\Users\Bean\Projects\small-giants-wp\.claude\plans\2026-10-19-fr48-8-declared-values.md (step 6, Progress, Open)
+- C:\Users\Bean\Projects\small-giants-wp\.claude\plans\archive\2026-10-19-fr48-8-declared-values.md (step 6, Progress; frozen evidence) and C:\Users\Bean\Projects\small-giants-wp\.claude\plans\2026-10-21-indus-delivery.md unit U2 (the open work)
 - C:\Users\Bean\Projects\small-giants-wp\.claude\specs\48-CLONING-SYSTEM.md: FR-48-8 (its done-when), FR-48-36 ("What is written"), FR-48-34 (draft defects)
 - C:\Users\Bean\Projects\small-giants-wp\scripts\computed-route\lib\fill-state.mjs (the state writer, FR-48-81)
 - C:\Users\Bean\Projects\small-giants-wp\.claude\LEDGER.md, the Indus front
