@@ -120,6 +120,34 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 		// The one embedded frame this element is or holds (a map): its address, the filter it paints and its height.
 		const frames = el.matches( 'iframe' ) ? [ el ] : [ ...el.querySelectorAll( 'iframe' ) ];
 		snap.embed = 1 === frames.length ? { src: frames[ 0 ].getAttribute( 'src' ) ?? '', filter: getComputedStyle( frames[ 0 ] ).filter, h: frames[ 0 ].getBoundingClientRect().height } : null;
+		// The one inline SVG this element is or holds, as XML with the paint the draft's CSS gave each drawing element written onto it
+		// (fill, stroke and stroke width, a colour equal to the SVG's own colour as currentColor), for the icon writer.
+		const svgs = el.matches( 'svg' ) ? [ el ] : [ ...el.querySelectorAll( 'svg' ) ];
+		snap.svg = null;
+		if ( 1 === svgs.length ) {
+			const [ from ] = svgs;
+			const copy = from.cloneNode( true );
+			const own = getComputedStyle( from ).color;
+			const pairs = [ [ from, copy ], ...[ ...from.querySelectorAll( '*' ) ].map( ( o, i ) => [ o, copy.querySelectorAll( '*' )[ i ] ] ) ];
+			const drawn = /^(?:path|circle|ellipse|rect|line|polyline|polygon)$/;
+			for ( const [ o, c ] of pairs ) {
+				if ( drawn.test( o.localName ) ) {
+					const cs = getComputedStyle( o );
+					for ( const p of [ 'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'stroke-dasharray', 'fill-rule', 'opacity' ] ) {
+						const v = cs.getPropertyValue( p ).trim();
+						const plain = { 'stroke-linecap': 'butt', 'stroke-linejoin': 'miter', 'stroke-dasharray': 'none', 'fill-rule': 'nonzero', opacity: '1' }[ p ];
+						if ( v && v !== plain ) {
+							c.setAttribute( p, v === own ? 'currentColor' : v );
+						}
+					}
+				}
+			}
+			if ( ! copy.getAttribute( 'viewBox' ) ) {
+				const b = from.getBoundingClientRect();
+				copy.setAttribute( 'viewBox', `0 0 ${ Math.round( b.width ) } ${ Math.round( b.height ) }` );
+			}
+			snap.svg = { markup: new XMLSerializer().serializeToString( copy ) };
+		}
 		// The intrinsic ratio of the image or SVG this element is, or of the one it wraps: an image's natural size, else its
 		// width and height attributes, else an SVG's viewBox. A wrapper is media only when that image is its only rendered
 		// content (no words, no other element) and fills its box; a button or card holding one icon is not media. null when
