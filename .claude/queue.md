@@ -6,3 +6,4 @@ The signal between the cloning tool plan's two orchestrator sessions (`.claude/p
 - 2026-10-22 fb done editor-canvas fixes 575b9a2c0 (deployed eye-care-test --blocks-only, verified live: header columns equal the front end's at 1124 to 1884 canvas widths, cart within 3px of nav, logo 48px, trust bar one marquee row at Mobile preview as at 375 on the front)
 - 2026-10-22 T site-run-start header post 201 (indus-test; skeleton, Fill, build; reads the framework DB)
 - 2026-10-22 T site-run-end (header post 201 not built: the strip rule misses the top bar on the served draft; fix first, the run reopens after)
+- 2026-10-22 0c reseed-start 130e7d7f9 (bug-hunter fixes, runs 1 to 4; backup sgs-framework.db.pre-reseed-20261022-1919)
