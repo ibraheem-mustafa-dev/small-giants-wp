@@ -40,7 +40,7 @@ rows -- see block_attributes for sgs/container.padding, whose OWN row is NULL bu
     'ctaBorderWidth', 'splitMediaBorderWidth')
   - bare `presets` (boolean shorthand, matching this codebase's existing style at
     container/edit.js:613) for every other family (padding/margin and all their
-    compound siblings -- cardPadding, contentBandPadding, tagPadding, ...)
+    compound siblings -- cardPadding, gridItemPadding, tagPadding, ...)
 
 WHAT IT REFUSES TO DO (refuse, never guess)
 --------------------------------------------

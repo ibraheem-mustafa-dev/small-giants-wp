@@ -75,7 +75,6 @@
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
 						"css:border-radius": "borderRadius",
-						"css:padding": "padding",
 						"css:margin": "margin",
 						"css:max-width": "maxWidth",
 						"css:gap": "gap",
@@ -111,7 +110,8 @@
 					],
 					"prefix": "contentBand",
 					"attrMap": {
-						"css:width": "contentWidth"
+						"css:max-width": "contentWidth",
+						"css:padding": "padding"
 					}
 				}
 			}

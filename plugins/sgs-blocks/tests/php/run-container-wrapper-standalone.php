@@ -241,8 +241,8 @@ $content_attrs = array(
 $section_html = SGS_Container_Wrapper::render( $section_attrs, null, '<p>inner</p>', 'section' );
 
 contains( $section_html, '<style id="sgs-container-', 'section: scoped <style> tag present' );
-contains( $section_html, '<section class="sgs-container has-global-padding sgs-container--flex sgs-container-', 'section: exact class list (banded container gets has-global-padding, then the layout class, then the uid)' );
-contains( $section_html, 'padding-top:40px;padding-right:20px;padding-bottom:40px;padding-left:20px;', 'section: base spacing golden rule' );
+contains( $section_html, '<section class="sgs-container sgs-container--flex sgs-container-', 'section: exact class list (a horizontal padding replaces the has-global-padding gutter, then the layout class, then the uid)' );
+contains( $section_html, '>.sgs-container__inner{padding-top:40px;padding-right:20px;padding-bottom:40px;padding-left:20px;}', 'section: base spacing golden rule (the padding paints the content band)' );
 contains( $section_html, '{max-width:1200px;margin-inline:auto}', 'section: base outer max-width golden rule' );
 contains( $section_html, '>.sgs-container__inner{max-width:var(--wp--style--global--content-size,1200px);margin-inline:auto}', 'section: base content-band golden rule' );
 contains( $section_html, '>.sgs-container__inner{gap:24px;display:flex}', 'section: base grid/flex golden rule (grid-on-inner)' );
@@ -258,7 +258,7 @@ $layout_html = SGS_Container_Wrapper::render( $layout_attrs, null, '<p>cols</p>'
 contains( $layout_html, '<section class="sgs-container has-global-padding sgs-container--grid sgs-container-', 'layout: exact class list (the sgs-cols-* shorthand classes are gone; the tier counts are @media rules)' );
 not_contains( $layout_html, 'sgs-cols-', 'layout: no sgs-cols-* shorthand class' );
 contains( $layout_html, '@media (max-width:1023px){', 'layout: default tablet column count is a scoped @media rule' );
-contains( $layout_html, 'padding-top:32px;padding-bottom:32px;', 'layout: base spacing golden rule (top+bottom only)' );
+contains( $layout_html, '>.sgs-container__inner{padding-top:32px;padding-bottom:32px;}', 'layout: base spacing golden rule (top+bottom only, on the content band)' );
 contains( $layout_html, '{max-width:960px;margin-inline:auto}', 'layout: base outer max-width golden rule' );
 contains( $layout_html, '>.sgs-container__inner{max-width:var(--wp--style--global--wide-size,1400px);margin-inline:auto}', 'layout: base content-band golden rule (wide token)' );
 contains( $layout_html, '>.sgs-container__inner{gap:16px;display:grid;grid-template-columns:repeat(3,1fr)}', 'layout: base grid golden rule (3 columns, grid-on-inner)' );
@@ -267,11 +267,69 @@ not_contains( $layout_html, 'backgroundImage', 'layout: NO section-only backgrou
 $content_html = SGS_Container_Wrapper::render( $content_attrs, null, '<p>text</p>', 'content' );
 
 contains( $content_html, '<section class="sgs-container has-global-padding sgs-container-', 'content: default tag=section, exact class list (band gutter class, no layout class — content kind has no grid/flex)' );
-contains( $content_html, 'padding-top:16px;padding-bottom:16px;', 'content: base spacing golden rule (WP-native style.spacing.padding, applied to the OUTER — distinct from band padding)' );
+contains( $content_html, '>.sgs-container__inner{padding-top:16px;padding-bottom:16px;}', 'content: base spacing golden rule (WP-native style.spacing.padding, painted on the content band)' );
 contains( $content_html, '{max-width:800px;margin-inline:auto}', 'content: base outer max-width golden rule' );
-contains( $content_html, '>.sgs-container__inner{max-width:var(--wp--style--global--content-size,1200px);margin-inline:auto}', 'content: base content-band golden rule (contentWidth only — no contentBandPadding attr was set)' );
+contains( $content_html, '>.sgs-container__inner{max-width:var(--wp--style--global--content-size,1200px);margin-inline:auto}', 'content: base content-band golden rule (contentWidth and margin-inline only)' );
 not_contains( $content_html, 'display:grid', 'content: NO grid layer (content kind has no __inner grid/flex per Spec 31 §13.6)' );
 not_contains( $content_html, 'display:flex', 'content: NO flex layer (content kind has no __inner grid/flex per Spec 31 §13.6)' );
+
+// ── Padding paints the content band (container band layers) ───────────────────
+// A block declaring contentWidth puts its `padding` (tier-of-boxes) on the band beside the
+// contentWidth cap; the outer carries none, and a horizontal padding replaces the gutter class.
+$band_attrs = array(
+	'layout'       => 'flex',
+	'contentWidth' => array( 'desktop' => '1320px' ),
+	'padding'      => array(
+		'desktop' => array( 'left' => '40px', 'right' => '40px' ),
+		'tablet'  => array( 'left' => '32px', 'right' => '32px' ),
+		'mobile'  => array( 'left' => '20px', 'right' => '20px' ),
+	),
+);
+$band_html = SGS_Container_Wrapper::render( $band_attrs, null, '<p>x</p>', 'layout' );
+preg_match( '/sgs-container-([0-9a-f]{8})/', $band_html, $band_uid );
+$band_sel = '.sgs-container-' . ( $band_uid[1] ?? '' ) . '>.sgs-container__inner';
+contains( $band_html, $band_sel . '{max-width:1320px;padding-right:40px;padding-left:40px;}', 'band padding: the cap and the desktop padding share the band rule' );
+contains( $band_html, '@media (max-width:1023px){' . $band_sel . '{padding-right:32px;padding-left:32px;}', 'band padding: the tablet tier paints the band' );
+contains( $band_html, '@media (max-width:767px){' . $band_sel . '{padding-right:20px;padding-left:20px;}', 'band padding: the mobile tier paints the band' );
+not_contains( $band_html, '.sgs-container-' . ( $band_uid[1] ?? '' ) . '{padding', 'band padding: the outer element carries no padding' );
+not_contains( $band_html, 'has-global-padding', 'band padding: a horizontal padding replaces the gutter class' );
+
+$vertical_html = SGS_Container_Wrapper::render(
+	array(
+		'contentWidth' => array( 'desktop' => 'normal' ),
+		'padding'      => array( 'desktop' => array( 'top' => '10px', 'bottom' => '10px' ) ),
+	),
+	null,
+	'<p>x</p>',
+	'layout'
+);
+contains( $vertical_html, 'has-global-padding', 'band padding: a vertical-only padding keeps the gutter class' );
+contains( $vertical_html, 'padding-top:10px;padding-bottom:10px;}', 'band padding: a vertical-only padding paints the band' );
+
+$full_html = SGS_Container_Wrapper::render(
+	array(
+		'contentWidth' => array( 'desktop' => 'full' ),
+		'padding'      => array( 'desktop' => array( 'left' => '40px', 'right' => '40px' ) ),
+	),
+	null,
+	'<p>x</p>',
+	'layout'
+);
+contains( $full_html, '<div class="sgs-container__inner">', 'band padding: a full-width block with padding still renders the band' );
+contains( $full_html, '>.sgs-container__inner{padding-right:40px;padding-left:40px;}', 'band padding: a full-width block paints its padding on the band, uncapped' );
+
+$no_band_html = SGS_Container_Wrapper::render(
+	array(
+		'contentWidth' => array( 'desktop' => 'normal' ),
+		'padding'      => array( 'desktop' => array( 'left' => '40px', 'right' => '40px' ) ),
+	),
+	null,
+	'<p>x</p>',
+	'layout',
+	array( 'wrap_inner' => false )
+);
+not_contains( $no_band_html, '<div class="sgs-container__inner"', 'band padding: wrap_inner false renders no band element' );
+contains( $no_band_html, '{padding-right:40px;padding-left:40px;}', 'band padding: wrap_inner false keeps the padding on the outer element' );
 
 // ── Background layers are universal across KINDs (D6, 2026-08-11) ─────────────
 // The background image/video/overlay/svg layers were section-only; D6 made them

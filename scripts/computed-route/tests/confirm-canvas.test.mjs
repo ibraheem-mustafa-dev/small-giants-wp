@@ -18,7 +18,7 @@ write( 'footer', [
 	row( 'cr-ref-footer-6|.a|style|padding-top', 'padding-top', { ref: 'cr-ref-footer-2', block: 'sgs/container', setting: 'gridItemPadding', property: 'padding', via: 'declared', where: 'sibling' } ),
 	row( 'cr-ref-footer-7|.b|style|padding-top', 'padding-top', { ref: 'cr-ref-footer-2', block: 'sgs/container', setting: 'gridItemPadding', property: 'padding', via: 'declared', where: 'sibling' } ),
 	// Same block and property, DIFFERENT setting: a separate family.
-	row( 'cr-ref-footer-8|.c|style|padding-top', 'padding-top', { ref: 'cr-ref-footer-2', block: 'sgs/container', setting: 'contentBandPadding', property: 'padding', via: 'declared', where: 'ancestor' } ),
+	row( 'cr-ref-footer-8|.c|style|padding-top', 'padding-top', { ref: 'cr-ref-footer-2', block: 'sgs/container', setting: 'padding', property: 'padding', via: 'declared', where: 'ancestor' } ),
 	// A resolver-hop citation: no `where` key at all.
 	row( 'cr-ref-footer-9|.d|style|width', 'width', { ref: 'cr-ref-footer-3', block: 'sgs/container', setting: 'contentWidth', property: 'width', via: 'declared' } ),
 ] );
@@ -38,8 +38,8 @@ test( 'MUST FAIL: claims group by (cited block, cited setting, row property), ac
 	assert.equal( grid.keys.length, 3 );
 	assert.deepEqual( grid.citedRefs, [ 'cr-ref-footer-2', 'cr-ref-shop-5' ], 'the cited ref per surface is kept' );
 	// Not over-grouping: a different setting on the same block and property is its own family.
-	assert.ok( fams.find( ( f ) => 'contentBandPadding' === f.setting ), 'a different setting is a separate family' );
-	assert.equal( fams.find( ( f ) => 'contentBandPadding' === f.setting ).claims, 1 );
+	assert.ok( fams.find( ( f ) => 'padding' === f.setting ), 'a different setting is a separate family' );
+	assert.equal( fams.find( ( f ) => 'padding' === f.setting ).claims, 1 );
 	// A row that was not decided by canvas-settable is not a claim at all.
 	assert.equal( fams.reduce( ( a, f ) => a + f.claims, 0 ), 5, 'only the five canvas-settable rows are counted' );
 	// Families come back most-claims-first, so the biggest population is confirmed first.
@@ -51,7 +51,7 @@ test( 'MUST FAIL: the two citation mechanisms stay distinguishable', () => {
 	// A canvas-roster citation records where it came from; a resolver-hop citation has no `where` key and must
 	// be labelled, not silently merged with the roster ones: a defect in one gate says nothing about the other.
 	assert.deepEqual( fams.find( ( f ) => 'gridItemPadding' === f.setting ).where, [ 'sibling' ] );
-	assert.deepEqual( fams.find( ( f ) => 'contentBandPadding' === f.setting ).where, [ 'ancestor' ] );
+	assert.deepEqual( fams.find( ( f ) => 'padding' === f.setting ).where, [ 'ancestor' ] );
 	assert.deepEqual( fams.find( ( f ) => 'contentWidth' === f.setting ).where, [ 'resolver-cite' ] );
 } );
 

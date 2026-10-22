@@ -296,7 +296,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// wp_style_engine_get_styles(), so an unset side keeps the stylesheet's value.
 	Object.assign(
 		style,
-		tierBoxLonghands( attributes.padding, previewTier, 'padding' ),
 		tierBoxLonghands( attributes.margin, previewTier, 'margin' )
 	);
 
@@ -401,7 +400,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		resolveResponsiveTier( attributes.contentWidth, previewTier )?.value
 	);
 	const bandPadTier = resolveResponsiveTier(
-		attributes.contentBandPadding,
+		attributes.padding,
 		previewTier
 	)?.value;
 	const bandPad =
@@ -1015,49 +1014,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
               background on the block itself (BackgroundPanel) instead. Zero
               stored instances existed on the canary at deletion. Do NOT re-add
               a band-scoped background control here or on any composite. */ }
-					{ /* contentBandPadding is a TIER OBJECT — ONE attr holding
-              {desktop,tablet,mobile}, each tier itself a {top,right,bottom,left}
-              box (Spec 35 box-shaped pass, 2026-08-11). It therefore uses
-              ResponsiveOverride, which reads and writes the object, NOT the
-              flat-sibling ResponsiveBoxControl. Do NOT revert to an attrMap of
-              {base:'contentBandPadding', tablet:'contentBandPaddingTablet',
-              mobile:'contentBandPaddingMobile'} — those two siblings are no
-              longer declared by any block.json, and WordPress SILENTLY
-              DISCARDS an attribute a block does not declare (D338), so both
-              tiers would save nothing while the desktop branch wrote a plain
-              object into the SAME shape as before by coincidence only — the
-              real risk is a stale flat write landing on a deleted attr.
-              Mirrors ResponsiveBoxControls.js's Padding block exactly. */ }
-					{ /* ⛔ NO `label` on the wrapper, and NO `hideLabelFromVision` on the
-              BoxControl — core's BoxControl ignores that prop and always renders its
-              own label, so both painted (sentence case + WP's uppercase). Keep
-              BoxControl's; BaseControl associates it with the inputs. Full reasoning
-              at components/ResponsiveBoxControls.js. */ }
-					<ResponsiveOverride
-						value={ attributes.contentBandPadding }
-						onChange={ ( obj ) =>
-							setAttributes( { contentBandPadding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Band padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					{ /* contentBandMargin — same tier-object shape as contentBandPadding
+					{ /* contentBandMargin — a tier-object band margin,
               immediately above, same ResponsiveOverride wiring. Completes a
               wire-up that was previously write-only: the Universal Cloning
               Pipeline's content_band.py resolver already writes real values

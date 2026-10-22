@@ -129,7 +129,8 @@ export function heroCanvasPreview( attributes, { tier = 'desktop', palette = [],
 			root[ key ] = wrapper.style[ key ];
 		}
 	} );
-	Object.assign( root, tierBoxLonghands( attributes.padding, tier, 'padding' ), tierBoxLonghands( attributes.margin, tier, 'margin' ) );
+	// A standard hero's padding paints its content band (the shared wrapper's `bandStyle`); a split hero has no band, so it stays on the section.
+	Object.assign( root, isSplit ? tierBoxLonghands( attributes.padding, tier, 'padding' ) : {}, tierBoxLonghands( attributes.margin, tier, 'margin' ) );
 	// render.php always sets align-items from verticalAlignment; a wrapper layout's own value wins.
 	root.alignItems = root.alignItems || ALIGN_MAP[ attributes.verticalAlignment ] || 'center';
 	const minHeight = 'mobile' === tier

@@ -80,6 +80,8 @@ EXEMPT_RULES = (
      'a Fill, Solve, triage or confirm run report: it names settings it measured and saves none'),
     (lambda r: r.startswith('plugins/sgs-blocks/scripts/check-container-band-layers'),
      'this detector, its baseline and its census'),
+    (lambda r: r.startswith('plugins/sgs-blocks/includes/class-sgs-band-padding-'),
+     'the saved-content migration: it names the retired attribute it folds into padding'),
 )
 
 # Generated from block.json by the reseed / consistency generators: they follow once
@@ -117,10 +119,11 @@ NARROW_GLOBS = (
 )
 
 WRAPPER_CODE_PATH = (
-    "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper::render: `padding` "
-    "paints the OUTER element; `contentBandPadding` is the only band padding "
-    "(emitted via $base_band_decls on .sgs-container__inner). The band renders "
-    "($do_wrap) whenever contentWidth or any band prop is set, whatever the block kind."
+    "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper::render: on a block "
+    "that declares contentWidth, `padding` paints the content band "
+    "(.sgs-container__inner, via $obj_band_props and the native-padding rule), the outer "
+    "element keeps no padding. The band renders ($do_wrap) whenever contentWidth or any "
+    "band prop (padding included) is set."
 )
 
 

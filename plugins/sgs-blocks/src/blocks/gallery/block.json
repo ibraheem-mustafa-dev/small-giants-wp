@@ -113,7 +113,6 @@
 					"attrMap": {
 						"css:background-color": "native:color.background",
 						"css:color": "native:color.text",
-						"css:padding": "padding",
 						"css:margin": "margin",
 						"css:max-width": "maxWidth",
 						"css:border-width": "borderWidth",
@@ -222,6 +221,19 @@
 						}
 					},
 					"_note_hover": "overlayColourHover declared 2026-09-05: render.php:145 states it paints an EXISTING `.sgs-gallery__img-wrap::after` overlay on hover. Was a rogue seed (css_property in the DB, declared nowhere)."
+				},
+				"content-band": {
+					"label": "Content band",
+					"layer": "CONTENT",
+					"order": 7,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:max-width": "contentWidth",
+						"css:padding": "padding"
+					}
 				}
 			},
 			"boxFamilies": {

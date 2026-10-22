@@ -43,9 +43,6 @@
 				"margin": [
 					"margin"
 				],
-				"contentBandPadding": [
-					"contentBandPadding"
-				],
 				"borderRadius": [
 					"borderRadius"
 				],
@@ -65,7 +62,6 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
-						"css:padding": "padding",
 						"css:margin": "margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
@@ -87,7 +83,8 @@
 					],
 					"prefix": "contentBand",
 					"attrMap": {
-						"css:width": "contentWidth"
+						"css:max-width": "contentWidth",
+						"css:padding": "padding"
 					},
 					"_note": "The __inner band IS the physics arena — its rendered box is what view.js reads as Draggable's bounds and the Physics2D floor/wall geometry."
 				},
@@ -166,12 +163,6 @@
 			"type": "object",
 			"default": {
 				"desktop": "full"
-			}
-		},
-		"contentBandPadding": {
-			"type": "object",
-			"default": {
-				"desktop": {}
 			}
 		},
 		"shadow": {

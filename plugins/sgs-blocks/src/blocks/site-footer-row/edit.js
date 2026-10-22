@@ -277,19 +277,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			? halved( previewPad[ side ] )
 			: previewPad[ side ];
 	};
-	const paddingPreview = {};
+	// The row's padding paints its content band (`.sgs-container__inner`), as the wrapper does.
+	const bandPadding = {};
 	[ 'top', 'right', 'bottom', 'left' ].forEach( ( side ) => {
 		const value = sideValue( side );
 		if ( value ) {
-			paddingPreview[
-				`padding${ side[ 0 ].toUpperCase() }${ side.slice( 1 ) }`
-			] = value;
+			bandPadding[ side ] = value;
 		}
 	} );
+	let bandTransition = '';
 	if ( rowShrinkDuration > 0 || rowShrinkEasing ) {
 		const ms =
 			rowShrinkDuration > 0 ? Math.min( 3000, rowShrinkDuration ) : 200;
-		paddingPreview.transition = `padding ${ ms }ms ${ motionEasingCss(
+		bandTransition = `padding ${ ms }ms ${ motionEasingCss(
 			rowShrinkEasing || 'ease',
 			rowShrinkEasingCustom || '',
 			'ease'
@@ -384,7 +384,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const style = {
 		...previewStyle,
 		...footerRowPaint( attributes, previewTier, colourPalette ),
-		...paddingPreview,
 		...sep.style,
 	};
 	Object.assign( style, marginPreview );
@@ -394,23 +393,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// Content band (CHECK A) — mirrors sgs/container's Layer 2 mirror exactly
 	// via the shared contentBandPreview()/resolveContentWidthPreview() utils.
-	// This block has NO `contentBandPadding` attribute (block.json declares
-	// none), so band padding is always {} — only `contentWidth` can open a
-	// band. Default contentWidth is {desktop:'full'}, which resolves to '' (no
-	// cap) via resolveContentWidthPreview(), so hasBandProps stays false and
-	// the canvas renders a single layer exactly as today until the operator
-	// explicitly sets Content width away from Full — matches
-	// class-sgs-container-wrapper.php's documented default-full-no-band
-	// behaviour for this block.
+	// `padding` and `contentWidth` open the band: the default contentWidth
+	// {desktop:'full'} resolves to '' (no cap) via resolveContentWidthPreview(),
+	// so the band renders when the row has padding or a width cap, as
+	// class-sgs-container-wrapper.php decides.
 	const bandMaxWidth = resolveContentWidthPreview(
 		resolveResponsiveTier( contentWidth, 'desktop' )?.value
 	);
 	const { hasBandProps, bandStyle } = contentBandPreview( {
 		contentWidth: bandMaxWidth,
-		bandPadding: {},
+		bandPadding,
 		style,
 		layout,
 	} );
+	if ( bandTransition && hasBandProps ) {
+		bandStyle.transition = bandTransition;
+	}
 
 	const blockProps = useBlockProps( {
 		className: `sgs-site-footer-row${

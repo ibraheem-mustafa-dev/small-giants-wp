@@ -414,7 +414,6 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		style: {
 			...wrapper.style,
 			...typographyPreviewStyle( attributes, '', previewTier ),
-			...tierBoxLonghands( attributes.padding, previewTier, 'padding' ),
 			...tierBoxLonghands( attributes.margin, previewTier, 'margin' ),
 		},
 		className: `sgs-form ${ formPreviewScope }${ fieldColumnsFrom && '560' !== fieldColumnsFrom ? ` sgs-form--field-cols-${ fieldColumnsFrom }` : '' }`,

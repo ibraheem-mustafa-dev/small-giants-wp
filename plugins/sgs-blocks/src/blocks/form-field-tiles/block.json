@@ -100,7 +100,6 @@
 						"css:border-color": "borderColour",
 						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
-						"css:width": "contentWidth",
 						"css:border-color-gradient": "borderColourGradient",
 						"css:background-image": "textColourGradient",
 						"css:color-gradient": "textColourGradient"
@@ -136,6 +135,18 @@
 						"css:flex-wrap": "flexWrap"
 					},
 					"_note": "WS-4: the tile grid delegates to SGS_Container_Wrapper (kind='layout', render.php:231-242) so it mirrors sgs/container's grid/flex capabilities. Maps explicitly — no `prefix` declared, so the default convention cannot resolve bare camelCase attrs (ROLLOUT REQUIREMENT 1). display/order/overflow/align-items remain honest gaps (no attribute on this block)."
+				},
+				"content-band": {
+					"label": "Content band",
+					"layer": "CONTENT",
+					"order": 5,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:max-width": "contentWidth"
+					}
 				}
 			},
 			"boxFamilies": {

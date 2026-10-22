@@ -200,7 +200,7 @@ if ( ! empty( $shr_shrink_tiers ) ) {
 	// An explicit shrunk padding (rowShrinkPadding) replaces the halving.
 	if ( empty( $attributes['rowShrinkPadding'] ) ) {
 		$css .= sgs_row_shrink_css(
-			$root_sel . '.is-row-shrunk',
+			$root_sel . '.is-row-shrunk>.sgs-container__inner',
 			isset( $attributes['padding'] ) ? $attributes['padding'] : array()
 		);
 	}

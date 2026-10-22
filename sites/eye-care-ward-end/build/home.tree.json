@@ -1846,7 +1846,7 @@
             "name": "sgs/container",
             "attributes": {
               "backgroundColour": "primary",
-              "contentBandPadding": {
+              "padding": {
                 "desktop": {
                   "bottom": "34px",
                   "left": "30px",
@@ -1951,7 +1951,7 @@
             "name": "sgs/container",
             "attributes": {
               "backgroundColour": "primary",
-              "contentBandPadding": {
+              "padding": {
                 "desktop": {
                   "bottom": "34px",
                   "left": "30px",
@@ -2057,7 +2057,7 @@
             "name": "sgs/container",
             "attributes": {
               "backgroundColour": "primary",
-              "contentBandPadding": {
+              "padding": {
                 "desktop": {
                   "bottom": "34px",
                   "left": "30px",
@@ -2163,7 +2163,7 @@
             "name": "sgs/container",
             "attributes": {
               "backgroundColour": "primary",
-              "contentBandPadding": {
+              "padding": {
                 "desktop": {
                   "bottom": "34px",
                   "left": "30px",
@@ -3327,7 +3327,7 @@
         "name": "sgs/container",
         "attributes": {
           "backgroundColour": "surface",
-          "contentBandPadding": {
+          "padding": {
             "desktop": {
               "bottom": "68px",
               "left": "60px",

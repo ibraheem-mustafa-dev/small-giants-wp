@@ -24,12 +24,13 @@
  *   here.
  *
  * BOX-GROUP (contract §B, 2026-07-09): splitMediaBorderRadius, splitMediaBorderWidth,
- * splitMediaPadding, mediaPadding, contentPadding, contentBandPadding are box
+ * splitMediaPadding, mediaPadding, contentPadding are box
  * OBJECTS ({top,right,bottom,left} / {topLeft,topRight,bottomLeft,bottomRight},
  * base + Tablet + Mobile tiers) — no more flat per-side attrs or *Unit
- * companions. contentBandPadding is read + emitted entirely by
- * SGS_Container_Wrapper (mirrors sgs/container); the other 5 families are
- * read + emitted here, block-private.
+ * companions. The block's `padding` is read + emitted entirely by
+ * SGS_Container_Wrapper on the content band (a split hero has no band, so it
+ * stays on the section); the other 3 families are read + emitted here,
+ * block-private.
  *
  * NO-INLINE: this block emits zero inline style property declarations.
  * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.

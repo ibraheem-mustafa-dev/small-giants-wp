@@ -90,14 +90,12 @@
 						"css:font-weight": "fontWeight",
 						"css:font-style": "fontStyle",
 						"css:line-height": "lineHeight",
-						"css:padding": "padding",
 						"css:margin": "margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
 						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
-						"css:width": "contentWidth",
 						"css:border-color-gradient": "borderColourGradient",
 						"css:-webkit-text-stroke-width": "textStrokeWidth",
 						"css:-webkit-text-stroke-color": "textStrokeColour"
@@ -807,6 +805,19 @@
 								"css:-webkit-text-stroke-color": "stepNumberTextStrokeColourHover"
 							}
 						}
+					}
+				},
+				"content-band": {
+					"label": "Content band",
+					"layer": "CONTENT",
+					"order": 27,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:max-width": "contentWidth",
+						"css:padding": "padding"
 					}
 				}
 			}

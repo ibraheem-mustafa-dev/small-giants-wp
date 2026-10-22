@@ -475,7 +475,7 @@ Every responsive property is `{ desktop: <val>, tablet: <val|null>, mobile: <val
 
 > **Uid hashing does NOT canonicalise attribute key order** (`site-header-row/render.php` `// STOP-NO-KSORT`): canonicalisation is a write-time oracle only, kept out of the hash path, because reordering keys would re-key every scoped-CSS selector and break the collector's cross-page dedup.
 
-**Status:** `BUILT` — `site-header/block.json` and `site-footer/block.json` declare `padding`, `margin`, `maxWidth`, `contentWidth`, `borderRadius`, `borderWidth`, `minHeight`, `contentBandPadding` and `backgroundOverlayOpacity` as objects (`{desktop, tablet, mobile}`), matching `sgs/container`'s shape. The only device-suffixed attrs on either container are `backgroundImageTablet`/`Mobile` and `bgVideoTablet`/`Mobile` — media-asset pickers, correctly flat under the framework's own RECORD/ASSET taxonomy, not the layout/spacing shape this FR is about.
+**Status:** `BUILT` — `site-header/block.json` and `site-footer/block.json` declare `padding`, `margin`, `maxWidth`, `contentWidth`, `borderRadius`, `borderWidth`, `minHeight` and `backgroundOverlayOpacity` as objects (`{desktop, tablet, mobile}`), matching `sgs/container`'s shape. The only device-suffixed attrs on either container are `backgroundImageTablet`/`Mobile` and `bgVideoTablet`/`Mobile` — media-asset pickers, correctly flat under the framework's own RECORD/ASSET taxonomy, not the layout/spacing shape this FR is about.
 
 **Done when:** every responsive property on all four blocks uses the object shape; no flat `*Tablet`/`*Mobile` attr remains on either container for a layout/spacing property; uid generation is unchanged and `STOP-NO-KSORT` still holds. ✅ met.
 

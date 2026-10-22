@@ -69,7 +69,6 @@
             "css:font-weight": "fontWeight",
             "css:font-style": "fontStyle",
             "css:line-height": "lineHeight",
-            "css:padding": "padding",
             "css:margin": "margin",
             "css:border-width": "borderWidth",
             "css:border-style": "borderStyle",
@@ -116,7 +115,9 @@
             "css:align-content": "alignContent",
             "css:align-items": "alignItems",
             "css:flex-direction": "flexDirection",
-            "css:flex-wrap": "flexWrap"
+            "css:flex-wrap": "flexWrap",
+            "css:max-width": "contentWidth",
+            "css:padding": "padding"
           },
           "_note": "Same composite wrapper grid capability as sgs/container (rendered via the shared SGS_Container_Wrapper, kind='layout'). Maps explicitly because this element declares no `prefix` — the default {prefix}{Suffix} convention cannot resolve a bare camelCase attribute (ROLLOUT REQUIREMENT 1). Members with no attribute on this block (display, order, overflow) remain honest gaps."
         },

@@ -278,7 +278,7 @@ def _companion_media_stem(attrs: dict, prop: str) -> bool:
 # backgroundImageMobile — three independent media references, correctly NOT a migration
 # target) from a BOX-OF-SIDES family declared three times, once per device
 # (padding/paddingTablet/paddingMobile — a box_family attribute that SHOULD fold into one
-# tier-of-boxes object, exactly the shape contentBandPadding already uses). Both shapes are
+# tier-of-boxes object, exactly the shape gridItemPadding already uses). Both shapes are
 # "object base + object siblings of the same type" at the block.json level, so the old
 # ASSET test reported both as "correct as-is" — verified live: `--survey --property padding`
 # reported "0 block(s) to migrate" against a real 63-block unmigrated surface (Ship-PM,
@@ -2130,8 +2130,8 @@ def self_test() -> int:
           'every consistent object family as a box',
           _kind_bg == 'ASSET')
 
-    _kind_cbp, _ = classify(_attrs_container, 'contentBandPadding', block_slug='sgs/container')
-    check('negative control is not vacuous: sgs/container.contentBandPadding (already '
+    _kind_cbp, _ = classify(_attrs_container, 'gridItemPadding', block_slug='sgs/container')
+    check('negative control is not vacuous: sgs/container.gridItemPadding (already '
           f'migrated to the tier-of-boxes shape, no Tablet/Mobile siblings declared) '
           f'classifies OBJECT (got {_kind_cbp!r}), not BOX_FLAT — an already-done family '
           'must not be re-flagged',

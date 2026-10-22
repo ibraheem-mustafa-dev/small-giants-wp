@@ -222,7 +222,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// Padding/margin canvas preview. `padding`/`margin` are each ONE
 	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
 	const spacePreview = spacingPreview( {
-		padding: attributes.padding,
 		margin: attributes.margin,
 	}, previewTier );
 
@@ -598,28 +597,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
-				{ /* contentBandPadding is a TIER OBJECT — ONE attr holding
-				     {desktop,tablet,mobile}, each tier itself a {top,right,bottom,left}
-				     box. It therefore uses
-				     ResponsiveOverride, which reads and writes the object, NOT the
-				     flat-sibling ResponsiveBoxControl. Mirrors container's own
-				     implementation. */ }
-				<PanelBody title={ __( 'Band padding', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveOverride
-						value={ attributes.contentBandPadding }
-						onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Band padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
 			</InspectorControls>
 
 			{ /* Spread first, then state children explicitly: innerBlocksProps

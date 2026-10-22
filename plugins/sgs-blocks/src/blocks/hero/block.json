@@ -141,9 +141,6 @@
 					"splitMediaBorderRadiusTablet",
 					"splitMediaBorderRadiusMobile"
 				],
-				"contentBandPadding": [
-					"contentBandPadding"
-				],
 				"padding": [
 					"padding"
 				],
@@ -172,7 +169,6 @@
 					"attrMap": {
 						"css:background-color": "backgroundColour",
 						"css:color": "textColour",
-						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
@@ -244,9 +240,10 @@
 					],
 					"prefix": "contentBand",
 					"attrMap": {
-						"css:width": "contentWidth"
+						"css:max-width": "contentWidth",
+						"css:padding": "padding"
 					},
-					"_note": "Mirrors sgs/container's content-band — the content-width constraining band, independent of the `content` grid-area below. Padding resolves via the default {prefix}{Suffix} convention (contentBandPadding)."
+					"_note": "Mirrors sgs/container's content-band — the content-width constraining band, independent of the `content` grid-area below. Padding maps explicitly to the block's `padding` attribute."
 				},
 				"content": {
 					"label": "Content column",
@@ -1116,12 +1113,6 @@
 		"alignItems": {
 			"type": "string",
 			"default": ""
-		},
-		"contentBandPadding": {
-			"type": "object",
-			"default": {
-				"desktop": {}
-			}
 		},
 		"padding": {
 			"type": "object",

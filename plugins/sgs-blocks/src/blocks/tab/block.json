@@ -63,6 +63,18 @@
 					"order": 2,
 					"clusters": [],
 					"_note": "Content is native InnerBlocks children (any block type) — each child owns its own typography. Mirrors sgs/quote's quote-body element. The `label` attribute is NOT rendered anywhere in THIS block's own render.php — it is read only by the PARENT sgs/tabs to render the tab BUTTON text, and its styling (tabTextColour/tabActiveTextColour/tabActiveBgColour/tabActiveIndicatorColour/tabHoverBgColour) is owned entirely by sgs/tabs's own `tab` manifest element (see tabs/block.json) — never duplicated here."
+				},
+				"content-band": {
+					"label": "Content band",
+					"layer": "CONTENT",
+					"order": 3,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:max-width": "contentWidth"
+					}
 				}
 			},
 			"boxFamilies": {

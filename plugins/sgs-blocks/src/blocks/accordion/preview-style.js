@@ -29,7 +29,7 @@ export function accordionWrapperPreview( attributes, tier, palette, scope ) {
 	const wrapper = containerWrapperPreview( attributes, tier, palette );
 	Object.assign(
 		wrapper.style,
-		spacingPreview( { padding: attributes.padding, margin: attributes.margin }, tier ),
+		spacingPreview( { margin: attributes.margin }, tier ),
 		typographyPreviewStyle( attributes, '', tier )
 	);
 	return {

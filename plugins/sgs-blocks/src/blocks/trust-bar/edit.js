@@ -37,9 +37,9 @@ import {
 } from '../../utils';
 // trust-bar does not use the default <ContainerWrapperControls> aggregator —
 // its "Content band" / "Responsive spacing" panels write to flat attrs
-// (contentBandPaddingTop, paddingTopTablet, …) this block does not declare;
+// (per-side, per-tier keys such as paddingTopTablet) this block does not declare;
 // its padding/margin/content-band values are tier-of-boxes object attrs
-// (`padding`, `margin`, `contentBandPadding`, each { desktop, tablet, mobile }).
+// (`padding`, `margin`, each { desktop, tablet, mobile }).
 // The individual panels needed are imported instead (mirrors
 // sgs/container's + sgs/hero's own edit.js), and trust-bar rolls its own
 // "Padding & margin" / "Content band" panels below using ResponsiveBoxControl
@@ -466,7 +466,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// Padding/margin canvas preview. `padding`/`margin` are each ONE
 	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
 	const spacePreview = spacingPreview( {
-		padding: attributes.padding,
 		margin: attributes.margin,
 	}, previewTier );
 
@@ -980,33 +979,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						fills its CONTAINER's max-width and is never clipped to the
 						inner content layer (Bean-ruled). Use BackgroundPanel on the
 						block itself. Do NOT re-add a band-scoped background. */ }
-					{ /* contentBandPadding is a TIER OBJECT — ONE attr holding
-						{desktop,tablet,mobile}, each tier itself a
-						{top,right,bottom,left} box (Spec 35 box-shaped pass,
-						2026-08-11). Uses ResponsiveOverride, not the flat-sibling
-						ResponsiveBoxControl — contentBandPaddingTablet/Mobile are
-						no longer declared by block.json, so writing through the
-						old attrMap would silently discard both tiers (D338).
-						Mirrors sgs/container's own edit.js. */ }
-					{ /* ⛔ NO `label` on the wrapper, and NO `hideLabelFromVision` on the
-					     BoxControl — core's BoxControl ignores that prop and always renders its
-					     own label, so both painted (sentence case + WP's uppercase). Keep
-					     BoxControl's; BaseControl associates it with the inputs. Full reasoning
-					     at components/ResponsiveBoxControls.js. */ }
-					<ResponsiveOverride
-						value={ attributes.contentBandPadding }
-						onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Band padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-							/>
-						) }
-					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* ── Layout (grid/flex, columns, gap) ──────────────────────── */ }

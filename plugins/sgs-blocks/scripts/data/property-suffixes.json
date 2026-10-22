@@ -1319,42 +1319,6 @@
       null
     ],
     [
-      "BandPaddingTop",
-      "layout",
-      "padding-top",
-      0,
-      null,
-      "CSS padding-top -> CONTENT-layer 'contentBandPaddingTop' (sgs/container's actual band-padding attr name, distinct from the generic contentPaddingTop candidate that the pre-existing 'PaddingTop' suffix derives); EXECUTION Step 12",
-      null
-    ],
-    [
-      "BandPaddingRight",
-      "layout",
-      "padding-right",
-      0,
-      null,
-      "CSS padding-right -> CONTENT-layer 'contentBandPaddingRight'; EXECUTION Step 12",
-      null
-    ],
-    [
-      "BandPaddingBottom",
-      "layout",
-      "padding-bottom",
-      0,
-      null,
-      "CSS padding-bottom -> CONTENT-layer 'contentBandPaddingBottom'; EXECUTION Step 12",
-      null
-    ],
-    [
-      "BandPaddingLeft",
-      "layout",
-      "padding-left",
-      0,
-      null,
-      "CSS padding-left -> CONTENT-layer 'contentBandPaddingLeft'; EXECUTION Step 12",
-      null
-    ],
-    [
       "BandMarginTop",
       "layout",
       "margin-top",
