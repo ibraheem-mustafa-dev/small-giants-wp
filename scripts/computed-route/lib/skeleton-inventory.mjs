@@ -78,7 +78,11 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc ]
 			const renders = s.getClientRects().length > 0 && r.width > 0 && r.height > 0 && s.checkVisibility( { opacityProperty: true, visibilityProperty: true } );
 			const holdsOtherRoot = holdsOther( s );
 			beside.push( { key: keyOf( s ), side, distance, position, renders, holdsOtherRoot } );
-			if ( open[ side ] && ! [ 'fixed', 'absolute' ].includes( position ) && renders ) {
+			const floats = [ 'fixed', 'absolute' ].includes( position );
+			if ( strips.floating ) {
+				// A footer reads only the floating siblings (rules.footerSlots): they are its bottom row's.
+				floats && renders && ! holdsOtherRoot && stripRoots.set( s, { side, distance } );
+			} else if ( open[ side ] && ! floats && renders ) {
 				holdsOtherRoot ? ( open[ side ] = false ) : stripRoots.set( s, { side, distance } );
 			}
 		} );

@@ -60,10 +60,10 @@ export function inventoryStrips( { client, surface, repo = REPO } ) {
 	const slug = readSurface( repo, client, surface ).intakeSurface;
 	const entry = slug ? readJson( path.join( repo, 'sites', client, 'build', 'intake', 'intake.json' ), null )?.skeletons?.[ slug ] : null;
 	const records = readJson( path.join( repo, 'sites', client, 'handoff', 'surfaces.json' ), null )?.records;
-	if ( 'header' !== entry?.kind || ! records ) {
+	if ( ! [ 'header', 'footer' ].includes( entry?.kind ) || ! records ) {
 		return null;
 	}
-	return { rootComponent: records.find( ( r ) => r.id === entry.id )?.dc ?? null, exclude: records.filter( ( r ) => r.id !== entry.id && 'global' !== r.kind && null != r.template_tpl_id ).map( ( r ) => [ r.dc, String( [].concat( r.template_tpl_id ).at( -1 ) ) ] ), pages: records.some( ( r ) => 'page' === r.kind ) };
+	return { rootComponent: records.find( ( r ) => r.id === entry.id )?.dc ?? null, ...( 'footer' === entry.kind ? { floating: true } : {} ), exclude: records.filter( ( r ) => r.id !== entry.id && 'global' !== r.kind && null != r.template_tpl_id ).map( ( r ) => [ r.dc, String( [].concat( r.template_tpl_id ).at( -1 ) ) ] ), pages: records.some( ( r ) => 'page' === r.kind ) };
 }
 
 // The intake context of a surface, as lib/skeleton-rerun.mjs::rerunSkeletons passes it: the intake skeleton the manifest

@@ -137,3 +137,47 @@ test( 'MUST FAIL: the header root and its siblings are read in one frame, at scr
 	assert.equal( inv.elements[ 0 ].box[ 1440 ].y, 30, 'the sticky header is at its natural place, not stuck 500px down' );
 	assert.deepEqual( rowSlots( propose( inv ) ).map( ( x ) => x[ 1 ] ), [ 'Root/2#0', 'Root/5#0', null ], 'the strip above it is stacked on it' );
 } );
+
+// ---- rules.footerSlots, read from a real page: a footer with a grid of link groups between two strips, and a fixed button beside it ----
+const FOOTER_HTML = `<!doctype html><html><head><style>body{margin:0}.g{display:flex;gap:20px}.g>div{width:120px}</style></head><body>
+<div class="sc-host" data-sc-name="Root" data-dc-tpl="">
+	<div data-dc-tpl="1">
+		<main data-dc-tpl="9" style="height:300px"><h1 data-dc-tpl="10">Page</h1></main>
+		<footer data-dc-tpl="20">
+			<div data-dc-tpl="21" style="height:30px">Join the newsletter</div>
+			<div data-dc-tpl="22" class="g"><div data-dc-tpl="23"><h4 data-dc-tpl="24">Shop</h4><a data-dc-tpl="25" href="/shop">Shop all</a></div><div data-dc-tpl="26"><h4 data-dc-tpl="27">Help</h4><a data-dc-tpl="28" href="/help">Get help</a></div></div>
+			<div data-dc-tpl="29" style="height:30px">Registered charity</div>
+		</footer>
+		<a data-dc-tpl="30" href="https://wa.me/1" style="position:fixed;right:0;bottom:0;width:40px;height:40px">Chat</a>
+	</div>
+</div></body></html>`;
+const FOOTER_SURFACES = [ { id: 'S-1', kind: 'footer', component: 'Root', rootTpl: '20' }, { id: 'S-2', kind: 'page', component: 'Root', rootTpl: '9' }, { id: 'S-3', kind: 'global', component: 'Root', rootTpl: '30' } ];
+const footerRows = ( r ) => r.skeleton[ 0 ].innerBlocks.map( ( n ) => [ n.attributes.rowSlot, n.draftRef?.tpl ?? ( n.innerBlocks.map( ( c ) => c.draftRef?.tpl ).join( '+' ) || null ) ] );
+const proposeFooter = ( inventory, f = facts() ) => proposeSkeleton( { inventory, facts: f, surface: 'footer', surfaceKind: 'footer', surfaceName: 'Footer', db } );
+
+test( 'MUST FAIL: the planted footer is three rows (strip above, grid, strip below) with the fixed button read beside it in the bottom row, and the slot ref nulled raises the gap again', async () => {
+	const strips = stripOptions( FOOTER_SURFACES[ 0 ], FOOTER_SURFACES );
+	assert.deepEqual( strips, { exclude: [ [ 'Root', '9' ] ], floating: true }, 'a footer reads floating siblings only' );
+	const page = await browser.newPage( { viewport: { width: 1440, height: 900 } } );
+	await page.setContent( FOOTER_HTML );
+	await page.evaluate( () => {
+		window.__dcAnnotatedTemplate = () => '';
+		window.__dcRootName = () => 'Root';
+	} );
+	let inv;
+	try {
+		inv = await readInventory( { page, root: 'footer', settle: async () => {}, strips } );
+	} finally {
+		await page.close();
+	}
+	assert.deepEqual( inv.elements.filter( ( e ) => e.strip ).map( ( e ) => [ e.key, e.strip.side ] ), [ [ 'Root/30#0', 'after' ] ], 'only the fixed sibling is read; the in-flow page content is not' );
+	const r = proposeFooter( inv );
+	assert.deepEqual( footerRows( r ), [ [ 'top', 'Root/21#0' ], [ 'columns', 'Root/22#0' ], [ 'bottom', 'Root/29#0+Root/30#0' ] ] );
+	assert.deepEqual( r.proposal.stripRoots, [ 'Root/30#0' ] );
+	assert.deepEqual( r.problems, [] );
+	const f = facts();
+	const nulled = { ...f, decisions: { ...f.decisions, rules: { ...f.decisions.rules, footerSlots: { ...f.decisions.rules.footerSlots, slotAttribute: null } } } };
+	const raised = proposeFooter( inv, nulled );
+	assert.ok( raised.problems.some( ( p ) => p.startsWith( 'Root/30#0' ) && /no row/.test( p ) ), `the floating element is raised again: ${ JSON.stringify( raised.problems ) }` );
+	assert.ok( raised.skeleton[ 0 ].innerBlocks.every( ( n ) => undefined === n.attributes.rowSlot ), 'nothing was assigned a slot' );
+} );

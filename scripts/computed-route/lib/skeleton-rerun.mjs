@@ -58,11 +58,11 @@ export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = n
 	const unchecked = [];
 	// The export is hashed once per run, not once per surface.
 	const current = fs.existsSync( handoffRoot ) ? sourcesOf( handoffRoot ) : null;
-	// A header surface is proposed first: the strips it reads beside itself (rules.headerSlots) are its rows, so a global
+	// A header or footer surface is proposed first: the strips it reads beside itself (rules.headerSlots, rules.footerSlots) are its rows, so a global
 	// surface whose root is one of them is that header's, never a surface of its own.
 	const absorbedKeys = new Map();
 	const absorbed = {};
-	for ( const s of [ ...surfaces ].sort( ( a, b ) => Number( 'header' !== a.kind ) - Number( 'header' !== b.kind ) ) ) {
+	for ( const s of [ ...surfaces ].sort( ( a, b ) => Number( ! [ 'header', 'footer' ].includes( a.kind ) ) - Number( ! [ 'header', 'footer' ].includes( b.kind ) ) ) ) {
 		const file = path.join( dir, `${ s.slug }.json` );
 		if ( ! fs.existsSync( file ) ) {
 			missing.push( s.slug );
