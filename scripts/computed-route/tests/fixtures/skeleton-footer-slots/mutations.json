@@ -1,20 +1,146 @@
 [
-	{ "file": "lib/skeleton-footer-slots.mjs", "find": "const floating = kids.filter( ( k ) => isFloating( k, declared ) );", "replace": "const floating = [];", "why": "a floating child of the footer root would be columns content, not the bottom row's" },
-	{ "file": "lib/skeleton-footer-slots.mjs", "find": "return { mode: grids.length ? 'grid' : 'band', top: [ ...split.top ].reverse(), columns: split.main, bottom: split.bottom, floating };", "replace": "return { mode: grids.length ? 'grid' : 'band', top: [], columns: split.main, bottom: split.bottom, floating };", "why": "a strip above the grid would not be the top row" },
-	{ "file": "lib/skeleton-footer-slots.mjs", "find": "return { mode: grids.length ? 'grid' : 'band', top: [ ...split.top ].reverse(), columns: split.main, bottom: split.bottom, floating };", "replace": "return { mode: grids.length ? 'grid' : 'band', top: [ ...split.top ].reverse(), columns: split.main, bottom: [], floating };", "why": "a strip below the grid would not be the bottom row" },
-	{ "file": "lib/skeleton-footer-slots.mjs", "find": "top: [ ...split.top ].reverse(), columns", "replace": "top: split.top, columns", "why": "several top strips would be in reverse document order" },
-	{ "file": "lib/skeleton-footer-slots.mjs", "find": "const grids = flow.filter( ( k ) => sideBySide( kidsOf( k ).filter( linkGroup ) ).length >= 2 );", "replace": "const grids = [];", "why": "a grid child would not be found, so everything would be columns" },
-	{ "file": "lib/skeleton-footer-slots.mjs", "find": "const mains = grids.length ? grids : band.length >= 2 ? band : [];", "replace": "const mains = grids;", "why": "link groups that are the root's own children would not be the columns" },
-	{ "file": "lib/skeleton-footer-slots.mjs", "find": "return { mode: 'none', top: [], columns: flow, bottom: [], floating };", "replace": "return { mode: 'none', top: [], columns: [], bottom: flow, floating };", "why": "with no grid the in-flow children would leave the columns row" },
-	{ "file": "lib/skeleton-footer-slots.mjs", "find": "return at.filter( ( x ) => at.some( ( y ) => y !== x && apart( x.b, y.b ) && overlapY( x.b, y.b ) ) ).map( ( x ) => x.k );", "replace": "return at.filter( ( x ) => at.some( ( y ) => y !== x && apart( x.b, y.b ) ) ).map( ( x ) => x.k );", "why": "two stacked blocks would read as side by side" },
-	{ "file": "lib/skeleton-footer-slots.mjs", "find": "a[ F.slotAttribute ] = slot;", "replace": "void slot;", "why": "a row made from a draft element would carry no slot" },
-	{ "file": "lib/skeleton-footer-slots.mjs", "find": "plan.top.length ? rowOf( 'top', plan.top ) : rowNode( 'top', [] ),", "replace": "...( plan.top.length ? [ rowOf( 'top', plan.top ) ] : [] ),", "why": "an empty footer would lose its top row" },
-	{ "file": "lib/skeleton-footer-slots.mjs", "find": "plan.bottom.length || floats.length ? rowOf( 'bottom', plan.bottom, floats ) : rowNode( 'bottom', [] ),", "replace": "plan.bottom.length ? rowOf( 'bottom', plan.bottom, floats ) : rowNode( 'bottom', [] ),", "why": "a floating element alone would not make the bottom row hold it" },
-	{ "file": "lib/skeleton-footer-slots.mjs", "find": "c.setStripRoots( beside.map( ( x ) => x.key ) );", "replace": "c.setStripRoots( [] );", "why": "a floating sibling's surface would not be absorbed into the footer" },
-	{ "file": "lib/skeleton-footer-slots.mjs", "find": "b.renders && ! b.holdsOtherRoot && (", "replace": "b.renders && (", "why": "a sibling holding another surface's root would be taken into the bottom row" },
-	{ "file": "lib/skeleton-footer-slots.mjs", "find": "b.renders && ! b.holdsOtherRoot && (", "replace": "! b.holdsOtherRoot && (", "why": "a hidden sibling would be taken into the bottom row" },
-	{ "file": "lib/skeleton-footer-slots.mjs", "find": "( isOut( b.position ) || isOut( c.declared( byKey.get( b.key ) ?? {} ) ) )", "replace": "true", "why": "an in-flow sibling would be taken into the bottom row" },
-	{ "file": "lib/skeleton-footer-slots.mjs", "find": "return c.buildChildren( e, block );", "replace": "return c.buildChildren( e, block ).slice( 0, 0 );", "why": "with no slot attribute the footer would lose its content" },
-	{ "file": "lib/skeleton-propose.mjs", "find": ": R.footerSlots && block === R.footerSlots.block ? buildFooterRows( e, block )", "replace": ": false ? buildFooterRows( e, block )", "why": "the footer would not get its three rows" },
-	{ "file": "lib/skeleton-facts.mjs", "find": " || 3 !== r.footerSlots.slots.length", "replace": "", "why": "a footer rule naming other than three slots would not be reported" }
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "const floating = all.filter( ( k ) => isFloating( k, declared ) );",
+		"replace": "const floating = [];",
+		"why": "a floating child of the footer root would be columns content, not the bottom row's"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "return { mode: grids.length ? 'grid' : 'band', top: [ ...split.top ].reverse(), columns: split.main, bottom: split.bottom, floating, through: passed };",
+		"replace": "return { mode: grids.length ? 'grid' : 'band', top: [], columns: split.main, bottom: split.bottom, floating, through: passed };",
+		"why": "a strip above the grid would not be the top row"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "return { mode: grids.length ? 'grid' : 'band', top: [ ...split.top ].reverse(), columns: split.main, bottom: split.bottom, floating, through: passed };",
+		"replace": "return { mode: grids.length ? 'grid' : 'band', top: [ ...split.top ].reverse(), columns: split.main, bottom: [], floating, through: passed };",
+		"why": "a strip below the grid would not be the bottom row"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "top: [ ...split.top ].reverse(), columns",
+		"replace": "top: split.top, columns",
+		"why": "several top strips would be in reverse document order"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "const grids = flow.filter( isGrid );",
+		"replace": "const grids = [];",
+		"why": "a grid child would not be found, so everything would be columns"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": ": band.length >= 2 ? band : [];",
+		"replace": ": [];",
+		"why": "link groups that are the root's own children would not be the columns"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "return { mode: 'none', top: [], columns: flow, bottom: [], floating, through: passed };",
+		"replace": "return { mode: 'none', top: [], columns: [], bottom: flow, floating, through: passed };",
+		"why": "with no grid the in-flow children would leave the columns row"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "return at.filter( ( x ) => at.some( ( y ) => y !== x && apart( x.b, y.b ) && overlapY( x.b, y.b ) ) ).map( ( x ) => x.k );",
+		"replace": "return at.filter( ( x ) => at.some( ( y ) => y !== x && apart( x.b, y.b ) ) ).map( ( x ) => x.k );",
+		"why": "two stacked blocks would read as side by side"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "a[ F.slotAttribute ] = slot;",
+		"replace": "void slot;",
+		"why": "a row made from a draft element would carry no slot"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "plan.top.length ? rowOf( 'top', plan.top ) : rowNode( 'top', [] ),",
+		"replace": "...( plan.top.length ? [ rowOf( 'top', plan.top ) ] : [] ),",
+		"why": "an empty footer would lose its top row"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "plan.bottom.length || floats.length ? rowOf( 'bottom', plan.bottom, floats ) : rowNode( 'bottom', [] ),",
+		"replace": "plan.bottom.length ? rowOf( 'bottom', plan.bottom, floats ) : rowNode( 'bottom', [] ),",
+		"why": "a floating element alone would not make the bottom row hold it"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "c.setStripRoots( beside.map( ( x ) => x.key ) );",
+		"replace": "c.setStripRoots( [] );",
+		"why": "a floating sibling's surface would not be absorbed into the footer"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "b.renders && ! b.holdsOtherRoot && (",
+		"replace": "b.renders && (",
+		"why": "a sibling holding another surface's root would be taken into the bottom row"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "b.renders && ! b.holdsOtherRoot && (",
+		"replace": "! b.holdsOtherRoot && (",
+		"why": "a hidden sibling would be taken into the bottom row"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "( isOut( b.position ) || isOut( c.declared( byKey.get( b.key ) ?? {} ) ) )",
+		"replace": "true",
+		"why": "an in-flow sibling would be taken into the bottom row"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "return c.buildChildren( e, block );",
+		"replace": "return c.buildChildren( e, block ).slice( 0, 0 );",
+		"why": "with no slot attribute the footer would lose its content"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": ": R.footerSlots && block === R.footerSlots.block ? buildFooterRows( e, block )",
+		"replace": ": false ? buildFooterRows( e, block )",
+		"why": "the footer would not get its three rows"
+	},
+	{
+		"file": "lib/skeleton-facts.mjs",
+		"find": " || 3 !== r.footerSlots.slots.length",
+		"replace": "",
+		"why": "a footer rule naming other than three slots would not be reported"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "return inner ? open( inner ) : [ k ];",
+		"replace": "return [ k ];",
+		"why": "a wrapper of stacked bands would hide the band above the grid inside the columns"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "[ grids.reduce( ( a, b ) => ( linksIn( b ) > linksIn( a ) ? b : a ) ) ]",
+		"replace": "grids",
+		"why": "every grid would be columns, so a band of links above the grid would not be the top row"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "&& subtree( k ).slice( 1 ).some( isGrid ) ? kidsOf( k ) : null;",
+		"replace": "? kidsOf( k ) : null;",
+		"why": "a link column (heading over links) would be read through and the band broken up"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "\tplan.through.forEach( ( x ) => c.unwrap( x ) );\n",
+		"replace": "",
+		"why": "a wrapper read through would have no row, so its width slot and its record would be lost"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "\t\t\trow.innerBlocks.push( ...floated() );\n",
+		"replace": "",
+		"why": "a floating element would be dropped when the bottom row is one strip"
+	},
+	{
+		"file": "lib/skeleton-footer-slots.mjs",
+		"find": "if ( 1 === els.length && 'none' !== plan.mode ) {",
+		"replace": "if ( 1 === els.length && ! floats.length && 'none' !== plan.mode ) {",
+		"why": "a single bottom strip with a floating element would become a keyless row"
+	}
 ]

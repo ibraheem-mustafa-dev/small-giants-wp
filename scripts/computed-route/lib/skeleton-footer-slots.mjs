@@ -29,32 +29,52 @@ export function sideBySide( list ) {
 // The footer root's children split into its three slots. `kids` are the root's block children in document order;
 // `subtree( x )` is x and all its block descendants; `kidsOf( x )` its block children; `declared( x )` the declared
 // position. Returns { mode, top, columns, bottom, floating } (each a list of elements in document order). A link group is an
-// element holding a link and a heading, a list, or two links. The columns are, in order of preference: (grid) the in-flow
-// children that are themselves a grid, two or more link groups side by side; (band) with no such child, the link groups of
+// element holding a link and a heading, a list, or two links. A child whose in-flow children are stacked (so no grid
+// itself) and which holds a grid below it (a width wrapper of the footer's bands) is read through to its children. The
+// columns are, in order of preference: (grid) the in-flow child that is itself a grid, two or more link groups side by
+// side, the one holding the most links when there are several (the others are strips); (band) with no such child, the link groups of
 // the root's own children that sit side by side; (none) with neither, every in-flow child, all in the columns row: with no
 // grid no signal says where the footer's body ends and a strip begins, so nothing is split off. A child stacked wholly above
 // the columns at every width where both render is top, below is bottom; a child inline with them is part of them.
 export function footerPlan( kids, { subtree, kidsOf, declared = () => null } ) {
-	const floating = kids.filter( ( k ) => isFloating( k, declared ) );
-	const flow = kids.filter( ( k ) => ! floating.includes( k ) );
 	const href = ( d ) => 'a' === d.tag && '' !== String( d.attrs?.href ?? '' ) && '#' !== String( d.attrs?.href ?? '' );
 	const linkGroup = ( k ) => {
 		const all = subtree( k );
 		const links = all.filter( href ).length;
 		return links > 0 && ( links > 1 || all.some( ( d ) => /^(h[1-6]|ul|ol)$/.test( d.tag ) ) );
 	};
-	const grids = flow.filter( ( k ) => sideBySide( kidsOf( k ).filter( linkGroup ) ).length >= 2 );
+	const isGrid = ( k ) => sideBySide( kidsOf( k ).filter( linkGroup ) ).length >= 2;
+	// A child whose in-flow children are all stacked (so no grid itself) and which holds a grid below it is a wrapper
+	// of the footer's stacked bands (a width wrapper): the plan reads through it to its children, so a band above or below
+	// the grid inside it is a strip of its own.
+	const through = ( k ) => {
+		const inner = kidsOf( k ).filter( ( x ) => ! isFloating( x, declared ) );
+		return inner.length >= 2 && ! sideBySide( inner ).length && subtree( k ).slice( 1 ).some( isGrid ) ? kidsOf( k ) : null;
+	};
+	const passed = [];
+	const open = ( list ) => list.flatMap( ( k ) => {
+		const inner = through( k );
+		inner && passed.push( k );
+		return inner ? open( inner ) : [ k ];
+	} );
+	const all = open( kids );
+	const floating = all.filter( ( k ) => isFloating( k, declared ) );
+	const flow = all.filter( ( k ) => ! floating.includes( k ) );
+	// Of two or more grids, the one holding the most links is the columns; the others are strips above or below it.
+	const linksIn = ( k ) => subtree( k ).filter( href ).length;
+	const grids = flow.filter( isGrid );
 	const band = grids.length ? [] : sideBySide( flow.filter( linkGroup ) );
-	const mains = grids.length ? grids : band.length >= 2 ? band : [];
+	const mains = grids.length ? [ grids.reduce( ( a, b ) => ( linksIn( b ) > linksIn( a ) ? b : a ) ) ] : band.length >= 2 ? band : [];
 	if ( ! mains.length ) {
-		return { mode: 'none', top: [], columns: flow, bottom: [], floating };
+		return { mode: 'none', top: [], columns: flow, bottom: [], floating, through: passed };
 	}
 	const split = insideStrips( flow, { holdsMain: ( k ) => mains.includes( k ), declared } );
-	return { mode: grids.length ? 'grid' : 'band', top: [ ...split.top ].reverse(), columns: split.main, bottom: split.bottom, floating };
+	return { mode: grids.length ? 'grid' : 'band', top: [ ...split.top ].reverse(), columns: split.main, bottom: split.bottom, floating, through: passed };
 }
 
 // The proposal part. c: { R, m, inventory, contentAttrs, base, record, hosts, buildChildren, buildNode, slotProblems,
-// setStripRoots, declared }. Returns the three row nodes for the footer root `e`, or the ordinary children when the rule
+// setStripRoots, declared, unwrap }; unwrap( x ) records an element the plan read through as unwrapped (as the writer
+// unwraps any wrapper, so a width wrapper still gives its host its width slot). Returns the three row nodes for the footer root `e`, or the ordinary children when the rule
 // names no slot attribute (each element that would have had a row is a problem).
 export function buildFooterRows( e, block, c ) {
 	const F = c.R.footerSlots;
@@ -70,8 +90,9 @@ export function buildFooterRows( e, block, c ) {
 		return c.buildChildren( e, block );
 	}
 	c.setStripRoots( beside.map( ( x ) => x.key ) );
-	// One element is the row itself (its descendants are the row's children, its attributes the row's); several go inside a
-	// keyless row, one built node each (a built row block gives its children to the row).
+	plan.through.forEach( ( x ) => c.unwrap( x ) );
+	// One element is the row itself (its descendants are the row's children, its attributes the row's, floating elements
+	// after them); several go inside a keyless row, one built node each (a built row block gives its children to the row).
 	function slotRow( el, slot ) {
 		const hit = { block: F.rowBlock, score: 1, share: 1, evidence: [ { text: `rule footerSlots: ${ F.reason }` } ] };
 		const { a, handover } = c.contentAttrs( F.rowBlock, el, hit );
@@ -87,11 +108,14 @@ export function buildFooterRows( e, block, c ) {
 	// With no grid the children are built as the footer's ordinary children: a wrapper the other rules unwrap still goes, and
 	// when exactly one node is itself a row block it is the columns row (as the header's main bar is its middle row).
 	const rowOf = ( slot, els, floats = [] ) => {
-		if ( 1 === els.length && ! floats.length && 'none' !== plan.mode ) {
-			return slotRow( els[ 0 ], slot );
-		}
 		const parent = 'none' === plan.mode ? block : F.rowBlock;
-		const built = [ ...( els.length ? c.buildChildren( e, parent, els ) : [] ), ...floats.flatMap( ( x ) => ( x.strip ? [ c.buildNode( x, F.rowBlock ) ] : c.buildChildren( e, parent, [ x ] ) ) ) ].filter( Boolean );
+		const floated = () => floats.flatMap( ( x ) => ( x.strip ? [ c.buildNode( x, F.rowBlock ) ] : c.buildChildren( e, parent, [ x ] ) ) ).filter( Boolean );
+		if ( 1 === els.length && 'none' !== plan.mode ) {
+			const row = slotRow( els[ 0 ], slot );
+			row.innerBlocks.push( ...floated() );
+			return row;
+		}
+		const built = [ ...( els.length ? c.buildChildren( e, parent, els ) : [] ), ...floated() ].filter( Boolean );
 		const rowsIn = built.filter( ( n ) => n.name === F.rowBlock );
 		const row = 1 === rowsIn.length ? rowsIn[ 0 ] : rowNode( slot, [] );
 		row.innerBlocks = built.flatMap( ( n ) => ( n.name === F.rowBlock ? n.innerBlocks : [ n ] ) );

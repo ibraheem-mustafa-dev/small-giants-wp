@@ -508,7 +508,17 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	}
 
 	// ---- rules.footerSlots: the footer's three rows (lib/skeleton-footer-slots.mjs) ----
-	const buildFooterRows = ( e, block ) => footerRowsOf( e, block, { R, m, inventory, contentAttrs, base, record, hosts, buildChildren, buildNode, slotProblems, declared: declaredPosition, setStripRoots: ( keys ) => ( stripRoots = keys ) } );
+	// A wrapper the footer plan read through: the writer's own unwrap (with its host slot) when a rule unwraps it, else unwrapped by footerSlots.
+	function unwrapThrough( x, block ) {
+		const r = cls.classify( x, block );
+		if ( 'unwrap' === r.action ) {
+			record( x, r );
+			hostSlot( x, r );
+			return;
+		}
+		record( x, { action: 'unwrap', rule: 'footerSlots', source: 'rule footerSlots', reason: "a wrapper of the footer's stacked bands: its bands are the footer's rows", confidence: 1, candidates: [] } );
+	}
+	const buildFooterRows = ( e, block ) => footerRowsOf( e, block, { R, m, inventory, contentAttrs, base, record, hosts, buildChildren, buildNode, slotProblems, declared: declaredPosition, setStripRoots: ( keys ) => ( stripRoots = keys ), unwrap: ( x ) => unwrapThrough( x, block ) } );
 
 	// The built blocks whose children are being built, innermost last.
 	const hosts = [];

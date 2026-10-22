@@ -41,6 +41,12 @@ const run = ( inventory, f = facts() ) => proposeSkeleton( { inventory, facts: f
 const rows = ( r ) => r.skeleton[ 0 ].innerBlocks;
 const flat = ( list ) => list.flatMap( ( n ) => [ n, ...flat( n.innerBlocks || [] ) ] );
 const slotOf = ( r, tpl ) => rows( r ).find( ( n ) => n.draftRef?.tpl === tpl || flat( n.innerBlocks ).some( ( c ) => c.draftRef?.tpl === tpl ) )?.attributes.rowSlot ?? null;
+// footerPlan run directly on an inventory's elements, from the footer root's children.
+const footerPlanOf = ( els ) => {
+	const kidsOf = ( x ) => els.filter( ( e ) => e.parentKey === x.key );
+	const subtree = ( x ) => [ x, ...kidsOf( x ).flatMap( subtree ) ];
+	return footerPlan( kidsOf( els[ 0 ] ), { subtree, kidsOf } );
+};
 const shaped = ( r ) => assert.deepEqual( shape.slottedRootProblems( structuredClone( r.skeleton ) ), [], 'the tree passes the wp-build-page surface shape check' );
 
 test( 'the decisions entry is sound: its blocks exist, its slot attribute is one the row block has, and its slots are the footer template\'s', () => {
@@ -94,7 +100,8 @@ test( 'MUST FAIL: a floating element that is a child of the footer root goes in 
 	const r = run( inv( [ root(), ...grid(), ...fixedKid( 30 ), ...strip( 20, 300, 'Legal' ) ] ) );
 	assert.equal( slotOf( r, 'Root/30#0' ), 'bottom' );
 	assert.equal( slotOf( r, 'Root/20#0' ), 'bottom' );
-	assert.deepEqual( rows( r )[ 2 ].innerBlocks.map( ( n ) => n.draftRef?.tpl ), [ 'Root/20#0', 'Root/30#0' ], 'strips first, then the floating element' );
+	assert.equal( rows( r )[ 2 ].draftRef?.tpl, 'Root/20#0', 'the one bottom strip is the row itself' );
+	assert.equal( rows( r )[ 2 ].innerBlocks.at( -1 ).draftRef?.tpl, 'Root/30#0', 'its content first, then the floating element' );
 	assert.equal( slotOf( r, 'Root/2#0' ), 'columns', 'the floating element is not in the columns' );
 	shaped( r );
 	const alone = run( inv( [ root(), ...grid(), ...fixedKid( 30 ) ] ) );
@@ -125,6 +132,28 @@ test( 'MUST FAIL: an empty footer, and one with no grid, are still three rows; w
 	assert.deepEqual( [ slotOf( plain, 'Root/11#0' ), slotOf( plain, 'Root/21#0' ) ], [ 'columns', 'columns' ], 'with no grid nothing is split off' );
 	assert.deepEqual( [ rows( plain )[ 0 ].innerBlocks.length, rows( plain )[ 2 ].innerBlocks.length ], [ 0, 0 ] );
 	shaped( plain );
+} );
+
+test( 'MUST FAIL: a wrapper of stacked bands is read through: a band of links above the grid is the top row, the grid with the most links the columns, a strip below the wrapper the bottom row', () => {
+	// Root/1 > [ Root/30 wrapper > [ Root/40 contact band (two link cards side by side), Root/2 grid (three columns) ], Root/20 strip ].
+	const wrap = el( 'Root/30#0', 'Root/1#0', 'div', '', { box: place( 0, 60, 400, 240 ) } );
+	const band = [ el( 'Root/40#0', 'Root/30#0', 'div', '', { depth: 2, box: place( 0, 60, 400, 40 ) } ), ...column( 41, 'Root/40#0', place( 0, 60, 100, 40 ), 'Call', 3 ), ...column( 44, 'Root/40#0', place( 150, 60, 100, 40 ), 'Email', 3 ) ];
+	const g = [ el( 'Root/2#0', 'Root/30#0', 'div', '', { depth: 2, box: place( 0, 100, 400, 100 ), display: 'grid' } ), ...column( 3, 'Root/2#0', place( 0, 100, 100, 100 ), 'Shop', 3 ), ...column( 6, 'Root/2#0', place( 150, 100, 100, 100 ), 'Help', 3 ), ...column( 50, 'Root/2#0', place( 300, 100, 100, 100 ), 'About', 3 ) ];
+	const r = run( inv( [ root(), wrap, ...band, ...g, ...strip( 20, 300, 'Copyright' ) ] ) );
+	assert.deepEqual( [ slotOf( r, 'Root/40#0' ), slotOf( r, 'Root/2#0' ), slotOf( r, 'Root/20#0' ) ], [ 'top', 'columns', 'bottom' ] );
+	assert.equal( rows( r )[ 1 ].draftRef.tpl, 'Root/2#0', 'the grid with the most links is the columns row itself' );
+	assert.equal( r.proposal.rows.find( ( x ) => 'Root/30#0' === x.key )?.action, 'unwrap', 'the wrapper read through is recorded as unwrapped' );
+	const withChat = run( inv( [ root(), wrap, ...band, ...g, ...strip( 20, 300, 'Copyright' ), ...fixedKid( 60 ) ] ) );
+	assert.equal( rows( withChat )[ 2 ].draftRef?.tpl, 'Root/20#0', 'one bottom strip stays the row itself when a floating element joins it' );
+	assert.ok( flat( rows( withChat )[ 2 ].innerBlocks ).some( ( n ) => 'Root/60#0' === n.draftRef?.tpl ), 'the floating element is inside it' );
+	assert.deepEqual( r.problems, [] );
+	shaped( r );
+} );
+
+test( 'a link column (a heading over its links, stacked) is never read through: the band of the root\'s own columns stays whole', () => {
+	const cols = [ ...column( 3, 'Root/1#0', place( 0, 100, 100, 100 ), 'Shop', 1 ), ...column( 6, 'Root/1#0', place( 150, 100, 100, 100 ), 'Help', 1 ) ];
+	const plan = footerPlanOf( [ root(), ...cols ] );
+	assert.deepEqual( plan.columns.map( ( x ) => x.key ), [ 'Root/3#0', 'Root/6#0' ] );
 } );
 
 test( 'MUST FAIL: link groups that are children of the root itself, side by side, are the columns (the band) with strips around them', () => {

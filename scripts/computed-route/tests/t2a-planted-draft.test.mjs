@@ -172,7 +172,8 @@ test( 'MUST FAIL: the planted footer is three rows (strip above, grid, strip bel
 	}
 	assert.deepEqual( inv.elements.filter( ( e ) => e.strip ).map( ( e ) => [ e.key, e.strip.side ] ), [ [ 'Root/30#0', 'after' ] ], 'only the fixed sibling is read; the in-flow page content is not' );
 	const r = proposeFooter( inv );
-	assert.deepEqual( footerRows( r ), [ [ 'top', 'Root/21#0' ], [ 'columns', 'Root/22#0' ], [ 'bottom', 'Root/29#0+Root/30#0' ] ] );
+	assert.deepEqual( footerRows( r ), [ [ 'top', 'Root/21#0' ], [ 'columns', 'Root/22#0' ], [ 'bottom', 'Root/29#0' ] ] );
+	assert.equal( r.skeleton[ 0 ].innerBlocks[ 2 ].innerBlocks.at( -1 ).draftRef?.tpl, 'Root/30#0', 'the fixed button read beside the footer is inside the bottom strip row' );
 	assert.deepEqual( r.proposal.stripRoots, [ 'Root/30#0' ] );
 	assert.deepEqual( r.problems, [] );
 	const f = facts();
