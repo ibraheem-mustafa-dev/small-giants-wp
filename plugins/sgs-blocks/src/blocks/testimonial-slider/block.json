@@ -161,16 +161,49 @@
 	"attributes": {
 		"autoplay": {
 			"type": "boolean",
-			"default": true
+			"default": true,
+			"sgs": {
+				"meaning": {
+					"what": "Advances the slides automatically.",
+					"trigger": "a time interval, paused by hover, touch and keyboard focus",
+					"parameters": {
+						"value": {
+							"unit": "boolean"
+						}
+					}
+				}
+			}
 		},
 		"autoplaySpeed": {
 			"type": "number",
-			"default": 5000
+			"default": 5000,
+			"sgs": {
+				"meaning": {
+					"what": "Sets the time each slide shows before the slider advances.",
+					"trigger": "a time interval, when autoplay is on",
+					"parameters": {
+						"value": {
+							"unit": "ms"
+						}
+					}
+				}
+			}
 		},
 		"pauseButton": {
 			"type": "boolean",
 			"default": false,
-			"description": "Show a pause / play button while autoplay runs (off by default). Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients. Keyboard focus, hover and touch pause autoplay either way."
+			"description": "Show a pause / play button while autoplay runs (off by default). Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients. Keyboard focus, hover and touch pause autoplay either way.",
+			"sgs": {
+				"meaning": {
+					"what": "Shows a pause and play button while autoplay runs.",
+					"trigger": "always, while autoplay runs with more than one slide",
+					"parameters": {
+						"value": {
+							"unit": "boolean"
+						}
+					}
+				}
+			}
 		},
 		"showDots": {
 			"type": "boolean",
@@ -182,7 +215,18 @@
 		},
 		"slidesVisible": {
 			"type": "number",
-			"default": 3
+			"default": 3,
+			"sgs": {
+				"meaning": {
+					"what": "Sets how many testimonial cards show side by side in the slider.",
+					"trigger": "always, from page load",
+					"parameters": {
+						"value": {
+							"unit": "count of slides"
+						}
+					}
+				}
+			}
 		},
 		"cardStyle": {
 			"type": "string",
@@ -233,7 +277,18 @@
 		},
 		"transitionDuration": {
 			"type": "string",
-			"default": "300"
+			"default": "300",
+			"sgs": {
+				"meaning": {
+					"what": "Sets how long the slide movement and the slider's hover transitions take.",
+					"trigger": "a slide change, and hover or focus on the slider controls",
+					"parameters": {
+						"value": {
+							"unit": "ms (whole number as a string; default 300)"
+						}
+					}
+				}
+			}
 		},
 		"transitionEasing": {
 			"type": "string",

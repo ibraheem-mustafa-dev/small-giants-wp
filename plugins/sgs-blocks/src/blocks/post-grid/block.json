@@ -530,7 +530,18 @@
     },
     "showFilters": {
       "type": "boolean",
-      "default": false
+      "default": false,
+      "sgs": {
+        "meaning": {
+          "what": "Shows or hides the category filter bar above the grid.",
+          "trigger": "always",
+          "parameters": {
+            "value": {
+              "unit": "boolean"
+            }
+          }
+        }
+      }
     },
     "filterTaxonomy": {
       "type": "string",

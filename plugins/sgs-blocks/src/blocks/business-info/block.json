@@ -92,7 +92,18 @@
 		"openStatusShowLine": {
 			"type": "boolean",
 			"default": true,
-			"description": "Only read by displayType 'open-status'. Shows the line under the pill (when it closes or next opens). Off shows the pill alone."
+			"description": "Only read by displayType 'open-status'. Shows the line under the pill (when it closes or next opens). Off shows the pill alone.",
+			"sgs": {
+				"meaning": {
+					"what": "Shows or hides the line under the open-status pill that says when it closes or next opens.",
+					"trigger": "always, in the open-status display",
+					"parameters": {
+						"value": {
+							"unit": "boolean"
+						}
+					}
+				}
+			}
 		},
 		"openStatusOpenDot": {
 			"type": "string",
@@ -127,28 +138,93 @@
 		"openStatusDotPulse": {
 			"type": "boolean",
 			"default": false,
-			"description": "Only read by displayType 'open-status'. Pulses the dot with an endless expanding ring while the business is open. No pulse under reduced motion."
+			"description": "Only read by displayType 'open-status'. Pulses the dot with an endless expanding ring while the business is open. No pulse under reduced motion.",
+			"sgs": {
+				"meaning": {
+					"what": "Pulses the status dot with an expanding ring while the business is open.",
+					"trigger": "the business being open (endless animation); none under reduced motion",
+					"parameters": {
+						"value": {
+							"unit": "boolean"
+						}
+					}
+				}
+			}
 		},
 		"openStatusDotPulseDuration": {
 			"type": "number",
 			"default": 1600,
-			"description": "Only read by displayType 'open-status'. Length of one pulse in milliseconds (200 to 10000)."
+			"description": "Only read by displayType 'open-status'. Length of one pulse in milliseconds (200 to 10000).",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the length of one pulse of the open-status dot.",
+					"trigger": "the business being open, when the pulse is on",
+					"parameters": {
+						"value": {
+							"unit": "ms (200 to 10000)"
+						}
+					}
+				}
+			}
 		},
 		"hoursTodayColour": {
 			"type": "string",
 			"default": "",
-			"description": "Only read by displayType 'hours'. Text colour of today's row; view.js adds sgs-business-info__hours-row--today in the visitor's browser. Empty leaves it unstyled."
+			"description": "Only read by displayType 'hours'. Text colour of today's row; view.js adds sgs-business-info__hours-row--today in the visitor's browser. Empty leaves it unstyled.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the text colour of today's row in the opening hours.",
+					"trigger": "always, on today's row (marked in the visitor's browser)",
+					"parameters": {
+						"value": {
+							"unit": "CSS colour or theme colour token slug"
+						}
+					}
+				}
+			}
 		},
 		"hoursTodayBackground": {
 			"type": "string",
 			"default": "",
-			"description": "Only read by displayType 'hours'. Background of today's row. Empty leaves it unstyled."
+			"description": "Only read by displayType 'hours'. Background of today's row. Empty leaves it unstyled.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the background colour of today's row in the opening hours.",
+					"trigger": "always, on today's row (marked in the visitor's browser)",
+					"parameters": {
+						"value": {
+							"unit": "CSS colour or theme colour token slug"
+						}
+					}
+				}
+			}
 		},
 		"hoursTodayWeight": {
 			"type": "string",
 			"default": "",
 			"enum": [ "", "300", "400", "500", "600", "700", "800", "900" ],
-			"description": "Only read by displayType 'hours'. Font weight of today's row. Empty keeps the row's own weight."
+			"description": "Only read by displayType 'hours'. Font weight of today's row. Empty keeps the row's own weight.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the font weight of today's row in the opening hours.",
+					"trigger": "always, on today's row (marked in the visitor's browser)",
+					"parameters": {
+						"value": {
+							"unit": "enum",
+							"values": [
+								"",
+								"300",
+								"400",
+								"500",
+								"600",
+								"700",
+								"800",
+								"900"
+							]
+						}
+					}
+				}
+			}
 		},
 		"mapHeight": {
 			"type": "object",

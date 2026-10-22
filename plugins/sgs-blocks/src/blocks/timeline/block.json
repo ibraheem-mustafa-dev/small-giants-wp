@@ -318,7 +318,22 @@
 				"carousel"
 			],
 			"default": "stacked",
-			"description": "How the timeline behaves at 767px and below, independently of orientation/alignment. 'stacked' is today's collapse (unchanged). 'carousel' is a native horizontal scroll-snap row, ≤767px only — inert above that width in either orientation."
+			"description": "How the timeline behaves at 767px and below, independently of orientation/alignment. 'stacked' is today's collapse (unchanged). 'carousel' is a native horizontal scroll-snap row, ≤767px only — inert above that width in either orientation.",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses whether the timeline collapses to a stacked column or becomes a horizontal scroll-snap carousel on narrow screens.",
+					"trigger": "viewport width of 767px or below",
+					"parameters": {
+						"value": {
+							"unit": "enum",
+							"values": [
+								"stacked",
+								"carousel"
+							]
+						}
+					}
+				}
+			}
 		},
 		"entries": {
 			"type": "array",
@@ -462,7 +477,24 @@
 				"pinned-horizontal"
 			],
 			"default": "basic",
-			"description": "A layout-MODE selector, not a CSS property — deliberately absent from any element's attrMap (see the `entry` element note). Curated wrapper around the generic GSAP scroll-effects picker: 'basic' runs no GSAP scroll effect (the entry reveal is the sgsMotion entrance); 'scrub' ties milestone motion directly to scroll position; 'pinned-journey' pins the timeline and reveals milestones as the connector fills (vertical only); 'pinned-horizontal' pins and slides the track sideways (horizontal only)."
+			"description": "A layout-MODE selector, not a CSS property — deliberately absent from any element's attrMap (see the `entry` element note). Curated wrapper around the generic GSAP scroll-effects picker: 'basic' runs no GSAP scroll effect (the entry reveal is the sgsMotion entrance); 'scrub' ties milestone motion directly to scroll position; 'pinned-journey' pins the timeline and reveals milestones as the connector fills (vertical only); 'pinned-horizontal' pins and slides the track sideways (horizontal only).",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses how the timeline reacts to scrolling: no scroll effect, scrubbed milestones, a pinned journey or a pinned horizontal track.",
+					"trigger": "scrolling the page through the timeline",
+					"parameters": {
+						"value": {
+							"unit": "enum",
+							"values": [
+								"basic",
+								"scrub",
+								"pinned-journey",
+								"pinned-horizontal"
+							]
+						}
+					}
+				}
+			}
 		},
 		"milestoneMediaWidth": {
 			"type": "string",
@@ -683,7 +715,18 @@
 		"panelCounter": {
 			"type": "boolean",
 			"default": false,
-			"description": "Pinned-horizontal only: renders a progress counter fed by the motion engine's pin progress."
+			"description": "Pinned-horizontal only: renders a progress counter fed by the motion engine's pin progress.",
+			"sgs": {
+				"meaning": {
+					"what": "Shows a progress counter that follows how far through the pinned horizontal timeline the visitor has scrolled.",
+					"trigger": "scrolling while the horizontal timeline is pinned",
+					"parameters": {
+						"value": {
+							"unit": "boolean"
+						}
+					}
+				}
+			}
 		},
 		"panelCounterFormat": {
 			"type": "string",
@@ -692,37 +735,141 @@
 				"index-of-total",
 				"percent"
 			],
-			"default": "padded-index-of-total"
+			"default": "padded-index-of-total",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses how the progress counter reads: padded index of total, index of total, or percentage.",
+					"trigger": "scrolling while the horizontal timeline is pinned, when the counter is on",
+					"parameters": {
+						"value": {
+							"unit": "enum",
+							"values": [
+								"padded-index-of-total",
+								"index-of-total",
+								"percent"
+							]
+						}
+					}
+				}
+			}
 		},
 		"panelProximityFocus": {
 			"type": "boolean",
 			"default": false,
-			"description": "Pinned-horizontal only: entries scale and fade by distance from the centre."
+			"description": "Pinned-horizontal only: entries scale and fade by distance from the centre.",
+			"sgs": {
+				"meaning": {
+					"what": "Scales and fades horizontal timeline entries by their distance from the centre of the view.",
+					"trigger": "scrolling while the horizontal timeline is pinned",
+					"parameters": {
+						"value": {
+							"unit": "boolean"
+						}
+					}
+				}
+			}
 		},
 		"panelFocusScale": {
-			"type": "number"
+			"type": "number",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the scale of the entry nearest the centre.",
+					"trigger": "scrolling while the horizontal timeline is pinned, when proximity focus is on",
+					"parameters": {
+						"value": {
+							"unit": "factor (0 to 2; unset uses the engine default)"
+						}
+					}
+				}
+			}
 		},
 		"panelEdgeScale": {
-			"type": "number"
+			"type": "number",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the scale of entries furthest from the centre.",
+					"trigger": "scrolling while the horizontal timeline is pinned, when proximity focus is on",
+					"parameters": {
+						"value": {
+							"unit": "factor (0 to 2; unset uses the engine default 0.94)"
+						}
+					}
+				}
+			}
 		},
 		"panelFocusOpacity": {
-			"type": "number"
+			"type": "number",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the opacity of the entry nearest the centre.",
+					"trigger": "scrolling while the horizontal timeline is pinned, when proximity focus is on",
+					"parameters": {
+						"value": {
+							"unit": "factor (0 to 1; unset uses the engine default)"
+						}
+					}
+				}
+			}
 		},
 		"panelEdgeOpacity": {
-			"type": "number"
+			"type": "number",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the opacity of entries furthest from the centre.",
+					"trigger": "scrolling while the horizontal timeline is pinned, when proximity focus is on",
+					"parameters": {
+						"value": {
+							"unit": "factor (0 to 1; unset uses the engine default 0.55)"
+						}
+					}
+				}
+			}
 		},
 		"dateActiveColour": {
 			"type": "string",
 			"default": "",
-			"description": "Year text colour while its entry carries data-sgs-fx-panel-active. Empty keeps dateColour."
+			"description": "Year text colour while its entry carries data-sgs-fx-panel-active. Empty keeps dateColour.",
+			"sgs": {
+				"meaning": {
+					"what": "Changes the year text colour of the entry currently nearest the centre.",
+					"trigger": "scrolling while the horizontal timeline is pinned, for the active entry",
+					"parameters": {
+						"value": {
+							"unit": "CSS colour or theme colour token slug"
+						}
+					}
+				}
+			}
 		},
 		"dateActiveTextStrokeWidth": {
 			"type": "object",
-			"default": {}
+			"default": {},
+			"sgs": {
+				"meaning": {
+					"what": "Sets the outline width of the year text of the active entry.",
+					"trigger": "scrolling while the horizontal timeline is pinned, for the active entry",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} of CSS length"
+						}
+					}
+				}
+			}
 		},
 		"dateActiveTextStrokeColour": {
 			"type": "string",
-			"default": ""
+			"default": "",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the outline colour of the year text of the active entry.",
+					"trigger": "scrolling while the horizontal timeline is pinned, for the active entry",
+					"parameters": {
+						"value": {
+							"unit": "CSS colour or theme colour token slug"
+						}
+					}
+				}
+			}
 		}
 	},
 	"render": "file:./render.php",

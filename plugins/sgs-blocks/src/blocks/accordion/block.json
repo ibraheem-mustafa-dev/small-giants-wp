@@ -241,12 +241,34 @@
     "scrollToOpened": {
       "type": "boolean",
       "default": false,
-      "description": "When a visitor opens an item, scroll its header below the sticky site header unless it is already fully in view. Reduced motion jumps instead of scrolling smoothly."
+      "description": "When a visitor opens an item, scroll its header below the sticky site header unless it is already fully in view. Reduced motion jumps instead of scrolling smoothly.",
+      "sgs": {
+        "meaning": {
+          "what": "Scrolls an opened item's header to just below the sticky site header unless it is already fully in view.",
+          "trigger": "an item opening",
+          "parameters": {
+            "value": {
+              "unit": "boolean"
+            }
+          }
+        }
+      }
     },
     "scrollToOpenedGap": {
       "type": "string",
       "default": "6px",
-      "description": "Extra space between the site header and the scrolled-to item header. Added to the published site header height (--sgs-header-height)."
+      "description": "Extra space between the site header and the scrolled-to item header. Added to the published site header height (--sgs-header-height).",
+      "sgs": {
+        "meaning": {
+          "what": "Sets the extra space between the site header and the scrolled-to item header.",
+          "trigger": "an item opening, when scroll-to-opened is on",
+          "parameters": {
+            "value": {
+              "unit": "CSS length"
+            }
+          }
+        }
+      }
     },
     "iconPosition": {
       "type": "string",
