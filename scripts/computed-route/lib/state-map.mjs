@@ -21,7 +21,7 @@ export function vocabStateFor( state, vocab ) {
 	const names = new Set( ( vocab || [] ).map( ( r ) => r.state ) );
 	const tokens = new Map();
 	for ( const r of ( vocab || [] ).filter( ( x ) => ! x.kind || [ 'class', 'data-attribute' ].includes( x.kind ) ) ) {
-		const stem = /^(?:::?|--|is-|has-)([a-z]+)$/.exec( String( r.token || '' ) )?.[ 1 ];
+		const stem = /^(?:--|is-|has-)([a-z]+)$/.exec( String( r.token || '' ) )?.[ 1 ];
 		stem && ! tokens.has( stem ) && tokens.set( stem, r.state );
 	}
 	const keyWords = Object.keys( state?.state_keys || {} ).flatMap( words );

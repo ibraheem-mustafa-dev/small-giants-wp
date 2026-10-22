@@ -46,7 +46,7 @@ export function fontUrlFamilies( href ) {
 				const parts = tuple.split( ',' );
 				const at = ( k ) => parts[ names.indexOf( k ) ];
 				if ( names.includes( 'wght' ) ) {
-					at( 'wght' ).split( '..' ).forEach( ( w ) => weights.add( Number( w ) ) );
+					( at( 'wght' ) || '' ).split( '..' ).forEach( ( w ) => weights.add( Number( w ) ) );
 				}
 				italic = italic || '1' === at( 'ital' );
 			}

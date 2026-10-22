@@ -85,11 +85,26 @@ def css_rules(src: str, scss: bool = False) -> list[tuple[str, str]]:
     stack: list[tuple[str, list[str]]] = [("", [])]  # (resolved selector, decl chunks)
     buf: list[str] = []
     quote = None
-    for c in src:
+    escaped = False
+    in_raw_url = False
+    for i, c in enumerate(src):
+        if in_raw_url:
+            buf.append(c)
+            if c == ")":
+                in_raw_url = False
+            continue
         if quote:
             buf.append(c)
-            if c == quote:
+            if escaped:
+                escaped = False
+            elif c == "\\":
+                escaped = True
+            elif c == quote:
                 quote = None
+            continue
+        if c == "(" and "".join(buf[-3:]).lower() == "url" and not src[i + 1 :].lstrip().startswith(('"', "'")):
+            in_raw_url = True  # an unquoted url(): quotes inside are literal
+            buf.append(c)
             continue
         if c in ('"', "'"):
             quote = c

@@ -64,6 +64,9 @@ export function harnessOptions( opts = {} ) {
 			throw new Error( `harness ${ k } must be a non-negative integer, not ${ JSON.stringify( o[ k ] ) }` );
 		}
 	}
+	if ( 0 === o.stepMs ) {
+		throw new Error( 'harness stepMs must be at least 1: virtual time never advances at 0' );
+	}
 	return o;
 }
 

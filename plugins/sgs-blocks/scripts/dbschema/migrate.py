@@ -146,7 +146,7 @@ def applied_set_readonly(con: sqlite3.Connection) -> set[str]:
 
 def _record(con: sqlite3.Connection, filename: str) -> None:
     con.execute(
-        "INSERT OR REPLACE INTO schema_migrations(filename, applied_at) VALUES (?,?)",
+        "INSERT OR IGNORE INTO schema_migrations(filename, applied_at) VALUES (?,?)",
         (filename, datetime.now(timezone.utc).isoformat(timespec="seconds")),
     )
     con.commit()

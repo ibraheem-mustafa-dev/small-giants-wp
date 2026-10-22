@@ -174,6 +174,10 @@ export function assertSecondUnit( first, second, bag, { maxGapMs = SECOND_UNIT_M
 	if ( gapMs >= maxGapMs ) {
 		return { ok: false, invalid: true, signal: 'gap-too-long', detail: `the second add came ${ gapMs } ms after the first; it must be under ${ maxGapMs } ms or a 30 s cooldown could have expired unseen` };
 	}
+	const refusedFirst = rejectedAdd( first );
+	if ( refusedFirst ) {
+		return { ok: false, signal: refusedFirst, detail: 'the first add was refused, so the bag was never given the chance to lose a unit' };
+	}
 	if ( isCooldownBlock( second ) ) {
 		return { ok: false, signal: SIGNALS.COOLDOWN, detail: `second unit refused ${ gapMs } ms after the first: HTTP ${ second.status } ${ second.code || '' } ${ second.ui || second.message || '' }`.trim() };
 	}

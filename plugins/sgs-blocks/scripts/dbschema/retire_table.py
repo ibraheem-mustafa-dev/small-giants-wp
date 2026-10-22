@@ -50,6 +50,7 @@ USAGE
 from __future__ import annotations
 
 import argparse
+import base64
 import gzip
 import json
 import sqlite3
@@ -145,6 +146,20 @@ def verify_roundtrip(ddl: str, cols: list[str], rows: list[dict], table: str) ->
         )
 
 
+def _encode_extra(value: object) -> object:
+    """JSON encoder for values json cannot store: BLOBs become a tagged base64 object, the rest a string."""
+    if isinstance(value, bytes):
+        return {"__bytes_b64": base64.b64encode(value).decode("ascii")}
+    return str(value)
+
+
+def _decode_extra(obj: dict) -> object:
+    """JSON object hook restoring the BLOBs written by `_encode_extra`."""
+    if set(obj) == {"__bytes_b64"}:
+        return base64.b64decode(obj["__bytes_b64"])
+    return obj
+
+
 def retire(db: Path, table: str, reason: str, dry_run: bool) -> int:
     con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
     try:
@@ -175,7 +190,7 @@ def retire(db: Path, table: str, reason: str, dry_run: bool) -> int:
     }
     RETIRED_DIR.mkdir(parents=True, exist_ok=True)
     archive = RETIRED_DIR / f"{table}.json.gz"
-    blob = json.dumps(payload, indent=2, ensure_ascii=False, default=str)
+    blob = json.dumps(payload, indent=2, ensure_ascii=False, default=_encode_extra)
     if dry_run:
         print(f"  [2/4] would archive to {archive.name} ({len(blob)} bytes uncompressed)")
     else:
@@ -187,9 +202,9 @@ def retire(db: Path, table: str, reason: str, dry_run: bool) -> int:
     # what was actually written to disk — the file is what a restore would read).
     check_rows = rows
     if not dry_run:
-        reread = json.loads(gzip.open(archive, "rt", encoding="utf-8").read())
+        reread = json.loads(gzip.open(archive, "rt", encoding="utf-8").read(), object_hook=_decode_extra)
         check_rows = reread["rows"]
-        if reread["__ddl"] != ddl or reread["__columns"] != cols:
+        if reread["__ddl"] != ddl or reread["__columns"] != cols or check_rows != rows:
             print("FATAL: archive re-read does not match what was captured", file=sys.stderr)
             return 3
     try:

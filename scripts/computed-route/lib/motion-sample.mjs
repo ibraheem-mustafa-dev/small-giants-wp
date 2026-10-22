@@ -121,7 +121,16 @@ const ORDER = [ 'translate', 'rotate', 'scale', 'transform' ];
 function framesOf( p ) {
 	const frames = Array.isArray( p.keyframes ) && p.keyframes.length >= 2 ? p.keyframes : [ { offset: 0, value: p.from }, { offset: 1, value: p.to } ];
 	const formulas = String( p.formula ?? '' );
-	return frames.some( ( k ) => k.computed || undefined === k.value || null === k.value || ( formulas && formulas.includes( String( k.value ) ) ) ) ? null : frames.map( ( k ) => ( { offset: Number( k.offset ), value: String( k.value ) } ) );
+	// A value is a formula's own when it occurs in the formula as a whole token: not glued to a digit, letter or dot.
+	const inFormula = ( v ) => {
+		for ( let i = v ? formulas.indexOf( v ) : -1; -1 !== i; i = formulas.indexOf( v, i + 1 ) ) {
+			if ( ! /[\w.]/.test( formulas[ i - 1 ] ?? '' ) && ! /[\w.]/.test( formulas[ i + v.length ] ?? '' ) ) {
+				return true;
+			}
+		}
+		return false;
+	};
+	return frames.some( ( k ) => k.computed || undefined === k.value || null === k.value || inFormula( String( k.value ) ) ) ? null : frames.map( ( k ) => ( { offset: Number( k.offset ), value: String( k.value ) } ) );
 }
 
 // A property's value at fraction f of the run: a Web Animation eases the whole run and interpolates its keyframes

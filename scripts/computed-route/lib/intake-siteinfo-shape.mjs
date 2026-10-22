@@ -164,6 +164,9 @@ export function parseHoursText( text, day = null ) {
 		if ( ! m[ 5 ] && ! m[ 8 ] && range[ 1 ] <= range[ 0 ] && range[ 1 ] < 720 ) {
 			range[ 1 ] += 720;
 		}
+		if ( ! m[ 5 ] && m[ 8 ] && range[ 0 ] >= range[ 1 ] ) {
+			range[ 0 ] -= 720;
+		}
 		days.forEach( ( d ) => ( out[ d ] = [ ...( out[ d ] || [] ), range ] ) );
 	}
 	return Object.keys( out ).length ? out : null;

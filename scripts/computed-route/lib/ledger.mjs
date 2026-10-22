@@ -164,7 +164,8 @@ const INDEPENDENT_KEYS = {
 export function holdsValue( expected, live, pxTol = 2 ) {
 	const a = parseFloat( expected );
 	const b = parseFloat( live );
-	if ( ! Number.isNaN( a ) && ! Number.isNaN( b ) && /^-?(\d+(\.\d+)?|\.\d+)(px)?$/.test( String( expected ).trim() ) ) {
+	const pixels = /^-?(\d+(\.\d+)?|\.\d+)(px)?$/;
+	if ( ! Number.isNaN( a ) && ! Number.isNaN( b ) && pixels.test( String( expected ).trim() ) && pixels.test( String( live ).trim() ) ) {
 		return Math.abs( a - b ) <= pxTol;
 	}
 	return String( expected ).replace( /\s+/g, '' ) === String( live ).replace( /\s+/g, '' );

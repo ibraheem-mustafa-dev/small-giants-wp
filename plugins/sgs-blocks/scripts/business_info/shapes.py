@@ -29,7 +29,8 @@ def hours_fields(text: str) -> dict[str, str]:
     for m in HOURS_RE.finditer(text):
         start = DAYS.index(m.group(1).lower())
         end = DAYS.index(m.group(2).lower()) if m.group(2) else start
-        for day in DAYS[start:end + 1]:
+        days = DAYS[start:end + 1] if start <= end else DAYS[start:] + DAYS[:end + 1]
+        for day in days:
             out.setdefault(f"opening_hours.{day}", m.group(3).strip())
     return out
 

@@ -69,7 +69,7 @@ const durOk = (r, dur) => {
   return shift === 0 && !Number.isInteger(Number(dur));
 };
 const combos = new Map();
-for (const c of log) { const k = `${c.kind}|${c.tpl || '-'}|${c.near}|${c.dur}`; combos.set(k, (combos.get(k) || 0) + 1); }
+for (const c of log) { const k = `${c.kind}|${c.tpl || '-'}|${c.near || '-'}|${c.dur}`; combos.set(k, (combos.get(k) || 0) + 1); }
 let matched = 0; const miss = [];
 for (const [k, n] of combos) {
   const [, tpl, near, dur] = k.split('|');

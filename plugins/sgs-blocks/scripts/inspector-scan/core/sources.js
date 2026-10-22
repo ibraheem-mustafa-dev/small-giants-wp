@@ -142,7 +142,7 @@ class SourceCache {
 				for ( const c of parsed.comments ) {
 					out =
 						out.slice( 0, c.start ) +
-						' '.repeat( c.end - c.start ) +
+						out.slice( c.start, c.end ).replace( /[^\n]/g, ' ' ) +
 						out.slice( c.end );
 				}
 			} else {
@@ -180,7 +180,7 @@ class SourceCache {
 			} else {
 				out = raw;
 			}
-			out = out.replace( /\/\*[\s\S]*?\*\//g, ( m ) => ' '.repeat( m.length ) );
+			out = out.replace( /\/\*[\s\S]*?\*\//g, ( m ) => m.replace( /[^\n]/g, ' ' ) );
 		}
 		this._stripped.set( file, out );
 		return out;

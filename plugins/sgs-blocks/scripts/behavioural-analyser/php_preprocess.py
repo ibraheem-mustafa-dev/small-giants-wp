@@ -232,6 +232,8 @@ def inline_array_variables(src: str, callee_names: "set[str]") -> str:
     out: list[str] = []
     pos = 0
     for m in pattern.finditer(src):
+        if m.start() < pos:
+            continue
         close = matching_close(src, m.end() - 1, "(", ")")
         if close < 0:
             continue
@@ -366,7 +368,7 @@ def composite_transition_props(
     )
     out: dict[str, set[str]] = {}
     for stmt in statements:
-        if "transition" not in stmt:
+        if "transition" not in stmt and "animation" not in stmt:
             continue
         frags = list(frag_re.finditer(stmt))
         shorthand: "str | None" = None

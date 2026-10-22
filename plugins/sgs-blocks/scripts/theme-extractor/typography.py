@@ -34,6 +34,9 @@ def _px(value: str, root_px: float) -> float | None:
 
 
 def _ratio(line_height: str, font_size: str, root_px: float):
+    bare = (line_height or "").strip()
+    if re.fullmatch(r"\d+(?:\.\d+)?|\.\d+", bare):
+        return round(float(bare), 3)  # a unitless line-height is already a ratio
     lh = _px(line_height, root_px)
     fs = _px(font_size, root_px)
     if lh is None or fs is None or fs == 0:

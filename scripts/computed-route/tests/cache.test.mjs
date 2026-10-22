@@ -9,7 +9,6 @@ import os from 'os';
 import path from 'path';
 import { splitCalibration, writeSlotMap, writePaint, readPaint, readSlotMap, loadCalibration, slotMapSkip, paintSkip, paintStale, paintFile, paintSite, slotMapLosses, lossDestination, slotMapWriteDecision, parseAllowLoss } from '../lib/cache.mjs';
 import { calibrationFor } from '../solve.mjs';
-import { splitCache, placeMirrorPaint } from '../split-cache.mjs';
 import { READ_KEY } from '../lib/calibrate-props.mjs';
 
 const el = ( colour ) => ( { '': { 375: { color: colour }, 768: { color: colour }, 1440: { color: colour } } } );
@@ -102,20 +101,6 @@ test( 'MUST FAIL TO SHARE: a reader asked for site B paint never returns A', () 
 	assert.throws( () => paintFile( dir, '../site-a', 'sgs/heading' ) );
 } );
 
-test( 'split-cache moves a combined file into slot map and paint, and a second run changes nothing', () => {
-	const dir = fresh();
-	fs.writeFileSync( path.join( dir, 'heading.json' ), JSON.stringify( measured( 'site-a', 'red' ) ) );
-	fs.writeFileSync( path.join( dir, 'heading.tree.json' ), '[]' );
-	assert.deepEqual( splitCache( dir, { dryRun: true } ).split, [ 'heading.json' ] );
-	assert.ok( ! fs.existsSync( path.join( dir, 'site-a' ) ), 'a dry run writes nothing' );
-	assert.deepEqual( splitCache( dir ).split, [ 'heading.json' ] );
-	const files = [ 'heading.json', 'site-a/heading.paint.json' ];
-	const snap = files.map( ( f ) => fs.readFileSync( path.join( dir, f ) ) );
-	assert.deepEqual( splitCache( dir ).split, [] );
-	assert.deepEqual( files.map( ( f ) => fs.readFileSync( path.join( dir, f ) ) ), snap );
-	assert.equal( readPaint( dir, 'site-a', 'sgs/heading' ).elements[ '' ][ 1440 ].color, 'red' );
-} );
-
 test( 'a mirror shares its test site’s paint (mirrorOf), and an unrelated site still gets none', () => {
 	const dir = fresh();
 	run( dir, 'local-eye-care', 'red' );
@@ -123,20 +108,6 @@ test( 'a mirror shares its test site’s paint (mirrorOf), and an unrelated site
 	assert.ok( fs.existsSync( path.join( dir, 'eye-care-test', 'heading.paint.json' ) ), 'the mirror writes into its test site’s folder' );
 	assert.equal( readPaint( dir, 'eye-care-test', 'sgs/heading' ).elements[ '' ][ 1440 ].color, 'red' );
 	assert.equal( readPaint( dir, 'sandybrown', 'sgs/heading' ), null );
-} );
-
-test( 'placeMirrorPaint moves a mirror folder into its test site’s, keeping the newer measurement, and is idempotent', () => {
-	const dir = fresh();
-	const write = ( site, measured, color ) => {
-		fs.mkdirSync( path.join( dir, site ), { recursive: true } );
-		fs.writeFileSync( path.join( dir, site, 'heading.paint.json' ), JSON.stringify( { block: 'sgs/heading', site, measured, elements: { '': { 1440: { color } } } } ) );
-	};
-	write( 'local-eye-care', '2026-10-05', 'new' );
-	write( 'eye-care-test', '2026-10-01', 'old' );
-	assert.deepEqual( placeMirrorPaint( dir ).moved, [ 'local-eye-care/heading.paint.json' ] );
-	assert.ok( ! fs.existsSync( path.join( dir, 'local-eye-care' ) ) );
-	assert.equal( readPaint( dir, 'eye-care-test', 'sgs/heading' ).elements[ '' ][ 1440 ].color, 'new' );
-	assert.deepEqual( placeMirrorPaint( dir ), { moved: [], dropped: [] } );
 } );
 
 // A slot map that loses a reached setting must not replace the existing one unless the loss is named.

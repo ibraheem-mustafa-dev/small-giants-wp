@@ -201,13 +201,16 @@ function tokenizeCssValue( value ) {
  * (returns false) rather than assumed either way.
  */
 function isNonZeroWidthShorthand( value ) {
+	// The width may sit after the style keyword (`solid 2px transparent`), so
+	// every token is scanned for the first width-shaped one.
 	const tokens = tokenizeCssValue( value );
-	if ( ! tokens.length ) return false;
-	const first = tokens[ 0 ].toLowerCase();
-	if ( first === 'thin' || first === 'medium' || first === 'thick' ) return true;
-	const m = /^(-?\d*\.?\d+)/.exec( first );
-	if ( ! m ) return false;
-	return parseFloat( m[ 1 ] ) !== 0;
+	for ( const token of tokens ) {
+		const word = token.toLowerCase();
+		if ( word === 'thin' || word === 'medium' || word === 'thick' ) return true;
+		const m = /^(-?\d*\.?\d+)/.exec( word );
+		if ( m ) return parseFloat( m[ 1 ] ) !== 0;
+	}
+	return false;
 }
 
 function hasReservedBorderWidth( baseValueMap, side ) {
@@ -372,7 +375,14 @@ function parseBlock( src, start, end ) {
 			}
 			if ( ch === '{' ) break;
 			if ( ch === '}' ) return { rules, next: i + 1 };
+			// A statement at-rule (`@charset "UTF-8";`, `@import ...;`) ends at its
+			// semicolon, so the rule after it is not read as part of its prelude.
+			if ( ch === ';' ) break;
 			i++;
+		}
+		if ( i < end && src[ i ] === ';' ) {
+			i++;
+			continue;
 		}
 		if ( i >= end ) break;
 		const selectorText = src.slice( selStart, i ).trim();

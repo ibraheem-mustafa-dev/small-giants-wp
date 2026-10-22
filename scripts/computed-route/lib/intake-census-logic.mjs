@@ -61,7 +61,7 @@ const globalName = ( n ) => {
 };
 const thisMember = ( n ) => ( 'MemberExpression' === n?.type && ! n.computed && 'ThisExpression' === n.object.type ? keyName( n.property ) : null );
 // CSS declarations of a string the way the runtime's cssToObj splits a style: [[property, value]].
-export const cssDecls = ( css ) => css.split( ';' ).map( ( d ) => [ d.slice( 0, d.indexOf( ':' ) ).trim().toLowerCase(), d.slice( d.indexOf( ':' ) + 1 ).trim() ] ).filter( ( [ p ] ) => p && ! p.includes( ' ' ) );
+export const cssDecls = ( css ) => css.split( ';' ).filter( ( d ) => d.includes( ':' ) ).map( ( d ) => [ d.slice( 0, d.indexOf( ':' ) ).trim().toLowerCase(), d.slice( d.indexOf( ':' ) + 1 ).trim() ] ).filter( ( [ p ] ) => p && ! p.includes( ' ' ) );
 // The census kind a CSS property belongs to: 'transition', 'keyframes' (animation*) or null.
 export const motionKind = ( prop ) => ( /^-?(?:webkit-)?transition/.test( prop ) || 'transition' === prop ? 'transition' : /^-?(?:webkit-)?animation/.test( prop ) ? 'keyframes' : null );
 const clip = ( s ) => ( s.length > MAX_DETAIL ? `${ s.slice( 0, MAX_DETAIL ) }…` : s );

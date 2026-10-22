@@ -295,7 +295,7 @@ const normRoute = ( r ) => ( r ? String( r ).replace( /^\/+/, '' ).replace( /\.d
 // posts take part; a hint record names its kind, `name`, `dc` and `route`.
 export function crossCheck( code, hint ) {
 	const records = ( hint?.records || [] ).filter( ( h ) => KIND_POST_TYPE[ String( h.kind ).toLowerCase() ] )
-		.map( ( h ) => ( { ...h, kind: 'choice flow' === h.kind || 'quiz' === h.kind ? 'choice-flow' : String( h.kind ).toLowerCase() } ) );
+		.map( ( h ) => ( { ...h, kind: [ 'choice flow', 'quiz' ].includes( String( h.kind ).toLowerCase() ) ? 'choice-flow' : String( h.kind ).toLowerCase() } ) );
 	if ( ! hint ) {
 		return { surfaces: code, gaps: [] };
 	}

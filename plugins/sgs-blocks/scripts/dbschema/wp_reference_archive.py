@@ -185,9 +185,10 @@ def restore(db: Path, allow_live: bool = False) -> int:
             placeholders = ",".join("?" for _ in keep)
             collist = ",".join(f'"{c}"' for c in keep)
             n = 0
+            con.execute(f"DELETE FROM {table}")  # noqa: S608 — fixed names
             for row in arch["rows"]:
                 con.execute(
-                    f"INSERT OR REPLACE INTO {table} ({collist}) VALUES ({placeholders})",  # noqa: S608 — fixed names
+                    f"INSERT INTO {table} ({collist}) VALUES ({placeholders})",  # noqa: S608 — fixed names
                     [row[c] for c in keep],
                 )
                 n += 1
