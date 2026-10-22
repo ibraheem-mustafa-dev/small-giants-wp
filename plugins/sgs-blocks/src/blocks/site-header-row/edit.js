@@ -42,6 +42,7 @@ import {
 	sgsBorderPreview,
 } from '../../utils';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
+import RowMinHeightControl from './RowMinHeightControl';
 
 // TIER 2 (THE PLACEMENT RULE, Spec 35 Part O) — `row` is the block's
 // isWrapper element with clusters [text, fill, layout], so its controls
@@ -414,6 +415,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	Object.assign( style, marginPreview );
 	if ( maxWidthPreview ) {
 		style.maxWidth = maxWidthPreview;
+	}
+	const minHeightPreview = resolveResponsiveTier(
+		attributes.minHeight,
+		previewTier
+	)?.value;
+	if ( minHeightPreview ) {
+		style.minHeight = minHeightPreview;
 	}
 
 	// Content band (CHECK A) — mirrors sgs/container's Layer 2 mirror exactly
@@ -884,6 +892,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							</>
 						) }
 					</ToolsPanel>
+					<RowMinHeightControl
+						value={ attributes.minHeight }
+						setAttributes={ setAttributes }
+					/>
 
 					{ /* Padding/margin/max-width — `row`'s own box attrs (Spec 37
 					   FR-37-16 object model). Inlined here rather than through the

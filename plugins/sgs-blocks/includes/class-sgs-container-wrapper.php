@@ -223,6 +223,27 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 		}
 
 		/**
+		 * Whether the block type declares an attribute in its block.json. Lets a shared-wrapper capability
+		 * open for exactly the layout blocks that opt in by declaring the attribute, never by block name.
+		 *
+		 * @param \WP_Block|null $block     Block instance passed to render.php.
+		 * @param string         $attribute Attribute name.
+		 * @return bool
+		 */
+		public static function declares_attribute( $block, string $attribute ): bool {
+			$attributes = null;
+			if ( $block instanceof \WP_Block && isset( $block->block_type->attributes ) && is_array( $block->block_type->attributes ) ) {
+				$attributes = $block->block_type->attributes;
+			} elseif ( $block instanceof \WP_Block && ! empty( $block->name ) ) {
+				$registered = \WP_Block_Type_Registry::get_instance()->get_registered( $block->name );
+				if ( null !== $registered && is_array( $registered->attributes ?? null ) ) {
+					$attributes = $registered->attributes;
+				}
+			}
+			return is_array( $attributes ) && array_key_exists( $attribute, $attributes );
+		}
+
+		/**
 		 * Render the outer wrapper for a container-style block.
 		 *
 		 * Returns a single pre-joined string:
@@ -292,6 +313,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			$is_section = 'section' === $kind;
 			$is_layout  = 'layout' === $kind;
+			// minHeight: a section always carries it; a layout block carries it only when its block.json declares the attribute.
+			$has_min_height_capability = $is_section || ( $is_layout && self::declares_attribute( $block, 'minHeight' ) );
 			// content kind = only maxWidth/align/contentWidth/padding; used by content-level composites.
 
 			// Hover-spill-scale capability (2026-09-10, Bean-directed — the hero
@@ -671,12 +694,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// stylesheet rule in the responsive block so the cascade decides per viewport.
 			$has_responsive_max_width = ( '' !== $max_width_tablet || '' !== $max_width_mobile );
 			$min_height               = $sgs_css_length( $min_height );
-			$min_height_tablet        = $is_section ? $sgs_css_length( $min_height_tablet ) : '';
-			$min_height_mobile        = $is_section ? $sgs_css_length( $min_height_mobile ) : '';
+			$min_height_tablet        = $has_min_height_capability ? $sgs_css_length( $min_height_tablet ) : '';
+			$min_height_mobile        = $has_min_height_capability ? $sgs_css_length( $min_height_mobile ) : '';
 			// True when a responsive variant exists → base + variants render via the
 			// per-instance uid CSS below (so @media overrides win over the cascade),
 			// rather than the inline base (which would beat any .uid{} @media rule).
-			$has_responsive_min_height = $is_section && ( '' !== $min_height_tablet || '' !== $min_height_mobile );
+			$has_responsive_min_height = $has_min_height_capability && ( '' !== $min_height_tablet || '' !== $min_height_mobile );
 
 			// Responsive padding/margin — all kinds. FIXED 2026-09-06 (D976 follow-up,
 			// live-verified via render_block() on sandybrown): this used to read the
@@ -1090,7 +1113,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Base min-height — section kind. When responsive variants exist the
 			// responsive branch below emits base + tiers on .$uid instead (mutually
 			// exclusive with this base-only case via $has_responsive_min_height).
-			if ( $is_section && $min_height && ! $has_responsive_min_height ) {
+			if ( $has_min_height_capability && $min_height && ! $has_responsive_min_height ) {
 				$base_outer_decls[] = 'min-height:' . esc_attr( $min_height );
 			}
 
@@ -1135,7 +1158,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$sgs_box_ratio = $sgs_ar[1] . ( isset( $sgs_ar[2] ) && '' !== $sgs_ar[2] ? ' / ' . $sgs_ar[2] : '' );
 			}
 
-			$sgs_min_height_flex_fill = $is_section && $grid_on_inner && ( '' !== $min_height || $has_responsive_min_height || '' !== $sgs_box_ratio );
+			$sgs_min_height_flex_fill = $has_min_height_capability && $grid_on_inner && ( '' !== $min_height || $has_responsive_min_height || '' !== $sgs_box_ratio );
 			if ( $sgs_min_height_flex_fill ) {
 				$base_outer_decls[] = 'display:flex';
 				$base_outer_decls[] = 'flex-direction:column';
