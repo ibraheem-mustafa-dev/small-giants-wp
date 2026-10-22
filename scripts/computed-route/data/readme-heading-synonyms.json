@@ -1,0 +1,15 @@
+{
+  "description": "How lib/read-readme.mjs reads a README that words its headings differently from handoff-schema/README.template.md. headings: a template heading and the words a README heading may begin with instead (whole words, case and punctuation ignored); an exact template heading always wins, and a README heading that two templates accept goes to the first in template order. labels: the words in a sub-heading, a bold line or a `Label:` line that put the items under it in the judgement calls list or the open items list (whole words, anywhere in the label; an open word wins over a decision word).",
+  "headings": {
+    "Routes": [ "routes", "screens", "views", "pages" ],
+    "Global layout": [ "global elements", "global layout", "layout", "shared layout" ],
+    "Pages": [ "pages", "screens", "views" ],
+    "Animations and interactions": [ "animations", "interactions", "behaviour", "behavior" ],
+    "Judgement calls": [ "judgement calls", "judgment calls", "decisions", "design decisions" ],
+    "Open items": [ "open items", "open questions", "outstanding" ]
+  },
+  "labels": {
+    "openItems": [ "still open", "open", "to supply", "pending", "unresolved", "outstanding", "to confirm" ],
+    "judgementCalls": [ "decision", "decisions", "judgement", "judgment", "deliberate", "deliberately" ]
+  }
+}

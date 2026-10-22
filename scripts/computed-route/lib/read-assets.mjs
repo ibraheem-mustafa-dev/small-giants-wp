@@ -135,14 +135,24 @@ function candidates( rec ) {
 	return out;
 }
 
-// { <script file>: { <value>: <asset path> } } for each project script at the folder root: the `key: './assets/...'` pairs it holds.
+// The attributes a project script reads its value from: those its `observedAttributes` returns, else those it names in a
+// `getAttribute('<name>')` call. A script that names none maps no attribute.
+export function scriptAttrs( text ) {
+	const observed = /observedAttributes\s*(?:\(\s*\))?\s*\{\s*return\s*\[([^\]]*)\]/.exec( text );
+	const names = observed ? [ ...observed[ 1 ].matchAll( /["']([\w:-]+)["']/g ) ].map( ( m ) => m[ 1 ] ) : [ ...text.matchAll( /getAttribute\(\s*["']([\w:-]+)["']\s*\)/g ) ].map( ( m ) => m[ 1 ] );
+	return new Set( names );
+}
+
+// { <script file>: { byValue: Map( <value> → <asset path> ), attrs: Set( attribute names ), paths } } for each project script at
+// the folder root: the `key: './assets/...'` pairs it holds, the attributes it reads and every `assets/` literal. A Map, so a
+// value such as `constructor` finds no inherited property.
 export function scriptMaps( folder, files ) {
 	const maps = {};
 	for ( const rel of files.filter( ( f ) => /^[^/]+\.js$/.test( f ) && 'support.js' !== f ) ) {
 		const text = fs.readFileSync( path.join( folder, rel ), 'utf8' );
 		const pairs = [ ...text.matchAll( /["']?([\w-]+)["']?\s*:\s*["'](\.?\/?assets\/[^"']+)["']/g ) ];
 		const literals = [ ...text.matchAll( /["'](\.?\/?assets\/[^"'\s]+)["']/g ) ].map( ( m ) => refPath( m[ 1 ] ) );
-		( pairs.length || literals.length ) && ( maps[ rel ] = { byValue: Object.fromEntries( pairs.map( ( m ) => [ m[ 1 ], refPath( m[ 2 ] ) ] ) ), paths: [ ...new Set( literals ) ] } );
+		( pairs.length || literals.length ) && ( maps[ rel ] = { byValue: new Map( pairs.map( ( m ) => [ m[ 1 ], refPath( m[ 2 ] ) ] ) ), attrs: scriptAttrs( text ), paths: [ ...new Set( literals ) ] } );
 	}
 	return maps;
 }
@@ -151,12 +161,14 @@ export function scriptMaps( folder, files ) {
 // id } }, assets: { files, unused, missing }, gaps } from the folder and lib/read-template.mjs's result. An element's `assets`
 // entry is { path, ratio, kind, sha256, animated, via }. `unused`: files no element and no project script names. `missing`:
 // a referenced path under `assets/` (or a script's asset literal) that has no file, with the element or script that names it.
-// `logicPaths`: [ { path, by } ] the logic's hole values and statics name; the file is used, a path with no file is missing.
+// `logicPaths`: [ { path, by, key?, hole? } ] (lib/read-logic-statics.mjs::logicAssetPaths) the logic's hole values and statics
+// name. A path a hole names makes the hole's element a user (`via: 'logic:<hole id>'`); a path with no element (a static) is
+// listed in `assets.logicRefs` with what names it. The file is used either way, and a path with no file is missing.
 export function readAssets( { folder, template, logicPaths = [] } ) {
 	const all = walkFolder( folder ).files;
 	const names = all.filter( ( f ) => f.startsWith( 'assets/' ) );
 	const gaps = [];
-	const files = {};
+	const files = Object.create( null );
 	for ( const rel of names ) {
 		try {
 			files[ rel ] = fileFacts( folder, rel );
@@ -176,7 +188,15 @@ export function readAssets( { folder, template, logicPaths = [] } ) {
 		}
 	}
 	// A path the draft's logic builds by string (a hole's value, a static: lib/read-logic-statics.mjs::logicAssetPaths) names its file.
-	for ( const { path: p, by } of logicPaths ) {
+	const byLogic = new Map();
+	const logicRefs = [];
+	for ( const { path: p, by, key, hole } of logicPaths ) {
+		if ( key ) {
+			byLogic.has( key ) || byLogic.set( key, [] );
+			byLogic.get( key ).push( [ `logic:${ hole }`, p ] );
+			continue;
+		}
+		logicRefs.push( { path: p, by } );
 		files[ p ] ? scriptNamed.add( p ) : missing.push( { path: p, by, via: 'logic' } );
 	}
 	for ( const key of template.order ) {
@@ -199,9 +219,12 @@ export function readAssets( { folder, template, logicPaths = [] } ) {
 		}
 		const map = scripts[ `${ rec.realTag || rec.tag }.js` ];
 		if ( map ) {
-			for ( const value of Object.values( rec.attrs || {} ) ) {
-				map.byValue[ value ] && put( map.byValue[ value ], `script:${ rec.realTag || rec.tag }.js` );
+			for ( const [ name, value ] of Object.entries( rec.attrs || {} ) ) {
+				'string' === typeof value && map.attrs.has( name ) && map.byValue.has( value ) && put( map.byValue.get( value ), `script:${ rec.realTag || rec.tag }.js` );
 			}
+		}
+		for ( const [ via, p ] of byLogic.get( key ) || [] ) {
+			put( p, via );
 		}
 		found.length && ( byElement[ key ] = found );
 		if ( 'image-slot' === ( rec.realTag || rec.tag ) && null != rec.attrs?.placeholder ) {
@@ -210,6 +233,6 @@ export function readAssets( { folder, template, logicPaths = [] } ) {
 	}
 	return {
 		files, byElement, alt, gaps,
-		assets: { files: Object.keys( files ).length, unused: Object.keys( files ).filter( ( p ) => ! used.has( p ) && ! scriptNamed.has( p ) ), missing },
+		assets: { files: Object.keys( files ).length, unused: Object.keys( files ).filter( ( p ) => ! used.has( p ) && ! scriptNamed.has( p ) ), missing, logicRefs },
 	};
 }

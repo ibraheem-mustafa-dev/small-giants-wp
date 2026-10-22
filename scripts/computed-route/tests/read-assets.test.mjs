@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { readAssets, svgFacts, rasterSize, refPath } from '../lib/read-assets.mjs';
+import { readAssets, svgFacts, rasterSize, refPath, scriptAttrs } from '../lib/read-assets.mjs';
 import { joinFacts, countsOf, FACTS_SCHEMA_VERSION } from '../lib/fact-record.mjs';
 import { sourcesOf, assertCurrent, StaleRecordError } from '../lib/freshness.mjs';
 
@@ -34,10 +34,11 @@ const SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3741.59 847.97
 const SVG_ANIM = '<svg viewBox="0 0 100 50"><style>@keyframes spin{to{transform:rotate(1turn)}}</style><g id="a"><animateTransform attributeName="transform"/></g></svg>';
 
 // Page/0 is an img by src, Page/1 a div with a background-image, Page/2 an image-slot, Page/3 a custom element mapped by its
-// project script, Page/4 an img with a hole, Page/5 an img whose file is missing.
+// project script, Page/4 an img with a hole, Page/5 an img whose file is missing, Page/6 a custom element whose attribute the
+// script does not read and Page/7 one whose value is an inherited property name.
 const el = ( tag, attrs = {}, decls = [] ) => ( { tag, realTag: tag, attrs, style: { static: decls, holes: [] }, pseudo: {} } );
 const template = {
-	order: [ 'Page/0', 'Page/1', 'Page/2', 'Page/3', 'Page/4', 'Page/5' ],
+	order: [ 'Page/0', 'Page/1', 'Page/2', 'Page/3', 'Page/4', 'Page/5', 'Page/6', 'Page/7' ],
 	elements: {
 		'Page/0': el( 'img', { src: './assets/photo.png', alt: '' } ),
 		'Page/1': el( 'div', {}, [ [ 'background-image', 'url("assets/hero%20x.jpg")' ] ] ),
@@ -45,6 +46,8 @@ const template = {
 		'Page/3': el( 'brand-logo', { variant: 'wide' } ),
 		'Page/4': el( 'img', { src: 'assets/{{ item.img }}.png' } ),
 		'Page/5': el( 'img', { src: 'assets/gone.png' } ),
+		'Page/6': el( 'brand-logo', { label: 'wide' } ),
+		'Page/7': el( 'brand-logo', { variant: 'constructor', title: 'toString' } ),
 	},
 	gaps: [],
 };
@@ -57,7 +60,7 @@ function folder() {
 	fs.writeFileSync( path.join( dir, 'assets', 'logo.svg' ), SVG );
 	fs.writeFileSync( path.join( dir, 'assets', 'spin.svg' ), SVG_ANIM );
 	fs.writeFileSync( path.join( dir, 'assets', 'orphan.webp' ), webp( 64, 32 ) );
-	fs.writeFileSync( path.join( dir, 'brand-logo.js' ), "const SRC = { wide: './assets/logo.svg', tall: './assets/lost.svg' };\n" );
+	fs.writeFileSync( path.join( dir, 'brand-logo.js' ), "const SRC = { wide: './assets/logo.svg', tall: './assets/lost.svg' };\nclass L { static get observedAttributes() { return ['variant']; } }\n" );
 	return dir;
 }
 const withFolder = ( fn ) => {
@@ -105,6 +108,33 @@ test( 'MUST FAIL (script map and slot): a custom element takes the path its proj
 	assert.deepEqual( r.byElement[ 'Page/3' ].map( ( a ) => [ a.path, a.via ] ), [ [ 'assets/logo.svg', 'script:brand-logo.js' ] ] );
 	assert.deepEqual( r.alt[ 'Page/2' ], { source: 'image-slot', placeholder: 'Team photo', hole: false, id: 's1' } );
 	assert.equal( r.byElement[ 'Page/2' ], undefined, 'a slot with no src holds no asset' );
+} ) );
+
+test( 'MUST FAIL (script map attribute): only the attribute the script reads maps, and only a string value found in its own map', () => withFolder( ( dir ) => {
+	const r = readAssets( { folder: dir, template } );
+	assert.equal( r.byElement[ 'Page/6' ], undefined, 'a value that equals a map key under an attribute the script never reads maps nothing' );
+	assert.equal( r.byElement[ 'Page/7' ], undefined, 'an inherited property name (constructor, toString) is no key of the map' );
+	assert.deepEqual( [ ...scriptAttrs( "static get observedAttributes() { return ['variant', 'tone']; }" ) ], [ 'variant', 'tone' ] );
+	assert.deepEqual( [ ...scriptAttrs( 'this.getAttribute(\'size\'); this.getAttribute("kind")' ) ], [ 'size', 'kind' ] );
+	assert.equal( scriptAttrs( 'no attributes read' ).size, 0 );
+	const withNumber = { ...template, elements: { ...template.elements, 'Page/3': { ...template.elements[ 'Page/3' ], attrs: { variant: 5 } } } };
+	assert.equal( readAssets( { folder: dir, template: withNumber } ).byElement[ 'Page/3' ], undefined, 'a non-string attribute value maps nothing' );
+} ) );
+
+test( 'MUST FAIL (logic users): an asset path a hole names makes the holes element a user; a statics path, with no element, is a logic ref', () => withFolder( ( dir ) => {
+	const logicPaths = [
+		{ path: 'assets/spin.svg', by: 'hole Page/4 attr:src#0', key: 'Page/4', hole: 'attr:src#0' },
+		{ path: 'assets/orphan.webp', by: 'static Page.CATALOGUE' },
+		{ path: 'assets/nope.png', by: 'static Page.MENU' },
+		{ path: 'assets/nofile.png', by: 'hole Page/1 attr:src#0', key: 'Page/1', hole: 'attr:src#0' },
+	];
+	const r = readAssets( { folder: dir, template, logicPaths } );
+	assert.deepEqual( r.byElement[ 'Page/4' ].map( ( a ) => [ a.path, a.via, a.ratio ] ), [ [ 'assets/spin.svg', 'logic:attr:src#0', 2 ] ] );
+	assert.deepEqual( r.assets.logicRefs, [ { path: 'assets/orphan.webp', by: 'static Page.CATALOGUE' }, { path: 'assets/nope.png', by: 'static Page.MENU' } ] );
+	assert.deepEqual( r.assets.unused, [], 'the hole file and the static file are used' );
+	assert.ok( r.assets.missing.some( ( m ) => 'assets/nope.png' === m.path && 'static Page.MENU' === m.by && 'logic' === m.via ) );
+	assert.ok( r.assets.missing.some( ( m ) => 'assets/nofile.png' === m.path && 'Page/1' === m.by ), 'a hole path with no file is missing, naming its element' );
+	assert.deepEqual( readAssets( { folder: dir, template } ).assets.logicRefs, [] );
 } ) );
 
 test( 'MUST FAIL (missing and unused): a referenced path with no file is missing and names its element or script; a file nothing names is unused', () => withFolder( ( dir ) => {

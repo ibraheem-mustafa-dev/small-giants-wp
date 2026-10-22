@@ -9,7 +9,7 @@
  { "file": "lib/read-assets.mjs", "find": "out.push( [ `attr:${ name }`, value ] );", "replace": "'src' === name || out.push( [ `attr:${ name }`, value ] );", "why": "the src attribute never read" },
  { "file": "lib/read-assets.mjs", "find": "v = decodeURIComponent( v );", "replace": "v = v;", "why": "a percent-encoded path never matches its file" },
  { "file": "lib/read-assets.mjs", "find": "v.includes( '{{' ) || ", "replace": "", "why": "a {{ }} value is matched as a path" },
- { "file": "lib/read-assets.mjs", "find": "map.byValue[ value ] && put(", "replace": "false && put(", "why": "a project script's map never read" },
+ { "file": "lib/read-assets.mjs", "find": "map.byValue.has( value ) && put(", "replace": "false && put(", "why": "a project script's map never read" },
  { "file": "lib/read-assets.mjs", "find": "'image-slot' === ( rec.realTag || rec.tag ) && null != rec.attrs?.placeholder", "replace": "false", "why": "an image-slot's placeholder not kept" },
  { "file": "lib/read-assets.mjs", "find": "p.startsWith( 'assets/' ) && ! missing.some(", "replace": "false && ! missing.some(", "why": "a referenced path with no file not listed as missing" },
  { "file": "lib/read-assets.mjs", "find": "! used.has( p ) && ! scriptNamed.has( p )", "replace": "false", "why": "unused files not listed" },
@@ -19,5 +19,10 @@
  { "file": "lib/fact-record.mjs", "find": "...( assets.alt[ key ] ? { alt: assets.alt[ key ] } : {} ),", "replace": "", "why": "alt evidence not joined onto the element" },
  { "file": "lib/fact-record.mjs", "find": "elements: Object.values( elements ).filter( ( e ) => e.assets.length ).length,", "replace": "elements: 0,", "why": "elements using an asset not counted" },
  { "file": "lib/freshness.mjs", "find": "/^assets\\/./.test( rel ) || ", "replace": "", "why": "a changed asset leaves the record current" },
- { "file": "lib/freshness.mjs", "find": "/^[^/]+\\.js$/.test( rel ) || ", "replace": "", "why": "a changed project script leaves the record current" }
-]
+ { "file": "lib/freshness.mjs", "find": "/\\.js$/.test( rel ) || ", "replace": "", "why": "a changed project script leaves the record current" },
+ { "file": "lib/read-assets.mjs", "find": "const files = Object.create( null );", "replace": "const files = {};", "why": "an inherited property name (constructor) matches a file" },
+ { "file": "lib/read-assets.mjs", "find": "map.attrs.has( name ) && ", "replace": "", "why": "an attribute the script never reads maps an asset" },
+ { "file": "lib/read-assets.mjs", "find": "for ( const [ via, p ] of byLogic.get( key ) || [] ) {", "replace": "for ( const [ via, p ] of [] ) {", "why": "the element a hole belongs to is not a user of the path the hole names" },
+ { "file": "lib/read-assets.mjs", "find": "logicRefs.push( { path: p, by } );", "replace": "void by;", "why": "a static's asset path is not listed as a logic ref" },
+ { "file": "lib/read-assets.mjs", "find": "\t\tif ( key ) {\n\t\t\tbyLogic.has( key )", "replace": "\t\tif ( false ) {\n\t\t\tbyLogic.has( key )", "why": "a hole's path is listed as a logic ref, not as its element's use" },
+ { "file": "lib/read-assets.mjs", "find": "attrs: scriptAttrs( text ), ", "replace": "attrs: new Set( [ 'variant', 'label', 'title' ] ), ", "why": "the attributes a script reads are not taken from its code" }]

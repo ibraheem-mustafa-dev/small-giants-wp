@@ -1,0 +1,9 @@
+[
+ { "file": "lib/fact-record.mjs", "find": "schema: FACTS_SCHEMA_VERSION, client, widths,", "replace": "schema: FACTS_SCHEMA_VERSION, client, generated: new Date().toISOString(), widths,", "why": "a wall-clock timestamp in the record" },
+ { "file": "lib/fact-record.mjs", "find": "...( readme?.gaps || [] ), ", "replace": "", "why": "the README reader's gap rows are not in the record" },
+ { "file": "lib/fact-record.mjs", "find": "stateSideEffects: logic.stateSideEffects || {}, ", "replace": "", "why": "the side effects of a state are dropped before the record" },
+ { "file": "lib/fact-record.mjs", "find": "...( logic.staticsTruncated ? { truncated: true } : {} ) }", "replace": "}", "why": "a spent statics budget is not recorded" },
+ { "file": "lib/fact-record.mjs", "find": "logic: { statics: logic.statics || {}, ", "replace": "logic: { ", "why": "statics dropped before the record" },
+ { "file": "lib/fact-record.mjs", "find": "assets: { files: 0, unused: [], missing: [], logicRefs: [] }", "replace": "assets: { files: 0, unused: [], missing: [] }", "why": "a record with no assets reader run has no logicRefs list" },
+ { "file": "data/facts.schema.json", "find": "\"schema\": { \"const\": \"6\" },", "replace": "\"schema\": { \"const\": \"5\" },", "why": "the schema version is not the record's" }
+]

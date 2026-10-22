@@ -1,0 +1,5 @@
+[
+ { "file": "tools/mutate.mjs", "find": "const hits = text.split( find ).length - 1;", "replace": "const hits = 1;", "why": "a stale or ambiguous find is not skipped" },
+ { "file": "tools/mutate.mjs", "find": "\t\tskipped.push( line );\n\t\tbad++;", "replace": "\t\tskipped.push( line );", "why": "a skipped mutation does not fail the run" },
+ { "file": "tools/mutate.mjs", "find": "0 === hits ? 'find matches nothing'", "replace": "false ? 'find matches nothing'", "why": "a find that matches nothing is reported as ambiguous" }
+]

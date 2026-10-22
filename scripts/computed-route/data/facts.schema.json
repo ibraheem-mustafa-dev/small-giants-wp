@@ -3,11 +3,10 @@
   "$id": "https://sgs.local/computed-route/facts.schema.json",
   "title": "Handoff fact record (Spec 48 FR-48-7)",
   "type": "object",
-  "required": [ "schema", "client", "generated", "widths", "sources", "elements", "surfaces", "pages", "animations", "assets", "gaps", "counts" ],
+  "required": [ "schema", "client", "widths", "sources", "elements", "surfaces", "pages", "animations", "assets", "gaps", "counts" ],
   "properties": {
-    "schema": { "const": "5" },
+    "schema": { "const": "6" },
     "client": { "type": "string", "pattern": "^[a-z0-9-]+$" },
-    "generated": { "type": "string" },
     "widths": { "type": "array", "items": { "type": "integer", "minimum": 200, "maximum": 4000 }, "minItems": 1 },
     "sources": {
       "type": "object",
@@ -21,7 +20,7 @@
     "surfaces": { "type": "object", "additionalProperties": { "$ref": "#/$defs/surface" } },
     "pages": { "type": "array", "items": { "type": "object", "required": [ "surface", "route", "blocks" ], "properties": { "surface": { "type": "string" }, "route": { "type": [ "string", "null" ] }, "blocks": { "type": "array", "items": { "type": "string" } } } } },
     "animations": { "type": "object", "required": [ "records", "unjoined" ], "properties": { "records": { "type": "integer" }, "unjoined": { "type": "array", "items": { "type": "object", "required": [ "id", "reason" ], "properties": { "id": { "type": "string" }, "reason": { "type": "string" } } } } } },
-    "assets": { "type": "object", "required": [ "files", "unused", "missing" ], "properties": { "files": { "type": "integer" }, "unused": { "type": "array", "items": { "type": "string" } }, "missing": { "type": "array", "items": { "type": "object", "required": [ "path", "by" ], "properties": { "path": { "type": "string" }, "by": { "type": "string" }, "via": { "type": "string" } } } } } },
+    "assets": { "type": "object", "required": [ "files", "unused", "missing", "logicRefs" ], "properties": { "files": { "type": "integer" }, "unused": { "type": "array", "items": { "type": "string" } }, "logicRefs": { "type": "array", "description": "asset paths the logic names that no template element owns (a static, a getter, an instance field), with what names them", "items": { "type": "object", "required": [ "path", "by" ], "properties": { "path": { "type": "string" }, "by": { "type": "string" } } } }, "missing": { "type": "array", "items": { "type": "object", "required": [ "path", "by" ], "properties": { "path": { "type": "string" }, "by": { "type": "string" }, "via": { "type": "string" } } } } } },
     "readme": {
       "type": "object",
       "required": [ "present", "title", "sections", "judgementCalls", "openItems", "businessDetails", "platformIntent", "blockHints", "flagged", "missing" ],
@@ -42,7 +41,12 @@
       "type": "object",
       "description": "the logic instances' data: statics, getters and instance fields holding arrays and plain objects, per component (lib/read-logic-statics.mjs)",
       "properties": {
-        "statics": { "type": "object", "additionalProperties": { "type": "object", "required": [ "entries", "functions" ], "properties": {
+        "truncated": { "const": true, "description": "the record's statics passed their node budget" },
+        "stateSideEffects": { "type": "object", "description": "keyed <surface id>:<state name>: template keys outside the state's surface whose hole values the state changes", "additionalProperties": { "type": "array", "items": { "type": "string" } } },
+        "statics": { "type": "object", "additionalProperties": { "type": "object", "required": [ "entries", "functions", "width" ], "properties": {
+          "width": { "type": "integer", "description": "the viewport width the getters were read at" },
+          "truncated": { "const": true },
+          "dropped": { "type": "array", "description": "entries whose value changed between two reads", "items": { "type": "object", "required": [ "name", "source", "reason" ], "properties": { "name": { "type": "string" }, "source": { "enum": [ "static", "getter", "field" ] }, "reason": { "const": "volatile" } } } },
           "entries": { "type": "array", "items": { "type": "object", "required": [ "name", "source", "kind", "length", "value" ], "properties": { "name": { "type": "string" }, "source": { "enum": [ "static", "getter", "field" ] }, "kind": { "enum": [ "array", "object" ] }, "length": { "type": "integer", "minimum": 0 }, "value": {}, "dropped": { "type": "array", "items": { "type": "string" } }, "truncated": { "const": true }, "err": { "type": "string" } } } },
           "functions": { "type": "array", "items": { "type": "string" } }
         } } }

@@ -9,15 +9,104 @@
       "kind": "page",
       "name": "Home",
       "dc": "Home",
-      "template_tpl_id": [ "0" ],
+      "template_tpl_id": [
+        "0"
+      ],
       "route": "*",
-      "breakpoints": [ "desktop" ],
+      "breakpoints": [
+        "desktop"
+      ],
       "parent": null,
       "states": [
-        { "name": "first", "state_keys": {}, "how_to_reach": "default" },
-        { "name": "second", "state_keys": { "tab": "two" }, "how_to_reach": "set tab" }
+        {
+          "name": "first",
+          "state_keys": {},
+          "how_to_reach": "default"
+        },
+        {
+          "name": "second",
+          "state_keys": {
+            "tab": "two"
+          },
+          "how_to_reach": "set tab"
+        },
+        {
+          "name": "wide",
+          "state_keys": {
+            "tab": "two",
+            "w": ">= 1260"
+          },
+          "how_to_reach": "set tab at a wide viewport"
+        },
+        {
+          "name": "variant",
+          "state_keys": {
+            "props.kind": "x"
+          },
+          "how_to_reach": "a prop variant"
+        }
       ],
-      "time_dependent": { "value": false, "reason": "" }
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      }
+    },
+    {
+      "id": "S-02",
+      "kind": "modal",
+      "name": "Heading",
+      "dc": "Home",
+      "template_tpl_id": [
+        "2"
+      ],
+      "route": "*",
+      "breakpoints": [
+        "desktop"
+      ],
+      "parent": null,
+      "states": [
+        {
+          "name": "base",
+          "state_keys": {},
+          "how_to_reach": "default"
+        },
+        {
+          "name": "tab-two",
+          "state_keys": {
+            "tab": "two"
+          },
+          "how_to_reach": "set tab"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      }
+    },
+    {
+      "id": "S-03",
+      "kind": "modal",
+      "name": "No draft",
+      "dc": "",
+      "template_tpl_id": [],
+      "route": "*",
+      "breakpoints": [
+        "desktop"
+      ],
+      "parent": null,
+      "states": [
+        {
+          "name": "open",
+          "state_keys": {
+            "open": true
+          },
+          "how_to_reach": "open"
+        }
+      ],
+      "time_dependent": {
+        "value": false,
+        "reason": ""
+      }
     }
   ],
   "counts": {},
