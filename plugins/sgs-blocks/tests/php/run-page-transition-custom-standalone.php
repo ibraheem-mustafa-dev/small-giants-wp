@@ -47,6 +47,9 @@ foreach ( array( '', '0', '-5', '0.3', '380ms', '5001', 'abc', null, 3.5, array(
 t_eq( 'ease-out', R::sanitise_transition_easing( 'ease-out' ), 'named easing kept' );
 t_eq( 'cubic-bezier(0.22, 1, 0.36, 1)', R::sanitise_transition_easing( 'cubic-bezier(0.22,1,0.36,1)' ), 'cubic-bezier normalised' );
 t_eq( 'cubic-bezier(0.2, -0.5, 0.4, 1.5)', R::sanitise_transition_easing( 'cubic-bezier( 0.2 , -0.5 , 0.4 , 1.5 )' ), 'y overshoot allowed' );
+// A trailing dot matches the number pattern but is invalid CSS: each number is normalised.
+t_eq( 'cubic-bezier(0, 0, 1, 1)', R::sanitise_transition_easing( 'cubic-bezier(0., 0, 1., 1)' ), 'trailing dots removed' );
+t_eq( 'cubic-bezier(0.5, 0, 0.25, 1)', R::sanitise_transition_easing( 'cubic-bezier(.5,0,0.250,1.0)' ), 'leading dot and trailing zeros normalised' );
 foreach ( array( 'custom', 'bogus', 'cubic-bezier(1.2,0,0.2,1)', 'cubic-bezier(0,0,0.2)', 'cubic-bezier(0,0,0.2,1);x', 'cubic-bezier(a,0,0,1)', 'url(x)', '', null ) as $bad ) {
 	t_eq( '', R::sanitise_transition_easing( $bad ), 'easing refused: ' . var_export( $bad, true ) );
 }

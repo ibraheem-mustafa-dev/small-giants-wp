@@ -29,8 +29,11 @@ function mockMotion( reduced ) {
 beforeEach( () => {
 	window.scrollBy = jest.fn();
 	window.innerHeight = 800;
+	// The site header publishes its height as a custom property; the gap probe is the only element with an inline height.
+	document.documentElement.style.setProperty( '--sgs-header-height', '64px' );
 	Element.prototype.getBoundingClientRect = function () {
-		return { top: 0, bottom: 0, height: 0 };
+		const height = parseFloat( this.style.height ) || 0;
+		return { top: 0, bottom: height, height };
 	};
 	mockMotion( false );
 } );
@@ -45,7 +48,20 @@ describe( 'scrollOpenedIntoView', () => {
 	it( 'scrolls smoothly when the header sits above the visible area', () => {
 		const { accordion, details } = build( { top: -40, bottom: 10 } );
 		expect( scrollOpenedIntoView( details, accordion ) ).toBe( true );
-		expect( window.scrollBy ).toHaveBeenCalledWith( { top: -40, behavior: 'smooth' } );
+		expect( window.scrollBy ).toHaveBeenCalledWith( { top: -104, behavior: 'smooth' } );
+	} );
+
+	it( 'lands the header below the site header plus the gap', () => {
+		const { accordion, details } = build( { top: -40, bottom: 10, gap: '16px' } );
+		scrollOpenedIntoView( details, accordion );
+		expect( window.scrollBy ).toHaveBeenCalledWith( { top: -120, behavior: 'smooth' } );
+	} );
+
+	it( 'counts the admin bar in the offset', () => {
+		const { accordion, details } = build( { top: -40, bottom: 10 } );
+		document.body.insertAdjacentHTML( 'afterbegin', '<div id="wpadminbar" style="position:fixed;height:32px"></div>' );
+		scrollOpenedIntoView( details, accordion );
+		expect( window.scrollBy ).toHaveBeenCalledWith( { top: -136, behavior: 'smooth' } );
 	} );
 
 	it( 'scrolls when the header is cut off at the bottom', () => {

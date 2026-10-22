@@ -1,18 +1,21 @@
 /**
  * Accordion — scroll the opened item's header into view.
  *
- * The offset is the published site header height (`--sgs-header-height`, 0 when the header is not sticky) plus the
- * block's extra gap, so the header lands below a sticky site header. Nothing scrolls when the header is already fully
+ * The offset is the pinned chrome (sticky site header and admin bar) plus the block's extra gap, so the header lands
+ * below them. Nothing scrolls when the header is already fully
  * inside the visible area. Reduced motion jumps instead of scrolling smoothly.
  *
  * @package SGS\Blocks
  */
 
+import { chromeOffsetPx } from '../../shared/effects/motion-utils';
+
 /** Wait for the sibling's close animation to settle before measuring. */
 const SETTLE_MS = 560;
 
 /**
- * Resolve the scroll offset in px: header height plus the gap (a length or a `var()` preset).
+ * Resolve the scroll offset in px: the chrome pinned to the top (sticky site header and admin bar, measured by
+ * `chromeOffsetPx()`) plus the gap (a length or a `var()` preset).
  *
  * @param {HTMLElement} accordion Accordion root, the probe's parent so custom properties resolve there.
  * @param {string}      gap       CSS length, or '' for none.
@@ -20,14 +23,15 @@ const SETTLE_MS = 560;
  */
 export function resolveOffset( accordion, gap ) {
 	const probe = document.createElement( 'div' );
-	probe.style.cssText =
-		'position:absolute;visibility:hidden;pointer-events:none;width:0;height:calc(var(--sgs-header-height,0px) + ' +
-		( gap || '0px' ) +
-		')';
+	probe.style.position = 'absolute';
+	probe.style.visibility = 'hidden';
+	probe.style.pointerEvents = 'none';
+	probe.style.width = '0';
+	probe.style.height = gap || '0px';
 	accordion.appendChild( probe );
-	const px = probe.getBoundingClientRect().height;
+	const gapPx = probe.getBoundingClientRect().height;
 	probe.remove();
-	return Number.isFinite( px ) ? px : 0;
+	return chromeOffsetPx() + ( Number.isFinite( gapPx ) ? gapPx : 0 );
 }
 
 /**

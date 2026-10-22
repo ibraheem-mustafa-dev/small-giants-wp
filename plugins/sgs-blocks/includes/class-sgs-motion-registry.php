@@ -628,7 +628,15 @@ class SGS_Motion_Registry {
 			return '';
 		}
 
-		return \sprintf( 'cubic-bezier(%s, %s, %s, %s)', $m[1], $m[2], $m[3], $m[4] );
+		// Each number is normalised: `0.` and `1.` match the pattern but are invalid CSS and would drop the whole shorthand.
+		$numbers = \array_map(
+			static function ( string $number ): string {
+				return \rtrim( \rtrim( \number_format( (float) $number, 6, '.', '' ), '0' ), '.' );
+			},
+			\array_slice( $m, 1, 4 )
+		);
+
+		return \sprintf( 'cubic-bezier(%s, %s, %s, %s)', $numbers[0], $numbers[1], $numbers[2], $numbers[3] );
 	}
 
 	/**
