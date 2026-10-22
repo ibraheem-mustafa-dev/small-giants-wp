@@ -1,6 +1,7 @@
 // Marks Bean wrote in review.md that were never applied to intake.json (`intake.mjs --apply-review`), kept across a
 // re-run (Spec 48 FR-48-17). A re-run carries marks from the previous intake.json's review rows (intake-review.mjs::
 // carryOver), so without this step every mark that lives only in review.md is lost when the run rewrites the file.
+import fs from 'fs';
 import { parseReview, markProblem, isoDay } from './intake-review.mjs';
 
 // The previous intake with each unmarked review row given the mark review.md holds for it (dated `markedOn`, the day
@@ -31,4 +32,21 @@ export function withUnappliedMarks( previous, markdown, { day = isoDay() } = {} 
 	} );
 	out.intake = { ...previous, review };
 	return out;
+}
+
+// The confirmed page map (`--apply-review` writes it, with `confirmedFile` beside it as the record that Bean confirmed
+// it; later steps add each page's WordPress ID to it). A plain run writes the proposed map only while no confirmed one
+// exists, so it never overwrites a map Bean confirmed. `files`: { pageMap, confirmed }. Returns { written: boolean }.
+export function writeProposedPageMap( files, text ) {
+	if ( fs.existsSync( files.pageMap ) && fs.existsSync( files.confirmed ) ) {
+		return { written: false };
+	}
+	fs.writeFileSync( files.pageMap, text );
+	return { written: true };
+}
+
+// Writes the confirmed map and the record that it is confirmed (`--apply-review`, the one step that replaces it).
+export function writeConfirmedPageMap( files, text, today = isoDay() ) {
+	fs.writeFileSync( files.pageMap, text );
+	fs.writeFileSync( files.confirmed, `${ JSON.stringify( { confirmedOn: today }, null, 2 ) }\n` );
 }

@@ -16,7 +16,7 @@ import { runIsolated } from './intake-process.mjs';
 import { loadAjv, schemaProblems } from './handoff.mjs';
 import { pageMapProblems } from './intake-pagemap.mjs';
 import { renderReview, applyReview, carryOver, reviewRows, isoDay, ROW_TYPES } from './intake-review.mjs';
-import { withUnappliedMarks } from './intake-review-carry.mjs';
+import { withUnappliedMarks, writeProposedPageMap, writeConfirmedPageMap } from './intake-review-carry.mjs';
 import { mergeBlocked } from './intake-run-collapse.mjs';
 import { reviewDecisions, recordReviewDecisions, decisionsFile, dbKnownBlock } from './intake-run-finalise.mjs';
 import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
@@ -89,7 +89,7 @@ export function parseArgs( argv ) {
 export function pathsFor( repo, client ) {
 	const build = path.join( repo, 'sites', client, 'build' );
 	const dir = path.join( build, 'intake' );
-	return { folder: path.join( repo, 'sites', client, 'handoff' ), dir, intake: path.join( dir, 'intake.json' ), prev: path.join( dir, 'intake.prev.json' ), review: path.join( dir, 'review.md' ), inventories: path.join( dir, 'inventories' ), facts: path.join( dir, 'facts.json' ), pageMap: path.join( build, 'page-map.json' ), replay: ( hash ) => path.join( dir, 'replay', `${ hash }.har` ) };
+	return { folder: path.join( repo, 'sites', client, 'handoff' ), dir, intake: path.join( dir, 'intake.json' ), prev: path.join( dir, 'intake.prev.json' ), review: path.join( dir, 'review.md' ), inventories: path.join( dir, 'inventories' ), facts: path.join( dir, 'facts.json' ), pageMap: path.join( build, 'page-map.json' ), confirmed: path.join( dir, 'page-map.confirmed.json' ), replay: ( hash ) => path.join( dir, 'replay', `${ hash }.har` ) };
 }
 
 const secs = ( ms ) => `${ ( ms / 1000 ).toFixed( 1 ) }s`;
@@ -247,7 +247,8 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 	previous && fs.copyFileSync( at.intake, at.prev );
 	fs.writeFileSync( at.intake, `${ JSON.stringify( record, null, 1 ) }\n` );
 	fs.writeFileSync( at.review, renderReview( record ) );
-	fs.writeFileSync( at.pageMap, `${ JSON.stringify( record.pageMap, null, 2 ) }\n` );
+	const mapKept = ! writeProposedPageMap( at, `${ JSON.stringify( record.pageMap, null, 2 ) }\n` ).written;
+	mapKept && say( `${ path.relative( o.repo, at.pageMap ) } is confirmed, so this run leaves it as it is (the new proposal is in intake.json; --apply-review replaces it)` );
 	const counts = sectionCounts( record );
 	const p = result.parts;
 	const sk = p.skeletons?.collapse?.skeletons ?? [ 0, 0 ];
@@ -313,7 +314,7 @@ export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${
 	fs.writeFileSync( at.intake, `${ JSON.stringify( res.intake, null, 1 ) }\n` );
 	const file = decisionsFile( o.repo, o.client );
 	const saved = recordReviewDecisions( decisions, file );
-	fs.writeFileSync( at.pageMap, `${ JSON.stringify( pageMap, null, 2 ) }\n` );
+	writeConfirmedPageMap( at, `${ JSON.stringify( pageMap, null, 2 ) }\n`, today );
 	const dropped = res.intake.pageMap.length - pageMap.length;
 	say( `${ o.client }: ${ res.intake.review.length } rows marked (dated ${ today }); page-map.json confirmed with ${ pageMap.length } rows${ dropped ? ` (${ dropped } dropped)` : '' }; ${ saved } skeleton choices saved to ${ path.relative( o.repo, file ) } (block:<slug> marks and accepted finaliser picks)` );
 	return 0;

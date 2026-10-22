@@ -3,11 +3,13 @@
 // off-list marks and unknown rows, blocks on unmarked rows, and carries marks across an identical re-export.
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { loadAjv, schemaProblems } from '../lib/handoff.mjs';
 import { reviewRows, renderReview, parseReview, applyReview, carryOver, markProblem, notDefectLine, MARKS, ROW_TYPES, byCause, CONFIDENT_HEADING } from '../lib/intake-review.mjs';
-import { withUnappliedMarks } from '../lib/intake-review-carry.mjs';
+import { withUnappliedMarks, writeProposedPageMap, writeConfirmedPageMap } from '../lib/intake-review-carry.mjs';
 import { deadCodeWhy } from '../lib/intake-defects-static.mjs';
 import { deadFieldVerdict } from '../lib/intake-defects-deadfield.mjs';
 import { diffAnimations } from '../lib/intake-inventory-diff.mjs';
@@ -409,4 +411,41 @@ test( 'MUST FAIL a palette mark may name several slugs, each one a slug, none em
 	assert.deepEqual( r.problems, [] );
 	assert.equal( r.intake.review.find( ( x ) => 'palette:ink' === x.rowId ).mark, 'role:text,accent-text' );
 	assert.deepEqual( schemaProblems( loadAjv(), SCHEMA, r.intake ), [] );
+} );
+
+test( 'MUST FAIL: applying review.md again keeps every saved first date; only a changed mark or a changed row is dated again', () => {
+	const md = mark( renderReview( fixture() ), { accept: ROW_TYPES, rows: { 'missing:Quiz:1': 'build' } } );
+	const first = applyReview( fixture(), md, { today: '2026-10-02' } );
+	assert.deepEqual( [ first.problems, first.missing ], [ [], [] ] );
+	assert.ok( first.intake.review.every( ( r ) => '2026-10-02' === r.markedOn ), 'control: the first apply dates every mark' );
+	const again = applyReview( first.intake, md, { today: '2026-10-20' } );
+	assert.deepEqual( again.intake.review.map( ( r ) => [ r.rowId, r.mark, r.markedOn ] ), first.intake.review.map( ( r ) => [ r.rowId, r.mark, r.markedOn ] ), 'a second apply with the same marks changes no date' );
+	const edited = applyReview( first.intake, mark( md, { rows: { 'missing:Quiz:1': 'difference' } } ), { today: '2026-10-20' } );
+	const by = Object.fromEntries( edited.intake.review.map( ( r ) => [ r.rowId, r ] ) );
+	assert.deepEqual( [ by[ 'missing:Quiz:1' ].mark, by[ 'missing:Quiz:1' ].markedOn ], [ 'difference', '2026-10-20' ], 'a changed mark is dated again' );
+	assert.ok( edited.intake.review.filter( ( r ) => 'missing:Quiz:1' !== r.rowId ).every( ( r ) => '2026-10-02' === r.markedOn ), 'every other mark keeps its first date' );
+	const rowId = first.intake.review[ 0 ].rowId;
+	const moved = { ...first.intake, review: first.intake.review.map( ( r ) => ( r.rowId === rowId ? { ...r, contentHash: 'old' } : r ) ) };
+	assert.equal( applyReview( moved, md, { today: '2026-10-20' } ).intake.review.find( ( r ) => r.rowId === rowId ).markedOn, '2026-10-20', 'a row whose content changed is dated again' );
+} );
+
+test( 'MUST FAIL: a run never overwrites a confirmed page-map.json; the proposal is written only while none is confirmed, and --apply-review replaces it', () => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-pagemap-' ) );
+	try {
+		const files = { pageMap: path.join( dir, 'page-map.json' ), confirmed: path.join( dir, 'page-map.confirmed.json' ) };
+		assert.equal( writeProposedPageMap( files, '[ "proposal 1" ]\n' ).written, true, 'nothing confirmed: the proposal is written' );
+		assert.equal( writeProposedPageMap( files, '[ "proposal 2" ]\n' ).written, true, 'an unconfirmed proposal is replaced by the next run' );
+		assert.equal( fs.readFileSync( files.pageMap, 'utf8' ), '[ "proposal 2" ]\n' );
+		writeConfirmedPageMap( files, '[ "confirmed" ]\n', '2026-10-02' );
+		fs.writeFileSync( files.pageMap, '[ "confirmed", "with a WordPress ID" ]\n' );
+		assert.equal( writeProposedPageMap( files, '[ "proposal 3" ]\n' ).written, false, 'a confirmed map is left alone' );
+		assert.equal( fs.readFileSync( files.pageMap, 'utf8' ), '[ "confirmed", "with a WordPress ID" ]\n', 'its bytes, including what later steps added, are untouched' );
+		writeConfirmedPageMap( files, '[ "confirmed again" ]\n', '2026-10-20' );
+		assert.equal( fs.readFileSync( files.pageMap, 'utf8' ), '[ "confirmed again" ]\n', '--apply-review is the step that replaces it' );
+		assert.equal( JSON.parse( fs.readFileSync( files.confirmed, 'utf8' ) ).confirmedOn, '2026-10-20' );
+		fs.rmSync( files.pageMap );
+		assert.equal( writeProposedPageMap( files, '[ "proposal 4" ]\n' ).written, true, 'a missing map is written even when the record remains' );
+	} finally {
+		fs.rmSync( dir, { recursive: true, force: true } );
+	}
 } );

@@ -87,7 +87,7 @@ test( 'POSITIVE: the CSS logic writes is read from its syntax tree', () => {
 }`;
 	const t = tally();
 	codeUsage( parseLogic( logic, { startLine: 10 } ), t, ( n ) => `Home:js:${ n.loc.start.line }:${ n.loc.start.column }`, KNOWN );
-	assert.deepEqual( ids( t ), [ 'css-at:media', 'css-function:blur', 'css-group:filter-effects', 'css-group:grid-layout', 'css-group:scroll-snap', 'css-group:transitions', 'css-media-feature:prefers-reduced-motion', 'css-unit:px' ] );
+	assert.deepEqual( ids( t ), [ 'css-function:blur', 'css-group:filter-effects', 'css-group:grid-layout', 'css-group:scroll-snap', 'css-group:transitions', 'css-media-feature:prefers-reduced-motion', 'css-unit:px' ] );
 	assert.match( t.get( 'css-group:scroll-snap' ).draftId, /^Home:js:11:/ );
 } );
 
@@ -101,13 +101,32 @@ test( 'POSITIVE: the file read covers stamped elements, <style> bodies, logic an
 		{ n: '3', tag: 'link', attrs: [ [ 'rel', 'stylesheet' ], [ 'href', 'missing.css' ] ], inHelmet: true },
 		{ n: '4', tag: 'style', attrs: [], body: '.a:focus-visible { outline: 2px solid }' },
 		{ n: '5', tag: 'details', attrs: [ [ 'open', '' ] ] },
-	] }, scripts: [ { src: 'support.js', text: 'document.body.style.overscrollBehavior = "none";' } ] } ];
+	] }, scripts: [ { src: 'helper.js', text: 'document.body.style.overscrollBehavior = "none";' } ] } ];
 	const { usage, problems } = draftUsage( { sources, folder, known: KNOWN } );
 	for ( const id of [ 'css-function:color-mix', 'css-at:supports', 'css-pseudo-class:focus-visible', 'html-attr:details.open', 'css-group:positioned-layout', 'css-group:overscroll-behavior' ] ) {
 		assert.ok( usage.has( id ), id );
 	}
 	assert.equal( usage.get( 'css-pseudo-class:focus-visible' ).draftId, 'Home:4' );
 	assert.deepEqual( problems, [ 'linked stylesheet missing.css is not in the export folder' ] );
+} );
+
+test( 'MUST FAIL: the Spec 48A runtime files (support.js, image-slot.js) are not the draft, so a planted runtime file raises no capability; the draft own script still does', () => {
+	const code = 'const c = document.createElement( "canvas" ); c.style.overscrollBehavior = "none";';
+	const read = ( src ) => draftUsage( { sources: [ { component: 'Home', stamped: { elements: [] }, scripts: [ { src, text: code } ] } ], folder: null, known: KNOWN } ).usage;
+	for ( const src of [ './support.js', 'image-slot.js', 'assets/support.js?v=2' ] ) {
+		assert.deepEqual( ids( read( src ) ), [], src );
+	}
+	assert.ok( read( './indus-logo.js' ).has( 'html:canvas' ), 'the draft own script is read' );
+} );
+
+test( 'MUST FAIL: @media (prefers-reduced-motion: reduce) and the pseudo-elements inside it are the own reduced-motion handling, not capabilities; the same outside it still counts', () => {
+	const only = tally();
+	cssUsage( '@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms } }', only, 'Home:1', KNOWN );
+	assert.ok( ! only.has( 'css-at:media' ) && ! only.has( 'css-pseudo-element:before' ) && ! only.has( 'css-pseudo-element:after' ), ids( only ).join( ',' ) );
+	assert.ok( only.has( 'css-media-feature:prefers-reduced-motion' ), 'the media feature is still read' );
+	const both = tally();
+	cssUsage( '@media (prefers-reduced-motion: reduce) { a::before { top: 0 } } @media (min-width: 40em) { b::after { top: 0 } } c::before { top: 0 }', both, 'Home:2', KNOWN );
+	assert.ok( both.has( 'css-at:media' ) && both.has( 'css-pseudo-element:after' ) && both.has( 'css-pseudo-element:before' ) );
 } );
 
 test( 'THE CHECK (runtime): the running page is read too, and what only it showed is named', async () => {
