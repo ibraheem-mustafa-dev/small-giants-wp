@@ -436,6 +436,11 @@ The FRs in this section sit at uneven maturity. FR-36-26 is a dispatchable sub-s
 - **NICE:** reduced-motion SVG entrance/hover; auto-2x raster.
 - **Differentiator:** ONE logo *object* attribute (desktop/mobile/sticky/transparent/dark with a fallback chain) in one inspector panel with live preview — beats the competitors' split-across-panels UX. A11y/SEO: visible focus (first tab-stop); `<img>` in `<a href="/">` near DOM top.
 
+### FR-36-30 — The logo can print its SVG file inline
+**Status:** built (be8340127, 52db3a936, 5561b35be, 5eeebb3db), live check pending (Track F's final round at 375, 768 and 1440 on indus-test). Proof: `php plugins/sgs-blocks/tests/php/run-svg-document-standalone.php` passes.
+
+`inlineSvg` ("Print SVG inline", default off) prints the desktop logo's sanitised SVG inside the home link with `role="img"` and the alt as `aria-label` (or `aria-hidden` when decorative); each instance's ids, `url(#…)` references, animation names and `<style>` selectors are scoped to it (`plugins/sgs-blocks/includes/helpers-svg-instance-scope.php::sgs_svg_scope_instance`; the scoper allows only `@media`, `@supports` and `@keyframes` and re-checks its output), the draw-layer SVG too; the dark logo and the colour filters apply to it. *Done when:* `php plugins/sgs-blocks/tests/php/run-svg-document-standalone.php` passes.
+
 ### FR-36-23 — Business-info / contact (`sgs/business-info`, extend) — the Site-Info source of truth
 **Status:** PARTLY BUILT: click-to-call, click-to-email, click-to-map and `labelCollapse` are built (`plugins/sgs-blocks/src/blocks/business-info/render.php`, `plugins/sgs-blocks/src/blocks/business-info/block.json::attributes.labelCollapse`, `::attributes.addressLink`) over the single Site Info store, and `plugins/sgs-blocks/includes/class-org-website-schema.php` upgrades to `LocalBusiness` from the same fields. Not built: the live open/closed state from opening hours and the multi-location repeat (no match in the block folder). **Spec maturity: `OUTLINE`** — needs the `sgs_site_info` field roster + sanitisers as a frozen table before dispatch (§4 index).
 

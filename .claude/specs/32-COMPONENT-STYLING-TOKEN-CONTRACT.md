@@ -821,5 +821,9 @@ Every focusable element in the framework shows one keyboard focus look, defined 
 
   Status: built (8ee1e5564; deployed to sandybrown in 13d04b31f). Proof: `npx wp-scripts test-unit-js tests/js/scrollbar-contract.test.js` and `python scripts/check-snapshot-scrollbar-tokens.py --self-test` pass, every site snapshot passes `--check` at the 2:1 floor; live on the canary the root `scrollbar-color` resolves from the token at 375, 768 and 1440. On Windows Chrome (2026-10-20) the page bar keeps its arrows and every inner scroller is a slim branded thumb with none, the opted-out and hidden bars unchanged (`afdc09cdb`; `tests/js/scrollbar-contract.test.js`, and bar widths 10px inner, 15px native in a real Chrome).
 
+- **FR-32-27 — A client can colour text selection from its snapshot.** `settings.custom.selection.background` and `.colour` paint `::selection` through `theme/sgs-theme/assets/css/selection.css`, which loads only when both are set (`theme/sgs-theme/inc/selection.php`), so an unset pair leaves the browser default; `push-theme-snapshot.py` refuses a half pair, and a pair under 4.5:1 only warns (a contrast check never refuses a client's colours, Bean 2026-10-22). *Done when:* `npx wp-scripts test-unit-js tests/js/selection-contract.test.js` passes.
+
+  Status: built (e182719cc, e285e9c1e), live check pending (Track F's final round at 375, 768 and 1440 on indus-test). Proof: `npx wp-scripts test-unit-js tests/js/selection-contract.test.js` passes.
+
 
 Part D (the draft-to-snapshot extractor, §15, FR-33-1 to FR-33-10 and FR-33-12 to FR-33-19) is in Spec 48 §11 (`.claude/specs/48-CLONING-SYSTEM.md`).

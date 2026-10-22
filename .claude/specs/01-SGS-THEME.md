@@ -228,7 +228,7 @@ The `sgs_typography_css_rule()` PHP helper (auto-loaded via `render-helpers.php`
 - **WebP/AVIF** via WordPress native image handling (6.1+)
 - **Lazy loading** via native `loading="lazy"` (WordPress adds this automatically)
 - **Explicit width/height** on all images to prevent CLS
-- **SVG support** (BUILT, in the blocks plugin: `plugins/sgs-blocks/includes/svg-upload.php`) — SVG uploads for any user who can upload files, sanitised on both upload and sideload (`sgs_svg_upload_sanitise`: allowlisted elements, no scripts or event handlers, no outside `href` or `url()`, the SVG's mixed-case attribute names kept)
+- **SVG support** (BUILT, in the blocks plugin: `plugins/sgs-blocks/includes/svg-upload.php`) — uploads are rebuilt from an XML parse (`plugins/sgs-blocks/includes/helpers-svg-document.php::sgs_svg_sanitise_document`) that keeps an SVG's own animation (`animate`, `animateTransform`, `animateMotion`, `set`, `mpath`, `<style>` with `@keyframes`) and mesh gradients; it refuses, with its reason, everything the route's screen refuses (`scripts/computed-route/lib/svg-screen.mjs::svgProblem`: `javascript:`, `@import`, a DOCTYPE with entities, foreign elements, `on…` attributes, an animation rewriting a link, off-file links and CSS `url()`), refuses any parser error and any comment inside `<style>`, and strips `<script>`, comments and editor metadata; the shared `sgs_svg_kses_allowed_tags` list keeps only its original `<animate>`.
 
 ### Fonts
 - **Two font files maximum** per site (heading + body)
@@ -320,3 +320,7 @@ WP 7.0 adds native pseudo-element support for `core/button` at theme.json level:
 - **FR-1-1 — Text on Mac browsers matches the drafts' weight.** `theme/sgs-theme/assets/css/core-blocks-critical.css` sets `-webkit-font-smoothing: antialiased` and `-moz-osx-font-smoothing: grayscale` on `html`, always on: Mac browsers then draw text slightly thinner and lighter, as the drafts do; other platforms ignore it. *Done when:* `npx wp-scripts test-unit-js tests/js/font-smoothing.test.js` passes (in `plugins/sgs-blocks/`).
 
   Status: built (2df8b1670; deployed to sandybrown in 13d04b31f). Proof: `npx wp-scripts test-unit-js tests/js/font-smoothing.test.js` passes; live on the canary `getComputedStyle(document.body).webkitFontSmoothing` is `antialiased` at 375, 768 and 1440.
+
+- **FR-1-2 — An uploaded SVG keeps its own animation and is refused, with the reason, when it holds anything the route's SVG screen refuses.** *Done when:* `php plugins/sgs-blocks/tests/php/run-svg-document-standalone.php` passes (142 checks, MUST FAIL cases red under mutation).
+
+  Status: built (be8340127, 7d50cba34, 5eeebb3db), live check pending (Track F's final round at 375, 768 and 1440 on indus-test). Proof: `php plugins/sgs-blocks/tests/php/run-svg-document-standalone.php` passes.
