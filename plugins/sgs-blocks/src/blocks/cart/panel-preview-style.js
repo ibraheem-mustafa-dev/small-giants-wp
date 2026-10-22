@@ -19,7 +19,6 @@ import {
 	tierLengthPreview,
 	sgsLengthPreview,
 	resolveShadowPreviewComposed,
-	isCssGradient,
 	tierBoxLonghands,
 } from '../../utils';
 import { resolveColourToken } from '../../components';
@@ -203,9 +202,10 @@ export function triggerStyles( attributes, tier, palette, hasPill ) {
 	if ( ! hasPill || 'bubble' === attributes.pillCountStyle ) {
 		Object.assign( badge, typographyPreviewStyle( attributes, 'badge', tier ) );
 	}
-	const badgeFill = attributes.badgeColourGradient;
-	if ( isCssGradient( badgeFill ) ) {
-		badge[ '--sgs-cart-editor-badge-fill' ] = badgeFill;
+	// render-scoped-css.php paints badgeColour (solid) or badgeColourGradient on the badge's ::after.
+	const badgeFill = backgroundPaintPreview( attributes.badgeColour, attributes.badgeColourGradient, palette );
+	if ( badgeFill.backgroundImage || badgeFill.backgroundColor ) {
+		badge[ '--sgs-cart-editor-badge-fill' ] = badgeFill.backgroundImage || badgeFill.backgroundColor;
 	}
 	if ( ! hasPill ) {
 		return { trigger: {}, pillLabel: {}, badge };

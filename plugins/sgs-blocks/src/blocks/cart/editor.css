@@ -1,10 +1,5 @@
 /* ===== SGS Cart — editor.css (editor-only overrides) ===== */
 
-/* Ensure the editor preview wrapper behaves inline */
-.wp-block-sgs-cart {
-	display: inline-block;
-}
-
 /* WooCommerce notice in the editor canvas */
 .sgs-cart__editor-notice {
 	font-size: 12px;
@@ -19,8 +14,20 @@
 
 /* ===== Panel preview (static sample of the mini-cart panel) ===== */
 
+/* The open preview floats over the canvas below the trigger, as the live flyout and
+   drawer do, so it takes no room in the row the cart sits in. Rendered only while the
+   "Preview drawer open" toggle is on. */
+.sgs-cart--editor-preview {
+	position: relative;
+}
+
 .sgs-cart__panel-preview {
-	margin-top: 12px;
+	position: absolute;
+	top: 100%;
+	right: 0;
+	z-index: 100;
+	width: min( 400px, 92vw );
+	margin-top: 8px;
 }
 
 .sgs-cart__panel-preview-switch {
@@ -58,7 +65,7 @@
 	z-index: -1;
 	border-radius: inherit;
 	pointer-events: none;
-	background-image: var( --sgs-cart-editor-badge-fill, none );
+	background: var( --sgs-cart-editor-badge-fill, transparent );
 }
 
 .sgs-cart--editor-preview .sgs-cart__trigger::after {
@@ -80,7 +87,6 @@
 /* Drawer mode: the panel sits over the page it dims, drawn by the scrim layer
    (--sgs-scrim-fill, --sgs-scrim-opacity, --sgs-scrim-blur from the preview). */
 .sgs-cart__panel-preview--drawer {
-	position: relative;
 	padding: 12px;
 	overflow: hidden;
 }

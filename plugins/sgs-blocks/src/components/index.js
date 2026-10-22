@@ -15,6 +15,7 @@ export {
 	resolveColourToken,
 } from './DesignTokenPicker';
 export { default as SgsColourPanel } from './SgsColourPanel';
+export { default as useDrawerPreviewToggle } from './DrawerPreviewToggle';
 // Colour-variant row helpers (the five-variant family: 3 rows + 2 controls).
 export { default as fillRow } from './colour-variants/fillRow';
 export { default as textRow } from './colour-variants/textRow';

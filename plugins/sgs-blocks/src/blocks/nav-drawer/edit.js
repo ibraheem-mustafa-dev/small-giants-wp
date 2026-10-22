@@ -38,7 +38,7 @@ import {
 	RangeControl,
 	Button,
 } from '@wordpress/components';
-import { useState, useEffect } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 import ChromePanel from './ChromePanel';
 import chromeColourRows from './chrome-colour-rows';
 import ChromePreview from './ChromePreview';
@@ -78,7 +78,7 @@ const BG_ATTACHMENT_OPTIONS = [
 	{ label: __( 'Scroll', 'sgs-blocks' ), value: 'scroll' },
 	{ label: __( 'Fixed', 'sgs-blocks' ), value: 'fixed' },
 ];
-import { LogicalAlignControl, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl,
+import { useDrawerPreviewToggle, LogicalAlignControl, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl,
 	SgsBorderControl, IconPicker, IconPreview, TypographyControls, StarterLookPresetControl,
 	ShadowControl, SurfaceGroundControls, ScrimControls, scrimColourRow,
 } from '../../components';
@@ -333,7 +333,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// attribute: it must never serialise into saved content. Deliberately NOT
 	// derived from isSelected either — core/navigation avoids that for its
 	// overlay so the canvas does not reflow as the operator moves between blocks.
-	const [ previewOpen, setPreviewOpen ] = useState( false );
+	const [ previewOpen, drawerPreviewControl ] = useDrawerPreviewToggle();
 	const shellStyle = {
 		backgroundColor:
 			typeof surfaceOpacity === 'number' && surfaceOpacity < 1 && drawerBg
@@ -560,15 +560,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			<InspectorControls>
 				{ /* Preview drawer open — editor-only state (never serialised), stays
 				   outside ToolsPanel since it doesn't reset with the block's saved attrs. */ }
-				<PanelBody title={ __( 'Drawer', 'sgs-blocks' ) }>
-					<ToggleControl
-						label={ __( 'Preview drawer open', 'sgs-blocks' ) }
-						help={ __( 'Expands the drawer in the editor so you can edit its contents. Affects this editing session only — it is not saved and does not change the site.', 'sgs-blocks' ) }
-						checked={ previewOpen }
-						onChange={ setPreviewOpen }
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
+				{ drawerPreviewControl }
 
 				{ /* A ToolsPanel rather than a plain PanelBody — ariaLabel, drawerRef, and anchor (panel position) are
 				   core block settings and stay always-visible (isShownByDefault); panelSize,

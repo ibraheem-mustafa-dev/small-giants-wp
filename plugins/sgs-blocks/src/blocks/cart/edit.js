@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
-import { IconPreview, ResponsiveBoxControl, SgsColourPanel, ScrimControls, TypographyControls, ResponsiveOverride, SgsLengthControl } from '../../components';
+import { useDrawerPreviewToggle, IconPreview, ResponsiveBoxControl, SgsColourPanel, ScrimControls, TypographyControls, ResponsiveOverride, SgsLengthControl } from '../../components';
 import { ToolsPanel } from '../../components/primitives';
 import { colourVar, usePreviewTier, tierBoxLonghands } from '../../utils';
 import MediaElementPanel from '../../components/MediaElementPanel';
@@ -87,6 +87,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// so we don't show spurious warnings on a fresh install.
 	const wcActive = window?.sgsCartData?.wcActive !== false;
 
+	const [ previewOpen, drawerPreviewControl ] = useDrawerPreviewToggle( {
+		title: __( 'Bag drawer', 'sgs-blocks' ),
+		help: __( 'Shows the open panel over the canvas so you can style it. Affects this editing session only — it is not saved and does not change the site.', 'sgs-blocks' ),
+	} );
 	const previewTier = usePreviewTier();
 	const [ palette ] = useSettings( 'color.palette' );
 	const parts = triggerStyles( attributes, previewTier, palette, hasPill );
@@ -109,6 +113,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 	return (
 		<>
+			{ hasPanel && <InspectorControls>{ drawerPreviewControl }</InspectorControls> }
 			<SgsColourPanel
 				rows={ [
 					...buildCartColourRows( {
@@ -341,7 +346,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						0
 					</span>
 				</span>
-				{ hasPanel && (
+				{ hasPanel && previewOpen && (
 					<PanelPreview attributes={ attributes } displayMode={ displayMode } tier={ previewTier } palette={ palette } />
 				) }
 			</div>
