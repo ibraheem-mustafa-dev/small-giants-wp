@@ -37,3 +37,5 @@ The signal between the cloning tool plan's two orchestrator sessions (`.claude/p
 - 2026-10-22 T site-run-end (header post 201 built through wave T2b's writers; pairs sites/indus-foods/build/qa/pairs/header-2026-10-22-t2b/, untracked)
 - 2026-10-22 T db-reads paused (wave T2b's lanes merged; Track T reads the framework DB again after the next F reseed-done)
 - 2026-10-22 F reseed-start 52e61d742 (U11: adds block_attributes.meaning and seeds the sgs.meaning of 50 settings; Track T holds framework-DB reads until F reseed-done)
+- 2026-10-22 F reseed-done eb57a037c blocks: nav-bar-menu, nav-drawer-menu, nav-drawer, site-header, site-header-row, container, timeline, business-info, accordion, testimonial-slider, post-grid settings: block_attributes.meaning (new column; 50 sgs.meaning values, every effect-settings.json entry included); no other attribute row changed. Track T may read the framework DB again
+- 2026-10-22 F built U11 eb57a037c (check-setting-meanings.py --check 0 of 27; the reseeded DB holds each sgs.meaning)
