@@ -62,6 +62,32 @@ test( 'a record with no sources passes with one warning, never silently', () => 
 	assert.match( warned[ 0 ], /old\.json has no sources/ );
 } );
 
+test( 'MUST FAIL a changed token stylesheet is refused, naming the file', () => {
+	const root = folder();
+	const record = { sources: sourcesOf( root ) };
+	write( root, 'tokens/colors.css', ':root{--a:#222}\n' );
+	assert.throws( () => assertCurrent( record, root ), ( e ) => e instanceof StaleRecordError && /tokens\/colors\.css changed/.test( e.message ) && 1 === e.changed.length );
+} );
+
+test( 'MUST FAIL every source kind is hashed: a script at any depth, an asset, a README, the runtime and both inventories', () => {
+	const root = folder();
+	for ( const [ f, body ] of Object.entries( { 'store.js': '//a\n', 'lib/deep/helper.js': '//b\n', 'assets/a.svg': '<svg/>\n', 'README.md': '# r\n', 'handoff-schema/x.js': '//c\n' } ) ) {
+		fs.mkdirSync( path.dirname( path.join( root, f ) ), { recursive: true } );
+		write( root, f, body );
+	}
+	const record = { sources: sourcesOf( root ) };
+	assert.deepEqual( Object.keys( record.sources.files ).sort(), [ 'Home.dc.html', 'README.md', 'animations.json', 'assets/a.svg', 'handoff-schema/x.js', 'lib/deep/helper.js', 'store.js', 'support.js', 'surfaces.json', 'tokens/colors.css' ] );
+	for ( const f of Object.keys( record.sources.files ) ) {
+		const was = fs.readFileSync( path.join( root, f ), 'utf8' );
+		write( root, f, `${ was }changed\n` );
+		assert.deepEqual( changedSources( record.sources, root ), [ `${ f } changed` ], f );
+		write( root, f, was );
+	}
+	write( root, 'Extra.dc.html', '<x-dc/>\n' );
+	fs.rmSync( path.join( root, 'surfaces.json' ) );
+	assert.deepEqual( changedSources( record.sources, root ).sort(), [ 'Extra.dc.html added', 'surfaces.json removed' ] );
+} );
+
 test( 'MUST FAIL the readers of an intake record call assertCurrent', () => {
 	for ( const f of [ 'skeleton.mjs', 'check-approved.mjs', 'fill.mjs', 'lib/skeleton-rerun.mjs' ] ) {
 		assert.match( fs.readFileSync( path.join( ROUTE, f ), 'utf8' ), /assertCurrent\(/, f );

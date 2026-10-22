@@ -1,0 +1,11 @@
+[
+ { "file": "lib/freshness.mjs", "find": "/\\.dc\\.html$/.test( rel ) || ", "replace": "", "why": "a changed draft leaves the record current" },
+ { "file": "lib/freshness.mjs", "find": "/^assets\\/./.test( rel ) || ", "replace": "", "why": "a changed asset leaves the record current" },
+ { "file": "lib/freshness.mjs", "find": "/\\.js$/.test( rel ) || ", "replace": "/^[^/]+\\.js$/.test( rel ) || ", "why": "a script below the root leaves the record current" },
+ { "file": "lib/freshness.mjs", "find": "[ 'support.js', 'surfaces.json', 'animations.json', 'README.md' ].includes( rel )", "replace": "[ 'support.js', 'animations.json', 'README.md' ].includes( rel )", "why": "a changed surfaces.json leaves the record current" },
+ { "file": "lib/freshness.mjs", "find": "[ 'support.js', 'surfaces.json', 'animations.json', 'README.md' ].includes( rel )", "replace": "[ 'support.js', 'surfaces.json', 'README.md' ].includes( rel )", "why": "a changed animations.json leaves the record current" },
+ { "file": "lib/freshness.mjs", "find": "[ 'support.js', 'surfaces.json', 'animations.json', 'README.md' ].includes( rel )", "replace": "[ 'support.js', 'surfaces.json', 'animations.json' ].includes( rel )", "why": "a changed README leaves the record current" },
+ { "file": "lib/freshness.mjs", "find": " || /^tokens\\/[^/]+\\.css$/.test( rel )", "replace": "", "why": "a changed token stylesheet leaves the record current" },
+ { "file": "lib/freshness.mjs", "find": "...Object.keys( now ).filter( ( f ) => ! ( f in was ) ).map( ( f ) => `${ f } added` ),", "replace": "", "why": "an added source is not listed" },
+ { "file": "lib/freshness.mjs", "find": "...Object.keys( was ).filter( ( f ) => ! ( f in now ) ).map( ( f ) => `${ f } removed` ),", "replace": "", "why": "a removed source is not listed" }
+]

@@ -3,11 +3,15 @@
  { "file": "lib/read-animations.mjs", "find": "for ( const up of template.elements[ target ].parentChain ) {", "replace": "for ( const up of template.order ) {", "why": "siblings receive the record" },
  { "file": "lib/read-animations.mjs", "find": "} else if ( 'self' === entry.reach && 'self' !== list[ held ].reach ) {", "replace": "} else if ( false ) {", "why": "a descendant entry keeps the place of a self entry" },
  { "file": "lib/read-animations.mjs", "find": "const ids = own.length ? own : idsOf( r.element?.nearest_tpl_id );", "replace": "const ids = own;", "why": "nearest_tpl_id never read" },
- { "file": "lib/read-animations.mjs", "find": "const idsOf = ( v ) => ( null == v ? [] : [ v ].flat().map( String ) );", "replace": "const idsOf = ( v ) => ( null == v ? [] : [ v ].flat().slice( 0, 1 ).map( String ) );", "why": "only the first of a list of ids read" },
- { "file": "lib/read-animations.mjs", "find": "flagged: 'active' === r.status ? null : r.status,", "replace": "flagged: null,", "why": "dead-code records not flagged" },
+ { "file": "lib/read-animations.mjs", "find": "[ v ].flat().map( String ).filter(", "replace": "[ v ].flat().slice( 0, 1 ).map( String ).filter(", "why": "only the first of a list of ids read" },
+ { "file": "lib/read-animations.mjs", "find": "flagged: 'active' === status ? null : status,", "replace": "flagged: null,", "why": "dead-code records not flagged" },
  { "file": "lib/read-animations.mjs", "find": "if ( ! ids.length ) {", "replace": "if ( false ) {", "why": "records with no element not listed with their reason" },
  { "file": "lib/read-animations.mjs", "find": "if ( ! template.elements[ target ] ) {", "replace": "if ( false ) {", "why": "a missing template element not reported" },
  { "file": "lib/fact-record.mjs", "find": "effects: animations.byElement[ key ] || [],", "replace": "effects: [],", "why": "effects not joined onto the element" },
  { "file": "lib/fact-record.mjs", "find": "joined: a.records - a.unjoined.length,", "replace": "joined: a.records,", "why": "unjoined records counted as joined" },
- { "file": "lib/freshness.mjs", "find": "[ 'support.js', 'surfaces.json', 'animations.json' ].includes( rel )", "replace": "[ 'support.js', 'surfaces.json' ].includes( rel )", "why": "a changed animations.json leaves the record current" }
+ { "file": "lib/freshness.mjs", "find": "'surfaces.json', 'animations.json', 'README.md' ]", "replace": "'surfaces.json', 'README.md' ]", "why": "a changed animations.json leaves the record current" },
+ { "file": "lib/read-animations.mjs", "find": "if ( ! Array.isArray( records ) ) {", "replace": "if ( false ) {", "why": "records that are not a list throw instead of a gap row" },
+ { "file": "lib/read-animations.mjs", "find": "if ( ! r || 'object' !== typeof r ) {", "replace": "if ( false ) {", "why": "a record that is not an object throws" },
+ { "file": "lib/read-animations.mjs", "find": ".map( String ).filter( ( id ) => '' !== id ) );", "replace": ".map( String ) );", "why": "an empty-string template_tpl_id blocks the nearest_tpl_id fallback" },
+ { "file": "lib/read-animations.mjs", "find": "const status = r.status ?? 'active';", "replace": "const status = r.status;", "why": "a record with no status is not active" }
 ]

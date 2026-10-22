@@ -12,7 +12,7 @@ const record = { elements: { [ `${ ROOT }/39` ]: rec(), [ `${ ROOT }/47` ]: rec(
 const el = ( key, template, tpl, extra = {} ) => ( { key, template, tpl, tag: 'div', attrs: {}, ...extra } );
 const inventory = { elements: [ el( 'Root/39#0', 'Root', 39 ), el( 'Root/47#0', 'Root', 47 ), el( 'Root/47#3', 'Root', 47 ), el( 'Root>Nav@8#0/5#0', 'Nav', 5 ), el( 'Root/99#0', 'Root', 99 ) ] };
 
-test( 'a served Root key resolves to its record key and its intake-space instance key', () => {
+test( 'MUST FAIL a served Root key resolves to its record key and its intake-space instance key', () => {
 	const t = translateElement( inventory.elements[ 0 ], ROOT );
 	assert.equal( t.templateKey, `${ ROOT }/39` );
 	assert.equal( t.instanceKey, `${ ROOT }/39#0` );
@@ -21,14 +21,14 @@ test( 'a served Root key resolves to its record key and its intake-space instanc
 	assert.equal( view.entry( inventory.elements[ 1 ] ), record.elements[ `${ ROOT }/47` ] );
 } );
 
-test( 'a copy inside a loop resolves to the same template and the right #copy', () => {
+test( 'MUST FAIL a copy inside a loop resolves to the same template and the right #copy', () => {
 	const t = translateElement( inventory.elements[ 2 ], ROOT );
 	assert.equal( t.templateKey, `${ ROOT }/47` );
 	assert.equal( t.instanceKey, `${ ROOT }/47#3` );
 	assert.equal( t.copy, 3 );
 } );
 
-test( 'a nested import host keeps its own component and a served root key without an entry component is listed', () => {
+test( 'MUST FAIL a nested import host keeps its own component and a served root key without an entry component is listed', () => {
 	assert.equal( translateElement( inventory.elements[ 3 ], ROOT ).templateKey, 'Nav/5' );
 	const none = translateElement( inventory.elements[ 0 ], null );
 	assert.equal( none.templateKey, undefined );
@@ -38,14 +38,14 @@ test( 'a nested import host keeps its own component and a served root key withou
 	assert.deepEqual( view.untranslated.map( ( u ) => u.key ), [ 'Root/39#0' ] );
 } );
 
-test( 'an element with no identity, or a key that disagrees with its tpl, is listed and never guessed', () => {
+test( 'MUST FAIL an element with no identity, or a key that disagrees with its tpl, is listed and never guessed', () => {
 	const r = translateInventory( { elements: [ el( 'Root/39#0', 'Root', 39 ), el( 'Root/40#0', 'Root', null ), el( 'Root/41#0', 'Root', 42 ), el( 'x', '', 3 ) ] }, ROOT, record );
 	assert.deepEqual( Object.keys( r.byKey ), [ 'Root/39#0' ] );
 	assert.deepEqual( r.untranslated.map( ( u ) => u.key ), [ 'Root/40#0', 'Root/41#0', 'x' ] );
 	assert.match( r.untranslated[ 1 ].reason, /tpl 41 and the element tpl 42|tpl 41/ );
 } );
 
-test( 'translateInventory resolves every node and lists the ones the record has no entry for', () => {
+test( 'MUST FAIL translateInventory resolves every node and lists the ones the record has no entry for', () => {
 	const r = translateInventory( inventory, ROOT, record );
 	assert.equal( Object.keys( r.byKey ).length, 5 );
 	assert.deepEqual( r.untranslated, [] );
@@ -53,14 +53,14 @@ test( 'translateInventory resolves every node and lists the ones the record has 
 	assert.equal( r.byKey[ 'Root/47#3' ].templateKey, `${ ROOT }/47` );
 } );
 
-test( 'matching is by identity, never by text or class', () => {
+test( 'MUST FAIL matching is by identity, never by text or class', () => {
 	const decoy = el( 'Root/99#0', 'Root', 99, { allText: 'Home About', words: 'Home', attrs: { class: `${ ROOT }/39` } } );
 	assert.equal( recordView( record, { rootComponent: ROOT } ).has( decoy ), false );
 } );
 
 // The wiring: proposeSkeleton hands the entry component to the record view, so a served inventory's nodes find their
 // record entries and the proposal lists none as untranslated.
-test( 'proposeSkeleton on a served inventory translates every node and lists the untranslatable ones only without a root component', async () => {
+test( 'MUST FAIL proposeSkeleton on a served inventory translates every node and lists the untranslatable ones only without a root component', async () => {
 	const { openDb } = await import( '../lib/db.mjs' );
 	const { loadFacts } = await import( '../lib/skeleton-facts.mjs' );
 	const { proposeSkeleton } = await import( '../lib/skeleton-propose.mjs' );

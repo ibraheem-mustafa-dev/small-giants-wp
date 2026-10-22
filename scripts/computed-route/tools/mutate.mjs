@@ -6,7 +6,7 @@
 // KILLED when an assertion turns red, BROKEN when the mutated code no longer loads (fewer tests ran), SURVIVED when
 // nothing turned red. The file is backed up to <file>.mutate-bak before each write and restored after each run and on
 // exit; a backup left by a killed run stops the next run until it is restored. Exit 0 every mutation killed,
-// 1 one survived, broke or was skipped, 2 red baseline or a leftover backup.
+// 1 one survived, broke or was SKIPPED (its find matches no text or more than one place; the SKIPPED lines are repeated at the end), 2 red baseline or a leftover backup.
 import { copyFileSync, existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
@@ -51,14 +51,18 @@ if ( ! base || 0 !== base.fail ) {
 }
 console.log( `baseline green (${ base.tests } tests)` );
 let bad = 0;
+const skipped = [];
 for ( const m of list ) {
 	const path = join( dir, m.file );
 	const orig = readFileSync( path, 'utf8' );
 	const crlf = orig.includes( '\r\n' );
 	const text = orig.replace( /\r\n/g, '\n' );
 	const find = m.find.replace( /\r\n/g, '\n' );
-	if ( 1 !== text.split( find ).length - 1 ) {
-		console.log( `SKIP (find not unique): ${ m.why }` );
+	const hits = text.split( find ).length - 1;
+	if ( 1 !== hits ) {
+		const line = `SKIPPED (${ 0 === hits ? 'find matches nothing' : `find matches ${ hits } places, not one` } in ${ m.file }): ${ m.why }`;
+		console.log( line );
+		skipped.push( line );
 		bad++;
 		continue;
 	}
@@ -79,4 +83,5 @@ for ( const m of list ) {
 	}
 }
 console.log( `${ list.length - bad } of ${ list.length } mutations killed` );
+skipped.length && console.log( [ `${ skipped.length } SKIPPED, so not run (a stale find fails the run):`, ...skipped ].join( '\n' ) );
 process.exit( bad ? 1 : 0 );

@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { readReadme, splitSections, normaliseHeading, templateHeadingOf, TEMPLATE_HEADINGS } from '../lib/read-readme.mjs';
+import { readReadme, splitSections, normaliseHeading, templateHeadingOf, templateHeadingsOf, labelKind, loadSynonyms, TEMPLATE_HEADINGS } from '../lib/read-readme.mjs';
 import { joinFacts, factsProblems } from '../lib/fact-record.mjs';
 import { sourcesOf, assertCurrent, StaleRecordError } from '../lib/freshness.mjs';
 
@@ -108,6 +108,65 @@ test( 'MUST FAIL (sub-sections): a list reads the deeper headings under its temp
 		assert.deepEqual( r.openItems.map( ( j ) => j.text ), [ 'Three.' ] );
 	}, text );
 	assert.equal( splitSections( text ).sections.length, 3 );
+} );
+
+test( 'MUST FAIL (heading synonyms): a heading that begins with an accepted word is the template heading nothing else claims; an exact heading wins', () => {
+	const templates = ( ...headings ) => templateHeadingsOf( headings );
+	assert.deepEqual( templates( 'Screens / Views', 'Animations & Behaviour', 'Global elements' ), [ 'Routes', 'Animations and interactions', 'Global layout' ] );
+	assert.deepEqual( templates( 'Interactions and animation', 'Breakpoints and layout' ), [ 'Animations and interactions', null ], 'the accepted word must begin the heading' );
+	assert.deepEqual( templates( 'Routes', 'Pages', 'Screens / Views' ), [ 'Routes', 'Pages', null ], 'both templates are claimed by their own words' );
+	assert.deepEqual( templates( 'Pages', 'Screens / Views' ), [ 'Pages', 'Routes' ], 'the first template in template order takes a tie' );
+	const text = '# T\n\n## Screens / Views\n- a\n\n## Animations & Behaviour\nHover lifts the cards.\n\n## Global elements\nHeader.\n';
+	withFolder( ( dir ) => {
+		const r = readReadme( { folder: dir } );
+		assert.deepEqual( r.sections.map( ( s ) => s.template ), [ 'Routes', 'Animations and interactions', 'Global layout' ] );
+		assert.deepEqual( r.missing, TEMPLATE_HEADINGS.filter( ( t ) => ! [ 'Routes', 'Animations and interactions', 'Global layout' ].includes( t ) ) );
+	}, text );
+} );
+
+test( 'MUST FAIL (synonyms table): a table naming a non-template heading or a non-word is refused', () => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'readme-syn-' ) );
+	try {
+		const write = ( data ) => {
+			const f = path.join( dir, 's.json' );
+			fs.writeFileSync( f, JSON.stringify( data ) );
+			return f;
+		};
+		assert.throws( () => loadSynonyms( write( { headings: { 'Not a heading': [ 'x' ] } } ) ), /not a template heading/ );
+		assert.throws( () => loadSynonyms( write( { headings: { Routes: [ 'Screens!' ] } } ) ), /lower-case words/ );
+		assert.throws( () => loadSynonyms( write( { labels: { other: [ 'x' ] } } ) ), /judgementCalls or openItems/ );
+		assert.deepEqual( loadSynonyms( write( { headings: { Routes: [ 'screens' ] }, labels: { openItems: [ 'open' ] } } ) ), { headings: { Routes: [ 'screens' ] }, labels: { openItems: [ 'open' ] } } );
+		assert.ok( Object.keys( loadSynonyms().headings ).every( ( h ) => TEMPLATE_HEADINGS.includes( h ) ) );
+	} finally {
+		fs.rmSync( dir, { recursive: true, force: true } );
+	}
+} );
+
+test( 'MUST FAIL (labels): items under a decision label leave the open items; a still-open or to-supply line joins them', () => {
+	const text = [
+		'# T', '', '## Open items',
+		'Client to supply: a phone number, the opening hours.', '',
+		'**Inert in the draft, by decision. What each becomes:**',
+		'- Express pay: through the processor.',
+		'- Find address: postcode lookup.', '',
+		'**Notes**',
+		'- A plain bullet after a label that names nothing.', '',
+		'**Decisions applied on 2026-10-11:** autoplay is off under reduced motion.', '',
+		'**Still open** (`surfaces.json` unresolved): sign-in is simulated.', '',
+		'## Judgement calls', '- Kept.', '',
+		'### Still open', '- A question.', '',
+		'### Decisions', '- A choice.', '',
+	].join( '\n' );
+	withFolder( ( dir ) => {
+		const r = readReadme( { folder: dir } );
+		assert.deepEqual( r.openItems.map( ( i ) => i.text ), [ 'Client to supply: a phone number, the opening hours.', 'A plain bullet after a label that names nothing.', '**Still open** (`surfaces.json` unresolved): sign-in is simulated.', 'A question.' ] );
+		assert.deepEqual( r.judgementCalls.map( ( i ) => i.text ), [ 'Express pay: through the processor.', 'Find address: postcode lookup.', '**Decisions applied on 2026-10-11:** autoplay is off under reduced motion.', 'Kept.', 'A choice.' ] );
+		assert.deepEqual( r.openItems.map( ( i ) => i.section ), [ 'Open items', 'Open items', 'Open items', 'Still open' ] );
+	}, text );
+	assert.equal( labelKind( 'Inert in the draft, by decision. What each becomes:' ), 'judgementCalls' );
+	assert.equal( labelKind( 'Decisions still open' ), 'openItems', 'an open word wins' );
+	assert.equal( labelKind( 'Reopened' ), null, 'whole words only' );
+	assert.equal( labelKind( 'Notes' ), null );
 } );
 
 test( 'MUST FAIL (block hints): block-mapping bullets and table rows are kept as evidence, never in a decision list', () => withFolder( ( dir ) => {

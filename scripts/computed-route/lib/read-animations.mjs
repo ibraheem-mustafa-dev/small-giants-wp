@@ -6,17 +6,18 @@
 // `animations.json` is plain JSON and is read as it is: no `.dc.html` is parsed and no draft logic runs here.
 import { templateKey } from './fact-key.mjs';
 
-const idsOf = ( v ) => ( null == v ? [] : [ v ].flat().map( String ) );
+const idsOf = ( v ) => ( null == v ? [] : [ v ].flat().map( String ).filter( ( id ) => '' !== id ) );
 
 // The effect entry of one record as it appears on an element.
 function entryOf( r, target, via, reach ) {
+	const status = r.status ?? 'active';
 	return {
 		id: r.id,
 		name: r.name ?? null,
 		mechanism: r.mechanism ?? null,
 		group: r.group ?? null,
-		status: r.status,
-		flagged: 'active' === r.status ? null : r.status,
+		status,
+		flagged: 'active' === status ? null : status,
 		reach,
 		target,
 		via,
@@ -28,7 +29,8 @@ function entryOf( r, target, via, reach ) {
 }
 
 // { byElement: { <template key>: [ effect ] }, unjoined: [ { id, reason } ], records, gaps } from animations.json's records
-// and lib/read-template.mjs's result. `flagged` is the record's status when it is not `active` (`dead-code` can never run
+// and lib/read-template.mjs's result. A `records` that is not a list is one gap row; an empty-string id names no element and falls through to
+// the next field; a record with no `status` is `active`. `flagged` is the record's status when it is not `active` (`dead-code` can never run
 // in the draft, `no-op` changes nothing visible), so a consumer skips it without reading `status` again.
 export function readAnimations( { records, template } ) {
 	const byElement = {};
@@ -43,7 +45,15 @@ export function readAnimations( { records, template } ) {
 			list[ held ] = entry;
 		}
 	};
+	if ( ! Array.isArray( records ) ) {
+		gaps.push( { construct: 'animations', draftId: 'animations.json', error: `animations.json \`records\` is ${ null === records ? 'null' : typeof records } and not a list, so no animation record was read` } );
+		return { byElement, unjoined, records: 0, gaps };
+	}
 	for ( const r of records ) {
+		if ( ! r || 'object' !== typeof r ) {
+			gaps.push( { construct: 'animations', draftId: 'animations.json', error: 'a record in animations.json is not an object and was not read' } );
+			continue;
+		}
 		const own = idsOf( r.element?.template_tpl_id );
 		const via = own.length ? 'template_tpl_id' : 'nearest_tpl_id';
 		const ids = own.length ? own : idsOf( r.element?.nearest_tpl_id );

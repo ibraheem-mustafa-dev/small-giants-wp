@@ -66,6 +66,26 @@ test( 'MUST FAIL (unjoined): a record with no element is listed with its reason;
 	assert.deepEqual( r.byElement, {} );
 } );
 
+test( 'MUST FAIL (records shape): records that are not a list, or a record that is not an object, is a gap row and never a throw', () => {
+	for ( const records of [ {}, 'text', 7 ] ) {
+		const r = readAnimations( { records, template } );
+		assert.deepEqual( [ r.records, r.byElement, r.unjoined ], [ 0, {}, [] ] );
+		assert.equal( r.gaps.length, 1 );
+		assert.match( r.gaps[ 0 ].error, /not a list/ );
+	}
+	const mixed = readAnimations( { records: [ null, rec( 'A-01', { template_tpl_id: '2' } ), 'x' ], template } );
+	assert.deepEqual( ids( mixed.byElement, 'Page/2' ), [ 'A-01:self' ] );
+	assert.equal( mixed.gaps.filter( ( g ) => /not an object/.test( g.error ) ).length, 2 );
+} );
+
+test( 'MUST FAIL (empty ids): an empty-string template_tpl_id falls through to nearest_tpl_id; a missing status reads as active', () => {
+	const records = [ rec( 'E-01', { template_tpl_id: '', nearest_tpl_id: '1' } ), rec( 'E-02', { template_tpl_id: [ '' ], nearest_tpl_id: '2' } ), rec( 'E-03', { template_tpl_id: '2' }, { status: undefined } ) ];
+	const { byElement, unjoined } = readAnimations( { records, template } );
+	assert.deepEqual( unjoined, [] );
+	assert.deepEqual( byElement[ 'Page/1' ].map( ( e ) => [ e.id, e.via ] ), [ [ 'E-01', 'nearest_tpl_id' ] ] );
+	assert.deepEqual( byElement[ 'Page/2' ].map( ( e ) => [ e.id, e.via, e.status, e.flagged ] ), [ [ 'E-02', 'nearest_tpl_id', 'active', null ], [ 'E-03', 'template_tpl_id', 'active', null ] ] );
+} );
+
 test( 'MUST FAIL (join): joinFacts puts effects on each element, the unjoined list and the effect counts in the record', () => {
 	const animations = readAnimations( { records: [ rec( 'A-01', { template_tpl_id: '3' } ), rec( 'A-06', {} ) ], template } );
 	const empty = { gaps: [], byElement: {}, surfaces: {}, byTemplate: new Map(), conditions: {}, holes: {}, mounted: {} };

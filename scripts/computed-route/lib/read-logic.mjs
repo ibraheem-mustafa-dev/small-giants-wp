@@ -7,7 +7,7 @@
 // and, inside an `sc-for`, each item of its list. The elements a width does not render are answered too: `renderVals()`
 // holds the values for all of them. A hole that cannot resolve, and every hole of a component with no live instance, is a gap row.
 import { widthConditions } from './read-logic-conditions.mjs';
-import { readStatics, readStateValues, stateJobsOf, holesByState } from './read-logic-statics.mjs';
+import { readStatics, readStateValues, stateJobsOf, holesByState, valueGaps } from './read-logic-statics.mjs';
 
 export const READ_WIDTHS = [ 375, 768, 1440 ];
 const MAX_LOOP = 60;
@@ -210,6 +210,10 @@ export function planHoles( template ) {
 	return comps;
 }
 
+// A page of the draft whose intervals never fire: a carousel index or a countdown stays where it starts, so the resting answers
+// and the per-state answers are read from one state and two reads of one handoff folder agree.
+const visitStill = ( sandbox, file, width ) => sandbox.visit( file, { width, stopIntervals: true } );
+
 // Resizes the page and waits for the draft's resize handling to settle.
 export async function resizeTo( page, width ) {
 	await page.setViewportSize( { width, height: 900 } );
@@ -224,7 +228,9 @@ export const askHoles = ( page, comps ) => page.evaluate( resolveInPage, { comps
 // Returns { holes: { <template key>: { <hole id>: { <width>: { v: [ summary ], n, loop, err? } } } }, conditions: { <sc-if key>:
 // { value, width } }, mounted: { <component>: { <width>: boolean } }, state: { <component>: { keys, widthKeys } }, statics: { <component>:
 // { entries, functions } } (lib/read-logic-statics.mjs), holesByState: { <template key>: { <surface id>:<state name>: { <hole id>:
-// { <width>: { v, n, loop } } } } } (only where a state's value differs from resting), gaps }. `surfaces`: lib/read-surfaces.mjs's
+// { <width>: { v, n, loop } } } } } (only where a state's value differs from resting, on an element inside the state's surface),
+// stateSideEffects: { <surface id>:<state name>: [ template key ] } (elements outside the surface whose value the state changes),
+// staticsTruncated, gaps }. `surfaces`: lib/read-surfaces.mjs's
 // `surfaces`, whose states' keys are applied in turn.
 export async function readLogic( { sandbox, entry, sources, template, widths = READ_WIDTHS, surfaces = {} } ) {
 	const plan = planHoles( template );
@@ -232,14 +238,17 @@ export async function readLogic( { sandbox, entry, sources, template, widths = R
 	const holes = {};
 	const mounted = {};
 	const answers = {};
-	let statics = {};
+	const statics = {};
+	let staticsNodes = 0;
+	let staticsTruncated = false;
+	const noInstance = new Set();
 	let states = {};
 	const { jobs, skipped } = stateJobsOf( surfaces );
 	const keep = ( comp, width, res ) => {
 		mounted[ comp ] = { ...( mounted[ comp ] || {} ), [ width ]: res.mounted };
 		answers[ comp ] = { ...( answers[ comp ] || {} ), [ width ]: res };
 	};
-	const page = await sandbox.visit( entry, { width: widths[ widths.length - 1 ] } );
+	const page = await visitStill( sandbox, entry, widths[ widths.length - 1 ] );
 	try {
 		for ( const w of widths ) {
 			await resizeTo( page, w );
@@ -248,7 +257,11 @@ export async function readLogic( { sandbox, entry, sources, template, widths = R
 				keep( comp, w, res );
 			}
 		}
-		statics = ( await readStatics( { page, components: [ ...new Set( [ ...sources.map( ( s ) => s.component ), ...Object.keys( plan ) ] ) ] } ) ).statics;
+		const first = await readStatics( { page, components: [ ...new Set( [ ...sources.map( ( s ) => s.component ), ...Object.keys( plan ) ] ) ] } );
+		Object.assign( statics, first.statics );
+		first.missing.forEach( ( c ) => noInstance.add( c ) );
+		staticsNodes = first.nodes;
+		staticsTruncated = first.truncated;
 		states = await readStateValues( { page, plan, jobs, widths, ask: askHoles, resize: resizeTo } );
 		// The state reads put every key back: the resting answers at the last width are read again and must not have moved.
 		const last = widths[ widths.length - 1 ];
@@ -266,7 +279,7 @@ export async function readLogic( { sandbox, entry, sources, template, widths = R
 		if ( ! plan[ comp ] || ! need.length ) {
 			continue;
 		}
-		const alone = await sandbox.visit( src.file, { width: widths[ widths.length - 1 ] } );
+		const alone = await visitStill( sandbox, src.file, widths[ widths.length - 1 ] );
 		try {
 			const root = await alone.evaluate( () => window.__dcRootName() );
 			for ( const w of need ) {
@@ -274,7 +287,13 @@ export async function readLogic( { sandbox, entry, sources, template, widths = R
 				const got = root === comp ? await alone.evaluate( resolveInPage, { comps: { [ comp ]: plan[ comp ] } } ) : {};
 				keep( comp, w, got[ comp ] || { mounted: false, holes: {} } );
 			}
-			root === comp && Object.assign( statics, ( await readStatics( { page: alone, components: [ comp ] } ) ).statics );
+			if ( root === comp ) {
+				const own = await readStatics( { page: alone, components: [ comp ], used: staticsNodes } );
+				Object.assign( statics, own.statics );
+				own.missing.length || noInstance.delete( comp );
+				staticsNodes = own.nodes;
+				staticsTruncated = staticsTruncated || own.truncated;
+			}
 		} finally {
 			await alone.close();
 		}
@@ -307,9 +326,7 @@ export async function readLogic( { sandbox, entry, sources, template, widths = R
 		gaps.push( ...c.gaps );
 		c.state && ( state[ src.component ] = c.state );
 	}
-	const unreached = jobs.filter( ( j ) => ! states[ j.id ]?.reached ).map( ( j ) => j.id );
-	unreached.length && gaps.push( { construct: 'state-values', draftId: unreached.join( ', ' ), error: 'the state keys could not be set (the component has no live instance on the entry page, or its setState refused them), so no per-state value was read' } );
-	skipped.length && gaps.push( { construct: 'state-values', draftId: skipped.join( ', ' ), error: 'the state keys are not literal state of the live instance (a prop variant, a selector, or a placeholder value), so no per-state value was read' } );
-	const elements = template.order.map( ( k ) => ( { key: k, component: template.elements[ k ].component, n: template.elements[ k ].n, holes: template.elements[ k ].holes } ) );
-	return { holes, conditions, mounted, state, statics, holesByState: holesByState( { elements, rest: answers, states, widths } ), gaps };
+	gaps.push( ...valueGaps( { jobs, skipped, states, noInstance: [ ...noInstance ], truncated: staticsTruncated } ) );
+	const elements = template.order.map( ( k ) => ( { key: k, component: template.elements[ k ].component, n: template.elements[ k ].n, parentChain: template.elements[ k ].parentChain, holes: template.elements[ k ].holes } ) );
+	return { holes, conditions, mounted, state, statics, staticsTruncated, ...holesByState( { elements, rest: answers, states, widths, surfaces } ), gaps };
 }

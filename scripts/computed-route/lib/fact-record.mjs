@@ -1,8 +1,8 @@
 // The shared fact record (Spec 48 FR-48-7, Spec 48A §3): the template, logic and surfaces readers joined into
 // `sites/<client>/build/intake/facts.json`, one entry per template element keyed by template key (lib/fact-key.mjs):
-//   { schema, client, generated, widths, sources, elements: { <template key>: { template, logic, surfaces, effects, assets, alt?,
+//   { schema, client, widths, sources, elements: { <template key>: { template, logic, surfaces, effects, assets, alt?,
 //     instances: [ { key, state } ], fingerprint } }, surfaces, animations: { records, unjoined }, assets: { files, unused,
-//     missing }, gaps, counts }
+//     missing, logicRefs }, pages, readme?, mounted, state, logic: { statics, stateSideEffects, truncated? }, gaps, counts }
 // `sources` is lib/freshness.mjs::sourcesOf: the sha256 of every handoff input and the route's commit. `instances` are the
 // element's instance keys (`<chain>/<tpl>#<copy>`) in the per-surface inventories intake saved (the copy index is counted
 // on the rendered page, so only a rendered inventory can name one); `state` is the inventory's surface slug. Intake writes
@@ -26,7 +26,7 @@ import { openSandbox } from './intake-sandbox.mjs';
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '..', '..', '..' );
 export const FACTS_SCHEMA = path.join( HERE, '..', 'data', 'facts.schema.json' );
-export const FACTS_SCHEMA_VERSION = '5';
+export const FACTS_SCHEMA_VERSION = '6';
 
 // Where a client's fact record lives.
 export const factsFile = ( repo, client ) => path.join( repo, 'sites', client, 'build', 'intake', 'facts.json' );
@@ -101,12 +101,13 @@ const effectCounts = ( elements, a ) => ( { records: a.records, joined: a.record
 const assetCounts = ( elements, a ) => ( { files: a.assets.files, elements: Object.values( elements ).filter( ( e ) => e.assets.length ).length, unused: a.assets.unused.length, missing: a.assets.missing.length } );
 
 // The assets result of a record with no assets reader run: no files, no references.
-const emptyAssets = { byElement: {}, alt: {}, gaps: [], assets: { files: 0, unused: [], missing: [] } };
+const emptyAssets = { byElement: {}, alt: {}, gaps: [], assets: { files: 0, unused: [], missing: [], logicRefs: [] } };
 
-// Joins the readers' results into the record (no browser, no files).
-export function joinFacts( { client, sources, widths, template, logic, surfaces, animations, assets = emptyAssets, readme = null, instances, generated = new Date().toISOString() } ) {
+// Joins the readers' results into the record (no browser, no files). The record holds nothing taken from the clock: two reads of
+// an unchanged handoff folder are byte-identical.
+export function joinFacts( { client, sources, widths, template, logic, surfaces, animations, assets = emptyAssets, readme = null, instances } ) {
 	const elements = {};
-	const gaps = [ ...template.gaps, ...logic.gaps, ...surfaces.gaps, ...animations.gaps, ...assets.gaps, ...instances.gaps ];
+	const gaps = [ ...template.gaps, ...logic.gaps, ...surfaces.gaps, ...animations.gaps, ...assets.gaps, ...( readme?.gaps || [] ), ...instances.gaps ];
 	for ( const key of template.order ) {
 		const { fingerprint, ...rec } = template.elements[ key ];
 		const cond = logic.conditions[ key ];
@@ -125,7 +126,7 @@ export function joinFacts( { client, sources, widths, template, logic, surfaces,
 		elements[ key ] || gaps.push( { construct: 'instance', draftId: key, error: `${ list.length } instance key(s) of a template element the annotated template does not hold (first ${ list[ 0 ].key } in ${ list[ 0 ].state })` } );
 	}
 	return {
-		schema: FACTS_SCHEMA_VERSION, client, generated, widths, sources, elements, surfaces: surfaces.surfaces, pages: surfaces.pages || [], animations: { records: animations.records, unjoined: animations.unjoined }, assets: assets.assets, ...( readme ? { readme } : {} ), mounted: logic.mounted, state: logic.state || {}, logic: { statics: logic.statics || {} }, gaps,
+		schema: FACTS_SCHEMA_VERSION, client, widths, sources, elements, surfaces: surfaces.surfaces, pages: surfaces.pages || [], animations: { records: animations.records, unjoined: animations.unjoined }, assets: assets.assets, ...( readme ? { readme } : {} ), mounted: logic.mounted, state: logic.state || {}, logic: { statics: logic.statics || {}, stateSideEffects: logic.stateSideEffects || {}, ...( logic.staticsTruncated ? { truncated: true } : {} ) }, gaps,
 		counts: countsOf( elements, widths, gaps, animations, assets ),
 	};
 }

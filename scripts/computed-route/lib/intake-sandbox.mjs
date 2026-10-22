@@ -228,8 +228,8 @@ async function resolveDraftId( row, request, limit ) {
 //   (visit() and newPage() alike); a row found no ID then is retried at the next quiet spell and settled for good when
 //   its page closes, in visit() or in close(). An ID that cannot be resolved (or a lookup the page does not answer
 //   within `resolveTimeout` ms) leaves draftId null with draftIdError set.
-//   visit(pagePath, { width }) renders a draft page, waits for the runtime and fonts, scrolls it through, waits for the
-//   pending ID resolutions and returns the page; close() waits for them too.
+//   visit(pagePath, { width, stopIntervals }) renders a draft page, waits for the runtime and fonts, scrolls it through, waits for the
+//   pending ID resolutions and returns the page (with `stopIntervals` the page's setInterval never fires); close() waits for them too.
 export async function openSandbox( { folder, index, harPath = null, mode = 'replay', widths = [ 1440 ], stockHosts = [], pinnedBodies = {}, headless = true, timeout = 60000, resolveTimeout = RESOLVE_MS } ) {
 	if ( ! [ 'replay', 'discover' ].includes( mode ) ) {
 		throw new Error( `openSandbox mode must be 'replay' or 'discover', not ${ JSON.stringify( mode ) }` );
@@ -343,9 +343,15 @@ export async function openSandbox( { folder, index, harPath = null, mode = 'repl
 		};
 		return page;
 	};
-	const visit = async ( pagePath = index, { width = widths[ 0 ], height = 900 } = {} ) => {
+	const visit = async ( pagePath = index, { width = widths[ 0 ], height = 900, stopIntervals = false } = {} ) => {
 		const page = await newPage();
 		await page.setViewportSize( { width, height } );
+		// A draft that moves its own state on an interval (a carousel index, a countdown) would answer differently at every read.
+		// With `stopIntervals` the page's setInterval registers a handle and never fires, so the state stays where it starts.
+		stopIntervals && await page.addInitScript( () => {
+			const later = window.setTimeout.bind( window );
+			window.setInterval = () => later( () => {}, 0 );
+		} );
 		const [ file, query = '' ] = pagePath.split( /\?(.*)/s );
 		await page.goto( `${ origin }/${ file.split( '/' ).map( encodeURIComponent ).join( '/' ) }${ query ? `?${ query }` : '' }`, { waitUntil: 'load', timeout } );
 		await page.waitForFunction( () => document.querySelector( '#dc-root [data-dc-tpl]' ) && 'function' === typeof window.__dcAnnotatedTemplate && window.__dcAnnotatedTemplate( window.__dcRootName() ), null, { timeout } );

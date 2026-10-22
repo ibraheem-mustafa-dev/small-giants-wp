@@ -11,18 +11,34 @@
   <img src="{{ img }}" alt="">
   <h1>{{ title }}</h1>
   <p>{{ same }}</p>
+  <small>{{ clock }}</small>
+  <sc-if value="{{ showChild }}"><dc-import name="Child"></dc-import></sc-if>
 </main>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
   static CATALOGUE = [ { name: 'Rice', onPick: () => {} }, { name: 'Lentils' }, { name: 'Flour' } ];
+  static GALLERY = [ { src: './assets/about-hero-three.svg' } ];
   static helper() { return 1; }
 
-  state = { tab: 'one' };
+  state = { tab: 'one', n: 0 };
+
+  componentDidMount() {
+    this.timer = setInterval( () => this.setState( { n: this.state.n + 1 } ), 20 );
+  }
+
+  componentWillUnmount() {
+    clearInterval( this.timer );
+  }
   schema = { fields: [ { id: 'topic', chips: [ 'Pricing', 'Samples' ] } ] };
 
   get menu() {
     return [ 'Home', 'About' ];
+  }
+
+  get tick() {
+    window.__staticsTick = ( window.__staticsTick || 0 ) + 1;
+    return [ window.__staticsTick ];
   }
 
   get tabNow() {
@@ -34,6 +50,8 @@ class Component extends DCLogic {
       img: './assets/about-hero-' + this.state.tab + '.svg',
       title: this.state.tab === 'one' ? 'First' : 'Second',
       same: 'Same',
+      clock: 'tick ' + this.state.n,
+      showChild: false,
     };
   }
 }
