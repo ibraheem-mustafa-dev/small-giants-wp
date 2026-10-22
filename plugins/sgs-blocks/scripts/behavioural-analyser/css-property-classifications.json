@@ -24799,7 +24799,7 @@
       "attr": "maxHeight",
       "fields": {
         "css_property": "max-height",
-        "css_element": "wrapper"
+        "css_element": "image"
       }
     },
     {
