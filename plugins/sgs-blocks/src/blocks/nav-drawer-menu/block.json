@@ -680,7 +680,18 @@
 		},
 		"itemMotionDuration": {
 			"type": "number",
-			"description": "Wave 3C U-6 (.claude/reports/2026-09-25-u6-u7-design.md 3c). ONE item-motion time in ms (0 to 3000) shared by this block's item effects (sibling dim, label roll, the ornament crossfade). Unset resolves to 300."
+			"description": "Wave 3C U-6 (.claude/reports/2026-09-25-u6-u7-design.md 3c). ONE item-motion time in ms (0 to 3000) shared by this block's item effects (sibling dim, label roll, the ornament crossfade). Unset resolves to 300.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the duration of the menu item effects (sibling dimming, label roll, ornament crossfade).",
+					"trigger": "hover or focus on a menu item",
+					"parameters": {
+						"value": {
+							"unit": "ms (0 to 3000; unset resolves to 300)"
+						}
+					}
+				}
+			}
 		},
 		"itemMotionEasing": {
 			"type": "string",
@@ -699,12 +710,48 @@
 				"linear",
 				"custom"
 			],
-			"description": "Item-motion easing curve, from the shared motion easing list (includes/helpers-motion-easing.php)."
+			"description": "Item-motion easing curve, from the shared motion easing list (includes/helpers-motion-easing.php).",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses the speed curve of the menu item effects.",
+					"trigger": "hover or focus on a menu item",
+					"parameters": {
+						"value": {
+							"unit": "enum",
+							"values": [
+								"ease",
+								"ease-out",
+								"ease-in-out",
+								"default",
+								"emphasised",
+								"quart-out",
+								"standard",
+								"drafts",
+								"ease-in",
+								"spring",
+								"linear",
+								"custom"
+							]
+						}
+					}
+				}
+			}
 		},
 		"itemMotionEasingCustom": {
 			"type": "string",
 			"default": "",
-			"description": "A hand-typed `cubic-bezier(x1, y1, x2, y2)` curve, read only when `itemMotionEasing` is `custom` (validated by the easing field type, Sgs_Motion_Field_Types::is_valid_cubic_bezier)."
+			"description": "A hand-typed `cubic-bezier(x1, y1, x2, y2)` curve, read only when `itemMotionEasing` is `custom` (validated by the easing field type, Sgs_Motion_Field_Types::is_valid_cubic_bezier).",
+			"sgs": {
+				"meaning": {
+					"what": "Supplies a hand-typed cubic-bezier curve for the menu item effects.",
+					"trigger": "hover or focus on a menu item, only when the item easing is custom",
+					"parameters": {
+						"value": {
+							"unit": "CSS easing (cubic-bezier(x1, y1, x2, y2))"
+						}
+					}
+				}
+			}
 		},
 		"itemOrnament": {
 			"type": "object",
@@ -911,17 +958,56 @@
 		"accordionScrollIntoView": {
 			"type": "boolean",
 			"default": false,
-			"description": "When an accordion row opens, scroll the drawer so the row sits near the top if it is above the visible area or below its top 40%, after the row has expanded; instant under prefers-reduced-motion (accordion-scroll.js). Off by default."
+			"description": "When an accordion row opens, scroll the drawer so the row sits near the top if it is above the visible area or below its top 40%, after the row has expanded; instant under prefers-reduced-motion (accordion-scroll.js). Off by default.",
+			"sgs": {
+				"meaning": {
+					"what": "Scrolls the drawer so an opened accordion row sits near the top when it is above the visible area or below its top 40%.",
+					"trigger": "an accordion row opening",
+					"parameters": {
+						"value": {
+							"unit": "boolean"
+						}
+					}
+				}
+			}
 		},
 		"submenuAnimation": {
 			"type": "string",
 			"default": "none",
-			"description": "How an accordion section arrives and leaves: none / fade / fade-lift / height. PHP-validated, no JSON enum. Default none keeps today's instant native <details> toggle. `height` collapses and grows the section's height; `fade` and `fade-lift` (8px lift) change opacity only. Accordion mode only: drill-down keeps its own slide. Built on `::details-content` and `interpolate-size`, so a browser without them opens and closes whole. Under reduced motion sections open and close whole. The bar's `slide-down` and `grow` are floating-panel shapes with no inline equivalent and are not offered."
+			"description": "How an accordion section arrives and leaves: none / fade / fade-lift / height. PHP-validated, no JSON enum. Default none keeps today's instant native <details> toggle. `height` collapses and grows the section's height; `fade` and `fade-lift` (8px lift) change opacity only. Accordion mode only: drill-down keeps its own slide. Built on `::details-content` and `interpolate-size`, so a browser without them opens and closes whole. Under reduced motion sections open and close whole. The bar's `slide-down` and `grow` are floating-panel shapes with no inline equivalent and are not offered.",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses how an accordion section animates open and closed inside the drawer menu.",
+					"trigger": "an accordion section opening or closing",
+					"parameters": {
+						"value": {
+							"unit": "enum",
+							"values": [
+								"none",
+								"fade",
+								"fade-lift",
+								"height"
+							]
+						}
+					}
+				}
+			}
 		},
 		"submenuAnimationDuration": {
 			"type": "number",
 			"default": 180,
-			"description": "Opening time of an accordion section, in milliseconds, 0 to 3000."
+			"description": "Opening time of an accordion section, in milliseconds, 0 to 3000.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets how long an accordion section takes to open.",
+					"trigger": "an accordion section opening or closing",
+					"parameters": {
+						"value": {
+							"unit": "ms (0 to 3000)"
+						}
+					}
+				}
+			}
 		},
 		"submenuAnimationEasing": {
 			"type": "string",
@@ -940,12 +1026,48 @@
 				"linear",
 				"custom"
 			],
-			"description": "Speed curve for a section opening and closing, from the shared motion easing list (includes/helpers-motion-easing.php)."
+			"description": "Speed curve for a section opening and closing, from the shared motion easing list (includes/helpers-motion-easing.php).",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses the speed curve of an accordion section opening and closing.",
+					"trigger": "an accordion section opening or closing",
+					"parameters": {
+						"value": {
+							"unit": "enum",
+							"values": [
+								"ease",
+								"ease-out",
+								"ease-in-out",
+								"default",
+								"emphasised",
+								"quart-out",
+								"standard",
+								"drafts",
+								"ease-in",
+								"spring",
+								"linear",
+								"custom"
+							]
+						}
+					}
+				}
+			}
 		},
 		"submenuAnimationEasingCustom": {
 			"type": "string",
 			"default": "",
-			"description": "A cubic-bezier() curve, read only when submenuAnimationEasing is custom. Validated; an invalid curve falls back to ease-out."
+			"description": "A cubic-bezier() curve, read only when submenuAnimationEasing is custom. Validated; an invalid curve falls back to ease-out.",
+			"sgs": {
+				"meaning": {
+					"what": "Supplies a hand-typed cubic-bezier curve for the accordion section animation.",
+					"trigger": "an accordion section opening or closing, only when the section easing is custom",
+					"parameters": {
+						"value": {
+							"unit": "CSS easing (cubic-bezier(x1, y1, x2, y2))"
+						}
+					}
+				}
+			}
 		},
 		"submenuExitDuration": {
 			"type": "number",

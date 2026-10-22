@@ -890,11 +890,33 @@
 		},
 		"itemMagnetEnabled": {
 			"type": "boolean",
-			"default": false
+			"default": false,
+			"sgs": {
+				"meaning": {
+					"what": "Makes each top-level menu item drift slightly towards the pointer, like a magnet.",
+					"trigger": "pointer moving over a menu item",
+					"parameters": {
+						"value": {
+							"unit": "boolean"
+						}
+					}
+				}
+			}
 		},
 		"itemMagnetStrength": {
 			"type": "number",
-			"description": "Wave 3C U-11 (M-10). The item magnet's pull FACTOR, 0.02 to 0.5. No default — unset means today's exact behaviour: `view.js::initBarEffects` calls `initMagnet(el)` with no options at all, giving `magnet.js`'s own shipped defaults (factor 0.15, an 8px cap). When set, the cap is lifted (`maxPull: Infinity`) — the pointer only ever engages while inside the item's own box (the listener is on the item), so the pull is naturally bounded by half the item's width times the factor. Shown only while `itemMagnetEnabled` is on."
+			"description": "Wave 3C U-11 (M-10). The item magnet's pull FACTOR, 0.02 to 0.5. No default — unset means today's exact behaviour: `view.js::initBarEffects` calls `initMagnet(el)` with no options at all, giving `magnet.js`'s own shipped defaults (factor 0.15, an 8px cap). When set, the cap is lifted (`maxPull: Infinity`) — the pointer only ever engages while inside the item's own box (the listener is on the item), so the pull is naturally bounded by half the item's width times the factor. Shown only while `itemMagnetEnabled` is on.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets how far a menu item is pulled towards the pointer, as a fraction of the pointer's offset from the item centre.",
+					"trigger": "pointer moving over a menu item, when item magnet is on",
+					"parameters": {
+						"value": {
+							"unit": "factor (0.02 to 0.5; unset keeps the shipped 0.15 with an 8px cap)"
+						}
+					}
+				}
+			}
 		},
 		"burgerMorph": {
 			"type": "string",
@@ -1481,17 +1503,50 @@
 		},
 		"triggerMagnetEnabled": {
 			"type": "boolean",
-			"default": false
+			"default": false,
+			"sgs": {
+				"meaning": {
+					"what": "Makes the burger (menu toggle) button drift towards the pointer when it comes near.",
+					"trigger": "pointer moving within the pull radius of the burger button",
+					"parameters": {
+						"value": {
+							"unit": "boolean"
+						}
+					}
+				}
+			}
 		},
 		"triggerMagnetRadius": {
 			"type": "number",
 			"default": 120,
-			"description": "Pull radius in pixels, 20-400 — the range matches fx-magnet.js's own clamp."
+			"description": "Pull radius in pixels, 20-400 — the range matches fx-magnet.js's own clamp.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets how close the pointer must be to the burger button before it starts to pull.",
+					"trigger": "pointer moving near the burger button, when trigger magnet is on",
+					"parameters": {
+						"value": {
+							"unit": "px (20 to 400)"
+						}
+					}
+				}
+			}
 		},
 		"triggerMagnetStrength": {
 			"type": "number",
 			"default": 24,
-			"description": "Pull strength, 2-80 — the range matches fx-magnet.js's own clamp."
+			"description": "Pull strength, 2-80 — the range matches fx-magnet.js's own clamp.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets how strongly the burger button is pulled towards the pointer.",
+					"trigger": "pointer moving within the radius, when trigger magnet is on",
+					"parameters": {
+						"value": {
+							"unit": "px of maximum pull (2 to 80)"
+						}
+					}
+				}
+			}
 		},
 		"triggerSurface": {
 			"type": "object",

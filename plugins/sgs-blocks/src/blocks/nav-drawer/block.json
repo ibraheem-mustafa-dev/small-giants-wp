@@ -793,7 +793,18 @@
 		"scrimFadeDuration": {
 			"type": "number",
 			"default": 0,
-			"description": "Fade time of the dimmed layer behind the drawer, in milliseconds. 0 fades it with the drawer."
+			"description": "Fade time of the dimmed layer behind the drawer, in milliseconds. 0 fades it with the drawer.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets how long the dimmed layer behind the drawer takes to fade in and out; 0 fades it with the drawer.",
+					"trigger": "the drawer opening or closing",
+					"parameters": {
+						"value": {
+							"unit": "ms (0 follows the drawer's own time)"
+						}
+					}
+				}
+			}
 		},
 		"modality": {
 			"type": "string",
