@@ -223,6 +223,7 @@ require_once SGS_BLOCKS_PATH . 'includes/lottie-upload.php';
 // brand marks are SVGs). Needs the SVG allowlist loaded first.
 require_once SGS_BLOCKS_PATH . 'includes/helpers-svg-kses.php';
 require_once SGS_BLOCKS_PATH . 'includes/svg-upload.php';
+require_once SGS_BLOCKS_PATH . 'includes/svg-htaccess-guard.php';
 require_once SGS_BLOCKS_PATH . 'includes/lottie-render.php';
 // A Lottie effect layer's attachment ID becomes the player's `data-src` after the motion renderer writes the layer.
 add_filter( 'render_block', 'sgs_lottie_layer_add_source', 100 );
