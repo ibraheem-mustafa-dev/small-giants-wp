@@ -15,6 +15,7 @@ use function SGS\Blocks\Forms\field_help;
 use function SGS\Blocks\Forms\field_error;
 use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
+use function SGS\Blocks\Forms\field_message_attrs;
 
 $fid         = field_id( $attributes['fieldName'] ?? 'consent' );
 $type        = $attributes['consentType'] ?? 'terms';
@@ -27,6 +28,13 @@ echo '<label class="sgs-form-field__consent" for="' . esc_attr( $fid ) . '">';
 echo '<input type="checkbox" id="' . esc_attr( $fid ) . '" name="' . esc_attr( $attributes['fieldName'] ?? 'consent' ) . '" value="yes"';
 if ( $is_required ) {
 	echo ' required aria-required="true"';
+}
+if ( ! empty( $attributes['defaultChecked'] ) ) {
+	echo ' checked';
+}
+$msg_attrs = field_message_attrs( $attributes );
+if ( $msg_attrs ) {
+	echo ' ' . implode( ' ', $msg_attrs );
 }
 echo ' aria-describedby="' . esc_attr( $fid ) . '-error"';
 echo ' />';

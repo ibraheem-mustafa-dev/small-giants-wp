@@ -70,6 +70,12 @@ function field_open( array $attributes, string $type, string $extra_class = '' )
 		$classes[] = 'sgs-form-field--no-label';
 	}
 
+	// floatingLabel off (Spec 04 FR-4-4): the label stays above the box instead of floating
+	// inside it. Absent or true keeps the default floating label.
+	if ( array_key_exists( 'floatingLabel', $attributes ) && false === $attributes['floatingLabel'] ) {
+		$classes[] = 'sgs-form-field--static-label';
+	}
+
 	if ( ! empty( $extra_class ) ) {
 		$classes[] = esc_attr( $extra_class );
 	}
@@ -219,9 +225,11 @@ function field_id( string $field_name ): string {
  *
  * @param string $field_id   Field ID (from field_id()).
  * @param array  $attributes Block attributes.
+ * @param bool   $with_value Print the default value as a value attribute (false for textarea and select,
+ *                           which carry it in their content).
  * @return string Space-separated attribute string.
  */
-function field_input_attrs( string $field_id, array $attributes ): string {
+function field_input_attrs( string $field_id, array $attributes, bool $with_value = true ): string {
 	$field_name  = $attributes['fieldName'] ?? '';
 	$placeholder = $attributes['placeholder'] ?? '';
 	$required    = ! empty( $attributes['required'] );
@@ -262,6 +270,15 @@ function field_input_attrs( string $field_id, array $attributes ): string {
 	}
 	$attrs[] = 'aria-describedby="' . implode( ' ', $described_by ) . '"';
 
+	$attrs = array_merge( $attrs, field_feature_attrs( $attributes ) );
+
+	if ( $with_value ) {
+		$default = field_default_value( $attributes );
+		if ( '' !== $default ) {
+			$attrs[] = 'value="' . esc_attr( $default ) . '"';
+		}
+	}
+
 	return implode( ' ', $attrs );
 }
 
@@ -278,5 +295,171 @@ function field_error( string $field_id ): string {
 	return sprintf(
 		'<span id="%s-error" class="sgs-form-field__error" role="alert" aria-live="polite"></span>',
 		esc_attr( $field_id )
+	);
+}
+
+/**
+ * The inputmode values a field may declare (HTML virtual-keyboard hint). Anything else renders nothing.
+ *
+ * @return string[] Allowed values.
+ */
+function field_inputmodes(): array {
+	return array( 'none', 'text', 'decimal', 'numeric', 'tel', 'search', 'email', 'url' );
+}
+
+/**
+ * Clean a free-text setting: no tags, no control characters, cut to a length. Empty when nothing is left.
+ *
+ * @param mixed $value  Raw attribute value.
+ * @param int   $length    Maximum characters.
+ * @param bool  $multiline Keep line breaks (a textarea's default).
+ * @return string Clean text.
+ */
+function field_clean_text( $value, int $length = 200, bool $multiline = false ): string {
+	if ( ! is_string( $value ) ) {
+		return '';
+	}
+	$clean = trim( $multiline ? sanitize_textarea_field( $value ) : sanitize_text_field( $value ) );
+	return function_exists( 'mb_substr' ) ? mb_substr( $clean, 0, $length ) : substr( $clean, 0, $length );
+}
+
+/**
+ * The autocomplete attribute value (Spec 04 FR-4-6): an HTML autofill token list, either one of the standard
+ * tokens or a custom value. Only lower-case letters, digits, hyphens and single spaces pass; anything else
+ * renders nothing.
+ *
+ * @param array $attributes Block attributes.
+ * @return string Token list, or '' when unset or not valid.
+ */
+function field_autocomplete_value( array $attributes ): string {
+	$value = strtolower( trim( (string) ( $attributes['autocomplete'] ?? '' ) ) );
+	return 1 === preg_match( '/^[a-z0-9]+(?:[- ][a-z0-9]+)*$/', $value ) && strlen( $value ) <= 120 ? $value : '';
+}
+
+/**
+ * The URL query parameter name a field takes its value from (Spec 04 FR-4-8). The browser applies it; the
+ * server never reads the query string, so a cached page stays correct for every visitor.
+ *
+ * @param array $attributes Block attributes.
+ * @return string Parameter name, or '' when unset.
+ */
+function field_value_param( array $attributes ): string {
+	$name = preg_replace( '/[^A-Za-z0-9_\-]/', '', (string) ( $attributes['valueFromParam'] ?? '' ) );
+	return substr( (string) $name, 0, 64 );
+}
+
+/**
+ * The data-sgs-value-param attribute for a field, or '' when it takes no value from the link.
+ *
+ * @param array $attributes Block attributes.
+ * @return string Attribute string (no leading space).
+ */
+function field_value_param_attr( array $attributes ): string {
+	$name = field_value_param( $attributes );
+	return '' === $name ? '' : 'data-sgs-value-param="' . esc_attr( $name ) . '"';
+}
+
+/**
+ * Per-field validation copy as data attributes (Spec 04 FR-4-3): data-sgs-msg-required,
+ * data-sgs-msg-invalid and data-sgs-msg-toolong. The form runtime reads them when it shows an error.
+ *
+ * @param array $attributes Block attributes (msgRequired, msgInvalid, msgTooLong).
+ * @return string[] Attribute strings, empty when no copy is set.
+ */
+function field_message_attrs( array $attributes ): array {
+	$out = array();
+	foreach ( array(
+		'msgRequired' => 'data-sgs-msg-required',
+		'msgInvalid'  => 'data-sgs-msg-invalid',
+		'msgTooLong'  => 'data-sgs-msg-toolong',
+	) as $key => $attr ) {
+		$text = field_clean_text( $attributes[ $key ] ?? '' );
+		if ( '' !== $text ) {
+			$out[] = $attr . '="' . esc_attr( $text ) . '"';
+		}
+	}
+	return $out;
+}
+
+/**
+ * The feature attributes shared by every text-like input (Spec 04 FR-4-3, 4-5, 4-6, 4-7, 4-8): autocomplete,
+ * inputmode, maxlength, validation copy and the link-parameter name. A block that does not declare a setting
+ * has no such attribute, so nothing prints for it.
+ *
+ * @param array $attributes Block attributes.
+ * @return string[] Attribute strings.
+ */
+function field_feature_attrs( array $attributes ): array {
+	$out = array();
+
+	$autocomplete = field_autocomplete_value( $attributes );
+	if ( '' !== $autocomplete ) {
+		$out[] = 'autocomplete="' . esc_attr( $autocomplete ) . '"';
+	}
+
+	$inputmode = (string) ( $attributes['inputmode'] ?? '' );
+	if ( in_array( $inputmode, field_inputmodes(), true ) ) {
+		$out[] = 'inputmode="' . esc_attr( $inputmode ) . '"';
+	}
+
+	$max = absint( $attributes['maxLength'] ?? 0 );
+	if ( $max > 0 ) {
+		$out[] = 'maxlength="' . min( $max, 100000 ) . '"';
+	}
+
+	$out = array_merge( $out, field_message_attrs( $attributes ) );
+
+	$param = field_value_param_attr( $attributes );
+	if ( '' !== $param ) {
+		$out[] = $param;
+	}
+
+	return $out;
+}
+
+/**
+ * A text-like field's default value (Spec 04 FR-4-8), cleaned and cut to 2000 characters.
+ *
+ * @param array $attributes Block attributes.
+ * @param bool  $multiline  Keep line breaks (textarea).
+ * @return string Default value, or ''.
+ */
+function field_default_value( array $attributes, bool $multiline = false ): string {
+	return field_clean_text( $attributes['defaultValue'] ?? '', 2000, $multiline );
+}
+
+/**
+ * A select's default value (Spec 04 FR-4-8): kept only when it is one of the select's own option values.
+ *
+ * @param array    $attributes Block attributes.
+ * @param string[] $values     The option values the select renders.
+ * @return string The default, or '' when unset or not an option.
+ */
+function field_select_default( array $attributes, array $values ): string {
+	$default = (string) ( $attributes['defaultValue'] ?? '' );
+	return '' !== $default && in_array( $default, array_map( 'strval', $values ), true ) ? $default : '';
+}
+
+/**
+ * The live character counter under a textarea (Spec 04 FR-4-5). Printed only when a maximum length is set and
+ * the counter is on. The textarea's view module keeps the count current.
+ *
+ * @param string $field_id   Field ID (from field_id()).
+ * @param array  $attributes Block attributes (maxLength, showCounter, defaultValue).
+ * @return string Counter HTML, or '' when there is none.
+ */
+function field_counter( string $field_id, array $attributes ): string {
+	$max = min( absint( $attributes['maxLength'] ?? 0 ), 100000 );
+	if ( $max < 1 || false === ( $attributes['showCounter'] ?? true ) ) {
+		return '';
+	}
+	$default = field_default_value( $attributes, true );
+	$start   = function_exists( 'mb_strlen' ) ? mb_strlen( $default ) : strlen( $default );
+	return sprintf(
+		'<span class="sgs-form-field__counter" aria-live="polite" data-sgs-counter-for="%s" data-sgs-counter-max="%d">%d / %d</span>',
+		esc_attr( $field_id ),
+		$max,
+		min( $start, $max ),
+		$max
 	);
 }

@@ -7,6 +7,7 @@ import {
 	SelectControl,
 	Button,
 } from '@wordpress/components';
+import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const WIDTH_OPTIONS = [
@@ -179,6 +180,14 @@ export default function Edit( { attributes, setAttributes } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
+							<ToggleControl
+								label={ __( 'Ticked by default', 'sgs-blocks' ) }
+								checked={ !! option.checked }
+								onChange={ ( val ) =>
+									updateOption( index, 'checked', val )
+								}
+								__nextHasNoMarginBottom
+							/>
 							<Button
 								isDestructive
 								isSmall
@@ -193,6 +202,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ __( 'Add Option', 'sgs-blocks' ) }
 					</Button>
 				</PanelBody>
+				<FormFieldAdvancedPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					features={ [ 'msgRequired' ] }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>

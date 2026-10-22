@@ -120,6 +120,47 @@
             "type": "string",
             "default": "",
             "description": "A short visual heading to the left of the box (e.g. \"R\"), set on the first box of each row."
+        },
+        "autocomplete": {
+            "type": "string",
+            "default": ""
+        },
+        "inputmode": {
+            "type": "string",
+            "default": "",
+            "enum": [
+                "",
+                "none",
+                "text",
+                "decimal",
+                "numeric",
+                "tel",
+                "search",
+                "email",
+                "url"
+            ]
+        },
+        "defaultValue": {
+            "type": "string",
+            "default": ""
+        },
+        "valueFromParam": {
+            "type": "string",
+            "default": ""
+        },
+        "msgRequired": {
+            "type": "string",
+            "default": "",
+            "role": "content"
+        },
+        "msgInvalid": {
+            "type": "string",
+            "default": "",
+            "role": "content"
+        },
+        "floatingLabel": {
+            "type": "boolean",
+            "default": true
         }
     },
     "render": "file:./render.php",

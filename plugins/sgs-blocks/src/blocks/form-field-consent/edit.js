@@ -6,6 +6,7 @@ import {
 	TextareaControl,
 	SelectControl,
 } from '@wordpress/components';
+import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
 const WIDTH_OPTIONS = [
@@ -100,6 +101,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+				<FormFieldAdvancedPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					features={ [ 'defaultChecked', 'msgRequired' ] }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>

@@ -6,6 +6,7 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
+import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
 
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
@@ -84,6 +85,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+				<FormFieldAdvancedPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					features={ [ 'floatingLabel', 'autocomplete', 'inputmode', 'defaultValue', 'valueFromParam', 'msgRequired', 'msgInvalid' ] }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>

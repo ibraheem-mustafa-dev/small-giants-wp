@@ -16,6 +16,8 @@ use function SGS\Blocks\Forms\field_help;
 use function SGS\Blocks\Forms\field_error;
 use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
+use function SGS\Blocks\Forms\field_message_attrs;
+use function SGS\Blocks\Forms\field_value_param_attr;
 
 $fid     = field_id( $attributes['fieldName'] ?? 'unnamed' );
 $options = $attributes['options'] ?? array();
@@ -33,7 +35,9 @@ $described_by_attr = 'aria-describedby="' . esc_attr( implode( ' ', $described_b
 
 echo field_open( $attributes, 'radio' );
 
-echo '<fieldset class="sgs-form-field__group">';
+$param_attr = field_value_param_attr( $attributes );
+$msg_attrs  = field_message_attrs( $attributes );
+echo '<fieldset class="sgs-form-field__group"' . ( '' !== $param_attr ? ' ' . $param_attr : '' ) . '>';
 
 if ( ! empty( $label ) ) {
 	echo '<legend class="sgs-form-field__label">';
@@ -62,6 +66,9 @@ foreach ( $options as $i => $option ) {
 	// First option carries the aria-describedby for the whole group.
 	if ( 0 === $i ) {
 		echo ' ' . $described_by_attr;
+	}
+	if ( $msg_attrs ) {
+		echo ' ' . implode( ' ', $msg_attrs );
 	}
 	echo ' />';
 	echo '<span>' . esc_html( $opt_label ) . '</span>';
