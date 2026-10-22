@@ -27,7 +27,7 @@ import { fillStates } from './lib/fill-state.mjs';
 import { sampleMotion } from './lib/fill-entrance.mjs';
 import { confirmRecords, defectIndex } from './lib/fill-confirm.mjs';
 import { motionWrites } from './lib/fill-motion.mjs';
-import { groupBindings } from './lib/fill-binding-group.mjs';
+import { groupBindings, noFactsWarning } from './lib/fill-binding-group.mjs';
 import { factsFile, loadFacts } from './lib/fact-record.mjs';
 import { motionDb } from './lib/motion-db.mjs';
 import { loadMotionSchema } from './lib/motion-schema.mjs';
@@ -175,6 +175,7 @@ export async function fillSurface( o ) {
 		// FR-48-41: the written settings that one {{ }} style binding feeds on two or more elements, grouped (binding-groups.json);
 		// the bindings are read from the fact record's holes; none when intake has not run.
 		const bound = groupBindings( { facts: fs.existsSync( factsFile( repo, o.client ) ) ? loadFacts( o.client, { repo } ) : null, nodes, writes: result.writes, rootComponent: intakeParts.rootComponent } );
+		bound.skipped && console.warn( noFactsWarning( path.relative( repo, factsFile( repo, o.client ) ).split( path.sep ).join( '/' ) ) );
 		result.notes.push( ...bound.groups.map( ( g ) => `binding ${ g.binding } sets ${ g.attr } to ${ JSON.stringify( g.value ) } on ${ g.members.length } elements in ${ g.sections } sections: one shared setting` ), ...bound.split.map( ( x ) => `binding ${ x.binding } sets ${ x.attr } to ${ x.values.length } different values: not grouped` ) );
 		// FR-48-8: every written style value against what the draft's code declares, at each read width.
 		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.

@@ -1,0 +1,11 @@
+[
+	{ "file": "../lib/surface-tree-shape.js", "find": "trail.length && containers.has( b.name ) && out.push(", "replace": "false && out.push(", "why": "a header or footer nested inside another block would pass" },
+	{ "file": "../lib/surface-tree-shape.js", "find": "walk( b.innerBlocks, [ ...trail, b.name ] );", "replace": "void trail;", "why": "a container nested more than one level deep would pass" },
+	{ "file": "../lib/surface-tree-shape.js", "find": "if ( ast.errors && ast.errors.length ) {", "replace": "if ( false ) {", "why": "a parse error hidden by errorRecovery would read as a TEMPLATE" },
+	{ "file": "../lib/surface-tree-shape.js", "find": "return fail( `parse error: ${ e.message }` );", "replace": "return null;", "why": "an unparseable edit.js would be silently not slotted" },
+	{ "file": "../lib/surface-tree-shape.js", "find": "if ( ! d.init || 'ArrayExpression' !== d.init.type ) {\n\t\t\tfail( 'it is not a literal array' );\n\t\t}", "replace": "if ( ! d.init || 'ArrayExpression' !== d.init.type ) {\n\t\t\treturn null;\n\t\t}", "why": "a TEMPLATE built by a call or variable would be silently not slotted" },
+	{ "file": "../lib/surface-tree-shape.js", "find": "if ( props.some( ( p ) => 'ObjectProperty' !== p.type || p.computed ) ) {", "replace": "if ( false ) {", "why": "a spread or computed key in an entry's attributes would pass" },
+	{ "file": "../lib/surface-tree-shape.js", "find": "if ( ! rowSlot ) {\n\t\t\t\tfail( `the rowSlot of ${ name } is not a string literal` );\n\t\t\t}", "replace": "if ( ! rowSlot ) {\n\t\t\t\tcontinue;\n\t\t\t}", "why": "a computed rowSlot value would be dropped silently" },
+	{ "file": "../lib/surface-tree-shape.js", "find": "if ( plain ) {\n\t\t\tfail( 'some entries have a rowSlot and some do not' );\n\t\t}", "replace": "", "why": "an entry without a rowSlot beside entries with one would be dropped silently" },
+	{ "file": "../lib/surface-tree-shape.js", "find": "if ( ! rows.every( ( r ) => r.name === rows[ 0 ].name ) ) {\n\t\t\tfail( 'its rows are of more than one block type' );\n\t\t}", "replace": "if ( ! rows.every( ( r ) => r.name === rows[ 0 ].name ) ) {\n\t\t\treturn null;\n\t\t}", "why": "mixed row types would be silently not slotted" }
+]

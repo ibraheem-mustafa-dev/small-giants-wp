@@ -1,8 +1,11 @@
 [
  { "file": "lib/fill-binding-group.mjs", "find": "if ( values.size > 1 ) {", "replace": "if ( false ) {", "why": "differing values under one binding are grouped" },
  { "file": "lib/fill-binding-group.mjs", "find": "if ( new Set( [ ...values.values() ].flat().map( memberKey ) ).size < 2 ) {", "replace": "if ( false ) {", "why": "a single element is a group" },
- { "file": "lib/fill-binding-group.mjs", "find": "if ( b && 'attr:style' === b.where ) {", "replace": "if ( b ) {", "why": "text bindings count as style bindings" },
+ { "file": "lib/fill-binding-group.mjs", "find": ".filter( ( h ) => String( h?.where ?? '' ).startsWith( 'style:' ) && h.expr )", "replace": ".filter( ( h ) => h.expr )", "why": "text bindings count as style bindings" },
  { "file": "lib/fill-binding-group.mjs", "find": "if ( ! w.attr || w.state ||", "replace": "if ( ! w.attr ||", "why": "a state write joins the resting group" },
  { "file": "lib/fill-binding-group.mjs", "find": "w.group = id;", "replace": "w.grouped = id;", "why": "the writes are not marked with their group" },
- { "file": "lib/fill-binding-group.mjs", "find": "sections: new Set( ws.map( ( w ) => rootOf( nodes, w.index ) ) ).size", "replace": "sections: ws.length", "why": "sections counted as members" }
+ { "file": "lib/fill-binding-group.mjs", "find": "sections: new Set( ws.map( ( w ) => rootOf( nodes, w.index ) ) ).size", "replace": "sections: ws.length", "why": "sections counted as members" },
+ { "file": "lib/fill-binding-group.mjs", "find": "return { groups: [], split: [], skipped: NO_FACTS };", "replace": "return { groups: [], split: [] };", "why": "a missing fact record would give a silent empty result" },
+ { "file": "lib/fill-binding-group.mjs", "find": "export const NO_FACTS = 'no fact record';", "replace": "export const NO_FACTS = '';", "why": "binding-groups.json would not say why nothing was grouped" },
+ { "file": "lib/fill-binding-group.mjs", "find": "bindings were not grouped because ${ file } is missing;", "replace": "bindings were not grouped;", "why": "the warning would not name the missing file" }
 ]

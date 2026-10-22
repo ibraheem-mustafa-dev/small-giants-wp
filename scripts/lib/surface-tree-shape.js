@@ -24,30 +24,72 @@ const cache = new Map();
 const strOf = ( n ) => ( n && 'StringLiteral' === n.type ? n.value : null );
 
 // The `{ name, rowSlot }` rows of a parsed `const TEMPLATE = [ [ 'name', { rowSlot: '…' }, … ], … ]`, or null when the
-// file holds no such TEMPLATE or an entry is not a block name with a literal rowSlot.
-function rowsOfSource( source ) {
+// TEMPLATE is a literal array none of whose entries has a rowSlot (not a slotted container) or the file has no TEMPLATE.
+// A source that mentions rowSlot and holds a TEMPLATE the guard cannot read (a spread, a variable, a call, a computed
+// rowSlot, an entry without one among entries with one, mixed row types, a parse error) throws a plain error naming
+// `file`: a container the guard cannot read must not pass as "not slotted".
+function rowsOfSource( source, file = 'edit.js' ) {
+	const fail = ( why ) => {
+		throw new Error( `${ file }: its TEMPLATE mentions rowSlot but the guard cannot read it (${ why }); write the TEMPLATE as a literal array of [ 'block/name', { rowSlot: 'slot' } ] entries, all of one row block` );
+	};
 	parser = parser || routeRequire( '@babel/parser' );
-	const ast = parser.parse( source, { sourceType: 'module', plugins: [ 'jsx' ], errorRecovery: true } );
-	for ( const stmt of ast.program.body ) {
-		const decl = 'VariableDeclaration' === stmt.type ? stmt : null;
-		const d = decl && decl.declarations.find( ( x ) => x.id && 'TEMPLATE' === x.id.name && x.init && 'ArrayExpression' === x.init.type );
+	let ast;
+	try {
+		ast = parser.parse( source, { sourceType: 'module', plugins: [ 'jsx' ], errorRecovery: true } );
+	} catch ( e ) {
+		return fail( `parse error: ${ e.message }` );
+	}
+	if ( ast.errors && ast.errors.length ) {
+		fail( `parse error: ${ ast.errors[ 0 ].message }` );
+	}
+	for ( const top of ast.program.body ) {
+		const stmt = 'ExportNamedDeclaration' === top.type && top.declaration ? top.declaration : top;
+		const d = 'VariableDeclaration' === stmt.type ? stmt.declarations.find( ( x ) => x.id && 'TEMPLATE' === x.id.name ) : null;
 		if ( ! d ) {
 			continue;
 		}
+		if ( ! d.init || 'ArrayExpression' !== d.init.type ) {
+			fail( 'it is not a literal array' );
+		}
 		const rows = [];
+		let plain = 0;
 		for ( const entry of d.init.elements ) {
-			const name = entry && 'ArrayExpression' === entry.type ? strOf( entry.elements[ 0 ] ) : null;
-			const attrs = entry && 'ArrayExpression' === entry.type ? entry.elements[ 1 ] : null;
-			const slotProp = attrs && 'ObjectExpression' === attrs.type
-				? attrs.properties.find( ( p ) => p.key && ( p.key.name === 'rowSlot' || p.key.value === 'rowSlot' ) )
-				: null;
-			const rowSlot = slotProp ? strOf( slotProp.value ) : null;
-			if ( ! name || ! rowSlot ) {
-				return null;
+			if ( ! entry || 'ArrayExpression' !== entry.type ) {
+				fail( 'an entry is not a literal [ name, attributes ] array' );
+			}
+			const name = strOf( entry.elements[ 0 ] );
+			const attrs = entry.elements[ 1 ];
+			if ( ! name ) {
+				fail( 'an entry\'s block name is not a string' );
+			}
+			if ( attrs && 'ObjectExpression' !== attrs.type ) {
+				fail( `the attributes of ${ name } are not a literal object` );
+			}
+			const props = attrs ? attrs.properties : [];
+			if ( props.some( ( p ) => 'ObjectProperty' !== p.type || p.computed ) ) {
+				fail( `the attributes of ${ name } hold a spread, a method or a computed key` );
+			}
+			const slotProp = props.find( ( p ) => p.key && ( p.key.name === 'rowSlot' || p.key.value === 'rowSlot' ) );
+			if ( ! slotProp ) {
+				plain += 1;
+				continue;
+			}
+			const rowSlot = strOf( slotProp.value );
+			if ( ! rowSlot ) {
+				fail( `the rowSlot of ${ name } is not a string literal` );
 			}
 			rows.push( { name, rowSlot } );
 		}
-		return rows.length && rows.every( ( r ) => r.name === rows[ 0 ].name ) ? rows : null;
+		if ( ! rows.length ) {
+			return null;
+		}
+		if ( plain ) {
+			fail( 'some entries have a rowSlot and some do not' );
+		}
+		if ( ! rows.every( ( r ) => r.name === rows[ 0 ].name ) ) {
+			fail( 'its rows are of more than one block type' );
+		}
+		return rows;
 	}
 	return null;
 }
@@ -71,7 +113,7 @@ function slottedContainers( blocksDir = DEFAULT_BLOCKS_DIR ) {
 		if ( ! source.includes( 'rowSlot' ) || ! source.includes( 'TEMPLATE' ) ) {
 			continue;
 		}
-		const rows = rowsOfSource( source );
+		const rows = rowsOfSource( source, edit );
 		const name = JSON.parse( fs.readFileSync( meta, 'utf8' ) ).name;
 		rows && name && out.set( name, rows );
 	}
@@ -138,13 +180,25 @@ function surfaceTreeProblems( tree, expected, opts = {} ) {
 
 /**
  * Before the browser opens: when the top level holds a slotted container (any, per its edit.js), the tree must be that
- * one root with its rows. A tree with no slotted container at the top level is not this check's business.
+ * one root with its rows; a slotted container nested anywhere below the top level is a problem. A tree with no slotted
+ * container anywhere is not this check's business.
  * @returns {string[]}
  */
 function slottedRootProblems( tree, opts = {} ) {
 	const containers = slottedContainers( opts.blocksDir );
-	const roots = ( Array.isArray( tree ) ? tree : [] ).filter( ( b ) => b && containers.has( b.name ) );
-	return roots.length ? surfaceTreeProblems( tree, roots[ 0 ].name, opts ) : [];
+	const list = Array.isArray( tree ) ? tree : [];
+	const roots = list.filter( ( b ) => b && containers.has( b.name ) );
+	const out = roots.length ? surfaceTreeProblems( tree, roots[ 0 ].name, opts ) : [];
+	// A slotted container anywhere below the top level is not the sole root: a header or footer nested in another block.
+	const walk = ( blocks, trail ) => ( Array.isArray( blocks ) ? blocks : [] ).forEach( ( b ) => {
+		if ( ! b ) {
+			return;
+		}
+		trail.length && containers.has( b.name ) && out.push( `${ b.name } is nested inside ${ trail.join( ' > ' ) }, but it must be the only top-level block of its post` );
+		walk( b.innerBlocks, [ ...trail, b.name ] );
+	} );
+	walk( list, [] );
+	return out;
 }
 
 /**

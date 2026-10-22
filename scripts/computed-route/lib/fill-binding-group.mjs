@@ -35,10 +35,19 @@ const rootOf = ( nodes, i ) => {
 	return at;
 };
 
-// { groups, split }. facts: the fact record (null when intake has not run: nothing is grouped); nodes: lib/fill-skeleton.mjs::skeletonNodes; writes: Fill's style writes (node,
+// What binding-groups.json records when there is no fact record to read the bindings from.
+export const NO_FACTS = 'no fact record';
+
+// The plain warning Fill prints when bindings were not grouped for want of a fact record (`file`: where it should be).
+export const noFactsWarning = ( file ) => `warning: bindings were not grouped because ${ file } is missing; run intake for this client to write it, then Fill again`;
+
+// { groups, split, skipped? }. facts: the fact record (null when intake has not run: nothing is grouped and `skipped` is 'no fact record'); nodes: lib/fill-skeleton.mjs::skeletonNodes; writes: Fill's style writes (node,
 // index, slot, prop, attr, after). A group: { id, binding, attr, value, members: [ { node, slot, prop } ], sections }. A
 // split: { binding, attr, values: [ { value, members } ] }. Each grouped write gains `group: <id>`.
 export function groupBindings( { facts, nodes, writes, rootComponent = null } ) {
+	if ( ! facts ) {
+		return { groups: [], split: [], skipped: NO_FACTS };
+	}
 	const exprsOf = styleBindings( facts );
 	const elementOf = ( w ) => {
 		const t = nodes[ w.index ]?.targets.find( ( x ) => x.slot === ( w.slot || '' ) );

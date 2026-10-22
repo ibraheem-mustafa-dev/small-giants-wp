@@ -3,7 +3,7 @@
 // The bindings are read from the fact record's holes (elements[<component>/<n>].template.holes), never from census rows.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { groupBindings } from '../lib/fill-binding-group.mjs';
+import { groupBindings, noFactsWarning } from '../lib/fill-binding-group.mjs';
 
 const tpl = ( n, copy = 0 ) => ( { tpl: `Root>Sec@1#0/${ n }#${ copy }` } );
 // Three sections (roots 0, 2, 4), each with one child node; node i names draft element i by its tpl finder.
@@ -40,7 +40,7 @@ test( 'NEGATIVE: one bound element, text bindings, a hover hole, a state write a
 	assert.deepEqual( groupBindings( { facts: facts( [ 2, hole( 'R.t', 'text' ) ], [ 6, hole( 'R.t', 'text' ) ] ), nodes, writes } ).groups, [] );
 	assert.deepEqual( groupBindings( { facts: facts( [ 2, hole( 'R.c', 'style-hover:color' ) ], [ 6, hole( 'R.c', 'style-hover:color' ) ] ), nodes, writes } ).groups, [] );
 	assert.deepEqual( groupBindings( { facts: facts( [ 2, hole( 'R.pad' ) ], [ 4, hole( 'R.pad' ) ] ), nodes, writes } ).groups, [] );
-	assert.deepEqual( groupBindings( { facts: null, nodes, writes } ), { groups: [], split: [] } );
+	assert.deepEqual( groupBindings( { facts: null, nodes, writes } ), { groups: [], split: [], skipped: 'no fact record' } );
 } );
 
 test( 'MUST FAIL (FR-48-41): bindings are read from the record holes: a binding only in a census row is not grouped, one only in the record is', () => {
@@ -52,4 +52,12 @@ test( 'MUST FAIL (FR-48-41): bindings are read from the record holes: a binding 
 	const { groups } = groupBindings( { facts: facts( [ 2, hole( 'R.pad' ) ], [ 4, hole( 'R.pad' ) ] ), nodes, writes: writes() } );
 	assert.equal( groups.length, 1 );
 	assert.equal( groups[ 0 ].members.length, 2 );
+} );
+
+test( 'MUST FAIL: with no fact record nothing is grouped and the result says so, with a plain warning naming the missing file (never a silent empty result)', () => {
+	const r = groupBindings( { facts: null, nodes, writes: [ write( 1, '80px' ), write( 3, '80px' ) ] } );
+	assert.deepEqual( r, { groups: [], split: [], skipped: 'no fact record' } );
+	const warning = noFactsWarning( 'sites/acme/build/intake/facts.json' );
+	assert.match( warning, /bindings were not grouped because sites\/acme\/build\/intake\/facts\.json is missing/ );
+	assert.equal( groupBindings( { facts: { elements: {} }, nodes, writes: [] } ).skipped, undefined, 'an empty record is a record: nothing skipped' );
 } );
