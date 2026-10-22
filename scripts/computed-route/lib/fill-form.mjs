@@ -78,7 +78,8 @@ export function formFieldWrites( { db, block, attributes = {}, el, field = null,
 			gap( property, value, why || `the draft's ${ property }` );
 			return false;
 		}
-		if ( ! same( value, def.default ) && ! same( value, attributes[ attr ] ) ) {
+		// What the node reads as now: the value it holds, else the block's default; a write that changes nothing is skipped.
+		if ( ! same( value, undefined === attributes[ attr ] ? def.default : attributes[ attr ] ) ) {
 			out.writes.push( { attr, value, merge: 'replace' } );
 		}
 		return true;
@@ -161,7 +162,7 @@ export function formFieldWrites( { db, block, attributes = {}, el, field = null,
 }
 
 // Reads a written value back against the draft fact it came from; returns the problems (empty when they agree).
-export function formReadback( { writes, el } ) {
+export function formReadback( { writes, el, field = null } ) {
 	const got = Object.fromEntries( writes.map( ( w ) => [ w.attr, w.value ] ) );
 	const bad = [];
 	if ( undefined !== got.autocomplete && got.autocomplete !== el.autocomplete ) {
@@ -170,7 +171,7 @@ export function formReadback( { writes, el } ) {
 	if ( undefined !== got.maxLength && got.maxLength !== ( num( el.maxlength ) ?? num( el.counterMax ) ) ) {
 		bad.push( `maxLength ${ got.maxLength } is not the draft's cap` );
 	}
-	if ( undefined !== got.placeholder && ! [ el.placeholder, ...( el.options || [] ).map( ( o ) => o.label ) ].includes( got.placeholder ) ) {
+	if ( undefined !== got.placeholder && ! [ el.placeholder, field?.field?.ph, ...( el.options || [] ).map( ( o ) => o.label ) ].includes( got.placeholder ) ) {
 		bad.push( `placeholder ${ got.placeholder } is not the draft's` );
 	}
 	return bad;
@@ -188,7 +189,7 @@ function apply( out, node, ref, rec, w ) {
 // Fill's form pass. nodes/flat/refOf: the skeleton nodes, their tree nodes and the ref function; reads: readDraft's result;
 // facts: the fact record (or null); flags: intake's flags; db: the framework DB; source: { component: script text } for the
 // draft's conditions ({ component: script text }, see formSources). Returns { writes, unmapped, notes }.
-export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, sources = {} } ) {
+export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, sources = {}, readback = formReadback } ) {
 	const out = { writes: [], unmapped: [], notes: [] };
 	const schema = formSchemaOf( facts );
 	const params = linkParams( facts );
@@ -208,7 +209,10 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 		};
 		if ( /^sgs\/form-field-/.test( rec.name ) && el ) {
 			const hit = ( el.chips ? schemaChipsOf( schema, el.chips ) : schemaFieldOf( schema, el ) );
-			take( formFieldWrites( { db, block: rec.name, attributes: node.attributes || {}, el, field: hit, params, condition: hit ? conditions[ hit.field.name ] || null : null } ) );
+			const made = formFieldWrites( { db, block: rec.name, attributes: node.attributes || {}, el, field: hit, params, condition: hit ? conditions[ hit.field.name ] || null : null } );
+			take( made );
+			// The read-back: every value written must be the draft fact it came from; a disagreement is a named problem in the report.
+			out.unmapped.push( ...readback( { writes: made.writes, el, field: hit } ).map( ( reason ) => ( { node: ref, block: rec.name, property: 'form read-back', value: '', slot: '', reason } ) ) );
 		} else if ( 'sgs/button' === rec.name && el && 'button' === el.tag && 'submit' === el.type && attrDef( db, 'sgs/button', 'isSubmit' ) ) {
 			apply( out, node, ref, rec, { attr: 'isSubmit', value: true, merge: 'replace' } );
 		} else if ( 'sgs/form' === rec.name && schema && savesProgress( flags, schema.component ) ) {

@@ -129,7 +129,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			notPlain.forEach( ( row ) => unmapped( st, rec, ref, row ) );
 		}
 		if ( 'gap' === res.status && ( ! eq || 'gap' === eq.status ) ) {
-			unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: `${ res.gap }: ${ res.detail }${ eq ? `; ${ eq.detail }` : '' }` } );
+			unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: `${ res.gap }: ${ res.detail }${ eq ? `; ${ eq.detail }` : '' }`, ...( res.code ? { code: res.code } : {} ) } );
 		} else if ( 'written' === res.status ) {
 			// One gap setting holds both a row and a column gap: a second prop writing it with another value is a conflict.
 			const attrs = res.writes.map( ( w ) => w.attr );

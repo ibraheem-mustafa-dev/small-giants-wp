@@ -72,7 +72,7 @@ const planted = ( tiers ) => ( {
 	refOf: ( n ) => n.ref,
 	reads: { widths: Object.fromEntries( Object.entries( tiers ).map( ( [ w, px ] ) => [ w, { '0:': { rect: { w: px } } } ] ) ) },
 	db,
-	unmapped: [ { node: 'cr-ref-f-9', block: 'sgs/responsive-logo', slot: '', property: 'width', reason: 'shape: width holds one value for every width; draft has 260px, 200px' } ],
+	unmapped: [ { node: 'cr-ref-f-9', block: 'sgs/responsive-logo', slot: '', property: 'width', code: 'one-value-every-width', reason: 'shape: width holds one value for every width; draft has 260px, 200px' } ],
 } );
 
 test( 'a logo block\'s size settings come from the framework DB: an unresponsive width and a tier-object max-width with its unit', () => {
@@ -94,7 +94,7 @@ test( 'MUST FAIL: a footer logo 200px on mobile is written as the per-device max
 
 test( 'a gap on another property, another slot or a block without the pair is left as it was', () => {
 	const other = planted( { 1440: 260, 375: 200 } );
-	other.unmapped = [ { ...other.unmapped[ 0 ], property: 'height' }, { ...other.unmapped[ 0 ], slot: '.inner' }, { ...other.unmapped[ 0 ], reason: 'no-setting' } ];
+	other.unmapped = [ { ...other.unmapped[ 0 ], property: 'height' }, { ...other.unmapped[ 0 ], slot: '.inner' }, { ...other.unmapped[ 0 ], reason: 'no-setting', code: undefined } ];
 	assert.equal( logoSizeWrites( other ).unmapped.length, 3 );
 	const plain = planted( { 1440: 260, 375: 200 } );
 	plain.nodes[ 0 ].name = 'sgs/container';

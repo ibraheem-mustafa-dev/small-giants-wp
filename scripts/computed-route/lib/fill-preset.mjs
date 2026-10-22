@@ -108,7 +108,8 @@ export function presetWrites( { nodes, flat, refOf, reads, rawSnapshot, snapshot
 		const node = flat[ n.index ];
 		const ref = refOf( node );
 		const dropped = out.writes.filter( ( w ) => w.node === ref && '' === String( w.slot ?? '' ) && ( ! w.state || 'hover' === w.state ) && m.props.includes( w.prop ) );
-		for ( const w of dropped ) {
+		// Several writes to one attribute each hold the value the one before left as their `before`: undoing them last to first ends on the first `before`.
+		for ( const w of [ ...dropped ].reverse() ) {
 			null === w.before ? delete node.attributes[ w.attr ] : ( node.attributes[ w.attr ] = w.before );
 		}
 		const { before, after } = setAttr( node, { attr, value: m.variant } );
