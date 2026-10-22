@@ -323,10 +323,11 @@ export function resolveIssue( issue, ctx ) {
 			// that names this ancestor as an owner. Measured, never guessed, so an ancestor merely declaring the property
 			// can never prove a write (R-47-5).
 			const measured = [ ...new Set( ( ctx.open || [] ).filter( sameRow ).flatMap( ( x ) => ( x.owners || [] ).filter( ( o2 ) => o2.ref === o.ref ).map( ( o2 ) => o2.path ) ) ) ];
-			return { ref: o.ref, block: n2.name, path: o.path, tag: o.tag || null, attributes: n2.attributes || {}, calibration: calFor( n2.name ), measured: measured.length ? measured : [ o.path ] };
+			const measuredRefs = Object.fromEntries( ( ctx.open || [] ).filter( sameRow ).flatMap( ( x ) => ( x.owners || [] ).filter( ( o2 ) => o2.ref === o.ref ).map( ( o2 ) => [ o2.path, x.ref ] ) ) );
+			return { ref: o.ref, block: n2.name, path: o.path, tag: o.tag || null, attributes: n2.attributes || {}, calibration: calFor( n2.name ), measured: measured.length ? measured : [ o.path ], measuredRefs };
 		} ).filter( Boolean );
 		const hop = hopFn( { block: node.name, slot: r.path, prop, state, perWidth, fontPx, current: node.attributes || {}, siblings },
-			{ db: ctx.db, snapshot: ctx.snapshot, log: [], canvas: !! ctx.canvas, ancestors, measuredSlots: ancestors.flatMap( ( a ) => a.measured ) } );
+			{ db: ctx.db, snapshot: ctx.snapshot, log: [], canvas: !! ctx.canvas, ancestors, measuredSlots: ancestors.flatMap( ( a ) => a.measured ), ...( ctx.loopBody ? { loopBody: ctx.loopBody } : {} ) } );
 		if ( hop?.writes ) {
 			const held = hop.writes.every( ( w ) => holdsValue( nodeFor( hop.on.ref )?.attributes?.[ w.attr ], w.value, w.merge ) );
 			return { writes: hop.writes, on: hop.on, holds: held, via: hop.via, cite: hop.cite };

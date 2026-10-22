@@ -1,0 +1,8 @@
+[
+	{ "file": "lib/fill-current-item.mjs", "find": "'sc-if' !== t?.tag || ! hole ||", "replace": "! hole ||", "why": "any element with a current-like hole would become a group" },
+	{ "file": "lib/fill-current-item.mjs", "find": "! t.membership?.scFor?.length || ! hasBoth( e.logic?.holes )", "replace": "! t.membership?.scFor?.length", "why": "a condition true in every copy would mark an item" },
+	{ "file": "lib/fill-current-item.mjs", "find": "! t.membership?.scFor?.length ||", "replace": "", "why": "an sc-if outside a loop would count as a list item" },
+	{ "file": "lib/fill-current-item.mjs", "find": "const changed = declaredDiff( oth, cur );", "replace": "const changed = declaredDiff( {}, cur );", "why": "without the comparison copy every declared value would be a look" },
+	{ "file": "lib/fill-current-item.mjs", "find": "states: [ 'current' ]", "replace": "states: [ 'hover' ]", "why": "the look would enter the wrong setting state" },
+	{ "file": "lib/fill-current-item.mjs", "find": "out.gaps.push( { ids: [ job.id ], reason: `current-indicator:", "replace": "void ( { ids: [ job.id ], reason: `current-indicator:", "why": "the underline would be dropped silently" }
+]

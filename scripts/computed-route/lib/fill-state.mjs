@@ -49,7 +49,8 @@ const same = ( a, b ) => JSON.stringify( a ) === JSON.stringify( b );
 
 // One target's state looks grouped by state, pseudo-element and property across the read widths: Map
 // `${state}|${pseudo-element or ''}|${prop}` →
-// { state, prop, pseudo, perWidth, read ('code' when any width's value was read from the stylesheet) }. A combination of states (hover on the current item) keeps every word, joined by `+`.
+// { state, prop, pseudo, perWidth, read ('code' when any width's value was read from the stylesheet), draftDefect (the draft ID of a
+// declaration the draft never paints, built from the code: lib/fill-state-defect.mjs) }. A combination of states (hover on the current item) keeps every word, joined by `+`.
 // reads: readDraft's result; id: the target id.
 export function stateDrafts( reads, id ) {
 	const out = new Map();
@@ -70,6 +71,7 @@ export function stateDrafts( reads, id ) {
 				const pseudo = look.pseudo || '';
 				const key = `${ state }|${ pseudo }|${ prop }`;
 				const e = out.get( key ) || { state, prop, pseudo, perWidth: {}, byCode: {}, read: 'entered' };
+				look.draftDefect && ( e.draftDefect = look.draftDefect );
 				if ( code && undefined !== e.perWidth[ w ] ) {
 					continue;
 				}
@@ -139,7 +141,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 			const drafts = stateDrafts( reads, target.id );
 			const hidden = SURFACE_BLOCKS.includes( rec.name ) && hiddenAtRest( reads, target.id );
 			const tokenLooks = {};
-			for ( const { state, prop, pseudo, perWidth, read } of drafts.values() ) {
+			for ( const { state, prop, pseudo, perWidth, read, draftDefect } of drafts.values() ) {
 				// A pseudo-element look goes to that layer's calibrated path, as the resting writer sends it
 				// (lib/fill-resolve.mjs), and never to a theme token: the site ring and press tokens paint the element.
 				const slot = `${ target.slot }${ pseudo }`;
@@ -161,7 +163,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 				if ( 'written' === res.status ) {
 					for ( const w of res.writes ) {
 						const { before, after } = setAttr( node, w );
-						out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop, state, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: 'fill-state', ...( 'code' === read ? { read } : {} ), ...( atRest ? { surface: 'open look written as the resting look' } : {} ) } );
+						out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop, state, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: 'fill-state', ...( 'code' === read ? { read } : {} ), ...( draftDefect ? { draftDefect } : {} ), ...( atRest ? { surface: 'open look written as the resting look' } : {} ) } );
 					}
 				} else if ( 'gap' === res.status ) {
 					out.unmapped.push( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( perWidth ), reason: res.detail ? `${ res.gap }: ${ res.detail }` : res.gap } );

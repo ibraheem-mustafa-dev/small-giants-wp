@@ -11,6 +11,7 @@ export const RULES = {
 	'not-painted': 'The property differs with no visible effect; the reason says why nothing paints.',
 	'draft-flaw': 'The draft itself is wrong here and live deliberately does better.',
 	'accessibility': 'Live differs to meet WCAG 2.1 AA (contrast, focus, motion) where the draft does not.',
+	'breakpoint-snap': 'A draft width threshold sits within 5% of an SGS tier (768, 1024), so live uses the tier (Spec 48 FR-48-50, house rule).',
 };
 
 const KEYS = [ 'id', 'scope', 'node', 'state', 'property', 'expected', 'reason', 'decided' ];

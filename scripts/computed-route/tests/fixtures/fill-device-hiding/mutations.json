@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/fill-width-gate.mjs", "find": "mobile: 'sgsHideOnMobile'", "replace": "mobile: 'sgsHideOnTablet'", "why": "mobile hiding would be written to the tablet flag" },
+	{ "file": "lib/fill-width-gate.mjs", "find": "return c.is ? holds( c.when, w ) : ! holds( c.when, w );", "replace": "return holds( c.when, w );", "why": "a hidden-on-mobile element would be read as mobile only" },
+	{ "file": "lib/fill-width-gate.mjs", "find": "const gates = ( facts?.elements?.[ key ]?.template?.membership?.scIf || [] ).filter( ( g ) => facts.elements[ g.key ]?.logic?.width );", "replace": "const gates = [];", "why": "no element would be recognised as width gated" }
+]

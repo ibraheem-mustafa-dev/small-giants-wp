@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/fill-prop.mjs", "find": "return { status: 'written', slot, writes, included, how, ...( fit ? { fluid: fit } : {} ) };", "replace": "return { status: 'gap', gap: 'no-setting', slot };", "why": "no property would be written to its setting" },
+	{ "file": "lib/fill-confirm.mjs", "find": "return defect ? 'draft-defect' : 'render-wins';", "replace": "return 'confirmed';", "why": "a render that differs from the code would be confirmed" },
+	{ "file": "lib/fill-declared.mjs", "find": "! read.includes( p ) && ! MOTION.test( p ) && ! isShorthand( p )", "replace": "false", "why": "no declared longhand beyond Fill's list would be recognised" },
+	{ "file": "data/clone-coverage.json", "find": "No setting paints overscroll-behavior, overscroll-behavior-x or overscroll-behavior-y,", "replace": "No setting paints overscroll-behavior or overscroll-behavior-y,", "why": "a gap note would stop naming a property no setting paints" },
+	{ "file": "data/clone-coverage.json", "find": "tests/fill-css-groups.test.mjs#css-group:grid-layout\"", "replace": "tests/fill-css-groups.test.mjs#css-group:grid\"", "why": "a covered group would name no proving test" }
+]

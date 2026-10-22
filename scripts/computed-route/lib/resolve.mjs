@@ -584,7 +584,8 @@ export function reachedDescendants( attr, ancestor, measuredSlots ) {
 //
 // Returns one of:
 //   null                                      no block in the chain declares the property in the row's state
-//   { writes, on, via, cite }                 a proven write whose paint reaches exactly ONE measured descendant
+//   { writes, on, via, cite }                 a proven write whose paint reaches exactly ONE measured descendant, or several that
+//                                             are all copies of one loop body (ctx.loopBody, lib/loop-body.mjs, FR-48-14)
 //   { gap: 'canvas-settable', detail, cite }  on a canvas: a block that can hold it, cited, and no write (R-47-5)
 //   { cite }                                  off a canvas: the same citation, for the caller's `evidence`, and the
 //                                             row's existing classification untouched — the five ordinary pages are
@@ -620,7 +621,10 @@ export function resolveViaAncestor( input, ctx ) {
 			// every item, so on a real page they are explained and cited, never written; the write belongs on the child.
 			const reach = reachedDescendants( row.attr_name, a, ctx.measuredSlots );
 			cite.measuredDescendants = reach;
-			if ( 1 === reach.length ) {
+			// FR-48-14: several descendants that are all copies of one `sc-for` loop body, the property static in it, are one write.
+			const loop = reach.length > 1 && ctx.loopBody ? ctx.loopBody( { ancestor: a, paths: reach, prop, state } ) : null;
+			loop && ( cite.loop = loop.key );
+			if ( 1 === reach.length || loop ) {
 				const out = resolve( { ...input, block: a.block, slot: a.path, anyIndex: true, tag: a.tag || null, current: a.attributes || {} },
 					{ ...ctx, calibration: a.calibration } );
 				if ( out.writes ) {

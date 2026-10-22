@@ -1,0 +1,38 @@
+[
+	{
+	"file": "lib/resolve.mjs",
+	"find": "const loop = reach.length > 1 && ctx.loopBody ? ctx.loopBody( { ancestor: a, paths: reach, prop, state } ) : null;",
+	"replace": "const loop = null;",
+	"why": "several descendants of one loop would never be one write"
+ },
+ {
+	"file": "lib/resolve.mjs",
+	"find": "if ( 1 === reach.length || loop ) {",
+	"replace": "if ( 1 === reach.length || reach.length > 1 ) {",
+	"why": "any parent reaching several descendants would be written"
+ },
+ {
+	"file": "lib/loop-body.mjs",
+	"find": "if ( 1 !== loops.size || loops.has( null ) || ! keys.every(",
+	"replace": "if ( 1 !== loops.size || ! keys.every(",
+	"why": "a descendant outside every loop would count as a loop body"
+ },
+ {
+	"file": "lib/loop-body.mjs",
+	"find": "if ( 1 !== loops.size || loops.has( null ) || ! keys.every(",
+	"replace": "if ( loops.has( null ) || ! keys.every(",
+	"why": "descendants of two different loops would count as one body"
+ },
+ {
+	"file": "lib/loop-body.mjs",
+	"find": "|| ! keys.every( ( k ) => staticIn( facts, k, prop, state ) ) ) {",
+	"replace": ") {",
+	"why": "a value that varies across copies would still be written on the parent"
+ },
+ {
+	"file": "lib/loop-body.mjs",
+	"find": "return distinct.size <= 1;",
+	"replace": "return true;",
+	"why": "a bound property that varies would read as static"
+ }
+]

@@ -223,7 +223,7 @@ export function unpaintedBorder( report, g ) {
 	return { gap: 'not-painted', detail: `the draft has no ${ m[ 1 ] } border (${ measured.map( ( w ) => `${ widths[ w ] } ${ styles[ w ] || '' }`.trim() + '@' + w ).join( ', ' ) }): its ${ g.prop } is currentColor and paints nothing` };
 }
 
-export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor, refs = detectReferences(), canvas = false, ancestorHop = resolveViaAncestor, ownerOf = () => null, refused = [] } ) {
+export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor, refs = detectReferences(), canvas = false, ancestorHop = resolveViaAncestor, ownerOf = () => null, refused = [], loopBody = null } ) {
 	const { groups, stateConflict, content } = writableGroups( report, stateMap, refused );
 	const writes = [];
 	const gaps = {};
@@ -310,10 +310,12 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 				// The measured descendants of this ancestor: the owner path of every open row of the same property and state
 				// that names it as an owner (measured, never guessed).
 				const measured = [ ...new Set( groups.filter( sameRow ).flatMap( ( o2 ) => o2.rows.flatMap( ( x ) => ( x.owners || [] ).filter( ( oo ) => oo.ref === o.ref ).map( ( oo ) => oo.path ) ) ) ) ];
-				return { ref: o.ref, block: n2.name, path: o.path, tag: o.tag || null, attributes: n2.attributes || {}, calibration: calFor( n2.name ), measured: measured.length ? measured : [ o.path ] };
+				// Which measured group (descendant) each measured path came from: a loop body's identity is the descendant's draft element.
+				const measuredRefs = Object.fromEntries( groups.filter( sameRow ).flatMap( ( o2 ) => o2.rows.flatMap( ( x ) => ( x.owners || [] ).filter( ( oo ) => oo.ref === o.ref ).map( ( oo ) => [ oo.path, o2.ref ] ) ) ) );
+				return { ref: o.ref, block: n2.name, path: o.path, tag: o.tag || null, attributes: n2.attributes || {}, calibration: calFor( n2.name ), measured: measured.length ? measured : [ o.path ], measuredRefs };
 			} ).filter( Boolean );
 			const hop = ancestorHop( { block: node.name, slot: g.path, prop, state: g.state, perWidth, fontPx, current: node.attributes || {}, siblings },
-				{ db, snapshot, log, canvas: !! canvas, ancestors, measuredSlots: ancestors.flatMap( ( a ) => a.measured ) } );
+				{ db, snapshot, log, canvas: !! canvas, ancestors, measuredSlots: ancestors.flatMap( ( a ) => a.measured ), ...( loopBody ? { loopBody } : {} ) } );
 			const hopNode = hop?.writes ? nodeByRef( tree, hop.on.ref ) : null;
 			if ( hopNode ) {
 				r = { writes: hop.writes, ...debtOf( hop ) };

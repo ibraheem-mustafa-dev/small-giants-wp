@@ -30,6 +30,10 @@ import { motionWrites } from './lib/fill-motion.mjs';
 import { draftCssOf, templateOf } from './lib/fill-behaviour.mjs';
 import { groupBindings, noFactsWarning } from './lib/fill-binding-group.mjs';
 import { factsFile, loadFacts } from './lib/fact-record.mjs';
+import { currentItemGroups } from './lib/fill-current-item.mjs';
+import { widthGateWrites } from './lib/fill-width-gate.mjs';
+import { addDefectLooks } from './lib/fill-state-defect.mjs';
+import { presetWrites } from './lib/fill-preset.mjs';
 import { motionDb } from './lib/motion-db.mjs';
 import { loadMotionSchema } from './lib/motion-schema.mjs';
 import { sweepSteps } from './lib/fill-values.mjs';
@@ -142,7 +146,13 @@ export async function fillSurface( o ) {
 		// states (lib/fill-logic-state.mjs); none when intake has not run.
 		const intakeFile = path.join( buildDir, 'intake', 'intake.json' );
 		const logicRows = fs.existsSync( intakeFile ) && vocab.rows.length ? stateMap( { surfaces, surface: o.surface, intake: JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ), vocab: vocab.rows } ).scIf : [];
-		const reads = await readDraft( { url, nodes, open: o.open || null, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, log } );
+		const facts = fs.existsSync( factsFile( repo, o.client ) ) ? loadFacts( o.client, { repo } ) : null;
+		// The entry draft's component and the draft defects intake lists (the served root host is named `Root`, the fact record names it after the component).
+		const intakeParts = animationInventory( buildDir, o.draftIndex, log );
+		const currentGroups = facts ? currentItemGroups( facts, intakeParts.rootComponent ) : [];
+		const reads = await readDraft( { url, nodes, open: o.open || null, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, log } );
+		// FR-48-69: a state declaration the draft never paints (intake.json `draftDefects`) is built from the code value, as a code look.
+		const defectLooks = addDefectLooks( { reads, jobs: nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) ), facts, draftDefects: intakeParts.draftDefects, rootComponent: intakeParts.rootComponent } );
 		const calFor = calibrationLoader( entry.site, o.cache );
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
 		const result = fillTree( {
@@ -159,7 +169,18 @@ export async function fillSurface( o ) {
 		// FR-48-81: each target's state looks, through the settings that hold their states.
 		const states = fillStates( { tree, nodes, reads, calFor, db, snapshot } );
 		result.writes.push( ...states.writes );
+		result.notes.push( ...defectLooks.listed.map( ( d ) => `draft defect ${ d.draftId } (${ d.state } ${ d.prop }, ${ d.declared }): the draft never paints it; built from the code value ${ JSON.stringify( d.built ) } by width; listed for Bean (intake.json draftDefects, FR-48-69)` ), ...defectLooks.gaps.map( ( g ) => `draft defect ${ g.draftId } (${ g.state } ${ g.prop }${ g.width ? ` at ${ g.width }px` : '' }): not built: ${ g.reason }` ) );
 		result.unmapped.push( ...states.unmapped );
+		// FR-48-50: content the draft's logic shows or hides by width, written as hiding settings (lib/fill-width-gate.mjs); a snapped
+		// threshold's `breakpoint-snap` ledger entry is written beside the other outputs for the client's ledger.
+		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, entries: loadLedger( ledgerFile ), rootComponent: intakeParts.rootComponent } );
+		result.writes.push( ...gates.writes );
+		result.unmapped.push( ...gates.unmapped );
+		result.notes.push( ...gates.notes );
+		// FR-48-51: a button whose looks equal a theme button preset is written as that variant and nothing per instance.
+		const presets = presetWrites( { nodes, flat, refOf, reads, rawSnapshot, snapshot, writes: result.writes, db } );
+		result.writes = presets.writes;
+		result.notes.push( ...presets.notes );
 		const patchFile = states.patchEntries.length ? 'theme-snapshot.patch.json' : null;
 		result.notes.push( ...states.held.map( ( h ) => `${ h.node } (${ h.slot }) ${ h.prop } ${ h.state }: ${ h.reason }` ) );
 		// Motion (Spec 48 FR-48-78): the draft's motion records from intake's re-derived inventory, written as each
@@ -168,19 +189,18 @@ export async function fillSurface( o ) {
 		const jobs = nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) );
 		const { entrances: sampled, loops } = await sampleMotion( { url, jobs, open: o.open || null, headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {} } );
 		const entrances = nodes.filter( ( x ) => x.targets.length ).map( ( n ) => ( { node: refOf( flat[ n.index ] ), block: n.name, measured: sampled[ n.targets[ 0 ].id ]?.[ 1440 ] ?? null } ) );
-		const intakeParts = animationInventory( buildDir, o.draftIndex, log );
-		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), schema: loadMotionSchema(), rawSnapshot, template: templateOf( fs.existsSync( factsFile( repo, o.client ) ) ? loadFacts( o.client, { repo } ) : null ), draftCss: draftCssOf( o.draftDir, o.draftIndex ) } );
+		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ) } );
 		result.writes.push( ...motion.writes );
 		result.unmapped.push( ...motion.unmapped );
 		result.notes.push( ...motion.notes.map( ( x ) => `${ x.node } ${ x.block }${ x.slot ? ` (${ x.slot })` : '' }: ${ x.text }` ) );
 		// FR-48-41: the written settings that one {{ }} style binding feeds on two or more elements, grouped (binding-groups.json);
 		// the bindings are read from the fact record's holes; none when intake has not run.
-		const bound = groupBindings( { facts: fs.existsSync( factsFile( repo, o.client ) ) ? loadFacts( o.client, { repo } ) : null, nodes, writes: result.writes, rootComponent: intakeParts.rootComponent } );
+		const bound = groupBindings( { facts, nodes, writes: result.writes, rootComponent: intakeParts.rootComponent } );
 		bound.skipped && console.warn( noFactsWarning( path.relative( repo, factsFile( repo, o.client ) ).split( path.sep ).join( '/' ) ) );
 		result.notes.push( ...bound.groups.map( ( g ) => `binding ${ g.binding } sets ${ g.attr } to ${ JSON.stringify( g.value ) } on ${ g.members.length } elements in ${ g.sections } sections: one shared setting` ), ...bound.split.map( ( x ) => `binding ${ x.binding } sets ${ x.attr } to ${ x.values.length } different values: not grouped` ) );
 		// FR-48-8: every written style value against what the draft's code declares, at each read width.
 		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.
-		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => 'motion' !== w.how && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent } );
+		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset' ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent } );
 		const steps = sweepSteps( reads.sweep, ( id ) => ( { node: refOf( flat[ Number( id.split( ':' )[ 0 ] ) ] ), slot: id.slice( id.indexOf( ':' ) + 1 ) } ) );
 		const report = fillReport( { client: o.client, surface: o.surface, draft: o.draftDir ? `${ o.draftDir } (served locally)` : url, nodes: nodes.length, targets: nodes.reduce( ( t, n ) => t + n.targets.length, 0 ), ...result, steps, entrances, snapshotPatch: { file: patchFile, entries: states.patchEntries }, sweepSkipped: false === o.sweep } );
 		const divergences = fs.existsSync( ledgerFile ) ? path.relative( outDir, ledgerFile ).split( path.sep ).join( '/' ) : null;
@@ -194,6 +214,7 @@ export async function fillSurface( o ) {
 ` );
 		}
 		put( 'unmapped.json', JSON.stringify( unmappedList( result.unmapped ), null, 1 ) );
+		gates.ledger.length && put( 'breakpoint-snaps.json', JSON.stringify( gates.ledger, null, 1 ) );
 		put( 'binding-groups.json', JSON.stringify( bound, null, 1 ) );
 		put( 'handover.json', JSON.stringify( result.handover, null, 1 ) );
 		put( 'breakpoints.json', JSON.stringify( steps, null, 1 ) );
