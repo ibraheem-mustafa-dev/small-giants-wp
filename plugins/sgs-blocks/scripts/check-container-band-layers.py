@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Container band layers: contentWidth and padding on the ONE content-band layer.
 
-Governing plan: .claude/plans/2026-10-22-container-band-layers.md (Bean's decisions,
+Governing plan: .claude/plans/2026-10-21-handoff-readers.md, Status, Container band layers (Bean's decisions,
 2026-10-22): every container-type block records `contentWidth` as `max-width` on its
 content band, and `padding` paints the content band (`contentBandPadding` is folded
 into `padding` and removed).
@@ -76,6 +76,8 @@ EXEMPT_RULES = (
     (lambda r: r.startswith('.claude/'), 'plan, spec, catalogue or dated report'),
     (lambda r: r.startswith('reports/'), 'dated report or this migration\'s census'),
     (lambda r: '/fixtures/' in r, 'detector fixture: the token is the input under test'),
+    (lambda r: re.match(r'^sites/[^/]+/build/qa/', r) is not None,
+     'a Fill, Solve, triage or confirm run report: it names settings it measured and saves none'),
     (lambda r: r.startswith('plugins/sgs-blocks/scripts/check-container-band-layers'),
      'this detector, its baseline and its census'),
 )
@@ -291,10 +293,19 @@ def zone_of(r):
     return None
 
 
+def tracked_files():
+    """The files git tracks: the corpus is the same in every checkout and worktree, so local run output,
+    caches and pipeline state (untracked or ignored) never move the census or the ceiling."""
+    import subprocess
+    out = subprocess.run(['git', '-C', ROOT, 'ls-files', '-z'], capture_output=True, check=True).stdout
+    return {f.decode('utf-8') for f in out.split(b'\0') if f}
+
+
 def wide_token_files():
     """Dumb wide walk: every text file in the repo that contains the token."""
     out = []
     needle = TOKEN.encode()
+    tracked = tracked_files()
     for dirpath, dirnames, filenames in os.walk(ROOT):
         drel = rel(dirpath) if dirpath != ROOT else ''
         dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS and not any(
@@ -303,6 +314,8 @@ def wide_token_files():
             if os.path.splitext(fn)[1].lower() not in TEXT_SUFFIXES:
                 continue
             p = os.path.join(dirpath, fn)
+            if rel(p) not in tracked:
+                continue
             try:
                 with open(p, 'rb') as fh:
                     data = fh.read()
@@ -317,9 +330,10 @@ def wide_token_files():
 def narrow_token_files():
     out = set()
     needle = TOKEN.encode()
+    tracked = tracked_files()
     for g in NARROW_GLOBS:
         for p in glob.glob(os.path.join(ROOT, *g.split('/')), recursive=True):
-            if not os.path.isfile(p) or '/node_modules/' in p.replace(os.sep, '/'):
+            if not os.path.isfile(p) or rel(p) not in tracked:
                 continue
             try:
                 with open(p, 'rb') as fh:
@@ -397,7 +411,7 @@ def build_census():
         w['paths'].sort()
     return {
         'rule': 'contentWidth is max-width on the content band; padding paints the content band; no contentBandPadding',
-        'plan': '.claude/plans/2026-10-22-container-band-layers.md',
+        'plan': '.claude/plans/2026-10-21-handoff-readers.md (Status, Container band layers)',
         'wrapper_code_path': WRAPPER_CODE_PATH,
         'totals': {
             'blocks_with_contentWidth': len(blocks),

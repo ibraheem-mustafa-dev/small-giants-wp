@@ -1,6 +1,6 @@
 {
   "rule": "contentWidth is max-width on the content band; padding paints the content band; no contentBandPadding",
-  "plan": ".claude/plans/2026-10-22-container-band-layers.md",
+  "plan": ".claude/plans/2026-10-21-handoff-readers.md (Status, Container band layers)",
   "wrapper_code_path": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper::render: `padding` paints the OUTER element; `contentBandPadding` is the only band padding (emitted via $base_band_decls on .sgs-container__inner). The band renders ($do_wrap) whenever contentWidth or any band prop is set, whatever the block kind.",
   "totals": {
     "blocks_with_contentWidth": 24,
@@ -20,15 +20,15 @@
     "padding_exempt_blocks": 4,
     "token_files_by_status": {
       "derived": 4,
-      "exempt": 34,
-      "target": 37
+      "exempt": 38,
+      "target": 33
     },
     "token_files_target_by_mechanism": {
       "editors": 10,
       "manifests": 6,
       "per-block-render": 1,
       "route-data": 1,
-      "saved-trees": 5,
+      "saved-trees": 1,
       "shared-includes": 1,
       "shared-wrapper": 1,
       "tooling-and-tests": 10,
@@ -777,14 +777,7 @@
     },
     {
       "path": ".claude/plans/2026-10-21-handoff-readers.md",
-      "mentions": 1,
-      "status": "exempt",
-      "mechanism": null,
-      "reason": "documentation"
-    },
-    {
-      "path": ".claude/plans/2026-10-22-container-band-layers.md",
-      "mentions": 6,
+      "mentions": 4,
       "status": "exempt",
       "mechanism": null,
       "reason": "documentation"
@@ -1182,6 +1175,13 @@
       "reason": "dated report or this migration's census"
     },
     {
+      "path": "reports/migrations/container-band-layers-census.json",
+      "mentions": 27,
+      "status": "exempt",
+      "mechanism": null,
+      "reason": "dated report or this migration's census"
+    },
+    {
       "path": "reports/no-inline-track-C-report.md",
       "mentions": 10,
       "status": "exempt",
@@ -1268,30 +1268,30 @@
     {
       "path": "sites/eye-care-ward-end/build/qa/canvas-confirm.json",
       "mentions": 12,
-      "status": "target",
-      "mechanism": "saved-trees",
-      "reason": null
+      "status": "exempt",
+      "mechanism": null,
+      "reason": "a Fill, Solve, triage or confirm run report: it names settings it measured and saves none"
     },
     {
       "path": "sites/eye-care-ward-end/build/qa/triage/header.json",
       "mentions": 12,
-      "status": "target",
-      "mechanism": "saved-trees",
-      "reason": null
+      "status": "exempt",
+      "mechanism": null,
+      "reason": "a Fill, Solve, triage or confirm run report: it names settings it measured and saves none"
     },
     {
       "path": "sites/eye-care-ward-end/build/qa/triage/home.json",
       "mentions": 12,
-      "status": "target",
-      "mechanism": "saved-trees",
-      "reason": null
+      "status": "exempt",
+      "mechanism": null,
+      "reason": "a Fill, Solve, triage or confirm run report: it names settings it measured and saves none"
     },
     {
       "path": "sites/eye-care-ward-end/build/qa/triage/shop.json",
       "mentions": 16,
-      "status": "target",
-      "mechanism": "saved-trees",
-      "reason": null
+      "status": "exempt",
+      "mechanism": null,
+      "reason": "a Fill, Solve, triage or confirm run report: it names settings it measured and saves none"
     }
   ],
   "worklist_by_mechanism": {
@@ -1348,14 +1348,10 @@
       ]
     },
     "saved-trees": {
-      "files": 5,
-      "mentions": 57,
+      "files": 1,
+      "mentions": 5,
       "paths": [
-        "sites/eye-care-ward-end/build/home.tree.json",
-        "sites/eye-care-ward-end/build/qa/canvas-confirm.json",
-        "sites/eye-care-ward-end/build/qa/triage/header.json",
-        "sites/eye-care-ward-end/build/qa/triage/home.json",
-        "sites/eye-care-ward-end/build/qa/triage/shop.json"
+        "sites/eye-care-ward-end/build/home.tree.json"
       ]
     },
     "shared-includes": {
