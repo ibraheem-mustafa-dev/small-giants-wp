@@ -9,6 +9,8 @@ import { brandOwnsAddress } from './brand-registry.mjs';
 import { inventoryModel } from './skeleton-model.mjs';
 import { makeClassifier, overrideFor, finish, W } from './skeleton-classify.mjs';
 import { isMarker } from './skeleton-rules.mjs';
+import { specHit } from './skeleton-facts.mjs';
+import { besideStrips, insideStrips, slotPlan } from './skeleton-header-slots.mjs';
 import { childSlots, collapsePoint } from './skeleton-child-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 
@@ -126,6 +128,14 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		absorbSubtree( k, top, why, rule );
 	} );
 	const finder = ( e ) => m.tplFinder( e );
+	// The top of the tree an element sits in: the surface root, or the root of a header strip read beside it (parentKey null).
+	const rootOf = ( e ) => {
+		let t = e;
+		while ( m.byKey[ t.parentKey ] ) {
+			t = m.byKey[ t.parentKey ];
+		}
+		return t;
+	};
 	const base = ( e, name, attributes ) => ( { name, attributes, draftRef: finder( e ), draftFingerprint: m.fingerprint( e ), innerBlocks: [] } );
 	const attrExists = ( slug, name ) => !! facts.attr( slug, name );
 	const layoutOf = ( slug, e ) => {
@@ -170,8 +180,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const gridList = 'grid' === parent?.display && span.length === list.length;
 		return links.length >= minLinks && ( m.stacked( links ) || gridList ) && ! removedBy( span[ 0 ] ) ? span : [];
 	};
-	const unitsOf = ( e ) => {
-		const list = m.blockKids( e );
+	const unitsOf = ( e, list = m.blockKids( e ) ) => {
 		const out = [];
 		for ( let i = 0; i < list.length; ) {
 			const brand = typedBrandRun( list, i );
@@ -215,7 +224,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const slugs = els.map( ( l ) => cls.siteInfoBrand( l ).slug );
 		const node = base( first, D.block, {} );
 		node.siteInfoRow = slugs;
-		const root = m.root;
+		const root = rootOf( parent );
 		if ( parent.template === root.template && els.every( ( l ) => l.template === root.template ) ) {
 			const sel = ( x ) => `[data-dc-tpl="${ x.tpl }"]`;
 			node.draftRef = `${ root.tag }${ sel( root ) } ${ sel( parent ) }`;
@@ -412,7 +421,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const kids = m.blockKids( e );
 		const rowBlock = facts.rowBlocks.find( ( x ) => x.slug === block );
 		const kidTops = rowBlock ? kids.map( ( k ) => ( { k, r: cls.classify( k, block ) } ) ) : [];
-		const root = m.root;
+		const root = rootOf( e );
 		// A Site Info row (Fill generates its icons, fill-skeleton.mjs::expandSiteInfoRows): needs selector draftRefs inside the root's own template.
 		if ( rowBlock && kidTops.length && kidTops.every( ( x ) => x.r.candidates[ 0 ]?.brand ) && e.template === root.template ) {
 			const sel = ( x ) => `[data-dc-tpl="${ x.tpl }"]`;
@@ -430,9 +439,66 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			return node;
 		}
 		hosts.push( { block, node, row } );
-		node.innerBlocks = buildChildren( e, block );
+		node.innerBlocks = e === m.root && R.headerSlots && block === R.headerSlots.block ? buildHeaderRows( e, block ) : buildChildren( e, block );
 		hosts.pop();
 		return node;
+	}
+
+	// ---- rules.headerSlots: the header's three rows (lib/skeleton-header-slots.mjs) ----
+	const slotProblems = [];
+	let stripRoots = [];
+	const declaredPosition = ( x ) => view.declared( x ).position ?? null;
+	const subtree = ( x ) => [ x, ...m.blockKids( x ).flatMap( subtree ) ];
+	// Whether an element holds the surface's navigation or its logo or home link (the main bar's signals).
+	const holdsMain = ( x ) => subtree( x ).some( ( d ) => {
+		const href = String( d.attrs?.href ?? '' );
+		return 'nav' === d.tag || d.tag.endsWith( '-logo' ) || facts.logoBlocks.includes( cls.classify( d, null ).candidates?.[ 0 ]?.block ) || ( 'a' === d.tag && '' !== href && '#' !== href && !! specHit( R.homeLink, href ) );
+	} );
+	const emptyRow = ( slot ) => ( { name: R.headerSlots.rowBlock, attributes: { [ R.headerSlots.slotAttribute ]: slot }, innerBlocks: [] } );
+	// A strip's element is the row of its slot: its descendants are proposed inside it as the row's own children.
+	function buildSlotRow( el, slot ) {
+		const H = R.headerSlots;
+		const hit = { block: H.rowBlock, score: 1, share: 1, evidence: [ { text: `rule headerSlots: ${ H.reason }` } ] };
+		const { a, handover } = contentAttrs( H.rowBlock, el, hit );
+		a[ H.slotAttribute ] = slot;
+		const node = base( el, H.rowBlock, a );
+		handover.length && ( node.handover = handover );
+		const row = record( el, { rule: 'headerSlots', source: 'rule headerSlots', reason: `a strip ${ 'top' === slot ? 'above' : 'below' } the header's main bar is its ${ slot } row`, confidence: 1, candidates: [ hit ] }, { attributes: a } );
+		hosts.push( { block: H.rowBlock, node, row } );
+		node.innerBlocks = buildChildren( el, H.rowBlock );
+		hosts.pop();
+		return node;
+	}
+	// A strip with no row to take: a header holds exactly three rows, so the second strip on a side is listed, never built.
+	function leaveStrip( x ) {
+		const why = `${ x.el.key }: a second strip ${ 'top' === x.side ? 'above' : 'below' } the header's main bar; the ${ x.side } row is ${ x.taken } and a header holds exactly three rows, so this strip is not proposed`;
+		slotProblems.push( why );
+		record( x.el, { action: 'unresolved', reason: why, confidence: 0, candidates: [] } );
+		removeSubtree( x.el, `inside a strip that has no row (${ x.el.key })` );
+	}
+	function buildHeaderRows( e, block ) {
+		const H = R.headerSlots;
+		const sameParent = ( x ) => {
+			const a = view.parentsOf( x );
+			const b = view.parentsOf( e );
+			return ! a || ! b || a.realParent === b.realParent;
+		};
+		const inside = insideStrips( m.blockKids( e ), { holdsMain, declared: declaredPosition } );
+		const beside = besideStrips( inventory, { declared: declaredPosition, sameParent } );
+		stripRoots = [ ...beside.before, ...beside.after ].map( ( x ) => x.key );
+		const plan = slotPlan( { beside, inside } );
+		if ( ! H.slotAttribute ) {
+			[ [ 'top', plan.top ], [ 'bottom', plan.bottom ], ...plan.extras.map( ( x ) => [ x.side, x.el ] ) ].filter( ( [ , x ] ) => x ).forEach( ( [ side, x ] ) => slotProblems.push( `${ x.key }: a strip ${ 'top' === side ? 'above' : 'below' } the header's main bar has no row: rules.headerSlots names no slot attribute` ) );
+			return buildChildren( e, block );
+		}
+		const top = plan.top && buildSlotRow( plan.top, 'top' );
+		plan.extras.forEach( leaveStrip );
+		const nodes = buildChildren( e, block, inside.main );
+		const bottom = plan.bottom && buildSlotRow( plan.bottom, 'bottom' );
+		const rowsIn = nodes.filter( ( n ) => n.name === H.rowBlock );
+		const middle = 1 === nodes.length && 1 === rowsIn.length ? nodes[ 0 ] : { name: H.rowBlock, attributes: {}, innerBlocks: nodes.flatMap( ( n ) => ( n.name === H.rowBlock ? n.innerBlocks : [ n ] ) ) };
+		middle.attributes[ H.slotAttribute ] = 'middle';
+		return [ top || emptyRow( 'top' ), middle, bottom || emptyRow( 'bottom' ) ];
 	}
 
 	// The built blocks whose children are being built, innermost last.
@@ -451,17 +517,21 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		host.row.slots = { ...host.row.slots, [ slot ]: finder( e ) };
 	}
 
-	function buildChildren( e, parentBlock ) {
-		return unitsOf( e ).flatMap( ( u ) => ( 'brand' === u.type ? buildBrand( u.els ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els ) : buildNode( u.els[ 0 ], parentBlock ) ) ).filter( Boolean );
+	function buildChildren( e, parentBlock, list = undefined ) {
+		return unitsOf( e, list ).flatMap( ( u ) => ( 'brand' === u.type ? buildBrand( u.els ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els ) : buildNode( u.els[ 0 ], parentBlock ) ) ).filter( Boolean );
 	}
 
 	const rootNode = buildNode( m.root, null );
 	const skeleton = [].concat( rootNode || [] );
 	// A surface the client already built as a post: that post's block tree is the skeleton, so every row is settled by it.
+	rows.forEach( ( x ) => {
+		const top = rootOf( m.byKey[ x.key ] );
+		top !== m.root && ( x.strip = top.key );
+	} );
 	built && R.clientBuiltSurface && rows.forEach( ( x ) => Object.assign( x, { rule: 'clientBuiltSurface', builtPost: built, low: false }, 'unresolved' === x.action ? { action: null } : {} ) );
-	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ) ];
+	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...slotProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ) ];
 	const proposal = {
-		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], recordDisagreements: view.disagreements, recordUntranslated: view.untranslated,
+		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], stripRoots, recordDisagreements: view.disagreements, recordUntranslated: view.untranslated,
 		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W, ...( built ? { builtPost: built } : {} ),
 		counts: { inventoryElements: m.els.length, parts: m.els.filter( m.isPart ).length, rows: rows.length, skeletonNodes: count( skeleton ), expandedNodes: count( expandSiteInfoRows( skeleton ) ), low: rows.filter( ( r ) => r.low && ! r.action ).length, removed: rows.filter( ( r ) => [ 'remove', 'absorbed', 'unwrap' ].includes( r.action ) ).length, unresolved: rows.filter( ( r ) => 'unresolved' === r.action ).length, byRule: rows.reduce( ( o, r ) => ( r.rule ? { ...o, [ r.rule ]: ( o[ r.rule ] || 0 ) + 1 } : o ), {} ) },
 		problems, rows,

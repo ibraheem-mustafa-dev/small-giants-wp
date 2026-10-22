@@ -15,7 +15,7 @@ import { fileURLToPath } from 'url';
 import { rerunSkeletons, loopingKeys } from './lib/skeleton-rerun.mjs';
 import { openDb } from './lib/db.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
-import { checkApproval } from './lib/approved-check.mjs';
+import { checkApproval, aliasAbsorbed } from './lib/approved-check.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
 const [ client, ...flags ] = process.argv.slice( 2 );
@@ -37,6 +37,7 @@ for ( const [ slug, s ] of Object.entries( run.surfaces ) ) {
 	s.rows.forEach( ( r ) => ( rows[ `skeleton:${ slug }:${ r.key }` ] = { ...r, surface: slug, built: s.built } ) );
 	fingerprints[ slug ] = s.fingerprints;
 }
+aliasAbsorbed( { rows, fingerprints }, run.absorbed );
 const out = { match: 0, mismatch: [], builtSettled: 0, settings: 0, noRow: [], refused: [], realigned: [], unverified: 0 };
 for ( const [ batch, list ] of Object.entries( approved.category3 || {} ) ) {
 	for ( const a of list ) {

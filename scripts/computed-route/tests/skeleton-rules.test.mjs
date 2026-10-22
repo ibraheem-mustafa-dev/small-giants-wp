@@ -59,10 +59,11 @@ test( 'the decisions data names only real blocks and every rule pattern compiles
 	assert.deepEqual( decisionsProblems( facts() ), [] );
 } );
 
-test( 'surfaceRoot: a top bar surface is the header\'s top row; MUST FAIL without the rule', () => {
+test( 'surfaceRoot: a drawer surface is the navigation drawer and a global surface is not given a block by its name (rules.headerSlots places a header strip); MUST FAIL without the rule', () => {
 	const tree = E( 'div', { display: 'flex' }, [ E( 'a', { words: 'Call', attrs: { href: 'tel:01217714330' } } ), E( 'a', { words: 'Email', attrs: { href: 'mailto:a@b.co' } } ) ] );
-	assert.equal( run( tree, { kind: 'global', name: 'Top bar' } ).proposal.rows[ 0 ].block, 'sgs/site-header-row' );
-	assert.notEqual( run( tree, { kind: 'global', name: 'Top bar', facts: facts( 'surfaceRoot' ) } ).proposal.rows[ 0 ].block, 'sgs/site-header-row' );
+	assert.equal( run( tree, { kind: 'drawer', name: 'Mobile drawer' } ).proposal.rows[ 0 ].block, 'sgs/nav-drawer' );
+	assert.notEqual( run( tree, { kind: 'drawer', name: 'Mobile drawer', facts: facts( 'surfaceRoot' ) } ).proposal.rows[ 0 ].block, 'sgs/nav-drawer' );
+	assert.notEqual( run( tree, { kind: 'global', name: 'Top bar' } ).proposal.rows[ 0 ].block, 'sgs/site-header-row' );
 } );
 
 test( 'readingProgress: a fixed full-width 3px bar is removed (a Floating UI setting); MUST FAIL without the rule', () => {

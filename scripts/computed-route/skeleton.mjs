@@ -3,6 +3,7 @@
 // links, plus a review table. Output folder: sites/<client>/build/skeleton/. The draft url is
 // sites/<client>/build/surfaces.json[surface].draftUrl.
 //   node scripts/computed-route/skeleton.mjs inventory --client <slug> --surface <name> --root <selector>
+//     (a header surface's inventory also holds the strips beside its root, rules.headerSlots)
 //   node scripts/computed-route/skeleton.mjs propose   --client <slug> --surface <name> [--site-name <text>]
 //     (the surfaces.json entry names its intake skeleton in `intakeSurface`: the proposal takes that skeleton's kind, name and
 //     built post, the intake motion inventory's loops, and the client decisions saved under that slug)
@@ -50,6 +51,20 @@ const json = ( file, value ) => write( file, `${ JSON.stringify( value, null, '\
 
 const readSurface = ( repo, client, surface ) => JSON.parse( fs.readFileSync( path.join( repo, 'sites', client, 'build', 'surfaces.json' ), 'utf8' ) )[ surface ] || {};
 const readJson = ( file, fallback ) => ( fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : fallback );
+
+// The siblings a header surface's inventory reads beside its root (rules.headerSlots, lib/skeleton-header-slots.mjs): { exclude:
+// [ [ component, tpl ] ], pages } (the roots of the handoff's other surfaces that are not global, which a strip may not hold; whether
+// it has page surfaces) when the
+// manifest entry's intake skeleton is a header; null otherwise.
+export function inventoryStrips( { client, surface, repo = REPO } ) {
+	const slug = readSurface( repo, client, surface ).intakeSurface;
+	const entry = slug ? readJson( path.join( repo, 'sites', client, 'build', 'intake', 'intake.json' ), null )?.skeletons?.[ slug ] : null;
+	const records = readJson( path.join( repo, 'sites', client, 'handoff', 'surfaces.json' ), null )?.records;
+	if ( 'header' !== entry?.kind || ! records ) {
+		return null;
+	}
+	return { exclude: records.filter( ( r ) => r.id !== entry.id && 'global' !== r.kind && null != r.template_tpl_id ).map( ( r ) => [ r.dc, String( [].concat( r.template_tpl_id ).at( -1 ) ) ] ), pages: records.some( ( r ) => 'page' === r.kind ) };
+}
 
 // The intake context of a surface, as lib/skeleton-rerun.mjs::rerunSkeletons passes it: the intake skeleton the manifest
 // entry names in `intakeSurface` (its slug, id, kind, name and root component), the client's built post for it and the
@@ -128,7 +143,7 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 		const served = p.draftUrl ? null : await serveDraft( assertDraftPage( p.draftDir, p.draftIndex ), { index: p.draftIndex } );
 		let inv;
 		try {
-			inv = await read( { url: served ? served.url : p.draftUrl, root, shotsDir: p.shots, log } );
+			inv = await read( { url: served ? served.url : p.draftUrl, root, shotsDir: p.shots, log, strips: inventoryStrips( { client, surface, repo } ) } );
 		} finally {
 			served && await served.close();
 		}

@@ -37,6 +37,18 @@ function disagreement( r, want, rows ) {
 	return ok ? null : `${ r.surface }:${ r.key } <${ r.tag }> want ${ 'removed' === want.kind ? 'removed' : want.block } got ${ got } [${ r.rule || 'score' }]${ why }`;
 }
 
+// The rows of a surface that another surface absorbed (rules.headerSlots: a header surface reads the strip beside it, so the
+// strip's rows are proposed there), also under the absorbed surface's row ids and fingerprints, which is what Bean's
+// approvals name (`skeleton:<absorbed slug>:<key>`). absorbed: { <slug>: { into: the surface's slug, root: the strip's root
+// key } } as lib/skeleton-rerun.mjs::rerunSkeletons returns it. Adds to `rows` and `fingerprints` in place.
+export function aliasAbsorbed( { rows, fingerprints }, absorbed = {} ) {
+	for ( const [ slug, a ] of Object.entries( absorbed ) ) {
+		const mine = Object.values( rows ).filter( ( r ) => r.surface === a.into && r.strip === a.root );
+		fingerprints[ slug ] = Object.fromEntries( mine.filter( ( r ) => fingerprints[ a.into ]?.[ r.key ] ).map( ( r ) => [ r.key, fingerprints[ a.into ][ r.key ] ] ) );
+		mine.forEach( ( r ) => ( rows[ `skeleton:${ slug }:${ r.key }` ] = r ) );
+	}
+}
+
 // ctx: { rows: { [rowId]: row (with surface and built) }, fingerprints }. Returns one of
 //   { refused: why }, { noRow: true }, { settled: true } (a client-built post settles it), { setting: true },
 //   { match: true } (every copy agrees) or { mismatches: [ line ] } (each copy that disagrees);

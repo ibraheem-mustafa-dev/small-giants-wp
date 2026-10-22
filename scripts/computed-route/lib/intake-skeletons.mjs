@@ -287,6 +287,13 @@ async function readOpened( h, s, settle, open, shotsDir ) {
 	return readInventory( { page, root: s.selector, settle: settleOpen, shotsDir: shotsDir ? path.join( shotsDir, s.slug ) : null, url: h.page.url() } );
 }
 
+// The reading of a header surface's siblings (lib/skeleton-header-slots.mjs, rules.headerSlots): the roots of the other
+// surfaces that are not global, which a sibling may not hold, and whether the export has page surfaces (a page's root is its
+// route's <main>). null for any other kind of surface.
+export function stripOptions( s, all ) {
+	return 'header' === s.kind ? { exclude: all.filter( ( x ) => x.id !== s.id && 'global' !== x.kind ).map( ( x ) => [ x.component, x.rootTpl ] ), pages: all.some( ( x ) => 'page' === x.kind ) } : null;
+}
+
 // The facts and client decisions, once per run. Returns { facts, clientDecisions } or { error }.
 function factsFor( { db, client, repo, facts } ) {
 	const file = path.join( skeletonDir( repo, client ), 'decisions.json' );
@@ -333,6 +340,9 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 	const f = factsFor( { db: theDb, client, repo, facts } );
 	const calKeys = site ? ( s ) => Object.keys( loadCalibration( path.join( HERE, '..', 'cache' ), s, site )?.elements || {} ) : () => [];
 	const sources = inventoriesDir ? sourcesOf( folder ) : null;
+	// Every surface root of the export (the run may read a subset): the roots a header's sibling strip may not hold.
+	let every = null;
+	const everySurface = () => ( every ||= census ? surfaceRoots( { folder, census } ).surfaces : surfaces );
 	const out = [];
 	const gaps = [];
 	const runs = [];
@@ -372,7 +382,8 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 			}
 			try {
 				const settle = ( page ) => settleRest( page, h.options );
-				for ( const s of g.list ) {
+				const absorbed = new Map();
+				for ( const s of [ ...g.list ].sort( ( a, b ) => Number( 'header' !== a.kind ) - Number( 'header' !== b.kind ) ) ) {
 					try {
 						await h.page.setViewportSize( { width: 1440, height: 900 } );
 						await settle( h.page );
@@ -393,7 +404,12 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 						} else if ( m.error ) {
 							throw new Error( m.error );
 						} else {
-							inventory = await readInventory( { page: h.page, root: s.selector, settle, shotsDir: shotsDir ? path.join( shotsDir, s.slug ) : null, url: h.page.url() } );
+							inventory = await readInventory( { page: h.page, root: s.selector, settle, shotsDir: shotsDir ? path.join( shotsDir, s.slug ) : null, url: h.page.url(), strips: stripOptions( s, everySurface() ) } );
+						}
+						// A global surface that is a strip the header surface read beside itself is that header's row, never a surface of its own.
+						if ( 'global' === s.kind && absorbed.has( inventory.checks.rootKey ) ) {
+							log( `${ s.slug }: a strip of the ${ absorbed.get( inventory.checks.rootKey ) } surface; proposed there` );
+							continue;
 						}
 						inventoriesDir && fs.writeFileSync( path.join( inventoriesDir, `${ s.slug }.json` ), `${ JSON.stringify( { ...inventory, sources } ) }
 ` );
@@ -402,6 +418,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 						}
 						const r = proposeSkeleton( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: builtFor( s ), clientDecisions: f.clientDecisions, carried: carriedIds( { repo, client, site: siteOf( { repo, client, slug: s.slug } ) } ), calKeys, db: theDb } );
 						const opened = open && { ...open.opener, at: open.at, readAt: open.readAt, tried: open.tried };
+						r.proposal.stripRoots?.forEach( ( k ) => absorbed.set( k, s.slug ) );
 						u.out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, root: { tpl: s.rootTpl, ...m }, ...( opened ? { opened } : {} ), inventory: summaryOf( inventory ), rows: rowsOf( s.slug, r.proposal, inventory ), counts: r.proposal.counts, problems: r.problems } );
 						log( `${ s.slug }: ${ inventory.elements.length } elements, ${ r.proposal.rows.length } rows` );
 					} catch ( e ) {
