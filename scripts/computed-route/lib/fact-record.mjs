@@ -1,7 +1,8 @@
 // The shared fact record (Spec 48 FR-48-7, Spec 48A §3): the template, logic and surfaces readers joined into
 // `sites/<client>/build/intake/facts.json`, one entry per template element keyed by template key (lib/fact-key.mjs):
-//   { schema, client, generated, widths, sources, elements: { <template key>: { template, logic, surfaces, effects, instances:
-//     [ { key, state } ], fingerprint } }, surfaces, animations: { records, unjoined }, gaps, counts }
+//   { schema, client, generated, widths, sources, elements: { <template key>: { template, logic, surfaces, effects, assets, alt?,
+//     instances: [ { key, state } ], fingerprint } }, surfaces, animations: { records, unjoined }, assets: { files, unused,
+//     missing }, gaps, counts }
 // `sources` is lib/freshness.mjs::sourcesOf: the sha256 of every handoff input and the route's commit. `instances` are the
 // element's instance keys (`<chain>/<tpl>#<copy>`) in the per-surface inventories intake saved (the copy index is counted
 // on the rendered page, so only a rendered inventory can name one); `state` is the inventory's surface slug. Intake writes
@@ -17,12 +18,13 @@ import { readTemplate } from './read-template.mjs';
 import { readLogic, READ_WIDTHS } from './read-logic.mjs';
 import { readSurfaces } from './read-surfaces.mjs';
 import { readAnimations } from './read-animations.mjs';
+import { readAssets } from './read-assets.mjs';
 import { openSandbox } from './intake-sandbox.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '..', '..', '..' );
 export const FACTS_SCHEMA = path.join( HERE, '..', 'data', 'facts.schema.json' );
-export const FACTS_SCHEMA_VERSION = '2';
+export const FACTS_SCHEMA_VERSION = '3';
 
 // Where a client's fact record lives.
 export const factsFile = ( repo, client ) => path.join( repo, 'sites', client, 'build', 'intake', 'facts.json' );
@@ -68,7 +70,7 @@ export function instancesOf( { inventoriesDir, folder, current = null } ) {
 // `effects` are the animations.json records that target the element (reach `self`) or a descendant (lib/read-animations.mjs).
 // The counts of a record: elements, holes, hole answers per width (resolved to a value, absent: the live state holds no value
 // for it, unresolved: the expression or the instance failed), width conditions, elements in a surface, instances, gaps.
-export function countsOf( elements, widths, gaps, animations = { records: 0, unjoined: [] } ) {
+export function countsOf( elements, widths, gaps, animations = { records: 0, unjoined: [] }, assets = emptyAssets ) {
 	const per = Object.fromEntries( widths.map( ( w ) => [ w, { resolved: 0, absent: 0, unresolved: 0 } ] ) );
 	let holes = 0;
 	let joined = 0;
@@ -85,17 +87,24 @@ export function countsOf( elements, widths, gaps, animations = { records: 0, unj
 			}
 		}
 	}
-	return { elements: Object.keys( elements ).length, holes, perWidth: per, widthConditions: conditions, elementsInSurfaces: joined, instances, gaps: gaps.length, effects: effectCounts( elements, animations ) };
+	return { elements: Object.keys( elements ).length, holes, perWidth: per, widthConditions: conditions, elementsInSurfaces: joined, instances, gaps: gaps.length, effects: effectCounts( elements, animations ), assets: assetCounts( elements, assets ) };
 }
 
 // Effect counts: animations.json records read, records that landed on a template element, records with no element, and
 // elements carrying at least one effect.
 const effectCounts = ( elements, a ) => ( { records: a.records, joined: a.records - a.unjoined.length, unjoined: a.unjoined.length, elements: Object.values( elements ).filter( ( e ) => e.effects.length ).length } );
 
+// Asset counts: files under `assets/`, elements using at least one, files no element or project script names, and
+// referenced paths with no file.
+const assetCounts = ( elements, a ) => ( { files: a.assets.files, elements: Object.values( elements ).filter( ( e ) => e.assets.length ).length, unused: a.assets.unused.length, missing: a.assets.missing.length } );
+
+// The assets result of a record with no assets reader run: no files, no references.
+const emptyAssets = { byElement: {}, alt: {}, gaps: [], assets: { files: 0, unused: [], missing: [] } };
+
 // Joins the readers' results into the record (no browser, no files).
-export function joinFacts( { client, sources, widths, template, logic, surfaces, animations, instances, generated = new Date().toISOString() } ) {
+export function joinFacts( { client, sources, widths, template, logic, surfaces, animations, assets = emptyAssets, instances, generated = new Date().toISOString() } ) {
 	const elements = {};
-	const gaps = [ ...template.gaps, ...logic.gaps, ...surfaces.gaps, ...animations.gaps, ...instances.gaps ];
+	const gaps = [ ...template.gaps, ...logic.gaps, ...surfaces.gaps, ...animations.gaps, ...assets.gaps, ...instances.gaps ];
 	for ( const key of template.order ) {
 		const { fingerprint, ...rec } = template.elements[ key ];
 		const cond = logic.conditions[ key ];
@@ -104,6 +113,8 @@ export function joinFacts( { client, sources, widths, template, logic, surfaces,
 			logic: { holes: logic.holes[ key ] || {}, ...( cond ? { width: cond.width, ...( cond.via ? { via: cond.via } : {} ) } : {} ) },
 			surfaces: surfaces.byElement[ key ] || [],
 			effects: animations.byElement[ key ] || [],
+			assets: assets.byElement[ key ] || [],
+			...( assets.alt[ key ] ? { alt: assets.alt[ key ] } : {} ),
 			instances: instances.byTemplate.get( key ) || [],
 			fingerprint,
 		};
@@ -112,8 +123,8 @@ export function joinFacts( { client, sources, widths, template, logic, surfaces,
 		elements[ key ] || gaps.push( { construct: 'instance', draftId: key, error: `${ list.length } instance key(s) of a template element the annotated template does not hold (first ${ list[ 0 ].key } in ${ list[ 0 ].state })` } );
 	}
 	return {
-		schema: FACTS_SCHEMA_VERSION, client, generated, widths, sources, elements, surfaces: surfaces.surfaces, animations: { records: animations.records, unjoined: animations.unjoined }, mounted: logic.mounted, state: logic.state || {}, gaps,
-		counts: countsOf( elements, widths, gaps, animations ),
+		schema: FACTS_SCHEMA_VERSION, client, generated, widths, sources, elements, surfaces: surfaces.surfaces, animations: { records: animations.records, unjoined: animations.unjoined }, assets: assets.assets, mounted: logic.mounted, state: logic.state || {}, gaps,
+		counts: countsOf( elements, widths, gaps, animations, assets ),
 	};
 }
 
@@ -140,8 +151,9 @@ export async function buildFactRecord( { folder, client, entry, harPath = null, 
 		const animationFile = readJson( path.join( folder, 'animations.json' ) );
 		const animations = readAnimations( { records: animationFile.data?.records || [], template } );
 		animationFile.error && animations.gaps.push( { construct: 'animations', draftId: 'animations.json', error: `animations.json could not be read: ${ animationFile.error }` } );
+		const assets = readAssets( { folder, template } );
 		const instances = instancesOf( { inventoriesDir, folder, current: taken } );
-		const record = joinFacts( { client, sources: taken, widths, template, logic, surfaces, animations, instances } );
+		const record = joinFacts( { client, sources: taken, widths, template, logic, surfaces, animations, assets, instances } );
 		return { record, blocked: sandbox ? [] : sb.blocked };
 	} finally {
 		if ( ! sandbox ) {

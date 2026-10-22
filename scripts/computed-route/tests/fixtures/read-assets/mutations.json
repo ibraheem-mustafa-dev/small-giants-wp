@@ -1,0 +1,23 @@
+[
+ { "file": "lib/read-assets.mjs", "find": "if ( 4 === vb.length && vb.every( Number.isFinite ) && vb[ 2 ] > 0 && vb[ 3 ] > 0 ) {", "replace": "if ( false ) {", "why": "the viewBox is ignored for the width and height attributes" },
+ { "file": "lib/read-assets.mjs", "find": "/^\\s*\\d+(\\.\\d+)?(px)?\\s*$/.test( s ?? '' )", "replace": "/^\\s*\\d+(\\.\\d+)?(px|%)?\\s*$/.test( s ?? '' )", "why": "a percentage width is taken as a size" },
+ { "file": "lib/read-assets.mjs", "find": "return { width: buf.readUInt32BE( 16 ), height: buf.readUInt32BE( 20 ) };", "replace": "return { width: buf.readUInt32BE( 20 ), height: buf.readUInt32BE( 16 ) };", "why": "PNG width and height swapped" },
+ { "file": "lib/read-assets.mjs", "find": "return { width: buf.readUInt16BE( i + 7 ), height: buf.readUInt16BE( i + 5 ) };", "replace": "return { width: buf.readUInt16BE( i + 5 ), height: buf.readUInt16BE( i + 7 ) };", "why": "JPEG width and height swapped" },
+ { "file": "lib/read-assets.mjs", "find": "return { width: 1 + buf.readUIntLE( 24, 3 ), height: 1 + buf.readUIntLE( 27, 3 ) };", "replace": "return { width: buf.readUIntLE( 24, 3 ), height: buf.readUIntLE( 27, 3 ) };", "why": "WebP size off by one" },
+ { "file": "lib/read-assets.mjs", "find": "return { width: buf.readUInt16LE( 6 ), height: buf.readUInt16LE( 8 ) };", "replace": "return { width: buf.readUInt16LE( 8 ), height: buf.readUInt16LE( 6 ) };", "why": "GIF width and height swapped" },
+ { "file": "lib/read-assets.mjs", "find": "out.push( [ `style:${ prop }`, m[ 1 ] ] );", "replace": "void m;", "why": "url() in a declaration never read" },
+ { "file": "lib/read-assets.mjs", "find": "out.push( [ `attr:${ name }`, value ] );", "replace": "'src' === name || out.push( [ `attr:${ name }`, value ] );", "why": "the src attribute never read" },
+ { "file": "lib/read-assets.mjs", "find": "v = decodeURIComponent( v );", "replace": "v = v;", "why": "a percent-encoded path never matches its file" },
+ { "file": "lib/read-assets.mjs", "find": "v.includes( '{{' ) || ", "replace": "", "why": "a {{ }} value is matched as a path" },
+ { "file": "lib/read-assets.mjs", "find": "map.byValue[ value ] && put(", "replace": "false && put(", "why": "a project script's map never read" },
+ { "file": "lib/read-assets.mjs", "find": "'image-slot' === ( rec.realTag || rec.tag ) && null != rec.attrs?.placeholder", "replace": "false", "why": "an image-slot's placeholder not kept" },
+ { "file": "lib/read-assets.mjs", "find": "p.startsWith( 'assets/' ) && ! missing.some(", "replace": "false && ! missing.some(", "why": "a referenced path with no file not listed as missing" },
+ { "file": "lib/read-assets.mjs", "find": "! used.has( p ) && ! scriptNamed.has( p )", "replace": "false", "why": "unused files not listed" },
+ { "file": "lib/read-assets.mjs", "find": "styles.some( ( s ) => /@keyframes/i.test( s ) )", "replace": "false", "why": "a keyframes style does not mark an SVG animated" },
+ { "file": "lib/read-assets.mjs", "find": "/<(animate|animateTransform|animateMotion|set)\\b/i.test( text ) || ", "replace": "", "why": "animate and set elements do not mark an SVG animated" },
+ { "file": "lib/fact-record.mjs", "find": "assets: assets.byElement[ key ] || [],", "replace": "assets: [],", "why": "assets not joined onto the element" },
+ { "file": "lib/fact-record.mjs", "find": "...( assets.alt[ key ] ? { alt: assets.alt[ key ] } : {} ),", "replace": "", "why": "alt evidence not joined onto the element" },
+ { "file": "lib/fact-record.mjs", "find": "elements: Object.values( elements ).filter( ( e ) => e.assets.length ).length,", "replace": "elements: 0,", "why": "elements using an asset not counted" },
+ { "file": "lib/freshness.mjs", "find": "/^assets\\/./.test( rel ) || ", "replace": "", "why": "a changed asset leaves the record current" },
+ { "file": "lib/freshness.mjs", "find": "/^[^/]+\\.js$/.test( rel ) || ", "replace": "", "why": "a changed project script leaves the record current" }
+]
