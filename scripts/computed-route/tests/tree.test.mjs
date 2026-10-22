@@ -1,7 +1,8 @@
 // Proves R-47-11 (live-site safety) and the tree operations Solve relies on: refs, deep writes, stripping.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { addRefs, stripRefs, nodeByRef, setAttr, assertWritable, assertQuiet, refOf } from '../lib/tree.mjs';
+import fs from 'node:fs';
+import { addRefs, stripRefs, nodeByRef, setAttr, assertWritable, assertQuiet, refOf, FORBIDDEN_POSTS } from '../lib/tree.mjs';
 
 const tree = () => [ { name: 'sgs/container', attributes: { className: 'keep' }, innerBlocks: [ { name: 'sgs/heading', attributes: { padding: { desktop: { top: '8px' }, mobile: { top: '4px' } } } } ] } ];
 const manifests = { calibrationTargets: { 'eye-care-test': { postId: 900 } }, surfaces: { footer: { target: { postId: 182 } }, product: { target: { template: 'single-product' } } } };
@@ -62,4 +63,18 @@ test( 'MUST FAIL: the canary homepage, a motion fixture or an unlisted post is r
 test( 'MUST FAIL: a local mirror (sshArgs null) skips the host check; an unreachable host still fails the run', () => {
 	assert.throws( () => assertQuiet( [ '-o', 'ConnectTimeout=2', '-o', 'BatchMode=yes', '-p', '1', 'nobody@127.0.0.1' ] ) );
 	assert.equal( assertQuiet( null ), true );
+} );
+
+// MUST FAIL: the project CLAUDE.md names the canary homepage, posts page and motion-QA fixture pages; a page it names that the list lacks could be written.
+test( 'every canary page the project CLAUDE.md protects is a forbidden post, and assertWritable refuses it', () => {
+	const md = fs.readFileSync( new URL( '../../../CLAUDE.md', import.meta.url ), 'utf8' );
+	const home = md.match( /Homepage = \*\*page (\d+)\*\*.*?posts page = \*\*(\d+)\*\*/ );
+	const fixtures = md.match( /Canary pages ([\d, ]+) are motion-QA fixtures/ );
+	assert.ok( home && fixtures, 'the project CLAUDE.md lines naming the canary pages were not found' );
+	const ids = [ home[ 1 ], home[ 2 ], ...fixtures[ 1 ].split( /,\s*/ ) ].map( Number );
+	assert.ok( ids.length >= 12 );
+	const missing = ids.filter( ( id ) => ! FORBIDDEN_POSTS.includes( id ) );
+	assert.deepEqual( missing, [], `FORBIDDEN_POSTS lacks ${ missing.join( ', ' ) }` );
+	const all = { calibrationTargets: Object.fromEntries( ids.map( ( id ) => [ `t${ id }`, { postId: id } ] ) ), surfaces: {} };
+	ids.forEach( ( id ) => assert.throws( () => assertWritable( { postId: id }, all ), /R-47-11/ ) );
 } );

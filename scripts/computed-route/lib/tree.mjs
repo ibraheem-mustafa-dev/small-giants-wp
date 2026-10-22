@@ -7,7 +7,7 @@ import { execFileSync } from 'child_process';
 export const REF_PREFIX = 'cr-ref-';
 
 // R-47-11: never written, whatever a manifest says. Canary homepage and posts page, and the motion-QA fixtures.
-export const FORBIDDEN_POSTS = [ 2742, 2741, 2103, 2109, 2113, 2603, 2740, 3037 ];
+export const FORBIDDEN_POSTS = [ 2742, 2741, 2103, 2109, 2113, 2603, 2740, 3037, 5223, 5226, 5229, 5395 ];
 
 export function readTree( file ) {
 	const t = JSON.parse( fs.readFileSync( path.resolve( file ), 'utf8' ) );
