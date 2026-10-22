@@ -504,7 +504,21 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const loops = ( e ) => motion.has( String( e.key ).replace( /#\d+$/, '' ) );
 
 	// Composite structures, before the element rules: a marquee, a trust bar, a page's hero and what its hero provides.
+	// The navigation element of the surface whose block draws its own collapsed-navigation opener (the block holds a collapse
+	// setting: rules.navigation.collapseAttribute), or null.
+	const burgerNav = () => m.els.find( ( n ) => 'nav' === n.tag && ! m.isPart( n ) && R.navigation?.collapseAttribute?.[ hooks.topBlock( n ) ] ) ?? null;
+	// A button or link whose click handler is named in the recorded opener of a drawer surface: it opens that drawer.
+	const opensDrawer = ( e ) => {
+		const h = handlerOf( e );
+		return !! h && [ 'a', 'button' ].includes( e.tag ) && Object.values( view.surfaces ).some( ( s ) => 'drawer' === s.kind && String( view.openers[ s.id ] || '' ).split( /[^\w$]+/ ).includes( h ) );
+	};
 	const STRUCTURES = [
+		// The control that opens the drawer, inside a header whose navigation block draws its own opener below its collapse
+		// point: the navigation block draws it, so it is absorbed there.
+		( { e } ) => {
+			const nav = R.drawerOpener && 'nav' !== e.tag && opensDrawer( e ) ? burgerNav() : null;
+			return nav && nav.key !== e.key ? v( 'drawerOpener', { action: 'absorbed', into: nav.key } ) : null;
+		},
 		// A direct child of a header's disclosure panel, told apart by its declared sizing, own paint and a loop of links:
 		// a growing child holding a run of links is a mega group, a fixed or ratio-sized painted box without links an aside,
 		// and any other growing child a plain container (lib/skeleton-panel-rules.mjs).

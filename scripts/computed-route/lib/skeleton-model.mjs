@@ -21,7 +21,18 @@ export function inventoryModel( inventory ) {
 	const shownAnywhere = ( e ) => Object.values( e.visible ).some( Boolean );
 	// Part of its parent rather than a block: an svg and everything in it, or an element never shown at any width (a br).
 	const isPart = ( e ) => 'svg' === e.tag || inSvg( e ) || ! shownAnywhere( e );
-	const blockKids = ( e ) => kids( e ).filter( ( c ) => ! isPart( c ) );
+	// The widest width an element renders at (1440, else 768, else 375), the width its own classification is read at.
+	const refWidth = ( e ) => [ 1440, 768, 375 ].find( ( w ) => e?.visible?.[ w ] ) ?? null;
+	// A child that does not render where its parent does (an sc-if on a width: a label shown only on a phone): an alternative
+	// of its parent, never part of what the parent is classified on.
+	const widthOnly = ( c ) => {
+		const ref = refWidth( byKey[ c.parentKey ] );
+		return null !== ref && ! c.visible?.[ ref ] && shownAnywhere( c );
+	};
+	const blockKids = ( e ) => kids( e ).filter( ( c ) => ! isPart( c ) && ! widthOnly( c ) );
+	const widthKids = ( e ) => kids( e ).filter( ( c ) => ! isPart( c ) && widthOnly( c ) );
+	// The widths an element renders at, as the 375, 768 and 1440 it is visible at.
+	const shownAt = ( e ) => [ 375, 768, 1440 ].filter( ( w ) => e.visible?.[ w ] );
 	const words = ( e ) => ws( e.words );
 	// The element's own text with its never-shown br children kept as <br>, read from the annotated source.
 	const textWithBreaks = ( e ) => ws( ( e.snippet || '' ).replace( /^<[^>]*>/, '' ).replace( /<\/[a-z]+>\s*$/i, '' ).replace( /<br[^>]*>/gi, '<br>' ).replace( /<(?!br>)[^>]+>/g, '' ) );
@@ -44,5 +55,5 @@ export function inventoryModel( inventory ) {
 	const childIndex = ( e ) => blockKids( byKey[ e.parentKey ] || { key: null } ).indexOf( e );
 	// The fingerprint Fill's origin map keeps (lib/identity.mjs::fingerprintOf): tag, class, a hash of the style attribute (only a hash, never a value), the ancestor tags, a hash of the element's own words and its template line.
 	const fingerprint = ( e ) => fingerprintOf( e, byKey );
-	return { els, byKey, kids, isPart, blockKids, words, textWithBreaks, placeholders, box, stacked, isTextLink, isIconLink, childIndex, fingerprint, root: els.find( ( e ) => 0 === e.depth ) || els[ 0 ], tplFinder: ( e ) => ( parseTplKey( e.key ) ? { tpl: e.key } : null ) };
+	return { els, byKey, kids, isPart, blockKids, widthKids, widthOnly, shownAt, words, textWithBreaks, placeholders, box, stacked, isTextLink, isIconLink, childIndex, fingerprint, root: els.find( ( e ) => 0 === e.depth ) || els[ 0 ], tplFinder: ( e ) => ( parseTplKey( e.key ) ? { tpl: e.key } : null ) };
 }

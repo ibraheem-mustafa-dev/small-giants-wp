@@ -122,12 +122,29 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// The children of an element whose block draws them itself: each is a row absorbed into it, never a block.
 	// A child carrying its own client decision is still absorbed (its block draws it), but the row says the decision no
 	// longer applies, so the review shows it instead of dropping it.
-	const absorbSubtree = ( e, top, why, rule ) => m.blockKids( e ).forEach( ( k ) => {
-		const own = overrides( k, m.words( k ) );
-		const stale = 'client decision' === own?.source ? `the client decision for ${ k.key } (${ own.block || 'remove' }) no longer applies: ${ top.block } draws this element` : null;
-		record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ why }`, confidence: 1, candidates: [], rule, into: top.key, stale } );
-		absorbSubtree( k, top, why, rule );
-	} );
+	const absorbSubtree = ( e, top, why, rule, node = null ) => {
+		m.blockKids( e ).forEach( ( k ) => {
+			const own = overrides( k, m.words( k ) );
+			const stale = 'client decision' === own?.source ? `the client decision for ${ k.key } (${ own.block || 'remove' }) no longer applies: ${ top.block } draws this element` : null;
+			record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ why }`, confidence: 1, candidates: [], rule, into: top.key, stale } );
+			absorbSubtree( k, top, why, rule, node );
+		} );
+		absorbWidthKids( e, top, rule, node );
+	};
+	// An element that renders only at some widths inside a block that draws its own content cannot be a node of its own: it
+	// is absorbed with the width alternative named, and listed in the proposal's widthAlternatives (and as a handover entry
+	// on the block's node) so the review shows it and it reaches Bean.
+	const widthAlternatives = [];
+	function absorbWidthKids( e, top, rule, node ) {
+		m.widthKids( e ).forEach( ( k ) => {
+			const at = m.shownAt( k ).join( ' and ' );
+			const what = m.words( k ) ? `a label shown only at ${ at }px inside a block with one label: no setting holds a per-width label` : `an element shown only at ${ at }px inside a block that draws its own content: no setting holds a per-width alternative`;
+			record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ what }`, confidence: 1, candidates: [], rule, into: top.key } );
+			widthAlternatives.push( { key: k.key, into: top.key, block: top.block, widths: m.shownAt( k ), words: m.words( k ), reason: what } );
+			node && ( node.handover ||= [] ).push( { owner: 'behaviour', kind: m.words( k ) ? 'text' : 'presence', detail: `${ k.key }${ m.words( k ) ? ` "${ m.words( k ) }"` : '' }: ${ what }` } );
+			absorbSubtree( k, top, what, rule, node );
+		} );
+	}
 	const finder = ( e ) => m.tplFinder( e );
 	// The top of the tree an element sits in: the surface root, or the root of a header strip read beside it (parentKey null).
 	const rootOf = ( e ) => {
@@ -416,7 +433,11 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			Object.keys( cs.slots ).length && ( node.draftSlots = { ...node.draftSlots, ...cs.slots }, row.slots = { ...row.slots, ...cs.slots } );
 			const notes = [ ...cs.notes, ...( collapse?.note ? [ collapse.note ] : [] ) ];
 			notes.length && ( row.slotNotes = notes );
-			absorbSubtree( e, { block, key: e.key }, drawn, r.rule || 'drawsChildren' );
+			absorbSubtree( e, { block, key: e.key }, drawn, r.rule || 'drawsChildren', node );
+			return node;
+		}
+		if ( ! m.blockKids( e ).length && m.widthKids( e ).length && 'leaf' === composition[ block ]?.composition_role ) {
+			absorbWidthKids( e, { block, key: e.key }, 'drawsChildren', node );
 			return node;
 		}
 		const kids = m.blockKids( e );
@@ -495,7 +516,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		stripRoots = [ plan.top, plan.bottom ].filter( ( x ) => x && besideKeys.has( x.key ) ).map( ( x ) => x.key );
 		const top = plan.top && buildSlotRow( plan.top, 'top' );
 		plan.extras.forEach( leaveStrip );
-		const nodes = buildChildren( e, block, inside.main );
+		const nodes = buildChildren( e, block, inside.main, true );
 		const bottom = plan.bottom && buildSlotRow( plan.bottom, 'bottom' );
 		const rowsIn = nodes.filter( ( n ) => n.name === H.rowBlock );
 		// A main bar that is itself a row block is the middle row and keeps its attributes and draft element; any node beside
@@ -536,8 +557,27 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		host.row.slots = { ...host.row.slots, [ slot ]: finder( e ) };
 	}
 
-	function buildChildren( e, parentBlock, list = undefined ) {
-		return unitsOf( e, list ).flatMap( ( u ) => ( 'brand' === u.type ? buildBrand( u.els ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els ) : buildNode( u.els[ 0 ], parentBlock ) ) ).filter( Boolean );
+	// The children of an element: its units, with each width-only child (an sc-if on a width) built as its own node beside the
+	// sibling it follows in the document, so Fill's width gate can hide each branch on the other's widths.
+	function buildChildren( e, parentBlock, list = undefined, withWide = ! list ) {
+		const units = unitsOf( e, list );
+		const build = ( u ) => ( 'brand' === u.type ? buildBrand( u.els ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els ) : buildNode( u.els[ 0 ], parentBlock ) );
+		const wide = withWide ? m.widthKids( e ) : [];
+		if ( ! wide.length ) {
+			return units.flatMap( build ).filter( Boolean );
+		}
+		const after = units.map( () => [] );
+		const first = [];
+		let at = -1;
+		m.kids( e ).filter( ( k ) => ! m.isPart( k ) ).forEach( ( k ) => {
+			if ( wide.includes( k ) ) {
+				( at < 0 ? first : after[ at ] ).push( k );
+			} else {
+				at = units.findIndex( ( u ) => u.els.includes( k ) );
+			}
+		} );
+		const own = ( k ) => buildNode( k, parentBlock );
+		return [ ...first.flatMap( own ), ...units.flatMap( ( u, i ) => [ ...[].concat( build( u ) ), ...after[ i ].flatMap( own ) ] ) ].filter( Boolean );
 	}
 
 	const rootNode = buildNode( m.root, null );
@@ -553,7 +593,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], stripRoots, recordDisagreements: view.disagreements, recordUntranslated: view.untranslated,
 		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W, ...( built ? { builtPost: built } : {} ),
 		counts: { inventoryElements: m.els.length, parts: m.els.filter( m.isPart ).length, rows: rows.length, skeletonNodes: count( skeleton ), expandedNodes: count( expandSiteInfoRows( skeleton ) ), low: rows.filter( ( r ) => r.low && ! r.action ).length, removed: rows.filter( ( r ) => [ 'remove', 'absorbed', 'unwrap' ].includes( r.action ) ).length, unresolved: rows.filter( ( r ) => 'unresolved' === r.action ).length, byRule: rows.reduce( ( o, r ) => ( r.rule ? { ...o, [ r.rule ]: ( o[ r.rule ] || 0 ) + 1 } : o ), {} ) },
-		problems, rows,
+		widthAlternatives, problems, rows,
 	};
 	return { skeleton, proposal, problems };
 }

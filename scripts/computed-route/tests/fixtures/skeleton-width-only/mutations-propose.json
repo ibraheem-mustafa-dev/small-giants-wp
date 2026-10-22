@@ -1,0 +1,10 @@
+[
+	{"file":"lib/skeleton-model.mjs","find":"( c ) => ! isPart( c ) && ! widthOnly( c ) );","replace":"( c ) => ! isPart( c ) );","why":"a width-only descendant would change its parent's classification (a multi-button becomes a container, a pill a container)"},
+	{"file":"lib/skeleton-propose.mjs","find":"const wide = withWide ? m.widthKids( e ) : [];","replace":"const wide = [];","why":"a width-only sibling would have no node and no row"},
+	{"file":"lib/skeleton-propose.mjs","find":"( at < 0 ? first : after[ at ] ).push( k );","replace":"first.push( k );","why":"a width-only sibling would land before the sibling it follows"},
+	{"file":"lib/skeleton-propose.mjs","find":"widthAlternatives.push( {","replace":"void ( {","why":"an absorbed width alternative would not reach the proposal's list"},
+	{"file":"lib/skeleton-propose.mjs","find":"node && ( node.handover ||= [] ).push(","replace":"false && ( [] ).push(","why":"an absorbed width alternative would not reach the block's handover"},
+	{"file":"lib/skeleton-propose.mjs","find":"m.widthKids( e ).forEach( ( k ) => {\n\t\t\tconst at","replace":"[].forEach( ( k ) => {\n\t\t\tconst at","why":"a width-only element inside a drawing block would be dropped without a row"},
+	{"file":"lib/skeleton-rules.mjs","find":"R.drawerOpener && 'nav' !== e.tag && opensDrawer( e )","replace":"false","why":"the drawer's opener would be built as a container"},
+	{"file":"lib/skeleton-rules.mjs","find":".split( /[^\\w$]+/ ).includes( h ) );","replace":".split( /[^\\w$]+/ ).length > 0 );","why":"any button would count as the drawer's opener"}
+]
