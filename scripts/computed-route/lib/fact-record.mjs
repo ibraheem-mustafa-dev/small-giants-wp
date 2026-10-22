@@ -19,6 +19,7 @@ import { readLogic, READ_WIDTHS } from './read-logic.mjs';
 import { readSurfaces } from './read-surfaces.mjs';
 import { readAnimations } from './read-animations.mjs';
 import { readAssets } from './read-assets.mjs';
+import { readReadme } from './read-readme.mjs';
 import { openSandbox } from './intake-sandbox.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -102,7 +103,7 @@ const assetCounts = ( elements, a ) => ( { files: a.assets.files, elements: Obje
 const emptyAssets = { byElement: {}, alt: {}, gaps: [], assets: { files: 0, unused: [], missing: [] } };
 
 // Joins the readers' results into the record (no browser, no files).
-export function joinFacts( { client, sources, widths, template, logic, surfaces, animations, assets = emptyAssets, instances, generated = new Date().toISOString() } ) {
+export function joinFacts( { client, sources, widths, template, logic, surfaces, animations, assets = emptyAssets, readme = null, instances, generated = new Date().toISOString() } ) {
 	const elements = {};
 	const gaps = [ ...template.gaps, ...logic.gaps, ...surfaces.gaps, ...animations.gaps, ...assets.gaps, ...instances.gaps ];
 	for ( const key of template.order ) {
@@ -123,7 +124,7 @@ export function joinFacts( { client, sources, widths, template, logic, surfaces,
 		elements[ key ] || gaps.push( { construct: 'instance', draftId: key, error: `${ list.length } instance key(s) of a template element the annotated template does not hold (first ${ list[ 0 ].key } in ${ list[ 0 ].state })` } );
 	}
 	return {
-		schema: FACTS_SCHEMA_VERSION, client, generated, widths, sources, elements, surfaces: surfaces.surfaces, animations: { records: animations.records, unjoined: animations.unjoined }, assets: assets.assets, mounted: logic.mounted, state: logic.state || {}, gaps,
+		schema: FACTS_SCHEMA_VERSION, client, generated, widths, sources, elements, surfaces: surfaces.surfaces, animations: { records: animations.records, unjoined: animations.unjoined }, assets: assets.assets, ...( readme ? { readme } : {} ), mounted: logic.mounted, state: logic.state || {}, gaps,
 		counts: countsOf( elements, widths, gaps, animations, assets ),
 	};
 }
@@ -153,7 +154,7 @@ export async function buildFactRecord( { folder, client, entry, harPath = null, 
 		animationFile.error && animations.gaps.push( { construct: 'animations', draftId: 'animations.json', error: `animations.json could not be read: ${ animationFile.error }` } );
 		const assets = readAssets( { folder, template } );
 		const instances = instancesOf( { inventoriesDir, folder, current: taken } );
-		const record = joinFacts( { client, sources: taken, widths, template, logic, surfaces, animations, assets, instances } );
+		const record = joinFacts( { client, sources: taken, widths, template, logic, surfaces, animations, assets, readme: readReadme( { folder } ), instances } );
 		return { record, blocked: sandbox ? [] : sb.blocked };
 	} finally {
 		if ( ! sandbox ) {

@@ -1,6 +1,6 @@
 // Whether a record the route saved (intake.json, a saved inventory) still describes the export on disk. Intake writes a
 // `sources` object into each record: the sha256 of every draft (`*.dc.html`), `support.js`, `surfaces.json`,
-// `animations.json`, `tokens/*.css`, every file under `assets/` and every project script at the folder root under the handoff folder, and the commit of the route that built it. Every reader
+// `animations.json`, `README.md`, `tokens/*.css`, every file under `assets/` and every project script at the folder root under the handoff folder, and the commit of the route that built it. Every reader
 // of a record calls assertCurrent( record, handoffRoot ), which throws a StaleRecordError naming each changed file. A
 // record written before `sources` existed passes with one warning, never silently.
 import fs from 'fs';
@@ -12,7 +12,7 @@ import { walkFolder, sha256 } from './handoff.mjs';
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 
 // The handoff files a record depends on: drafts, the runtime and project scripts, the two inventories, the token stylesheets and the assets.
-export const isSourceFile = ( rel ) => /\.dc\.html$/.test( rel ) || /^assets\/./.test( rel ) || /^[^/]+\.js$/.test( rel ) || [ 'support.js', 'surfaces.json', 'animations.json' ].includes( rel ) || /^tokens\/[^/]+\.css$/.test( rel );
+export const isSourceFile = ( rel ) => /\.dc\.html$/.test( rel ) || /^assets\/./.test( rel ) || /^[^/]+\.js$/.test( rel ) || [ 'support.js', 'surfaces.json', 'animations.json', 'README.md' ].includes( rel ) || /^tokens\/[^/]+\.css$/.test( rel );
 
 // The commit of the route working tree, or null when git cannot answer.
 export function routeCommit() {
