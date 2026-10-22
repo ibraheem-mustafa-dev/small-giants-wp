@@ -1,6 +1,6 @@
 Invoke /autopilot before doing anything else.
 
-TRACK: Eye Care Birmingham (LEDGER Front F): mirror the live site into its draft, then run it through the Spec 48 intake. The Indus review (Track 1) runs separately, beside clone coverage step 4.0, so this track runs on its own.
+TRACK: Eye Care Birmingham (LEDGER Front F): mirror the live site into its draft, then run it through the Spec 48 intake. The Indus delivery (`.claude/plans/2026-10-21-indus-delivery.md`) runs separately, so this track runs on its own; the handoff readers plan's "Eye Care comparison" (its Status, owned by another session) diffs the skeleton writer against Eye Care's built header and footer, so check its state before task 3 and reuse its result.
 
 CONTEXT (plain English)
 - Eye Care is built by hand and live on eye-care-test (https://darkcyan-grouse-898606.hostingersite.com, credentials .claude/secrets/eye-care-test.env): the finished site is the cloning pipeline's answer key. Bean's rulings live in the fix register .claude/plans/2026-10-02-eye-care-fix-register.md (most rows proven or closed; the rest still open, read the counts live) and in 90 accepted divergences in sites/eye-care-ward-end/build/qa/divergences.json (intended differences from the draft). The old pipeline's false positives were triaged there and in sites/eye-care-ward-end/build/qa/triage/*.json.

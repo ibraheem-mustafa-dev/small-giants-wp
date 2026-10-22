@@ -18,5 +18,5 @@ GUARDRAILS
 - In scripts/computed-route: node --test "tests/*.test.mjs" (all pass; 1,851 on 2026-10-21), node capabilities.mjs --gate, node lint.mjs; run tests only when no peer is reseeding.
 - A framework-DB reseed runs ONLY from a clean worktree at origin/main with `npm ci` in scripts/computed-route first, then sgs-update-v2.py and seed_reference_data.py (npm run build does not reseed block_attributes). If the build's db-consistency F6 flags rogue seeds, regenerate plugins/sgs-blocks/scripts/behavioural-analyser/css-property-classifications.json with extract-signatures.py and check its diff removes nothing.
 - check-text-stroke-routing must stay green: a new *TextStroke* attribute needs an element-manifest claim (its --fix, and a hand-placed element where it reports UNPLACED).
-- Message peers before any build, reseed, provisioning, mirror refresh or calibration; the states-wave session owns calibrate-read.mjs, calibrate-instances.mjs and calibration-fixtures.json.
+- Message peers (ListAgents, SendMessage) before any build, reseed, provisioning, mirror refresh or calibration.
 - Gate every commit chain on the real exit code of python .claude/hooks/handoff-preflight.py --check.
