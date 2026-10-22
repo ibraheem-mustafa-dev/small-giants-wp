@@ -146,7 +146,8 @@ async function verifySavedPost( page, id, built ) {
 		const raw = ( post.content && post.content.raw ) || '';
 		return { length: raw.length, names: raw.trim() ? window.wp.blocks.parse( raw ).map( ( b ) => b.name ) : [] };
 	}, id );
-	if ( read.length === 0 ) return `the server holds empty content for post ${ id } (the save was lost)`;
+	// Empty content is the build when the tree was empty (a calibration page cleared), a lost save otherwise.
+	if ( read.length === 0 ) return built.length ? `the server holds empty content for post ${ id } (the save was lost)` : '';
 	const why = topLevelMismatch( built, read.names );
 	return why ? `the content saved on the server for post ${ id } is not the build: ${ why }` : '';
 }

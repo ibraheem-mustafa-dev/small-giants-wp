@@ -117,6 +117,11 @@ test( 'verifySavedPost: empty server content is a lost save', async () => {
 	assert.match( await verifySavedPost( fakeEditorPage( '' ), 5287, [ 'sgs/container' ] ), /empty content/ );
 } );
 
+test( 'verifySavedPost: an empty tree saved as empty content is the build (MUST FAIL against empty-is-always-lost)', async () => {
+	assert.equal( await verifySavedPost( fakeEditorPage( '' ), 15, [] ), '' );
+	assert.match( await verifySavedPost( fakeEditorPage( '<!-- wp:sgs/container /-->' ), 15, [] ), /not the build/, 'control: an empty tree with blocks left on the server is refused' );
+} );
+
 test( 'verifySavedPost: other blocks on the server are refused, the built blocks pass', async () => {
 	assert.match( await verifySavedPost( fakeEditorPage( '<!-- wp:template-part /-->' ), 5287, [ 'sgs/container' ] ), /not the build/ );
 	assert.equal( await verifySavedPost( fakeEditorPage( '<!-- wp:sgs/container /-->' ), 5287, [ 'sgs/container' ] ), '' );
