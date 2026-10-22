@@ -16,8 +16,8 @@
     "blocks_mechanically_fixable": 0,
     "padding_exempt_blocks": 4,
     "token_files_by_status": {
-      "derived": 4,
-      "exempt": 35
+      "derived": 2,
+      "exempt": 38
     },
     "token_files_target_by_mechanism": {},
     "unrecognised": 0,
@@ -27,14 +27,7 @@
     "db_available": true,
     "db_only": [],
     "disk_only": [],
-    "cbp_db_vs_disk": [
-      "sgs/container",
-      "sgs/hero",
-      "sgs/physics-canvas",
-      "sgs/site-footer",
-      "sgs/site-header",
-      "sgs/trust-bar"
-    ]
+    "cbp_db_vs_disk": []
   },
   "blocks": [
     {
@@ -937,18 +930,25 @@
       "reason": "documentation"
     },
     {
+      "path": "plugins/sgs-blocks/includes/class-sgs-band-padding-folder.php",
+      "mentions": 4,
+      "status": "exempt",
+      "mechanism": null,
+      "reason": "the saved-content sweep and its test: they name the old attribute to fold it into padding"
+    },
+    {
+      "path": "plugins/sgs-blocks/includes/class-sgs-band-padding-migrate-command.php",
+      "mentions": 3,
+      "status": "exempt",
+      "mechanism": null,
+      "reason": "the saved-content sweep and its test: they name the old attribute to fold it into padding"
+    },
+    {
       "path": "plugins/sgs-blocks/reports/no-inline-track-D-report.md",
       "mentions": 8,
       "status": "exempt",
       "mechanism": null,
       "reason": "documentation"
-    },
-    {
-      "path": "plugins/sgs-blocks/scripts/behavioural-analyser/css-property-classifications.json",
-      "mentions": 6,
-      "status": "derived",
-      "mechanism": "derived-by-reseed",
-      "reason": "generated from block.json; regenerates once the source changes"
     },
     {
       "path": "plugins/sgs-blocks/scripts/check-container-band-layers-baseline.json",
@@ -963,13 +963,6 @@
       "status": "exempt",
       "mechanism": null,
       "reason": "this detector, its baseline and its census"
-    },
-    {
-      "path": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
-      "mentions": 6,
-      "status": "derived",
-      "mechanism": "derived-by-reseed",
-      "reason": "generated from block.json; regenerates once the source changes"
     },
     {
       "path": "plugins/sgs-blocks/scripts/consistency/setting-registry-css.json",
@@ -1007,6 +1000,13 @@
       "reason": "detector fixture: the token is the input under test"
     },
     {
+      "path": "plugins/sgs-blocks/tests/php/run-band-padding-fold-standalone.php",
+      "mentions": 12,
+      "status": "exempt",
+      "mechanism": null,
+      "reason": "the saved-content sweep and its test: they name the old attribute to fold it into padding"
+    },
+    {
       "path": "reports/2026-08-26-check-a-exemption-differential.json",
       "mentions": 1,
       "status": "exempt",
@@ -1015,7 +1015,7 @@
     },
     {
       "path": "reports/migrations/container-band-layers-census.json",
-      "mentions": 27,
+      "mentions": 26,
       "status": "exempt",
       "mechanism": null,
       "reason": "dated report or this migration's census"
@@ -1121,11 +1121,9 @@
   ],
   "worklist_by_mechanism": {
     "derived-by-reseed": {
-      "files": 4,
-      "mentions": 16,
+      "files": 2,
+      "mentions": 4,
       "paths": [
-        "plugins/sgs-blocks/scripts/behavioural-analyser/css-property-classifications.json",
-        "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
         "plugins/sgs-blocks/scripts/consistency/setting-registry-css.json",
         "plugins/sgs-blocks/scripts/consistency/setting-registry.json"
       ]

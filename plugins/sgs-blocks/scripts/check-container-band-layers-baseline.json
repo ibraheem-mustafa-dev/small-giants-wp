@@ -1,15 +1,6 @@
 {
   "_note": "Ratcheted ceiling for check-container-band-layers.py --check --ratchet. Entries are content keys with a count (a file key counts its contentBandPadding mentions). The ceiling only moves down: lower it with --write-baseline after a drop; raising it is refused. Exit condition: empty, then promote the gate to binary --check.",
-  "ceiling": 6,
-  "composition": {
-    "db-cbp-mismatch": 6
-  },
-  "entries": {
-    "db-cbp-mismatch:sgs/container": 1,
-    "db-cbp-mismatch:sgs/hero": 1,
-    "db-cbp-mismatch:sgs/physics-canvas": 1,
-    "db-cbp-mismatch:sgs/site-footer": 1,
-    "db-cbp-mismatch:sgs/site-header": 1,
-    "db-cbp-mismatch:sgs/trust-bar": 1
-  }
+  "ceiling": 0,
+  "composition": {},
+  "entries": {}
 }

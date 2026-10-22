@@ -52,7 +52,8 @@
       "attr": "contentWidth",
       "fields": {
         "css_property": "max-width",
-        "css_layer": "OUTER"
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -195,8 +196,8 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -4532,7 +4533,8 @@
       "attr": "contentWidth",
       "fields": {
         "css_property": "max-width",
-        "css_layer": "OUTER"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -6528,18 +6530,9 @@
     },
     {
       "slug": "sgs/container",
-      "attr": "contentBandPadding",
-      "fields": {
-        "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-        "css_layer": "CONTENT",
-        "css_element": "content-band"
-      }
-    },
-    {
-      "slug": "sgs/container",
       "attr": "contentWidth",
       "fields": {
-        "css_property": "width",
+        "css_property": "max-width",
         "css_layer": "CONTENT",
         "css_element": "content-band"
       }
@@ -6705,8 +6698,8 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -7727,7 +7720,8 @@
       "attr": "contentWidth",
       "fields": {
         "css_property": "max-width",
-        "css_layer": "OUTER"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -8020,9 +8014,9 @@
       "slug": "sgs/form",
       "attr": "contentWidth",
       "fields": {
-        "css_property": "width",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_property": "max-width",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -9423,8 +9417,8 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -10664,7 +10658,8 @@
       "attr": "contentWidth",
       "fields": {
         "css_property": "max-width",
-        "css_layer": "OUTER"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -10753,8 +10748,8 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -11662,7 +11657,8 @@
       "attr": "contentWidth",
       "fields": {
         "css_property": "max-width",
-        "css_layer": "OUTER"
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -12440,8 +12436,8 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -13885,15 +13881,6 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "contentBandPadding",
-      "fields": {
-        "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-        "css_layer": "CONTENT",
-        "css_element": "content-band"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "contentPadding",
       "fields": {
         "css_property": "padding",
@@ -13905,7 +13892,7 @@
       "slug": "sgs/hero",
       "attr": "contentWidth",
       "fields": {
-        "css_property": "width",
+        "css_property": "max-width",
         "css_layer": "CONTENT",
         "css_element": "content-band"
       }
@@ -14110,7 +14097,9 @@
       "slug": "sgs/hero",
       "attr": "padding",
       "fields": {
-        "css_property": "padding-bottom,padding-left,padding-right,padding-top"
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -17306,7 +17295,8 @@
       "attr": "contentWidth",
       "fields": {
         "css_property": "max-width",
-        "css_layer": "OUTER"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -17382,8 +17372,8 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -19266,18 +19256,9 @@
     },
     {
       "slug": "sgs/physics-canvas",
-      "attr": "contentBandPadding",
-      "fields": {
-        "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-        "css_layer": "CONTENT",
-        "css_element": "content-band"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
       "attr": "contentWidth",
       "fields": {
-        "css_property": "width",
+        "css_property": "max-width",
         "css_layer": "CONTENT",
         "css_element": "content-band"
       }
@@ -19330,8 +19311,8 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -19685,7 +19666,8 @@
       "attr": "contentWidth",
       "fields": {
         "css_property": "max-width",
-        "css_layer": "OUTER"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -20583,7 +20565,8 @@
       "attr": "contentWidth",
       "fields": {
         "css_property": "max-width",
-        "css_layer": "OUTER"
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -25172,18 +25155,9 @@
     },
     {
       "slug": "sgs/site-footer",
-      "attr": "contentBandPadding",
-      "fields": {
-        "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-        "css_layer": "CONTENT",
-        "css_element": "content-band"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
       "attr": "contentWidth",
       "fields": {
-        "css_property": "width",
+        "css_property": "max-width",
         "css_layer": "CONTENT",
         "css_element": "content-band"
       }
@@ -25263,8 +25237,8 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -25377,7 +25351,7 @@
       "slug": "sgs/site-footer-row",
       "attr": "contentWidth",
       "fields": {
-        "css_property": "width",
+        "css_property": "max-width",
         "css_layer": "CONTENT",
         "css_element": "content-band"
       }
@@ -25468,8 +25442,8 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -25483,7 +25457,10 @@
       "slug": "sgs/site-footer-row",
       "attr": "rowShrinkPadding",
       "fields": {
-        "css_property": "padding"
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "content-band",
+        "css_state": "shrunk"
       }
     },
     {
@@ -25618,18 +25595,9 @@
     },
     {
       "slug": "sgs/site-header",
-      "attr": "contentBandPadding",
-      "fields": {
-        "css_property": "padding-bottom,padding-left,padding-right,padding-top",
-        "css_layer": "CONTENT",
-        "css_element": "content-band"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
       "attr": "contentWidth",
       "fields": {
-        "css_property": "width",
+        "css_property": "max-width",
         "css_layer": "CONTENT",
         "css_element": "content-band"
       }
@@ -25682,8 +25650,8 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -25792,7 +25760,7 @@
       "slug": "sgs/site-header-row",
       "attr": "contentWidth",
       "fields": {
-        "css_property": "width",
+        "css_property": "max-width",
         "css_layer": "CONTENT",
         "css_element": "content-band"
       }
@@ -25883,8 +25851,8 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -25898,7 +25866,10 @@
       "slug": "sgs/site-header-row",
       "attr": "rowShrinkPadding",
       "fields": {
-        "css_property": "padding"
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "content-band",
+        "css_state": "shrunk"
       }
     },
     {
@@ -26543,7 +26514,8 @@
       "attr": "contentWidth",
       "fields": {
         "css_property": "max-width",
-        "css_layer": "OUTER"
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -28102,7 +28074,8 @@
       "attr": "contentWidth",
       "fields": {
         "css_property": "max-width",
-        "css_layer": "OUTER"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -29202,17 +29175,11 @@
     },
     {
       "slug": "sgs/trust-bar",
-      "attr": "contentBandPadding",
-      "fields": {
-        "css_property": "padding-bottom,padding-left,padding-right,padding-top"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
       "attr": "contentWidth",
       "fields": {
         "css_property": "max-width",
-        "css_layer": "OUTER"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -29578,8 +29545,8 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -29819,7 +29786,8 @@
       "attr": "contentWidth",
       "fields": {
         "css_property": "max-width",
-        "css_layer": "OUTER"
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -30716,6 +30684,15 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion-item",
+      "attr": "contentWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -32970,9 +32947,9 @@
       "slug": "sgs/form-field-tiles",
       "attr": "contentWidth",
       "fields": {
-        "css_property": "width",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_property": "max-width",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -33284,9 +33261,9 @@
       "slug": "sgs/form-step",
       "attr": "contentWidth",
       "fields": {
-        "css_property": "width",
+        "css_property": "max-width",
         "css_layer": "CONTENT",
-        "css_element": "wrapper"
+        "css_element": "content-band"
       }
     },
     {
@@ -39975,6 +39952,15 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tab",
+      "attr": "contentWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
