@@ -362,11 +362,29 @@ function scrollResetOf( r ) {
 
 const done = ( r, fields ) => ( { record: r.id, host: hostOf( r ), notes: [], coverage: [], ...fields } );
 
+// A property that states its values only in its formula, as a choice between two literals (`cond ? 'a' : 'b'`, the shape
+// intake's re-derived inventory writes), with `to` the first and `from` the second; a stated `from` or `to` is kept.
+export function withEnds( r ) {
+	const list = Array.isArray( r?.properties ) ? r.properties : null;
+	if ( ! list ) {
+		return r;
+	}
+	const re = /\?\s*(?:'([^']*)'|"([^"]*)")\s*:\s*(?:'([^']*)'|"([^"]*)")\s*$/;
+	const properties = list.map( ( p ) => {
+		if ( null != p.to || 'string' !== typeof p.formula ) {
+			return p;
+		}
+		const m = re.exec( p.formula.trim() );
+		return m ? { ...p, to: m[ 1 ] ?? m[ 2 ], from: p.from ?? ( m[ 3 ] ?? m[ 4 ] ) } : p;
+	} );
+	return { ...r, properties };
+}
+
 export function recogniseBehaviour( record, ctx = {} ) {
-	const r = record;
-	if ( ! r || 'object' !== typeof r || 'active' !== ( r.status ?? 'active' ) ) {
+	if ( ! record || 'object' !== typeof record || 'active' !== ( record.status ?? 'active' ) ) {
 		return null;
 	}
+	const r = withEnds( record );
 	const control = controlOf( r );
 	if ( control ) {
 		return done( r, { kind: 'control', of: control.of, effect: 'marquee', values: { hoverRate: control.rate } } );

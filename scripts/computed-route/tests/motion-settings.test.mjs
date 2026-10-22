@@ -12,7 +12,7 @@ import { openDb } from '../lib/db.mjs';
 import { motionDb } from '../lib/motion-db.mjs';
 import { loadMotionSchema } from '../lib/motion-schema.mjs';
 import { motionWrites, sameTriggerResolved } from '../lib/fill-motion.mjs';
-import { recogniseBehaviour } from '../lib/motion-behaviours.mjs';
+import { recogniseBehaviour, withEnds } from '../lib/motion-behaviours.mjs';
 import { motionFixtureDb } from './fixtures/motion-fixture-db.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -182,4 +182,12 @@ test( 'MUST FAIL: every setting this lane writes is listed in data/clone effect-
 	for ( const e of EFFECT_SETTINGS ) {
 		assert.ok( declared( e.block, e.attr ), `${ e.block } declares ${ e.attr }` );
 	}
+} );
+
+test( 'MUST FAIL: a record that states its values only in its formula (intake\'s re-derived shape, `cond ? a : b`) is read as from and to, so the scrolled header is written', () => {
+	const r = { id: 'X-1', mechanism: 'js-style-write', status: 'active', trigger: { type: 'scroll-position', detail: 'scroll listener on window' }, source: { code: "el.style.boxShadow = window.scrollY > 8 ? '0 10px 30px -18px rgba(20,40,60,.35)' : 'none'" }, properties: [ { property: 'box-shadow', from: null, to: null, formula: "window.scrollY > 8 ? '0 10px 30px -18px rgba(20,40,60,.35)' : 'none'" } ] };
+	const out = recogniseBehaviour( r, {} );
+	assert.equal( out?.kind, 'settings' );
+	assert.deepEqual( out.blocks[ 'sgs/site-header' ].map( ( x ) => [ x.attr, x.value ] ).slice( 0, 2 ), [ [ 'scrolledOffset', 8 ], [ 'shadowScrolled', '0px 10px 30px -18px' ] ] );
+	assert.deepEqual( withEnds( { properties: [ { property: 'x', to: 'a', from: 'b', formula: "c ? 'y' : 'z'" } ] } ).properties[ 0 ], { property: 'x', to: 'a', from: 'b', formula: "c ? 'y' : 'z'" }, 'stated ends are kept' );
 } );
