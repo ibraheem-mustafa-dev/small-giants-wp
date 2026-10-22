@@ -53,7 +53,7 @@ const crypto = require( 'crypto' );
 const { execFileSync } = require( 'child_process' );
 
 const surfaceShape = require( './lib/surface-tree-shape' );
-const pluginRequire =createRequire( path.join( __dirname, '..', 'plugins', 'sgs-blocks', 'package.json' ) );
+const pluginRequire = createRequire( path.join( __dirname, '..', 'plugins', 'sgs-blocks', 'package.json' ) );
 const { chromium } = pluginRequire( 'playwright' );
 
 function parseArgs( argv ) {
@@ -433,7 +433,7 @@ async function main() {
 		}
 
 		// Validate the whole tree before touching the post.
-		const problems =await page.evaluate( ( { t, bannedMap, flat } ) => {
+		const problems = await page.evaluate( ( { t, bannedMap, flat } ) => {
 			const out = [];
 			const walk = ( blocks, trail ) => blocks.forEach( ( b, i ) => {
 				const where = `${ trail }[${ i }] ${ b && b.name }`;
