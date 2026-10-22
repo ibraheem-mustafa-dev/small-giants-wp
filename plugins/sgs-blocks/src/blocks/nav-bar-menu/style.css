@@ -34,12 +34,21 @@
  */
 :where(.sgs-nav-bar-menu) {
 	justify-content: space-between;
+	--sgs-nav-link-pad-end: 12px;
+}
+
+/*
+ * `flex-wrap` is attr-owned (`flexWrap`, default '' = unset): the zero-specificity
+ * :where() default is a single row, and the wrapper's #uid-scoped rule wins the
+ * moment an operator sets the attribute.
+ */
+:where(.sgs-nav-bar-menu__bar) {
+	flex-wrap: nowrap;
 }
 
 .sgs-nav-bar-menu__bar {
 	align-items: center;
 	display: flex;
-	flex-wrap: wrap;
 	list-style: none;
 	margin: 0;
 	padding: 0;
@@ -143,7 +152,7 @@
 	color: inherit;
 	display: flex;
 	min-height: 44px;
-	padding: 8px 12px;
+	padding: 8px var(--sgs-nav-link-pad-end) 8px 12px;
 	text-decoration: none;
 	/*
 	 * `--sgs-nav-item-motion` — published by
@@ -156,6 +165,38 @@
 	transition: background-color var(--sgs-nav-item-motion, var(--wp--custom--transition--fast, 150ms ease)),
 		color var(--sgs-nav-item-motion, var(--wp--custom--transition--fast, 150ms ease));
 	white-space: nowrap;
+}
+
+/*
+ * Split item: a link followed by its own sub-toggle button. The toggle draws only
+ * the caret, a gap after the label and the item's right padding after the caret,
+ * so the item is label + gap + caret + both paddings wide. The link's right
+ * padding moves onto the toggle (--sgs-nav-link-pad-end). The toggle's 44px tap
+ * target is an invisible ::before anchored to its inline end, so any shortfall
+ * extends back over the gap and never into the neighbouring item.
+ */
+.sgs-nav-bar-menu .sgs-nav-bar-menu__link:has(+ .sgs-nav-bar-menu__subtoggle) {
+	padding-inline-end: 0;
+}
+
+.sgs-nav-bar-menu .sgs-nav-bar-menu__subtoggle:not(.sgs-nav-bar-menu__link) {
+	align-self: stretch;
+	box-sizing: border-box;
+	min-height: 0;
+	min-width: 0;
+	padding-block: 0;
+	padding-inline: var(--sgs-nav-caret-gap, 0.4em) var(--sgs-nav-link-pad-end);
+	position: relative;
+}
+
+.sgs-nav-bar-menu .sgs-nav-bar-menu__subtoggle:not(.sgs-nav-bar-menu__link)::before {
+	content: "";
+	height: max(100%, 44px);
+	inset-block-start: 50%;
+	inset-inline-end: 0;
+	position: absolute;
+	transform: translateY(-50%);
+	width: max(100%, 44px);
 }
 
 /*

@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { RangeControl } from '@wordpress/components';
+import { RangeControl, SelectControl } from '@wordpress/components';
 import {
 	ResponsiveControl,
 	ResponsiveOverride,
@@ -41,6 +41,8 @@ import LinkExtrasItems from './LinkExtrasItems';
  *                                             accordion link instead of the top-level one.
  * @param {Object}   [root0.submenuLinkPadding] The block's `submenuLinkPadding` attribute, a
  *                                             tier object of {top,right,bottom,left} boxes.
+ * @param {boolean}  [root0.showFlexWrap]      True on `sgs/nav-bar-menu` only: shows "Wrap items" (`flexWrap`).
+ * @param {string}   [root0.flexWrap]          The bar's `flexWrap` attribute ('' | 'nowrap' | 'wrap').
  * @param {Function} root0.setAttributes       The block's attribute setter.
  */
 export default function ListLayoutPanel( {
@@ -58,6 +60,8 @@ export default function ListLayoutPanel( {
 	itemBadgeGap,
 	showSubmenuLinkPadding = false,
 	submenuLinkPadding,
+	showFlexWrap = false,
+	flexWrap,
 	setAttributes,
 } ) {
 	return (
@@ -70,6 +74,7 @@ export default function ListLayoutPanel( {
 					...( showMargin ? { margin: {} } : {} ),
 					...( showItemPadding ? { itemPadding: {}, itemMinHeight: {}, itemBadgePadding: {}, itemBadgeBorderRadius: '', itemBadgeGap: '' } : {} ),
 					...( showSubmenuLinkPadding ? { submenuLinkPadding: {} } : {} ),
+					...( showFlexWrap ? { flexWrap: '' } : {} ),
 				} )
 			}
 		>
@@ -95,6 +100,31 @@ export default function ListLayoutPanel( {
 					onChange={ ( obj ) => setAttributes( { gap: obj } ) }
 				/>
 			</ToolsPanelItem>
+
+			{ showFlexWrap && (
+				<ToolsPanelItem
+					hasValue={ () => !! flexWrap }
+					label={ __( 'Wrap items', 'sgs-blocks' ) }
+					onDeselect={ () => setAttributes( { flexWrap: '' } ) }
+				>
+					<SelectControl
+						label={ __( 'Wrap items', 'sgs-blocks' ) }
+						help={ __(
+							'Default keeps every link on one row. Choose Wrap to let links that overrun the bar drop onto a further row.',
+							'sgs-blocks'
+						) }
+						value={ flexWrap || '' }
+						options={ [
+							{ value: '', label: __( 'One row (default)', 'sgs-blocks' ) },
+							{ value: 'nowrap', label: __( 'One row', 'sgs-blocks' ) },
+							{ value: 'wrap', label: __( 'Wrap onto more rows', 'sgs-blocks' ) },
+						] }
+						onChange={ ( value ) => setAttributes( { flexWrap: value } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</ToolsPanelItem>
+			) }
 
 			{ showColumnsControl && (
 				<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>

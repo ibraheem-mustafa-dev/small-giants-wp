@@ -134,9 +134,10 @@
 					],
 					"prefix": "",
 					"attrMap": {
-						"css:gap": "gap"
+						"css:gap": "gap",
+						"css:flex-wrap": "flexWrap"
 					},
-					"_note": "The <ul class=\"sgs-nav-bar-menu__bar\"> that actually arranges the item links — distinct from `wrapper`, which arranges the bar against the burger toggle-wrap. Remaining ARRANGEMENT members are honest GAPs (style.css hardcodes `display:flex;flex-wrap:wrap` with no attribute). This block declares no `listColumns` grid-column-count destination; that attribute belongs to the in-drawer vertical list on sgs/nav-drawer-menu."
+					"_note": "The <ul class=\"sgs-nav-bar-menu__bar\"> that actually arranges the item links — distinct from `wrapper`, which arranges the bar against the burger toggle-wrap. Remaining ARRANGEMENT members are honest GAPs (style.css hardcodes `display:flex` with no attribute; its `flex-wrap:nowrap` default sits in `:where()` and yields to `flexWrap`). This block declares no `listColumns` grid-column-count destination; that attribute belongs to the in-drawer vertical list on sgs/nav-drawer-menu."
 				},
 				"item": {
 					"label": "Each nav item (resting)",
@@ -637,6 +638,12 @@
 				"desktop": "8px"
 			}
 		},
+		"flexWrap": {
+			"type": "string",
+			"enum": [ "", "nowrap", "wrap" ],
+			"default": "",
+			"description": "Whether the item bar wraps its links onto further rows when they overrun the bar. Empty keeps a single row (the stylesheet's `nowrap`); the bar collapses to the burger at collapsePoint."
+		},
 		"_note_nav_fill": "Nav CONTAINER surface. Scope is deliberately SURFACE ONLY (navBg / navColour and their Hover siblings): border, radius and divider are not offered here because the pill-nav and bordered-nav patterns that justify them are whole-HEADER treatments, and sgs/site-header already declares `color` + `__experimentalBorder` supports for exactly that. Do not add them here without a header-level reason. Defaults are unset, so an untouched nav paints no surface of its own. Because the drawer holds its OWN sgs/nav-drawer-menu instance, that block's identical attributes give fully independent drawer styling with no extra plumbing.",
 		"navBg": {
 			"type": "string",
@@ -948,7 +955,7 @@
 		"submenuCaretGap": {
 			"type": "string",
 			"default": "",
-			"description": "I-B6 (U-18). Gap between the item label and its caret glyph, on `.{bem}__link` (also covers the mega trigger, which shares that class). Empty keeps the browser's default flex spacing (0)."
+			"description": "I-B6 (U-18). Gap between the item label and its caret glyph. On `.{bem}__link` for an item whose caret sits inside the link (the mega trigger shares that class); for a split item (link plus separate sub-toggle) it is published as `--sgs-nav-caret-gap` and becomes the toggle's left padding. Empty keeps 0 inside a link and 0.4em before a split toggle's caret."
 		},
 		"submenuCaretTurnDuration": {
 			"type": "number",

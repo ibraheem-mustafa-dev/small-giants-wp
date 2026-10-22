@@ -199,7 +199,11 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_link_css' ) ) {
 		// browser's UA button-reset default — matching the `.mega-trigger` reset
 		// in nav-menu-submenu-css.php, which already carries it.
 		$css .= $uid_sel . ' .' . $bem_root . '__subtoggle{display:inline-flex;align-items:center;justify-content:center;'
-			. 'min-width:44px;min-height:44px;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit;}';
+			. 'background:none;border:0;cursor:pointer;color:inherit;font:inherit;}';
+		// The toggle that IS the item's link (no separate <a> beside it) keeps the
+		// full 44px box. The split toggle beside a link draws only its caret area
+		// and takes its 44px target from an invisible ::before (nav-bar-menu/style.css).
+		$css .= $uid_sel . ' .' . $bem_root . '__subtoggle.' . $bem_root . '__link{min-width:44px;min-height:44px;padding:0;}';
 		// The caret SVG is `1em`, so its size is tied to itemFontSize. `1em` rides
 		// the cascade: it resolves against whatever font-size the caret's own
 		// ancestor chain carries, so it tracks the responsive item tier for free
@@ -552,6 +556,12 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_link_css' ) ) {
 				)
 			);
 			$root_box_css .= $uid_sel . ' .' . $bem_root . '__bar{gap:var(--sgs-nm-gap, 8px);}';
+		}
+
+		// `flexWrap` — the bar's wrap behaviour (style.css defaults to nowrap).
+		$nav_flex_wrap = (string) ( $attributes['flexWrap'] ?? '' );
+		if ( in_array( $nav_flex_wrap, array( 'wrap', 'nowrap' ), true ) ) {
+			$root_box_css .= $uid_sel . ' .' . $bem_root . '__bar{flex-wrap:' . $nav_flex_wrap . ';}';
 		}
 
 		if ( '' !== $root_box_css ) {
