@@ -19,8 +19,8 @@ Searching one directory and concluding a tool does not exist is a live failure m
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 552 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 769 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 573 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 781 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
 
@@ -189,16 +189,17 @@ Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution
 | 155 | `sweep-easing-vocabulary.py` | Move stored easing names to the CSS-keyword vocabulary (Bean, 2026-10-18). |
 | 156 | `survey-length-control-scale.py` | Classify every <SgsLengthControl> mount by the scale its ROLE needs ("spacing" or "font-size"). |
 | 157 | `check-container-band-layers.py` | Container band layers: contentWidth, padding and margin on their one layer each. |
-| 158 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 159 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
-| 160 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 161 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
-| 162 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
-| 163 | `survey-spacing-defaults.py` | census of the Spacing control's untouched sides. |
-| 164 | `run-motion-gates.py` | run every motion gate and print one table (Spec 38A phase M1). |
-| 165 | `fx-off-switch-css.check.mjs` | Computed-style check for the per-device off switch in the fx-*.css stylesheets (Spec 38A FR-38A-23). |
+| 158 | `check-setting-meanings.py` | Gate: every setting listed in effect-settings.json carries a complete sgs.meaning. |
+| 159 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 160 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
+| 161 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 162 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 163 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
+| 164 | `survey-spacing-defaults.py` | census of the Spacing control's untouched sides. |
+| 165 | `run-motion-gates.py` | run every motion gate and print one table (Spec 38A phase M1). |
+| 166 | `fx-off-switch-css.check.mjs` | Computed-style check for the per-device off switch in the fx-*.css stylesheets (Spec 38A FR-38A-23). |
 
-**165 gating scripts.** Regenerate this whole section with:
+**166 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -206,7 +207,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (165 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 0 resolved scripts) — 165 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (166 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 0 resolved scripts) — 166 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -585,6 +586,13 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: `BASELINE`
 - DB tables (sgs-framework.db): plugins
 - CLI flags read: `--check`, `--self-test`, `--survey`, `--write-baseline`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
+**`plugins/sgs-blocks/scripts/check-setting-meanings.py`** (build)
+- Path constants: `HERE` = Path(__file__).resolve().parent; `REPO` = HERE.parent.parent.parent; `DEFAULT_SETTINGS` = REPO / 'scripts' / 'computed-route' / 'data' / 'effect-settings.json'; `DEFAULT_BLOCKS` = HERE.parent / 'src' / 'blocks'
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- CLI flags read: `--blocks-dir`, `--check`, `--report`, `--self-test`, `--settings`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
 **`plugins/sgs-blocks/scripts/check-shadow-fallback-php.py`** (build)
@@ -1218,7 +1226,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 
 ⚠ The naming is not consistent — the same idea appears as `census-*`, `survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`. Grep for the SUBJECT (colour, gradient, token, element, inline, parity), never for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 719 scripts
+#### `plugins/sgs-blocks/scripts/` — 721 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1240,7 +1248,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `behavioural-analyser/helper_maps.py` | manifest+script-call | Derive the seeder's helper contracts from the helper PHP source. |
 | `behavioural-analyser/hover_states.py` | manifest+script-call | Which values a helper paints only in the hover state, read from the helper body. |
 | `behavioural-analyser/php_include_graph.py` | manifest+script-call+test-import | The PHP text the seeder's supplementary pass scans for one block. |
-| `behavioural-analyser/php_preprocess.py` | manifest+script-call | Source rewrites that let the seeder's statement scanner read more PHP shapes. |
+| `behavioural-analyser/php_preprocess.py` | manifest+script-call+test-import | Source rewrites that let the seeder's statement scanner read more PHP shapes. |
 | `behavioural-analyser/php_source_index.py` | manifest+script-call+test-import | Index of the PHP functions the css_property seeder can follow. |
 | `behavioural-analyser/seeder_shapes.py` | manifest+script-call+test-import | Evidence shapes the css_property seeder adds on top of its statement tracer. |
 | `behavioural-analyser/state-cssom-scan.mjs` | script-call | Live CSSOM pass of the states exhaustiveness gate (check-state-exhaustiveness.py --live). |
@@ -1333,6 +1341,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-rest-route-require.py` | manifest+npm | STRUCTURAL GUARD — catches a REST route registered against a callback class |
 | `check-retired-blocks.py` | manifest+npm | - a block that has been removed leaves no trace in live sources or the framework DB. |
 | `check-separators-through-helper.py` | manifest | lines between items go through the helper. |
+| `check-setting-meanings.py` | manifest | Gate: every setting listed in effect-settings.json carries a complete sgs.meaning. |
 | `check-shader-sources.py` | manifest+npm | structural gate for Tier W `*.frag.js` shader sources. |
 | `check-shadow-fallback-php.py` | manifest+npm+script-call | Every PHP writer of a `box-shadow:` declaration must carry the forced-colours fallback. |
 | `check-shadow-sources.py` | manifest | the shadow-source detector (D4/D5 follow-on, survey stage). |
@@ -1398,17 +1407,17 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `dbschema/capture_seed_data.py` | manifest+script-call | Capture the Phase-1 Group-5 seed tables from a LIVE database into data files. |
 | `dbschema/check_schema_drift.py` | manifest+script-call | Detect drift between the committed ``schema.sql`` and the live database's DDL. |
 | `dbschema/check_value_identity.py` | manifest+script-call | Assert that named, load-bearing DB rows still hold the EXACT value they must. |
-| `dbschema/migrate.py` | manifest+script-call | Migration runner + tracking table for the SGS knowledge-base DB. |
+| `dbschema/migrate.py` | manifest+script-call+test-import | Migration runner + tracking table for the SGS knowledge-base DB. |
 | `dbschema/motion_presets_seed.py` | script-call | - seeds `motion_presets` from scripts/data/motion-presets.json (Spec 38A FR-38A-6). |
 | `dbschema/motion_registry_columns.py` | script-call | - the `fx_effects.owned_properties` and `fx_effects.panels` values, read from the schema. |
 | `dbschema/rebuild_compare.py` | manifest+script-call | Rebuild the knowledge base from NOTHING and report honestly what returns. |
-| `dbschema/retire_table.py` | manifest+script-call | Retire a knowledge-base table: back up, archive it reversibly, then DROP it. |
+| `dbschema/retire_table.py` | manifest+script-call+test-import | Retire a knowledge-base table: back up, archive it reversibly, then DROP it. |
 | `dbschema/sandbox.py` | manifest+script-call | Run DB-touching scripts against a throwaway database, never the live one. |
 | `dbschema/seed_history.py` | manifest+script-call | Record the last N seeding runs' row counts and REPORT what moved unexpectedly. |
 | `dbschema/seed_motion_fields.py` | script-call | - seeds `motion_targets` and `motion_fields` (Spec 38A FR-38A-3, section 6.4). |
 | `dbschema/seed_reference_data.py` | manifest+script-call+test-import | - idempotent seeders for the framework DB's reference tables. |
 | `dbschema/tree_guard.py` | script-call+test-import | - refuse to write the shared framework DB from a stale checkout. |
-| `dbschema/wp_reference_archive.py` | manifest+script-call | Preserve the ORPHANED WordPress reference corpus (`hooks` + `docs`). |
+| `dbschema/wp_reference_archive.py` | manifest+script-call+test-import | Preserve the ORPHANED WordPress reference corpus (`hooks` + `docs`). |
 | `dead-api-checker/tokenize-calls.php` | manifest+script-call | Tokenize-calls.php |
 | `dedupe-shadow-colour-rows.py` | manifest+script-call | One writer for a shadow's colour: the ShadowControl. Any other colour row for the same attribute |
 | `deploy-client-notes-quick.py` | manifest | a small, one-off deploy path for |
@@ -1844,6 +1853,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `snapshot_motion_tokens.py` | script-call | : the motion tokens every client snapshot must carry (Spec 38A section 7, FR-38A-14, FR-38A-15). |
 | `snapshot_palette_roster.py` | script-call | : the palette roster rule every client snapshot must satisfy (Spec 32 FR-32-14). |
 | `snapshot_scrollbar_tokens.py` | script-call | : the scrollbar tokens every client snapshot carries (Spec 32 FR-32-26). |
+| `snapshot_selection_tokens.py` | script-call | : the optional text-selection tokens a client snapshot may carry (Spec 32 FR-32-26a). |
 | `stage8-audit.js` | manifest+npm+script-call | ONE Lighthouse run. ⚠ **header disputes this — it IS wired** |
 | `survey-border-control-migration.py` | manifest+npm+script-call | Classify every block's border UI against the SgsBorderControl target shape. |
 | `survey-length-control-scale.py` | manifest+npm | Classify every <SgsLengthControl> mount by the scale its ROLE needs ("spacing" or "font-size"). |
@@ -1883,7 +1893,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `theme-extractor/confirmed_palette.py` | script-call | apply Bean's confirmed palette roles to the snapshot (Spec 48 FR-33-2). |
 | `theme-extractor/declared_layout.py` | manifest+script-call | Spec 33 declared layout and shape: the README's content width and corner radius as theme settings. |
 | `theme-extractor/declared_reconcile.py` | manifest+script-call | Spec 33 declared design checked against the RENDERED page (FR-33-1: computed wins). |
-| `theme-extractor/declared_sources.py` | manifest+script-call | Spec 33 declared-source readers: the design system a draft states outright. |
+| `theme-extractor/declared_sources.py` | manifest+script-call+test-import | Spec 33 declared-source readers: the design system a draft states outright. |
 | `theme-extractor/derive.py` | manifest+script-call | Pass B: PROVISIONAL palette derivation for drafts that declare NO :root tokens (FR-33-5). |
 | `theme-extractor/extract.py` | manifest+script-call+settings+test-import | the Spec 33 draft global-styles extractor (CLI orchestrator). |
 | `theme-extractor/font-usage.js` | manifest+script-call | FONT_USAGE_SRC is serialised into the browser context by measure.js, so it must not close over anything in Node scope. |
@@ -1900,7 +1910,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `theme-extractor/roles.py` | manifest+script-call+test-import | colour ROLE inference by usage-context (Spec 33 FR-33-2). |
 | `theme-extractor/schema_validate.py` | manifest+script-call | theme.json v3 structural validation (Spec 33 FR-33-7). |
 | `theme-extractor/site_palette.py` | manifest+script-call | Spec 33 declared-design overlay: a per-site palette built from what a draft DECLARES. |
-| `theme-extractor/token_map.py` | manifest+script-call | declared-CSS parsing for the Spec 33 extractor (tinycss2, not regex). |
+| `theme-extractor/token_map.py` | manifest+script-call+test-import | declared-CSS parsing for the Spec 33 extractor (tinycss2, not regex). |
 | `theme-extractor/typography.py` | manifest+script-call+test-import | base + heading typography from COMPUTED nodes (Spec 33 FR-33-3, the drift-killer). |
 | `theme-extractor/usage_census.py` | manifest+script-call | Colour usage census for a draft's HTML and JavaScript. |
 | `theme-extractor/usage_js.py` | manifest+script-call | Quote-aware bracket structure of a draft's script, for the colour census' JS-bound scan. |
@@ -1926,8 +1936,8 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `wiring-fingerprint/wf_bugs.py` | manifest+script-call | Bug-class rules and the selector-shaped links. |
 | `wiring-fingerprint/wf_channel.py` | manifest+script-call | Front-end value flow (links L4 and L5, and the tokens L6/L7/C1/B3 read). |
 | `wiring-fingerprint/wf_cli.py` | manifest+script-call | Command line for check-wiring-fingerprint.py. |
-| `wiring-fingerprint/wf_css.py` | manifest+script-call | CSS consumer index (link L6 and the editor.css shadowing rule S1). |
-| `wiring-fingerprint/wf_editor.py` | manifest+script-call | Editor model: links L2 (control) and L3 (editor canvas) from the collected |
+| `wiring-fingerprint/wf_css.py` | manifest+script-call+test-import | CSS consumer index (link L6 and the editor.css shadowing rule S1). |
+| `wiring-fingerprint/wf_editor.py` | manifest+script-call+test-import | Editor model: links L2 (control) and L3 (editor canvas) from the collected |
 | `wiring-fingerprint/wf_extensions.py` | manifest+script-call | Extension attributes from the roster (`src/blocks/extensions/extension-roster.json`, |
 | `wiring-fingerprint/wf_frontend.py` | manifest+script-call | Front-end model per block: the PHP texts a block's render reaches, the |
 | `wiring-fingerprint/wf_inputs.py` | manifest+script-call | Gate inputs: the framework DB (read-only), block.json files, the extension |
@@ -1936,13 +1946,13 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `wiring-fingerprint/wf_paint.py` | manifest+script-call | Population: does an attribute paint, and through which category? |
 | `wiring-fingerprint/wf_pass.py` | manifest+script-call | The front-end pass: for every block, the PHP texts its render reaches, the |
 | `wiring-fingerprint/wf_paths.py` | manifest+script-call | Path resolution for the wiring-fingerprint gate. |
-| `wiring-fingerprint/wf_php.py` | manifest+script-call | PHP source model: comment stripping, statement bounds, literal and variable |
-| `wiring-fingerprint/wf_resolve.py` | manifest+script-call | Each attribute's final channel and paint category, as the scan uses them. |
+| `wiring-fingerprint/wf_php.py` | manifest+script-call+test-import | PHP source model: comment stripping, statement bounds, literal and variable |
+| `wiring-fingerprint/wf_resolve.py` | manifest+script-call+test-import | Each attribute's final channel and paint category, as the scan uses them. |
 | `wiring-fingerprint/wf_returns.py` | manifest+script-call | Keyed call returns (used by wf_channel.ChannelAnalyser.flow). |
 | `wiring-fingerprint/wf_scan.py` | manifest+script-call | The scan: every SGS block attribute (DB `source='sgs'`) through the paint |
 | `wiring-fingerprint/wf_tokens.py` | manifest+script-call | Channel tokens: what one PHP statement emits. |
 
-#### `scripts/` — 307 scripts
+#### `scripts/` — 309 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1962,6 +1972,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/fill.mjs` | manifest+script-call+skill+test-import | Fill (FR-47-4): from a skeleton tree (which blocks, nested how, with the draft's words, each node naming the draft element it copies) to a tree… |
 | `computed-route/fixture-refs.mjs` | script-call | The detector for site references in calibration-fixtures.json (Spec 48 §3.2, lib/fixture-refs.mjs). |
 | `computed-route/freeze.mjs` | manifest+script-call+skill | The cross-client guard for the skeleton rules (handoff readers plan, "The cross-client guard"): node scripts/computed-route/freeze.mjs snapshot… |
+| `computed-route/gate-chain.mjs` | — | Gate chain command (Spec 48 FR-48-64): runs G0 to G7 (lib/gate-chain.mjs) on every distinct open issue of a Solve report and prints each row's first… |
 | `computed-route/handoff-check.mjs` | script-call | The Claude Design handoff folder check (Spec 48A, FR-48A-2 to FR-48A-8 and FR-48A-10). |
 | `computed-route/handoff-repackage.mjs` | — | Brings a Claude Design export made before MANIFEST.json existed (one carrying MANIFEST.md) to the Spec 48A format without changing a byte the export… |
 | `computed-route/head-check.mjs` | manifest+script-call | The draft head check (Spec 48 FR-48-84): reads every entry draft's head through the census and checks it against the client's theme snapshot (fonts… |
@@ -1985,6 +1996,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/calibration-refs.mjs` | script-call | Site references in calibration fixtures (Spec 48 §3.2). A fixture names a WordPress object it needs (a menu, a menu item, a drawer post, an… |
 | `computed-route/lib/capabilities.mjs` | manifest+script-call+skill | The capability inventory (clone coverage plan Phase 1, steps 1.1 and 1.2): everything the SGS framework offers and everything a draft can hold, as… |
 | `computed-route/lib/clone-coverage.mjs` | script-call | The clone coverage map (clone coverage plan Phase 1, steps 1.3 and 1.4): for every capability ID in data/capabilities.json, how the route recognises… |
+| `computed-route/lib/confirm-live.mjs` | script-call | The rendered-live half of the confirm record (Spec 48 FR-48-36). Fill writes the record with the declared and rendered-draft values (D–R) before the… |
 | `computed-route/lib/coverage-register.mjs` | script-call | The coverage map as a register of solved gaps: worked examples for a new gap (--like), the gaps a draft's review reports (--drafts) and the one-off… |
 | `computed-route/lib/css-matrix.mjs` | manifest+script-call | A CSS transform list as the 4x4 matrix a browser draws it with (CSS Transforms 1 and 2), in Node, so the motion writer's render check can compare the… |
 | `computed-route/lib/db.mjs` | manifest+script-call+skill | Read-only access to the framework database (R-47-2). Opened with node:sqlite in read-only mode, which refuses every write; the route never seeds… |
@@ -1994,7 +2006,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/entrance.mjs` | manifest+script-call | Entrance start (Spec 38A): a block with an entrance that the draft shows at rest while live still holds it hidden is one whose draft plays its… |
 | `computed-route/lib/fact-key.mjs` | script-call | The two key levels of a draft element, built and read here and nowhere else (tests/fact-key.test.mjs refuses a key built from a template literal in… |
 | `computed-route/lib/fact-record.mjs` | script-call | The shared fact record (Spec 48 FR-48-7, Spec 48A §3): the template, logic and surfaces readers joined into `sites/<client>/build/intake/facts.json`… |
-| `computed-route/lib/fill-binding-group.mjs` | script-call | Binding grouping (Spec 48 FR-48-41, row 5): elements that share one `{{ }}` binding in their style attribute share one setting. The census names each… |
+| `computed-route/lib/fill-binding-group.mjs` | script-call | Binding grouping (Spec 48 FR-48-41, row 5): elements that share one `{{ }}` binding in their style attribute share one setting. The fact record… |
 | `computed-route/lib/fill-config.mjs` | script-call | The walker config Fill generates (FR-47-4 step 4): one pair per skeleton node that has a draftRef, drawn from the node's own ref class, with… |
 | `computed-route/lib/fill-confirm.mjs` | manifest+script-call | The confirm record (Spec 48 FR-48-8, FR-48-36): for every value Fill writes, at each read width, the value the draft's code declares on the element… |
 | `computed-route/lib/fill-declared.mjs` | manifest+script-call | Declared values for Fill (Spec 48 FR-48-8, code first): what the draft's code sets on each target, beyond Fill's own property list. readDraft reads… |
@@ -2031,6 +2043,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/fill-values.mjs` | script-call | The values FR-47-4 says need care. Fluid sizes: sampled at five widths, linear within 0.5px means fluid, written as clamp() only where calibration… |
 | `computed-route/lib/fixture-refs.mjs` | script-call | The detector for site references in calibration-fixtures.json (Spec 48 §3.2; the migration method's survey, fix, check and self-test). Every value… |
 | `computed-route/lib/freshness.mjs` | script-call | Whether a record the route saved (intake.json, a saved inventory) still describes the export on disk. Intake writes a `sources` object into each… |
+| `computed-route/lib/gate-chain.mjs` | script-call | The gate chain G0 to G7 (Spec 48 FR-48-64): the checks a Solve row passes, in order, before it may be called a framework gap. A row stops at the… |
 | `computed-route/lib/guard.mjs` | manifest+script-call | The regression guard (R-47-9): when a round makes rows worse, find the write that did it and revert only that. |
 | `computed-route/lib/handoff.mjs` | script-call | The Claude Design handoff folder check (Spec 48A): required and allowed files, draft reachability, the manifest, the runtime build, the schema… |
 | `computed-route/lib/head-check.mjs` | manifest+script-call | The checks for the draft's head (Spec 48 FR-48-84), on what lib/intake-head.mjs::readHead read: |
@@ -2129,7 +2142,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/read-logic-conditions.mjs` | script-call | Width conditions of the template's `sc-if`s, read from the logic's syntax tree (Spec 48 FR-48-7, FR-48-24: draft logic is parsed here, never run in… |
 | `computed-route/lib/read-logic-statics.mjs` | manifest+script-call | The logic's data and its per-state values (Spec 48 FR-48-7, FR-48-24, Spec 48A §3): in the sandboxed page, the statics, getters and instance fields… |
 | `computed-route/lib/read-logic.mjs` | script-call | The logic reader (Spec 48 FR-48-7, FR-48-24, READING-DC-FILES §1 and §4): the value every hole of every template element resolves to at each read… |
-| `computed-route/lib/read-readme.mjs` | script-call | The README reader (Spec 48 FR-48-7, Spec 48A §3, FR-48A-8 and FR-48A-10): the handoff's `README.md` split into sections by… |
+| `computed-route/lib/read-readme.mjs` | manifest+script-call | The README reader (Spec 48 FR-48-7, Spec 48A §3, FR-48A-8 and FR-48A-10): the handoff's `README.md` split into sections by… |
 | `computed-route/lib/read-surfaces.mjs` | script-call | The surfaces reader (Spec 48 FR-48-7, Spec 48A §3): for each template element, the `surfaces.json` records it belongs to. |
 | `computed-route/lib/read-template.mjs` | script-call | The template reader (Spec 48 FR-48-7, Spec 48A §3): one record per element of each draft's annotated template, keyed by template key (`<dc… |
 | `computed-route/lib/references.mjs` | script-call+skill | Blocks that render another post (Spec 48 §3.3, reference blocks), found by reading each block's render.php, never listed by hand, so a new block is… |
@@ -2149,6 +2162,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/skeleton-context.mjs` | script-call | The proposal context a surface's skeleton is proposed with (lib/skeleton-propose.mjs::proposeSkeleton): the surface's handoff states, the draft's… |
 | `computed-route/lib/skeleton-facts.mjs` | manifest+script-call | The facts the skeleton writer reasons from, all read from data (FP-1): the framework database (read-only), the brand registry, the client's Site Info… |
 | `computed-route/lib/skeleton-finalise.mjs` | script-call | Skeleton writer, decisions and the finaliser (Spec 48 §3.4). Two files beside a surface's inventory hold choices: decisions.json          Bean's… |
+| `computed-route/lib/skeleton-header-slots.mjs` | script-call | The header's three slotted rows (Spec 48 §3.4, rules.headerSlots): the pure part of the rule, over an inventory and what the fact record says of its… |
 | `computed-route/lib/skeleton-inventory.mjs` | manifest+script-call+settings | Skeleton writer step 1 (Spec 48 §3.4): the inventory of a draft surface. Every element the draft runtime stamped |
 | `computed-route/lib/skeleton-model.mjs` | script-call | The skeleton writer's reading of an inventory (lib/skeleton-inventory.mjs): the element tree, which elements are parts of another (a glyph and… |
 | `computed-route/lib/skeleton-narrowing.mjs` | manifest+script-call | Which lists a group of choice chips narrows (Spec 48 FR-48-6, the `optionSetFilter` standing rule). Read from the draft's logic syntax tree, never… |
@@ -2188,7 +2202,6 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/site-build.mjs` | script-call | The site build (Spec 48 FR-48-55): every row of the confirmed sites/<client>/build/page-map.json made on one site once, with its menus, front and… |
 | `computed-route/skeleton.mjs` | manifest+script-call | Skeleton writer (Spec 48 §3.4): turns a Claude Design draft's own elements into an SGS block skeleton with exact draft links, plus a review table.… |
 | `computed-route/solve.mjs` | script-call+skill | Solve (FR-47-3): compare a built surface with its draft, turn each open style or hover difference into a setting write through the resolver, rebuild… |
-| `computed-route/split-cache.mjs` | — | One-off, idempotent migration of the calibration cache to its two outputs (lib/cache.mjs): each cache/<block>.json written before the split holds the… |
 | `computed-route/stage0.mjs` | script-call | Stage 0 command (Spec 48 FR-48-3, FR-48-16): a current export and a calibrated block set. |
 | `computed-route/state-map.mjs` | manifest+script-call+settings | The generated state map for one surface (Spec 48 FR-48-13). |
 | `computed-route/sweep.mjs` | manifest+script-call+skill | Sweep command: reads every surface's latest Solve report (`<buildDir>/qa/solve/<surface>/<timestamp>/solve-report.json`) and writes… |
@@ -2202,7 +2215,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `font-source-audit.js` | manifest+npm | Font source audit — static analysis for external CDN URLs in theme.json fontFace declarations. |
 | `global-styles-reset.js` | — | wp_global_styles reset + reapply. |
 | `lib/close-browser-on-exit.js` | script-call | close-browser-on-exit — make sure a Playwright browser dies with the script that launched it. |
-| `lib/oldshape-mappings.js` | script-call | wp-migrate-oldshape-blocks.js (Track B content restore, 2026-07-15). |
+| `lib/surface-tree-shape.js` | script-call | Pure, browser-free check that a header or footer block tree has the shape SGS's template-locked posts demand: exactly one root block… |
 | `lib/wp-session.js` | script-call | wp-session — one logged-in Chrome shared by a run and every child script it starts. |
 | `lint-naming-conventions.py` | manifest+test-import | CI linter for the SGS WordPress Framework naming conventions. |
 | `lint-patterns-for-personal-data.py` | manifest+npm+test-import | Lint SGS pattern PHP files for hardcoded personal data. |
@@ -2210,7 +2223,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `local-wp/refresh-from-remote.sh` | script-call | Refreshes a local WSL mirror's database and uploads from its Hostinger test site, so measurements run on the local copy see the same content… |
 | `local-wp/sync-build.sh` | script-call | Copies the repo's built plugins and theme into the local WSL mirror sites. |
 | `md_wrap_blocks.py` | script-call | The block reader behind scripts/check-md-wrap.py: joins the lines of each paragraph and list item, copies the rest. |
-| `parity/benchmark/cases.mjs` | manifest+script-call | The walker's catch-rate benchmark: six optician-client gaps the walker passed and Bean found by eye |
+| `parity/benchmark/cases.mjs` | manifest+script-call+test-import | The walker's catch-rate benchmark: six optician-client gaps the walker passed and Bean found by eye |
 | `parity/benchmark/score.mjs` | manifest+script-call+skill | Scores a catch-rate benchmark run from its recorded walker reports (<out>/<config>-control and <out>/case-<id>): benchmark.mjs calls it after the… |
 | `parity/benchmark.mjs` | script-call+skill | The walker's catch-rate benchmark. For each page config it runs the walker once as a control |
 | `parity/draft-live-walk.mjs` | manifest+script-call+skill | Draft-versus-live parity walker. Drives the design draft and the live site through the same states (tabs, steps, open panels, filters, modals) at… |
@@ -2252,6 +2265,5 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `render-mobile-override-audit.js` | — | Render.php inline-vs-media audit. |
 | `wc-pages-responsive-audit.js` | manifest+script-call | FR-30-11 — WooCommerce page-type responsive + budget verification gate. |
 | `wp-build-page.js` | manifest+script-call+skill | Builds a whole page (or header, footer, drawer, modal, mega menu) through the real block editor from a JSON block tree, so every block is serialised… |
-| `wp-migrate-oldshape-blocks.js` | manifest+script-call | block migrations (Track B, 2026-07-15), through the BLOCK EDITOR ONLY. |
 
 <!-- TOOLING-CATALOGUE:END -->
