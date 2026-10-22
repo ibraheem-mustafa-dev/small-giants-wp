@@ -234,7 +234,7 @@ Where it stands (2026-10-22): Track T's readers are part built (template, logic,
 - [x] Indus units built so far: U2b and U2c (`1d53b7771`), U5's `lib/fill-resolve.mjs` split and U7 (`ff22b3d37`), U16's FR-48-41 binding grouping (`ff22b3d37`); `lib/read-animations.mjs` (`ca77b7871`, both clients' records regenerated at schema version 2: Indus 206 of 217 records joined, Mama's 192 of 195).
 
 ### Next
-- [ ] Track T: T1 (the README reader, the `surfaces.json` fields and served-inventory keys merging; the logic's statics next), then T2a, T5's code-only items, T2b, T3, T4, T5.
+- [ ] Track T: T1: the animations and assets readers (schema 3), the README reader (`5c35757d2`), the `surfaces.json` state fields (`195a961b6`), served-inventory keys (Indus header 24 of 24 nodes resolving; `lib/key-space.mjs::translateInventory`) all merged at schema version 4 (both clients regenerated, check-approved 157/0, freeze diff unchanged, full route suite 2040 pass with only the known intake re-run red); the logic's statics in progress; then T1's review. Then T2a, T5's code-only items, T2b, T3, T4, T5.
 - [ ] Track F: F0, F1 to F4 (from `.claude/prompts/2026-10-22-track-f-framework.md`).
 - [ ] The closing three-rater `/qc-council`, then Stage S steps 1 to 7.
 - [ ] Close (below).
