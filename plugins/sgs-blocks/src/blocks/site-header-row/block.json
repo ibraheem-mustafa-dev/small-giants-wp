@@ -239,7 +239,18 @@
 		},
 		"rowHideOnScroll": {
 			"type": "object",
-			"default": {}
+			"default": {},
+			"sgs": {
+				"meaning": {
+					"what": "Hides this header row when the visitor scrolls down and shows it again when they scroll up, at each tier where it is on.",
+					"trigger": "scrolling down past 100px of scroll (fixed, independent of the header scrolled offset), which adds is-row-hidden to the row (collapsed to zero height while the header is pinned, translated out otherwise); scrolling up removes it",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} (desktop: on or off; tablet and mobile: inherit, on or off)"
+						}
+					}
+				}
+			}
 		},
 		"rowShrink": {
 			"type": "object",

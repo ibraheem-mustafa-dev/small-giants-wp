@@ -198,7 +198,18 @@
 		},
 		"headerSticky": {
 			"type": "object",
-			"default": {}
+			"default": {},
+			"sgs": {
+				"meaning": {
+					"what": "Keeps the header fixed to the top of the viewport while the page scrolls, at each device tier where it is on.",
+					"trigger": "always, while scrolling, at the tiers where it is on",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} (desktop: on or off; tablet and mobile: inherit, on or off)"
+						}
+					}
+				}
+			}
 		},
 		"headerTransparent": {
 			"type": "object",
@@ -210,7 +221,18 @@
 		},
 		"headerHideOnScroll": {
 			"type": "object",
-			"default": {}
+			"default": {},
+			"sgs": {
+				"meaning": {
+					"what": "Slides the header out of view when the visitor scrolls down and back in when they scroll up, at each tier where it is on.",
+					"trigger": "scrolling down past 100px of scroll (fixed, independent of the scrolled offset), which adds is-header-scrolling-down; scrolling up removes it",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} (desktop: on or off; tablet and mobile: inherit, on or off)"
+						}
+					}
+				}
+			}
 		},
 		"headerPassThrough": {
 			"type": "object",
@@ -273,7 +295,18 @@
 		},
 		"backgroundColourScrolled": {
 			"type": "string",
-			"default": ""
+			"default": "",
+			"sgs": {
+				"meaning": {
+					"what": "Changes the header background colour once the page has scrolled.",
+					"trigger": "scroll past the scrolled offset",
+					"parameters": {
+						"value": {
+							"unit": "CSS colour or theme colour token slug"
+						}
+					}
+				}
+			}
 		},
 		"backgroundColourScrolledGradient": {
 			"type": "string",
@@ -285,7 +318,18 @@
 		},
 		"textColourScrolled": {
 			"type": "string",
-			"default": ""
+			"default": "",
+			"sgs": {
+				"meaning": {
+					"what": "Changes the header text colour once the page has scrolled.",
+					"trigger": "scroll past the scrolled offset",
+					"parameters": {
+						"value": {
+							"unit": "CSS colour or theme colour token slug"
+						}
+					}
+				}
+			}
 		},
 		"headerTransparentDirection": {
 			"type": "string",
@@ -302,12 +346,38 @@
 				"position",
 				"direction"
 			],
-			"description": "Wave 3C U-13 M-03. position (default): is-header-scrolled/is-header-shrunk toggle once scrollY passes scrolledOffset, same as before this attribute existed. direction: is-header-scrolled toggles on while scrollY is past scrolledOffset AND the last movement was downward, and clears on an upward movement of 8px or more (deadzone) or at/below the offset — so a solid-first transparent header restyles going down and restyles back the moment the visitor scrolls up, at any offset."
+			"description": "Wave 3C U-13 M-03. position (default): is-header-scrolled/is-header-shrunk toggle once scrollY passes scrolledOffset, same as before this attribute existed. direction: is-header-scrolled toggles on while scrollY is past scrolledOffset AND the last movement was downward, and clears on an upward movement of 8px or more (deadzone) or at/below the offset — so a solid-first transparent header restyles going down and restyles back the moment the visitor scrolls up, at any offset.",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses whether the header's scrolled state is set by scroll position alone or also by scroll direction.",
+					"trigger": "scrolling the page",
+					"parameters": {
+						"value": {
+							"unit": "enum",
+							"values": [
+								"position",
+								"direction"
+							]
+						}
+					}
+				}
+			}
 		},
 		"scrolledOffset": {
 			"type": "number",
 			"default": 50,
-			"description": "The scrollY threshold (px) past which is-header-scrolled/is-header-shrunk apply, in both trigger modes. Sanitised server-side via absint, clamped 0-2000."
+			"description": "The scrollY threshold (px) past which is-header-scrolled/is-header-shrunk apply, in both trigger modes. Sanitised server-side via absint, clamped 0-2000.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets how far the page must scroll before the header takes its scrolled (and shrunk) state.",
+					"trigger": "scroll past this many px",
+					"parameters": {
+						"value": {
+							"unit": "px of scroll distance (0 to 2000)"
+						}
+					}
+				}
+			}
 		},
 		"sectionInk": {
 			"type": "object",
@@ -520,12 +590,34 @@
 		"shadowScrolled": {
 			"type": "string",
 			"default": "",
-			"description": "Box-shadow SHAPE (or theme shadow preset slug) the header takes once the page has scrolled. Same value vocabulary as `shadow`. Empty = no scrolled shadow, nothing emitted."
+			"description": "Box-shadow SHAPE (or theme shadow preset slug) the header takes once the page has scrolled. Same value vocabulary as `shadow`. Empty = no scrolled shadow, nothing emitted.",
+			"sgs": {
+				"meaning": {
+					"what": "Gives the header a box-shadow once the page has scrolled.",
+					"trigger": "scroll past the scrolled offset",
+					"parameters": {
+						"value": {
+							"unit": "CSS box-shadow value or theme shadow preset slug"
+						}
+					}
+				}
+			}
 		},
 		"shadowScrolledColour": {
 			"type": "string",
 			"default": "",
-			"description": "Colour composed into the scrolled shadow SHAPE (a token slug or raw colour). Ignored when shadowScrolled is a preset slug."
+			"description": "Colour composed into the scrolled shadow SHAPE (a token slug or raw colour). Ignored when shadowScrolled is a preset slug.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the colour of the scrolled-state header shadow.",
+					"trigger": "scroll past the scrolled offset",
+					"parameters": {
+						"value": {
+							"unit": "CSS colour or theme colour token slug"
+						}
+					}
+				}
+			}
 		},
 		"borderWidth": {
 			"type": "object",

@@ -655,7 +655,18 @@
 		"pinBelowHeader": {
 			"type": "object",
 			"default": {},
-			"description": "Stop below the site header, per device tier ('on' or 'off', inheriting from the larger tier): at a tier where the pin resolves to 'top', the container sticks at the sticky header's height plus pinGap instead of sliding under it. Ignored inside drawers and pop-ups (includes/container-pin-edge-css.php)."
+			"description": "Stop below the site header, per device tier ('on' or 'off', inheriting from the larger tier): at a tier where the pin resolves to 'top', the container sticks at the sticky header's height plus pinGap instead of sliding under it. Ignored inside drawers and pop-ups (includes/container-pin-edge-css.php).",
+			"sgs": {
+				"meaning": {
+					"what": "Makes a pinned container stick just below the sticky site header instead of sliding under it.",
+					"trigger": "scrolling, while the container is pinned at the top",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} (desktop: on or off; tablet and mobile: inherit, on or off)"
+						}
+					}
+				}
+			}
 		},
 		"pinGap": {
 			"type": "object",
