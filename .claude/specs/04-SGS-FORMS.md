@@ -313,36 +313,36 @@ These items are specified above and have no implementation yet. Each stays in th
 
 - **FR-4-3 — A field can carry its own validation messages.** `msgRequired`, `msgInvalid`, `msgTooLong` on the field blocks print as `data-sgs-msg-required|invalid|toolong` (`includes/forms/field-render-helpers.php::field_message_attrs`); the browser shows them (`src/blocks/form/custom-messages.js`: a missing value uses `required`, too long uses `toolong`, every other validity failure uses `invalid`). The server checks payload shape only, so the messages are browser-side. *Done when:* `php plugins/sgs-blocks/tests/php/run-form-field-features-standalone.php` and `npx wp-scripts test-unit-js tests/js/form-custom-messages.test.js` (in `plugins/sgs-blocks/`) pass.
 
-  Status: built (201390c26, b1e3e8cff), live check pending (Track F's final round at 375, 768 and 1440 on indus-test). Proof: `php plugins/sgs-blocks/tests/php/run-form-field-features-standalone.php` and `npx wp-scripts test-unit-js tests/js/form-custom-messages.test.js` passes.
+  Status: built (201390c26, b1e3e8cff), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `php plugins/sgs-blocks/tests/php/run-form-field-features-standalone.php` and `npx wp-scripts test-unit-js tests/js/form-custom-messages.test.js` passes.
 
 - **FR-4-4 — A text-like field's label can float inside the box or stay above it.** `floatingLabel` (default on) and `floatingLabelPosition` (`above` default, `inside`); a static label keeps the form's label typography (its defaults sit at zero specificity and the floating rules skip it). *Done when:* the runner above and `npx wp-scripts test-unit-js tests/js/form-static-label-css.test.js` pass.
 
-  Status: built (201390c26, b1e3e8cff, 114554977, ec0d3fa92), live check pending (Track F's final round at 375, 768 and 1440 on indus-test). Proof: `php plugins/sgs-blocks/tests/php/run-form-field-features-standalone.php` and `npx wp-scripts test-unit-js tests/js/form-static-label-css.test.js` passes.
+  Status: built (201390c26, b1e3e8cff, 114554977, ec0d3fa92), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `php plugins/sgs-blocks/tests/php/run-form-field-features-standalone.php` and `npx wp-scripts test-unit-js tests/js/form-static-label-css.test.js` passes.
 
 - **FR-4-5 — A text or textarea field can cap its length and a textarea can show a live counter.** `maxLength`, `showCounter`; the counter "N / max" (`field_counter`, `src/blocks/form-field-textarea/view.js`) is not a live region. *Done when:* `npx wp-scripts test-unit-js tests/js/form-field-textarea-counter.test.js` passes.
 
-  Status: built (201390c26, b1e3e8cff), live check pending (Track F's final round at 375, 768 and 1440 on indus-test). Proof: `npx wp-scripts test-unit-js tests/js/form-field-textarea-counter.test.js` passes.
+  Status: built (201390c26, b1e3e8cff), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `npx wp-scripts test-unit-js tests/js/form-field-textarea-counter.test.js` passes.
 
 - **FR-4-6 — A field can set its autofill token.** `autocomplete` (a standard token or a custom token list, validated by `field_autocomplete_value`). *Done when:* the field-features runner passes.
 
-  Status: built (201390c26), live check pending (Track F's final round at 375, 768 and 1440 on indus-test). Proof: `php plugins/sgs-blocks/tests/php/run-form-field-features-standalone.php` passes.
+  Status: built (201390c26), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `php plugins/sgs-blocks/tests/php/run-form-field-features-standalone.php` passes.
 
 - **FR-4-7 — A field can set its on-screen keyboard.** `inputmode`, checked against `field_inputmodes()`. *Done when:* the field-features runner passes.
 
-  Status: built (201390c26), live check pending (Track F's final round at 375, 768 and 1440 on indus-test). Proof: `php plugins/sgs-blocks/tests/php/run-form-field-features-standalone.php` passes.
+  Status: built (201390c26), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `php plugins/sgs-blocks/tests/php/run-form-field-features-standalone.php` passes.
 
 - **FR-4-8 — A field can start with a value or a tick, and take its value from a link.** `defaultValue` (text-like and select; a select default only when it is one of its options, `field_select_default`), `defaultChecked` and option `checked`; `valueFromParam` prints `data-sgs-value-param` (the server never reads the query string). The editor canvas previews the default value, tick, label style and counter (`src/components/form-field-preview.js`). *Done when:* the field-features runner passes.
 
-  Status: built (201390c26, b1e3e8cff), live check pending (Track F's final round at 375, 768 and 1440 on indus-test). Proof: `php plugins/sgs-blocks/tests/php/run-form-field-features-standalone.php` passes.
+  Status: built (201390c26, b1e3e8cff), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `php plugins/sgs-blocks/tests/php/run-form-field-features-standalone.php` passes.
 
 - **FR-4-9 — A form can save progress in the browser and restore it.** `savedProgress`, `savedProgressLabel` ("Saves as you go"), `savedProgressSavedLabel` ("Progress saved"), `savedProgressDotColour` on `sgs/form`; every field except file, hidden and honeypot fields, and the step, go to `localStorage` under `sgs-form-progress:<path>:<form id>:<copy>` (`src/blocks/form/saved-progress.js`), restored with the notice, cleared on a successful submit (Ruling 4). *Done when:* `npx wp-scripts test-unit-js tests/js/form-runtime-behaviours.test.js` and `php plugins/sgs-blocks/tests/php/run-form-runtime-render-standalone.php` pass.
 
-  Status: built (7c71007e7), live check pending (Track F's final round at 375, 768 and 1440 on indus-test). Proof: `npx wp-scripts test-unit-js tests/js/form-runtime-behaviours.test.js` and `php plugins/sgs-blocks/tests/php/run-form-runtime-render-standalone.php` passes.
+  Status: built (7c71007e7), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `npx wp-scripts test-unit-js tests/js/form-runtime-behaviours.test.js` and `php plugins/sgs-blocks/tests/php/run-form-runtime-render-standalone.php` passes.
 
 - **FR-4-10 — A field can take its value from a link parameter.** `src/blocks/form/field-from-link.js` applies `?<param>=<value>` to a field carrying `data-sgs-value-param`: text as plain text, a select or radio only on a case-insensitive match with one of its own options; a link value wins over restored progress. *Done when:* the form-runtime Jest test passes.
 
-  Status: built (7c71007e7), live check pending (Track F's final round at 375, 768 and 1440 on indus-test). Proof: `npx wp-scripts test-unit-js tests/js/form-runtime-behaviours.test.js` passes.
+  Status: built (7c71007e7), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `npx wp-scripts test-unit-js tests/js/form-runtime-behaviours.test.js` passes.
 
-- **FR-4-11 — The review step shows one card per step with an Edit button and its own intro, styled from the inspector.** `sgs/form-review` gains `intro`, `showEditLinks`, `editLabel` and the card's background, border colour, style, width, radius, padding, title typography and row label and value colours (`src/blocks/form/review-cards.js`; Edit is a button naming its section that moves focus to the step heading). *Done when:* `php plugins/sgs-blocks/tests/php/run-form-review-card-standalone.php` and the form-runtime Jest test pass.
+- **FR-4-11 — The review step shows one card per step with an Edit button and its own intro, styled from the inspector.** `sgs/form-review` gains `intro`, `showEditLinks`, `editLabel` and the card's background, border colour, style, width, radius, padding, title typography and row label and value colours, each colour flat or gradient (`src/blocks/form/review-cards.js`; Edit is a button naming its section that moves focus to the step heading). *Done when:* `php plugins/sgs-blocks/tests/php/run-form-review-card-standalone.php` and the form-runtime Jest test pass.
 
-  Status: built (7c71007e7, b1e3e8cff), live check pending (Track F's final round at 375, 768 and 1440 on indus-test). Proof: `php plugins/sgs-blocks/tests/php/run-form-review-card-standalone.php` and `npx wp-scripts test-unit-js tests/js/form-runtime-behaviours.test.js` passes.
+  Status: built (7c71007e7, b1e3e8cff, 07022a448, 9761cc058), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `php plugins/sgs-blocks/tests/php/run-form-review-card-standalone.php` and `npx wp-scripts test-unit-js tests/js/form-runtime-behaviours.test.js` passes.

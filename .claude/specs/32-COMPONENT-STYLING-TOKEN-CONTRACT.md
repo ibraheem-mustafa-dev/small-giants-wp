@@ -823,7 +823,7 @@ Every focusable element in the framework shows one keyboard focus look, defined 
 
 - **FR-32-27 — A client can colour text selection from its snapshot.** `settings.custom.selection.background` and `.colour` paint `::selection` through `theme/sgs-theme/assets/css/selection.css`, which loads only when both are set (`theme/sgs-theme/inc/selection.php`), so an unset pair leaves the browser default; `push-theme-snapshot.py` refuses a half pair, and a pair under 4.5:1 only warns (a contrast check never refuses a client's colours, Bean 2026-10-22). *Done when:* `npx wp-scripts test-unit-js tests/js/selection-contract.test.js` passes.
 
-  Status: built (e182719cc, e285e9c1e), live check pending (Track F's final round at 375, 768 and 1440 on indus-test). Proof: `npx wp-scripts test-unit-js tests/js/selection-contract.test.js` passes.
+  Status: built (e182719cc, e285e9c1e), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `npx wp-scripts test-unit-js tests/js/selection-contract.test.js` passes.
 
 
 Part D (the draft-to-snapshot extractor, §15, FR-33-1 to FR-33-10 and FR-33-12 to FR-33-19) is in Spec 48 §11 (`.claude/specs/48-CLONING-SYSTEM.md`).

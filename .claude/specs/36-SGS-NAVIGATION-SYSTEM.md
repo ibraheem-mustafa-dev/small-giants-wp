@@ -437,7 +437,7 @@ The FRs in this section sit at uneven maturity. FR-36-26 is a dispatchable sub-s
 - **Differentiator:** ONE logo *object* attribute (desktop/mobile/sticky/transparent/dark with a fallback chain) in one inspector panel with live preview — beats the competitors' split-across-panels UX. A11y/SEO: visible focus (first tab-stop); `<img>` in `<a href="/">` near DOM top.
 
 ### FR-36-30 — The logo can print its SVG file inline
-**Status:** built (be8340127, 52db3a936, 5561b35be, 5eeebb3db), live check pending (Track F's final round at 375, 768 and 1440 on indus-test). Proof: `php plugins/sgs-blocks/tests/php/run-svg-document-standalone.php` passes.
+**Status:** built (be8340127, 52db3a936, 5561b35be, 5eeebb3db), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `php plugins/sgs-blocks/tests/php/run-svg-document-standalone.php` passes.
 
 `inlineSvg` ("Print SVG inline", default off) prints the desktop logo's sanitised SVG inside the home link with `role="img"` and the alt as `aria-label` (or `aria-hidden` when decorative); each instance's ids, `url(#…)` references, animation names and `<style>` selectors are scoped to it (`plugins/sgs-blocks/includes/helpers-svg-instance-scope.php::sgs_svg_scope_instance`; the scoper allows only `@media`, `@supports` and `@keyframes` and re-checks its output), the draw-layer SVG too; the dark logo and the colour filters apply to it. *Done when:* `php plugins/sgs-blocks/tests/php/run-svg-document-standalone.php` passes.
 

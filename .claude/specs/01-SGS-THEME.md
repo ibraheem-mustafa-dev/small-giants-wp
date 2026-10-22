@@ -323,4 +323,4 @@ WP 7.0 adds native pseudo-element support for `core/button` at theme.json level:
 
 - **FR-1-2 — An uploaded SVG keeps its own animation and is refused, with the reason, when it holds anything the route's SVG screen refuses.** *Done when:* `php plugins/sgs-blocks/tests/php/run-svg-document-standalone.php` passes (142 checks, MUST FAIL cases red under mutation).
 
-  Status: built (be8340127, 7d50cba34, 5eeebb3db), live check pending (Track F's final round at 375, 768 and 1440 on indus-test). Proof: `php plugins/sgs-blocks/tests/php/run-svg-document-standalone.php` passes.
+  Status: built (be8340127, 7d50cba34, 5eeebb3db), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `php plugins/sgs-blocks/tests/php/run-svg-document-standalone.php` passes.

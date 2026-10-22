@@ -549,7 +549,7 @@ These are the attribute and file names the old motion mechanisms stored in exist
 
 - **FR-38A-58 The image-reveal cursor field opens in full on keyboard focus and on a touch or pen tap (Ruling 8).** Focus in the host opens it, focus out closes it; a tap toggles it, a second tap or a tap outside closes it; the mouse follow stays mouse-only; the image layer shows on touch screens when open (`plugins/sgs-blocks/src/shared/effects/cursor-field-reveal.js::initRevealOpen`, `plugins/sgs-blocks/assets/css/fx-cursor-field.css`). *Done when:* `npx wp-scripts test-unit-js tests/js/cursor-field-reveal-open.test.js` passes.
 
-  Status: built (72e9d7dcd, 3c0469d82), live check pending (Track F's final round at 375, 768 and 1440 on indus-test). Proof: `npx wp-scripts test-unit-js tests/js/cursor-field-reveal-open.test.js` passes.
+  Status: built (72e9d7dcd, 3c0469d82), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `npx wp-scripts test-unit-js tests/js/cursor-field-reveal-open.test.js` passes.
 
 ## 16. Phasing
 
