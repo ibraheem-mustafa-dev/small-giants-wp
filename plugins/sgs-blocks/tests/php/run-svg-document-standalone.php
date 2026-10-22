@@ -135,7 +135,7 @@ unlink( $tmp );
 $dir  = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'sgs-svg-inline-' . getmypid();
 @mkdir( $dir );
 $file = $dir . DIRECTORY_SEPARATOR . 'logo.svg';
-file_put_contents( $file, $svg( '<script>x()</script><path id="sun" d="M0 0"><animate attributeName="opacity" values="0;1" dur="1s"/></path>' ) );
+file_put_contents( $file, $svg( '<style>rect{fill:red} #sun{opacity:1} svg > g{fill:blue}</style><script>x()</script><path id="sun" d="M0 0"><animate attributeName="opacity" values="0;1" dur="1s"/></path><use href="#sun"/>' ) );
 $prepend = $dir . DIRECTORY_SEPARATOR . 'prepend.php';
 file_put_contents( $prepend, '<?php function get_attached_file( $id ) { return 7 === (int) $id ? ' . var_export( $file, true ) . ' : false; }'
 	. ' function wp_get_attachment_url( $id ) { return 7 === (int) $id ? "https://x.test/logo.svg" : ( 8 === (int) $id ? "https://x.test/square.png" : false ); }'
@@ -149,15 +149,34 @@ $render = static function ( array $attrs ) use ( $prepend, $dir ): string {
 	return is_array( $json ) && ! empty( $json['ok'] ) ? (string) $json['html'] : 'NOT RUN: ' . json_encode( $json );
 };
 $on = $render( array( 'logoId' => 7, 'inlineSvg' => true, 'alt' => 'Acme home' ) );
-ok( 1 === preg_match( '/<span class="sgs-responsive-logo__svg"><svg role="img" aria-label="Acme home" focusable="false" xmlns="http:\/\/www.w3.org\/2000\/svg"/', $on ), 'inline on: the SVG is printed with role="img" and the accessible name', $on );
+ok( 1 === preg_match( '/<span class="sgs-responsive-logo__svg sgs-responsive-logo__svg--inline"><svg role="img" aria-label="Acme home" focusable="false" xmlns="http:\/\/www.w3.org\/2000\/svg"/', $on ), 'inline on: the SVG is printed with role="img" and the accessible name', $on );
 ok( false !== strpos( $on, '<animate attributeName="opacity"' ) && false === strpos( $on, '<script' ) && false === strpos( $on, '<img' ), 'inline on: sanitised, animation kept, no <img>', $on );
 ok( false !== strpos( $on, 'class="sgs-responsive-logo__link" href=' ), 'inline on: the home link still wraps the logo', $on );
+preg_match( '/<svg [^>]* id="(sgs-logo-svg-[^"]+)"/', $on, $root_id );
+$rid = $root_id[1] ?? 'NONE';
+ok( false !== strpos( $on, ':where(#' . $rid . ') rect{fill:red}' ) && false === strpos( $on, '>rect{' ), 'MUST FAIL: inline on: the file rect rule only matches inside this logo', $on );
+ok( false !== strpos( $on, ':where(#' . $rid . ') #' . $rid . '-sun{' ) && false !== strpos( $on, 'id="' . $rid . '-sun"' ) && false !== strpos( $on, 'href="#' . $rid . '-sun"' ), 'MUST FAIL: inline on: ids, id selectors and #id links carry the instance prefix', $on );
+ok( false !== strpos( $on, 'svg:where(#' . $rid . ') &gt; g{fill:blue}' ), 'inline on: a rule on the root svg keeps matching the root', $on );
 $swap = $render( array( 'logoId' => 7, 'logoIdMobile' => 8, 'inlineSvg' => true ) );
 ok( false !== strpos( $swap, 'sgs-responsive-logo__svg--swaps' ) && false !== strpos( $swap, 'src="https://x.test/square.png"' ), 'inline on with a compact logo: the compact logo swaps in below 1024px', $swap );
 $deco = $render( array( 'logoId' => 7, 'inlineSvg' => true, 'logoDecorative' => true ) );
 ok( false !== strpos( $deco, '<svg aria-hidden="true"' ) && false === strpos( $deco, 'role="img"' ), 'inline on, decorative: the SVG is hidden from assistive tech', $deco );
 $off = $render( array( 'logoId' => 7 ) );
 ok( false === strpos( $off, '<svg' ) && false !== strpos( $off, '<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="https://x.test/logo.svg"' ), 'negative control: inline off prints the <img> as before', $off );
+// ── Two instances of one file never share an id or a keyframes name ──
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-svg-instance-scope.php';
+$one_file = sgs_svg_sanitise_document( $svg( '<style>@keyframes spin{to{transform:rotate(1turn)}} @media (min-width:1px){.a{animation:spin 2s;fill:url(#g)}}</style><defs><linearGradient id="g"/></defs><path class="a" d="M0 0" fill="url(#g)"><animate begin="g.end; 1s" attributeName="opacity" values="0;1" dur="1s"/></path>' ) )['svg'];
+$first  = sgs_svg_scope_instance( $one_file, 'sgs-logo-svg-1' );
+$second = sgs_svg_scope_instance( $one_file, 'sgs-logo-svg-2' );
+ok( false !== strpos( $first, 'id="sgs-logo-svg-1-g"' ) && false !== strpos( $second, 'id="sgs-logo-svg-2-g"' ) && false === strpos( $second, 'sgs-logo-svg-1' ), 'MUST FAIL: two instances get distinct ids', $first . ' | ' . $second );
+ok( false !== strpos( $first, 'fill="url(#sgs-logo-svg-1-g)"' ) && false !== strpos( $first, 'begin="sgs-logo-svg-1-g.end; 1s"' ), 'url(#id) attributes and begin id.event follow the renamed id', $first );
+ok( false !== strpos( $first, '@keyframes sgs-logo-svg-1-spin{' ) && false !== strpos( $first, '@media (min-width:1px){:where(#sgs-logo-svg-1) .a{animation:sgs-logo-svg-1-spin 2s;fill:url(#sgs-logo-svg-1-g)}}' ), 'keyframes renamed; rules inside @media scoped', $first );
+
+// ── Dark mode and colour treatment reach the inline logo ──
+$scss = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/responsive-logo/style.scss' );
+ok( 1 === preg_match( "/data-theme='dark'[^}]*\.sgs-responsive-logo__image--desktop \{\s*display: none;\s*\}\s*\.sgs-responsive-logo__svg--inline \{\s*visibility: hidden;/", $scss ), 'MUST FAIL: the inline logo hides under the dark logo in dark mode' );
+ok( 7 === substr_count( $scss, "img:not( .sgs-responsive-logo__dark ),\n\t\t\t.sgs-responsive-logo__svg--inline svg {" ), 'MUST FAIL: every automatic colour treatment rule reaches the inline <svg>' );
+
 array_map( 'unlink', glob( $dir . DIRECTORY_SEPARATOR . '*' ) );
 @rmdir( $dir );
 

@@ -7,6 +7,7 @@
  *   .sgs-responsive-logo__picture     <picture> element
  *   .sgs-responsive-logo__image--desktop  Main <img>
  *   .sgs-responsive-logo__svg         Inline SVG wrapper (animation mode)
+ *   .sgs-responsive-logo__svg--inline The inlineSvg logo's wrapper (dark-logo swap and colour treatment)
  *   .sgs-responsive-logo__picture--fallback  Static images in animation mode
  *   .sgs-responsive-logo--animate-draw / --animate-hover / --animate-scroll
  *
@@ -68,7 +69,9 @@
 	// Shares the light logo's box (absolutely positioned on top of it) so it
 	// inherits that box's size rather than imposing its own intrinsic one.
 	// Hidden by default; shown — with the light logo hidden — per the ground
-	// rules below. Every breakpoint's <img> shares this ONE class (render.php:
+	// rules below. An inline SVG logo (`__svg--inline`) is hidden with
+	// `visibility` rather than `display`, so its box stays under the dark logo
+	// and its own `__svg--swaps` breakpoint rule keeps deciding its display. Every breakpoint's <img> shares this ONE class (render.php:
 	// desktop/tablet/mobile are all `<picture><source media="…">…<img
 	// class="sgs-responsive-logo__image--desktop">`, the browser swaps the
 	// SOURCE the <img> resolves, never the class) — so hiding/showing this
@@ -117,6 +120,10 @@
 				display: none;
 			}
 
+			.sgs-responsive-logo__svg--inline {
+				visibility: hidden;
+			}
+
 			.sgs-responsive-logo__dark {
 				display: block;
 			}
@@ -128,6 +135,10 @@
 				display: none;
 			}
 
+			.sgs-responsive-logo__svg--inline {
+				visibility: hidden;
+			}
+
 			.sgs-responsive-logo__dark {
 				display: block;
 			}
@@ -136,6 +147,10 @@
 		.sgs-on-light & {
 			.sgs-responsive-logo__image--desktop {
 				display: block;
+			}
+
+			.sgs-responsive-logo__svg--inline {
+				visibility: visible;
 			}
 
 			.sgs-responsive-logo__dark {
@@ -149,6 +164,10 @@
 				display: block;
 			}
 
+			.sgs-responsive-logo__svg--inline {
+				visibility: visible;
+			}
+
 			.sgs-responsive-logo__dark {
 				display: none;
 			}
@@ -157,6 +176,10 @@
 		.sgs-on-light .sgs-on-dark & {
 			.sgs-responsive-logo__image--desktop {
 				display: none;
+			}
+
+			.sgs-responsive-logo__svg--inline {
+				visibility: hidden;
 			}
 
 			.sgs-responsive-logo__dark {
@@ -172,6 +195,10 @@
 				display: none;
 			}
 
+			.sgs-responsive-logo__svg--inline {
+				visibility: hidden;
+			}
+
 			.sgs-responsive-logo__dark {
 				display: block;
 			}
@@ -180,6 +207,10 @@
 		.sgs-site-header.is-header-on-light & {
 			.sgs-responsive-logo__image--desktop {
 				display: block;
+			}
+
+			.sgs-responsive-logo__svg--inline {
+				visibility: visible;
 			}
 
 			.sgs-responsive-logo__dark {
@@ -199,46 +230,53 @@
 		// Tier 3 (lowest precedence) — site dark mode.
 		:where( :root[ data-theme='dark' ] ) &,
 		:where( :root[ data-theme='auto' ][ data-prefers-dark='true' ] ) & {
-			img:not( .sgs-responsive-logo__dark ) {
+			img:not( .sgs-responsive-logo__dark ),
+			.sgs-responsive-logo__svg--inline svg {
 				filter: brightness( 0 ) invert( 1 );
 			}
 		}
 
 		// Tier 2 — nearest static section ground.
 		.sgs-on-dark & {
-			img:not( .sgs-responsive-logo__dark ) {
+			img:not( .sgs-responsive-logo__dark ),
+			.sgs-responsive-logo__svg--inline svg {
 				filter: brightness( 0 ) invert( 1 );
 			}
 		}
 
 		.sgs-on-light & {
-			img:not( .sgs-responsive-logo__dark ) {
+			img:not( .sgs-responsive-logo__dark ),
+			.sgs-responsive-logo__svg--inline svg {
 				filter: none;
 			}
 		}
 
 		// One level of nesting, explicit both directions.
 		.sgs-on-dark .sgs-on-light & {
-			img:not( .sgs-responsive-logo__dark ) {
+			img:not( .sgs-responsive-logo__dark ),
+			.sgs-responsive-logo__svg--inline svg {
 				filter: none;
 			}
 		}
 
 		.sgs-on-light .sgs-on-dark & {
-			img:not( .sgs-responsive-logo__dark ) {
+			img:not( .sgs-responsive-logo__dark ),
+			.sgs-responsive-logo__svg--inline svg {
 				filter: brightness( 0 ) invert( 1 );
 			}
 		}
 
 		// Tier 1 (highest precedence) — live header scroll state, declared last.
 		.sgs-site-header.is-header-on-dark & {
-			img:not( .sgs-responsive-logo__dark ) {
+			img:not( .sgs-responsive-logo__dark ),
+			.sgs-responsive-logo__svg--inline svg {
 				filter: brightness( 0 ) invert( 1 );
 			}
 		}
 
 		.sgs-site-header.is-header-on-light & {
-			img:not( .sgs-responsive-logo__dark ) {
+			img:not( .sgs-responsive-logo__dark ),
+			.sgs-responsive-logo__svg--inline svg {
 				filter: none;
 			}
 		}
