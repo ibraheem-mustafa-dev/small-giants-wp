@@ -93,6 +93,15 @@
         "conditionalValue": {
             "type": "string",
             "default": ""
+        },
+        "valueFromParam": {
+            "type": "string",
+            "default": ""
+        },
+        "msgRequired": {
+            "type": "string",
+            "default": "",
+            "role": "content"
         }
     },
     "render": "file:./render.php",

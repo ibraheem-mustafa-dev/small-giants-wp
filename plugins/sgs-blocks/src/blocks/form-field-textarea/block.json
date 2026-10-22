@@ -93,6 +93,60 @@
         "conditionalValue": {
             "type": "string",
             "default": ""
+        },
+        "autocomplete": {
+            "type": "string",
+            "default": ""
+        },
+        "inputmode": {
+            "type": "string",
+            "default": "",
+            "enum": [
+                "",
+                "none",
+                "text",
+                "decimal",
+                "numeric",
+                "tel",
+                "search",
+                "email",
+                "url"
+            ]
+        },
+        "defaultValue": {
+            "type": "string",
+            "default": ""
+        },
+        "valueFromParam": {
+            "type": "string",
+            "default": ""
+        },
+        "msgRequired": {
+            "type": "string",
+            "default": "",
+            "role": "content"
+        },
+        "msgInvalid": {
+            "type": "string",
+            "default": "",
+            "role": "content"
+        },
+        "floatingLabel": {
+            "type": "boolean",
+            "default": true
+        },
+        "maxLength": {
+            "type": "number",
+            "default": 0
+        },
+        "msgTooLong": {
+            "type": "string",
+            "default": "",
+            "role": "content"
+        },
+        "showCounter": {
+            "type": "boolean",
+            "default": true
         }
     },
     "render": "file:./render.php",
@@ -103,5 +157,6 @@
             "placeholder": "Tell us about your requirements…",
             "rows": 4
         }
-    }
+    },
+    "viewScriptModule": "file:./view.js"
 }

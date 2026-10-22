@@ -1,0 +1,38 @@
+/*
+ * Form field features (Spec 04 FR-4-4 and FR-4-5). Named style.css in its own folder so the build bundles it into the form's frontend stylesheet.
+ *
+ * - A field with floating labels switched off keeps its label above the box.
+ * - The textarea's live character counter sits under the box, right-aligned.
+ *
+ * Colours come from the theme tokens; the floating-label rules these override live in style.css.
+ */
+
+/* Floating label off: undo the absolute, in-box label. The chained class raises specificity above the
+   per-type floating rules (including their :has() focus and filled states). */
+.sgs-form-field.sgs-form-field--static-label.sgs-form-field--static-label.sgs-form-field--static-label {
+	padding-top: 0;
+}
+
+.sgs-form-field.sgs-form-field--static-label.sgs-form-field--static-label.sgs-form-field--static-label .sgs-form-field__label {
+	position: static;
+	display: block;
+	margin-bottom: 0.375rem;
+	color: var(--wp--preset--color--text, #1e1e1e);
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 600;
+	pointer-events: auto;
+}
+
+.sgs-form-field.sgs-form-field--static-label.sgs-form-field--static-label.sgs-form-field--static-label .sgs-form-field__input::placeholder {
+	color: var(--sgs-field-placeholder-colour, var(--wp--preset--color--text-muted, #555));
+}
+
+/* Live character counter. */
+.sgs-form-field__counter {
+	display: block;
+	margin-top: 0.25rem;
+	color: var(--wp--preset--color--text-muted, #555);
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-variant-numeric: tabular-nums;
+	text-align: end;
+}

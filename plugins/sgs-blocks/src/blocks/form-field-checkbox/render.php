@@ -16,6 +16,7 @@ use function SGS\Blocks\Forms\field_help;
 use function SGS\Blocks\Forms\field_error;
 use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
+use function SGS\Blocks\Forms\field_message_attrs;
 
 $fid      = field_id( $attributes['fieldName'] ?? 'unnamed' );
 $options  = $attributes['options'] ?? array();
@@ -30,6 +31,8 @@ if ( ! empty( $help_text ) ) {
 	$described_by[] = $fid . '-help';
 }
 $described_by_attr = 'aria-describedby="' . esc_attr( implode( ' ', $described_by ) ) . '"';
+
+$msg_attrs = field_message_attrs( $attributes );
 
 echo field_open( $attributes, 'checkbox' );
 
@@ -49,9 +52,11 @@ foreach ( $options as $i => $option ) {
 	if ( is_string( $option ) ) {
 		$opt_value = $option;
 		$opt_label = $option;
+		$opt_on    = false;
 	} else {
 		$opt_value = $option['value'] ?? '';
 		$opt_label = $option['label'] ?? '';
+		$opt_on    = ! empty( $option['checked'] );
 	}
 	$option_id = $fid . '-' . $i;
 	echo '<label class="sgs-form-field__option" for="' . esc_attr( $option_id ) . '">';
@@ -62,6 +67,12 @@ foreach ( $options as $i => $option ) {
 	// First option carries the aria-describedby for the whole group.
 	if ( 0 === $i ) {
 		echo ' ' . $described_by_attr;
+	}
+	if ( $opt_on ) {
+		echo ' checked';
+	}
+	if ( $msg_attrs ) {
+		echo ' ' . implode( ' ', $msg_attrs );
 	}
 	echo ' />';
 	echo '<span>' . esc_html( $opt_label ) . '</span>';

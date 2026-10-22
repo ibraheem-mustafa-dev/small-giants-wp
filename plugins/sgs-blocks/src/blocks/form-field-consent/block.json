@@ -87,6 +87,15 @@
 		"conditionalValue": {
 			"type": "string",
 			"default": ""
+		},
+		"defaultChecked": {
+			"type": "boolean",
+			"default": false
+		},
+		"msgRequired": {
+			"type": "string",
+			"default": "",
+			"role": "content"
 		}
 	},
 	"render": "file:./render.php",

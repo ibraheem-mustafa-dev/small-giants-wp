@@ -5,6 +5,7 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
+import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import FieldLabelLayoutPanel from '../../components/FieldLabelLayoutPanel';
 
@@ -213,6 +214,11 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToolsPanelItem>
 				</ToolsPanel>
 				<FieldLabelLayoutPanel attributes={ attributes } setAttributes={ setAttributes } showHeadings />
+				<FormFieldAdvancedPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					features={ [ 'floatingLabel', 'autocomplete', 'inputmode', 'defaultValue', 'valueFromParam', 'msgRequired', 'msgInvalid' ] }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>

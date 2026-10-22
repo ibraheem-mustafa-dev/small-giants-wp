@@ -7,6 +7,7 @@ import {
 	SelectControl,
 	Button,
 } from '@wordpress/components';
+import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const WIDTH_OPTIONS = [
@@ -210,6 +211,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ __( 'Add Option', 'sgs-blocks' ) }
 					</Button>
 				</PanelBody>
+				<FormFieldAdvancedPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					features={ [ 'defaultSelect', 'valueFromParam', 'msgRequired' ] }
+					optionValues={ ( attributes.options || [] ).map( ( option ) =>
+						'string' === typeof option ? option : option.value || ''
+					) }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>

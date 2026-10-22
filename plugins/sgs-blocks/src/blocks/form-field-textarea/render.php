@@ -14,13 +14,16 @@ use function SGS\Blocks\Forms\field_error;
 use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
 use function SGS\Blocks\Forms\field_input_attrs;
+use function SGS\Blocks\Forms\field_default_value;
+use function SGS\Blocks\Forms\field_counter;
 
 $fid  = field_id( $attributes['fieldName'] ?? 'unnamed' );
 $rows = absint( $attributes['rows'] ?? 4 );
 
 echo field_open( $attributes, 'textarea' );
 echo field_label( $fid, $attributes );
-echo '<textarea class="sgs-form-field__input" rows="' . $rows . '" ' . field_input_attrs( $fid, $attributes ) . '></textarea>';
+echo '<textarea class="sgs-form-field__input" rows="' . $rows . '" ' . field_input_attrs( $fid, $attributes, false ) . '>' . esc_html( field_default_value( $attributes, true ) ) . '</textarea>';
+echo field_counter( $fid, $attributes );
 echo field_error( $fid );
 echo field_help( $fid, $attributes );
 echo field_close();
