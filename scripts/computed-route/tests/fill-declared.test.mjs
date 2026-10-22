@@ -186,3 +186,14 @@ test( 'MUST FAIL: the council fixes, unit by unit: shorthands, widths a property
 	const recs = confirmRecords( { writes: [ { node: 'n', index: 0, block: 'b', slot: '::before', prop: 'background-color', attr: 'x' }, { node: 'n', index: 0, block: 'b', slot: '.gone', prop: 'color', attr: 'y' } ], nodes, reads, rootComponent: 'Home' } );
 	assert.deepEqual( recs.map( ( r ) => [ r.attribute, r.renderedDraft, r.dr, r.verdict ] ), [ [ 'x', 'rgb(1, 2, 3)', 'no-declared', 'open' ], [ 'y', null, 'no-target', 'open' ] ] );
 } );
+
+
+test( 'MUST FAIL: a percentage inside a colour function is a colour channel, not a run-time value: red is never confirmed against blue', () => {
+	assert.notEqual( compareDR( 'color', 'hsl(0 100% 50%)', 'rgb(0, 0, 255)' ).dr, 'runtime' );
+	assert.equal( compareDR( 'color', 'hsl(0 100% 50%)', 'rgb(0, 0, 255)' ).dr, 'unreadable' );
+	assert.equal( compareDR( 'color', 'rgb(255, 0, 0)', '#f00' ).dr, 'agree' );
+	assert.equal( compareDR( 'color', 'rgb(255, 0, 0)', 'rgb(0, 0, 255)' ).dr, 'disagree' );
+	assert.equal( compareDR( 'width', '50%', '100px' ).dr, 'runtime', 'a percentage length is still run-time' );
+	assert.equal( compareDR( 'border', '1px solid hsl(0 100% 50%)', '1px solid rgb(255, 0, 0)' ).dr === 'runtime', false );
+	assert.equal( compareDR( 'margin', 'calc(10% + hsl(0 0% 0%))', '5px' ).dr, 'runtime' );
+} );

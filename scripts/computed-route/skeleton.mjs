@@ -150,7 +150,7 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 		json( p.inventory, inv );
 		log( `inventory ${ surface }: ${ inv.elements.length } elements, ${ Object.keys( inv.elements.reduce( ( a, e ) => Object.assign( a, e.screenshots ), {} ) ).length ? 'screenshots in' : 'no screenshots in' } ${ p.shots }, ${ inv.checks.duplicateKeys } duplicate keys` );
 	} else if ( 'propose' === cmd ) {
-		const r = proposeSurface( { client, surface, siteName: flag( '--site-name' ) } );
+		const r = proposeSurface( { client, surface, repo, siteName: flag( '--site-name' ) } );
 		const c = r.proposal.counts;
 		log( `propose ${ surface }: ${ c.skeletonNodes } skeleton nodes (${ c.expandedNodes } with Fill's generated icons), ${ c.low } low confidence, ${ c.removed } removed or absorbed, ${ c.unresolved } unresolved, ${ r.problems.length } problems` );
 		r.problems.forEach( ( x ) => log( ` - ${ x }` ) );
@@ -163,10 +163,10 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 		const inventory = JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) );
 		if ( flag( '--apply' ) ) {
 			const db = openDb();
-			const facts = loadFacts( { db, client } );
+			const facts = loadFacts( { db, client, repo } );
 			const known = ( s ) => !! facts.composition[ s ] || facts.q( 'SELECT 1 FROM blocks WHERE slug = ?', s ).length > 0;
 			const merged = applyPicks( { picks: JSON.parse( fs.readFileSync( path.resolve( flag( '--apply' ) ), 'utf8' ) ), request: JSON.parse( fs.readFileSync( p.request, 'utf8' ) ), knownBlock: known, file: p.picks } );
-			const r = proposeSurface( { client, surface, db } );
+			const r = proposeSurface( { client, surface, repo, db } );
 			log( `finalise ${ surface }: ${ Object.keys( merged ).length } picks merged; skeleton rewritten (${ r.proposal.counts.low } still low confidence, ${ r.problems.length } problems)` );
 		} else {
 			const req = finaliseRequest( { inventory, proposal, surface, promptFile: FINALISER_PROMPT } );
@@ -185,7 +185,7 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 		}
 		const block = flag( '--block' );
 		if ( block ) {
-			const facts = loadFacts( { db: openDb(), client } );
+			const facts = loadFacts( { db: openDb(), client, repo } );
 			if ( ! facts.composition[ block ] && ! facts.q( 'SELECT 1 FROM blocks WHERE slug = ?', block ).length ) {
 				throw new Error( `${ block } is not in the framework database` );
 			}

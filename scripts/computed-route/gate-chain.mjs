@@ -19,6 +19,7 @@ import { draftValues, cssProp, settingState } from './lib/solve-rows.mjs';
 import { calibrationForSite } from './solve.mjs';
 import { readTree, nodeByRef } from './lib/tree.mjs';
 import { localBlockHash } from './lib/deploy-hash.mjs';
+import { manifestSchemaVersion } from './lib/handoff.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '..', '..' );
@@ -78,7 +79,8 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 					installed,
 					manifest: { schema_version: manifest.schema_version, files: Object.fromEntries( ( manifest.files || [] ).map( ( f ) => [ f.path, f.sha256 ] ) ) },
 					intake: need( intake, 'intake.json' ).manifest,
-					schemaVersion: '1.0',
+					blockChanges: execFileSync( 'git', [ 'status', '--porcelain', '--', `plugins/sgs-blocks/src/blocks/${ short }` ], { cwd: REPO, encoding: 'utf8' } ).split( '\n' ).filter( Boolean ),
+					schemaVersion: manifestSchemaVersion(),
 				};
 			},
 			G1: ( row ) => {

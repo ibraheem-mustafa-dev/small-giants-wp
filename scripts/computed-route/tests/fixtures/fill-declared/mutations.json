@@ -1,0 +1,4 @@
+[
+	{ "file": "lib/fill-confirm.mjs", "find": "const runtimeValue = ( v ) => RUNTIME.test( v ) || v.replace( COLOUR_FN, '' ).includes( '%' );", "replace": "const runtimeValue = ( v ) => RUNTIME.test( v ) || v.includes( '%' );", "why": "any percentage, even a colour channel, would mark a value run-time and confirm red against blue" },
+	{ "file": "lib/fill-confirm.mjs", "find": "const runtimeValue = ( v ) => RUNTIME.test( v ) || v.replace( COLOUR_FN, '' ).includes( '%' );", "replace": "const runtimeValue = ( v ) => RUNTIME.test( v );", "why": "a percentage length would no longer be run-time" }
+]

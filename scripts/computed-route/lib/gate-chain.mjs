@@ -16,7 +16,8 @@ const blank = ( v ) => null == v || '' === String( v ).trim();
 const time = ( v ) => ( blank( v ) ? NaN : Date.parse( v ) );
 
 // G0 Freshness. i: { dbRefreshedAt, blockCommittedAt (ISO times), cache: { slotKey, playwrightVersion, browserVersion },
-// deployHash (the current deploy's key), installed: { playwrightVersion, browserVersion }, manifest: { schema_version,
+// blockChanges (git status --porcelain lines for the block's source folder; any means uncommitted edits),
+// deployHash (the local build's hash, which calibration also records: a stale remote deploy is not seen here), installed: { playwrightVersion, browserVersion }, manifest: { schema_version,
 // files: { path: sha256 } } (MANIFEST.json), intake: the same shape from intake.json, schemaVersion (expected) }.
 export function g0Freshness( i ) {
 	const stale = ( why ) => fail( 'I-stale', why );
@@ -29,6 +30,13 @@ export function g0Freshness( i ) {
 	}
 	if ( db < commit ) {
 		return stale( `the DB was refreshed ${ i.dbRefreshedAt }, before the block's last commit ${ i.blockCommittedAt }` );
+	}
+	// Uncommitted edits to the block are newer than any commit the DB refresh can be compared with.
+	if ( ! Array.isArray( i.blockChanges ) ) {
+		return stale( 'the block\'s uncommitted changes were not read' );
+	}
+	if ( i.blockChanges.length ) {
+		return stale( `the block has uncommitted changes (${ i.blockChanges.slice( 0, 3 ).join( '; ' ) }); the DB cannot reflect them` );
 	}
 	const c = i.cache;
 	if ( ! c || blank( c.slotKey ) || blank( i.deployHash ) ) {
@@ -97,8 +105,10 @@ export function g2Intent( i ) {
 // G3 DB query. i: { db, block, ancestors: [slug], property, state }. Reads block_attributes for the block, its ancestors
 // and its extensions (rows with source sgs-ext carry the block's slug). Fails I-unrouted when a NULL css_property row
 // fits the property (lib/triage.mjs::settingFits, the name test triage uses), I-mistag when a routed row fits but its
-// role is not classed styling-behaviour. Otherwise passes, listing the routed settings that fit (none when nothing
-// does): G4 and G5 decide whether one of them is the route's miss.
+// role is not classed styling-behaviour; both on the row's state only (a row's css_state is its state, none for rest). A fitting
+// row that exists only on another state fails I-unrouted: nothing routes the property on this state. Otherwise passes,
+// listing the routed settings that fit (none when nothing fits on any state): G4 and G5 decide whether one of them is the
+// route's miss.
 export function g3Db( i ) {
 	if ( ! i?.db || blank( i.block ) || blank( i.property ) ) {
 		return fail( 'I-stale', 'the DB, block or property is missing' );
@@ -113,8 +123,11 @@ export function g3Db( i ) {
 		return fail( 'I-stale', `the DB cannot be read: ${ String( e.message || e ).slice( 0, 100 ) }` );
 	}
 	const state = i.state || null;
-	const routed = rows.filter( ( r ) => null !== r.css_property && listedProperties( r.css_property ).includes( i.property ) && ( r.css_state || null ) === state );
-	const unrouted = rows.filter( ( r ) => null === r.css_property && settingFits( r.attr_name, r, i.property ) );
+	const fitting = rows.filter( ( r ) => ( null !== r.css_property ? listedProperties( r.css_property ).includes( i.property ) : settingFits( r.attr_name, r, i.property ) ) );
+	const onState = ( r ) => ( r.css_state || null ) === state;
+	const routed = fitting.filter( ( r ) => null !== r.css_property && onState( r ) );
+	const unrouted = fitting.filter( ( r ) => null === r.css_property && onState( r ) );
+	const elsewhere = fitting.filter( ( r ) => ! onState( r ) );
 	const label = ( r ) => `${ r.block_slug } ${ r.attr_name } (css_property ${ r.css_property ?? 'NULL' }, role ${ r.role })`;
 	if ( unrouted.length ) {
 		return fail( 'I-unrouted', `${ label( unrouted[ 0 ] ) } fits ${ i.property } but carries no css_property` );
@@ -125,6 +138,9 @@ export function g3Db( i ) {
 	}
 	if ( routed.length ) {
 		return ok( `${ routed.length } stored setting(s) fit ${ i.property }: ${ routed.map( label ).join( '; ' ) }`, { settings: routed.map( ( r ) => ( { block: r.block_slug, attr: r.attr_name } ) ) } );
+	}
+	if ( elsewhere.length ) {
+		return fail( 'I-unrouted', `${ label( elsewhere[ 0 ] ) } fits ${ i.property } but on state ${ elsewhere[ 0 ].css_state ?? 'none' }, not on ${ state ?? 'the resting state' }; no row routes it there` );
 	}
 	return ok( `no stored row on ${ [ i.block, ...( i.ancestors || [] ) ].join( ', ' ) } fits ${ i.property }`, { settings: [] } );
 }

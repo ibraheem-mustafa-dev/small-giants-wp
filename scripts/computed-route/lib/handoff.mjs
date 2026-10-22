@@ -12,7 +12,17 @@ import { svgProblem } from './svg-screen.mjs';
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const REPO = path.resolve( HERE, '../../..' );
 export const MASTER_SCHEMAS = path.join( REPO, '.claude', 'claude-design-handoff', 'handoff-schema' );
-export const KNOWN_RUNTIMES = path.join( REPO, 'scripts', 'computed-route', 'data', 'known-runtimes.json' );
+
+// The MANIFEST.json schema version the handoff schema demands (manifest.schema.json: properties.schema_version.const), the
+// one checkHandoff validates a folder against.
+export function manifestSchemaVersion( schemas = MASTER_SCHEMAS ) {
+	const v = JSON.parse( fs.readFileSync( path.join( schemas, 'manifest.schema.json' ), 'utf8' ) ).properties?.schema_version?.const;
+	if ( 'string' !== typeof v || ! v ) {
+		throw new Error( `${ path.join( schemas, 'manifest.schema.json' ) } names no schema_version const` );
+	}
+	return v;
+}
+export const KNOWN_RUNTIMES =path.join( REPO, 'scripts', 'computed-route', 'data', 'known-runtimes.json' );
 
 // FR-48A-2: every file a handoff folder must hold, besides at least one draft `.dc.html` at its root.
 export const REQUIRED_FILES = [

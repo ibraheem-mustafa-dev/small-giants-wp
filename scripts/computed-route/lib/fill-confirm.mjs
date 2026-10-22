@@ -12,7 +12,10 @@ import { READ_WIDTHS } from './fill-read.mjs';
 export const TOLERANCE = { colour: `ΔE ${ COLOUR_DE }, alpha 0.02`, length: '0.5px', 'font-family': 'first family', 'font-weight': 'exact', 'line-height': '0.5px', transform: 'matrix entries 0.01', time: '10ms', keyword: 'exact' };
 
 // A value the code computes at run time: its rendered value is what it resolves to, so there is nothing to compare.
-const RUNTIME = /\b(?:var|calc|clamp|min|max|env|attr)\(|%|\bv[wh]\b|\d(?:vw|vh|vmin|vmax|dvh|svh|lvh|cq[whib])\b/;
+const RUNTIME = /\b(?:var|calc|clamp|min|max|env|attr)\(|\bv[wh]\b|\d(?:vw|vh|vmin|vmax|dvh|svh|lvh|cq[whib])\b/;
+// A percentage is relative to something the browser resolves, except inside a colour function, where it is a colour channel.
+const COLOUR_FN = /\b(?:hsla?|rgba?|hwb|lab|lch|oklab|oklch|color)\([^()]*\)/gi;
+const runtimeValue = ( v ) => RUNTIME.test( v ) || v.replace( COLOUR_FN, '' ).includes( '%' );
 const FONT_WEIGHTS = { normal: 400, bold: 700 };
 const firstFamily = ( v ) => String( v ).split( ',' )[ 0 ].trim().replace( /^["']|["']$/g, '' ).toLowerCase();
 const ms = ( v ) => {
@@ -65,7 +68,7 @@ export function compareDR( prop, declared, rendered, fontPx = 16, { tol = 0.5, r
 	// A value the browser resolves itself: run-time functions and relative units, a CSS-wide keyword (the default),
 	// `currentcolor`, and a keyword the render states as a plain length (`thin`, `medium`, `auto` laid out): its render
 	// is its value.
-	if ( ! bothRendered && ( RUNTIME.test( d ) || /^(?:initial|inherit|unset|revert|revert-layer|currentcolor)$/i.test( d ) || ( /^[a-z-]+$/i.test( d ) && null !== lengthPx( r ) ) ) ) {
+	if ( ! bothRendered && ( runtimeValue( d ) || /^(?:initial|inherit|unset|revert|revert-layer|currentcolor)$/i.test( d ) || ( /^[a-z-]+$/i.test( d ) && null !== lengthPx( r ) ) ) ) {
 		return { dr: 'runtime', type: null, tolerance: null };
 	}
 	const type = propertyType( prop, d, r );
@@ -94,8 +97,11 @@ export function compareDR( prop, declared, rendered, fontPx = 16, { tol = 0.5, r
 			const [ a, b ] = [ ms( d ), ms( r ) ];
 			return out( null !== a && null !== b ? Math.abs( a - b ) <= 10 : null );
 		}
-		case 'length':
-			return out( Math.abs( lengthPx( d, fontPx ) - lengthPx( r, fontPx ) ) <= tol );
+		case 'length': {
+			// A side that is not a length (null) is unreadable, never 0: two unreadable sides do not agree.
+			const [ a, b ] = [ lengthPx( d, fontPx ), lengthPx( r, fontPx ) ];
+			return out( null !== a && null !== b ? Math.abs( a - b ) <= tol : null );
+		}
 		default: {
 			// Part by part; a value the browser serialises in another shape (a shadow with its colour moved first and a
 			// spread added, a radius expanded to four corners) cannot be compared here.

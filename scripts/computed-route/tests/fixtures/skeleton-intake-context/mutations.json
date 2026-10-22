@@ -1,0 +1,3 @@
+[
+	{ "file": "skeleton.mjs", "find": "const r = proposeSurface( { client, surface, repo, siteName: flag( '--site-name' ) } );", "replace": "const r = proposeSurface( { client, surface, siteName: flag( '--site-name' ) } );", "why": "propose would read and write the default repo" }
+]

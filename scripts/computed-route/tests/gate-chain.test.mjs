@@ -14,7 +14,7 @@ const fresh = () => ( {
 	cache: { slotKey: 'abc', playwrightVersion: '1.58.2', browserVersion: '145.0.1' }, deployHash: 'abc',
 	installed: { playwrightVersion: '1.58.2', browserVersion: '145.0.1' },
 	manifest: { schema_version: '1.0', files: { 'a.dc.html': 'h1', 'support.js': 'h2' } },
-	intake: { schema_version: '1.0', files: { 'a.dc.html': 'h1', 'support.js': 'h2' } }, schemaVersion: '1.0',
+	intake: { schema_version: '1.0', files: { 'a.dc.html': 'h1', 'support.js': 'h2' } }, schemaVersion: '1.0', blockChanges: [],
 } );
 const row = ( over = {} ) => ( { ref: 'cr-ref-f-1', path: '', pair: 'head', kind: 'style', key: 'padding-top', state: 'rest', width: 1440, draft: '24px', live: '16px', ...over } );
 
@@ -121,9 +121,11 @@ test( 'MUST FAIL G3: a routed, correctly roled row on an ancestor passes and is 
 	const r = g3Db( { db: d, block: 'sgs/card', ancestors: [ 'sgs/parent' ], property: 'padding-top', state: null } );
 	assert.deepEqual( [ r.pass, r.settings ], [ true, [ { block: 'sgs/parent', attr: 'space' } ] ] );
 	assert.deepEqual( g3Db( { db: d, block: 'sgs/card', ancestors: [], property: 'padding-top', state: null } ).settings, [] );
-	// a hover-state row does not fit a rest request
+	// a hover-state row is not a rest route, and is not a silent pass with no settings either
 	add( d, 'sgs/card', 'hoverSpace', 'padding-top', 'hover', 'spacing-token', 'sgs' );
-	assert.deepEqual( g3Db( { db: d, block: 'sgs/card', ancestors: [], property: 'padding-top', state: null } ).settings, [] );
+	const other = g3Db( { db: d, block: 'sgs/card', ancestors: [], property: 'padding-top', state: null } );
+	assert.deepEqual( [ other.pass, other.class ], [ false, 'I-unrouted' ] );
+	assert.equal( g3Db( { db: d, block: 'sgs/card', ancestors: [], property: 'padding-top', state: 'hover' } ).pass, true, 'the hover request finds its own row' );
 	assert.equal( g3Db( { db: new DatabaseSync( ':memory:' ), block: 'sgs/card', property: 'padding-top' } ).class, 'I-stale' );
 	assert.equal( g3Db( {} ).class, 'I-stale' );
 } );
@@ -249,4 +251,36 @@ test( 'MUST FAIL: the CLI reads the highest round of the walks beside a report',
 	}
 	assert.equal( finalWalk( dir ).round, 10 );
 	assert.equal( finalWalk( fs.mkdtempSync( path.join( os.tmpdir(), 'gate-chain-' ) ) ), null );
+} );
+
+test( 'MUST FAIL G3: a NULL css_property row that fits on another state is not an unrouted-on-this-state pass either: both lists take the same state rule', () => {
+	const d = db();
+	add( d, 'sgs/card', 'paddingTop', null, 'hover', 'spacing-token', 'sgs' );
+	const rest = g3Db( { db: d, block: 'sgs/card', ancestors: [], property: 'padding-top', state: null } );
+	assert.deepEqual( [ rest.pass, rest.class ], [ false, 'I-unrouted' ], 'never a pass with no settings' );
+	const hover = g3Db( { db: d, block: 'sgs/card', ancestors: [], property: 'padding-top', state: 'hover' } );
+	assert.equal( hover.class, 'I-unrouted' );
+} );
+
+test( 'MUST FAIL G0: uncommitted edits to the block are I-stale, and an unread change list fails closed', () => {
+	const i = fresh();
+	i.blockChanges = [ ' M plugins/sgs-blocks/src/blocks/card/render.php' ];
+	const r = g0Freshness( i );
+	assert.deepEqual( [ r.pass, r.class ], [ false, 'I-stale' ] );
+	assert.match( r.evidence, /uncommitted changes/ );
+	delete i.blockChanges;
+	assert.equal( g0Freshness( i ).class, 'I-stale' );
+	assert.equal( g0Freshness( fresh() ).pass, true );
+} );
+
+test( 'MUST FAIL G0: the expected MANIFEST schema version is read from the handoff schema, not written in the command', async () => {
+	const { manifestSchemaVersion } = await import( '../lib/handoff.mjs' );
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'schema-' ) );
+	fs.writeFileSync( path.join( dir, 'manifest.schema.json' ), JSON.stringify( { properties: { schema_version: { const: '7.3' } } } ) );
+	assert.equal( manifestSchemaVersion( dir ), '7.3' );
+	fs.writeFileSync( path.join( dir, 'manifest.schema.json' ), '{}' );
+	assert.throws( () => manifestSchemaVersion( dir ), /names no schema_version const/ );
+	fs.rmSync( dir, { recursive: true } );
+	assert.match( manifestSchemaVersion(), /^\d+\.\d+$/ );
+	assert.ok( ! /schemaVersion: '/.test( fs.readFileSync( new URL( '../gate-chain.mjs', import.meta.url ), 'utf8' ) ), 'no literal version in the command' );
 } );
