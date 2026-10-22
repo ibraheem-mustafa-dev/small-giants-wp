@@ -482,7 +482,7 @@
 @media (prefers-reduced-motion: no-preference) {
 	.sgs-business-info-wrap--pulse .sgs-open-status[data-state="open"] .sgs-open-status__dot {
 		color: var(--sgs-os-dot);
-		animation: sgs-os-pulse var(--sgs-os-pulse-dur, 1600ms) linear infinite;
+		animation: sgs-os-pulse var(--sgs-os-pulse-dur, 1600ms) var(--wp--custom--easing--linear, linear) infinite;
 	}
 }
 
