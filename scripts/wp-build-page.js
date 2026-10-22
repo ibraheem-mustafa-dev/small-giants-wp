@@ -484,17 +484,29 @@ async function main() {
 			return;
 		}
 
+		// The editor's save notice ("Updating failed.") hides the server's answer, so a failed REST write during the save
+		// is kept and named with the error: its status and the start of its body.
 		const save = async () => {
+			const failed = [];
+			const onResponse = async ( res ) => {
+				if ( res.status() >= 400 && /\/wp-json\/|rest_route=/.test( res.url() ) && 'GET' !== res.request().method() ) {
+					const body = await res.text().catch( () => '' );
+					failed.push( `${ res.request().method() } ${ res.url().replace( /^https?:\/\/[^/]+/, '' ).slice( 0, 120 ) } ${ res.status() }: ${ body.replace( /\s+/g, ' ' ).slice( 0, 300 ) }` );
+				}
+			};
+			page.on( 'response', onResponse );
 			await page.evaluate( () => window.wp.data.dispatch( 'core/editor' ).savePost() );
 			await page.waitForFunction(
 				() => ! window.wp.data.select( 'core/editor' ).isSavingPost() && ! window.wp.data.select( 'core/editor' ).isAutosavingPost(),
 				{ timeout: args.editorTimeout }
 			);
-			return page.evaluate( () => {
+			page.off( 'response', onResponse );
+			const out = await page.evaluate( () => {
 				const errs = ( window.wp.data.select( 'core/notices' ).getNotices() || [] ).filter( ( n ) => n.status === 'error' );
 				const ed = window.wp.data.select( 'core/editor' );
 				return { error: errs.map( ( n ) => n.content ).join( ' | ' ), id: ed.getCurrentPostId(), link: ed.getPermalink() };
 			} );
+			return out.error && failed.length ? { ...out, error: `${ out.error } (${ failed.join( ' ; ' ) })` } : out;
 		};
 		// Reload: every block must parse valid and serialise to what was saved.
 		const reload = async ( id ) => {
