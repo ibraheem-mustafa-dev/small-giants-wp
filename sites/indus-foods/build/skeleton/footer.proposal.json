@@ -1,0 +1,2799 @@
+{
+	"generated": "2026-10-22T21:56:28.437Z",
+	"inventory": "2026-10-22T21:06:59.252Z",
+	"source": "http://127.0.0.1:60979/",
+	"surface": "footer",
+	"siteName": null,
+	"surfaceParts": [],
+	"stripRoots": [
+		"Root/728#0",
+		"Root/38#0"
+	],
+	"recordDisagreements": [],
+	"recordUntranslated": [
+		{
+			"reason": "the element carries no host and data-dc-tpl identity"
+		}
+	],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 96,
+		"parts": 13,
+		"rows": 83,
+		"skeletonNodes": 47,
+		"expandedNodes": 51,
+		"low": 1,
+		"removed": 31,
+		"unresolved": 0,
+		"byRule": {
+			"widthWrapper": 2,
+			"footerSlots": 3,
+			"wholeCardLink": 2,
+			"solitaryIcon": 3,
+			"label": 5,
+			"hoursRows": 12,
+			"homeLink": 1,
+			"logoElement": 1,
+			"drawsChildren": 10,
+			"columnHeading": 2,
+			"listWrapper": 1,
+			"mapEmbed": 1,
+			"siteInfoLink": 1,
+			"typedDivider": 2,
+			"backToTop": 1,
+			"decorationLayer": 2,
+			"pillButton": 3,
+			"readingProgress": 1
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/653#0",
+			"tag": "footer",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/site-footer",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/site-footer",
+					"score": 1.4,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/site-footer lists \"footer\" (the draft root tag)",
+						"block_composition: sgs/site-footer is a section-root accepting [\"sgs/site-footer-row\"]",
+						"the root of the surface",
+						"the root's children fit what it accepts (sgs/site-footer-row)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_653_0@375.png",
+				"1440": "shots/Root_653_0@1440.png"
+			},
+			"snippet": "<footer style=\"position:relative;z-index:1;background:#2C3E50;color:#FFFFFF;overflow:hidden;\" data-dc-tpl=\"653\"> <span aria-hidden=\"true\" style=\"position:absolute;left:0;right:0;top:0;height:5px;background:linear-gradient(90deg,#D8CA50 0%,#E7D768 30%,#2EADE2 70%,#0A7EA8 100%);\" data-dc-tpl=\"654\"></span> <span aria-hidden=\"true\" style=\"position:absolute;right:-180px;top:-180px;width:520px;height:52",
+			"attributes": {},
+			"slots": {
+				".sgs-container__inner": {
+					"tpl": "Root/656#0"
+				}
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root/656#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there",
+			"source": "rule widthWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "widthWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_656_0@375.png",
+				"1440": "shots/Root_656_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;max-width:1240px;margin:0 auto;padding:{{ R.footPad }} {{ R.px }} 0;\" data-dc-tpl=\"656\"> <div style=\"display:grid;grid-template-columns:{{ R.footTopCols }};gap:16px;\" data-dc-tpl=\"657\"> <a href=\"tel:01217714330\" style=\"position:relative;display:flex;gap:18px;align-items:flex-start;padding:26px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid rgba(2",
+			"attributes": {}
+		},
+		{
+			"order": 2,
+			"key": "Root/657#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/site-footer-row",
+			"action": null,
+			"reason": "the top row of the footer",
+			"source": "rule footerSlots",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "footerSlots",
+			"candidates": [
+				{
+					"block": "sgs/site-footer-row",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule footerSlots: a footer is always three rows: its grid of link groups is the columns row, a strip above it is the top row, a strip below it (a legal line, a copyright bar) and any floating element it carries is the bottom row (Bean, 2026-10-22)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_657_0@375.png",
+				"1440": "shots/Root_657_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ R.footTopCols }};gap:16px;\" data-dc-tpl=\"657\"> <a href=\"tel:01217714330\" style=\"position:relative;display:flex;gap:18px;align-items:flex-start;padding:26px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#FFFFFF;transition:transform .35s cubic-bezier(.2,.8,.2,1),background .3s,border-color .3s,box-sh",
+			"attributes": {
+				"layout": "grid",
+				"rowSlot": "top"
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root/658#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_658_0@375.png",
+				"1440": "shots/Root_658_0@1440.png"
+			},
+			"snippet": "<a href=\"tel:01217714330\" style=\"position:relative;display:flex;gap:18px;align-items:flex-start;padding:26px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#FFFFFF;transition:transform .35s cubic-bezier(.2,.8,.2,1),background .3s,border-color .3s,box-shadow .3s;\" style-hover=\"transform:translateY(-4px);background:rgba(255,255,255,.08);border-color:",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex",
+				"sgsBlockLinkSource": "phone"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/659#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"source": "rule solitaryIcon",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "solitaryIcon",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_659_0@1440.png"
+			},
+			"snippet": "<span style=\"flex-shrink:0;width:52px;height:52px;border-radius:50%;background:#D8CA50;color:#2C3E50;display:flex;align-items:center;justify-content:center;\" data-dc-tpl=\"659\">{{ footPhone }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 5,
+			"key": "Root/660#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_660_0@375.png",
+				"1440": "shots/Root_660_0@1440.png"
+			},
+			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"660\"><span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;\" data-dc-tpl=\"661\">Call us</span><span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(20px,1.9vw,24px);margin-top:8px;\" data-dc-tpl=\"662\">0121 771 4330</span>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 6,
+			"key": "Root/661#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Call us",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_661_0@375.png",
+				"1440": "shots/Root_661_0@1440.png"
+			},
+			"snippet": "<span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;\" data-dc-tpl=\"661\">Call us</span>",
+			"attributes": {
+				"text": "Call us"
+			}
+		},
+		{
+			"order": 7,
+			"key": "Root/662#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "0121 771 4330",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.8,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 0.8,
+					"evidence": [
+						"block_attributes: sgs/business-info.displayType enum has \"phone\"",
+						"decisions: phone pattern (a typed UK phone number standing alone is the Site Info phone)",
+						"block_capabilities: sgs/business-info lists \"phone\""
+					]
+				},
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 0.2,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_662_0@375.png",
+				"1440": "shots/Root_662_0@1440.png"
+			},
+			"snippet": "<span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(20px,1.9vw,24px);margin-top:8px;\" data-dc-tpl=\"662\">0121 771 4330</span>",
+			"attributes": {
+				"displayType": "phone"
+			}
+		},
+		{
+			"order": 8,
+			"key": "Root/663#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Speak to our sales team",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-10-19: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_663_0@375.png",
+				"1440": "shots/Root_663_0@1440.png"
+			},
+			"snippet": "<span style=\"display:block;font-size:16px;color:#C9D4DE;margin-top:4px;\" data-dc-tpl=\"663\">Speak to our sales team</span>",
+			"attributes": {
+				"text": "Speak to our sales team"
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root/664#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_664_0@375.png",
+				"1440": "shots/Root_664_0@1440.png"
+			},
+			"snippet": "<a href=\"mailto:amir@indusfoodsltd.com\" style=\"position:relative;display:flex;gap:18px;align-items:flex-start;padding:26px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#FFFFFF;transition:transform .35s cubic-bezier(.2,.8,.2,1),background .3s,border-color .3s,box-shadow .3s;\" style-hover=\"transform:translateY(-4px);background:rgba(255,255,255,.08)",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex",
+				"sgsBlockLinkSource": "email"
+			}
+		},
+		{
+			"order": 10,
+			"key": "Root/665#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"source": "rule solitaryIcon",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "solitaryIcon",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_665_0@1440.png"
+			},
+			"snippet": "<span style=\"flex-shrink:0;width:52px;height:52px;border-radius:50%;background:#D8CA50;color:#2C3E50;display:flex;align-items:center;justify-content:center;\" data-dc-tpl=\"665\">{{ footMail }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 11,
+			"key": "Root/666#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_666_0@375.png",
+				"1440": "shots/Root_666_0@1440.png"
+			},
+			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"666\"><span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;\" data-dc-tpl=\"667\">Email us</span><span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(15px,1.25vw,17px);margin-top:8px;white-space:nowrap;\" data-dc-tpl=\"668\"",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 12,
+			"key": "Root/667#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Email us",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_667_0@375.png",
+				"1440": "shots/Root_667_0@1440.png"
+			},
+			"snippet": "<span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;\" data-dc-tpl=\"667\">Email us</span>",
+			"attributes": {
+				"text": "Email us"
+			}
+		},
+		{
+			"order": 13,
+			"key": "Root/668#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "amir@indusfoodsltd.com",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.8,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 0.8,
+					"evidence": [
+						"block_attributes: sgs/business-info.displayType enum has \"email\"",
+						"decisions: email pattern (a typed email address standing alone is the Site Info email)",
+						"block_capabilities: sgs/business-info lists \"email\""
+					]
+				},
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 0.2,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_668_0@375.png",
+				"1440": "shots/Root_668_0@1440.png"
+			},
+			"snippet": "<span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(15px,1.25vw,17px);margin-top:8px;white-space:nowrap;\" data-dc-tpl=\"668\">amir@indusfoodsltd.com</span>",
+			"attributes": {
+				"displayType": "email"
+			}
+		},
+		{
+			"order": 14,
+			"key": "Root/669#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "We reply within one working day",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-10-19: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_669_0@375.png",
+				"1440": "shots/Root_669_0@1440.png"
+			},
+			"snippet": "<span style=\"display:block;font-size:16px;color:#C9D4DE;margin-top:4px;\" data-dc-tpl=\"669\">We reply within one working day</span>",
+			"attributes": {
+				"text": "We reply within one working day"
+			}
+		},
+		{
+			"order": 15,
+			"key": "Root/670#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_670_0@375.png",
+				"1440": "shots/Root_670_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;display:flex;gap:18px;align-items:flex-start;padding:26px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#FFFFFF;transition:transform .35s cubic-bezier(.2,.8,.2,1),background .3s,border-color .3s,box-shadow .3s;flex-direction:column;gap:14px;grid-column:{{ R.footHoursSpan }};\" data-dc-tpl=\"670\"> <div style=\"display:fle",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root/671#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_671_0@375.png",
+				"1440": "shots/Root_671_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;\" data-dc-tpl=\"671\"> <span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;\" data-dc-tpl=\"672\">Opening hours</span> <span style=\"display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;padding:5px 1",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root/672#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Opening hours",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_672_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;\" data-dc-tpl=\"672\">Opening hours</span>",
+			"attributes": {
+				"text": "Opening hours"
+			}
+		},
+		{
+			"order": 18,
+			"key": "Root/673#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Closed",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_673_0@375.png",
+				"1440": "shots/Root_673_0@1440.png"
+			},
+			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;padding:5px 12px;border-radius:999px;background:{{ hoursNow.bg }};color:{{ hoursNow.fg }};white-space:nowrap;\" data-dc-tpl=\"673\"><span ref=\"{{ setPulseEl }}\" style=\"width:8px;height:8px;border-radius:50%;background:{{ hoursNow.dot }};color:{{ hoursNow.dot }};\" data-dc-tpl=\"674\"></span>{{ hoursNow.label }}</s",
+			"attributes": {}
+		},
+		{
+			"order": 19,
+			"key": "Root/674#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"into": "Root/673#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_674_0@1440.png"
+			},
+			"snippet": "<span ref=\"{{ setPulseEl }}\" style=\"width:8px;height:8px;border-radius:50%;background:{{ hoursNow.dot }};color:{{ hoursNow.dot }};\" data-dc-tpl=\"674\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 20,
+			"key": "Root/675#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_675_0@375.png",
+				"1440": "shots/Root_675_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-direction:column;width:100%;\" data-dc-tpl=\"675\"> <sc-for list=\"{{ hours }}\" as=\"hr\" hint-placeholder-count=\"4\" data-dc-tpl=\"676\"> <div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};font-weight:{{ hr.weight }};\" data-dc-tpl=\"677\"><span data-dc-tpl=\"678\">{{ hr.d ",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 21,
+			"key": "Root/677#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+			"source": "rule hoursRows",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hoursRows",
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule hoursRows: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_677_0@375.png",
+				"1440": "shots/Root_677_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};font-weight:{{ hr.weight }};\" data-dc-tpl=\"677\"><span data-dc-tpl=\"678\">{{ hr.d }}</span><span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span></div>",
+			"attributes": {
+				"displayType": "hours",
+				"hoursLayout": "rows"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root/678#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "Monday – Thursday",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/business-info: rule hoursRows",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hoursRows",
+			"into": "Root/677#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_678_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"678\">{{ hr.d }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 23,
+			"key": "Root/679#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "9:30am – 5pm",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/business-info: rule hoursRows",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hoursRows",
+			"into": "Root/677#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_679_0@375.png",
+				"1440": "shots/Root_679_0@1440.png"
+			},
+			"snippet": "<span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 24,
+			"key": "Root/677#1",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+			"source": "rule hoursRows",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hoursRows",
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule hoursRows: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_677_1@375.png",
+				"1440": "shots/Root_677_1@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};font-weight:{{ hr.weight }};\" data-dc-tpl=\"677\"><span data-dc-tpl=\"678\">{{ hr.d }}</span><span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span></div>",
+			"attributes": {
+				"displayType": "hours",
+				"hoursLayout": "rows"
+			}
+		},
+		{
+			"order": 25,
+			"key": "Root/678#1",
+			"tag": "span",
+			"depth": 6,
+			"words": "Friday",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/business-info: rule hoursRows",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hoursRows",
+			"into": "Root/677#1",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_678_1@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"678\">{{ hr.d }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 26,
+			"key": "Root/679#1",
+			"tag": "span",
+			"depth": 6,
+			"words": "9:30am – 12pm, 2:30 – 5pm",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/business-info: rule hoursRows",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hoursRows",
+			"into": "Root/677#1",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_679_1@375.png",
+				"1440": "shots/Root_679_1@1440.png"
+			},
+			"snippet": "<span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 27,
+			"key": "Root/677#2",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+			"source": "rule hoursRows",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hoursRows",
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule hoursRows: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_677_2@375.png",
+				"1440": "shots/Root_677_2@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};font-weight:{{ hr.weight }};\" data-dc-tpl=\"677\"><span data-dc-tpl=\"678\">{{ hr.d }}</span><span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span></div>",
+			"attributes": {
+				"displayType": "hours",
+				"hoursLayout": "rows"
+			}
+		},
+		{
+			"order": 28,
+			"key": "Root/678#2",
+			"tag": "span",
+			"depth": 6,
+			"words": "Saturday",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/business-info: rule hoursRows",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hoursRows",
+			"into": "Root/677#2",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_678_2@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"678\">{{ hr.d }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 29,
+			"key": "Root/679#2",
+			"tag": "span",
+			"depth": 6,
+			"words": "10am – 3pm",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/business-info: rule hoursRows",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hoursRows",
+			"into": "Root/677#2",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_679_2@375.png",
+				"1440": "shots/Root_679_2@1440.png"
+			},
+			"snippet": "<span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 30,
+			"key": "Root/677#3",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+			"source": "rule hoursRows",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hoursRows",
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule hoursRows: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_677_3@375.png",
+				"1440": "shots/Root_677_3@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};font-weight:{{ hr.weight }};\" data-dc-tpl=\"677\"><span data-dc-tpl=\"678\">{{ hr.d }}</span><span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span></div>",
+			"attributes": {
+				"displayType": "hours",
+				"hoursLayout": "rows"
+			}
+		},
+		{
+			"order": 31,
+			"key": "Root/678#3",
+			"tag": "span",
+			"depth": 6,
+			"words": "Sunday",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/business-info: rule hoursRows",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hoursRows",
+			"into": "Root/677#3",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_678_3@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"678\">{{ hr.d }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 32,
+			"key": "Root/679#3",
+			"tag": "span",
+			"depth": 6,
+			"words": "Closed",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/business-info: rule hoursRows",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hoursRows",
+			"into": "Root/677#3",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_679_3@375.png",
+				"1440": "shots/Root_679_3@1440.png"
+			},
+			"snippet": "<span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 33,
+			"key": "Root/680#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Opens tomorrow at 9:30am",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_680_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:15px;color:#C9D4DE;\" data-dc-tpl=\"680\">{{ hoursNow.sub }}</span>",
+			"attributes": {
+				"text": "Opens tomorrow at 9:30am"
+			}
+		},
+		{
+			"order": 34,
+			"key": "Root/681#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/site-footer-row",
+			"action": null,
+			"reason": "the columns row of the footer",
+			"source": "rule footerSlots",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "footerSlots",
+			"candidates": [
+				{
+					"block": "sgs/site-footer-row",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule footerSlots: a footer is always three rows: its grid of link groups is the columns row, a strip above it is the top row, a strip below it (a legal line, a copyright bar) and any floating element it carries is the bottom row (Bean, 2026-10-22)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_681_0@375.png",
+				"1440": "shots/Root_681_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ R.footMainCols }};gap:48px 56px;padding:{{ R.footMidPad }} 0;\" data-dc-tpl=\"681\"> <div style=\"grid-column:{{ R.footBrandSpan }};min-width:0;\" data-dc-tpl=\"682\"> <a href=\"#/\" aria-label=\"Indus Foods home\" style=\"display:block;width:{{ R.footLogoW }};max-width:100%;margin:0 auto;\" data-dc-tpl=\"683\"><indus-logo variant=\"square\" aria-label=\"Indus Foods",
+			"attributes": {
+				"layout": "grid",
+				"rowSlot": "columns"
+			}
+		},
+		{
+			"order": 35,
+			"key": "Root/682#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_682_0@375.png",
+				"1440": "shots/Root_682_0@1440.png"
+			},
+			"snippet": "<div style=\"grid-column:{{ R.footBrandSpan }};min-width:0;\" data-dc-tpl=\"682\"> <a href=\"#/\" aria-label=\"Indus Foods home\" style=\"display:block;width:{{ R.footLogoW }};max-width:100%;margin:0 auto;\" data-dc-tpl=\"683\"><indus-logo variant=\"square\" aria-label=\"Indus Foods Ltd\" style=\"display:block;width:100%;aspect-ratio:1998 / 1302;\" data-dc-tpl=\"684\"></indus-logo></a> <p style=\"font-size:17px;line-h",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 36,
+			"key": "Root/683#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "the link around one or more logos (a mark and a wordmark) goes: the logo block links home itself",
+			"source": "rule homeLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "homeLink",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_683_0@375.png",
+				"1440": "shots/Root_683_0@1440.png"
+			},
+			"snippet": "<a href=\"#/\" aria-label=\"Indus Foods home\" style=\"display:block;width:{{ R.footLogoW }};max-width:100%;margin:0 auto;\" data-dc-tpl=\"683\"><indus-logo variant=\"square\" aria-label=\"Indus Foods Ltd\" style=\"display:block;width:100%;aspect-ratio:1998 / 1302;\" data-dc-tpl=\"684\"></indus-logo></a>",
+			"attributes": {}
+		},
+		{
+			"order": 37,
+			"key": "Root/684#0",
+			"tag": "indus-logo",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/responsive-logo",
+			"action": null,
+			"reason": "a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo",
+			"source": "rule logoElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "logoElement",
+			"handover": {
+				"owner": "site-info",
+				"kind": "presence",
+				"detail": "the logo image: choose the site logo in the editor"
+			},
+			"candidates": [
+				{
+					"block": "sgs/responsive-logo",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule logoElement: a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_684_0@375.png",
+				"1440": "shots/Root_684_0@1440.png"
+			},
+			"snippet": "<indus-logo variant=\"square\" aria-label=\"Indus Foods Ltd\" style=\"display:block;width:100%;aspect-ratio:1998 / 1302;\" data-dc-tpl=\"684\"></indus-logo>",
+			"attributes": {
+				"logoId": 83
+			},
+			"carried": {
+				"logoId": "media-map.json: sites/indus-foods/handoff/assets/logo-square-anim.svg"
+			}
+		},
+		{
+			"order": 38,
+			"key": "Root/685#0",
+			"tag": "p",
+			"depth": 4,
+			"words": "As an industry leading food & drink distributor, based in the heart of the UK, the company specialises in Ethnic Foods & has a strong export operation. Part of the Unitas Wholesale Group, with an annual turnover of £8bn, the company is at the forefront of driving positive growth within the Independent Wholesale sector.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_685_0@375.png",
+				"1440": "shots/Root_685_0@1440.png"
+			},
+			"snippet": "<p style=\"font-size:17px;line-height:1.65;color:#DCE4EA;margin:24px 0 0;max-width:460px;text-wrap:pretty;\" data-dc-tpl=\"685\">As an industry leading food &amp; drink distributor, based in the heart of the UK, the company specialises in Ethnic Foods &amp; has a strong export operation. Part of the Unitas Wholesale Group, with an annual turnover of £8bn, the company is at the forefront of driving pos",
+			"attributes": {
+				"text": "As an industry leading food & drink distributor, based in the heart of the UK, the company specialises in Ethnic Foods & has a strong export operation. Part of the Unitas Wholesale Group, with an annual turnover of £8bn, the company is at the forefront of driving positive growth within the Independent Wholesale sector."
+			}
+		},
+		{
+			"order": 39,
+			"key": "Root/686#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/social-icons",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.74,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/social-icons",
+					"score": 1,
+					"share": 0.741,
+					"evidence": [
+						"block_composition: sgs/social-icons is a content-block accepting exactly [\"sgs/icon\"]; all 4 children propose sgs/icon",
+						"a row of 4 sgs/icon",
+						"block_capabilities: sgs/social-icons lists facebook, instagram"
+					]
+				},
+				{
+					"block": "sgs/container",
+					"score": 0.35,
+					"share": 0.259,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_686_0@375.png",
+				"1440": "shots/Root_686_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:12px;margin-top:26px;\" data-dc-tpl=\"686\"><a href=\"#/\" aria-label=\"LinkedIn\" style=\"width:44px;height:44px;border-radius:50%;background:#0A66C2;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-sh",
+			"attributes": {},
+			"rowNote": "icons generated by Fill from siteInfoRow [\"linkedin\",\"facebook\",\"google\",\"instagram\"]"
+		},
+		{
+			"order": 40,
+			"key": "Root/687#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/icon",
+			"action": "absorbed",
+			"reason": "drawn by sgs/social-icons: Fill generates its icons from the Site Info row",
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root/686#0",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
+						"brand-registry label \"LinkedIn\" in aria-label/title"
+					]
+				}
+			],
+			"parts": [
+				"Root/688#0"
+			],
+			"screenshots": {
+				"1440": "shots/Root_687_0@1440.png"
+			},
+			"snippet": "<a href=\"#/\" aria-label=\"LinkedIn\" style=\"width:44px;height:44px;border-radius:50%;background:#0A66C2;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px -6px rgba(0,0,0,.45);color:#FFFFFF\" data-dc-tpl=\"687\"",
+			"attributes": {
+				"iconSource": "brand",
+				"brandName": "linkedin",
+				"metadata": {
+					"bindings": {
+						"linkUrl": {
+							"source": "sgs/site-info",
+							"args": {
+								"key": "socials.linkedin"
+							}
+						}
+					}
+				}
+			},
+			"generatedBy": "Root/686#0"
+		},
+		{
+			"order": 41,
+			"key": "Root/690#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/icon",
+			"action": "absorbed",
+			"reason": "drawn by sgs/social-icons: Fill generates its icons from the Site Info row",
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root/686#0",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
+						"brand-registry label \"Facebook\" in aria-label/title"
+					]
+				}
+			],
+			"parts": [
+				"Root/691#0"
+			],
+			"screenshots": {
+				"1440": "shots/Root_690_0@1440.png"
+			},
+			"snippet": "<a href=\"#/\" aria-label=\"Facebook\" style=\"width:44px;height:44px;border-radius:50%;background:#1877F2;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px -6px rgba(0,0,0,.45);color:#FFFFFF\" data-dc-tpl=\"690\"",
+			"attributes": {
+				"iconSource": "brand",
+				"brandName": "facebook",
+				"metadata": {
+					"bindings": {
+						"linkUrl": {
+							"source": "sgs/site-info",
+							"args": {
+								"key": "socials.facebook"
+							}
+						}
+					}
+				}
+			},
+			"generatedBy": "Root/686#0"
+		},
+		{
+			"order": 42,
+			"key": "Root/693#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/icon",
+			"action": "absorbed",
+			"reason": "drawn by sgs/social-icons: Fill generates its icons from the Site Info row",
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root/686#0",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
+						"brand-registry label \"Google\" in aria-label/title"
+					]
+				}
+			],
+			"parts": [
+				"Root/694#0"
+			],
+			"screenshots": {
+				"1440": "shots/Root_693_0@1440.png"
+			},
+			"snippet": "<a href=\"#/\" aria-label=\"Google\" style=\"width:44px;height:44px;border-radius:50%;background:#FFFFFF;color:#FFFFFF;box-shadow:0 2px 6px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px -6px rgba(0,0,0,.4",
+			"attributes": {
+				"iconSource": "brand",
+				"brandName": "google",
+				"metadata": {
+					"bindings": {
+						"linkUrl": {
+							"source": "sgs/site-info",
+							"args": {
+								"key": "socials.google"
+							}
+						}
+					}
+				}
+			},
+			"generatedBy": "Root/686#0"
+		},
+		{
+			"order": 43,
+			"key": "Root/699#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/icon",
+			"action": "absorbed",
+			"reason": "drawn by sgs/social-icons: Fill generates its icons from the Site Info row",
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root/686#0",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
+						"brand-registry label \"Instagram\" in aria-label/title"
+					]
+				}
+			],
+			"parts": [
+				"Root/700#0"
+			],
+			"screenshots": {
+				"1440": "shots/Root_699_0@1440.png"
+			},
+			"snippet": "<a href=\"#/\" aria-label=\"Instagram\" style=\"width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 30% 107%,#FDF497 0%,#FD5949 45%,#D6249F 60%,#285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);",
+			"attributes": {
+				"iconSource": "brand",
+				"brandName": "instagram",
+				"metadata": {
+					"bindings": {
+						"linkUrl": {
+							"source": "sgs/site-info",
+							"args": {
+								"key": "socials.instagram"
+							}
+						}
+					}
+				}
+			},
+			"generatedBy": "Root/686#0"
+		},
+		{
+			"order": 44,
+			"key": "Root/702#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_702_0@375.png",
+				"1440": "shots/Root_702_0@1440.png"
+			},
+			"snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"702\"> <div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;margin-bottom:18px;\" data-dc-tpl=\"703\">Quick links</div> <div style=\"display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 24px;\" data-dc-tpl=\"704\"> <sc-for list=\"{{ footerQuick }}\" as=\"l\" hint-placehold",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 45,
+			"key": "Root/703#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "Quick links",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style",
+			"source": "rule columnHeading",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "columnHeading",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule columnHeading: the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_703_0@375.png",
+				"1440": "shots/Root_703_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;margin-bottom:18px;\" data-dc-tpl=\"703\">Quick links</div>",
+			"attributes": {
+				"content": "Quick links"
+			}
+		},
+		{
+			"order": 46,
+			"key": "Root/704#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a bare wrapper whose only content is one list goes: the list block is that wrapper",
+			"source": "rule listWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "listWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_704_0@375.png",
+				"1440": "shots/Root_704_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 24px;\" data-dc-tpl=\"704\"> <sc-for list=\"{{ footerQuick }}\" as=\"l\" hint-placeholder-count=\"6\" data-dc-tpl=\"705\"> <a href=\"{{ l.href }}\" style=\"display:flex;align-items:center;gap:10px;padding:9px 0;color:#FFFFFF;font-size:17px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,gap .3s cubi",
+			"attributes": {}
+		},
+		{
+			"order": 47,
+			"key": "Root/706#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Certifications",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"6 bare text links, one above the next"
+					]
+				},
+				{
+					"block": "sgs/button",
+					"score": 0.5,
+					"share": 0.303,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (each link on its own)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_706_0@375.png",
+				"1440": "shots/Root_706_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;align-items:center;gap:10px;padding:9px 0;color:#FFFFFF;font-size:17px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,gap .3s cubic-bezier(.2,.8,.2,1);\" style-hover=\"color:#D8CA50;gap:16px\" data-dc-tpl=\"706\"><span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>{",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Certifications",
+				"url": "#/certifications"
+			}
+		},
+		{
+			"order": 48,
+			"key": "Root/707#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root/706#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_707_0@1440.png"
+			},
+			"snippet": "<span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 49,
+			"key": "Root/706#1",
+			"tag": "a",
+			"depth": 5,
+			"words": "Trade",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"6 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_706_1@375.png",
+				"1440": "shots/Root_706_1@1440.png"
+			},
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;align-items:center;gap:10px;padding:9px 0;color:#FFFFFF;font-size:17px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,gap .3s cubic-bezier(.2,.8,.2,1);\" style-hover=\"color:#D8CA50;gap:16px\" data-dc-tpl=\"706\"><span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>{",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Trade",
+				"url": "#/apply"
+			}
+		},
+		{
+			"order": 50,
+			"key": "Root/707#1",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root/706#1",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_707_1@1440.png"
+			},
+			"snippet": "<span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 51,
+			"key": "Root/706#2",
+			"tag": "a",
+			"depth": 5,
+			"words": "Brands",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"6 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_706_2@375.png",
+				"1440": "shots/Root_706_2@1440.png"
+			},
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;align-items:center;gap:10px;padding:9px 0;color:#FFFFFF;font-size:17px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,gap .3s cubic-bezier(.2,.8,.2,1);\" style-hover=\"color:#D8CA50;gap:16px\" data-dc-tpl=\"706\"><span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>{",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Brands",
+				"url": "#/brands"
+			}
+		},
+		{
+			"order": 52,
+			"key": "Root/707#2",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root/706#2",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_707_2@1440.png"
+			},
+			"snippet": "<span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 53,
+			"key": "Root/706#3",
+			"tag": "a",
+			"depth": 5,
+			"words": "Delivery & Logistics",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"6 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_706_3@375.png",
+				"1440": "shots/Root_706_3@1440.png"
+			},
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;align-items:center;gap:10px;padding:9px 0;color:#FFFFFF;font-size:17px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,gap .3s cubic-bezier(.2,.8,.2,1);\" style-hover=\"color:#D8CA50;gap:16px\" data-dc-tpl=\"706\"><span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>{",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Delivery & Logistics",
+				"url": "#/delivery"
+			}
+		},
+		{
+			"order": 54,
+			"key": "Root/707#3",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root/706#3",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_707_3@1440.png"
+			},
+			"snippet": "<span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 55,
+			"key": "Root/706#4",
+			"tag": "a",
+			"depth": 5,
+			"words": "Terms & Conditions",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"6 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_706_4@375.png",
+				"1440": "shots/Root_706_4@1440.png"
+			},
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;align-items:center;gap:10px;padding:9px 0;color:#FFFFFF;font-size:17px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,gap .3s cubic-bezier(.2,.8,.2,1);\" style-hover=\"color:#D8CA50;gap:16px\" data-dc-tpl=\"706\"><span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>{",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Terms & Conditions",
+				"url": "#/terms"
+			}
+		},
+		{
+			"order": 56,
+			"key": "Root/707#4",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root/706#4",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_707_4@1440.png"
+			},
+			"snippet": "<span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 57,
+			"key": "Root/706#5",
+			"tag": "a",
+			"depth": 5,
+			"words": "Blog",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"6 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_706_5@375.png",
+				"1440": "shots/Root_706_5@1440.png"
+			},
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;align-items:center;gap:10px;padding:9px 0;color:#FFFFFF;font-size:17px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,gap .3s cubic-bezier(.2,.8,.2,1);\" style-hover=\"color:#D8CA50;gap:16px\" data-dc-tpl=\"706\"><span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>{",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Blog",
+				"url": "#/blog"
+			}
+		},
+		{
+			"order": 58,
+			"key": "Root/707#5",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root/706#5",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_707_5@1440.png"
+			},
+			"snippet": "<span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 59,
+			"key": "Root/708#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Apply For A Trade Account",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_708_0@1440.png"
+			},
+			"snippet": "<a href=\"#/apply\" data-mag=\"\" style=\"margin-top:28px;display:inline-flex;align-items:center;gap:10px;background:#D8CA50;color:#2C3E50;font-weight:700;font-size:16px;padding:14px 24px;border-radius:999px;box-shadow:0 10px 20px -10px rgba(0,0,0,.6);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,background .2s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 6px ",
+			"attributes": {
+				"label": "Apply For A Trade Account",
+				"url": "#/apply"
+			}
+		},
+		{
+			"order": 60,
+			"key": "Root/709#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_709_0@375.png",
+				"1440": "shots/Root_709_0@1440.png"
+			},
+			"snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"709\"> <div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;margin-bottom:18px;\" data-dc-tpl=\"710\">Visit us</div> <div style=\"position:relative;border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:#3A4D60;\" data-dc-tpl=\"711\"> <iframe title=\"Ind",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 61,
+			"key": "Root/710#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "Visit us",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style",
+			"source": "rule columnHeading",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "columnHeading",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule columnHeading: the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_710_0@375.png",
+				"1440": "shots/Root_710_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;margin-bottom:18px;\" data-dc-tpl=\"710\">Visit us</div>",
+			"attributes": {
+				"content": "Visit us"
+			}
+		},
+		{
+			"order": 62,
+			"key": "Root/711#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_711_0@375.png",
+				"1440": "shots/Root_711_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:#3A4D60;\" data-dc-tpl=\"711\"> <iframe title=\"Indus Foods location map\" src=\"https://maps.google.com/maps?q=55-58%20Stratford%20Street%20North%2C%20Birmingham%20B11%201BU&amp;z=14&amp;output=embed\" loading=\"lazy\" style=\"width:100%;height:210px;border:0;display:block;filter:grayscale(.35",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 63,
+			"key": "Root/712#0",
+			"tag": "iframe",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": "an embedded map is sgs/business-info's map display",
+			"source": "rule mapEmbed",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "mapEmbed",
+			"handover": {
+				"owner": "site-info",
+				"kind": "presence",
+				"detail": "map source: the Google Business Profile listing when Site Info has one (preferred), else the address"
+			},
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mapEmbed: an embedded map is sgs/business-info's map display"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_712_0@375.png",
+				"1440": "shots/Root_712_0@1440.png"
+			},
+			"snippet": "<iframe title=\"Indus Foods location map\" src=\"https://maps.google.com/maps?q=55-58%20Stratford%20Street%20North%2C%20Birmingham%20B11%201BU&amp;z=14&amp;output=embed\" loading=\"lazy\" style=\"width:100%;height:210px;border:0;display:block;filter:grayscale(.35) contrast(1.05);\" data-dc-tpl=\"712\"></iframe>",
+			"attributes": {
+				"displayType": "map"
+			}
+		},
+		{
+			"order": 64,
+			"key": "Root/713#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_713_0@375.png",
+				"1440": "shots/Root_713_0@1440.png"
+			},
+			"snippet": "<div style=\"padding:20px 22px 22px;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;\" data-dc-tpl=\"713\"> <div style=\"font-size:17px;line-height:1.55;color:#FFFFFF;\" data-dc-tpl=\"714\">55-58 Stratford St N,<br data-dc-tpl=\"715\">Birmingham B11 1BU,<br data-dc-tpl=\"716\">United Kingdom</div> <a href=\"https://www.google.com/maps/dir/?api=1&amp;destination=55-58+Str",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 65,
+			"key": "Root/714#0",
+			"tag": "div",
+			"depth": 6,
+			"words": "55-58 Stratford St N, Birmingham B11 1BU, United Kingdom",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.8,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 0.8,
+					"evidence": [
+						"block_attributes: sgs/business-info.displayType enum has \"address\"",
+						"decisions: address pattern (a UK postcode)",
+						"block_capabilities: sgs/business-info lists \"address\""
+					]
+				},
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 0.2,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [
+				"Root/715#0",
+				"Root/716#0"
+			],
+			"screenshots": {
+				"1440": "shots/Root_714_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:17px;line-height:1.55;color:#FFFFFF;\" data-dc-tpl=\"714\">55-58 Stratford St N,<br data-dc-tpl=\"715\">Birmingham B11 1BU,<br data-dc-tpl=\"716\">United Kingdom</div>",
+			"attributes": {
+				"displayType": "address"
+			}
+		},
+		{
+			"order": 66,
+			"key": "Root/717#0",
+			"tag": "a",
+			"depth": 6,
+			"words": "Get Directions",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself",
+			"source": "rule siteInfoLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "siteInfoLink",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule siteInfoLink: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_717_0@1440.png"
+			},
+			"snippet": "<a href=\"https://www.google.com/maps/dir/?api=1&amp;destination=55-58+Stratford+Street+North+Birmingham+B11+1BU\" target=\"_blank\" rel=\"noopener\" data-mag=\"\" style=\"white-space:nowrap;display:inline-flex;align-items:center;gap:10px;background:#0A7EA8;color:#FFFFFF;font-weight:700;font-size:16px;padding:12px 20px;border-radius:999px;border:2px solid #FFFFFF;transition:transform .25s cubic-bezier(.2,.",
+			"attributes": {
+				"label": "Get Directions",
+				"url": "https://www.google.com/maps/dir/?api=1&destination=55-58+Stratford+Street+North+Birmingham+B11+1BU",
+				"linkTarget": "_blank",
+				"linkSource": "directions"
+			}
+		},
+		{
+			"order": 67,
+			"key": "Root/718#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/site-footer-row",
+			"action": null,
+			"reason": "the bottom row of the footer",
+			"source": "rule footerSlots",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "footerSlots",
+			"candidates": [
+				{
+					"block": "sgs/site-footer-row",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule footerSlots: a footer is always three rows: its grid of link groups is the columns row, a strip above it is the top row, a strip below it (a legal line, a copyright bar) and any floating element it carries is the bottom row (Bean, 2026-10-22)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_718_0@375.png",
+				"1440": "shots/Root_718_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;border-top:1px solid rgba(255,255,255,.12);\" data-dc-tpl=\"718\"> <div style=\"max-width:1240px;margin:0 auto;padding:22px {{ R.px }};display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 24px;font-size:16px;\" data-dc-tpl=\"719\"> <div style=\"display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;\" data-dc-tpl=\"720\"> <span style=\"color:",
+			"attributes": {
+				"rowSlot": "bottom"
+			},
+			"slots": {
+				".sgs-container__inner": {
+					"tpl": "Root/719#0"
+				}
+			}
+		},
+		{
+			"order": 68,
+			"key": "Root/719#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there",
+			"source": "rule widthWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "widthWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_719_0@375.png",
+				"1440": "shots/Root_719_0@1440.png"
+			},
+			"snippet": "<div style=\"max-width:1240px;margin:0 auto;padding:22px {{ R.px }};display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 24px;font-size:16px;\" data-dc-tpl=\"719\"> <div style=\"display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;\" data-dc-tpl=\"720\"> <span style=\"color:#D8CA50;\" data-dc-tpl=\"721\">Copyright © 2026 Indus Foods Ltd</span><span style=\"color:#6F8193;",
+			"attributes": {}
+		},
+		{
+			"order": 69,
+			"key": "Root/720#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_720_0@375.png",
+				"1440": "shots/Root_720_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;\" data-dc-tpl=\"720\"> <span style=\"color:#D8CA50;\" data-dc-tpl=\"721\">Copyright © 2026 Indus Foods Ltd</span><span style=\"color:#6F8193;\" data-dc-tpl=\"722\">|</span><a href=\"#/\" style=\"color:#FFFFFF;background:linear-gradient(#D8CA50,#D8CA50) no-repeat left bottom / 0% 1px;padding-bottom:2px;transition:color .3s,background-size .",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 70,
+			"key": "Root/721#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Copyright © 2026 Indus Foods Ltd",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.8,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 0.8,
+					"evidence": [
+						"block_attributes: sgs/business-info.displayType enum has \"copyright\"",
+						"decisions: copyright pattern (a line opening with a copyright mark (the marker business-info's own render uses))",
+						"block_capabilities: sgs/business-info lists \"copyright\""
+					]
+				},
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 0.2,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_721_0@1440.png"
+			},
+			"snippet": "<span style=\"color:#D8CA50;\" data-dc-tpl=\"721\">Copyright © 2026 Indus Foods Ltd</span>",
+			"attributes": {
+				"displayType": "copyright",
+				"copyrightPrefix": "Copyright"
+			}
+		},
+		{
+			"order": 71,
+			"key": "Root/722#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "|",
+			"block": null,
+			"action": "remove",
+			"reason": "a typed divider between items is the row's separators setting, not a block",
+			"source": "rule typedDivider",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "typedDivider",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_722_0@1440.png"
+			},
+			"snippet": "<span style=\"color:#6F8193;\" data-dc-tpl=\"722\">|</span>",
+			"attributes": {}
+		},
+		{
+			"order": 72,
+			"key": "Root/723#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Website by Ibraheem Mustafa",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-10-19: A website-credit link is Site Info attribution; sgs/business-info has displayType attribution and is the top candidate."
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_723_0@375.png",
+				"1440": "shots/Root_723_0@1440.png"
+			},
+			"snippet": "<a href=\"#/\" style=\"color:#FFFFFF;background:linear-gradient(#D8CA50,#D8CA50) no-repeat left bottom / 0% 1px;padding-bottom:2px;transition:color .3s,background-size .3s;\" style-hover=\"color:#D8CA50;background-size:100% 1px\" data-dc-tpl=\"723\">Website by Ibraheem Mustafa</a>",
+			"attributes": {
+				"copyrightPrefix": "Website by Ibraheem Mustafa",
+				"displayType": "attribution"
+			}
+		},
+		{
+			"order": 73,
+			"key": "Root/724#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "|",
+			"block": null,
+			"action": "remove",
+			"reason": "a typed divider between items is the row's separators setting, not a block",
+			"source": "rule typedDivider",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "typedDivider",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_724_0@375.png",
+				"1440": "shots/Root_724_0@1440.png"
+			},
+			"snippet": "<span style=\"color:#6F8193;\" data-dc-tpl=\"724\">|</span>",
+			"attributes": {}
+		},
+		{
+			"order": 74,
+			"key": "Root/725#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Placeholder photography via Unsplash",
+			"block": null,
+			"action": "remove",
+			"reason": "brief-only line (photo-credit-note): a note that the draft's photographs are stand-ins exists only for the design review; the live site uses the client's own photographs",
+			"source": "decisions photo-credit-note",
+			"confidence": 0.9,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_725_0@375.png",
+				"1440": "shots/Root_725_0@1440.png"
+			},
+			"snippet": "<span style=\"color:#AEBBC7;\" data-dc-tpl=\"725\">Placeholder photography via Unsplash</span>",
+			"attributes": {}
+		},
+		{
+			"order": 75,
+			"key": "Root/726#0",
+			"tag": "button",
+			"depth": 3,
+			"words": "Back to top",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a back-to-top control is a link whose source is 'top' (the shared link source): a container whose whole box is the link when it holds a label and an icon, a button when it is words alone",
+			"source": "rule backToTop",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "backToTop",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule backToTop: a back-to-top control is a link whose source is 'top' (the shared link source): a container whose whole box is the link when it holds a label and an icon, a button when it is words alone"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_726_0@375.png",
+				"1440": "shots/Root_726_0@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ toTop }}\" aria-label=\"Back to top\" style=\"display:inline-flex;align-items:center;gap:10px;background:transparent;border:0;color:#FFFFFF;font-weight:600;font-size:16px;cursor:pointer;padding:0;transition:color .2s;\" style-hover=\"color:#D8CA50;--tt:rotate(-90deg) translateX(4px) scale(1.08);--tb:#D8CA50;--tbg:rgba(216,202,80,.12)\" data-dc-tpl=\"726\">Back to top <span sty",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex",
+				"sgsBlockLinkSource": "top"
+			}
+		},
+		{
+			"order": 76,
+			"key": "Root/727#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"source": "rule solitaryIcon",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "solitaryIcon",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_727_0@1440.png"
+			},
+			"snippet": "<span style=\"width:40px;height:40px;border-radius:50%;border:1.5px solid var(--tb,rgba(255,255,255,.4));background:var(--tbg,transparent);display:flex;align-items:center;justify-content:center;transform:var(--tt,rotate(-90deg));transition:transform .35s cubic-bezier(.34,1.56,.64,1),border-color .2s,background .2s;\" data-dc-tpl=\"727\">{{ arrowIcon }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 77,
+			"key": "Root/654#0",
+			"tag": "span",
+			"depth": 1,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_654_0@375.png",
+				"1440": "shots/Root_654_0@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" style=\"position:absolute;left:0;right:0;top:0;height:5px;background:linear-gradient(90deg,#D8CA50 0%,#E7D768 30%,#2EADE2 70%,#0A7EA8 100%);\" data-dc-tpl=\"654\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 78,
+			"key": "Root/655#0",
+			"tag": "span",
+			"depth": 1,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_655_0@375.png",
+				"1440": "shots/Root_655_0@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" style=\"position:absolute;right:-180px;top:-180px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(46,173,226,.16),rgba(46,173,226,0) 70%);pointer-events:none;\" data-dc-tpl=\"655\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 79,
+			"key": "Root/728#0",
+			"tag": "a",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
+			"source": "rule pillButton",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "pillButton",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_728_0@375.png",
+				"1440": "shots/Root_728_0@1440.png"
+			},
+			"snippet": "<a href=\"https://wa.me/441217714330\" target=\"_blank\" rel=\"noopener\" aria-label=\"Message Indus Foods on WhatsApp\" style=\"position:fixed;right:22px;bottom:22px;z-index:140;display:flex;align-items:center;gap:10px;background:#25D366;color:#0B2B17;border-radius:999px;padding:0 18px 0 14px;min-height:52px;font-size:15px;font-weight:600;box-shadow:0 10px 30px rgba(13,110,53,.32);transition:transform .25",
+			"attributes": {
+				"label": "Chat with our team"
+			},
+			"strip": "Root/728#0"
+		},
+		{
+			"order": 80,
+			"key": "Root/729#0",
+			"tag": "img",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/button: rule pillButton",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "pillButton",
+			"into": "Root/728#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_729_0@1440.png"
+			},
+			"snippet": "<img src=\"assets/whatsapp-ink.svg\" alt=\"\" aria-hidden=\"true\" width=\"22\" height=\"22\" style=\"display:block\" data-dc-tpl=\"729\">",
+			"attributes": {},
+			"strip": "Root/728#0"
+		},
+		{
+			"order": 81,
+			"key": "Root/731#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "Chat with our team",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/button: rule pillButton",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "pillButton",
+			"into": "Root/728#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_731_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"731\">Chat with our team</span>",
+			"attributes": {},
+			"strip": "Root/728#0"
+		},
+		{
+			"order": 82,
+			"key": "Root/38#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a full-width bar a few pixels tall, fixed to the viewport, is the Floating UI reading progress setting, not a block",
+			"source": "rule readingProgress",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "readingProgress",
+			"handover": {
+				"owner": "site-setting",
+				"kind": "floating-ui",
+				"detail": "Floating UI reading progress bar: its height and its colour or gradient (shared gradient picker) are site settings"
+			},
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_38_0@375.png",
+				"1440": "shots/Root_38_0@1440.png"
+			},
+			"snippet": "<div ref=\"{{ setProgEl }}\" aria-hidden=\"true\" style=\"position:fixed;left:0;top:0;height:3px;width:100%;background:linear-gradient(90deg,#EBDD78 0%,#E7D768 24%,#D8CA50 46%,#2EADE2 76%,#0A7EA8 100%);transform-origin:0 50%;transform:scaleX(0);z-index:400;pointer-events:none;\" data-dc-tpl=\"38\"></div>",
+			"attributes": {},
+			"strip": "Root/38#0"
+		}
+	]
+}

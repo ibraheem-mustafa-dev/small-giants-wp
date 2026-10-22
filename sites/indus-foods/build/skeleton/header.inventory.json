@@ -1,6 +1,6 @@
 {
-	"generated": "2026-10-22T18:20:25.761Z",
-	"source": "http://127.0.0.1:51092/",
+	"generated": "2026-10-22T21:25:40.057Z",
+	"source": "http://127.0.0.1:58607/",
 	"root": "header",
 	"beside": [
 		{
@@ -504,10 +504,11 @@
 			"768": 33,
 			"1440": 46
 		},
-		"tagAgree": 46,
+		"tagAgree": 54,
 		"tagDisagree": [],
 		"keysMissingAt": {
 			"375": [
+				"Root/58#0",
 				"Root/45#0",
 				"Root/47#0",
 				"Root/48#0",
@@ -565,9 +566,20 @@
 				"Root/50#3",
 				"Root/47#5",
 				"Root/48#5",
-				"Root/54#0"
+				"Root/54#0",
+				"Root/13#0",
+				"Root/18#0"
 			],
-			"1440": []
+			"1440": [
+				"Root/56#0",
+				"Root/58#0",
+				"Root/59#0",
+				"Root/60#0",
+				"Root/61#0",
+				"Root/62#0",
+				"Root/13#0",
+				"Root/18#0"
+			]
 		},
 		"screenshotSkips": []
 	},
@@ -848,6 +860,343 @@
 			"screenshots": {
 				"375": "shots/Root_43_0@375.png",
 				"1440": "shots/Root_43_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/56#0",
+			"parentKey": "Root/41#0",
+			"depth": 3,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 56,
+			"attrs": {
+				"style": "display: flex; align-items: center; gap: 10px;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 66,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isCompact }}",
+					"tpl": "55"
+				}
+			],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;align-items:center;gap:10px;\" data-dc-tpl=\"56\"> <sc-if value=\"{{ isTablet }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"57\"> <a href=\"#/apply\" data-mag=\"\" style=\"flex-shrink:0;display:inline-flex;align-items:center;gap:8px;background:#0A7EA8;color:#FFFFFF;border:2px solid #0A7EA8;border-radius:999px;padding:10px 18px;font-size:17px;font-weight:600;white-space:nowrap;",
+			"box": {
+				"375": {
+					"x": 307,
+					"y": 58,
+					"w": 48,
+					"h": 48
+				},
+				"768": {
+					"x": 431.2,
+					"y": 56.8,
+					"w": 304.8,
+					"h": 50.3
+				},
+				"1440": null
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": false
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": null
+			},
+			"flexDirection": "row",
+			"layoutChanged": true,
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_56_0@375.png"
+			}
+		},
+		{
+			"key": "Root/58#0",
+			"parentKey": "Root/56#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 58,
+			"attrs": {
+				"href": "#/apply",
+				"class": "scp2",
+				"style": "flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; background: rgb(10, 126, 168); color: rgb(255, 255, 255); border: 2px solid rgb(10, 126, 168); border-radius: 999px; padding: 10px 18px; font-size: 17px; font-weight: 600; white-space: nowrap; box-shadow: rgba(10, 126, 168, 0.65) 0px 8px 18px -8px; transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s, background 0.2s, color 0.2s;"
+			},
+			"words": "Register For A Trade Account",
+			"allText": "Register For A Trade Account",
+			"srcLine": 68,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isCompact }}",
+					"tpl": "55"
+				},
+				{
+					"kind": "sc-if",
+					"value": "{{ isTablet }}",
+					"tpl": "57"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "Register For A Trade Account",
+			"snippet": "<a href=\"#/apply\" data-mag=\"\" style=\"flex-shrink:0;display:inline-flex;align-items:center;gap:8px;background:#0A7EA8;color:#FFFFFF;border:2px solid #0A7EA8;border-radius:999px;padding:10px 18px;font-size:17px;font-weight:600;white-space:nowrap;box-shadow:0 8px 18px -8px rgba(10,126,168,.65);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,background .2s,color .2s;\" style-hover=\"t",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 431.2,
+					"y": 56.8,
+					"w": 246.8,
+					"h": 50.3
+				},
+				"1440": null
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": false
+			},
+			"display": "flex",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": null
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {}
+		},
+		{
+			"key": "Root/59#0",
+			"parentKey": "Root/56#0",
+			"depth": 4,
+			"tag": "button",
+			"template": "Root",
+			"tpl": 59,
+			"attrs": {
+				"aria-label": "Open menu",
+				"class": "scp3",
+				"style": "width: 48px; height: 48px; border-radius: 50%; border: 2px solid rgb(10, 126, 168); background: rgb(255, 255, 255); color: rgb(10, 126, 168); display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 4px; padding: 0px 13px; cursor: pointer; flex-shrink: 0; transition: background 0.25s, color 0.25s, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 70,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isCompact }}",
+					"tpl": "55"
+				}
+			],
+			"srcTag": "button",
+			"srcOwnText": "",
+			"snippet": "<button sc-camel-on-click=\"{{ toggleMobile }}\" aria-label=\"Open menu\" style=\"width:48px;height:48px;border-radius:50%;border:2px solid #0A7EA8;background:#FFFFFF;color:#0A7EA8;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:4px;padding:0 13px;cursor:pointer;flex-shrink:0;transition:background .25s,color .25s,transform .4s cubic-bezier(.34,1.56,.64,1),box-shadow .",
+			"box": {
+				"375": {
+					"x": 307,
+					"y": 58,
+					"w": 48,
+					"h": 48
+				},
+				"768": {
+					"x": 688,
+					"y": 58,
+					"w": 48,
+					"h": 48
+				},
+				"1440": null
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": false
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": null
+			},
+			"flexDirection": "column",
+			"layoutChanged": true,
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_59_0@375.png"
+			}
+		},
+		{
+			"key": "Root/60#0",
+			"parentKey": "Root/59#0",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 60,
+			"attrs": {
+				"style": "width: 18px; height: 2.5px; border-radius: 2px; background: currentcolor; display: block;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 71,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isCompact }}",
+					"tpl": "55"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span style=\"width:18px;height:2.5px;border-radius:2px;background:currentColor;display:block;\" data-dc-tpl=\"60\"></span>",
+			"box": {
+				"375": {
+					"x": 322,
+					"y": 74.3,
+					"w": 18,
+					"h": 2.5
+				},
+				"768": {
+					"x": 703,
+					"y": 74.3,
+					"w": 18,
+					"h": 2.5
+				},
+				"1440": null
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": false
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": null
+			},
+			"flexDirection": "row",
+			"layoutChanged": true,
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_60_0@375.png"
+			}
+		},
+		{
+			"key": "Root/61#0",
+			"parentKey": "Root/59#0",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 61,
+			"attrs": {
+				"style": "width: var(--b2,13px); height: 2.5px; border-radius: 2px; background: currentcolor; display: block; transition: width 0.3s cubic-bezier(0.16, 0.84, 0.32, 1);"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 72,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isCompact }}",
+					"tpl": "55"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span style=\"width:var(--b2,13px);height:2.5px;border-radius:2px;background:currentColor;display:block;transition:width .3s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"61\"></span>",
+			"box": {
+				"375": {
+					"x": 327,
+					"y": 80.8,
+					"w": 13,
+					"h": 2.5
+				},
+				"768": {
+					"x": 708,
+					"y": 80.8,
+					"w": 13,
+					"h": 2.5
+				},
+				"1440": null
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": false
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": null
+			},
+			"flexDirection": "row",
+			"layoutChanged": true,
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_61_0@375.png"
+			}
+		},
+		{
+			"key": "Root/62#0",
+			"parentKey": "Root/59#0",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 62,
+			"attrs": {
+				"style": "width: var(--b3,8px); height: 2.5px; border-radius: 2px; background: currentcolor; display: block; transition: width 0.35s cubic-bezier(0.16, 0.84, 0.32, 1) 0.04s;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 73,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isCompact }}",
+					"tpl": "55"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span style=\"width:var(--b3,8px);height:2.5px;border-radius:2px;background:currentColor;display:block;transition:width .35s cubic-bezier(.16,.84,.32,1) .04s;\" data-dc-tpl=\"62\"></span>",
+			"box": {
+				"375": {
+					"x": 332,
+					"y": 87.3,
+					"w": 8,
+					"h": 2.5
+				},
+				"768": {
+					"x": 713,
+					"y": 87.3,
+					"w": 8,
+					"h": 2.5
+				},
+				"1440": null
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": false
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": null
+			},
+			"flexDirection": "row",
+			"layoutChanged": true,
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_62_0@375.png"
 			}
 		},
 		{
@@ -2104,6 +2453,59 @@
 			}
 		},
 		{
+			"key": "Root/13#0",
+			"parentKey": "Root/11#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 13,
+			"attrs": {
+				"href": "#/apply",
+				"class": "scp0",
+				"style": "display: inline-flex; align-items: center; gap: 7px; background: rgb(255, 255, 255); color: rgb(10, 126, 168); border-radius: 999px; padding: 6px 14px; font-size: 15px; font-weight: 700; white-space: nowrap; box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 6px; transition: transform 0.2s, box-shadow 0.25s, background 0.2s, color 0.2s;"
+			},
+			"words": "Register For A Trade Account",
+			"allText": "Register For A Trade Account",
+			"srcLine": 28,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isM }}",
+					"tpl": "12"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "Register For A Trade Account",
+			"snippet": "<a href=\"#/apply\" style=\"display:inline-flex;align-items:center;gap:7px;background:#FFFFFF;color:#0A7EA8;border-radius:999px;padding:6px 14px;font-size:15px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.15);transition:transform .2s,box-shadow .25s,background .2s,color .2s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2);background:#D8",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 5.4,
+					"w": 215.4,
+					"h": 35.3
+				},
+				"768": null,
+				"1440": null
+			},
+			"visible": {
+				"375": true,
+				"768": false,
+				"1440": false
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": null,
+				"1440": null
+			},
+			"flexDirection": "row",
+			"layoutChanged": true,
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_13_0@375.png"
+			}
+		},
+		{
 			"key": "Root/14#0",
 			"parentKey": "Root/11#0",
 			"depth": 4,
@@ -2158,6 +2560,55 @@
 			"screenshots": {
 				"375": "shots/Root_14_0@375.png",
 				"1440": "shots/Root_14_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/18#0",
+			"parentKey": "Root/14#0",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 18,
+			"attrs": {},
+			"words": "Call",
+			"allText": "Call",
+			"srcLine": 29,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ isM }}",
+					"tpl": "17"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "Call",
+			"snippet": "<span data-dc-tpl=\"18\">Call</span>",
+			"box": {
+				"375": {
+					"x": 281.4,
+					"y": 11.4,
+					"w": 25.2,
+					"h": 23.3
+				},
+				"768": null,
+				"1440": null
+			},
+			"visible": {
+				"375": true,
+				"768": false,
+				"1440": false
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": null,
+				"1440": null
+			},
+			"flexDirection": "row",
+			"layoutChanged": true,
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_18_0@375.png"
 			}
 		},
 		{

@@ -1,0 +1,5955 @@
+{
+	"generated": "2026-10-22T21:06:59.252Z",
+	"source": "http://127.0.0.1:60979/",
+	"root": "footer",
+	"beside": [
+		{
+			"key": "Root/201#0",
+			"side": "before",
+			"distance": 1,
+			"position": "relative",
+			"renders": true,
+			"holdsOtherRoot": true
+		},
+		{
+			"key": "Root/728#0",
+			"side": "after",
+			"distance": 1,
+			"position": "fixed",
+			"renders": true,
+			"holdsOtherRoot": false
+		},
+		{
+			"key": "Root/106#0",
+			"side": "before",
+			"distance": 2,
+			"position": "fixed",
+			"renders": false,
+			"holdsOtherRoot": true
+		},
+		{
+			"key": "Root/39#0",
+			"side": "before",
+			"distance": 3,
+			"position": "sticky",
+			"renders": true,
+			"holdsOtherRoot": true
+		},
+		{
+			"key": "Root/38#0",
+			"side": "before",
+			"distance": 4,
+			"position": "fixed",
+			"renders": true,
+			"holdsOtherRoot": false
+		},
+		{
+			"key": "Root/9#0",
+			"side": "before",
+			"distance": 5,
+			"position": "relative",
+			"renders": true,
+			"holdsOtherRoot": false
+		}
+	],
+	"keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+	"checks": {
+		"rootName": "Root",
+		"rootKey": "Root/653#0",
+		"unstamped": [
+			{
+				"tag": "svg",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "svg",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "rect",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "polyline",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Closed"
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Monday – Thursday"
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "9:30am – 5pm"
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Friday"
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "9:30am – 12pm, 2:30 – 5pm"
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Saturday"
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "10am – 3pm"
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Sunday"
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Closed"
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Opens tomorrow at 9:30am"
+			},
+			{
+				"tag": "svg",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "defs",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "meshgradient",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "meshgradient",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "meshrow",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "meshpatch",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "stop",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "stop",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "stop",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "stop",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "meshgradient",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "meshrow",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "meshpatch",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "stop",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "stop",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "stop",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "stop",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "g",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "g",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "g",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "g",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "g",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "g",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "g",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "path",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Certifications"
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Trade"
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Brands"
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Delivery & Logistics"
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Terms & Conditions"
+			},
+			{
+				"tag": "span",
+				"cls": "sc-interp",
+				"text": "Blog"
+			},
+			{
+				"tag": "svg",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "line",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "polyline",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "svg",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "line",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "polyline",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "svg",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "line",
+				"cls": "",
+				"text": ""
+			},
+			{
+				"tag": "polyline",
+				"cls": "",
+				"text": ""
+			}
+		],
+		"duplicateKeys": 0,
+		"perWidthCounts": {
+			"375": 95,
+			"768": 96,
+			"1440": 96
+		},
+		"tagAgree": 96,
+		"tagDisagree": [],
+		"keysMissingAt": {
+			"375": [
+				"Root/731#0"
+			],
+			"768": [],
+			"1440": []
+		},
+		"screenshotSkips": [
+			{
+				"w": 1440,
+				"key": "Root/715#0",
+				"why": "not visible (box 0x24)"
+			},
+			{
+				"w": 1440,
+				"key": "Root/716#0",
+				"why": "not visible (box 0x24)"
+			},
+			{
+				"w": 375,
+				"key": "Root/715#0",
+				"why": "not visible (box 0x24)"
+			},
+			{
+				"w": 375,
+				"key": "Root/716#0",
+				"why": "not visible (box 0x24)"
+			}
+		]
+	},
+	"elements": [
+		{
+			"key": "Root/653#0",
+			"parentKey": "Root/8#0",
+			"depth": 0,
+			"tag": "footer",
+			"template": "Root",
+			"tpl": 653,
+			"attrs": {
+				"style": "position: relative; z-index: 1; background: rgb(44, 62, 80); color: rgb(255, 255, 255); overflow: hidden;"
+			},
+			"words": "",
+			"allText": "Call us0121 771 4330Speak to our sales team Email usamir@indusfoodsltd.comWe reply within one working day Opening hours ",
+			"srcLine": 939,
+			"membership": [],
+			"srcTag": "footer",
+			"srcOwnText": "",
+			"snippet": "<footer style=\"position:relative;z-index:1;background:#2C3E50;color:#FFFFFF;overflow:hidden;\" data-dc-tpl=\"653\"> <span aria-hidden=\"true\" style=\"position:absolute;left:0;right:0;top:0;height:5px;background:linear-gradient(90deg,#D8CA50 0%,#E7D768 30%,#2EADE2 70%,#0A7EA8 100%);\" data-dc-tpl=\"654\"></span> <span aria-hidden=\"true\" style=\"position:absolute;right:-180px;top:-180px;width:520px;height:52",
+			"box": {
+				"375": {
+					"x": 0,
+					"y": 7268.5,
+					"w": 375,
+					"h": 2268.8
+				},
+				"768": {
+					"x": 0,
+					"y": 5780.8,
+					"w": 768,
+					"h": 1741.3
+				},
+				"1440": {
+					"x": 0,
+					"y": 4449.8,
+					"w": 1440,
+					"h": 1045.1
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "relative",
+				"768": "relative",
+				"1440": "relative"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_653_0@375.png",
+				"1440": "shots/Root_653_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/654#0",
+			"parentKey": "Root/653#0",
+			"depth": 1,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 654,
+			"attrs": {
+				"aria-hidden": "true",
+				"style": "position: absolute; left: 0px; right: 0px; top: 0px; height: 5px; background: linear-gradient(90deg, rgb(216, 202, 80) 0%, rgb(231, 215, 104) 30%, rgb(46, 173, 226) 70%, rgb(10, 126, 168) 100%);"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 940,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span aria-hidden=\"true\" style=\"position:absolute;left:0;right:0;top:0;height:5px;background:linear-gradient(90deg,#D8CA50 0%,#E7D768 30%,#2EADE2 70%,#0A7EA8 100%);\" data-dc-tpl=\"654\"></span>",
+			"box": {
+				"375": {
+					"x": 0,
+					"y": 7268.5,
+					"w": 375,
+					"h": 5
+				},
+				"768": {
+					"x": 0,
+					"y": 5780.8,
+					"w": 768,
+					"h": 5
+				},
+				"1440": {
+					"x": 0,
+					"y": 4449.8,
+					"w": 1440,
+					"h": 5
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "absolute",
+				"768": "absolute",
+				"1440": "absolute"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_654_0@375.png",
+				"1440": "shots/Root_654_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/655#0",
+			"parentKey": "Root/653#0",
+			"depth": 1,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 655,
+			"attrs": {
+				"aria-hidden": "true",
+				"style": "position: absolute; right: -180px; top: -180px; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, rgba(46, 173, 226, 0.16), rgba(46, 173, 226, 0) 70%); pointer-events: none;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 941,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span aria-hidden=\"true\" style=\"position:absolute;right:-180px;top:-180px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(46,173,226,.16),rgba(46,173,226,0) 70%);pointer-events:none;\" data-dc-tpl=\"655\"></span>",
+			"box": {
+				"375": {
+					"x": 35,
+					"y": 7088.5,
+					"w": 520,
+					"h": 520
+				},
+				"768": {
+					"x": 428,
+					"y": 5600.8,
+					"w": 520,
+					"h": 520
+				},
+				"1440": {
+					"x": 1100,
+					"y": 4269.8,
+					"w": 520,
+					"h": 520
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "absolute",
+				"768": "absolute",
+				"1440": "absolute"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_655_0@375.png",
+				"1440": "shots/Root_655_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/656#0",
+			"parentKey": "Root/653#0",
+			"depth": 1,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 656,
+			"attrs": {
+				"style": "position: relative; max-width: 1240px; margin: 0px auto; padding: 80px 40px 0px;"
+			},
+			"words": "",
+			"allText": "Call us0121 771 4330Speak to our sales team Email usamir@indusfoodsltd.comWe reply within one working day Opening hours ",
+			"srcLine": 942,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"position:relative;max-width:1240px;margin:0 auto;padding:{{ R.footPad }} {{ R.px }} 0;\" data-dc-tpl=\"656\"> <div style=\"display:grid;grid-template-columns:{{ R.footTopCols }};gap:16px;\" data-dc-tpl=\"657\"> <a href=\"tel:01217714330\" style=\"position:relative;display:flex;gap:18px;align-items:flex-start;padding:26px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid rgba(2",
+			"box": {
+				"375": {
+					"x": 0,
+					"y": 7268.5,
+					"w": 375,
+					"h": 2081.4
+				},
+				"768": {
+					"x": 0,
+					"y": 5780.8,
+					"w": 768,
+					"h": 1584.7
+				},
+				"1440": {
+					"x": 100,
+					"y": 4449.8,
+					"w": 1240,
+					"h": 960.1
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "relative",
+				"768": "relative",
+				"1440": "relative"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_656_0@375.png",
+				"1440": "shots/Root_656_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/657#0",
+			"parentKey": "Root/656#0",
+			"depth": 2,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 657,
+			"attrs": {
+				"style": "display: grid; grid-template-columns: minmax(0px, 1fr) minmax(0px, 1fr) minmax(0px, 1.15fr); gap: 16px;"
+			},
+			"words": "",
+			"allText": "Call us0121 771 4330Speak to our sales team Email usamir@indusfoodsltd.comWe reply within one working day Opening hours ",
+			"srcLine": 943,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ R.footTopCols }};gap:16px;\" data-dc-tpl=\"657\"> <a href=\"tel:01217714330\" style=\"position:relative;display:flex;gap:18px;align-items:flex-start;padding:26px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#FFFFFF;transition:transform .35s cubic-bezier(.2,.8,.2,1),background .3s,border-color .3s,box-sh",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 7324.5,
+					"w": 335,
+					"h": 629
+				},
+				"768": {
+					"x": 32,
+					"y": 5860.8,
+					"w": 704,
+					"h": 454.1
+				},
+				"1440": {
+					"x": 140,
+					"y": 4529.8,
+					"w": 1160,
+					"h": 296.1
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "grid",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_657_0@375.png",
+				"1440": "shots/Root_657_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/658#0",
+			"parentKey": "Root/657#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 658,
+			"attrs": {
+				"href": "tel:01217714330",
+				"class": "scp1e",
+				"style": "position: relative; display: flex; gap: 18px; align-items: flex-start; padding: 26px; border-radius: 22px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); color: rgb(255, 255, 255); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.3s, border-color 0.3s, box-shadow 0.3s;"
+			},
+			"words": "",
+			"allText": "Call us0121 771 4330Speak to our sales team",
+			"srcLine": 944,
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"tel:01217714330\" style=\"position:relative;display:flex;gap:18px;align-items:flex-start;padding:26px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#FFFFFF;transition:transform .35s cubic-bezier(.2,.8,.2,1),background .3s,border-color .3s,box-shadow .3s;\" style-hover=\"transform:translateY(-4px);background:rgba(255,255,255,.08);border-color:",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 7324.5,
+					"w": 335,
+					"h": 141.9
+				},
+				"768": {
+					"x": 32,
+					"y": 5860.8,
+					"w": 344,
+					"h": 141.9
+				},
+				"1440": {
+					"x": 140,
+					"y": 4529.8,
+					"w": 358.1,
+					"h": 296.1
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "relative",
+				"768": "relative",
+				"1440": "relative"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_658_0@375.png",
+				"1440": "shots/Root_658_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/659#0",
+			"parentKey": "Root/658#0",
+			"depth": 4,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 659,
+			"attrs": {
+				"style": "flex-shrink: 0; width: 52px; height: 52px; border-radius: 50%; background: rgb(216, 202, 80); color: rgb(44, 62, 80); display: flex; align-items: center; justify-content: center;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 945,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "{{ footPhone }}",
+			"snippet": "<span style=\"flex-shrink:0;width:52px;height:52px;border-radius:50%;background:#D8CA50;color:#2C3E50;display:flex;align-items:center;justify-content:center;\" data-dc-tpl=\"659\">{{ footPhone }}</span>",
+			"box": {
+				"375": {
+					"x": 47,
+					"y": 7351.5,
+					"w": 52,
+					"h": 52
+				},
+				"768": {
+					"x": 59,
+					"y": 5887.8,
+					"w": 52,
+					"h": 52
+				},
+				"1440": {
+					"x": 167,
+					"y": 4556.8,
+					"w": 52,
+					"h": 52
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_659_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/660#0",
+			"parentKey": "Root/658#0",
+			"depth": 4,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 660,
+			"attrs": {
+				"style": "min-width: 0px;"
+			},
+			"words": "",
+			"allText": "Call us0121 771 4330Speak to our sales team",
+			"srcLine": 946,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"660\"><span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;\" data-dc-tpl=\"661\">Call us</span><span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(20px,1.9vw,24px);margin-top:8px;\" data-dc-tpl=\"662\">0121 771 4330</span>",
+			"box": {
+				"375": {
+					"x": 117,
+					"y": 7351.5,
+					"w": 158.4,
+					"h": 87.9
+				},
+				"768": {
+					"x": 129,
+					"y": 5887.8,
+					"w": 158.4,
+					"h": 87.9
+				},
+				"1440": {
+					"x": 237,
+					"y": 4556.8,
+					"w": 163.1,
+					"h": 94.1
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_660_0@375.png",
+				"1440": "shots/Root_660_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/661#0",
+			"parentKey": "Root/660#0",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 661,
+			"attrs": {
+				"style": "display: block; font-family: Montserrat, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(216, 202, 80);"
+			},
+			"words": "Call us",
+			"allText": "Call us",
+			"srcLine": 946,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "Call us",
+			"snippet": "<span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;\" data-dc-tpl=\"661\">Call us</span>",
+			"box": {
+				"375": {
+					"x": 117,
+					"y": 7351.5,
+					"w": 158.4,
+					"h": 20.1
+				},
+				"768": {
+					"x": 129,
+					"y": 5887.8,
+					"w": 158.4,
+					"h": 20.1
+				},
+				"1440": {
+					"x": 237,
+					"y": 4556.8,
+					"w": 163.1,
+					"h": 20.1
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_661_0@375.png",
+				"1440": "shots/Root_661_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/662#0",
+			"parentKey": "Root/660#0",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 662,
+			"attrs": {
+				"style": "display: block; font-family: Montserrat, sans-serif; font-weight: 700; font-size: clamp(20px, 1.9vw, 24px); margin-top: 8px;"
+			},
+			"words": "0121 771 4330",
+			"allText": "0121 771 4330",
+			"srcLine": 946,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "0121 771 4330",
+			"snippet": "<span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(20px,1.9vw,24px);margin-top:8px;\" data-dc-tpl=\"662\">0121 771 4330</span>",
+			"box": {
+				"375": {
+					"x": 117,
+					"y": 7379.7,
+					"w": 158.4,
+					"h": 31
+				},
+				"768": {
+					"x": 129,
+					"y": 5916,
+					"w": 158.4,
+					"h": 31
+				},
+				"1440": {
+					"x": 237,
+					"y": 4585,
+					"w": 163.1,
+					"h": 37.2
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_662_0@375.png",
+				"1440": "shots/Root_662_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/663#0",
+			"parentKey": "Root/660#0",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 663,
+			"attrs": {
+				"style": "display: block; font-size: 16px; color: rgb(201, 212, 222); margin-top: 4px;"
+			},
+			"words": "Speak to our sales team",
+			"allText": "Speak to our sales team",
+			"srcLine": 946,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "Speak to our sales team",
+			"snippet": "<span style=\"display:block;font-size:16px;color:#C9D4DE;margin-top:4px;\" data-dc-tpl=\"663\">Speak to our sales team</span>",
+			"box": {
+				"375": {
+					"x": 117,
+					"y": 7414.7,
+					"w": 158.4,
+					"h": 24.8
+				},
+				"768": {
+					"x": 129,
+					"y": 5951,
+					"w": 158.4,
+					"h": 24.8
+				},
+				"1440": {
+					"x": 237,
+					"y": 4626.1,
+					"w": 163.1,
+					"h": 24.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_663_0@375.png",
+				"1440": "shots/Root_663_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/664#0",
+			"parentKey": "Root/657#0",
+			"depth": 3,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 664,
+			"attrs": {
+				"href": "mailto:amir@indusfoodsltd.com",
+				"class": "scp1e",
+				"style": "position: relative; display: flex; gap: 18px; align-items: flex-start; padding: 26px; border-radius: 22px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); color: rgb(255, 255, 255); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.3s, border-color 0.3s, box-shadow 0.3s;"
+			},
+			"words": "",
+			"allText": "Email usamir@indusfoodsltd.comWe reply within one working day",
+			"srcLine": 948,
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"mailto:amir@indusfoodsltd.com\" style=\"position:relative;display:flex;gap:18px;align-items:flex-start;padding:26px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#FFFFFF;transition:transform .35s cubic-bezier(.2,.8,.2,1),background .3s,border-color .3s,box-shadow .3s;\" style-hover=\"transform:translateY(-4px);background:rgba(255,255,255,.08)",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 7482.5,
+					"w": 335,
+					"h": 159
+				},
+				"768": {
+					"x": 392,
+					"y": 5860.8,
+					"w": 344,
+					"h": 141.9
+				},
+				"1440": {
+					"x": 514.1,
+					"y": 4529.8,
+					"w": 358.1,
+					"h": 296.1
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "relative",
+				"768": "relative",
+				"1440": "relative"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_664_0@375.png",
+				"1440": "shots/Root_664_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/665#0",
+			"parentKey": "Root/664#0",
+			"depth": 4,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 665,
+			"attrs": {
+				"style": "flex-shrink: 0; width: 52px; height: 52px; border-radius: 50%; background: rgb(216, 202, 80); color: rgb(44, 62, 80); display: flex; align-items: center; justify-content: center;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 949,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "{{ footMail }}",
+			"snippet": "<span style=\"flex-shrink:0;width:52px;height:52px;border-radius:50%;background:#D8CA50;color:#2C3E50;display:flex;align-items:center;justify-content:center;\" data-dc-tpl=\"665\">{{ footMail }}</span>",
+			"box": {
+				"375": {
+					"x": 47,
+					"y": 7509.5,
+					"w": 52,
+					"h": 52
+				},
+				"768": {
+					"x": 419,
+					"y": 5887.8,
+					"w": 52,
+					"h": 52
+				},
+				"1440": {
+					"x": 541.1,
+					"y": 4556.8,
+					"w": 52,
+					"h": 52
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_665_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/666#0",
+			"parentKey": "Root/664#0",
+			"depth": 4,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 666,
+			"attrs": {
+				"style": "min-width: 0px;"
+			},
+			"words": "",
+			"allText": "Email usamir@indusfoodsltd.comWe reply within one working day",
+			"srcLine": 950,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"666\"><span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;\" data-dc-tpl=\"667\">Email us</span><span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(15px,1.25vw,17px);margin-top:8px;white-space:nowrap;\" data-dc-tpl=\"668\"",
+			"box": {
+				"375": {
+					"x": 117,
+					"y": 7509.5,
+					"w": 211,
+					"h": 105
+				},
+				"768": {
+					"x": 489,
+					"y": 5887.8,
+					"w": 216.7,
+					"h": 80.2
+				},
+				"1440": {
+					"x": 611.1,
+					"y": 4556.8,
+					"w": 224.2,
+					"h": 83.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_666_0@375.png",
+				"1440": "shots/Root_666_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/667#0",
+			"parentKey": "Root/666#0",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 667,
+			"attrs": {
+				"style": "display: block; font-family: Montserrat, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(216, 202, 80);"
+			},
+			"words": "Email us",
+			"allText": "Email us",
+			"srcLine": 950,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "Email us",
+			"snippet": "<span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;\" data-dc-tpl=\"667\">Email us</span>",
+			"box": {
+				"375": {
+					"x": 117,
+					"y": 7509.5,
+					"w": 211,
+					"h": 20.1
+				},
+				"768": {
+					"x": 489,
+					"y": 5887.8,
+					"w": 216.7,
+					"h": 20.1
+				},
+				"1440": {
+					"x": 611.1,
+					"y": 4556.8,
+					"w": 224.2,
+					"h": 20.1
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_667_0@375.png",
+				"1440": "shots/Root_667_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/668#0",
+			"parentKey": "Root/666#0",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 668,
+			"attrs": {
+				"style": "display: block; font-family: Montserrat, sans-serif; font-weight: 700; font-size: clamp(15px, 1.25vw, 17px); margin-top: 8px; white-space: nowrap;"
+			},
+			"words": "amir@indusfoodsltd.com",
+			"allText": "amir@indusfoodsltd.com",
+			"srcLine": 950,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "amir@indusfoodsltd.com",
+			"snippet": "<span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(15px,1.25vw,17px);margin-top:8px;white-space:nowrap;\" data-dc-tpl=\"668\">amir@indusfoodsltd.com</span>",
+			"box": {
+				"375": {
+					"x": 117,
+					"y": 7537.6,
+					"w": 211,
+					"h": 23.3
+				},
+				"768": {
+					"x": 489,
+					"y": 5916,
+					"w": 216.7,
+					"h": 23.3
+				},
+				"1440": {
+					"x": 611.1,
+					"y": 4585,
+					"w": 224.2,
+					"h": 26.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_668_0@375.png",
+				"1440": "shots/Root_668_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/669#0",
+			"parentKey": "Root/666#0",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 669,
+			"attrs": {
+				"style": "display: block; font-size: 16px; color: rgb(201, 212, 222); margin-top: 4px;"
+			},
+			"words": "We reply within one working day",
+			"allText": "We reply within one working day",
+			"srcLine": 950,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "We reply within one working day",
+			"snippet": "<span style=\"display:block;font-size:16px;color:#C9D4DE;margin-top:4px;\" data-dc-tpl=\"669\">We reply within one working day</span>",
+			"box": {
+				"375": {
+					"x": 117,
+					"y": 7564.9,
+					"w": 211,
+					"h": 49.6
+				},
+				"768": {
+					"x": 489,
+					"y": 5943.2,
+					"w": 216.7,
+					"h": 24.8
+				},
+				"1440": {
+					"x": 611.1,
+					"y": 4615.3,
+					"w": 224.2,
+					"h": 24.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_669_0@375.png",
+				"1440": "shots/Root_669_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/670#0",
+			"parentKey": "Root/657#0",
+			"depth": 3,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 670,
+			"attrs": {
+				"style": "position: relative; display: flex; gap: 14px; align-items: flex-start; padding: 26px; border-radius: 22px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); color: rgb(255, 255, 255); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.3s, border-color 0.3s, box-shadow 0.3s; flex-direction: column; grid-column: auto;"
+			},
+			"words": "",
+			"allText": "Opening hours Closed Monday – Thursday9:30am – 5pm Friday9:30am – 12pm, 2:30 – 5pm Saturday10am – 3pm SundayClosed Opens",
+			"srcLine": 952,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"position:relative;display:flex;gap:18px;align-items:flex-start;padding:26px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#FFFFFF;transition:transform .35s cubic-bezier(.2,.8,.2,1),background .3s,border-color .3s,box-shadow .3s;flex-direction:column;gap:14px;grid-column:{{ R.footHoursSpan }};\" data-dc-tpl=\"670\"> <div style=\"display:fle",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 7657.5,
+					"w": 335,
+					"h": 296.1
+				},
+				"768": {
+					"x": 32,
+					"y": 6018.8,
+					"w": 704,
+					"h": 296.1
+				},
+				"1440": {
+					"x": 888.2,
+					"y": 4529.8,
+					"w": 411.8,
+					"h": 296.1
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "relative",
+				"768": "relative",
+				"1440": "relative"
+			},
+			"flexDirection": "column",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_670_0@375.png",
+				"1440": "shots/Root_670_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/671#0",
+			"parentKey": "Root/670#0",
+			"depth": 4,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 671,
+			"attrs": {
+				"style": "display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%;"
+			},
+			"words": "",
+			"allText": "Opening hours Closed",
+			"srcLine": 953,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;\" data-dc-tpl=\"671\"> <span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;\" data-dc-tpl=\"672\">Opening hours</span> <span style=\"display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;padding:5px 1",
+			"box": {
+				"375": {
+					"x": 47,
+					"y": 7684.5,
+					"w": 281,
+					"h": 31.7
+				},
+				"768": {
+					"x": 59,
+					"y": 6045.8,
+					"w": 650,
+					"h": 31.7
+				},
+				"1440": {
+					"x": 915.2,
+					"y": 4556.8,
+					"w": 357.8,
+					"h": 31.7
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_671_0@375.png",
+				"1440": "shots/Root_671_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/672#0",
+			"parentKey": "Root/671#0",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 672,
+			"attrs": {
+				"style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(216, 202, 80);"
+			},
+			"words": "Opening hours",
+			"allText": "Opening hours",
+			"srcLine": 954,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "Opening hours",
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;\" data-dc-tpl=\"672\">Opening hours</span>",
+			"box": {
+				"375": {
+					"x": 47,
+					"y": 7690.2,
+					"w": 141.3,
+					"h": 20.1
+				},
+				"768": {
+					"x": 59,
+					"y": 6051.5,
+					"w": 141.3,
+					"h": 20.1
+				},
+				"1440": {
+					"x": 915.2,
+					"y": 4562.6,
+					"w": 141.3,
+					"h": 20.1
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_672_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/673#0",
+			"parentKey": "Root/671#0",
+			"depth": 5,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 673,
+			"attrs": {
+				"style": "display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; padding: 5px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); color: rgb(255, 255, 255); white-space: nowrap;"
+			},
+			"words": "Closed",
+			"allText": "Closed",
+			"srcLine": 955,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "{{ hoursNow.label }}",
+			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;padding:5px 12px;border-radius:999px;background:{{ hoursNow.bg }};color:{{ hoursNow.fg }};white-space:nowrap;\" data-dc-tpl=\"673\"><span ref=\"{{ setPulseEl }}\" style=\"width:8px;height:8px;border-radius:50%;background:{{ hoursNow.dot }};color:{{ hoursNow.dot }};\" data-dc-tpl=\"674\"></span>{{ hoursNow.label }}</s",
+			"box": {
+				"375": {
+					"x": 246.7,
+					"y": 7684.5,
+					"w": 81.3,
+					"h": 31.7
+				},
+				"768": {
+					"x": 627.7,
+					"y": 6045.8,
+					"w": 81.3,
+					"h": 31.7
+				},
+				"1440": {
+					"x": 1191.6,
+					"y": 4556.8,
+					"w": 81.3,
+					"h": 31.7
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_673_0@375.png",
+				"1440": "shots/Root_673_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/674#0",
+			"parentKey": "Root/673#0",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 674,
+			"attrs": {
+				"style": "width: 8px; height: 8px; border-radius: 50%; background: rgb(232, 161, 58); color: rgb(232, 161, 58);"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 955,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span ref=\"{{ setPulseEl }}\" style=\"width:8px;height:8px;border-radius:50%;background:{{ hoursNow.dot }};color:{{ hoursNow.dot }};\" data-dc-tpl=\"674\"></span>",
+			"box": {
+				"375": {
+					"x": 258.7,
+					"y": 7696.3,
+					"w": 8,
+					"h": 8
+				},
+				"768": {
+					"x": 639.7,
+					"y": 6057.6,
+					"w": 8,
+					"h": 8
+				},
+				"1440": {
+					"x": 1203.6,
+					"y": 4568.7,
+					"w": 8,
+					"h": 8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_674_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/675#0",
+			"parentKey": "Root/670#0",
+			"depth": 4,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 675,
+			"attrs": {
+				"style": "display: flex; flex-direction: column; width: 100%;"
+			},
+			"words": "",
+			"allText": "Monday – Thursday9:30am – 5pm Friday9:30am – 12pm, 2:30 – 5pm Saturday10am – 3pm SundayClosed",
+			"srcLine": 957,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;flex-direction:column;width:100%;\" data-dc-tpl=\"675\"> <sc-for list=\"{{ hours }}\" as=\"hr\" hint-placeholder-count=\"4\" data-dc-tpl=\"676\"> <div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};font-weight:{{ hr.weight }};\" data-dc-tpl=\"677\"><span data-dc-tpl=\"678\">{{ hr.d ",
+			"box": {
+				"375": {
+					"x": 47,
+					"y": 7730.1,
+					"w": 281,
+					"h": 159.2
+				},
+				"768": {
+					"x": 59,
+					"y": 6091.5,
+					"w": 650,
+					"h": 159.2
+				},
+				"1440": {
+					"x": 915.2,
+					"y": 4602.5,
+					"w": 357.8,
+					"h": 159.2
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "column",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_675_0@375.png",
+				"1440": "shots/Root_675_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/677#0",
+			"parentKey": "Root/675#0",
+			"depth": 5,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 677,
+			"attrs": {
+				"style": "display: flex; justify-content: space-between; gap: 14px; font-size: 16px; padding: 7px 0px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: rgb(216, 202, 80); font-weight: 700;"
+			},
+			"words": "",
+			"allText": "Monday – Thursday9:30am – 5pm",
+			"srcLine": 959,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ hours }}",
+					"as": "hr",
+					"tpl": "676"
+				}
+			],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};font-weight:{{ hr.weight }};\" data-dc-tpl=\"677\"><span data-dc-tpl=\"678\">{{ hr.d }}</span><span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span></div>",
+			"box": {
+				"375": {
+					"x": 47,
+					"y": 7730.1,
+					"w": 281,
+					"h": 39.8
+				},
+				"768": {
+					"x": 59,
+					"y": 6091.5,
+					"w": 650,
+					"h": 39.8
+				},
+				"1440": {
+					"x": 915.2,
+					"y": 4602.5,
+					"w": 357.8,
+					"h": 39.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_677_0@375.png",
+				"1440": "shots/Root_677_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/678#0",
+			"parentKey": "Root/677#0",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 678,
+			"attrs": {},
+			"words": "Monday – Thursday",
+			"allText": "Monday – Thursday",
+			"srcLine": 959,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ hours }}",
+					"as": "hr",
+					"tpl": "676"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ hr.d }}",
+			"snippet": "<span data-dc-tpl=\"678\">{{ hr.d }}</span>",
+			"box": {
+				"375": {
+					"x": 47,
+					"y": 7737.1,
+					"w": 136.6,
+					"h": 24.8
+				},
+				"768": {
+					"x": 59,
+					"y": 6098.5,
+					"w": 136.6,
+					"h": 24.8
+				},
+				"1440": {
+					"x": 915.2,
+					"y": 4609.5,
+					"w": 136.6,
+					"h": 24.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_678_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/679#0",
+			"parentKey": "Root/677#0",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 679,
+			"attrs": {
+				"style": "text-align: right;"
+			},
+			"words": "9:30am – 5pm",
+			"allText": "9:30am – 5pm",
+			"srcLine": 959,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ hours }}",
+					"as": "hr",
+					"tpl": "676"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ hr.t }}",
+			"snippet": "<span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span>",
+			"box": {
+				"375": {
+					"x": 230.3,
+					"y": 7737.1,
+					"w": 97.7,
+					"h": 24.8
+				},
+				"768": {
+					"x": 611.3,
+					"y": 6098.5,
+					"w": 97.7,
+					"h": 24.8
+				},
+				"1440": {
+					"x": 1175.3,
+					"y": 4609.5,
+					"w": 97.7,
+					"h": 24.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_679_0@375.png",
+				"1440": "shots/Root_679_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/677#1",
+			"parentKey": "Root/675#0",
+			"depth": 5,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 677,
+			"attrs": {
+				"style": "display: flex; justify-content: space-between; gap: 14px; font-size: 16px; padding: 7px 0px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: rgb(220, 228, 234); font-weight: 400;"
+			},
+			"words": "",
+			"allText": "Friday9:30am – 12pm, 2:30 – 5pm",
+			"srcLine": 959,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ hours }}",
+					"as": "hr",
+					"tpl": "676"
+				}
+			],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};font-weight:{{ hr.weight }};\" data-dc-tpl=\"677\"><span data-dc-tpl=\"678\">{{ hr.d }}</span><span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span></div>",
+			"box": {
+				"375": {
+					"x": 47,
+					"y": 7769.9,
+					"w": 281,
+					"h": 39.8
+				},
+				"768": {
+					"x": 59,
+					"y": 6131.3,
+					"w": 650,
+					"h": 39.8
+				},
+				"1440": {
+					"x": 915.2,
+					"y": 4642.3,
+					"w": 357.8,
+					"h": 39.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_677_1@375.png",
+				"1440": "shots/Root_677_1@1440.png"
+			}
+		},
+		{
+			"key": "Root/678#1",
+			"parentKey": "Root/677#1",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 678,
+			"attrs": {},
+			"words": "Friday",
+			"allText": "Friday",
+			"srcLine": 959,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ hours }}",
+					"as": "hr",
+					"tpl": "676"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ hr.d }}",
+			"snippet": "<span data-dc-tpl=\"678\">{{ hr.d }}</span>",
+			"box": {
+				"375": {
+					"x": 47,
+					"y": 7776.9,
+					"w": 41.5,
+					"h": 24.8
+				},
+				"768": {
+					"x": 59,
+					"y": 6138.3,
+					"w": 41.5,
+					"h": 24.8
+				},
+				"1440": {
+					"x": 915.2,
+					"y": 4649.3,
+					"w": 41.5,
+					"h": 24.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_678_1@1440.png"
+			}
+		},
+		{
+			"key": "Root/679#1",
+			"parentKey": "Root/677#1",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 679,
+			"attrs": {
+				"style": "text-align: right;"
+			},
+			"words": "9:30am – 12pm, 2:30 – 5pm",
+			"allText": "9:30am – 12pm, 2:30 – 5pm",
+			"srcLine": 959,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ hours }}",
+					"as": "hr",
+					"tpl": "676"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ hr.t }}",
+			"snippet": "<span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span>",
+			"box": {
+				"375": {
+					"x": 147.5,
+					"y": 7776.9,
+					"w": 180.5,
+					"h": 24.8
+				},
+				"768": {
+					"x": 528.5,
+					"y": 6138.3,
+					"w": 180.5,
+					"h": 24.8
+				},
+				"1440": {
+					"x": 1092.5,
+					"y": 4649.3,
+					"w": 180.5,
+					"h": 24.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_679_1@375.png",
+				"1440": "shots/Root_679_1@1440.png"
+			}
+		},
+		{
+			"key": "Root/677#2",
+			"parentKey": "Root/675#0",
+			"depth": 5,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 677,
+			"attrs": {
+				"style": "display: flex; justify-content: space-between; gap: 14px; font-size: 16px; padding: 7px 0px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: rgb(220, 228, 234); font-weight: 400;"
+			},
+			"words": "",
+			"allText": "Saturday10am – 3pm",
+			"srcLine": 959,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ hours }}",
+					"as": "hr",
+					"tpl": "676"
+				}
+			],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};font-weight:{{ hr.weight }};\" data-dc-tpl=\"677\"><span data-dc-tpl=\"678\">{{ hr.d }}</span><span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span></div>",
+			"box": {
+				"375": {
+					"x": 47,
+					"y": 7809.7,
+					"w": 281,
+					"h": 39.8
+				},
+				"768": {
+					"x": 59,
+					"y": 6171,
+					"w": 650,
+					"h": 39.8
+				},
+				"1440": {
+					"x": 915.2,
+					"y": 4682.1,
+					"w": 357.8,
+					"h": 39.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_677_2@375.png",
+				"1440": "shots/Root_677_2@1440.png"
+			}
+		},
+		{
+			"key": "Root/678#2",
+			"parentKey": "Root/677#2",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 678,
+			"attrs": {},
+			"words": "Saturday",
+			"allText": "Saturday",
+			"srcLine": 959,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ hours }}",
+					"as": "hr",
+					"tpl": "676"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ hr.d }}",
+			"snippet": "<span data-dc-tpl=\"678\">{{ hr.d }}</span>",
+			"box": {
+				"375": {
+					"x": 47,
+					"y": 7816.7,
+					"w": 60.3,
+					"h": 24.8
+				},
+				"768": {
+					"x": 59,
+					"y": 6178,
+					"w": 60.3,
+					"h": 24.8
+				},
+				"1440": {
+					"x": 915.2,
+					"y": 4689.1,
+					"w": 60.3,
+					"h": 24.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_678_2@1440.png"
+			}
+		},
+		{
+			"key": "Root/679#2",
+			"parentKey": "Root/677#2",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 679,
+			"attrs": {
+				"style": "text-align: right;"
+			},
+			"words": "10am – 3pm",
+			"allText": "10am – 3pm",
+			"srcLine": 959,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ hours }}",
+					"as": "hr",
+					"tpl": "676"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ hr.t }}",
+			"snippet": "<span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span>",
+			"box": {
+				"375": {
+					"x": 246.6,
+					"y": 7816.7,
+					"w": 81.4,
+					"h": 24.8
+				},
+				"768": {
+					"x": 627.6,
+					"y": 6178,
+					"w": 81.4,
+					"h": 24.8
+				},
+				"1440": {
+					"x": 1191.6,
+					"y": 4689.1,
+					"w": 81.4,
+					"h": 24.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_679_2@375.png",
+				"1440": "shots/Root_679_2@1440.png"
+			}
+		},
+		{
+			"key": "Root/677#3",
+			"parentKey": "Root/675#0",
+			"depth": 5,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 677,
+			"attrs": {
+				"style": "display: flex; justify-content: space-between; gap: 14px; font-size: 16px; padding: 7px 0px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: rgb(220, 228, 234); font-weight: 400;"
+			},
+			"words": "",
+			"allText": "SundayClosed",
+			"srcLine": 959,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ hours }}",
+					"as": "hr",
+					"tpl": "676"
+				}
+			],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};font-weight:{{ hr.weight }};\" data-dc-tpl=\"677\"><span data-dc-tpl=\"678\">{{ hr.d }}</span><span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span></div>",
+			"box": {
+				"375": {
+					"x": 47,
+					"y": 7849.5,
+					"w": 281,
+					"h": 39.8
+				},
+				"768": {
+					"x": 59,
+					"y": 6210.8,
+					"w": 650,
+					"h": 39.8
+				},
+				"1440": {
+					"x": 915.2,
+					"y": 4721.9,
+					"w": 357.8,
+					"h": 39.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_677_3@375.png",
+				"1440": "shots/Root_677_3@1440.png"
+			}
+		},
+		{
+			"key": "Root/678#3",
+			"parentKey": "Root/677#3",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 678,
+			"attrs": {},
+			"words": "Sunday",
+			"allText": "Sunday",
+			"srcLine": 959,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ hours }}",
+					"as": "hr",
+					"tpl": "676"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ hr.d }}",
+			"snippet": "<span data-dc-tpl=\"678\">{{ hr.d }}</span>",
+			"box": {
+				"375": {
+					"x": 47,
+					"y": 7856.5,
+					"w": 50.4,
+					"h": 24.8
+				},
+				"768": {
+					"x": 59,
+					"y": 6217.8,
+					"w": 50.4,
+					"h": 24.8
+				},
+				"1440": {
+					"x": 915.2,
+					"y": 4728.9,
+					"w": 50.4,
+					"h": 24.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_678_3@1440.png"
+			}
+		},
+		{
+			"key": "Root/679#3",
+			"parentKey": "Root/677#3",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 679,
+			"attrs": {
+				"style": "text-align: right;"
+			},
+			"words": "Closed",
+			"allText": "Closed",
+			"srcLine": 959,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ hours }}",
+					"as": "hr",
+					"tpl": "676"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "{{ hr.t }}",
+			"snippet": "<span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span>",
+			"box": {
+				"375": {
+					"x": 282.6,
+					"y": 7856.5,
+					"w": 45.4,
+					"h": 24.8
+				},
+				"768": {
+					"x": 663.6,
+					"y": 6217.8,
+					"w": 45.4,
+					"h": 24.8
+				},
+				"1440": {
+					"x": 1227.6,
+					"y": 4728.9,
+					"w": 45.4,
+					"h": 24.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_679_3@375.png",
+				"1440": "shots/Root_679_3@1440.png"
+			}
+		},
+		{
+			"key": "Root/680#0",
+			"parentKey": "Root/670#0",
+			"depth": 4,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 680,
+			"attrs": {
+				"style": "font-size: 15px; color: rgb(201, 212, 222);"
+			},
+			"words": "Opens tomorrow at 9:30am",
+			"allText": "Opens tomorrow at 9:30am",
+			"srcLine": 962,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "{{ hoursNow.sub }}",
+			"snippet": "<span style=\"font-size:15px;color:#C9D4DE;\" data-dc-tpl=\"680\">{{ hoursNow.sub }}</span>",
+			"box": {
+				"375": {
+					"x": 47,
+					"y": 7903.3,
+					"w": 170.4,
+					"h": 23.3
+				},
+				"768": {
+					"x": 59,
+					"y": 6264.6,
+					"w": 170.4,
+					"h": 23.3
+				},
+				"1440": {
+					"x": 915.2,
+					"y": 4775.7,
+					"w": 170.4,
+					"h": 23.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_680_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/681#0",
+			"parentKey": "Root/656#0",
+			"depth": 2,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 681,
+			"attrs": {
+				"style": "display: grid; grid-template-columns: minmax(0px, 1.25fr) minmax(0px, 0.85fr) minmax(0px, 1fr); gap: 48px 56px; padding: 72px 0px;"
+			},
+			"words": "",
+			"allText": "As an industry leading food & drink distributor, based in the heart of the UK, the company specialises in Ethnic Foods &",
+			"srcLine": 966,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ R.footMainCols }};gap:48px 56px;padding:{{ R.footMidPad }} 0;\" data-dc-tpl=\"681\"> <div style=\"grid-column:{{ R.footBrandSpan }};min-width:0;\" data-dc-tpl=\"682\"> <a href=\"#/\" aria-label=\"Indus Foods home\" style=\"display:block;width:{{ R.footLogoW }};max-width:100%;margin:0 auto;\" data-dc-tpl=\"683\"><indus-logo variant=\"square\" aria-label=\"Indus Foods",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 7953.6,
+					"w": 335,
+					"h": 1396.3
+				},
+				"768": {
+					"x": 32,
+					"y": 6314.9,
+					"w": 704,
+					"h": 1050.6
+				},
+				"1440": {
+					"x": 140,
+					"y": 4825.9,
+					"w": 1160,
+					"h": 584
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "grid",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_681_0@375.png",
+				"1440": "shots/Root_681_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/682#0",
+			"parentKey": "Root/681#0",
+			"depth": 3,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 682,
+			"attrs": {
+				"style": "grid-column: auto; min-width: 0px;"
+			},
+			"words": "",
+			"allText": "As an industry leading food & drink distributor, based in the heart of the UK, the company specialises in Ethnic Foods &",
+			"srcLine": 967,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"grid-column:{{ R.footBrandSpan }};min-width:0;\" data-dc-tpl=\"682\"> <a href=\"#/\" aria-label=\"Indus Foods home\" style=\"display:block;width:{{ R.footLogoW }};max-width:100%;margin:0 auto;\" data-dc-tpl=\"683\"><indus-logo variant=\"square\" aria-label=\"Indus Foods Ltd\" style=\"display:block;width:100%;aspect-ratio:1998 / 1302;\" data-dc-tpl=\"684\"></indus-logo></a> <p style=\"font-size:17px;line-h",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8001.6,
+					"w": 335,
+					"h": 448.7
+				},
+				"768": {
+					"x": 32,
+					"y": 6386.9,
+					"w": 704,
+					"h": 418.7
+				},
+				"1440": {
+					"x": 140,
+					"y": 4897.9,
+					"w": 422.6,
+					"h": 440
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_682_0@375.png",
+				"1440": "shots/Root_682_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/683#0",
+			"parentKey": "Root/682#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 683,
+			"attrs": {
+				"href": "#/",
+				"aria-label": "Indus Foods home",
+				"style": "display: block; width: 240px; max-width: 100%; margin: 0px auto;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 968,
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"#/\" aria-label=\"Indus Foods home\" style=\"display:block;width:{{ R.footLogoW }};max-width:100%;margin:0 auto;\" data-dc-tpl=\"683\"><indus-logo variant=\"square\" aria-label=\"Indus Foods Ltd\" style=\"display:block;width:100%;aspect-ratio:1998 / 1302;\" data-dc-tpl=\"684\"></indus-logo></a>",
+			"box": {
+				"375": {
+					"x": 87.5,
+					"y": 8001.6,
+					"w": 200,
+					"h": 130.3
+				},
+				"768": {
+					"x": 264,
+					"y": 6386.9,
+					"w": 240,
+					"h": 156.4
+				},
+				"1440": {
+					"x": 231.3,
+					"y": 4897.9,
+					"w": 240,
+					"h": 156.4
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_683_0@375.png",
+				"1440": "shots/Root_683_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/684#0",
+			"parentKey": "Root/683#0",
+			"depth": 5,
+			"tag": "indus-logo",
+			"template": "Root",
+			"tpl": 684,
+			"attrs": {
+				"aria-label": "Indus Foods Ltd",
+				"style": "display: block; width: 100%; aspect-ratio: 1998 / 1302;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 968,
+			"membership": [],
+			"srcTag": "indus-logo",
+			"srcOwnText": "",
+			"snippet": "<indus-logo variant=\"square\" aria-label=\"Indus Foods Ltd\" style=\"display:block;width:100%;aspect-ratio:1998 / 1302;\" data-dc-tpl=\"684\"></indus-logo>",
+			"box": {
+				"375": {
+					"x": 87.5,
+					"y": 8001.6,
+					"w": 200,
+					"h": 130.3
+				},
+				"768": {
+					"x": 264,
+					"y": 6386.9,
+					"w": 240,
+					"h": 156.4
+				},
+				"1440": {
+					"x": 231.3,
+					"y": 4897.9,
+					"w": 240,
+					"h": 156.4
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_684_0@375.png",
+				"1440": "shots/Root_684_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/685#0",
+			"parentKey": "Root/682#0",
+			"depth": 4,
+			"tag": "p",
+			"template": "Root",
+			"tpl": 685,
+			"attrs": {
+				"style": "font-size: 17px; line-height: 1.65; color: rgb(220, 228, 234); margin: 24px 0px 0px; max-width: 460px; text-wrap: pretty;"
+			},
+			"words": "As an industry leading food & drink distributor, based in the heart of the UK, the company specialises in Ethnic Foods & has a strong export operation. Part of the Unitas Wholesale Group, with an annual turnover of £8bn, the company is at the forefront of driving positive growth within the Independent Wholesale sector.",
+			"allText": "As an industry leading food & drink distributor, based in the heart of the UK, the company specialises in Ethnic Foods &",
+			"srcLine": 969,
+			"membership": [],
+			"srcTag": "p",
+			"srcOwnText": "As an industry leading food & drink distributor, based in the heart of the UK, the company specialises in Ethnic Foods & has a strong export operation. Part of the Unitas Wholesale Group, with an annual turnover of £8bn, the company is at the forefront of driving positive growth within the Independent Wholesale sector.",
+			"snippet": "<p style=\"font-size:17px;line-height:1.65;color:#DCE4EA;margin:24px 0 0;max-width:460px;text-wrap:pretty;\" data-dc-tpl=\"685\">As an industry leading food &amp; drink distributor, based in the heart of the UK, the company specialises in Ethnic Foods &amp; has a strong export operation. Part of the Unitas Wholesale Group, with an annual turnover of £8bn, the company is at the forefront of driving pos",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8155.9,
+					"w": 335,
+					"h": 224.4
+				},
+				"768": {
+					"x": 32,
+					"y": 6567.3,
+					"w": 460,
+					"h": 168.3
+				},
+				"1440": {
+					"x": 140,
+					"y": 5078.3,
+					"w": 422.6,
+					"h": 168.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_685_0@375.png",
+				"1440": "shots/Root_685_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/686#0",
+			"parentKey": "Root/682#0",
+			"depth": 4,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 686,
+			"attrs": {
+				"style": "display: flex; gap: 12px; margin-top: 26px;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 970,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;gap:12px;margin-top:26px;\" data-dc-tpl=\"686\"><a href=\"#/\" aria-label=\"LinkedIn\" style=\"width:44px;height:44px;border-radius:50%;background:#0A66C2;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-sh",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8406.3,
+					"w": 335,
+					"h": 44
+				},
+				"768": {
+					"x": 32,
+					"y": 6761.6,
+					"w": 704,
+					"h": 44
+				},
+				"1440": {
+					"x": 140,
+					"y": 5272.6,
+					"w": 422.6,
+					"h": 44
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_686_0@375.png",
+				"1440": "shots/Root_686_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/687#0",
+			"parentKey": "Root/686#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 687,
+			"attrs": {
+				"href": "#/",
+				"aria-label": "LinkedIn",
+				"class": "scp1",
+				"style": "width: 44px; height: 44px; border-radius: 50%; background: rgb(10, 102, 194); color: rgb(255, 255, 255); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 970,
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"#/\" aria-label=\"LinkedIn\" style=\"width:44px;height:44px;border-radius:50%;background:#0A66C2;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px -6px rgba(0,0,0,.45);color:#FFFFFF\" data-dc-tpl=\"687\"",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8406.3,
+					"w": 44,
+					"h": 44
+				},
+				"768": {
+					"x": 32,
+					"y": 6761.6,
+					"w": 44,
+					"h": 44
+				},
+				"1440": {
+					"x": 140,
+					"y": 5272.6,
+					"w": 44,
+					"h": 44
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_687_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/688#0",
+			"parentKey": "Root/687#0",
+			"depth": 6,
+			"tag": "svg",
+			"template": "Root",
+			"tpl": 688,
+			"attrs": {
+				"aria-hidden": "true",
+				"viewBox": "0 0 24 24"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 970,
+			"membership": [],
+			"srcTag": "svg",
+			"srcOwnText": "",
+			"snippet": "<svg sc-camel-view-box=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"#FFFFFF\" aria-hidden=\"true\" data-dc-tpl=\"688\"><path d=\"M6.94 5a2 2 0 1 1-4-.002 2 2 0 0 1 4 .002zM7 8.48H3V21h4V8.48zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91l.04-1.68z\" data-dc-tpl=\"689\"></path></svg>",
+			"box": {
+				"375": {
+					"x": 31,
+					"y": 8417.3,
+					"w": 22,
+					"h": 22
+				},
+				"768": {
+					"x": 43,
+					"y": 6772.6,
+					"w": 22,
+					"h": 22
+				},
+				"1440": {
+					"x": 151,
+					"y": 5283.6,
+					"w": 22,
+					"h": 22
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_688_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/689#0",
+			"parentKey": "Root/688#0",
+			"depth": 7,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 689,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"srcLine": 970,
+			"membership": [],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path d=\"M6.94 5a2 2 0 1 1-4-.002 2 2 0 0 1 4 .002zM7 8.48H3V21h4V8.48zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91l.04-1.68z\" data-dc-tpl=\"689\"></path>",
+			"box": {
+				"375": {
+					"x": 33.7,
+					"y": 8420,
+					"w": 17.5,
+					"h": 16.5
+				},
+				"768": {
+					"x": 45.7,
+					"y": 6775.3,
+					"w": 17.5,
+					"h": 16.5
+				},
+				"1440": {
+					"x": 153.7,
+					"y": 5286.4,
+					"w": 17.5,
+					"h": 16.5
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_689_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/690#0",
+			"parentKey": "Root/686#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 690,
+			"attrs": {
+				"href": "#/",
+				"aria-label": "Facebook",
+				"class": "scp1",
+				"style": "width: 44px; height: 44px; border-radius: 50%; background: rgb(24, 119, 242); color: rgb(255, 255, 255); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 970,
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"#/\" aria-label=\"Facebook\" style=\"width:44px;height:44px;border-radius:50%;background:#1877F2;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px -6px rgba(0,0,0,.45);color:#FFFFFF\" data-dc-tpl=\"690\"",
+			"box": {
+				"375": {
+					"x": 76,
+					"y": 8406.3,
+					"w": 44,
+					"h": 44
+				},
+				"768": {
+					"x": 88,
+					"y": 6761.6,
+					"w": 44,
+					"h": 44
+				},
+				"1440": {
+					"x": 196,
+					"y": 5272.6,
+					"w": 44,
+					"h": 44
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_690_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/691#0",
+			"parentKey": "Root/690#0",
+			"depth": 6,
+			"tag": "svg",
+			"template": "Root",
+			"tpl": 691,
+			"attrs": {
+				"aria-hidden": "true",
+				"viewBox": "0 0 24 24"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 970,
+			"membership": [],
+			"srcTag": "svg",
+			"srcOwnText": "",
+			"snippet": "<svg sc-camel-view-box=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"#FFFFFF\" aria-hidden=\"true\" data-dc-tpl=\"691\"><path d=\"M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.25-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.9v3h2.5V21h3.1z\" data-dc-tpl=\"692\"></path></svg>",
+			"box": {
+				"375": {
+					"x": 87,
+					"y": 8417.3,
+					"w": 22,
+					"h": 22
+				},
+				"768": {
+					"x": 99,
+					"y": 6772.6,
+					"w": 22,
+					"h": 22
+				},
+				"1440": {
+					"x": 207,
+					"y": 5283.6,
+					"w": 22,
+					"h": 22
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_691_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/692#0",
+			"parentKey": "Root/691#0",
+			"depth": 7,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 692,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"srcLine": 970,
+			"membership": [],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path d=\"M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.25-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.9v3h2.5V21h3.1z\" data-dc-tpl=\"692\"></path>",
+			"box": {
+				"375": {
+					"x": 94.2,
+					"y": 8421.2,
+					"w": 8,
+					"h": 15.3
+				},
+				"768": {
+					"x": 106.2,
+					"y": 6776.5,
+					"w": 8,
+					"h": 15.3
+				},
+				"1440": {
+					"x": 214.2,
+					"y": 5287.6,
+					"w": 8,
+					"h": 15.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_692_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/693#0",
+			"parentKey": "Root/686#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 693,
+			"attrs": {
+				"href": "#/",
+				"aria-label": "Google",
+				"class": "scp1",
+				"style": "width: 44px; height: 44px; border-radius: 50%; background: rgb(255, 255, 255); color: rgb(255, 255, 255); box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 970,
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"#/\" aria-label=\"Google\" style=\"width:44px;height:44px;border-radius:50%;background:#FFFFFF;color:#FFFFFF;box-shadow:0 2px 6px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px -6px rgba(0,0,0,.4",
+			"box": {
+				"375": {
+					"x": 132,
+					"y": 8406.3,
+					"w": 44,
+					"h": 44
+				},
+				"768": {
+					"x": 144,
+					"y": 6761.6,
+					"w": 44,
+					"h": 44
+				},
+				"1440": {
+					"x": 252,
+					"y": 5272.6,
+					"w": 44,
+					"h": 44
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_693_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/694#0",
+			"parentKey": "Root/693#0",
+			"depth": 6,
+			"tag": "svg",
+			"template": "Root",
+			"tpl": 694,
+			"attrs": {
+				"aria-hidden": "true",
+				"viewBox": "0 0 48 48"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 970,
+			"membership": [],
+			"srcTag": "svg",
+			"srcOwnText": "",
+			"snippet": "<svg sc-camel-view-box=\"0 0 48 48\" width=\"20\" height=\"20\" aria-hidden=\"true\" data-dc-tpl=\"694\"><path fill=\"#EA4335\" d=\"M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z\" data-dc-tpl=\"695\"></path><path fill=\"#4285F4\" d=\"M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4",
+			"box": {
+				"375": {
+					"x": 144,
+					"y": 8418.3,
+					"w": 20,
+					"h": 20
+				},
+				"768": {
+					"x": 156,
+					"y": 6773.6,
+					"w": 20,
+					"h": 20
+				},
+				"1440": {
+					"x": 264,
+					"y": 5284.6,
+					"w": 20,
+					"h": 20
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_694_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/695#0",
+			"parentKey": "Root/694#0",
+			"depth": 7,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 695,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"srcLine": 970,
+			"membership": [],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path fill=\"#EA4335\" d=\"M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z\" data-dc-tpl=\"695\"></path>",
+			"box": {
+				"375": {
+					"x": 145.1,
+					"y": 8418.3,
+					"w": 15.6,
+					"h": 8.1
+				},
+				"768": {
+					"x": 157.1,
+					"y": 6773.6,
+					"w": 15.6,
+					"h": 8.1
+				},
+				"1440": {
+					"x": 265.1,
+					"y": 5284.6,
+					"w": 15.6,
+					"h": 8.1
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_695_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/696#0",
+			"parentKey": "Root/694#0",
+			"depth": 7,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 696,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"srcLine": 970,
+			"membership": [],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path fill=\"#4285F4\" d=\"M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z\" data-dc-tpl=\"696\"></path>",
+			"box": {
+				"375": {
+					"x": 154,
+					"y": 8426.6,
+					"w": 9.6,
+					"h": 9.3
+				},
+				"768": {
+					"x": 166,
+					"y": 6781.9,
+					"w": 9.6,
+					"h": 9.3
+				},
+				"1440": {
+					"x": 274,
+					"y": 5292.9,
+					"w": 9.6,
+					"h": 9.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_696_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/697#0",
+			"parentKey": "Root/694#0",
+			"depth": 7,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 697,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"srcLine": 970,
+			"membership": [],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path fill=\"#FBBC05\" d=\"M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z\" data-dc-tpl=\"697\"></path>",
+			"box": {
+				"375": {
+					"x": 144,
+					"y": 8423.8,
+					"w": 4.4,
+					"h": 9
+				},
+				"768": {
+					"x": 156,
+					"y": 6779.1,
+					"w": 4.4,
+					"h": 9
+				},
+				"1440": {
+					"x": 264,
+					"y": 5290.1,
+					"w": 4.4,
+					"h": 9
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_697_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/698#0",
+			"parentKey": "Root/694#0",
+			"depth": 7,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 698,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"srcLine": 970,
+			"membership": [],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path fill=\"#34A853\" d=\"M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z\" data-dc-tpl=\"698\"></path>",
+			"box": {
+				"375": {
+					"x": 145.1,
+					"y": 8430.2,
+					"w": 15.6,
+					"h": 8.1
+				},
+				"768": {
+					"x": 157.1,
+					"y": 6785.5,
+					"w": 15.6,
+					"h": 8.1
+				},
+				"1440": {
+					"x": 265.1,
+					"y": 5296.5,
+					"w": 15.6,
+					"h": 8.1
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_698_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/699#0",
+			"parentKey": "Root/686#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 699,
+			"attrs": {
+				"href": "#/",
+				"aria-label": "Instagram",
+				"class": "scp1",
+				"style": "width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle at 30% 107%, rgb(253, 244, 151) 0%, rgb(253, 89, 73) 45%, rgb(214, 36, 159) 60%, rgb(40, 90, 235) 90%); color: rgb(255, 255, 255); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 970,
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"#/\" aria-label=\"Instagram\" style=\"width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 30% 107%,#FDF497 0%,#FD5949 45%,#D6249F 60%,#285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);",
+			"box": {
+				"375": {
+					"x": 188,
+					"y": 8406.3,
+					"w": 44,
+					"h": 44
+				},
+				"768": {
+					"x": 200,
+					"y": 6761.6,
+					"w": 44,
+					"h": 44
+				},
+				"1440": {
+					"x": 308,
+					"y": 5272.6,
+					"w": 44,
+					"h": 44
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_699_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/700#0",
+			"parentKey": "Root/699#0",
+			"depth": 6,
+			"tag": "svg",
+			"template": "Root",
+			"tpl": 700,
+			"attrs": {
+				"aria-hidden": "true",
+				"viewBox": "0 0 24 24"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 970,
+			"membership": [],
+			"srcTag": "svg",
+			"srcOwnText": "",
+			"snippet": "<svg sc-camel-view-box=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"#FFFFFF\" aria-hidden=\"true\" data-dc-tpl=\"700\"><path d=\"M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zm5.5-4a1 1 0 1 1 0 2 1 1 0 0 1 0-2z\" data-dc-tpl=\"701\">",
+			"box": {
+				"375": {
+					"x": 199,
+					"y": 8417.3,
+					"w": 22,
+					"h": 22
+				},
+				"768": {
+					"x": 211,
+					"y": 6772.6,
+					"w": 22,
+					"h": 22
+				},
+				"1440": {
+					"x": 319,
+					"y": 5283.6,
+					"w": 22,
+					"h": 22
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_700_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/701#0",
+			"parentKey": "Root/700#0",
+			"depth": 7,
+			"tag": "path",
+			"template": "Root",
+			"tpl": 701,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"srcLine": 970,
+			"membership": [],
+			"srcTag": "path",
+			"srcOwnText": "",
+			"snippet": "<path d=\"M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zm5.5-4a1 1 0 1 1 0 2 1 1 0 0 1 0-2z\" data-dc-tpl=\"701\"></path>",
+			"box": {
+				"375": {
+					"x": 200.8,
+					"y": 8419.1,
+					"w": 18.3,
+					"h": 18.3
+				},
+				"768": {
+					"x": 212.8,
+					"y": 6774.4,
+					"w": 18.3,
+					"h": 18.3
+				},
+				"1440": {
+					"x": 320.8,
+					"y": 5285.4,
+					"w": 18.3,
+					"h": 18.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_701_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/702#0",
+			"parentKey": "Root/681#0",
+			"depth": 3,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 702,
+			"attrs": {
+				"style": "min-width: 0px;"
+			},
+			"words": "",
+			"allText": "Quick links Certifications Trade Brands Delivery & Logistics Terms & Conditions Blog Apply For A Trade Account",
+			"srcLine": 972,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"702\"> <div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;margin-bottom:18px;\" data-dc-tpl=\"703\">Quick links</div> <div style=\"display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 24px;\" data-dc-tpl=\"704\"> <sc-for list=\"{{ footerQuick }}\" as=\"l\" hint-placehold",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8498.3,
+					"w": 335,
+					"h": 315.7
+				},
+				"768": {
+					"x": 32,
+					"y": 6853.6,
+					"w": 324,
+					"h": 440
+				},
+				"1440": {
+					"x": 618.6,
+					"y": 4897.9,
+					"w": 287.3,
+					"h": 440
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_702_0@375.png",
+				"1440": "shots/Root_702_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/703#0",
+			"parentKey": "Root/702#0",
+			"depth": 4,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 703,
+			"attrs": {
+				"style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(216, 202, 80); margin-bottom: 18px;"
+			},
+			"words": "Quick links",
+			"allText": "Quick links",
+			"srcLine": 973,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "Quick links",
+			"snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;margin-bottom:18px;\" data-dc-tpl=\"703\">Quick links</div>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8498.3,
+					"w": 335,
+					"h": 20.1
+				},
+				"768": {
+					"x": 32,
+					"y": 6853.6,
+					"w": 324,
+					"h": 20.1
+				},
+				"1440": {
+					"x": 618.6,
+					"y": 4897.9,
+					"w": 287.3,
+					"h": 20.1
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_703_0@375.png",
+				"1440": "shots/Root_703_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/704#0",
+			"parentKey": "Root/702#0",
+			"depth": 4,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 704,
+			"attrs": {
+				"style": "display: grid; grid-template-columns: repeat(2, minmax(0px, 1fr)); gap: 4px 24px;"
+			},
+			"words": "",
+			"allText": "Certifications Trade Brands Delivery & Logistics Terms & Conditions Blog",
+			"srcLine": 974,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 24px;\" data-dc-tpl=\"704\"> <sc-for list=\"{{ footerQuick }}\" as=\"l\" hint-placeholder-count=\"6\" data-dc-tpl=\"705\"> <a href=\"{{ l.href }}\" style=\"display:flex;align-items:center;gap:10px;padding:9px 0;color:#FFFFFF;font-size:17px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,gap .3s cubi",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8536.4,
+					"w": 335,
+					"h": 196.7
+				},
+				"768": {
+					"x": 32,
+					"y": 6891.7,
+					"w": 324,
+					"h": 196.7
+				},
+				"1440": {
+					"x": 618.6,
+					"y": 4936.1,
+					"w": 287.3,
+					"h": 196.7
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "grid",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_704_0@375.png",
+				"1440": "shots/Root_704_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/706#0",
+			"parentKey": "Root/704#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 706,
+			"attrs": {
+				"href": "#/certifications",
+				"class": "scp1f",
+				"style": "display: flex; align-items: center; gap: 10px; padding: 9px 0px; color: rgb(255, 255, 255); font-size: 17px; font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.08); transition: color 0.2s, gap 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);"
+			},
+			"words": "Certifications",
+			"allText": "Certifications",
+			"srcLine": 976,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ footerQuick }}",
+					"as": "l",
+					"tpl": "705"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "{{ l.label }}",
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;align-items:center;gap:10px;padding:9px 0;color:#FFFFFF;font-size:17px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,gap .3s cubic-bezier(.2,.8,.2,1);\" style-hover=\"color:#D8CA50;gap:16px\" data-dc-tpl=\"706\"><span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>{",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8536.4,
+					"w": 155.5,
+					"h": 45.3
+				},
+				"768": {
+					"x": 32,
+					"y": 6891.7,
+					"w": 150,
+					"h": 45.3
+				},
+				"1440": {
+					"x": 618.6,
+					"y": 4936.1,
+					"w": 131.7,
+					"h": 45.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_706_0@375.png",
+				"1440": "shots/Root_706_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/707#0",
+			"parentKey": "Root/706#0",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 707,
+			"attrs": {
+				"style": "width: 6px; height: 6px; border-radius: 50%; background: rgb(216, 202, 80); flex-shrink: 0;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 976,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ footerQuick }}",
+					"as": "l",
+					"tpl": "705"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8555.6,
+					"w": 6,
+					"h": 6
+				},
+				"768": {
+					"x": 32,
+					"y": 6910.9,
+					"w": 6,
+					"h": 6
+				},
+				"1440": {
+					"x": 618.6,
+					"y": 4955.3,
+					"w": 6,
+					"h": 6
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_707_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/706#1",
+			"parentKey": "Root/704#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 706,
+			"attrs": {
+				"href": "#/apply",
+				"class": "scp1f",
+				"style": "display: flex; align-items: center; gap: 10px; padding: 9px 0px; color: rgb(255, 255, 255); font-size: 17px; font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.08); transition: color 0.2s, gap 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);"
+			},
+			"words": "Trade",
+			"allText": "Trade",
+			"srcLine": 976,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ footerQuick }}",
+					"as": "l",
+					"tpl": "705"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "{{ l.label }}",
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;align-items:center;gap:10px;padding:9px 0;color:#FFFFFF;font-size:17px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,gap .3s cubic-bezier(.2,.8,.2,1);\" style-hover=\"color:#D8CA50;gap:16px\" data-dc-tpl=\"706\"><span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>{",
+			"box": {
+				"375": {
+					"x": 199.5,
+					"y": 8536.4,
+					"w": 155.5,
+					"h": 45.3
+				},
+				"768": {
+					"x": 206,
+					"y": 6891.7,
+					"w": 150,
+					"h": 45.3
+				},
+				"1440": {
+					"x": 774.3,
+					"y": 4936.1,
+					"w": 131.7,
+					"h": 45.3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_706_1@375.png",
+				"1440": "shots/Root_706_1@1440.png"
+			}
+		},
+		{
+			"key": "Root/707#1",
+			"parentKey": "Root/706#1",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 707,
+			"attrs": {
+				"style": "width: 6px; height: 6px; border-radius: 50%; background: rgb(216, 202, 80); flex-shrink: 0;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 976,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ footerQuick }}",
+					"as": "l",
+					"tpl": "705"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>",
+			"box": {
+				"375": {
+					"x": 199.5,
+					"y": 8555.6,
+					"w": 6,
+					"h": 6
+				},
+				"768": {
+					"x": 206,
+					"y": 6910.9,
+					"w": 6,
+					"h": 6
+				},
+				"1440": {
+					"x": 774.3,
+					"y": 4955.3,
+					"w": 6,
+					"h": 6
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_707_1@1440.png"
+			}
+		},
+		{
+			"key": "Root/706#2",
+			"parentKey": "Root/704#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 706,
+			"attrs": {
+				"href": "#/brands",
+				"class": "scp1f",
+				"style": "display: flex; align-items: center; gap: 10px; padding: 9px 0px; color: rgb(255, 255, 255); font-size: 17px; font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.08); transition: color 0.2s, gap 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);"
+			},
+			"words": "Brands",
+			"allText": "Brands",
+			"srcLine": 976,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ footerQuick }}",
+					"as": "l",
+					"tpl": "705"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "{{ l.label }}",
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;align-items:center;gap:10px;padding:9px 0;color:#FFFFFF;font-size:17px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,gap .3s cubic-bezier(.2,.8,.2,1);\" style-hover=\"color:#D8CA50;gap:16px\" data-dc-tpl=\"706\"><span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>{",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8585.8,
+					"w": 155.5,
+					"h": 71.7
+				},
+				"768": {
+					"x": 32,
+					"y": 6941,
+					"w": 150,
+					"h": 71.7
+				},
+				"1440": {
+					"x": 618.6,
+					"y": 4985.4,
+					"w": 131.7,
+					"h": 71.7
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_706_2@375.png",
+				"1440": "shots/Root_706_2@1440.png"
+			}
+		},
+		{
+			"key": "Root/707#2",
+			"parentKey": "Root/706#2",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 707,
+			"attrs": {
+				"style": "width: 6px; height: 6px; border-radius: 50%; background: rgb(216, 202, 80); flex-shrink: 0;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 976,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ footerQuick }}",
+					"as": "l",
+					"tpl": "705"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8618.1,
+					"w": 6,
+					"h": 6
+				},
+				"768": {
+					"x": 32,
+					"y": 6973.4,
+					"w": 6,
+					"h": 6
+				},
+				"1440": {
+					"x": 618.6,
+					"y": 5017.8,
+					"w": 6,
+					"h": 6
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_707_2@1440.png"
+			}
+		},
+		{
+			"key": "Root/706#3",
+			"parentKey": "Root/704#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 706,
+			"attrs": {
+				"href": "#/delivery",
+				"class": "scp1f",
+				"style": "display: flex; align-items: center; gap: 10px; padding: 9px 0px; color: rgb(255, 255, 255); font-size: 17px; font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.08); transition: color 0.2s, gap 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);"
+			},
+			"words": "Delivery & Logistics",
+			"allText": "Delivery & Logistics",
+			"srcLine": 976,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ footerQuick }}",
+					"as": "l",
+					"tpl": "705"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "{{ l.label }}",
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;align-items:center;gap:10px;padding:9px 0;color:#FFFFFF;font-size:17px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,gap .3s cubic-bezier(.2,.8,.2,1);\" style-hover=\"color:#D8CA50;gap:16px\" data-dc-tpl=\"706\"><span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>{",
+			"box": {
+				"375": {
+					"x": 199.5,
+					"y": 8585.8,
+					"w": 155.5,
+					"h": 71.7
+				},
+				"768": {
+					"x": 206,
+					"y": 6941,
+					"w": 150,
+					"h": 71.7
+				},
+				"1440": {
+					"x": 774.3,
+					"y": 4985.4,
+					"w": 131.7,
+					"h": 71.7
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_706_3@375.png",
+				"1440": "shots/Root_706_3@1440.png"
+			}
+		},
+		{
+			"key": "Root/707#3",
+			"parentKey": "Root/706#3",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 707,
+			"attrs": {
+				"style": "width: 6px; height: 6px; border-radius: 50%; background: rgb(216, 202, 80); flex-shrink: 0;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 976,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ footerQuick }}",
+					"as": "l",
+					"tpl": "705"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>",
+			"box": {
+				"375": {
+					"x": 199.5,
+					"y": 8618.1,
+					"w": 6,
+					"h": 6
+				},
+				"768": {
+					"x": 206,
+					"y": 6973.4,
+					"w": 6,
+					"h": 6
+				},
+				"1440": {
+					"x": 774.3,
+					"y": 5017.8,
+					"w": 6,
+					"h": 6
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_707_3@1440.png"
+			}
+		},
+		{
+			"key": "Root/706#4",
+			"parentKey": "Root/704#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 706,
+			"attrs": {
+				"href": "#/terms",
+				"class": "scp1f",
+				"style": "display: flex; align-items: center; gap: 10px; padding: 9px 0px; color: rgb(255, 255, 255); font-size: 17px; font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.08); transition: color 0.2s, gap 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);"
+			},
+			"words": "Terms & Conditions",
+			"allText": "Terms & Conditions",
+			"srcLine": 976,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ footerQuick }}",
+					"as": "l",
+					"tpl": "705"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "{{ l.label }}",
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;align-items:center;gap:10px;padding:9px 0;color:#FFFFFF;font-size:17px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,gap .3s cubic-bezier(.2,.8,.2,1);\" style-hover=\"color:#D8CA50;gap:16px\" data-dc-tpl=\"706\"><span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>{",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8661.5,
+					"w": 155.5,
+					"h": 71.7
+				},
+				"768": {
+					"x": 32,
+					"y": 7016.7,
+					"w": 150,
+					"h": 71.7
+				},
+				"1440": {
+					"x": 618.6,
+					"y": 5061.1,
+					"w": 131.7,
+					"h": 71.7
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_706_4@375.png",
+				"1440": "shots/Root_706_4@1440.png"
+			}
+		},
+		{
+			"key": "Root/707#4",
+			"parentKey": "Root/706#4",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 707,
+			"attrs": {
+				"style": "width: 6px; height: 6px; border-radius: 50%; background: rgb(216, 202, 80); flex-shrink: 0;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 976,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ footerQuick }}",
+					"as": "l",
+					"tpl": "705"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8693.8,
+					"w": 6,
+					"h": 6
+				},
+				"768": {
+					"x": 32,
+					"y": 7049.1,
+					"w": 6,
+					"h": 6
+				},
+				"1440": {
+					"x": 618.6,
+					"y": 5093.5,
+					"w": 6,
+					"h": 6
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_707_4@1440.png"
+			}
+		},
+		{
+			"key": "Root/706#5",
+			"parentKey": "Root/704#0",
+			"depth": 5,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 706,
+			"attrs": {
+				"href": "#/blog",
+				"class": "scp1f",
+				"style": "display: flex; align-items: center; gap: 10px; padding: 9px 0px; color: rgb(255, 255, 255); font-size: 17px; font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.08); transition: color 0.2s, gap 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);"
+			},
+			"words": "Blog",
+			"allText": "Blog",
+			"srcLine": 976,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ footerQuick }}",
+					"as": "l",
+					"tpl": "705"
+				}
+			],
+			"srcTag": "a",
+			"srcOwnText": "{{ l.label }}",
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;align-items:center;gap:10px;padding:9px 0;color:#FFFFFF;font-size:17px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.08);transition:color .2s,gap .3s cubic-bezier(.2,.8,.2,1);\" style-hover=\"color:#D8CA50;gap:16px\" data-dc-tpl=\"706\"><span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>{",
+			"box": {
+				"375": {
+					"x": 199.5,
+					"y": 8661.5,
+					"w": 155.5,
+					"h": 71.7
+				},
+				"768": {
+					"x": 206,
+					"y": 7016.7,
+					"w": 150,
+					"h": 71.7
+				},
+				"1440": {
+					"x": 774.3,
+					"y": 5061.1,
+					"w": 131.7,
+					"h": 71.7
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_706_5@375.png",
+				"1440": "shots/Root_706_5@1440.png"
+			}
+		},
+		{
+			"key": "Root/707#5",
+			"parentKey": "Root/706#5",
+			"depth": 6,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 707,
+			"attrs": {
+				"style": "width: 6px; height: 6px; border-radius: 50%; background: rgb(216, 202, 80); flex-shrink: 0;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 976,
+			"membership": [
+				{
+					"kind": "sc-for",
+					"list": "{{ footerQuick }}",
+					"as": "l",
+					"tpl": "705"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "",
+			"snippet": "<span style=\"width:6px;height:6px;border-radius:50%;background:#D8CA50;flex-shrink:0;\" data-dc-tpl=\"707\"></span>",
+			"box": {
+				"375": {
+					"x": 199.5,
+					"y": 8693.8,
+					"w": 6,
+					"h": 6
+				},
+				"768": {
+					"x": 206,
+					"y": 7049.1,
+					"w": 6,
+					"h": 6
+				},
+				"1440": {
+					"x": 774.3,
+					"y": 5093.5,
+					"w": 6,
+					"h": 6
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_707_5@1440.png"
+			}
+		},
+		{
+			"key": "Root/708#0",
+			"parentKey": "Root/702#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 708,
+			"attrs": {
+				"href": "#/apply",
+				"class": "scp1g",
+				"style": "margin-top: 28px; display: inline-flex; align-items: center; gap: 10px; background: rgb(216, 202, 80); color: rgb(44, 62, 80); font-weight: 700; font-size: 16px; padding: 14px 24px; border-radius: 999px; box-shadow: rgba(0, 0, 0, 0.6) 0px 10px 20px -10px; transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s, background 0.2s;"
+			},
+			"words": "Apply For A Trade Account",
+			"allText": "Apply For A Trade Account",
+			"srcLine": 979,
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Apply For A Trade Account {{ arrowIcon }}",
+			"snippet": "<a href=\"#/apply\" data-mag=\"\" style=\"margin-top:28px;display:inline-flex;align-items:center;gap:10px;background:#D8CA50;color:#2C3E50;font-weight:700;font-size:16px;padding:14px 24px;border-radius:999px;box-shadow:0 10px 20px -10px rgba(0,0,0,.6);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,background .2s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 6px ",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8761.1,
+					"w": 255.3,
+					"h": 52.8
+				},
+				"768": {
+					"x": 32,
+					"y": 7116.4,
+					"w": 255.3,
+					"h": 52.8
+				},
+				"1440": {
+					"x": 618.6,
+					"y": 5160.8,
+					"w": 255.3,
+					"h": 52.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "inline-flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_708_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/709#0",
+			"parentKey": "Root/681#0",
+			"depth": 3,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 709,
+			"attrs": {
+				"style": "min-width: 0px;"
+			},
+			"words": "",
+			"allText": "Visit us 55-58 Stratford St N,Birmingham B11 1BU,United Kingdom Get Directions",
+			"srcLine": 981,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"709\"> <div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;margin-bottom:18px;\" data-dc-tpl=\"710\">Visit us</div> <div style=\"position:relative;border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:#3A4D60;\" data-dc-tpl=\"711\"> <iframe title=\"Ind",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8861.9,
+					"w": 335,
+					"h": 440
+				},
+				"768": {
+					"x": 412,
+					"y": 6853.6,
+					"w": 324,
+					"h": 440
+				},
+				"1440": {
+					"x": 961.9,
+					"y": 4897.9,
+					"w": 338.1,
+					"h": 440
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_709_0@375.png",
+				"1440": "shots/Root_709_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/710#0",
+			"parentKey": "Root/709#0",
+			"depth": 4,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 710,
+			"attrs": {
+				"style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(216, 202, 80); margin-bottom: 18px;"
+			},
+			"words": "Visit us",
+			"allText": "Visit us",
+			"srcLine": 982,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "Visit us",
+			"snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;margin-bottom:18px;\" data-dc-tpl=\"710\">Visit us</div>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8861.9,
+					"w": 335,
+					"h": 20.1
+				},
+				"768": {
+					"x": 412,
+					"y": 6853.6,
+					"w": 324,
+					"h": 20.1
+				},
+				"1440": {
+					"x": 961.9,
+					"y": 4897.9,
+					"w": 338.1,
+					"h": 20.1
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_710_0@375.png",
+				"1440": "shots/Root_710_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/711#0",
+			"parentKey": "Root/709#0",
+			"depth": 4,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 711,
+			"attrs": {
+				"style": "position: relative; border-radius: 22px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.14); background: rgb(58, 77, 96);"
+			},
+			"words": "",
+			"allText": "55-58 Stratford St N,Birmingham B11 1BU,United Kingdom Get Directions",
+			"srcLine": 983,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"position:relative;border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:#3A4D60;\" data-dc-tpl=\"711\"> <iframe title=\"Indus Foods location map\" src=\"https://maps.google.com/maps?q=55-58%20Stratford%20Street%20North%2C%20Birmingham%20B11%201BU&amp;z=14&amp;output=embed\" loading=\"lazy\" style=\"width:100%;height:210px;border:0;display:block;filter:grayscale(.35",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 8900.1,
+					"w": 335,
+					"h": 401.8
+				},
+				"768": {
+					"x": 412,
+					"y": 6891.7,
+					"w": 324,
+					"h": 401.8
+				},
+				"1440": {
+					"x": 961.9,
+					"y": 4936.1,
+					"w": 338.1,
+					"h": 401.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "relative",
+				"768": "relative",
+				"1440": "relative"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_711_0@375.png",
+				"1440": "shots/Root_711_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/712#0",
+			"parentKey": "Root/711#0",
+			"depth": 5,
+			"tag": "iframe",
+			"template": "Root",
+			"tpl": 712,
+			"attrs": {
+				"title": "Indus Foods location map",
+				"style": "width: 100%; height: 210px; border: 0px; display: block; filter: grayscale(0.35) contrast(1.05);"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 984,
+			"membership": [],
+			"srcTag": "iframe",
+			"srcOwnText": "",
+			"snippet": "<iframe title=\"Indus Foods location map\" src=\"https://maps.google.com/maps?q=55-58%20Stratford%20Street%20North%2C%20Birmingham%20B11%201BU&amp;z=14&amp;output=embed\" loading=\"lazy\" style=\"width:100%;height:210px;border:0;display:block;filter:grayscale(.35) contrast(1.05);\" data-dc-tpl=\"712\"></iframe>",
+			"box": {
+				"375": {
+					"x": 21,
+					"y": 8901.1,
+					"w": 333,
+					"h": 210
+				},
+				"768": {
+					"x": 413,
+					"y": 6892.7,
+					"w": 322,
+					"h": 210
+				},
+				"1440": {
+					"x": 962.9,
+					"y": 4937.1,
+					"w": 336.1,
+					"h": 210
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_712_0@375.png",
+				"1440": "shots/Root_712_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/713#0",
+			"parentKey": "Root/711#0",
+			"depth": 5,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 713,
+			"attrs": {
+				"style": "padding: 20px 22px 22px; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px;"
+			},
+			"words": "",
+			"allText": "55-58 Stratford St N,Birmingham B11 1BU,United Kingdom Get Directions",
+			"srcLine": 985,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"padding:20px 22px 22px;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;\" data-dc-tpl=\"713\"> <div style=\"font-size:17px;line-height:1.55;color:#FFFFFF;\" data-dc-tpl=\"714\">55-58 Stratford St N,<br data-dc-tpl=\"715\">Birmingham B11 1BU,<br data-dc-tpl=\"716\">United Kingdom</div> <a href=\"https://www.google.com/maps/dir/?api=1&amp;destination=55-58+Str",
+			"box": {
+				"375": {
+					"x": 21,
+					"y": 9111.1,
+					"w": 333,
+					"h": 189.8
+				},
+				"768": {
+					"x": 413,
+					"y": 7102.7,
+					"w": 322,
+					"h": 189.8
+				},
+				"1440": {
+					"x": 962.9,
+					"y": 5147.1,
+					"w": 336.1,
+					"h": 189.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_713_0@375.png",
+				"1440": "shots/Root_713_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/714#0",
+			"parentKey": "Root/713#0",
+			"depth": 6,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 714,
+			"attrs": {
+				"style": "font-size: 17px; line-height: 1.55; color: rgb(255, 255, 255);"
+			},
+			"words": "55-58 Stratford St N, Birmingham B11 1BU, United Kingdom",
+			"allText": "55-58 Stratford St N,Birmingham B11 1BU,United Kingdom",
+			"srcLine": 986,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "55-58 Stratford St N, Birmingham B11 1BU, United Kingdom",
+			"snippet": "<div style=\"font-size:17px;line-height:1.55;color:#FFFFFF;\" data-dc-tpl=\"714\">55-58 Stratford St N,<br data-dc-tpl=\"715\">Birmingham B11 1BU,<br data-dc-tpl=\"716\">United Kingdom</div>",
+			"box": {
+				"375": {
+					"x": 43,
+					"y": 9131.1,
+					"w": 155.2,
+					"h": 79
+				},
+				"768": {
+					"x": 435,
+					"y": 7122.7,
+					"w": 155.2,
+					"h": 79
+				},
+				"1440": {
+					"x": 984.9,
+					"y": 5167.1,
+					"w": 155.2,
+					"h": 79
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_714_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/715#0",
+			"parentKey": "Root/714#0",
+			"depth": 7,
+			"tag": "br",
+			"template": "Root",
+			"tpl": 715,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"srcLine": 986,
+			"membership": [],
+			"srcTag": "br",
+			"srcOwnText": "",
+			"snippet": "<br data-dc-tpl=\"715\">",
+			"box": {
+				"375": {
+					"x": 185,
+					"y": 9132.1,
+					"w": 0,
+					"h": 24
+				},
+				"768": {
+					"x": 577,
+					"y": 7123.7,
+					"w": 0,
+					"h": 24
+				},
+				"1440": {
+					"x": 1126.9,
+					"y": 5168.1,
+					"w": 0,
+					"h": 24
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": false
+			},
+			"display": "inline",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {}
+		},
+		{
+			"key": "Root/716#0",
+			"parentKey": "Root/714#0",
+			"depth": 7,
+			"tag": "br",
+			"template": "Root",
+			"tpl": 716,
+			"attrs": {},
+			"words": "",
+			"allText": "",
+			"srcLine": 986,
+			"membership": [],
+			"srcTag": "br",
+			"srcOwnText": "",
+			"snippet": "<br data-dc-tpl=\"716\">",
+			"box": {
+				"375": {
+					"x": 198.2,
+					"y": 9158.4,
+					"w": 0,
+					"h": 24
+				},
+				"768": {
+					"x": 590.2,
+					"y": 7150,
+					"w": 0,
+					"h": 24
+				},
+				"1440": {
+					"x": 1140.2,
+					"y": 5194.4,
+					"w": 0,
+					"h": 24
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": false,
+				"1440": false
+			},
+			"display": "inline",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {}
+		},
+		{
+			"key": "Root/717#0",
+			"parentKey": "Root/713#0",
+			"depth": 6,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 717,
+			"attrs": {
+				"href": "https://www.google.com/maps/dir/?api=1&destination=55-58+Stratford+Street+North+Birmingham+B11+1BU",
+				"target": "_blank",
+				"class": "scp1h",
+				"style": "white-space: nowrap; display: inline-flex; align-items: center; gap: 10px; background: rgb(10, 126, 168); color: rgb(255, 255, 255); font-weight: 700; font-size: 16px; padding: 12px 20px; border-radius: 999px; border: 2px solid rgb(255, 255, 255); transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s;"
+			},
+			"words": "Get Directions",
+			"allText": "Get Directions",
+			"srcLine": 987,
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Get Directions {{ arrowIcon }}",
+			"snippet": "<a href=\"https://www.google.com/maps/dir/?api=1&amp;destination=55-58+Stratford+Street+North+Birmingham+B11+1BU\" target=\"_blank\" rel=\"noopener\" data-mag=\"\" style=\"white-space:nowrap;display:inline-flex;align-items:center;gap:10px;background:#0A7EA8;color:#FFFFFF;font-weight:700;font-size:16px;padding:12px 20px;border-radius:999px;border:2px solid #FFFFFF;transition:transform .25s cubic-bezier(.2,.",
+			"box": {
+				"375": {
+					"x": 43,
+					"y": 9226.1,
+					"w": 168.8,
+					"h": 52.8
+				},
+				"768": {
+					"x": 435,
+					"y": 7217.7,
+					"w": 168.8,
+					"h": 52.8
+				},
+				"1440": {
+					"x": 984.9,
+					"y": 5262.1,
+					"w": 168.8,
+					"h": 52.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_717_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/718#0",
+			"parentKey": "Root/653#0",
+			"depth": 1,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 718,
+			"attrs": {
+				"style": "position: relative; border-top: 1px solid rgba(255, 255, 255, 0.12);"
+			},
+			"words": "",
+			"allText": "Copyright © 2026 Indus Foods Ltd|Website by Ibraheem Mustafa|Placeholder photography via Unsplash Back to top",
+			"srcLine": 993,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"position:relative;border-top:1px solid rgba(255,255,255,.12);\" data-dc-tpl=\"718\"> <div style=\"max-width:1240px;margin:0 auto;padding:22px {{ R.px }};display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 24px;font-size:16px;\" data-dc-tpl=\"719\"> <div style=\"display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;\" data-dc-tpl=\"720\"> <span style=\"color:",
+			"box": {
+				"375": {
+					"x": 0,
+					"y": 9349.9,
+					"w": 375,
+					"h": 187.4
+				},
+				"768": {
+					"x": 0,
+					"y": 7365.5,
+					"w": 768,
+					"h": 156.6
+				},
+				"1440": {
+					"x": 0,
+					"y": 5409.9,
+					"w": 1440,
+					"h": 85
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "relative",
+				"768": "relative",
+				"1440": "relative"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_718_0@375.png",
+				"1440": "shots/Root_718_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/719#0",
+			"parentKey": "Root/718#0",
+			"depth": 2,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 719,
+			"attrs": {
+				"style": "max-width: 1240px; margin: 0px auto; padding: 22px 40px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px; font-size: 16px;"
+			},
+			"words": "",
+			"allText": "Copyright © 2026 Indus Foods Ltd|Website by Ibraheem Mustafa|Placeholder photography via Unsplash Back to top",
+			"srcLine": 994,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"max-width:1240px;margin:0 auto;padding:22px {{ R.px }};display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 24px;font-size:16px;\" data-dc-tpl=\"719\"> <div style=\"display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;\" data-dc-tpl=\"720\"> <span style=\"color:#D8CA50;\" data-dc-tpl=\"721\">Copyright © 2026 Indus Foods Ltd</span><span style=\"color:#6F8193;",
+			"box": {
+				"375": {
+					"x": 0,
+					"y": 9350.9,
+					"w": 375,
+					"h": 186.4
+				},
+				"768": {
+					"x": 0,
+					"y": 7366.5,
+					"w": 768,
+					"h": 155.6
+				},
+				"1440": {
+					"x": 100,
+					"y": 5410.9,
+					"w": 1240,
+					"h": 84
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_719_0@375.png",
+				"1440": "shots/Root_719_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/720#0",
+			"parentKey": "Root/719#0",
+			"depth": 3,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 720,
+			"attrs": {
+				"style": "display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center;"
+			},
+			"words": "",
+			"allText": "Copyright © 2026 Indus Foods Ltd|Website by Ibraheem Mustafa|Placeholder photography via Unsplash",
+			"srcLine": 995,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;\" data-dc-tpl=\"720\"> <span style=\"color:#D8CA50;\" data-dc-tpl=\"721\">Copyright © 2026 Indus Foods Ltd</span><span style=\"color:#6F8193;\" data-dc-tpl=\"722\">|</span><a href=\"#/\" style=\"color:#FFFFFF;background:linear-gradient(#D8CA50,#D8CA50) no-repeat left bottom / 0% 1px;padding-bottom:2px;transition:color .3s,background-size .",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 9372.9,
+					"w": 335,
+					"h": 88.4
+				},
+				"768": {
+					"x": 32,
+					"y": 7388.5,
+					"w": 704,
+					"h": 57.6
+				},
+				"1440": {
+					"x": 140,
+					"y": 5439.5,
+					"w": 733.4,
+					"h": 26.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_720_0@375.png",
+				"1440": "shots/Root_720_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/721#0",
+			"parentKey": "Root/720#0",
+			"depth": 4,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 721,
+			"attrs": {
+				"style": "color: rgb(216, 202, 80);"
+			},
+			"words": "Copyright © 2026 Indus Foods Ltd",
+			"allText": "Copyright © 2026 Indus Foods Ltd",
+			"srcLine": 996,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "Copyright © 2026 Indus Foods Ltd",
+			"snippet": "<span style=\"color:#D8CA50;\" data-dc-tpl=\"721\">Copyright © 2026 Indus Foods Ltd</span>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 9372.9,
+					"w": 224.9,
+					"h": 24.8
+				},
+				"768": {
+					"x": 32,
+					"y": 7389.5,
+					"w": 224.9,
+					"h": 24.8
+				},
+				"1440": {
+					"x": 140,
+					"y": 5440.5,
+					"w": 224.9,
+					"h": 24.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_721_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/722#0",
+			"parentKey": "Root/720#0",
+			"depth": 4,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 722,
+			"attrs": {
+				"style": "color: rgb(111, 129, 147);"
+			},
+			"words": "|",
+			"allText": "|",
+			"srcLine": 996,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "|",
+			"snippet": "<span style=\"color:#6F8193;\" data-dc-tpl=\"722\">|</span>",
+			"box": {
+				"375": {
+					"x": 256.9,
+					"y": 9372.9,
+					"w": 3.9,
+					"h": 24.8
+				},
+				"768": {
+					"x": 268.9,
+					"y": 7389.5,
+					"w": 3.9,
+					"h": 24.8
+				},
+				"1440": {
+					"x": 376.9,
+					"y": 5440.5,
+					"w": 3.9,
+					"h": 24.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_722_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/723#0",
+			"parentKey": "Root/720#0",
+			"depth": 4,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 723,
+			"attrs": {
+				"href": "#/",
+				"class": "scp1i",
+				"style": "color: rgb(255, 255, 255); background: linear-gradient(rgb(216, 202, 80), rgb(216, 202, 80)) left bottom / 0% 1px no-repeat; padding-bottom: 2px; transition: color 0.3s, background-size 0.3s;"
+			},
+			"words": "Website by Ibraheem Mustafa",
+			"allText": "Website by Ibraheem Mustafa",
+			"srcLine": 996,
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "Website by Ibraheem Mustafa",
+			"snippet": "<a href=\"#/\" style=\"color:#FFFFFF;background:linear-gradient(#D8CA50,#D8CA50) no-repeat left bottom / 0% 1px;padding-bottom:2px;transition:color .3s,background-size .3s;\" style-hover=\"color:#D8CA50;background-size:100% 1px\" data-dc-tpl=\"723\">Website by Ibraheem Mustafa</a>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 9403.7,
+					"w": 195.4,
+					"h": 26.8
+				},
+				"768": {
+					"x": 284.8,
+					"y": 7388.5,
+					"w": 195.4,
+					"h": 26.8
+				},
+				"1440": {
+					"x": 392.8,
+					"y": 5439.5,
+					"w": 195.4,
+					"h": 26.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_723_0@375.png",
+				"1440": "shots/Root_723_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/724#0",
+			"parentKey": "Root/720#0",
+			"depth": 4,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 724,
+			"attrs": {
+				"style": "color: rgb(111, 129, 147);"
+			},
+			"words": "|",
+			"allText": "|",
+			"srcLine": 996,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "|",
+			"snippet": "<span style=\"color:#6F8193;\" data-dc-tpl=\"724\">|</span>",
+			"box": {
+				"375": {
+					"x": 227.4,
+					"y": 9404.7,
+					"w": 3.9,
+					"h": 24.8
+				},
+				"768": {
+					"x": 492.1,
+					"y": 7389.5,
+					"w": 3.9,
+					"h": 24.8
+				},
+				"1440": {
+					"x": 600.1,
+					"y": 5440.5,
+					"w": 3.9,
+					"h": 24.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_724_0@375.png",
+				"1440": "shots/Root_724_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/725#0",
+			"parentKey": "Root/720#0",
+			"depth": 4,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 725,
+			"attrs": {
+				"style": "color: rgb(174, 187, 199);"
+			},
+			"words": "Placeholder photography via Unsplash",
+			"allText": "Placeholder photography via Unsplash",
+			"srcLine": 996,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "Placeholder photography via Unsplash",
+			"snippet": "<span style=\"color:#AEBBC7;\" data-dc-tpl=\"725\">Placeholder photography via Unsplash</span>",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 9436.5,
+					"w": 257.4,
+					"h": 24.8
+				},
+				"768": {
+					"x": 32,
+					"y": 7421.3,
+					"w": 257.4,
+					"h": 24.8
+				},
+				"1440": {
+					"x": 616,
+					"y": 5440.5,
+					"w": 257.4,
+					"h": 24.8
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_725_0@375.png",
+				"1440": "shots/Root_725_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/726#0",
+			"parentKey": "Root/719#0",
+			"depth": 3,
+			"tag": "button",
+			"template": "Root",
+			"tpl": 726,
+			"attrs": {
+				"aria-label": "Back to top",
+				"class": "scp1j",
+				"style": "display: inline-flex; align-items: center; gap: 10px; background: transparent; border: 0px; color: rgb(255, 255, 255); font-weight: 600; font-size: 16px; cursor: pointer; padding: 0px; transition: color 0.2s;"
+			},
+			"words": "Back to top",
+			"allText": "Back to top",
+			"srcLine": 998,
+			"membership": [],
+			"srcTag": "button",
+			"srcOwnText": "Back to top",
+			"snippet": "<button sc-camel-on-click=\"{{ toTop }}\" aria-label=\"Back to top\" style=\"display:inline-flex;align-items:center;gap:10px;background:transparent;border:0;color:#FFFFFF;font-weight:600;font-size:16px;cursor:pointer;padding:0;transition:color .2s;\" style-hover=\"color:#D8CA50;--tt:rotate(-90deg) translateX(4px) scale(1.08);--tb:#D8CA50;--tbg:rgba(216,202,80,.12)\" data-dc-tpl=\"726\">Back to top <span sty",
+			"box": {
+				"375": {
+					"x": 20,
+					"y": 9475.3,
+					"w": 127.6,
+					"h": 40
+				},
+				"768": {
+					"x": 32,
+					"y": 7460.1,
+					"w": 127.6,
+					"h": 40
+				},
+				"1440": {
+					"x": 1172.4,
+					"y": 5432.9,
+					"w": 127.6,
+					"h": 40
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_726_0@375.png",
+				"1440": "shots/Root_726_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/727#0",
+			"parentKey": "Root/726#0",
+			"depth": 4,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 727,
+			"attrs": {
+				"style": "width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--tb,rgba(255,255,255,.4)); background: var(--tbg,transparent); display: flex; align-items: center; justify-content: center; transform: var(--tt,rotate(-90deg)); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s, background 0.2s;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 998,
+			"membership": [],
+			"srcTag": "span",
+			"srcOwnText": "{{ arrowIcon }}",
+			"snippet": "<span style=\"width:40px;height:40px;border-radius:50%;border:1.5px solid var(--tb,rgba(255,255,255,.4));background:var(--tbg,transparent);display:flex;align-items:center;justify-content:center;transform:var(--tt,rotate(-90deg));transition:transform .35s cubic-bezier(.34,1.56,.64,1),border-color .2s,background .2s;\" data-dc-tpl=\"727\">{{ arrowIcon }}</span>",
+			"box": {
+				"375": {
+					"x": 107.6,
+					"y": 9475.3,
+					"w": 40,
+					"h": 40
+				},
+				"768": {
+					"x": 119.6,
+					"y": 7460.1,
+					"w": 40,
+					"h": 40
+				},
+				"1440": {
+					"x": 1260,
+					"y": 5432.9,
+					"w": 40,
+					"h": 40
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_727_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/728#0",
+			"parentKey": null,
+			"strip": {
+				"side": "after",
+				"distance": 1
+			},
+			"depth": 1,
+			"tag": "a",
+			"template": "Root",
+			"tpl": 728,
+			"attrs": {
+				"href": "https://wa.me/441217714330",
+				"aria-label": "Message Indus Foods on WhatsApp",
+				"target": "_blank",
+				"class": "scp1k",
+				"style": "position: fixed; right: 22px; bottom: 22px; z-index: 140; display: flex; align-items: center; gap: 10px; background: rgb(37, 211, 102); color: rgb(11, 43, 23); border-radius: 999px; padding: 0px 18px 0px 14px; min-height: 52px; font-size: 15px; font-weight: 600; box-shadow: rgba(13, 110, 53, 0.32) 0px 10px 30px; transition: transform 0.25s, background 0.25s;"
+			},
+			"words": "",
+			"allText": "Chat with our team",
+			"srcLine": 1002,
+			"membership": [],
+			"srcTag": "a",
+			"srcOwnText": "",
+			"snippet": "<a href=\"https://wa.me/441217714330\" target=\"_blank\" rel=\"noopener\" aria-label=\"Message Indus Foods on WhatsApp\" style=\"position:fixed;right:22px;bottom:22px;z-index:140;display:flex;align-items:center;gap:10px;background:#25D366;color:#0B2B17;border-radius:999px;padding:0 18px 0 14px;min-height:52px;font-size:15px;font-weight:600;box-shadow:0 10px 30px rgba(13,110,53,.32);transition:transform .25",
+			"box": {
+				"375": {
+					"x": 299,
+					"y": 826,
+					"w": 54,
+					"h": 52
+				},
+				"768": {
+					"x": 559,
+					"y": 826,
+					"w": 187,
+					"h": 52
+				},
+				"1440": {
+					"x": 1231,
+					"y": 826,
+					"w": 187,
+					"h": 52
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "flex",
+			"position": {
+				"375": "fixed",
+				"768": "fixed",
+				"1440": "fixed"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_728_0@375.png",
+				"1440": "shots/Root_728_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/729#0",
+			"parentKey": "Root/728#0",
+			"depth": 2,
+			"tag": "img",
+			"template": "Root",
+			"tpl": 729,
+			"attrs": {
+				"aria-hidden": "true",
+				"style": "display: block;",
+				"srcBasename": "whatsapp-ink.svg"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 1003,
+			"membership": [],
+			"srcTag": "img",
+			"srcOwnText": "",
+			"snippet": "<img src=\"assets/whatsapp-ink.svg\" alt=\"\" aria-hidden=\"true\" width=\"22\" height=\"22\" style=\"display:block\" data-dc-tpl=\"729\">",
+			"box": {
+				"375": {
+					"x": 313,
+					"y": 841,
+					"w": 22,
+					"h": 22
+				},
+				"768": {
+					"x": 573,
+					"y": 841,
+					"w": 22,
+					"h": 22
+				},
+				"1440": {
+					"x": 1245,
+					"y": 841,
+					"w": 22,
+					"h": 22
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "static",
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": false,
+			"screenshots": {
+				"1440": "shots/Root_729_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/731#0",
+			"parentKey": "Root/728#0",
+			"depth": 2,
+			"tag": "span",
+			"template": "Root",
+			"tpl": 731,
+			"attrs": {},
+			"words": "Chat with our team",
+			"allText": "Chat with our team",
+			"srcLine": 1004,
+			"membership": [
+				{
+					"kind": "sc-if",
+					"value": "{{ showEmailPill }}",
+					"tpl": "730"
+				}
+			],
+			"srcTag": "span",
+			"srcOwnText": "Chat with our team",
+			"snippet": "<span data-dc-tpl=\"731\">Chat with our team</span>",
+			"box": {
+				"375": null,
+				"768": {
+					"x": 605,
+					"y": 840.4,
+					"w": 123,
+					"h": 23.3
+				},
+				"1440": {
+					"x": 1277,
+					"y": 840.4,
+					"w": 123,
+					"h": 23.3
+				}
+			},
+			"visible": {
+				"375": false,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": null,
+				"768": "static",
+				"1440": "static"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": null,
+			"screenshots": {
+				"1440": "shots/Root_731_0@1440.png"
+			}
+		},
+		{
+			"key": "Root/38#0",
+			"parentKey": null,
+			"strip": {
+				"side": "before",
+				"distance": 4
+			},
+			"depth": 1,
+			"tag": "div",
+			"template": "Root",
+			"tpl": 38,
+			"attrs": {
+				"aria-hidden": "true",
+				"style": "position: fixed; left: 0px; top: 0px; height: 3px; width: 100%; background: linear-gradient(90deg, rgb(235, 221, 120) 0%, rgb(231, 215, 104) 24%, rgb(216, 202, 80) 46%, rgb(46, 173, 226) 76%, rgb(10, 126, 168) 100%); transform-origin: 0px 50%; transform: scaleX(0.968444); z-index: 400; pointer-events: none;"
+			},
+			"words": "",
+			"allText": "",
+			"srcLine": 36,
+			"membership": [],
+			"srcTag": "div",
+			"srcOwnText": "",
+			"snippet": "<div ref=\"{{ setProgEl }}\" aria-hidden=\"true\" style=\"position:fixed;left:0;top:0;height:3px;width:100%;background:linear-gradient(90deg,#EBDD78 0%,#E7D768 24%,#D8CA50 46%,#2EADE2 76%,#0A7EA8 100%);transform-origin:0 50%;transform:scaleX(0);z-index:400;pointer-events:none;\" data-dc-tpl=\"38\"></div>",
+			"box": {
+				"375": {
+					"x": 0,
+					"y": 0,
+					"w": 315.6,
+					"h": 3
+				},
+				"768": {
+					"x": 0,
+					"y": 0,
+					"w": 670.5,
+					"h": 3
+				},
+				"1440": {
+					"x": 0,
+					"y": 0,
+					"w": 1394.6,
+					"h": 3
+				}
+			},
+			"visible": {
+				"375": true,
+				"768": true,
+				"1440": true
+			},
+			"display": "block",
+			"position": {
+				"375": "fixed",
+				"768": "fixed",
+				"1440": "fixed"
+			},
+			"flexDirection": "row",
+			"layoutChanged375": true,
+			"screenshots": {
+				"375": "shots/Root_38_0@375.png",
+				"1440": "shots/Root_38_0@1440.png"
+			}
+		}
+	]
+}

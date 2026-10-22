@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-22T18:36:21.208Z",
-	"inventory": "2026-10-22T18:20:25.761Z",
-	"source": "http://127.0.0.1:51092/",
+	"generated": "2026-10-22T21:56:27.746Z",
+	"inventory": "2026-10-22T21:25:40.057Z",
+	"source": "http://127.0.0.1:58607/",
 	"surface": "sticky-header",
 	"siteName": null,
 	"surfaceParts": [
@@ -70,18 +70,30 @@
 		"title": "QA copy Indus mega menu"
 	},
 	"counts": {
-		"inventoryElements": 46,
+		"inventoryElements": 54,
 		"parts": 11,
-		"rows": 35,
-		"skeletonNodes": 11,
-		"expandedNodes": 15,
+		"rows": 43,
+		"skeletonNodes": 14,
+		"expandedNodes": 18,
 		"low": 0,
-		"removed": 25,
+		"removed": 30,
 		"unresolved": 0,
 		"byRule": {
-			"clientBuiltSurface": 35
+			"clientBuiltSurface": 43
 		}
 	},
+	"widthAlternatives": [
+		{
+			"key": "Root/18#0",
+			"into": "Root/14#0",
+			"block": "sgs/button",
+			"widths": [
+				375
+			],
+			"words": "Call",
+			"reason": "a label shown only at 375px inside a block with one label: no setting holds a per-width label"
+		}
+	],
 	"problems": [],
 	"rows": [
 		{
@@ -263,6 +275,48 @@
 		},
 		{
 			"order": 4,
+			"key": "Root/13#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Register For A Trade Account",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_13_0@375.png"
+			},
+			"snippet": "<a href=\"#/apply\" style=\"display:inline-flex;align-items:center;gap:7px;background:#FFFFFF;color:#0A7EA8;border-radius:999px;padding:6px 14px;font-size:15px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.15);transition:transform .2s,box-shadow .25s,background .2s,color .2s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2);background:#D8",
+			"attributes": {
+				"label": "Register For A Trade Account",
+				"url": "#/apply"
+			},
+			"strip": "Root/9#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 5,
 			"key": "Root/14#0",
 			"tag": "a",
 			"depth": 4,
@@ -305,7 +359,7 @@
 			}
 		},
 		{
-			"order": 5,
+			"order": 6,
 			"key": "Root/16#0",
 			"tag": "span",
 			"depth": 5,
@@ -335,7 +389,37 @@
 			}
 		},
 		{
-			"order": 6,
+			"order": 7,
+			"key": "Root/18#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Call",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/button: a label shown only at 375px inside a block with one label: no setting holds a per-width label",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/14#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_18_0@375.png"
+			},
+			"snippet": "<span data-dc-tpl=\"18\">Call</span>",
+			"attributes": {},
+			"strip": "Root/9#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 8,
 			"key": "Root/20#0",
 			"tag": "a",
 			"depth": 4,
@@ -378,7 +462,7 @@
 			}
 		},
 		{
-			"order": 7,
+			"order": 9,
 			"key": "Root/22#0",
 			"tag": "div",
 			"depth": 3,
@@ -427,7 +511,7 @@
 			}
 		},
 		{
-			"order": 8,
+			"order": 10,
 			"key": "Root/23#0",
 			"tag": "a",
 			"depth": 4,
@@ -483,7 +567,7 @@
 			}
 		},
 		{
-			"order": 9,
+			"order": 11,
 			"key": "Root/26#0",
 			"tag": "a",
 			"depth": 4,
@@ -539,7 +623,7 @@
 			}
 		},
 		{
-			"order": 10,
+			"order": 12,
 			"key": "Root/29#0",
 			"tag": "a",
 			"depth": 4,
@@ -595,7 +679,7 @@
 			}
 		},
 		{
-			"order": 11,
+			"order": 13,
 			"key": "Root/35#0",
 			"tag": "a",
 			"depth": 4,
@@ -651,7 +735,7 @@
 			}
 		},
 		{
-			"order": 12,
+			"order": 14,
 			"key": "Root/40#0",
 			"tag": "div",
 			"depth": 1,
@@ -698,7 +782,7 @@
 			}
 		},
 		{
-			"order": 13,
+			"order": 15,
 			"key": "Root/41#0",
 			"tag": "div",
 			"depth": 2,
@@ -727,7 +811,7 @@
 			}
 		},
 		{
-			"order": 14,
+			"order": 16,
 			"key": "Root/42#0",
 			"tag": "a",
 			"depth": 3,
@@ -756,7 +840,7 @@
 			}
 		},
 		{
-			"order": 15,
+			"order": 17,
 			"key": "Root/43#0",
 			"tag": "indus-logo",
 			"depth": 4,
@@ -799,7 +883,204 @@
 			}
 		},
 		{
-			"order": 16,
+			"order": 18,
+			"key": "Root/56#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_56_0@375.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center;gap:10px;\" data-dc-tpl=\"56\"> <sc-if value=\"{{ isTablet }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"57\"> <a href=\"#/apply\" data-mag=\"\" style=\"flex-shrink:0;display:inline-flex;align-items:center;gap:8px;background:#0A7EA8;color:#FFFFFF;border:2px solid #0A7EA8;border-radius:999px;padding:10px 18px;font-size:17px;font-weight:600;white-space:nowrap;",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root/58#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Register For A Trade Account",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"#/apply\" data-mag=\"\" style=\"flex-shrink:0;display:inline-flex;align-items:center;gap:8px;background:#0A7EA8;color:#FFFFFF;border:2px solid #0A7EA8;border-radius:999px;padding:10px 18px;font-size:17px;font-weight:600;white-space:nowrap;box-shadow:0 8px 18px -8px rgba(10,126,168,.65);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,background .2s,color .2s;\" style-hover=\"t",
+			"attributes": {
+				"label": "Register For A Trade Account",
+				"url": "#/apply"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root/59#0",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"source": "rule drawerOpener",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_59_0@375.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ toggleMobile }}\" aria-label=\"Open menu\" style=\"width:48px;height:48px;border-radius:50%;border:2px solid #0A7EA8;background:#FFFFFF;color:#0A7EA8;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:4px;padding:0 13px;cursor:pointer;flex-shrink:0;transition:background .25s,color .25s,transform .4s cubic-bezier(.34,1.56,.64,1),box-shadow .",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 21,
+			"key": "Root/60#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_60_0@375.png"
+			},
+			"snippet": "<span style=\"width:18px;height:2.5px;border-radius:2px;background:currentColor;display:block;\" data-dc-tpl=\"60\"></span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root/61#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_61_0@375.png"
+			},
+			"snippet": "<span style=\"width:var(--b2,13px);height:2.5px;border-radius:2px;background:currentColor;display:block;transition:width .3s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"61\"></span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 23,
+			"key": "Root/62#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/45#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_62_0@375.png"
+			},
+			"snippet": "<span style=\"width:var(--b3,8px);height:2.5px;border-radius:2px;background:currentColor;display:block;transition:width .35s cubic-bezier(.16,.84,.32,1) .04s;\" data-dc-tpl=\"62\"></span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_header",
+				"postId": 4461,
+				"title": "QA copy Indus mega menu"
+			}
+		},
+		{
+			"order": 24,
 			"key": "Root/45#0",
 			"tag": "nav",
 			"depth": 3,
@@ -850,7 +1131,7 @@
 			}
 		},
 		{
-			"order": 17,
+			"order": 25,
 			"key": "Root/47#0",
 			"tag": "button",
 			"depth": 4,
@@ -879,7 +1160,7 @@
 			}
 		},
 		{
-			"order": 18,
+			"order": 26,
 			"key": "Root/48#0",
 			"tag": "span",
 			"depth": 5,
@@ -908,7 +1189,7 @@
 			}
 		},
 		{
-			"order": 19,
+			"order": 27,
 			"key": "Root/52#0",
 			"tag": "span",
 			"depth": 5,
@@ -937,7 +1218,7 @@
 			}
 		},
 		{
-			"order": 20,
+			"order": 28,
 			"key": "Root/47#1",
 			"tag": "button",
 			"depth": 4,
@@ -966,7 +1247,7 @@
 			}
 		},
 		{
-			"order": 21,
+			"order": 29,
 			"key": "Root/48#1",
 			"tag": "span",
 			"depth": 5,
@@ -995,7 +1276,7 @@
 			}
 		},
 		{
-			"order": 22,
+			"order": 30,
 			"key": "Root/50#0",
 			"tag": "span",
 			"depth": 6,
@@ -1024,7 +1305,7 @@
 			}
 		},
 		{
-			"order": 23,
+			"order": 31,
 			"key": "Root/47#2",
 			"tag": "button",
 			"depth": 4,
@@ -1053,7 +1334,7 @@
 			}
 		},
 		{
-			"order": 24,
+			"order": 32,
 			"key": "Root/48#2",
 			"tag": "span",
 			"depth": 5,
@@ -1082,7 +1363,7 @@
 			}
 		},
 		{
-			"order": 25,
+			"order": 33,
 			"key": "Root/50#1",
 			"tag": "span",
 			"depth": 6,
@@ -1111,7 +1392,7 @@
 			}
 		},
 		{
-			"order": 26,
+			"order": 34,
 			"key": "Root/47#3",
 			"tag": "button",
 			"depth": 4,
@@ -1140,7 +1421,7 @@
 			}
 		},
 		{
-			"order": 27,
+			"order": 35,
 			"key": "Root/48#3",
 			"tag": "span",
 			"depth": 5,
@@ -1169,7 +1450,7 @@
 			}
 		},
 		{
-			"order": 28,
+			"order": 36,
 			"key": "Root/50#2",
 			"tag": "span",
 			"depth": 6,
@@ -1198,7 +1479,7 @@
 			}
 		},
 		{
-			"order": 29,
+			"order": 37,
 			"key": "Root/47#4",
 			"tag": "button",
 			"depth": 4,
@@ -1227,7 +1508,7 @@
 			}
 		},
 		{
-			"order": 30,
+			"order": 38,
 			"key": "Root/48#4",
 			"tag": "span",
 			"depth": 5,
@@ -1256,7 +1537,7 @@
 			}
 		},
 		{
-			"order": 31,
+			"order": 39,
 			"key": "Root/50#3",
 			"tag": "span",
 			"depth": 6,
@@ -1285,7 +1566,7 @@
 			}
 		},
 		{
-			"order": 32,
+			"order": 40,
 			"key": "Root/47#5",
 			"tag": "button",
 			"depth": 4,
@@ -1314,7 +1595,7 @@
 			}
 		},
 		{
-			"order": 33,
+			"order": 41,
 			"key": "Root/48#5",
 			"tag": "span",
 			"depth": 5,
@@ -1343,7 +1624,7 @@
 			}
 		},
 		{
-			"order": 34,
+			"order": 42,
 			"key": "Root/54#0",
 			"tag": "a",
 			"depth": 3,

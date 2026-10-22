@@ -54,6 +54,29 @@
 							{
 								"name": "sgs/button",
 								"attributes": {
+									"label": "Register For A Trade Account",
+									"url": "#/apply"
+								},
+								"draftRef": {
+									"tpl": "Root/13#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scp0",
+									"styleHash": "a8233049",
+									"parentTags": [
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "61ec7831",
+									"line": 28
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
 									"label": "0121 771 4330",
 									"linkSource": "phone",
 									"labelFromSiteInfo": true
@@ -73,7 +96,14 @@
 									"textHash": "1505",
 									"line": 29
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "text",
+										"detail": "Root/18#0 \"Call\": a label shown only at 375px inside a block with one label: no setting holds a per-width label"
+									}
+								]
 							},
 							{
 								"name": "sgs/button",
@@ -184,6 +214,54 @@
 								"owner": "site-info",
 								"kind": "presence",
 								"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root/56#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "f4aede7b",
+							"parentTags": [
+								"header",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 66
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Register For A Trade Account",
+									"url": "#/apply"
+								},
+								"draftRef": {
+									"tpl": "Root/58#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scp2",
+									"styleHash": "54fbc7ec",
+									"parentTags": [
+										"header",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "61ec7831",
+									"line": 68
+								},
+								"innerBlocks": []
 							}
 						]
 					},

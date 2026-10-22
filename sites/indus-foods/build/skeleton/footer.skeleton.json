@@ -1,0 +1,1199 @@
+[
+	{
+		"name": "sgs/site-footer",
+		"attributes": {},
+		"draftRef": {
+			"tpl": "Root/653#0"
+		},
+		"draftFingerprint": {
+			"tag": "footer",
+			"cls": "",
+			"styleHash": "722e4b2a",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 939
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/site-footer-row",
+				"attributes": {
+					"layout": "grid",
+					"rowSlot": "top"
+				},
+				"draftRef": {
+					"tpl": "Root/657#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "7dd7b36",
+					"parentTags": [
+						"footer",
+						"div"
+					],
+					"textHash": "1505",
+					"line": 943
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex",
+							"sgsBlockLinkSource": "phone"
+						},
+						"draftRef": {
+							"tpl": "Root/658#0"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "scp1e",
+							"styleHash": "7dd4a007",
+							"parentTags": [
+								"footer",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 944
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/icon",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/659#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "595e9778",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 945
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div"
+								},
+								"draftRef": {
+									"tpl": "Root/660#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "73effcfd",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 946
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/label",
+										"attributes": {
+											"text": "Call us"
+										},
+										"draftRef": {
+											"tpl": "Root/661#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "e474e174",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "dedd80a1",
+											"line": 946
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/business-info",
+										"attributes": {
+											"displayType": "phone"
+										},
+										"draftRef": {
+											"tpl": "Root/662#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "6028178a",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "f3097ff2",
+											"line": 946
+										},
+										"innerBlocks": [],
+										"handover": [
+											{
+												"owner": "site-info",
+												"kind": "text",
+												"detail": "Site Info \"phone\" must read: 0121 771 4330"
+											}
+										]
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Speak to our sales team"
+										},
+										"draftRef": {
+											"tpl": "Root/663#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "37499e5d",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "e9fab06f",
+											"line": 946
+										},
+										"innerBlocks": []
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex",
+							"sgsBlockLinkSource": "email"
+						},
+						"draftRef": {
+							"tpl": "Root/664#0"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "scp1e",
+							"styleHash": "7dd4a007",
+							"parentTags": [
+								"footer",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 948
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/icon",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/665#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "595e9778",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 949
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div"
+								},
+								"draftRef": {
+									"tpl": "Root/666#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "73effcfd",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 950
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/label",
+										"attributes": {
+											"text": "Email us"
+										},
+										"draftRef": {
+											"tpl": "Root/667#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "e474e174",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "3f3d130f",
+											"line": 950
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/business-info",
+										"attributes": {
+											"displayType": "email"
+										},
+										"draftRef": {
+											"tpl": "Root/668#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "b8b86d08",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "f9b825f5",
+											"line": 950
+										},
+										"innerBlocks": [],
+										"handover": [
+											{
+												"owner": "site-info",
+												"kind": "text",
+												"detail": "Site Info \"email\" must read: amir@indusfoodsltd.com"
+											}
+										]
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "We reply within one working day"
+										},
+										"draftRef": {
+											"tpl": "Root/669#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "37499e5d",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "54bdb359",
+											"line": 950
+										},
+										"innerBlocks": []
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "stack"
+						},
+						"draftRef": {
+							"tpl": "Root/670#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "aea861ee",
+							"parentTags": [
+								"footer",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 952
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/671#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "907e7cc2",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 953
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/label",
+										"attributes": {
+											"text": "Opening hours"
+										},
+										"draftRef": {
+											"tpl": "Root/672#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "2877c526",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "d848fac2",
+											"line": 954
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/label",
+										"attributes": {},
+										"draftRef": {
+											"tpl": "Root/673#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "89f864fd",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "a23d92d7",
+											"line": 955
+										},
+										"innerBlocks": []
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "stack"
+								},
+								"draftRef": {
+									"tpl": "Root/675#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "480f9252",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 957
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/business-info",
+										"attributes": {
+											"displayType": "hours",
+											"hoursLayout": "rows"
+										},
+										"draftRef": {
+											"tpl": "Root/677#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "94bba882",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 959
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/business-info",
+										"attributes": {
+											"displayType": "hours",
+											"hoursLayout": "rows"
+										},
+										"draftRef": {
+											"tpl": "Root/677#1"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "eb8ff691",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 959
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/business-info",
+										"attributes": {
+											"displayType": "hours",
+											"hoursLayout": "rows"
+										},
+										"draftRef": {
+											"tpl": "Root/677#2"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "eb8ff691",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 959
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/business-info",
+										"attributes": {
+											"displayType": "hours",
+											"hoursLayout": "rows"
+										},
+										"draftRef": {
+											"tpl": "Root/677#3"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "eb8ff691",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 959
+										},
+										"innerBlocks": []
+									}
+								]
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Opens tomorrow at 9:30am"
+								},
+								"draftRef": {
+									"tpl": "Root/680#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "2ab719e9",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1a48063a",
+									"line": 962
+								},
+								"innerBlocks": []
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/site-footer-row",
+				"attributes": {
+					"layout": "grid",
+					"rowSlot": "columns"
+				},
+				"draftRef": {
+					"tpl": "Root/681#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "480eae12",
+					"parentTags": [
+						"footer",
+						"div"
+					],
+					"textHash": "1505",
+					"line": 966
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/682#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "e7aab50",
+							"parentTags": [
+								"footer",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 967
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/responsive-logo",
+								"attributes": {
+									"logoId": 83
+								},
+								"draftRef": {
+									"tpl": "Root/684#0"
+								},
+								"draftFingerprint": {
+									"tag": "indus-logo",
+									"cls": "",
+									"styleHash": "65dba6ff",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 968
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "presence",
+										"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
+									},
+									{
+										"owner": "site-info",
+										"kind": "presence",
+										"detail": "the logo image: choose the site logo in the editor"
+									}
+								]
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "As an industry leading food & drink distributor, based in the heart of the UK, the company specialises in Ethnic Foods & has a strong export operation. Part of the Unitas Wholesale Group, with an annual turnover of £8bn, the company is at the forefront of driving positive growth within the Independent Wholesale sector."
+								},
+								"draftRef": {
+									"tpl": "Root/685#0"
+								},
+								"draftFingerprint": {
+									"tag": "p",
+									"cls": "",
+									"styleHash": "7a636aa9",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "767a176d",
+									"line": 969
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/social-icons",
+								"attributes": {},
+								"draftRef": "footer[data-dc-tpl=\"653\"] [data-dc-tpl=\"686\"]",
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "312d5b20",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 970
+								},
+								"innerBlocks": [],
+								"siteInfoRow": [
+									"linkedin",
+									"facebook",
+									"google",
+									"instagram"
+								],
+								"childRefs": {
+									"linkedin": "[data-dc-tpl=\"687\"]",
+									"facebook": "[data-dc-tpl=\"690\"]",
+									"google": "[data-dc-tpl=\"693\"]",
+									"instagram": "[data-dc-tpl=\"699\"]"
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/702#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "73effcfd",
+							"parentTags": [
+								"footer",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 972
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Quick links"
+								},
+								"draftRef": {
+									"tpl": "Root/703#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "f1b9b6fa",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "80d9f5f3",
+									"line": 973
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/icon-list",
+								"attributes": {
+									"items": [
+										{
+											"text": "Certifications",
+											"url": "#/certifications"
+										},
+										{
+											"text": "Trade",
+											"url": "#/apply"
+										},
+										{
+											"text": "Brands",
+											"url": "#/brands"
+										},
+										{
+											"text": "Delivery & Logistics",
+											"url": "#/delivery"
+										},
+										{
+											"text": "Terms & Conditions",
+											"url": "#/terms"
+										},
+										{
+											"text": "Blog",
+											"url": "#/blog"
+										}
+									]
+								},
+								"draftRef": {
+									"tpl": "Root/706#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scp1f",
+									"styleHash": "f976e711",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "da9824ce",
+									"line": 976
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Apply For A Trade Account",
+									"url": "#/apply"
+								},
+								"draftRef": {
+									"tpl": "Root/708#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scp1g",
+									"styleHash": "aa23d055",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "c38be34c",
+									"line": 979
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/709#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "73effcfd",
+							"parentTags": [
+								"footer",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 981
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Visit us"
+								},
+								"draftRef": {
+									"tpl": "Root/710#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "f1b9b6fa",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "ed5469f2",
+									"line": 982
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div"
+								},
+								"draftRef": {
+									"tpl": "Root/711#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "f8c0740e",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 983
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/business-info",
+										"attributes": {
+											"displayType": "map"
+										},
+										"draftRef": {
+											"tpl": "Root/712#0"
+										},
+										"draftFingerprint": {
+											"tag": "iframe",
+											"cls": "",
+											"styleHash": "56fb05a0",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 984
+										},
+										"innerBlocks": [],
+										"handover": [
+											{
+												"owner": "site-info",
+												"kind": "presence",
+												"detail": "map source: the Google Business Profile listing when Site Info has one (preferred), else the address"
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "flex"
+										},
+										"draftRef": {
+											"tpl": "Root/713#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "daf26c0a",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 985
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/business-info",
+												"attributes": {
+													"displayType": "address"
+												},
+												"draftRef": {
+													"tpl": "Root/714#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "c886d18b",
+													"parentTags": [
+														"footer",
+														"div",
+														"div",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "88331c8d",
+													"line": 986
+												},
+												"innerBlocks": [],
+												"handover": [
+													{
+														"owner": "site-info",
+														"kind": "text",
+														"detail": "Site Info \"address\" must read: 55-58 Stratford St N,<br>Birmingham B11 1BU,<br>United Kingdom"
+													}
+												]
+											},
+											{
+												"name": "sgs/button",
+												"attributes": {
+													"label": "Get Directions",
+													"url": "https://www.google.com/maps/dir/?api=1&destination=55-58+Stratford+Street+North+Birmingham+B11+1BU",
+													"linkTarget": "_blank",
+													"linkSource": "directions"
+												},
+												"draftRef": {
+													"tpl": "Root/717#0"
+												},
+												"draftFingerprint": {
+													"tag": "a",
+													"cls": "scp1h",
+													"styleHash": "22c9741e",
+													"parentTags": [
+														"footer",
+														"div",
+														"div",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "64e53e25",
+													"line": 987
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/site-footer-row",
+				"attributes": {
+					"rowSlot": "bottom"
+				},
+				"draftRef": {
+					"tpl": "Root/718#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "46cc7b72",
+					"parentTags": [
+						"footer"
+					],
+					"textHash": "1505",
+					"line": 993
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root/720#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "ac450dbc",
+							"parentTags": [
+								"footer",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 995
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/business-info",
+								"attributes": {
+									"displayType": "copyright",
+									"copyrightPrefix": "Copyright"
+								},
+								"draftRef": {
+									"tpl": "Root/721#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "65268e22",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "8eedc567",
+									"line": 996
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "text",
+										"detail": "Site Info \"copyright\" must read: Copyright © 2026 Indus Foods Ltd"
+									}
+								]
+							},
+							{
+								"name": "sgs/business-info",
+								"attributes": {
+									"copyrightPrefix": "Website by Ibraheem Mustafa",
+									"displayType": "attribution"
+								},
+								"draftRef": {
+									"tpl": "Root/723#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scp1i",
+									"styleHash": "56e975f4",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "e5b0b5a1",
+									"line": 996
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex",
+							"sgsBlockLinkSource": "top"
+						},
+						"draftRef": {
+							"tpl": "Root/726#0"
+						},
+						"draftFingerprint": {
+							"tag": "button",
+							"cls": "scp1j",
+							"styleHash": "61ad1753",
+							"parentTags": [
+								"footer",
+								"div",
+								"div"
+							],
+							"textHash": "5423aa5e",
+							"line": 998
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/icon",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/727#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "5bedf47a",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"button"
+									],
+									"textHash": "1505",
+									"line": 998
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Chat with our team"
+						},
+						"draftRef": {
+							"tpl": "Root/728#0"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "scp1k",
+							"styleHash": "a1f6e3fe",
+							"parentTags": [],
+							"textHash": "1505",
+							"line": 1002
+						},
+						"innerBlocks": []
+					}
+				],
+				"draftSlots": {
+					".sgs-container__inner": {
+						"tpl": "Root/719#0"
+					}
+				}
+			}
+		],
+		"draftSlots": {
+			".sgs-container__inner": {
+				"tpl": "Root/656#0"
+			}
+		}
+	}
+]

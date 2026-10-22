@@ -3,7 +3,13 @@
     "name": "sgs/site-header",
     "attributes": {
       "className": "cr-ref-header-0",
-      "textColour": "custom-ink"
+      "textColour": "custom-ink",
+      "scrolledOffset": 8,
+      "shadowScrolled": "0px 10px 30px -18px",
+      "shadowScrolledColour": "#14283C59",
+      "headerSticky": {
+        "desktop": "on"
+      }
     },
     "innerBlocks": [
       {
@@ -33,6 +39,9 @@
           },
           "contentWidth": {
             "desktop": "1320px"
+          },
+          "rowHideOnScroll": {
+            "desktop": "on"
           }
         },
         "innerBlocks": [
@@ -50,11 +59,66 @@
               {
                 "name": "sgs/button",
                 "attributes": {
+                  "label": "Register For A Trade Account",
+                  "url": "#/apply",
+                  "className": "cr-ref-header-3",
+                  "fontSize": {
+                    "mobile": 15
+                  },
+                  "fontWeight": "700",
+                  "lineHeight": {
+                    "mobile": 1.55
+                  },
+                  "colourText": "primary",
+                  "colourBackground": "surface",
+                  "borderStyle": "none",
+                  "boxShadow": "rgba(0, 0, 0, 0.15) 0px 2px 6px 0px",
+                  "padding": {
+                    "mobile": {
+                      "top": "6px",
+                      "right": "14px",
+                      "bottom": "6px",
+                      "left": "14px"
+                    }
+                  },
+                  "iconGap": {
+                    "mobile": "7px"
+                  },
+                  "textWrap": "nowrap",
+                  "colourBackgroundHover": "accent",
+                  "boxShadowHover": "rgba(0, 0, 0, 0.2) 0px 6px 20px 0px",
+                  "colourTextHover": "accent-text",
+                  "sgsHideOnTablet": true,
+                  "sgsHideOnDesktop": true,
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "root": {
+                        "hover": {
+                          "state": {
+                            "values": {
+                              "scale": 1.05,
+                              "translateY": -2.1,
+                              "duration": 200,
+                              "easing": "token:easing.ease"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "innerBlocks": []
+              },
+              {
+                "name": "sgs/button",
+                "attributes": {
                   "label": "0121 771 4330",
                   "linkSource": "phone",
                   "labelFromSiteInfo": true,
-                  "className": "cr-ref-header-3",
+                  "className": "cr-ref-header-4",
                   "url": "tel:01217714330",
+                  "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\"><path d=\"M5 3h2.6l1.3 3.6-1.8 1.2a9 9 0 0 0 5 5l1.2-1.8 3.7 1.3V15a2 2 0 0 1-2 2A13.5 13.5 0 0 1 3 5a2 2 0 0 1 2-2z\" stroke=\"currentColor\" stroke-width=\"1.7px\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"></path></svg>",
                   "fontSize": {
                     "desktop": 15
                   },
@@ -108,7 +172,8 @@
                   "url": "mailto:amir@indusfoodsltd.com",
                   "linkSource": "email",
                   "labelFromSiteInfo": true,
-                  "className": "cr-ref-header-4",
+                  "className": "cr-ref-header-5",
+                  "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\"><rect x=\"2.5\" y=\"4\" width=\"15\" height=\"12\" rx=\"2\" stroke=\"currentColor\" stroke-width=\"1.7px\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"></rect><polyline points=\"3.5,5.5 10,10.5 16.5,5.5\" stroke=\"currentColor\" stroke-width=\"1.7px\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"></polyline></svg>",
                   "fontSize": {
                     "desktop": 15
                   },
@@ -135,6 +200,7 @@
                   "colourBackgroundHover": "accent",
                   "boxShadowHover": "rgba(0, 0, 0, 0.2) 0px 6px 20px 0px",
                   "colourTextHover": "accent-text",
+                  "sgsHideOnMobile": true,
                   "sgsMotion": {
                     "v": 1,
                     "elements": {
@@ -160,7 +226,7 @@
           {
             "name": "sgs/social-icons",
             "attributes": {
-              "className": "cr-ref-header-5",
+              "className": "cr-ref-header-6",
               "gap": {
                 "desktop": "10px"
               },
@@ -168,7 +234,8 @@
                 "desktop": {
                   "width": "34px"
                 }
-              }
+              },
+              "sgsHideOnMobile": true
             },
             "innerBlocks": [
               {
@@ -186,7 +253,7 @@
                       }
                     }
                   },
-                  "className": "cr-ref-header-6",
+                  "className": "cr-ref-header-7",
                   "linkUrl": "/",
                   "ariaLabel": "LinkedIn"
                 },
@@ -207,7 +274,7 @@
                       }
                     }
                   },
-                  "className": "cr-ref-header-7",
+                  "className": "cr-ref-header-8",
                   "linkUrl": "/",
                   "ariaLabel": "Facebook"
                 },
@@ -228,7 +295,7 @@
                       }
                     }
                   },
-                  "className": "cr-ref-header-8",
+                  "className": "cr-ref-header-9",
                   "linkUrl": "/",
                   "ariaLabel": "Google"
                 },
@@ -249,7 +316,7 @@
                       }
                     }
                   },
-                  "className": "cr-ref-header-9",
+                  "className": "cr-ref-header-10",
                   "linkUrl": "/",
                   "ariaLabel": "Instagram"
                 },
@@ -263,7 +330,7 @@
         "name": "sgs/site-header-row",
         "attributes": {
           "rowSlot": "middle",
-          "className": "cr-ref-header-10",
+          "className": "cr-ref-header-11",
           "backgroundColour": "surface",
           "borderWidth": {
             "top": "0px",
@@ -300,7 +367,7 @@
             "name": "sgs/responsive-logo",
             "attributes": {
               "logoId": 81,
-              "className": "cr-ref-header-11",
+              "className": "cr-ref-header-12",
               "maxHeight": {
                 "mobile": 54,
                 "tablet": 56,
@@ -310,11 +377,84 @@
             "innerBlocks": []
           },
           {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "stack",
+              "className": "cr-ref-header-13",
+              "fontSize": {
+                "tablet": 19
+              },
+              "lineHeight": {
+                "tablet": 1.55
+              },
+              "gap": {
+                "mobile": "4px",
+                "tablet": "10px"
+              },
+              "sgsHideOnDesktop": true
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/button",
+                "attributes": {
+                  "label": "Register For A Trade Account",
+                  "url": "#/apply",
+                  "className": "cr-ref-header-14",
+                  "fontSize": {
+                    "tablet": 17
+                  },
+                  "fontWeight": "600",
+                  "colourText": "surface",
+                  "borderWidth": {
+                    "right": "2px",
+                    "bottom": "2px",
+                    "left": "2px",
+                    "top": "2px"
+                  },
+                  "borderColour": "primary",
+                  "boxShadow": "rgba(10, 126, 168, 0.65) 0px 8px 18px -8px",
+                  "padding": {
+                    "tablet": {
+                      "top": "10px",
+                      "bottom": "10px"
+                    }
+                  },
+                  "iconGap": {
+                    "tablet": "8px"
+                  },
+                  "textWrap": "nowrap",
+                  "boxShadowHover": "rgba(0, 0, 0, 0.25) 0px 6px 20px 0px",
+                  "sgsHideOnMobile": true,
+                  "sgsHideOnDesktop": true,
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "root": {
+                        "hover": {
+                          "state": {
+                            "values": {
+                              "scale": 1.05,
+                              "translateY": -2.1,
+                              "duration": "token:duration.fast",
+                              "easing": "cubic-bezier(.2,.8,.2,1)"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "innerBlocks": []
+              }
+            ]
+          },
+          {
             "name": "sgs/nav-bar-menu",
             "attributes": {
               "ref": 5,
               "collapsePoint": 1024,
-              "className": "cr-ref-header-12",
+              "className": "cr-ref-header-15",
               "itemFontWeight": "600",
               "itemLineHeight": 1.412,
               "navColour": "primary",
@@ -347,7 +487,8 @@
               "itemMinHeight": {
                 "desktop": "42px"
               },
-              "itemMotionEasing": "ease"
+              "itemMotionEasing": "ease",
+              "itemColourCurrent": "primary"
             },
             "innerBlocks": []
           },
@@ -356,7 +497,7 @@
             "attributes": {
               "label": "Register For A Trade Account",
               "url": "#/apply",
-              "className": "cr-ref-header-13",
+              "className": "cr-ref-header-16",
               "fontSize": {
                 "desktop": 17
               },
@@ -384,6 +525,9 @@
               },
               "textWrap": "nowrap",
               "boxShadowHover": "rgba(0, 0, 0, 0.25) 0px 6px 20px 0px",
+              "sgsCustomCss": "@media (max-width: 1259px) { & { display: none; } }",
+              "sgsCustomCssId": "wgate16",
+              "sgsCustomCssNote": "Width gate w >= 1260 and d: hidden at 0-1259px",
               "sgsMotion": {
                 "v": 1,
                 "elements": {
@@ -410,7 +554,7 @@
         "name": "sgs/site-header-row",
         "attributes": {
           "rowSlot": "bottom",
-          "className": "cr-ref-header-14"
+          "className": "cr-ref-header-17"
         },
         "innerBlocks": []
       }
