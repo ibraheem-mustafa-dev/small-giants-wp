@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "origin": {
+    "base_url": "https://api.anthropic.com",
+    "organization_id": "fa53c96e-a9a3-4cce-910f-58062fc0dc05",
+    "workspace_id": "wrkspc_019v1haT8YGXB97xuwzvegpb"
+  },
+  "resources": {
+    "./agents/bug-hunter/agent.md": {
+      "kind": "agent",
+      "id": "agent_018G4bbrgwoeXN7CxWVqNNGC",
+      "version": "1",
+      "hash": "03f21136ed47d58f31a3bb8cbf044596",
+      "remote_hash": "e384a97d2c6f61c585cc507eb97cbbcd"
+    },
+    "./agents/bug-hunter/environment.yaml": {
+      "kind": "environment",
+      "id": "env_01DDp8e1vJgt6AEfjMp6WNDS",
+      "hash": "d9017ec32fc708950cb9a694cec40730",
+      "remote_hash": "6c7086ef3d4ecbced9b8f7f0d6c3322f"
+    }
+  }
+}
