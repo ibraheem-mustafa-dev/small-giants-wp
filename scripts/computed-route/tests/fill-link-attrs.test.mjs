@@ -4,6 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { linkAttrDecisions, blockSupportsAnchor } from '../lib/fill-link-attrs.mjs';
 import { blockSchema } from '../lib/resolve.mjs';
+import { linkDecisions } from '../lib/fill-presence.mjs';
 
 const CAL = { link: { url: { path: '', attr: 'href' } } };
 const run = ( block, slots, over = {} ) => linkAttrDecisions( { calibration: CAL, schema: blockSchema( block ), anchor: blockSupportsAnchor( block ), slots, ...over } );
@@ -58,4 +59,27 @@ test( 'a value the node already holds is kept, and a contradiction is a note, no
 	assert.deepEqual( r.writes, [] );
 	assert.match( r.notes[ 0 ], /ariaLabel holds "Reserve"/ );
 	assert.deepEqual( run( 'sgs/button', { '': { ariaLabel: 'Book now' } }, { attributes: { ariaLabel: 'Book now' } } ).notes, [] );
+} );
+
+const PAGES = [
+	{ route: 'home', slug: 'home', parent: null, postType: 'page' },
+	{ route: 'apply', slug: 'apply', parent: null, postType: 'page' },
+	{ route: 'about', slug: 'about', parent: null, postType: 'page' },
+	{ route: 'our-story', slug: 'our-story', parent: 'about', postType: 'page' },
+	{ route: 'blog-index', slug: 'blog', parent: null, postType: 'post' },
+];
+const hash = ( href, pages = PAGES ) => linkDecisions( { calibration: CAL, attributes: {}, slots: { '': href }, origin: 'http://x', pages } );
+
+test( 'MUST FAIL: a draft hash route is written as the page map\'s permalink for that route', () => {
+	assert.deepEqual( hash( '#/apply' ).writes, [ { attr: 'url', value: '/apply/', merge: 'replace' } ] );
+	assert.equal( hash( '#/' ).writes[ 0 ].value, '/', 'the bare route is the home page' );
+	assert.equal( hash( '#/our-story' ).writes[ 0 ].value, '/about/our-story/', 'a child page keeps its parent chain' );
+} );
+
+test( 'a hash route with no page, a non-page row, no page map, and a bare # stay no route', () => {
+	assert.deepEqual( hash( '#/nowhere' ).writes, [] );
+	assert.deepEqual( hash( '#/blog-index' ).writes, [], 'a post row has no page permalink' );
+	assert.deepEqual( hash( '#/apply', null ).writes, [], 'no page map, no route' );
+	assert.deepEqual( hash( '#' ).writes, [] );
+	assert.deepEqual( hash( '#section' ).writes, [], 'an in-page fragment is not a route' );
 } );

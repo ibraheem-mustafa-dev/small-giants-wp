@@ -1,0 +1,7 @@
+[
+ { "file": "lib/fill-presence.mjs", "find": "if ( h.startsWith( '#/' ) ) {\n\t\treturn hashRoutePermalink( h, pages );\n\t}", "replace": "", "why": "the hash route lookup is removed" },
+ { "file": "lib/fill-route.mjs", "find": "const route = m[ 1 ].replace( /\\/+$/, '' ) || 'home';", "replace": "const route = m[ 1 ].replace( /\\/+$/, '' );", "why": "the bare route no longer reaches home" },
+ { "file": "lib/fill-route.mjs", "find": "const row = pages.find( ( r ) => 'page' === r.postType && r.route === route );", "replace": "const row = pages.find( ( r ) => r.route === route );", "why": "a post row is given a page permalink" },
+ { "file": "lib/fill-route.mjs", "find": "\t\tparts.unshift( up.slug );\n\t\tp = up.parent;", "replace": "\t\tp = up.parent;", "why": "a child page loses its parent chain" },
+ { "file": "lib/fill-route.mjs", "find": "if ( ! m || ! Array.isArray( pages ) ) {", "replace": "if ( ! m ) {", "why": "a missing page map throws instead of staying no route" }
+]

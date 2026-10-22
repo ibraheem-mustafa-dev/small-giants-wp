@@ -1632,7 +1632,8 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/fill-presence.mjs#linkDecisions",
 			"check": "scripts/computed-route/lib/solve-rows.mjs#resolveContent",
-			"note": "link URLs: Fill reads and writes hrefs; link targets are not handled separately"
+			"test": "scripts/computed-route/tests/fill-link-attrs.test.mjs",
+			"note": "link URLs: Fill reads and writes hrefs; a draft hash route (#/apply) is written as the permalink of the page map's page for that route (lib/fill-route.mjs::hashRoutePermalink), a route with no page and a bare # stay no route; link targets are not handled separately"
 		},
 		"block-setting:motion:motion": {
 			"recognise": "scripts/computed-route/lib/fill-timing.mjs#timingFacts",
@@ -2019,7 +2020,8 @@
 			"recognise": "construct:link",
 			"write": "scripts/computed-route/lib/fill-presence.mjs#linkDecisions",
 			"check": "scripts/computed-route/lib/solve-rows.mjs#resolveContent",
-			"note": "a link by its address (readLink): anchors, contact links, bound, external and page addresses reach the link decisions; a head link (a font host or stylesheet) is the document's: stylesheets are read by the CSS readers, fonts are the snapshot's (construct:helmet-font, site and surfaces); javascript: and data: addresses are named as such"
+			"test": "scripts/computed-route/tests/fill-link-attrs.test.mjs",
+			"note": "a link by its address (readLink): anchors, contact links, bound, external and page addresses (a hash route is the permalink of its page map page) reach the link decisions; a head link (a font host or stylesheet) is the document's: stylesheets are read by the CSS readers, fonts are the snapshot's (construct:helmet-font, site and surfaces); javascript: and data: addresses are named as such"
 		},
 		"construct:observer": {
 			"recognise": "construct:observer",
