@@ -1,0 +1,8 @@
+[
+ { "file": "lib/fill-binding-group.mjs", "find": "if ( values.size > 1 ) {", "replace": "if ( false ) {", "why": "differing values under one binding are grouped" },
+ { "file": "lib/fill-binding-group.mjs", "find": "if ( new Set( [ ...values.values() ].flat().map( memberKey ) ).size < 2 ) {", "replace": "if ( false ) {", "why": "a single element is a group" },
+ { "file": "lib/fill-binding-group.mjs", "find": "if ( b && 'attr:style' === b.where ) {", "replace": "if ( b ) {", "why": "text bindings count as style bindings" },
+ { "file": "lib/fill-binding-group.mjs", "find": "if ( ! w.attr || w.state ||", "replace": "if ( ! w.attr ||", "why": "a state write joins the resting group" },
+ { "file": "lib/fill-binding-group.mjs", "find": "w.group = id;", "replace": "w.grouped = id;", "why": "the writes are not marked with their group" },
+ { "file": "lib/fill-binding-group.mjs", "find": "sections: new Set( ws.map( ( w ) => rootOf( nodes, w.index ) ) ).size", "replace": "sections: ws.length", "why": "sections counted as members" }
+]

@@ -203,6 +203,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/fill-equivalents.mjs` | FR-48-8 step 5: a draft property no setting holds, written through a setting for another property on the element or its parent (the framework DB's `property_equivalents`), only under each row's condition. |
 | `lib/fill-resolve.mjs` | Root-down resolution of a whole skeleton: inherited baselines, spacing ownership, presence, words, links, the divergence ledger, UNMAPPED and handover. |
 | `lib/fill-spacing.mjs` | Spacing ownership per tier: a flex or grid parent's declared gap first, the render confirming it; otherwise rendered border-box gaps (equal within 0.5px). |
+| `lib/fill-binding-group.mjs` | Binding grouping (FR-48-41): the written settings one `{{ }}` style binding feeds on two or more elements are listed once as a group (`groupBindings`), a binding written different values is split; `fill.mjs` runs it and writes `binding-groups.json` |
 | `lib/fill-values.mjs` | Fluid fit and `clamp()`, the 16px breakpoint sweep against the SGS boundaries, and the sweep log. |
 | `lib/fill-presence.mjs` | Visibility and variant settings from calibration `presence`, words from `text`, links from `link`. |
 | `lib/fill-link-attrs.mjs` | A draft link's target, rel, id and aria-label, written to the block's own settings (block.json schema, supports.anchor, calibrated `target` entries) or raised as a named UNMAPPED row. |
@@ -405,6 +406,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/motion-sample.test.mjs` | lib/motion-sample.mjs: easing curves, transform interpolation, a Web animation eased over its run and a CSS animation per stretch, and in a real browser the probe's seeks agree with the code while a misread curve, travel or animation kind does not (MUST FAIL). |
 | `tests/css-matrix.test.mjs` | lib/css-matrix.mjs against Chromium's computed transform for every kind of function in mixed orders; an unreadable list is null (MUST FAIL). |
 | `tests/fill-site-info.test.mjs` | A link setting bound to Site Info keeps the draft address as its fallback and yields one `site-info` handover entry (MUST FAIL without it); an unbound node, a bound node with no draft link and a non-Site-Info binding yield none. |
+| `tests/fill-binding-group.test.mjs` | Binding grouping (FR-48-41): a binding on four elements in three sections is one group with its writes marked (MUST FAIL without it); a binding written two values is split; one bound element, text bindings, a state write and an unbound twin make no group. Mutations: `tests/fixtures/fill-binding-group/mutations.json` |
 | `tests/fill-site-rows.test.mjs` | A `sgs/social-icons` skeleton node with `siteInfoRow` expands to the Site Info-bound icons the committed Eye Care footer and drawer trees hold; the Fill-only keys are stripped; an unknown slug is a skeleton problem. |
 | `tests/fill-handover.test.mjs` | FR-47-4/§3.3: the five owners, four kinds, and an entry with no evidence is refused. |
 | `tests/fill-config.test.mjs` | FR-47-4 step 4: a pair for every node with a `draftRef` and none without (MUST FAIL); the generated config passes the walker's own lint. |
@@ -1058,6 +1060,10 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `spacingOwnership(rects, { unmeasured, declared })` → `{ owner, count, decisions }`: a flex or grid parent that declares a gap on an axis owns it at the declared value when the render confirms it (every rendered gap at least the declared one under a `space-*` justify-content on that axis, otherwise within `EQUAL_PX`); otherwise the parent owns the gap only when every rendered sibling gap is equal. Each decision carries `source` (`declared` | `rendered`), `distributed` (the `space-*` value) and `disagree` (a declared gap the render did not confirm). `declared` is the parent's declared longhands at that tier (`lib/fill-resolve.mjs` passes `st.reads.declared[w]['<index>:']`).
 - `declaredGap(declared, prop)` → the gap a flex or grid parent declares on one axis in px, or null (`normal`, 0, no layout, not a plain length).
 - `decisionFor(ownership, prop)` → the decision for `row-gap` or `column-gap`, or null.
+
+### `lib/fill-binding-group.mjs`
+- `bindingOf(row)` → `{ where, expression, draftId }` for a census binding row (from its `detail` or its id), else null.
+- `groupBindings({ rows, nodes, writes, rootComponent })` → `{ groups, split }`: a group is one style binding that fed the same setting the same value on two or more elements (`{ id, binding, attr, value, members, sections }`; each grouped write gains `group`); a binding written different values is a `split` entry, never a group. Elements are matched by the node's tpl finder and the census draft id.
 
 ### `lib/fill-values.mjs`
 - `FLUID_WIDTHS`, `SWEEP_WIDTHS`, `SGS_BOUNDARIES`, `LENGTH_PROPS`, `FLUID_TOL`: the sample widths, the 16px sweep range, the SGS breakpoints, the properties swept and the 0.5px linearity tolerance.
