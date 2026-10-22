@@ -432,17 +432,37 @@ $scoped_css[] = sgs_responsive_css_rule(
 			'tablet_attr'  => 'maxWidthTablet',
 			'mobile_attr'  => 'maxWidthMobile',
 		),
-		array(
-			'attr'         => 'maxHeight',
-			'css'          => 'max-height',
-			'unit_attr'    => 'maxHeightUnit',
-			'unit_default' => 'px',
-			'tablet_attr'  => 'maxHeightTablet',
-			'mobile_attr'  => 'maxHeightMobile',
-		),
 	),
 	$sel
 );
+
+// --- Maximum height caps the logo IMAGE (light, tablet/mobile picture sources
+// and the dark variant), not the root: the image keeps its aspect ratio
+// (`width:auto`), so its width follows from the capped height, and the root
+// drops its fill-width default (`width:auto`) so the block box shrinks to the
+// image instead of filling its container. With no tier set nothing is emitted
+// and the logo stays width-driven. ---
+$rl_has_max_height = '' !== $rl_css_attributes['maxHeight']
+	|| '' !== $rl_css_attributes['maxHeightTablet']
+	|| '' !== $rl_css_attributes['maxHeightMobile'];
+if ( $rl_has_max_height ) {
+	$scoped_css[] = $sel . '{width:auto}';
+	$scoped_css[] = $sel . ' .sgs-responsive-logo__image--desktop{width:auto}';
+	$scoped_css[] = sgs_responsive_css_rule(
+		$rl_css_attributes,
+		array(
+			array(
+				'attr'         => 'maxHeight',
+				'css'          => 'max-height',
+				'unit_attr'    => 'maxHeightUnit',
+				'unit_default' => 'px',
+				'tablet_attr'  => 'maxHeightTablet',
+				'mobile_attr'  => 'maxHeightMobile',
+			),
+		),
+		$sel . ' .sgs-responsive-logo__image--desktop,' . $sel . ' .sgs-responsive-logo__dark'
+	);
+}
 
 // --- Base padding/margin — the desktop tier of the block-owned padding/margin
 // objects, emitted scoped via the stable core style engine. ---
