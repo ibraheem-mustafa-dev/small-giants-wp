@@ -201,7 +201,9 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/fill-state-code.mjs` | FR-48-81, R-47-4: the code read of a state no browser can enter. Combinations naming the same states are one cascade over the draft's stylesheet rules (`!important`, then specificity, then source order; `var()` resolved on the target); the look carries `read: "code"` and `rendered: null`, so the render cannot confirm it. |
 | `lib/fill-prop.mjs` | One property of one element: which tiers differ from what the node shows, the slots a setting could paint, `clamp()` where a setting accepts one; every write is the resolver's. |
 | `lib/fill-equivalents.mjs` | FR-48-8 step 5: a draft property no setting holds, written through a setting for another property on the element or its parent (the framework DB's `property_equivalents`), only under each row's condition. |
-| `lib/fill-resolve.mjs` | Root-down resolution of a whole skeleton: inherited baselines, spacing ownership, presence, words, links, the divergence ledger, UNMAPPED and handover. |
+| `lib/fill-resolve.mjs` | Root-down resolution of a whole skeleton: walks the nodes, fills content (presence, words, links, media, handover) and each element, lifts rows, lists UNREAD. |
+| `lib/fill-resolve-state.mjs` | Fill's run state and per-node planning: inherited baselines, the divergence ledger view, spacing ownership per tier. |
+| `lib/fill-resolve-element.mjs` | Fill's resolution of one element: every property that differs, written through the resolver, with the not-plain, conflict and fluid records. |
 | `lib/fill-spacing.mjs` | Spacing ownership per tier: a flex or grid parent's declared gap first, the render confirming it; otherwise rendered border-box gaps (equal within 0.5px). |
 | `lib/fill-values.mjs` | Fluid fit and `clamp()`, the 16px breakpoint sweep against the SGS boundaries, and the sweep log. |
 | `lib/fill-presence.mjs` | Visibility and variant settings from calibration `presence`, words from `text`, links from `link`. |
@@ -1050,8 +1052,13 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `fillEquivalent(st, rec, target, prop, draft, hooks)` → after a `no-setting` gap, the write through a setting for another property on the element (`self`) or its parent (`parent`, once per parent, a later sibling `held`) with the row's `condition`, `{ status: 'gap', gap: 'unknown-condition' }` when only rows with an unknown condition matched, or null; writes carry `how: 'equivalent:<hop>'`. `hooks.rendered` is the property's rendered value per width before a used-value property was cut to its plain declared widths; an `intrinsic-ratio` row writes from it. An `intrinsic-ratio` row also offers the slots where the block's own setting for that property paints (a logo block's image), after the element's own slot.
 
 ### `lib/fill-resolve.mjs`
-- `valueText(draft)` → a readable value for a per-width map.
 - `fillTree(options)` → `{ writes, unmapped, notes, handover, spacing, fluid, held, snaps }`, filling the tree in place. Spacing ownership reads the declared values of, and applies its decided gap at, the element that holds the node's gap: the target at the calibrated slot of the block's `gap` setting when the skeleton gives one (a container's inner element), else the node's own element.
+
+### `lib/fill-resolve-state.mjs`
+- `makeState(options)` → the run state built once for a Fill run; `planSpacing(st, rec)` decides each tier's gap owner and the margins the children give up; `baselineFn(st, rec, cal, prop, ownFontPx)` → `(slot, width) => value`, what the node shows with nothing written; `ledgerView(st, rec, ref, prop, draft, pseudo)` → `{ draft, rules, held }` over the divergence ledger; `alternateSlots(cal, prop, draft)`, `gapTarget(st, rec)`, `snapsOf(st, id)`, `draftOf(snaps, get)`, `valueText(draft)` (a readable value for a per-width map), and the shared `GAP_PROPS`, `slugClass`, `json`.
+
+### `lib/fill-resolve-element.mjs`
+- `fillElement(st, rec, ref, cal, target, snaps, layer)` → writes every property of one element (or its `::before` / `::after` layer) that differs, through the resolver; `apply(st, rec, ref, target, prop, res, slot)` writes one resolver result and its fixture switch; `ratioWrite(...)` tries the fixed-ratio equivalent for a not-plain property; `unmapped(st, rec, ref, row)` records an UNMAPPED row.
 
 ### `lib/fill-spacing.mjs`
 - `EQUAL_PX`: 0.5, the tolerance at which two rendered gaps are equal.
@@ -1078,7 +1085,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `plainText(s)` → text without markup, whitespace collapsed.
 - `presenceDecisions(input)` → `{ writes, unmapped, notes }` for visibility and variant settings, from calibration's `presence`.
 - `textDecisions(input)` → the same for words, from calibration's `text`.
-- `normaliseHref(href, origin)` → the href as WordPress holds it, or null. `linkDecisions(input)` → the same for links, from calibration's `link`; a setting bound to Site Info (`metadata.bindings.<attr>.args.key`) is still written and also returns a `handover` row, which `fill-resolve.mjs::fillContent` records as a `site-info` / `link` handover entry. A block whose `link` names one distinct path (the nested anchor `sgs/icon` calibrates as `.sgs-icon__link`) also takes the address at the draft's root slot when no slot names that path: the draft's own anchor, or the sole anchor inside the copied element, is that block's one link; a block with two link paths takes no root guess.
+- `normaliseHref(href, origin)` → the href as WordPress holds it, or null;  `linkDecisions(input)` → the same for links, from calibration's `link`; a setting bound to Site Info (`metadata.bindings.<attr>.args.key`) is still written and also returns a `handover` row, which `fill-resolve.mjs::fillContent` records as a `site-info` / `link` handover entry. A block whose `link` names one distinct path (the nested anchor `sgs/icon` calibrates as `.sgs-icon__link`) also takes the address at the draft's root slot when no slot names that path: the draft's own anchor, or the sole anchor inside the copied element, is that block's one link; a block with two link paths takes no root guess.
 
 ### `lib/fill-link-attrs.mjs`
 - `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.

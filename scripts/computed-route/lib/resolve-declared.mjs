@@ -2,7 +2,7 @@
 // agree, the setting is written with what the code states (a 2rem font size, a 0.05em letter spacing, a unitless line
 // height), in the form the setting holds; a declared form the setting cannot hold keeps the rendered value.
 // resolve.mjs::resolve calls these with input.declaredForm ({ width: value }, only the widths where D–R agrees,
-// lib/fill-resolve.mjs::fillElement).
+// lib/fill-resolve-element.mjs::fillElement).
 
 // The calibrated forms that prove a setting passes a CSS string through to its paint (lib/calibrate-markers.mjs::FLUID_MARKERS).
 const STRING_FORMS = [ 'clamp', 'vw', 'min', 'max' ];
