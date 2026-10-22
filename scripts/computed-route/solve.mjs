@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Solve (FR-47-3): compare a built surface with its draft, turn each open style or hover difference into a setting
 // write through the resolver, rebuild, and repeat (at most three write rounds), then classify what survives.
-//   node scripts/computed-route/solve.mjs --client eye-care-ward-end --surface footer [--out <dir>] [--rounds 3] [--site <calibration target>] [--no-trial] [--no-states]
+//   node scripts/computed-route/solve.mjs --client eye-care-ward-end --surface footer [--out <dir>] [--rounds 3] [--site <calibration target>] [--no-trial] [--no-states] [--fill-report <fill-report.json>]
 // Each write round's settings are tried in the open live page before the rebuild (lib/trial-run.mjs); a rejected one
 // is undone and blocked (lib/trial.mjs::applyVerdicts). --no-trial skips the trial. The state check (lib/state-live.mjs)
 // reads every paired element's state looks on both pages after the last walk; --no-states skips it.
@@ -18,6 +18,7 @@ import { resolve, resolveViaAncestor } from './lib/resolve.mjs';
 import { readTree, writeTree, addRefs, nodeByRef, setAttr, assertWritable, assertQuiet } from './lib/tree.mjs';
 import { writableGroups, draftValues, usedValueTarget, classify, openRows, rowDistance, intendedCount, regressedRows, groupKey, settingState, cssProp, knownPaths, resolveContent, handoverOf, HANDOVER_OWNERS } from './lib/solve-rows.mjs';
 import { writeSolveReport } from './lib/solve-report.mjs';
+import { writeConfirmLive } from './lib/confirm-live.mjs';
 import { guardRound, closeTrials } from './lib/guard.mjs';
 import { readWinningRules } from './lib/winning-rule.mjs';
 import { detectReferences, referenceOf, BLOCKS_SRC } from './lib/references.mjs';
@@ -609,5 +610,11 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const handover = handoverOf( classes );
 	const trial = { verdicts: trialVerdicts, rejected: trialRejected, ...( trialOn ? {} : { off: '--no-trial' } ) };
 	writeSolveReport( outDir, { trial, handover, surface, refsAdded: added, rounds, roundThreeWrote: rounds >= 3 && lastWrote, writes: allWrites, wrong, wrongSettings: settingRatio( wrong, allWrites ), gaps, classes, snaps: ctx.log, intended: intendedCount( report ), unmappedState, states: states.json, statesMarkdown: states.markdown, before, after: report } );
+	// FR-48-36: with --fill-report <fill-report.json>, the confirm records get their rendered-live half from the final walk
+	// (confirm-live.json beside the report).
+	if ( flag( '--fill-report' ) ) {
+		const cl = writeConfirmLive( outDir, path.resolve( flag( '--fill-report' ) ), report, { stateMap: s.states } );
+		console.log( `confirm-live: ${ JSON.stringify( cl.counts ) } -> ${ cl.file }` );
+	}
 	console.log( `solve ${ surface }: ${ allWrites.length } writes over ${ rounds } round(s); hardcode ${ classes.hardcode.length }, missing ${ classes.missing.length }, unresolved ${ classes.unresolved.length }, derived ${ classes.derived.length }, unmapped-state ${ unmappedState }, handover ${ handover.length }; wrong writes ${ wrong.length } (settings ${ settingRatio( wrong, allWrites ).wrong } of ${ settingRatio( wrong, allWrites ).total }). Report: ${ path.join( outDir, 'solve-report.md' ) }` );
 }
