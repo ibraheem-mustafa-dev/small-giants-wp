@@ -10,7 +10,6 @@ import { compareDR, TOLERANCE } from './fill-confirm.mjs';
 
 // The rendered tolerance (FR-48-36): ±1px for lengths in place of the declared ±0.5px.
 export const RENDERED_TOL = 1;
-const bare = ( r ) => String( r ?? '' ).replace( /^[a-z]+-ref-/, '' );
 
 // R–L for one property: { rl: 'agree' | 'disagree' | 'unreadable', tolerance }.
 export function compareRL( prop, renderedDraft, renderedLive, fontPx = 16 ) {
@@ -63,12 +62,19 @@ export function livePair( report, record, width, rest ) {
 		}
 		for ( const [ name, p ] of Object.entries( run.pairs || {} ) ) {
 			const t = p?.live?.trace;
-			if ( name.startsWith( '(' ) || ! t || bare( t.ref ) !== bare( record.node ) ) {
+			if ( name.startsWith( '(' ) || ! t || t.ref !== record.node ) {
+				continue;
+			}
+			// The pair's draft side, where the walker states it, must be the record's draft element.
+			const sideId = p.draftId ?? p.draft?.draftId ?? null;
+			if ( null != sideId && null != record.draftId && sideId !== record.draftId ) {
 				continue;
 			}
 			mispaired ||= ( p.diffs || [] ).some( ( d ) => d.mispaired );
 			if ( ( t.path ?? '' ) === base && ! p.live.missing ) {
-				found.push( { name, live: p.live } );
+				// The same pair read in two state runs (rest and hover at one width) is one live element.
+				const id = `${ name }|${ t.ref }|${ t.path ?? '' }`;
+				found.some( ( x ) => x.id === id ) || found.push( { id, name, live: p.live } );
 			}
 		}
 	}
@@ -78,7 +84,7 @@ export function livePair( report, record, width, rest ) {
 	if ( 1 !== found.length ) {
 		return { why: found.length ? 'ambiguous-pair' : 'no-live-element' };
 	}
-	return found[ 0 ];
+	return { name: found[ 0 ].name, live: found[ 0 ].live };
 }
 
 // The records with the live half filled: renderedLive, rl, rlTolerance, the verdict from the table and, where the table

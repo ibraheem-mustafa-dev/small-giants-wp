@@ -73,13 +73,57 @@ test( 'a new container whose edit.js TEMPLATE is slotted rows is covered with no
 	};
 	make( 'strip', "const TEMPLATE = [ [ 'sgs/strip-row', { rowSlot: 'left' } ], [ 'sgs/strip-row', { rowSlot: 'right', gap: 4 } ] ];\nexport default function Edit() { return <div />; }\n" );
 	make( 'plain', "const TEMPLATE = [ [ 'core/paragraph' ] ];\nexport default function Edit() { return null; }\n" );
-	make( 'mixed', "const TEMPLATE = [ [ 'sgs/a', { rowSlot: 'x' } ], [ 'sgs/b', { rowSlot: 'y' } ] ];\n" );
 	try {
 		assert.deepEqual( [ ...shape.slottedContainers( dir ).keys() ], [ 'sgs/strip' ] );
 		const ok = [ blk( 'sgs/strip', {}, [ blk( 'sgs/strip-row', { rowSlot: 'left' } ), blk( 'sgs/strip-row', { rowSlot: 'right' } ) ] ) ];
 		assert.deepEqual( shape.slottedRootProblems( ok, { blocksDir: dir } ), [] );
 		assert.match( shape.slottedRootProblems( [ blk( 'sgs/strip', {}, [ blk( 'sgs/strip-row', { rowSlot: 'left' } ) ] ) ], { blocksDir: dir } ).join( '\n' ), /missing its "right" row/ );
 		assert.deepEqual( shape.slottedRootProblems( [ blk( 'sgs/container' ), blk( 'sgs/container' ) ], { blocksDir: dir } ), [] );
+	} finally {
+		fs.rmSync( dir, { recursive: true, force: true } );
+	}
+} );
+
+for ( const s of SURFACES ) {
+	test( `MUST FAIL ${ s.root.replace( 'sgs/', '' ) }: a container nested inside another block, at any depth, is refused before the browser opens`, () => {
+		const root = blk( s.root, {}, rows( s ) );
+		assert.match( shape.slottedRootProblems( [ blk( 'sgs/container', {}, [ root ] ) ] ).join( '\n' ), /sgs\/site-\w+ is nested inside sgs\/container/ );
+		assert.match( shape.slottedRootProblems( [ blk( 'sgs/container', {}, [ blk( 'sgs/group', {}, [ root ] ) ] ) ] ).join( '\n' ), /nested inside sgs\/container > sgs\/group/ );
+		const second = blk( s.root, {}, rows( s ) );
+		assert.match( shape.slottedRootProblems( [ blk( s.root, {}, [ ...rows( s ).slice( 0, 1 ), blk( s.row, { rowSlot: 'middle' }, [ second ] ), ...rows( s ).slice( 2 ) ] ) ] ).join( '\n' ), /nested inside/, 'a header inside its own row' );
+		assert.deepEqual( shape.slottedRootProblems( [ blk( 'sgs/container', {}, [ blk( 'sgs/heading' ) ] ) ] ), [], 'no slotted container anywhere is not this check\'s business' );
+	} );
+}
+
+test( 'MUST FAIL: a container whose edit.js mentions rowSlot but whose TEMPLATE the guard cannot read fails with a plain error naming the file', () => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'unreadable-' ) );
+	const bad = {
+		spread: "const ROWS = [ [ 'sgs/r', { rowSlot: 'a' } ] ];\nconst TEMPLATE = [ ...ROWS ];\n",
+		variable: "const TEMPLATE = buildRows();\n// rowSlot\n",
+		computed: "const KEY = 'rowSlot';\nconst TEMPLATE = [ [ 'sgs/r', { [ KEY ]: 'a' } ] ];\n",
+		computedValue: "const TEMPLATE = [ [ 'sgs/r', { rowSlot: SLOT } ] ];\n",
+		mixed: "const TEMPLATE = [ [ 'sgs/a', { rowSlot: 'x' } ], [ 'sgs/b', { rowSlot: 'y' } ] ];\n",
+		partial: "const TEMPLATE = [ [ 'sgs/a', { rowSlot: 'x' } ], [ 'sgs/a' ] ];\n",
+		recovered: "const TEMPLATE = [ [ 'sgs/a', { rowSlot: 'x' } ] ];\nconst TEMPLATE = [];\n",
+		parse: "const TEMPLATE = [ [ 'sgs/a', { rowSlot: 'x' } ] ;\n",
+		spreadAttrs: "const TEMPLATE = [ [ 'sgs/a', { ...base, rowSlot: 'x' } ] ];\n",
+	};
+	try {
+		for ( const [ name, edit ] of Object.entries( bad ) ) {
+			fs.mkdirSync( path.join( dir, name ) );
+			fs.writeFileSync( path.join( dir, name, 'block.json' ), JSON.stringify( { name: `sgs/${ name }` } ) );
+			fs.writeFileSync( path.join( dir, name, 'edit.js' ), edit );
+			assert.throws( () => shape.rowsOfSource( edit, `${ name }/edit.js` ), new RegExp( `${ name }/edit\\.js: its TEMPLATE mentions rowSlot but the guard cannot read it` ), name );
+			fs.rmSync( path.join( dir, name ), { recursive: true } );
+		}
+		fs.mkdirSync( path.join( dir, 'spread' ) );
+		fs.writeFileSync( path.join( dir, 'spread', 'block.json' ), JSON.stringify( { name: 'sgs/spread' } ) );
+		fs.writeFileSync( path.join( dir, 'spread', 'edit.js' ), bad.spread );
+		assert.throws( () => shape.slottedContainers( dir ), /spread[\\/]edit\.js: its TEMPLATE/ );
+		// A literal TEMPLATE with no rowSlot among its entries is a container that is not slotted, not an unreadable one.
+		assert.equal( shape.rowsOfSource( "const TEMPLATE = [ [ 'core/paragraph' ] ];\n// rowSlot elsewhere\n" ), null );
+		assert.equal( shape.rowsOfSource( 'export const OTHER = 1;\n' ), null );
+		assert.deepEqual( shape.rowsOfSource( "export const TEMPLATE = [ [ 'sgs/r', { rowSlot: 'a' } ] ];\n" ), [ { name: 'sgs/r', rowSlot: 'a' } ] );
 	} finally {
 		fs.rmSync( dir, { recursive: true, force: true } );
 	}

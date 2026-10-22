@@ -3,7 +3,9 @@
 // `bottom`; the draft's main bar (the bar holding the logo or navigation) is the middle row and a strip drawn above or
 // below it is the top or bottom row. A strip is either BESIDE the header (a sibling of the header's root: the inventory
 // reads those in the page and lists them in `inventory.beside`, with the strips' own elements under `strip` roots) or
-// INSIDE it (a direct child of the header root that holds neither navigation nor logo while a sibling does).
+// INSIDE it (a direct child of the header root that holds neither navigation nor logo, is in flow and is stacked above or
+// below the main bar). Either way a strip is stacked: its rendered box lies wholly above or wholly below the bar's box at
+// every width where both render; an element inline with the bar is part of the bar.
 // Signals are universal: position, rendering, adjacency, whether an element holds another surface's root, and what an
 // element holds. Never a surface name, a client name or a pixel value.
 
@@ -12,14 +14,34 @@ export const OUT_OF_FLOW = new Set( [ 'fixed', 'absolute' ] );
 
 const outOfFlow = ( ...positions ) => positions.some( ( p ) => OUT_OF_FLOW.has( String( p ?? '' ).trim() ) );
 
+// Whether an element draws a box at a width: the inventory carries a box and a visibility per read width, and a width the
+// element is not drawn at (display none, no layout box) is a width it does not render at.
+const drawnAt = ( el, w ) => !! el?.box?.[ w ] && el.box[ w ].w > 0 && el.box[ w ].h > 0 && false !== el.visible?.[ w ];
+const widthsOf = ( el ) => Object.keys( el?.box || {} );
+
+// Whether an element lies wholly above (side 'top') or wholly below (side 'bottom') a reference box at every read width where
+// both are drawn, and at one width at least. `refAt( w )` is the reference box at that width or null (the reference is not
+// drawn there). A box one pixel short of touching still counts as touching (rounding of fractional layout).
+export function stackedOn( el, side, refAt ) {
+	const widths = widthsOf( el ).filter( ( w ) => drawnAt( el, w ) && refAt( w ) );
+	return widths.length > 0 && widths.every( ( w ) => {
+		const a = el.box[ w ];
+		const r = refAt( w );
+		return 'top' === side ? a.y + a.h <= r.y + 1 : a.y >= r.y + r.h - 1;
+	} );
+}
+
 // The strips beside the header, nearest the header first on each side: { before: [ element ], after: [ element ], skipped:
 // [ { key, side, why } ] }. Walking outward from the header root, a sibling that is out of flow (declared or computed
-// position) or does not render is passed over; the first in-flow sibling that holds the root of another surface (a page,
-// footer, drawer or menu; a surface of kind global does not count) ends the walk; any other is a strip. A sibling that
-// does not share the header root's template parent (`sameParent`) is not a strip. `declared( element )` is the position
-// the template declares ('' or null when none).
+// position) or does not render is passed over; the first in-flow sibling that is, or holds at any depth, the root of another
+// surface (a page, footer, drawer, panel, menu or form; a surface of kind global does not count) ends the walk; any other
+// is a strip when it is stacked: wholly above (before) or below (after) the header root's box at every width where both
+// render. A sibling that does not share the header root's template parent (`sameParent`) is not a strip. An export with no
+// surface for the page reads a plain in-flow block stacked next to the header as a strip, since no signal tells it from
+// one; the strip is listed for review. `declared( element )` is the position the template declares ('' or null when none).
 export function besideStrips( inventory, { declared = () => null, sameParent = () => true } = {} ) {
 	const byKey = new Map( inventory.elements.map( ( e ) => [ e.key, e ] ) );
+	const root = byKey.get( inventory.checks?.rootKey ) || inventory.elements.find( ( e ) => ! e.parentKey && ! e.strip );
 	const out = { before: [], after: [], skipped: [] };
 	for ( const side of [ 'before', 'after' ] ) {
 		const list = ( inventory.beside || [] ).filter( ( b ) => b.side === side ).sort( ( a, b ) => a.distance - b.distance );
@@ -37,6 +59,8 @@ export function besideStrips( inventory, { declared = () => null, sameParent = (
 				skip( 'its elements are not in the inventory' );
 			} else if ( ! sameParent( el ) ) {
 				skip( 'does not share the header root\'s template parent' );
+			} else if ( ! stackedOn( el, 'before' === side ? 'top' : 'bottom', ( w ) => ( drawnAt( root, w ) ? root.box[ w ] : null ) ) ) {
+				skip( `not stacked ${ 'before' === side ? 'above' : 'below' } the header root at every width where both render` );
 			} else {
 				out[ side ].push( el );
 			}
@@ -47,8 +71,11 @@ export function besideStrips( inventory, { declared = () => null, sameParent = (
 
 // The strips inside the header root, nearest the main bar first on each side: { top: [ element ], bottom: [ element ],
 // main: [ element ] }. `kids` are the root's block children in document order. A child that holds the navigation or the
-// logo (`holdsMain`) is the main bar (every such child: width alternatives are all the main bar); a child before the first
-// of them that is in flow is a top strip, one after the last a bottom strip. With no child holding either, nothing is a strip.
+// logo (`holdsMain`) is the main bar (every such child: width alternatives are all the main bar). A child before the first
+// of them (after the last) is a top (bottom) strip when it renders at some width, is in flow (neither declared nor computed
+// fixed or absolute at a width it renders at) and is stacked: wholly above (below) the main bar's box at every width where
+// both render. A child inline with the main bar (a call to action, a burger, social links) is part of the main bar. A child
+// hidden at some widths is still a strip where it renders. With no child holding either, nothing is a strip.
 export function insideStrips( kids, { holdsMain, declared = () => null } ) {
 	const mains = kids.filter( holdsMain );
 	if ( ! mains.length ) {
@@ -56,7 +83,15 @@ export function insideStrips( kids, { holdsMain, declared = () => null } ) {
 	}
 	const first = kids.indexOf( mains[ 0 ] );
 	const last = kids.indexOf( mains.at( -1 ) );
-	const strip = ( k, i ) => ! outOfFlow( declared( k ) ) && ( i < first || i > last );
+	const barAt = ( side ) => ( w ) => {
+		const bar = 'top' === side ? mains.find( ( m ) => drawnAt( m, w ) ) : [ ...mains ].reverse().find( ( m ) => drawnAt( m, w ) );
+		return bar ? bar.box[ w ] : null;
+	};
+	const inFlow = ( k ) => ! outOfFlow( declared( k ) ) && ! widthsOf( k ).some( ( w ) => drawnAt( k, w ) && outOfFlow( k.position?.[ w ] ) );
+	const strip = ( k, i ) => {
+		const side = i < first ? 'top' : 'bottom';
+		return ( i < first || i > last ) && inFlow( k ) && stackedOn( k, side, barAt( side ) );
+	};
 	return {
 		top: kids.filter( ( k, i ) => i < first && strip( k, i ) ).reverse(),
 		bottom: kids.filter( ( k, i ) => i > last && strip( k, i ) ),

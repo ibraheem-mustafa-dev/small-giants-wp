@@ -1,0 +1,9 @@
+[
+	{ "file": "lib/gate-chain.mjs", "find": "if ( i.blockChanges.length ) {", "replace": "if ( false ) {", "why": "uncommitted edits to the block would pass G0" },
+	{ "file": "lib/gate-chain.mjs", "find": "if ( ! Array.isArray( i.blockChanges ) ) {", "replace": "if ( false ) {", "why": "an unread change list would pass G0" },
+	{ "file": "lib/gate-chain.mjs", "find": "const routed = fitting.filter( ( r ) => null !== r.css_property && onState( r ) );", "replace": "const routed = fitting.filter( ( r ) => null !== r.css_property );", "why": "a routed row on another state would be a candidate setting for this state" },
+	{ "file": "lib/gate-chain.mjs", "find": "if ( elsewhere.length ) {", "replace": "if ( false ) {", "why": "a fitting row on another state would pass G3 with no settings" },
+	{ "file": "gate-chain.mjs", "find": "schemaVersion: manifestSchemaVersion(),", "replace": "schemaVersion: '1.0',", "why": "the expected MANIFEST version would be a literal in the command" },
+	{ "file": "lib/handoff.mjs", "find": "if ( 'string' !== typeof v || ! v ) {", "replace": "if ( false ) {", "why": "a handoff schema naming no version would yield an undefined expectation" },
+	{ "file": "lib/handoff.mjs", "find": ".properties?.schema_version?.const;", "replace": ".properties?.schema_version?.const ?? '1.0';", "why": "the expected version would fall back to a literal" }
+]

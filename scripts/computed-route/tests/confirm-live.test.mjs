@@ -68,8 +68,9 @@ test( 'MUST FAIL: fillLive reads the live value from the pair whose trace names 
 	assert.equal( out.renderedLive, '16.4px' );
 	assert.equal( out.rl, 'agree' );
 	assert.equal( out.verdict, 'confirmed' );
-	// a bare ref on the trace pairs with the class-form node
-	assert.equal( fillLive( [ rec() ], report( { a: pair( 'f-1', { 'padding-top': '16px' } ) } ) )[ 0 ].renderedLive, '16px' );
+	// the full ref is compared: a bare ref, or another prefix, is another element
+	assert.equal( fillLive( [ rec() ], report( { a: pair( 'f-1', { 'padding-top': '16px' } ) } ) )[ 0 ].liveWhy, 'no-live-element' );
+	assert.equal( fillLive( [ rec() ], report( { a: pair( 'xx-ref-f-1', { 'padding-top': '16px' } ) } ) )[ 0 ].liveWhy, 'no-live-element' );
 	// another width reads nothing
 	assert.equal( fillLive( [ rec( { width: 375 } ) ], rep )[ 0 ].verdict, 'open' );
 } );
@@ -125,4 +126,19 @@ test( 'MUST FAIL: writeConfirmLive writes confirm-live.json with verdict counts 
 	assert.equal( JSON.parse( fs.readFileSync( out.file, 'utf8' ) ).confirm[ 0 ].renderedLive, '16px' );
 	fs.writeFileSync( fr, '{}' );
 	assert.throws( () => writeConfirmLive( dir, fr, report( {} ) ), /no confirm records/ );
+} );
+
+test( 'MUST FAIL: one live element read in two state runs (rest and hover, or a null state map) is one pair, not an ambiguous one; two pairs on it are still ambiguous', () => {
+	const p = () => ( { a: pair( 'cr-ref-f-1', { 'padding-top': '16px' } ) } );
+	const two = { runs: [ { state: 'rest', width: 1440, pairs: p() }, { state: 'hover', width: 1440, pairs: p() } ] };
+	assert.equal( fillLive( [ rec() ], two )[ 0 ].verdict, 'confirmed' );
+	assert.equal( fillLive( [ rec() ], two, { stateMap: null } )[ 0 ].verdict, 'confirmed' );
+	assert.equal( fillLive( [ rec() ], { runs: [ { state: 'rest', width: 1440, pairs: { ...p(), b: pair( 'cr-ref-f-1', { 'padding-top': '16px' } ) } } ] } )[ 0 ].liveWhy, 'ambiguous-pair' );
+} );
+
+test( 'MUST FAIL: a pair is the record\'s only by its full ref and its stated draft element: another surface\'s ref with the same tail, or another draft element, is not it', () => {
+	assert.equal( livePair( report( { a: pair( 'cr-ref-g-1', { 'padding-top': '16px' } ) } ), rec( { node: 'cr-ref-f-1' } ), 1440, null ).why, 'no-live-element' );
+	const named = ( draftId ) => report( { a: { ...pair( 'cr-ref-f-1', { 'padding-top': '16px' } ), draftId } } );
+	assert.equal( livePair( named( 'Sec:9' ), rec( { draftId: 'Sec:2' } ), 1440, null ).why, 'no-live-element' );
+	assert.ok( livePair( named( 'Sec:2' ), rec( { draftId: 'Sec:2' } ), 1440, null ).live );
 } );

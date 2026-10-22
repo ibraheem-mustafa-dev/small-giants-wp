@@ -14,8 +14,8 @@ export const INVENTORY_WIDTHS = [ 1440, 375, 768 ];
 const ATTRS = [ 'href', 'aria-label', 'alt', 'role', 'type', 'title', 'target', 'aria-hidden', 'viewBox', 'class', 'style' ];
 
 // In-page. in: [ rootSelector, tplKeyOfSource, attrs, tplLineOfSource, strips ]. `strips` is null, or { exclude: [ [ component,
-// tpl ] ], pages } (the roots of the other surfaces that are not global; `pages` is true when the export has page surfaces, whose
-// root is the route's <main>, so a sibling that is or holds a <main> holds a page root): the root's siblings are then read too, as `beside`, and the
+// tpl ] ] } (the roots of the other surfaces that are not global: a page, footer, drawer, panel, menu or form; a sibling that
+// is or holds one at any depth holds another surface's root): the root's siblings are then read too, as `beside`, and the
 // elements of those in the chain of strips next to the root are inventoried under `strip` roots (rules.headerSlots decides
 // which are rows: lib/skeleton-header-slots.mjs::besideStrips). Returns { records, beside } or { error }.
 function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips ] ) {
@@ -29,7 +29,7 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips ] ) {
 	document.querySelectorAll( '[data-inv-strip]' ).forEach( ( x ) => x.removeAttribute( 'data-inv-strip' ) );
 	const stampedAt = ( x ) => x.hasAttribute( 'data-dc-tpl' );
 	const hostName = ( x ) => x.parentElement?.closest( '.sc-host' )?.dataset.scName;
-	const holdsOther = ( s ) => ( strips?.pages && ( s.matches( 'main' ) || !! s.querySelector( 'main' ) ) ) || ( strips?.exclude || [] ).some( ( [ dc, tpl ] ) => [ s, ...s.querySelectorAll( `[data-dc-tpl="${ tpl }"]` ) ].some( ( x ) => x.matches( `[data-dc-tpl="${ tpl }"]` ) && [ dc, window.__dcRootName() ].includes( hostName( x ) ) ) );
+	const holdsOther = ( s ) => ( strips?.exclude || [] ).some( ( [ dc, tpl ] ) => [ s, ...s.querySelectorAll( `[data-dc-tpl="${ tpl }"]` ) ].some( ( x ) => x.matches( `[data-dc-tpl="${ tpl }"]` ) && [ dc, window.__dcRootName() ].includes( hostName( x ) ) ) );
 	const beside = [];
 	const stripRoots = new Map();
 	if ( strips && root.parentElement ) {
@@ -131,7 +131,7 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips ] ) {
 		const box = e.getClientRects().length ? { x: +( r.left + scrollX ).toFixed( 1 ), y: +( r.top + scrollY ).toFixed( 1 ), w: +r.width.toFixed( 1 ), h: +r.height.toFixed( 1 ) } : null;
 		out.push( {
 			i: out.length, key: keyOf( e ), parentKey: p && ! stripRoots.has( e ) ? keyOf( p ) : null, ...( stripRoots.has( e ) ? { strip: stripRoots.get( e ) } : {} ), depth, tag: e.tagName.toLowerCase(), template: tname, tpl: Number( n ), attrs, words: ws( own ), allText: ws( e.textContent ).slice( 0, 120 ),
-			srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, flexDirection: getComputedStyle( e ).flexDirection,
+			srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, position: getComputedStyle( e ).position, flexDirection: getComputedStyle( e ).flexDirection,
 		} );
 	} );
 	return { records: out, beside, unstamped, rootKey: out[ 0 ]?.key ?? null, rootName: window.__dcRootName() };
@@ -309,7 +309,7 @@ function summarise( { runs, shots, skipped, url, root } ) {
 	const at = ( w, key ) => runs[ w ].records.find( ( x ) => x.key === key );
 	const elements = base.records.map( ( r ) => {
 		const { i, ...rest } = r;
-		return { ...rest, box: { 375: at( 375, r.key )?.box ?? null, 768: at( 768, r.key )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, r.key )?.visible ?? false, 768: at( 768, r.key )?.visible ?? false, 1440: r.visible }, layoutChanged375: at( 375, r.key )?.layoutChanged ?? null, screenshots: shots[ r.key ] || {} };
+		return { ...rest, box: { 375: at( 375, r.key )?.box ?? null, 768: at( 768, r.key )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, r.key )?.visible ?? false, 768: at( 768, r.key )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, r.key )?.position ?? null, 768: at( 768, r.key )?.position ?? null, 1440: r.position ?? null }, layoutChanged375: at( 375, r.key )?.layoutChanged ?? null, screenshots: shots[ r.key ] || {} };
 	} );
 	const tagOk = ( r ) => !! r.srcTag && r.srcTag.replace( /^sc-raw-/, '' ).toLowerCase() === r.tag;
 	const checks = {

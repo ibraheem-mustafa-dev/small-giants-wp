@@ -20,14 +20,15 @@ const db = openDb();
 const facts = () => loadFacts( { db, client: 'eye-care-ward-end', repo: REPO, siteName: 'Acme' } );
 
 const num = ( key ) => Number( /\/(\d+)#/.exec( key )[ 1 ] );
-const box = { x: 0, y: 0, w: 100, h: 20 };
-const el = ( key, parentKey, tag, words = '', x = {} ) => ( { key, parentKey, depth: x.depth ?? 1, tag, template: 'Root', tpl: num( key ), attrs: x.attrs || {}, words, allText: words, membership: [], srcTag: tag, srcOwnText: words, snippet: `<${ tag } data-dc-tpl="${ num( key ) }">${ words }</${ tag }>`, box: { 375: box, 768: box, 1440: box }, visible: { 375: true, 768: true, 1440: true }, display: x.display || 'block', flexDirection: 'row', screenshots: {}, ...( x.strip ? { strip: x.strip } : {} ) } );
+// A box at every read width: the header and its bar are drawn at y 100; a strip above is at 0, one below at 300.
+const boxes = ( y, h = 20, w = 100, x = 0 ) => { const b = { x, y, w, h }; return { 375: b, 768: b, 1440: b }; };
+const el = ( key, parentKey, tag, words = '', x = {} ) => ( { key, parentKey, depth: x.depth ?? 1, tag, template: 'Root', tpl: num( key ), attrs: x.attrs || {}, words, allText: words, membership: [], srcTag: tag, srcOwnText: words, snippet: `<${ tag } data-dc-tpl="${ num( key ) }">${ words }</${ tag }>`, box: x.box || boxes( 100 ), visible: { 375: true, 768: true, 1440: true }, display: x.display || 'block', flexDirection: 'row', screenshots: {}, ...( x.strip ? { strip: x.strip } : {} ) } );
 // A strip root read beside the header: no parent in the inventory, depth 1.
-const stripRoot = ( key, side, distance = 1 ) => el( key, null, 'div', '', { strip: { side, distance } } );
+const stripRoot = ( key, side, distance = 1 ) => el( key, null, 'div', '', { strip: { side, distance }, box: boxes( 'before' === side ? 0 : 300 ) } );
 const near = ( key, side, distance = 1, o = {} ) => ( { key, side, distance, position: 'relative', renders: true, holdsOtherRoot: false, ...o } );
 
 // The header (Root/1) with its main bar: a bar (Root/2) holding a nav (Root/3) of two links.
-const header = () => [ el( 'Root/1#0', null, 'header', '', { depth: 0 } ), el( 'Root/2#0', 'Root/1#0', 'div', '', { depth: 1, display: 'flex' } ), el( 'Root/3#0', 'Root/2#0', 'nav', '', { depth: 2 } ), el( 'Root/4#0', 'Root/3#0', 'a', 'Shop', { depth: 3, attrs: { href: '/shop' } } ), el( 'Root/5#0', 'Root/3#0', 'a', 'Help', { depth: 3, attrs: { href: '/help' } } ) ];
+const header = () => [ el( 'Root/1#0', null, 'header', '', { depth: 0, box: boxes( 90, 60 ) } ), el( 'Root/2#0', 'Root/1#0', 'div', '', { depth: 1, display: 'flex' } ), el( 'Root/3#0', 'Root/2#0', 'nav', '', { depth: 2 } ), el( 'Root/4#0', 'Root/3#0', 'a', 'Shop', { depth: 3, attrs: { href: '/shop' } } ), el( 'Root/5#0', 'Root/3#0', 'a', 'Help', { depth: 3, attrs: { href: '/help' } } ) ];
 const stripText = ( root, text ) => el( `Root/${ num( root ) + 1 }#0`, root, 'span', text, { depth: 2 } );
 const inv = ( elements, beside = [] ) => ( { generated: 'fixture', source: 'fixture', root: 'header', checks: { rootKey: 'Root/1#0' }, elements, ...( beside.length ? { beside } : {} ) } );
 const run = ( inventory, f = facts() ) => proposeSkeleton( { inventory, facts: f, surface: 'header', surfaceKind: 'header', surfaceName: 'Header', db } );
@@ -78,7 +79,7 @@ test( 'MUST FAIL: a strip beside the header, below it, is the bottom row', () =>
 } );
 
 test( 'MUST FAIL: a direct child of the header that holds neither navigation nor logo, beside a child that does, is a strip by its place', () => {
-	const kids = [ el( 'Root/6#0', 'Root/1#0', 'div', '', { depth: 1 } ), el( 'Root/7#0', 'Root/6#0', 'span', 'Open late on Fridays', { depth: 2 } ), el( 'Root/8#0', 'Root/1#0', 'div', '', { depth: 1 } ), el( 'Root/9#0', 'Root/8#0', 'span', 'Registered charity', { depth: 2 } ) ];
+	const kids = [ el( 'Root/6#0', 'Root/1#0', 'div', '', { depth: 1, box: boxes( 0 ) } ), el( 'Root/7#0', 'Root/6#0', 'span', 'Open late on Fridays', { depth: 2, box: boxes( 0 ) } ), el( 'Root/8#0', 'Root/1#0', 'div', '', { depth: 1, box: boxes( 300 ) } ), el( 'Root/9#0', 'Root/8#0', 'span', 'Registered charity', { depth: 2, box: boxes( 300 ) } ) ];
 	const [ root, bar, ...rest ] = header();
 	// document order: the top strip, the bar, the bottom strip
 	const r = run( inv( [ root, kids[ 0 ], kids[ 1 ], bar, ...rest, kids[ 2 ], kids[ 3 ] ] ) );
@@ -201,4 +202,77 @@ test( 'MUST FAIL: Bean\'s approvals of an absorbed surface\'s rows are found by 
 	assert.equal( checkApproval( { rowId: 'skeleton:top-bar:Root/1#0', approvedBlock: 'sgs/site-header' }, ctx ).noRow, true, 'a row outside the strip is not the absorbed surface\'s' );
 	assert.equal( checkApproval( { ...approval, approvedBlock: 'sgs/heading' }, ctx ).mismatches.length, 1, 'a disagreeing approval is still a mismatch' );
 	assert.deepEqual( Object.keys( ctx.fingerprints[ 'top-bar' ] ), [ 'Root/10#0', 'Root/11#0' ] );
+} );
+
+// A direct child of the header root with one text inside it, drawn at the given boxes (default: inline with the bar).
+const kid = ( n, words, x = {} ) => [ el( `Root/${ n }#0`, 'Root/1#0', x.tag || 'div', '', { depth: 1, box: x.box, display: 'flex' } ), el( `Root/${ n + 1 }#0`, `Root/${ n }#0`, 'span', words, { depth: 2, box: x.box } ) ];
+const withKids = ( ...lists ) => { const [ root, ...rest ] = header(); return inv( [ root, ...lists.flat(), ...rest ] ); };
+const slotOf = ( r, tpl ) => rows( r ).find( ( n ) => flat( n.innerBlocks ).some( ( c ) => c.draftRef?.tpl === tpl ) || n.draftRef?.tpl === tpl )?.attributes.rowSlot ?? null;
+
+test( 'MUST FAIL: a child inline with the main bar is part of the bar, never a strip: a call to action after the nav, a burger, social links before the logo', () => {
+	const cta = kid( 6, 'Book now', { box: boxes( 100, 20, 80, 200 ) } );
+	let r = run( withKids( cta ) );
+	assert.equal( slotOf( r, 'Root/7#0' ), 'middle', 'the call to action after the bar stays in the middle row' );
+	assert.equal( rows( r )[ 2 ].innerBlocks.length, 0, 'no bottom row' );
+	const social = kid( 6, 'Follow us', { box: boxes( 100, 20, 80, 0 ) } );
+	const burger = kid( 8, 'Menu', { box: boxes( 100, 20, 40, 300 ) } );
+	const [ root, ...rest ] = header();
+	r = run( inv( [ root, ...social, ...rest, ...burger ] ) );
+	assert.deepEqual( [ slotOf( r, 'Root/7#0' ), slotOf( r, 'Root/9#0' ) ], [ 'middle', 'middle' ] );
+	assert.deepEqual( [ rows( r )[ 0 ].innerBlocks.length, rows( r )[ 2 ].innerBlocks.length ], [ 0, 0 ], 'no top and no bottom row' );
+	assert.deepEqual( insideStrips( [ { key: 'a', box: boxes( 100 ) }, { key: 'b', box: boxes( 100, 20, 80, 200 ) } ], { holdsMain: ( k ) => 'a' === k.key } ).bottom, [] );
+} );
+
+test( 'MUST FAIL: a full-width bar stacked above the main bar is the top row; one stacked below is the bottom row', () => {
+	const above = kid( 6, 'Announcement', { box: boxes( 0, 30, 1400 ) } );
+	const below = kid( 8, 'Legal line', { box: boxes( 300, 30, 1400 ) } );
+	const [ root, ...rest ] = header();
+	const r = run( inv( [ root, ...above, ...rest, ...below ] ) );
+	assert.deepEqual( [ slotOf( r, 'Root/6#0' ), slotOf( r, 'Root/8#0' ) ], [ 'top', 'bottom' ] );
+} );
+
+test( 'MUST FAIL: a strip is stacked at every width where both render; a strip hidden at some widths is still a strip where it renders; one rendering at none is not', () => {
+	const bar = { key: 'bar', box: boxes( 100 ) };
+	const main = ( k ) => 'bar' === k.key;
+	const hiddenNarrow = { key: 's', box: { ...boxes( 0 ), 375: null }, visible: { 375: false, 768: true, 1440: true } };
+	assert.deepEqual( insideStrips( [ hiddenNarrow, bar ], { holdsMain: main } ).top.map( ( k ) => k.key ), [ 's' ], 'drawn above where it renders' );
+	const nowhere = { key: 's', box: { 375: null, 768: null, 1440: null }, visible: { 375: false, 768: false, 1440: false } };
+	assert.deepEqual( insideStrips( [ nowhere, bar ], { holdsMain: main } ).top, [], 'renders at no width' );
+	const inlineNarrow = { key: 's', box: { ...boxes( 0 ), 375: boxes( 100 )[ 375 ] } };
+	assert.deepEqual( insideStrips( [ inlineNarrow, bar ], { holdsMain: main } ).top, [], 'beside the bar at one width is inline with it' );
+	const fixedNarrow = { key: 's', box: boxes( 0 ), position: { 375: 'fixed', 768: 'static', 1440: 'static' } };
+	assert.deepEqual( insideStrips( [ fixedNarrow, bar ], { holdsMain: main } ).top, [], 'computed fixed where it renders' );
+	const fixedHidden = { key: 's', box: { ...boxes( 0 ), 375: null }, position: { 375: 'fixed', 768: 'static', 1440: 'static' } };
+	assert.deepEqual( insideStrips( [ fixedHidden, bar ], { holdsMain: main } ).top.map( ( k ) => k.key ), [ 's' ], 'fixed only where it does not render' );
+	const absolute = { key: 's', box: boxes( 0 ), position: { 375: 'absolute', 768: 'absolute', 1440: 'absolute' } };
+	assert.deepEqual( insideStrips( [ absolute, bar ], { holdsMain: main } ).top, [] );
+} );
+
+test( 'MUST FAIL: only a strip that got a row is absorbed: the extra strip beside the header is in no stripRoots and keeps its own surface', () => {
+	const strips = [ stripRoot( 'Root/10#0', 'before', 1 ), stripText( 'Root/10#0', 'Near' ), stripRoot( 'Root/20#0', 'before', 2 ), stripText( 'Root/20#0', 'Far' ), stripRoot( 'Root/30#0', 'after', 1 ), stripText( 'Root/30#0', 'Below' ) ];
+	const r = run( inv( [ ...header(), ...strips ], [ near( 'Root/10#0', 'before', 1 ), near( 'Root/20#0', 'before', 2 ), near( 'Root/30#0', 'after', 1 ) ] ) );
+	assert.deepEqual( r.proposal.stripRoots, [ 'Root/10#0', 'Root/30#0' ], 'the rows\' strips only' );
+	const bare = run( inv( [ ...header(), ...strips ], [ near( 'Root/20#0', 'before', 2 ) ] ) );
+	assert.deepEqual( bare.proposal.stripRoots, [ 'Root/20#0' ], 'a lone strip is the row' );
+} );
+
+test( 'MUST FAIL: a sibling beside the header is a strip only when stacked above or below the header root; a plain content block with no surface that is stacked is read as a strip', () => {
+	const plain = [ stripRoot( 'Root/10#0', 'after' ), stripText( 'Root/10#0', 'Some content' ) ];
+	const stackedBelow = besideStrips( inv( [ ...header(), ...plain ], [ near( 'Root/10#0', 'after' ) ] ) );
+	assert.deepEqual( stackedBelow.after.map( ( x ) => x.key ), [ 'Root/10#0' ], 'no surface holds it and it is stacked: a strip, listed for review' );
+	const inlineEl = el( 'Root/10#0', null, 'div', '', { strip: { side: 'after', distance: 1 }, box: boxes( 90, 60, 100, 500 ) } );
+	const inline = besideStrips( inv( [ ...header(), inlineEl ], [ near( 'Root/10#0', 'after' ) ] ) );
+	assert.deepEqual( inline.after, [], 'beside the header root in one row: not stacked' );
+	assert.match( inline.skipped[ 0 ].why, /not stacked below the header root/ );
+	const above = el( 'Root/10#0', null, 'div', '', { strip: { side: 'before', distance: 1 }, box: boxes( 120, 20 ) } );
+	assert.deepEqual( besideStrips( inv( [ ...header(), above ], [ near( 'Root/10#0', 'before' ) ] ) ).before, [], 'listed before but drawn below the header: not above it' );
+} );
+
+test( 'MUST FAIL: the middle row keeps the main bar\'s attributes and draft element when the bar is the row block, with a sibling inline beside it inside; a keyless row only when no row block is the bar', () => {
+	const sib = [ el( 'Root/6#0', 'Root/1#0', 'span', 'Open late', { depth: 1, box: boxes( 100, 20, 80, 200 ) } ) ];
+	const r = run( withKids( sib ) );
+	assert.equal( rows( r ).length, 3 );
+	assert.equal( rows( r )[ 1 ].draftRef.tpl, 'Root/2#0', 'the bar\'s draft element stays on the middle row' );
+	assert.ok( flat( rows( r )[ 1 ].innerBlocks ).some( ( n ) => 'Root/6#0' === n.draftRef?.tpl ), 'the sibling is inside the middle row' );
+	assert.equal( rows( r )[ 1 ].attributes.rowSlot, 'middle' );
 } );

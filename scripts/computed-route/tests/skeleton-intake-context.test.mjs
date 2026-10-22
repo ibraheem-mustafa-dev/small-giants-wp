@@ -114,3 +114,36 @@ test( 'key-space helpers rewrite only a root-host key', () => {
 	assert.equal( isServedInventory( footer ), true );
 	assert.equal( isServedInventory( { elements: [ { key: `${ ROOT }/1#0` } ] } ), false );
 } );
+
+test( 'MUST FAIL: main passes its repo option to every call: propose reads and writes the given repo, never the default one', async () => {
+	const f = fixture();
+	const other = 'zz-repo-option-client';
+	fs.renameSync( path.join( f.repo, 'sites', CLIENT ), path.join( f.repo, 'sites', other ) );
+	const log = console.log;
+	console.log = () => {};
+	try {
+		await main( [ 'propose', '--client', other, '--surface', 'footer' ], { repo: f.repo } );
+	} finally {
+		console.log = log;
+	}
+	assert.ok( fs.existsSync( path.join( f.repo, 'sites', other, 'build', 'skeleton', 'footer.proposal.json' ) ), 'the proposal was written under the given repo' );
+	assert.ok( ! fs.existsSync( path.join( REPO, 'sites', other ) ), 'nothing was written under the default repo' );
+	process.exitCode = 0;
+	f.done();
+} );
+
+test( 'MUST FAIL: decide with --block validates the block against the given repo\'s facts', async () => {
+	const f = fixture();
+	const other = 'zz-repo-option-client';
+	fs.renameSync( path.join( f.repo, 'sites', CLIENT ), path.join( f.repo, 'sites', other ) );
+	const log = console.log;
+	console.log = () => {};
+	try {
+		await main( [ 'decide', '--client', other, '--surface', 'footer', '--key', 'Root/848#0', '--block', 'sgs/heading' ], { repo: f.repo } );
+	} finally {
+		console.log = log;
+	}
+	assert.ok( fs.existsSync( path.join( f.repo, 'sites', other, 'build', 'skeleton', 'decisions.json' ) ) );
+	assert.ok( ! fs.existsSync( path.join( REPO, 'sites', other ) ) );
+	f.done();
+} );

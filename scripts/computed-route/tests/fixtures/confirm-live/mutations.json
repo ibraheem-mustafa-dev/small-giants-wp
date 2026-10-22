@@ -1,0 +1,6 @@
+[
+	{ "file": "lib/confirm-live.mjs", "find": "found.some( ( x ) => x.id === id ) || found.push( { id, name, live: p.live } );", "replace": "found.push( { id, name, live: p.live } );", "why": "one live element read in rest and hover runs would be ambiguous" },
+	{ "file": "lib/confirm-live.mjs", "find": "const id = `${ name }|${ t.ref }|${ t.path ?? '' }`;", "replace": "const id = `${ t.ref }|${ t.path ?? '' }`;", "why": "two pairs naming one element would be merged instead of ambiguous" },
+	{ "file": "lib/confirm-live.mjs", "find": "|| t.ref !== record.node ) {", "replace": "|| t.ref.replace( /^[a-z]+-ref-/, '' ) !== record.node.replace( /^[a-z]+-ref-/, '' ) ) {", "why": "refs of another prefix or bare refs would collide with the record's" },
+	{ "file": "lib/confirm-live.mjs", "find": "if ( null != sideId && null != record.draftId && sideId !== record.draftId ) {", "replace": "if ( false ) {", "why": "a pair of another draft element would pair with the record" }
+]
