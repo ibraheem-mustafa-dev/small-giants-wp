@@ -76,6 +76,8 @@ EXEMPT_RULES = (
     (lambda r: r.startswith('.claude/'), 'plan, spec, catalogue or dated report'),
     (lambda r: r.startswith('reports/'), 'dated report or this migration\'s census'),
     (lambda r: '/fixtures/' in r, 'detector fixture: the token is the input under test'),
+    (lambda r: re.search(r'band-padding-(fold|migrate)', r) is not None,
+     'the saved-content sweep and its test: they name the old attribute to fold it into padding'),
     (lambda r: re.match(r'^sites/[^/]+/build/qa/', r) is not None,
      'a Fill, Solve, triage or confirm run report: it names settings it measured and saves none'),
     (lambda r: r.startswith('plugins/sgs-blocks/scripts/check-container-band-layers'),
