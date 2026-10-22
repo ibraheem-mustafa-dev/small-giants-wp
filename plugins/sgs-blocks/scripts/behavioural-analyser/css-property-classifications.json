@@ -33324,10 +33324,134 @@
     },
     {
       "slug": "sgs/form-review",
+      "attr": "cardBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "cardBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "cardBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "cardBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "cardBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "cardPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "cardTitleFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "card-title"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "cardTitleFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "card-title"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "cardTitleFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "card-title"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "cardTitleFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "card-title"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "cardTitleLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "card-title"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "cardTitleLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "card-title"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "cardTitleTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "card-title"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
       "attr": "headingLevel",
       "fields": {
         "css_property": "tag",
         "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "termColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "term"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "valueColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "value"
       }
     },
     {
