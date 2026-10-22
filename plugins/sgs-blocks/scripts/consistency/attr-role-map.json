@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9212,
+    "row_count": 9211,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -2261,7 +2261,6 @@
     "sgs/container::borderWidth": "visual",
     "sgs/container::boxAspectRatio": "layout",
     "sgs/container::columns": "layout",
-    "sgs/container::contentBandMargin": "layout",
     "sgs/container::contentWidth": "layout",
     "sgs/container::flexDirection": "layout",
     "sgs/container::flexWrap": "layout",

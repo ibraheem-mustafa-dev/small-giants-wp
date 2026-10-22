@@ -6521,15 +6521,6 @@
     },
     {
       "slug": "sgs/container",
-      "attr": "contentBandMargin",
-      "fields": {
-        "css_property": "margin-bottom,margin-left,margin-right,margin-top",
-        "css_layer": "CONTENT",
-        "css_element": "content-band"
-      }
-    },
-    {
-      "slug": "sgs/container",
       "attr": "contentWidth",
       "fields": {
         "css_property": "max-width",
