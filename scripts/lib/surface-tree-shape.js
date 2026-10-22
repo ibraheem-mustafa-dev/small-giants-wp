@@ -179,16 +179,21 @@ function surfaceTreeProblems( tree, expected, opts = {} ) {
 }
 
 /**
- * Before the browser opens: when the top level holds a slotted container (any, per its edit.js), the tree must be that
- * one root with its rows; a slotted container nested anywhere below the top level is a problem. A tree with no slotted
- * container anywhere is not this check's business.
+ * Before the browser opens: when the top level holds a slotted container (any, per its edit.js), the tree is that
+ * surface's tree, so it must be that one root with its rows, and a slotted container nested anywhere below the top level
+ * is a problem. A tree whose top level holds none (a page, or a calibration page holding a header inside a container) is
+ * not this check's business; a header or footer post's own wrapped root is refused in the editor by
+ * `lockedTemplateProblems`, as that post type's template is its one root under lock "all".
  * @returns {string[]}
  */
 function slottedRootProblems( tree, opts = {} ) {
 	const containers = slottedContainers( opts.blocksDir );
 	const list = Array.isArray( tree ) ? tree : [];
 	const roots = list.filter( ( b ) => b && containers.has( b.name ) );
-	const out = roots.length ? surfaceTreeProblems( tree, roots[ 0 ].name, opts ) : [];
+	if ( ! roots.length ) {
+		return [];
+	}
+	const out = surfaceTreeProblems( tree, roots[ 0 ].name, opts );
 	// A slotted container anywhere below the top level is not the sole root: a header or footer nested in another block.
 	const walk = ( blocks, trail ) => ( Array.isArray( blocks ) ? blocks : [] ).forEach( ( b ) => {
 		if ( ! b ) {

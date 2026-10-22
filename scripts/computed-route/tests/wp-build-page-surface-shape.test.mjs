@@ -85,10 +85,11 @@ test( 'a new container whose edit.js TEMPLATE is slotted rows is covered with no
 } );
 
 for ( const s of SURFACES ) {
-	test( `MUST FAIL ${ s.root.replace( 'sgs/', '' ) }: a container nested inside another block, at any depth, is refused before the browser opens`, () => {
+	test( `MUST FAIL ${ s.root.replace( 'sgs/', '' ) }: in a surface tree, a container nested inside another block, at any depth, is refused before the browser opens; a page holding one is not this check's business`, () => {
 		const root = blk( s.root, {}, rows( s ) );
-		assert.match( shape.slottedRootProblems( [ blk( 'sgs/container', {}, [ root ] ) ] ).join( '\n' ), /sgs\/site-\w+ is nested inside sgs\/container/ );
-		assert.match( shape.slottedRootProblems( [ blk( 'sgs/container', {}, [ blk( 'sgs/group', {}, [ root ] ) ] ) ] ).join( '\n' ), /nested inside sgs\/container > sgs\/group/ );
+		assert.match( shape.slottedRootProblems( [ root, blk( 'sgs/container', {}, [ blk( 'sgs/group', {}, [ blk( s.root, {}, rows( s ) ) ] ) ] ) ] ).join( '\n' ), /nested inside sgs\/container > sgs\/group/ );
+		assert.deepEqual( shape.slottedRootProblems( [ blk( 'sgs/container', {}, [ root ] ) ] ), [], 'a page (a calibration page) holding the surface inside a container' );
+		assert.match( shape.lockedTemplateProblems( [ blk( 'sgs/container', {}, [ root ] ) ], { template: [ [ s.root ] ], templateLock: 'all' } ).join( '\n' ), /\S/, 'the surface post\'s own wrapped root is refused in the editor' );
 		const second = blk( s.root, {}, rows( s ) );
 		assert.match( shape.slottedRootProblems( [ blk( s.root, {}, [ ...rows( s ).slice( 0, 1 ), blk( s.row, { rowSlot: 'middle' }, [ second ] ), ...rows( s ).slice( 2 ) ] ) ] ).join( '\n' ), /nested inside/, 'a header inside its own row' );
 		assert.deepEqual( shape.slottedRootProblems( [ blk( 'sgs/container', {}, [ blk( 'sgs/heading' ) ] ) ] ), [], 'no slotted container anywhere is not this check\'s business' );
