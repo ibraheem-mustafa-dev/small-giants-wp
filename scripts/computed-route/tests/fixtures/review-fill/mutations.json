@@ -1,0 +1,134 @@
+[
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "...readback( { writes: made.writes, el, field: hit } ).map(",
+		"replace": "...[].map(",
+		"why": "the read-back would never run"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "field?.field?.ph, ",
+		"replace": "",
+		"why": "a schema placeholder would be called a disagreement"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "if ( ! same( value, undefined === attributes[ attr ] ? def.default : attributes[ attr ] ) ) {",
+		"replace": "if ( ! same( value, def.default ) && ! same( value, attributes[ attr ] ) ) {",
+		"why": "a default-equal value would not replace another held value"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "for ( const w of [ ...dropped ].reverse() ) {",
+		"replace": "for ( const w of dropped ) {",
+		"why": "an intermediate value would be restored"
+	},
+	{
+		"file": "lib/fill-state-defect.mjs",
+		"find": "( reads.states[ w ].looks ??= {} )",
+		"replace": "reads.states[ w ].looks",
+		"why": "a missing looks table would throw"
+	},
+	{
+		"file": "lib/fill-width-gate.mjs",
+		"find": "ownBreakpoint( db, n.name, collapse )",
+		"replace": "ownBreakpoint( db, n.name, new Proxy( {}, { get: () => 'mobileBreakpoint' } ) )",
+		"why": "any number named like a breakpoint would be the collapse setting"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "rec.targets.find( ( t ) => t.slot === ( image?.slot ?? '' ) && t.finder?.tpl ) ?? ",
+		"replace": "",
+		"why": "the first target would speak for the image"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "code: ONE_VALUE_EVERY_WIDTH, ",
+		"replace": "",
+		"why": "the gap would carry no code"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "...( res.code ? { code: res.code } : {} )",
+		"replace": "",
+		"why": "the code would be lost between the resolver and the row"
+	},
+	{
+		"file": "lib/fill-logo-size.mjs",
+		"find": "ONE_VALUE_EVERY_WIDTH === row.code",
+		"replace": "/holds one value for every width/.test( row.reason ?? '' )",
+		"why": "the gap would be matched by its wording"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "svg.position !== ( attributes.iconPosition ?? spec.default )",
+		"replace": "true",
+		"why": "the default side would be written"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "Array.isArray( spec.enum ) && ! spec.enum.includes( svg.position )",
+		"replace": "false",
+		"why": "a side the setting lacks would be written"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "\ticonPosition( { svg, schema, attributes, out } );\n\treturn out;",
+		"replace": "\treturn out;",
+		"why": "the side would not be written"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "return Math.abs( dx ) >= Math.abs( dy ) ? dx > 0 : dy > 0;",
+		"replace": "return dx > 0;",
+		"why": "a column would read by its x offset"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "ahead.every( Boolean ) ? 'before'",
+		"replace": "ahead.every( Boolean ) ? 'after'",
+		"why": "before and after would swap"
+	},
+	{
+		"file": "lib/ledger.mjs",
+		"find": "! [ ...held, ...fresh ].some( ( x ) => same( x, e ) )",
+		"replace": "true",
+		"why": "a snap would be added every run"
+	},
+	{
+		"file": "lib/ledger.mjs",
+		"find": "a.node === b.node && a.property",
+		"replace": "a.property",
+		"why": "a snap on another node would be dropped"
+	},
+	{
+		"file": "fill.mjs",
+		"find": "addEntries( ledgerFile, gates.ledger );",
+		"replace": "",
+		"why": "the snaps would not reach the ledger"
+	},
+	{
+		"file": "fill.mjs",
+		"find": "result.handover.push( ...motion.handover );",
+		"replace": "",
+		"why": "the motion handover would be dropped"
+	},
+	{
+		"file": "fill.mjs",
+		"find": "mdb: motionDb( db ), db,",
+		"replace": "mdb: motionDb( db ),",
+		"why": "the motion writer would not check settings against the DB it was given"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": "254f6\" },\n\t\t\t\"clients\": [",
+		"replace": "254f6\" },\n\t\t\t\"clientsx\": [",
+		"why": "the drawer-opener rule would name no clients"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": "v2/59\"",
+		"replace": "v2/9\"",
+		"why": "the drawer-opener rule would name another teacher key"
+	}
+]

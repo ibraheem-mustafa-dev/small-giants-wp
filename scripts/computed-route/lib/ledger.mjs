@@ -191,6 +191,21 @@ export function judgeIndependent( entries, diff, { state } ) {
 	return null;
 }
 
+// Adds new entries (the width gate's `breakpoint-snap` entries) to the ledger file, leaving out any the ledger already holds
+// (the same node, property, rule and reason), so a re-run adds nothing. Returns the entries it added.
+export function addEntries( file, entries ) {
+	const held = load( file );
+	const same = ( a, b ) => a.node === b.node && a.property === b.property && a.expected?.rule === b.expected?.rule && a.reason === b.reason;
+	const fresh = [];
+	for ( const e of entries ) {
+		if ( ! [ ...held, ...fresh ].some( ( x ) => same( x, e ) ) ) {
+			fresh.push( e );
+		}
+	}
+	fresh.length && save( file, [ ...held, ...fresh ] );
+	return fresh;
+}
+
 export function save( file, entries ) {
 	validate( entries );
 	fs.mkdirSync( path.dirname( file ), { recursive: true } );

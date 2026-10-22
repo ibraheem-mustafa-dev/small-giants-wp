@@ -208,7 +208,28 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 				const b = from.getBoundingClientRect();
 				copy.setAttribute( 'viewBox', `0 0 ${ Math.round( b.width ) } ${ Math.round( b.height ) }` );
 			}
-			snap.svg = { markup: new XMLSerializer().serializeToString( copy ) };
+			// Which side of the words the icon is drawn on, from where it and each piece of text paint along the row (or the
+			// column, when the words sit beneath it): 'before' when it is drawn ahead of all of them, 'after' behind all of
+			// them, null when there are no words or it sits among them.
+			const ic = from.getBoundingClientRect();
+			const words = [];
+			const walk = document.createTreeWalker( el, NodeFilter.SHOW_TEXT );
+			while ( walk.nextNode() ) {
+				const t = walk.currentNode;
+				if ( t.textContent.trim() && ! from.contains( t ) && ! /^(?:SCRIPT|STYLE)$/.test( t.parentElement?.tagName ?? '' ) ) {
+					const range = document.createRange();
+					range.selectNodeContents( t );
+					const r = range.getBoundingClientRect();
+					r.width && r.height && words.push( r );
+				}
+			}
+			const ahead = words.map( ( r ) => {
+				const dx = r.left + r.width / 2 - ( ic.left + ic.width / 2 );
+				const dy = r.top + r.height / 2 - ( ic.top + ic.height / 2 );
+				return Math.abs( dx ) >= Math.abs( dy ) ? dx > 0 : dy > 0;
+			} );
+			const position = ! ahead.length ? null : ahead.every( Boolean ) ? 'before' : ahead.some( Boolean ) ? null : 'after';
+			snap.svg = { markup: new XMLSerializer().serializeToString( copy ), position };
 		}
 		// The intrinsic ratio of the image or SVG this element is, or of the one it wraps: an image's natural size, else its
 		// width and height attributes, else an SVG's viewBox. A wrapper is media only when that image is its only rendered

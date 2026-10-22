@@ -50,6 +50,9 @@ export const BLOCKS_DIR = path.resolve( HERE, '../../../plugins/sgs-blocks/src/b
 
 // Gap reasons (§3.1), plus `uncalibrated` (the block has no calibration file yet, so no slot is proven).
 export const GAPS = [ 'no-setting', 'ambiguous', 'shape', 'uncalibrated' ];
+// The structured code of the shape gap a single-value setting raises when the draft's value differs by width; the passes that
+// act on that gap (lib/fill-logo-size.mjs) match this code, never the reason's wording.
+export const ONE_VALUE_EVERY_WIDTH = 'one-value-every-width';
 
 const TIER_OF = { 375: 'mobile', 768: 'tablet', 1440: 'desktop' };
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
@@ -549,7 +552,9 @@ export function resolve( input, ctx ) {
 	} else {
 		const vals = [ ...new Set( Object.values( out ).map( ( v ) => JSON.stringify( v ) ) ) ];
 		if ( 1 !== vals.length || undefined === vals[ 0 ] ) {
-			return { gap: 'shape', detail: vals.length > 1 ? `${ attr } holds one value for every width; draft has ${ vals.join( ', ' ) }` : `no draft value for ${ prop }` };
+			return vals.length > 1
+				? { gap: 'shape', code: ONE_VALUE_EVERY_WIDTH, detail: `${ attr } holds one value for every width; draft has ${ vals.join( ', ' ) }` }
+				: { gap: 'shape', detail: `no draft value for ${ prop }` };
 		}
 		writes.push( { attr, value: boxed( JSON.parse( vals[ 0 ] ), 'desktop' ), merge: isBox ? 'deep' : 'replace' } );
 	}

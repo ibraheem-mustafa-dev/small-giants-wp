@@ -1,0 +1,639 @@
+[
+	{
+		"id": "L-01",
+		"name": "Web Animation in MarkLogo.load on this._p.spin",
+		"mechanism": "waapi",
+		"element": {
+			"dc": "Site",
+			"template_tpl_id": null,
+			"nearest_tpl_id": "7",
+			"selector": "this._p.spin",
+			"selection_rule": "inside mark-logo.js: this._p.spin",
+			"description": "animated element: this._p.spin"
+		},
+		"source": {
+			"file": "mark-logo.js",
+			"function": "MarkLogo.load",
+			"ref": null,
+			"line": 44,
+			"code": "this._p.spin.animate([{ rotate: '0deg' }, { rotate: '360deg' }], { duration: 60000, iterations: Infinity })"
+		},
+		"trigger": {
+			"type": "load",
+			"detail": "runs when mark-logo.js loads (MarkLogo.connectedCallback) via load (and 1 more: runs when mark-logo.js loads (MarkLogo.attributeChangedCallback) via load)"
+		},
+		"properties": [
+			{
+				"property": "rotate",
+				"from": "0deg",
+				"to": "360deg"
+			}
+		],
+		"duration_ms": 60000,
+		"delay_ms": 0,
+		"stagger": null,
+		"easing": "linear",
+		"iterations": "infinite",
+		"direction": "normal",
+		"fill": "auto",
+		"reduced_motion": {
+			"behaviour": "skip",
+			"detail": "guarded by this._p.spin && !rm()"
+		},
+		"status": "active",
+		"trace": {
+			"observed": "yes",
+			"note": "reached in the census runtime pass"
+		}
+	},
+	{
+		"id": "L-02",
+		"name": "Web Animation in MarkLogo.play on P.expand",
+		"mechanism": "waapi",
+		"element": {
+			"dc": "Site",
+			"template_tpl_id": null,
+			"nearest_tpl_id": "7",
+			"selector": "P.expand",
+			"selection_rule": "inside mark-logo.js: P.expand",
+			"description": "animated element: P.expand"
+		},
+		"source": {
+			"file": "mark-logo.js",
+			"function": "MarkLogo.play",
+			"ref": null,
+			"line": 53,
+			"code": "P.expand.animate([{ scale: '1' }, { scale: '1.12' }, { scale: '1' }], { duration: 900, easing: SPRING })"
+		},
+		"trigger": {
+			"type": "hover",
+			"detail": "mouseenter listener on this (this._enter) via play"
+		},
+		"properties": [
+			{
+				"property": "scale",
+				"from": "1",
+				"to": "1",
+				"keyframes": [
+					{
+						"offset": 0,
+						"value": "1"
+					},
+					{
+						"offset": 0.5,
+						"value": "1.12"
+					},
+					{
+						"offset": 1,
+						"value": "1"
+					}
+				]
+			}
+		],
+		"duration_ms": 900,
+		"delay_ms": 0,
+		"stagger": null,
+		"easing": "cubic-bezier(.34,1.56,.64,1)",
+		"iterations": 1,
+		"direction": "normal",
+		"fill": "auto",
+		"reduced_motion": {
+			"behaviour": "skip",
+			"detail": "returns early under !P || rm()"
+		},
+		"status": "active",
+		"trace": {
+			"observed": "no",
+			"note": "unreached in the census runtime pass (rest mode); see the draft defects for the forced test"
+		}
+	},
+	{
+		"id": "L-05",
+		"name": "Web Animation in MarkLogo.play on P.expand",
+		"mechanism": "waapi",
+		"element": {
+			"dc": "Site",
+			"template_tpl_id": null,
+			"nearest_tpl_id": "7",
+			"selector": "P.expand",
+			"selection_rule": "inside mark-logo.js: P.expand",
+			"description": "animated element: P.expand"
+		},
+		"source": {
+			"file": "mark-logo.js",
+			"function": "MarkLogo.play",
+			"ref": null,
+			"line": 58,
+			"code": "P.expand.animate([{ scale: '0', opacity: 0 }, { scale: '1', opacity: 1 }], { duration: 1200, delay: 150, easing: SPRING, fill: 'backwards' })"
+		},
+		"trigger": {
+			"type": "scroll-into-view",
+			"detail": "IntersectionObserver callback via play"
+		},
+		"properties": [
+			{
+				"property": "scale",
+				"from": "0",
+				"to": "1"
+			},
+			{
+				"property": "opacity",
+				"from": 0,
+				"to": 1
+			}
+		],
+		"duration_ms": 1200,
+		"delay_ms": 150,
+		"stagger": null,
+		"easing": "cubic-bezier(.34,1.56,.64,1)",
+		"iterations": 1,
+		"direction": "normal",
+		"fill": "backwards",
+		"reduced_motion": {
+			"behaviour": "skip",
+			"detail": "returns early under !P || rm()"
+		},
+		"status": "active",
+		"trace": {
+			"observed": "yes",
+			"note": "reached in the census runtime pass"
+		}
+	},
+	{
+		"id": "L-08",
+		"name": "Web Animation in MarkLogo.play on P.road",
+		"mechanism": "waapi",
+		"element": {
+			"dc": "Site",
+			"template_tpl_id": null,
+			"nearest_tpl_id": "7",
+			"selector": "P.road",
+			"selection_rule": "inside mark-logo.js: P.road",
+			"description": "animated element: P.road"
+		},
+		"source": {
+			"file": "mark-logo.js",
+			"function": "MarkLogo.play",
+			"ref": null,
+			"line": 61,
+			"code": "P.road.animate([{ clipPath: 'inset(100% 0 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 900, delay: 500, easing: E, fill: 'backwards' })"
+		},
+		"trigger": {
+			"type": "scroll-into-view",
+			"detail": "IntersectionObserver callback via play"
+		},
+		"properties": [
+			{
+				"property": "clip-path",
+				"from": "inset(100% 0 0 0)",
+				"to": "inset(0 0 0 0)"
+			}
+		],
+		"duration_ms": 900,
+		"delay_ms": 500,
+		"stagger": null,
+		"easing": "cubic-bezier(.16,.84,.32,1)",
+		"iterations": 1,
+		"direction": "normal",
+		"fill": "backwards",
+		"reduced_motion": {
+			"behaviour": "skip",
+			"detail": "returns early under !P || rm()"
+		},
+		"status": "active",
+		"trace": {
+			"observed": "yes",
+			"note": "reached in the census runtime pass"
+		}
+	},
+	{
+		"id": "J-49",
+		"name": "js-style-write in bindMotion on e.target.closest && e.target.closest('[data-mag]')",
+		"mechanism": "js-style-write",
+		"element": {
+			"dc": "Site",
+			"template_tpl_id": null,
+			"selector": "e.target.closest && e.target.closest('[data-mag]')",
+			"selection_rule": "resolved at runtime",
+			"description": "written element: e.target.closest && e.target.closest('[data-mag]')"
+		},
+		"source": {
+			"file": "Site.dc.html",
+			"function": "bindMotion",
+			"ref": null,
+			"line": 1372,
+			"code": "m.style.transition = (m.style.transition ? m.style.transition.replace(/,?\\s*translate [^,]*/g, '') + ',' : '') + 'translate .25s ' + E"
+		},
+		"trigger": {
+			"type": "pointer-move",
+			"detail": "pointermove listener on document"
+		},
+		"properties": [
+			{
+				"property": "transition",
+				"from": null,
+				"to": null,
+				"formula": "(m.style.transition ? m.style.transition.replace(/,?\\s*translate [^,]*/g, '') + ',' : '') + 'translate .25s ' + E"
+			}
+		],
+		"duration_ms": 0,
+		"delay_ms": 0,
+		"stagger": null,
+		"easing": null,
+		"iterations": 1,
+		"direction": null,
+		"fill": null,
+		"reduced_motion": {
+			"behaviour": "skip",
+			"detail": "returns early under this.rm || e.pointerType === 'touch'"
+		},
+		"status": "active",
+		"trace": {
+			"observed": "not-instrumented",
+			"note": "the census does not trace style writes; timer and frame writers are sampled (inventory.samples)"
+		}
+	},
+	{
+		"id": "J-50",
+		"name": "js-style-write in bindMotion on e.target.closest && e.target.closest('[data-mag]')",
+		"mechanism": "js-style-write",
+		"element": {
+			"dc": "Site",
+			"template_tpl_id": null,
+			"selector": "e.target.closest && e.target.closest('[data-mag]')",
+			"selection_rule": "resolved at runtime",
+			"description": "written element: e.target.closest && e.target.closest('[data-mag]')"
+		},
+		"source": {
+			"file": "Site.dc.html",
+			"function": "bindMotion",
+			"ref": null,
+			"line": 1373,
+			"code": "m.style.translate = (((e.clientX - r.left) / r.width - 0.5) * 10).toFixed(1) + 'px ' + (((e.clientY - r.top) / r.height - 0.5) * 8).toFixed(1) + 'px'"
+		},
+		"trigger": {
+			"type": "pointer-move",
+			"detail": "pointermove listener on document"
+		},
+		"properties": [
+			{
+				"property": "translate",
+				"from": null,
+				"to": null,
+				"formula": "(((e.clientX - r.left) / r.width - 0.5) * 10).toFixed(1) + 'px ' + (((e.clientY - r.top) / r.height - 0.5) * 8).toFixed(1) + 'px'"
+			}
+		],
+		"duration_ms": 0,
+		"delay_ms": 0,
+		"stagger": null,
+		"easing": null,
+		"iterations": 1,
+		"direction": null,
+		"fill": null,
+		"reduced_motion": {
+			"behaviour": "skip",
+			"detail": "returns early under this.rm || e.pointerType === 'touch'"
+		},
+		"status": "active",
+		"trace": {
+			"observed": "not-instrumented",
+			"note": "the census does not trace style writes; timer and frame writers are sampled (inventory.samples)"
+		}
+	},
+	{
+		"id": "J-66",
+		"name": "js-style-write in magnet on [data-label]",
+		"mechanism": "js-style-write",
+		"element": {
+			"dc": "Site",
+			"template_tpl_id": "48",
+			"selector": "[data-label]",
+			"description": "written element: [data-label]"
+		},
+		"source": {
+			"file": "Site.dc.html",
+			"function": "magnet",
+			"ref": null,
+			"line": 1471,
+			"code": "lab.style.transform = 'translateX(' + ((e.clientX - (r.left + r.width / 2)) * 0.14) + 'px)'"
+		},
+		"trigger": {
+			"type": "pointer-move",
+			"detail": "onMouseMove on Site:47 (onMove → magnet)"
+		},
+		"properties": [
+			{
+				"property": "transform",
+				"from": null,
+				"to": null,
+				"formula": "'translateX(' + ((e.clientX - (r.left + r.width / 2)) * 0.14) + 'px)'"
+			}
+		],
+		"duration_ms": 200,
+		"delay_ms": 0,
+		"stagger": null,
+		"easing": "ease-out",
+		"iterations": 1,
+		"direction": null,
+		"fill": null,
+		"reduced_motion": {
+			"behaviour": "skip",
+			"detail": "returns early under this.rm"
+		},
+		"status": "active",
+		"trace": {
+			"observed": "not-instrumented",
+			"note": "the census does not trace style writes; timer and frame writers are sampled (inventory.samples)"
+		}
+	},
+	{
+		"id": "J-67",
+		"name": "js-style-write in resetLabel on [data-label]",
+		"mechanism": "js-style-write",
+		"element": {
+			"dc": "Site",
+			"template_tpl_id": "48",
+			"selector": "[data-label]",
+			"description": "written element: [data-label]"
+		},
+		"source": {
+			"file": "Site.dc.html",
+			"function": "resetLabel",
+			"ref": null,
+			"line": 1473,
+			"code": "lab.style.transform = ''"
+		},
+		"trigger": {
+			"type": "pointer-leave",
+			"detail": "onMouseLeave on Site:47 (onLeaveLabel → resetLabel)"
+		},
+		"properties": [
+			{
+				"property": "transform",
+				"from": null,
+				"to": ""
+			}
+		],
+		"duration_ms": 200,
+		"delay_ms": 0,
+		"stagger": null,
+		"easing": "ease-out",
+		"iterations": 1,
+		"direction": null,
+		"fill": null,
+		"reduced_motion": {
+			"behaviour": "final-state",
+			"detail": "still written; its CSS transition is forced to about zero by the reduced-motion rule"
+		},
+		"status": "active",
+		"trace": {
+			"observed": "not-instrumented",
+			"note": "the census does not trace style writes; timer and frame writers are sampled (inventory.samples)"
+		}
+	},
+	{
+		"id": "J-214",
+		"name": "js-style-write in MarkLogo.connectedCallback on this",
+		"mechanism": "js-style-write",
+		"element": {
+			"dc": "Site",
+			"template_tpl_id": null,
+			"selector": "this",
+			"selection_rule": "inside mark-logo.js",
+			"description": "written element: this"
+		},
+		"source": {
+			"file": "mark-logo.js",
+			"function": "MarkLogo.connectedCallback",
+			"ref": null,
+			"line": 11,
+			"code": "this.style.display = this.style.display || 'block'"
+		},
+		"trigger": {
+			"type": "load",
+			"detail": "runs when mark-logo.js loads (MarkLogo.connectedCallback)"
+		},
+		"properties": [
+			{
+				"property": "display",
+				"from": null,
+				"to": null,
+				"formula": "this.style.display || 'block'"
+			}
+		],
+		"duration_ms": 0,
+		"delay_ms": 0,
+		"stagger": null,
+		"easing": null,
+		"iterations": 1,
+		"direction": null,
+		"fill": null,
+		"reduced_motion": {
+			"behaviour": "unchanged",
+			"detail": "no reduced-motion guard on this code path"
+		},
+		"status": "active",
+		"trace": {
+			"observed": "not-instrumented",
+			"note": "the census does not trace style writes; timer and frame writers are sampled (inventory.samples)"
+		}
+	},
+	{
+		"id": "J-215",
+		"name": "js-style-write in MarkLogo.load on svg",
+		"mechanism": "js-style-write",
+		"element": {
+			"dc": "Site",
+			"template_tpl_id": null,
+			"selector": "svg",
+			"selection_rule": "inside mark-logo.js",
+			"description": "written element: svg"
+		},
+		"source": {
+			"file": "mark-logo.js",
+			"function": "MarkLogo.load",
+			"ref": null,
+			"line": 40,
+			"code": "svg.style.cssText = 'display:block;width:100%;height:100%;overflow:visible;'"
+		},
+		"trigger": {
+			"type": "load",
+			"detail": "runs when mark-logo.js loads (MarkLogo.connectedCallback) via load (and 1 more: runs when mark-logo.js loads (MarkLogo.attributeChangedCallback) via load)"
+		},
+		"properties": [
+			{
+				"property": "display",
+				"from": null,
+				"to": "block"
+			},
+			{
+				"property": "width",
+				"from": null,
+				"to": "100%"
+			},
+			{
+				"property": "height",
+				"from": null,
+				"to": "100%"
+			},
+			{
+				"property": "overflow",
+				"from": null,
+				"to": "visible"
+			}
+		],
+		"duration_ms": 0,
+		"delay_ms": 0,
+		"stagger": null,
+		"easing": null,
+		"iterations": 1,
+		"direction": null,
+		"fill": null,
+		"reduced_motion": {
+			"behaviour": "unchanged",
+			"detail": "no reduced-motion guard on this code path"
+		},
+		"status": "active",
+		"trace": {
+			"observed": "not-instrumented",
+			"note": "the census does not trace style writes; timer and frame writers are sampled (inventory.samples)"
+		}
+	},
+	{
+		"id": "J-216",
+		"name": "js-style-write in MarkLogo.load on g",
+		"mechanism": "js-style-write",
+		"element": {
+			"dc": "Site",
+			"template_tpl_id": null,
+			"selector": "g",
+			"selection_rule": "inside mark-logo.js",
+			"description": "written element: g"
+		},
+		"source": {
+			"file": "mark-logo.js",
+			"function": "MarkLogo.load",
+			"ref": null,
+			"line": 43,
+			"code": "g.style.transformBox = 'fill-box'"
+		},
+		"trigger": {
+			"type": "load",
+			"detail": "runs when mark-logo.js loads (MarkLogo.connectedCallback) via load (and 1 more: runs when mark-logo.js loads (MarkLogo.attributeChangedCallback) via load)"
+		},
+		"properties": [
+			{
+				"property": "transform-box",
+				"from": null,
+				"to": "fill-box"
+			}
+		],
+		"duration_ms": 0,
+		"delay_ms": 0,
+		"stagger": null,
+		"easing": null,
+		"iterations": 1,
+		"direction": null,
+		"fill": null,
+		"reduced_motion": {
+			"behaviour": "unchanged",
+			"detail": "no reduced-motion guard on this code path"
+		},
+		"status": "active",
+		"trace": {
+			"observed": "not-instrumented",
+			"note": "the census does not trace style writes; timer and frame writers are sampled (inventory.samples)"
+		}
+	},
+	{
+		"id": "J-218",
+		"name": "waapi-control in MarkLogo.play on this._spin",
+		"mechanism": "waapi-control",
+		"element": {
+			"dc": "Site",
+			"template_tpl_id": null,
+			"selector": "this._spin",
+			"selection_rule": "inside mark-logo.js",
+			"description": "written element: this._spin"
+		},
+		"source": {
+			"file": "mark-logo.js",
+			"function": "MarkLogo.play",
+			"ref": null,
+			"line": 52,
+			"code": "this._spin.updatePlaybackRate(14)"
+		},
+		"trigger": {
+			"type": "hover",
+			"detail": "mouseenter listener on this (this._enter) via play"
+		},
+		"properties": [
+			{
+				"property": "playback-rate",
+				"from": null,
+				"to": 14
+			}
+		],
+		"duration_ms": 0,
+		"delay_ms": 0,
+		"stagger": null,
+		"easing": null,
+		"iterations": 1,
+		"direction": null,
+		"fill": null,
+		"reduced_motion": {
+			"behaviour": "skip",
+			"detail": "returns early under !P || rm()"
+		},
+		"status": "active",
+		"trace": {
+			"observed": "not-instrumented",
+			"note": "the census does not trace style writes; timer and frame writers are sampled (inventory.samples)"
+		}
+	},
+	{
+		"id": "PS-015",
+		"name": "Instant pseudo rule on <button> Contact:48",
+		"mechanism": "css-pseudo",
+		"element": {
+			"dc": "Contact",
+			"template_tpl_id": "48",
+			"selector": "template element data-dc-tpl=48",
+			"description": "<button> Contact:48"
+		},
+		"source": {
+			"file": "Contact.dc.html",
+			"function": "template",
+			"ref": null,
+			"line": null,
+			"code": "style-hover=\"border-color:#2C3E50\""
+		},
+		"trigger": {
+			"type": "hover",
+			"detail": "style-hover rule, no transition (instant)"
+		},
+		"properties": [
+			{
+				"property": "border-color",
+				"from": null,
+				"to": "#2C3E50"
+			}
+		],
+		"duration_ms": 0,
+		"delay_ms": 0,
+		"stagger": null,
+		"easing": null,
+		"iterations": 1,
+		"direction": null,
+		"fill": null,
+		"reduced_motion": {
+			"behaviour": "unchanged",
+			"detail": "not motion-gated"
+		},
+		"status": "active",
+		"trace": {
+			"observed": "not-instrumented",
+			"note": "real :hover/:focus is not produced by the runtime pass"
+		}
+	}
+]

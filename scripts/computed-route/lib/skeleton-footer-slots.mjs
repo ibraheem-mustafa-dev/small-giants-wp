@@ -107,15 +107,26 @@ export function buildFooterRows( e, block, c ) {
 	}
 	// With no grid the children are built as the footer's ordinary children: a wrapper the other rules unwrap still goes, and
 	// when exactly one node is itself a row block it is the columns row (as the header's main bar is its middle row).
+	// The root's width-only children (an sc-if on a width: an alternative of the sibling it follows) are built into the row
+	// that sibling is in, so the width gate can hide each branch on the other's widths; one with no sibling before it
+	// follows the first row that has content.
+	const kidsInOrder = m.kids( e ).filter( ( k ) => ! m.isPart( k ) );
+	const wides = m.widthKids( e );
+	const rowHolding = ( k ) => [ 'top', 'columns', 'bottom' ].find( ( s ) => plan[ s ].some( ( x ) => subtree( k ).includes( x ) || subtree( x ).includes( k ) ) ) ?? ( plan.floating.some( ( x ) => subtree( k ).includes( x ) ) ? 'bottom' : null );
+	const slotOfWide = ( w ) => {
+		const before = kidsInOrder.slice( 0, kidsInOrder.indexOf( w ) ).reverse().find( ( k ) => ! wides.includes( k ) );
+		return ( before && rowHolding( before ) ) || [ 'top', 'columns', 'bottom' ].find( ( s ) => plan[ s ].length ) || 'columns';
+	};
 	const rowOf = ( slot, els, floats = [] ) => {
 		const parent = 'none' === plan.mode ? block : F.rowBlock;
 		const floated = () => floats.flatMap( ( x ) => ( x.strip ? [ c.buildNode( x, F.rowBlock ) ] : c.buildChildren( e, parent, [ x ] ) ) ).filter( Boolean );
+		const alternatives = () => wides.filter( ( w ) => slotOfWide( w ) === slot ).flatMap( ( w ) => c.buildNode( w, parent ) ).filter( Boolean );
 		if ( 1 === els.length && 'none' !== plan.mode ) {
 			const row = slotRow( els[ 0 ], slot );
-			row.innerBlocks.push( ...floated() );
+			row.innerBlocks.push( ...alternatives(), ...floated() );
 			return row;
 		}
-		const built = [ ...( els.length ? c.buildChildren( e, parent, els ) : [] ), ...floated() ].filter( Boolean );
+		const built = [ ...( els.length ? c.buildChildren( e, parent, els ) : [] ), ...alternatives(), ...floated() ].filter( Boolean );
 		const rowsIn = built.filter( ( n ) => n.name === F.rowBlock );
 		const row = 1 === rowsIn.length ? rowsIn[ 0 ] : rowNode( slot, [] );
 		row.innerBlocks = built.flatMap( ( n ) => ( n.name === F.rowBlock ? n.innerBlocks : [ n ] ) );

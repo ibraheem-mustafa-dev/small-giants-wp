@@ -1,14 +1,14 @@
 // A logo's size per device for Fill (FR-48-39/FR-48-8): a logo block holds one desktop width (`width`, a number for every
 // width) and a per-device ceiling (`maxWidth`, a tier object with its unit in `maxWidthUnit`). A draft logo whose width
 // changes with the screen (the footer logo 200px on mobile) cannot go in the single width, so the generic resolver names a
-// "holds one value for every width" gap; this pass turns that gap into the per-device ceiling, read from the width the
+// one-value-every-width gap (lib/resolve.mjs::ONE_VALUE_EVERY_WIDTH); this pass turns that gap into the per-device ceiling, read from the width the
 // draft paints at 1440, 768 and 375. Which blocks have the pair comes from the framework DB (a block with an unresponsive
 // `width` setting and a tier-object `max-width` setting), never from a list of blocks.
 // Returns { writes, unmapped (the rows left), notes }.
 import { setAttr } from './tree.mjs';
+import { ONE_VALUE_EVERY_WIDTH } from './resolve.mjs';
 
 const TIERS = [ [ 1440, 'desktop' ], [ 768, 'tablet' ], [ 375, 'mobile' ] ];
-const GAP = /holds one value for every width/;
 
 // { width, max, unit } setting names a block has for a logo's size, or null.
 export function logoSizeSettings( db, block ) {
@@ -25,7 +25,7 @@ export function logoSizeSettings( db, block ) {
 export function logoSizeWrites( { nodes, flat, refOf, reads, db, unmapped } ) {
 	const out = { writes: [], unmapped: [], notes: [] };
 	for ( const row of unmapped ) {
-		const rec = 'width' === row.property && GAP.test( row.reason ?? '' ) && '' === ( row.slot ?? '' ) ? nodes.find( ( n ) => refOf( flat[ n.index ] ) === row.node ) : null;
+		const rec = 'width' === row.property && ONE_VALUE_EVERY_WIDTH === row.code && '' === ( row.slot ?? '' ) ? nodes.find( ( n ) => refOf( flat[ n.index ] ) === row.node ) : null;
 		const settings = rec ? logoSizeSettings( db, rec.name ) : null;
 		const target = rec?.targets.find( ( t ) => '' === t.slot );
 		const widths = target ? TIERS.map( ( [ w, tier ] ) => [ tier, reads.widths?.[ w ]?.[ target.id ]?.rect?.w ] ).filter( ( [ , v ] ) => Number.isFinite( v ) && v > 0 ) : [];

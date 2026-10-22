@@ -16,7 +16,9 @@
 // condition (`partial`) hides only where its width part is false.
 
 import { setAttr } from './tree.mjs';
+import fs from 'node:fs';
 import { templateKeyOf, templateKeyOfSelector } from './fact-key.mjs';
+import { DECISIONS_FILE } from './skeleton-facts.mjs';
 
 export const TIERS = [ 768, 1024 ];
 export const SNAP_TOLERANCE = 0.05;
@@ -134,9 +136,15 @@ export function mediaRule( [ lo, hi ] ) {
 	return `@media ${ cond } { & { display: none; } }`;
 }
 
-// The numeric breakpoint setting a block holds, by framework-DB query, or null.
-export function ownBreakpoint( db, block ) {
-	return db.prepare( "SELECT attr_name FROM block_attributes WHERE block_slug = ? AND attr_type = 'number' AND (attr_name LIKE '%reakpoint%' OR attr_name LIKE '%ollapsePoint%') ORDER BY attr_name" ).all( block )[ 0 ]?.attr_name ?? null;
+// The setting each block draws its own alternative below (the nav's burger under its collapse point), as the skeleton
+// rules name it: data/skeleton-decisions.json `rules.navigation.collapseAttribute`, { block: attr }.
+export const collapseAttributes = () => JSON.parse( fs.readFileSync( DECISIONS_FILE, 'utf8' ) ).rules?.navigation?.collapseAttribute ?? {};
+
+// The numeric collapse setting a block holds, by framework-DB query: the attribute the skeleton rules name for the block,
+// when the block holds it as a number; null for any other block, whatever other breakpoint-like numbers it holds.
+export function ownBreakpoint( db, block, collapse = collapseAttributes() ) {
+	const attr = collapse[ block ];
+	return attr && db.prepare( "SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ? AND attr_type = 'number'" ).get( block, attr ) ? attr : null;
 }
 
 // Whether a block holds an attribute, by framework-DB query.
@@ -156,7 +164,7 @@ function snapEntry( { scope, ref, snap, entries, date } ) {
 // ref; facts: the fact record (null: nothing written); db: the framework DB; scope: the surface; entries: the ledger's
 // entries (the snap entries continue its numbering). Returns { writes, unmapped, notes, ledger } in the shapes
 // lib/fill-resolve.mjs uses; `ledger` holds the new snap entries.
-export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, entries = [], rootComponent = null, date = new Date().toISOString().slice( 0, 10 ) } ) {
+export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, entries = [], rootComponent = null, date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes() } ) {
 	const out = { writes: [], unmapped: [], notes: [], ledger: [] };
 	if ( ! facts ) {
 		return out;
@@ -194,7 +202,7 @@ export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, entries
 		}
 		// A block that draws its own alternative below a threshold (the nav's burger under collapsePoint) takes the threshold as
 		// that setting; a hiding flag would hide the alternative with it.
-		const own = ownBreakpoint( db, n.name );
+		const own = ownBreakpoint( db, n.name, collapse );
 		if ( own && 1 === hidden.length && 0 === hidden[ 0 ][ 0 ] && Infinity > hidden[ 0 ][ 1 ] ) {
 			const t = hidden[ 0 ][ 1 ];
 			node.attributes?.[ own ] === t || put( own, t, `width gate (${ via }): the block's own breakpoint` );

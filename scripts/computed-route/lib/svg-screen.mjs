@@ -3,7 +3,9 @@
 // namespace prefix never hides a forbidden name. Refuses: text that is not well-formed XML, a DOCTYPE (entity tricks),
 // script and foreignObject elements, any on* attribute, an animation element whose attributeName targets a link, any
 // href in any namespace other than a same-document #fragment or a raster data:image URI, javascript: anywhere, and a
-// CSS @import.
+// CSS @import. The checks on attribute values and CSS text are the plugin's own
+// (plugins/sgs-blocks/includes/helpers-svg-document.php::sgs_svg_attribute_problem, sgs_svg_css_problem,
+// sgs_svg_script_url_problem), so the route refuses what the upload refuses.
 import saxes from 'saxes';
 
 const FORBIDDEN_ELEMENTS = { script: 'holds a <script> element', foreignobject: 'holds a <foreignObject> element' };
@@ -18,16 +20,34 @@ const METADATA_NS = new Set( [
 ] );
 const URL_ATTRIBUTES = new Set( [ 'href', 'src', 'data', 'action', 'formaction' ] );
 
-// The first CSS url() target in `css` that is not a #fragment or a raster data:image, or null.
-const unsafeCssUrl = ( css ) => {
-	for ( const m of String( css ).matchAll( /url\(([^)]*)\)/gi ) ) {
-		const target = m[ 1 ].trim().replace( /^["']|["']$/g, '' ).trim();
+// Why a decoded value holds a script URL, or null. Whitespace and control characters are removed first, so `java\tscript:`
+// and `JaVaScRiPt :` are caught.
+const scriptUrlProblem = ( value ) => ( /(?:java|vb)script:/i.test( String( value ).replace( /[\s\x00-\x1F\x7F]+/g, '' ) ) ? 'holds a javascript: URL' : null );
+
+// Why a piece of CSS (a style attribute, a presentation attribute or a <style> element's text) is unsafe, or null. CSS escapes
+// are decoded and comments removed first, so `@\69mport`, `u\72l(` and `@import/**/` are caught.
+function cssProblem( css ) {
+	const plain = String( css )
+		.replace( /\\([0-9a-fA-F]{1,6})[ \t\r\n\f]?|\\([\s\S])/gu, ( _m, hex, ch ) => ( hex ? String.fromCodePoint( ( n => ( n && n <= 0x10FFFF ? n : 0xFFFD ) )( Number.parseInt( hex, 16 ) ) ) : ch ) )
+		.replace( /\/\*[\s\S]*?(?:\*\/|$)/g, '' );
+	if ( /@import\b/i.test( plain ) ) {
+		return 'holds a CSS @import';
+	}
+	for ( const m of plain.matchAll( /url\(\s*([^)]*)(?:\)|$)/gi ) ) {
+		const target = m[ 1 ].trim().replace( /^["']+|["']+$/g, '' ).trim();
 		if ( ! SAFE_LINK.test( target ) ) {
-			return target;
+			return `holds a CSS url() to ${ target.slice( 0, 60 ) }`;
 		}
 	}
-	return null;
-};
+	for ( const set of plain.matchAll( /image-set\(([^)]*)\)/gi ) ) {
+		for ( const s of set[ 1 ].matchAll( /(["'])(.*?)\1/g ) ) {
+			if ( ! SAFE_LINK.test( s[ 2 ].trim() ) ) {
+				return `holds a CSS image-set() to ${ s[ 2 ].slice( 0, 60 ) }`;
+			}
+		}
+	}
+	return scriptUrlProblem( plain );
+}
 
 // The saxes parser class, from the route's own pinned install (FR-48-75).
 export function saxesParser() {
@@ -36,7 +56,7 @@ export function saxesParser() {
 
 // Why an SVG's text is unsafe to run, or null.
 export function svgProblem( text ) {
-	if ( /javascript\s*:/i.test( text ) ) {
+	if ( /(?:java|vb)script\s*:/i.test( text ) ) {
 		return 'holds a javascript: URL';
 	}
 	if ( /@import\b/i.test( text ) ) {
@@ -65,24 +85,25 @@ export function svgProblem( text ) {
 			if ( /^on/.test( local ) && 'http://www.w3.org/2000/xmlns/' !== a.uri ) {
 				flag( 'holds an on…= event attribute' );
 			}
-			if ( ANIMATIONS.has( name ) && 'attributename' === local && /(?:^|:)href$/i.test( value ) ) {
-				flag( 'holds an <animate> or <set> that rewrites a link' );
+			if ( ANIMATIONS.has( name ) && 'attributename' === local && ( /(?:^|:)href$/i.test( value.replace( /\s+/g, '' ) ) || /^on/i.test( value.replace( /\s+/g, '' ) ) ) ) {
+				flag( 'holds an <animate> or <set> that rewrites a link or an event attribute' );
 			}
 			if ( URL_ATTRIBUTES.has( local ) && 'http://www.w3.org/2000/xmlns/' !== a.uri && ! SAFE_LINK.test( value ) ) {
 				flag( `holds a link to ${ value.slice( 0, 60 ) }` );
 			}
-			const cssUrl = 'style' === local ? unsafeCssUrl( value ) : null;
-			if ( cssUrl ) {
-				flag( `holds a CSS url() to ${ cssUrl.slice( 0, 60 ) }` );
+			// Any attribute value can carry a script URL or CSS (a presentation attribute such as fill="url(...)", a <set> to="...").
+			const bad = scriptUrlProblem( a.value ) ?? cssProblem( a.value );
+			if ( bad ) {
+				flag( bad );
 			}
 		}
 	} );
 	parser.on( 'closetag', () => open.pop() );
 	const styleText = ( text ) => {
 		const top = open[ open.length - 1 ];
-		const cssUrl = top && 'style' === top.name && SVG_NS === top.uri ? unsafeCssUrl( text ) : null;
-		if ( cssUrl ) {
-			flag( `holds a CSS url() to ${ cssUrl.slice( 0, 60 ) }` );
+		const bad = top && 'style' === top.name && SVG_NS === top.uri ? cssProblem( text ) : null;
+		if ( bad ) {
+			flag( bad );
 		}
 	};
 	parser.on( 'text', styleText );

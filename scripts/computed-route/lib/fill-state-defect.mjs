@@ -60,7 +60,7 @@ export function addDefectLooks( { reads, jobs, facts, draftDefects, rootComponen
 					continue;
 				}
 				perWidth[ w ] = v.value;
-				const looks = ( reads.states[ w ].looks[ job.id ] ??= [] );
+				const looks = ( ( reads.states[ w ].looks ??= {} )[ job.id ] ??= [] );
 				const had = looks.some( ( l ) => l.states.includes( d.pseudo ) && l.declared?.[ d.prop ] );
 				had || looks.push( { states: [ d.pseudo ], family: 'pseudo-class', selector: `style-${ d.pseudo } ${ d.declared }`, tokens: [], declared: { [ d.prop ]: v.value }, rendered: null, read: 'code', draftDefect: draftId } );
 			}

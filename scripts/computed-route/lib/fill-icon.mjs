@@ -191,7 +191,25 @@ export function markKind( root ) {
 	return { kind: stroke ? 'stroke' : filled ? 'filled' : 'mixed', lucideStyle };
 }
 
-// svg: the element's read ({ markup }) or null. schema: the block's settings. attributes: what the node already holds.
+// Which side of the label the draft draws the icon on (`svg.position`, read from where each paints), as the block's
+// `iconPosition` setting when the block declares one: written when it differs from what the node holds or the setting's
+// default; a position the setting's enum (when it lists values) does not hold is a named row.
+function iconPosition( { svg, schema, attributes, out } ) {
+	const spec = schema?.iconPosition;
+	if ( ! svg?.position || ! spec ) {
+		return;
+	}
+	if ( Array.isArray( spec.enum ) && ! spec.enum.includes( svg.position ) ) {
+		out.unmapped.push( { property: 'svg', value: svg.position, slot: '', reason: `the draft draws the icon ${ svg.position } the label, and iconPosition holds only ${ spec.enum.join( ', ' ) }` } );
+		return;
+	}
+	if ( svg.position !== ( attributes.iconPosition ?? spec.default ) ) {
+		out.writes.push( { attr: 'iconPosition', value: svg.position, merge: 'replace' } );
+		out.notes.push( `the draft draws the icon ${ svg.position } the label: iconPosition ${ svg.position }` );
+	}
+}
+
+// svg: the element's read ({ markup, position }) or null. schema: the block's settings. attributes: what the node already holds.
 export function iconDecisions( { svg, schema, attributes = {}, allowed = null } ) {
 	const out = { writes: [], unmapped: [], notes: [] };
 	if ( ! svg?.markup || ! schema || ! ( 'iconSvg' in schema ) ) {
@@ -243,5 +261,6 @@ export function iconDecisions( { svg, schema, attributes = {}, allowed = null } 
 		'filled' === kind && 'iconFill' in schema && put( 'iconFill', true );
 		'mixed' === kind && out.notes.push( 'the draft SVG mixes stroked and filled shapes, so it is written as the client\'s own mark with its painted values kept' );
 	}
+	iconPosition( { svg, schema, attributes, out } );
 	return out;
 }

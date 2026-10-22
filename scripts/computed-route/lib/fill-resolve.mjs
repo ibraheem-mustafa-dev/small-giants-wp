@@ -53,7 +53,10 @@ function fillContent( st, rec, ref, cal ) {
 	take( textDecisions( { calibration: cal, attributes: node.attributes || {}, slots: words, leaf: 0 === rec.children.length } ) );
 	take( linkDecisions( { calibration: cal, attributes: node.attributes || {}, slots: hrefs, origin: st.origin, pages: st.pages } ) );
 	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts } ) );
-	take( mediaDecisions( { slots: imageSlots( st.db, rec.name ), schema: blockSchema( rec.name ), attributes: node.attributes || {}, img: nestedImage( atDesktop ), media: { ...st.media, origin: st.origin }, fact: factImage( st.facts, rec.targets.find( ( t ) => t.finder?.tpl )?.finder.tpl, st.rootComponent ) } ) );
+	// The fact record speaks for the element the image is drawn by: the target whose slot is the image's own (a nested image names its slot).
+	const image = nestedImage( atDesktop );
+	const imageTarget = rec.targets.find( ( t ) => t.slot === ( image?.slot ?? '' ) && t.finder?.tpl ) ?? rec.targets.find( ( t ) => t.finder?.tpl );
+	take( mediaDecisions( { slots: imageSlots( st.db, rec.name ), schema: blockSchema( rec.name ), attributes: node.attributes || {}, img: image, media: { ...st.media, origin: st.origin }, fact: factImage( st.facts, imageTarget?.finder.tpl, st.rootComponent ) } ) );
 	take( iconDecisions( { svg: atDesktop[ '' ]?.svg ?? null, schema: blockSchema( rec.name ), attributes: node.attributes || {} } ) );
 	if ( 'map' === node.attributes?.displayType ) {
 		const embeds = Object.fromEntries( [ 1440, 768, 375 ].map( ( w ) => [ w, st.reads.widths[ w ]?.[ rec.targets.find( ( t ) => '' === t.slot )?.id ]?.embed ] ).filter( ( [ , e ] ) => e ) );
