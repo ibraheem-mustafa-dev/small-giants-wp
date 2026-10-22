@@ -78,6 +78,7 @@ ROLE_EXCEPTIONS = {
 GENERIC_FILES = {
     'components/ResponsiveLengthControl.js': ('spacing', 'generic wrapper: must forward `scale` from its callers'),
     'blocks/icon/icon-size-control.js': ('font-size', 'the glyph-size wrapper for sgs/icon and sgs/social-icons'),
+    'components/SgsGapControl.js': ('spacing', 'the row and column gap pair: its parts are gaps, always the spacing scale'),
     'components/MediaSizingPanel.js': ('spacing', 'media height and inset boxes'),
     'components/motion/DistanceAtom.js': ('spacing', 'motion distance length'),
 }

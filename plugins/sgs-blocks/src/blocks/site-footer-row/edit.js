@@ -28,6 +28,7 @@ import {
 	DesignTokenPicker,
 	GradientCapableColourControl,
 	SgsBoxControl,
+	SgsGapControl,
 	SgsLengthControl,
 } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
@@ -1159,7 +1160,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							inherited,
 							setOwnValue,
 						} ) => (
-							<SgsLengthControl
+							<SgsGapControl
 								value={ ownValue }
 								placeholder={ inherited ? effectiveValue : '' }
 								onChange={ setOwnValue }

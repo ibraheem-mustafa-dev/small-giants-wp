@@ -32,6 +32,7 @@ import {
 	ResponsiveOverride,
 	resolveColourToken,
 	SgsColourPanel,
+	SgsGapControl,
 	SgsLengthControl,
 } from '../../components';
 import {
@@ -369,7 +370,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							inherited,
 							setOwnValue,
 						} ) => (
-							<SgsLengthControl
+							<SgsGapControl
 								value={ ownValue }
 								placeholder={
 									inherited ? effectiveValue : '16px'

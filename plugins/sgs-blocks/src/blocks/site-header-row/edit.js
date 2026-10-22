@@ -28,6 +28,7 @@ import {
 	DesignTokenPicker,
 	GradientCapableColourControl,
 	SgsBoxControl,
+	SgsGapControl,
 	SgsLengthControl,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -1132,7 +1133,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							inherited,
 							setOwnValue,
 						} ) => (
-							<SgsLengthControl
+							<SgsGapControl
 								value={ ownValue }
 								placeholder={ inherited ? effectiveValue : '' }
 								onChange={ setOwnValue }

@@ -13,7 +13,7 @@ import ContainerWrapperControls, {
 } from '../container/components/ContainerWrapperControls';
 import {
 	ResponsiveOverride,
-	SgsLengthControl,
+	SgsGapControl,
 	SgsColourPanel,
 	fillRow,
 	SGS_FONT_WEIGHT_OPTIONS,
@@ -790,7 +790,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								inherited,
 								setOwnValue,
 							} ) => (
-								<SgsLengthControl
+								<SgsGapControl
 									value={ ownValue }
 									placeholder={
 										inherited ? effectiveValue : ''

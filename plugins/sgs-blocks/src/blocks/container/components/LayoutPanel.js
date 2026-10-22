@@ -19,6 +19,7 @@ import {
 import {
 	ColumnShapePicker,
 	ResponsiveOverride,
+	SgsGapControl,
 	SgsLengthControl,
 } from '../../../components';
 import {
@@ -219,7 +220,7 @@ export function LayoutPanel( {
 				onChange={ ( obj ) => setAttributes( { gap: obj } ) }
 			>
 				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-					<SgsLengthControl
+					<SgsGapControl
 						value={ ownValue }
 						placeholder={ inherited ? effectiveValue : '' }
 						onChange={ setOwnValue }

@@ -24,7 +24,7 @@ import {
 	textRow,
 	TypographyControls,
 	ResponsiveOverride,
-	SgsLengthControl,
+	SgsGapControl,
 } from '../../components';
 import {
 	colourVar,
@@ -343,7 +343,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( obj ) => setAttributes( { gap: obj } ) }
 					>
 						{ ( { ownValue, setOwnValue } ) => (
-							<SgsLengthControl
+							<SgsGapControl
 								value={ ownValue }
 								onChange={ setOwnValue }
 							/>
