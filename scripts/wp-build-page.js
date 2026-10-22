@@ -36,7 +36,7 @@
  * Credentials: WP_URL_<KEY>, WP_USER_<KEY>, WP_PWD_<KEY> from --env-file (never printed).
  *
  * Exit codes: 0 ok · 1 argument/tree error · 2 login failed · 3 editor did not load ·
- *             4 unknown block, setting, wrong value type or off-list value · 5 save failed ·
+ *             4 unknown block, setting, wrong value type or off-list value · 5 save failed (the message names each REST write that answered 400 or more: method, path, status, the start of the body) ·
  *             6 blocks invalid, or content still changing after one settling save
  */
 
