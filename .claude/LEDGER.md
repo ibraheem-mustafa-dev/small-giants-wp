@@ -42,7 +42,7 @@ last_updated: 2026-10-22
 
 **Resume from:** `plans/2026-10-21-handoff-readers.md`, Status, Next; the tracks signal each other through `.claude/queue.md`.
 - **Track T (the handoff readers session):** T1, T2a done 2026-10-22 (the header's three slotted rows, skeleton and build tool; Indus post 201 rebuilt, top bar in its top row, `774966427`; suite 2205 pass, the known intake re-run red). Next: T2a's footer half, T2b, T3 (`.claude/prompts/2026-10-22-track-t-t2b.md`).
-- **Track F:** F0 to F3 done 2026-10-22 as one wave (U10, U13, U13a, U14's builds, U13c a and b, U8, U5's maps, U17, the rows' minimum height): reseeded, deployed to indus-test at `170797cec`, live-verified at 375/768/1440 (draft page 231). Open: F4 (U11 meanings) waits on `T effect-settings complete`; then the track's closing `/qc-council`. Resume: `.claude/prompts/2026-10-22-track-f-f4.md`.
+- **Track F:** done 2026-10-22: F0 to F3 live-verified; F4 (U11) built, 50 setting meanings seeded into `block_attributes.meaning` (reseed `eb57a037c`); closing three-rater council run, fixes merged; indus-test at `d976224be` (host marker). Its recorded open items: the plan's Status, "Track F's closing three-rater /qc-council", and Stage S step 5. Plan: `.claude/plans/2026-10-21-handoff-readers.md`.
 
 ### Front F: Eye Care Birmingham, built by hand (D1149)
 

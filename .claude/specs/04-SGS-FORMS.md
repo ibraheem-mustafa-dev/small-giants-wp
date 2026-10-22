@@ -183,7 +183,7 @@ The visual tile selector inspired by the Indus Foods V2 trade application mockup
 2. Honeypot check (hidden field must be empty)
 3. Nonce verification
 4. Rate limit check (transient-based, per IP)
-5. Server-side validation (all fields)
+5. Server-side sanitisation and a 64 KB cap per value (all fields); per-field rules on the server are **not built** (see Not built)
 6. File upload processing (if any)
 7. Payment processing (if enabled) — Stripe Payment Intent (**not built**; this step is skipped)
 8. Store submission in database
@@ -300,6 +300,7 @@ These items are specified above and have no implementation yet. Each stays in th
 | Multi-file upload cap (`maxFiles` on `sgs/form-field-file`) | Not built. |
 | Retention auto-delete (GDPR) | Not built. Data export and erasure are built. |
 | Admin bulk actions | Not built. |
+| Per-field rules on the server (submission-flow step 5: `required`, the field's pattern, FR-4-5's `maxLength`) | Not built. `plugins/sgs-blocks/includes/forms/class-form-rest-submission.php::handle_submit` receives only a name-to-value map, with no per-field settings, so it sanitises each value (`plugins/sgs-blocks/includes/forms/class-form-processor.php::sanitise_fields`) and caps it at 64 KB (`plugins/sgs-blocks/includes/forms/class-form-rest-api.php`). Every per-field rule is enforced in the browser only. Enforcing them needs the form's field settings on the server (found by Track F's closing council, 2026-10-22). |
 
 ## Control gap requirements
 
@@ -335,13 +336,13 @@ These items are specified above and have no implementation yet. Each stays in th
 
   Status: built (201390c26, b1e3e8cff), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `php plugins/sgs-blocks/tests/php/run-form-field-features-standalone.php` passes.
 
-- **FR-4-9 — A form can save progress in the browser and restore it.** `savedProgress`, `savedProgressLabel` ("Saves as you go"), `savedProgressSavedLabel` ("Progress saved"), `savedProgressDotColour` on `sgs/form`; every field except file, hidden and honeypot fields, and the step, go to `localStorage` under `sgs-form-progress:<path>:<form id>:<copy>` (`src/blocks/form/saved-progress.js`), restored with the notice, cleared on a successful submit (Ruling 4). *Done when:* `npx wp-scripts test-unit-js tests/js/form-runtime-behaviours.test.js` and `php plugins/sgs-blocks/tests/php/run-form-runtime-render-standalone.php` pass.
+- **FR-4-9 — A form can save progress in the browser and restore it.** `savedProgress`, `savedProgressLabel` ("Saves as you go"), `savedProgressSavedLabel` ("Progress saved"), `savedProgressDotColour` on `sgs/form`; every field except file, hidden and honeypot fields, and the step, go to `localStorage` under `sgs-form-progress:<path>:<form id>:<copy>` (`src/blocks/form/saved-progress.js`), restored with the notice, cleared on a successful submit and never written again on that page (Ruling 4). *Done when:* `npx wp-scripts test-unit-js tests/js/form-runtime-behaviours.test.js` and `php plugins/sgs-blocks/tests/php/run-form-runtime-render-standalone.php` pass.
 
-  Status: built (7c71007e7), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `npx wp-scripts test-unit-js tests/js/form-runtime-behaviours.test.js` and `php plugins/sgs-blocks/tests/php/run-form-runtime-render-standalone.php` passes.
+  Status: built (7c71007e7; no write after submit 8d84c2949), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `npx wp-scripts test-unit-js tests/js/form-runtime-behaviours.test.js` and `php plugins/sgs-blocks/tests/php/run-form-runtime-render-standalone.php` passes.
 
-- **FR-4-10 — A field can take its value from a link parameter.** `src/blocks/form/field-from-link.js` applies `?<param>=<value>` to a field carrying `data-sgs-value-param`: text as plain text, a select or radio only on a case-insensitive match with one of its own options; a link value wins over restored progress. *Done when:* the form-runtime Jest test passes.
+- **FR-4-10 — A field can take its value from a link parameter.** `src/blocks/form/field-from-link.js` applies `?<param>=<value>` to a field carrying `data-sgs-value-param`: text as plain text held to the field's own `maxlength`, a select or radio only on a case-insensitive match with one of its own options; a link value wins over restored progress. *Done when:* the form-runtime Jest test passes.
 
-  Status: built (7c71007e7), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `npx wp-scripts test-unit-js tests/js/form-runtime-behaviours.test.js` passes.
+  Status: built (7c71007e7; maxlength cap 8d84c2949), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `npx wp-scripts test-unit-js tests/js/form-runtime-behaviours.test.js` passes.
 
 - **FR-4-11 — The review step shows one card per step with an Edit button and its own intro, styled from the inspector.** `sgs/form-review` gains `intro`, `showEditLinks`, `editLabel` and the card's background, border colour, style, width, radius, padding, title typography and row label and value colours, each colour flat or gradient (`src/blocks/form/review-cards.js`; Edit is a button naming its section that moves focus to the step heading). *Done when:* `php plugins/sgs-blocks/tests/php/run-form-review-card-standalone.php` and the form-runtime Jest test pass.
 
