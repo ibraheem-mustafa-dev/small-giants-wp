@@ -223,6 +223,7 @@
 					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step)."
 				},
 				"saved-dot": {
+					"motion": false,
 					"selector": ".sgs-form__saved-dot",
 					"label": "Saved-progress dot",
 					"order": 30,

@@ -1224,11 +1224,11 @@ select.sgs-form-field__input {
 	padding-top: 1.5rem;
 }
 
-.sgs-form-field--text .sgs-form-field__label,
-.sgs-form-field--email .sgs-form-field__label,
-.sgs-form-field--phone .sgs-form-field__label,
-.sgs-form-field--number .sgs-form-field__label,
-.sgs-form-field--textarea .sgs-form-field__label {
+.sgs-form-field--text:where(:not(.sgs-form-field--static-label)) .sgs-form-field__label,
+.sgs-form-field--email:where(:not(.sgs-form-field--static-label)) .sgs-form-field__label,
+.sgs-form-field--phone:where(:not(.sgs-form-field--static-label)) .sgs-form-field__label,
+.sgs-form-field--number:where(:not(.sgs-form-field--static-label)) .sgs-form-field__label,
+.sgs-form-field--textarea:where(:not(.sgs-form-field--static-label)) .sgs-form-field__label {
 	position: absolute;
 	top: 2.3rem;
 	left: 1rem;
@@ -1238,20 +1238,20 @@ select.sgs-form-field__input {
 	transition: all var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--emphasised, ease-out);
 }
 
-.sgs-form-field--textarea .sgs-form-field__label {
+.sgs-form-field--textarea:where(:not(.sgs-form-field--static-label)) .sgs-form-field__label {
 	top: 2.1rem;
 }
 
-.sgs-form-field--text:has(.sgs-form-field__input:focus) .sgs-form-field__label,
-.sgs-form-field--text:has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label,
-.sgs-form-field--email:has(.sgs-form-field__input:focus) .sgs-form-field__label,
-.sgs-form-field--email:has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label,
-.sgs-form-field--phone:has(.sgs-form-field__input:focus) .sgs-form-field__label,
-.sgs-form-field--phone:has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label,
-.sgs-form-field--number:has(.sgs-form-field__input:focus) .sgs-form-field__label,
-.sgs-form-field--number:has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label,
-.sgs-form-field--textarea:has(.sgs-form-field__input:focus) .sgs-form-field__label,
-.sgs-form-field--textarea:has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label {
+.sgs-form-field--text:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--text:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label,
+.sgs-form-field--email:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--email:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label,
+.sgs-form-field--phone:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--phone:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label,
+.sgs-form-field--number:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--number:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label,
+.sgs-form-field--textarea:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--textarea:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label {
 	top: 0;
 	left: 0;
 	color: var(--wp--preset--color--text, #1e1e1e);
@@ -1264,25 +1264,25 @@ select.sgs-form-field__input {
    :where(.sgs-form-field__label) defaults, and loses to the control in every state.
    The layout half above (top, left, colour) keeps its own specificity so the
    floating position always wins. */
-:where(.sgs-form-field--text:has(.sgs-form-field__input:focus)) .sgs-form-field__label,
-:where(.sgs-form-field--text:has(.sgs-form-field__input:not(:placeholder-shown))) .sgs-form-field__label,
-:where(.sgs-form-field--email:has(.sgs-form-field__input:focus)) .sgs-form-field__label,
-:where(.sgs-form-field--email:has(.sgs-form-field__input:not(:placeholder-shown))) .sgs-form-field__label,
-:where(.sgs-form-field--phone:has(.sgs-form-field__input:focus)) .sgs-form-field__label,
-:where(.sgs-form-field--phone:has(.sgs-form-field__input:not(:placeholder-shown))) .sgs-form-field__label,
-:where(.sgs-form-field--number:has(.sgs-form-field__input:focus)) .sgs-form-field__label,
-:where(.sgs-form-field--number:has(.sgs-form-field__input:not(:placeholder-shown))) .sgs-form-field__label,
-:where(.sgs-form-field--textarea:has(.sgs-form-field__input:focus)) .sgs-form-field__label,
-:where(.sgs-form-field--textarea:has(.sgs-form-field__input:not(:placeholder-shown))) .sgs-form-field__label {
+:where(.sgs-form-field--text:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus)) .sgs-form-field__label,
+:where(.sgs-form-field--text:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:not(:placeholder-shown))) .sgs-form-field__label,
+:where(.sgs-form-field--email:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus)) .sgs-form-field__label,
+:where(.sgs-form-field--email:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:not(:placeholder-shown))) .sgs-form-field__label,
+:where(.sgs-form-field--phone:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus)) .sgs-form-field__label,
+:where(.sgs-form-field--phone:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:not(:placeholder-shown))) .sgs-form-field__label,
+:where(.sgs-form-field--number:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus)) .sgs-form-field__label,
+:where(.sgs-form-field--number:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:not(:placeholder-shown))) .sgs-form-field__label,
+:where(.sgs-form-field--textarea:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus)) .sgs-form-field__label,
+:where(.sgs-form-field--textarea:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:not(:placeholder-shown))) .sgs-form-field__label {
 	font-size: 0.8125rem;
 	font-weight: 600;
 }
 
-.sgs-form-field--text:has(.sgs-form-field__input:focus) .sgs-form-field__label,
-.sgs-form-field--email:has(.sgs-form-field__input:focus) .sgs-form-field__label,
-.sgs-form-field--phone:has(.sgs-form-field__input:focus) .sgs-form-field__label,
-.sgs-form-field--number:has(.sgs-form-field__input:focus) .sgs-form-field__label,
-.sgs-form-field--textarea:has(.sgs-form-field__input:focus) .sgs-form-field__label {
+.sgs-form-field--text:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--email:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--phone:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--number:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--textarea:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label {
 	color: var(--wp--preset--color--primary-dark, #0f7e80);
 }
 
