@@ -344,7 +344,7 @@ def restore_wp_reference_archive(db_path: Path = None) -> None:
     try:
         import wp_reference_archive  # noqa: PLC0415
         wp_reference_archive.restore(db_path, allow_live=True)
-    except FileNotFoundError as exc:
+    except (FileNotFoundError, OSError, EOFError, ValueError, KeyError, sqlite3.Error) as exc:
         print(
             f"[--rebuild] WARNING: reference archive missing or unreadable "
             f"({exc}). hooks/docs will stay at whatever level Stage 1/2 "
@@ -2126,6 +2126,18 @@ _DYNAMIC_MARKERS = (
 )
 
 
+_JS_COMMENT_OR_STRING_RE = re.compile(
+    r"//[^\n]*|/\*.*?\*/|'(?:\\.|[^'\\\n])*'|\"(?:\\.|[^\"\\\n])*\"",
+    re.DOTALL,
+)
+
+
+def _blank_js_comment_or_string(match: "re.Match[str]") -> str:
+    """Replace a JS comment with a space and a string literal with an empty pair of its quotes."""
+    text = match.group(0)
+    return " " if text.startswith("/") else text[0] * 2
+
+
 def scrape_allowed_blocks(edit_js_path: Path) -> list[str] | None:
     """Parse edit.js for a literal allowedBlocks / ALLOWED_BLOCKS array.
 
@@ -2177,8 +2189,10 @@ def scrape_allowed_blocks(edit_js_path: Path) -> list[str] | None:
         array_body = text[bracket_start : array_end + 1]
 
         # A dynamic marker in any declaration makes the whole list unknowable statically.
+        # Comments and string literals are blanked first so their text never counts as a marker.
+        code_only = _JS_COMMENT_OR_STRING_RE.sub(_blank_js_comment_or_string, array_body)
         for marker in _DYNAMIC_MARKERS:
-            if marker in array_body:
+            if marker in code_only:
                 # Signal "dynamic" by returning the sentinel DYNAMIC_SKIP constant.
                 # Callers check `result is _DYNAMIC_SKIP`.
                 return _DYNAMIC_SKIP  # type: ignore[return-value]
@@ -3121,9 +3135,9 @@ def _populate_allowed_blocks(
     write a JSON-array string into block_composition.accepts_allowed_blocks
     (UPDATE only when the stored value differs — write-on-drift, idempotent).
 
-    Blocks with no allowedBlocks at all → leave column NULL.
-    Blocks with a dynamic allowedBlocks expression → leave column NULL and
-    count in dynamic_skipped.
+    Blocks with no allowedBlocks at all → column NULL (a stored value is cleared).
+    Blocks with a dynamic allowedBlocks expression → column NULL (a stored value
+    is cleared) and counted in dynamic_skipped.
 
     Returns counters:
         allowed_blocks_scanned    — edit.js files examined
@@ -3150,13 +3164,12 @@ def _populate_allowed_blocks(
 
         if result is _DYNAMIC_SKIP:
             dynamic_skipped += 1
-            continue  # leave column NULL — dynamic means we cannot know statically
-
-        if result is None:
-            continue  # no declaration → leave column NULL
-
-        # Literal array found — serialise to canonical JSON.
-        new_value = json.dumps(result, ensure_ascii=False)
+            new_value = None  # dynamic means we cannot know statically: the column is cleared
+        elif result is None:
+            new_value = None  # no declaration: the column is cleared
+        else:
+            # Literal array found — serialise to canonical JSON.
+            new_value = json.dumps(result, ensure_ascii=False)
 
         # Derive block slug from block.json (same logic as _index_sgs_block_files).
         block_json_path = block_dir / "block.json"
@@ -3177,7 +3190,8 @@ def _populate_allowed_blocks(
                 (slug,),
             ).fetchone()
             if existing_row is not None:
-                populated += 1
+                if new_value is not None:
+                    populated += 1
                 if existing_row[0] != new_value:
                     updated += 1
             continue
@@ -3201,7 +3215,8 @@ def _populate_allowed_blocks(
             )
             updated += 1
 
-        populated += 1
+        if new_value is not None:
+            populated += 1
 
     return {
         "allowed_blocks_scanned": scanned,
@@ -3747,7 +3762,7 @@ def _process_gutenberg_block_dir(
     title = block_data.get("title", block_name)
     description = block_data.get("description", "")
     category = block_data.get("category", "")
-    block_type = "dynamic" if "$schema" in block_data else "static"
+    block_type = "dynamic" if block_data.get("render") else "static"
 
     b_delta = _insert_or_count(
         c, new_rows, "blocks", dry_run,
@@ -4103,6 +4118,12 @@ def _insert_handbook_doc(
     )
 
 
+# Published field-guide URL per WordPress version (the legacy `<version>-field-guide` slug 404s for 7.0+).
+_FIELD_GUIDE_URLS = {
+    "7.0": "https://make.wordpress.org/core/2026/05/14/wordpress-7-0-field-guide/",
+}
+
+
 def _scrape_handbook_sources_5_to_10(
     c: sqlite3.Cursor,
     conn: sqlite3.Connection,
@@ -4130,7 +4151,9 @@ def _scrape_handbook_sources_5_to_10(
             # WP 7.0 field guide published at: https://make.wordpress.org/core/2026/05/14/wordpress-7-0-field-guide/
             # Pattern for future versions: https://make.wordpress.org/core/<YYYY>/<MM>/<DD>/wordpress-<major>-<minor>-field-guide/
             # The legacy slug https://make.wordpress.org/core/<version>-field-guide/ returns 404 for WP 7.0+.
-            "https://make.wordpress.org/core/2026/05/14/wordpress-7-0-field-guide/",
+            _FIELD_GUIDE_URLS.get(
+                wp_version, f"https://make.wordpress.org/core/{wp_version}-field-guide/"
+            ),
             "release-notes",
             f"WP {wp_version} Field Guide",
             f"wp-{wp_version}-field-guide",
@@ -4419,8 +4442,8 @@ def _extract_colour_tokens(settings: dict, client_slug: str) -> list[dict]:
         slug = item.get("slug", "")
         colour = item.get("color", "")
         name = item.get("name", slug)
-        # Skip forward-reference colours (value is another slug, not a hex/rgb)
-        if not slug or not colour or colour.startswith("var(") or not colour.startswith("#"):
+        # Skip forward-reference colours (value is another slug, not a colour)
+        if not slug or not colour or colour.startswith("var("):
             continue
         result.append({
             "slug": f"color-{slug}",
@@ -4884,6 +4907,11 @@ def _camel_to_kebab(name: str) -> str:
     return s1.lower()
 
 
+def _escape_like(text: str) -> str:
+    """Escape LIKE wildcards so `_` and `%` match themselves (pair with ESCAPE '\\')."""
+    return text.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
 def _match_slot_to_block(cursor, normalised: str) -> tuple:
     """Run the 3-tier slot→block match. Pure query — no writes, no side effects.
 
@@ -4908,8 +4936,8 @@ def _match_slot_to_block(cursor, normalised: str) -> tuple:
 
     # Tier 2: prefix match
     prefix_results = cursor.execute(
-        "SELECT slug FROM blocks WHERE source='sgs' AND slug LIKE ?",
-        (f"sgs/{normalised}%",),
+        "SELECT slug FROM blocks WHERE source='sgs' AND slug LIKE ? ESCAPE '\\'",
+        (f"sgs/{_escape_like(normalised)}%",),
     ).fetchall()
     if len(prefix_results) == 1 and len(normalised) >= 4:
         return ("medium-prefix", prefix_results[0][0], [])
@@ -4919,8 +4947,8 @@ def _match_slot_to_block(cursor, normalised: str) -> tuple:
 
     # Tier 3: contains match
     contains_results = cursor.execute(
-        "SELECT slug FROM blocks WHERE source='sgs' AND slug LIKE ?",
-        (f"%{normalised}%",),
+        "SELECT slug FROM blocks WHERE source='sgs' AND slug LIKE ? ESCAPE '\\'",
+        (f"%{_escape_like(normalised)}%",),
     ).fetchall()
     if len(contains_results) == 1 and len(normalised) >= 4:
         return ("medium-contains", contains_results[0][0], [])
@@ -5636,7 +5664,8 @@ def _prune_orphans_on_conn(
 
     # ---- (d) Retired blocks in `blocks` table (sgs/* slug, no block.json on disk) ----
     # Must run BEFORE (a) so child-row orphan queries still find the parent slugs to act on.
-    _ensure_blocks_is_stale_column(conn)
+    if not dry_run:
+        _ensure_blocks_is_stale_column(conn)
 
     retired_block_slugs: list[str] = []
     for (slug,) in c.execute(
@@ -6936,6 +6965,10 @@ def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
             # Get column names
             col_names = [desc[0] for desc in cursor.description] if cursor.description else []
 
+            # Record whether the file existed, and its bytes, before it is rewritten
+            existed = csv_path.exists()
+            old_bytes = csv_path.read_bytes() if existed else b""
+
             # Write to CSV
             with open(csv_path, "w", newline="", encoding="utf-8") as f:
                 writer = csv.DictWriter(f, fieldnames=col_names)
@@ -6946,14 +6979,10 @@ def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
             row_counts[table_name] = len(rows)
             exported.append(table_name)
 
-            # Check if file is new or unchanged
-            if csv_path.stat().st_size == 0:
+            if not existed:
                 added.append(table_name)
-            else:
-                # For idempotency: if we just wrote it, it's exported; we'll
-                # track "unchanged" only by comparing to a baseline if needed
-                # For now, all exports are "exported" in this run
-                pass
+            elif csv_path.read_bytes() == old_bytes:
+                unchanged.append(table_name)
 
             conn.close()
         except Exception as exc:
@@ -6977,6 +7006,7 @@ def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
         "status": "ok" if not errors else "WARN",
         "tables_exported": len(exported),
         "tables_added": len(added),
+        "tables_unchanged": len(unchanged),
         "tables_removed": len(removed),
         "row_counts": row_counts,
     }

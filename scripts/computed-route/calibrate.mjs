@@ -163,6 +163,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 			return true;
 		};
 		let timedOut = false;
+		let staleTree = false;
 		for ( let attempt = 0; attempt < 3 && ! timedOut; attempt++ ) {
 			writeTree( treeFile, buildTree( block, fixture, list ) );
 			const dry = await build( target, treeFile, [ '--post-id', String( target.postId ), '--dry-run' ] );
@@ -171,6 +172,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 				break;
 			}
 			if ( 0 === dry.code ) {
+				staleTree = false;
 				break;
 			}
 			// wp-build-page names each rejected node by its tree path: "[<i>] sgs/container > ...". Drop those instances.
@@ -182,6 +184,11 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 				return { block, error: `calibration tree rejected${ where() }: ${ dry.err.slice( -600 ) }` };
 			}
 			list = list.filter( ( _, i ) => ! bad.has( i ) );
+			staleTree = true;
+		}
+		// The last attempt's rejections leave the tree file holding nodes that are no longer in the list.
+		if ( ! timedOut && staleTree ) {
+			writeTree( treeFile, buildTree( block, fixture, list ) );
 		}
 		let built = null;
 		if ( ! timedOut ) {
