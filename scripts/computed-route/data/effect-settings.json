@@ -1,0 +1,4 @@
+[
+	{ "block": "sgs/nav-bar-menu", "attr": "itemMagnetEnabled", "effect": "magnet" },
+	{ "block": "sgs/nav-bar-menu", "attr": "itemMagnetStrength", "effect": "magnet" }
+]
