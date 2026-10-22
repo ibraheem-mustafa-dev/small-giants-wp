@@ -36,13 +36,15 @@ if ( ! function_exists( 'sgs_svg_trust_intent' ) ) {
 
 if ( ! function_exists( 'sgs_svg_trusted_prepare' ) ) {
 	/**
-	 * A trusted upload's markup: refused when it declares entities or is not an SVG document, with duplicate <script>
-	 * elements (byte-identical text) reduced to the first; otherwise exactly as uploaded.
+	 * A trusted upload's markup: refused when it holds an internal subset or entities (in any encoding) or is not an SVG
+	 * document. A plain DOCTYPE before the root (an editor export's) is removed, as the sanitiser does, so none is stored;
+	 * duplicate <script> elements (byte-identical text) are reduced to the first; the rest is exactly as uploaded.
 	 *
 	 * @param string $raw Raw file contents.
 	 * @return array{svg: string, error: string}
 	 */
 	function sgs_svg_trusted_prepare( string $raw ): array {
+		$raw     = (string) preg_replace( '/^((?:\s|<\?xml.*?\?>|<!--.*?-->)*)<!DOCTYPE[^>\[]*>/is', '$1', $raw, 1 );
 		$problem = sgs_svg_parse_problem( $raw );
 		if ( '' !== $problem ) {
 			return array(

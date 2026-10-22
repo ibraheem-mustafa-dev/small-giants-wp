@@ -237,10 +237,15 @@ list( $res ) = $upload( $utf16, 'u16.svg', 1, true );
 ok( ! empty( $res['error'] ), 'MUST FAIL: a UTF-16LE SVG with an entity DOCTYPE is refused for a trusted user', $res['error'] ?? '' );
 list( $res ) = $upload( '<?xml version="1.0" encoding="UTF-16"?>' . $svg( '<path d="M0 0"/>' ), 'u16b.svg', 1, true );
 ok( ! empty( $res['error'] ), 'MUST FAIL: a declared non-UTF-8 encoding is refused for a trusted user' );
-list( $res ) = $upload( '<!DOCTYPE svg SYSTEM "http://evil.test/x.dtd">' . $svg( '<path d="M0 0"/>' ), 'dtd.svg', 1, true );
-ok( ! empty( $res['error'] ), 'MUST FAIL: an external DTD is refused for a trusted user', $res['error'] ?? '' );
-list( $res ) = $upload( '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' . $svg( '<path d="M0 0"/>' ), 'plain.svg', 1, true );
-ok( ! empty( $res['error'] ), 'MUST FAIL: a plain DOCTYPE is refused for a trusted user' );
+$illustrator = '<?xml version="1.0" encoding="utf-8"?>' . "
+" . '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' . "
+" . $scripted;
+list( $res, $out ) = $upload( $illustrator, 'ai.svg', 1, true );
+ok( empty( $res['error'] ) && false === stripos( $out, 'DOCTYPE' ) && false === strpos( $out, 'svg11.dtd' ) && false !== strpos( $out, '<script' ) && $out === str_replace( '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">', '', $illustrator ), 'MUST FAIL: an Illustrator-style file uploads as trusted with its DOCTYPE removed and its script kept', $out . ( $res['error'] ?? '' ) );
+list( $res, $out ) = $upload( '<!DOCTYPE svg SYSTEM "http://evil.test/x.dtd">' . $svg( '<path d="M0 0"/>' ), 'dtd.svg', 1, true );
+ok( empty( $res['error'] ) && false === strpos( $out, 'evil.test' ), 'MUST FAIL: an external DTD reference is never stored' );
+list( $res ) = $upload( '<!DOCTYPE svg [<!ELEMENT svg ANY>]>' . $svg( '<path d="M0 0"/>' ), 'subset.svg', 1, true );
+ok( ! empty( $res['error'] ), 'MUST FAIL: a DOCTYPE with an internal subset is refused for a trusted user' );
 ok( '' === sgs_svg_parse_problem( $scripted ), 'a plain scripted SVG still passes the trusted parse check' );
 
 // Review fix 4: href and xlink:href on one element are both renamed.
