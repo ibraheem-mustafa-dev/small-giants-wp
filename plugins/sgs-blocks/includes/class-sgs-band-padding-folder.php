@@ -4,8 +4,10 @@
  *
  * `padding` paints the content band and is the only padding control of a block that declares `contentWidth`
  * (`SGS_Container_Wrapper::render`), so a block comment that still carries `contentBandPadding` moves its sides
- * onto `padding`, per device and per side. Where both attributes set the same side of the same device with
- * different values, the band's value wins and the clash is reported. Only the attribute JSON of the changed block
+ * onto `padding`, per device and per side. Before the fold both painted (the block's padding outside the band, the
+ * band's inside it), so each folded side is the two added together, each read as its tier paints it (a tier with no
+ * value takes the nearest larger tier's): a zero or absent side adds nothing, and where both hold a length the sum
+ * is `calc( own + band )` and is reported. Only the attribute JSON of the changed block
  * comments is replaced in the stored text, so every other byte of the post is untouched.
  *
  * @package SGS\Blocks
@@ -71,26 +73,30 @@ final class Sgs_Band_Padding_Folder {
 				'conflicts' => $conflicts,
 			);
 		}
-		$merged = self::tiers_of( $attrs['padding'] ?? null );
-		foreach ( $band as $tier => $box ) {
-			$target = $merged[ $tier ] ?? array();
-			foreach ( $box as $side => $value ) {
-				if ( ! is_string( $value ) || '' === $value ) {
+		$own    = self::tiers_of( $attrs['padding'] ?? null );
+		$merged = $own;
+		foreach ( self::TIERS as $index => $tier ) {
+			// The block's sides first, then the band's, each in its stored order, so the written box keeps its order.
+			$sides = array_intersect( array_unique( array_merge( array_keys( $own[ $tier ] ?? array() ), array_keys( $band[ $tier ] ?? array() ) ) ), self::SIDES );
+			foreach ( $sides as $side ) {
+				if ( '' === self::length( $own[ $tier ][ $side ] ?? null ) && '' === self::length( $band[ $tier ][ $side ] ?? null ) ) {
 					continue;
 				}
-				$own = $target[ $side ] ?? '';
-				if ( is_string( $own ) && '' !== $own && $own !== $value ) {
+				$o = self::inherited( $own, $index, $side );
+				$b = self::inherited( $band, $index, $side );
+				if ( '' !== $o && '' !== $b && ! self::is_zero( $o ) && ! self::is_zero( $b ) ) {
 					$conflicts[] = array(
 						'tier' => $tier,
 						'side' => $side,
-						'own'  => $own,
-						'band' => $value,
+						'own'  => $o,
+						'band' => $b,
+						'sum'  => self::sum( $o, $b ),
 					);
 				}
-				$target[ $side ] = $value;
-			}
-			if ( array() !== $target ) {
-				$merged[ $tier ] = $target;
+				$sum = self::sum( $o, $b );
+				if ( '' !== $sum ) {
+					$merged[ $tier ][ $side ] = $sum;
+				}
 			}
 		}
 		if ( array() !== $merged ) {
@@ -106,6 +112,62 @@ final class Sgs_Band_Padding_Folder {
 			'attrs'     => $attrs,
 			'conflicts' => $conflicts,
 		);
+	}
+
+	/**
+	 * A stored side as a length string, or '' when it holds none.
+	 *
+	 * @param mixed $value Stored side value.
+	 * @return string
+	 */
+	private static function length( $value ): string {
+		return is_string( $value ) ? trim( $value ) : ( is_int( $value ) || is_float( $value ) ? (string) $value : '' );
+	}
+
+	/**
+	 * The side a tier paints: its own value, else the nearest larger tier's (the tiers cascade from desktop down).
+	 *
+	 * @param array<string,array<string,mixed>> $tiers Boxes by tier.
+	 * @param int                               $index Position of the tier in TIERS.
+	 * @param string                            $side  Side name.
+	 * @return string
+	 */
+	private static function inherited( array $tiers, int $index, string $side ): string {
+		for ( $i = $index; $i >= 0; $i-- ) {
+			$value = self::length( $tiers[ self::TIERS[ $i ] ][ $side ] ?? null );
+			if ( '' !== $value ) {
+				return $value;
+			}
+		}
+		return '';
+	}
+
+	/**
+	 * Whether a length is zero in any unit.
+	 *
+	 * @param string $value Length.
+	 * @return bool
+	 */
+	private static function is_zero( string $value ): bool {
+		return 1 === preg_match( '/^[-+]?0*\.?0+(?:[a-z%]+)?$/i', $value );
+	}
+
+	/**
+	 * The space two stacked paddings leave on one side: the block's own padding sat outside the band, the band's
+	 * inside it, so both painted. A zero or absent side adds nothing; two lengths add up in `calc()`.
+	 *
+	 * @param string $own  The block's padding on that side.
+	 * @param string $band The band's padding on that side.
+	 * @return string
+	 */
+	private static function sum( string $own, string $band ): string {
+		if ( '' === $own || ( self::is_zero( $own ) && '' !== $band ) ) {
+			return $band;
+		}
+		if ( '' === $band || self::is_zero( $band ) ) {
+			return $own;
+		}
+		return 'calc(' . $own . ' + ' . $band . ')';
 	}
 
 	/**

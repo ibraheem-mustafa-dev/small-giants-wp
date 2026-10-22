@@ -134,11 +134,11 @@ $out = Sgs_Band_Padding_Folder::fold(
 same(
 	array(
 		'top'    => '10px',
-		'left'   => '40px',
+		'left'   => 'calc(5px + 40px)',
 		'bottom' => '12px',
 	),
 	$out['attrs']['padding']['desktop'],
-	'both: own-only side kept, band wins the clash, band-only side added'
+	'both: own-only side kept, a side both set is their sum (both painted), band-only side added'
 );
 same( 1, count( $out['conflicts'] ), 'both: one conflict reported' );
 same(
@@ -147,19 +147,85 @@ same(
 		'side' => 'left',
 		'own'  => '5px',
 		'band' => '40px',
+		'sum'  => 'calc(5px + 40px)',
 	),
 	$out['conflicts'][0],
-	'both: the conflict names tier, side and both values'
+	'both: the report names tier, side, both values and their sum'
 );
 
-// The same value on both is not a conflict.
+// The same value on both painted twice: it is summed and reported.
 $out = Sgs_Band_Padding_Folder::fold(
 	array(
 		'padding'            => array( 'desktop' => array( 'left' => '40px' ) ),
 		'contentBandPadding' => array( 'desktop' => array( 'left' => '40px' ) ),
 	)
 );
-same( array(), $out['conflicts'], 'equal values: no conflict' );
+same( array( 'left' => 'calc(40px + 40px)' ), $out['attrs']['padding']['desktop'], 'equal values: both painted, so summed' );
+same( 1, count( $out['conflicts'] ), 'equal values: the sum is reported' );
+
+// A zero adds nothing (MUST FAIL against band-wins): the block's 11px top and bottom survive the band's 0, and the
+// band's 24px sides survive the block's 0; nothing is reported.
+$out = Sgs_Band_Padding_Folder::fold(
+	array(
+		'padding'            => array(
+			'desktop' => array(
+				'top'    => '11px',
+				'right'  => '0',
+				'bottom' => '11px',
+				'left'   => '0',
+			),
+		),
+		'contentBandPadding' => array(
+			'desktop' => array(
+				'top'    => '0',
+				'right'  => '24px',
+				'bottom' => '0',
+				'left'   => '24px',
+			),
+		),
+	)
+);
+same(
+	array(
+		'top'    => '11px',
+		'right'  => '24px',
+		'bottom' => '11px',
+		'left'   => '24px',
+	),
+	$out['attrs']['padding']['desktop'],
+	'zeros: each side keeps the length the other painted over nothing'
+);
+same( array(), $out['conflicts'], 'zeros: nothing is reported' );
+
+// A tier with no value paints the larger tier's, on both attributes (MUST FAIL against per-tier-only reading).
+$out = Sgs_Band_Padding_Folder::fold(
+	array(
+		'padding'            => array( 'mobile' => array( 'left' => '10px' ) ),
+		'contentBandPadding' => array( 'desktop' => array( 'left' => '24px' ) ),
+	)
+);
+same(
+	array(
+		'desktop' => array( 'left' => '24px' ),
+		'mobile'  => array( 'left' => 'calc(10px + 24px)' ),
+	),
+	$out['attrs']['padding'],
+	'inherited: the mobile side adds the band\'s desktop value it inherited'
+);
+$out = Sgs_Band_Padding_Folder::fold(
+	array(
+		'padding'            => array( 'desktop' => array( 'left' => '10px' ) ),
+		'contentBandPadding' => array( 'mobile' => array( 'left' => '24px' ) ),
+	)
+);
+same(
+	array(
+		'desktop' => array( 'left' => '10px' ),
+		'mobile'  => array( 'left' => 'calc(10px + 24px)' ),
+	),
+	$out['attrs']['padding'],
+	'inherited: the band\'s mobile side adds the block\'s desktop value it inherited'
+);
 
 // A flat box (no tier keys) is the desktop tier; an empty band only drops the attribute.
 $out = Sgs_Band_Padding_Folder::fold( array( 'contentBandPadding' => array( 'top' => '6px' ) ) );

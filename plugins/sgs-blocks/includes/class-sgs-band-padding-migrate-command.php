@@ -175,14 +175,14 @@ final class Sgs_Band_Padding_Migrate_Command {
 				\WP_CLI::log( sprintf( '  block %s %s: contentBandPadding folded into padding', $change['path'], $change['block'] ) );
 				foreach ( $change['conflicts'] as $clash ) {
 					++$conflicts;
-					\WP_CLI::warning( sprintf( '  CONFLICT block %s %s: %s %s was %s on padding, band value %s wins', $change['path'], $change['block'], $clash['tier'], $clash['side'], $clash['own'], $clash['band'] ) );
+					\WP_CLI::warning( sprintf( '  BOTH SET block %s %s: %s %s is %s on padding and %s on the band, folded to %s', $change['path'], $change['block'], $clash['tier'], $clash['side'], $clash['own'], $clash['band'], $clash['sum'] ) );
 				}
 			}
 		}
 		foreach ( $this->skipped as $line ) {
 			\WP_CLI::warning( $line );
 		}
-		\WP_CLI::log( sprintf( '%d post(s) with changes, %d block(s) folded, %d conflict(s), %d post(s) skipped.', count( $rows ), $blocks, $conflicts, count( $this->skipped ) ) );
+		\WP_CLI::log( sprintf( '%d post(s) with changes, %d block(s) folded, %d side(s) set on both and summed, %d post(s) skipped.', count( $rows ), $blocks, $conflicts, count( $this->skipped ) ) );
 	}
 
 	/**
