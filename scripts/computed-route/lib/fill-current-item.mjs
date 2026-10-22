@@ -10,7 +10,7 @@
 import { declaredValues } from '../../parity/lib/devtools.mjs';
 import { renderedOf } from './fill-state-apply.mjs';
 import { declaredDiff } from './fill-state-read.mjs';
-import { templateKeyOf, parseTemplateKey } from './fact-key.mjs';
+import { templateKeyOf, templateKeyOfSelector, parseTemplateKey } from './fact-key.mjs';
 
 // The loop variable's property names a draft uses for "this item is the current route".
 export const CURRENT_PATH = /(?:^|\.)(?:current|isCurrent|active|isActive|selected|isSelected)$/;
@@ -44,7 +44,7 @@ export function currentItemGroups( facts, rootComponent = null ) {
 
 // The group a read job (a target with a `{ tpl: '<chain>/<n>#<copy>' }` finder) is the item of, or undefined.
 export function groupOfJob( groups, job ) {
-	return groups.find( ( g ) => g.itemKey === templateKeyOf( job?.finder?.tpl, g.rootComponent ) );
+	return groups.find( ( g ) => g.itemKey === ( 'string' === typeof job?.finder ? templateKeyOfSelector( job.finder, g.rootComponent ) : templateKeyOf( job?.finder?.tpl, g.rootComponent ) ) );
 }
 
 // The two selectors of a group: the copy where the condition holds and a copy where it does not.

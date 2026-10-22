@@ -107,3 +107,40 @@ test( 'an element with no width-gated sc-if, or no fact record, is untouched', (
 	assert.equal( run( [ { name: 'sgs/button', n: 13 }, { name: 'sgs/button', n: 10 } ], facts ).writes.length, 0 );
 	assert.equal( run( [ { name: 'sgs/button', n: 13 } ], null ).writes.length, 0 );
 } );
+
+test( 'MUST FAIL WITHOUT THE OWN-ALTERNATIVE RULE: a nav drawing its own burger below 1024 gets collapsePoint, never a hiding flag', () => {
+	const facts = factsOf( gate( 'Page/44', { w: '>=', n: 1024 }, 'w >= 1024' ), leaf( 'Page/45', [ 'Page/44' ] ) );
+	const r = run( [ { name: 'sgs/nav-bar-menu', n: 45 } ], facts );
+	assert.deepEqual( r.flat[ 0 ].attributes, { collapsePoint: 1024 } );
+	assert.equal( r.writes.some( ( w ) => /^sgsHideOn/.test( w.attr ) ), false );
+	const { flat, nodes } = skeleton( [ { name: 'sgs/nav-bar-menu', n: 45 } ] );
+	flat[ 0 ].attributes.collapsePoint = 1024;
+	const again = widthGateWrites( { nodes, flat, refOf: ( n ) => n.ref, facts, db, scope: 'header', entries: [], date: '2026-10-22' } );
+	assert.deepEqual( again.writes, [], 'a node already holding the value is left' );
+	const below = factsOf( gate( 'Page/55', isM, 'm' ), leaf( 'Page/56', [ 'Page/55' ] ) );
+	assert.deepEqual( run( [ { name: 'sgs/nav-bar-menu', n: 56 } ], below ).flat[ 0 ].attributes, { sgsHideOnTablet: true, sgsHideOnDesktop: true }, 'content shown only below a width is still hidden above it' );
+} );
+
+test( 'MUST FAIL WITHOUT THE SELECTOR RESOLVER: a Site Info row node whose draftRef is a selector string has its gate written', () => {
+	const facts = factsOf( gate( 'Page/21', { w: '>=', n: 768 }, 'w >= 768' ), leaf( 'Page/22', [ 'Page/21' ] ) );
+	const flat = [ { name: 'sgs/social-icons', attributes: {}, ref: 'r0' } ];
+	const nodes = [ { index: 0, name: 'sgs/social-icons', parent: null, node: { draftRef: 'div[data-dc-tpl="9"] [data-dc-tpl="22"]' }, children: [], targets: [] } ];
+	const at = ( rootComponent ) => widthGateWrites( { nodes, flat: structuredClone( flat ), refOf: ( n ) => n.ref, facts, db, scope: 'header', entries: [], rootComponent, date: '2026-10-22' } ).writes.map( ( w ) => w.attr );
+	assert.deepEqual( at( 'Page' ), [ 'sgsHideOnMobile' ] );
+	assert.deepEqual( at( null ), [], 'no root component: no key' );
+} );
+
+test( 'MUST FAIL WITHOUT THE SELECTOR READERS: the draft ID and the current-item group of a selector finder resolve in the root key space', async () => {
+	const { draftIdOf } = await import( '../lib/fill-confirm.mjs' );
+	const { groupOfJob } = await import( '../lib/fill-current-item.mjs' );
+	const sel = 'div[data-dc-tpl="9"] [data-dc-tpl="22"]';
+	assert.equal( draftIdOf( sel, 'Page' ), 'Page:22' );
+	assert.equal( draftIdOf( sel, null ), null );
+	assert.equal( groupOfJob( [ { itemKey: 'Page/22', rootComponent: 'Page' } ], { finder: sel } )?.itemKey, 'Page/22' );
+} );
+
+test( 'MUST FAIL WITHOUT THE LOWER-EDGE CHECK: a middle range on a block with a breakpoint setting is hidden by its tier flag, not a collapse point', () => {
+	const mid = { any: [ { w: '<', n: 768 }, { w: '>=', n: 1024 } ] };
+	const facts = factsOf( gate( 'Page/57', mid, 'not tablet' ), leaf( 'Page/58', [ 'Page/57' ] ) );
+	assert.deepEqual( run( [ { name: 'sgs/nav-bar-menu', n: 58 } ], facts ).flat[ 0 ].attributes, { sgsHideOnTablet: true } );
+} );

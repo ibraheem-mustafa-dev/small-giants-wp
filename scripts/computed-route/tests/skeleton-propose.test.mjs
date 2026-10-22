@@ -229,3 +229,17 @@ test( 'MUST FAIL (SGS bans core blocks): a core pick from any source is rewritte
 	assert.ok( nodes( real.skeleton ).every( ( n ) => ! n.name.startsWith( 'core/' ) ), 'the real footer skeleton holds no core block' );
 	assert.match( decisionsProblems( { ...f, decisions: { ...f.decisions, structural: { columnLabel: { block: 'core/heading' } } } } ).join( ' ' ), /core block.*sgs\/heading/ );
 } );
+
+test( 'MUST FAIL WITHOUT THE WIDTH-ONLY READ: an element rendered only at 375 joins the inventory in document order, existing records unchanged', async () => {
+	const { withWidthOnly } = await import( '../lib/skeleton-inventory.mjs' );
+	const rec = ( key, parentKey ) => ( { key, parentKey, box: { x: 0, y: 0, w: 10, h: 10 }, visible: true, position: 'static' } );
+	const runs = {
+		1440: { records: [ rec( 'Root/1#0', null ), rec( 'Root/3#0', 'Root/1#0' ), rec( 'Root/5#0', 'Root/1#0' ) ] },
+		375: { records: [ rec( 'Root/1#0', null ), rec( 'Root/2#0', 'Root/1#0' ), rec( 'Root/3#0', 'Root/1#0' ) ] },
+		768: { records: [ rec( 'Root/1#0', null ), rec( 'Root/3#0', 'Root/1#0' ), rec( 'Root/4#0', 'Root/1#0' ), rec( 'Root/5#0', 'Root/1#0' ) ] },
+	};
+	const out = withWidthOnly( runs );
+	assert.deepEqual( out.map( ( r ) => r.key ), [ 'Root/1#0', 'Root/2#0', 'Root/3#0', 'Root/4#0', 'Root/5#0' ] );
+	assert.deepEqual( out.find( ( r ) => 'Root/3#0' === r.key ), runs[ 1440 ].records[ 1 ], 'a 1440 record is untouched' );
+	assert.deepEqual( [ out[ 1 ].visible, out[ 1 ].box ], [ false, null ], 'not drawn at 1440' );
+} );

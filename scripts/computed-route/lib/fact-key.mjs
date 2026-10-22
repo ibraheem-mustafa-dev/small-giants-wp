@@ -68,3 +68,10 @@ export function renameRootHost( key, from, to ) {
 	const p = parseInstanceKey( key );
 	return p && 1 === p.chain.length && p.chain[ 0 ] === from ? instanceKey( { ...p, chain: [ to ] } ) : key;
 }
+
+// The template key a selector string names: its last `data-dc-tpl="<n>"` in the root component's key space (a Site Info row
+// node's draftRef is resolved inside the root's own template), or null when it names none or no root component is given.
+export function templateKeyOfSelector( selector, rootComponent ) {
+	const all = 'string' === typeof selector ? [ ...selector.matchAll( /data-dc-tpl=["']?(\d+)/g ) ] : [];
+	return rootComponent && all.length ? templateKey( { dc: rootComponent, tpl: all.at( -1 )[ 1 ] } ) : null;
+}

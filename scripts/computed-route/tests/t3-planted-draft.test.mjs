@@ -129,6 +129,14 @@ test( 'MUST FAIL WITHOUT THE WRITER: width-gated content is hidden per device, o
 	assert.deepEqual( r.writes.filter( ( w ) => 'a' === w.node ).map( ( w ) => w.attr ).sort(), [ 'sgsHideOnDesktop', 'sgsHideOnTablet' ] );
 	assert.ok( r.writes.some( ( w ) => 'b' === w.node && 'sgsCustomCss' === w.attr && /max-width: 1259px/.test( w.after ) ) );
 	assert.equal( run( null ).writes.length, 0 );
+	const navFlat = [ { name: 'sgs/nav-bar-menu', attributes: {}, ref: 'n' } ];
+	const navNodes = [ { index: 0, name: 'sgs/nav-bar-menu', parent: null, node: { draftRef: { tpl: 'Page/54#0' } }, targets: [], children: [] } ];
+	const nav = widthGateWrites( { nodes: navNodes, flat: navFlat, refOf: ( n ) => n.ref, facts: FACTS, db, scope: 's', entries: [], date: '2026-10-22' } );
+	assert.deepEqual( nav.writes.map( ( w ) => [ w.attr, w.after ] ), [ [ 'collapsePoint', 1260 ] ], 'a block drawing its own alternative takes the threshold, no hiding flag' );
+	const sel = [ { index: 0, name: 'sgs/button', parent: null, node: { draftRef: 'div[data-dc-tpl="9"] [data-dc-tpl="13"]' }, targets: [], children: [] } ];
+	const viaSelector = ( rootComponent ) => widthGateWrites( { nodes: sel, flat: structuredClone( flat ).slice( 0, 1 ), refOf: ( n ) => n.ref, facts: FACTS, db, scope: 's', entries: [], rootComponent, date: '2026-10-22' } ).writes.length;
+	assert.equal( viaSelector( 'Page' ), 2, 'a selector draftRef resolves to its last data-dc-tpl' );
+	assert.equal( viaSelector( null ), 0 );
 } );
 
 test( 'MUST FAIL WITHOUT THE WIRING: a declared clamp() is one value; a button equal to a preset is the preset; a loop body gets one parent write', () => {
