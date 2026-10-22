@@ -24,3 +24,4 @@ The signal between the cloning tool plan's two orchestrator sessions (`.claude/p
 - 2026-10-22 F built U5 f6191d64e (business-info mapHeight, mapZoom, mapFilterPreset, mapFilter)
 - 2026-10-22 F built U8 e182719cc (::selection from settings.custom.selection, contrast warns only)
 - 2026-10-22 F built U17 a4fd07856 (nav-drawer role and aria-modal, testimonial dot labels), 5507aa62c (accordion and FAQ aria-controls)
+- 2026-10-22 T site-run-start recalibrate sgs/site-header-row, sgs/site-footer-row, sgs/responsive-logo on local-indus (after F deployed indus-test 170797cec)
