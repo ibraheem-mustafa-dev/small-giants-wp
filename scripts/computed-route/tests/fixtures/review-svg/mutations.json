@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/svg-screen.mjs",
+		"find": "const bad = scriptUrlProblem( a.value ) ?? cssProblem( a.value );",
+		"replace": "const bad = 'style' === local ? cssProblem( a.value ) : null;",
+		"why": "a URL in a presentation attribute would pass"
+	},
+	{
+		"file": "lib/svg-screen.mjs",
+		"find": "Number.parseInt( hex, 16 )",
+		"replace": "0",
+		"why": "CSS escapes would not be decoded"
+	},
+	{
+		"file": "lib/svg-screen.mjs",
+		"find": ".replace( /\\/\\*[\\s\\S]*?(?:\\*\\/|$)/g, '' )",
+		"replace": ".replace( /(?!)/g, '' )",
+		"why": "a comment inside @import would hide it"
+	},
+	{
+		"file": "lib/svg-screen.mjs",
+		"find": "image-set\\(([^)]*)\\)/gi",
+		"replace": "image-setx\\(([^)]*)\\)/gi",
+		"why": "image-set() would not be read"
+	},
+	{
+		"file": "lib/svg-screen.mjs",
+		"find": "url\\(\\s*([^)]*)(?:\\)|$)/gi",
+		"replace": "urlx\\(\\s*([^)]*)(?:\\)|$)/gi",
+		"why": "url() would not be read"
+	},
+	{
+		"file": "lib/svg-screen.mjs",
+		"find": "String( value ).replace( /[\\s\\x00-\\x1F\\x7F]+/g, '' )",
+		"replace": "String( value )",
+		"why": "a whitespace or control character would hide a script URL"
+	},
+	{
+		"file": "lib/svg-screen.mjs",
+		"find": "/(?:java|vb)script:/i.test( String( value )",
+		"replace": "/javascript:/i.test( String( value )",
+		"why": "vbscript would pass in an attribute"
+	},
+	{
+		"file": "lib/svg-screen.mjs",
+		"find": "/(?:java|vb)script\\s*:/i.test( text )",
+		"replace": "/javascript\\s*:/i.test( text )",
+		"why": "vbscript would pass in the text"
+	},
+	{
+		"file": "lib/svg-screen.mjs",
+		"find": "|| /^on/i.test( value.replace( /\\s+/g, '' ) )",
+		"replace": "|| false",
+		"why": "an animation of an event attribute would pass"
+	},
+	{
+		"file": "lib/svg-screen.mjs",
+		"find": "/(?:^|:)href$/i.test( value.replace( /\\s+/g, '' ) )",
+		"replace": "/(?:^|:)href$/i.test( value )",
+		"why": "a spaced animation target would pass"
+	},
+	{
+		"file": "lib/svg-screen.mjs",
+		"find": "const bad = top && 'style' === top.name && SVG_NS === top.uri ? cssProblem( text ) : null;",
+		"replace": "const bad = null;",
+		"why": "a <style> element would not be checked"
+	}
+]
