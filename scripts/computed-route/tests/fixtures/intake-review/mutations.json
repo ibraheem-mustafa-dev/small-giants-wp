@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "const keep = old && old.contentHash === r.contentHash && null !== mark && old.mark === mark;",
+		"replace": "const keep = false;",
+		"why": "every apply would re-date every mark"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "markedOn: null === mark ? null : keep ? old.markedOn : today",
+		"replace": "markedOn: null === mark ? null : today",
+		"why": "a kept mark would take today's date"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "const keep = old && old.contentHash === r.contentHash && null !== mark && old.mark === mark;",
+		"replace": "const keep = old && null !== mark;",
+		"why": "a changed mark or a changed row would keep its old date"
+	},
+	{
+		"file": "lib/intake-review-carry.mjs",
+		"find": "if ( fs.existsSync( files.pageMap ) && fs.existsSync( files.confirmed ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a run would overwrite a confirmed page map"
+	},
+	{
+		"file": "lib/intake-review-carry.mjs",
+		"find": "if ( fs.existsSync( files.pageMap ) && fs.existsSync( files.confirmed ) ) {",
+		"replace": "if ( fs.existsSync( files.confirmed ) ) {",
+		"why": "a missing page map would stay missing while the confirmation record remains"
+	},
+	{
+		"file": "lib/intake-review-carry.mjs",
+		"find": "fs.writeFileSync( files.confirmed, `${ JSON.stringify( { confirmedOn: today }, null, 2 ) }\\n` );",
+		"replace": "",
+		"why": "--apply-review would not record the confirmation, so the next run would overwrite the map"
+	},
+	{
+		"file": "lib/intake-review-carry.mjs",
+		"find": "export function writeConfirmedPageMap( files, text, today = isoDay() ) {",
+		"replace": "export function writeConfirmedPageMap( files, text, today = isoDay() ) {\n\treturn;",
+		"why": "--apply-review would not replace the page map"
+	}
+]
