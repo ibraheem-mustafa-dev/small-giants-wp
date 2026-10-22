@@ -176,6 +176,41 @@ ok( false !== strpos( $first, 'id="sgs-logo-svg-1-g"' ) && false !== strpos( $se
 ok( false !== strpos( $first, 'fill="url(#sgs-logo-svg-1-g)"' ) && false !== strpos( $first, 'begin="sgs-logo-svg-1-g.end; 1s"' ), 'url(#id) attributes and begin id.event follow the renamed id', $first );
 ok( false !== strpos( $first, '@keyframes sgs-logo-svg-1-spin{' ) && false !== strpos( $first, '@media (min-width:1px){:where(#sgs-logo-svg-1) .a{animation:sgs-logo-svg-1-spin 2s;fill:url(#sgs-logo-svg-1-g)}}' ), 'keyframes renamed; rules inside @media scoped', $first );
 
+// ── The <style> reader cannot be tricked into ending a rule early ──
+$scope_css = static function ( string $css ): string {
+	return sgs_svg_scope_css( $css, '#s1', array(), array() );
+};
+$unscoped  = static function ( string $out ): bool {
+	return 1 === preg_match( '/(?<!:where\(#s1\) )html\{background:red\}/', $out );
+};
+$smuggles  = array(
+	'a } inside a quoted string'              => 'a{content:"}"}html{background:red}',
+	'a } inside a single-quoted string'       => "a{content:'}'}html{background:red}",
+	'a backslash-escaped brace'               => 'a{content:\}}html{background:red}',
+	'a comment holding a brace'               => 'a{x:1/*}*/}html{background:red}',
+	'a comment opener inside a string'        => 'a{content:"/*"}html{background:red}b{content:"*/"}',
+	'a rule after a broken paren block'       => 'a{b:(}html{background:red}',
+	'a rule after a string broken by newline' => "a{x:\"bad\n}html{background:red}",
+	'a stray closing brace'                   => 'a{b:1}}html{background:red}',
+	'a sibling combinator off the root svg'   => 'svg ~ html{background:red}',
+	'a selector starting with a combinator'   => '+ html{background:red}',
+);
+foreach ( $smuggles as $label => $css ) {
+	$out = $scope_css( $css );
+	ok( ! $unscoped( $out ), "MUST FAIL: $label never emits a rule outside the scope", $out );
+}
+ok( false !== strpos( $scope_css( 'a{content:"}"}html{background:red}' ), ':where(#s1) html{background:red}' ), 'a quoted } keeps the next rule, scoped', $scope_css( 'a{content:"}"}html{background:red}' ) );
+foreach ( array( '@font-face{font-family:x}', '@page{margin:0}', '@layer x{html{background:red}}', '@namespace svg url(http://www.w3.org/2000/svg);', '@container (min-width:1px){a{b:c}}', '@\6d edia all{html{background:red}}' ) as $at ) {
+	$out = $scope_css( $at . 'rect{fill:red}' );
+	ok( '' === trim( str_replace( ':where(#s1) rect{fill:red}', '', $out ) ) && false !== strpos( $out, ':where(#s1) rect{fill:red}' ), "MUST FAIL: unknown at-rule dropped: $at", $out );
+}
+ok( '@media (min-width:1px){:where(#s1) a{b:c}}@supports (display:grid){:where(#s1) a{b:c}}@keyframes s1-k{to{opacity:0}}' === $scope_css( '@media (min-width:1px){a{b:c}}@supports (display:grid){a{b:c}}@-webkit-keyframes k{to{opacity:0}}' ), 'allowed at-rules pass: @media, @supports, @keyframes (vendor form renamed)', $scope_css( '@media (min-width:1px){a{b:c}}@supports (display:grid){a{b:c}}@-webkit-keyframes k{to{opacity:0}}' ) );
+ok( '' === $scope_css( 'a{b:c;rect{fill:red}}' ), 'a rule holding a nested rule is dropped', $scope_css( 'a{b:c;rect{fill:red}}' ) );
+ok( ! sgs_svg_scope_verify( 'html{background:red}', 's1' ) && ! sgs_svg_scope_verify( '@keyframes spin{to{opacity:0}}', 's1' ) && ! sgs_svg_scope_verify( ':where(#s1) ~ html{x:y}', 's1' ) && ! sgs_svg_scope_verify( '@font-face{font-family:x}', 's1' ) && ! sgs_svg_scope_verify( ':where(#s1) a{content:"}', 's1' ), 'MUST FAIL: the re-read refuses an unscoped rule, an unprefixed keyframes, a sibling reach, an unknown at-rule and an unclosed block' );
+ok( sgs_svg_scope_verify( ':where(#s1) a,svg:where(#s1) > g{b:c}@media (x){:where(#s1) a{b:c}}@keyframes s1-k{to{opacity:0}}', 's1' ), 'the re-read accepts scoped rules, nested @media and prefixed keyframes' );
+$no_style = sgs_svg_scope_instance( $svg( '<style>@font-face{font-family:x}</style><rect width="1" height="1"/>' ), 'sgs-logo-svg-9' );
+ok( false === strpos( $no_style, '<style' ) && false !== strpos( $no_style, '<rect' ), 'a <style> that scopes to nothing is removed', $no_style );
+
 // ── Dark mode and colour treatment reach the inline logo ──
 $scss = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/responsive-logo/style.scss' );
 ok( 1 === preg_match( "/data-theme='dark'[^}]*\.sgs-responsive-logo__image--desktop \{\s*display: none;\s*\}\s*\.sgs-responsive-logo__svg--inline \{\s*visibility: hidden;/", $scss ), 'MUST FAIL: the inline logo hides under the dark logo in dark mode' );
