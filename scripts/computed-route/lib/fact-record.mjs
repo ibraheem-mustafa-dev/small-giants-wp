@@ -26,7 +26,7 @@ import { openSandbox } from './intake-sandbox.mjs';
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '..', '..', '..' );
 export const FACTS_SCHEMA = path.join( HERE, '..', 'data', 'facts.schema.json' );
-export const FACTS_SCHEMA_VERSION = '4';
+export const FACTS_SCHEMA_VERSION = '5';
 
 // Where a client's fact record lives.
 export const factsFile = ( repo, client ) => path.join( repo, 'sites', client, 'build', 'intake', 'facts.json' );
