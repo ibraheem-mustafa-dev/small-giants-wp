@@ -95,7 +95,8 @@
 					],
 					"prefix": "",
 					"attrMap": {
-						"css:max-width": "maxWidth"
+						"css:max-width": "maxWidth",
+						"css:max-height": "maxHeight"
 					},
 					"_note": "The <img> element. Declaring it gives the slot its true owner via the manifest-first precedence (css_property = manifest_css_property or emission_css_property); without it, its attrs fall to the classifier's emission heuristic and FOUR of them (width, alt, logoSwitchCustomPx, logoDecorative) are each assigned css_property='max-width' — two of which are not CSS at all (`alt` is a string, `logoDecorative` a boolean). The only real owner of max-width is the `maxWidth` tier object (render.php). `maxHeight` (a tier object) paints `max-height` onto `.sgs-responsive-logo__image--desktop` and `.sgs-responsive-logo__dark` with `width:auto`, so the logo image renders no taller than the value at that tier and its width follows from its aspect ratio. The empty-string prefix is not the cause of that over-match: the over-assignment is in the classifier's emission heuristic, not this manifest."
 				},
