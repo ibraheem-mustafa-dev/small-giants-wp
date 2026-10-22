@@ -57,6 +57,11 @@ $refused = array(
 	'escaped u\72l( in <style>'              => $svg( '<style>.a{fill:u\72l(https://evil.test/x)}</style>' ),
 	'not well-formed XML'                    => '<svg ' . NS . '><path d="M0 0"></svg>',
 	'undefined entity'                       => $svg( '<text>&nbsp;</text>' ),
+	'@import split by an XML comment'        => $svg( '<style>@im<!---->port "https://evil.test/x.css";</style>' ),
+	'url( split by a CDATA section'          => $svg( '<style>.a{fill:u<![CDATA[rl(]]>http://x)}</style>' ),
+	'@import split by an element'            => $svg( '<style>@im<g/>port "x.css";</style>' ),
+	'processing instruction in <style>'      => $svg( '<style>.a{}<?x y?></style>' ),
+	'undeclared xlink: prefix, outside href' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><use xlink:href="https://evil.test/s.svg#a"/><g xml:space="bogus"/></svg>',
 );
 foreach ( $refused as $label => $markup ) {
 	$r = sgs_svg_sanitise_document( $markup );
@@ -83,6 +88,48 @@ foreach ( array( 'viewBox="0 0 10 10"', '<animate attributeName="opacity"', 'rep
 	ok( false !== strpos( $out, $needle ), "kept: $needle", $out );
 }
 ok( '' !== sgs_svg_sanitise_document( $svg( '<image href="data:image/png;base64,AAAA"/>' ) )['svg'], 'a raster data:image href is kept' );
+
+// ── Plain wp_kses callers: the shared list carries no screened-only element, so wp_kses strips <set attributeName="href"> ──
+$shared   = sgs_svg_kses_allowed_tags();
+$document = sgs_svg_document_allowed_tags();
+foreach ( array( 'set', 'animatetransform', 'animatemotion', 'mpath', 'meshgradient', 'meshrow', 'meshpatch', 'style' ) as $tag ) {
+	ok( ! isset( $shared[ $tag ] ), "MUST FAIL: the shared wp_kses list has no <$tag>" );
+	ok( isset( $document[ $tag ] ), "the whole-file list keeps <$tag>" );
+}
+ok( empty( $shared['stop']['path'] ) && ! empty( $document['stop']['path'] ), 'a mesh <stop path> is whole-file only' );
+ok( ! empty( $shared['animate']['attributename'] ) && empty( $shared['animate']['keysplines'] ), 'the shared list keeps its narrow <animate>' );
+
+// ── A <style> split into text nodes is screened as one string ──
+$split = new DOMDocument();
+$split->loadXML( $svg( '<style></style>' ) );
+$style_el = $split->getElementsByTagName( 'style' )->item( 0 );
+$style_el->appendChild( $split->createTextNode( '@im' ) );
+$style_el->appendChild( $split->createTextNode( 'port "x.css";' ) );
+$scopy = new DOMDocument();
+$sroot = $scopy->appendChild( $scopy->createElementNS( SGS_SVG_NS, 'svg' ) );
+ok( '' !== sgs_svg_document_copy( $split->documentElement, $sroot, $scopy, sgs_svg_document_allowed_tags() ), 'MUST FAIL: @import split across text nodes in the copy step' );
+$parent = new DOMDocument();
+$parent->loadXML( $svg( '<style>.a{fill:red}</style>' ) );
+$root_el = $parent->documentElement;
+$copied  = new DOMDocument();
+$croot   = $copied->appendChild( $copied->createElementNS( SGS_SVG_NS, 'svg' ) );
+$sstyle  = $parent->createElementNS( SGS_SVG_NS, 'style' );
+$sstyle->appendChild( $parent->createTextNode( 'u' ) );
+$sstyle->appendChild( $parent->createCDATASection( 'rl(http://x)' ) );
+$root_el->appendChild( $sstyle );
+ok( '' !== sgs_svg_document_copy( $root_el, $croot, $copied, sgs_svg_document_allowed_tags() ), 'MUST FAIL: url( split across a text node and a CDATA node in the copy step' );
+$r = sgs_svg_sanitise_document( $svg( '<style>.a{fill:red}</style><g xml:space="bogus"/>' ) );
+ok( '' !== $r['svg'], 'a parser warning alone does not refuse the file', $r['error'] );
+
+// ── Upload: the refusal reason the media uploader shows as HTML is escaped ──
+function add_filter( ...$a ) { return true; }
+function esc_html( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES, 'UTF-8' ); }
+require_once dirname( __DIR__, 2 ) . '/includes/svg-upload.php';
+$tmp = tempnam( sys_get_temp_dir(), 'sgs' );
+file_put_contents( $tmp, $svg( '<image href="https://evil.test/&lt;img src=x onerror=alert(1)&gt;"/>' ) );
+$up = sgs_svg_upload_prefilter( array( 'name' => 'a.svg', 'tmp_name' => $tmp ) );
+ok( isset( $up['error'] ) && false === strpos( $up['error'], '<img' ) && false !== strpos( $up['error'], '&lt;img' ), 'MUST FAIL: the upload refusal reason is HTML-escaped', $up['error'] ?? '' );
+unlink( $tmp );
 
 // ── Render: the logo's inline option through the real render.php ──
 $dir  = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'sgs-svg-inline-' . getmypid();

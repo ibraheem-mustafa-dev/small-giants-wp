@@ -12,10 +12,14 @@
  * namespace other than editor metadata; <foreignObject>; any on… attribute; an animation element whose
  * attributeName targets a link (href, xlink:href, …:href) or an on… attribute; an href, src, data, action or
  * formaction that is not a #fragment or a raster data:image; a CSS url() (in any attribute or a <style> element)
- * that is not a #fragment or a raster data:image; a CSS @import; javascript: or vbscript: anywhere.
+ * that is not a #fragment or a raster data:image; a CSS @import; javascript: or vbscript: anywhere; a comment,
+ * processing instruction or element inside a <style> element. A <style> element's text and CDATA children are joined
+ * and screened as one string, and the rebuilt file's <style> text is screened again, so a construct split across
+ * nodes is caught. Any parser message above a warning refuses the file (an undeclared namespace prefix included), and
+ * a link attribute is matched by the name after its last colon.
  *
  * Stripped silently: <script> (a mesh-gradient polyfill in editor exports), editor metadata elements and attributes
- * (Inkscape, Sodipodi, RDF and the rest), comments, processing instructions, a plain DOCTYPE with no entity
+ * (Inkscape, Sodipodi, RDF and the rest), comments and processing instructions outside <style>, a plain DOCTYPE with no entity
  * declarations, elements and attributes the allowlist does not name.
  *
  * @package SGS\Blocks
@@ -31,18 +35,59 @@ defined( 'SGS_XML_NS' ) || define( 'SGS_XML_NS', 'http://www.w3.org/XML/1998/nam
 
 if ( ! function_exists( 'sgs_svg_document_allowed_tags' ) ) {
 	/**
-	 * The whole-file allowlist: the shared inline list plus the <style> element. The style element is here and not in
-	 * sgs_svg_kses_allowed_tags() because only this sanitiser screens the CSS inside it (url(), @import).
+	 * The whole-file allowlist: the shared inline list plus <style>, the SMIL animation elements (animate's full
+	 * attribute set, set, animateTransform, animateMotion, mpath) and the mesh gradients. They are here and not in
+	 * sgs_svg_kses_allowed_tags() because only this sanitiser screens the CSS inside <style> (url(), @import), every
+	 * animation's attributeName and every link; a plain wp_kses caller screens none of them.
 	 *
 	 * @return array<string, array<string, bool>>
 	 */
 	function sgs_svg_document_allowed_tags(): array {
-		$tags          = sgs_svg_kses_allowed_tags();
-		$tags['style'] = array(
+		$tags      = sgs_svg_kses_allowed_tags();
+		$core      = $tags['g'];
+		$animation = array_fill_keys(
+			array( 'id', 'class', 'attributename', 'attributetype', 'values', 'from', 'to', 'by', 'dur', 'begin', 'end', 'repeatcount', 'repeatdur', 'fill', 'calcmode', 'keytimes', 'keysplines', 'keypoints', 'additive', 'accumulate', 'restart', 'min', 'max' ),
+			true
+		);
+
+		$tags['style']            = array(
 			'id'    => true,
 			'type'  => true,
 			'media' => true,
 		);
+		$tags['animate']          = $animation;
+		$tags['set']              = $animation;
+		$tags['animatetransform'] = array_merge( $animation, array( 'type' => true ) );
+		$tags['animatemotion']    = array_merge(
+			$animation,
+			array(
+				'path'   => true,
+				'rotate' => true,
+				'origin' => true,
+			)
+		);
+		// An <animateMotion>'s path by reference: only a #fragment survives sgs_svg_attribute_problem().
+		$tags['mpath'] = array(
+			'id'         => true,
+			'href'       => true,
+			'xlink:href' => true,
+		);
+		// Mesh gradients (SVG 2, Inkscape exports). Each patch's <stop> carries its edge in `path`.
+		$tags['meshgradient']  = array_merge(
+			$core,
+			array(
+				'x'                 => true,
+				'y'                 => true,
+				'type'              => true,
+				'gradientunits'     => true,
+				'gradienttransform' => true,
+				'href'              => true,
+				'xlink:href'        => true,
+			)
+		);
+		$tags['meshrow']       = $core;
+		$tags['meshpatch']     = $core;
+		$tags['stop']['path']  = true;
 		return $tags;
 	}
 }
@@ -128,6 +173,8 @@ if ( ! function_exists( 'sgs_svg_attribute_problem' ) ) {
 	 */
 	function sgs_svg_attribute_problem( string $element, DOMAttr $attr ): string {
 		$local = strtolower( (string) $attr->localName );
+		$colon = strrpos( $local, ':' );
+		$local = false === $colon ? $local : substr( $local, $colon + 1 );
 		$value = (string) $attr->value;
 		if ( 0 === strpos( $local, 'on' ) ) {
 			return __( 'holds an on…= event attribute', 'sgs-blocks' );
@@ -168,13 +215,30 @@ if ( ! function_exists( 'sgs_svg_document_copy' ) ) {
 		);
 		$text_holders = array( 'text', 'tspan', 'textpath', 'title', 'desc', 'style' );
 		$holder       = strtolower( (string) $target->localName );
+		if ( 'style' === $holder ) {
+			$css = '';
+			foreach ( $source->childNodes as $child ) {
+				if ( XML_TEXT_NODE !== $child->nodeType && XML_CDATA_SECTION_NODE !== $child->nodeType ) {
+					return __( 'holds a comment, processing instruction or element inside a <style> element', 'sgs-blocks' );
+				}
+				$css .= (string) $child->nodeValue;
+			}
+			$problem = sgs_svg_css_problem( $css );
+			if ( '' !== $problem ) {
+				return $problem;
+			}
+			if ( '' !== $css ) {
+				$target->appendChild( $out->createTextNode( $css ) );
+			}
+			return '';
+		}
 		foreach ( $source->childNodes as $child ) {
 			if ( XML_TEXT_NODE === $child->nodeType || XML_CDATA_SECTION_NODE === $child->nodeType ) {
 				if ( ! in_array( $holder, $text_holders, true ) ) {
 					continue;
 				}
 				$text    = (string) $child->nodeValue;
-				$problem = 'style' === $holder ? sgs_svg_css_problem( $text ) : sgs_svg_script_url_problem( $text );
+				$problem = sgs_svg_script_url_problem( $text );
 				if ( '' !== $problem ) {
 					return $problem;
 				}
@@ -260,10 +324,16 @@ if ( ! function_exists( 'sgs_svg_sanitise_document' ) ) {
 		$doc       = new DOMDocument();
 		$previous  = libxml_use_internal_errors( true );
 		$parsed    = $doc->loadXML( $markup, LIBXML_NONET );
-		$xml_error = libxml_get_last_error();
+		$xml_error = null;
+		foreach ( libxml_get_errors() as $message ) {
+			if ( LIBXML_ERR_WARNING < $message->level ) {
+				$xml_error = $message;
+				break;
+			}
+		}
 		libxml_clear_errors();
 		libxml_use_internal_errors( $previous );
-		if ( ! $parsed || ( $xml_error && LIBXML_ERR_WARNING < $xml_error->level ) ) {
+		if ( ! $parsed || $xml_error ) {
 			$detail = $xml_error ? trim( (string) $xml_error->message ) : '';
 			/* translators: %s: the parser's message. */
 			return $refuse( sprintf( __( 'is not well-formed XML (%s)', 'sgs-blocks' ), substr( $detail, 0, 80 ) ) );
@@ -305,6 +375,12 @@ if ( ! function_exists( 'sgs_svg_sanitise_document' ) ) {
 			return $refuse( $problem );
 		}
 
+		foreach ( $out->getElementsByTagNameNS( SGS_SVG_NS, 'style' ) as $style ) {
+			$problem = sgs_svg_css_problem( (string) $style->textContent );
+			if ( '' !== $problem ) {
+				return $refuse( $problem );
+			}
+		}
 		$svg = (string) $out->saveXML( $new_root );
 		// The end state never holds what the screen refuses on the raw text.
 		if ( preg_match( '/javascript\s*:|@import\b/i', $svg ) || 0 !== strpos( $svg, '<svg' ) ) {
