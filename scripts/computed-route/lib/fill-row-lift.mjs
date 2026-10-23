@@ -57,19 +57,25 @@ function readCopy( st, rec, ref, cal, target, path, snaps, fillElement ) {
 	return { values, props, unmapped: sub.out.unmapped };
 }
 
-// One copy's reading of one element across every slot the block's settings of that element sit at: a value is taken
-// from the read at the slot its setting is calibrated at, and a row no setting at another slot could hold is kept once.
+// The element a calibrated slot sits on: a pseudo-element layer (`::before`, `::after`) is painted on its host element,
+// and a draft element is read as that host, never as the layer (lib/fill-skeleton.mjs refuses a pseudo slot for the same
+// reason).
+const hostOf = ( slot ) => String( slot ?? '' ).replace( /::(?:before|after)$/, '' );
+
+// One copy's reading of one element across every element the block's settings of that element sit at: a value is taken
+// from the read at the element its setting is calibrated on; a row no setting at another element could hold is kept
+// (liftChildren raises each such row once).
 function readElement( st, rec, ref, cal, element, target, snaps, fillElement ) {
-	const calibrated = elementSlots( st.db, rec.name, cal )[ element ];
+	const calibrated = ( elementSlots( st.db, rec.name, cal )[ element ] || [] ).map( hostOf ).filter( ( s, i, all ) => all.findIndex( ( x ) => LOOSE( x ) === LOOSE( s ) ) === i );
 	// An element none of the block's settings is calibrated on is still read where the draft element sits, so what it paints is raised.
-	const slots = calibrated?.length ? calibrated : [ target.slot ];
+	const slots = calibrated.length ? calibrated : [ target.slot ];
 	const out = { values: {}, props: {}, unmapped: [] };
 	for ( const slot of slots ) {
 		const r = readCopy( st, rec, ref, cal, target, slot, snaps, fillElement );
-		const elsewhere = new Set( attrsFor( st.db, rec.name ).filter( ( a ) => a.css_element === element && ! a.css_state && undefined !== cal.settings?.[ a.attr_name ]?.slot && LOOSE( cal.settings[ a.attr_name ].slot ) !== LOOSE( slot ) ).flatMap( ( a ) => String( a.css_property ).split( ',' ) ) );
+		const elsewhere = new Set( attrsFor( st.db, rec.name ).filter( ( a ) => a.css_element === element && ! a.css_state && undefined !== cal.settings?.[ a.attr_name ]?.slot && LOOSE( hostOf( cal.settings[ a.attr_name ].slot ) ) !== LOOSE( slot ) ).flatMap( ( a ) => String( a.css_property ).split( ',' ) ) );
 		for ( const [ attr, value ] of Object.entries( r.values ) ) {
 			const home = cal.settings?.[ attr ]?.slot;
-			if ( ( undefined === home || LOOSE( home ) === LOOSE( slot ) ) && ! ( attr in out.values ) ) {
+			if ( ( undefined === home || LOOSE( hostOf( home ) ) === LOOSE( slot ) ) && ! ( attr in out.values ) ) {
 				out.values[ attr ] = value;
 				out.props[ attr ] = r.props[ attr ];
 			}

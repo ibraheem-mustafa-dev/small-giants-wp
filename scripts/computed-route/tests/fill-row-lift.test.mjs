@@ -129,3 +129,16 @@ test( 'MUST FAIL: settings of one element calibrated at different slots are each
 	assert.ok( undefined !== tree[ 0 ].attributes.childIconBackground, 'the colour sitting one element deeper is written too' );
 } );
 
+
+test( 'MUST FAIL: a draft element is never read at a pseudo-element slot, and a row is raised once however many slots read it', () => {
+	// The icon's gradient border is calibrated on its shape's ::before (as the real sgs/icon cache has it); the icons
+	// disagree on their background, so each is read against the icon's own calibration.
+	// A second shape setting calibrated on the icon root makes the shape read at two elements: its rows are raised once.
+	const iconCal = { ...ICON_CAL, settings: { ...ICON_CAL.settings, borderColourGradient: at( '.sgs-icon__shape::before', 'border-color-gradient' ), borderRadius: at( '', 'border-radius' ) } };
+	const colour = { 1: 'rgb(10, 102, 194)', 2: 'rgb(24, 119, 242)', 3: 'rgb(255, 255, 255)' };
+	const { out } = run( { iconCal, linkOf: ( i ) => ( { ...LINK, 'background-color': colour[ i ] } ) } );
+	const pseudo = out.unmapped.filter( ( u ) => /::(before|after)$/.test( u.slot || '' ) );
+	assert.deepEqual( pseudo, [], 'no row is read against a ::before or ::after slot' );
+	const keys = out.unmapped.map( ( u ) => `${ u.node }|${ u.property }|${ u.state || '' }|${ u.value }` );
+	assert.equal( new Set( keys ).size, keys.length, 'each row once' );
+} );

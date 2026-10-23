@@ -7,8 +7,8 @@
 	},
 	{
 		"file": "lib/fill-row-lift.mjs",
-		"find": "calibrated?.length ? calibrated : [ target.slot ]",
-		"replace": "calibrated?.length ? calibrated.slice( 0, 1 ) : [ target.slot ]",
+		"find": "const slots = calibrated.length ? calibrated : [ target.slot ];",
+		"replace": "const slots = calibrated.length ? calibrated.slice( 0, 1 ) : [ target.slot ];",
 		"why": "only the first slot of an element would be read, losing the settings calibrated elsewhere"
 	},
 	{
@@ -19,8 +19,8 @@
 	},
 	{
 		"file": "lib/fill-row-lift.mjs",
-		"find": "if ( own && held.has( keyOf( own ) ) ) {",
-		"replace": "if ( false ) {",
+		"find": "const skipped = ( attr ) => childAttr.has( attr ) && held.has( keyOf( childAttr.get( attr ) ) );",
+		"replace": "const skipped = ( attr ) => false;",
 		"why": "an icon would carry what the row already holds"
 	},
 	{
@@ -31,8 +31,8 @@
 	},
 	{
 		"file": "lib/fill-row-lift.mjs",
-		"find": "calibrated?.length ? calibrated : [ target.slot ]",
-		"replace": "calibrated?.length ? calibrated : []",
+		"find": "const slots = calibrated.length ? calibrated : [ target.slot ];",
+		"replace": "const slots = calibrated.length ? calibrated : [];",
 		"why": "an element no setting is calibrated on would be silent"
 	},
 	{
@@ -40,5 +40,11 @@
 		"find": "! [ ...heldProps ].some( ( h ) => paints( h, x.property ) )",
 		"replace": "true",
 		"why": "longhand rows of a property the row holds would be raised on the icon"
+	},
+	{
+		"file": "lib/fill-row-lift.mjs",
+		"find": "const hostOf = ( slot ) => String( slot ?? '' ).replace( /::(?:before|after)$/, '' );",
+		"replace": "const hostOf = ( slot ) => String( slot ?? '' );",
+		"why": "a draft element would be read as a ::before layer and every property it paints raised there"
 	}
 ]
