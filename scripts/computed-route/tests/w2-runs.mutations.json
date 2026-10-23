@@ -1,0 +1,8 @@
+[
+	{ "file": "lib/gate-probes.mjs", "find": "if ( run.refused ) {", "replace": "if ( false ) {", "why": "a refused run is evidence" },
+	{ "file": "lib/gate-probes.mjs", "find": "if ( run.untriggered ) {", "replace": "if ( run.untriggered?.draft && run.untriggered?.live ) {", "why": "a run untriggered on one side is evidence" },
+	{ "file": "lib/gate-probes.mjs", "find": "if ( run.untriggered ) {", "replace": "if ( false ) {", "why": "an untriggered run is evidence" },
+	{ "file": "lib/draft-branches.mjs", "find": ".filter( ( r ) => ! r.refused && ! r.untriggered )", "replace": ".filter( ( r ) => ! r.untriggered )", "why": "a refused run counts as walked" },
+	{ "file": "lib/draft-branches.mjs", "find": ".filter( ( r ) => ! r.refused && ! r.untriggered )", "replace": ".filter( ( r ) => ! r.refused )", "why": "an untriggered run counts as walked" },
+	{ "file": "lib/draft-branches.mjs", "find": ".filter( ( r ) => ! r.refused && ! r.untriggered )", "replace": ".filter( ( r ) => ! r.refused && ! r.untriggered && 1440 === r.width )", "why": "a state measured at another width does not count" }
+]

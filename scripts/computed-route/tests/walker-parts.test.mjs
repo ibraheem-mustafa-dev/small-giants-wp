@@ -101,13 +101,13 @@ const LOOK = { color: 'rgb(0, 0, 0)', 'background-color': 'rgba(0, 0, 0, 0)', 'b
 const part = ( name, x, hover = {}, rest = {}, extra = {} ) => ( { name, root: false, pos: { x, y: 0.5 }, box: { w: 40, h: 20 }, rest: { ...LOOK, ...rest }, hover: { ...LOOK, ...rest, ...hover }, layers: { rest: [], hover: [] }, effects: { hover: [], press: [] }, ...extra } );
 
 test( 'MUST FAIL (review 7): two parts of one name listed in another order pair by where they sit', () => {
-	const d = [ part( 'home', 0.1, { color: 'rgb(200, 0, 0)' } ), part( 'home#1', 0.9, { color: 'rgb(0, 0, 200)' } ) ];
-	const l = [ part( 'home', 0.9, { color: 'rgb(0, 0, 200)' } ), part( 'home#1', 0.1, { color: 'rgb(200, 0, 0)' } ) ];
+	const d = [ part( 'home', 0.1, { color: 'rgb(200, 0, 0)' } ), part( 'home', 0.9, { color: 'rgb(0, 0, 200)' }, {}, { dup: 1 } ) ];
+	const l = [ part( 'home', 0.9, { color: 'rgb(0, 0, 200)' } ), part( 'home', 0.1, { color: 'rgb(200, 0, 0)' }, {}, { dup: 1 } ) ];
 	assert.deepEqual( compareParts( d, l, TOL ), [] );
 } );
 
 test( 'MUST FAIL (review 7): a part on one side only is a presence row', () => {
-	const r = compareParts( [ part( 'home', 0.1 ), part( 'home#1', 0.9 ) ], [ part( 'home', 0.1 ) ], TOL );
+	const r = compareParts( [ part( 'home', 0.1 ), part( 'home', 0.9, {}, {}, { dup: 1 } ) ], [ part( 'home', 0.1 ) ], TOL );
 	assert.deepEqual( r.map( ( x ) => `${ x.key } ${ x.draft } ${ x.live }` ), [ 'home#1 presence present missing' ] );
 	assert.deepEqual( compareParts( [ part( 'home', 0.1 ) ], [ part( 'home', 0.1 ), part( 'shop', 0.5 ) ], TOL ).map( ( x ) => `${ x.key } ${ x.draft } ${ x.live }` ), [ 'shop presence missing present' ] );
 } );

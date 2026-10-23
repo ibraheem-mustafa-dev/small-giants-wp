@@ -63,7 +63,8 @@ async function installedVersions() {
 export async function defaultProbes( { s, client, db, surface = null, tmp = fs.mkdtempSync( path.join( os.tmpdir(), 'gate-chain-' ) ) } ) {
 	const buildDir = path.join( REPO, 'sites', client, 'build' );
 	const walkerFile = path.join( buildDir, s.walkerFull || s.walker );
-	// FR-48-12: a walker config that fails its lint is never walked; the chain reads the refusal as W-walker with the fault.
+	// FR-48-12: a walker config that fails its lint for the state a walk covers is never walked; the chain reads the refusal
+	// as W-walker with the fault.
 	const lintGuard = walkLintGuard( { surface: surface ?? path.basename( s.walkerFull || s.walker ), walker: walkerFile, root: REPO, states: s.walkStates || null } );
 	// A config that will not load or names no live url is the lint's to report (walkerFile does not load, exports no object), never a crash here.
 	const cfg = await import( pathToFileURL( walkerFile ).href ).then( ( m ) => m.default, () => null );
@@ -72,7 +73,7 @@ export async function defaultProbes( { s, client, db, surface = null, tmp = fs.m
 	return createProbes( {
 		origin, url, db, states: s.states,
 		walk: async ( row ) => {
-			await lintGuard();
+			await lintGuard( row.state );
 			const served = await serveDraft( path.join( REPO, s.draftDir ), { index: s.draftIndex || null } );
 			const out = path.join( tmp, `walk-${ row.state }-${ row.width }` );
 			try {

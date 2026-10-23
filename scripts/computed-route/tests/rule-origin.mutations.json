@@ -1,0 +1,6 @@
+[
+	{"file": "lib/rule-origin.mjs", "find": "|core-block-supports|sgs-(?!custom-css-|blocks-collected(?:-css)?$))/;", "replace": "|core-block-supports|sgs-theme|sgs-blocks-style)/;", "why": "the invented ids again: a real SGS handle is no owner"},
+	{"file": "lib/rule-origin.mjs", "find": "|core-block-supports|sgs-(?!custom-css-|blocks-collected(?:-css)?$))/;", "replace": "|core-block-supports|sgs-)/;", "why": "the collected sheet counts as SGS-owned (lifted residuals lost)"},
+	{"file": "lib/rule-origin.mjs", "find": "|core-block-supports|sgs-(?!custom-css-|blocks-collected(?:-css)?$))/;", "replace": "|core-block-supports|sgs-(?!custom-css-|blocks-collected$))/;", "why": "the collected file link counts as SGS-owned"},
+	{"file": "lib/rule-origin.mjs", "find": "if ( /^sgs-custom-css-/.test( owner ) ) {", "replace": "if ( false ) {", "why": "the residual element is not recognised by its id"}
+]

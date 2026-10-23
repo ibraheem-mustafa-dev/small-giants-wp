@@ -75,10 +75,15 @@ test( 'control (c): a link in the same place with another destination is two pre
 	assert.deepEqual( keys( rows ), [ 'facebook presence | present | missing', 'twitter presence | missing | present' ] );
 } );
 
-test( 'parts of one name still pair by name first, and two parts of one name by where they sit', () => {
-	const d = [ part( 'home', 0.1, { href: 'a.com/x' } ), part( 'home#1', 0.9 ) ];
-	const l = [ part( 'home', 0.9 ), part( 'home#1', 0.1, { href: 'b.com/y' } ) ];
-	assert.deepEqual( compareParts( d, l, TOL ), [] );
+test( 'parts of one name still pair by name first, two parts of one name by where they sit, never across two destinations that differ', () => {
+	const d = [ part( 'home', 0.1, { href: 'a.com/x' } ), part( 'home', 0.9, { dup: 1 } ) ];
+	const l = [ part( 'home', 0.9 ), part( 'home', 0.1, { href: 'b.com/y', dup: 1 } ) ];
+	assert.deepEqual( keys( compareParts( d, l, TOL ) ), [ 'home presence | present | missing', 'home#1 presence | missing | present' ] );
+	const same = [ part( 'home', 0.9 ), part( 'home', 0.1, { href: 'a.com/x', dup: 1 } ) ];
+	assert.deepEqual( compareParts( d, same, TOL ), [] );
+	// One name pairs wherever it sits; a destination on one side alone pairs nothing far away.
+	assert.deepEqual( compareParts( [ part( 'home', 0.1 ) ], [ part( 'home', 0.9 ) ], TOL ), [] );
+	assert.deepEqual( keys( compareParts( [ part( 'instagram', 0.1, { href: 'instagram.com/x' } ) ], [ part( 'follow us', 0.9 ) ], TOL ) ), [ 'instagram presence | present | missing', 'follow us presence | missing | present' ] );
 } );
 
 test( 'hrefKey: only a destination both sides can name alike is a key', () => {

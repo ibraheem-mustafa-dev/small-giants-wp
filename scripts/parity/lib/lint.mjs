@@ -49,6 +49,11 @@ export function lintConfig( cfg, handScope = null, onlyStates = null ) {
 			problems.push( `--states names unknown state "${ s }"` );
 		}
 	}
+	for ( const st of ( cfg.states || [] ).filter( ( x ) => undefined !== x.widths ) ) {
+		if ( ! Array.isArray( st.widths ) || ! st.widths.length || ! st.widths.every( Number.isInteger ) ) {
+			problems.push( `state "${ st.name }" widths must be a list of widths in px (the widths it is run at)` );
+		}
+	}
 	for ( const [ i, st ] of ( cfg.states || [] ).entries() ) {
 		if ( onlyStates && ! onlyStates.includes( st.name ) ) {
 			continue;

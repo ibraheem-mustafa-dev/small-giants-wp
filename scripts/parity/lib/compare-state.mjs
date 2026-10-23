@@ -10,6 +10,7 @@ import { compareLinks } from './links.mjs';
 import { stampRefs, dropUnmatched, markMispaired } from './ref-trace.mjs';
 import { judgeDivergence } from './divergences.mjs';
 import { partEffects } from './parts.mjs';
+import { stampDeclaredPath } from './state-passes.mjs';
 
 // Where each pair sits in the page's flow (ref-traced walks): pairs with no configured anchor, in draft reading
 // order, are measured from the pair before them (top to top), and the first from the top of <main>. A shift is then
@@ -80,6 +81,7 @@ export function compareState( run, d, l, { state, width, cfg, accept, divergence
 		const { diffs: kept, unmatched: dropped } = dropUnmatched( all, unmatched );
 		// Every effect layer each side's parts showed on hover and press, matched or not (GAP-CHECKLIST.md section 29).
 		const effects = { draft: partEffects( d.snap[ p.name ].parts ), live: partEffects( l.snap[ p.name ].parts ) };
+		stampDeclaredPath( d.snap[ p.name ], l.snap[ p.name ] );
 		run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, markMispaired( kept, mispaired, l.snap[ p.name ].trace?.ref ) ), ...( dropped.length ? { unmatched: dropped } : {} ), ...( effects.draft || effects.live ? { effects } : {} ) };
 	}
 	// A layout row reached another way holds only while every pair inside it is settled (compare.mjs::holdEquivalent);

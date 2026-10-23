@@ -20,6 +20,21 @@ export async function declaredIn( cdp, snapOf, finder, state, RESOLVE, keepDocum
 		return;
 	}
 	snapOf.declaredIn = { ...( snapOf.declaredIn || {} ), [ state ]: await declaredValues( cdp, finder, RESOLVE, DECLARED_PROPS, { keepDocument } ) };
+	snapOf.declaredPath ??= declaredAt( snapOf );
+}
+
+// The element the declarations (snap.declared, snap.declaredIn) are read on is the pair's element; its path in the rows'
+// path space (ref-trace.mjs: the live trace's `path`) is snap.declaredPath, so G2 (computed-route
+// lib/draft-identity.mjs::declaredRead) answers only a row on that element. A side with no trace (the draft) has none
+// until stampDeclaredPath gives it the live pair element's path, the element it is paired with.
+export const declaredAt = ( snapOf ) => ( 'string' === typeof snapOf?.trace?.path ? snapOf.trace.path : null );
+export function stampDeclaredPath( d, l ) {
+	const at = declaredAt( l );
+	for ( const s of [ d, l ] ) {
+		if ( s && ! s.missing && ( s.declared || s.declaredIn ) && null == s.declaredPath && null !== at ) {
+			s.declaredPath = at;
+		}
+	}
 }
 
 // The read options of one pair's reads (collect.mjs::collectPair, ::hoverStyles): the state's other pairs bound the paint

@@ -1,0 +1,14 @@
+[
+	{ "file": "lib/paint.mjs", "find": "if ( ! n.textContent.trim() || srOnly( n.parentElement ) || inner.some( ( o ) => o.contains( n ) ) ) {", "replace": "if ( ! n.textContent.trim() || srOnly( n.parentElement ) || inner.some( ( o ) => o.contains( n ) ) || ( inner.length && ! laidOutHere( n.parentElement ) ) ) {", "why": "nested-block text is dropped again (the wave-2 rule)" },
+	{ "file": "lib/paint.mjs", "find": "nested: inner.length > 0 && ! laidOutHere( carrier ) }", "replace": "nested: false }", "why": "nested text is never flagged (nine font rows on N11)" },
+	{ "file": "lib/paint.mjs", "find": "nested: inner.length > 0 && ! laidOutHere( carrier ) }", "replace": "nested: inner.length > 0 }", "why": "own laid-out text flagged nested" },
+	{ "file": "lib/collect.mjs", "find": "textFrom: textAt ? ( textAt.nested ? 'nested' : 'own' ) : 'none'", "replace": "textFrom: textAt ? 'own' : 'none'", "why": "the snapshot never says nested" },
+	{ "file": "lib/collect.mjs", "find": "textFrom: textAt ? ( textAt.nested ? 'nested' : 'own' ) : 'none'", "replace": "textFrom: textAt ? ( textAt.nested ? 'nested' : 'own' ) : 'own'", "why": "no text recorded as own" },
+	{ "file": "lib/compare.mjs", "find": "froms.includes( 'nested' ) && froms.includes( 'none' ) &&", "replace": "froms.includes( 'none' ) &&", "why": "own text against none collapses to presence" },
+	{ "file": "lib/compare.mjs", "find": "froms.includes( 'nested' ) && froms.includes( 'none' ) &&", "replace": "froms.includes( 'nested' ) &&", "why": "nested text on both sides collapses to presence" },
+	{ "file": "lib/compare.mjs", "find": "add( 'style', 'text presence', 'none' === d.textFrom ? 'none' : 'text',", "replace": "add( 'style', 'text presence', 'text',", "why": "the draft side is always text" },
+	{ "file": "lib/compare.mjs", "find": "if ( 'icon-colour' === p ? ! mixed : ( loops.has( p ) || ( ( mixed || textAlone ) && GLYPH_TEXT.has( p ) )", "replace": "if ( 'icon-colour' === p ? ! mixed : ( loops.has( p ) || ( mixed && GLYPH_TEXT.has( p ) )", "why": "font rows kept beside the presence row" },
+	{ "file": "lib/compare.mjs", "find": "if ( loops.has( p ) || ( ( mixed || textAlone ) && GLYPH_TEXT.has( p ) ) || borderColourIrrelevant(", "replace": "if ( loops.has( p ) || ( mixed && GLYPH_TEXT.has( p ) ) || borderColourIrrelevant(", "why": "a hover colour row beside the presence row" },
+	{ "file": "lib/auto-compare.mjs", "find": "'ls', 'lh', 'c',", "replace": "'ls', 'c',", "why": "the auto check ignores line-height" },
+	{ "file": "lib/auto-collect.mjs", "find": "lh: lineHeightOf( cs ),", "replace": "lh: cs.lineHeight,", "why": "normal is not read as pixels" }
+]

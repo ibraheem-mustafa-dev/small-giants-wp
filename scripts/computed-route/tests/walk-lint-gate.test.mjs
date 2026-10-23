@@ -29,18 +29,31 @@ const surface = ( walker ) => ( { walker: `walkers/${ walker }`, draftDir: 'no-s
 const row = ( over = {} ) => ( { ref: 'cr-ref-f-1', path: '', pair: 'head', kind: 'style', key: 'padding-top', state: 'rest', width: 1440, draft: '24px', live: '16px', ...over } );
 const DUP_FAULT = 'surface "home": walker config dup.mjs failed its lint, so nothing is built or walked:\n- pair "a" is named twice';
 
-test( 'MUST FAIL: the guard lints once and refuses every walk of a faulty config with a W-walker error carrying the fault as evidence', async () => {
+test( 'MUST FAIL: the guard refuses every walk of a faulty config with a W-walker error carrying the fault as evidence, and re-lints a refused config', async () => {
 	let runs = 0;
 	const file = path.join( build, 'walkers', 'dup.mjs' );
 	const guard = walkLintGuard( { surface: 'home', walker: file, root: repo, lint: async () => ( runs++, 'the fault' ) } );
 	for ( let n = 0; n < 2; n++ ) {
-		const e = await guard().catch( ( x ) => x );
+		const e = await guard( 'rest' ).catch( ( x ) => x );
 		assert.equal( e.gateClass, 'W-walker' );
 		assert.equal( e.message, 'the fault' );
 		assert.deepEqual( e.evidence, { file: 'sites/demo/build/walkers/dup.mjs', key: 'lint', line: 'the fault' } );
 		assert.ok( isEvidence( e.evidence ) );
 	}
-	assert.equal( runs, 1, 'the lint runs once per guard' );
+	assert.equal( runs, 2, 'a refusal is not kept: the next walk lints again' );
+	// A config fixed after a refusal is walked: the refusal was not cached.
+	let fixed = false;
+	const healing = walkLintGuard( { surface: 'home', walker: file, root: repo, lint: async () => ( fixed ? null : 'the fault' ) } );
+	assert.equal( ( await healing( 'rest' ).catch( ( x ) => x ) ).gateClass, 'W-walker' );
+	fixed = true;
+	assert.equal( await healing( 'rest' ), undefined, 'the fixed config passes' );
+	// A pass is kept per state: one lint per state, each with that state alone.
+	const seen = [];
+	const passing = walkLintGuard( { surface: 'home', walker: file, root: repo, lint: async ( s, w, states ) => ( seen.push( states ), null ) } );
+	await passing( 'rest' );
+	await passing( 'rest' );
+	await passing( 'open' );
+	assert.deepEqual( seen, [ [ 'rest' ], [ 'open' ] ] );
 	const clean = walkLintGuard( { surface: 'home', walker: file, root: repo, lint: async () => null } );
 	assert.equal( await clean(), undefined, 'a clean config resolves' );
 	assert.equal( lintRefusal( { walker: file, root: repo, fault: 'f' } ).evidence.file, 'sites/demo/build/walkers/dup.mjs' );
@@ -106,14 +119,26 @@ test( 'MUST FAIL: defaultProbes refuses a faulty config before any walk, serving
 	const m = await missing.recheck( row() ).catch( ( x ) => x );
 	assert.equal( m.gateClass, 'W-walker' );
 	assert.match( m.message, /walker config absent\.mjs failed its lint|does not exist/ );
-	// The lint reads the states the walk covers: a state with no pair is a fault only when the walk would cover it.
+	// The lint reads the state the walk covers, as the walker does (--states <row's state>): a state with no pair is a
+	// fault only for a walk of that state.
 	const narrow = await defaultProbes( { s: { ...surface( 'unscoped.mjs' ), walkStates: [ 'rest' ] }, client: 'demo', db: dbWith(), surface: 'home', tmp } );
 	assert.doesNotMatch( String( ( await narrow.recheck( row() ).catch( ( x ) => x ) ).message ), /failed its lint/ );
 	const wide = await defaultProbes( { s: surface( 'unscoped.mjs' ), client: 'demo', db: dbWith(), surface: 'home', tmp } );
-	assert.match( ( await wide.recheck( row() ).catch( ( x ) => x ) ).message, /state "open" has no pair scoped to it/ );
+	assert.match( ( await wide.recheck( row( { state: 'open' } ) ).catch( ( x ) => x ) ).message, /state "open" has no pair scoped to it/ );
 	// Control: a clean config passes the guard and reaches the walk, which then fails for its own reason (no draft folder).
 	const clean = await defaultProbes( { s: surface( 'clean.mjs' ), client: 'demo', db: dbWith(), surface: 'home', tmp } );
 	const c = await clean.recheck( row() ).catch( ( x ) => x );
 	assert.notEqual( c.gateClass, 'W-walker' );
 	assert.doesNotMatch( String( c.message ), /failed its lint/ );
+} );
+
+test( 'MUST FAIL: a lint fault in another state does not refuse a walk of this one (the walker lints the state it walks)', async () => {
+	const tmp = fs.mkdtempSync( path.join( repo, 'tmp-' ) );
+	const p = await defaultProbes( { s: surface( 'unscoped.mjs' ), client: 'demo', db: dbWith(), surface: 'home', tmp } );
+	const e = await p.recheck( row( { state: 'rest' } ) ).catch( ( x ) => x );
+	assert.notEqual( e.gateClass, 'W-walker', String( e.message ) );
+	assert.doesNotMatch( String( e.message ), /failed its lint/ );
+	// Control: the faulty state itself is still refused.
+	const o = await p.recheck( row( { state: 'open' } ) ).catch( ( x ) => x );
+	assert.equal( o.gateClass, 'W-walker' );
 } );

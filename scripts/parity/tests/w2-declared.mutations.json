@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/state-passes.mjs", "find": "if ( s && ! s.missing && ( s.declared || s.declaredIn ) && null == s.declaredPath && null !== at ) {", "replace": "if ( s && null !== at ) {", "why": "every side is stamped, read or not" },
+	{ "file": "lib/state-passes.mjs", "find": "if ( s && ! s.missing && ( s.declared || s.declaredIn ) && null == s.declaredPath && null !== at ) {", "replace": "if ( s && ! s.missing && s.declared && null == s.declaredPath && null !== at ) {", "why": "a side with only state declarations is not stamped" },
+	{ "file": "lib/state-passes.mjs", "find": "if ( s && ! s.missing && ( s.declared || s.declaredIn ) && null == s.declaredPath && null !== at ) {", "replace": "if ( s && ! s.missing && ( s.declared || s.declaredIn ) && null !== at ) {", "why": "a recorded path is overwritten" },
+	{ "file": "lib/state-passes.mjs", "find": "const at = declaredAt( l );", "replace": "const at = declaredAt( d ) ?? '';", "why": "the draft's own (absent) trace is used" },
+	{ "file": "lib/state-passes.mjs", "find": "( 'string' === typeof snapOf?.trace?.path ? snapOf.trace.path : null )", "replace": "( snapOf?.trace?.path || null )", "why": "the ref element's empty path is lost" }
+]

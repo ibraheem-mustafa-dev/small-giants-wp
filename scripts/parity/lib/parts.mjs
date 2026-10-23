@@ -33,9 +33,11 @@ export function hrefKey( raw, url, origin ) {
 
 // The interactive parts of a pair element: itself when interactive, and every shown interactive descendant that is not
 // inside an element another pair measures (`others`, that pair reads it). Stored on window.__crParts for the reads that
-// follow. Named by their words, else aria-label or title, lower-case; a repeated name gets #1, #2. Each carries `pos`, its
-// centre as fractions of the pair element's box, `box`, its size, `kind` (`link` for a[href], else `button`) and `href`, its
-// destination as hrefKey names it. in: [ finder, resolveSrc, others, hrefKeySrc ].
+// follow. Named by their words, else aria-label or title, lower-case (`worded` when the name is painted words); `dup` is a
+// repeated name's copy index (0 for the first, 1, 2 for the next), kept apart from the name so a real "#1" in a name stays
+// part of it. Each carries `pos`, its centre as fractions of the pair element's box, `box`, its size, `kind` (`link` for
+// a[href], else `button`), `href`, its destination as hrefKey names it, and `site`, a same-site link's path and query
+// (lower-case, no trailing slash; never a bare `#` or a fragment of the page itself). in: [ finder, resolveSrc, others, hrefKeySrc ].
 export function listParts( [ finder, resolveSrc, others, hrefKeySrc ] ) {
 	// eslint-disable-next-line no-new-func
 	const resolve = new Function( `return (${ resolveSrc });` )();
@@ -67,7 +69,17 @@ export function listParts( [ finder, resolveSrc, others, hrefKeySrc ] ) {
 		const k = seen.get( base ) || 0;
 		seen.set( base, k + 1 );
 		const link = p.matches( 'a[href]' );
-		return { i, name: k ? `${ base }#${ k }` : base, root: p === el, kind: link ? 'link' : 'button', href: link ? keyOf( p.getAttribute( 'href' ), p.href, location.origin ) : null, pos, box: { w: Math.round( r.width ), h: Math.round( r.height ) } };
+		const raw = link ? ( p.getAttribute( 'href' ) || '' ).trim() : '';
+		let site = null;
+		if ( link && raw && ! raw.startsWith( '#' ) && ! /^(javascript|tel|mailto):/i.test( raw ) ) {
+			try {
+				const u = new URL( p.href );
+				site = u.origin === location.origin ? ( u.pathname.replace( /\/$/, '' ) + u.search ).toLowerCase() || '/' : null;
+			} catch {
+				site = null;
+			}
+		}
+		return { i, name: base, dup: k, worded: !! words, root: p === el, kind: link ? 'link' : 'button', href: link ? keyOf( raw, p.href, location.origin ) : null, site, pos, box: { w: Math.round( r.width ), h: Math.round( r.height ) } };
 	} );
 }
 
@@ -210,7 +222,7 @@ export async function readParts( page, finder, others, RESOLVE, wait = 800 ) {
 		if ( ! at || at.unreached ) {
 			continue;
 		}
-		const rec = { name: part.name, root: part.root, kind: part.kind, href: part.href, pos: part.pos, box: part.box, rest: await styles(), layers: { rest: await page.evaluate( partLayers, [ part.i ] ) }, effects: {} };
+		const rec = { name: part.name, dup: part.dup, worded: part.worded, root: part.root, kind: part.kind, href: part.href, site: part.site, pos: part.pos, box: part.box, rest: await styles(), layers: { rest: await page.evaluate( partLayers, [ part.i ] ) }, effects: {} };
 		await page.evaluate( effectArm, [ part.i ] );
 		await page.mouse.move( at.x, at.y );
 		await page.waitForTimeout( wait );
@@ -255,20 +267,28 @@ const sameLayers = ( a = [], b = [], tol = 2 ) => a.length === b.length && a.eve
 // is at least SIZE of the other's.
 const PLACE = 0.15;
 const SIZE = 0.75;
-const baseName = ( n ) => n.replace( /#\d+$/, '' );
+// A part's label on rows and in effects: its name, with `#<dup>` for a repeated name's later copies.
+export const partLabel = ( x ) => ( x.dup ? `${ x.name }#${ x.dup }` : x.name );
+// A part's destination: another site's address, tel: or mailto: (hrefKey), else a same-site path (`site`), else null.
+const destOf = ( x ) => x.href || ( x.site ? `site:${ x.site }` : null );
+// Two parts whose destinations are both known and differ are never each other, whatever their names or places.
+const differ = ( a, b ) => !! ( destOf( a ) && destOf( b ) && destOf( a ) !== destOf( b ) );
+// A part with no painted words (an icon link): named by its aria-label or title, or `(unnamed <tag>)`.
+const wordless = ( x ) => false === x.worded || /^\(unnamed /.test( x.name );
 
-// The parts of the two sides paired, in three rounds, each over the parts the rounds before left: by name (a repeated
-// name's #n suffix aside); then by destination (hrefKey, the same on both, so links only); then by kind, place and size (within PLACE
-// and SIZE), never two parts whose destinations differ. Within a round the nearest pair (`pos`; within one name, list
-// order where either lacks it) is taken first. Returns { pairs: [[d, l]] in draft order, draftOnly, liveOnly }.
+// The parts of the two sides paired, in rounds, each over the parts the rounds before left: unnamed parts by destination
+// (an icon link's only identity); then by name (`dup` aside); then by destination; then by kind, place and size (within
+// PLACE and SIZE). No round pairs two parts whose destinations are both known and differ (`differ`). Within a round the
+// nearest pair (`pos`; within one name, list order where either lacks it) is taken first. Returns { pairs: [[d, l]] in
+// draft order, draftOnly, liveOnly }.
 export function pairParts( d, l ) {
-	const base = baseName;
-	const rank = ( list, x ) => list.filter( ( y ) => base( y.name ) === base( x.name ) ).indexOf( x );
+	const base = ( x ) => x.name;
+	const rank = ( list, x ) => list.filter( ( y ) => base( y ) === base( x ) ).indexOf( x );
 	const dist = ( a, b ) => ( a.pos && b.pos ? Math.hypot( a.pos.x - b.pos.x, a.pos.y - b.pos.y ) : Math.abs( rank( d, a ) - rank( l, b ) ) );
 	const mate = new Map();
 	const taken = new Set();
 	const round = ( fits ) => {
-		const cand = d.flatMap( ( a, i ) => l.flatMap( ( b, j ) => ( fits( a, b ) ? [ [ dist( a, b ), i, j ] ] : [] ) ) );
+		const cand = d.flatMap( ( a, i ) => l.flatMap( ( b, j ) => ( ! differ( a, b ) && fits( a, b ) ? [ [ dist( a, b ), i, j ] ] : [] ) ) );
 		cand.sort( ( x, y ) => x[ 0 ] - y[ 0 ] || x[ 1 ] - y[ 1 ] || x[ 2 ] - y[ 2 ] );
 		for ( const [ , i, j ] of cand ) {
 			if ( ! mate.has( i ) && ! taken.has( j ) ) {
@@ -280,9 +300,11 @@ export function pairParts( d, l ) {
 	const sameKind = ( a, b ) => a.kind === b.kind;
 	const near = ( x, y ) => Math.min( x, y ) >= SIZE * Math.max( x, y );
 	const placed = ( a, b ) => !! ( a.pos && b.pos && a.box && b.box ) && Math.hypot( a.pos.x - b.pos.x, a.pos.y - b.pos.y ) <= PLACE && near( a.box.w, b.box.w ) && near( a.box.h, b.box.h );
-	round( ( a, b ) => base( a.name ) === base( b.name ) );
-	round( ( a, b ) => !! a.href && a.href === b.href );
-	round( ( a, b ) => sameKind( a, b ) && ! ( a.href && b.href && a.href !== b.href ) && placed( a, b ) );
+	const unnamed = ( x ) => /^\(unnamed /.test( x.name );
+	round( ( a, b ) => unnamed( a ) && unnamed( b ) && !! destOf( a ) && destOf( a ) === destOf( b ) );
+	round( ( a, b ) => base( a ) === base( b ) );
+	round( ( a, b ) => !! destOf( a ) && destOf( a ) === destOf( b ) );
+	round( ( a, b ) => sameKind( a, b ) && placed( a, b ) );
 	return {
 		pairs: d.map( ( a, i ) => ( mate.has( i ) ? [ a, l[ mate.get( i ) ] ] : null ) ).filter( Boolean ),
 		draftOnly: d.filter( ( a, i ) => ! mate.has( i ) ),
@@ -296,7 +318,7 @@ export function partEffects( parts ) {
 	if ( ! parts ) {
 		return null;
 	}
-	return Object.fromEntries( parts.filter( ( x ) => x.effects?.hover?.length || x.effects?.press?.length ).map( ( x ) => [ x.name, { hover: x.effects.hover || [], press: x.effects.press || [] } ] ) );
+	return Object.fromEntries( parts.filter( ( x ) => x.effects?.hover?.length || x.effects?.press?.length ).map( ( x ) => [ partLabel( x ), { hover: x.effects.hover || [], press: x.effects.press || [] } ] ) );
 }
 
 const POSE_KEYS = [ ...TRANSFORM_PARTS, 'transform-origin' ];
@@ -315,7 +337,8 @@ export function compareParts( d, l, tol ) {
 		return rows;
 	}
 	const { pairs, draftOnly, liveOnly } = pairParts( d, l );
-	for ( const [ a, b ] of pairs ) {
+	for ( const [ pa, b ] of pairs ) {
+		const a = { ...pa, name: partLabel( pa ) };
 		if ( ! a.root && a.rest && a.hover && b.rest && b.hover ) {
 			const side = ( x ) => ( { box: x.box, origin: x.rest[ 'transform-origin' ] } );
 			const opts = { sides: [ side( a ), side( b ) ], boxTol: tol.box };
@@ -359,11 +382,23 @@ export function compareParts( d, l, tol ) {
 				rows.push( { kind: 'effect', key: `${ a.name } ${ st }`, part: a.name, draft: da.join( ', ' ) || 'none', live: lb.join( ', ' ) || 'none' } );
 			}
 		}
-		if ( baseName( a.name ) !== baseName( b.name ) ) {
-			rows.push( { kind: 'part', key: `${ a.name } label`, part: a.name, draft: baseName( a.name ), live: baseName( b.name ) } );
+		if ( pa.name !== b.name ) {
+			rows.push( { kind: 'part', key: `${ a.name } label`, part: a.name, draft: pa.name, live: b.name } );
 		}
 	}
-	rows.push( ...draftOnly.map( ( a ) => ( { kind: 'part', key: `${ a.name } presence`, part: a.name, draft: 'present', live: 'missing' } ) ) );
-	rows.push( ...liveOnly.map( ( b ) => ( { kind: 'part', key: `${ b.name } presence`, part: b.name, draft: 'missing', live: 'present' } ) ) );
+	// Wordless parts (icon links) paired across the sides keep their reading order: one at another place in the order than
+	// its mate (two social icons swapped) is an `order` row, its place among the paired wordless parts on each side.
+	const icons = pairs.filter( ( [ a, b ] ) => wordless( a ) && wordless( b ) && a.pos && b.pos );
+	const before = ( p, q ) => ( Math.abs( p.y - q.y ) > 0.25 ? p.y - q.y : p.x - q.x );
+	const draftOrder = icons.map( ( [ a ] ) => a ).sort( ( p, q ) => before( p.pos, q.pos ) );
+	const liveOrder = icons.map( ( [ , b ] ) => b ).sort( ( p, q ) => before( p.pos, q.pos ) );
+	for ( const [ a, b ] of icons ) {
+		const [ i, j ] = [ draftOrder.indexOf( a ), liveOrder.indexOf( b ) ];
+		if ( i !== j ) {
+			rows.push( { kind: 'part', key: `${ partLabel( a ) } order`, part: partLabel( a ), draft: `${ i + 1 } of ${ icons.length }`, live: `${ j + 1 } of ${ icons.length }` } );
+		}
+	}
+	rows.push( ...draftOnly.map( ( a ) => ( { kind: 'part', key: `${ partLabel( a ) } presence`, part: partLabel( a ), draft: 'present', live: 'missing' } ) ) );
+	rows.push( ...liveOnly.map( ( b ) => ( { kind: 'part', key: `${ partLabel( b ) } presence`, part: partLabel( b ), draft: 'missing', live: 'present' } ) ) );
 	return rows;
 }

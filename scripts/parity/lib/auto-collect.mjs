@@ -124,6 +124,23 @@ export function collectAuto( [ scope, exclude, maxWords ] ) {
 
 	const words = [];
 	const styleCache = new Map();
+	// `line-height: normal` is the font's own line height: read as the pixels it paints (a one-line probe in the word's
+	// font, as collect.mjs::collectPair reads it), so a draft's `normal` and a live number compare like for like.
+	const normalLh = new Map();
+	const lineHeightOf = ( cs ) => {
+		if ( 'normal' !== cs.lineHeight ) {
+			return cs.lineHeight;
+		}
+		if ( ! normalLh.has( cs.font ) ) {
+			const probe = document.createElement( 'div' );
+			probe.textContent = 'Hg';
+			probe.style.cssText = `position:absolute;visibility:hidden;white-space:nowrap;line-height:normal;font:${ cs.font };`;
+			document.body.appendChild( probe );
+			normalLh.set( cs.font, `${ Math.round( probe.getBoundingClientRect().height * 100 ) / 100 }px` );
+			probe.remove();
+		}
+		return normalLh.get( cs.font );
+	};
 	// scope.tagEls (Spec 48 block pairing, scripts/computed-route/lib/pairs.mjs): each word also carries `e`, the index of
 	// the element painting it in window.__crEls, so the pairing can find that element again. Off, the output is unchanged.
 	const els = scope.tagEls ? ( window.__crEls = [] ) : null;
@@ -162,7 +179,7 @@ export function collectAuto( [ scope, exclude, maxWords ] ) {
 				// A word inside a link (a[href]): the link-coverage rows (auto-compare.mjs::compareAuto) read it.
 				...( el.closest( 'a[href]' ) ? { lk: true } : {} ),
 				fs: cs.fontSize, fw: cs.fontWeight, ff: cs.fontFamily.split( ',' )[ 0 ].replace( /["']/g, '' ).trim().toLowerCase(),
-				fst: cs.fontStyle, tt: cs.textTransform, ls: cs.letterSpacing, c: srgb( cs.color ), td, tsh: cs.textShadow, fixed: fixedOf( el ), m: inModal( el ),
+				fst: cs.fontStyle, tt: cs.textTransform, ls: cs.letterSpacing, lh: lineHeightOf( cs ), c: srgb( cs.color ), td, tsh: cs.textShadow, fixed: fixedOf( el ), m: inModal( el ),
 			} );
 		}
 		const st = styleCache.get( el );

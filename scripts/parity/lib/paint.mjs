@@ -32,24 +32,36 @@ export function layoutComparable( prop, d, l ) {
 }
 
 // Self-contained (passed to page.evaluate as source). The element whose layout a pair's layout properties describe:
-// the first flex or grid container with two or more rendered children, found from the element down a chain of single
+// the first flex or grid container with two or more rendered items, found from the element down a chain of single
 // rendered children (a block wrapper, flex or not, holding one inner band that lays out the items), else the element.
+// A display: contents child has no box: its children stand in its place. A painting ::before or ::after in flow (an icon
+// layer beside a label) is an item too, so an element holding one child and such a layer lays out two items.
 // A gap or alignment between fewer than two items paints nothing. The same rule on both sides, so a draft row element
 // and a live wrapper-plus-inner band compare the same layout. A closed <details> that renders its <summary> plus
 // collapsed content counts only its <summary>: a visitor sees one child, and a draft that drops the answer when closed
 // presents the same single child. An open <details>, or one with no rendered <summary>, counts every rendered child.
 // A read that stamps the elements its targets own (Fill: data-fill-owner holds the owning node's index) never descends into
 // an element another node owns: that element is not this one's inner band, so its layout is not this element's.
-export function layoutElement( el, styleOf = ( e ) => getComputedStyle( e ) ) {
+export function layoutElement( el, styleOf = ( e, ps ) => getComputedStyle( e, ps ) ) {
 	const lays = ( e ) => /(^|-)(flex|grid)$/.test( styleOf( e ).display );
 	const ownerOf = ( e ) => ( e.getAttribute ? e.getAttribute( 'data-fill-owner' ) : null );
 	const owner = ownerOf( el );
+	const contents = ( k ) => 'contents' === styleOf( k ).display;
+	const flat = ( a ) => [ ...a.children ].flatMap( ( k ) => ( contents( k ) ? [ k, ...flat( k ) ] : [ k ] ) );
+	// A real element's ::before or ::after that generates an in-flow box; a style without `content` (a test stub) has none.
+	const layer = ( e, ps ) => {
+		const s = styleOf( e, ps );
+		const c = String( s.content ?? 'none' ).trim();
+		return ! [ 'none', 'normal', '' ].includes( c ) && 'none' !== s.display && ! /absolute|fixed/.test( s.position || '' );
+	};
 	for ( let a = el; ; ) {
-		let kids = [ ...a.children ].filter( ( k ) => k.getClientRects().length && 'none' !== styleOf( k ).display );
+		const all = flat( a );
+		const layers = [ a, ...all.filter( contents ) ].reduce( ( n, e ) => n + [ '::before', '::after' ].filter( ( ps ) => layer( e, ps ) ).length, 0 );
+		let kids = all.filter( ( k ) => ! contents( k ) && k.getClientRects().length && 'none' !== styleOf( k ).display );
 		if ( 'DETAILS' === a.tagName && ! a.open && kids.length >= 2 && kids.some( ( k ) => 'SUMMARY' === k.tagName ) ) {
 			kids = kids.filter( ( k ) => 'SUMMARY' === k.tagName );
 		}
-		if ( kids.length >= 2 ) {
+		if ( kids.length + layers >= 2 ) {
 			return lays( a ) ? a : el;
 		}
 		if ( 1 !== kids.length ) {
@@ -118,11 +130,12 @@ export function paintElement( el, owned = null ) {
 // Self-contained. The element painting the first visible text inside el (a button's label span, not the button),
 // or null. Text properties at rest and on hover are read from it. Text inside an element of `owned` (a Set of the elements
 // other pairs measure) is that pair's, never this one's: an outer pair whose first text sits in an inner pair's block (the
-// header's phone label) reads its own text or none. An element holding another pair's element owns only the text it lays
-// out itself: text reached from it through inline and display: contents boxes alone, never text inside a nested block
-// (a wordmark in the logo link beside an inner pair's span is that block's, on whichever side paints it as text), so
-// both sides apply one rule whatever else their nested blocks hold.
-export function textCarrier( el, owned = null ) {
+// header's phone label) reads its own text or none. Text in a nested block no pair measures belongs to the nearest
+// enclosing pair, so an outer pair reads it (a wordmark in the logo link beside an inner pair's span is the header root's).
+// With `detail`, returns { el, nested } (or null): `nested` when el holds another pair's element and the text is not laid
+// out by el itself (reached through a box other than an inline or display: contents one), the case
+// compare.mjs::comparePair reports as one `text presence` row where the other side paints no text.
+export function textCarrier( el, owned = null, detail = false ) {
 	const inner = owned ? [ ...owned ].filter( ( o ) => o !== el && el.contains( o ) ) : [];
 	// Visually hidden text (a screen-reader link name clipped to nothing) paints nothing; the same test as
 	// auto-collect.mjs::collectAuto's srOnly, walked up to `el`.
@@ -147,7 +160,7 @@ export function textCarrier( el, owned = null ) {
 	const walker = document.createTreeWalker( el, NodeFilter.SHOW_TEXT, {
 		// The text node's own rects: its parent can be display:contents (no box of its own) and still paint it.
 		acceptNode: ( n ) => {
-			if ( ! n.textContent.trim() || srOnly( n.parentElement ) || inner.some( ( o ) => o.contains( n ) ) || ( inner.length && ! laidOutHere( n.parentElement ) ) ) {
+			if ( ! n.textContent.trim() || srOnly( n.parentElement ) || inner.some( ( o ) => o.contains( n ) ) ) {
 				return NodeFilter.FILTER_SKIP;
 			}
 			const range = document.createRange();
@@ -155,7 +168,11 @@ export function textCarrier( el, owned = null ) {
 			return range.getClientRects().length ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
 		},
 	} );
-	return walker.nextNode()?.parentElement || null;
+	const carrier = walker.nextNode()?.parentElement || null;
+	if ( ! detail ) {
+		return carrier;
+	}
+	return carrier ? { el: carrier, nested: inner.length > 0 && ! laidOutHere( carrier ) } : null;
 }
 
 // Self-contained. The underline a visitor sees on the text starting at `from`: text-decoration is not inherited but

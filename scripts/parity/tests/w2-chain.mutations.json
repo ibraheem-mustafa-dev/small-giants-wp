@@ -1,0 +1,6 @@
+[
+	{ "file": "draft-live-walk.mjs", "find": "const chainBroken = null !== rest && 'previous' === state.from && previous?.refused ?", "replace": "const chainBroken = false ?", "why": "a chained state runs whatever happened to its previous state" },
+	{ "file": "draft-live-walk.mjs", "find": "const chainBroken = null !== rest && 'previous' === state.from && previous?.refused ?", "replace": "const chainBroken = null !== rest && previous?.refused ?", "why": "every state after a refused one is refused, chained or not" },
+	{ "file": "draft-live-walk.mjs", "find": "\t\tprevious = { name: state.name, refused: start.refused || null };\n", "replace": "", "why": "the previous state is never recorded" },
+	{ "file": "draft-live-walk.mjs", "find": "\t\t\tprevious = { name: state.name, refused: `not run at ${ width }px` };\n", "replace": "", "why": "a state not run at this width leaves the earlier state as the previous one" }
+]

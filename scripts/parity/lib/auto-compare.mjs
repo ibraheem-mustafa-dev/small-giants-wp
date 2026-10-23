@@ -80,8 +80,8 @@ export function matchWords( dw, lw ) {
 	return repairRepeats( dw, lw, [ ...first, ...kept, ...crossed ].sort( ( a, b ) => a[ 0 ] - b[ 0 ] ) );
 }
 
-const STYLE_KEYS = [ 'fs', 'fw', 'ff', 'fst', 'tt', 'ls', 'c', 'td', 'tsh' ];
-const STYLE_NAMES = { fs: 'font-size', fw: 'font-weight', ff: 'font-family', fst: 'font-style', tt: 'text-transform', ls: 'letter-spacing', c: 'color', td: 'text-decoration', tsh: 'text-shadow' };
+const STYLE_KEYS = [ 'fs', 'fw', 'ff', 'fst', 'tt', 'ls', 'lh', 'c', 'td', 'tsh' ];
+const STYLE_NAMES = { fs: 'font-size', fw: 'font-weight', ff: 'font-family', fst: 'font-style', tt: 'text-transform', ls: 'letter-spacing', lh: 'line-height', c: 'color', td: 'text-decoration', tsh: 'text-shadow' };
 const px0 = ( v ) => ( 'normal' === v ? '0px' : v );
 const sameStyle = ( k, a, b, tol ) => {
 	if ( 'td' === k ) {

@@ -1,0 +1,15 @@
+[
+	{"file": "lib/parts.mjs", "find": "( ! differ( a, b ) && fits( a, b ) ?", "replace": "( fits( a, b ) ?", "why": "rounds pair across differing destinations"},
+	{"file": "lib/parts.mjs", "find": "const differ = ( a, b ) => !! ( destOf( a ) && destOf( b ) && destOf( a ) !== destOf( b ) );", "replace": "const differ = ( a, b ) => !! ( a.href && b.href && a.href !== b.href );", "why": "same-site paths are no destination"},
+	{"file": "lib/parts.mjs", "find": "const differ = ( a, b ) => !! ( destOf( a ) && destOf( b ) && destOf( a ) !== destOf( b ) );", "replace": "const differ = ( a, b ) => destOf( a ) !== destOf( b );", "why": "an unknown destination refuses a pair"},
+	{"file": "lib/parts.mjs", "find": "round( ( a, b ) => unnamed( a ) && unnamed( b ) && !! destOf( a ) && destOf( a ) === destOf( b ) );", "replace": "", "why": "no destination round before names for unnamed links"},
+	{"file": "lib/parts.mjs", "find": "if ( i !== j ) {\n\t\t\trows.push( { kind: 'part', key: `${ partLabel( a ) } order`", "replace": "if ( false ) {\n\t\t\trows.push( { kind: 'part', key: `${ partLabel( a ) } order`", "why": "no order row"},
+	{"file": "lib/parts.mjs", "find": "const icons = pairs.filter( ( [ a, b ] ) => wordless( a ) && wordless( b ) && a.pos && b.pos );", "replace": "const icons = pairs.filter( ( [ a, b ] ) => a.pos && b.pos );", "why": "worded parts get order rows"},
+	{"file": "lib/parts.mjs", "find": "const before = ( p, q ) => ( Math.abs( p.y - q.y ) > 0.25 ? p.y - q.y : p.x - q.x );", "replace": "const before = ( p, q ) => p.y - q.y;", "why": "the order reads rows only"},
+	{"file": "lib/parts.mjs", "find": "export const partLabel = ( x ) => ( x.dup ? `${ x.name }#${ x.dup }` : x.name );", "replace": "export const partLabel = ( x ) => x.name;", "why": "the copy index is lost from the row keys"},
+	{"file": "lib/parts.mjs", "find": "const base = ( x ) => x.name;", "replace": "const base = ( x ) => x.name.replace( /#\\d+$/, '' );", "why": "a real #1 is stripped again"},
+	{"file": "lib/parts.mjs", "find": "return { i, name: base, dup: k,", "replace": "return { i, name: k ? `${ base }#${ k }` : base, dup: k,", "why": "the list still suffixes the name"},
+	{"file": "lib/parts.mjs", "find": "worded: !! words,", "replace": "worded: true,", "why": "every part worded"},
+	{"file": "lib/parts.mjs", "find": "site = u.origin === location.origin ? ( u.pathname.replace( /\\/$/, '' ) + u.search ).toLowerCase() || '/' : null;", "replace": "site = null;", "why": "no same-site path read"},
+	{"file": "lib/parts.mjs", "find": "if ( link && raw && ! raw.startsWith( '#' ) &&", "replace": "if ( link && raw &&", "why": "a page fragment is a path"}
+]
