@@ -7,26 +7,14 @@
 import { resolveProperty } from './fill-prop.mjs';
 import { refOf } from './tree.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
+import { equivalentRows } from './db.mjs';
+
+export { equivalentRows };
 
 const PX_TOL = 0.5;
 const RATIO_TOL = 0.02;
 // The conditions fillEquivalent evaluates.
 export const CONDITIONS = [ 'every-child-same', 'render-matches', 'intrinsic-ratio' ];
-
-// The rows for one draft property, or none when the DB predates the table.
-export function equivalentRows( db, prop ) {
-	if ( ! db ) {
-		return [];
-	}
-	try {
-		return db.prepare( 'SELECT draft_property, setting_property, hop, condition FROM property_equivalents WHERE draft_property = ? ORDER BY setting_property' ).all( prop );
-	} catch ( e ) {
-		if ( /no such table/.test( e.message ) ) {
-			return [];
-		}
-		throw e;
-	}
-}
 
 // The paths a block's calibration shows a resting setting for `prop` painting.
 const layoutSlots = ( cal, prop ) => Object.values( cal?.settings || {} ).filter( ( s ) => s.property === prop && ! s.state ).flatMap( ( s ) => s.slots || [ s.slot ] );
