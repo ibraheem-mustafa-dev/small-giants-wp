@@ -304,6 +304,8 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		// A text run's rows (paint.mjs::textRun): compared as the spacing between them.
 		...( run?.rows ? { rows: run.rows } : {} ),
 		styles,
+		// The point the pose turns and scales about (compared inside the pose, transform.mjs::effectiveMatrix).
+		...( ! run && props.includes( 'transform' ) ? { origin: cs.transformOrigin } : {} ),
 		iconKind,
 		loops,
 		pseudo,

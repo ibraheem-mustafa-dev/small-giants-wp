@@ -105,3 +105,8 @@ test( 'positive control: the same 34px shape painted by the link or by an inner 
 	const own = sizeRows( await snapOf( DISC.replace( /44px/g, '40px' ) ), await snapOf( DISC ) );
 	assert.deepEqual( own.map( ( x ) => x.key ), [ 'w', 'h' ], 'a pair painting itself on both sides has its box rows only' );
 } );
+
+test( 'a pair\'s transform-origin is read as the px point its pose turns about (review 5)', async () => {
+	assert.equal( ( await snapOf( DISC ) ).origin, '22px 22px' );
+	assert.equal( ( await snapOf( DISC.replace( 'display:block;', 'display:block;transform-origin:0 0;' ) ) ).origin, '0px 0px' );
+} );

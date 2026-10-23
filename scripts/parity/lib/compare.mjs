@@ -3,7 +3,7 @@ import { compareFocus } from './focus.mjs';
 import { sameRatio, sameTracks } from './ratio.mjs';
 import { layoutComparable } from './paint.mjs';
 import { sameTransitions, isTimingLonghand } from './transitions.mjs';
-import { TRANSFORM_PARTS, hasTransformParts, sameTransform, effectiveText } from './transform.mjs';
+import { TRANSFORM_PARTS, comparePose } from './transform.mjs';
 import { compareParts } from './parts.mjs';
 
 const PX = /^-?\d+(\.\d+)?px$/;
@@ -241,11 +241,9 @@ export function comparePair( pair, d, l, tol ) {
 			add( 'box', `paint-${ k }`, pd[ k ], pl[ k ] );
 		}
 	}
-	// translate, rotate, scale and transform are one row: the composed pose (lib/transform.mjs).
-	const posed = ! TRANSFORM_PARTS.some( ( p ) => loops.has( p ) );
-	if ( posed && ( hasTransformParts( d.styles ) || hasTransformParts( l.styles ) ) && ! sameTransform( d.styles, l.styles, tol.px ) ) {
-		add( 'style', 'transform', effectiveText( d.styles ), effectiveText( l.styles ) );
-	}
+	// translate, rotate, scale and transform are one row per state: the composed pose (lib/transform.mjs::comparePose).
+	const poseRows = comparePose( d, l, tol, loops );
+	diffs.push( ...poseRows.filter( ( r ) => 'style' === r.kind ) );
 	for ( const p of new Set( [ ...Object.keys( d.styles ), ...Object.keys( l.styles ) ] ) ) {
 		if ( TRANSFORM_PARTS.includes( p ) ) {
 			continue;
@@ -308,11 +306,7 @@ export function comparePair( pair, d, l, tol ) {
 	for ( const [ kind, field ] of [ [ 'hover', 'hover' ], [ 'active', 'active' ] ] ) {
 		if ( d[ field ] && l[ field ] ) {
 			const still = ( s, p ) => undefined !== s.styles?.[ p ] && sameValue( p, s[ field ][ p ], s.styles[ p ], tol.px );
-			const pose = ( s ) => ( { ...s.styles, ...s[ field ] } );
-			const posedStill = ( s ) => sameTransform( s.styles, pose( s ), tol.px );
-			if ( posed && hasTransformParts( d[ field ] ) && ! ( posedStill( d ) && posedStill( l ) ) && ! sameTransform( pose( d ), pose( l ), tol.px ) ) {
-				add( kind, 'transform', effectiveText( pose( d ) ), effectiveText( pose( l ) ) );
-			}
+			diffs.push( ...poseRows.filter( ( r ) => kind === r.kind ) );
 			for ( const p of Object.keys( d[ field ] ) ) {
 				if ( TRANSFORM_PARTS.includes( p ) ) {
 					continue;
