@@ -320,8 +320,11 @@ export function compareParts( d, l, tol ) {
 			const side = ( x ) => ( { box: x.box, origin: x.rest[ 'transform-origin' ] } );
 			const opts = { sides: [ side( a ), side( b ) ], boxTol: tol.box };
 			const own = ( x ) => ( { sides: [ side( x ), side( x ) ], boxTol: tol.box } );
-			// A border colour paints only where that state has a border.
-			const unbordered = ( p, st ) => /^border-top-(color|style)$/.test( p ) && [ a, b ].every( ( x ) => 0 === parseFloat( x[ st ][ 'border-top-width' ] ?? '0' ) );
+			// A border colour is compared only where both sides draw that edge in that state (a width above 0 and a style
+			// not none or hidden), a border style only where both have a width; a property not read counts as drawing.
+			const wide = ( x, st ) => undefined === x[ st ][ 'border-top-width' ] || parseFloat( x[ st ][ 'border-top-width' ] ) > 0;
+			const draws = ( x, st ) => wide( x, st ) && ! /^(none|hidden)$/.test( x[ st ][ 'border-top-style' ] ?? '' );
+			const unbordered = ( p, st ) => ( 'border-top-color' === p && ! [ a, b ].every( ( x ) => draws( x, st ) ) ) || ( 'border-top-style' === p && ! [ a, b ].every( ( x ) => wide( x, st ) ) );
 			for ( const p of Object.keys( a.rest ).filter( ( k ) => ! POSE_KEYS.includes( k ) ) ) {
 				if ( ! unbordered( p, 'rest' ) && ! sameValue( p, a.rest[ p ], b.rest[ p ], tol.px ) ) {
 					rows.push( { kind: 'part', key: `${ a.name } rest:${ p }`, part: a.name, draft: a.rest[ p ], live: b.rest[ p ] } );

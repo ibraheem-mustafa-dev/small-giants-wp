@@ -1,31 +1,236 @@
 [
-	{ "file": "lib/parts.mjs", "find": "round( ( a, b ) => !! a.href && a.href === b.href );", "replace": "", "why": "no destination round" },
-	{ "file": "lib/parts.mjs", "find": "round( ( a, b ) => sameKind( a, b ) && ! ( a.href && b.href && a.href !== b.href ) && placed( a, b ) );", "replace": "", "why": "no place round" },
-	{ "file": "lib/parts.mjs", "find": "!! a.href && a.href === b.href", "replace": "!! a.href", "why": "any destination pairs" },
-	{ "file": "lib/parts.mjs", "find": "!! a.href && a.href === b.href", "replace": "a.href === b.href", "why": "two missing destinations pair" },
-	{ "file": "lib/parts.mjs", "find": "! ( a.href && b.href && a.href !== b.href ) && placed", "replace": "placed", "why": "control (c): differing destinations pair by place" },
-	{ "file": "lib/parts.mjs", "find": "! ( a.href && b.href && a.href !== b.href ) && placed", "replace": "! ( a.href && a.href !== b.href ) && placed", "why": "a destination on one side only blocks a place pair" },
-	{ "file": "lib/parts.mjs", "find": "round( ( a, b ) => sameKind( a, b ) && ! ( a.href", "replace": "round( ( a, b ) => true && ! ( a.href", "why": "place round ignores kind" },
-	{ "file": "lib/parts.mjs", "find": "const sameKind = ( a, b ) => a.kind === b.kind;", "replace": "const sameKind = ( a, b ) => true;", "why": "kind never checked" },
-	{ "file": "lib/parts.mjs", "find": "Math.hypot( a.pos.x - b.pos.x, a.pos.y - b.pos.y ) <= PLACE", "replace": "Math.abs( a.pos.x - b.pos.x ) <= PLACE", "why": "vertical place ignored" },
-	{ "file": "lib/parts.mjs", "find": "const PLACE = 0.15;", "replace": "const PLACE = 1;", "why": "any place" },
-	{ "file": "lib/parts.mjs", "find": "near( a.box.w, b.box.w ) && ", "replace": "", "why": "width ignored" },
-	{ "file": "lib/parts.mjs", "find": " && near( a.box.h, b.box.h )", "replace": "", "why": "height ignored" },
-	{ "file": "lib/parts.mjs", "find": "const SIZE = 0.75;", "replace": "const SIZE = 0;", "why": "any size" },
-	{ "file": "lib/parts.mjs", "find": "Math.min( x, y ) >= SIZE * Math.max( x, y )", "replace": "Math.min( x, y ) >= SIZE * Math.min( x, y )", "why": "size ratio against the smaller" },
-	{ "file": "lib/parts.mjs", "find": "round( ( a, b ) => base( a.name ) === base( b.name ) );", "replace": "", "why": "no name round" },
-	{ "file": "lib/parts.mjs", "find": "if ( baseName( a.name ) !== baseName( b.name ) ) {", "replace": "if ( false ) {", "why": "no label row" },
-	{ "file": "lib/parts.mjs", "find": "if ( baseName( a.name ) !== baseName( b.name ) ) {", "replace": "if ( a.name !== b.name ) {", "why": "a repeated-name suffix is a label" },
-	{ "file": "lib/parts.mjs", "find": "draft: baseName( a.name ), live: baseName( b.name ) } );", "replace": "draft: baseName( a.name ), live: baseName( a.name ) } );", "why": "label row loses the live name" },
-	{ "file": "lib/parts.mjs", "find": "return 'tel:' + v.replace(", "replace": "return v + ''.replace(", "why": "tel not normalised" },
-	{ "file": "lib/parts.mjs", "find": "return v.toLowerCase();", "replace": "return v;", "why": "mailto case kept" },
-	{ "file": "lib/parts.mjs", "find": "/^https?:$/.test( u.protocol ) && u.origin !== origin ?", "replace": "u.origin !== origin ?", "why": "any scheme is a key" },
-	{ "file": "lib/parts.mjs", "find": "/^https?:$/.test( u.protocol ) && u.origin !== origin ?", "replace": "/^https?:$/.test( u.protocol ) ?", "why": "the page's own site is a key" },
-	{ "file": "lib/parts.mjs", "find": "u.host.replace( /^www", "replace": "u.host.replace( /^wwwx", "why": "www kept" },
-	{ "file": "lib/parts.mjs", "find": "u.pathname.replace(", "replace": "u.pathname.slice( 0 ) + ''.replace(", "why": "trailing slash kept" },
-	{ "file": "lib/parts.mjs", "find": "+ u.search ).toLowerCase()", "replace": ").toLowerCase()", "why": "query dropped" },
-	{ "file": "lib/parts.mjs", "find": "+ u.search ).toLowerCase() : null;", "replace": "+ u.search ) : null;", "why": "case kept" },
-	{ "file": "lib/parts.mjs", "find": "kind: link ? 'link' : 'button', href: link ? keyOf(", "replace": "kind: 'link', href: link ? keyOf(", "why": "every part a link" },
-	{ "file": "lib/parts.mjs", "find": "href: link ? keyOf( p.getAttribute( 'href' ), p.href, location.origin ) : null,", "replace": "href: null,", "why": "listParts records no destination" },
-	{ "file": "lib/parts.mjs", "find": "kind: part.kind, href: part.href,", "replace": "", "why": "readParts drops kind and destination" }
+	{
+		"file": "lib/parts.mjs",
+		"find": "round( ( a, b ) => !! a.href && a.href === b.href );",
+		"replace": "",
+		"why": "no destination round"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "round( ( a, b ) => sameKind( a, b ) && ! ( a.href && b.href && a.href !== b.href ) && placed( a, b ) );",
+		"replace": "",
+		"why": "no place round"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "!! a.href && a.href === b.href",
+		"replace": "!! a.href",
+		"why": "any destination pairs"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "!! a.href && a.href === b.href",
+		"replace": "a.href === b.href",
+		"why": "two missing destinations pair"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "! ( a.href && b.href && a.href !== b.href ) && placed",
+		"replace": "placed",
+		"why": "control (c): differing destinations pair by place"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "! ( a.href && b.href && a.href !== b.href ) && placed",
+		"replace": "! ( a.href && a.href !== b.href ) && placed",
+		"why": "a destination on one side only blocks a place pair"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "round( ( a, b ) => sameKind( a, b ) && ! ( a.href",
+		"replace": "round( ( a, b ) => true && ! ( a.href",
+		"why": "place round ignores kind"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "const sameKind = ( a, b ) => a.kind === b.kind;",
+		"replace": "const sameKind = ( a, b ) => true;",
+		"why": "kind never checked"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "Math.hypot( a.pos.x - b.pos.x, a.pos.y - b.pos.y ) <= PLACE",
+		"replace": "Math.abs( a.pos.x - b.pos.x ) <= PLACE",
+		"why": "vertical place ignored"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "const PLACE = 0.15;",
+		"replace": "const PLACE = 1;",
+		"why": "any place"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "near( a.box.w, b.box.w ) && ",
+		"replace": "",
+		"why": "width ignored"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": " && near( a.box.h, b.box.h )",
+		"replace": "",
+		"why": "height ignored"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "const SIZE = 0.75;",
+		"replace": "const SIZE = 0;",
+		"why": "any size"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "Math.min( x, y ) >= SIZE * Math.max( x, y )",
+		"replace": "Math.min( x, y ) >= SIZE * Math.min( x, y )",
+		"why": "size ratio against the smaller"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "round( ( a, b ) => base( a.name ) === base( b.name ) );",
+		"replace": "",
+		"why": "no name round"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "if ( baseName( a.name ) !== baseName( b.name ) ) {",
+		"replace": "if ( false ) {",
+		"why": "no label row"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "if ( baseName( a.name ) !== baseName( b.name ) ) {",
+		"replace": "if ( a.name !== b.name ) {",
+		"why": "a repeated-name suffix is a label"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "draft: baseName( a.name ), live: baseName( b.name ) } );",
+		"replace": "draft: baseName( a.name ), live: baseName( a.name ) } );",
+		"why": "label row loses the live name"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "return 'tel:' + v.replace(",
+		"replace": "return v + ''.replace(",
+		"why": "tel not normalised"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "return v.toLowerCase();",
+		"replace": "return v;",
+		"why": "mailto case kept"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "/^https?:$/.test( u.protocol ) && u.origin !== origin ?",
+		"replace": "u.origin !== origin ?",
+		"why": "any scheme is a key"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "/^https?:$/.test( u.protocol ) && u.origin !== origin ?",
+		"replace": "/^https?:$/.test( u.protocol ) ?",
+		"why": "the page's own site is a key"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "u.host.replace( /^www",
+		"replace": "u.host.replace( /^wwwx",
+		"why": "www kept"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "u.pathname.replace(",
+		"replace": "u.pathname.slice( 0 ) + ''.replace(",
+		"why": "trailing slash kept"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "+ u.search ).toLowerCase()",
+		"replace": ").toLowerCase()",
+		"why": "query dropped"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "+ u.search ).toLowerCase() : null;",
+		"replace": "+ u.search ) : null;",
+		"why": "case kept"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "kind: link ? 'link' : 'button', href: link ? keyOf(",
+		"replace": "kind: 'link', href: link ? keyOf(",
+		"why": "every part a link"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "href: link ? keyOf( p.getAttribute( 'href' ), p.href, location.origin ) : null,",
+		"replace": "href: null,",
+		"why": "listParts records no destination"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "kind: part.kind, href: part.href,",
+		"replace": "",
+		"why": "readParts drops kind and destination"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "undefined === x[ st ][ 'border-top-width' ] || parseFloat",
+		"replace": "false || parseFloat",
+		"why": "a width not read counts as no border"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "parseFloat( x[ st ][ 'border-top-width' ] ) > 0;",
+		"replace": "parseFloat( x[ st ][ 'border-top-width' ] ) >= 0;",
+		"why": "a 0px width draws"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "const draws = ( x, st ) => wide( x, st ) && ! /^(none|hidden)$/",
+		"replace": "const draws = ( x, st ) => true && ! /^(none|hidden)$/",
+		"why": "colour ignores width"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "&& ! /^(none|hidden)$/.test( x[ st ][ 'border-top-style' ] ?? '' );",
+		"replace": ";",
+		"why": "colour ignores style"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "/^(none|hidden)$/.test",
+		"replace": "/^(none)$/.test",
+		"why": "hidden draws"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "( 'border-top-color' === p && ! [ a, b ].every( ( x ) => draws( x, st ) ) )",
+		"replace": "( 'border-top-color' === p && ! [ a, b ].some( ( x ) => draws( x, st ) ) )",
+		"why": "old both-sides rule for colour"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "( 'border-top-color' === p && ! [ a, b ].every( ( x ) => draws( x, st ) ) )",
+		"replace": "( 'border-top-color' === p )",
+		"why": "colour never compared"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "( 'border-top-style' === p && ! [ a, b ].every( ( x ) => wide( x, st ) ) )",
+		"replace": "false",
+		"why": "style always compared"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "( 'border-top-style' === p && ! [ a, b ].every( ( x ) => wide( x, st ) ) )",
+		"replace": "( 'border-top-style' === p && ! [ a, b ].every( ( x ) => draws( x, st ) ) )",
+		"why": "style needs a drawn style"
+	},
+	{
+		"file": "lib/parts.mjs",
+		"find": "if ( ! unbordered( p, 'hover' ) &&",
+		"replace": "if ( ! unbordered( p, 'rest' ) &&",
+		"why": "hover judged on the resting border"
+	}
 ]
