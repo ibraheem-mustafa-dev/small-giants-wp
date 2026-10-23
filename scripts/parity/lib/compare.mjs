@@ -2,6 +2,7 @@
 import { compareFocus } from './focus.mjs';
 import { sameRatio, sameTracks } from './ratio.mjs';
 import { layoutComparable } from './paint.mjs';
+import { TRANSFORM_PARTS, hasTransformParts, sameTransform, effectiveText } from './transform.mjs';
 
 const PX = /^-?\d+(\.\d+)?px$/;
 // The identity transform in both forms the computed style gives (2D and 3D), whitespace removed.
@@ -229,7 +230,15 @@ export function comparePair( pair, d, l, tol ) {
 			add( 'box', k, d.box[ k ], l.box[ k ] );
 		}
 	}
+	// translate, rotate, scale and transform are one row: the composed pose (lib/transform.mjs).
+	const posed = ! TRANSFORM_PARTS.some( ( p ) => loops.has( p ) );
+	if ( posed && ( hasTransformParts( d.styles ) || hasTransformParts( l.styles ) ) && ! sameTransform( d.styles, l.styles, tol.px ) ) {
+		add( 'style', 'transform', effectiveText( d.styles ), effectiveText( l.styles ) );
+	}
 	for ( const p of new Set( [ ...Object.keys( d.styles ), ...Object.keys( l.styles ) ] ) ) {
+		if ( TRANSFORM_PARTS.includes( p ) ) {
+			continue;
+		}
 		// icon-colour is its own row only across a glyph and an svg; elsewhere icon-fill and icon-stroke carry the icon's colour.
 		if ( 'icon-colour' === p ? ! mixed : ( loops.has( p ) || ( mixed && ( GLYPH_TEXT.has( p ) || /^icon-(fill|stroke)$/.test( p ) ) ) ) ) {
 			continue;
@@ -283,7 +292,15 @@ export function comparePair( pair, d, l, tol ) {
 	for ( const [ kind, field ] of [ [ 'hover', 'hover' ], [ 'active', 'active' ] ] ) {
 		if ( d[ field ] && l[ field ] ) {
 			const still = ( s, p ) => undefined !== s.styles?.[ p ] && sameValue( p, s[ field ][ p ], s.styles[ p ], tol.px );
+			const pose = ( s ) => ( { ...s.styles, ...s[ field ] } );
+			const posedStill = ( s ) => sameTransform( s.styles, pose( s ), tol.px );
+			if ( posed && hasTransformParts( d[ field ] ) && ! ( posedStill( d ) && posedStill( l ) ) && ! sameTransform( pose( d ), pose( l ), tol.px ) ) {
+				add( kind, 'transform', effectiveText( pose( d ) ), effectiveText( pose( l ) ) );
+			}
 			for ( const p of Object.keys( d[ field ] ) ) {
+				if ( TRANSFORM_PARTS.includes( p ) ) {
+					continue;
+				}
 				if ( loops.has( p ) || ( mixed && GLYPH_TEXT.has( p ) ) || borderColourIrrelevant( p, { ...d.styles, ...d[ field ] }, { ...l.styles, ...l[ field ] } ) || ( still( d, p ) && still( l, p ) ) ) {
 					continue;
 				}
