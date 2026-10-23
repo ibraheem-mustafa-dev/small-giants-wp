@@ -7,10 +7,13 @@
 const DOUBLED_SCOPE = /\.(sgs-c-[a-z0-9]{4,16}(?:-\d+)?)\.\1(?![\w-])/;
 
 // A stylesheet WordPress or the theme owns never carries a residual, whatever its selectors: the owner element ids of core's
-// block library, global styles, classic-theme and block-support styles and the SGS theme and per-block plugin styles, and
-// the stylesheet hrefs under wp-includes, a theme or a plugin's build folder. The registry's consolidated sheet
-// (`sgs-blocks-collected`, in uploads) is none of these: it is where a lifted residual lives.
-const WP_OWNER_ID = /^(?:wp-|global-styles|classic-theme-styles|core-block-supports|sgs-theme|sgs-blocks-style)/;
+// block library, global styles, classic-theme and block-support styles; SGS's own stylesheets, every handle starting
+// `sgs-` (theme/sgs-theme/functions.php enqueues sgs-core-blocks, sgs-utilities, sgs-layout-tokens and the rest; WordPress
+// prints `<handle>-css` or `<handle>-inline-css` as the element id) except the residual's own element (`sgs-custom-css-`)
+// and the registry's consolidated sheet (`sgs-blocks-collected`, plugins/sgs-blocks/includes/class-sgs-css-registry.php,
+// inline or a file in uploads), which is where a lifted residual lives; and the stylesheet hrefs under wp-includes, a theme
+// or a plugin's build folder.
+const WP_OWNER_ID = /^(?:wp-|global-styles|classic-theme-styles|core-block-supports|sgs-(?!custom-css-|blocks-collected(?:-css)?$))/;
 const WP_SHEET_HREF = /\/(?:wp-includes\/|wp-content\/themes\/|wp-content\/plugins\/[^/]+\/build\/)/;
 
 // r: { selector or rule (the selector text), owner (the id of the stylesheet's owner element; null for the inline style),
