@@ -1,0 +1,18 @@
+{
+	"_meta": {
+		"purpose": "How census-all.mjs reads a walker row and a Fill row into the parts of a mechanism signature (lib/census-mechanism.mjs). The reason classes and their owning Spec 48 items stay in data/census-classes.json; this file holds only the walker and Fill vocabulary the signature needs. composedEffects names longhands the browser composes into one matrix, so one spelling difference is one group."
+	},
+	"interactionKinds": [ "hover", "active", "focus" ],
+	"keyWordKinds": [ "presence", "auto", "link" ],
+	"boxKind": "box",
+	"fillStatePatterns": [ "\\((hover|active|focus)[^)]*\\)\\s*$", "^(hover|active|focus):", "^width (hover|active|focus)" ],
+	"inventoryIdPattern": "^[A-Z]{1,3}-\\d+$",
+	"inventoryIdFamily": "motion-record",
+	"composedEffects": { "transform": [ "transform", "scale", "rotate", "translate" ] },
+	"fillSides": { "unmapped": "fill-unwritten", "held": "fill-held" },
+	"reasonClasses": {
+		"walkerOnly": "no-fill-row",
+		"wrote": "fill-wrote"
+	},
+	"surfaceBlockFamily": "(surface)"
+}

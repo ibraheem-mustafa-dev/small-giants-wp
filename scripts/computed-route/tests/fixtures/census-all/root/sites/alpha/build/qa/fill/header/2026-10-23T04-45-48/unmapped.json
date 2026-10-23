@@ -1,0 +1,882 @@
+[
+ {
+  "property": "display",
+  "value": "block",
+  "node": "cr-ref-header-0",
+  "reason": "no-setting: no layout setting holds display:block on sgs/site-header \"\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)",
+  "block": "sgs/site-header",
+  "slot": ""
+ },
+ {
+  "property": "font-size",
+  "value": "19px",
+  "node": "cr-ref-header-0",
+  "reason": "no-setting: sgs/site-header has no setting for font-size",
+  "block": "sgs/site-header",
+  "slot": ""
+ },
+ {
+  "property": "line-height",
+  "value": "29.45px",
+  "node": "cr-ref-header-0",
+  "reason": "no-setting: sgs/site-header has no setting for line-height",
+  "block": "sgs/site-header",
+  "slot": ""
+ },
+ {
+  "property": "justify-content",
+  "value": "normal",
+  "node": "cr-ref-header-0",
+  "reason": "no-setting: sgs/site-header has no setting for justify-content",
+  "block": "sgs/site-header",
+  "slot": ""
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.3s",
+  "node": "cr-ref-header-0",
+  "reason": "no-setting: sgs/site-header has no setting for transition-duration",
+  "block": "sgs/site-header",
+  "slot": ""
+ },
+ {
+  "property": "max-width",
+  "value": "none",
+  "node": "cr-ref-header-0",
+  "reason": "shape: none cannot be held; dimension: the block's own max-width is unknown (no calibrated paint), so whether it contradicts the draft's rendered 375 / 768 / 1440px is unproven",
+  "block": "sgs/site-header",
+  "slot": ""
+ },
+ {
+  "property": "flex-direction",
+  "value": "row",
+  "node": "cr-ref-header-0",
+  "reason": "no-setting: sgs/site-header has no setting for flex-direction",
+  "block": "sgs/site-header",
+  "slot": ""
+ },
+ {
+  "property": "position",
+  "value": "sticky",
+  "node": "cr-ref-header-0",
+  "reason": "no-setting: sgs/site-header has no setting for position",
+  "block": "sgs/site-header",
+  "slot": ""
+ },
+ {
+  "property": "z-index",
+  "value": "200",
+  "node": "cr-ref-header-0",
+  "reason": "no-setting: sgs/site-header has no setting for z-index",
+  "block": "sgs/site-header",
+  "slot": ""
+ },
+ {
+  "property": "display",
+  "value": "{\"375\":\"block\",\"768\":\"flex\",\"1440\":\"flex\"}",
+  "node": "cr-ref-header-1",
+  "reason": "no-setting: no layout setting holds display:block, flex on sgs/site-header-row \"\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)",
+  "block": "sgs/site-header-row",
+  "slot": ""
+ },
+ {
+  "property": "position",
+  "value": "relative",
+  "node": "cr-ref-header-1",
+  "reason": "no-setting: sgs/site-header-row has no setting for position",
+  "block": "sgs/site-header-row",
+  "slot": ""
+ },
+ {
+  "property": "z-index",
+  "value": "201",
+  "node": "cr-ref-header-1",
+  "reason": "no-setting: sgs/site-header-row has no setting for z-index",
+  "block": "sgs/site-header-row",
+  "slot": ""
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.2s, 0.25s, 0.2s, 0.2s",
+  "node": "cr-ref-header-3",
+  "reason": "no-setting: sgs/button has no setting for transition-duration",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "white-space-collapse",
+  "value": "collapse",
+  "node": "cr-ref-header-3",
+  "reason": "no-setting: sgs/button has no setting for white-space-collapse",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "svg",
+  "value": "iconSource",
+  "node": "cr-ref-header-4",
+  "reason": "the block declares no iconSource, so the draft icon's iconSource is not written",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.2s, 0.25s, 0.2s, 0.2s",
+  "node": "cr-ref-header-4",
+  "reason": "no-setting: sgs/button has no setting for transition-duration",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "white-space-collapse",
+  "value": "collapse",
+  "node": "cr-ref-header-4",
+  "reason": "no-setting: sgs/button has no setting for white-space-collapse",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "svg",
+  "value": "iconSource",
+  "node": "cr-ref-header-5",
+  "reason": "the block declares no iconSource, so the draft icon's iconSource is not written",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.2s, 0.25s, 0.2s, 0.2s",
+  "node": "cr-ref-header-5",
+  "reason": "no-setting: sgs/button has no setting for transition-duration",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "white-space-collapse",
+  "value": "collapse",
+  "node": "cr-ref-header-5",
+  "reason": "no-setting: sgs/button has no setting for white-space-collapse",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "svg",
+  "value": "iconSource",
+  "node": "cr-ref-header-6",
+  "reason": "the block declares no iconSource, so the draft icon's iconSource is not written",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.2s, 0.25s, 0.2s, 0.2s",
+  "node": "cr-ref-header-6",
+  "reason": "no-setting: sgs/button has no setting for transition-duration",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "white-space-collapse",
+  "value": "collapse",
+  "node": "cr-ref-header-6",
+  "reason": "no-setting: sgs/button has no setting for white-space-collapse",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "flex-wrap",
+  "value": "nowrap",
+  "node": "cr-ref-header-7",
+  "reason": "no-setting: sgs/social-icons has no setting for flex-wrap",
+  "block": "sgs/social-icons",
+  "slot": ""
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.35s, 0.25s",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for transition-duration",
+  "block": "sgs/icon",
+  "slot": ""
+ },
+ {
+  "property": "transition-timing-function",
+  "value": "cubic-bezier(0.34, 1.56, 0.64, 1), ease",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for transition-timing-function",
+  "block": "sgs/icon",
+  "slot": ""
+ },
+ {
+  "property": "height",
+  "value": "34px",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for height; dimension: the content is of unknown height at 768, of unknown height at 1440 against a declared height of 34px / 34px, so a minimum would grow the box the draft overflows; not written",
+  "block": "sgs/icon",
+  "slot": ""
+ },
+ {
+  "property": "justify-content",
+  "value": "center",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for justify-content",
+  "block": "sgs/icon",
+  "slot": ".sgs-icon__shape > .sgs-icon__glyph > svg"
+ },
+ {
+  "property": "align-items",
+  "value": "center",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for align-items",
+  "block": "sgs/icon",
+  "slot": ".sgs-icon__shape > .sgs-icon__glyph > svg"
+ },
+ {
+  "property": "flex-shrink",
+  "value": "0",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for flex-shrink",
+  "block": "sgs/icon",
+  "slot": ""
+ },
+ {
+  "property": "justify-content",
+  "value": "normal",
+  "node": "cr-ref-header-11",
+  "reason": "ambiguous: iconSource=wp-icon, iconSource=emoji all give justify-content on \".sgs-icon__shape > .sgs-icon__glyph\"",
+  "block": "sgs/icon",
+  "slot": ".sgs-icon__shape > .sgs-icon__glyph"
+ },
+ {
+  "property": "align-items",
+  "value": "normal",
+  "node": "cr-ref-header-11",
+  "reason": "ambiguous: iconSource=wp-icon, iconSource=emoji all give align-items on \".sgs-icon__shape > .sgs-icon__glyph\"",
+  "block": "sgs/icon",
+  "slot": ".sgs-icon__shape > .sgs-icon__glyph"
+ },
+ {
+  "property": "fill",
+  "value": "rgb(255, 255, 255)",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for fill",
+  "block": "sgs/icon",
+  "slot": ".sgs-icon__shape > .sgs-icon__glyph"
+ },
+ {
+  "property": "height",
+  "value": "17px",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for height",
+  "block": "sgs/icon",
+  "slot": ".sgs-icon__shape > .sgs-icon__glyph"
+ },
+ {
+  "property": "height",
+  "value": "15px",
+  "node": "cr-ref-header-10",
+  "reason": "no-setting: sgs/icon has no setting for height",
+  "block": "sgs/icon",
+  "slot": ".sgs-icon__shape > .sgs-icon__glyph"
+ },
+ {
+  "property": "border-bottom-style",
+  "value": "solid",
+  "node": "cr-ref-header-12",
+  "reason": "shape: borderStyle holds one value for every side; draft has border-top-style none, border-right-style none, border-bottom-style solid, border-left-style none at 1440",
+  "block": "sgs/site-header-row",
+  "slot": ""
+ },
+ {
+  "property": "position",
+  "value": "relative",
+  "node": "cr-ref-header-12",
+  "reason": "no-setting: sgs/site-header-row has no setting for position",
+  "block": "sgs/site-header-row",
+  "slot": ".sgs-container__inner"
+ },
+ {
+  "property": "aria-label",
+  "value": "Client Foods Ltd",
+  "node": "cr-ref-header-13",
+  "reason": "no setting of the block holds the aria-label of \"\" (the block has no such setting)",
+  "block": "sgs/responsive-logo",
+  "slot": ""
+ },
+ {
+  "property": "display",
+  "value": "block",
+  "node": "cr-ref-header-13",
+  "reason": "no-setting: no layout setting holds display:block on sgs/responsive-logo \"\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)",
+  "block": "sgs/responsive-logo",
+  "slot": ""
+ },
+ {
+  "property": "aspect-ratio",
+  "value": "3741 / 848",
+  "node": "cr-ref-header-13",
+  "reason": "no-setting: sgs/responsive-logo has no setting for aspect-ratio",
+  "block": "sgs/responsive-logo",
+  "slot": ""
+ },
+ {
+  "property": "max-width",
+  "value": "none",
+  "node": "cr-ref-header-13",
+  "reason": "shape: none cannot be held; dimension: the block's own max-width is unknown (no calibrated paint), so whether it contradicts the draft's rendered 238.219 / 247.047 / 279.5px is unproven",
+  "block": "sgs/responsive-logo",
+  "slot": ""
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.25s, 0.25s, 0.2s, 0.2s",
+  "node": "cr-ref-header-15",
+  "reason": "no-setting: sgs/button has no setting for transition-duration",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "transition-timing-function",
+  "value": "cubic-bezier(0.2, 0.8, 0.2, 1), ease, ease, ease",
+  "node": "cr-ref-header-15",
+  "reason": "no-setting: sgs/button has no setting for transition-timing-function",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "flex-shrink",
+  "value": "0",
+  "node": "cr-ref-header-15",
+  "reason": "no-setting: sgs/button has no setting for flex-shrink",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "white-space-collapse",
+  "value": "collapse",
+  "node": "cr-ref-header-15",
+  "reason": "no-setting: sgs/button has no setting for white-space-collapse",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "font-size",
+  "value": "17px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no font-size setting on sgs/nav-bar-menu paints \"\" (candidates: itemFontSize, burgerFontSize, submenuFontSize, itemBadgeFontSize)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ""
+ },
+ {
+  "property": "font-weight",
+  "value": "600",
+  "node": "cr-ref-header-16",
+  "reason": "unpaired-part: itemFontWeight paints the item part (calibrated at \".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item > .sgs-nav-bar-menu__link\"), but font-weight 600 was read from \"\", an element the draft does not pair to that part (calibration measured a different font-weight on each); a value from another box, a percentage included, is never written",
+  "block": "sgs/nav-bar-menu",
+  "slot": ""
+ },
+ {
+  "property": "line-height",
+  "value": "24px",
+  "node": "cr-ref-header-16",
+  "reason": "unpaired-part: itemLineHeight paints the item part (calibrated at \".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item > .sgs-nav-bar-menu__link\"), but line-height 24px was read from \"\", an element the draft does not pair to that part (calibration measured a different line-height on each); a value from another box, a percentage included, is never written",
+  "block": "sgs/nav-bar-menu",
+  "slot": ""
+ },
+ {
+  "property": "height",
+  "value": "100%",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no height setting on sgs/nav-bar-menu paints \"\" (candidates: burgerSize, triggerDetachSize, burgerIconHeight, submenuCaretSize, burgerBarThickness); dimension: the code declares height as 100%, which is not a plain length",
+  "block": "sgs/nav-bar-menu",
+  "slot": ""
+ },
+ {
+  "property": "position",
+  "value": "relative",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: sgs/nav-bar-menu has no setting for position",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link"
+ },
+ {
+  "property": "position",
+  "value": "relative",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: sgs/nav-bar-menu has no setting for position",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link"
+ },
+ {
+  "property": "display",
+  "value": "block",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no layout setting holds display:block on sgs/nav-bar-menu \".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret"
+ },
+ {
+  "property": "text-align",
+  "value": "center",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no text-align setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret\" (candidates: submenuTextAlign)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret"
+ },
+ {
+  "property": "opacity",
+  "value": "0.6",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no opacity setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret\" (candidates: itemOpacity, submenuOpacity, scrimOpacity)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret"
+ },
+ {
+  "property": "height",
+  "value": "11px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no height setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret\" (candidates: burgerSize, triggerDetachSize, burgerIconHeight, submenuCaretSize, burgerBarThickness); dimension: the content is of unknown height at 1440 against a declared height of 11px, so a minimum would grow the box the draft overflows; not written",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret"
+ },
+ {
+  "property": "text-align",
+  "value": "center",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no text-align setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger\" (candidates: submenuTextAlign)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger"
+ },
+ {
+  "property": "align-items",
+  "value": "flex-end",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: sgs/nav-bar-menu has no setting for align-items",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger"
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.25s, 0.25s, 0.4s, 0.25s",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no transition-duration setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger\" (candidates: itemMotionDuration, submenuCaretTurnDuration, scrimFadeDuration)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger"
+ },
+ {
+  "property": "transition-timing-function",
+  "value": "ease, ease, cubic-bezier(0.34, 1.56, 0.64, 1), ease",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no transition-timing-function setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger\" (candidates: itemMotionEasing, submenuCaretTurnEasingCustom, scrimFadeEasing)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger"
+ },
+ {
+  "property": "flex-direction",
+  "value": "column",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: sgs/nav-bar-menu has no setting for flex-direction",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger"
+ },
+ {
+  "property": "flex-shrink",
+  "value": "0",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: sgs/nav-bar-menu has no setting for flex-shrink",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger"
+ },
+ {
+  "property": "text-align",
+  "value": "center",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no text-align setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)\" (candidates: submenuTextAlign)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)"
+ },
+ {
+  "property": "background-color",
+  "value": "rgb(10, 126, 168)",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no background-color setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)\" (candidates: navBg, itemBg, featuredBg, burgerBg, submenuBg, submenuLinkBg, scrimColour, itemBadgeColour, triggerDetachBackground)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)"
+ },
+ {
+  "property": "border-radius",
+  "value": "2px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no border-radius setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)\" (candidates: featuredRadius, itemBorderRadius, submenuBorderRadius, triggerDetachRadius, burgerBorderRadius, itemBadgeBorderRadius)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)"
+ },
+ {
+  "property": "transition-duration",
+  "value": "0s",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no transition-duration setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)\" (candidates: itemMotionDuration, submenuCaretTurnDuration, scrimFadeDuration)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)"
+ },
+ {
+  "property": "width",
+  "value": "18px",
+  "node": "cr-ref-header-16",
+  "reason": "ambiguous: burgerWidth, burgerIconWidth all paint width on \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)\"",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)"
+ },
+ {
+  "property": "border-bottom-left-radius",
+  "value": "2px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no border-bottom-left-radius setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)\" (candidates: featuredRadius, itemBorderRadius, submenuBorderRadius, triggerDetachRadius, burgerBorderRadius, itemBadgeBorderRadius)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)"
+ },
+ {
+  "property": "border-bottom-right-radius",
+  "value": "2px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no border-bottom-right-radius setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)\" (candidates: featuredRadius, itemBorderRadius, submenuBorderRadius, triggerDetachRadius, burgerBorderRadius, itemBadgeBorderRadius)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)"
+ },
+ {
+  "property": "border-top-left-radius",
+  "value": "2px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no border-top-left-radius setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)\" (candidates: featuredRadius, itemBorderRadius, submenuBorderRadius, triggerDetachRadius, burgerBorderRadius, itemBadgeBorderRadius)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)"
+ },
+ {
+  "property": "border-top-right-radius",
+  "value": "2px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no border-top-right-radius setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)\" (candidates: featuredRadius, itemBorderRadius, submenuBorderRadius, triggerDetachRadius, burgerBorderRadius, itemBadgeBorderRadius)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)"
+ },
+ {
+  "property": "text-align",
+  "value": "center",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no text-align setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)\" (candidates: submenuTextAlign)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)"
+ },
+ {
+  "property": "background-color",
+  "value": "rgb(10, 126, 168)",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no background-color setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)\" (candidates: navBg, itemBg, featuredBg, burgerBg, submenuBg, submenuLinkBg, scrimColour, itemBadgeColour, triggerDetachBackground)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)"
+ },
+ {
+  "property": "border-radius",
+  "value": "2px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no border-radius setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)\" (candidates: featuredRadius, itemBorderRadius, submenuBorderRadius, triggerDetachRadius, burgerBorderRadius, itemBadgeBorderRadius)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)"
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.3s",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no transition-duration setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)\" (candidates: itemMotionDuration, submenuCaretTurnDuration, scrimFadeDuration)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)"
+ },
+ {
+  "property": "transition-timing-function",
+  "value": "cubic-bezier(0.16, 0.84, 0.32, 1)",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no transition-timing-function setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)\" (candidates: itemMotionEasing, submenuCaretTurnEasingCustom, scrimFadeEasing)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)"
+ },
+ {
+  "property": "border-bottom-left-radius",
+  "value": "2px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no border-bottom-left-radius setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)\" (candidates: featuredRadius, itemBorderRadius, submenuBorderRadius, triggerDetachRadius, burgerBorderRadius, itemBadgeBorderRadius)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)"
+ },
+ {
+  "property": "border-bottom-right-radius",
+  "value": "2px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no border-bottom-right-radius setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)\" (candidates: featuredRadius, itemBorderRadius, submenuBorderRadius, triggerDetachRadius, burgerBorderRadius, itemBadgeBorderRadius)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)"
+ },
+ {
+  "property": "border-top-left-radius",
+  "value": "2px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no border-top-left-radius setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)\" (candidates: featuredRadius, itemBorderRadius, submenuBorderRadius, triggerDetachRadius, burgerBorderRadius, itemBadgeBorderRadius)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)"
+ },
+ {
+  "property": "border-top-right-radius",
+  "value": "2px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no border-top-right-radius setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)\" (candidates: featuredRadius, itemBorderRadius, submenuBorderRadius, triggerDetachRadius, burgerBorderRadius, itemBadgeBorderRadius)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)"
+ },
+ {
+  "property": "text-align",
+  "value": "center",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no text-align setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)\" (candidates: submenuTextAlign)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)"
+ },
+ {
+  "property": "background-color",
+  "value": "rgb(10, 126, 168)",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no background-color setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)\" (candidates: navBg, itemBg, featuredBg, burgerBg, submenuBg, submenuLinkBg, scrimColour, itemBadgeColour, triggerDetachBackground)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)"
+ },
+ {
+  "property": "border-radius",
+  "value": "2px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no border-radius setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)\" (candidates: featuredRadius, itemBorderRadius, submenuBorderRadius, triggerDetachRadius, burgerBorderRadius, itemBadgeBorderRadius)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)"
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.35s",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no transition-duration setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)\" (candidates: itemMotionDuration, submenuCaretTurnDuration, scrimFadeDuration)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)"
+ },
+ {
+  "property": "transition-delay",
+  "value": "0.04s",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: sgs/nav-bar-menu has no setting for transition-delay",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)"
+ },
+ {
+  "property": "transition-timing-function",
+  "value": "cubic-bezier(0.16, 0.84, 0.32, 1)",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no transition-timing-function setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)\" (candidates: itemMotionEasing, submenuCaretTurnEasingCustom, scrimFadeEasing)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)"
+ },
+ {
+  "property": "border-bottom-left-radius",
+  "value": "2px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no border-bottom-left-radius setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)\" (candidates: featuredRadius, itemBorderRadius, submenuBorderRadius, triggerDetachRadius, burgerBorderRadius, itemBadgeBorderRadius)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)"
+ },
+ {
+  "property": "border-bottom-right-radius",
+  "value": "2px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no border-bottom-right-radius setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)\" (candidates: featuredRadius, itemBorderRadius, submenuBorderRadius, triggerDetachRadius, burgerBorderRadius, itemBadgeBorderRadius)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)"
+ },
+ {
+  "property": "border-top-left-radius",
+  "value": "2px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no border-top-left-radius setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)\" (candidates: featuredRadius, itemBorderRadius, submenuBorderRadius, triggerDetachRadius, burgerBorderRadius, itemBadgeBorderRadius)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)"
+ },
+ {
+  "property": "border-top-right-radius",
+  "value": "2px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no border-top-right-radius setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)\" (candidates: featuredRadius, itemBorderRadius, submenuBorderRadius, triggerDetachRadius, burgerBorderRadius, itemBadgeBorderRadius)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)"
+ },
+ {
+  "property": "display",
+  "value": "flex",
+  "node": "cr-ref-header-17",
+  "reason": "no-setting: no layout setting holds display:flex on sgs/button \"\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.25s, 0.25s, 0.2s, 0.2s",
+  "node": "cr-ref-header-17",
+  "reason": "no-setting: sgs/button has no setting for transition-duration",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "transition-timing-function",
+  "value": "cubic-bezier(0.2, 0.8, 0.2, 1), ease, ease, ease",
+  "node": "cr-ref-header-17",
+  "reason": "no-setting: sgs/button has no setting for transition-timing-function",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "flex-shrink",
+  "value": "0",
+  "node": "cr-ref-header-17",
+  "reason": "no-setting: sgs/button has no setting for flex-shrink",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "white-space-collapse",
+  "value": "collapse",
+  "node": "cr-ref-header-17",
+  "reason": "no-setting: sgs/button has no setting for white-space-collapse",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "font-weight",
+  "value": "{\"768\":\"700\"}",
+  "node": "cr-ref-header-15",
+  "reason": "no-setting: sgs/button has no setting for font-weight (hover)",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "color",
+  "value": "{\"1440\":\"rgb(10, 126, 168)\"}",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no color setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link\" (candidates: itemColourCurrent, submenuColourCurrent)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link"
+ },
+ {
+  "property": "transition-duration",
+  "value": "",
+  "node": "cr-ref-header-16",
+  "reason": "timing-computed: \"0.25s, 0.25s, 0.4s, 0.25s\" at 375px is a time per property or computed in the code",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger"
+ },
+ {
+  "property": "transition-duration",
+  "value": "",
+  "node": "cr-ref-header-16",
+  "reason": "timing-computed: \"0.25s, 0.25s, 0.4s, 0.25s\" at 768px is a time per property or computed in the code",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger"
+ },
+ {
+  "property": "transition-timing-function",
+  "value": "",
+  "node": "cr-ref-header-16",
+  "reason": "timing-computed: \"ease, ease, cubic-bezier(0.34, 1.56, 0.64, 1), ease\" at 375px is a time per property or computed in the code",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger"
+ },
+ {
+  "property": "transition-timing-function",
+  "value": "",
+  "node": "cr-ref-header-16",
+  "reason": "timing-computed: \"ease, ease, cubic-bezier(0.34, 1.56, 0.64, 1), ease\" at 768px is a time per property or computed in the code",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger"
+ },
+ {
+  "property": "box-shadow",
+  "value": "{\"375\":\"rgba(10, 126, 168, 0.85) 0px 10px 22px -10px\",\"768\":\"rgba(10, 126, 168, 0.85) 0px 10px 22px -10px\"}",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: sgs/nav-bar-menu has no setting for box-shadow (hover)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger"
+ },
+ {
+  "property": "font-weight",
+  "value": "{\"1440\":\"700\"}",
+  "node": "cr-ref-header-17",
+  "reason": "no-setting: sgs/button has no setting for font-weight (hover)",
+  "block": "sgs/button",
+  "slot": ""
+ },
+ {
+  "property": "motion",
+  "value": "TR-008",
+  "node": "cr-ref-header-0",
+  "reason": "a state state transition: the states wave (FR-48-81) or the owning block's setting",
+  "block": "sgs/site-header",
+  "slot": ""
+ },
+ {
+  "property": "motion",
+  "value": "TR-009",
+  "node": "cr-ref-header-16",
+  "reason": "no declared part of sgs/nav-bar-menu is this element (.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link); the record is also skipped: a state state transition: the states wave (FR-48-81) or the owning block's setting",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link"
+ },
+ {
+  "property": "motion",
+  "value": "J-67",
+  "node": "cr-ref-header-16",
+  "reason": "no declared part of sgs/nav-bar-menu is this element (.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link"
+ },
+ {
+  "property": "motion",
+  "value": "TR-009",
+  "node": "cr-ref-header-16",
+  "reason": "no declared part of sgs/nav-bar-menu is this element (.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link); the record is also skipped: a state state transition: the states wave (FR-48-81) or the owning block's setting",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link"
+ },
+ {
+  "property": "motion",
+  "value": "J-67",
+  "node": "cr-ref-header-16",
+  "reason": "no declared part of sgs/nav-bar-menu is this element (.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link"
+ },
+ {
+  "property": "motion",
+  "value": "TR-011",
+  "node": "cr-ref-header-16",
+  "reason": "no declared part of sgs/nav-bar-menu is this element (.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret); the record is also skipped: a state state transition: the states wave (FR-48-81) or the owning block's setting",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret"
+ },
+ {
+  "property": "motion",
+  "value": "TR-015",
+  "node": "cr-ref-header-16",
+  "reason": "width hover: Spec 38A §5.1 maps a layout-property hover to scale, translate, indent or the link underline, which this draft node needs routed by hand",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)"
+ },
+ {
+  "property": "motion",
+  "value": "TR-016",
+  "node": "cr-ref-header-16",
+  "reason": "width hover: Spec 38A §5.1 maps a layout-property hover to scale, translate, indent or the link underline, which this draft node needs routed by hand",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)"
+ }
+]
