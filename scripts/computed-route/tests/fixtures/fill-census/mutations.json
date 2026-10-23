@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/fill-census.mjs",
+		"find": "if ( ! rule ) {",
+		"replace": "if ( false ) {",
+		"why": "an unmatched row would crash instead of being reported unclassified; with the guard off the new gap kind is lost"
+	},
+	{
+		"file": "lib/fill-census.mjs",
+		"find": "new RegExp( r.pattern, 'i' )",
+		"replace": "new RegExp( r.pattern )",
+		"why": "case-insensitive patterns would turn case-sensitive and miss rows"
+	},
+	{
+		"file": "lib/fill-census.mjs",
+		"find": "if ( row.block ) entry.blocks.add( row.block );",
+		"replace": "",
+		"why": "a class would report no blocks"
+	},
+	{
+		"file": "lib/fill-census.mjs",
+		"find": "if ( row.property ) entry.properties.add( row.property );",
+		"replace": "",
+		"why": "a class would report no properties"
+	},
+	{
+		"file": "lib/fill-census.mjs",
+		"find": "add( held, rules.held, 'held' );",
+		"replace": "",
+		"why": "already-held rows would never be classified or counted"
+	},
+	{
+		"file": "lib/fill-census.mjs",
+		"find": "? ( read( 'fill-report.json' ).alreadyHeld || [] ) : [];",
+		"replace": "? [] : [];",
+		"why": "the run's alreadyHeld rows would be ignored"
+	},
+	{
+		"file": "lib/fill-census.mjs",
+		"find": "rules.find( ( r ) => r.re.test( String( text ?? '' ) ) )",
+		"replace": "rules.findLast( ( r ) => r.re.test( String( text ?? '' ) ) )",
+		"why": "the last matching rule would win instead of the first, mis-naming compound reasons"
+	},
+	{
+		"file": "census.mjs",
+		"find": "if ( args.includes( '--check' ) && result.unclassified.length ) process.exit( 1 );",
+		"replace": "",
+		"why": "--check would exit 0 on an unclassified row"
+	}
+]
