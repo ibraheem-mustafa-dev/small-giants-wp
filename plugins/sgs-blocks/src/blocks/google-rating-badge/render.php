@@ -137,6 +137,8 @@ $grb_gap        = sgs_responsive_normalise_object( $attributes['gap'] ?? null, f
 $grb_normal = array_merge( $grb_fill['normal'], $grb_border['base'], $grb_shadow['normal'] );
 if ( $grb_min_height > 0 ) {
 	$grb_normal[] = 'min-height:' . rtrim( rtrim( number_format( $grb_min_height, 2, '.', '' ), '0' ), '.' ) . 'px';
+	// The height the client set is the tap area: the ::after hit box wraps the link instead of growing to 44px.
+	$grb_normal[] = '--sgs-grb-tap-min:0px';
 }
 $grb_padding_desktop = is_array( $grb_padding['desktop'] ?? null ) ? sgs_box_object_longhands( $grb_padding['desktop'], 'padding' ) : null;
 if ( null !== $grb_padding_desktop ) {

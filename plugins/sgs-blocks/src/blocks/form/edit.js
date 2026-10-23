@@ -299,10 +299,9 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		box && 'object' === typeof box && Object.values( box ).some( hasValue )
 			? [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ].map( ( c ) => box[ c ] || '0' ).join( ' ' )
 			: '';
-	// A stored value is a bare number (px) or a CSS length string; the height is
-	// floored at 44px with max(), as render.php does.
+	// A stored value is a bare number (px) or a CSS length string; it is the height, as render.php prints it.
 	const fieldPx = ( v ) => ( hasValue( v ) ? ( Number.isFinite( Number( v ) ) ? `${ Number( v ) }px` : String( v ) ) : '' );
-	const fieldHeight = ( v ) => ( fieldPx( v ) ? `max(44px,${ fieldPx( v ) })` : '' );
+	const fieldHeight = fieldPx;
 	const fieldBorderDecls = borderBoxPreview( fieldBorderWidth, fieldBorderStyle );
 	const fieldBackgroundValue = resolveColourToken( fieldBackground, palette );
 	const fieldTextValue = resolveColourToken( fieldTextColour, palette );

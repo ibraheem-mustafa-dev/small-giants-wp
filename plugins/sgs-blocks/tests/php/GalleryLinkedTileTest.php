@@ -204,7 +204,7 @@ final class GalleryLinkedTileTest extends TestCase {
 		$this->assertStringContainsString( $item . '{background-color:#FAFAF8}', $css );
 		$this->assertStringContainsString( $item . ':hover{background-color:#ffffff}', $css );
 		$this->assertStringContainsString( 'border-width:1px 1px 1px 1px;border-color:#1e2a3c;border-top-left-radius:12px', $css );
-		$this->assertStringContainsString( $item . '{min-height:64px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px;}', $css );
+		$this->assertStringContainsString( $item . '{min-height:64px;--sgs-gallery-tap-min:0px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px;}', $css );
 		$this->assertStringContainsString( '@media (max-width:767px){', $css );
 		$this->assertStringContainsString( 'min-height:56px;', $css );
 		$this->assertStringContainsString( '.sgs-gallery__img-wrap img,', $css );
@@ -220,5 +220,12 @@ final class GalleryLinkedTileTest extends TestCase {
 		);
 		$this->assertStringNotContainsString( 'sgs-gallery--tile', $out['html'] );
 		$this->assertStringContainsString( 'padding-top:8px;', $out['css'] );
+		$this->assertStringNotContainsString( '--sgs-gallery-tap-min', $out['css'] );
+	}
+
+	public function test_the_tap_floor_flag_prints_only_beside_a_tile_height_in_its_tier(): void {
+		$out = $this->render_block( 'sgs/gallery', $this->attrs( array(), array( 'tileMinHeight' => array( 'mobile' => '30px' ) ) ) );
+		$this->assertSame( 1, substr_count( $out['css'], '--sgs-gallery-tap-min:0px' ) );
+		$this->assertMatchesRegularExpression( '/max-width:767px\)\{[^{]*\{min-height:30px;--sgs-gallery-tap-min:0px;\}/', $out['css'] );
 	}
 }
