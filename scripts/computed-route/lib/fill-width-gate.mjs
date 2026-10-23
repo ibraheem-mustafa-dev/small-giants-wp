@@ -130,10 +130,26 @@ export function tiersOf( hidden ) {
 	return Object.keys( TIER_RANGES ).filter( ( t ) => hidden.some( ( [ lo, hi ] ) => lo <= TIER_RANGES[ t ][ 0 ] && hi >= TIER_RANGES[ t ][ 1 ] ) );
 }
 
-// The scoped @media rule hiding a range (width in whole px; the rule `&` is the instance, includes/custom-css.php).
-export function mediaRule( [ lo, hi ] ) {
+// The scoped @media rule over a range (width in whole px; the rule `&` is the instance, includes/custom-css.php); the body
+// hides the instance unless the caller gives its own.
+export function mediaRule( [ lo, hi ], body = '& { display: none; }' ) {
 	const cond = [ lo > 0 ? `(min-width: ${ lo }px)` : null, Infinity > hi ? `(max-width: ${ hi - 1 }px)` : null ].filter( Boolean ).join( ' and ' );
-	return `@media ${ cond } { & { display: none; } }`;
+	return `@media ${ cond } { ${ body } }`;
+}
+
+// The three settings that hold a scoped rule on a node (Additional CSS, its scope key and its label): [ { attr, value, prop } ]
+// to write, appending to what the node holds; empty when the node already holds the rule text. Every writer of a scoped
+// rule (the width gate, the width ladder) goes through this one function.
+export function scopedCssPuts( node, { css, label, index, why } ) {
+	const had = ( a ) => node.attributes?.[ a ] || '';
+	if ( had( 'sgsCustomCss' ).includes( css ) ) {
+		return [];
+	}
+	return [
+		{ attr: 'sgsCustomCss', value: [ had( 'sgsCustomCss' ), css ].filter( Boolean ).join( ' ' ), prop: `${ why }: scoped @media rule` },
+		{ attr: 'sgsCustomCssId', value: had( 'sgsCustomCssId' ) || `wgate${ index }`.slice( 0, 16 ), prop: `${ why }: scope key` },
+		{ attr: 'sgsCustomCssNote', value: [ had( 'sgsCustomCssNote' ), label ].filter( Boolean ).join( '; ' ), prop: `${ why }: label` },
+	];
 }
 
 // The setting each block draws its own alternative below (the nav's burger under its collapse point), as the skeleton
@@ -151,7 +167,7 @@ export function ownBreakpoint( db, block, collapse = collapseAttributes() ) {
 const holdsAttr = ( db, block, attr ) => !! db.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );
 
 // A divergence-ledger entry for one snap (FR-48-50 step 1), numbered after the entries already in the ledger.
-function snapEntry( { scope, ref, snap, entries, date } ) {
+export function snapEntry( { scope, ref, snap, entries, date } ) {
 	const reason = `the draft's width threshold ${ snap.draft }px snapped to the ${ snap.tier }px tier (distance ${ snap.distance }px, within 5% of the tier)`;
 	if ( entries.some( ( e ) => e.node === ref && 'breakpoint' === e.property && e.reason === reason ) ) {
 		return null;
@@ -233,14 +249,12 @@ export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, entries
 			out.notes.push( `${ ref } ${ n.name }: shown only at ${ at.shown.map( ( [ lo, hi ] ) => `${ lo }-${ Infinity === hi ? 'up' : hi - 1 }` ).join( ', ' ) } (${ via }); hidden on ${ tiers.join( ', ' ) }${ snaps.length ? `; snapped ${ snaps.map( ( s ) => `${ s.draft } to ${ s.tier }` ).join( ', ' ) }` : '' }` );
 			continue;
 		}
-		const css = hidden.map( mediaRule ).join( ' ' );
-		const had = ( a ) => node.attributes?.[ a ] || '';
-		if ( had( 'sgsCustomCss' ).includes( css ) ) {
+		const css = hidden.map( ( r ) => mediaRule( r ) ).join( ' ' );
+		const puts = scopedCssPuts( node, { css, index: n.index, why: `width gate (${ via })`, label: `Width gate ${ via }: hidden at ${ hidden.map( ( [ lo, hi ] ) => `${ lo }-${ Infinity === hi ? 'up' : hi - 1 }px` ).join( ', ' ) }` } );
+		if ( ! puts.length ) {
 			continue;
 		}
-		put( 'sgsCustomCss', [ had( 'sgsCustomCss' ), css ].filter( Boolean ).join( ' ' ), `width gate (${ via }): scoped @media rule` );
-		put( 'sgsCustomCssId', had( 'sgsCustomCssId' ) || `wgate${ n.index }`.slice( 0, 16 ), 'width gate: scope key' );
-		put( 'sgsCustomCssNote', [ had( 'sgsCustomCssNote' ), `Width gate ${ via }: hidden at ${ hidden.map( ( [ lo, hi ] ) => `${ lo }-${ Infinity === hi ? 'up' : hi - 1 }px` ).join( ', ' ) }` ].filter( Boolean ).join( '; ' ), 'width gate: label' );
+		puts.forEach( ( x ) => put( x.attr, x.value, x.prop ) );
 		out.notes.push( `${ ref } ${ n.name }: ${ via } has no tier-aligned hiding setting and no breakpoint setting; written as a scoped @media rule in Additional CSS` );
 	}
 	return out;

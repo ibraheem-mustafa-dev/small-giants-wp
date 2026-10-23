@@ -1,0 +1,12 @@
+[
+	{ "file": "lib/fill-width-ladder.mjs", "find": "[ 'normal', 'start', 'flex-start' ].includes( v )", "replace": "[ 'start', 'flex-start' ].includes( v )", "why": "normal would no longer stand for the start value, so the enum alias would not be written" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "if ( 'space-between' === v && null !== children && children <= 1 ) {", "replace": "if ( false ) {", "why": "space-between with one visible child would differ from the start value, so the top row would need CSS" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": ".filter( ( r ) => r.css_property.split( ',' ).map( ( x ) => x.trim() ).includes( prop ) && paints( cal, r.attr_name.replace( /(Tablet|Mobile)$/, '' ), slot ) );", "replace": ".filter( () => false );", "why": "a tier-shaped setting painting the element would never be used" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "if ( own && Number.isFinite( point ) && 2 === distinct.length ) {", "replace": "if ( false ) {", "why": "the block's own breakpoint setting would never take the wide value" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "const s = snapThreshold( raw );", "replace": "const s = null;", "why": "a threshold within 5% of a tier would not snap and would leave no ledger entry" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "! SAFE_VALUE.test( values[ w ] )", "replace": "false", "why": "a value carrying CSS syntax would be written into the rule" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "const pseudo = state ? STATE_PSEUDO[ state ] : '';", "replace": "const pseudo = '';", "why": "a state value would be written on the resting element" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "out.at( -1 ).value === s.value &&", "replace": "false &&", "why": "adjacent widths holding the same value would each get a rule" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "ONE_VALUE_EVERY_WIDTH === row.code ||", "replace": "", "why": "the one-value-every-width gap would not be read" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "const step = series.find( ( s ) => s.width > a && s.width <= b && norm( s.value ) !== norm( base ) );", "replace": "const step = null;", "why": "the swept threshold would be ignored for the tier boundary" }
+]
