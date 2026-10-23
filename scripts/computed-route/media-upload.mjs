@@ -1,11 +1,13 @@
 // Media upload to an ID map (Spec 48 FR-48-58): lib/media-upload.mjs over one client and one site.
 //   node media-upload.mjs <client> --site <secrets name, e.g. indus-test> [--apply] [--repo <root>]
 // Without --apply it lists what it would upload (reading the site only to check the mapped attachments are live);
-// with --apply it uploads and writes sites/<client>/build/media-map.json. Exit 0 done, 1 failure, 2 usage.
+// with --apply it uploads and writes sites/<client>/build/media-map.json and, for the stock previews the draft paints,
+// sites/<client>/build/stock-review.md. Exit 0 done, 1 failure (a stock image that did not download included), 2 usage.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { readMap, siteCredentials, uploadMedia } from './lib/media-upload.mjs';
+import { stockReview } from './lib/media-stock.mjs';
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );
@@ -17,20 +19,30 @@ if ( ! client || ! site ) {
 }
 const repo = opt( '--repo' ) || path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
 const mapFile = path.join( repo, 'sites', client, 'build', 'media-map.json' );
+const reviewFile = path.join( repo, 'sites', client, 'build', 'stock-review.md' );
 const apply = args.includes( '--apply' );
+const save = ( map ) => {
+	fs.mkdirSync( path.dirname( mapFile ), { recursive: true } );
+	fs.writeFileSync( mapFile, `${ JSON.stringify( map, null, '\t' ) }\n` );
+	fs.writeFileSync( reviewFile, stockReview( client, map ) );
+};
 try {
 	const r = await uploadMedia( { repo, client, site, map: readMap( mapFile ), creds: siteCredentials( repo, site ), apply, log: console.log } );
 	if ( apply ) {
-		fs.mkdirSync( path.dirname( mapFile ), { recursive: true } );
-		fs.writeFileSync( mapFile, `${ JSON.stringify( r.map, null, '\t' ) }\n` );
+		save( r.map );
 	}
 	r.wouldUpload.forEach( ( a ) => console.log( `would upload ${ a }` ) );
 	r.sanitised.forEach( ( a ) => console.log( `REVIEW ${ a }: the SVG upload sanitiser changed the file (svg-upload.php); compare the stored attachment with the asset` ) );
+	const isStock = ( a ) => r.stockFound.includes( a );
+	console.log( `stock previews: ${ r.stockFound.length } found, ${ r.uploaded.filter( isStock ).length } uploaded, ${ r.skipped.filter( isStock ).length } already live, ${ r.wouldUpload.filter( isStock ).length } to upload, ${ r.failed.length } failed` );
+	r.failed.forEach( ( f ) => console.error( `STOCK FAILED ${ f.asset }: ${ f.reason }` ) );
 	console.log( `${ r.uploaded.length } uploaded, ${ r.skipped.length } already live, ${ r.wouldUpload.length } to upload${ apply ? `; map ${ path.relative( repo, mapFile ) }` : ' (dry run: re-run with --apply)' }` );
+	if ( r.failed.length ) {
+		process.exit( 1 );
+	}
 } catch ( e ) {
 	if ( apply && e.map ) {
-		fs.mkdirSync( path.dirname( mapFile ), { recursive: true } );
-		fs.writeFileSync( mapFile, `${ JSON.stringify( e.map, null, '\t' ) }\n` );
+		save( e.map );
 		console.error( `the map holds the files uploaded before the failure: ${ path.relative( repo, mapFile ) }` );
 	}
 	console.error( `FAILED: ${ e.message }` );

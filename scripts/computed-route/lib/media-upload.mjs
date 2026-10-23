@@ -4,9 +4,13 @@
 // each file's source sha256, attachment ID and URL, and the sha256 of the file WordPress kept (`storedSha256`); an SVG
 // the upload sanitiser changed (plugins/sgs-blocks/includes/svg-upload.php) is marked `sanitised` for Bean's review.
 // A rerun skips a file whose sha256 is in the map with a live attachment that still serves `storedSha256`.
+// A stock preview (an image on a stock host that the draft paints, lib/media-stock.mjs) is downloaded once and uploaded
+// the same way as a `stock: true` entry whose `asset` is its source URL without the query; a rerun skips one whose
+// attachment is live without downloading it again.
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import { downloadStock, stockDownloadUrl, stockFileName, stockImages, stockKey } from './media-stock.mjs';
 
 export const IMAGE_TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.avif': 'image/avif', '.svg': 'image/svg+xml' };
 export const sha256 = ( buf ) => crypto.createHash( 'sha256' ).update( buf ).digest( 'hex' );
@@ -67,14 +71,62 @@ async function stillLive( fetchImpl, creds, entry ) {
 	return !! bytes && sha256( bytes ) === entry.storedSha256;
 }
 
+// One upload through the REST media endpoint: { media, kept } with the bytes WordPress serves for it.
+async function postMedia( fetchImpl, creds, label, name, type, bytes ) {
+	const res = await fetchImpl( `${ creds.url }/wp-json/wp/v2/media`, { method: 'POST', headers: { Authorization: creds.auth, 'Content-Type': type, 'Content-Disposition': disposition( name ) }, body: bytes } );
+	if ( 201 !== res.status ) {
+		throw new Error( `uploading ${ label } answered ${ res.status }: ${ ( await res.text() ).slice( 0, 300 ) }` );
+	}
+	const media = await res.json();
+	const kept = await served( fetchImpl, media.source_url );
+	if ( ! kept ) {
+		throw new Error( `attachment ${ media.id } for ${ label } does not serve ${ media.source_url }` );
+	}
+	return { media, kept };
+}
+
 // Uploads what the map does not hold live: { files, uploaded, skipped, sanitised }. `apply: false` uploads nothing and
-// lists what would be uploaded. The map is returned, not written (the caller writes it).
-export async function uploadMedia( { repo, client, site, map, creds, fetchImpl = fetch, apply = false, log = () => {} } ) {
+// lists what would be uploaded. The map is returned, not written (the caller writes it). `stock` is the list of stock
+// previews to carry (default: those the client's draft paints); `stockFound` returns their keys and `failed` the stock
+// downloads that did not complete (the run goes on without them).
+export async function uploadMedia( { repo, client, site, map, creds, fetchImpl = fetch, apply = false, log = () => {}, stock = stockImages( repo, client ) } ) {
 	const known = map.sites?.[ site ]?.files || [];
 	const handoffPrefix = `sites/${ client }/handoff/`;
 	const manifest = manifestSums( repo, client );
 	const files = [];
-	const report = { uploaded: [], skipped: [], sanitised: [], wouldUpload: [] };
+	const report = { uploaded: [], skipped: [], sanitised: [], wouldUpload: [], failed: [], stockFound: stock.map( ( s ) => s.key ) };
+	// One stock preview: kept when its attachment is live, else downloaded (its failure is reported, not thrown) and uploaded.
+	const carryStock = async ( row ) => {
+		const had = known.find( ( e ) => e.stock && e.asset === row.key );
+		if ( had && ( await stillLive( fetchImpl, creds, had ) || await stillLive( fetchImpl, creds, had ) ) ) {
+			files.push( { ...had, paintedAt: row.paintedAt } );
+			report.skipped.push( row.key );
+			return;
+		}
+		if ( ! apply ) {
+			report.wouldUpload.push( row.key );
+			return;
+		}
+		const source = stockDownloadUrl( row.key, row.width );
+		let got;
+		try {
+			got = await downloadStock( fetchImpl, source );
+		} catch ( e ) {
+			report.failed.push( { asset: row.key, reason: e.message } );
+			return;
+		}
+		const sum = sha256( got.bytes );
+		const twin = files.find( ( e ) => e.sha256 === sum && e.id );
+		if ( twin ) {
+			files.push( { ...twin, asset: row.key, source, stock: true, paintedAt: row.paintedAt } );
+			report.skipped.push( row.key );
+			return;
+		}
+		const { media, kept } = await postMedia( fetchImpl, creds, row.key, stockFileName( row.key, got.ext ), got.type, got.bytes );
+		files.push( { asset: row.key, source, sha256: sum, id: media.id, url: media.source_url, storedSha256: sha256( kept ), stock: true, paintedAt: row.paintedAt } );
+		report.uploaded.push( row.key );
+		log( `uploaded stock ${ row.key } as attachment ${ media.id }` );
+	};
 	// A failure part-way keeps what did upload: the error carries the map of the files handled so far plus the earlier
 	// rows not reached yet, so the caller can save it and a rerun does not upload them twice.
 	try {
@@ -106,15 +158,7 @@ export async function uploadMedia( { repo, client, site, map, creds, fetchImpl =
 			}
 			const name = path.basename( asset );
 			const type = IMAGE_TYPES[ path.extname( name ).toLowerCase() ];
-			const res = await fetchImpl( `${ creds.url }/wp-json/wp/v2/media`, { method: 'POST', headers: { Authorization: creds.auth, 'Content-Type': type, 'Content-Disposition': disposition( name ) }, body: bytes } );
-			if ( 201 !== res.status ) {
-				throw new Error( `uploading ${ asset } answered ${ res.status }: ${ ( await res.text() ).slice( 0, 300 ) }` );
-			}
-			const media = await res.json();
-			const kept = await served( fetchImpl, media.source_url );
-			if ( ! kept ) {
-				throw new Error( `attachment ${ media.id } for ${ asset } does not serve ${ media.source_url }` );
-			}
+			const { media, kept } = await postMedia( fetchImpl, creds, asset, name, type, bytes );
 			const entry = { asset, sha256: sum, id: media.id, url: media.source_url, storedSha256: sha256( kept ), stock: false };
 			if ( 'image/svg+xml' === type && entry.storedSha256 !== sum ) {
 				entry.sanitised = true;
@@ -124,6 +168,9 @@ export async function uploadMedia( { repo, client, site, map, creds, fetchImpl =
 			report.uploaded.push( asset );
 			log( `uploaded ${ asset } as attachment ${ media.id }${ entry.sanitised ? ' (the SVG sanitiser changed it)' : '' }` );
 		}
+		for ( const row of stock ) {
+			await carryStock( row );
+		}
 	} catch ( e ) {
 		e.map = { ...map, sites: { ...( map.sites || {} ), [ site ]: { files: [ ...files, ...known.filter( ( k ) => ! files.some( ( f ) => f.asset === k.asset ) ) ] } } };
 		throw e;
@@ -132,11 +179,13 @@ export async function uploadMedia( { repo, client, site, map, creds, fetchImpl =
 }
 
 // The asset a painted image URL shows on a site, through the map (FR-48-58's identity check): the attachment whose URL
-// the painted URL is, else one a size WordPress made of it matches (`name-300x200.png`, `name-scaled.png`); null when none.
+// the painted URL is, else a stock preview whose source URL it is, else one a size WordPress made of it matches (`name-300x200.png`, `name-scaled.png`); null when none.
 export function paintedAsset( map, site, src ) {
 	const files = map.sites?.[ site ]?.files || [];
 	const plain = ( u ) => String( u ).split( /[?#]/ )[ 0 ];
 	const unsized = ( u ) => plain( u ).replace( /-(?:\d+x\d+|scaled)(?=\.[a-z0-9]+$)/i, '' );
 	// The exact URL first, so an asset whose own name ends like a size (hero-1200x600.png) is never taken for another's.
-	return files.find( ( e ) => plain( e.url ) === plain( src ) ) || files.find( ( e ) => unsized( e.url ) === unsized( src ) ) || null;
+	// A stock preview the draft paints from its source URL is found by that URL without the query.
+	const key = stockKey( src );
+	return files.find( ( e ) => plain( e.url ) === plain( src ) ) || ( key && files.find( ( e ) => e.stock && e.asset === key ) ) || files.find( ( e ) => unsized( e.url ) === unsized( src ) ) || null;
 }

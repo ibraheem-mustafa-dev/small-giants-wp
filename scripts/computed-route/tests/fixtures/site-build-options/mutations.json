@@ -1,0 +1,17 @@
+[
+	{ "file": "lib/site-build-options.mjs", "find": "if ( ! NAME.test( name ) ) {\n\t\tthrow new Error( `site option \"${ name }\" is not a plain option name` );\n\t}\n\tif ( ! isObject( entry?.value )", "replace": "if ( false ) {\n\t\tthrow new Error( `site option \"${ name }\" is not a plain option name` );\n\t}\n\tif ( ! isObject( entry?.value )", "why": "an option name that is not a plain identifier is promoted" },
+	{ "file": "lib/site-build-options.mjs", "find": "if ( ! isObject( entry?.value ) || ! Object.keys( entry.value ).length ) {", "replace": "if ( false ) {", "why": "a valueless entry is promoted" },
+	{ "file": "lib/site-build-options.mjs", "find": "if ( ! KEY.test( k ) || ( null !== v && ! [ 'string', 'number', 'boolean' ].includes( typeof v ) ) ) {", "replace": "if ( false ) {", "why": "a bad key or nested value is promoted" },
+	{ "file": "lib/site-build-options.mjs", "find": "value: { ...was.value, ...incoming.value } };", "replace": "value: { ...incoming.value } };", "why": "a later Fill run drops the keys an earlier one promoted" },
+	{ "file": "lib/site-build-options.mjs", "find": "records: [ ...new Set( [ ...was.records, ...incoming.records ] ) ].sort(),", "replace": "records: incoming.records,", "why": "the records of earlier runs are lost" },
+	{ "file": "lib/site-build-options.mjs", "find": "const changed = ! same( was, next );\n\tif ( changed ) {", "replace": "const changed = true;\n\tif ( changed ) {", "why": "a repeat promotion reports a change" },
+	{ "file": "lib/site-build-options.mjs", "find": "const base = isObject( held ) ? held : {};", "replace": "const base = {};", "why": "the keys the site holds that the draft does not set are overwritten" },
+	{ "file": "lib/site-build-options.mjs", "find": "! same( base[ k ], v ) );", "replace": "true );", "why": "a key the site already holds is planned again, so a second run is never empty" },
+	{ "file": "lib/site-build-options.mjs", "find": "before: shown( base[ k ] ), after: shown( v ) } ) );", "replace": "before: shown( v ), after: shown( v ) } ) );", "why": "the table shows the wanted value as the before" },
+	{ "file": "lib/site-build-options.mjs", "find": "out.notes.push( `${ name } holds", "replace": "void ( `${ name } holds", "why": "a non-array stored value is replaced without a note" },
+	{ "file": "lib/site-build-options.mjs", "find": "const names = Object.keys( desired );\n\tif ( ! names.length ) {", "replace": "const names = Object.keys( desired );\n\tif ( false ) {", "why": "the site is read even when no site option is wanted" },
+	{ "file": "lib/site-build-options.mjs", "find": "plan.actions.push( ...mine.actions );", "replace": "", "why": "the plan never carries the options' actions" },
+	{ "file": "lib/site-build-options.mjs", "find": "plan.options.push( ...mine.options );", "replace": "", "why": "the option table never shows the site options" },
+	{ "file": "lib/site-build-apply.mjs", "find": "wp( [ 'option', 'update', a.name, JSON.stringify( a.value ), '--format=json' ] );", "replace": "", "why": "the writer plans the option and never writes it" },
+	{ "file": "lib/site-build-apply.mjs", "find": "JSON.stringify( a.value ), '--format=json' ] );\n\t\t} else if ( 'permalinks'", "replace": "JSON.stringify( a.value ) ] );\n\t\t} else if ( 'permalinks'", "why": "the array is written as a plain string, not JSON" }
+]

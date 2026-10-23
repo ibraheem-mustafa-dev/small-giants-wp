@@ -1,12 +1,13 @@
 // Spec 48 FR-48-58, lib/media-upload.mjs against an in-memory WordPress: the first run uploads every image once and
 // maps it; a second run uploads nothing; a deleted attachment or a stored file that changed is uploaded again; an SVG
-// the sanitiser rewrote is marked for review; a dry run uploads nothing; a painted size URL maps back to its asset.
+// the sanitiser rewrote is marked for review; a dry run uploads nothing; a painted size URL maps back to its asset; a stock preview the draft paints is downloaded once, uploaded as `stock: true`, listed for review and followed from its painted URL.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { mediaAssets, paintedAsset, sha256, siteCredentials, uploadMedia } from '../lib/media-upload.mjs';
+import { downloadStock, MAX_STOCK_BYTES, stockImages, stockKey, stockReview } from '../lib/media-stock.mjs';
 
 // Writes an export asset and records its fingerprint in the export's MANIFEST.json, as a real export does.
 function ship( repo, name, body ) {
@@ -180,4 +181,136 @@ test( 'MUST FAIL: one failed liveness read does not re-upload a live attachment;
 	misses = 0;
 	const twice = await uploadMedia( { repo, client: 'acme', site: 'acme-test', map: first.map, creds, fetchImpl: flaky( 2 ), apply: true } );
 	assert.deepEqual( twice.uploaded, [ 'sites/acme/handoff/assets/hero.png' ] );
+} );
+
+// A draft that paints stock images three ways: a literal with a query (two sizes of one photo), a literal with no query,
+// and a URL built from photo IDs; plus a credit link and a non-stock host that are not images to keep.
+function draftWithStock( repo ) {
+	const dir = path.join( repo, 'sites/acme/handoff' );
+	fs.mkdirSync( dir, { recursive: true } );
+	fs.writeFileSync( path.join( dir, 'Home.dc.html' ), [
+		'<img src="https://images.unsplash.com/photo-1111111111111-aaaaaaaaaaaa?w=2200&q=82&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1111111111111-aaaaaaaaaaaa?w=400 1x">',
+		'<img src="https://images.unsplash.com/photo-1111111111111-aaaaaaaaaaaa?w=800&amp;q=80">',
+		'<a href="https://unsplash.com/photos/1111111111111-aaaaaaaaaaaa">credit</a>',
+		'<img src="https://cdn.example.org/photo-9999999999999-ffffffffffff">',
+		'<script>const hero = { a: \'https://images.unsplash.com/photo-2222222222222-bbbbbbbbbbbb\' };',
+		'const P = [\'3333333333333-cccccccccccc\'];',
+		'img.src = \'https://images.unsplash.com/photo-\' + P[0] + \'?w=400\';</script>',
+		'<img src="https://images.unsplash.com/photo-2222222222222-bbbbbbbbbbbb?w=5000">',
+	].join( '\n' ) );
+}
+
+// The in-memory WordPress plus an image host that serves each stock photo (its bytes derive from its path).
+function withStockHost( wp, { type = 'image/jpeg', same = false } = {} ) {
+	const calls = { downloads: [] };
+	const fetchImpl = async ( url, init = {} ) => {
+		if ( url.startsWith( 'https://images.unsplash.com/' ) ) {
+			calls.downloads.push( url );
+			const body = Buffer.from( same ? 'SAME-PHOTO' : `PHOTO:${ new URL( url ).pathname }` );
+			return { status: 200, url, headers: { get: ( k ) => ( { 'content-type': type, 'content-length': String( body.length ) } )[ k ] }, arrayBuffer: async () => body };
+		}
+		return wp.fetchImpl( url, init );
+	};
+	return { calls, fetchImpl };
+}
+
+const runStock = ( repo, map, fetchImpl, apply = true ) => uploadMedia( { repo, client: 'acme', site: 'acme-test', map, creds: siteCredentials( repo, 'acme-test' ), fetchImpl, apply } );
+const stockRows = ( r ) => r.map.sites[ 'acme-test' ].files.filter( ( f ) => f.stock );
+
+test( 'MUST FAIL: stockImages finds each stock photo the draft paints once, whatever its size, and nothing else', () => {
+	const repo = fixtureRepo();
+	draftWithStock( repo );
+	const found = stockImages( repo, 'acme' );
+	assert.deepEqual( found.map( ( f ) => [ f.key, f.width ] ), [
+		[ 'https://images.unsplash.com/photo-1111111111111-aaaaaaaaaaaa', 2200 ],
+		[ 'https://images.unsplash.com/photo-2222222222222-bbbbbbbbbbbb', 5000 ],
+		[ 'https://images.unsplash.com/photo-3333333333333-cccccccccccc', 0 ],
+	] );
+	assert.deepEqual( found[ 0 ].paintedAt, [ 'Home.dc.html:1', 'Home.dc.html:2' ] );
+	assert.equal( stockKey( 'https://unsplash.com/photos/1111111111111-aaaaaaaaaaaa' ), null );
+	assert.equal( stockKey( 'http://images.unsplash.com/photo-1111111111111-aaaaaaaaaaaa' ), null );
+} );
+
+test( 'MUST FAIL: each stock photo uploads once as stock:true with its source and downloaded hash; a rerun downloads and uploads nothing', async () => {
+	const repo = fixtureRepo();
+	draftWithStock( repo );
+	const wp = fakeWordPress();
+	const host = withStockHost( wp );
+	const first = await runStock( repo, { sites: {} }, host.fetchImpl );
+	assert.equal( first.uploaded.length, 6, '3 local images and 3 stock previews' );
+	const rows = stockRows( first );
+	assert.deepEqual( rows.map( ( f ) => f.asset ), [ 'https://images.unsplash.com/photo-1111111111111-aaaaaaaaaaaa', 'https://images.unsplash.com/photo-2222222222222-bbbbbbbbbbbb', 'https://images.unsplash.com/photo-3333333333333-cccccccccccc' ] );
+	assert.equal( rows[ 0 ].source, 'https://images.unsplash.com/photo-1111111111111-aaaaaaaaaaaa?w=2200&q=80&auto=format&fit=crop' );
+	assert.equal( rows[ 1 ].source, 'https://images.unsplash.com/photo-2222222222222-bbbbbbbbbbbb?w=2400&q=80&auto=format&fit=crop', 'a width over the cap is capped' );
+	assert.equal( rows[ 2 ].source, 'https://images.unsplash.com/photo-3333333333333-cccccccccccc?w=1600&q=80&auto=format&fit=crop', 'a photo painted with no width gets the default' );
+	assert.equal( rows[ 0 ].sha256, sha256( Buffer.from( 'PHOTO:/photo-1111111111111-aaaaaaaaaaaa' ) ) );
+	assert.ok( rows.every( ( f ) => f.id && f.url.includes( '/wp-content/uploads/' ) && f.paintedAt.length ) );
+	assert.equal( first.map.sites[ 'acme-test' ].files.filter( ( f ) => ! f.stock ).length, 3, 'local rows stay stock:false' );
+	const [ downloads, uploads ] = [ host.calls.downloads.length, wp.calls.uploads ];
+	const again = await runStock( repo, first.map, host.fetchImpl );
+	assert.deepEqual( [ again.uploaded.length, again.skipped.length, host.calls.downloads.length, wp.calls.uploads ], [ 0, 6, downloads, uploads ] );
+	wp.media.delete( rows[ 1 ].id );
+	assert.deepEqual( ( await runStock( repo, again.map, host.fetchImpl ) ).uploaded, [ rows[ 1 ].asset ] );
+} );
+
+test( 'MUST FAIL: a stock dry run downloads and uploads nothing and lists every stock preview', async () => {
+	const repo = fixtureRepo();
+	draftWithStock( repo );
+	const wp = fakeWordPress();
+	const host = withStockHost( wp );
+	const r = await runStock( repo, { sites: {} }, host.fetchImpl, false );
+	assert.deepEqual( [ host.calls.downloads.length, wp.calls.uploads, r.stockFound.length, r.wouldUpload.filter( ( a ) => a.startsWith( 'https://' ) ).length ], [ 0, 0, 3, 3 ] );
+} );
+
+test( 'MUST FAIL: a stock download that is not https, not an image, over the size cap or redirected off https is refused', async () => {
+	const answer = ( over ) => async ( url ) => ( { status: 200, url, headers: { get: ( k ) => ( { 'content-type': 'image/jpeg', ...over.headers } )[ k ] }, arrayBuffer: async () => over.body || Buffer.from( 'x' ), ...over.res } );
+	const photo = 'https://images.unsplash.com/photo-1';
+	await assert.rejects( downloadStock( answer( { res: { url: photo } } ), 'http://images.unsplash.com/photo-1' ), /is not https/ );
+	await assert.rejects( downloadStock( answer( { headers: { 'content-type': 'text/html' } } ), photo ), /not an image type/ );
+	await assert.rejects( downloadStock( answer( { headers: { 'content-type': 'image/svg+xml' } } ), photo ), /not an image type/ );
+	await assert.rejects( downloadStock( answer( { headers: { 'content-length': String( MAX_STOCK_BYTES + 1 ) } } ), photo ), /over the .* cap/ );
+	await assert.rejects( downloadStock( answer( { body: Buffer.alloc( MAX_STOCK_BYTES + 1 ) } ), photo ), /over the .* cap/ );
+	await assert.rejects( downloadStock( answer( { res: { url: 'http://elsewhere.test/a.jpg' } } ), photo ), /redirected to http:\/\/elsewhere\.test\/a\.jpg, which is not https/ );
+	assert.equal( ( await downloadStock( answer( {} ), photo ) ).ext, '.jpg' );
+} );
+
+test( 'MUST FAIL: a stock photo that does not download is reported and the run still uploads the rest', async () => {
+	const repo = fixtureRepo();
+	draftWithStock( repo );
+	const host = withStockHost( fakeWordPress() );
+	const flaky = ( url, init ) => ( url.includes( 'photo-2222222222222' ) ? Promise.resolve( { status: 404, headers: { get: () => null } } ) : host.fetchImpl( url, init ) );
+	const r = await runStock( repo, { sites: {} }, flaky );
+	assert.deepEqual( r.failed.map( ( f ) => f.asset ), [ 'https://images.unsplash.com/photo-2222222222222-bbbbbbbbbbbb' ] );
+	assert.match( r.failed[ 0 ].reason, /answered 404/ );
+	assert.equal( stockRows( r ).length, 2 );
+} );
+
+test( 'MUST FAIL: two stock photos with the same bytes share one attachment', async () => {
+	const repo = fixtureRepo();
+	draftWithStock( repo );
+	const wp = fakeWordPress();
+	const r = await runStock( repo, { sites: {} }, withStockHost( wp, { same: true } ).fetchImpl );
+	assert.equal( new Set( stockRows( r ).map( ( f ) => f.id ) ).size, 1 );
+	assert.equal( wp.calls.uploads, 4, '3 local images and one stock upload' );
+	assert.equal( stockRows( r ).length, 3, 'each photo keeps its own row' );
+} );
+
+test( 'MUST FAIL: paintedAsset follows a painted stock URL, with any query, to its stock entry', () => {
+	const map = { sites: { 'acme-test': { files: [
+		{ asset: 'https://images.unsplash.com/photo-1111111111111-aaaaaaaaaaaa', id: 7, stock: true, url: 'https://acme.test/wp-content/uploads/2026/10/stock-1111111111111-aaaaaaaaaaaa.jpg' },
+		{ asset: 'sites/acme/assets/x.png', id: 8, stock: false, url: 'https://acme.test/wp-content/uploads/2026/10/x.png' },
+	] } } };
+	assert.equal( paintedAsset( map, 'acme-test', 'https://images.unsplash.com/photo-1111111111111-aaaaaaaaaaaa?w=2200&q=82&auto=format&fit=crop' ).id, 7 );
+	assert.equal( paintedAsset( map, 'acme-test', 'https://acme.test/wp-content/uploads/2026/10/stock-1111111111111-aaaaaaaaaaaa-300x200.jpg' ).id, 7 );
+	assert.equal( paintedAsset( map, 'acme-test', 'https://images.unsplash.com/photo-2222222222222-bbbbbbbbbbbb?w=10' ), null );
+} );
+
+test( 'MUST FAIL: the stock review lists each stock image with where it is painted and its attachment, and no local image', async () => {
+	const repo = fixtureRepo();
+	draftWithStock( repo );
+	const r = await runStock( repo, { sites: {} }, withStockHost( fakeWordPress() ).fetchImpl );
+	const md = stockReview( 'acme', r.map );
+	assert.match( md, /\| https:\/\/images\.unsplash\.com\/photo-1111111111111-aaaaaaaaaaaa \| Home\.dc\.html:1<br>Home\.dc\.html:2 \| \d+ \|/ );
+	assert.equal( ( md.match( /^\| https:/gm ) || [] ).length, 3 );
+	assert.ok( ! md.includes( 'bread.jpg' ) );
 } );
