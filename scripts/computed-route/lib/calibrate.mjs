@@ -4,6 +4,7 @@
 // preconditions: lib/calibrate-instances.mjs; the browser reader: lib/calibrate-read.mjs.
 import { WIDTHS, INHERITED, CAL_PREFIX, longhands } from './calibrate-props.mjs';
 import { splitProperty } from './resolve.mjs';
+import { stateLook } from './calibrate-instances.mjs';
 import { timingSet } from '../../parity/lib/compare.mjs';
 
 export { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT, MARKER_REST_GRADIENT, CAL_PREFIX, READ_PROPS, READ_KEY, INHERITED, longhands } from './calibrate-props.mjs';
@@ -87,11 +88,13 @@ function formAccepted( marker, changes ) {
 }
 
 // Works out one setting's slot from the default and marked readings ({ width: { path: { prop: value } } }).
-// Returns { slot, slots, property, transform, reachedAt, oneWidth, effects } or { dead }. containerQuery: the block's
+// Returns { slot, slots, property, transform, reachedAt, oneWidth, effects, look? } or { dead }. containerQuery: the block's
 // tiers follow its container's width (an @container rule), so a tier reached at fewer page widths is expected, not oneWidth.
 // slots: every element the marker reaches (a non-inherited property can land on the root and an inner element alike;
 // an inherited one only counts where it is set, the shallowest). effects: other properties the marker changed on those
-// elements ("path|prop"), the side effects Solve's regression guard matches regressions against.
+// elements ("path|prop"), the side effects Solve's regression guard matches regressions against. look: for a state
+// setting (row.css_state), what its slots show in that state as values (lib/calibrate-instances.mjs::stateLook), read from
+// the marked instance in its state, the setting's own properties left out.
 export function slotFor( row, marker, defReads, markReads, { containerQuery = false, own = null } = {} ) {
 	const props = longhands( row.css_property );
 	const changes = [];
@@ -138,7 +141,8 @@ export function slotFor( row, marker, defReads, markReads, { containerQuery = fa
 	const misses = marker.expect && hitPaths.size ? [ ...new Set( changes.filter( ( c ) => ! hitPaths.has( c.path ) ).map( ( c ) => c.path ) ) ] : [];
 	// formAccepted: only for a marker whose form has an acceptance rule (FORM_ACCEPT).
 	const accepted = FORM_ACCEPT[ marker.form ] ? { formAccepted: formAccepted( marker, changes ) } : {};
-	return { slot: best.path, slots, ...accepted, ...( misses.length ? { misses } : {} ), ...( reaches ? { reaches } : {} ), ...( overriddenBy.length ? { overriddenBy } : {} ), property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: ! containerQuery && 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length, ...( containerQuery && reachedAt.length < WIDTHS.length ? { containerTier: true } : {} ), effects };
+	const look = row.css_state ? stateLook( markReads, slots, props ) : null;
+	return { slot: best.path, slots, ...( look && Object.keys( look ).length ? { look } : {} ), ...accepted, ...( misses.length ? { misses } : {} ), ...( reaches ? { reaches } : {} ), ...( overriddenBy.length ? { overriddenBy } : {} ), property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: ! containerQuery && 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length, ...( containerQuery && reachedAt.length < WIDTHS.length ? { containerTier: true } : {} ), effects };
 }
 
 // The setting's own element (`own`: the selector its css_element names, null for the wrapper) when the marker reached
@@ -185,7 +189,8 @@ export function overridingChildren( props, marker, defReads, slot, reaches ) {
 // the entry so far (undefined for the first marker); s: a slotFor reading; ctx: { state, form, variant } from the
 // instance. Array fields are the union across every marker; the slot is the first marker's. An element some reading
 // changed without carrying the marker value (`misses`) leaves the slots, and the slot moves to the shallowest one left,
-// unless that would leave none.
+// unless that would leave none. A state setting's look (slotFor) folds per element, property and width, the earlier
+// marker's value kept where two readings both hold one.
 export function mergeSetting( prev, s, { state = null, form = null, variant = 0 } = {} ) {
 	const union = ( a, b ) => [ ...new Set( [ ...( a || [] ), ...( b || [] ) ] ) ];
 	const reaches = s.reaches || prev?.reaches ? union( prev?.reaches, s.reaches ) : null;
@@ -210,7 +215,19 @@ export function mergeSetting( prev, s, { state = null, form = null, variant = 0 
 		variants: union( prev?.variants, [ variant ?? 0 ] ),
 		// A container-query tier reaching fewer page widths by design (slotFor) keeps saying so in the cache.
 		...( s.containerTier || prev?.containerTier ? { containerTier: true } : {} ),
+		...( s.look || prev?.look ? { look: mergeLook( prev?.look, s.look ) } : {} ),
 	};
+}
+
+// Two state looks ({ path: { prop: { width: value } } }) as one; a value `a` holds stands.
+function mergeLook( a = {}, b = {} ) {
+	const out = structuredClone( a );
+	for ( const [ path, props ] of Object.entries( b ) ) {
+		for ( const [ prop, ws ] of Object.entries( props ) ) {
+			( out[ path ] ??= {} )[ prop ] = { ...ws, ...( out[ path ][ prop ] || {} ) };
+		}
+	}
+	return out;
 }
 
 // Folds one marker's reading into the block's results (calibrate.mjs). acc: { settings, dead, oneWidth }; inst:

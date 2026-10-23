@@ -6,7 +6,9 @@
 //              setting whose parts include the property (and whose written part equals the draft's), a setting calibration
 //              saw change the property as a side effect, or an sgsMotion state that carries the transform and the transition;
 //   inherited  an inherited property on an element that holds no text of its own (a container whose descendants state their
-//              own text looks), equal to what its parent renders;
+//              own text looks), equal to what its parent renders, where the block's own stylesheet sets no value of it on
+//              that element (lib/fill-resolve-state.mjs::ownPaint, as Fill's baseline prefers it): such an element shows
+//              its own value, never the parent's;
 //   inert      the equivalence engine judged the value to paint nothing at every width it states (the resolver's `code`
 //              'held:inert', lib/css-equivalence/inert.mjs), listed with the engine's reason.
 // A value the block paints by default is never judged here (the engine's 'held:default' row stays raised): the calibration page is not the page being built, where a
@@ -18,7 +20,7 @@ import { sameValue } from '../../parity/lib/compare.mjs';
 import { LOOSE } from './resolve.mjs';
 import { refOf } from './tree.mjs';
 import { INHERITED, canon, defaultPaint } from './fill-prop.mjs';
-import { snapsOf } from './fill-resolve-state.mjs';
+import { snapsOf, ownPaint } from './fill-resolve-state.mjs';
 import { familyOf, expand, physicalOf, partKey, isCssProperty } from './css-families.mjs';
 import { propertyChannels, IDENTITY } from './motion-channels.mjs';
 import { msOf, easingOf, clientTokens } from './motion-tokens.mjs';
@@ -183,8 +185,10 @@ export function makeSettle( st ) {
 				return null;
 			}
 			const widths = Object.keys( values ).map( Number );
-			// inherited: no text of its own (its text lives in child nodes) and the parent renders the same value.
-			if ( INHERITED.includes( row.property ) && rec.children.length > 0 && widths.every( ( w ) => same( row.property, values[ w ], parentValue( rec, '' === row.slot ? null : row.slot, row.property, w ) ) ) ) {
+			// inherited: no text of its own (its text lives in child nodes), no paint of its own from the block's stylesheet,
+			// and the parent renders the same value.
+			const own = ( w ) => ownPaint( cal, row.slot, w, row.property, parseFloat( snaps[ w ]?.styles?.[ 'font-size' ] ) || undefined );
+			if ( INHERITED.includes( row.property ) && rec.children.length > 0 && widths.every( ( w ) => undefined === own( w ) && same( row.property, values[ w ], parentValue( rec, '' === row.slot ? null : row.slot, row.property, w ) ) ) ) {
 				return { reason: 'inherited', detail: `${ row.property } is inherited and this element holds no text of its own; its parent renders the same value` };
 			}
 			return null;
