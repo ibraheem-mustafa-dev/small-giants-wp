@@ -1,21 +1,28 @@
-// Reads a draft's shop surfaces (the buy box, the filter, the basket drawer) out of its `.dc.html` template source as a
-// flat list of units (Spec 48 FR-48-60, FR-48-61, FR-48-62): every control, text run and image in the surface's region,
-// each carrying the conditions (`sc-if` values, `sc-for` lists) it sits under. Pure: sources and surface records in,
-// units out. The matcher (lib/shop-parts.mjs) classifies the units.
+// Reads a draft's shop surfaces (the buy box, the filter, the basket drawer) out of its `.dc.html` source as a flat list
+// of units (Spec 48 FR-48-60, FR-48-61, FR-48-62): every control, text run and image in the surface's region, each with
+// the conditions (`sc-if` values, `sc-for` lists) it sits under and the structural facts the matcher classifies it by
+// (lib/shop-parts.mjs). The regions and the facts come from what the draft's code is and does, never from its words:
+//   - the buy box is the lowest element holding the first control whose handler appends a record to a collection (an
+//     add-to-basket, lib/shop-parts-logic.mjs::effectOf) and the page's h1, plus each conditional bar outside it that
+//     repeats that control's handler (a sticky add bar);
+//   - the basket drawer is an `aside`, `dialog` or `role="dialog"` holding a loop and a currency amount outside it;
+//   - the filter is the lowest element holding every control whose handler sets a state key the product listing (a
+//     loop of imported cards) reads.
+// Pure: sources and surface records in, units out.
+import { countBinding, effectOf, emptinessBinding, logicOf, moneyBinding, selectionReads } from './shop-parts-logic.mjs';
+
 const TAG = /<(\/?)([a-zA-Z][\w:-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/g;
 const VOID = new Set( [ 'br', 'hr', 'img', 'input', 'meta', 'link', 'source', 'area', 'base', 'col', 'embed', 'wbr' ] );
 const ATTR = /([\w:@.-]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+)))?/g;
 const ENTITIES = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&nbsp;': ' ' };
 const CONTROLS = new Set( [ 'button', 'a', 'select', 'textarea', 'input' ] );
 const SKIPPED = new Set( [ 'svg', 'option', 'script', 'style', 'helmet', 'sc-helmet' ] );
-const ADD_HANDLER = /\badd(?:ToBag|ToCart|ToBasket|FrameOnly|WithLens)?\b/;
-const ADD_TEXT = /add(?:ed)? to (?:basket|bag|cart)/i;
-const FILTER_SIGNAL = /filter|sort|chips|price|clear/i;
-const DRAWER_LABEL = /\b(?:basket|bag|cart)\b/i;
+const BINDING = /\{\{\s*([^}]+?)\s*\}\}/g;
 
 const decode = ( s ) => s.replace( /&(?:amp|lt|gt|quot|nbsp|#39);/g, ( m ) => ENTITIES[ m ] );
 const squash = ( s ) => decode( s ).replace( /\s+/g, ' ' ).trim();
 const stripExpr = ( v ) => String( v ).replace( /^\{\{\s*|\s*\}\}$/g, '' ).trim();
+const bindingsOf = ( text ) => [ ...String( text || '' ).matchAll( BINDING ) ].map( ( m ) => m[ 1 ] );
 
 function attrsOf( rest ) {
 	const out = {};
@@ -25,13 +32,14 @@ function attrsOf( rest ) {
 	return out;
 }
 
-// The element tree of a template: `{ tag, attrs, children, parent }` elements and `{ text, parent }` runs. Comments,
-// styles and scripts are dropped first, so their content is never read as markup.
+// The element tree of a template: `{ tag, attrs, children, parent, n }` elements (`n` numbers them in source order) and
+// `{ text, parent }` runs. Comments, styles and scripts are dropped first, so their content is never read as markup.
 export function parseTemplate( source ) {
 	const clean = source.replace( /<!--[\s\S]*?-->/g, '' ).replace( /<(style|script)\b[\s\S]*?<\/\1>/gi, '' );
-	const root = { tag: '#root', attrs: {}, children: [], parent: null };
+	const root = { tag: '#root', attrs: {}, children: [], parent: null, n: 0 };
 	let at = root;
 	let last = 0;
+	let count = 0;
 	for ( const m of clean.matchAll( TAG ) ) {
 		const text = clean.slice( last, m.index );
 		if ( text.trim() ) {
@@ -50,7 +58,7 @@ export function parseTemplate( source ) {
 			}
 			continue;
 		}
-		const el = { tag, attrs: attrsOf( rest ), children: [], parent: at };
+		const el = { tag, attrs: attrsOf( rest ), children: [], parent: at, n: ++count };
 		at.children.push( el );
 		if ( ! VOID.has( tag ) && ! /\/\s*$/.test( rest ) ) {
 			at = el;
@@ -77,11 +85,10 @@ const within = ( node, test ) => {
 	return false;
 };
 const textOf = ( node ) => squash( [ ...walk( node ) ].filter( ( n ) => ! n.tag && ! within( n.parent, ( p ) => p !== node && SKIPPED.has( p.tag ) ) ).map( ( n ) => n.text ).join( ' ' ) );
-const handlerOf = ( el ) => stripExpr( el.attrs.onClick || el.attrs.onChange || '' );
-
-const isAddControl = ( el ) => ( 'button' === el.tag || 'a' === el.tag ) && ( ADD_HANDLER.test( handlerOf( el ) ) || ADD_TEXT.test( textOf( el ) ) );
-const isFilterSignal = ( el ) => ( CONTROLS.has( el.tag ) && FILTER_SIGNAL.test( `${ el.attrs[ 'aria-label' ] || '' } ${ handlerOf( el ) } ${ stripExpr( el.attrs.value || '' ) }` ) ) || ( 'group' === el.attrs.role && /filter/i.test( el.attrs[ 'aria-label' ] || '' ) );
+const handlerOf = ( el ) => stripExpr( el.attrs.onClick || el.attrs.onChange || el.attrs.onInput || '' );
 const inImport = ( el ) => within( el, ( n ) => 'dc-import' === n.tag );
+const isDialog = ( e ) => 'aside' === e.tag || 'dialog' === e.tag || 'dialog' === e.attrs.role;
+const isControl = ( e ) => CONTROLS.has( e.tag ) || 'switch' === e.attrs.role;
 
 // The outermost elements of `list` (none inside another).
 const outermost = ( list ) => list.filter( ( el ) => ! list.some( ( o ) => o !== el && within( el.parent, ( p ) => p === o ) ) );
@@ -92,14 +99,44 @@ const lowestCommon = ( els ) => {
 	}
 	return n;
 };
+const textRuns = ( node ) => [ ...walk( node ) ].filter( ( n ) => ! n.tag );
+const moneyText = ( L, t ) => {
+	const b = bindingsOf( t.text );
+	return b.length > 0 && b.every( ( x ) => moneyBinding( L, x ) );
+};
 
-export const drawerRegions = ( root ) => outermost( elements( root ).filter( ( e ) => ! CONTROLS.has( e.tag ) && 'svg' !== e.tag && 'img' !== e.tag && ( 'aside' === e.tag || 'dialog' === e.attrs.role ) && DRAWER_LABEL.test( e.attrs[ 'aria-label' ] || '' ) ) );
+const isAddControl = ( L, el ) => ( 'button' === el.tag || 'a' === el.tag ) && !! handlerOf( el ) && effectOf( L, handlerOf( el ) ).appends;
 
-// The buy box: the lowest element holding both the first add-to-basket control and a page heading, plus any
-// add-to-basket bar the page shows conditionally (a sticky bar).
-export function buyboxRegions( root ) {
-	const drawers = drawerRegions( root );
-	const add = elements( root ).find( ( e ) => isAddControl( e ) && ! inImport( e ) && ! drawers.some( ( d ) => within( e, ( p ) => p === d ) ) );
+// Whether a loop's items carry a control that changes the basket without adding to it: it writes an outside store, or
+// sets a state key every add control sets (the basket itself).
+const editsBasket = ( L, loop, addKeys ) => elements( loop ).some( ( x ) => {
+	if ( ! isControl( x ) || ! handlerOf( x ) ) {
+		return false;
+	}
+	const fx = effectOf( L, handlerOf( x ), loop.attrs.as && handlerOf( x ).split( '.' )[ 0 ] === loop.attrs.as ? stripExpr( loop.attrs.list || '' ) : null );
+	return ! fx.appends && ( fx.writesStore || fx.sets.some( ( k ) => addKeys.has( k ) ) );
+} );
+
+// The state keys every add control sets (the basket itself).
+function basketKeys( root, L ) {
+	const adds = elements( root ).filter( ( e ) => isAddControl( L, e ) ).map( ( e ) => effectOf( L, handlerOf( e ) ).sets );
+	return new Set( adds.length ? adds[ 0 ].filter( ( k ) => adds.every( ( set ) => set.includes( k ) ) ) : [] );
+}
+
+// The basket drawers: outermost dialogs holding a loop whose items edit the basket, and a currency amount outside every
+// loop.
+export function drawerRegions( root, L ) {
+	const all = elements( root );
+	const addKeys = basketKeys( root, L );
+	return outermost( all.filter( ( e ) => isDialog( e ) && elements( e ).some( ( x ) => 'sc-for' === x.tag && editsBasket( L, x, addKeys ) ) &&
+		textRuns( e ).some( ( t ) => moneyText( L, t ) && ! within( t.parent, ( p ) => p !== e && 'sc-for' === p.tag && within( p, ( q ) => q === e ) ) ) ) );
+}
+
+// The buy box: the lowest element holding both the first add-to-basket control and the page's h1, plus each conditional
+// bar outside it that repeats the add control's handler.
+export function buyboxRegions( root, L ) {
+	const drawers = drawerRegions( root, L );
+	const add = elements( root ).find( ( e ) => ! inImport( e ) && ! drawers.some( ( d ) => within( e, ( p ) => p === d ) ) && isAddControl( L, e ) );
 	if ( ! add ) {
 		return [];
 	}
@@ -108,51 +145,153 @@ export function buyboxRegions( root ) {
 		n = n.parent;
 	}
 	const regions = n && n.parent ? [ n ] : [];
-	const bars = elements( root ).filter( ( e ) => 'sc-if' === e.tag && /show\w*bar|sticky/i.test( e.attrs.value || '' ) && elements( e ).some( isAddControl ) );
-	return [ ...regions, ...bars ];
+	const main = regions[ 0 ];
+	const bars = elements( root ).filter( ( e ) => 'sc-if' === e.tag && ! ( main && within( e, ( p ) => p === main ) ) && ! ( main && within( main, ( p ) => p === e ) ) &&
+		elements( e ).some( ( x ) => isControl( x ) && handlerOf( x ) === handlerOf( add ) ) );
+	return [ ...regions, ...outermost( bars ).map( ( b ) => Object.assign( b, { bar: true } ) ) ];
 }
 
-// The filter: the lowest element holding every filter or sort control outside drawers and imported components.
-export function filterRegions( root ) {
-	const drawers = drawerRegions( root );
-	const signals = elements( root ).filter( ( e ) => isFilterSignal( e ) && ! inImport( e ) && ! drawers.some( ( d ) => within( e, ( p ) => p === d ) ) );
-	const n = signals.length ? lowestCommon( signals ) : null;
+const narrows = ( L, el, keys ) => !! handlerOf( el ) && effectOf( L, handlerOf( el ) ).sets.some( ( k ) => keys.has( k ) );
+
+// The controls that belong to a listing: those inside its highest ancestor that holds no other listing.
+function nearest( loop, loops, signals ) {
+	let own = loop;
+	for ( let a = loop.parent; a && ! loops.some( ( l ) => l !== loop && within( l, ( p ) => p === a ) ); a = a.parent ) {
+		own = a;
+	}
+	return signals.filter( ( e ) => within( e, ( p ) => p === own ) );
+}
+
+// The product listing a filter drives: of the loops of imported cards (outside drawers), the one with the most
+// controls of its own (nearest) that set a state key selecting its items (lib/shop-parts-logic.mjs::selectionReads).
+// { loop, keys, signals } or null.
+function listing( root, L ) {
+	const drawers = drawerRegions( root, L );
+	const loops = elements( root ).filter( ( e ) => 'sc-for' === e.tag && elements( e ).some( ( x ) => 'dc-import' === x.tag ) && ! inImport( e ) );
+	const controls = elements( root ).filter( ( e ) => isControl( e ) && ! inImport( e ) && ! drawers.some( ( d ) => within( e, ( p ) => p === d ) ) && ! loops.some( ( l ) => within( e, ( p ) => p === l ) ) );
+	let best = null;
+	for ( const loop of loops ) {
+		const keys = selectionReads( L, loop.attrs.list );
+		const signals = keys.size ? nearest( loop, loops, controls.filter( ( e ) => narrows( L, e, keys ) ) ) : [];
+		if ( signals.length && ( ! best || signals.length > best.signals.length ) ) {
+			best = { loop, keys, signals };
+		}
+	}
+	return best;
+}
+
+// The filter: the lowest element holding every control (outside drawers, imports and the listing itself) whose handler
+// sets a state key that selects the product listing's items.
+export function filterRegions( root, L ) {
+	const found = listing( root, L );
+	const n = found ? lowestCommon( found.signals ) : null;
 	return n && n.parent ? [ n ] : [];
 }
 
 const REGIONS = { buybox: buyboxRegions, filter: filterRegions, drawer: drawerRegions };
 export const SURFACE_KINDS = Object.keys( REGIONS );
 
+// The row a node sits in: the nearest ancestor-or-self with more than one child (a wrapper around one child is not a row).
+const rowOf = ( node ) => {
+	let n = node;
+	while ( n.parent && n.children.filter( ( c ) => c.tag || c.text.trim() ).length < 2 ) {
+		n = n.parent;
+	}
+	return n;
+};
+
+const GLYPH = /^[^\p{L}\p{N}]+$/u;
+// Whether an element is a stepper: a glyph-only button, a value, and a glyph-only button side by side.
+const isStepper = ( el ) => {
+	const kids = el.children.filter( ( c ) => c.tag || c.text.trim() );
+	if ( 3 !== kids.length ) {
+		return false;
+	}
+	const glyphButton = ( c ) => 'button' === c.tag && GLYPH.test( textOf( c ) || '' ) && textOf( c );
+	return glyphButton( kids[ 0 ] ) && glyphButton( kids[ 2 ] ) && ! ( kids[ 1 ].tag && isControl( kids[ 1 ] ) ) && bindingsOf( kids[ 1 ].tag ? textOf( kids[ 1 ] ) : kids[ 1 ].text ).length > 0;
+};
+
+// The route a link opens, when it is another draft file: { file, form } (`form` when that file's template holds three
+// or more form fields), else null.
+function routeOf( href, sources ) {
+	const file = String( href || '' ).split( /[?#]/ )[ 0 ];
+	if ( ! file.endsWith( '.dc.html' ) || ! ( file in sources ) ) {
+		return null;
+	}
+	const fields = elements( parseTemplate( sources[ file ] ) ).filter( ( e ) => [ 'input', 'select', 'textarea' ].includes( e.tag ) && 'hidden' !== e.attrs.type ).length;
+	return { file, form: fields >= 3 };
+}
+
 // The units of a region: one per control (its own words, aria label, placeholder, input type, handler, href; a checkbox's
-// words are the text runs beside it), per text run outside a control, and per image or imported component. Decorative glyphs with no letter or digit are not units.
-export function unitsOf( region, { file } ) {
+// words are the text runs beside it), per text run outside a control, and per image or imported component. Decorative
+// glyphs with no letter or digit are not units. Each unit carries `rowN` (the number of its row element) and `facts`: its role, input type, ARIA state (pressed,
+// expanded), the loop it repeats in, its heading level, whether it is part of a stepper, the region part it sits in
+// (`bar` for a sticky bar), the handler's effect, whether its bound value is a currency amount or a collection count,
+// whether a condition above it tests a collection is empty or discloses a control's expanded content, the route a link
+// opens, whether the handler narrows the product listing (`listingKeys`) and whether it edits the basket without adding
+// to it (it writes an outside store or a key in `addKeys`).
+export function unitsOf( region, { file, L = null, sources = {}, listingKeys = new Set(), addKeys = new Set() } ) {
 	const out = [];
-	const visit = ( node, conds ) => {
+	const expanded = new Set( elements( region ).filter( ( e ) => e.attrs[ 'aria-expanded' ] ).map( ( e ) => stripExpr( e.attrs[ 'aria-expanded' ] ) ) );
+	const visit = ( node, ctx ) => {
+		const stepper = ctx.stepper || isStepper( node );
 		for ( const c of node.children ) {
+			const base = { conds: ctx.conds, file, rowN: rowOf( node ).n };
+			const facts = { loop: ctx.loop, heading: ctx.heading, stepper, bar: !! region.bar, empty: ctx.empty, disclosed: ctx.disclosed };
 			if ( ! c.tag ) {
 				const text = squash( c.text );
 				if ( /[A-Za-z0-9{]/.test( text ) ) {
-					out.push( { kind: 'text', tag: '#text', parent: node.tag, text, conds, file } );
+					const b = bindingsOf( text );
+					out.push( { ...base, kind: 'text', tag: '#text', parent: node.tag, text, facts: { ...facts, money: b.length > 0 && b.every( ( x ) => moneyBinding( L, x ) ), count: 1 === b.length && countBinding( L, b[ 0 ] ) } } );
 				}
 				continue;
 			}
 			if ( SKIPPED.has( c.tag ) ) {
 				continue;
 			}
-			const here = 'sc-if' === c.tag ? [ ...conds, stripExpr( c.attrs.value || '' ) ] : 'sc-for' === c.tag ? [ ...conds, stripExpr( c.attrs.list || '' ) ] : conds;
+			const value = stripExpr( c.attrs.value || '' );
+			const next = { ...ctx, stepper };
+			if ( 'sc-if' === c.tag ) {
+				next.conds = [ ...ctx.conds, value ];
+				next.empty = ctx.empty || emptinessBinding( L, value );
+				next.disclosed = ctx.disclosed || expanded.has( value );
+			} else if ( 'sc-for' === c.tag ) {
+				next.conds = [ ...ctx.conds, stripExpr( c.attrs.list || '' ) ];
+				next.loop = stripExpr( c.attrs.list || '' );
+				next.loopAs = c.attrs.as || '';
+			} else if ( /^h[1-6]$/.test( c.tag ) ) {
+				next.heading = Number( c.tag[ 1 ] );
+			}
 			if ( 'dc-import' === c.tag ) {
-				out.push( { kind: 'import', tag: c.tag, text: c.attrs.name || '', conds, file } );
+				out.push( { ...base, kind: 'import', tag: c.tag, text: c.attrs.name || '', facts } );
 			} else if ( 'img' === c.tag ) {
-				out.push( { kind: 'image', tag: 'img', text: squash( c.attrs.alt || '' ), src: c.attrs.src || '', conds, file } );
-			} else if ( CONTROLS.has( c.tag ) || 'switch' === c.attrs.role ) {
+				out.push( { ...base, kind: 'image', tag: 'img', text: squash( c.attrs.alt || '' ), src: c.attrs.src || '', facts } );
+			} else if ( isControl( c ) ) {
 				const label = 'input' === c.tag ? '' : textOf( c );
-				out.push( { kind: 'control', tag: c.tag, text: label, aria: c.attrs[ 'aria-label' ] || '', placeholder: c.attrs.placeholder || '', type: c.attrs.type || c.attrs.role || '', on: handlerOf( c ), href: c.attrs.href || '', conds, file } );
+				const on = handlerOf( c );
+				const effect = effectOf( L, on, ctx.loopAs && on.split( '.' )[ 0 ] === ctx.loopAs ? ctx.loop : null );
+				out.push( { ...base, kind: 'control', tag: c.tag, text: label, aria: c.attrs[ 'aria-label' ] || '', placeholder: c.attrs.placeholder || '', type: c.attrs.type || c.attrs.role || '', on, href: c.attrs.href || '', facts: {
+					...facts,
+					role: c.attrs.role || '',
+					inputType: 'input' === c.tag ? ( c.attrs.type || 'text' ).toLowerCase() : '',
+					pressed: [ 'aria-pressed', 'aria-checked', 'aria-selected' ].some( ( k ) => k in c.attrs ),
+					expanded: 'aria-expanded' in c.attrs,
+					effect,
+					route: routeOf( c.attrs.href, sources ),
+					narrows: effect.sets.some( ( k ) => listingKeys.has( k ) ),
+					editsBasket: ! effect.appends && ( effect.writesStore || effect.sets.some( ( k ) => addKeys.has( k ) ) ),
+					money: bindingsOf( label ).some( ( x ) => moneyBinding( L, x ) ),
+				} } );
 			} else {
-				visit( c, here );
+				visit( c, next );
 			}
 		}
 	};
-	visit( region, 'sc-if' === region.tag ? [ stripExpr( region.attrs.value || '' ) ] : [] );
+	const start = { conds: [], loop: null, loopAs: '', heading: 0, stepper: false, empty: false, disclosed: false };
+	if ( 'sc-if' === region.tag ) {
+		start.conds = [ stripExpr( region.attrs.value || '' ) ];
+	}
+	visit( region, start );
 	return out;
 }
 
@@ -165,7 +304,7 @@ const NAMES = {
 
 // Every shop surface of a draft: for each kind, the first name pattern that some handoff surface record matches picks
 // the draft file (`dc`) to read, and the region reader finds the surface in it. `sources` maps a draft file name to its
-// template source. A kind with no matching record, no file or no region is returned with `problem` set and no units.
+// source. A kind with no matching record, no file or no region is returned with `problem` set and no units.
 export function readShopSurfaces( { records, sources } ) {
 	return SURFACE_KINDS.map( ( kind ) => {
 		const rec = NAMES[ kind ].map( ( rx ) => records.filter( ( r ) => rx.test( r.name || '' ) ) ).find( ( l ) => l.length )?.[ 0 ];
@@ -176,10 +315,14 @@ export function readShopSurfaces( { records, sources } ) {
 		if ( ! ( file in sources ) ) {
 			return { kind, record: rec.name, file, units: [], problem: `${ file } is not in the draft folder` };
 		}
-		const regions = REGIONS[ kind ]( parseTemplate( sources[ file ] ) );
+		const root = parseTemplate( sources[ file ] );
+		const L = logicOf( sources[ file ] );
+		const regions = REGIONS[ kind ]( root, L );
 		if ( ! regions.length ) {
-			return { kind, record: rec.name, file, units: [], problem: `${ file } holds no ${ kind } region the reader recognises` };
+			return { kind, record: rec.name, file, units: [], problem: `${ file } holds no ${ kind } region the reader recognises by its structure` };
 		}
-		return { kind, record: rec.name, file, units: regions.flatMap( ( r ) => unitsOf( r, { file } ) ), problem: null };
+		const listingKeys = 'filter' === kind ? listing( root, L )?.keys || new Set() : new Set();
+		const addKeys = basketKeys( root, L );
+		return { kind, record: rec.name, file, units: regions.flatMap( ( r ) => unitsOf( r, { file, L, sources, listingKeys, addKeys } ) ), problem: null };
 	} );
 }

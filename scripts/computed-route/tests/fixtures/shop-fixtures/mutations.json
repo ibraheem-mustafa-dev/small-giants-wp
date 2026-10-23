@@ -1,9 +1,0 @@
-[
-	{ "file": "lib/shop-fixtures.mjs", "find": "\tif ( ! safeSiteUrl( creds?.url ) ) {", "replace": "\tif ( false ) {", "why": "a plain-http site gets the application password in the clear" },
-	{ "file": "lib/shop-fixtures.mjs", "find": "export async function requireWooCommerce( { creds, fetchImpl = fetch } ) {\n\trequireSafeCreds( creds );", "replace": "export async function requireWooCommerce( { creds, fetchImpl = fetch } ) {", "why": "the REST index is read from a plain-http site before any check" },
-	{ "file": "lib/shop-fixtures.mjs", "find": "\tif ( 'media-map' === choice.source ) {\n\t\trequireSafeCreds( creds );", "replace": "\tif ( 'media-map' === choice.source ) {", "why": "the media-map check reads a plain-http site" },
-	{ "file": "lib/shop-fixtures.mjs", "find": "if ( media && Number( media.id ) === Number( choice.id ) ) {", "replace": "if ( true ) {", "why": "a stale media-map id is put on the products" },
-	{ "file": "lib/shop-fixtures.mjs", "find": "if ( ! choice.asset || ! fs.existsSync( path.join( repo, choice.asset ) ) ) {", "replace": "if ( true ) {", "why": "a stale media-map id never falls back to its asset" },
-	{ "file": "lib/shop-fixtures.mjs", "find": "if ( ! choice.asset || ! fs.existsSync( path.join( repo, choice.asset ) ) ) {", "replace": "if ( ! choice.asset ) {", "why": "a stale id whose asset file is missing tries to upload nothing" },
-	{ "file": "lib/shop-fixtures.mjs", "find": "const api = ( creds, fetchImpl ) => async ( method, route, body ) => {\n\trequireSafeCreds( creds );", "replace": "const api = ( creds, fetchImpl ) => async ( method, route, body ) => {", "why": "an asset upload reaches a plain-http site" }
-]

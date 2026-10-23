@@ -36,16 +36,28 @@ export function themeFiles( vocab, repo = REPO ) {
 	return files;
 }
 
-export function run( client, { repo = REPO } = {} ) {
+// One client's draft surfaces (lib/shop-parts-read.mjs::readShopSurfaces), or null when its export has no surfaces.json.
+export function draftSurfaces( client, repo = REPO ) {
 	const draft = path.join( repo, 'sites', client, 'handoff' );
 	if ( ! existsSync( path.join( draft, 'surfaces.json' ) ) ) {
-		throw new ShopPartsError( `sites/${ client }/handoff/surfaces.json does not exist` );
+		return null;
 	}
 	const records = JSON.parse( readFileSync( path.join( draft, 'surfaces.json' ), 'utf8' ) ).records;
 	const sources = Object.fromEntries( readdirSync( draft ).filter( ( f ) => f.endsWith( '.dc.html' ) ).map( ( f ) => [ f, readFileSync( path.join( draft, f ), 'utf8' ) ] ) );
+	return readShopSurfaces( { records, sources } );
+}
+
+// The client's record. Every client draft with a surfaces.json is read as a fixture, so a vocabulary entry no draft
+// reaches is refused as stale.
+export function run( client, { repo = REPO } = {} ) {
+	const surfaces = draftSurfaces( client, repo );
+	if ( ! surfaces ) {
+		throw new ShopPartsError( `sites/${ client }/handoff/surfaces.json does not exist` );
+	}
+	const fixtures = readdirSync( path.join( repo, 'sites' ) ).filter( ( c ) => c !== client ).map( ( c ) => draftSurfaces( c, repo ) ).filter( Boolean );
 	const raw = loadVocab();
-	const vocab = resolveVocab( raw, { attrs: attrsFor( raw ), files: themeFiles( raw, repo ) } );
-	return buildRecord( { client, surfaces: readShopSurfaces( { records, sources } ), vocab } );
+	const vocab = resolveVocab( raw, { attrs: attrsFor( raw ), files: themeFiles( raw, repo ), fixtures: [ surfaces, ...fixtures ] } );
+	return buildRecord( { client, surfaces, vocab } );
 }
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {
@@ -59,7 +71,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		for ( const s of record.surfaces ) {
 			console.log( `${ s.kind }: ${ s.problem || `${ s.units } units, ${ s.parts.length } parts (${ s.record }, ${ s.file })` }` );
 			for ( const p of s.parts ) {
-				console.log( `  ${ p.home.type.padEnd( 14 ) } ${ p.label } x${ p.units }${ p.write ? ` -> ${ JSON.stringify( p.write ) }` : '' }` );
+				console.log( `  ${ p.home.type.padEnd( 14 ) } ${ ( p.by.join( '+' ) || '-' ).padEnd( 18 ) } ${ p.label } x${ p.units }${ p.write ? ` -> ${ JSON.stringify( p.write ) }` : '' }` );
 			}
 		}
 		console.log( JSON.stringify( record.counts ) );

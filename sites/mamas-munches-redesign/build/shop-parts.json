@@ -16,6 +16,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"{{ eyebrow }}"
@@ -30,20 +31,26 @@
 						"contains": "wp:post-title"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"{{ p.name }}"
 					]
 				},
 				{
-					"id": "buybox-rating",
+					"id": "buybox-rating:hint",
 					"label": "Rating and review count",
 					"home": {
-						"type": "part",
-						"file": "theme/sgs-theme/parts/sgs-pdp-buybox.html",
-						"contains": "wp:woocommerce/product-rating"
+						"type": "missing",
+						"reason": "only words name this control (a) as \"Rating and review count\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "buybox-rating"
 					},
 					"write": null,
+					"by": [
+						"hint"
+					],
 					"units": 1,
 					"sample": [
 						"★★★★★ 4.3 · 8 Trustpilot reviews"
@@ -57,6 +64,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"{{ p.short }}"
@@ -70,6 +78,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"1 · How many"
@@ -88,12 +97,15 @@
 						]
 					},
 					"write": null,
-					"units": 5,
+					"by": [
+						"structure"
+					],
+					"units": 6,
 					"sample": [
 						"{{ o.n }} {{ o.priceTxt }} {{ o.each }} {{ o.tag }}",
 						"{{ o.name }}",
 						"✓ {{ o.name }}",
-						"{{ o.label }}"
+						"{{ f.label }}"
 					]
 				},
 				{
@@ -104,6 +116,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"2 · Base"
@@ -117,6 +130,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"3 · Chips"
@@ -130,6 +144,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"4 · Flavours"
@@ -143,6 +158,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"Up to 3, split evenly"
@@ -156,23 +172,27 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"{{ split }}"
 					]
 				},
 				{
-					"id": "buybox-subscribe",
+					"id": "buybox-subscribe:hint",
 					"label": "Subscribe-and-save choice",
 					"home": {
 						"type": "missing",
-						"reason": "no sgs/buybox setting or part holds a subscription choice (one-off versus repeat delivery with a frequency)"
+						"reason": "only words name this control (button) as \"Subscribe-and-save choice\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "buybox-subscribe"
 					},
 					"write": null,
-					"units": 3,
+					"by": [
+						"hint"
+					],
+					"units": 2,
 					"sample": [
 						"Subscribe & save 10% Skip, swap flavours or cancel any time {{ subTxt }} {{ onceTxt }}",
-						"{{ f.label }}",
 						"One-off box {{ onceTxt }}"
 					]
 				},
@@ -184,6 +204,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"Amount"
@@ -197,6 +218,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"Comes as a printed card in an envelope, ready for the shower. She redeems it online once baby arrives and builds her own box."
@@ -210,6 +232,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"What’s inside"
@@ -223,19 +246,24 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"{{ x }}"
 					]
 				},
 				{
-					"id": "buybox-gift-note",
+					"id": "buybox-gift-note:hint",
 					"label": "Gift note",
 					"home": {
 						"type": "missing",
-						"reason": "the buy box has no extras slot for a gift tick and note (Spec 27 hand-off, spec 48 section 16)"
+						"reason": "only words name this control (input) as \"Gift note\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "buybox-gift-note"
 					},
 					"write": null,
+					"by": [
+						"hint"
+					],
 					"units": 5,
 					"sample": [
 						"checkbox",
@@ -252,6 +280,9 @@
 						"reason": "no sgs/buybox setting names a quantity stepper"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 3,
 					"sample": [
 						"−",
@@ -272,6 +303,9 @@
 						]
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"{{ addLabel }}"
@@ -285,6 +319,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"Baked fresh when you order"
@@ -298,6 +333,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"With you in 3–5 days"
@@ -311,6 +347,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"Free UK delivery over £35"
@@ -324,6 +361,9 @@
 						"note": "the product information accordion is its own surface (sgs/accordion), not a buy box part"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 2,
 					"sample": [
 						"{{ a.t }} +",
@@ -342,6 +382,9 @@
 						]
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 3,
 					"sample": [
 						"{{ priceTxt }}",
@@ -360,6 +403,16 @@
 					"line": "{{ eyebrow }}: no part or setting in the framework is known for this text (#text) (1 unit)",
 					"mainFlow": "buy",
 					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:buybox-rating:hint",
+					"draftId": "Product buy box:buybox-rating:hint",
+					"construct": "shop buybox part: Rating and review count",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/buybox-rating:hint",
+					"line": "Rating and review count: only words name this control (a) as \"Rating and review count\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (1 unit)",
+					"mainFlow": "buy",
+					"why": "only words name this control (a) as \"Rating and review count\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
 				},
 				{
 					"rowId": "missing:shop:buybox:unmatched:buybox:{{ p.short }}",
@@ -432,14 +485,14 @@
 					"why": "no part or setting in the framework is known for this text (#text)"
 				},
 				{
-					"rowId": "missing:shop:buybox:buybox-subscribe",
-					"draftId": "Product buy box:buybox-subscribe",
+					"rowId": "missing:shop:buybox:buybox-subscribe:hint",
+					"draftId": "Product buy box:buybox-subscribe:hint",
 					"construct": "shop buybox part: Subscribe-and-save choice",
 					"from": "shop-parts",
-					"key": "Product.dc.html#buybox/buybox-subscribe",
-					"line": "Subscribe-and-save choice: no sgs/buybox setting or part holds a subscription choice (one-off versus repeat delivery with a frequency) (3 units)",
+					"key": "Product.dc.html#buybox/buybox-subscribe:hint",
+					"line": "Subscribe-and-save choice: only words name this control (button) as \"Subscribe-and-save choice\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (2 units)",
 					"mainFlow": "buy",
-					"why": "no sgs/buybox setting or part holds a subscription choice (one-off versus repeat delivery with a frequency)"
+					"why": "only words name this control (button) as \"Subscribe-and-save choice\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
 				},
 				{
 					"rowId": "missing:shop:buybox:unmatched:buybox:amount",
@@ -482,14 +535,14 @@
 					"why": "no part or setting in the framework is known for this text (#text)"
 				},
 				{
-					"rowId": "missing:shop:buybox:buybox-gift-note",
-					"draftId": "Product buy box:buybox-gift-note",
+					"rowId": "missing:shop:buybox:buybox-gift-note:hint",
+					"draftId": "Product buy box:buybox-gift-note:hint",
 					"construct": "shop buybox part: Gift note",
 					"from": "shop-parts",
-					"key": "Product.dc.html#buybox/buybox-gift-note",
-					"line": "Gift note: the buy box has no extras slot for a gift tick and note (Spec 27 hand-off, spec 48 section 16) (5 units)",
+					"key": "Product.dc.html#buybox/buybox-gift-note:hint",
+					"line": "Gift note: only words name this control (input) as \"Gift note\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (5 units)",
 					"mainFlow": "buy",
-					"why": "the buy box has no extras slot for a gift tick and note (Spec 27 hand-off, spec 48 section 16)"
+					"why": "only words name this control (input) as \"Gift note\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
 				},
 				{
 					"rowId": "missing:shop:buybox:buybox-quantity",
@@ -549,6 +602,9 @@
 						"contains": "wp:woocommerce/catalog-sorting"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"select"
@@ -564,6 +620,9 @@
 						"customCss": "chip or segment presentation, a visual leftover for scoped custom CSS"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"{{ c.label }} {{ c.n }}"
@@ -580,18 +639,17 @@
 			"units": 31,
 			"parts": [
 				{
-					"id": "drawer-heading",
+					"id": "drawer-heading:hint",
 					"label": "Panel heading",
 					"home": {
-						"type": "setting",
-						"block": "sgs/cart",
-						"settings": [
-							"panelHeading"
-						]
+						"type": "missing",
+						"reason": "only words name this text (#text) as \"Panel heading\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "drawer-heading"
 					},
-					"write": {
-						"panelHeading": "Your basket"
-					},
+					"write": null,
+					"by": [
+						"hint"
+					],
 					"units": 1,
 					"sample": [
 						"Your basket"
@@ -608,6 +666,9 @@
 						]
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"({{ count }})"
@@ -622,24 +683,26 @@
 						"note": "the panel draws its own close button"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"×"
 					]
 				},
 				{
-					"id": "drawer-free-delivery",
+					"id": "drawer-free-delivery:hint",
 					"label": "Free-delivery message",
 					"home": {
-						"type": "setting",
-						"block": "sgs/cart",
-						"settings": [
-							"freeDeliveryMessage",
-							"freeDeliverySuccessMessage",
-							"freeDeliveryThresholdOverride"
-						]
+						"type": "missing",
+						"reason": "only words name this text (#text) as \"Free-delivery message\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "drawer-free-delivery"
 					},
 					"write": null,
+					"by": [
+						"hint"
+					],
 					"units": 1,
 					"sample": [
 						"{{ freeMsg }}"
@@ -656,6 +719,9 @@
 						]
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"{{ it.img }}"
@@ -670,6 +736,9 @@
 						"note": "each cart line renders its own name, detail and price"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 3,
 					"sample": [
 						"{{ it.name }}",
@@ -688,6 +757,9 @@
 						]
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 3,
 					"sample": [
 						"−",
@@ -708,19 +780,26 @@
 					"write": {
 						"itemRemoveLabel": "Remove"
 					},
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"Remove"
 					]
 				},
 				{
-					"id": "drawer-gift-note",
+					"id": "drawer-gift-note:hint",
 					"label": "Gift tick and note",
 					"home": {
 						"type": "missing",
-						"reason": "drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16)"
+						"reason": "only words name this control (input) as \"Gift tick and note\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "drawer-gift-note"
 					},
 					"write": null,
+					"by": [
+						"hint"
+					],
 					"units": 4,
 					"sample": [
 						"checkbox",
@@ -737,20 +816,25 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"Add a message. We leave the prices off."
 					]
 				},
 				{
-					"id": "drawer-upsell",
+					"id": "drawer-upsell:hint",
 					"label": "Upsell offer",
 					"home": {
 						"type": "missing",
-						"reason": "drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16)"
+						"reason": "only words name this image (img) as \"Upsell offer\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "drawer-upsell"
 					},
 					"write": null,
-					"units": 6,
+					"by": [
+						"hint"
+					],
+					"units": 5,
 					"sample": [
 						"assets/photo-bun-case.jpg",
 						"Add a Taster Trio for a friend",
@@ -767,6 +851,10 @@
 						"note": "the panel footer renders the subtotal"
 					},
 					"write": null,
+					"by": [
+						"position",
+						"structure"
+					],
 					"units": 2,
 					"sample": [
 						"Subtotal",
@@ -774,18 +862,17 @@
 					]
 				},
 				{
-					"id": "drawer-note",
+					"id": "drawer-note:hint",
 					"label": "Footer note",
 					"home": {
-						"type": "setting",
-						"block": "sgs/cart",
-						"settings": [
-							"panelTaxNote"
-						]
+						"type": "missing",
+						"reason": "only words name this text (#text) as \"Footer note\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "drawer-note"
 					},
-					"write": {
-						"panelTaxNote": "Baked fresh for you · with you in 3–5 days"
-					},
+					"write": null,
+					"by": [
+						"hint"
+					],
 					"units": 1,
 					"sample": [
 						"Baked fresh for you · with you in 3–5 days"
@@ -804,6 +891,9 @@
 					"write": {
 						"checkoutLabel": "Checkout securely"
 					},
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"Checkout securely"
@@ -821,6 +911,9 @@
 						]
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"View full basket"
@@ -834,6 +927,7 @@
 						"reason": "no part or setting in the framework is known for this image (img)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"assets/logo-round.png"
@@ -852,9 +946,13 @@
 					"write": {
 						"emptyCartMessage": "Your basket is empty"
 					},
-					"units": 1,
+					"by": [
+						"structure"
+					],
+					"units": 2,
 					"sample": [
-						"Your basket is empty"
+						"Your basket is empty",
+						"New to Zookies? The Taster Trio is 3 cookies for £5, postage included."
 					]
 				},
 				{
@@ -870,6 +968,9 @@
 					"write": {
 						"emptyCartCtaLabel": "Browse the shop"
 					},
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"Browse the shop"
@@ -878,14 +979,34 @@
 			],
 			"missing": [
 				{
-					"rowId": "missing:shop:drawer:drawer-gift-note",
-					"draftId": "Basket drawer (right):drawer-gift-note",
+					"rowId": "missing:shop:drawer:drawer-heading:hint",
+					"draftId": "Basket drawer (right):drawer-heading:hint",
+					"construct": "shop drawer part: Panel heading",
+					"from": "shop-parts",
+					"key": "SiteHeader.dc.html#drawer/drawer-heading:hint",
+					"line": "Panel heading: only words name this text (#text) as \"Panel heading\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (1 unit)",
+					"mainFlow": "buy",
+					"why": "only words name this text (#text) as \"Panel heading\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
+				},
+				{
+					"rowId": "missing:shop:drawer:drawer-free-delivery:hint",
+					"draftId": "Basket drawer (right):drawer-free-delivery:hint",
+					"construct": "shop drawer part: Free-delivery message",
+					"from": "shop-parts",
+					"key": "SiteHeader.dc.html#drawer/drawer-free-delivery:hint",
+					"line": "Free-delivery message: only words name this text (#text) as \"Free-delivery message\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (1 unit)",
+					"mainFlow": "buy",
+					"why": "only words name this text (#text) as \"Free-delivery message\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
+				},
+				{
+					"rowId": "missing:shop:drawer:drawer-gift-note:hint",
+					"draftId": "Basket drawer (right):drawer-gift-note:hint",
 					"construct": "shop drawer part: Gift tick and note",
 					"from": "shop-parts",
-					"key": "SiteHeader.dc.html#drawer/drawer-gift-note",
-					"line": "Gift tick and note: drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16) (4 units)",
+					"key": "SiteHeader.dc.html#drawer/drawer-gift-note:hint",
+					"line": "Gift tick and note: only words name this control (input) as \"Gift tick and note\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (4 units)",
 					"mainFlow": "buy",
-					"why": "drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16)"
+					"why": "only words name this control (input) as \"Gift tick and note\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
 				},
 				{
 					"rowId": "missing:shop:drawer:unmatched:drawer:add a message. we leave the prices off.",
@@ -898,14 +1019,24 @@
 					"why": "no part or setting in the framework is known for this text (#text)"
 				},
 				{
-					"rowId": "missing:shop:drawer:drawer-upsell",
-					"draftId": "Basket drawer (right):drawer-upsell",
+					"rowId": "missing:shop:drawer:drawer-upsell:hint",
+					"draftId": "Basket drawer (right):drawer-upsell:hint",
 					"construct": "shop drawer part: Upsell offer",
 					"from": "shop-parts",
-					"key": "SiteHeader.dc.html#drawer/drawer-upsell",
-					"line": "Upsell offer: drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16) (6 units)",
+					"key": "SiteHeader.dc.html#drawer/drawer-upsell:hint",
+					"line": "Upsell offer: only words name this image (img) as \"Upsell offer\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (5 units)",
 					"mainFlow": "buy",
-					"why": "drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16)"
+					"why": "only words name this image (img) as \"Upsell offer\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
+				},
+				{
+					"rowId": "missing:shop:drawer:drawer-note:hint",
+					"draftId": "Basket drawer (right):drawer-note:hint",
+					"construct": "shop drawer part: Footer note",
+					"from": "shop-parts",
+					"key": "SiteHeader.dc.html#drawer/drawer-note:hint",
+					"line": "Footer note: only words name this text (#text) as \"Footer note\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (1 unit)",
+					"mainFlow": "buy",
+					"why": "only words name this text (#text) as \"Footer note\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
 				},
 				{
 					"rowId": "missing:shop:drawer:unmatched:drawer:assets/logo-round.png",
@@ -923,9 +1054,11 @@
 	"counts": {
 		"units": 76,
 		"parts": 44,
-		"mapped": 21,
-		"missing": 22,
+		"mapped": 17,
+		"missing": 26,
 		"elsewhere": 1,
+		"hinted": 8,
+		"unmatched": 17,
 		"problems": 0
 	}
 }
