@@ -218,7 +218,7 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 			slug: item.ref ? slugOf( item.ref, hit?.block, item.block ) : null, surfaceLevel: ! item.ref,
 			kind: item.kind, key: item.key, property: propertyFamily( item.kind, item.key, null, cell ), state,
 			runStates: item.runStates.length === walk.runStates.length ? 'all' : 'some', tier: tierPattern( item.widths, allWidths ),
-			side: hit ? 'both' : 'walker-only', reason, reasonText: hit?.reason ?? null, owner: rule?.owner ?? null,
+			side: hit ? 'both' : 'walker-only', reason, reasonText: hit?.reason ?? null, owner: rule?.owner ?? null, fillClass: rule?.frClass ?? null, fillCandidate: !! rule?.candidate,
 			draft: cell.draft, live: cell.live, confirm: key ? confirmBy.get( key ) ?? null : null
 		} );
 	}
@@ -227,7 +227,7 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 		rows.push( {
 			client, surface, element: `${ f.node }${ f.slot ? ` ${ f.slot }` : '' }`, slug: slugOf( f.node, f.block ), surfaceLevel: false,
 			kind: 'fill', key: f.property, property: propertyFamily( 'style', f.property, f.value ), state: f.state, runStates: 'all',
-			tier: tierPattern( f.widths, allWidths ), side: VOCAB.fillSides[ f.origin ], reason: rule?.class ?? null, reasonText: f.reason ?? null, owner: rule?.owner ?? null,
+			tier: tierPattern( f.widths, allWidths ), side: VOCAB.fillSides[ f.origin ], reason: rule?.class ?? null, reasonText: f.reason ?? null, owner: rule?.owner ?? null, fillClass: rule?.frClass ?? null, fillCandidate: !! rule?.candidate,
 			draft: f.value, live: null, confirm: confirmBy.get( keyOf( f.node, f.slot, f.property, f.state ) ) ?? null
 		} );
 	}
@@ -241,7 +241,7 @@ export function signatureOf( row ) {
 }
 
 // Groups rows by signature, whatever their client or surface. Returns { groups, unclassified }: each group holds its parts,
-// per-client row counts, up to `examples` example rows, a Fill reason sample and the owning Spec 48 item.
+// per-client row counts, FR-48-65 class counts (rows carrying `gapClass`), up to `examples` example rows, a Fill reason sample and the owning Spec 48 item.
 export function groupRows( rows, { examples = 2 } = {} ) {
 	const by = new Map();
 	const unclassified = [];
@@ -252,11 +252,12 @@ export function groupRows( rows, { examples = 2 } = {} ) {
 			continue;
 		}
 		if ( ! by.has( signature ) ) {
-			by.set( signature, { signature, parts: Object.fromEntries( SIGNATURE_PARTS.map( ( p ) => [ p, row[ p ] ] ) ), total: 0, byClient: {}, examples: [], reasonText: null, owner: null } );
+			by.set( signature, { signature, parts: Object.fromEntries( SIGNATURE_PARTS.map( ( p ) => [ p, row[ p ] ] ) ), total: 0, byClient: {}, classes: {}, examples: [], reasonText: null, owner: null } );
 		}
 		const g = by.get( signature );
 		g.total++;
 		g.byClient[ row.client ] = ( g.byClient[ row.client ] ?? 0 ) + 1;
+		row.gapClass && ( g.classes[ row.gapClass ] = ( g.classes[ row.gapClass ] ?? 0 ) + 1 );
 		g.reasonText ??= row.reasonText;
 		g.owner ??= row.owner;
 		g.examples.length < examples && g.examples.push( { client: row.client, surface: row.surface, element: row.element, draft: row.draft, live: row.live } );
