@@ -13,6 +13,7 @@ import { referenceOf } from './references.mjs';
 import { sourcePass } from './triage-source.mjs';
 import { USED_VALUES } from '../solve.mjs';
 // The kinds, classes, order and issue key are shared with lib/sweep.mjs so the two counts agree by construction.
+import { citedElementPath, emissionProof, hopCanvasSettable } from './cite-emission.mjs';
 import { SOLVE_CLASSES, UNMAPPED, CONTENT, isContentRow, isIssue, issueKey as keyOf } from './issue-classes.mjs';
 
 export const TRIAGE_CLASSES = [ 'W', 'F', 'T', 'U', 'L' ];
@@ -337,7 +338,7 @@ export function resolveIssue( issue, ctx ) {
 		// Whether a citation reclassifies the row is the caller's decision, and it turns on the canvas flag alone.
 		// A citation whose control cannot paint the row's element is dropped: the row then keeps the resolver's own gap.
 		const cite = hop?.cite && citeReaches( hop.cite, issue, ctx ) ? hop.cite : null;
-		return { gap: out.gap, detail: out.detail, ...( cite ? { cite, canvasSettable: !! hop.gap } : {} ) };
+		return { gap: out.gap, detail: out.detail, ...( cite ? { cite, canvasSettable: hopCanvasSettable( hop, ancestors, prop, ctx.measuredEmits ) } : {} ) };
 	}
 	const holds = out.writes.every( ( w ) => holdsValue( on.node.attributes?.[ w.attr ], w.value, w.merge ) );
 	return { writes: out.writes.map( ( w ) => ( { attr: w.attr, value: w.value, merge: w.merge } ) ), on: { ref: on.ref, block: on.block, path: on.path }, holds };
@@ -626,16 +627,19 @@ export function triageIssue( issue, ctx ) {
 	if ( settable ) {
 		// Say whether the reachability gate tested this citation or fell through its fail-open branch, so a claim
 		// that was never assessed cannot read as one that was.
-		evidence.push( { ...settable, reachabilityVerified: reachabilityVerified( settable, issue, ctx ) } );
+		evidence.push( { ...settable, reachabilityVerified: reachabilityVerified( settable, issue, ctx ), emission: settableEmission( settable, issue, ctx ) } );
 	}
 	if ( settable && ctx.canvas ) {
-		return verdict( 'W', 'canvas-settable', withSource() );
+		return verdict( 'W', settableEmission( settable, issue, ctx ) ? 'canvas-settable' : 'unconfirmed', withSource() );
 	}
 	if ( 'no-setting' === res.gap ) {
 		return verdict( 'F', 'no-setting', withSource() );
 	}
 	return verdict( 'W', `resolver-${ res.gap }`, 'hardcode' === issue.solveClass ? withSource() : {} );
 }
+
+// FR-48-15: the proof that a canvas citation's attribute emits on the row's element (lib/cite-emission.mjs), or null.
+const settableEmission = ( cite, issue, ctx ) => emissionProof( cite, { calibration: ctx.calFor?.( cite.block ) ?? null, elementPath: citedElementPath( cite, issue.rows[ 0 ] ), property: cssProp( issue.rows[ 0 ].key ), measuredEmits: ctx.measuredEmits } );
 
 // The per-issue ctx triageIssue and canvasSettable read: the surface ctx plus the walk, its open rows, its writable
 // groups and Solve's own gaps and writes. Exported so confirm-canvas.mjs's candidates mode asks canvasSettable exactly

@@ -17,6 +17,7 @@ import { readTree, walk as walkTree, refOf } from './lib/tree.mjs';
 import { detectReferences } from './lib/references.mjs';
 import { latestReport } from './lib/sweep.mjs';
 import { triage, measuredReachFrom } from './lib/triage.mjs';
+import { measuredEmitsFrom } from './lib/cite-emission.mjs';
 import { helperIndex } from './lib/triage-source.mjs';
 import { load as loadLedger } from './lib/ledger.mjs';
 import { calibrationForSite } from './solve.mjs';
@@ -160,6 +161,8 @@ export function surfaceContext( { client, surface, report: reportArg = null, mea
 		// The client's divergence ledger: an entry accepting a node in full places every row positioned after it.
 		ledger: loadLedger( path.join( buildDir, 'qa', 'divergences.json' ) ),
 		measuredReach,
+		// FR-48-15: the CONFIRMED families, one of the two proofs a canvas citation's attribute emits on its element.
+		measuredEmits: measuredEmitsFrom( fs.existsSync( confirmFile ) ? JSON.parse( fs.readFileSync( confirmFile, 'utf8' ) ) : [] ),
 		refs: detectReferences(),
 		helpers: helperIndex( [ ...phpFiles( path.join( PLUGIN, 'includes' ) ), ...phpFiles( BLOCKS_DIR ).filter( ( f ) => ! f.file.endsWith( '/render.php' ) ) ] ),
 		blockPhp: ( slug ) => phpFiles( path.join( BLOCKS_DIR, slug ) ).filter( ( f ) => ! f.file.endsWith( '/render.php' ) ).map( ( f ) => f.text ),
