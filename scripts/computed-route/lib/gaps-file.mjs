@@ -18,7 +18,7 @@ export const OWNERS = {
 
 // The classes each gate can fail with (lib/gate-chain.mjs), the other half of the chain's own contract.
 const GATE_CLASSES = {
-	G0: [ 'I-stale' ], G1: [ 'W-walker' ], G2: [ 'W-walker', 'draft-defect', 'render-wins', 'CLIENT' ], G3: [ 'I-stale', 'I-unrouted', 'I-mistag' ],
+	G0: [ 'I-stale', 'W-walker', 'W-route' ], G1: [ 'W-walker' ], G2: [ 'W-walker', 'draft-defect', 'render-wins', 'CLIENT' ], G3: [ 'I-stale', 'I-unrouted', 'I-mistag' ],
 	G4: [ 'I-calibration' ], G5: [ 'W-route' ], G6: [ 'W-route' ], G7: [ 'I-stale', 'closed' ],
 };
 

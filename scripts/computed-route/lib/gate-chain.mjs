@@ -269,7 +269,8 @@ export const g6Probe = async ( i ) => withSource( await g6ProbeRead( i ), { comm
 export const g7Recheck = async ( i ) => withSource( await g7RecheckRead( i ), { command: 'lib/gate-probes.mjs::recheck (a fresh lean walk)' } );
 
 // Runs G0 to G7 on a Solve row. ctx.inputs maps a gate name to a function (row, soFar) -> the gate's input (or a promise
-// of it); a missing builder, a thrown error or an undefined input fails that gate closed. Returns { gate, class,
+// of it); a missing builder, a thrown error or an undefined input fails that gate closed, with the gate's unreadable class
+// or the `gateClass` the thrown error names (a G0 row whose node the surface tree lacks is the route's, W-route). Returns { gate, class,
 // evidence, gates: [{ gate, status: 'pass' | 'fail' | 'not-reached', evidence }], candidate, settings }: gate and class
 // are those of the first failing gate, or null and the F-class G6 proved when every gate passed (candidate: true);
 // settings are the candidate settings G3 listed ([{ block, attr }], or null when G3 was not reached); setting is the one
@@ -286,7 +287,7 @@ export async function runChain( row, ctx ) {
 			const input = ctx?.inputs?.[ gate ] ? await ctx.inputs[ gate ]( row, soFar ) : undefined;
 			result = undefined === input ? fail( unreadable[ gate ], fromCommand( `the ${ gate } input builder`, `no input for ${ gate }` ) ) : await fns[ gate ]( input );
 		} catch ( e ) {
-			result = fail( unreadable[ gate ], fromCommand( `the ${ gate } input builder`, `${ gate } input failed: ${ String( e.message || e ).slice( 0, 120 ) }` ) );
+			result = fail( e?.gateClass ?? unreadable[ gate ], fromCommand( `the ${ gate } input builder`, `${ gate } input failed: ${ String( e.message || e ).slice( 0, 120 ) }` ) );
 		}
 		soFar[ gate ] = result;
 		gates[ n ] = { gate, status: result.pass ? 'pass' : 'fail', evidence: result.evidence };

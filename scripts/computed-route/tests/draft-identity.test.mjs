@@ -21,7 +21,8 @@ fs.writeFileSync( intakeFile, JSON.stringify( {
 } ) );
 process.env.SGS_REPO_ROOT = repo;
 const { buildContext } = await import( '../gate-chain.mjs' );
-const { g2Intent } = await import( '../lib/gate-chain.mjs' );
+const { g2Intent, runChain } = await import( '../lib/gate-chain.mjs' );
+const { writeGaps } = await import( '../lib/gaps-file.mjs' );
 const { declaredRead, draftIdentity } = await import( '../lib/draft-identity.mjs' );
 
 const db = new DatabaseSync( ':memory:' );
@@ -67,6 +68,19 @@ test( 'MUST FAIL: a declaration the walk cannot answer fails G2 with its reason,
 	// negative control: a property outside the walker's used sizes has no declaration to read, and passes on its render
 	assert.equal( g2Intent( await ctx.inputs.G2( row( { key: 'color', draft: 'rgb(0, 0, 0)' } ) ) ).pass, true );
 	assert.match( g2Intent( { property: 'width', declared: null, renderedDraft: '1px', fr34Passes: false, ledgered: false } ).evidence.line, /the intent input is missing/, 'an input without unread is incomplete' );
+} );
+
+test( 'MUST FAIL: a node the surface tree lacks is the route\'s (W-route) and a row naming no node the walker\'s (W-walker), never I-stale; gaps.json takes either at G0', async () => {
+	const ctx = ctxOf();
+	const at = async ( r ) => ( ( x ) => [ x.gate, x.class ] )( await runChain( r, ctx ) );
+	assert.deepEqual( await at( row() ), [ 'G0', 'W-route' ] );
+	assert.deepEqual( await at( row( { ref: undefined } ) ), [ 'G0', 'W-walker' ] );
+	// negative control: no surface tree at all is still unreadable instrument input
+	const bare = buildContext( { report: {}, walk, surfaces: null, surface: 'header', client: null, probes: null, installed: {}, db, intakeFile } );
+	assert.deepEqual( ( ( x ) => [ x.gate, x.class ] )( await runChain( row(), bare ) ), [ 'G0', 'I-stale' ] );
+	const res = await runChain( row(), ctx );
+	const file = path.join( repo, 'gaps.json' );
+	assert.equal( writeGaps( { file, rows: [ { key: 'k', ...res } ], surface: 'header', publishedOn: 'd' } ).rows[ 0 ].class, 'W-route' );
 } );
 
 test( 'MUST FAIL: an unreadable draft identity fails G2; gaps.json\'s draftId is null then, never the walker pair', async () => {

@@ -109,12 +109,21 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 		}
 		return v;
 	};
+	// The block of a row for G0. A row naming no node is the walker's (W-walker) and a node the surface tree does not hold
+	// is the route's (W-route), never stale instrument data; only an unreadable tree is I-stale.
+	const treeBlock = ( row ) => {
+		const block = blockOf( row );
+		if ( ! block && tree ) {
+			throw Object.assign( new Error( row.ref ? `the surface tree holds no node ${ row.ref }` : 'the row names no node' ), { gateClass: row.ref ? 'W-route' : 'W-walker' } );
+		}
+		return need( block, 'the block of the row' );
+	};
 	// The row as the probes read it: its block and that block's ancestors, which the settings it may take are looked up on.
 	const probed = ( row ) => ( { ...row, block: blockOf( row ), ancestors: ancestors( blockOf( row ) ), words: [ row.key, row.draftId ].filter( Boolean ) } );
 	return {
 		inputs: {
 			G0: ( row ) => {
-				const block = need( blockOf( row ), 'the block of the row' );
+				const block = treeBlock( row );
 				const short = block.replace( /^sgs\//, '' );
 				const manifest = JSON.parse( fs.readFileSync( path.join( REPO, 'sites', need( client, '--client' ), 'handoff', 'MANIFEST.json' ), 'utf8' ) );
 				return {
