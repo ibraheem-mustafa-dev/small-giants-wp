@@ -65,6 +65,11 @@ test( 'control (c): two links swapped in place with different destinations pair 
 	assert.deepEqual( keys( compareParts( d, l, TOL ) ), [ 'facebook label | facebook | like on facebook', 'instagram label | instagram | follow on instagram' ] );
 } );
 
+test( 'a destination one side cannot name ("#") never stops a pair by place', () => {
+	const rows = compareParts( [ part( 'instagram', 0.2, { href: 'instagram.com/eyecare' } ) ], [ part( 'follow us', 0.2 ) ], TOL );
+	assert.deepEqual( keys( rows ), [ 'instagram label | instagram | follow us' ] );
+} );
+
 test( 'control (c): a link in the same place with another destination is two presence rows, not a renamed pair', () => {
 	const rows = compareParts( [ part( 'facebook', 0.2, { href: 'facebook.com/eyecare' } ) ], [ part( 'twitter', 0.2, { href: 'x.com/eyecare' } ) ], TOL );
 	assert.deepEqual( keys( rows ), [ 'facebook presence | present | missing', 'twitter presence | missing | present' ] );
@@ -88,6 +93,7 @@ test( 'hrefKey: only a destination both sides can name alike is a key', () => {
 	assert.equal( hrefKey( 'https://wa.me/44?text=hi', 'https://wa.me/44?text=hi', o ), 'wa.me/44?text=hi' );
 	assert.equal( hrefKey( 'tel:0121 729 8233', 'tel:0121%20729%208233', o ), 'tel:01217298233' );
 	assert.equal( hrefKey( 'mailto:Hi@Eye.Care', 'mailto:Hi@Eye.Care', o ), 'mailto:hi@eye.care' );
+	assert.equal( hrefKey( 'https://instagram.com/EyeCare', 'https://instagram.com/EyeCare', o ), 'instagram.com/eyecare' );
 	assert.equal( hrefKey( 'ftp://files.test/a', 'ftp://files.test/a', o ), null );
 } );
 

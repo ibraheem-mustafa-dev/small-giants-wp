@@ -4,19 +4,43 @@
 // were the effect layers a draft adds under the pointer (a sheen band appended on pointer enter, a ripple circle on
 // press). partsPass reads, within each pair, every interactive part no other pair measures: at rest and at its hover end
 // state under a real pointer, plus the layers that appear or animate while it is hovered and while it is pressed. Parts
-// pair across the two sides by their accessible name (compareParts). Read on a desktop width of a ref-traced walk.
+// pair across the two sides by name, else by destination, else by kind, place and size (pairParts). Read on a desktop
+// width of a ref-traced walk.
 import { HOVER_PROPS, hoverPointOf, hoverStyles } from './collect.mjs';
 import { PAINT_SRC } from './paint.mjs';
 import { sameValue } from './compare.mjs';
 import { TRANSFORM_PARTS, sameTransform, effectiveText } from './transform.mjs';
 
+// A part's destination as both sides can name it alike: tel: digits, a mailto: address, or another site's host, path and
+// query, lower-case, without www. or a trailing slash. null for '#', javascript: and the page's own site (a draft's own
+// files and a live site's slugs never name each other). Self-contained: listParts runs it in the page. in: the href
+// attribute, the resolved address and the page's origin.
+export function hrefKey( raw, url, origin ) {
+	const v = String( raw || '' ).trim();
+	if ( /^tel:/i.test( v ) ) {
+		return 'tel:' + v.replace( /[^\d+]/g, '' );
+	}
+	if ( /^mailto:/i.test( v ) ) {
+		return v.toLowerCase();
+	}
+	try {
+		const u = new URL( url || v );
+		return /^https?:$/.test( u.protocol ) && u.origin !== origin ? ( u.host.replace( /^www\./, '' ) + u.pathname.replace( /\/$/, '' ) + u.search ).toLowerCase() : null;
+	} catch {
+		return null;
+	}
+}
+
 // The interactive parts of a pair element: itself when interactive, and every shown interactive descendant that is not
 // inside an element another pair measures (`others`, that pair reads it). Stored on window.__crParts for the reads that
 // follow. Named by their words, else aria-label or title, lower-case; a repeated name gets #1, #2. Each carries `pos`, its
-// centre as fractions of the pair element's box, and `box`, its size. in: [ finder, resolveSrc, others ].
-export function listParts( [ finder, resolveSrc, others ] ) {
+// centre as fractions of the pair element's box, `box`, its size, `kind` (`link` for a[href], else `button`) and `href`, its
+// destination as hrefKey names it. in: [ finder, resolveSrc, others, hrefKeySrc ].
+export function listParts( [ finder, resolveSrc, others, hrefKeySrc ] ) {
 	// eslint-disable-next-line no-new-func
 	const resolve = new Function( `return (${ resolveSrc });` )();
+	// eslint-disable-next-line no-new-func
+	const keyOf = new Function( `return (${ hrefKeySrc });` )();
 	const el = resolve( finder );
 	window.__crParts = [];
 	if ( ! el ) {
@@ -42,7 +66,8 @@ export function listParts( [ finder, resolveSrc, others ] ) {
 		const base = words || ( p.getAttribute( 'aria-label' ) || p.getAttribute( 'title' ) || '' ).replace( /\s+/g, ' ' ).trim().toLowerCase() || `(unnamed ${ p.tagName.toLowerCase() })`;
 		const k = seen.get( base ) || 0;
 		seen.set( base, k + 1 );
-		return { i, name: k ? `${ base }#${ k }` : base, root: p === el, pos, box: { w: Math.round( r.width ), h: Math.round( r.height ) } };
+		const link = p.matches( 'a[href]' );
+		return { i, name: k ? `${ base }#${ k }` : base, root: p === el, kind: link ? 'link' : 'button', href: link ? keyOf( p.getAttribute( 'href' ), p.href, location.origin ) : null, pos, box: { w: Math.round( r.width ), h: Math.round( r.height ) } };
 	} );
 }
 
@@ -176,7 +201,7 @@ const PART_PROPS = [ ...HOVER_PROPS, 'transform-origin' ];
 // pointer moved off before release so nothing is clicked).
 export async function readParts( page, finder, others, RESOLVE, wait = 800 ) {
 	await page.evaluate( partsSave, [ finder, RESOLVE ] ).catch( () => 0 );
-	const list = await page.evaluate( listParts, [ finder, RESOLVE, others ] ).catch( () => [] );
+	const list = await page.evaluate( listParts, [ finder, RESOLVE, others, hrefKey.toString() ] ).catch( () => [] );
 	const out = [];
 	for ( const part of list ) {
 		const pf = { js: `() => window.__crParts[${ part.i }]` };
@@ -185,7 +210,7 @@ export async function readParts( page, finder, others, RESOLVE, wait = 800 ) {
 		if ( ! at || at.unreached ) {
 			continue;
 		}
-		const rec = { name: part.name, root: part.root, pos: part.pos, box: part.box, rest: await styles(), layers: { rest: await page.evaluate( partLayers, [ part.i ] ) }, effects: {} };
+		const rec = { name: part.name, root: part.root, kind: part.kind, href: part.href, pos: part.pos, box: part.box, rest: await styles(), layers: { rest: await page.evaluate( partLayers, [ part.i ] ) }, effects: {} };
 		await page.evaluate( effectArm, [ part.i ] );
 		await page.mouse.move( at.x, at.y );
 		await page.waitForTimeout( wait );
@@ -226,23 +251,38 @@ const sameLayers = ( a = [], b = [], tol = 2 ) => a.length === b.length && a.eve
 	return pa && pb && [ 1, 2, 3, 4 ].every( ( k ) => Math.abs( Number( pa[ k ] ) - Number( pb[ k ] ) ) <= tol ) && sameValue( 'background-color', pa[ 5 ], pb[ 5 ], 0 );
 } );
 
-// The parts of the two sides paired: by name (a repeated name's #n suffix aside), and among parts of one name by where they
-// sit in the pair (`pos`; list order where either lacks it), nearest first. Returns { pairs: [[d, l]] in draft order,
-// draftOnly, liveOnly }.
+// A part paired by place sits within this share of the pair's box of the other's centre, and each side's width and height
+// is at least SIZE of the other's.
+const PLACE = 0.15;
+const SIZE = 0.75;
+const baseName = ( n ) => n.replace( /#\d+$/, '' );
+
+// The parts of the two sides paired, in three rounds, each over the parts the rounds before left: by name (a repeated
+// name's #n suffix aside); then by destination (hrefKey, the same on both, so links only); then by kind, place and size (within PLACE
+// and SIZE), never two parts whose destinations differ. Within a round the nearest pair (`pos`; within one name, list
+// order where either lacks it) is taken first. Returns { pairs: [[d, l]] in draft order, draftOnly, liveOnly }.
 export function pairParts( d, l ) {
-	const base = ( n ) => n.replace( /#\d+$/, '' );
+	const base = baseName;
 	const rank = ( list, x ) => list.filter( ( y ) => base( y.name ) === base( x.name ) ).indexOf( x );
 	const dist = ( a, b ) => ( a.pos && b.pos ? Math.hypot( a.pos.x - b.pos.x, a.pos.y - b.pos.y ) : Math.abs( rank( d, a ) - rank( l, b ) ) );
-	const cand = d.flatMap( ( a, i ) => l.flatMap( ( b, j ) => ( base( a.name ) === base( b.name ) ? [ [ dist( a, b ), i, j ] ] : [] ) ) );
-	cand.sort( ( x, y ) => x[ 0 ] - y[ 0 ] || x[ 1 ] - y[ 1 ] || x[ 2 ] - y[ 2 ] );
 	const mate = new Map();
 	const taken = new Set();
-	for ( const [ , i, j ] of cand ) {
-		if ( ! mate.has( i ) && ! taken.has( j ) ) {
-			mate.set( i, j );
-			taken.add( j );
+	const round = ( fits ) => {
+		const cand = d.flatMap( ( a, i ) => l.flatMap( ( b, j ) => ( fits( a, b ) ? [ [ dist( a, b ), i, j ] ] : [] ) ) );
+		cand.sort( ( x, y ) => x[ 0 ] - y[ 0 ] || x[ 1 ] - y[ 1 ] || x[ 2 ] - y[ 2 ] );
+		for ( const [ , i, j ] of cand ) {
+			if ( ! mate.has( i ) && ! taken.has( j ) ) {
+				mate.set( i, j );
+				taken.add( j );
+			}
 		}
-	}
+	};
+	const sameKind = ( a, b ) => a.kind === b.kind;
+	const near = ( x, y ) => Math.min( x, y ) >= SIZE * Math.max( x, y );
+	const placed = ( a, b ) => !! ( a.pos && b.pos && a.box && b.box ) && Math.hypot( a.pos.x - b.pos.x, a.pos.y - b.pos.y ) <= PLACE && near( a.box.w, b.box.w ) && near( a.box.h, b.box.h );
+	round( ( a, b ) => base( a.name ) === base( b.name ) );
+	round( ( a, b ) => !! a.href && a.href === b.href );
+	round( ( a, b ) => sameKind( a, b ) && ! ( a.href && b.href && a.href !== b.href ) && placed( a, b ) );
 	return {
 		pairs: d.map( ( a, i ) => ( mate.has( i ) ? [ a, l[ mate.get( i ) ] ] : null ) ).filter( Boolean ),
 		draftOnly: d.filter( ( a, i ) => ! mate.has( i ) ),
@@ -262,6 +302,7 @@ export function partEffects( parts ) {
 const POSE_KEYS = [ ...TRANSFORM_PARTS, 'transform-origin' ];
 
 // Rows for the parts paired across the two sides (pairParts). `part` rows: `<name> presence` for a part on one side only,
+// `<name> label` for a pair named differently on the two sides (its draft and live names),
 // `<name> rest:<prop>` where the resting looks differ, `<name> hover:<prop>` where hovering moves the property on either
 // side and the end states differ (the part's own element; the pair's root is the hover pass's, so its looks are not
 // compared here), `<name> rest:transform` / `<name> hover:transform` for the composed pose (lib/transform.mjs, about each
@@ -313,6 +354,9 @@ export function compareParts( d, l, tol ) {
 			if ( !! da.length !== !! lb.length ) {
 				rows.push( { kind: 'effect', key: `${ a.name } ${ st }`, part: a.name, draft: da.join( ', ' ) || 'none', live: lb.join( ', ' ) || 'none' } );
 			}
+		}
+		if ( baseName( a.name ) !== baseName( b.name ) ) {
+			rows.push( { kind: 'part', key: `${ a.name } label`, part: a.name, draft: baseName( a.name ), live: baseName( b.name ) } );
 		}
 	}
 	rows.push( ...draftOnly.map( ( a ) => ( { kind: 'part', key: `${ a.name } presence`, part: a.name, draft: 'present', live: 'missing' } ) ) );
