@@ -8,6 +8,7 @@ import { PROPS, READ_WIDTHS } from './fill-read.mjs';
 import { extraProps, usedValueDrafts, USED_VALUE } from './fill-declared.mjs';
 import { FLUID_WIDTHS } from './fill-values.mjs';
 import { INHERITED, resolveProperty, notPainted } from './fill-prop.mjs';
+import { unpairedPart } from './fill-part-pairing.mjs';
 import { gateFor } from './fill-fixture.mjs';
 import { fillEquivalent } from './fill-equivalents.mjs';
 import { compareDR } from './fill-confirm.mjs';
@@ -131,6 +132,15 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		if ( 'gap' === res.status && ( ! eq || 'gap' === eq.status ) ) {
 			unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: `${ res.gap }: ${ res.detail }${ eq ? `; ${ eq.detail }` : '' }`, ...( res.code ? { code: res.code } : {} ) } );
 		} else if ( 'written' === res.status ) {
+			// A setting of a part is written only from the element paired to that part (lib/fill-part-pairing.mjs).
+			const unpaired = target.paired ? [] : res.writes.map( ( w ) => ( { w, why: unpairedPart( { db: st.db, block: rec.name, cal, attr: w.attr, readSlot: target.slot, prop, value: valueText( draft ) } ) } ) ).filter( ( x ) => x.why );
+			if ( unpaired.length ) {
+				unpaired.forEach( ( x ) => unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: x.why } ) );
+				res.writes = res.writes.filter( ( w ) => ! unpaired.some( ( x ) => x.w === w ) );
+			}
+			if ( ! res.writes.length ) {
+				continue;
+			}
 			// One gap setting holds both a row and a column gap: a second prop writing it with another value is a conflict.
 			const attrs = res.writes.map( ( w ) => w.attr );
 			const prior = GAP_PROPS.includes( prop ) ? Object.entries( gapProp ).find( ( [ , a ] ) => a.attrs.some( ( x ) => attrs.includes( x ) ) ) : null;
