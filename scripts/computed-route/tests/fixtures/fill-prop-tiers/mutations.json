@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "canon( prop, painted ? painted.value : baseline( w ) )",
+		"replace": "canon( prop, Object.keys( out ).length ? Object.values( out ).at( -1 ) : baseline( w ) )",
+		"why": "a written wider tier would be assumed to carry down whatever the block's own fallback paints"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ) );",
+		"replace": "( w ) => baseline( slot, w ) );",
+		"why": "resolveProperty would judge the carry by the inherited baseline, not the block's calibrated paint"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "TIER_WIDTHS.every( ( w ) => undefined !== defaultAt( w ) ) ? defaultAt : () => '0px'",
+		"replace": "defaultAt",
+		"why": "a property calibration never measured would stop every carry and write every tier"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "const wider = [ 'tablet', 'desktop' ]",
+		"replace": "const wider = [ 'desktop', 'tablet' ]",
+		"why": "the widest written tier would be judged instead of the nearest"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "return same( prop, defaultAt( x ), defaultAt( WIDTH_OF[ wider ] ) ) ? { value: w.after[ wider ] } : null;",
+		"replace": "return { value: w.after[ wider ] };",
+		"why": "an empty tier would always show the wider value"
+	}
+]
