@@ -2,7 +2,7 @@
  "_meta": {
   "rule": "Ruling 11 (Bean, 2026-10-23): a block's own size setting overrules the 44px house minimum; a tap area fits its own shape. Each entry is a literal 44px floor in a block that has size settings, on an element none of those settings sizes, so 44px stays SGS's own default there.",
   "checker": "plugins/sgs-blocks/scripts/check-tap-floors.py --check",
-  "key": "block + the rule's selector (whitespace collapsed) + the property"
+  "key": "block + the rule's selector (whitespace collapsed; a rule inside an @-block is prefixed with its at-rule heads) + the property; a render-code floor in includes/ is keyed by its file path"
  },
  "house": [
   {
@@ -637,7 +637,7 @@
   },
   {
    "block": "trust-bar",
-   "selector": ".sgs-trust-bar--text-only .sgs-trust-bar__badge",
+   "selector": "@media (max-width: 599px) .sgs-trust-bar--text-only .sgs-trust-bar__badge",
    "property": "min-height",
    "reason": "badgeSize, iconCircleSize and badgeImageSize size icons and images; a text-only badge has none, and its height comes from padding (F2 candidate)."
   }
