@@ -30,7 +30,7 @@ import { createProbes, liveTarget } from './lib/gate-probes.mjs';
 import { writeGaps, gapsPath } from './lib/gaps-file.mjs';
 import { gapInput } from './lib/gap-input.mjs';
 import { ancestorsOf, withDiscovery } from './lib/gap-classes.mjs';
-import { debtRows, debtPath, staleSlotMaps, unroutedKnown, writeDebt } from './lib/instrument-debt.mjs';
+import { debtRows, debtPath, knownRows, staleSlotMaps, unroutedKnown, writeDebt } from './lib/instrument-debt.mjs';
 import { READ_KEY } from './lib/calibrate-props.mjs';
 import { serveDraft } from './lib/draft.mjs';
 import { adminSession, readEnv, renderBlock } from './lib/trial-page.mjs';
@@ -218,8 +218,8 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			const dir = path.join( REPO, 'plugins', 'sgs-blocks', 'build', 'blocks', short );
 			return fs.existsSync( dir ) ? localBlockHash( dir ) : null;
 		} } );
-		const known = [ ...unroutedKnown( { db, isDiscovered: ( r ) => !! calibrationForSite( surfaces?.[ report.surface ]?.site ?? '', cacheDir )( r.block_slug )?.discovered?.[ r.attr_name ] } ), ...stale.rows.filter( ( r ) => inTree.has( r.block ) ) ];
-		const written = writeDebt( { file: path.resolve( flag( '--debt-out' ) || debtPath( client, REPO ) ), rows: [ ...debtRows( out, { surface: report.surface } ), ...known.map( ( r ) => debtRows( [ r ], { surface: null } )[ 0 ] ) ], surface: report.surface, publishedOn: new Date().toISOString().slice( 0, 10 ) } );
+		const known = knownRows( { rows: [ ...unroutedKnown( { db, isDiscovered: ( r ) => !! calibrationForSite( surfaces?.[ report.surface ]?.site ?? '', cacheDir )( r.block_slug )?.discovered?.[ r.attr_name ] } ), ...stale.rows ], inTree, surface: report.surface } );
+		const written = writeDebt( { file: path.resolve( flag( '--debt-out' ) || debtPath( client, REPO ) ), rows: [ ...debtRows( out, { surface: report.surface } ), ...known ], surface: report.surface, publishedOn: new Date().toISOString().slice( 0, 10 ) } );
 		console.log( `instrument debt: ${ written.rows.length } rows by owner ${ JSON.stringify( written.byOwner ) }; ${ debtRows( out, { surface: report.surface } ).length } from the chain, ${ known.length } known items${ stale.missing.length ? `; inputs missing: ${ stale.missing.slice( 0, 3 ).join( '; ' ) }` : '' }. Written ${ written.file }` );
 	}
 }
