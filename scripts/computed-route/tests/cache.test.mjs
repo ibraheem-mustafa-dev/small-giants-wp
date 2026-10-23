@@ -104,9 +104,9 @@ test( 'MUST FAIL TO SHARE: a reader asked for site B paint never returns A', () 
 test( 'a mirror shares its test site’s paint (mirrorOf), and an unrelated site still gets none', () => {
 	const dir = fresh();
 	run( dir, 'local-eye-care', 'red' );
-	assert.equal( paintSite( 'local-eye-care' ), 'eye-care-test' );
-	assert.ok( fs.existsSync( path.join( dir, 'eye-care-test', 'heading.paint.json' ) ), 'the mirror writes into its test site’s folder' );
-	assert.equal( readPaint( dir, 'eye-care-test', 'sgs/heading' ).elements[ '' ][ 1440 ].color, 'red' );
+	assert.equal( paintSite( 'local-eye-care' ), 'eye-care-clone-test' );
+	assert.ok( fs.existsSync( path.join( dir, 'eye-care-clone-test', 'heading.paint.json' ) ), 'the mirror writes into its test site’s folder' );
+	assert.equal( readPaint( dir, 'eye-care-clone-test', 'sgs/heading' ).elements[ '' ][ 1440 ].color, 'red' );
 	assert.equal( readPaint( dir, 'sandybrown', 'sgs/heading' ), null );
 } );
 

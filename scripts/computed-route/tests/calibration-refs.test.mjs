@@ -22,7 +22,7 @@ test( 'a mirror inherits its test site\'s refs, and its own refs win', () => {
 	const t = { site: { refs: { menu: 1, drawer: 2 } }, mirror: { mirrorOf: 'site', refs: { drawer: 9 } }, bare: {} };
 	assert.deepEqual( refsFor( t, 'mirror' ), { menu: 1, drawer: 9 } );
 	assert.deepEqual( refsFor( t, 'bare' ), {} );
-	assert.deepEqual( refsFor( targets, 'local-eye-care' ), targets[ 'eye-care-test' ].refs );
+	assert.deepEqual( refsFor( targets, 'local-eye-care' ), targets[ 'eye-care-clone-test' ].refs );
 	assert.deepEqual( refsFor( targets, 'local-indus' ), targets[ 'indus-test' ].refs );
 } );
 
