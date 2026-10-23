@@ -39,7 +39,7 @@ import { collectStructure } from './lib/structure.mjs';
 import { writeContactSheet } from './lib/review.mjs';
 import { makeHelpers, retargetLive } from './lib/helpers.mjs';
 import { sampleTimeline, collectChrome } from './lib/chrome-walk.mjs';
-import { withAutoScroll, collectAutoOn, markClipped } from './lib/auto-walk.mjs';
+import { withAutoScroll, collectAutoOn, markClipped, SPACER_ATTR } from './lib/auto-walk.mjs';
 import closeOnExit from '../lib/close-browser-on-exit.js';
 import { REF_PROPS, elementPath, traceRef, loadUnmatched, loadMispaired, appendUnmatchedReport } from './lib/ref-trace.mjs';
 import { loadDivergences } from './lib/divergences.mjs';
@@ -266,7 +266,10 @@ async function walkSide( browser, side, width, draftStates = null ) {
 		}
 		states[ state.name ] = { snap, shot, log, structure, auto, links, mainY, region: h.region, entrances: state.name === firstState ? entrances : null, ...( settled.settled ? {} : { unsettled: settled } ), ...( findings.length ? { findings } : {} ), ...( inert ? { inert } : {} ) };
 		if ( state.autoScrolled ) {
-			await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
+			await page.evaluate( ( attr ) => {
+				document.querySelectorAll( `[${ attr }]` ).forEach( ( el ) => el.remove() );
+				window.scrollTo( { top: 0, behavior: 'instant' } );
+			}, SPACER_ATTR );
 		}
 	}
 	await ctx.close();

@@ -8,6 +8,26 @@ import { compareAuto } from './auto-compare.mjs';
 // The header, footer and floating chat belong to the nav track, not a page's parity.
 export const AUTO_EXCLUDE = [ 'header', 'footer', '[role=banner]', '[role=contentinfo]', '.sgs-site-header', '.sgs-site-footer', '.sgs-whatsapp-cta--floating' ];
 
+// The height a page must gain to scroll a screen and a half: a page shorter than that (a header or footer surface
+// on its own) is given an empty spacer at the end of <body>, so both sides reach the same scroll position and their
+// scroll handlers (a sticky header's scrolled shadow) run on both. The spacer is removed when the state ends.
+export const SPACER_ATTR = 'data-parity-scroll-spacer';
+
+// In the page: pad when needed, then scroll. Returns the scroll position reached.
+export function scrollAScreenAndAHalf( attr ) {
+	const top = Math.round( innerHeight * 1.5 );
+	const gap = top + innerHeight - document.documentElement.scrollHeight;
+	if ( gap > 0 ) {
+		const spacer = document.createElement( 'div' );
+		spacer.setAttribute( attr, '' );
+		spacer.setAttribute( 'aria-hidden', 'true' );
+		spacer.style.height = `${ gap }px`;
+		document.body.appendChild( spacer );
+	}
+	window.scrollTo( { top, behavior: 'instant' } );
+	return window.scrollY;
+}
+
 // A state after the opening one, scrolled a screen and a half: what appears only after scrolling
 // (a floating button, a sticky bar) and the content below the first screen.
 export function withAutoScroll( cfg ) {
@@ -15,7 +35,7 @@ export function withAutoScroll( cfg ) {
 		return;
 	}
 	const scroll = async ( h ) => {
-		await h.page.evaluate( () => window.scrollTo( { top: Math.round( innerHeight * 1.5 ), behavior: 'instant' } ) );
+		await h.page.evaluate( scrollAScreenAndAHalf, SPACER_ATTR );
 		await h.wait( 1200 );
 	};
 	cfg.states.splice( 1, 0, { name: 'auto-scrolled', autoScrolled: true, draft: scroll, live: scroll } );
