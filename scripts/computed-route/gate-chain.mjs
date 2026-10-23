@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 // Gate chain command (Spec 48 FR-48-64, FR-48-66): runs G0 to G7 (lib/gate-chain.mjs) on every distinct open issue of a
 // Solve report, prints each row's first failing gate, class and evidence, and writes gaps.json.
-//   node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--probes <module.mjs>] [--out <file>] [--debt-out <file>]
+//   node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--probes <module.mjs>] [--out <file>] [--debt-out <file>] [--gaps-out <file>]
 // With --client the surface's tree, state map and site come from sites/<client>/build/surfaces.json (the block of each row
 // is read from the tree; without it G0 fails every row, the block being unknown). The final walk is the highest
 // round-N/report.json beside the report. The live gates G5 to G7 run lib/gate-probes.mjs against the surface's live site
 // (the walker config's live url, or SGS_LIVE_ORIGIN) and a fresh walk of the draft served from the surface's draftDir; a
 // module given with --probes replaces them (its default export is { measure(row, setting), probe(row, kind), recheck(row) }).
-// Writes gate-chain.json beside the report (or --out) and, with --client, sites/<client>/build/qa/instrument-debt.json (FR-48-67,
+// Writes gate-chain.json beside the report (or --out) and, with --client, sites/<client>/build/qa/gaps.json (FR-48-66, or --gaps-out;
+// a row without evidence for each gate it passed is refused) and sites/<client>/build/qa/instrument-debt.json (FR-48-67,
 // or --debt-out): every I-class row grouped by owner, plus the known items (lib/instrument-debt.mjs). Reads the DB read-only.
 import fs from 'fs';
 import path from 'path';
@@ -26,7 +27,8 @@ import { localBlockHash } from './lib/deploy-hash.mjs';
 import { manifestSchemaVersion } from './lib/handoff.mjs';
 import { createProbes, liveTarget } from './lib/gate-probes.mjs';
 import { writeGaps, gapsPath } from './lib/gaps-file.mjs';
-import { ancestorsOf, gapClassOf, instrumentFinding, withDiscovery } from './lib/gap-classes.mjs';
+import { gapInput } from './lib/gap-input.mjs';
+import { ancestorsOf, instrumentFinding, withDiscovery } from './lib/gap-classes.mjs';
 import { debtRows, debtPath, staleSlotMaps, unroutedKnown, writeDebt } from './lib/instrument-debt.mjs';
 import { READ_KEY } from './lib/calibrate-props.mjs';
 import { serveDraft } from './lib/draft.mjs';
@@ -162,6 +164,8 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 			visit( tree );
 			return names;
 		},
+		// The setting state a row's values belong to: the one G3 reads, null for the resting state or an unmapped walker state.
+		stateOf: ( row ) => settingState( row, s?.states ) ?? null,
 		declaredOf: ( row ) => draftValues( walk, row.pair, cssProp( row.key ), 'hover' === row.kind ).declared[ row.width ] ?? null,
 	};
 }
@@ -174,7 +178,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	};
 	const reportFile = argv.find( ( a, i ) => ! a.startsWith( '--' ) && ( 0 === i || ! argv[ i - 1 ].startsWith( '--' ) ) );
 	if ( ! reportFile ) {
-		console.error( 'usage: node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--probes <module.mjs>] [--out <file>] [--debt-out <file>]' );
+		console.error( 'usage: node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--probes <module.mjs>] [--out <file>] [--debt-out <file>] [--gaps-out <file>]' );
 		process.exit( 2 );
 	}
 	const report = JSON.parse( fs.readFileSync( reportFile, 'utf8' ) );
@@ -188,16 +192,17 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	for ( const issue of issuesOf( report, report.surface ) ) {
 		const row = { ...issue.rows[ 0 ], solveClass: issue.solveClass };
 		const res = await runChain( row, ctx );
-		// A class outside FR-48-65 (G7's `closed` apart) is a chain defect, never defaulted.
-		'closed' === res.class || null === res.class || gapClassOf( res.class );
-		const block = ctx.blockOf( row );
-		const attribute = [ 'G3', 'G4' ].includes( res.gate ) && String( res.class ).startsWith( 'I-' ) ? ctx.findingOf( row ).attribute : null;
-		out.push( { key: issue.key, solveClass: issue.solveClass, ref: row.ref ?? null, pair: row.pair, property: row.key, widths: [ ...new Set( issue.rows.map( ( x ) => x.width ) ) ], block, attribute, ...res } );
+		out.push( gapInput( { issue, row, res }, ctx ) );
 		console.log( `${ issue.key }: ${ res.gate ? `stopped at ${ res.gate } (${ res.class }): ${ renderEvidence( res.evidence ) }` : `passed all gates: ${ res.class } candidate` }` );
 	}
 	const file = path.resolve( flag( '--out' ) || path.join( path.dirname( reportFile ), 'gate-chain.json' ) );
 	fs.writeFileSync( file, JSON.stringify( { surface: report.surface, rows: out }, null, 1 ) );
 	console.log( `gate chain: ${ out.length } rows, ${ out.filter( ( r ) => r.candidate ).length } framework-gap candidates. Written ${ file }` );
+	// FR-48-66: one gaps.json row per open item; a row without evidence for every gate it passed is refused, and a row a fresh walk closed is left out.
+	if ( client ) {
+		const gaps = writeGaps( { file: path.resolve( flag( '--gaps-out' ) || gapsPath( client, REPO ) ), rows: out, surface: report.surface, publishedOn: new Date().toISOString().slice( 0, 10 ) } );
+		console.log( `gaps: ${ gaps.rows.length } rows, ${ gaps.dropped } closed rows left out. Written ${ gaps.file }` );
+	}
 	// FR-48-67: every I-class row, and the known items whose inputs are present, grouped by owner beside gaps.json.
 	if ( client ) {
 		const db = openDb();
