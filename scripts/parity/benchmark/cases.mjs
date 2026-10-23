@@ -7,11 +7,14 @@
 // | <live>") would point a reviewer at the gap, so only a new row it matches counts as a catch. Run by
 // scripts/parity/benchmark.mjs.
 
+// `draft` replaces a draft address the old config names with the handoff folder served locally (its MANIFEST.json's first
+// entry draft at the root): the host that served the draft (`from`) now runs a WordPress site, so the old address shows no draft.
+const OPTICIAN_DRAFT = { from: 'https://mintcream-lyrebird-224487.hostingersite.com/', dir: 'sites/eye-care-ward-end/handoff' };
 export const CONFIGS = {
 	// Shop declared done (fd9115ba2), before Bean's review found cases a-d.
-	shop: { ref: 'fd9115ba2', path: 'sites/eye-care-ward-end/build/qa/parity/shop.mjs' },
+	shop: { ref: 'fd9115ba2', path: 'sites/eye-care-ward-end/build/qa/parity/shop.mjs', draft: OPTICIAN_DRAFT },
 	// Lens config before the last question's gaps (e, f) were found.
-	lens: { ref: '3495ae7e0', path: 'sites/eye-care-ward-end/build/qa/parity/lens.mjs' },
+	lens: { ref: '3495ae7e0', path: 'sites/eye-care-ward-end/build/qa/parity/lens.mjs', draft: OPTICIAN_DRAFT },
 };
 
 // Card prices set by the Interactivity API (data-wp-text) can be rewritten after load, so the
