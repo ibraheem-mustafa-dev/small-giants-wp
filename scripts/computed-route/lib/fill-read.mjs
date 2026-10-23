@@ -274,7 +274,9 @@ export function jobsFor( nodes ) {
 		id: t.id,
 		finder: t.scoped && 'tpl' !== finderKind( t.finder ) ? scopeFinder( t.finder, scopeSelector( n.index ) ) : t.finder,
 		mark: t.scoped ? null : n.index,
-		own: ! t.scoped && n.children.length > 0,
+		// A node with child nodes reads its own text styles at every target, its root and its slots alike (a row's content
+		// band): a text descendant there is another node's element, never this one's look.
+		own: n.children.length > 0,
 	} ) ) );
 }
 

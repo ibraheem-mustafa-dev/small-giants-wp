@@ -178,3 +178,10 @@ test( 'MUST FAIL: a tpl slot finder is never scoped to its root (an absorbed bur
 	assert.match( jobs.find( ( j ) => '0:.label' === j.id ).finder, /^\[data-fill-scope="0"\] :is\(span\.l\)$/ );
 	assert.equal( jobs.find( ( j ) => '0:.burger' === j.id ).mark, null, 'still a slot, never a root mark' );
 } );
+
+test( 'MUST FAIL: a slot of a node with child nodes reads its own text styles, never a child node\'s (the row band took the pill\'s blue)', () => {
+	const own = skeletonNodes( [ { name: 'sgs/site-header-row', draftRef: { tpl: 'Root/9#0' }, draftSlots: { '.sgs-container__inner': { tpl: 'Root/10#0' } }, innerBlocks: [ { name: 'sgs/button', draftRef: { tpl: 'Root/14#0' }, draftSlots: { '.sgs-button__label': 'span' } } ] } ] );
+	const jobs = jobsFor( own );
+	assert.equal( jobs.find( ( j ) => '0:.sgs-container__inner' === j.id ).own, true, 'the band is the row, read as itself' );
+	assert.equal( jobs.find( ( j ) => '1:.sgs-button__label' === j.id ).own, false, 'a leaf block\'s part still reads its text descendant' );
+} );

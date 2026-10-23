@@ -4,5 +4,11 @@
 		"find": "t.scoped && 'tpl' !== finderKind( t.finder ) ?",
 		"replace": "t.scoped ?",
 		"why": "a part drawn outside its root's element (the nav's burger) would never be found, so its block switched it off"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "\t\town: n.children.length > 0,",
+		"replace": "\t\town: ! t.scoped && n.children.length > 0,",
+		"why": "a row's content band would take a child pill's text colour and font as its own"
 	}
 ]
