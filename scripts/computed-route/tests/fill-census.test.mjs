@@ -71,6 +71,7 @@ test( 'MUST FAIL: census.mjs --check exits 1 on a planted unknown reason and 0 o
 	const run = () => spawnSync( process.execPath, [ path.join( ROOT, 'census.mjs' ), dir, '--check' ], { encoding: 'utf8' } );
 	fs.writeFileSync( path.join( dir, 'unmapped.json' ), JSON.stringify( [ row( 'no-setting: x' ) ] ) );
 	fs.writeFileSync( path.join( dir, 'fill-report.json' ), JSON.stringify( { alreadyHeld: [ row( 'inherited' ) ] } ) );
+	fs.writeFileSync( path.join( dir, 'reads.json' ), JSON.stringify( { version: 1, rows: [] } ) );
 	const ok = run();
 	assert.equal( ok.status, 0, ok.stdout + ok.stderr );
 	assert.match( ok.stdout, /2 rows, 2 classes, 0 unclassified/ );
