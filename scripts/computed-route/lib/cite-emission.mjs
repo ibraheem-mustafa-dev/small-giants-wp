@@ -3,18 +3,30 @@
 // or confirm-canvas.mjs's live measurement (a CONFIRMED verdict for the block, setting and property). A citation with
 // neither is `unconfirmed`. Emission found by searching PHP source text is never a proof here (Spec 48 §14 gate G5):
 // lib/triage-source.mjs may still drop a citation, but it can never confirm one.
-import { LOOSE } from './resolve.mjs';
+const NTH = /:nth-of-type\((\d+)\)/g;
+const SEG = /\s*>\s*/;
+
+// Whether a calibrated path names the row's element path: the same steps, each the same once its :nth-of-type is set
+// aside, and where both steps carry one, the same index (a paint on the first `li` never proves the second). An index on
+// one side only is the calibration fixture and the client tree numbering repetitions differently, so it matches.
+export function samePath( calibrated, elementPath ) {
+	const [ a, b ] = [ String( calibrated ).trim().split( SEG ), String( elementPath ).trim().split( SEG ) ];
+	return a.length === b.length && a.every( ( s, i ) => {
+		const [ x, y ] = [ [ ...s.matchAll( NTH ) ].map( ( m ) => m[ 1 ] ), [ ...b[ i ].matchAll( NTH ) ].map( ( m ) => m[ 1 ] ) ];
+		return s.replace( NTH, '' ) === b[ i ].replace( NTH, '' ) && ( ! x.length || ! y.length || x.join() === y.join() );
+	} );
+}
 
 // Whether a calibration entry shows `setting` painting or reaching `elementPath` (in the calibrated block's own path
-// space; '' is the block's root). elementPath null: the cited block does not enclose the row's element (a sibling in
-// the canvas), so the proof is that the setting paints some element of that block at all.
+// space; '' is the block's root; samePath). elementPath null: the cited block does not enclose the row's element (a
+// sibling in the canvas): its calibration names no path the row's element shares, so it proves nothing.
 export function calibrationEmits( calibration, setting, elementPath ) {
+	if ( null === elementPath || undefined === elementPath ) {
+		return false;
+	}
 	const c = calibration?.settings?.[ setting ];
 	const paints = [ ...( c?.slots || ( c?.slot ? [ c.slot ] : [] ) ), ...( c?.reaches || [] ) ].filter( ( p ) => 'string' === typeof p );
-	if ( null === elementPath || undefined === elementPath ) {
-		return paints.length > 0;
-	}
-	return paints.map( LOOSE ).includes( LOOSE( elementPath ) );
+	return paints.some( ( p ) => samePath( p, elementPath ) );
 }
 
 // The ctx.measuredEmits lookup from confirm-canvas.mjs's results (an array of { block, setting, property, verdict }):
