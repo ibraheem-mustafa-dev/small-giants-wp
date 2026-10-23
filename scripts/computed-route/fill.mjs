@@ -21,6 +21,7 @@ import { lintSkeleton } from './lint.mjs';
 import { load as loadLedger, addEntries } from './lib/ledger.mjs';
 import { assertDraftPage, draftPageProblem, serveDraft } from './lib/draft.mjs';
 import { skeletonNodes, skeletonProblems, cleanTree, expandSiteInfoRows, originMap } from './lib/fill-skeleton.mjs';
+import { draftHashOf, stampOrigin } from './lib/origin-file.mjs';
 import { readDraft } from './lib/fill-read.mjs';
 import { fillTree } from './lib/fill-resolve.mjs';
 import { fillStates } from './lib/fill-state.mjs';
@@ -140,7 +141,10 @@ export async function fillSurface( o ) {
 	// built tree itself is unchanged). Written only when the skeleton has any, so a hand-authored skeleton leaves no file.
 	const origin = originMap( nodes, flat.map( ( n ) => refOf( n ) ) );
 	if ( Object.keys( origin ).length ) {
-		fs.writeFileSync( path.join( buildDir, `${ o.surface }.origin.json` ), `${ JSON.stringify( origin, null, 2 ) }\n` );
+		// FR-48-10: each entry carries the draft hash of the export it was derived from, so pairing refuses it after a re-export.
+		const manifestFile = path.join( buildDir, '..', 'handoff', 'MANIFEST.json' );
+		const hash = fs.existsSync( manifestFile ) ? draftHashOf( JSON.parse( fs.readFileSync( manifestFile, 'utf8' ) ) ) : null;
+		fs.writeFileSync( path.join( buildDir, `${ o.surface }.origin.json` ), `${ JSON.stringify( hash ? stampOrigin( origin, hash ) : origin, null, 2 ) }\n` );
 	}
 	const served = o.draftDir ? await serveDraft( assertDraftPage( o.draftDir, o.draftIndex || null ), { index: o.draftIndex || null } ) : null;
 	const url = served ? served.url : o.draftUrl;
