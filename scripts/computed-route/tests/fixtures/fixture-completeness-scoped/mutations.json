@@ -1,0 +1,11 @@
+[
+	{ "file": "tools/fixture-completeness.mjs", "find": "const missing = classes.filter( ( c ) => ! rendered.has( c ) && ! MODIFIER.test( c ) );", "replace": "const missing = [];", "why": "an element a scoped rule paints that the fixture never rendered would read as rendered" },
+	{ "file": "tools/fixture-completeness.mjs", "find": "if ( hits.some( ( h ) => h.anchor ) && ! rendersAnchor( rendered ) )", "replace": "if ( false )", "why": "a link rule would never need an anchor in the fixture" },
+	{ "file": "tools/fixture-completeness.mjs", "find": "const rendersAnchor = ( rendered ) => rendered.has( '<a>' );", "replace": "const rendersAnchor = () => false;", "why": "a fixture that renders a link would still be asked for one" },
+	{ "file": "tools/fixture-completeness.mjs", "find": "for ( let hop = 0; hop < 3; hop++ ) {", "replace": "for ( let hop = 0; hop < 0; hop++ ) {", "why": "a value that flows through a variable into the selector's statement would be lost" },
+	{ "file": "tools/fixture-completeness.mjs", "find": "for ( const st of all ) if ( read.has( assigned( st ) ) ) used.add( st );", "replace": "", "why": "a selector held in a variable (`$link = $selector . ' a'`) would be unread" },
+	{ "file": "tools/fixture-completeness.mjs", "find": "...( 'shared' === where ? nameSuffixes( attr ) : [] )", "replace": "...[]", "why": "a helper that builds the setting's name from a suffix would find no emitter" },
+	{ "file": "tools/fixture-completeness.mjs", "find": "...( 'other-block' === where && contextKey ? [ contextKey ] : [] )", "replace": "...[]", "why": "a parent's setting read from block context by its child would find no emitter" },
+	{ "file": "tools/fixture-completeness.mjs", "find": "'no-emitter' === r.cause ? mine.find( ( x ) => x.attr === base ) : null", "replace": "null", "why": "a gradient setting would not follow its flat sibling" },
+	{ "file": "tools/fixture-completeness.mjs", "find": "text.replace( /<\\?php/g, '' )", "replace": "text", "why": "the opening tag would fuse into the first statement and hide its variable" }
+]

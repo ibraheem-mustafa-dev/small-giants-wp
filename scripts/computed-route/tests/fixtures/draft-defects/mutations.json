@@ -1,0 +1,13 @@
+[
+	{ "file": "lib/draft-defects.mjs", "find": "if ( 'unresolved-binding' === r.test && droppedDecls( r ).length ) {", "replace": "if ( false ) {", "why": "the declaration would name the whole rule, compiled properties included, instead of the dropped binding" },
+	{ "file": "lib/draft-defects.mjs", "find": "sentOn: old.sentOn ?? null", "replace": "sentOn: null", "why": "a rebuild would send an already-sent defect again" },
+	{ "file": "lib/draft-defects.mjs", "find": "listedOn: old.listedOn ?? d.listedOn", "replace": "listedOn: d.listedOn", "why": "a defect would look newly listed on every rebuild" },
+	{ "file": "lib/draft-defects.mjs", "find": "owner: old.owner ?? d.owner", "replace": "owner: d.owner", "why": "a changed owner would be reset on rebuild" },
+	{ "file": "lib/draft-defects.mjs", "find": "if ( ! seen.has( defectKey( entry ) ) ) {", "replace": "if ( true ) {", "why": "one defect seen twice would be listed twice" },
+	{ "file": "lib/draft-defects.mjs", "find": "if ( f in d && ! tail( d[ f ] ) ) {", "replace": "if ( false ) {", "why": "an entry with an empty render would be a valid list" },
+	{ "file": "lib/draft-defects.mjs", "find": "built: null, listedOn: date", "replace": "built: undefined, listedOn: date", "why": "an entry would lose its built field and fail the file check" },
+	{ "file": "lib/draft-defects-file.mjs", "find": "const open = ( file.defects || [] ).filter( ( d ) => ! d.sentOn );", "replace": "const open = file.defects || [];", "why": "the request would repeat defects already sent" },
+	{ "file": "lib/draft-defects-file.mjs", "find": "( d.built ? d : { ...d, built: heldBuilt.get( d.id ) ?? null } )", "replace": "d", "why": "a rebuild without Fill would erase the values Fill built" },
+	{ "file": "lib/draft-defects-file.mjs", "find": "if ( bad.length ) {\n\t\tthrow new Error( `draft-defects.json would be invalid", "replace": "if ( false ) {\n\t\tthrow new Error( `draft-defects.json would be invalid", "why": "an invalid list would be written to the client's folder" },
+	{ "file": "lib/draft-defects-file.mjs", "find": "d.sentOn ? d : { ...d, sentOn: date }", "replace": "{ ...d, sentOn: date }", "why": "marking sent would overwrite the date a defect was first sent" }
+]
