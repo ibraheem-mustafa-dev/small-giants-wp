@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/state-rest.mjs",
+		"find": "/^(absolute|sticky)$/.test( cs.position )",
+		"replace": "true",
+		"why": "any transformed element is a layer"
+	},
+	{
+		"file": "lib/state-rest.mjs",
+		"find": "/^(absolute|sticky)$/.test( cs.position )",
+		"replace": "false",
+		"why": "a transformed absolute panel is no layer"
+	},
+	{
+		"file": "lib/state-rest.mjs",
+		"find": "const layer = 'fixed' === cs.position || (",
+		"replace": "const layer = false || (",
+		"why": "a fixed drawer is no layer"
+	}
+]

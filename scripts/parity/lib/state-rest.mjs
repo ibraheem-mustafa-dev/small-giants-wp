@@ -2,7 +2,8 @@
 // once, just before the first state's action (after the load, the config's `open` and the load entrances), as a rest
 // signature: the scroll, any scroll lock (html and body overflow, body and html position), the open dialogs, modals,
 // popovers and disclosures, the elements made inert or hidden from assistive technology at page level, the focused
-// element, and every fixed or transformed layer in the viewport whatever its size (a 300px drawer with no ARIA at 1440).
+// element, and every layer in the viewport whatever its size (fixed, or transformed and absolute or sticky; a 300px drawer with no
+// ARIA at 1440), never an svg's drawing groups or an in-flow element taking a transform.
 // Layers are named by tag, id and first class, each name once, so a carousel's slide giving way to the next is no change. Before every later state the signature is read again: a page still at rest runs
 // the state where it is (a wizard step chosen inside a modal the config's `open` opened is at rest), a page that is not
 // (a drawer, a scroll, a lock the previous state left) is loaded afresh and the config's `open` runs again, and a page
@@ -36,7 +37,10 @@ export function restSignature() {
 	const names = ( list ) => [ ...new Set( list.map( name ) ) ].sort().join( ' ' );
 	const layers = names( [ ...document.querySelectorAll( 'body *' ) ].filter( ( e ) => {
 		const cs = getComputedStyle( e );
-		return ( 'fixed' === cs.position || 'none' !== cs.transform ) && shows( e ) && inView( e );
+		// A layer sits above the flow: fixed, or moved by a transform while taken out of the flow (absolute or sticky).
+		// An in-flow element taking a transform (a logo's animated svg paths, a lifted card) is content, not a layer.
+		const layer = 'fixed' === cs.position || ( 'none' !== cs.transform && /^(absolute|sticky)$/.test( cs.position ) );
+		return layer && shows( e ) && inView( e );
 	} ) );
 	// Page-level aria-hidden: on a child of body, or on an element that is or holds a landmark (an icon's own is not).
 	const LANDMARK = 'main, header, footer, nav, aside, [role="main"], [role="banner"], [role="contentinfo"], [role="navigation"]';

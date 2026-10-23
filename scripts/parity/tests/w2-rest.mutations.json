@@ -1,13 +1,68 @@
 [
-	{ "file": "lib/state-rest.mjs", "find": "return ( 'fixed' === cs.position || 'none' !== cs.transform ) && shows( e ) && inView( e );", "replace": "return 'fixed' === cs.position && shows( e ) && inView( e ) && e.getBoundingClientRect().width * e.getBoundingClientRect().height >= 0.25 * innerWidth * innerHeight;", "why": "the quarter-screen floor again (a 300px drawer at 1440 is at rest)" },
-	{ "file": "lib/state-rest.mjs", "find": "return ( 'fixed' === cs.position || 'none' !== cs.transform ) && shows( e ) && inView( e );", "replace": "return ( 'fixed' === cs.position || 'none' !== cs.transform ) && shows( e );", "why": "a layer off screen counts" },
-	{ "file": "lib/state-rest.mjs", "find": "return r.width > 0 && r.height > 0 && r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight;", "replace": "return r.width > 0 && r.height > 0 && r.right > 0 && r.left <= innerWidth && r.bottom > 0 && r.top < innerHeight;", "why": "a layer whose edge touches the viewport's right edge counts as in view" },
-	{ "file": "lib/state-rest.mjs", "find": "inert: names( [ ...document.querySelectorAll( '[inert]' ) ] ),", "replace": "inert: '',", "why": "inert is not read" },
-	{ "file": "lib/state-rest.mjs", "find": "\t\thidden,\n", "replace": "\t\thidden: '',\n", "why": "page-level aria-hidden is not read" },
-	{ "file": "lib/state-rest.mjs", "find": "e.parentElement === document.body || e.matches( LANDMARK ) || e.querySelector( LANDMARK )", "replace": "true", "why": "every aria-hidden counts, an icon's own too" },
-	{ "file": "lib/state-rest.mjs", "find": "e.parentElement === document.body || e.matches( LANDMARK ) || e.querySelector( LANDMARK )", "replace": "e.parentElement === document.body", "why": "a landmark's aria-hidden is not read" },
-	{ "file": "lib/state-rest.mjs", "find": "\t\tfocus: focused,\n", "replace": "\t\tfocus: '',\n", "why": "focus is not read" },
-	{ "file": "lib/state-rest.mjs", "find": "${ body.position } ${ html.position }`,", "replace": "${ body.position }`,", "why": "html position is not read" },
-	{ "file": "lib/state-rest.mjs", "find": "const names = ( list ) => [ ...new Set( list.map( name ) ) ].sort().join( ' ' );", "replace": "const names = ( list ) => list.map( name ).sort().join( ' ' );", "why": "names repeat (one more slide shown is a change)" },
-	{ "file": "lib/state-rest.mjs", "find": "inert: 'inert elements', hidden: 'page-level aria-hidden', focus: 'focused element', ", "replace": "", "why": "restDiff ignores the new fields" }
+	{
+		"file": "lib/state-rest.mjs",
+		"find": "return layer && shows( e ) && inView( e );",
+		"replace": "return layer && shows( e ) && inView( e ) && e.getBoundingClientRect().width * e.getBoundingClientRect().height >= 0.25 * innerWidth * innerHeight;",
+		"why": "the quarter-screen floor again (a 300px drawer at 1440 is at rest)"
+	},
+	{
+		"file": "lib/state-rest.mjs",
+		"find": "return layer && shows( e ) && inView( e );",
+		"replace": "return layer && shows( e );",
+		"why": "a layer off screen counts"
+	},
+	{
+		"file": "lib/state-rest.mjs",
+		"find": "return r.width > 0 && r.height > 0 && r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight;",
+		"replace": "return r.width > 0 && r.height > 0 && r.right > 0 && r.left <= innerWidth && r.bottom > 0 && r.top < innerHeight;",
+		"why": "a layer whose edge touches the viewport's right edge counts as in view"
+	},
+	{
+		"file": "lib/state-rest.mjs",
+		"find": "inert: names( [ ...document.querySelectorAll( '[inert]' ) ] ),",
+		"replace": "inert: '',",
+		"why": "inert is not read"
+	},
+	{
+		"file": "lib/state-rest.mjs",
+		"find": "\t\thidden,\n",
+		"replace": "\t\thidden: '',\n",
+		"why": "page-level aria-hidden is not read"
+	},
+	{
+		"file": "lib/state-rest.mjs",
+		"find": "e.parentElement === document.body || e.matches( LANDMARK ) || e.querySelector( LANDMARK )",
+		"replace": "true",
+		"why": "every aria-hidden counts, an icon's own too"
+	},
+	{
+		"file": "lib/state-rest.mjs",
+		"find": "e.parentElement === document.body || e.matches( LANDMARK ) || e.querySelector( LANDMARK )",
+		"replace": "e.parentElement === document.body",
+		"why": "a landmark's aria-hidden is not read"
+	},
+	{
+		"file": "lib/state-rest.mjs",
+		"find": "\t\tfocus: focused,\n",
+		"replace": "\t\tfocus: '',\n",
+		"why": "focus is not read"
+	},
+	{
+		"file": "lib/state-rest.mjs",
+		"find": "${ body.position } ${ html.position }`,",
+		"replace": "${ body.position }`,",
+		"why": "html position is not read"
+	},
+	{
+		"file": "lib/state-rest.mjs",
+		"find": "const names = ( list ) => [ ...new Set( list.map( name ) ) ].sort().join( ' ' );",
+		"replace": "const names = ( list ) => list.map( name ).sort().join( ' ' );",
+		"why": "names repeat (one more slide shown is a change)"
+	},
+	{
+		"file": "lib/state-rest.mjs",
+		"find": "inert: 'inert elements', hidden: 'page-level aria-hidden', focus: 'focused element', ",
+		"replace": "",
+		"why": "restDiff ignores the new fields"
+	}
 ]
