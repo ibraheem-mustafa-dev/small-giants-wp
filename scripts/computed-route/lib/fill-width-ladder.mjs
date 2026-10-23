@@ -16,7 +16,7 @@
 // Which blocks and settings take part comes from the framework DB and the block's calibration, never from a list.
 // Returns { writes, unmapped (the rows left), notes, ledger }.
 import { ONE_VALUE_EVERY_WIDTH, LOOSE } from './resolve.mjs';
-import { siblings } from './db.mjs';
+import { siblings, candidates } from './db.mjs';
 import { setAttr } from './tree.mjs';
 import { mediaRule, scopedCssPuts, snapThreshold, snapEntry, ownBreakpoint, collapseAttributes } from './fill-width-gate.mjs';
 import { WIDTHS, TIER_OF, rowTarget, rowValues, reresolve, commit } from './fill-regap.mjs';
@@ -165,8 +165,8 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 	const values = Object.fromEntries( widths.map( ( w ) => [ w, keywordOf( effs[ w ] ) ] ) );
 	// Rung 2: a tier-shaped setting painting the same element.
 	const cal = ctx.calFor( rec.name );
-	const tiered = db.prepare( "SELECT attr_name, css_property, tier_shape FROM block_attributes WHERE block_slug = ? AND tier_shape IN ('tier_object', 'flat_sibling') AND css_state IS ?" ).all( rec.name, state )
-		.filter( ( r ) => r.css_property.split( ',' ).map( ( x ) => x.trim() ).includes( prop ) && paints( cal, r.attr_name.replace( /(Tablet|Mobile)$/, '' ), slot ) );
+	const tiered = candidates( db, rec.name, prop, state )
+		.filter( ( r ) => [ 'tier_object', 'flat_sibling' ].includes( r.tier_shape ) && paints( cal, r.attr_name.replace( /(Tablet|Mobile)$/, '' ), slot ) );
 	if ( tiered.length ) {
 		const r = tiered[ 0 ];
 		const tiers = {};

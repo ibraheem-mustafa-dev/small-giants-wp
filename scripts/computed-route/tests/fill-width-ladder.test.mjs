@@ -14,6 +14,8 @@ const dbFile = fixtureDb( {
 		{ block_slug: 'sgs/box', attr_name: 'justifyContent', attr_type: 'string', css_property: 'justify-content', css_element: 'wrapper', role: 'layout' },
 		{ block_slug: 'sgs/box', attr_name: 'colour', attr_type: 'string', css_property: 'color', css_element: 'wrapper', role: 'colour' },
 		{ block_slug: 'sgs/bar', attr_name: 'barJustify', attr_type: 'object', css_property: 'justify-content', css_element: 'wrapper', tier_shape: 'tier_object', is_responsive: 1, role: 'layout' },
+		// A tier-shaped setting that paints no CSS property (as sgs/button's widthType): rung 2 never reads it.
+		{ block_slug: 'sgs/bar', attr_name: 'barSizing', attr_type: 'object', css_property: null, tier_shape: 'tier_object', is_responsive: 1, role: 'layout' },
 		{ block_slug: 'sgs/nav', attr_name: 'collapsePoint', attr_type: 'number', css_property: null, role: 'layout' },
 		{ block_slug: 'sgs/nav', attr_name: 'navJustify', attr_type: 'string', css_property: 'justify-content', css_element: 'wrapper', role: 'layout' },
 	],
