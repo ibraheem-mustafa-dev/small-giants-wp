@@ -27,6 +27,9 @@ const state = ( o = {} ) => ( {
 	options: { show_on_front: 'posts', page_on_front: '0', page_for_posts: '0', permalink_structure: '/%postname%/', woocommerce_shop_page_id: '6', woocommerce_cart_page_id: '7', woocommerce_checkout_page_id: '8', woocommerce_myaccount_page_id: '9' },
 	pointers: { header: 0, footer: 0, drawer: 0 }, templateHashes: {}, customTemplates: [], ...o,
 } );
+const TREE = [ { name: 'sgs/heading', attributes: { content: 'Real' } } ];
+const TREES = { 'sites/c/build/trees/shop/shop.json': TREE, 'sites/c/build/trees/product/product.json': TREE };
+const withTrees = ( files = TREES ) => ( { repo: repoWith( files ), client: 'c' } );
 const plan = ( rows, st = state(), extra = {} ) => planBuild( { rows, state: st, repo: os.tmpdir(), client: 'none', decisions: {}, ...extra } );
 const repoWith = ( files ) => {
 	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'site-build-shop-' ) );
@@ -39,7 +42,7 @@ const repoWith = ( files ) => {
 
 test( 'shop, product and product_cat rows plan with no stop: a page for the shop row, no post for product or product_cat', () => {
 	const rows = [ ...SHOP(), row( { slug: 'frames', title: 'Frames', postType: 'product_cat', template: 'archive-product', collection: 'live' } ) ];
-	const p = plan( rows );
+	const p = plan( rows, state(), withTrees() );
 	assert.deepEqual( p.problems, [] );
 	const creates = p.actions.filter( ( a ) => 'create' === a.type );
 	assert.deepEqual( creates.map( ( a ) => [ a.key, a.postType ] ).filter( ( [ k ] ) => /shop|product/.test( k ) ), [ [ 'shop:shop', 'page' ] ] );
@@ -69,30 +72,30 @@ test( 'a role with no row leaves its option and says so', () => {
 } );
 
 test( 'the shop and product rows build the site\'s own templates, once; a changed tree rebuilds only that template', () => {
-	const first = plan( SHOP() );
+	const first = plan( SHOP(), state(), withTrees() );
 	const builds = first.actions.filter( ( a ) => 'template' === a.type );
 	assert.deepEqual( builds.map( ( a ) => a.template ), [ 'archive-product', 'single-product' ] );
 	assert.deepEqual( builds[ 1 ].hashes, { 'archive-product': builds[ 0 ].hash, 'single-product': builds[ 1 ].hash } );
 	assert.ok( first.options.some( ( o ) => o.name === `${ TEMPLATE_OPTION }[single-product]` && '(none)' === o.before ) );
-	const built = state( { templateHashes: builds[ 1 ].hashes } );
-	assert.deepEqual( plan( SHOP(), built ).actions.filter( ( a ) => 'template' === a.type ), [] );
-	const repo = repoWith( { 'sites/c/build/trees/product/product.json': [ { name: 'sgs/heading', attributes: { content: 'Changed' } } ] } );
+	const built = state( { templateHashes: builds[ 1 ].hashes, customTemplates: [ 'archive-product', 'single-product' ] } );
+	assert.deepEqual( plan( SHOP(), built, withTrees() ).actions.filter( ( a ) => 'template' === a.type ), [] );
+	const repo = repoWith( { ...TREES, 'sites/c/build/trees/product/product.json': [ { name: 'sgs/heading', attributes: { content: 'Changed' } } ] } );
 	const again = planBuild( { rows: SHOP(), state: built, repo, client: 'c', decisions: {} } );
 	assert.deepEqual( again.actions.filter( ( a ) => 'template' === a.type ).map( ( a ) => [ a.template, a.say.split( ': ' )[ 1 ].split( ' ' )[ 0 ] ] ), [ [ 'single-product', 'rebuild' ] ] );
 } );
 
 test( 'a saved template copy the site build did not make stops the run and names the way out', () => {
-	const p = plan( SHOP(), state( { customTemplates: [ 'single-product' ] } ) );
+	const p = plan( SHOP(), state( { customTemplates: [ 'single-product' ] } ), withTrees() );
 	assert.equal( p.problems.length, 1 );
 	assert.match( p.problems[ 0 ], /product:product: the site already holds its own saved copy of the single-product template.*Clear customisations/ );
 } );
 
 test( 'WooCommerce\'s own default page for a role is taken over and marked; any other holder still stops the run', () => {
 	const held = { 'page:checkout': [ 8 ], 'page:account': [ 15 ] };
-	const p = plan( SHOP(), state( { holders: held, posts: { 8: { id: 8, type: 'page', slug: 'checkout', title: 'Checkout', status: 'publish', parent: 0, template: '', rowKey: '', treeHash: '' } } } ) );
+	const p = plan( SHOP(), state( { holders: held, posts: { 8: { id: 8, type: 'page', slug: 'checkout', title: 'Checkout', status: 'publish', parent: 0, template: '', rowKey: '', treeHash: '', content: '' } } } ) );
 	assert.equal( p.problems.length, 1 );
 	assert.match( p.problems[ 0 ], /page:account: post 15 already holds this page slug/ );
-	const ok = plan( SHOP(), state( { holders: { 'page:checkout': [ 8 ] }, posts: { 8: { id: 8, type: 'page', slug: 'checkout', title: 'Checkout', status: 'publish', parent: 0, template: '', rowKey: '', treeHash: '' } } } ) );
+	const ok = plan( SHOP(), state( { holders: { 'page:checkout': [ 8 ] }, posts: { 8: { id: 8, type: 'page', slug: 'checkout', title: 'Checkout', status: 'publish', parent: 0, template: '', rowKey: '', treeHash: '', content: '' } } } ) );
 	assert.deepEqual( ok.problems, [] );
 	assert.deepEqual( ok.actions.filter( ( a ) => 'adopt' === a.type ).map( ( a ) => [ a.key, a.id, a.mark ] ), [ [ 'page:checkout', 8, true ] ] );
 	assert.ok( ! ok.actions.some( ( a ) => 'create' === a.type && 'page:checkout' === a.key ) );
@@ -121,18 +124,21 @@ const LAYOUT = () => [
 	row( { slug: 'basket', title: 'Basket' } ),
 ].map( ( r ) => Object.fromEntries( Object.entries( r ).filter( ( [ , v ] ) => undefined !== v ) ) );
 
-test( 'several layout rows of one kind: the owner\'s decision, else the one not named for a page, and the choice is noted', () => {
+test( 'several layout rows of one kind stop the run until the owner decides, and a decision is applied', () => {
 	const rows = LAYOUT();
 	const pointer = ( p, area ) => p.actions.find( ( a ) => 'pointer' === a.type && a.area === area )?.id;
-	const byDefault = plan( rows );
-	assert.deepEqual( byDefault.problems, [] );
-	assert.deepEqual( [ pointer( byDefault, 'header' ), pointer( byDefault, 'drawer' ) ], [ { ref: 'post:sgs_header:header-site-header' }, { ref: 'post:sgs_drawer:drawer-menu' } ] );
-	assert.match( byDefault.notes.join( '\n' ), /sgs_header:header-site-header is the active header of 2/ );
-	const chosen = plan( rows, state(), { decisions: { active: { header: 'header-checkout' } } } );
-	assert.deepEqual( pointer( chosen, 'header' ), { ref: 'post:sgs_header:header-checkout' } );
-	const bad = plan( rows, state(), { decisions: { active: { header: 'nope' } } } );
+	const undecided = plan( rows );
+	assert.equal( undecided.problems.length, 2 );
+	assert.match( undecided.problems[ 0 ], /2 header rows \(header-checkout, header-site-header\) and no choice.*site-build-decisions\.json \(sgs_header:header-site-header is the likeliest\)/ );
+	assert.match( undecided.problems[ 1 ], /2 drawer rows/ );
+	const chosen = plan( rows, state(), { decisions: { active: { header: 'header-checkout', drawer: 'drawer-menu' } } } );
+	assert.deepEqual( chosen.problems, [] );
+	assert.deepEqual( [ pointer( chosen, 'header' ), pointer( chosen, 'drawer' ) ], [ { ref: 'post:sgs_header:header-checkout' }, { ref: 'post:sgs_drawer:drawer-menu' } ] );
+	const bad = plan( rows, state(), { decisions: { active: { header: 'nope', drawer: 'drawer-menu' } } } );
 	assert.match( bad.problems[ 0 ], /names "nope" as the active header, which is no header row/ );
-	assert.equal( chooseActive( rows.filter( ( r ) => 'sgs_header' === r.postType ), 'header', rows, {} ).row.slug, 'header-site-header' );
+	const found = chooseActive( rows.filter( ( r ) => 'sgs_header' === r.postType ), 'header', rows, {} );
+	assert.equal( found.suggested.slug, 'header-site-header' );
+	assert.equal( found.row, null );
 } );
 
 test( 'the writer builds a template with --template and records its hash, and marks an adopted WooCommerce page', () => {
@@ -140,12 +146,12 @@ test( 'the writer builds a template with --template and records its hash, and ma
 	const builds = [];
 	const actions = [
 		{ phase: 'posts', type: 'adopt', key: 'page:checkout', id: 8, mark: true, say: 'adopt' },
-		{ phase: 'posts', type: 'template', key: 'shop:shop', template: 'archive-product', tree: [ { name: 'sgs/heading' } ], hash: 'abc', hashes: { 'archive-product': 'abc' }, say: 'template' },
+		{ phase: 'posts', type: 'template', key: 'shop:shop', template: 'archive-product', tree: [ { name: 'sgs/heading' } ], hash: 'abc', hashes: { 'archive-product': 'abc' }, previous: {}, say: 'template' },
 	];
-	const done = applyPhase( actions, 'posts', { wp: ( a ) => calls.push( a.join( ' ' ) ), build: ( t, tree ) => builds.push( [ t, tree ] ), onId: () => {} } );
+	const done = applyPhase( actions, 'posts', { wp: ( a ) => calls.push( 'eval-file -' === a.join( ' ' ) ? 'eval' : a.join( ' ' ) ), build: ( t, tree ) => builds.push( [ t, tree ] ), onId: () => {} } );
 	assert.equal( done, 2 );
 	assert.deepEqual( builds, [ [ { template: 'archive-product' }, [ { name: 'sgs/heading' } ] ] ] );
-	assert.deepEqual( calls, [ `post meta update 8 ${ ROW_META } page:checkout`, `option update ${ TEMPLATE_OPTION } {"archive-product":"abc"} --format=json` ] );
+	assert.deepEqual( calls, [ `post meta update 8 ${ ROW_META } page:checkout`, `option update ${ TEMPLATE_OPTION } {"archive-product":"abc"} --format=json`, 'eval' ] );
 } );
 
 test( 'the state read covers shop rows: WordPress types, posts of held slugs, the WooCommerce options and the template bookkeeping', () => {

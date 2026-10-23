@@ -8,7 +8,7 @@ import { execFileSync } from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { MENU_META, ROW_META, SECTION_META, TEMPLATE_OPTION, TREE_META } from './site-build-state.mjs';
+import { CONTENT_META, MENU_META, ROW_META, SECTION_META, TEMPLATE_CONTENT_OPTION, TEMPLATE_OPTION, TREE_META } from './site-build-state.mjs';
 
 // How long each editor load and save may take: twice wp-build-page.js's 60 s default, since a shared host can stall an
 // admin page past it; a run stopped by a stall resumes from the posts already made.
@@ -77,15 +77,46 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 	};
 	// WordPress ignores an empty page_template, so clearing one sends `default` (get_page_template_slug reads it as '').
 	const fieldArgs = ( fields ) => Object.entries( fields ).map( ( [ k, v ] ) => `--${ k }=${ 'page_template' === k && '' === v ? 'default' : val( v ) }` );
+	// A bookkeeping write after a save is tried three times: a dropped connection must not leave a saved post unrecorded.
+	const again = ( fn ) => {
+		let last;
+		for ( let i = 0; i < 3; i++ ) {
+			try {
+				return fn();
+			} catch ( e ) {
+				last = e;
+			}
+		}
+		throw last;
+	};
+	const mark = ( id, key ) => again( () => wp( [ 'post', 'meta', 'update', String( id ), ROW_META, key ] ) );
+	// The hash of what a save produced, read and written on the site so the two sides hash the same text (a later difference is a person's edit).
+	const markContent = ( id ) => again( () => wp( [ 'eval-file', '-' ], `<?php
+update_post_meta( ${ Number( id ) }, '${ CONTENT_META }', hash( 'sha256', get_post_field( 'post_content', ${ Number( id ) }, 'raw' ) ) );
+` ) );
+	const markTemplateContent = ( slug ) => {
+		if ( ! /^[a-z0-9-]+$/.test( slug ) ) {
+			throw new Error( `template slug "${ slug }" is not a plain slug` );
+		}
+		again( () => wp( [ 'eval-file', '-' ], `<?php
+$t = get_block_template( get_stylesheet() . '//${ slug }', 'wp_template' );
+$o = (array) get_option( '${ TEMPLATE_CONTENT_OPTION }', array() );
+if ( $t ) {
+	$o['${ slug }'] = hash( 'sha256', (string) $t->content );
+	update_option( '${ TEMPLATE_CONTENT_OPTION }', $o );
+}
+` ) );
+	};
 	let done = 0;
 	for ( const a of actions.filter( ( x ) => x.phase === phase ) ) {
 		log( `  ${ a.say }` );
 		if ( 'adopt' === a.type ) {
 			refs[ `post:${ a.key }` ] = a.id;
-			onId( a.key, a.id );
+			// The mark first: a failed mark leaves the page map empty and the next run plans the adoption again.
 			if ( a.mark ) {
-				wp( [ 'post', 'meta', 'update', String( a.id ), ROW_META, a.key ] );
+				mark( a.id, a.key );
 			}
+			onId( a.key, a.id );
 		} else if ( 'create' === a.type ) {
 			let id;
 			try {
@@ -98,17 +129,45 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 			}
 			refs[ `post:${ a.key }` ] = id;
 			onId( a.key, id );
-			wp( [ 'post', 'meta', 'update', String( id ), ROW_META, a.key ] );
-			wp( [ 'post', 'meta', 'update', String( id ), TREE_META, a.hash ] );
+			try {
+				mark( id, a.key );
+			} catch ( e ) {
+				throw new Error( `post ${ id } was saved but not marked (${ e.message }); its id is in the page map, and the next run marks it, or mark it with "wp post meta update ${ id } ${ ROW_META } ${ a.key }"` );
+			}
+			again( () => wp( [ 'post', 'meta', 'update', String( id ), TREE_META, a.hash ] ) );
+			markContent( id );
 			if ( Object.keys( a.fields ).length ) {
 				wp( [ 'post', 'update', String( id ), ...fieldArgs( a.fields ) ] );
 			}
 		} else if ( 'build' === a.type ) {
-			build( { postId: a.id }, a.tree );
-			wp( [ 'post', 'meta', 'update', String( a.id ), TREE_META, a.hash ] );
+			try {
+				build( { postId: a.id }, a.tree );
+			} catch ( e ) {
+				// A save may have landed before the failure: the stored content hash no longer describes it, so it is cleared.
+				try {
+					wp( [ 'post', 'meta', 'delete', String( a.id ), CONTENT_META ] );
+				} catch {
+					// The original failure is the one to report.
+				}
+				throw e;
+			}
+			again( () => wp( [ 'post', 'meta', 'update', String( a.id ), TREE_META, a.hash ] ) );
+			markContent( a.id );
 		} else if ( 'template' === a.type ) {
-			build( { template: a.template }, a.tree );
-			wp( [ 'option', 'update', TEMPLATE_OPTION, JSON.stringify( a.hashes ), '--format=json' ] );
+			// The hash is recorded before the build and put back when the build fails, so a build that stops after its save is never "unrecorded".
+			const record = ( hashes ) => again( () => wp( [ 'option', 'update', TEMPLATE_OPTION, JSON.stringify( hashes ), '--format=json' ] ) );
+			record( a.hashes );
+			try {
+				build( { template: a.template }, a.tree );
+			} catch ( e ) {
+				try {
+					record( a.previous || {} );
+				} catch {
+					// The original failure is the one to report.
+				}
+				throw e;
+			}
+			markTemplateContent( a.template );
 		} else if ( 'section' === a.type ) {
 			wp( [ 'post', 'meta', 'update', String( val( a.id ) ), SECTION_META, String( val( a.page ) ) ] );
 		} else if ( 'update' === a.type ) {

@@ -144,23 +144,35 @@ export function readDecisions( repo, client ) {
 }
 
 // The row of one layout kind (`area`: header, drawer or footer) that gets the active pointer when the map holds several
-// (a checkout header beside the site header, a bag drawer beside the menu drawer): the owner's decision, else the first
-// row whose slug shares no word with a page row's slug or route (a variant named for its page is not the site's own),
-// else the first. Returns { row, note, problem }.
+// (a checkout header beside the site header, a bag drawer beside the menu drawer): only the owner's decision chooses.
+// With none, `problem` names the candidates and the file to set, and `suggested` is the first row whose slug shares no
+// word with a page row's slug or route (a variant named for its page is not the site's own), else the first.
+// Returns { row, suggested, problem }.
 export function chooseActive( mine, area, rows, decisions ) {
 	const slugs = mine.map( ( r ) => r.slug ).join( ', ' );
 	const wanted = decisions?.active?.[ area ];
 	if ( wanted ) {
 		const row = mine.find( ( r ) => r.slug === wanted );
-		return row ? { row, note: null, problem: null } : { row: null, note: null, problem: `site-build-decisions.json names "${ wanted }" as the active ${ area }, which is no ${ area } row (${ slugs })` };
+		return row ? { row, suggested: row, problem: null } : { row: null, suggested: null, problem: `site-build-decisions.json names "${ wanted }" as the active ${ area }, which is no ${ area } row (${ slugs })` };
 	}
 	const words = ( text ) => String( text || '' ).toLowerCase().split( /[^a-z0-9]+/ ).filter( ( w ) => w.length > 2 && ! [ area, 'site', 'menu' ].includes( w ) );
 	const surfaceTypes = [ ...Object.keys( LAYOUT_TYPES ), 'sgs_mega_menu', 'sgs_form', 'sgs_modal' ];
 	const pageWords = new Set( rows.filter( ( r ) => ! surfaceTypes.includes( r.postType ) ).flatMap( ( r ) => [ ...words( r.slug ), ...words( r.route ) ] ) );
 	const own = mine.filter( ( r ) => ! words( r.slug ).some( ( w ) => pageWords.has( w ) ) );
-	const row = own[ 0 ] || mine[ 0 ];
-	return { row, problem: null, note: `${ rowKey( row ) } is the active ${ area } of ${ mine.length } (${ slugs }); to choose another, set {"active":{"${ area }":"<slug>"}} in sites/<client>/build/site-build-decisions.json` };
+	const suggested = own[ 0 ] || mine[ 0 ];
+	return { row: null, suggested, problem: `${ mine.length } ${ area } rows (${ slugs }) and no choice of the active one; set {"active":{"${ area }":"<slug>"}} in sites/<client>/build/site-build-decisions.json (${ rowKey( suggested ) } is the likeliest)` };
 }
+
+// The site a page map's ids were written for, recorded beside the map (`page-map.site`) because the map's own layout
+// carries nothing but the ids; null before any run recorded one.
+const idsSiteFile = ( mapFile ) => path.join( path.dirname( mapFile ), 'page-map.site' );
+export const readIdsSite = ( mapFile ) => ( fs.existsSync( idsSiteFile( mapFile ) ) ? fs.readFileSync( idsSiteFile( mapFile ), 'utf8' ).trim() || null : null );
+export const writeIdsSite = ( mapFile, site ) => fs.writeFileSync( idsSiteFile( mapFile ), `${ site }
+` );
+
+// The rows as a run against `site` should plan from them: ids written for another site name nothing there, so they are
+// dropped (a post carrying a row key is adopted, FR-48-17) and the run's write-back replaces them.
+export const rowsForSite = ( rows, idsSite, site ) => ( idsSite && idsSite !== site ? rows.map( ( r ) => ( { ...r, id: null } ) ) : rows );
 
 export const treeHash = ( tree ) => crypto.createHash( 'sha256' ).update( JSON.stringify( tree ) ).digest( 'hex' );
 

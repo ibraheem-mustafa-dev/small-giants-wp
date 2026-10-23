@@ -6,12 +6,13 @@
 // the executor resolves. The run only ever changes what it made: a stored id must name a post carrying that row's key
 // (`_sgs_site_build_row`), a menu it reuses must carry its own mark, and an item no row asks for is reported, never
 // deleted. A row without an id adopts the one post carrying its key (a page map an intake rerun reset, FR-48-17), else
-// is created; an unmarked post already holding its type and slug (another author's, or one an interrupted run saved
-// before marking it) stops the run, so it is never duplicated or renamed `<slug>-2`.
+// is created; an unmarked post already holding its type and slug (another author's) stops the run, so it is never
+// duplicated or renamed `<slug>-2`, and a stored id naming a same-slug post that has no row key and no tree hash (one a
+// run saved before marking it) is marked and rebuilt. A rebuild never overwrites content a person changed since the build saved it.
 import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, builtTemplate, chooseActive, hasPost, orderRows, pageTreeFor, parentRow, readDecisions, rowKey, templateTreeFor, treeHash, wpType } from './site-build-map.mjs';
 import { desiredMenus, menuLocation } from './site-build-menus.mjs';
 import { readSurfaces } from './site-build-labels.mjs';
-import { MENU_META, ROW_META, TEMPLATE_OPTION } from './site-build-state.mjs';
+import { CONTENT_META, MENU_META, ROW_META, TEMPLATE_OPTION, isWooDefaultContent } from './site-build-state.mjs';
 
 export const PERMALINKS = '/%postname%/';
 export const PHASES = [ 'posts', 'menus', 'layout', 'site' ];
@@ -44,6 +45,17 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 	} catch ( e ) {
 		problems.push( e.message );
 	}
+	// Two rows that make one WordPress type and slug under one parent claim one slug (a `shop` row is a page).
+	const claims = {};
+	for ( const row of rows.filter( hasPost ) ) {
+		const parent = parentRow( rows, row );
+		( claims[ `${ wpType( row ) }
+${ row.slug }
+${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
+	}
+	for ( const list of Object.values( claims ).filter( ( l ) => l.length > 1 ) ) {
+		problems.push( `${ list.map( rowKey ).join( ' and ' ) } both make a ${ wpType( list[ 0 ] ) } with slug "${ list[ 0 ].slug }"; WordPress would rename the second, so give one a different slug` );
+	}
 	const ids = {};
 	for ( const row of ordered ) {
 		const key = rowKey( row );
@@ -55,6 +67,9 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 			const p = state.posts[ String( row.id ) ];
 			if ( ! p || p.type !== wpType( row ) || 'trash' === p.status ) {
 				problems.push( `${ key }: its stored id ${ row.id } ${ p && p.type !== wpType( row ) ? `is a ${ p.type }, not a ${ wpType( row ) }` : 'no longer exists on the site' }; restore the post or clear the row's id` );
+			} else if ( ! p.rowKey && ! p.treeHash && p.slug === row.slug ) {
+				// The post this row's slug names, saved by a run that stopped before it marked the post (it has no tree hash either): marked and rebuilt.
+				actions.push( { phase: 'posts', type: 'adopt', key, id: row.id, mark: true, say: `${ key }: post ${ row.id } was saved by a run that stopped before marking it; mark it with this row's key and rebuild it` } );
 			} else if ( p.rowKey !== key ) {
 				problems.push( `${ key }: its stored id ${ row.id } is a post the site build did not make for this row (${ p.rowKey ? `it carries ${ p.rowKey }` : 'it carries no row key' }); correct the id, or mark the post with "wp post meta update ${ row.id } ${ ROW_META } ${ key }"` );
 			}
@@ -72,8 +87,12 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 			// WooCommerce's own default page for this role (the one its page option names, nobody's authorship) is taken over.
 			const wooOption = woo.find( ( [ , , list ] ) => list[ 0 ] === row )?.[ 0 ];
 			if ( 1 === held.length && wooOption && String( state.options[ wooOption ] ) === String( held[ 0 ] ) ) {
-				ids[ key ] = held[ 0 ];
-				actions.push( { phase: 'posts', type: 'adopt', key, id: held[ 0 ], mark: true, say: `${ key }: take over post ${ held[ 0 ] }, WooCommerce's own page named by ${ wooOption }, and mark it with this row's key` } );
+				if ( isWooDefaultContent( state.posts[ String( held[ 0 ] ) ]?.content ) ) {
+					ids[ key ] = held[ 0 ];
+					actions.push( { phase: 'posts', type: 'adopt', key, id: held[ 0 ], mark: true, say: `${ key }: take over post ${ held[ 0 ] }, WooCommerce's own page named by ${ wooOption }, and mark it with this row's key` } );
+				} else {
+					problems.push( `${ key }: post ${ held[ 0 ] } is the page WooCommerce names in ${ wooOption }, but its content is no longer WooCommerce's default content, so taking it over would rebuild someone's edit; restore its default content, or mark it with "wp post meta update ${ held[ 0 ] } ${ ROW_META } ${ key }" to let the site build rebuild it` );
+				}
 			} else if ( held.length ) {
 				problems.push( `${ key }: post ${ held.join( ', ' ) } already holds this ${ wpType( row ) } slug and carries no site-build row key; if an interrupted run made it, mark it with "wp post meta update ${ held[ 0 ] } ${ ROW_META } ${ key }", otherwise rename or delete it` );
 			}
@@ -123,12 +142,23 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 		}
 		const p = state.posts[ String( ids[ key ] ) ];
 		if ( p.treeHash !== hash ) {
-			actions.push( { phase, type: 'build', key, id: p.id, tree, hash, say: `${ key }: rebuild post ${ p.id } from the ${ source } tree (it was built from another tree)` } );
+			if ( p.builtContentHash && p.contentHash !== p.builtContentHash ) {
+				problems.push( `${ key }: post ${ p.id } was edited after the site build saved it, so a rebuild from the changed tree would overwrite the edit; copy the edit into the tree, or let the rebuild win with "wp post meta delete ${ p.id } ${ CONTENT_META }"` );
+			} else {
+				actions.push( { phase, type: 'build', key, id: p.id, tree, hash, say: `${ key }: rebuild post ${ p.id } from the ${ source } tree (it was built from another tree)` } );
+			}
 		}
-		// Status is set once, at creation: a post someone has since drafted or made private stays as they left it.
+		// Status, title, slug and parent are set once, at creation: a post someone has since drafted, renamed, moved or made
+		// private stays as they left it, and a difference is reported. A parent made in this run is set when it exists.
 		const want = { post_title: row.title, post_name: row.slug, ...fields };
 		const have = { post_title: p.title, post_name: p.slug, post_parent: p.parent, page_template: p.template };
-		const diff = Object.fromEntries( Object.entries( want ).filter( ( [ k, v ] ) => String( v?.ref ? '' : v ) !== String( have[ k ] ) || v?.ref ) );
+		const differs = Object.entries( want ).filter( ( [ k, v ] ) => String( v?.ref ? '' : v ) !== String( have[ k ] ) || v?.ref );
+		const ownedByPerson = ( [ k, v ] ) => ! v?.ref && [ 'post_title', 'post_name', 'post_parent' ].includes( k );
+		const diff = Object.fromEntries( differs.filter( ( e ) => ! ownedByPerson( e ) ) );
+		const drift = differs.filter( ownedByPerson );
+		if ( drift.length ) {
+			notes.push( `${ key }: post ${ p.id } differs from the page map (${ drift.map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } (map ${ JSON.stringify( v ) })` ).join( '; ' ) }); the site build leaves a person's change` );
+		}
 		if ( Object.keys( diff ).length ) {
 			actions.push( { phase, type: 'update', key, id: p.id, fields: diff, say: `${ key }: post ${ p.id }: ${ Object.entries( diff ).map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } -> ${ shown( v ) }` ).join( '; ' ) }` } );
 		}
@@ -142,20 +172,31 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 	}
 	let hashes = { ...( state.templateHashes || {} ) };
 	for ( const [ slug, list ] of builders ) {
-		const pick = list.find( ( c ) => 'placeholder' !== c.source ) || list[ 0 ];
+		const pick = list.find( ( c ) => 'placeholder' !== c.source );
+		if ( ! pick ) {
+			notes.push( `${ rowKey( list[ 0 ].row ) }: names the ${ slug } template but has no tree (sites/<client>/build/trees/<postType>/<slug>.json), so the site keeps the theme's own default ${ slug } template` );
+			continue;
+		}
 		list.filter( ( c ) => c !== pick ).forEach( ( c ) => notes.push( `${ rowKey( c.row ) }: names the ${ slug } template, which ${ rowKey( pick.row ) } builds; this row adds nothing to it` ) );
 		const hash = treeHash( pick.tree );
-		if ( hashes[ slug ] === hash ) {
+		const saved = ( state.customTemplates || [] ).includes( slug );
+		// A recorded hash with no saved copy is a build that stopped before it saved: built again.
+		if ( hashes[ slug ] === hash && saved ) {
 			continue;
 		}
 		if ( ! hashes[ slug ] && ( state.customTemplates || [] ).includes( slug ) ) {
 			problems.push( `${ rowKey( pick.row ) }: the site already holds its own saved copy of the ${ slug } template that the site build did not make; clear it in Site Editor > Templates ("Clear customisations") so the site build can take it over` );
 			continue;
 		}
+		if ( hashes[ slug ] && saved && state.templateSaved?.[ slug ] && state.templateContent?.[ slug ] !== state.templateSaved[ slug ] ) {
+			problems.push( `${ rowKey( pick.row ) }: the site's ${ slug } template was edited after the site build saved it, so a rebuild from the changed tree would overwrite the edit; copy the edit into the tree, or clear it in Site Editor > Templates ("Clear customisations") to let the site build rebuild it` );
+			continue;
+		}
 		options.push( { name: `${ TEMPLATE_OPTION }[${ slug }]`, before: hashes[ slug ] ? hashes[ slug ].slice( 0, 12 ) : '(none)', after: hash.slice( 0, 12 ) } );
 		const verb = hashes[ slug ] ? 'rebuild' : 'build';
+		const previous = hashes;
 		hashes = { ...hashes, [ slug ]: hash };
-		actions.push( { phase: 'posts', type: 'template', key: rowKey( pick.row ), template: slug, tree: pick.tree, hash, hashes, say: `${ rowKey( pick.row ) }: ${ verb } the site's own ${ slug } template from the ${ pick.source } tree` } );
+		actions.push( { phase: 'posts', type: 'template', key: rowKey( pick.row ), template: slug, tree: pick.tree, hash, hashes, previous, say: `${ rowKey( pick.row ) }: ${ verb } the site's own ${ slug } template from the ${ pick.source } tree` } );
 	}
 
 	// Section pages (Spec 36 FR-36-5): each mega panel links its menu items to the page on its menu slot.
@@ -245,26 +286,54 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 				continue;
 			}
 			if ( list.length > 1 ) {
-				notes.push( `${ list.map( rowKey ).join( ' and ' ) } could all be the ${ role } page; ${ name } takes ${ rowKey( list[ 0 ] ) }` );
+				problems.push( `${ list.map( rowKey ).join( ' and ' ) } could both be the ${ role } page; ${ name } takes one page, so keep one row for that role` );
+				continue;
 			}
+			const was = String( state.options[ name ] ?? '' );
 			option( name, idOf( rowKey( list[ 0 ] ) ) );
+			if ( was && '0' !== was && String( ids[ rowKey( list[ 0 ] ) ] ) !== was ) {
+				notes.push( `post ${ was }, which ${ name } named, is left in place (WooCommerce's earlier ${ role } page); unpublish or delete it if it is no longer wanted` );
+			}
 		}
 	}
 	if ( state.options.permalink_structure !== PERMALINKS ) {
 		options.push( { name: 'permalink_structure', before: state.options.permalink_structure, after: PERMALINKS } );
 		actions.push( { phase: 'site', type: 'permalinks', value: PERMALINKS, say: `permalinks ${ JSON.stringify( state.options.permalink_structure ) } -> ${ PERMALINKS }` } );
 	}
+	// Only an empty pointer, one naming a post the site build made, or the owner's decision is ever overwritten; with
+	// several rows of a kind the choice is the owner's (or the pointer already names one of them).
 	for ( const [ type, area ] of Object.entries( LAYOUT_TYPES ) ) {
 		const mine = rows.filter( ( r ) => r.postType === type );
-		const active = mine.length > 1 ? chooseActive( mine, area, rows, decisions ) : { row: mine[ 0 ], note: null, problem: null };
-		if ( active.problem ) {
-			problems.push( active.problem );
-		} else if ( active.row && ( ! ids[ rowKey( active.row ) ] || state.pointers[ area ] !== ids[ rowKey( active.row ) ] ) ) {
-			const id = idOf( rowKey( active.row ) );
-			options.push( { name: `sgs_active_${ area }_cpt_id`, before: String( state.pointers[ area ] || 0 ), after: shown( id ) } );
-			actions.push( { phase: 'site', type: 'pointer', area, id, say: `active ${ area }: ${ state.pointers[ area ] || 'none' } -> ${ shown( id ) }` } );
+		if ( ! mine.length ) {
+			continue;
 		}
-		active.note && notes.push( active.note );
+		const current = state.pointers[ area ] || 0;
+		const decided = mine.length > 1 ? decisions?.active?.[ area ] : null;
+		let row = mine[ 0 ];
+		if ( mine.length > 1 ) {
+			const chosen = chooseActive( mine, area, rows, decisions );
+			const live = ! decided && current && mine.find( ( r ) => ids[ rowKey( r ) ] === current );
+			if ( live ) {
+				row = live;
+			} else if ( chosen.problem ) {
+				problems.push( chosen.problem );
+				continue;
+			} else {
+				row = chosen.row;
+			}
+		}
+		const explicit = decisions?.active?.[ area ] === row.slug;
+		const built = ids[ rowKey( row ) ];
+		if ( built && current === built ) {
+			continue;
+		}
+		if ( current && ! state.pointerKeys?.[ area ] && ! explicit ) {
+			notes.push( `active ${ area } is post ${ current }, a post not made by the site build, so it is left; to point it at ${ rowKey( row ) } set {"active":{"${ area }":"${ row.slug }"}} in sites/<client>/build/site-build-decisions.json` );
+			continue;
+		}
+		const id = idOf( rowKey( row ) );
+		options.push( { name: `sgs_active_${ area }_cpt_id`, before: String( current ), after: shown( id ) } );
+		actions.push( { phase: 'site', type: 'pointer', area, id, say: `active ${ area }: ${ current || 'none' } -> ${ shown( id ) }` } );
 	}
 	return problems.length ? { actions: [], problems, notes, options: [] } : { actions, problems, notes, options };
 }

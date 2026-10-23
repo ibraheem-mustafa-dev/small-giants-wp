@@ -7,6 +7,8 @@ import { hasPost, rowKey, wpType } from './site-build-map.mjs';
 
 export const ROW_META = '_sgs_site_build_row';
 export const TREE_META = '_sgs_site_build_tree';
+// The hash of the post_content the site build's own save produced: a later difference is a person's edit, which a rebuild never overwrites.
+export const CONTENT_META = '_sgs_site_build_content';
 // A mega panel's Section page (Sgs_Mega_Menu_CPT::META_SECTION_PAGE): the page id every item opening it links to.
 export const SECTION_META = '_sgs_mega_section_page';
 // The term meta a menu the site build made carries (its page-map menu name); a same-slug menu without it is not reused.
@@ -14,8 +16,26 @@ export const MENU_META = '_sgs_site_build_menu';
 // The option holding the hash of the tree each site-owned template copy was built from (template slug -> hash): the
 // next run rebuilds a copy only when its tree changed, and a saved copy not recorded here is another author's.
 export const TEMPLATE_OPTION = 'sgs_site_build_templates';
+// The same for a template copy's saved content (template slug -> hash of its content).
+export const TEMPLATE_CONTENT_OPTION = 'sgs_site_build_template_content';
 // The WooCommerce page options part 6 sets, and the page-map role each one takes.
 export const WOO_OPTIONS = [ 'woocommerce_shop_page_id', 'woocommerce_cart_page_id', 'woocommerce_checkout_page_id', 'woocommerce_myaccount_page_id' ];
+
+// Whether a post's content is still what WooCommerce wrote into its own page: empty, a `[woocommerce_*]` shortcode, or
+// (alone or in a shortcode block), or WooCommerce's block markup holding no block of anyone else's. Unknown content (null) is never the default.
+export function isWooDefaultContent( content ) {
+	if ( 'string' !== typeof content ) {
+		return false;
+	}
+	// A shortcode block around WooCommerce's shortcode is how its installer writes the My account page.
+	const text = content.replace( /<!--\s+\/?wp:shortcode\s*-->/g, '' ).trim();
+	if ( '' === text || /^\[woocommerce_[a-z_]+[^\]]*\]$/.test( text ) ) {
+		return true;
+	}
+	const blocks = [ ...text.matchAll( /<!--\s+\/?wp:([a-z0-9-]+\/[a-z0-9-]+)/g ) ].map( ( m ) => m[ 1 ] );
+	const stripped = text.replace( /<!--[\s\S]*?-->/g, '' ).replace( /<[^>]*>/g, '' ).trim();
+	return blocks.length > 0 && blocks.every( ( b ) => b.startsWith( 'woocommerce/' ) ) && '' === stripped;
+}
 
 // The rows' facts go in as base64 JSON, so no slug or title can break out of the PHP string.
 export function statePhp( rows ) {
@@ -39,6 +59,8 @@ $post = function ( $id ) {
 		'id' => (int) $p->ID, 'type' => $p->post_type, 'slug' => $p->post_name, 'title' => $p->post_title,
 		'status' => $p->post_status, 'parent' => (int) $p->post_parent, 'template' => (string) get_page_template_slug( $p ),
 		'rowKey' => (string) get_post_meta( $p->ID, '${ ROW_META }', true ), 'treeHash' => (string) get_post_meta( $p->ID, '${ TREE_META }', true ),
+			'contentHash' => hash( 'sha256', $p->post_content ), 'builtContentHash' => (string) get_post_meta( $p->ID, '${ CONTENT_META }', true ),
+			'content' => '' === (string) get_post_meta( $p->ID, '${ ROW_META }', true ) ? $p->post_content : null,
 		'sectionPage' => (int) get_post_meta( $p->ID, '${ SECTION_META }', true ),
 	);
 };
@@ -86,15 +108,21 @@ foreach ( array( 'show_on_front', 'page_on_front', 'page_for_posts', 'permalink_
 	$out['options'][ $o ] = (string) get_option( $o );
 }
 $out['templateHashes'] = (object) (array) get_option( '${ TEMPLATE_OPTION }', array() );
+$out['templateSaved'] = (object) (array) get_option( '${ TEMPLATE_CONTENT_OPTION }', array() );
 $out['customTemplates'] = array();
+$out['templateContent'] = array();
 foreach ( get_block_templates( array(), 'wp_template' ) as $t ) {
 	if ( 'custom' === $t->source ) {
 		$out['customTemplates'][] = $t->slug;
+		$out['templateContent'][ $t->slug ] = hash( 'sha256', (string) $t->content );
 	}
 }
+$out['templateContent'] = (object) $out['templateContent'];
 $out['pointers'] = array();
+$out['pointerKeys'] = array();
 foreach ( array( 'header', 'footer', 'drawer' ) as $a ) {
 	$out['pointers'][ $a ] = (int) get_option( 'sgs_active_' . $a . '_cpt_id', 0 );
+	$out['pointerKeys'][ $a ] = $out['pointers'][ $a ] ? (string) get_post_meta( $out['pointers'][ $a ], '${ ROW_META }', true ) : '';
 }
 echo wp_json_encode( $out );
 `;
