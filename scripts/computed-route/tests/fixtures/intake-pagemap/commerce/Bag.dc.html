@@ -1,0 +1,12 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Your bag | Bakery</title></head><body>
+<x-dc>
+<dc-import name="SiteHeader"></dc-import>
+<main><h1>Your bag</h1><sc-for list="{{ lines }}" as="l"><p>{{ l.name }} {{ l.price }}</p></sc-for><a href="Checkout.dc.html">Pay now</a></main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() { return { lines: [ { name: 'Loaf', price: '£' + (4).toFixed(2) } ] }; }
+}
+</script>
+</body></html>

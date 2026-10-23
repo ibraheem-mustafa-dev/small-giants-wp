@@ -7,6 +7,7 @@
 import { attrOf, readBinding, classMethod, isFn, propName, subtree, keyName, decodeEntities } from './intake-ast.mjs';
 import { ref, resolveRefs, propRefs, elementsOf, evalDeep, oneString, returnsOf } from './intake-ast-eval.mjs';
 import { megaPanelTitle } from './page-map-names.mjs';
+import { logicOf, moneyBinding } from './shop-parts-logic.mjs';
 
 const VOID = new Set( [ 'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr' ] );
 
@@ -173,13 +174,16 @@ function readItems( d, tree, node, scope, roots, mode ) {
 
 const numbered = ( items, parentItem = null ) => items.map( ( it, i ) => ( { ...it, position: i + 1, parentItem, children: numbered( it.children, it.label ) } ) );
 
-// Is this element an overlay (dialog, aria-modal, or a fixed panel holding a nav), and which kind: a drawer is a
-// full-height side panel or holds a nav; any other overlay is a modal.
-function overlayKind( t ) {
+// Is this element an overlay (dialog, aria-modal, or a fixed panel holding a nav and no dialog: a fixed wrapper around
+// a dialog is its backdrop), and which kind: a drawer is a
+// full-height side panel or holds a nav; any other overlay is a modal. `isNav( node )` says whether an element holds a
+// nav (a <nav>, or two or more links to routes whatever its tags).
+const isDialog = ( t ) => 'dialog' === t.name || 'dialog' === attrOf( t, 'role' ) || 'true' === attrOf( t, 'aria-modal' );
+function overlayKind( t, isNav ) {
 	const s = style( t );
-	const dialog = 'dialog' === t.name || 'dialog' === attrOf( t, 'role' ) || 'true' === attrOf( t, 'aria-modal' );
-	const hasNav = descendants( t ).some( ( x ) => 'nav' === x.name );
-	if ( ! dialog && ! ( s.includes( 'position:fixed' ) && ( hasNav || 'aside' === t.name ) ) ) {
+	const dialog = isDialog( t );
+	const hasNav = isNav( t );
+	if ( ! dialog && ! ( s.includes( 'position:fixed' ) && ( hasNav || 'aside' === t.name ) && ! descendants( t ).some( isDialog ) ) ) {
 		return null;
 	}
 	const side = /height:100(%|vh|dvh)/.test( s ) || ( s.includes( 'top:0' ) && s.includes( 'bottom:0' ) && /(left|right):0/.test( s ) );
@@ -187,17 +191,17 @@ function overlayKind( t ) {
 }
 
 // The regions of one draft: site headers and footers (not inside a sectioning element) and outermost overlays.
-function regions( tree ) {
+function regions( tree, isNav ) {
 	const out = [];
 	for ( const t of tree.nodes ) {
 		const ups = ancestors( t );
 		if ( ups.some( ( u ) => out.some( ( r ) => r.node === u && 'header' !== r.kind ) ) ) {
 			continue;
 		}
-		if ( ( 'header' === t.name || 'footer' === t.name ) && ! ups.some( ( u ) => SECTIONING.has( u.name ) || overlayKind( u ) ) ) {
+		if ( ( 'header' === t.name || 'footer' === t.name ) && ! ups.some( ( u ) => SECTIONING.has( u.name ) || overlayKind( u, isNav ) ) ) {
 			out.push( { kind: t.name, node: t } );
-		} else if ( overlayKind( t ) ) {
-			out.push( { kind: overlayKind( t ), node: t } );
+		} else if ( overlayKind( t, isNav ) ) {
+			out.push( { kind: overlayKind( t, isNav ), node: t } );
 		}
 	}
 	return out;
@@ -237,7 +241,7 @@ const tagKey = ( id ) => /^(.+?:\d+:\d+)(\s|$)/.exec( id )?.[ 1 ];
 // The route key whose page holds a template node: the draft's own file when that file is a route, else the first route
 // key named in the logic of an sc-if gate above the node's <main> (isPage('checkout'), S.page === 'signin'), read from
 // every object property the gate's name binds; null for a node outside every page (site-wide chrome and overlays).
-function pageOf( d, node, roots, routeKeys ) {
+export function pageOf( d, node, routeKeys ) {
 	if ( routeKeys.has( d.file ) ) {
 		return d.file;
 	}
@@ -253,19 +257,94 @@ function pageOf( d, node, roots, routeKeys ) {
 	return null;
 }
 
+const escapeRe = ( s ) => s.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
+
+// A control that shows or switches a view rather than choosing a value: a tab (role tab, aria-selected) or a
+// disclosure (aria-expanded, aria-controls).
+const switchesView = ( x ) => 'tab' === attrOf( x, 'role' ) || [ 'aria-selected', 'aria-expanded', 'aria-controls' ].some( ( a ) => undefined !== attrOf( x, a ) );
+
 // The pick lists inside an element: each sc-for whose items hold a control whose click handler is the loop item's own
-// member (`onClick="{{ o.pick }}"`), so a click chooses that item.
+// member (`onClick="{{ o.pick }}"`), so a click chooses that item. A loop whose controls are tabs or disclosures (a tab
+// strip, an accordion) switches a view and is no pick list.
 function pickLists( node ) {
-	return descendants( node ).filter( ( c ) => 'sc-for' === c.name && descendants( c ).some( ( x ) => new RegExp( `^\\{\\{\\s*${ attrOf( c, 'as' ) || 'item' }\\.[\\w$]+\\s*\\}\\}$` ).test( attrOf( x, 'onClick' ) || '' ) ) );
+	return descendants( node ).filter( ( c ) => {
+		if ( 'sc-for' !== c.name ) {
+			return false;
+		}
+		const own = new RegExp( `^\\{\\{\\s*${ escapeRe( attrOf( c, 'as' ) || 'item' ) }\\.[\\w$]+\\s*\\}\\}$` );
+		const picks = descendants( c ).filter( ( x ) => own.test( attrOf( x, 'onClick' ) || '' ) );
+		return picks.length > 0 && ! picks.some( switchesView );
+	} );
 }
 
 // A choice flow (Spec 48 FR-48-30): choices that build one selection, shown as two or more pick lists in an element
 // that holds no <form>. A form submits typed answers and stays a form, whatever pick lists it shows.
+// Whether an element shows order lines: a loop inside it whose content binds a currency amount
+// (lib/shop-parts-logic.mjs::moneyBinding).
+export function showsOrderLines( text, L, node ) {
+	return !! L && [ node, ...descendants( node ) ].some( ( x ) => 'sc-for' === x.name
+		&& [ ...text.slice( x.end, x.close ?? x.end ).matchAll( /\{\{\s*([\w$.]+)\s*\}\}/g ) ].some( ( m ) => moneyBinding( L, m[ 1 ] ) ) );
+}
+
 export const isChoiceFlow = ( node ) => 'form' !== node.name && pickLists( node ).length >= 2 && ! descendants( node ).some( ( x ) => 'form' === x.name );
 
+// The functions the logic gives a name: object or class properties holding a function, and methods of that name.
+const fnsNamed = ( d, name ) => d.idx.all.filter( ( n ) => ( ( 'ObjectProperty' === n.type || 'ClassProperty' === n.type ) && keyName( n ) === name && isFn( n.value ) ) || ( /ClassMethod|ObjectMethod/.test( n.type ) && keyName( n ) === name ) )
+	.map( ( n ) => ( isFn( n ) ? n : n.value ) );
+
+// The string state values a function sets: [ 'key=value', … ] from each `setState( { key: v } )` (or an updater
+// returning such an object) where `v` is a string literal or a parameter bound to one, following calls to the logic's
+// own functions (`this.openMega( 'sun' )`) with their literal arguments, to a depth of 3.
+function fnSets( d, fn, params = new Map(), depth = 0 ) {
+	if ( depth > 3 ) {
+		return [];
+	}
+	const lit = ( n ) => ( 'StringLiteral' === n?.type ? n.value : 'Identifier' === n?.type ? params.get( n.name ) ?? null : null );
+	const out = [];
+	for ( const n of subtree( d.idx, fn.body ).filter( ( x ) => 'CallExpression' === x.type ) ) {
+		if ( 'setState' === propName( n.callee ) ) {
+			const arg = n.arguments[ 0 ];
+			const obj = 'ObjectExpression' === arg?.type ? arg : isFn( arg ) && 'ObjectExpression' === arg.body?.type ? arg.body : null;
+			for ( const p of ( obj?.properties || [] ).filter( ( x ) => 'ObjectProperty' === x.type ) ) {
+				const v = lit( p.value ) ?? ( 'ConditionalExpression' === p.value.type ? lit( p.value.alternate ) ?? lit( p.value.consequent ) : null );
+				if ( null !== v ) {
+					out.push( `${ keyName( p ) }=${ v }` );
+				}
+			}
+			continue;
+		}
+		const callee = propName( n.callee ) || ( 'Identifier' === n.callee.type ? n.callee.name : null );
+		for ( const target of callee ? fnsNamed( d, callee ).filter( ( f ) => f !== fn ) : [] ) {
+			const bound = new Map( target.params.map( ( p, i ) => [ p.name, lit( n.arguments[ i ] ) ] ).filter( ( [ k, v ] ) => k && null !== v ) );
+			out.push( ...fnSets( d, target, bound, depth + 1 ) );
+		}
+	}
+	return out;
+}
+
+// The state values a handler binding sets (fnSets over every function its name gives).
+function setValues( d, value ) {
+	const expr = bindingOf( value )?.expr;
+	const name = expr && ( expr.property?.name || expr.name );
+	return name && d.idx ? fnsNamed( d, name ).flatMap( ( fn ) => fnSets( d, fn ) ) : [];
+}
+
+// The state value an sc-if gate tests: 'key=value' when the name it binds is `<state>.key === 'value'` (either side).
+function gateValue( d, gate ) {
+	const name = bindingOf( attrOf( gate, 'value' ) )?.expr?.name;
+	const props = name && d.idx ? d.idx.all.filter( ( n ) => 'ObjectProperty' === n.type && keyName( n ) === name ) : [];
+	for ( const v of props.map( ( p ) => p.value ).filter( ( v ) => 'BinaryExpression' === v.type && /^={2,3}$/.test( v.operator ) ) ) {
+		const [ lit, mem ] = 'StringLiteral' === v.right.type ? [ v.right, v.left ] : [ v.left, v.right ];
+		if ( 'StringLiteral' === lit.type && propName( mem ) ) {
+			return `${ propName( mem ) }=${ lit.value }`;
+		}
+	}
+	return null;
+}
+
 // The mega-menu panels of a panel element that drops below the header: one per outermost sc-if gate it holds (each
-// item opens its own panel), named in order by the header controls that open a panel on focus; one panel when it
-// gates fewer than two.
+// item opens its own panel), each named by the header control that opens it on focus (the control whose handler sets
+// the state value the gate tests); a gate no opener sets is `Mega menu <n>`. One panel when it gates fewer than two.
 function megaPanels( d, header, panel ) {
 	const inside = descendants( panel );
 	const inner = inside.filter( ( x ) => 'sc-if' === x.name && ! ancestors( x ).some( ( u ) => 'sc-if' === u.name && inside.includes( u ) ) );
@@ -273,7 +352,11 @@ function megaPanels( d, header, panel ) {
 	if ( inner.length < 2 ) {
 		return [ { label: attrOf( panel, 'aria-label' ) || 'Mega menu', node: panel } ];
 	}
-	return inner.map( ( g, i ) => ( { label: inner.length === openers.length ? attrOf( openers[ i ], 'aria-label' ) || innerText( d.text, openers[ i ] ) : `Mega menu ${ i + 1 }`, node: g } ) );
+	return inner.map( ( g, i ) => {
+		const want = gateValue( d, g );
+		const opens = want ? openers.filter( ( o ) => setValues( d, attrOf( o, 'onFocus' ) ).includes( want ) ) : [];
+		return { label: 1 === opens.length ? attrOf( opens[ 0 ], 'aria-label' ) || innerText( d.text, opens[ 0 ] ) : `Mega menu ${ i + 1 }`, node: g };
+	} );
 }
 
 // Every surface and menu the draft code shows. `routeOf( draft, node )` names the route whose page data holds a
@@ -289,16 +372,33 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 	const formComponents = new Set();
 	const pageAt = new Map();
 	const nodeAt = new Map();
-	for ( const d of ok ) {
-		const tree = elementTree( d );
+	const trees = new Map( ok.map( ( d ) => [ d, elementTree( d ) ] ) );
+	for ( const [ d, tree ] of trees ) {
+		tree.nodes.forEach( ( t ) => nodeAt.set( `${ d.file }:${ t.line }:${ t.col }`, t ) );
+	}
+	// A nav: an element that is or holds a <nav> (or role navigation), or holds two or more links to routes whatever its
+	// tags (a list of links is a nav too).
+	const isNav = ( node ) => [ node, ...descendants( node ) ].some( ( x ) => 'nav' === x.name || 'navigation' === attrOf( x, 'role' ) ) || links.filter( ( l ) => l.route && [ nodeAt.get( tagKey( l.from ) ), ...ancestors( nodeAt.get( tagKey( l.from ) ) || { parent: null } ) ].includes( node ) ).length >= 2;
+	// A header or footer whose markup repeats in two or more routed files is the site's own, not one page's: the first
+	// copy is kept as site-wide and the others are dropped.
+	const markup = ( tree, node ) => tree.text.slice( node.index, node.close ?? node.end ).replace( /\s+/g, ' ' ).trim();
+	const copies = new Map();
+	for ( const [ d, tree ] of trees ) {
+		for ( const r of routeKeys.has( d.file ) ? regions( tree, isNav ).filter( ( x ) => 'header' === x.kind || 'footer' === x.kind ) : [] ) {
+			const key = `${ r.kind }\u0000${ markup( tree, r.node ) }`;
+			copies.set( key, [ ...( copies.get( key ) || [] ), { d, node: r.node } ] );
+		}
+	}
+	const repeated = [ ...copies.values() ].filter( ( list ) => new Set( list.map( ( c ) => c.d.file ) ).size >= 2 );
+	const siteWide = new Set( repeated.map( ( list ) => list[ 0 ].node ) );
+	const dropped = new Set( repeated.flatMap( ( list ) => list.slice( 1 ).map( ( c ) => c.node ) ) );
+	for ( const [ d, tree ] of trees ) {
 		const component = exp.mounted.has( d.file );
 		const roots = d.idx ? rootRefs( d ) : [];
+		const L = logicOf( d.text );
 		const chrome = tree.nodes.some( ( t ) => /^(nav|header|footer)$/.test( t.name ) );
-		const page = ( node ) => pageOf( d, node, roots, routeKeys );
-		tree.nodes.forEach( ( t ) => {
-			pageAt.set( `${ d.file }:${ t.line }:${ t.col }`, () => page( t ) );
-			nodeAt.set( `${ d.file }:${ t.line }:${ t.col }`, t );
-		} );
+		const page = ( node ) => ( [ node, ...ancestors( node ) ].some( ( u ) => siteWide.has( u ) ) ? null : pageOf( d, node, routeKeys ) );
+		tree.nodes.forEach( ( t ) => pageAt.set( `${ d.file }:${ t.line }:${ t.col }`, () => page( t ) ) );
 		tree.nodes.filter( ( t ) => 'input' === t.name && 'password' === attrOf( t, 'type' ) ).forEach( ( t ) => accountPages.add( page( t ) ) );
 		if ( component && ( tree.nodes.some( ( t ) => 'form' === t.name ) || ( ! chrome && tree.nodes.filter( ( t ) => FIELDS.has( t.name ) ).length >= 2 ) ) ) {
 			formComponents.add( d.file );
@@ -306,7 +406,7 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 		} else {
 			surfaces.push( ...inlineForms( d, tree, roots, routeOf, exp.pages.length > 1 && exp.pages.includes( d.file ) ? d.file : null ).map( ( f ) => ( { ...f, page: page( f.node ) } ) ) );
 		}
-		const found = regions( tree );
+		const found = regions( tree, isNav ).filter( ( r ) => ! dropped.has( r.node ) );
 		const flows = tree.nodes.filter( ( t ) => 'section' === t.name && isChoiceFlow( t ) && ! [ t, ...ancestors( t ) ].some( ( u ) => found.some( ( r ) => r.node === u ) )
 			&& ! ancestors( t ).some( ( u ) => 'section' === u.name && isChoiceFlow( u ) ) );
 		for ( const t of flows ) {
@@ -318,14 +418,14 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 			const label = attrOf( r.node, 'aria-label' ) || `${ r.kind[ 0 ].toUpperCase() }${ r.kind.slice( 1 ) }`;
 			const kind = 'modal' === r.kind && isChoiceFlow( r.node ) ? 'choice-flow' : r.kind;
 			const reaches = [ ...new Set( links.filter( ( l ) => l.route && [ nodeAt.get( tagKey( l.from ) ), ...ancestors( nodeAt.get( tagKey( l.from ) ) || { parent: null } ) ].includes( r.node ) ).map( ( l ) => l.route ) ) ];
-			surfaces.push( { kind, label, title: label, route: null, page: page( r.node ), nav: descendants( r.node ).some( ( x ) => 'nav' === x.name ), reaches, dc: stem( d.file ), draftId: tagId( d, r.node ), node: r.node } );
+			surfaces.push( { kind, label, title: label, route: null, page: page( r.node ), nav: isNav( r.node ), orderLines: showsOrderLines( d.text, L, r.node ), reaches, dc: stem( d.file ), draftId: tagId( d, r.node ), node: r.node } );
 			if ( 'modal' === r.kind || ! d.idx && ! descendants( r.node ).some( ( x ) => 'a' === x.name ) ) {
 				continue;
 			}
 			const navs = descendants( r.node ).filter( ( x ) => 'nav' === x.name && ! ancestors( x ).some( ( u ) => 'nav' === u.name ) );
 			const scopes = navs.length ? navs : [ r.node ];
 			scopes.forEach( ( s, i ) => {
-				const items = numbered( readItems( d, tree, s, new Map(), roots, 'nav' === s.name ? 'nav' : 'region' ) );
+				const items = numbered( readItems( d, tree, s, new Map(), roots, 'nav' === s.name || ( 'drawer' === r.kind && isNav( s ) && ! showsOrderLines( d.text, L, s ) ) ? 'nav' : 'region' ) );
 				const many = scopes.length > 1 || named( r.kind ).length > 1;
 				const name = many ? `${ r.kind }-${ kebab( attrOf( s, 'aria-label' ) || '' ) || i + 1 }` : r.kind;
 				if ( items.length ) {

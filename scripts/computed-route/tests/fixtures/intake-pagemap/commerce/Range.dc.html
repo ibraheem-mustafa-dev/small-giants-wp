@@ -1,0 +1,21 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Our range | Bakery</title></head><body>
+<x-dc>
+<dc-import name="SiteHeader"></dc-import>
+<main><h1>Our range</h1>
+  <button onClick="{{ onlyBread }}">Bread</button>
+  <sc-for list="{{ shown }}" as="p"><dc-import name="ProductCard"></dc-import></sc-for>
+  <a href="Product.dc.html">Loaf</a>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { kind: null };
+  renderVals() {
+    const S = this.state;
+    const all = [ { name: 'Loaf', kind: 'bread' }, { name: 'Bun', kind: 'cake' } ];
+    return { shown: all.filter( ( p ) => ! S.kind || p.kind === S.kind ), onlyBread: () => this.setState( { kind: 'bread' } ) };
+  }
+}
+</script>
+</body></html>

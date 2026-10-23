@@ -47,15 +47,7 @@
     "postType": "product",
     "collection": "live",
     "flags": [],
-    "id": null,
-    "parts": [
-      {
-        "kind": "choice-flow",
-        "label": "Good to know",
-        "owner": "woocommerce",
-        "draftId": "Eye Care Birmingham.dc.html:1151:3 <section>"
-      }
-    ]
+    "id": null
   },
   {
     "route": "lenses",

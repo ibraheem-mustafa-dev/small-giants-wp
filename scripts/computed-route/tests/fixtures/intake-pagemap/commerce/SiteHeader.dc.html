@@ -1,0 +1,33 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title></title></head><body>
+<x-dc>
+<header>
+  <nav><a href="Home.dc.html">Home</a><a href="Range.dc.html">Range</a></nav>
+  <button onFocus="{{ openA }}" aria-label="Breads">Breads</button>
+  <button onFocus="{{ openB }}" aria-label="Cakes">Cakes</button>
+  <sc-if value="{{ megaAny }}">
+  <div style="position:absolute;left:0;right:0;top:100%">
+    <sc-if value="{{ megaB }}"><div><p>Sponges</p></div></sc-if>
+    <sc-if value="{{ megaA }}"><div><p>Sourdough</p></div></sc-if>
+  </div>
+  </sc-if>
+</header>
+<aside aria-label="Menu" style="position:fixed;top:0;bottom:0;left:0;width:300px">
+  <ul><li><a href="Home.dc.html">Home</a></li><li><a href="Account.dc.html">Orders</a></li><li><a href="Range.dc.html">Range</a></li><li><a href="Locator.dc.html">Find us</a></li></ul>
+</aside>
+<aside aria-label="Bag" style="position:fixed;top:0;bottom:0;right:0;width:300px">
+  <sc-for list="{{ lines }}" as="l"><p>{{ l.name }} {{ l.price }}</p></sc-for><a href="Bag.dc.html">View bag</a><a href="Checkout.dc.html">Pay now</a>
+</aside>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { mega: null };
+  open(k) { this.setState({ mega: k }); }
+  renderVals() {
+    const S = this.state;
+    return { megaAny: !!S.mega, megaA: S.mega === 'a', megaB: S.mega === 'b', openA: () => this.open('a'), openB: () => this.open('b'),
+      lines: [ { name: 'Loaf', price: '£' + (4).toFixed(2) } ] };
+  }
+}
+</script>
+</body></html>

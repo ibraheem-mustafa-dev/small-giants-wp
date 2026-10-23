@@ -44,7 +44,7 @@ test( 'MUST FAIL: ids carry by row key only; changes name every added, removed a
 } );
 
 test( 'MUST FAIL: the run writes the regenerated map with marks and ids, and prints its changes', () => {
-	const { root, map } = repo( { current: [ rowOf( 'shop', { postType: 'shop', template: 'archive-product', collection: 'live', id: 6 } ), rowOf( 'basket', { id: 9 } ) ],
+	const { root, map } = repo( { current: [ rowOf( 'shop', { postType: 'shop', template: 'archive-product', collection: 'live', id: 6 } ), rowOf( 'basket' ) ],
 		review: [ mark( 'page:page:contact', 'edit:title=Get in touch' ) ] } );
 	const lines = [];
 	assert.equal( runPageMap( { client: 'c', repo: root }, { log: ( l ) => lines.push( l ) } ), 0 );
@@ -63,4 +63,17 @@ test( 'MUST FAIL: a map that does not validate is refused and nothing is written
 	assert.equal( runPageMap( { client: 'c', repo: root }, { log: ( l ) => lines.push( l ) } ), 1 );
 	assert.match( lines.join( '\n' ), /does not validate, nothing written/ );
 	assert.deepEqual( JSON.parse( fs.readFileSync( map, 'utf8' ) ), [ rowOf( 'keep' ) ] );
+} );
+
+test( 'MUST FAIL: a row holding a WordPress id that the new map loses is refused unless the review dropped it', () => {
+	const held = [ rowOf( 'basket', { id: 9 } ) ];
+	const { root, map } = repo( { current: held } );
+	const lines = [];
+	assert.equal( runPageMap( { client: 'c', repo: root }, { log: ( l ) => lines.push( l ) } ), 1 );
+	assert.match( lines.join( '\n' ), /loses rows that hold a WordPress id[\s\S]*page:basket \(id 9\)/ );
+	assert.deepEqual( JSON.parse( fs.readFileSync( map, 'utf8' ) ), held, 'nothing is written' );
+	const dropped = repo( { current: held, review: [ mark( 'page:page:basket', 'drop' ), mark( 'page:page:contact', 'edit:menus=[]' ) ] } );
+	const said = [];
+	assert.equal( runPageMap( { client: 'c', repo: dropped.root }, { log: ( l ) => said.push( l ) } ), 0 );
+	assert.match( said.join( '\n' ), /edit:menus=\[\] edits a field a mark may not set/ );
 } );

@@ -38,7 +38,8 @@
   <form onSubmit="{{ sendContact }}"><input name="name"><textarea name="message"></textarea><button>Send</button></form>
 </main></sc-if>
 <sc-if value="{{ isCheckout }}"><main>
-  <section><h2>Pay</h2><button onClick="{{ placeOrder }}">Place order</button><a href="#" onClick="{{ toShop }}">Continue shopping</a></section>
+  <sc-for list="{{ bag }}" as="it"><p>{{ it.name }} {{ it.price }}</p></sc-for>
+  <section><h2>Pay</h2><input autocomplete="cc-number"><input autocomplete="cc-exp"><button onClick="{{ placeOrder }}">Place order</button><button onClick="{{ toContact }}">Ask about this order</button><a href="#" onClick="{{ toShop }}">Continue shopping</a></section>
 </main></sc-if>
 <sc-if value="{{ isDone }}"><main><h1>Thank you</h1></main></sc-if>
 <sc-if value="{{ isSignin }}"><main>
@@ -52,7 +53,7 @@
   <nav><a href="#" onClick="{{ toShop }}">Frames</a><a href="#" onClick="{{ toContact }}">Contact</a></nav>
 </div>
 <div role="dialog" aria-label="Your bag" style="position:fixed;top:0;bottom:0;right:0;width:400px">
-  <p>Your bag is empty</p><button onClick="{{ toCheckout }}">Checkout</button>
+  <sc-for list="{{ bag }}" as="it"><p>{{ it.name }} {{ it.price }}</p></sc-for><button onClick="{{ toCheckout }}">Checkout</button>
 </div>
 <div role="dialog" aria-label="Find a store" style="position:fixed;top:0;bottom:0;right:0;width:360px"><p>Our stores</p></div>
 <div role="dialog" aria-label="Size guide" style="position:fixed;inset:0"><p>Sizes</p></div>
@@ -69,6 +70,7 @@ class Component extends DCLogic {
   renderVals() {
     const S = this.state;
     const isPage = (p) => S.page === p;
+    const money = (n) => '£' + n.toFixed(2);
     return {
       isHome: isPage('home'), isShop: isPage('shop'), isContact: isPage('contact'), isCheckout: isPage('checkout'), isDone: isPage('done'),
       isSignin: S.page === 'signin', isAccount: S.page === 'account',
@@ -83,6 +85,7 @@ class Component extends DCLogic {
       shapes: [ { label: 'Round', pick: () => this.setState({ shape: 'round' }) }, { label: 'Square', pick: () => this.setState({ shape: 'square' }) } ],
       sorts: [ { label: 'Price', pick: () => this.setState({ sort: 'price' }) } ],
       uses: [ { label: 'Distance', pick: () => this.setState({ use: 'distance' }) } ],
+      bag: [ { name: 'Frame', price: money(120) } ],
       finishes: [ { label: 'Clear', pick: () => this.setState({ finish: 'clear' }) } ],
     };
   }

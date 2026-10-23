@@ -28,14 +28,17 @@ export function shopTitle( row, label ) {
 }
 
 // WooCommerce endpoints of the checkout page (order received): a route every link to which comes from inside the
-// checkout page. Each leaves the rows, its links resolve to the checkout row, and it is returned for the checkout
-// row's parts.
-export function checkoutEndpoints( rows, route, pageOfTag, home, routeSlug ) {
+// checkout page and that shows the order is confirmed: the checkout's submit leads to it, or its text shows an order
+// reference (lib/intake-pagemap-commerce.mjs::commerceFacts `submits`, `orderRef`). A route the checkout only links to
+// (its terms page) stays a page. Each endpoint leaves the rows, its links resolve to the checkout row, and it is
+// returned for the checkout row's parts.
+export function checkoutEndpoints( rows, route, pageOfTag, home, routeSlug, facts = new Map() ) {
 	const checkout = rows.find( ( r ) => 'page' === r.postType && 'checkout' === r.template );
 	const out = [];
+	const confirms = ( r ) => !! facts.get( checkout.route )?.submits.has( r.route ) || !! facts.get( r.route )?.orderRef;
 	for ( const r of checkout ? [ ...rows ] : [] ) {
 		const into = route.links.filter( ( l ) => l.route === r.route );
-		if ( r === checkout || r.route === home || ! r.route || ! into.length || ! into.every( ( l ) => pageOfTag( l.from ) === checkout.route ) ) {
+		if ( r === checkout || r.route === home || ! r.route || ! into.length || ! into.every( ( l ) => pageOfTag( l.from ) === checkout.route ) || ! confirms( r ) ) {
 			continue;
 		}
 		rows.splice( rows.indexOf( r ), 1 );
@@ -45,8 +48,9 @@ export function checkoutEndpoints( rows, route, pageOfTag, home, routeSlug ) {
 	return out;
 }
 
-// The cart block's own panel: an overlay holding no nav whose links lead to the checkout page.
-const cartPanel = ( s, checkout ) => 'drawer' === s.kind && ! s.nav && !! checkout && ( s.reaches || [] ).includes( checkout.route );
+// The cart block's own panel: a drawer showing order lines (a loop of currency amounts) whose links lead to the
+// checkout page, whatever other links it holds.
+const cartPanel = ( s, checkout ) => 'drawer' === s.kind && !! s.orderLines && !! checkout && ( s.reaches || [] ).includes( checkout.route );
 
 // A shop client (a `shop` or `product` row) always has WooCommerce's cart, checkout and my-account pages, since the site
 // build points WooCommerce's page settings at them: each the draft gives no route gets a row with WooCommerce's slug.
@@ -73,9 +77,10 @@ const LAYOUT_KIND = new Set( [ 'header', 'footer', 'drawer' ] );
 
 // Which surfaces become rows (FR-48-30, by what each is): a site-wide header, footer and nav drawer are the layout
 // rows; a header or footer inside a page is that page's own part; a drawer holding no nav is its block's panel (the
-// cart block's panel, one leading to checkout, is a part of the cart row; any other is a part of the page holding it,
-// else of the site chrome); a form, modal or choice flow inside a WooCommerce page (shop,
-// product, cart, checkout, my account) is WooCommerce's or its shop block's; a surfaces.json record with no surface in
+// cart block's panel, one showing order lines and leading to checkout, is a part of the cart row; any other is a part of
+// the page holding it, else of the site chrome); a form or modal inside a WooCommerce page (shop, product, cart,
+// checkout, my account) is WooCommerce's or its shop block's, while a choice flow there stays its own sgs_choice_flow
+// row; a surfaces.json record with no surface in
 // the draft code is a part of its page (the code shows nothing to build). Returns { rows: the surfaces that become
 // rows, parts: [ { row, part } ] } with `row` the owning row (null for the site chrome).
 export function ownedSurfaces( surfaces, rows, endpoints, routeSlug ) {
@@ -96,7 +101,7 @@ export function ownedSurfaces( surfaces, rows, endpoints, routeSlug ) {
 			part( 'block', cart || page );
 		} else if ( 'drawer' === s.kind && ! s.nav ) {
 			part( 'block' );
-		} else if ( WOO_ROW( page ) ) {
+		} else if ( WOO_ROW( page ) && 'choice-flow' !== s.kind ) {
 			part( 'woocommerce' );
 		} else {
 			out.push( s );

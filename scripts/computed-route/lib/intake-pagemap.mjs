@@ -15,6 +15,7 @@ import { ref, resolveRefs, propRefs, elementsOf, evalDeep, oneString, loopEnvs }
 import { codeSurfaces, KIND_POST_TYPE, kebab, stem } from './intake-pagemap-surfaces.mjs';
 import { crossCheck } from './intake-pagemap-hints.mjs';
 import { wooSlugs, shopTitle, checkoutEndpoints, wooPages, ownedSurfaces } from './intake-pagemap-owners.mjs';
+import { commerceFacts, commerceKinds, declaredKind } from './intake-pagemap-commerce.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const PAGE_MAP_SCHEMA = path.join( HERE, '..', 'data', 'page-map.schema.json' );
@@ -23,27 +24,21 @@ const gap = ( construct, draftId, error ) => ( { construct, draftId, error } );
 const SLUG_PREFIX = { header: 'header', footer: 'footer', drawer: 'drawer', menu: 'mega-menu', modal: 'modal', form: 'form', 'choice-flow': 'choice-flow' };
 const titleCase = ( key ) => kebab( key ).split( '-' ).filter( Boolean ).map( ( w ) => w[ 0 ].toUpperCase() + w.slice( 1 ) ).join( ' ' );
 
-// Post type, page template and collection from a route's own words (its key, title, or the manifest's type text):
-// a product archive is the WooCommerce shop (a product category when it says so), a single product a `product` row
-// (the design of WooCommerce's single-product template), cart and checkout their WooCommerce templates, an article a post, anything else a page.
+// Post type, page template and collection from a route's own words (its key, title, or the manifest's type text): a
+// product category when it says so (or a catalogue with priced items), a single product a `product` row (the design of
+// WooCommerce's single-product template), an article a post, anything else a page. Words that name a shop, cart or
+// checkout give only `hint` ('shop', 'cart', 'checkout' or null): lib/intake-pagemap-commerce.mjs::commerceKinds
+// decides those from the draft's structure and reports a hint the structure does not bear out.
 export function classifyRoute( text, { prices = false } = {} ) {
 	const t = String( text ).toLowerCase().replace( /\.dc\.html/g, '' );
-	if ( /product categor/.test( t ) ) {
-		return { postType: 'product_cat', template: 'archive-product', collection: 'live' };
+	const hint = /product archive|(^|[^a-z])(shop|store)([^a-z]|$)/.test( t ) ? 'shop' : /checkout/.test( t ) ? 'checkout' : /(^|[^a-z])(cart|basket)([^a-z]|$)/.test( t ) ? 'cart' : null;
+	if ( /product categor/.test( t ) || ( prices && /catalog/.test( t ) && 'shop' !== hint ) ) {
+		return { postType: 'product_cat', template: 'archive-product', collection: 'live', hint: null };
 	}
 	if ( /single product|product single|(^|\s)product(\s|$)/.test( t ) && ! /archive/.test( t ) ) {
-		return { postType: 'product', template: 'single-product', collection: 'live' };
+		return { postType: 'product', template: 'single-product', collection: 'live', hint: null };
 	}
-	if ( /product archive|(^|[^a-z])(shop|store)([^a-z]|$)/.test( t ) || ( prices && /catalog/.test( t ) ) ) {
-		return { postType: /catalog/.test( t ) && ! /shop|store/.test( t ) ? 'product_cat' : 'shop', template: 'archive-product', collection: 'live' };
-	}
-	if ( /checkout/.test( t ) ) {
-		return { postType: 'page', template: 'checkout', collection: 'static' };
-	}
-	if ( /(^|[^a-z])(cart|basket)([^a-z]|$)/.test( t ) ) {
-		return { postType: 'page', template: 'cart', collection: 'static' };
-	}
-	return { postType: /(^|[^a-z])(post|article)([^a-z]|$)/.test( t ) ? 'post' : 'page', template: null, collection: 'static' };
+	return { postType: /(^|[^a-z])(post|article)([^a-z]|$)/.test( t ) ? 'post' : 'page', template: null, collection: 'static', hint };
 }
 
 // The hash export's page data: the pages getter's object literal (returned, or memoised into this._x), each route's
@@ -112,11 +107,11 @@ function siteName( titles ) {
 const withoutSite = ( t, site ) => ( site ? t.split( SEP ).filter( ( x ) => x !== site ).join( ' · ' ) || t : t );
 
 // Route rows (before parents and menus): from the embedded manifest when present, else the adapter's routes plus
-// the routes the pages getter adds per element.
-function routeRows( exp, routing, gaps ) {
+// the routes the pages getter adds per element; the shop, cart and checkout come from commerceKinds.
+function routeRows( exp, routing, gaps, facts ) {
 	const rows = [];
 	const add = ( r ) => rows.push( { route: r.route, slug: r.slug, title: r.title, parent: r.parent ?? null, template: r.template ?? null, menus: [], postType: r.postType,
-		collection: r.collection, flags: [], id: null, ...( r.draftParent ? { draftParent: r.draftParent } : {} ) } );
+		collection: r.collection, flags: [], id: null, ...( r.draftParent ? { draftParent: r.draftParent } : {} ), ...( r.hint ? { hint: r.hint } : {} ), ...( r.declared ? { declared: r.declared } : {} ) } );
 	const manifest = exp.drafts.filter( ( d ) => exp.entries.includes( d.file ) ).map( ( d ) => ( { d, ...embeddedManifest( d.text, d.file ) } ) ).find( ( m ) => m.manifest?.pages || m.gaps.length );
 	gaps.push( ...( manifest?.gaps || [] ) );
 	if ( manifest?.manifest?.pages ) {
@@ -124,7 +119,7 @@ function routeRows( exp, routing, gaps ) {
 			const wp = p.wp || {};
 			const c = classifyRoute( `${ p.id } ${ wp.type || '' } ${ p.kind || '' }` );
 			const slug = /^[a-z0-9-]+$/.test( wp.slug || '' ) ? wp.slug : kebab( p.id || p.label );
-			add( { route: String( p.id ), slug, title: p.label || titleCase( p.id ), ...c, draftParent: wp.parent || null } );
+			add( { route: String( p.id ), slug, title: p.label || titleCase( p.id ), ...c, draftParent: wp.parent || null, declared: 'page' === c.postType ? declaredKind( wp.type, p.kind ) : null } );
 			rows[ rows.length - 1 ].explicit = slug === wp.slug;
 		}
 	}
@@ -151,6 +146,7 @@ function routeRows( exp, routing, gaps ) {
 		add( { route: a.key, slug: kebab( title || a.key ), title: title || titleCase( a.key ), ...c,
 			collection: listsCollection( data.d, a.value, a.env, sources ) ? 'live' : c.collection } );
 	}
+	commerceKinds( rows, facts, gaps );
 	return { rows, data };
 }
 
@@ -244,7 +240,8 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	const exp = loadExport( folder );
 	const route = routing || readRouting( { folder } );
 	const gaps = [];
-	const { rows, data } = routeRows( exp, route, gaps );
+	const facts = commerceFacts( exp, new Set( route.routes.map( ( x ) => x.key ) ), route.links );
+	const { rows, data } = routeRows( exp, route, gaps, facts );
 	const routeOfNode = ( d, node ) => ( data && d === data.d ? [ ...data.values ].find( ( [ , v ] ) => v.start <= node.start && node.end <= v.end )?.[ 0 ] ?? null : null );
 	const code = codeSurfaces( exp, routeOfNode, new Set( route.routes.map( ( x ) => x.key ) ), route.links );
 	wooSlugs( rows, code.accountPages );
@@ -269,7 +266,7 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 		}
 	}
 	const home = route.links.find( ( l ) => /^#\/?$/.test( l.href ) && l.route )?.route || rows[ 0 ]?.route || null;
-	const endpoints = checkoutEndpoints( rows, route, code.pageOfTag, home, routeSlug );
+	const endpoints = checkoutEndpoints( rows, route, code.pageOfTag, home, routeSlug, facts );
 	wooPages( rows, code.surfaces, used );
 	const hintFile = path.join( folder, 'surfaces.json' );
 	const hint = undefined !== surfacesHint ? surfacesHint : fs.existsSync( hintFile ) ? JSON.parse( fs.readFileSync( hintFile, 'utf8' ) ) : null;
@@ -284,9 +281,14 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 			menus: s.menuItem ? [ { menu: s.menuItem.menu, position: s.menuItem.position, parentItem: null } ] : [],
 			postType: KIND_POST_TYPE[ s.kind ], collection: 'static', flags: [], id: null } );
 	}
+	// A part with no owning row belongs to the site chrome, held by the header row; with no header row it is a gap row.
 	owned.parts.forEach( ( { row, part } ) => {
-		const to = row || rows.find( ( r ) => 'sgs_header' === r.postType ) || rows[ 0 ];
-		( to.parts ??= [] ).push( part );
+		const to = row || rows.find( ( r ) => 'sgs_header' === r.postType );
+		if ( to ) {
+			( to.parts ??= [] ).push( part );
+		} else {
+			gaps.push( gap( 'page-map', part.draftId, `the ${ part.kind } "${ part.label }" belongs to the site chrome, and the map has no header row to hold it` ) );
+		}
 	} );
 	const bySlug = new Map( rows.map( ( r ) => [ r.slug, r ] ) );
 	const rowOf = ( href, file ) => {

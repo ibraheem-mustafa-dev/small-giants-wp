@@ -9,13 +9,13 @@
   <nav><a href="Home.dc.html">Home</a><a href="Shop.dc.html">Shop</a></nav>
 </aside>
 <aside aria-label="Basket" style="position:fixed;top:0;bottom:0;right:0;width:300px">
-  <p>Your basket</p><a href="Basket.dc.html">View basket</a><a href="Checkout.dc.html">Checkout</a>
+  <p>Your basket</p><sc-for list="{{ lines }}" as="l"><p>{{ l.name }} {{ l.price }}</p></sc-for><a href="Basket.dc.html">View basket</a><a href="Checkout.dc.html">Checkout</a>
 </aside>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
   state = { nav: false };
-  renderVals() { return { openNav: () => this.setState({ nav: true }) }; }
+  renderVals() { return { openNav: () => this.setState({ nav: true }), lines: [ { name: 'Loaf', price: '£' + (4).toFixed(2) } ] }; }
 }
 </script>
 </body></html>
