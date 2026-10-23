@@ -119,3 +119,22 @@ test( 'MUST FAIL (only the drawer\'s own opener): a button with another handler,
 	assert.notEqual( rowAt( run( HEADER( 'toggleSearch' ), withDrawer ), 'Root/59#0' ).rule, 'drawerOpener', 'another handler' );
 	assert.notEqual( rowAt( run( HEADER( 'toggleMobile' ) ), 'Root/59#0' ).rule, 'drawerOpener', 'no drawer in the record' );
 } );
+
+// A phone pill whose words are the number itself reads Site Info for its label; its "Call" variant has other words.
+const PHONE = [
+	el( 1, null, 'header', '', { depth: 0, box: at( 0, 0, 800 ), display: 'flex' } ),
+	el( 11, 1, 'div', '', { depth: 1, box: at( 0, 0, 500 ), display: 'flex' } ),
+	el( 30, 11, 'a', '', { depth: 2, box: at( 0, 0 ), attrs: { href: 'tel:01217714330' }, allText: '0121 771 4330' } ),
+	el( 31, 30, 'span', '0121 771 4330', { depth: 3, widths: [ 768, 1440 ], box: at( 0, 0 ) } ),
+	el( 32, 30, 'span', 'Call', { depth: 3, widths: [ 375 ], box: at( 0, 0 ) } ),
+];
+
+test( 'MUST FAIL (a variant re-decides what its words decide): the "Call" variant of a phone pill keeps the phone link but not the label read from Site Info', () => {
+	const r = run( PHONE );
+	const pill = nodeAt( r, 'Root/30#0' );
+	const call = nodeAt( r, 'Root/32#0' );
+	assert.equal( pill.attributes.labelFromSiteInfo, true, 'the number pill reads its label from Site Info' );
+	assert.equal( call.attributes.label, 'Call' );
+	assert.equal( call.attributes.linkSource, pill.attributes.linkSource, 'the same phone link' );
+	assert.equal( call.attributes.labelFromSiteInfo, undefined, 'a label that is not the number never reads Site Info' );
+} );

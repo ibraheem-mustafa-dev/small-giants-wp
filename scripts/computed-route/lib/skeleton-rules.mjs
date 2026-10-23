@@ -14,6 +14,13 @@ import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
 
+// Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
+// them reads Site Info too.
+export function isSiteInfoValue( text, kind ) {
+	const VALUE = { phone: /^[+\d][\d\s()-]{6,20}$/, email: /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i };
+	return !! VALUE[ kind ]?.test( String( text ?? '' ) );
+}
+
 // The element's declared inline style as { property: value } (lower-case property names; values as written, which may
 // hold a draft binding such as {{ R.px }}).
 export function declared( e ) {
@@ -314,10 +321,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	// Whether the element's words are the Site Info value itself (a typed phone number or email address), so the label
 	// reads Site Info too.
-	const wordsAreValue = ( e, kind ) => {
-		const VALUE = { phone: /^[+\d][\d\s()-]{6,20}$/, email: /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i };
-		return !! VALUE[ kind ]?.test( all( e ) );
-	};
+	const wordsAreValue = ( e, kind ) => isSiteInfoValue( all( e ), kind );
+	// The attributes a verdict sets because the words are the Site Info value, as { attr: kind }: a copy of the block
+	// with other words (a width variant) keeps each only when its own words are that value too.
+	const wordBound = ( lk ) => ( lk ? { wordBound: { labelFromSiteInfo: lk.kind } } : {} );
 	// A verdict of a rule, or null when the decisions data has no entry for it (each rule is switched on by its entry).
 	const v = ( rule, extra ) => ( R[ rule ] ? { rule, reason: R[ rule ].reason || rule, ...extra } : null );
 	const linkAttrs = ( e, lk ) => {
@@ -423,13 +430,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( 1 !== texts.length || disclosure( e ) ) {
 				return null;
 			}
-			return v( 'pillButton', { block: R.pillButton?.block, absorb: true, attributes: { label: text, ...( lk ? { linkSource: lk.source } : {} ), ...( lk && wordsAreValue( e, lk.kind ) ? { labelFromSiteInfo: true } : {} ) } } );
+			return v( 'pillButton', { block: R.pillButton?.block, absorb: true, attributes: { label: text, ...( lk ? { linkSource: lk.source } : {} ), ...( lk && wordsAreValue( e, lk.kind ) ? { labelFromSiteInfo: true } : {} ) }, ...wordBound( lk ) } );
 		},
 		// A lone text link to a Site Info address (a phone number, an email address, a maps host) is a button whose link
 		// reads Site Info; credit and copyright lines stay business details.
 		( { e, text, kidsB } ) => {
 			const lk = 'a' === e.tag && ! kidsB.length && m.words( e ) ? linkKindOf( e ) : null;
-			return lk ? v( 'siteInfoLink', { block: R.siteInfoLink?.block, attributes: { label: text, linkSource: lk.source, ...( wordsAreValue( e, lk.kind ) ? { labelFromSiteInfo: true } : {} ) } } ) : null;
+			return lk ? v( 'siteInfoLink', { block: R.siteInfoLink?.block, attributes: { label: text, linkSource: lk.source, ...( wordsAreValue( e, lk.kind ) ? { labelFromSiteInfo: true } : {} ) }, ...wordBound( lk ) } ) : null;
 		},
 		( { e } ) => ( 'nav' === e.tag && R.navigation?.bySurface?.[ surface.kind ] ? v( 'navigation', { block: R.navigation.bySurface[ surface.kind ], absorb: true } ) : null ),
 		( { e } ) => ( ! m.isIconLink( e ) && ( iconOnly( e ) || emojiOnly( e ) || bindingGlyph( e ) ) ? v( 'solitaryIcon', { block: R.solitaryIcon?.block } ) : null ),

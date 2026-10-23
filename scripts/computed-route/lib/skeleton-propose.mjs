@@ -8,7 +8,7 @@ import { lintSkeleton } from '../lint.mjs';
 import { brandOwnsAddress } from './brand-registry.mjs';
 import { inventoryModel } from './skeleton-model.mjs';
 import { makeClassifier, overrideFor, finish, W } from './skeleton-classify.mjs';
-import { isMarker } from './skeleton-rules.mjs';
+import { isMarker, isSiteInfoValue } from './skeleton-rules.mjs';
 import { specHit } from './skeleton-facts.mjs';
 import { besideStrips, insideStrips, slotPlan } from './skeleton-header-slots.mjs';
 import { buildFooterRows as footerRowsOf } from './skeleton-footer-slots.mjs';
@@ -148,7 +148,11 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const textAttr = node && m.words( k ) ? facts.firstAttrByRole( top.block, 'text-content' ) : null;
 		let made = null;
 		if ( textAttr && node.attributes?.[ textAttr ] ) {
-			made = base( k, top.block, { ...node.attributes, [ textAttr ]: m.words( k ) } );
+			// An attribute the block's verdict set because its words are a Site Info value (the label reading the phone
+			// number) is kept only when the variation's own words are that value too.
+			const own = { ...node.attributes, [ textAttr ]: m.words( k ) };
+			Object.entries( top.wordBound || {} ).filter( ( [ , kind ] ) => ! isSiteInfoValue( m.words( k ), kind ) ).forEach( ( [ attr ] ) => delete own[ attr ] );
+			made = base( k, top.block, own );
 			record( k, { rule: 'widthVariant', source: 'rule widthVariant', reason: `${ k.key } renders only at ${ m.shownAt( k ).join( ' and ' ) }px: its words are one more ${ top.block } beside ${ top.key }, each hidden on the other's widths`, confidence: 1, candidates: [ { block: top.block, score: 1, share: 1, evidence: [] } ] }, { attributes: made.attributes } );
 		} else if ( node && parentBlock ) {
 			made = buildNode( k, parentBlock );
@@ -463,11 +467,11 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			Object.keys( cs.slots ).length && ( node.draftSlots = { ...node.draftSlots, ...cs.slots }, row.slots = { ...row.slots, ...cs.slots } );
 			const notes = [ ...cs.notes, ...( collapse?.note ? [ collapse.note ] : [] ) ];
 			notes.length && ( row.slotNotes = notes );
-			absorbSubtree( e, { block, key: e.key }, drawn, r.rule || 'drawsChildren', node, parentBlock );
+			absorbSubtree( e, { block, key: e.key, wordBound: top.wordBound }, drawn, r.rule || 'drawsChildren', node, parentBlock );
 			return [ node, ...takeVariants( node ) ];
 		}
 		if ( ! m.blockKids( e ).length && m.widthKids( e ).length && 'leaf' === composition[ block ]?.composition_role ) {
-			absorbWidthKids( e, { block, key: e.key }, 'drawsChildren', node, parentBlock );
+			absorbWidthKids( e, { block, key: e.key, wordBound: top.wordBound }, 'drawsChildren', node, parentBlock );
 			return [ node, ...takeVariants( node ) ];
 		}
 		const kids = m.blockKids( e );

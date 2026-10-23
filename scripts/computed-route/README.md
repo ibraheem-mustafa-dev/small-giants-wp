@@ -1404,6 +1404,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/skeleton-rules.mjs`
 - `declared(element)` → its inline style as `{ property: value }`.
+- `isSiteInfoValue(text, kind)` → whether words are the Site Info value of a kind itself (a typed phone number or email address); a rule's verdict names the attributes it set from that test as `wordBound` (`{ attr: kind }`), and `lib/skeleton-propose.mjs` keeps each on a width variant only when the variant's own words pass it too.
 - `isMarker(element, m, D, view?)` → whether the element is a small marker that holds nothing, in the flow of its text: a dot or a short bar within the sizes of `D` (`rules.dotMarker`); `lib/skeleton-propose.mjs` reads it to take stacked rows of a marker and one piece of text as one list.
 - `makeRules({ m, facts, surface: { slug, kind, name }, hooks: { siteInfoKinds, isColumnLabel, topBlock, blockOfKey }, motion?, view?, scope? })` → `{ ruleFor(element, parentBlock), drawsChildren(block), declared, iconRun, siteInfoBrand }` (`view` is `lib/skeleton-record.mjs::recordView`, `scope` its `surfaceContext`). `ruleFor` returns the first verdict in precedence order (`{ rule, reason, action?: 'remove'|'unwrap'|'absorbed', into?, block?, attributes?, absorb?, handover? }`) or null; a rule with no entry in `rules` never fires. `drawsChildren` gives why a block draws an element's children (a leaf, an `array_item_schema` block, or `rules.drawsChildren`), else null.
 
