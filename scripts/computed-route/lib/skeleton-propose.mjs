@@ -15,6 +15,7 @@ import { buildFooterRows as footerRowsOf } from './skeleton-footer-slots.mjs';
 import { childSlots, collapsePoint } from './skeleton-child-slots.mjs';
 import { partSlots } from './skeleton-part-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
+import { formStepNodes } from './skeleton-form-steps.mjs';
 
 export const COVERAGE_WRITES = [
 	'construct:dc-import',
@@ -626,7 +627,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	}
 
 	const rootNode = buildNode( m.root, null );
-	const skeleton = [].concat( rootNode || [] );
+	const skeleton = formStepNodes( [].concat( rootNode || [] ), { factRecord, surfaceKind } );
 	// Each absorbed part element is its block node's draftSlots entry at the part's calibrated slot, with its children at
 	// the part's sub-part slots (lib/skeleton-part-slots.mjs).
 	partPending.forEach( ( p ) => {
