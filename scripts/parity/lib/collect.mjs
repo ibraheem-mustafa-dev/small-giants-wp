@@ -29,12 +29,14 @@ export const PSEUDO_PROPS = [ 'content', 'background-color', 'background-image',
 // Properties read at rest and again at the hover end state.
 export const HOVER_PROPS = [ 'color', 'background-color', 'border-top-color', 'border-top-width', 'box-shadow', 'transform', 'scale', 'translate', 'rotate', 'opacity', 'text-decoration-line', 'text-decoration-color', 'filter' ];
 
-// Properties read on the focused control after a real Tab key reaches it (the keyboard focus ring).
-export const FOCUS_PROPS = [ 'outline-style', 'outline-width', 'outline-color', 'outline-offset', 'box-shadow', 'background-color', 'color', 'text-decoration-line', 'border-bottom-color' ];
+// Properties read on the focused control after a real Tab key reaches it (the keyboard focus ring). A border colour is read
+// with its side's width and style, so a colour on a side that paints no border can be judged as painting nothing.
+export const FOCUS_PROPS = [ 'outline-style', 'outline-width', 'outline-color', 'outline-offset', 'box-shadow', 'background-color', 'color', 'text-decoration-line', 'border-bottom-color', 'border-bottom-width', 'border-bottom-style' ];
 
 // Properties read on a pressed element (:active forced through the DevTools protocol, devtools.mjs::forcedPseudo): the
-// press feedback a visitor sees (a button that sinks, darkens or loses its shadow). Read at rest and while pressed.
-export const ACTIVE_PROPS = [ 'color', 'background-color', 'border-top-color', 'border-top-width', 'box-shadow', 'transform', 'scale', 'translate', 'rotate', 'opacity', 'filter', 'text-decoration-line', 'text-decoration-color', 'outline-style', 'outline-width', 'outline-color' ];
+// press feedback a visitor sees (a button that sinks, darkens or loses its shadow). Read at rest and while pressed; each
+// border colour with its side's width and style.
+export const ACTIVE_PROPS = [ 'color', 'background-color', 'border-top-color', 'border-top-width', 'border-top-style', 'border-bottom-color', 'border-bottom-width', 'border-bottom-style', 'box-shadow', 'transform', 'scale', 'translate', 'rotate', 'opacity', 'filter', 'text-decoration-line', 'text-decoration-color', 'outline-style', 'outline-width', 'outline-color' ];
 
 // The draft runtime's own name for a stamped element (data-dc-tpl), self-contained so it can be serialised into a page:
 // `<chain>/<n>#<copy>`. The chain is the import hosts (.sc-host) from the document root to the element's nearest host:
@@ -146,6 +148,20 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	const LAYOUT = [ 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'justify-content', 'align-items' ];
 	const layoutEl = layoutElement( el );
 	const lcs = getComputedStyle( layoutEl );
+	// The layout element's in-flow rendered items (`layoutChildren`): each child element with a box that is not absolutely
+	// or fixed positioned, and each run of painted text between them (a flex or grid container wraps it in one anonymous
+	// item). paint.mjs::layoutComparable and computed-route lib/fill-prop.mjs::gapPaintsNothing judge a gap by it.
+	let layoutChildren = 0;
+	let inText = false;
+	for ( const k of layoutEl.childNodes ) {
+		if ( 3 === k.nodeType ) {
+			layoutChildren += k.textContent.trim() && ! inText ? 1 : 0;
+			inText = inText || !! k.textContent.trim();
+		} else if ( 1 === k.nodeType && k.getClientRects().length && 'none' !== getComputedStyle( k ).display && ! /absolute|fixed/.test( getComputedStyle( k ).position ) ) {
+			layoutChildren += 1;
+			inText = false;
+		}
+	}
 	// Paint properties come from the element painting the ground, shape and border (paint.mjs::PAINT_PROPS, paintElement).
 	const PAINT = [ 'background-color', 'background-image', 'border-radius', 'box-shadow', 'border-top-width', 'border-top-style', 'border-top-color', 'border-bottom-width', 'border-bottom-color', 'border-left-width', 'border-right-width', 'border-left-color', 'border-right-color' ];
 	const paintEl = opts?.paintPart && ! run ? paintElement( el, owned ) : el;
@@ -314,6 +330,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		loops,
 		pseudo,
 		layoutDisplay: lcs.display,
+		layoutChildren,
 		tag: el.tagName.toLowerCase(),
 		motion: {
 			animation: cs.animationName.split( ',' ).every( ( n ) => 'none' === n.trim() ) ? 'none' : `${ cs.animationDuration } ${ cs.animationTimingFunction } ${ cs.animationDelay } ${ cs.animationIterationCount } ${ cs.animationFillMode }`,
@@ -403,7 +420,7 @@ export function hoverStyles( [ finder, props, resolveSrc, paintSrc, opts = null 
 	const ownedOf = ( list ) => new Set( ( list || [] ).map( ( f ) => resolve( f ) || ( 'string' === typeof f ? document.querySelector( f ) : null ) ).filter( ( o ) => o && o !== el ) );
 	const owned = ownedOf( opts?.others );
 	const carrier = textCarrier( el, opts?.textOthers ? ownedOf( opts.textOthers ) : owned );
-	const PAINT = [ 'background-color', 'background-image', 'border-radius', 'box-shadow', 'border-top-width', 'border-top-style', 'border-top-color', 'border-bottom-width', 'border-bottom-color', 'border-left-width', 'border-right-width', 'border-left-color', 'border-right-color' ];
+	const PAINT = [ 'background-color', 'background-image', 'border-radius', 'box-shadow', 'border-top-width', 'border-top-style', 'border-top-color', 'border-bottom-width', 'border-bottom-style', 'border-bottom-color', 'border-left-width', 'border-right-width', 'border-left-color', 'border-right-color' ];
 	const pcs = opts?.paintPart ? getComputedStyle( paintElement( el, owned ) ) : cs;
 	const deco = props.some( ( p ) => /^text-decoration-/.test( p ) ) ? paintedDecoration( carrier || el ) : null;
 	// Same sRGB normalising as collectPair (oklab()/color() through a canvas).

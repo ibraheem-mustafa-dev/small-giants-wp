@@ -6,7 +6,7 @@
 // over collect.mjs::collectPair's layoutChildren); a gap between two or more flex or grid items still compares.
 import test, { after, before } from 'node:test';
 import assert from 'node:assert/strict';
-import { DEFAULT_PROPS, resolveFinder, collectPair, hoverStyles } from '../lib/collect.mjs';
+import { DEFAULT_PROPS, FOCUS_PROPS, ACTIVE_PROPS, resolveFinder, collectPair, hoverStyles } from '../lib/collect.mjs';
 import { PAINT_SRC, layoutComparable } from '../lib/paint.mjs';
 import { comparePair } from '../lib/compare.mjs';
 
@@ -78,6 +78,9 @@ test( 'control: a root whose words all belong to inner pairs reads text on neith
 	const live = await read( side( '15px' ), { root: '#root', p: '#p' } );
 	assert.deepEqual( textRows( draft.root, live.root ), [] );
 	assert.ok( textRows( draft.p, live.p ).some( ( r ) => 'font-size' === r.key ), 'the owner still compares them' );
+	// Words in a nested block no pair measures are that block's, not the root's.
+	const loose = await read( '<div id="root"><div style="display:block"><b>Loose</b></div><p id="p">Words</p></div>', { root: '#root', p: '#p' } );
+	assert.equal( loose.root.styles[ 'font-size' ], undefined );
 } );
 
 const GAPS = [ 'gap', 'row-gap', 'column-gap', 'display' ];
@@ -92,8 +95,9 @@ test( 'MUST FAIL (Track R r11 section 2, Indus Register button @768): a one-chil
 
 test( 'layoutChildren counts the in-flow rendered items: a text run is one, an out-of-flow or undisplayed child none', async () => {
 	const s = await read( `<div id="a" style="display:flex"><span>a</span><span style="position:absolute">b</span><span style="display:none">c</span></div>
-		<a id="b" style="display:flex"><svg width="10" height="10"></svg> Label</a><div id="c" style="display:flex"> </div>`, { a: '#a', b: '#b', c: '#c' }, GAPS );
-	assert.deepEqual( [ s.a.layoutChildren, s.b.layoutChildren, s.c.layoutChildren ], [ 1, 2, 0 ] );
+		<a id="b" style="display:flex"><svg width="10" height="10"></svg> Label</a><div id="c" style="display:flex"> </div>
+		<div id="d" style="display:flex">One<!-- a comment splits the text node -->Two</div>`, { a: '#a', b: '#b', c: '#c', d: '#d' }, GAPS );
+	assert.deepEqual( [ s.a.layoutChildren, s.b.layoutChildren, s.c.layoutChildren, s.d.layoutChildren ], [ 1, 2, 0, 1 ] );
 } );
 
 test( 'control: a two-child flex row with an 8px gap against 16px is still a row, and so is one against a block stack', async () => {
@@ -116,4 +120,21 @@ test( 'layoutComparable on snapshots: gaps compare only where a side lays out tw
 	assert.equal( layoutComparable( 'row-gap', s( 'block', 1 ), s( 'grid', 2 ) ), true );
 	assert.equal( layoutComparable( 'gap', s( 'flex', 1 ), { styles: {} } ), true );
 	assert.equal( layoutComparable( 'gap', { styles: {} }, s( 'flex', 1 ) ), true );
+} );
+
+// W16's request: a focus or pressed border colour is read with its side's width and style, so a colour on a side that
+// paints no border can be judged (Eye Care focus:border-bottom-color rgb(230, 225, 218) against rgb(15, 15, 15)).
+test( 'the focus and pressed reads carry each border colour with its width and style, from the element painting them', async () => {
+	for ( const [ list, sides ] of [ [ FOCUS_PROPS, [ 'bottom' ] ], [ ACTIVE_PROPS, [ 'top', 'bottom' ] ] ] ) {
+		for ( const side of sides ) {
+			for ( const k of [ 'color', 'width', 'style' ] ) {
+				assert.ok( list.includes( `border-${ side }-${ k }` ), `border-${ side }-${ k }` );
+			}
+		}
+	}
+	const page = await browser.newPage();
+	await page.setContent( '<!doctype html><a id="a" style="display:inline-block"><span style="display:block;border-bottom:3px dashed rgb(1,2,3)">Go</span></a>' );
+	const out = await page.evaluate( hoverStyles, [ '#a', [ 'border-bottom-color', 'border-bottom-width', 'border-bottom-style' ], RESOLVE, PAINT_SRC, { paintPart: true } ] );
+	await page.close();
+	assert.deepEqual( out, { 'border-bottom-color': 'rgb(1, 2, 3)', 'border-bottom-width': '3px', 'border-bottom-style': 'dashed' } );
 } );

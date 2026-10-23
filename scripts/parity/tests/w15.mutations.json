@@ -1,0 +1,21 @@
+[
+	{ "file": "lib/paint.mjs", "find": "|| ( inner.length && ! laidOutHere( n.parentElement ) )", "replace": "", "why": "the own-text rule removed: the draft root reads the wordmark again" },
+	{ "file": "lib/paint.mjs", "find": "( inner.length && ! laidOutHere", "replace": "( true && ! laidOutHere", "why": "the rule applied to a pair holding no other pair (a nested button label is lost)" },
+	{ "file": "lib/paint.mjs", "find": "if ( ! [ 'inline', 'contents' ].includes( getComputedStyle( a ).display ) ) {", "replace": "if ( ! [ 'inline' ].includes( getComputedStyle( a ).display ) ) {", "why": "display: contents no longer counts as laid out here" },
+	{ "file": "lib/paint.mjs", "find": "if ( ! [ 'inline', 'contents' ].includes( getComputedStyle( a ).display ) ) {", "replace": "if ( ! [ 'inline', 'contents', 'flex', 'block' ].includes( getComputedStyle( a ).display ) ) {", "why": "nested blocks count as the element's own text" },
+	{ "file": "lib/paint.mjs", "find": "for ( let a = from; a && a !== el; a = a.parentElement ) {\n\t\t\tif ( ! [", "replace": "for ( let a = from; a && a !== el.parentElement; a = a.parentElement ) {\n\t\t\tif ( ! [", "why": "the walk also tests the element itself" },
+	{ "file": "lib/paint.mjs", "find": "return ! Number.isInteger( d.layoutChildren ) || ! Number.isInteger( l.layoutChildren )\n\t\t\t|| [ d, l ].some(", "replace": "return true || [ d, l ].some(", "why": "gaps always compare again" },
+	{ "file": "lib/paint.mjs", "find": "return ! Number.isInteger( d.layoutChildren ) || ! Number.isInteger( l.layoutChildren )", "replace": "return ! Number.isInteger( d.layoutChildren )", "why": "a live snapshot without layoutChildren no longer compares its gaps" },
+	{ "file": "lib/paint.mjs", "find": "return ! Number.isInteger( d.layoutChildren ) || ! Number.isInteger( l.layoutChildren )", "replace": "return ! Number.isInteger( l.layoutChildren )", "why": "a draft snapshot without layoutChildren no longer compares its gaps" },
+	{ "file": "lib/paint.mjs", "find": "|| [ d, l ].some( ( s ) => s.layoutChildren >= 2", "replace": "|| [ d, l ].every( ( s ) => s.layoutChildren >= 2", "why": "both sides must lay out two items (a flex row against a block stack is lost)" },
+	{ "file": "lib/paint.mjs", "find": "s.layoutChildren >= 2 &&", "replace": "s.layoutChildren >= 1 &&", "why": "a one-item flex row compares its gap" },
+	{ "file": "lib/paint.mjs", "find": "s.layoutChildren >= 2 && /(^|-)(flex|grid)$/.test( s.layoutDisplay || '' )", "replace": "s.layoutChildren >= 2", "why": "a block stack's items count as gap items" },
+	{ "file": "lib/collect.mjs", "find": "layoutChildren += k.textContent.trim() && ! inText ? 1 : 0;", "replace": "layoutChildren += 0;", "why": "a text run is not an item" },
+	{ "file": "lib/collect.mjs", "find": "inText = inText || !! k.textContent.trim();", "replace": "inText = false;", "why": "every text node an item" },
+	{ "file": "lib/collect.mjs", "find": "&& ! /absolute|fixed/.test( getComputedStyle( k ).position ) ) {", "replace": ") {", "why": "an out-of-flow child counts" },
+	{ "file": "lib/collect.mjs", "find": "1 === k.nodeType && k.getClientRects().length && 'none' !== getComputedStyle( k ).display &&", "replace": "1 === k.nodeType &&", "why": "an undisplayed child counts" },
+	{ "file": "lib/collect.mjs", "find": "\t\tlayoutChildren,\n", "replace": "", "why": "the count is not recorded" },
+	{ "file": "lib/collect.mjs", "find": "'border-bottom-color', 'border-bottom-width', 'border-bottom-style' ];", "replace": "'border-bottom-color' ];", "why": "focus reads the bottom colour alone" },
+	{ "file": "lib/collect.mjs", "find": "'border-top-style', 'border-bottom-color', 'border-bottom-width', 'border-bottom-style', ", "replace": "", "why": "pressed reads the top colour without its style and no bottom border" },
+	{ "file": "lib/collect.mjs", "find": "'border-bottom-width', 'border-bottom-style', 'border-bottom-color', 'border-left-width'", "replace": "'border-bottom-width', 'border-bottom-color', 'border-left-width'", "why": "the state read takes the border style from the pair's element, not the one painting the border" }
+]
