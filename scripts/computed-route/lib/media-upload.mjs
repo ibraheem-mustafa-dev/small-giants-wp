@@ -10,7 +10,7 @@
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import { downloadStock, stockDownloadUrl, stockFileName, stockImages, stockKey } from './media-stock.mjs';
+import { downloadStock, stockDownloadUrl, stockFileName, stockKey, stockSurvey } from './media-stock.mjs';
 
 export const IMAGE_TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.avif': 'image/avif', '.svg': 'image/svg+xml' };
 export const sha256 = ( buf ) => crypto.createHash( 'sha256' ).update( buf ).digest( 'hex' );
@@ -24,8 +24,21 @@ export function mediaAssets( repo, client ) {
 		.map( ( f ) => path.relative( repo, f ).split( path.sep ).join( '/' ) ).sort();
 }
 
+// Whether a site URL may carry an application password as Basic auth: https, or plain http to a loopback host (the
+// WSL mirrors).
+export function safeSiteUrl( url ) {
+	let u;
+	try {
+		u = new URL( url );
+	} catch {
+		return false;
+	}
+	return 'https:' === u.protocol || ( 'http:' === u.protocol && [ 'localhost', '127.0.0.1', '[::1]' ].includes( u.hostname ) );
+}
+
 // A site's REST credentials from `.claude/secrets/<site>.env` (WP_URL_<SITE>, WP_USER_<SITE>, WP_APP_PWD_<SITE>, the
-// suffix being the site name upper-cased without its punctuation).
+// suffix being the site name upper-cased without its punctuation). A URL that is neither https nor loopback http is
+// refused, since the application password travels as Basic auth.
 export function siteCredentials( repo, site ) {
 	const file = path.join( repo, '.claude', 'secrets', `${ site }.env` );
 	if ( ! fs.existsSync( file ) ) {
@@ -36,6 +49,9 @@ export function siteCredentials( repo, site ) {
 	const [ url, user, pass ] = [ 'WP_URL', 'WP_USER', 'WP_APP_PWD' ].map( ( k ) => env[ `${ k }_${ suffix }` ] );
 	if ( ! url || ! user || ! pass ) {
 		throw new Error( `.claude/secrets/${ site }.env lacks WP_URL_${ suffix }, WP_USER_${ suffix } or WP_APP_PWD_${ suffix }` );
+	}
+	if ( ! safeSiteUrl( url ) ) {
+		throw new Error( `WP_URL_${ suffix } (${ url }) is not https (plain http is allowed only to localhost), and the application password would travel in the clear` );
 	}
 	return { url: url.replace( /\/+$/, '' ), auth: `Basic ${ Buffer.from( `${ user }:${ pass.replace( /\s+/g, '' ) }` ).toString( 'base64' ) }` };
 }
@@ -54,8 +70,17 @@ export function manifestSums( repo, client ) {
 
 export const readMap = ( file ) => ( fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : { sites: {} } );
 
-// The bytes a URL serves, or null when it does not answer 200.
-async function served( fetchImpl, url ) {
+// The bytes a URL on the site's own origin serves, or null when it does not answer 200 or lies on another origin.
+async function served( fetchImpl, creds, url ) {
+	let origin;
+	try {
+		origin = new URL( url ).origin;
+	} catch {
+		return null;
+	}
+	if ( origin !== new URL( creds.url ).origin ) {
+		return null;
+	}
 	const res = await fetchImpl( url, { headers: { 'User-Agent': 'Mozilla/5.0 SGS media-upload' } } );
 	return 200 === res.status ? Buffer.from( await res.arrayBuffer() ) : null;
 }
@@ -67,7 +92,7 @@ async function stillLive( fetchImpl, creds, entry ) {
 		return false;
 	}
 	const media = await res.json();
-	const bytes = await served( fetchImpl, media.source_url );
+	const bytes = await served( fetchImpl, creds, media.source_url );
 	return !! bytes && sha256( bytes ) === entry.storedSha256;
 }
 
@@ -78,7 +103,7 @@ async function postMedia( fetchImpl, creds, label, name, type, bytes ) {
 		throw new Error( `uploading ${ label } answered ${ res.status }: ${ ( await res.text() ).slice( 0, 300 ) }` );
 	}
 	const media = await res.json();
-	const kept = await served( fetchImpl, media.source_url );
+	const kept = await served( fetchImpl, creds, media.source_url );
 	if ( ! kept ) {
 		throw new Error( `attachment ${ media.id } for ${ label } does not serve ${ media.source_url }` );
 	}
@@ -87,14 +112,15 @@ async function postMedia( fetchImpl, creds, label, name, type, bytes ) {
 
 // Uploads what the map does not hold live: { files, uploaded, skipped, sanitised }. `apply: false` uploads nothing and
 // lists what would be uploaded. The map is returned, not written (the caller writes it). `stock` is the list of stock
-// previews to carry (default: those the client's draft paints); `stockFound` returns their keys and `failed` the stock
-// downloads that did not complete (the run goes on without them).
-export async function uploadMedia( { repo, client, site, map, creds, fetchImpl = fetch, apply = false, log = () => {}, stock = stockImages( repo, client ) } ) {
+// previews to carry (default: those the client's draft paints); `stockFound` returns their keys, `stockUnpainted` the
+// photo IDs the draft holds without painting (never uploaded) and `failed` the stock downloads that did not complete
+// (the run goes on without them).
+export async function uploadMedia( { repo, client, site, map, creds, fetchImpl = fetch, apply = false, log = () => {}, survey = stockSurvey( repo, client ), stock = survey.painted } ) {
 	const known = map.sites?.[ site ]?.files || [];
 	const handoffPrefix = `sites/${ client }/handoff/`;
 	const manifest = manifestSums( repo, client );
 	const files = [];
-	const report = { uploaded: [], skipped: [], sanitised: [], wouldUpload: [], failed: [], stockFound: stock.map( ( s ) => s.key ) };
+	const report = { uploaded: [], skipped: [], sanitised: [], wouldUpload: [], failed: [], stockFound: stock.map( ( s ) => s.key ), stockUnpainted: survey.unpainted || [] };
 	// One stock preview: kept when its attachment is live, else downloaded (its failure is reported, not thrown) and uploaded.
 	const carryStock = async ( row ) => {
 		const had = known.find( ( e ) => e.stock && e.asset === row.key );
@@ -145,8 +171,7 @@ export async function uploadMedia( { repo, client, site, map, creds, fetchImpl =
 				continue;
 			}
 			const had = known.find( ( e ) => e.sha256 === sum && e.asset === asset ) || known.find( ( e ) => e.sha256 === sum );
-			// Read twice before re-uploading: a dry run on indus-test (2026-10-20) once read three live attachments as
-			// gone and the next two runs read all twenty live, so one failed read never makes a duplicate.
+			// Read twice before re-uploading, so one failed liveness read never makes a duplicate.
 			if ( had && ( await stillLive( fetchImpl, creds, had ) || await stillLive( fetchImpl, creds, had ) ) ) {
 				files.push( { ...had, asset } );
 				report.skipped.push( asset );

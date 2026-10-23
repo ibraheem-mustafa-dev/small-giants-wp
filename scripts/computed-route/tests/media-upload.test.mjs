@@ -7,7 +7,25 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { mediaAssets, paintedAsset, sha256, siteCredentials, uploadMedia } from '../lib/media-upload.mjs';
-import { downloadStock, MAX_STOCK_BYTES, stockImages, stockKey, stockReview } from '../lib/media-stock.mjs';
+import { downloadStock, MAX_STOCK_BYTES, stockImages, stockKey, stockReview, stockSurvey } from '../lib/media-stock.mjs';
+
+const JPEG = Buffer.from( [ 0xff, 0xd8, 0xff, 0xe0 ] );
+// A response body as a stream of `size`-byte chunks; `counter.pulled` counts the chunks read (arrayBuffer reads them all).
+function streamOf( buf, size = 64 * 1024, counter = { pulled: 0 } ) {
+	let at = 0;
+	const body = new ReadableStream( { pull( c ) {
+		if ( at >= buf.length ) {
+			c.close();
+			return;
+		}
+		counter.pulled++;
+		c.enqueue( new Uint8Array( buf.subarray( at, at += size ) ) );
+	} } );
+	return { body, arrayBuffer: async () => {
+		counter.pulled += Math.ceil( buf.length / size );
+		return buf;
+	} };
+}
 
 // Writes an export asset and records its fingerprint in the export's MANIFEST.json, as a real export does.
 function ship( repo, name, body ) {
@@ -189,14 +207,14 @@ function draftWithStock( repo ) {
 	const dir = path.join( repo, 'sites/acme/handoff' );
 	fs.mkdirSync( dir, { recursive: true } );
 	fs.writeFileSync( path.join( dir, 'Home.dc.html' ), [
-		'<img src="https://images.unsplash.com/photo-1111111111111-aaaaaaaaaaaa?w=2200&q=82&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1111111111111-aaaaaaaaaaaa?w=400 1x">',
+		'<x-dc><img src="https://images.unsplash.com/photo-1111111111111-aaaaaaaaaaaa?w=2200&q=82&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1111111111111-aaaaaaaaaaaa?w=400 1x">',
 		'<img src="https://images.unsplash.com/photo-1111111111111-aaaaaaaaaaaa?w=800&amp;q=80">',
 		'<a href="https://unsplash.com/photos/1111111111111-aaaaaaaaaaaa">credit</a>',
 		'<img src="https://cdn.example.org/photo-9999999999999-ffffffffffff">',
-		'<script>const hero = { a: \'https://images.unsplash.com/photo-2222222222222-bbbbbbbbbbbb\' };',
+		'<script data-dc-script>const hero = { a: \'https://images.unsplash.com/photo-2222222222222-bbbbbbbbbbbb\' };',
 		'const P = [\'3333333333333-cccccccccccc\'];',
 		'img.src = \'https://images.unsplash.com/photo-\' + P[0] + \'?w=400\';</script>',
-		'<img src="https://images.unsplash.com/photo-2222222222222-bbbbbbbbbbbb?w=5000">',
+		'<img src="https://images.unsplash.com/photo-2222222222222-bbbbbbbbbbbb?w=5000"></x-dc>',
 	].join( '\n' ) );
 }
 
@@ -206,8 +224,8 @@ function withStockHost( wp, { type = 'image/jpeg', same = false } = {} ) {
 	const fetchImpl = async ( url, init = {} ) => {
 		if ( url.startsWith( 'https://images.unsplash.com/' ) ) {
 			calls.downloads.push( url );
-			const body = Buffer.from( same ? 'SAME-PHOTO' : `PHOTO:${ new URL( url ).pathname }` );
-			return { status: 200, url, headers: { get: ( k ) => ( { 'content-type': type, 'content-length': String( body.length ) } )[ k ] }, arrayBuffer: async () => body };
+			const body = Buffer.concat( [ JPEG, Buffer.from( same ? 'SAME-PHOTO' : `PHOTO:${ new URL( url ).pathname }` ) ] );
+			return { status: 200, url, headers: { get: ( k ) => ( { 'content-type': type, 'content-length': String( body.length ) } )[ k ] }, ...streamOf( body ) };
 		}
 		return wp.fetchImpl( url, init );
 	};
@@ -243,7 +261,7 @@ test( 'MUST FAIL: each stock photo uploads once as stock:true with its source an
 	assert.equal( rows[ 0 ].source, 'https://images.unsplash.com/photo-1111111111111-aaaaaaaaaaaa?w=2200&q=80&auto=format&fit=crop' );
 	assert.equal( rows[ 1 ].source, 'https://images.unsplash.com/photo-2222222222222-bbbbbbbbbbbb?w=2400&q=80&auto=format&fit=crop', 'a width over the cap is capped' );
 	assert.equal( rows[ 2 ].source, 'https://images.unsplash.com/photo-3333333333333-cccccccccccc?w=1600&q=80&auto=format&fit=crop', 'a photo painted with no width gets the default' );
-	assert.equal( rows[ 0 ].sha256, sha256( Buffer.from( 'PHOTO:/photo-1111111111111-aaaaaaaaaaaa' ) ) );
+	assert.equal( rows[ 0 ].sha256, sha256( Buffer.concat( [ JPEG, Buffer.from( 'PHOTO:/photo-1111111111111-aaaaaaaaaaaa' ) ] ) ) );
 	assert.ok( rows.every( ( f ) => f.id && f.url.includes( '/wp-content/uploads/' ) && f.paintedAt.length ) );
 	assert.equal( first.map.sites[ 'acme-test' ].files.filter( ( f ) => ! f.stock ).length, 3, 'local rows stay stock:false' );
 	const [ downloads, uploads ] = [ host.calls.downloads.length, wp.calls.uploads ];
@@ -263,15 +281,135 @@ test( 'MUST FAIL: a stock dry run downloads and uploads nothing and lists every 
 } );
 
 test( 'MUST FAIL: a stock download that is not https, not an image, over the size cap or redirected off https is refused', async () => {
-	const answer = ( over ) => async ( url ) => ( { status: 200, url, headers: { get: ( k ) => ( { 'content-type': 'image/jpeg', ...over.headers } )[ k ] }, arrayBuffer: async () => over.body || Buffer.from( 'x' ), ...over.res } );
+	const answer = ( over ) => async ( url ) => ( { status: 200, url, headers: { get: ( k ) => ( { 'content-type': 'image/jpeg', ...over.headers } )[ k ] }, ...streamOf( over.body || Buffer.concat( [ JPEG, Buffer.from( 'x' ) ] ) ), ...over.res } );
 	const photo = 'https://images.unsplash.com/photo-1';
 	await assert.rejects( downloadStock( answer( { res: { url: photo } } ), 'http://images.unsplash.com/photo-1' ), /is not https/ );
 	await assert.rejects( downloadStock( answer( { headers: { 'content-type': 'text/html' } } ), photo ), /not an image type/ );
 	await assert.rejects( downloadStock( answer( { headers: { 'content-type': 'image/svg+xml' } } ), photo ), /not an image type/ );
 	await assert.rejects( downloadStock( answer( { headers: { 'content-length': String( MAX_STOCK_BYTES + 1 ) } } ), photo ), /over the .* cap/ );
 	await assert.rejects( downloadStock( answer( { body: Buffer.alloc( MAX_STOCK_BYTES + 1 ) } ), photo ), /over the .* cap/ );
-	await assert.rejects( downloadStock( answer( { res: { url: 'http://elsewhere.test/a.jpg' } } ), photo ), /redirected to http:\/\/elsewhere\.test\/a\.jpg, which is not https/ );
 	assert.equal( ( await downloadStock( answer( {} ), photo ) ).ext, '.jpg' );
+} );
+
+// A host that answers each URL from a table: a redirect (status + Location) or an image; `calls` lists every request.
+function hops( table ) {
+	const calls = [];
+	const fetchImpl = async ( url, init ) => {
+		calls.push( { url, redirect: init?.redirect } );
+		const row = table[ url ] || { status: 404 };
+		return { status: row.status, url, headers: { get: ( k ) => ( { location: row.location, 'content-type': row.type } )[ k ] }, ...streamOf( row.body || Buffer.alloc( 0 ) ) };
+	};
+	return { calls, fetchImpl };
+}
+
+test( 'MUST FAIL: a stock redirect is followed by hand only to https on a stock host, at most three hops', async () => {
+	const photo = 'https://images.unsplash.com/photo-1';
+	const img = { status: 200, type: 'image/jpeg', body: Buffer.concat( [ JPEG, Buffer.from( 'ok' ) ] ) };
+	const away = hops( { [ photo ]: { status: 302, location: 'https://evil.test/a.jpg' }, 'https://evil.test/a.jpg': img } );
+	await assert.rejects( downloadStock( away.fetchImpl, photo ), /redirected to https:\/\/evil\.test\/a\.jpg, which is not on a stock host/ );
+	assert.deepEqual( away.calls.map( ( c ) => c.url ), [ photo ], 'no request reaches the other host' );
+	assert.equal( away.calls[ 0 ].redirect, 'manual' );
+	const plain = hops( { [ photo ]: { status: 301, location: 'http://images.unsplash.com/photo-2' } } );
+	await assert.rejects( downloadStock( plain.fetchImpl, photo ), /which is not https/ );
+	assert.equal( plain.calls.length, 1 );
+	const home = hops( { [ photo ]: { status: 302, location: '/photo-2' }, 'https://images.unsplash.com/photo-2': img } );
+	assert.equal( ( await downloadStock( home.fetchImpl, photo ) ).bytes.toString( 'latin1' ).slice( 4 ), 'ok', 'a redirect within the stock host is followed' );
+	const loop = hops( { [ photo ]: { status: 302, location: photo } } );
+	await assert.rejects( downloadStock( loop.fetchImpl, photo ), /redirected more than 3 times/ );
+	assert.equal( loop.calls.length, 4 );
+	const bare = hops( { [ photo ]: { status: 302 } } );
+	await assert.rejects( downloadStock( bare.fetchImpl, photo ), /answered 302 with no Location/ );
+} );
+
+test( 'MUST FAIL: a stock body over the cap with no content-length is abandoned part-way, not read whole', async () => {
+	const counter = { pulled: 0 };
+	const size = 1024 * 1024;
+	const huge = Buffer.concat( [ JPEG, Buffer.alloc( MAX_STOCK_BYTES * 4 ) ] );
+	const fetchImpl = async ( url ) => ( { status: 200, url, headers: { get: ( k ) => ( { 'content-type': 'image/jpeg' } )[ k ] }, ...streamOf( huge, size, counter ) } );
+	await assert.rejects( downloadStock( fetchImpl, 'https://images.unsplash.com/photo-1' ), /over the .* cap/ );
+	assert.ok( counter.pulled <= MAX_STOCK_BYTES / size + 2, `read ${ counter.pulled } chunks of ${ Math.ceil( huge.length / size ) }` );
+	const exact = Buffer.concat( [ JPEG, Buffer.alloc( MAX_STOCK_BYTES - JPEG.length ) ] );
+	const fits = async ( url ) => ( { status: 200, url, headers: { get: ( k ) => ( { 'content-type': 'image/jpeg' } )[ k ] }, ...streamOf( exact, size ) } );
+	assert.equal( ( await downloadStock( fits, 'https://images.unsplash.com/photo-1' ) ).bytes.length, MAX_STOCK_BYTES, 'a body of exactly the cap is kept' );
+} );
+
+test( 'MUST FAIL: a body whose leading bytes are not the claimed image type is refused; each type\'s signature passes', async () => {
+	const serve = ( type, body ) => async ( url ) => ( { status: 200, url, headers: { get: ( k ) => ( { 'content-type': type } )[ k ] }, ...streamOf( body ) } );
+	const photo = 'https://images.unsplash.com/photo-1';
+	await assert.rejects( downloadStock( serve( 'image/jpeg', Buffer.from( '<!doctype html><html>' ) ), photo ), /leading bytes are not that type's signature/ );
+	await assert.rejects( downloadStock( serve( 'image/png', JPEG ), photo ), /signature/ );
+	const sig = {
+		'image/png': Buffer.from( [ 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a ] ),
+		'image/gif': Buffer.from( 'GIF89a' ),
+		'image/webp': Buffer.from( 'RIFF\0\0\0\0WEBPVP8 ' ),
+		'image/avif': Buffer.from( '\0\0\0\x1cftypavif' ),
+		'image/jpeg': JPEG,
+	};
+	for ( const [ type, body ] of Object.entries( sig ) ) {
+		assert.equal( ( await downloadStock( serve( type, body ), photo ) ).type, type );
+	}
+	await assert.rejects( downloadStock( serve( 'image/webp', Buffer.from( 'RIFF\0\0\0\0AVI LIST' ) ), photo ), /signature/ );
+	await assert.rejects( downloadStock( serve( 'image/gif', Buffer.from( 'GIF7' ) ), photo ), /signature/ );
+	await assert.rejects( downloadStock( serve( 'image/avif', Buffer.from( '\0\0\0\x1cftip' ) ), photo ), /signature/ );
+	await assert.rejects( downloadStock( serve( 'image/png', Buffer.from( [ 0x89, 0x50, 0x4e, 0x46 ] ) ), photo ), /signature/ );
+	await assert.rejects( downloadStock( serve( 'image/jpeg', Buffer.from( [ 0xff, 0xd8, 0x00 ] ) ), photo ), /signature/ );
+} );
+
+test( 'MUST FAIL: a photo ID the draft holds but never feeds into its built stock URL is unpainted and not uploaded', async () => {
+	const repo = fixtureRepo();
+	const dir = path.join( repo, 'sites/acme/handoff' );
+	fs.mkdirSync( dir, { recursive: true } );
+	fs.writeFileSync( path.join( dir, 'Shop.dc.html' ), [
+		'<x-dc><div></div></x-dc>',
+		'<script data-dc-script>',
+		'class C {',
+		'  get food() { return [\'4444444444444-dddddddddddd\']; }',
+		'  paint(el, id) {',
+		'    const M = { a: \'5555555555555-eeeeeeeeeeee\' };',
+		'    const P = this.food.concat([\'6666666666666-ffffffffffff\']);',
+		'    const spare = [\'7777777777777-aaaaaaaaaaaa\', \'4444444444444-dddddddddddd\'];',
+		'    const pid = M[id] || P[0];',
+		'    el.src = \'https://images.unsplash.com/photo-\' + pid + \'?w=400\';',
+		'    el.title = `https://images.unsplash.com/photo-${ id ? \'plain\' : \'8888888888888-bbbbbbbbbbbb\' }`;',
+		'  }',
+		'}',
+		'</script>',
+	].join( '\n' ) );
+	const survey = stockSurvey( repo, 'acme' );
+	assert.deepEqual( survey.painted.map( ( f ) => [ f.key.slice( -26 ), f.paintedAt ] ), [
+		[ '4444444444444-dddddddddddd', [ 'Shop.dc.html:4' ] ],
+		[ '5555555555555-eeeeeeeeeeee', [ 'Shop.dc.html:6' ] ],
+		[ '6666666666666-ffffffffffff', [ 'Shop.dc.html:7' ] ],
+		[ '8888888888888-bbbbbbbbbbbb', [ 'Shop.dc.html:11' ] ],
+	] );
+	assert.deepEqual( survey.unpainted.map( ( u ) => [ u.key.slice( -26 ), u.at, u.reason ] ), [ [ '7777777777777-aaaaaaaaaaaa', [ 'Shop.dc.html:8' ], 'no built stock URL expression reaches it' ] ] );
+	const wp = fakeWordPress();
+	const host = withStockHost( wp );
+	const r = await runStock( repo, { sites: {} }, host.fetchImpl );
+	assert.ok( ! host.calls.downloads.some( ( u ) => u.includes( '7777777777777' ) ), 'the unpainted photo is never downloaded' );
+	assert.deepEqual( r.stockUnpainted.map( ( u ) => u.key.slice( -26 ) ), [ '7777777777777-aaaaaaaaaaaa' ] );
+	assert.match( stockReview( 'acme', r.map, r.stockUnpainted ), /## Unpainted photo IDs[\s\S]*\| https:\/\/images\.unsplash\.com\/photo-7777777777777-aaaaaaaaaaaa \| Shop\.dc\.html:8 \|/ );
+} );
+
+test( 'MUST FAIL: a site URL that is not https is refused (loopback http allowed); a source_url off the site origin is never fetched', async () => {
+	const repo = fixtureRepo();
+	const put = ( v ) => fs.writeFileSync( path.join( repo, '.claude/secrets/acme-test.env' ), `WP_URL_ACMETEST=${ v }\nWP_USER_ACMETEST=Claude\nWP_APP_PWD_ACMETEST=abcd efgh\n` );
+	put( 'http://acme.test' );
+	assert.throws( () => siteCredentials( repo, 'acme-test' ), /is not https/ );
+	put( 'http://localhost:8080' );
+	assert.equal( siteCredentials( repo, 'acme-test' ).url, 'http://localhost:8080' );
+	put( 'https://acme.test/' );
+	const wp = fakeWordPress();
+	const first = await uploadMedia( { repo, client: 'acme', site: 'acme-test', map: { sites: {} }, creds: siteCredentials( repo, 'acme-test' ), fetchImpl: wp.fetchImpl, apply: true } );
+	const fetched = [];
+	const moved = async ( url, init = {} ) => {
+		fetched.push( url );
+		const res = await wp.fetchImpl( url, init );
+		return /\/wp-json\/wp\/v2\/media\/\d+/.test( url ) ? { ...res, json: async () => ( { id: 1, source_url: 'https://other.test/x.png' } ) } : res;
+	};
+	const again = await uploadMedia( { repo, client: 'acme', site: 'acme-test', map: first.map, creds: siteCredentials( repo, 'acme-test' ), fetchImpl: moved, apply: false } );
+	assert.ok( ! fetched.some( ( u ) => u.startsWith( 'https://other.test/' ) ), 'nothing is fetched off the site origin' );
+	assert.equal( again.wouldUpload.length, 3, 'an attachment served from another origin is not taken as live' );
 } );
 
 test( 'MUST FAIL: a stock photo that does not download is reported and the run still uploads the rest', async () => {

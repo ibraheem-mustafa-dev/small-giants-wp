@@ -21,20 +21,21 @@ const repo = opt( '--repo' ) || path.resolve( path.dirname( fileURLToPath( impor
 const mapFile = path.join( repo, 'sites', client, 'build', 'media-map.json' );
 const reviewFile = path.join( repo, 'sites', client, 'build', 'stock-review.md' );
 const apply = args.includes( '--apply' );
-const save = ( map ) => {
+const save = ( map, unpainted ) => {
 	fs.mkdirSync( path.dirname( mapFile ), { recursive: true } );
 	fs.writeFileSync( mapFile, `${ JSON.stringify( map, null, '\t' ) }\n` );
-	fs.writeFileSync( reviewFile, stockReview( client, map ) );
+	fs.writeFileSync( reviewFile, stockReview( client, map, unpainted ) );
 };
 try {
 	const r = await uploadMedia( { repo, client, site, map: readMap( mapFile ), creds: siteCredentials( repo, site ), apply, log: console.log } );
 	if ( apply ) {
-		save( r.map );
+		save( r.map, r.stockUnpainted );
 	}
 	r.wouldUpload.forEach( ( a ) => console.log( `would upload ${ a }` ) );
 	r.sanitised.forEach( ( a ) => console.log( `REVIEW ${ a }: the SVG upload sanitiser changed the file (svg-upload.php); compare the stored attachment with the asset` ) );
 	const isStock = ( a ) => r.stockFound.includes( a );
-	console.log( `stock previews: ${ r.stockFound.length } found, ${ r.uploaded.filter( isStock ).length } uploaded, ${ r.skipped.filter( isStock ).length } already live, ${ r.wouldUpload.filter( isStock ).length } to upload, ${ r.failed.length } failed` );
+	console.log( `stock previews: ${ r.stockFound.length } found, ${ r.uploaded.filter( isStock ).length } uploaded, ${ r.skipped.filter( isStock ).length } already live, ${ r.wouldUpload.filter( isStock ).length } to upload, ${ r.stockUnpainted.length } unpainted, ${ r.failed.length } failed` );
+	r.stockUnpainted.forEach( ( u ) => console.log( `unpainted photo ID ${ u.key } (${ u.at.join( ', ' ) }): ${ u.reason }; not uploaded` ) );
 	r.failed.forEach( ( f ) => console.error( `STOCK FAILED ${ f.asset }: ${ f.reason }` ) );
 	console.log( `${ r.uploaded.length } uploaded, ${ r.skipped.length } already live, ${ r.wouldUpload.length } to upload${ apply ? `; map ${ path.relative( repo, mapFile ) }` : ' (dry run: re-run with --apply)' }` );
 	if ( r.failed.length ) {
@@ -42,7 +43,7 @@ try {
 	}
 } catch ( e ) {
 	if ( apply && e.map ) {
-		save( e.map );
+		save( e.map, [] );
 		console.error( `the map holds the files uploaded before the failure: ${ path.relative( repo, mapFile ) }` );
 	}
 	console.error( `FAILED: ${ e.message }` );
