@@ -3,8 +3,9 @@
 // owned by a unit of the plan the map names, or marked done or accepted. `mapProblems` is the check: a missing,
 // duplicated or unknown key, a unit the plan does not hold, a done commit that does not exist, a coverage key whose
 // mark disagrees with the coverage map (an open key whose entry is covered or excluded, a done or accepted key still a
-// gap), and a done animation key with no live evidence (`animationEvidence`: the built trees' settings or a walker
-// effect row).
+// gap), a done animation key with no live evidence (`animationEvidence`: one built block's enabled layers or a walker
+// effect record, never an effect row that reports the effect missing) and a done state key with no walker run of its
+// state free of open rows (`stateEvidence`).
 import fs from 'fs';
 import path from 'path';
 import { spawnSync } from 'child_process';
@@ -14,6 +15,7 @@ import { statusOf } from './clone-coverage.mjs';
 import { recogniseBehaviour } from './motion-behaviours.mjs';
 import { classify } from './motion-layers.mjs';
 import { walk as walkTree } from './tree.mjs';
+import { openRows } from './solve-rows.mjs';
 
 export const PRIOR = 'prior';
 
@@ -120,25 +122,32 @@ export function duplicateKeys( raw ) {
 	return [ ...counts ].filter( ( [ , n ] ) => n > 1 ).map( ( [ k ] ) => k );
 }
 
+// Whether a value holds anything: a leaf that is set, or a container with such a leaf in it (`{}` and `{ base: {} }` hold nothing).
+const hasContent = ( v ) => ( Array.isArray( v ) ? v.some( hasContent ) : v && 'object' === typeof v ? Object.values( v ).some( hasContent ) : null != v && '' !== v );
+
 // What a client's built trees (sites/<client>/build/trees/**, the block trees written to the live posts) say about motion:
-// { effects: the names of every effect layer, flags: 'entrance' and 'hover-state' when a layer of that kind exists,
-// nodes: [{ name, attributes }] for every block }.
+// { effects: the names of every enabled effect layer, flags: 'entrance' and 'hover-state' when a layer of that kind holds
+// settings, nodes: [{ name, attributes, effects, flags }] for every block, each with its own layers }. A layer with
+// `enabled: false`, an empty entrance and an empty hover state are not layers.
 export function treeFacts( trees ) {
 	const facts = { effects: new Set(), flags: new Set(), nodes: [] };
-	const scan = ( v, key = '' ) => {
-		if ( Array.isArray( v ) ) {
-			v.forEach( ( x ) => scan( x, key ) );
-		} else if ( v && 'object' === typeof v ) {
-			'string' === typeof v.effect && facts.effects.add( v.effect );
-			'entrance' === key && facts.flags.add( 'entrance' );
-			'hover' === key && v.state && facts.flags.add( 'hover-state' );
-			Object.entries( v ).forEach( ( [ k, x ] ) => scan( x, k ) );
-		}
-	};
 	for ( const tree of trees ) {
 		walkTree( tree, ( n ) => {
-			facts.nodes.push( { name: n.name, attributes: n.attributes || {} } );
+			const node = { name: n.name, attributes: n.attributes || {}, effects: new Set(), flags: new Set() };
+			const scan = ( v, key = '' ) => {
+				if ( Array.isArray( v ) ) {
+					v.forEach( ( x ) => scan( x, key ) );
+				} else if ( v && 'object' === typeof v ) {
+					'string' === typeof v.effect && false !== v.enabled && node.effects.add( v.effect );
+					'entrance' === key && hasContent( v ) && node.flags.add( 'entrance' );
+					'hover' === key && hasContent( v.state ) && node.flags.add( 'hover-state' );
+					Object.entries( v ).forEach( ( [ k, x ] ) => scan( x, k ) );
+				}
+			};
 			scan( n.attributes?.sgsMotion );
+			node.effects.forEach( ( e ) => facts.effects.add( e ) );
+			node.flags.forEach( ( f ) => facts.flags.add( f ) );
+			facts.nodes.push( node );
 		} );
 	}
 	return facts;
@@ -192,51 +201,90 @@ export function animationNeeds( record ) {
 			: { walkerOnly: c.reason || `the record is an endless loop or an unnamed effect (${ c.kind }): no setting name in a tree identifies it` };
 }
 
-// Every effect row (an object with kind `effect`) anywhere in a walker report's runs.
+// Every effect row (an object with kind `effect`) and per-pair effect record (kind `effects`) anywhere in a walker report's runs.
 export function walkerEffectRows( report ) {
 	const out = [];
 	const scan = ( v ) => {
 		if ( Array.isArray( v ) ) {
 			v.forEach( scan );
 		} else if ( v && 'object' === typeof v ) {
-			'effect' === v.kind ? out.push( v ) : Object.values( v ).forEach( scan );
+			'effect' === v.kind || 'effects' === v.kind ? out.push( v ) : Object.values( v ).forEach( scan );
 		}
 	};
 	scan( report?.runs );
 	return out;
 }
 
-// The walker row that evidences a record: a row of kind `effect` (the walker's effect-layer rows: { kind: 'effect',
-// effect, animation?, live }) with its live side read that names the record, or an effect the record needs.
+const lower = ( v ) => String( v ).toLowerCase();
+const noEffect = ( v ) => null == v || 'none' === lower( v ) || ( Array.isArray( v ) && ! v.length );
+const names = ( list ) => ( list || [] ).map( lower );
+
+// The walker's effect rows ({ kind: 'effect', key: '<part> hover|press', part, draft, live }) are written when one side
+// has an effect layer and the other none, the empty side the string 'none' and the other the comma-joined effect names.
+// A row whose live side is 'none' and that names an effect the record needs (or carries the record's id in `animation`)
+// is counter-evidence: the live page lacks the effect, whatever the trees hold.
+function walkerMiss( record, needs, rows ) {
+	const want = names( needs.effects );
+	return rows.find( ( r ) => 'effect' === r.kind && noEffect( r.live ) && ( r.animation === record.id || ( ! r.animation && names( String( r.draft ?? '' ).split( /\s*,\s*/ ) ).some( ( d ) => want.includes( d ) ) ) ) );
+}
+
+// Positive walker evidence is the per-pair effect record { kind: 'effects', part, draft: [names], live: [names],
+// animation? }: the live page plays every effect the record needs, or the record's own id is named in `animation`.
 function walkerHit( record, needs, rows ) {
-	return rows.find( ( r ) => 'effect' === r.kind && null != r.live && ( r.animation === record.id || ( ! r.animation && ( needs.effects || [] ).includes( r.effect ) ) ) );
+	const want = names( needs.effects );
+	return rows.find( ( r ) => 'effects' === r.kind && Array.isArray( r.live ) && r.live.length && ( r.animation === record.id || ( ! r.animation && want.length && want.every( ( e ) => names( r.live ).includes( e ) ) ) ) );
 }
 
 const holds = ( node, list ) => list.every( ( s ) => JSON.stringify( node.attributes[ s.attr ] ) === JSON.stringify( s.value ) );
 
-// { ok, why } for one animation record's done mark: every effect and flag it needs is in the built trees (or the
-// alternative settings the recogniser names are on a block), or a walker effect row shows it played.
-export function animationEvidence( record, facts, walkerRows = [] ) {
-	const needs = animationNeeds( record );
+// { ok, why } for one animation record's done mark: a walker effect row reporting the effect missing fails it; otherwise a
+// walker effect record shows it played, or ONE built block carries every effect layer and flag the record needs (each
+// enabled and holding settings), or the alternative settings the recogniser names are on a block. A record that needs
+// nothing a tree can hold has no tree evidence. `needsOf` reads a record's needs (a test seam).
+export function animationEvidence( record, facts, walkerRows = [], needsOf = animationNeeds ) {
+	const needs = needsOf( record );
 	if ( needs.native ) {
 		return { ok: true, why: 'the SGS page or its motion model does it natively (a page load, a reduced-motion rule)' };
 	}
+	const miss = walkerMiss( record, needs, walkerRows );
+	if ( miss ) {
+		return { ok: false, why: `walker effect row "${ miss.key }" shows the live page lacks ${ miss.draft } (draft ${ JSON.stringify( miss.draft ) }, live ${ JSON.stringify( miss.live ) })` };
+	}
 	const hit = walkerHit( record, needs, walkerRows );
 	if ( hit ) {
-		return { ok: true, why: `walker effect row ${ hit.effect } (live ${ JSON.stringify( hit.live ) })` };
+		return { ok: true, why: `walker effect record for ${ hit.part ?? 'a part' } plays ${ JSON.stringify( hit.live ) } live` };
 	}
 	if ( needs.walkerOnly ) {
-		return { ok: false, why: `${ needs.walkerOnly }, and no walker effect row shows it` };
+		return { ok: false, why: `${ needs.walkerOnly }, and no walker effect record shows it` };
 	}
-	const missing = [
-		...( needs.effects || [] ).filter( ( e ) => ! facts.effects.has( e ) ).map( ( e ) => `no ${ e } effect layer` ),
-		...( needs.flags || [] ).filter( ( f ) => ! facts.flags.has( f ) ).map( ( f ) => `no ${ f } layer` ),
-		...Object.entries( needs.blocks || {} ).filter( ( [ name, list ] ) => ! facts.nodes.some( ( n ) => n.name === name && holds( n, list ) ) ).map( ( [ name ] ) => `no ${ name } block with the settings it needs` ),
-	];
+	const [ effects, flags, blocks ] = [ needs.effects || [], needs.flags || [], Object.entries( needs.blocks || {} ) ];
+	if ( ! effects.length && ! flags.length && ! blocks.length ) {
+		return { ok: false, why: 'the record names no effect layer, flag or block setting a tree could hold, and no walker effect record shows it' };
+	}
+	const missing = [];
+	if ( ( effects.length || flags.length ) && ! facts.nodes.some( ( n ) => effects.every( ( e ) => n.effects.has( e ) ) && flags.every( ( f ) => n.flags.has( f ) ) ) ) {
+		const absent = [ ...effects.filter( ( e ) => ! facts.effects.has( e ) ).map( ( e ) => `no ${ e } effect layer` ), ...flags.filter( ( f ) => ! facts.flags.has( f ) ).map( ( f ) => `no ${ f } layer` ) ];
+		missing.push( ...( absent.length ? absent : [ `no one block carries ${ [ ...effects, ...flags ].join( ' and ' ) } together` ] ) );
+	}
+	missing.push( ...blocks.filter( ( [ name, list ] ) => ! facts.nodes.some( ( n ) => n.name === name && holds( n, list ) ) ).map( ( [ name ] ) => `no ${ name } block with the settings it needs` ) );
 	if ( missing.length && needs.alt && facts.nodes.some( ( n ) => holds( n, needs.alt ) ) ) {
 		return { ok: true, why: `the alternative settings ${ needs.alt.map( ( s ) => s.attr ).join( ', ' ) } are on a block` };
 	}
-	return missing.length ? { ok: false, why: `${ missing.join( ', ' ) } in the built trees, and no walker effect row shows it` } : { ok: true, why: 'its effect layers are in the built trees' };
+	return missing.length ? { ok: false, why: `${ missing.join( ', ' ) } in the built trees, and no walker effect record shows it` } : { ok: true, why: 'one built block carries its effect layers' };
+}
+
+// { ok, why } for one `state:<surface>:<name>` key's done mark, from the walker reports given: a run of that state exists
+// and no open row is left in any run of it.
+export function stateEvidence( key ) {
+	const name = lower( String( key ).replace( /^state:[^:]*:/, '' ).replace( / #\d+$/, '' ) );
+	return ( reports ) => {
+		const runs = ( reports || [] ).flatMap( ( r ) => ( r.runs || [] ).filter( ( run ) => lower( run.state ?? '' ) === name ).map( ( run ) => ( { runs: [ run ] } ) ) );
+		if ( ! runs.length ) {
+			return { ok: false, why: `no walker run of the ${ name } state was given (--walk <report.json>)` };
+		}
+		const open = runs.flatMap( ( r ) => openRows( r ) );
+		return open.length ? { ok: false, why: `the walker still has ${ open.length } open row(s) in the ${ name } state (first: ${ open[ 0 ].key })` } : { ok: true, why: `${ runs.length } walker run(s) of the ${ name } state with no open row` };
+	};
 }
 
 // Whether a commit exists in the repo.
@@ -246,7 +294,8 @@ export function commitExists( hash, root = REPO ) {
 
 // Every reason the map is wrong, as sentences; empty when it is right. A value is a unit id ("U14"), { done: <commit or
 // "prior">, unit } or { accepted: <reason>, unit }; "prior" is allowed only for a coverage key whose entry is covered. A
-// done animation key needs evidenceFor(key) -> { ok, why } (`animationEvidence`); with no reader it fails.
+// done animation or state key needs evidenceFor(key) -> { ok, why } (`animationEvidence`, `stateEvidence`); with no reader it fails.
+// A coverage key's evidence is the coverage map's own status.
 export function mapProblems( { raw, expected, units, coverage, hasCommit, evidenceFor } ) {
 	const problems = [];
 	let map;
@@ -299,7 +348,7 @@ export function mapProblems( { raw, expected, units, coverage, hasCommit, eviden
 			if ( 'gap' === status ) {
 				problems.push( `${ k }: marked done but the coverage map still has it as a gap` );
 			}
-			if ( k.startsWith( 'animation:' ) ) {
+			if ( k.startsWith( 'animation:' ) || k.startsWith( 'state:' ) ) {
 				const e = 'function' === typeof evidenceFor ? evidenceFor( k ) : { ok: false, why: 'no evidence reader was supplied' };
 				e?.ok || problems.push( `${ k }: marked done but ${ e?.why ?? 'there is no evidence' }` );
 			}

@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { expectedKeys, planUnits, duplicateKeys, mapProblems, PRIOR, treeFacts, animationEvidence, walkerEffectRows } from '../lib/delivery-map.mjs';
+import { expectedKeys, planUnits, duplicateKeys, mapProblems, PRIOR, treeFacts, animationEvidence, stateEvidence, walkerEffectRows } from '../lib/delivery-map.mjs';
 
 const PLAN = '| Unit | What |\n|---|---|\n| U9 Forms | x |\n| U13a Track | x |\n';
 
@@ -92,7 +92,7 @@ test( 'MUST FAIL: a number, boolean or array value is refused, never a crash', (
 // A record whose script appends a sheen span to a pointer-tracked host, and the one that pulls the host toward the pointer.
 const SHEEN = { id: 'A-18', status: 'active', mechanism: 'waapi', trigger: { type: 'pointer-move', detail: 'first pointer move onto a new [data-mag] element' }, element: { selector: 'span appended to the [data-mag] element by shine()' }, source: { code: 'sp.animate(kf, { duration: dur })' }, properties: [ { property: 'transform', from: 'translateX(-120%) skewX(-18deg)', to: 'translateX(260%) skewX(-18deg)' } ], duration_ms: 750, easing: 'ease', iterations: 1 };
 const button = ( layers ) => [ { name: 'sgs/button', attributes: { sgsMotion: { v: 1, elements: { root: { hover: { state: { values: { scale: 1.05 } }, effects: layers } } } } }, innerBlocks: [] } ];
-const layer = ( effect ) => ( { id: `${ effect }-1`, effect, trigger: 'hover', values: {} } );
+const layer = ( effect, over = {} ) => ( { id: `${ effect }-1`, effect, trigger: 'hover', values: {}, ...over } );
 
 test( 'MUST FAIL: a done animation key whose element lacks its effect layer fails; with the layer it passes', () => {
 	const lacking = treeFacts( [ button( [ layer( 'magnet' ) ] ) ] );
@@ -112,12 +112,12 @@ test( 'MUST FAIL: a done animation key whose element lacks its effect layer fail
 
 test( 'a walker effect row with its live side read evidences a record the trees do not hold; an unread row does not', () => {
 	const none = treeFacts( [] );
-	const report = { runs: [ { pairs: { head: { diffs: [ { kind: 'effect', effect: 'sheen', animation: 'A-18', live: { played: true } }, { kind: 'style', key: 'color' } ] } } } ] };
+	const report = { runs: [ { pairs: { head: { diffs: [ { kind: 'effects', part: 'Book now', animation: 'A-18', draft: [ 'sheen' ], live: [ 'sheen' ] }, { kind: 'style', key: 'color' } ] } } } ] };
 	assert.equal( walkerEffectRows( report ).length, 1 );
 	assert.equal( animationEvidence( SHEEN, none, walkerEffectRows( report ) ).ok, true );
-	const unread = { runs: [ { pairs: { head: { diffs: [ { kind: 'effect', effect: 'sheen', animation: 'A-18', live: null } ] } } } ] };
+	const unread = { runs: [ { pairs: { head: { diffs: [ { kind: 'effects', part: 'Book now', animation: 'A-18', draft: [ 'sheen' ], live: [] } ] } } } ] };
 	assert.equal( animationEvidence( SHEEN, none, walkerEffectRows( unread ) ).ok, false );
-	const other = { runs: [ { pairs: { head: { diffs: [ { kind: 'effect', effect: 'sheen', animation: 'A-99', live: { played: true } } ] } } } ] };
+	const other = { runs: [ { pairs: { head: { diffs: [ { kind: 'effects', part: 'Book now', animation: 'A-99', draft: [ 'sheen' ], live: [ 'sheen' ] } ] } } } ] };
 	assert.equal( animationEvidence( SHEEN, none, walkerEffectRows( other ) ).ok, false );
 } );
 
@@ -132,10 +132,79 @@ test( 'evidence by key kind: a reduced-motion rule is native, an entrance needs 
 	const unnamed = animationEvidence( loop, treeFacts( [ withEntrance ] ) );
 	assert.equal( unnamed.ok, false );
 	assert.match( unnamed.why, /endless loop or an unnamed effect/ );
-	const withRow = animationEvidence( loop, treeFacts( [] ), [ { kind: 'effect', effect: 'drift', animation: 'A-40', live: { running: true } } ] );
+	const withRow = animationEvidence( loop, treeFacts( [] ), [ { kind: 'effects', part: 'Ring', animation: 'A-40', draft: [ 'drift' ], live: [ 'drift' ] } ] );
 	assert.equal( withRow.ok, true );
 	const hover = { id: 'A-30', status: 'active', mechanism: 'css-transition', trigger: { type: 'hover' }, element: { selector: '.card' }, properties: [ { property: 'transform', from: 'none', to: 'translateY(-4px)' } ], duration_ms: 200, iterations: 1 };
 	const noState = [ { name: 'sgs/button', attributes: { sgsMotion: { v: 1, elements: { root: { hover: { effects: [] } } } } }, innerBlocks: [] } ];
 	assert.match( animationEvidence( hover, treeFacts( [ noState ] ) ).why, /no hover-state layer/ );
 	assert.equal( animationEvidence( hover, treeFacts( [ button( [] ) ] ) ).ok, true );
+} );
+
+// Evidence bound to what a key names: tree layers that are present, enabled and on one block together; an effect row
+// that reports the effect missing is counter-evidence; a state key needs a walker run of its state with no open row.
+const wrapped = ( motion ) => [ { name: 'sgs/container', attributes: { sgsMotion: { v: 1, elements: { root: motion } } }, innerBlocks: [] } ];
+const ENTRANCE = { id: 'A-21', status: 'active', mechanism: 'waapi', trigger: { type: 'load' }, element: { selector: 'main h1' }, properties: [ { property: 'opacity', from: 0, to: 1 } ], duration_ms: 500, iterations: 1 };
+const HOVER = { id: 'A-30', status: 'active', mechanism: 'css-transition', trigger: { type: 'hover' }, element: { selector: '.card' }, properties: [ { property: 'transform', from: 'none', to: 'translateY(-4px)' } ], duration_ms: 200, iterations: 1 };
+
+test( 'MUST FAIL: an empty entrance, an empty hover state or a disabled layer is no evidence', () => {
+	assert.equal( animationEvidence( ENTRANCE, treeFacts( [ wrapped( { entrance: {} } ) ] ) ).ok, false );
+	assert.equal( animationEvidence( HOVER, treeFacts( [ wrapped( { hover: { state: {} } } ) ] ) ).ok, false );
+	assert.equal( animationEvidence( SHEEN, treeFacts( [ wrapped( { hover: { effects: [ layer( 'sheen', { enabled: false } ) ] } } ) ] ) ).ok, false );
+	assert.equal( animationEvidence( SHEEN, treeFacts( [ wrapped( { hover: { effects: [ layer( 'sheen', { enabled: true } ) ] } } ) ] ) ).ok, true );
+	assert.equal( animationEvidence( SHEEN, treeFacts( [ wrapped( { hover: { effects: [ layer( 'sheen' ) ] } } ) ] ) ).ok, true );
+} );
+
+test( 'MUST FAIL: the effects and flags a record needs must sit on one block, not be spread across the trees', () => {
+	const needs = () => ( { effects: [ 'glare' ], flags: [ 'hover-state' ] } );
+	const apart = [ wrapped( { hover: { effects: [ layer( 'glare' ) ] } } ), wrapped( { hover: { state: { values: { scale: 1.02 } } } } ) ];
+	assert.equal( animationEvidence( SHEEN, treeFacts( apart ), [], needs ).ok, false );
+	const together = [ wrapped( { hover: { state: { values: { scale: 1.02 } }, effects: [ layer( 'glare' ) ] } } ) ];
+	assert.equal( animationEvidence( SHEEN, treeFacts( together ), [], needs ).ok, true );
+} );
+
+test( 'MUST FAIL: a record whose needs are empty is not evidenced by the trees', () => {
+	const facts = treeFacts( [ wrapped( { entrance: { base: { trigger: 'load' } } } ) ] );
+	for ( const needs of [ { effects: [], flags: [] }, { effects: [], flags: [], blocks: {} }, {} ] ) {
+		assert.equal( animationEvidence( SHEEN, facts, [], () => needs ).ok, false );
+	}
+} );
+
+test( 'MUST FAIL: an effect row whose live side has no effect is counter-evidence, not live evidence', () => {
+	const lacking = { kind: 'effect', key: 'Book now hover', part: 'Book now', draft: 'sheen', live: 'none' };
+	const holds = treeFacts( [ wrapped( { hover: { effects: [ layer( 'sheen' ) ] } } ) ] );
+	assert.equal( animationEvidence( SHEEN, holds, [] ).ok, true );
+	assert.equal( animationEvidence( SHEEN, holds, [ lacking ] ).ok, false );
+	assert.equal( animationEvidence( SHEEN, treeFacts( [] ), [ lacking ] ).ok, false );
+	const plays = { kind: 'effects', part: 'Book now', draft: [ 'sheen' ], live: [ 'sheen' ] };
+	assert.equal( animationEvidence( SHEEN, treeFacts( [] ), [ plays ] ).ok, true );
+	assert.equal( animationEvidence( SHEEN, treeFacts( [] ), [ { ...plays, live: [ 'ripple' ] } ] ).ok, false );
+	assert.equal( animationEvidence( SHEEN, treeFacts( [] ), [ { kind: 'effect', key: 'Book now hover', part: 'Book now', draft: 'none', live: 'sheen' } ] ).ok, false, 'an effect row names a side that differs, never a played effect' );
+	assert.equal( animationEvidence( SHEEN, holds, [ { kind: 'effect', key: 'Book now hover', part: 'Book now', draft: 'sheen', live: 'ripple' } ] ).ok, true, 'a live side that has some other effect is no miss of this one' );
+	assert.equal( animationEvidence( SHEEN, treeFacts( [] ), [ { kind: 'effects', part: 'Book now', animation: 'A-18', draft: [ 'sheen' ], live: [] } ] ).ok, false, 'a record naming the id with nothing live' );
+	const two = () => ( { effects: [ 'sheen', 'ripple' ], flags: [] } );
+	assert.equal( animationEvidence( SHEEN, treeFacts( [] ), [ { ...plays, live: [ 'sheen' ] } ], two ).ok, false, 'one of two needed effects live' );
+	assert.equal( animationEvidence( SHEEN, treeFacts( [] ), [ { ...plays, live: [ 'sheen', 'ripple' ] } ], two ).ok, true );
+} );
+
+test( 'MUST FAIL: a state key marked done needs a walker run of its state with no open row for it', () => {
+	const root = fs.mkdtempSync( path.join( os.tmpdir(), 'dmap-ev-' ) );
+	const s = path.join( root, 'sites', 'client-a', 'handoff' );
+	fs.mkdirSync( s, { recursive: true } );
+	fs.writeFileSync( path.join( s, 'surfaces.json' ), JSON.stringify( { records: [ { id: 'S-01', states: [ { name: 'open' } ] } ] } ) );
+	const units = planUnits( '| Unit | What |\n|---|---|\n| U9 Forms | x |\n' );
+	const args = { raw: JSON.stringify( { keys: { 'state:S-01:open': { done: 'abc1234', unit: 'U9' } } } ), expected: expectedKeys( 'client-a', root ), units, coverage: { entries: {} }, hasCommit: ( h ) => 'abc1234' === h };
+	assert.match( mapProblems( args ).join( '; ' ), /state:S-01:open: marked done but no evidence reader was supplied/ );
+	const refused = mapProblems( { ...args, evidenceFor: () => ( { ok: false, why: 'the walker never ran the open state' } ) } );
+	assert.match( refused.join( '; ' ), /state:S-01:open: marked done but the walker never ran the open state/ );
+	assert.deepEqual( mapProblems( { ...args, evidenceFor: () => ( { ok: true, why: 't' } ) } ), [] );
+
+	const run = ( state, diffs ) => ( { runs: [ { state, width: 1440, pairs: { p: { diffs } } } ] } );
+	const openRow = { kind: 'style', key: 'color', ref: 'cr-ref-a', draft: 'red', live: 'blue' };
+	const evidence = stateEvidence( 'state:S-01:open' );
+	assert.equal( evidence( [] ).ok, false, 'no report at all' );
+	assert.equal( evidence( [ { runs: [] } ] ).ok, false, 'a report with no runs' );
+	assert.equal( evidence( [ run( 'open', [ openRow ] ) ] ).ok, false, 'an open row in the state' );
+	assert.equal( evidence( [ run( 'closed', [] ) ] ).ok, false, 'a run of another state is no evidence' );
+	assert.equal( evidence( [ run( 'open', [] ) ] ).ok, true );
+	assert.equal( stateEvidence( 'state:S-01:open #2' )( [ run( 'open', [] ) ] ).ok, true, 'a repeated state name keeps its base name' );
 } );

@@ -51,3 +51,16 @@ test( 'writeGaps drops a closed row, keeps firstSeen and other surfaces, refuses
 	assert.throws( () => writeGaps( { file, rows: [ candidate(), candidate() ], surface: 'header', publishedOn: '2026-10-24' } ), /two rows carry the same id/ );
 	assert.equal( fs.readFileSync( file, 'utf8' ), before );
 } );
+
+test( 'MUST FAIL: a row that contradicts the chain is refused: a failed row carrying an F-class, a gate passing after a failure, a reached gate after not-reached, a candidate whose class is not a probe class, a failing gate whose class is not its own', () => {
+	const ctx = { surface: 'header', publishedOn: '2026-10-23' };
+	const order = ( statuses ) => GATES.map( ( gate, i ) => ( { gate, status: statuses[ i ], evidence: 'not-reached' === statuses[ i ] ? null : `evidence for ${ gate }` } ) );
+	const stuck = order( [ 'pass', 'pass', 'pass', 'pass', 'pass', 'fail', 'not-reached', 'not-reached' ] );
+	assert.throws( () => gapRow( stopped( { class: 'F-setting', gate: 'G5', gates: stuck } ), ctx ), /F-setting is a framework class but the row failed at G5/ );
+	assert.throws( () => gapRow( stopped( { class: 'W-route', gates: order( [ 'pass', 'pass', 'pass', 'fail', 'pass', 'fail', 'not-reached', 'not-reached' ] ) } ), ctx ), /after the failing gate/ );
+	assert.throws( () => gapRow( stopped( { class: 'W-route', gates: order( [ 'pass', 'pass', 'not-reached', 'pass', 'fail', 'not-reached', 'not-reached', 'not-reached' ] ) } ), ctx ), /G3 is pass after G2 was not reached/ );
+	assert.throws( () => gapRow( stopped( { class: 'I-calibration', gates: stuck } ), ctx ), /G5 fails with class W-route, not I-calibration/ );
+	assert.throws( () => gapRow( candidate( { class: 'I-stale' } ), ctx ), /candidate's class must be the class G6 proved/ );
+	assert.equal( gapRow( stopped( { class: 'W-route', gates: stuck } ), ctx ).framework, false );
+	assert.equal( gapRow( candidate( { class: 'F-behaviour' } ), ctx ).framework, true );
+} );

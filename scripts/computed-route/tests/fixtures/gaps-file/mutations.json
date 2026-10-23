@@ -58,5 +58,29 @@
   "find": "framework: r.class.startsWith( 'F-' ),",
   "replace": "framework: true,",
   "why": "every row is called a framework gap"
+ },
+ {
+  "file": "lib/gaps-file.mjs",
+  "find": "if ( 'not-reached' !== g.status && 'pass' !== prev.status ) {",
+  "replace": "if ( false ) {",
+  "why": "gate order unchecked"
+ },
+ {
+  "file": "lib/gaps-file.mjs",
+  "find": "if ( ! Object.values( PROBE_CLASS ).includes( r.class ) ) {",
+  "replace": "if ( false ) {",
+  "why": "candidate class unchecked"
+ },
+ {
+  "file": "lib/gaps-file.mjs",
+  "find": "if ( r.class.startsWith( 'F-' ) ) {",
+  "replace": "if ( false ) {",
+  "why": "failed row may carry an F class"
+ },
+ {
+  "file": "lib/gaps-file.mjs",
+  "find": "if ( ! GATE_CLASSES[ r.gates[ failed ].gate ].includes( r.class ) ) {",
+  "replace": "if ( false ) {",
+  "why": "failing gate class unchecked"
  }
 ]
