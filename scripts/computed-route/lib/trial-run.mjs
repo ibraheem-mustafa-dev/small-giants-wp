@@ -5,8 +5,8 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { resolveFinder } from '../../parity/lib/collect.mjs';
-import { uidsIn, mapUids, ruleDiff, selfCheck, untriable, withWrite, judgeTrial, savedBlock } from './trial.mjs';
-import { readEnv, adminSession, renderBlock, styleOf, rootClassOf, rulesInPage, parseInPage, cssOf, applyTrialInPage, undoTrialInPage, measureInPage, scopeInPage } from './trial-page.mjs';
+import { uidsIn, mapUids, ruleDiff, selfCheck, untriable, withWrite, judgeTrial, anchorTops, savedBlock } from './trial.mjs';
+import { readEnv, adminSession, renderBlock, styleOf, rootClassOf, rulesInPage, parseInPage, cssOf, applyTrialInPage, undoTrialInPage, measureInPage, scopeInPage, anchorInPage } from './trial-page.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const BLOCKS_DIR = path.join( REPO, 'plugins/sgs-blocks/src/blocks' );
@@ -101,6 +101,8 @@ async function tryOne( { cand, attrs, session, pageOf, finders, widths, draft } 
 	const before = {};
 	const after = {};
 	const blockX = {};
+	const anchors = {};
+	const anchorAt = {};
 	const scoped = new Set();
 	let restored = true;
 	for ( const w of widths ) {
@@ -110,19 +112,25 @@ async function tryOne( { cand, attrs, session, pageOf, finders, widths, draft } 
 		// What a write on the block can move, read on this width's own page (a phone page can show other parts).
 		const scope = await page.evaluate( scopeInPage, [ RESOLVE, finders, sel ] );
 		scope.forEach( ( n ) => scoped.add( n ) );
-		const pick = Object.fromEntries( scope.map( ( n ) => [ n, finders[ n ] ] ) );
+		// The pair top offsets are measured from (FR-48-4): a margin write moves positions, not sizes.
+		anchors[ w ] = await page.evaluate( anchorInPage, [ RESOLVE, finders, sel ] );
+		const pick = Object.fromEntries( [ ...scope, ...( anchors[ w ] ? [ anchors[ w ] ] : [] ) ].map( ( n ) => [ n, finders[ n ] ] ) );
 		const m0 = await page.evaluate( measureInPage, [ RESOLVE, pick, sel ] );
 		await page.evaluate( applyTrialInPage, [ css, removed ] );
 		const m1 = await page.evaluate( measureInPage, [ RESOLVE, pick, sel ] );
 		await page.evaluate( undoTrialInPage );
 		const m2 = await page.evaluate( measureInPage, [ RESOLVE, pick, sel ] );
 		restored = restored && JSON.stringify( m0 ) === JSON.stringify( m2 );
-		before[ w ] = m0.pairs;
-		after[ w ] = m1.pairs;
+		const inScope = ( pairs ) => Object.fromEntries( Object.entries( pairs ).filter( ( [ n ] ) => scope.includes( n ) ) );
+		anchorAt[ w ] = { before: m0.pairs, after: m1.pairs };
+		before[ w ] = inScope( m0.pairs );
+		after[ w ] = inScope( m1.pairs );
 		const both = scope.filter( ( n ) => m0.pairs[ n ] && draft[ w ]?.[ n ] );
 		blockX[ w ] = { live: minX( m0.pairs, both ), draft: minX( draft[ w ] || {}, both ) };
 	}
-	const v = judgeTrial( { before, after, draft, blockX } );
+	const side = ( k ) => Object.fromEntries( Object.entries( anchorAt ).map( ( [ w, m ] ) => [ w, m[ k ] ] ) );
+	const anchorY = anchorTops( { before: side( 'before' ), after: side( 'after' ), draft, anchors } );
+	const v = judgeTrial( { before, after, draft, blockX, anchorY } );
 	const pairs = v.pairs.map( ( p ) => ( { ...p, boxBefore: slim( before[ p.width ][ p.pair ] ), boxAfter: slim( after[ p.width ][ p.pair ] ), boxDraft: slim( draft[ p.width ]?.[ p.pair ] ) } ) );
 	return { verdict: v.verdict, delta: v.delta, sumTol: v.sumTol, worse: v.worse, scope: scoped.size, added: added.length, removed: removed.length, restored, pairs };
 }
