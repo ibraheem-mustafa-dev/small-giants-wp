@@ -1,4 +1,4 @@
-// CSS shorthand families, derived from mdn-data (FP-1: no hand-written property lists). A family is a shorthand whose
+// CSS shorthand families, derived from mdn-data and @webref/css (FP-1: no hand-written property lists). A family is a shorthand whose
 // longhands differ only by an edge, a corner or an axis (`margin` → `margin-top`…, `border-radius` → `border-top-left-radius`…,
 // `gap` → `row-gap`/`column-gap`, `overflow` → `overflow-x`/`overflow-y`, `inset` → `top`…, `place-items` → `align-items`/
 // `justify-items`). A shorthand whose longhands are different kinds of thing (`outline`, `transition`, `text-decoration`) is a
@@ -8,9 +8,15 @@
 // One key normaliser covers physical and logical spellings: a logical edge or corner (`padding-inline-start`,
 // `border-start-start-radius`, `inset-inline`) is its physical equivalent for a horizontal writing mode in `dir`
 // (default ltr). A vertical writing mode is not modelled.
+//
+// The spelling layer of the equivalence engine (Spec 48 FR-48-86 layer 1) lives here too: a legacy alias as its standard
+// property (@webref/css `legacyAliasOf`), a longhand's shorthands and a shorthand's longhands, so a draft property reaches
+// every name the same paint can be stored under.
 import { createRequire } from 'module';
 
-const MDN = createRequire( import.meta.url )( 'mdn-data/css/properties.json' );
+const need = createRequire( import.meta.url );
+const MDN = need( 'mdn-data/css/properties.json' );
+const WEBREF = new Map( need( '@webref/css/css.json' ).properties.map( ( p ) => [ p.name, p ] ) );
 
 const CORNERS = [ 'top-left', 'top-right', 'bottom-right', 'bottom-left' ];
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
@@ -25,15 +31,21 @@ const TOKEN_RE = new RegExp( `(^|-)(${ TOKENS.join( '|' ) })(?=-|$)` );
 // `text-decoration` settings hold is the line.
 const VALUE_PRIMARY = { 'text-decoration-line': 'text-decoration' };
 
-// Whether a name is a CSS property mdn-data knows (a custom property, an attribute name or a pseudo row such as `svg` is not).
-export const isCssProperty = ( p ) => p in MDN;
+// Whether a name is a CSS property mdn-data or @webref/css knows (a custom property, an attribute name or a pseudo row such
+// as `svg` is not).
+export const isCssProperty = ( p ) => p in MDN || WEBREF.has( p );
 
-// The longhands a property sets: mdn-data's `computed` list, or where it lists none (`white-space`) the properties its syntax
-// is built from (`<'white-space-collapse'> || <'text-wrap-mode'>`).
+// The longhands a property sets: mdn-data's `computed` list, else @webref/css's `longhands`, or where neither lists any
+// the properties its syntax is built from (`<'white-space-collapse'> || <'text-wrap-mode'>`).
 function subs( p ) {
 	const c = MDN[ p ]?.computed;
 	if ( Array.isArray( c ) && c.some( ( l ) => l !== p ) ) {
 		return c;
+	}
+	// Only longhands mdn-data also knows: a draft specification's new longhands (`box-shadow-color`) are computed by no browser.
+	const w = WEBREF.get( p )?.longhands;
+	if ( Array.isArray( w ) && w.length > 1 && w.every( ( l ) => l in MDN ) && ! WEBREF.get( p )?.legacyAliasOf ) {
+		return w;
 	}
 	const refs = [ ...String( MDN[ p ]?.syntax ?? '' ).matchAll( /<'([a-z-]+)'>/g ) ].map( ( m ) => m[ 1 ] ).filter( ( n ) => n in MDN && n !== p );
 	// A syntax of one reference is an alias (`border-left-color` is `<'border-top-color'>`), not a shorthand.
@@ -221,3 +233,59 @@ export function completePaint( paint ) {
 
 // The key a box setting stores a part under: a side is itself, a corner is camel case (`top-left` → `topLeft`).
 export const partKey = ( token ) => token.replace( /-([a-z])/g, ( _, c ) => c.toUpperCase() );
+
+// The standard property a name stands for: a legacy alias as the property it aliases (`word-wrap` → `overflow-wrap`,
+// `grid-gap` → `gap`, @webref/css `legacyAliasOf`), a vendor-prefixed name as its unprefixed property where that is one
+// (`-webkit-box-shadow` → `box-shadow`); any other name as itself.
+export function canonicalName( prop ) {
+	const p = String( prop ?? '' ).trim().toLowerCase();
+	const alias = WEBREF.get( p )?.legacyAliasOf;
+	if ( alias ) {
+		return alias;
+	}
+	const bare = p.replace( /^-(?:webkit|moz|ms|o)-/, '' );
+	return bare !== p && isCssProperty( bare ) ? bare : p;
+}
+
+// The physical longhands a property paints through (its own name for a longhand), after its alias is resolved.
+export const longhandsOf = ( prop, dir = 'ltr' ) => expand( canonicalName( prop ), dir );
+
+let shortIndex = null;
+
+// Every shorthand whose longhands include a longhand (`white-space-collapse` → `white-space`, `border-top-left-radius` →
+// `border-radius`), nearest first (the fewest longhands), the logical shorthands included by their physical members.
+export function shorthandsOf( prop, dir = 'ltr' ) {
+	if ( ! shortIndex ) {
+		shortIndex = new Map();
+		for ( const short of Object.keys( MDN ) ) {
+			if ( WEBREF.get( short )?.legacyAliasOf || ! isShort( short ) ) {
+				continue;
+			}
+			const members = expand( short );
+			members.filter( ( m ) => m !== short ).forEach( ( m ) => shortIndex.set( m, [ ...( shortIndex.get( m ) || [] ), { short, size: members.length } ] ) );
+		}
+	}
+	return ( shortIndex.get( physicalOf( canonicalName( prop ), dir ) ) || [] ).sort( ( a, b ) => a.size - b.size || a.short.localeCompare( b.short ) ).map( ( s ) => s.short );
+}
+
+// The initial value of a property as CSS text (@webref/css `initial`, else mdn-data's when it is a value rather than a
+// longhand list or a prose code), or null.
+export function initialOf( prop ) {
+	const p = canonicalName( prop );
+	const w = WEBREF.get( p )?.initial;
+	if ( 'string' === typeof w && ! /see individual|depends on|same as|UA-dependent/i.test( w ) ) {
+		return w;
+	}
+	const m = MDN[ p ]?.initial;
+	return 'string' === typeof m && ! /^[a-z]+[A-Z]/.test( m ) ? m : null;
+}
+
+// Whether a property is inherited (mdn-data `inherited`).
+export const isInherited = ( prop ) => true === MDN[ canonicalName( prop ) ]?.inherited;
+
+// The keywords a property's own grammar lists at its top level (`white-space-collapse` → collapse, discard, preserve, …),
+// read from its mdn-data syntax; empty for a property whose grammar is not a plain keyword choice.
+export function keywordsOf( prop ) {
+	const syntax = String( MDN[ canonicalName( prop ) ]?.syntax ?? WEBREF.get( canonicalName( prop ) )?.syntax ?? '' );
+	return syntax.split( '|' ).map( ( t ) => t.trim() ).filter( ( t ) => /^[a-z][a-z-]*$/.test( t ) );
+}
