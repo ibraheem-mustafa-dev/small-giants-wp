@@ -6,6 +6,7 @@ import { walkAst } from './intake-census-logic.mjs';
 import { matchSelector } from './intake-inventory-css.mjs';
 import { isFn, isThis, prop, globalName, textOf, ancestors, memberOf, functionName, literalOf, declaratorsOf } from './intake-inventory-code.mjs';
 import { resolveArg, insertedInto } from './intake-inventory-calls.mjs';
+import { cssTextProperties } from './intake-inventory-csstext.mjs';
 
 // The template elements a ref field is bound to: Map(field → [{ comp, n, ref }]) for one component, from each `ref`
 // census row → its renderVals key's method (or a member of that name) → `this.<field> = <param>` in that method.
@@ -284,7 +285,7 @@ export function writerSites( p ) {
 			const k = prop( n.left );
 			const el = styleOf( n.left.object );
 			if ( el ) {
-				out.push( { node: n, mechanism: 'js-style-write', target: el, properties: 'cssText' === k ? cssTextProps( n.right, value ) : [ { property: kebab( k ), ...value( n.right ) } ] } );
+				out.push( { node: n, mechanism: 'js-style-write', target: el, properties: 'cssText' === k ? cssTextProps( p, n.right ) : [ { property: kebab( k ), ...value( n.right ) } ] } );
 			} else if ( /^(textContent|innerText)$/.test( k ) ) {
 				out.push( { node: n, mechanism: 'js-text-write', target: n.left.object, properties: [ { property: k, ...value( n.right ) } ] } );
 			} else if ( /^(playbackRate|currentTime)$/.test( k ) ) {
@@ -312,11 +313,7 @@ export function writerSites( p ) {
 	return out;
 }
 
-// The declarations a cssText value sets: a literal string split as the runtime splits a style, else the source text.
-function cssTextProps( n, value ) {
-	const v = literalOf( n );
-	if ( 'string' === typeof v && v.includes( ':' ) ) {
-		return v.split( ';' ).map( ( d ) => [ d.slice( 0, d.indexOf( ':' ) ).trim().toLowerCase(), d.slice( d.indexOf( ':' ) + 1 ).trim() ] ).filter( ( [ k ] ) => k ).map( ( [ property, to ] ) => ( { property, to } ) );
-	}
-	return [ { property: 'css-text', ...value( n ) } ];
+// The declarations a cssText value sets: lib/intake-inventory-csstext.mjs::cssTextProperties, else the whole source text.
+function cssTextProps( p, n ) {
+	return cssTextProperties( p, n ) ?? [ { property: 'css-text', to: null, formula: p.text.slice( n.start, n.end ) } ];
 }
