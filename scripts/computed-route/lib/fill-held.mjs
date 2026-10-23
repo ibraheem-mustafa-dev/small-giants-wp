@@ -44,7 +44,7 @@ function valuesOf( row, snaps ) {
 	return Object.fromEntries( WIDTHS.filter( ( w ) => snaps[ w ] ).map( ( w ) => [ w, String( row.value ) ] ) );
 }
 
-const TIER_OF = { 375: 'mobile', 768: 'tablet', 1440: 'desktop' };
+export const TIER_OF = { 375: 'mobile', 768: 'tablet', 1440: 'desktop' };
 const WIDTH_OF = { mobile: 375, tablet: 768, desktop: 1440 };
 const isTiered = ( value ) => value && 'object' === typeof value && [ 'desktop', 'tablet', 'mobile' ].some( ( t ) => t in value );
 
@@ -55,7 +55,7 @@ const isTiered = ( value ) => value && 'object' === typeof value && [ 'desktop',
 // the write paints nothing there; where it is unchanged the stated tier carries down; where calibration never measured
 // the property at either width nothing is known and the write paints nothing. A value with no tiers paints every width
 // when written as one value, and only the widths it was written at otherwise.
-function paintedAt( w, x, prop, defaultAt ) {
+export function paintedAt( w, x, prop, defaultAt ) {
 	if ( ! isTiered( w.after ) ) {
 		return 'single' === w.how || ( w.widths || [] ).includes( x ) ? { value: w.after } : null;
 	}

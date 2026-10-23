@@ -5,6 +5,7 @@ import { resolve, splitProperty, LOOSE } from './resolve.mjs';
 import { sameValue } from '../../parity/lib/compare.mjs';
 import { fitFluid, acceptsClamp, applyClamp, LENGTH_PROPS } from './fill-values.mjs';
 import { INHERITED } from './calibrate-props.mjs';
+import { paintedAt, TIER_OF } from './fill-held.mjs';
 
 // The clone-coverage IDs this module writes (lib/clone-coverage.mjs::declaredWrites holds each entry's write to it):
 // the CSS groups whose declared values a draft header's Fill run wrote and confirmed.
@@ -186,18 +187,23 @@ export function defaultPaint( cal, slot, width, prop ) {
 	return /gap$/.test( prop ) && 'normal' === v ? '0px' : v;
 }
 
-// The tiers whose draft value differs from what the node shows there: its baseline, or the value written at a wider
-// tier (an empty tier shows it). baseline( width ) is the node's value with nothing written. Returns { width: value }.
-export function tiersDiffering( prop, draft, baseline ) {
+// The tiers whose draft value differs from what the node shows there: its baseline, or what the tiers already chosen paint
+// there, judged as the held side judges a write (lib/fill-held.mjs::paintedAt): an empty tier shows the nearest wider
+// chosen tier only where the block's default paint of the property is the same at both widths, and otherwise the block's
+// own fallback (its baseline), so a 10px desktop gap over a block whose mobile default is 8px writes the mobile tier too.
+// A property calibration did not measure at every tier width gives no evidence of a fallback, so there the wider value
+// carries down. baseline( width ) is the node's value with nothing written; defaultAt( width ) the block's calibrated
+// default paint of the property (the baseline when not given). Returns { width: value }.
+export function tiersDiffering( prop, draft, baseline, defaultAt = baseline ) {
 	const out = {};
-	let carried = null;
+	const fallbackAt = TIER_WIDTHS.every( ( w ) => undefined !== defaultAt( w ) ) ? defaultAt : () => '0px';
 	for ( const w of TIER_WIDTHS ) {
 		if ( undefined === draft[ w ] ) {
 			continue;
 		}
-		if ( ! sameValue( prop, canon( prop, draft[ w ] ), canon( prop, null === carried ? baseline( w ) : carried ), PX_TOL ) ) {
+		const painted = paintedAt( { after: Object.fromEntries( Object.entries( out ).map( ( [ x, v ] ) => [ TIER_OF[ x ], v ] ) ) }, w, prop, fallbackAt );
+		if ( ! sameValue( prop, canon( prop, draft[ w ] ), canon( prop, painted ? painted.value : baseline( w ) ), PX_TOL ) ) {
 			out[ w ] = draft[ w ];
-			carried = draft[ w ];
 		}
 	}
 	return out;
@@ -219,7 +225,7 @@ export function resolveProperty( ctx ) {
 	const known = knownPaths( calibration ).map( LOOSE );
 	let firstGap = null;
 	for ( const slot of slots ) {
-		const included = tiersDiffering( prop, draft, ( w ) => baseline( slot, w ) );
+		const included = tiersDiffering( prop, draft, ( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ) );
 		if ( ! Object.keys( included ).length ) {
 			return { status: 'equal', slot };
 		}
