@@ -1,6 +1,7 @@
 // A draft's size against a block's built-in size (Spec 48 FR-48-8) for Fill. The generic resolver writes a plain size
-// property to the setting that paints it; it leaves a row when the draft's value is a keyword no setting holds (`min-height:
-// auto`, `max-width: none`: "cannot be held") or when the block has no setting for the property (a declared `height`). Both
+// property to the setting that paints it, and writes a size keyword (`none`, `auto`, `fit-content`, `min-content`, `max-content`)
+// where the setting prints one (lib/resolve-declared.mjs::sizeKeyword); it leaves a row when the setting stores a number beside
+// a unit (a keyword it cannot print: "cannot be held") or when the block has no setting for the property (a declared `height`). Both
 // leave the block's own floor or ceiling in force: `sgs/button` paints `min-height: 48px`, so a 34px draft pill renders 48px
 // and wraps. This pass is one rule over the whole size family (height, width, min-*, max-*, and their block-size /
 // inline-size forms), for every block and property:
