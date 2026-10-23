@@ -859,13 +859,6 @@
       ]
     },
     {
-      "name": "page-with-title",
-      "title": "Page (with title)",
-      "postTypes": [
-        "page"
-      ]
-    },
-    {
       "name": "single-product",
       "title": "Single Product",
       "postTypes": [

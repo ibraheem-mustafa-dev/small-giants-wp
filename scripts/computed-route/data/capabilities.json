@@ -2711,13 +2711,6 @@
 					"motion": false
 				},
 				{
-					"id": "template:page-with-title",
-					"label": "templates/page-with-title.html",
-					"count": 1,
-					"examples": [],
-					"motion": false
-				},
-				{
 					"id": "template:page",
 					"label": "templates/page.html",
 					"count": 1,
