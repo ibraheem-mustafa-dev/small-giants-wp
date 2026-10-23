@@ -615,7 +615,7 @@ if ( 'hours' === $display_type ) {
 $sgs_bi_tier_specs = array(
 	array( "{$root_sel} .sgs-business-info__icon svg", $attributes['iconSize'] ?? null, array( 'width', 'height' ) ),
 	array( "{$root_sel} .sgs-business-info__link,{$root_sel} .sgs-business-phone,{$root_sel} .sgs-business-email", $attributes['iconGap'] ?? null, array( 'gap' ) ),
-	array( "{$root_sel} .sgs-business-info__link", $attributes['linkMinHeight'] ?? null, array( 'min-height' ) ),
+	array( "{$root_sel} .sgs-business-info__link", $attributes['linkMinHeight'] ?? null, array( 'min-height', '--sgs-bi-link-min-h' ) ),
 );
 foreach ( $sgs_bi_tier_specs as $sgs_bi_spec ) {
 	if ( ! is_array( $sgs_bi_spec[1] ) || array() === $sgs_bi_spec[1] ) {

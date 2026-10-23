@@ -85,7 +85,7 @@
    descendant one. */
 .sgs-whatsapp-cta--inline.sgs-whatsapp-cta__btn {
 	padding: 12px 24px;
-	min-height: 44px;
+	min-height: var(--sgs-wa-min-height, 44px);
 	font-size: var(--wp--preset--font-size--medium);
 }
 

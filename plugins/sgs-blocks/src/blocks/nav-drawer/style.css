@@ -285,8 +285,8 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	min-width: 44px;
-	min-height: 44px;
+	min-width: var( --sgs-nd-close-size, 44px );
+	min-height: var( --sgs-nd-close-size, 44px );
 	padding: 0;
 	background: transparent;
 	border: 0;
@@ -302,14 +302,14 @@
 	opacity: var( --sgs-nd-close-hover-opacity, 0.75 );
 }
 
-/* The hit area never drops below 44px, whatever closeSize paints. */
+/* The hit area is closeSize; render.php prints --sgs-nd-close-tap-min:0px beside it, so only an unsized close keeps the 44px floor. */
 .sgs-nav-drawer__close::after {
 	content: "";
 	position: absolute;
 	top: 50%;
 	left: 50%; /* centring: direction-agnostic, paired with the -50% translate */
-	width: max(100%, 44px);
-	height: max(100%, 44px);
+	width: max(100%, var( --sgs-nd-close-tap-min, 44px ));
+	height: max(100%, var( --sgs-nd-close-tap-min, 44px ));
 	translate: -50% -50%;
 }
 
@@ -342,7 +342,7 @@
    block-private CSS because no attribute governs it. */
 .sgs-nav-drawer--close-text-swap .sgs-nav-drawer__close {
 	width: auto;
-	min-width: 44px;
+	min-width: var( --sgs-nd-close-size, 44px );
 	padding: 0 12px;
 }
 
@@ -356,7 +356,7 @@
    scoped .sgs-nav-drawer__close-text rule, same as text-swap above. ── */
 .sgs-nav-drawer--close-icon-and-text .sgs-nav-drawer__close {
 	width: auto;
-	min-width: 44px;
+	min-width: var( --sgs-nd-close-size, 44px );
 	gap: 8px;
 	padding: 0 12px;
 }

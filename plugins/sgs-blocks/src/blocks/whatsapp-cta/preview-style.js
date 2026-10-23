@@ -54,6 +54,7 @@ export function buildRootStyle( previewAttrs, colourVar, resolveTextColourPrevie
 		backgroundColor: colourVar( backgroundColour ) || undefined,
 		gap: iconGap || undefined,
 		minHeight: minHeight || undefined,
+		'--sgs-wa-min-height': minHeight || undefined,
 		...( isCssGradient( backgroundColourGradient )
 			? { backgroundImage: backgroundColourGradient }
 			: {} ),

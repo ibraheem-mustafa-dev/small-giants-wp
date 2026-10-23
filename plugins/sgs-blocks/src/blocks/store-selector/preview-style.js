@@ -55,7 +55,10 @@ export function storeSelectorPreviewStyles( attributes, tier ) {
 	const gapStyle = gap ? { gap } : {};
 
 	return {
-		root: typographyPreviewStyle( attributes, '', tier ),
+		root: {
+			...typographyPreviewStyle( attributes, '', tier ),
+			...( attributes.flagSize && Object.keys( attributes.flagSize ).length ? { '--sgs-ss-tap-min': '0px' } : {} ),
+		},
 		trigger: { ...gapStyle, ...textPaintPreview( attributes.triggerColour, '' ) },
 		item: textPaintPreview( attributes.itemColour, '' ),
 		list: {

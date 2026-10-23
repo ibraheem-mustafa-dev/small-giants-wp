@@ -40,6 +40,7 @@ export function themeTogglePreview( attributes, tier, palette ) {
 	return {
 		buttonStyle: {
 			...boxPreview( attributes, tier, palette ),
+			...( iconSize ? { '--sgs-tt-tap-min': '0px' } : {} ),
 			...backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient, palette ),
 		},
 		labelStyle: {
