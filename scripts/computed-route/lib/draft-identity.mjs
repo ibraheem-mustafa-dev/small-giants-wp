@@ -48,7 +48,8 @@ export function loadDraftIdentity( { buildDir, surface, s, intake } ) {
 // The value the draft's matched rules declare for `prop` on the row's pair at the row's state and width, as the walker
 // read it: { declared, unread }. `unread` is null when the walk answers (declared is the value, or null when no rule
 // declares it), else the reason it cannot: no pair at that state and width, a used size the walk did not read (no
-// DevTools session), or a hover row's used size (the walker reads rest declarations only). A property outside the
+// DevTools session). A hover or pressed row reads the declarations the walker recorded while that state held
+// (snap.declaredIn.hover / .active), and fails as unread where the walk recorded none. A property outside the
 // walker's used sizes (DECLARED_PROPS) has no declaration read: its computed value is the declared one resolved.
 export function declaredRead( walk, row, prop ) {
 	const run = ( walk?.runs || [] ).find( ( x ) => x.state === row.state && x.width === row.width );
@@ -59,8 +60,12 @@ export function declaredRead( walk, row, prop ) {
 	if ( ! DECLARED_PROPS.includes( prop ) ) {
 		return { declared: null, unread: null };
 	}
-	if ( 'hover' === row.kind ) {
-		return { declared: null, unread: `${ prop } is a used size and the walker reads no hover declarations` };
+	if ( 'hover' === row.kind || 'active' === row.kind ) {
+		const inState = d.declaredIn?.[ row.kind ];
+		if ( ! inState || 'object' !== typeof inState ) {
+			return { declared: null, unread: `the walk read no ${ row.kind } declarations on pair ${ row.pair }` };
+		}
+		return { declared: inState[ prop ] ?? null, unread: null };
 	}
 	if ( ! d.declared || 'object' !== typeof d.declared ) {
 		return { declared: null, unread: `the walk read no declarations on pair ${ row.pair } (no DevTools session)` };

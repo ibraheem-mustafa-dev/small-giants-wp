@@ -1,7 +1,7 @@
 // Proves G2's input and gaps.json's draftId (gate-chain.mjs::buildContext, lib/draft-identity.mjs): a Solve row's draft
 // identity is joined through the surface's origin map to intake's `<component>:<n>` id, so an FR-48-34 defect on the
 // row's draft element is seen; the declared value is read at the row's own state and width; a declaration the walk
-// cannot answer (no pair, a hover row's used size, no DevTools read) and an unreadable identity fail G2, never pass.
+// cannot answer (no pair, a hover or pressed row with no declarations read in that state, no DevTools read) and an unreadable identity fail G2, never pass.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
@@ -29,7 +29,7 @@ const db = new DatabaseSync( ':memory:' );
 db.exec( 'CREATE TABLE blocks ( slug TEXT, parent_block TEXT )' );
 const surfaces = { header: { tree: 'tree.json', draftIndex: 'Draft.dc.html', states: { rest: null } } };
 const walk = { runs: [
-	{ state: 'rest', width: 1440, pairs: { head: { draft: { declared: { width: '8px' } } }, bare: { draft: { styles: {} } }, lost: { draft: { missing: true, declared: {} } } } },
+	{ state: 'rest', width: 1440, pairs: { head: { draft: { declared: { width: '8px' }, declaredIn: { hover: { width: '12px' } } } }, bare: { draft: { styles: {} } }, lost: { draft: { missing: true, declared: {} } } } },
 	{ state: 'other', width: 1440, pairs: { head: { draft: { declared: { width: '99px' } } } } },
 ] };
 const ctxOf = ( over = {} ) => buildContext( { report: {}, walk, surfaces, surface: 'header', client: 'demo', probes: null, installed: {}, db, intakeFile, ...over } );
@@ -51,12 +51,20 @@ test( 'MUST FAIL: the declared value is read at the row\'s own state and width',
 	assert.equal( declaredRead( walk, row( { state: 'other' } ), 'width' ).declared, '99px' );
 } );
 
+test( 'MUST FAIL: the used size of a hover row is read from the hover declarations of the walk, never the rest ones', async () => {
+	assert.deepEqual( declaredRead( walk, row( { kind: 'hover' } ), 'width' ), { declared: '12px', unread: null } );
+	assert.deepEqual( declaredRead( walk, row( { kind: 'hover' } ), 'height' ), { declared: null, unread: null } );
+	const g = g2Intent( await ctxOf().inputs.G2( row( { kind: 'hover', draft: '12px' } ) ) );
+	assert.equal( g.pass, true );
+} );
+
 test( 'MUST FAIL: a declaration the walk cannot answer fails G2 with its reason, never a pass with nothing declared', async () => {
 	const ctx = ctxOf();
 	const cases = [
 		[ row( { pair: 'gone' } ), /no draft side of pair gone/ ],
 		[ row( { pair: 'lost' } ), /no draft side of pair lost/ ],
-		[ row( { kind: 'hover' } ), /reads no hover declarations/ ],
+		[ row( { kind: 'active' } ), /read no active declarations on pair head/ ],
+		[ row( { kind: 'hover', pair: 'bare' } ), /read no hover declarations on pair bare/ ],
 		[ row( { pair: 'bare' } ), /read no declarations on pair bare/ ],
 		[ row( { width: 375 } ), /no draft side of pair head at 375px/ ],
 	];

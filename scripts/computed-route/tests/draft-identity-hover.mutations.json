@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/draft-identity.mjs", "find": "if ( 'hover' === row.kind || 'active' === row.kind ) {", "replace": "if ( 'hover' === row.kind ) {", "why": "a pressed row reads the rest declarations" },
+	{ "file": "lib/draft-identity.mjs", "find": "if ( 'hover' === row.kind || 'active' === row.kind ) {", "replace": "if ( false ) {", "why": "state rows read the rest declarations" },
+	{ "file": "lib/draft-identity.mjs", "find": "const inState = d.declaredIn?.[ row.kind ];", "replace": "const inState = d.declared;", "why": "a hover row reads the rest declarations" },
+	{ "file": "lib/draft-identity.mjs", "find": "if ( ! inState || 'object' !== typeof inState ) {", "replace": "if ( false ) {", "why": "a missing state read passes as declared none" },
+	{ "file": "lib/draft-identity.mjs", "find": "return { declared: inState[ prop ] ?? null, unread: null };", "replace": "return { declared: null, unread: null };", "why": "the state's declared value is dropped" }
+]
