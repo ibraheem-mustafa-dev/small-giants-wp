@@ -10,6 +10,8 @@
 // Prove it fails: SGS_TAP_BASELINE=<commit before the fix> node tests/playwright/tap-area-fits-shape.check.mjs
 //                 (loads each stylesheet as it was at that commit: every `sized` case must go red, and every
 //                 unsized case must still read 44px, so the check is neither vacuous nor over-broad).
+// Another tree:   SGS_TAP_ROOT=<worktree>/plugins/sgs-blocks reads that tree's stylesheets and cases, with Playwright
+//                 loaded from this checkout (a worktree without node_modules).
 import { createRequire } from 'module';
 import { execFileSync } from 'child_process';
 import { readFileSync, readdirSync } from 'fs';
@@ -19,6 +21,7 @@ import { fileURLToPath, pathToFileURL } from 'url';
 const here = path.dirname( fileURLToPath( import.meta.url ) );
 const pluginRoot = path.resolve( here, '..', '..' );
 const require = createRequire( path.join( pluginRoot, 'package.json' ) );
+const subjectRoot = process.env.SGS_TAP_ROOT ? path.resolve( process.env.SGS_TAP_ROOT ) : pluginRoot;
 const { chromium } = require( 'playwright' );
 const BASELINE = process.env.SGS_TAP_BASELINE || '';
 const WIDTHS = [ 375, 768, 1440 ];
@@ -27,13 +30,13 @@ const TOLERANCE = 0.5;
 function readCss( block ) {
 	const rel = `src/blocks/${ block }/style.css`;
 	if ( BASELINE ) {
-		return execFileSync( 'git', [ 'show', `${ BASELINE }:plugins/sgs-blocks/${ rel }` ], { cwd: pluginRoot, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 } );
+		return execFileSync( 'git', [ 'show', `${ BASELINE }:plugins/sgs-blocks/${ rel }` ], { cwd: subjectRoot, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 } );
 	}
-	return readFileSync( path.join( pluginRoot, rel ), 'utf8' );
+	return readFileSync( path.join( subjectRoot, rel ), 'utf8' );
 }
 
 async function loadCases() {
-	const dir = path.join( here, 'tap-area-cases' );
+	const dir = path.join( subjectRoot, 'tests', 'playwright', 'tap-area-cases' );
 	const cases = [];
 	for ( const file of readdirSync( dir ).filter( ( f ) => f.endsWith( '.mjs' ) ).sort() ) {
 		const mod = await import( pathToFileURL( path.join( dir, file ) ).href );
