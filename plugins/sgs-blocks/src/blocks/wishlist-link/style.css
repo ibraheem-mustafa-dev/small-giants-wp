@@ -1,10 +1,12 @@
+/* A glyph size set on the block prints --sgs-wishlist-tap-min as 0, so the link wraps the glyph and its padding
+   exactly; with no size set the link keeps SGS's 44px minimum. */
 .sgs-wishlist-link {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--wp--preset--spacing--10, 0.25em);
 	position: relative;
-	min-width: 44px;
-	min-height: 44px;
+	min-width: var(--sgs-wishlist-tap-min, 44px);
+	min-height: var(--sgs-wishlist-tap-min, 44px);
 	padding: 10px;
 	text-decoration: none;
 	color: currentColor;

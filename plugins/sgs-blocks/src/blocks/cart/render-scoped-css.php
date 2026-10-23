@@ -234,6 +234,24 @@ if ( $has_panel && '' !== $free_delivery_track_colour ) {
 	$scoped_css[] = '.' . $uid . '.sgs-cart__panel{--sgs-cart-free-delivery-track:' . sgs_colour_value( $free_delivery_track_colour ) . ';}';
 }
 
+// A close size set at a tier overrules the close button's 44px tap floor at that tier: the button wraps the glyph
+// panelCloseSize sizes (ruling 11). The flag prints in the same tier rule shape as the size it follows.
+if ( $has_panel ) {
+	$sgs_cart_close_tiers = sgs_responsive_normalise_object( $attributes['panelCloseSize'] ?? null, false );
+	foreach ( array(
+		'desktop' => '',
+		'tablet'  => '@media(max-width:1023px)',
+		'mobile'  => '@media(max-width:767px)',
+	) as $sgs_cart_close_tier => $sgs_cart_close_media ) {
+		$sgs_cart_close_size = $sgs_cart_close_tiers[ $sgs_cart_close_tier ] ?? null;
+		if ( null === $sgs_cart_close_size || '' === $sgs_cart_close_size || '' === sgs_css_length_value( is_numeric( $sgs_cart_close_size ) ? $sgs_cart_close_size . 'px' : (string) $sgs_cart_close_size ) ) {
+			continue;
+		}
+		$sgs_cart_close_rule = '.' . $uid . '.sgs-cart__panel{--sgs-cart-close-tap-min:0px;}';
+		$scoped_css[]        = $sgs_cart_close_media ? $sgs_cart_close_media . '{' . $sgs_cart_close_rule . '}' : $sgs_cart_close_rule;
+	}
+}
+
 // The panel's own design settings (heading, rows, footer, buttons, motion),
 // scoped to the panel element for the same reason as the colours above.
 if ( $has_panel ) {

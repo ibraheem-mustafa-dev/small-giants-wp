@@ -131,7 +131,8 @@ foreach ( array(
 	if ( '' === $size_safe ) {
 		continue;
 	}
-	$rule         = $root_sel . ' .sgs-wishlist-link__icon svg{width:' . $size_safe . ';height:' . $size_safe . ';}';
+	// A size the client set overrules the 44px tap floor: the link wraps the glyph and its padding (ruling 11).
+	$rule         = $root_sel . '{--sgs-wishlist-tap-min:0px;}' . $root_sel . ' .sgs-wishlist-link__icon svg{width:' . $size_safe . ';height:' . $size_safe . ';}';
 	$scoped_css[] = $media ? $media . '{' . $rule . '}' : $rule;
 }
 

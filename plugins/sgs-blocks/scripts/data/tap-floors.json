@@ -4,5 +4,228 @@
   "checker": "plugins/sgs-blocks/scripts/check-tap-floors.py --check",
   "key": "block + the rule's selector (whitespace collapsed) + the property"
  },
- "house": []
+ "house": [
+  {
+   "block": "account",
+   "selector": ".sgs-account form .woocommerce-form__label-for-checkbox",
+   "property": "min-height",
+   "reason": "Settings checked: navWidth (the account navigation's width) only; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "account",
+   "selector": ".sgs-account form button, .sgs-account form input[type=\"submit\"]",
+   "property": "min-height",
+   "reason": "Settings checked: navWidth (the account navigation's width) only; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "account",
+   "selector": ".sgs-account form button, .sgs-account form input[type=\"submit\"]",
+   "property": "min-width",
+   "reason": "Settings checked: navWidth (the account navigation's width) only; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "account",
+   "selector": ".sgs-account form input.input-text, .sgs-account form select, .sgs-account form textarea",
+   "property": "min-height",
+   "reason": "Settings checked: navWidth (the account navigation's width) only; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "account",
+   "selector": ".sgs-account nav.woocommerce-MyAccount-navigation a",
+   "property": "min-height",
+   "reason": "Settings checked: navWidth (the account navigation's width) only; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "account",
+   "selector": ".sgs-account__order-link",
+   "property": "min-height",
+   "reason": "Settings checked: navWidth (the account navigation's width) only; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "account",
+   "selector": "a.sgs-account__quick-card",
+   "property": "min-height",
+   "reason": "Settings checked: navWidth (the account navigation's width) only; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "buybox",
+   "selector": ".sgs-buybox-guided__meter-btn",
+   "property": "min-height",
+   "reason": "Settings checked: addToCartMinHeight, which sizes only the add-to-cart button; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "buybox",
+   "selector": ".sgs-buybox-guided__nav-btn",
+   "property": "min-height",
+   "reason": "Settings checked: addToCartMinHeight, which sizes only the add-to-cart button; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "buybox",
+   "selector": ".sgs-buybox-guided__nav-btn",
+   "property": "min-width",
+   "reason": "Settings checked: addToCartMinHeight, which sizes only the add-to-cart button; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "buybox",
+   "selector": ".sgs-buybox__bar .buybox__add-to-cart",
+   "property": "min-height",
+   "reason": "addToCartMinHeight prints a scoped min-height on this button (render.php::$sgs_bb_add_to_cart_min_height) that outranks this default, so a set height already wins; 44px is the bar's default when none is set."
+  },
+  {
+   "block": "buybox",
+   "selector": ".sgs-buybox__notify-consent-label",
+   "property": "min-height",
+   "reason": "Settings checked: addToCartMinHeight, which sizes only the add-to-cart button; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "buybox",
+   "selector": ".sgs-buybox__notify-email",
+   "property": "min-height",
+   "reason": "Settings checked: addToCartMinHeight, which sizes only the add-to-cart button; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "buybox",
+   "selector": ".sgs-buybox__notify-submit",
+   "property": "min-height",
+   "reason": "Settings checked: addToCartMinHeight, which sizes only the add-to-cart button; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "cart",
+   "selector": ":where(.sgs-cart__panel) .sgs-cart__item-add-options",
+   "property": "min-height",
+   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), pillMinHeight, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "cart",
+   "selector": ":where(.sgs-cart__panel) .sgs-cart__item-remove",
+   "property": "min-height",
+   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), pillMinHeight, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "cart",
+   "selector": ":where(.sgs-cart__panel) .sgs-cart__item-remove",
+   "property": "min-width",
+   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), pillMinHeight, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "cart",
+   "selector": ":where(.sgs-cart__panel) .sgs-cart__item-save-for-later",
+   "property": "min-height",
+   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), pillMinHeight, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "cart",
+   "selector": ":where(.sgs-cart__panel) .sgs-cart__panel-empty-cta",
+   "property": "min-height",
+   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), pillMinHeight, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "cart",
+   "selector": ":where(.sgs-cart__panel) .sgs-cart__panel-header",
+   "property": "min-height",
+   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), pillMinHeight, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "cart",
+   "selector": ":where(.sgs-cart__panel) .sgs-cart__panel-view, :where(.sgs-cart__panel) .sgs-cart__panel-checkout",
+   "property": "min-height",
+   "reason": "checkoutMinHeight prints a scoped min-height on the checkout button (helpers-cart-panel-css.php) that outranks this default, so a set height already wins there; no setting sizes the View cart link, so 44px is its own default."
+  },
+  {
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__add-to-basket, .sgs-choice-flow__buy-now",
+   "property": "min-height",
+   "reason": "Settings checked: headerLogoHeight (the header logo) and optionMediaSize (the option media); neither sizes this control, so 44px is SGS's own default."
+  },
+  {
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__chrome-close",
+   "property": "height",
+   "reason": "Settings checked: headerLogoHeight (the header logo) and optionMediaSize (the option media); neither sizes this control, so 44px is SGS's own default."
+  },
+  {
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__chrome-close",
+   "property": "width",
+   "reason": "Settings checked: headerLogoHeight (the header logo) and optionMediaSize (the option media); neither sizes this control, so 44px is SGS's own default."
+  },
+  {
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__chrome-close--text",
+   "property": "min-height",
+   "reason": "Settings checked: headerLogoHeight (the header logo) and optionMediaSize (the option media); neither sizes this control, so 44px is SGS's own default."
+  },
+  {
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__continue",
+   "property": "min-height",
+   "reason": "Settings checked: headerLogoHeight (the header logo) and optionMediaSize (the option media); neither sizes this control, so 44px is SGS's own default."
+  },
+  {
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__nav-back",
+   "property": "min-height",
+   "reason": "Settings checked: headerLogoHeight (the header logo) and optionMediaSize (the option media); neither sizes this control, so 44px is SGS's own default."
+  },
+  {
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__nav-back-preview",
+   "property": "min-height",
+   "reason": "Settings checked: headerLogoHeight (the header logo) and optionMediaSize (the option media); neither sizes this control, so 44px is SGS's own default."
+  },
+  {
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__skip-button",
+   "property": "min-height",
+   "reason": "Settings checked: headerLogoHeight (the header logo) and optionMediaSize (the option media); neither sizes this control, so 44px is SGS's own default."
+  },
+  {
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__summary-toggle > summary",
+   "property": "min-height",
+   "reason": "Settings checked: headerLogoHeight (the header logo) and optionMediaSize (the option media); neither sizes this control, so 44px is SGS's own default."
+  },
+  {
+   "block": "choice-flow-question",
+   "selector": ".sgs-choice-flow-question__option-button",
+   "property": "min-height",
+   "reason": "Settings checked: introWidth (the intro measure) only; no setting sizes this control, so 44px is SGS's own default."
+  },
+  {
+   "block": "option-picker",
+   "selector": ".sgs-option-picker--tile .sgs-option-picker__pill",
+   "property": "min-height",
+   "reason": "Settings checked: pillSize (small, medium, large: font size and padding only, no height or width setting) and width (the picker's measure); no direct size setting for this control, an F2 candidate."
+  },
+  {
+   "block": "option-picker",
+   "selector": ".sgs-option-picker__option",
+   "property": "min-height",
+   "reason": "Settings checked: pillSize (small, medium, large: font size and padding only, no height or width setting) and width (the picker's measure); no direct size setting for this control, an F2 candidate."
+  },
+  {
+   "block": "product-card",
+   "selector": ".product-card .sgs-option-picker__option",
+   "property": "min-height",
+   "reason": "Settings checked: imageHeight (the card image), tagFullWidth (the tag) and swatchSize (the colour swatch); none sizes this control, so 44px is SGS's own default."
+  },
+  {
+   "block": "product-card",
+   "selector": ".product-card .sgs-option-picker__pill",
+   "property": "min-height",
+   "reason": "Settings checked: imageHeight (the card image), tagFullWidth (the tag) and swatchSize (the colour swatch); none sizes this control, so 44px is SGS's own default."
+  },
+  {
+   "block": "product-card",
+   "selector": ".product-card--live .product-card__thumb",
+   "property": "min-height",
+   "reason": "Settings checked: imageHeight (the card image), tagFullWidth (the tag) and swatchSize (the colour swatch); none sizes this control, so 44px is SGS's own default."
+  },
+  {
+   "block": "product-card",
+   "selector": ".product-card--live .product-card__thumb",
+   "property": "min-width",
+   "reason": "Settings checked: imageHeight (the card image), tagFullWidth (the tag) and swatchSize (the colour swatch); none sizes this control, so 44px is SGS's own default."
+  }
+ ]
 }
