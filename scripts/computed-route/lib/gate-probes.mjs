@@ -110,14 +110,15 @@ export function createProbes( o ) {
 	};
 
 	// G5. { method: 'measured', emitted, reaches, evidence }: reaches when a rule that matches the element and declares one of
-	// the setting's properties names the setting's block or one of its instances.
+	// the setting's properties names the setting's block or one of its instances, from a framework stylesheet (a rule in the
+	// block's sgsCustomCss residual is the route's own write, not an emission).
 	async function measure( row, setting ) {
 		const props = settingProperties( setting );
 		const found = await onElement( row, ( page, sel ) => page.evaluate( enumerateInPage, [ sel, props ] ) );
 		if ( found.absent ) {
 			throw new Error( `${ row.ref } is not on the live page` );
 		}
-		const own = found.hits.filter( ( h ) => belongsTo( h.selector, setting.block ) );
+		const own = found.hits.filter( ( h ) => 'custom-css' !== h.origin && belongsTo( h.selector, setting.block ) );
 		const where = `${ found.hits.length } matching rule(s) declare ${ props.join( '/' ) } on ${ row.ref } across ${ found.sheets } stylesheet(s)`;
 		if ( own.length ) {
 			return { method: 'measured', emitted: `${ own[ 0 ].selector } { ${ own[ 0 ].property }: ${ own[ 0 ].value } }`, reaches: true, evidence: `${ where }; ${ setting.block }'s own rule matches` };
@@ -129,7 +130,7 @@ export function createProbes( o ) {
 	}
 
 	// G6 missing setting: candidate settings are the DB rows of the block, its ancestors and its extensions that list the
-	// property. changed is true when a rule from an SGS class already declares the property on the element, or a candidate
+	// property. changed is true when a framework rule (not the block's sgsCustomCss) from an SGS class already declares the property on the element, or a candidate
 	// setting written with a probe value renders CSS naming the property; false only when neither holds.
 	async function trialSettings( row ) {
 		const prop = cssProp( row.key );
@@ -138,7 +139,7 @@ export function createProbes( o ) {
 		if ( live.absent ) {
 			throw new Error( `${ row.ref } is not on the live page` );
 		}
-		const sgs = live.hits.filter( ( h ) => ownRule( h.selector ) );
+		const sgs = live.hits.filter( ( h ) => 'custom-css' !== h.origin && ownRule( h.selector ) );
 		if ( sgs.length ) {
 			return { changed: true, evidence: `an SGS rule declares ${ prop } on ${ row.ref }: ${ sgs[ 0 ].selector }` };
 		}
@@ -167,7 +168,8 @@ export function createProbes( o ) {
 		return { changed: false, evidence: `${ candidates.length } candidate setting(s) (${ candidates.map( ( c ) => c.attr_name ).join( ', ' ) }) written with probe values render no CSS declaring ${ prop }, and no SGS rule declares it on ${ row.ref }` };
 	}
 
-	// G6 hardcode: the rule is the SGS rule (a selector naming an sgs- class) whose removal changes the computed value. A
+	// G6 hardcode: the rule is the SGS framework rule (a selector naming an sgs- class, in a stylesheet that is not a block's
+	// sgsCustomCss residual: the rule's origin, not its text, decides) whose removal changes the computed value. A
 	// winner that is a WordPress or theme rule or the element's inline style is no SGS hardcode, and a stylesheet or rule
 	// the trial could not read leaves a winner it may not have seen.
 	async function hardcodeRule( row ) {
@@ -179,14 +181,14 @@ export function createProbes( o ) {
 		if ( ! w.restored ) {
 			throw new Error( 'the trial could not restore the page\'s own rules' );
 		}
-		const own = w.winners.find( ( n ) => 'element.style' !== n && ownRule( n ) );
+		const own = w.winners.find( ( n ) => 'stylesheet' === n.origin && ownRule( n.rule ) )?.rule;
 		if ( own ) {
 			return { rule: own, evidence: `removing ${ prop } from ${ own } changes ${ row.ref } from ${ w.before }` };
 		}
 		if ( w.unread ) {
 			throw new Error( `${ w.unread } stylesheet(s) or rule(s) could not be read, so no rule can be ruled out` );
 		}
-		return { rule: null, evidence: w.winners.length ? `the rule that wins ${ prop } on ${ row.ref } is ${ w.winners.join( ', ' ) }, not an SGS rule` : `no single rule's removal changes ${ prop } on ${ row.ref } (computed ${ w.before })` };
+		return { rule: null, evidence: w.winners.length ? `the rule that wins ${ prop } on ${ row.ref } is ${ w.winners.map( ( n ) => ( 'custom-css' === n.origin ? `${ n.rule } (the block's own sgsCustomCss)` : n.rule ) ).join( ', ' ) }, not an SGS framework rule` : `no single rule's removal changes ${ prop } on ${ row.ref } (computed ${ w.before })` };
 	}
 
 	function rosterMatches( row ) {
