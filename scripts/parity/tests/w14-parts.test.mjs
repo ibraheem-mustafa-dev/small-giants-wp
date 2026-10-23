@@ -113,3 +113,48 @@ test( 'readParts records each part\'s kind and comparable destination', async ()
 	await page.close();
 	assert.deepEqual( parts.map( ( p ) => [ p.name, p.kind, p.href ] ), [ [ 'instagram', 'link', 'instagram.com/eyecare' ], [ 'top', 'link', null ], [ 'menu', 'button', null ] ] );
 } );
+
+// A border colour paints only on an edge both sides draw (width above 0, style not none or hidden; a property not read
+// counts as drawing), and a border style only where both sides have a width (W16's rule, in parts.mjs::compareParts).
+const edge = ( w, c, st ) => ( { 'border-top-width': w, 'border-top-color': c, ...( st ? { 'border-top-style': st } : {} ) } );
+const bordered = ( name, rest, hover = rest ) => part( name, 0.5, { rest: { ...LOOK, ...rest }, hover: { ...LOOK, ...hover } } );
+const borderKeys = ( d, l ) => compareParts( [ d ], [ l ], TOL ).map( ( r ) => r.key ).filter( ( k ) => /border/.test( k ) );
+
+test( 'MUST FAIL (W16 rule): a border colour where one side draws no border is no row; the width row stays', () => {
+	assert.deepEqual( borderKeys( bordered( 'go', edge( '0px', 'rgb(20, 20, 20)' ) ), bordered( 'go', edge( '1px', 'rgb(230, 225, 218)' ) ) ), [ 'go rest:border-top-width' ] );
+} );
+
+test( 'MUST FAIL (W16 rule): a border colour where one side\'s style is none is no row', () => {
+	assert.deepEqual( borderKeys( bordered( 'go', edge( '1px', 'rgb(20, 20, 20)', 'none' ) ), bordered( 'go', edge( '1px', 'rgb(230, 225, 218)', 'solid' ) ) ), [ 'go rest:border-top-style' ] );
+	assert.deepEqual( borderKeys( bordered( 'go', edge( '1px', 'rgb(20, 20, 20)', 'solid' ) ), bordered( 'go', edge( '1px', 'rgb(230, 225, 218)', 'hidden' ) ) ), [ 'go rest:border-top-style' ] );
+} );
+
+test( 'MUST FAIL (W16 rule): a hover border colour where one side draws no border on hover is no row', () => {
+	const d = bordered( 'go', edge( '1px', 'rgb(0, 0, 0)' ), edge( '0px', 'rgb(200, 0, 0)' ) );
+	const l = bordered( 'go', edge( '1px', 'rgb(0, 0, 0)' ), edge( '1px', 'rgb(0, 0, 200)' ) );
+	assert.deepEqual( borderKeys( d, l ), [ 'go hover:border-top-width' ] );
+} );
+
+test( 'MUST FAIL (W16 rule): a border style where one side has no width is no row', () => {
+	assert.deepEqual( borderKeys( bordered( 'go', edge( '0px', 'rgb(0, 0, 0)', 'none' ) ), bordered( 'go', edge( '1px', 'rgb(0, 0, 0)', 'solid' ) ) ), [ 'go rest:border-top-width' ] );
+} );
+
+test( 'control (W16 rule): both sides drawing a border in different colours or styles are rows', () => {
+	assert.deepEqual( borderKeys( bordered( 'go', edge( '1px', 'rgb(20, 20, 20)' ) ), bordered( 'go', edge( '1px', 'rgb(230, 225, 218)' ) ) ), [ 'go rest:border-top-color' ] );
+	assert.deepEqual( borderKeys( bordered( 'go', edge( '1px', 'rgb(20, 20, 20)', 'solid' ) ), bordered( 'go', edge( '1px', 'rgb(230, 225, 218)', 'dashed' ) ) ), [ 'go rest:border-top-color', 'go rest:border-top-style' ] );
+	const d = bordered( 'go', edge( '1px', 'rgb(0, 0, 0)' ), edge( '1px', 'rgb(200, 0, 0)' ) );
+	const l = bordered( 'go', edge( '1px', 'rgb(0, 0, 0)' ), edge( '1px', 'rgb(0, 0, 200)' ) );
+	assert.deepEqual( borderKeys( d, l ), [ 'go hover:border-top-color' ] );
+} );
+
+test( 'control (W16 rule): a border width or style not read counts as drawing, so the colour is still compared', () => {
+	const d = bordered( 'go', { 'border-top-color': 'rgb(20, 20, 20)' } );
+	const l = bordered( 'go', { 'border-top-color': 'rgb(230, 225, 218)' } );
+	delete d.rest[ 'border-top-width' ];
+	delete l.rest[ 'border-top-width' ];
+	assert.deepEqual( borderKeys( d, l ), [ 'go rest:border-top-color' ] );
+} );
+
+test( 'control (W16 rule): both sides without a border in different colours are no row', () => {
+	assert.deepEqual( borderKeys( bordered( 'go', edge( '0px', 'rgb(20, 20, 20)' ) ), bordered( 'go', edge( '0px', 'rgb(230, 225, 218)' ) ) ), [] );
+} );
