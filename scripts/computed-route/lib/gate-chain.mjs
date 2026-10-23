@@ -10,6 +10,7 @@ import { compareDR } from './fill-confirm.mjs';
 import { listedProperties } from './db.mjs';
 import { settingFits } from './triage.mjs';
 import { fromCommand, fromFile } from './gate-evidence.mjs';
+import { nameState } from './name-fit.mjs';
 
 export const GATES = [ 'G0', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7' ];
 const ok = ( evidence, extra = {} ) => ( { pass: true, class: null, evidence, ...extra } );
@@ -105,68 +106,80 @@ function g2IntentRead( i ) {
 }
 
 // G3 DB query. i: { db, block, ancestors: [slug], property, state }. Reads block_attributes for the block, its ancestors
-// and its extensions (rows with source sgs-ext carry the block's slug). Fails I-unrouted when a NULL css_property row
-// fits the property (lib/triage.mjs::settingFits, the name test triage uses), I-mistag when a routed row fits but its
-// role is not classed styling-behaviour; both on the row's state only (a row's css_state is its state, none for rest). A fitting
-// row that exists only on another state fails I-unrouted: nothing routes the property on this state. Otherwise passes,
-// listing the routed settings that fit (none when nothing fits on any state): G4 and G5 decide whether one of them is the
-// route's miss.
+// and its extensions (rows with source sgs-ext carry the block's slug), on the row's state only (a routed row's
+// css_state is its state, none for rest; a NULL css_property row's state is its css_state, else the state its name
+// carries among the DB's css_state values, lib/name-fit.mjs::nameState). A routed row that fits passes, listing every
+// routed fitting setting, unless one's role is not classed styling-behaviour (I-mistag); only when no routed row fits
+// does a NULL css_property row whose name fits (lib/triage.mjs::settingFits, the name test triage uses, read against the
+// DB's routed css_property values so a name spelling box-shadow-color never fits color) fail I-unrouted. A fitting row
+// that exists only on another state fails I-unrouted: nothing routes the property on this state. Otherwise passes with
+// no settings: G4 and G5 decide whether one of them is the route's miss. A failure names the setting it judged
+// (`setting: { block, attr }`).
 function g3DbRead( i ) {
 	if ( ! i?.db || blank( i.block ) || blank( i.property ) ) {
 		return fail( 'I-stale', 'the DB, block or property is missing' );
 	}
 	let rows;
 	let roles;
+	let vocabulary;
+	let states;
 	try {
 		const slugs = [ i.block, ...( i.ancestors || [] ) ];
 		rows = i.db.prepare( `SELECT block_slug, attr_name, css_property, css_state, role, source FROM block_attributes WHERE source IN ( 'sgs', 'sgs-ext' ) AND block_slug IN ( ${ slugs.map( () => '?' ).join( ',' ) } )` ).all( ...slugs );
 		roles = new Map( i.db.prepare( 'SELECT role_name, classification FROM roles' ).all().map( ( r ) => [ r.role_name, r.classification ] ) );
+		vocabulary = [ ...new Set( i.db.prepare( 'SELECT DISTINCT css_property FROM block_attributes WHERE css_property IS NOT NULL' ).all().flatMap( ( r ) => String( r.css_property ).split( ',' ) ).map( ( p ) => p.split( ':' )[ 0 ].trim() ).filter( Boolean ) ) ];
+		states = i.db.prepare( 'SELECT DISTINCT css_state FROM block_attributes WHERE css_state IS NOT NULL' ).all().map( ( r ) => r.css_state );
 	} catch ( e ) {
 		return fail( 'I-stale', `the DB cannot be read: ${ String( e.message || e ).slice( 0, 100 ) }` );
 	}
 	const state = i.state || null;
-	const fitting = rows.filter( ( r ) => ( null !== r.css_property ? listedProperties( r.css_property ).includes( i.property ) : settingFits( r.attr_name, r, i.property ) ) );
-	const onState = ( r ) => ( r.css_state || null ) === state;
+	const fitting = rows.filter( ( r ) => ( null !== r.css_property ? listedProperties( r.css_property ).includes( i.property ) : settingFits( r.attr_name, r, i.property, [], vocabulary ) ) );
+	const named = ( r ) => ( null === r.css_property && ! r.css_state ? nameState( r.attr_name, states ) : null );
+	const stateOf = ( r ) => r.css_state || named( r ) || null;
+	const onState = ( r ) => stateOf( r ) === state;
 	const routed = fitting.filter( ( r ) => null !== r.css_property && onState( r ) );
 	const unrouted = fitting.filter( ( r ) => null === r.css_property && onState( r ) );
 	const elsewhere = fitting.filter( ( r ) => ! onState( r ) );
 	const label = ( r ) => `${ r.block_slug } ${ r.attr_name } (css_property ${ r.css_property ?? 'NULL' }, role ${ r.role })`;
-	if ( unrouted.length ) {
-		return fail( 'I-unrouted', `${ label( unrouted[ 0 ] ) } fits ${ i.property } but carries no css_property` );
-	}
+	const judged = ( r ) => ( { setting: { block: r.block_slug, attr: r.attr_name } } );
 	const mistag = routed.find( ( r ) => 'styling-behaviour' !== roles.get( r.role ) );
 	if ( mistag ) {
-		return fail( 'I-mistag', `${ label( mistag ) } paints ${ i.property } but its role is classed ${ roles.get( mistag.role ) ?? 'unknown' }` );
+		return fail( 'I-mistag', `${ label( mistag ) } paints ${ i.property } but its role is classed ${ roles.get( mistag.role ) ?? 'unknown' }`, judged( mistag ) );
 	}
 	if ( routed.length ) {
 		return ok( `${ routed.length } stored setting(s) fit ${ i.property }: ${ routed.map( label ).join( '; ' ) }`, { settings: routed.map( ( r ) => ( { block: r.block_slug, attr: r.attr_name } ) ) } );
 	}
+	if ( unrouted.length ) {
+		return fail( 'I-unrouted', `${ label( unrouted[ 0 ] ) } fits ${ i.property } but carries no css_property`, judged( unrouted[ 0 ] ) );
+	}
 	if ( elsewhere.length ) {
-		return fail( 'I-unrouted', `${ label( elsewhere[ 0 ] ) } fits ${ i.property } but on state ${ elsewhere[ 0 ].css_state ?? 'none' }, not on ${ state ?? 'the resting state' }; no row routes it there` );
+		const e = elsewhere[ 0 ];
+		return fail( 'I-unrouted', `${ label( e ) } fits ${ i.property } but on state ${ stateOf( e ) ?? 'none' }${ named( e ) ? ' (read from its name)' : '' }, not on ${ state ?? 'the resting state' }; no row routes it there`, judged( e ) );
 	}
 	return ok( `no stored row on ${ [ i.block, ...( i.ancestors || [] ) ].join( ', ' ) } fits ${ i.property }`, { settings: [] } );
 }
 
 // G4 Calibration. i: { cache, settings: [{ block, attr }] (G3's), state, boxAgrees }. A candidate setting listed as dead,
 // without a marker, with the row's state untested or rejected is instrument debt (I-calibration); an `overriddenBy`
-// verdict stands only while the rendered box agrees.
+// verdict stands only while the rendered box agrees. A failure names the setting it judged (`setting: { block, attr }`).
 function g4CalibrationRead( i ) {
 	if ( ! i || ! Array.isArray( i.settings ) || ( i.settings.length && ! i.cache ) ) {
 		return fail( 'I-calibration', 'the calibration cache or the candidate settings are unreadable' );
 	}
 	const c = i.cache || {};
 	const key = ( r ) => ( 'string' === typeof r ? r : r?.key ?? '' );
-	for ( const { attr } of i.settings ) {
+	for ( const s of i.settings ) {
+		const { attr } = s;
 		const hit = ( c.dead || [] ).includes( attr ) ? 'dead'
 			: ( c.noMarker || [] ).includes( attr ) ? 'noMarker'
 				: ( c.untestedStates || [] ).some( ( u ) => u === `${ attr }:${ i.state }` || ( ! i.state && u === attr ) ) ? 'untestedStates'
 					: ( c.rejected || [] ).some( ( r ) => key( r ).startsWith( `${ attr }-` ) || key( r ) === attr ) ? 'rejected' : null;
 		if ( hit ) {
-			return fail( 'I-calibration', `${ attr } is listed ${ hit } in the cache` );
+			return fail( 'I-calibration', `${ attr } is listed ${ hit } in the cache`, { setting: s } );
 		}
 		const over = c.settings?.[ attr ]?.overriddenBy;
 		if ( over && true !== i.boxAgrees ) {
-			return fail( 'I-calibration', `${ attr } is overridden by ${ JSON.stringify( over ) } and the rendered box ${ false === i.boxAgrees ? 'does not agree' : 'was not measured' }` );
+			return fail( 'I-calibration', `${ attr } is overridden by ${ JSON.stringify( over ) } and the rendered box ${ false === i.boxAgrees ? 'does not agree' : 'was not measured' }`, { setting: s } );
 		}
 	}
 	return ok( i.settings.length ? `${ i.settings.map( ( s ) => s.attr ).join( ', ' ) } calibrated live` : 'no candidate setting to calibrate' );
@@ -255,7 +268,8 @@ export const g7Recheck = async ( i ) => withSource( await g7RecheckRead( i ), { 
 // of it); a missing builder, a thrown error or an undefined input fails that gate closed. Returns { gate, class,
 // evidence, gates: [{ gate, status: 'pass' | 'fail' | 'not-reached', evidence }], candidate, settings }: gate and class
 // are those of the first failing gate, or null and the F-class G6 proved when every gate passed (candidate: true);
-// settings are the candidate settings G3 listed ([{ block, attr }], or null when G3 was not reached).
+// settings are the candidate settings G3 listed ([{ block, attr }], or null when G3 was not reached); setting is the one
+// the failing gate judged (G3, G4), else null.
 export async function runChain( row, ctx ) {
 	const fns = { G0: g0Freshness, G1: g1PairAndPaint, G2: g2Intent, G3: g3Db, G4: g4Calibration, G5: g5Emission, G6: g6Probe, G7: g7Recheck };
 	const unreadable = { G0: 'I-stale', G1: 'W-walker', G2: 'W-walker', G3: 'I-stale', G4: 'I-calibration', G5: 'W-route', G6: 'W-route', G7: 'I-stale' };
@@ -273,8 +287,8 @@ export async function runChain( row, ctx ) {
 		soFar[ gate ] = result;
 		gates[ n ] = { gate, status: result.pass ? 'pass' : 'fail', evidence: result.evidence };
 		if ( ! result.pass ) {
-			return { gate, class: result.class, evidence: result.evidence, gates, candidate: false, settings: soFar.G3?.settings ?? null };
+			return { gate, class: result.class, evidence: result.evidence, gates, candidate: false, settings: soFar.G3?.settings ?? null, setting: result.setting ?? null };
 		}
 	}
-	return { gate: null, class: soFar.G6.framework, evidence: soFar.G6.evidence, gates, candidate: true, settings: soFar.G3?.settings ?? null };
+	return { gate: null, class: soFar.G6.framework, evidence: soFar.G6.evidence, gates, candidate: true, settings: soFar.G3?.settings ?? null, setting: null };
 }

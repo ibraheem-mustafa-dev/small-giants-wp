@@ -15,6 +15,7 @@ import { USED_VALUES } from '../solve.mjs';
 // The kinds, classes, order and issue key are shared with lib/sweep.mjs so the two counts agree by construction.
 import { citedElementPath, emissionProof, hopCanvasSettable } from './cite-emission.mjs';
 import { classifyBlankDraft, walkedStates } from './draft-branches.mjs';
+import { compoundSpelled } from './name-fit.mjs';
 import { SOLVE_CLASSES, UNMAPPED, CONTENT, isContentRow, isIssue, issueKey as keyOf } from './issue-classes.mjs';
 
 export const TRIAGE_CLASSES = [ 'W', 'F', 'T', 'U', 'L' ];
@@ -47,16 +48,16 @@ export function issuesOf( report, surface ) {
 // A name as lower-case words, sgs prefix dropped and colour spelt as the CSS property spells it.
 const words = ( s ) => String( s ).replace( /([a-z0-9])([A-Z])/g, '$1 $2' ).toLowerCase().split( /[\s_-]+/ ).map( ( t ) => ( 'colour' === t ? 'color' : t ) ).filter( ( t ) => t && 'sgs' !== t );
 const NOT_A_SIZE = [ 'border', 'stroke', 'outline', 'focus', 'ring', 'line' ];
-// Longer CSS properties that end in a shorter one's words: textTransform names text-transform, never transform.
-const COMPOUND = [ 'text-transform', 'text-decoration', 'text-align', 'text-shadow', 'border-color', 'border-style', 'outline-color', 'box-shadow', 'line-height', 'letter-spacing', 'word-spacing' ];
 // The walker's hover-effects row (lifts, grows, fades: chrome-compare.mjs::compareHover) fits a hover setting naming one.
 const HOVER_EFFECTS = [ 'lift', 'scale', 'zoom', 'shadow', 'tilt', 'opacity', 'grayscale', 'transform' ];
 
 // Whether a setting's name fits a CSS property: a box size (width, min-, max-) fits any setting naming that size
 // (maxWidth, contentWidth, width) that is not a border, outline or line size; a hover-effects row fits a hover effect
 // setting; a background colour fits a setting naming the background; otherwise every word of the property's shorthand
-// is in the name (padding-top → fieldPadding) and the name does not spell a longer property ending in it.
-export function nameFits( prop, attr ) {
+// is in the name (padding-top → fieldPadding). A size or a shorthand never fits a name spelling a longer property ending
+// in it (lib/name-fit.mjs::compoundSpelled: minColumnWidth spells column-width, textTransform text-transform), the longer
+// properties read from the CSS property list and `vocabulary` (G3 gives the DB's routed css_property values).
+export function nameFits( prop, attr, vocabulary = [] ) {
 	const { short } = splitProperty( prop );
 	const p = words( short );
 	const a = words( attr );
@@ -65,12 +66,12 @@ export function nameFits( prop, attr ) {
 	}
 	const size = /^(?:(?:min|max)-)?(width|height)$/.exec( short );
 	if ( size ) {
-		return a.includes( size[ 1 ] ) && ! a.some( ( t ) => NOT_A_SIZE.includes( t ) );
+		return a.includes( size[ 1 ] ) && ! a.some( ( t ) => NOT_A_SIZE.includes( t ) ) && ! compoundSpelled( [ size[ 1 ] ], a, { vocabulary, same: ( c ) => new RegExp( `^(?:(?:min|max)-)?${ size[ 1 ] }$` ).test( c ) } );
 	}
 	if ( 'background-color' === short ) {
 		return a.includes( 'background' ) || a.includes( 'bg' );
 	}
-	return p.every( ( t ) => a.includes( t ) ) && ! COMPOUND.some( ( c ) => c !== short && c.endsWith( `-${ short }` ) && a.join( '-' ).includes( c ) );
+	return p.every( ( t ) => a.includes( t ) ) && ! compoundSpelled( p, a, { vocabulary, same: ( c ) => c === short } );
 }
 
 // Whether a setting (a database row or a roster attribute: { css_property, role }) fits a row: its css_property lists
@@ -79,15 +80,15 @@ export function nameFits( prop, attr ) {
 // or its name fits. A visibility toggle only fits a row whose draft or live hides; a unit companion (lineHeightUnit)
 // never fits on its own. The namespace reading is `lib/db.mjs::listedProperties`, the same helper `candidates` uses, so
 // `anim:duration` fits an animation-duration row here exactly where the resolver finds it, and neither side strips a
-// colon blindly: a blanket strip turned `anim:duration` into an unmatchable `anim`.
-export function settingFits( name, s, prop, values = [] ) {
+// colon blindly: a blanket strip turned `anim:duration` into an unmatchable `anim`. `vocabulary` is passed to nameFits.
+export function settingFits( name, s, prop, values = [], vocabulary = [] ) {
 	if ( ( 'boolean-visibility' === s.role && ! values.includes( 'none' ) ) || /Unit$/.test( name ) ) {
 		return false;
 	}
 	const { short } = splitProperty( prop );
 	const listed = listedProperties( s.css_property );
 	const modifies = String( s.css_property || '' ).split( ',' ).map( ( x ) => modifierOf( x ) ).filter( Boolean );
-	return listed.includes( prop ) || listed.includes( short ) || modifies.includes( prop ) || modifies.includes( short ) || nameFits( prop, name );
+	return listed.includes( prop ) || listed.includes( short ) || modifies.includes( prop ) || modifies.includes( short ) || nameFits( prop, name, vocabulary );
 }
 
 // Whether an extension of the roster (extension-roster.json) reaches a block, by its rule mode and block.json supports.
