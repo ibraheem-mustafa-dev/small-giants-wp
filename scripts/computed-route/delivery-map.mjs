@@ -12,6 +12,7 @@ import fs from 'fs';
 import path from 'path';
 import { REPO } from './lib/capabilities.mjs';
 import { loadCoverage } from './lib/clone-coverage.mjs';
+import { commitFiles, stateCommitEvidence, surfaceFiles } from './lib/delivery-state-files.mjs';
 import { animationEvidence, clientTrees, commitExists, expectedKeys, mapPath, mapProblems, planUnits, stateEvidence, treeFacts, walkerEffectRows } from './lib/delivery-map.mjs';
 
 const [ client, mode, ...rest ] = process.argv.slice( 2 );
@@ -48,7 +49,7 @@ const walkRows = reports.flatMap( walkerEffectRows );
 const facts = treeFacts( clientTrees( client ) );
 const records = new Map( ( fs.existsSync( path.join( REPO, 'sites', client, 'handoff', 'animations.json' ) ) ? JSON.parse( fs.readFileSync( path.join( REPO, 'sites', client, 'handoff', 'animations.json' ), 'utf8' ) ).records || [] : [] ).map( ( r ) => [ `animation:${ r.id }`, r ] ) );
 const evidenceFor = ( k ) => ( k.startsWith( 'state:' ) ? stateEvidence( k )( reports ) : records.has( k ) ? animationEvidence( records.get( k ), facts, walkRows ) : { ok: false, why: 'the handoff animations.json has no record of it' } );
-const problems = mapProblems( { raw, expected: expectedKeys( client ), units, coverage: loadCoverage(), hasCommit: ( h ) => commitExists( h ), evidenceFor } );
+const problems = mapProblems( { raw, expected: expectedKeys( client ), units, coverage: loadCoverage(), hasCommit: ( h ) => commitExists( h ), evidenceFor, touches: ( k, c ) => stateCommitEvidence( k, c, { filesOf: ( id ) => surfaceFiles( client, id ), changedIn: commitFiles } ) } );
 for ( const p of problems ) {
 	console.log( p );
 }

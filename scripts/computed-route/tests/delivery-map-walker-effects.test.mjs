@@ -6,7 +6,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { animationEvidence, walkerEffectRows } from '../lib/delivery-map.mjs';
 
-const SHEEN = { id: 'A-90', mechanism: 'waapi' };
+const SHEEN = { id: 'A-90', mechanism: 'waapi', element: { dc: 'Hdr', template_tpl_id: '6' } };
 const needs = () => ( { effects: [ 'sheen' ], flags: [], blocks: [] } );
 const noFacts = { nodes: [], effects: new Set(), flags: new Set() };
 const report = ( live ) => ( { runs: [ { pairs: { cta: {
@@ -34,7 +34,7 @@ test( 'a live part showing only a ripple\'s circle does not prove a sheen', () =
 } );
 
 test( 'MUST FAIL: a built tree holding the sheen layer does not pass when the walker shows the live page lacks it', () => {
-	const holding = { nodes: [ { name: 'sgs/button', effects: new Set( [ 'sheen' ] ), flags: new Set(), attributes: {} } ], effects: new Set( [ 'sheen' ] ), flags: new Set() };
+	const holding = { nodes: [ { name: 'sgs/button', keys: [ 'Hdr/6' ], effects: new Set( [ 'sheen' ] ), flags: new Set(), attributes: {} } ], effects: new Set( [ 'sheen' ] ), flags: new Set() };
 	assert.equal( animationEvidence( SHEEN, holding, [], needs ).ok, true, 'the tree alone is evidence' );
 	assert.equal( animationEvidence( SHEEN, holding, walkerEffectRows( report( false ) ), needs ).ok, false );
 } );

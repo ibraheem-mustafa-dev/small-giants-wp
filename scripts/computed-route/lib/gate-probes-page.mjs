@@ -6,7 +6,7 @@
 // caller put the page in (a hover) is the state `matches` sees. Link, document and adopted stylesheets are read, an
 // @import is followed, and rules that cannot match an element (@keyframes, @font-face, @property, @page, @counter-style,
 // @namespace) are skipped. Returns { absent: true } when the element is not in the page, else { hits: [{ selector, sheet,
-// property, value }], inline: [property], unread: how many stylesheets or rules could not be read or evaluated (a
+// property, value, owner: the id of the stylesheet's owner element, for lib/rule-origin.mjs }], inline: [property], unread: how many stylesheets or rules could not be read or evaluated (a
 // cross-origin sheet, a container query, a nested rule), sheets }.
 export function enumerateInPage( [ selector, props ] ) {
 	const el = document.querySelector( selector );
@@ -26,7 +26,7 @@ export function enumerateInPage( [ selector, props ] ) {
 		}
 	};
 	const declared = ( style ) => props.find( ( p ) => '' !== style.getPropertyValue( p ) );
-	const visit = ( rules, sheet ) => {
+	const visit = ( rules, sheet, owner ) => {
 		for ( const r of rules ) {
 			if ( r.selectorText ) {
 				const p = r.style ? declared( r.style ) : undefined;
@@ -37,7 +37,7 @@ export function enumerateInPage( [ selector, props ] ) {
 					} catch ( e ) {
 						unread++;
 					}
-					matched && hits.push( { selector: r.selectorText, sheet, property: p, value: r.style.getPropertyValue( p ) } );
+					matched && hits.push( { selector: r.selectorText, sheet, property: p, value: r.style.getPropertyValue( p ), owner } );
 				}
 				r.cssRules && r.cssRules.length && nestedMayMatch( r.selectorText ) && ( unread += r.cssRules.length );
 			} else if ( r.styleSheet ) {
@@ -47,16 +47,16 @@ export function enumerateInPage( [ selector, props ] ) {
 				} catch ( e ) {
 					unread++;
 				}
-				inner ? visit( inner, r.styleSheet.href || sheet ) : r.styleSheet || unread++;
+				inner ? visit( inner, r.styleSheet.href || sheet, owner ) : r.styleSheet || unread++;
 			} else if ( SKIPPED.some( ( n ) => window[ n ] && r instanceof window[ n ] ) ) {
 				continue;
 			} else if ( r.cssRules ) {
 				if ( r.media ) {
-					r.media.mediaText && window.matchMedia( r.media.mediaText ).matches && visit( r.cssRules, sheet );
+					r.media.mediaText && window.matchMedia( r.media.mediaText ).matches && visit( r.cssRules, sheet, owner );
 				} else if ( window.CSSSupportsRule && r instanceof window.CSSSupportsRule ) {
-					CSS.supports( r.conditionText ) && visit( r.cssRules, sheet );
+					CSS.supports( r.conditionText ) && visit( r.cssRules, sheet, owner );
 				} else if ( window.CSSLayerBlockRule && r instanceof window.CSSLayerBlockRule ) {
-					visit( r.cssRules, sheet );
+					visit( r.cssRules, sheet, owner );
 				} else {
 					unread += r.cssRules.length;
 				}
@@ -72,14 +72,15 @@ export function enumerateInPage( [ selector, props ] ) {
 		} catch ( e ) {
 			unread++;
 		}
-		rules && visit( rules, s.href || 'inline <style>' );
+		rules && visit( rules, s.href || 'inline <style>', s.ownerNode?.id || '' );
 	}
 	return { hits, inline: props.filter( ( p ) => '' !== el.style.getPropertyValue( p ) ), unread, sheets };
 }
 
 // The rule that wins `prop` on the element, found by trial: with transitions off, each matching declaring rule (and the
 // element's inline style) has the property removed in turn; the one whose removal changes the computed value is the
-// winner. Everything removed is put back. Returns { absent: true } or { before, winners: [selector or 'element.style'],
+// winner. Everything removed is put back. Returns { absent: true } or { before, winners: [{ rule: selector or
+// 'element.style', owner: the id of the stylesheet's owner element (null for the inline style), for lib/rule-origin.mjs }],
 // restored, unread: how many sheets or nested rules could not be read, so a winner may be unseen }.
 export function winnerInPage( [ selector, prop ] ) {
 	const el = document.querySelector( selector );
@@ -103,16 +104,16 @@ export function winnerInPage( [ selector, prop ] ) {
 	const winners = [];
 	let restored = true;
 	let unread = 0;
-	const trial = ( style, name ) => {
+	const trial = ( style, name, owner ) => {
 		const value = style.getPropertyValue( prop );
 		const priority = style.getPropertyPriority( prop );
 		style.removeProperty( prop );
 		const after = read();
 		style.setProperty( prop, value, priority );
 		restored = restored && style.getPropertyValue( prop ) === value && read() === before;
-		after !== before && winners.push( name );
+		after !== before && winners.push( { rule: name, owner } );
 	};
-	const visit = ( rules ) => {
+	const visit = ( rules, owner ) => {
 		for ( const r of rules ) {
 			if ( r.selectorText && r.style && '' !== r.style.getPropertyValue( prop ) ) {
 				let matched = false;
@@ -121,29 +122,29 @@ export function winnerInPage( [ selector, prop ] ) {
 				} catch ( e ) {
 					unread++;
 				}
-				matched && trial( r.style, r.selectorText );
+				matched && trial( r.style, r.selectorText, owner );
 			}
 			if ( r.selectorText ) {
 				r.cssRules && r.cssRules.length && nestedMayMatch( r.selectorText ) && ( unread += r.cssRules.length );
 			} else if ( r.styleSheet ) {
 				try {
-					visit( r.styleSheet.cssRules );
+					visit( r.styleSheet.cssRules, owner );
 				} catch ( e ) {
 					unread++;
 				}
 			} else if ( r.cssRules && ( ! r.media || window.matchMedia( r.media.mediaText ).matches ) && ! ( window.CSSKeyframesRule && r instanceof window.CSSKeyframesRule ) ) {
-				visit( r.cssRules );
+				visit( r.cssRules, owner );
 			}
 		}
 	};
 	for ( const s of [ ...document.styleSheets, ...( document.adoptedStyleSheets || [] ) ] ) {
 		try {
-			visit( s.cssRules );
+			visit( s.cssRules, s.ownerNode?.id || '' );
 		} catch ( e ) {
 			unread++;
 		}
 	}
-	'' !== el.style.getPropertyValue( prop ) && trial( el.style, 'element.style' );
+	'' !== el.style.getPropertyValue( prop ) && trial( el.style, 'element.style', null );
 	tame.remove();
 	return { before, winners, restored, unread };
 }
