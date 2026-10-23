@@ -1,0 +1,7 @@
+[
+	{"file": "lib/fill-timing.mjs", "find": "out.unmapped.push( ...facts.skipped.map(", "replace": "out.unmapped.push( ...facts.skipped.filter( ( s ) => candidates( db, rec.name, s.prop ).length ).map(", "why": "the old behaviour: a computed timing on a block with no setting leaves no row"},
+	{"file": "lib/fill-timing.mjs", "find": "} else if ( res && ! facts.split.some( ( s ) => s.prop === prop && null === s.state ) && ! inertTiming( prop, rest, facts.rest[ 'transition-duration' ] ) ) {", "replace": "} else if ( false ) {", "why": "the old behaviour: a resting timing with no setting leaves no row"},
+	{"file": "lib/fill-timing.mjs", "find": "&& ! inertTiming( prop, rest, facts.rest[ 'transition-duration' ] ) ) {", "replace": ") {", "why": "a 0s timing that times nothing would be listed as a gap"},
+	{"file": "lib/fill-timing.mjs", "find": "return Object.entries( rest ).every( ( [ w, v ] ) => ( 'transition-timing-function' === prop ? undefined !== duration?.[ w ] && zero( duration[ w ] ) : zero( v ) ) );", "replace": "return Object.entries( rest ).every( ( [ , v ] ) => zero( v ) );", "why": "an easing over a 0s duration would be listed"},
+	{"file": "lib/fill-timing.mjs", "find": "has no setting that holds the resting ${ prop } of ${ part } (${ res.gap })", "replace": "has no setting that holds the resting ${ prop }", "why": "the row would not name the element and the gap"}
+]

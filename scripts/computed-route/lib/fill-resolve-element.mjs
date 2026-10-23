@@ -117,14 +117,14 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 	// A block's layout setting describes the element laying out its children: a draft wrapper around a grid reads as the grid.
 	const valueAt = ( s, p ) => ( layer ? s.pseudo?.[ layer ]?.[ p ] : ( 'display' === p && '' === target.slot && /(flex|grid)$/.test( s.layoutDisplay || '' ) ? s.layoutDisplay : s.styles?.[ p ] ) );
 	const fontPx = Object.fromEntries( Object.entries( snaps ).map( ( [ w, s ] ) => [ w, parseFloat( s.styles?.[ 'font-size' ] ) ] ).filter( ( [ , v ] ) => v ) );
-	// A value that paints nothing at a width (a gap on a box laying out no flex or grid items) is left out there; a gap left
-	// out is recorded as a settled row with its reason, never dropped silently.
+	// A value that paints nothing at a width (lib/fill-prop.mjs::notPainted: a gap on a box laying out no flex or grid items,
+	// an outline or border side with no width, a decoration with no line, a 0s transition) is left out there and recorded
+	// as a settled row with its reason (notPaintedWhy), never dropped silently.
 	const allDrafts = Object.fromEntries( ids.map( ( p ) => [ p, Object.fromEntries( Object.entries( draftOf( snaps, ( s ) => valueAt( s, p ) ) ).filter( ( [ w ] ) => {
 		if ( layer || ! notPainted( p, snaps[ w ].styles || {}, snaps[ w ] ) ) {
 			return true;
 		}
-		const why = /gap$/.test( p ) ? gapPaintsNothing( p, snaps[ w ].styles || {}, snaps[ w ] ) : null;
-		why && settled( st, rec, ref, { slot, property: p, value: String( valueAt( snaps[ w ], p ) ), reason: 'not-painted', detail: `at ${ w }: ${ why }` } );
+		settled( st, rec, ref, { slot, property: p, value: String( valueAt( snaps[ w ], p ) ), reason: 'not-painted', detail: `at ${ w }: ${ notPaintedWhy( p, snaps[ w ].styles || {}, snaps[ w ] ) }` } );
 		return false;
 	} ) ) ] ) );
 	const gapProp = {};
@@ -239,6 +239,25 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			st.shown.set( `${ rec.index }|${ prop }`, Object.fromEntries( Object.keys( draft ).map( ( w ) => [ Number( w ), 'gap' === res.status ? base( '', Number( w ) ) : draft[ w ] ] ) ) );
 		}
 	}
+}
+
+// Why a property lib/fill-prop.mjs::notPainted judges inert paints nothing on this element at this width: the zero width,
+// the missing line or the instant transition that leaves it unseen (a gap's reason is gapPaintsNothing's).
+export function notPaintedWhy( prop, styles, snap = null ) {
+	if ( /gap$/.test( prop ) ) {
+		return gapPaintsNothing( prop, styles, snap );
+	}
+	if ( /^outline-/.test( prop ) ) {
+		return `${ prop } with outline-style ${ styles[ 'outline-style' ] ?? 'unread' } and outline-width ${ styles[ 'outline-width' ] ?? 'unread' }: no outline is drawn`;
+	}
+	const side = /^border-(top|right|bottom|left)-/.exec( prop );
+	if ( side ) {
+		return `${ prop } on a ${ side[ 1 ] } border of width ${ styles[ `border-${ side[ 1 ] }-width` ] }: no border is drawn on that side`;
+	}
+	if ( /^transition-/.test( prop ) ) {
+		return `${ prop } with transition-duration ${ styles[ 'transition-duration' ] }: the change is instant, so nothing is timed`;
+	}
+	return `${ prop } with text-decoration-line ${ styles[ 'text-decoration-line' ] ?? 'none' }: no line is drawn`;
 }
 
 // The code's value at each width where it agrees with the value being written (FR-48-36 D–R `agree`): a confirmed row
