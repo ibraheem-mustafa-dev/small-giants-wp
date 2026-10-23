@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/resolve.mjs",
+		"find": "if ( ! fam || 'mixed' === fam.kind || exact || owned || ( isBox && 'corner' !== fam.kind ) ) {",
+		"replace": "if ( true ) {",
+		"why": "a corner would write a whole radius from its own value and a single-value setting would take unequal parts"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "out[ tier ] = fold.css;",
+		"replace": "out[ tier ] = tiers[ tier ];",
+		"why": "a pill's corners would be written from one corner's value"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "} else if ( ! fold.equal ) {",
+		"replace": "} else if ( false ) {",
+		"why": "a setting that holds one value would be written from unequal parts"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "const owned = 'axis' === fam?.kind && /^(row|column)$/.test( fam.part );",
+		"replace": "const owned = false;",
+		"why": "the row and column gap pair would be folded from raw reads, overriding spacing ownership"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "if ( fold.missing.length || Object.values( parts ).some(",
+		"replace": "if ( Object.values( parts ).some(",
+		"why": "a radius with an unstated corner would be written from a partial shape"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "siblings[ m ]?.[ w ] ?? whole?.[ m ]",
+		"replace": "siblings[ m ]?.[ w ]",
+		"why": "a corner the draft did not state would not come from the shorthand's reading"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "reachedBy( prop ).includes( c.property ) ) && canGive( r, c )",
+		"replace": "false ) && canGive( r, c )",
+		"why": "overflow-x would not find the calibrated overflow setting"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "const own = physicalOf( prop );",
+		"replace": "const own = prop;",
+		"why": "a logical corner would not be the physical part it stands for"
+	}
+]
