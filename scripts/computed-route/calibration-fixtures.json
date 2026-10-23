@@ -2477,6 +2477,14 @@
       {
         "shape": "circle",
         "showBackground": true
+      },
+      {
+        "linkUrl": "/"
+      },
+      {
+        "shape": "circle",
+        "showBackground": true,
+        "linkUrl": "/"
       }
     ]
   },
