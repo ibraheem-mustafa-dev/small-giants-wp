@@ -149,7 +149,6 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		let made = null;
 		if ( textAttr && node.attributes?.[ textAttr ] ) {
 			made = base( k, top.block, { ...node.attributes, [ textAttr ]: m.words( k ) } );
-			made.draftSlots = node.draftSlots;
 			record( k, { rule: 'widthVariant', source: 'rule widthVariant', reason: `${ k.key } renders only at ${ m.shownAt( k ).join( ' and ' ) }px: its words are one more ${ top.block } beside ${ top.key }, each hidden on the other's widths`, confidence: 1, candidates: [ { block: top.block, score: 1, share: 1, evidence: [] } ] }, { attributes: made.attributes } );
 		} else if ( node && parentBlock ) {
 			made = buildNode( k, parentBlock );
