@@ -17,6 +17,10 @@
 // A state may name `region: { draft: '<selector>', live: '<selector>' }` (a drawer or panel its action opens): its entrance is
 // sampled as the action fires and compared as the pair "(region)" (GAP-CHECKLIST.md section 26). A pair may set `lines: true`
 // (line counts during the action, section 25) and `active: true` (the pressed state, section 23).
+// Every state starts from the page's rest (lib/state-rest.mjs, GAP-CHECKLIST.md section 30): before each state after the first
+// the page is loaded afresh (and the config's `open` run again) when the previous state left it off rest, and the state is
+// refused when it still is not at rest; a state may set `from: 'previous'` (run on the previous state's page) or `from: 'rest'`
+// (always load afresh). A state that finds nothing to trigger on either side is one report line, not one row per property.
 // --draft-cache keeps the draft side's reads per width, state list and mode in a file and reuses them: the draft does not
 // change between the walks of one run.
 // Runs headed unless --headless is passed. Needs NODE_EXTRA_CA_CERTS set to certifi's bundle for the Hostinger sites.
@@ -45,6 +49,7 @@ import closeOnExit from '../lib/close-browser-on-exit.js';
 import { REF_PROPS, elementPath, traceRef, loadUnmatched, loadMispaired, appendUnmatchedReport } from './lib/ref-trace.mjs';
 import { loadDivergences } from './lib/divergences.mjs';
 import { openDevtools, settleAnimations, triggerArmed, declaredValues, DECLARED_PROPS } from './lib/devtools.mjs';
+import { readRest, toRest, untriggered, unmeasuredRun, appendStateLines } from './lib/state-rest.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const { chromium, devices } = await import( pathToFileURL( path.join( HERE, '../../plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
@@ -170,7 +175,26 @@ async function walkSide( browser, side, width, draftStates = null ) {
 		await cfg[ side ].open( h );
 	}
 	const states = {};
-	for ( const state of cfg.states ) {
+	// Every state starts from the page's rest (lib/state-rest.mjs): the rest signature is read before the first state's
+	// action; before each later one the page is loaded afresh when it is not at rest, and refused when it still is not.
+	let rest = null;
+	for ( const [ index, state ] of cfg.states.entries() ) {
+		h.log = [];
+		const start = 0 === index ? { how: 'first' } : await toRest( page, state, rest, async () => {
+			await h.goto( cfg[ side ].url );
+			if ( cfg[ side ].open ) {
+				await cfg[ side ].open( h );
+			}
+		} );
+		if ( 0 === index ) {
+			rest = await readRest( page, 0 );
+		}
+		if ( start.refused ) {
+			if ( ! onlyStates || onlyStates.includes( state.name ) ) {
+				states[ state.name ] = { snap: {}, shot: null, log: [], refused: start.refused, start: start.how };
+			}
+			continue;
+		}
 		h.log = [];
 		h.timeline = null;
 		h.lines = null;
@@ -182,6 +206,14 @@ async function walkSide( browser, side, width, draftStates = null ) {
 		}
 		const log = h.log;
 		const pairs = pairsFor( state );
+		// A state whose action found nothing to trigger; the live side skips its reads when the draft found nothing either.
+		const missed = untriggered( log );
+		if ( missed && draftStates?.[ state.name ]?.untriggered ) {
+			if ( ! onlyStates || onlyStates.includes( state.name ) ) {
+				states[ state.name ] = { snap: {}, shot: null, log, untriggered: missed, unread: true, start: start.how };
+			}
+			continue;
+		}
 		await page.waitForTimeout( 60 );
 		const running = {};
 		for ( const p of pairs ) {
@@ -270,7 +302,7 @@ async function walkSide( browser, side, width, draftStates = null ) {
 			await focusPasses( page, pairs, side, snap, RESOLVE, !! phone.isMobile );
 			await activePass( page, pairs, side, snap, RESOLVE, pressCdp, { all: !! cdp, propsFor } );
 		}
-		states[ state.name ] = { snap, shot, log, structure, auto, links, mainY, region: h.region, entrances: state.name === firstState ? entrances : null, ...( settled.settled ? {} : { unsettled: settled } ), ...( findings.length ? { findings } : {} ), ...( inert ? { inert } : {} ) };
+		states[ state.name ] = { start: start.how, ...( missed ? { untriggered: missed } : {} ), snap, shot, log, structure, auto, links, mainY, region: h.region, entrances: state.name === firstState ? entrances : null, ...( settled.settled ? {} : { unsettled: settled } ), ...( findings.length ? { findings } : {} ), ...( inert ? { inert } : {} ) };
 		if ( state.autoScrolled ) {
 			await page.evaluate( ( attr ) => {
 				document.querySelectorAll( `[${ attr }]` ).forEach( ( el ) => el.remove() );
@@ -312,11 +344,16 @@ for ( const width of widths ) {
 	for ( const state of cfg.states.filter( ( s ) => draft.states[ s.name ] ) ) {
 		const d = draft.states[ state.name ];
 		const l = live.states[ state.name ];
+		const bare = { state: state.name, width, shot: null, pairs: {} };
+		if ( unmeasuredRun( bare, d, l ) ) {
+			results.runs.push( bare );
+			continue;
+		}
 		const shot = d.shot && l.shot ? path.join( outDir, `pair-${ width }-${ state.name }.png` ) : null;
 		if ( shot ) {
 			await sideBySide( browser, d.shot, l.shot, shot, width );
 		}
-		const run = { state: state.name, width, shot: shot ? path.basename( shot ) : null, pairs: {} };
+		const run = { ...bare, shot: shot ? path.basename( shot ) : null };
 		compareState( run, d, l, { state, width, cfg, accept, divergences, tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks, unmatched, mispaired } );
 		results.runs.push( run );
 	}
@@ -330,6 +367,7 @@ if ( unseen.length ) {
 }
 const { open, accepted } = writeReport( outDir, cfg, results );
 appendUnmatchedReport( outDir, results );
+appendStateLines( outDir, results.runs );
 const unreviewed = argv.includes( '--no-review' ) ? 0 : writeContactSheet( outDir, cfg, results.runs );
 const liveErrors = Object.values( results.errors ).flatMap( ( e ) => e.live );
 console.log( `${ cfg.name }: ${ open } open, ${ accepted } accepted, ${ unreviewed } shots unreviewed, ${ liveErrors.length } live console errors. Report: ${ path.join( outDir, 'report.md' ) }, contact sheet: ${ path.join( outDir, 'contact.md' ) }` );
