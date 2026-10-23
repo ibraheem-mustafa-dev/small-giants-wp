@@ -1,0 +1,62 @@
+[
+ {
+  "file": "lib/gaps-file.mjs",
+  "find": "const bare = r.gates.find( ( g ) => 'not-reached' !== g.status && ! text( g.evidence ) );",
+  "replace": "const bare = null;",
+  "why": "a gate with no evidence is accepted"
+ },
+ {
+  "file": "lib/gaps-file.mjs",
+  "find": "if ( ! text( r.class ) || ! OWNERS[ r.class ] ) {",
+  "replace": "if ( false ) {",
+  "why": "an unknown class is accepted"
+ },
+ {
+  "file": "lib/gaps-file.mjs",
+  "find": "if ( r.candidate && r.gates.some( ( g ) => 'pass' !== g.status ) ) {",
+  "replace": "if ( false ) {",
+  "why": "a candidate that did not pass every gate is accepted"
+ },
+ {
+  "file": "lib/gaps-file.mjs",
+  "find": "if ( ! r.candidate && ! r.gates.some( ( g ) => 'fail' === g.status ) ) {",
+  "replace": "if ( false ) {",
+  "why": "a stopped row naming no failed gate is accepted"
+ },
+ {
+  "file": "lib/gaps-file.mjs",
+  "find": "const open = rows.filter( ( r ) => 'closed' !== r.class );",
+  "replace": "const open = rows;",
+  "why": "a row a fresh walk closed is published"
+ },
+ {
+  "file": "lib/gaps-file.mjs",
+  "find": "firstSeen: seen.get( `${ surface }:${ r.key }` )",
+  "replace": "firstSeen: undefined",
+  "why": "firstSeen resets at every publish"
+ },
+ {
+  "file": "lib/gaps-file.mjs",
+  "find": "const kept = ( prior.rows || [] ).filter( ( r ) => r.surface !== surface );",
+  "replace": "const kept = [];",
+  "why": "another surface's rows are lost"
+ },
+ {
+  "file": "lib/gaps-file.mjs",
+  "find": "if ( dup ) {",
+  "replace": "if ( false ) {",
+  "why": "two rows may share an id"
+ },
+ {
+  "file": "lib/gaps-file.mjs",
+  "find": "r.gates.length !== GATES.length ||",
+  "replace": "",
+  "why": "a row missing a gate is accepted"
+ },
+ {
+  "file": "lib/gaps-file.mjs",
+  "find": "framework: r.class.startsWith( 'F-' ),",
+  "replace": "framework: true,",
+  "why": "every row is called a framework gap"
+ }
+]

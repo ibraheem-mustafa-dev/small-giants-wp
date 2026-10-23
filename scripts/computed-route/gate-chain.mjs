@@ -1,16 +1,19 @@
 #!/usr/bin/env node
-// Gate chain command (Spec 48 FR-48-64): runs G0 to G7 (lib/gate-chain.mjs) on every distinct open issue of a Solve
-// report and prints each row's first failing gate, class and evidence.
+// Gate chain command (Spec 48 FR-48-64, FR-48-66): runs G0 to G7 (lib/gate-chain.mjs) on every distinct open issue of a
+// Solve report, prints each row's first failing gate, class and evidence, and writes gaps.json.
 //   node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--probes <module.mjs>] [--out <file>]
 // With --client the surface's tree, state map and site come from sites/<client>/build/surfaces.json (the block of each row
 // is read from the tree; without it G0 fails every row, the block being unknown). The final walk is the highest
-// round-N/report.json beside the report. The live gates G5 to G7 need a module given with --probes whose default export
-// is { measure(row, setting), probe(row, kind), recheck(row) }; without it a row that reaches one of them stops there
-// with the "not supplied" evidence. Writes gate-chain.json beside the report (or --out). Reads the DB read-only.
+// round-N/report.json beside the report. The live gates G5 to G7 run lib/gate-probes.mjs against the surface's live site
+// (the walker config's live url, or SGS_LIVE_ORIGIN) and a fresh walk of the draft served from the surface's draftDir; a
+// module given with --probes replaces them (its default export is { measure(row, setting), probe(row, kind), recheck(row) }).
+// Writes gate-chain.json beside the report (or --out) and, with --client, sites/<client>/build/qa/gaps.json (FR-48-66;
+// the date it is published on is today's). Reads the DB read-only.
 import fs from 'fs';
 import path from 'path';
 import { createRequire } from 'module';
-import { execFileSync } from 'child_process';
+import os from 'os';
+import { execFileSync, spawnSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { openDb } from './lib/db.mjs';
 import { runChain } from './lib/gate-chain.mjs';
@@ -20,6 +23,10 @@ import { calibrationForSite } from './solve.mjs';
 import { readTree, nodeByRef } from './lib/tree.mjs';
 import { localBlockHash } from './lib/deploy-hash.mjs';
 import { manifestSchemaVersion } from './lib/handoff.mjs';
+import { createProbes } from './lib/gate-probes.mjs';
+import { writeGaps, gapsPath } from './lib/gaps-file.mjs';
+import { serveDraft } from './lib/draft.mjs';
+import { adminSession, readEnv, renderBlock } from './lib/trial-page.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '..', '..' );
@@ -40,6 +47,38 @@ async function installedVersions() {
 	const browserVersion = b.version();
 	await b.close();
 	return { playwrightVersion, browserVersion };
+}
+
+// The live probes for a surface (lib/gate-probes.mjs): the live origin from the walker config, a fresh walk of the draft
+// the walker compares, and the block renderer behind the surface's admin login (opened only when a trial needs it).
+export async function defaultProbes( { s, client, db, tmp = fs.mkdtempSync( path.join( os.tmpdir(), 'gate-chain-' ) ) } ) {
+	const buildDir = path.join( REPO, 'sites', client, 'build' );
+	const walkerFile = path.join( buildDir, s.walkerFull || s.walker );
+	const cfg = ( await import( pathToFileURL( walkerFile ).href ) ).default;
+	const origin = ( process.env.SGS_LIVE_ORIGIN || new URL( String( cfg.live.url ).replace( '{cb}', '0' ) ).origin ).replace( /\/+$/, '' );
+	let session = null;
+	return createProbes( {
+		origin, db, states: s.states,
+		walk: async ( row ) => {
+			const served = await serveDraft( path.join( REPO, s.draftDir ), { index: s.draftIndex || null } );
+			const out = path.join( tmp, `walk-${ row.state }-${ row.width }` );
+			try {
+				const r = spawnSync( 'node', [ 'scripts/parity/draft-live-walk.mjs', walkerFile, ...( process.env.SGS_HEADED ? [] : [ '--headless' ] ), '--no-review', '--lean', '--widths', String( row.width ), '--states', row.state, '--out', out ], { cwd: REPO, encoding: 'utf8', timeout: 1800000, env: { ...process.env, SGS_DRAFT_URL: served.url, SGS_LIVE_ORIGIN: origin } } );
+				const file = path.join( out, 'report.json' );
+				if ( ! fs.existsSync( file ) ) {
+					throw new Error( `the walker wrote no report (exit ${ r.status }): ${ String( r.stderr || r.stdout ).slice( -200 ) }` );
+				}
+				return JSON.parse( fs.readFileSync( file, 'utf8' ) );
+			} finally {
+				await served.close();
+			}
+		},
+		renderBlock: async ( block, attrs ) => {
+			const { chromium } = await import( 'playwright' );
+			session ||= await adminSession( await ( await chromium.launch( { headless: ! process.env.SGS_HEADED } ) ).newContext(), readEnv( path.join( REPO, s.envFile ) ), s.envKey );
+			return renderBlock( session, block, attrs );
+		},
+	} );
 }
 
 // Every input the gates read, built from the report's files; a value that cannot be read is left undefined or throws, and
@@ -65,6 +104,8 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 		}
 		return v;
 	};
+	// The row as the probes read it: its block and that block's ancestors, which the settings it may take are looked up on.
+	const probed = ( row ) => ( { ...row, block: blockOf( row ), ancestors: ancestors( blockOf( row ) ), words: [ row.key, row.draftId ].filter( Boolean ) } );
 	return {
 		inputs: {
 			G0: ( row ) => {
@@ -106,11 +147,12 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 				state: settingState( row, s?.states ) ?? null,
 				boxAgrees: ! ( pairOf( walk, row )?.diffs || [] ).some( ( d ) => ! d.accepted && 'box' === d.kind ),
 			} ),
-			G5: ( row, soFar ) => ( { settings: soFar.G3?.settings ?? [], measure: probes?.measure ? ( setting ) => probes.measure( row, setting ) : undefined } ),
-			G6: ( row ) => ( { kind: 'hardcode' === row.solveClass ? 'hardcode' : ( 'drive' === row.kind ? 'behaviour' : 'missing-setting' ), probe: probes?.probe ? ( kind ) => probes.probe( row, kind ) : undefined } ),
-			G7: ( row ) => ( { recheck: probes?.recheck ? () => probes.recheck( row ) : undefined } ),
+			G5: ( row, soFar ) => ( { settings: soFar.G3?.settings ?? [], measure: probes?.measure ? ( setting ) => probes.measure( probed( row ), setting ) : undefined } ),
+			G6: ( row ) => ( { kind: 'hardcode' === row.solveClass ? 'hardcode' : ( 'drive' === row.kind ? 'behaviour' : 'missing-setting' ), probe: probes?.probe ? ( kind ) => probes.probe( probed( row ), kind ) : undefined } ),
+			G7: ( row ) => ( { recheck: probes?.recheck ? () => probes.recheck( probed( row ) ) : undefined } ),
 		},
 		blockOf,
+		declaredOf: ( row ) => draftValues( walk, row.pair, cssProp( row.key ), 'hover' === row.kind ).declared[ row.width ] ?? null,
 	};
 }
 

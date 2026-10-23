@@ -238,8 +238,9 @@ export async function g7Recheck( i ) {
 
 // Runs G0 to G7 on a Solve row. ctx.inputs maps a gate name to a function (row, soFar) -> the gate's input (or a promise
 // of it); a missing builder, a thrown error or an undefined input fails that gate closed. Returns { gate, class,
-// evidence, gates: [{ gate, status: 'pass' | 'fail' | 'not-reached', evidence }], candidate }: gate and class are those
-// of the first failing gate, or null and the F-class G6 proved when every gate passed (candidate: true).
+// evidence, gates: [{ gate, status: 'pass' | 'fail' | 'not-reached', evidence }], candidate, settings }: gate and class
+// are those of the first failing gate, or null and the F-class G6 proved when every gate passed (candidate: true);
+// settings are the candidate settings G3 listed ([{ block, attr }], or null when G3 was not reached).
 export async function runChain( row, ctx ) {
 	const fns = { G0: g0Freshness, G1: g1PairAndPaint, G2: g2Intent, G3: g3Db, G4: g4Calibration, G5: g5Emission, G6: g6Probe, G7: g7Recheck };
 	const unreadable = { G0: 'I-stale', G1: 'W-walker', G2: 'W-walker', G3: 'I-stale', G4: 'I-calibration', G5: 'W-route', G6: 'W-route', G7: 'I-stale' };
@@ -257,8 +258,8 @@ export async function runChain( row, ctx ) {
 		soFar[ gate ] = result;
 		gates[ n ] = { gate, status: result.pass ? 'pass' : 'fail', evidence: result.evidence };
 		if ( ! result.pass ) {
-			return { gate, class: result.class, evidence: result.evidence, gates, candidate: false };
+			return { gate, class: result.class, evidence: result.evidence, gates, candidate: false, settings: soFar.G3?.settings ?? null };
 		}
 	}
-	return { gate: null, class: soFar.G6.framework, evidence: soFar.G6.evidence, gates, candidate: true };
+	return { gate: null, class: soFar.G6.framework, evidence: soFar.G6.evidence, gates, candidate: true, settings: soFar.G3?.settings ?? null };
 }
