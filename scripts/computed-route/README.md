@@ -1028,7 +1028,9 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 ### `lib/fill-state-motion.mjs`
 - `MOTION_STATE_PROPS`: the state-look properties the motion layer holds (`transform`).
 - `splitList(text)` → a comma list split outside parentheses.
-- `stateMotionRecords(reads, target)` → the hover record a target's `:hover` transform look makes, with the transform's own duration and easing, or `[]`.
+- `stateHover(reads, target)` → `{ base, tiers, gaps }`: the widest width's hover transform record, the tablet and mobile looks that differ from it (a record, or null where the draft has none), and the reasons a width's transform cannot be held (a `var()` or `calc()`, a base narrower than the widest width).
+- `stateMotionRecords(reads, target)` → the hover record a target's `:hover` transform look makes (with the transform's own duration and easing, and `tiers`), or `[]`.
+- `hoverDevices(record, baseLayer, layerOf, perDevice)` → `{ devices, unmapped }`: the hover layer's tablet and mobile overrides for a record with `tiers`; a width with no hover takes the neutral pose and a field held for all devices only (the easing) that differs is returned in `unmapped`.
 
 ### `lib/fill-read.mjs` (Playwright by path; imports `scripts/parity/lib/*`)
 - `READ_WIDTHS`: 375, 768, 1440. `PRESENT`: the render-presence sweep series. `PROPS`: the properties Fill resolves.

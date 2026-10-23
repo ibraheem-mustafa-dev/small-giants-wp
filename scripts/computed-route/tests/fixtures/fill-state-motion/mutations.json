@@ -28,5 +28,35 @@
 		"find": "'hover' !== states ||",
 		"replace": "false ||",
 		"why": "a combined state would be read as hover"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "if ( held.base ) {",
+		"replace": "if ( true ) {",
+		"why": "a hover transform the motion writer cannot hold would vanish with no row"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "if ( base && w in at && w < baseW && ! sameHover( at[ w ], base ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a hover that differs by width would collapse to one look"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "if ( perDevice( k ) ) {",
+		"replace": "if ( true ) {",
+		"why": "an easing that differs by width would be written per device where no field holds it"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": ": neutral( k ) );",
+		"replace": ": baseLayer.values[ k ] );",
+		"why": "a width with no hover would keep the desktop hover"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "held.gaps.forEach(",
+		"replace": "[].forEach(",
+		"why": "a width the motion layer cannot hold would vanish with no row"
 	}
 ]
