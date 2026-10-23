@@ -189,6 +189,10 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/skeleton-narrowing.mjs` | Which lists a group of choice chips narrows (the `optionSetFilter` rule), read from the draft's logic syntax tree and never run: the chips' loop list is a `renderVals` key whose handlers `this.setState` a key, and another `renderVals` key is narrowed when its value is produced by a `.filter(callback)` (through a local variable or a `.map`/`.sort` chain) whose callback reads that key (`this.state.k`, an alias of `this.state`, or a destructured name). A computed key writes nothing the reader knows; a draft whose hash is not the record's is not read. |
 | `lib/skeleton-panel-rules.mjs` | The standing rules that read the record: the children of a header's disclosure panel (`megaGroup`, `megaAside`, `megaContainer`, and `megaGridContainer` for a panel root that lays its own grid out with its own padding or paint) and the icon-only Site Info run in a drawer's top row (`drawerIconRun`). |
 | `lib/skeleton-propose.mjs` | Skeleton step 2b: the inventory to a Fill skeleton and the proposal rows (units of siblings that are one block, content settings, `tpl` draft links, fingerprints, handover). |
+| `lib/skeleton-write-record.mjs` | The proposal writer's row book and the subtrees a block draws itself: a row per element, removed and absorbed subtrees, and the width variations of a drawn block (split out of `lib/skeleton-propose.mjs`). |
+| `lib/skeleton-write-units.mjs` | The proposal writer's units of siblings that are one block (a typed brand name, a drawer's icon run, a stacked list of text links) and the nodes built from them. |
+| `lib/skeleton-write-content.mjs` | The proposal writer's content, identity and structure settings for one element's block, and the ids the build carries for it (a logo's `logoId`, a menu's `ref`). |
+| `lib/skeleton-write-slots.mjs` | The proposal writer's header rows (`rules.headerSlots`), footer rows (`rules.footerSlots`) and the host slot of an unwrapped element. |
 | `lib/skeleton-review.mjs` | Skeleton step 3: the review table (key, tag, words, code, screenshot, proposed block, confidence, decision). |
 | `lib/skeleton-finalise.mjs` | Client decisions and finaliser picks on disk (with the element signature that makes a stale decision visible), the finalise request for the low rows and the validated merge of the picks. |
 | `lib/fill-read.mjs` | Reads the draft in Chromium through the walker's `collectPair` and `resolveFinder` at 375, 768, 1440 and the fluid widths, plus the 16px sweep; blocks or mirrors requests beyond the draft's origin. |
@@ -1506,6 +1510,19 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 ### `lib/skeleton-propose.mjs`
 - `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `proposeSkeleton({ inventory, facts, surface, surfaceKind?, surfaceName?, built?, clientDecisions?, carried?, picks?, calKeys?, calSettings?, states?, thresholds?, db?, factRecord?, openers? })` → `{ skeleton, proposal, problems }` (the proposal also carries `surfaceParts` and `recordDisagreements`); the skeleton passes `skeletonProblems` and `lintSkeleton`. Each row carries `rule` (the standing rule that settled it, or null) and, for an absorbed row, `into`; stacked text links, or stacked rows of a marker (`isMarker`) and one piece of text, are one list; a bare wrapper holding exactly one list is unwrapped into it (`listWrapper`); with `built` (`sites/<client>/build/skeleton/built-surfaces.json`) every row is settled by that post (`clientBuiltSurface`). `proposal.counts.byRule` counts rows per rule.
+
+### `lib/skeleton-write-record.mjs`
+- `makeRecorder( ctx )` → `{ record, removeSubtree, absorbSubtree, absorbWidthKids, takeVariants }`: `record( element, verdict, extra? )` adds the element's proposal row; `removeSubtree` removes the subtree inside a removed element; `absorbSubtree` and `absorbWidthKids` absorb what a block draws, turning an element shown only at some widths into one block instance per variation (FR-48-50) or listing it as a width alternative; `takeVariants( node )` hands over a node's variant instances. `ctx` is the shared context `proposeSkeleton` builds.
+
+### `lib/skeleton-write-units.mjs`
+- `LOGO_HANDOVER`: the handover entry of a logo block, whose image setting a skeleton cannot hold.
+- `makeUnits( ctx )` → `{ unitsOf, removedBy, buildBrand, buildIcons, buildList }`: `unitsOf( element, list? )` splits the children into `brand`, `icons`, `list` and `single` units; the builders make the node and rows of one unit.
+
+### `lib/skeleton-write-content.mjs`
+- `makeContent( ctx )` → `{ contentAttrs, carriedAttrs }`: `contentAttrs( block, element, top )` → `{ a, handover }`, the block's settings from the draft element and the notes for what no setting holds; `carriedAttrs( block, element )` → `{ attrs, said, missing }`, the ids the build holds for the block.
+
+### `lib/skeleton-write-slots.mjs`
+- `makeSlotRows( ctx )` → `{ buildHeaderRows, buildFooterRows, hostSlot }`: the header's top, middle and bottom rows, the footer's three rows, and the draft element a wrapper's hostSetting names as the slot of the block it unwraps into; the strips beside the header land in `ctx.stripRoots`.
 
 ### `lib/skeleton-part-slots.mjs`
 - `partSlots({ db, block, cal, part, opener, m, finder })` → `{ slots, notes }`: `slots` maps the part's calibrated slot to the opener's finder and each calibrated sub-part path under it to the draft child it is (a `:nth-of-type(k)` step is the k-th child, a lone step the only child); `notes` names a part with no calibrated slot and a sub-part the draft has no element for.
