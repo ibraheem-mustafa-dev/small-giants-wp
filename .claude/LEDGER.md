@@ -43,7 +43,7 @@ last_updated: 2026-10-22
 **Resume from:** `plans/2026-10-21-handoff-readers.md`, Status, Next; the tracks signal each other through `.claude/queue.md`.
 - **Track T (the handoff readers session):** T1 to the header-looks wave done 2026-10-23. The header walk (611 open differences) and the Spec 48 audit moved the work to `.claude/plans/2026-10-23-cloning-tool-completion.md`: Phase 0 done; Phase 1 runs as tracks W, R, F, S.
 - **Track W:** wave 1 done 2026-10-23 (`f88e8570b`, no deploy): FR-48-12, -15, -65, -67, -68, R7's check, W12. Next: the plan's Phase 1 Track W line.
-- **Track F:** Phase 1 done 2026-10-23: F1, tap areas fit their size setting (ruling 11), live on indus-test at `7778b1e8a` (header social links 34px, row 166px); gate `check-tap-floors.py --check`. F2 waits on Track R's settings map. Plan: `.claude/plans/2026-10-23-cloning-tool-completion.md`, register F.
+- **Track F:** Phase 1 done 2026-10-23: F1, tap areas fit their size setting (ruling 11), live on indus-test at `7778b1e8a`; gate `check-tap-floors.py --check`. F3 done (`4b5674467`, two stale tests). F2 waits on Track R's settings map. Plan: `.claude/plans/2026-10-23-cloning-tool-completion.md`, register F.
 
 ### Front F: Eye Care Birmingham, built by hand (D1149)
 
