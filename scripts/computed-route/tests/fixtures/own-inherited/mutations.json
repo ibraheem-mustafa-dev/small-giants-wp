@@ -1,0 +1,15 @@
+[
+	{ "file": "lib/calibrate-read.mjs", "find": "const own = ownAt.includes( n );", "replace": "const own = false;", "why": "the old reader: no own paint of an inherited property is recorded" },
+	{ "file": "lib/calibrate-read.mjs", "find": "if ( v === pv || ( 'line-height' === p && fs", "replace": "if ( v === pv || ( false && fs", "why": "a line-height ratio carried to a larger font size is taken as the element's own" },
+	{ "file": "lib/calibrate-read.mjs", "find": "return Object.keys( out ).length ? { ...out, _fs: cs.fontSize } : out;", "replace": "return out;", "why": "the own line height is recorded without the font size it is a ratio of" },
+	{ "file": "lib/calibrate-props.mjs", "find": "TEXT_PSEUDO_PROPS, INHERITED, OWN_INHERITED ] )", "replace": "TEXT_PSEUDO_PROPS, INHERITED ] )", "why": "the read key ignores the own-paint list, so caches read without it stay current" },
+	{ "file": "lib/fill-resolve-state.mjs", "find": "\t\t\tif ( undefined !== own ) {", "replace": "\t\t\tif ( false ) {", "why": "the old baseline: an inherited property is always the parent's value" },
+	{ "file": "lib/fill-resolve-state.mjs", "find": "return 'line-height' === prop && fs && base && ! Number.isNaN( px )", "replace": "return false", "why": "the own line height is not carried as a ratio to the element's font size" },
+	{ "file": "lib/fill-resolve-element.mjs", "find": "const [ keep, drop ] = here.direct && ! prior.direct ? [ here, prior ] : [ prior, here ];", "replace": "const [ keep, drop ] = [ prior, here ];", "why": "the first value always stays, even over the element the setting sits on" },
+	{ "file": "lib/fill-resolve-element.mjs", "find": "\tif ( ! at.length ) {\n\t\treturn true;", "replace": "\tif ( true ) {\n\t\treturn true;", "why": "the old silent overwrite: no conflict row" },
+	{ "file": "lib/fill-resolve-element.mjs", "find": "const at = prior && prior.from !== target.slot ?", "replace": "const at = prior ?", "why": "an element rewriting its own setting is taken as a conflict" },
+	{ "file": "lib/fill-resolve-element.mjs", "find": "if ( ! prior || json( prior.value ) !== json( value ) ) {", "replace": "if ( true ) {", "why": "a write that left the value unchanged takes over as its writer" },
+	{ "file": "lib/fill-resolve-element.mjs", "find": "filter( ( k ) => k in a ).flatMap", "replace": "filter( ( k ) => true ).flatMap", "why": "a tier only one value states counts as a clash" },
+	{ "file": "lib/calibrate-instances.mjs", "find": "STATE_LOOK_PROPS.filter( ( p ) => ! own.includes( p ) )", "replace": "STATE_LOOK_PROPS", "why": "the setting's own marker is recorded as the state's look" },
+	{ "file": "lib/calibrate-instances.mjs", "find": "\t\t\t\t\t( ( out[ path ] ??= {} )[ prop ] ??= {} )[ w ] = v;", "replace": "\t\t\t\t\tvoid v;", "why": "the old record: no value of the state's look" }
+]

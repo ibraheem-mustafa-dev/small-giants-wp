@@ -96,14 +96,29 @@ function shownAt( st, index, prop, w, ownFontPx ) {
 	return fs ? `${ Math.round( ( parseFloat( v ) / fs ) * ownFontPx * 100 ) / 100 }px` : v;
 }
 
+// The block's own paint of an inherited property at a slot, where its stylesheet sets one on that element (calibration
+// records it as `_own:<prop>` beside the element's font size `_fs`, lib/calibrate-read.mjs::readInstancesInPage). A line
+// height is carried as its ratio of the font size to the element's own font size fs. Undefined where the element inherits.
+export function ownPaint( cal, slot, w, prop, fs ) {
+	const v = defaultPaint( cal, slot, w, `_own:${ prop }` );
+	const px = parseFloat( v );
+	const base = parseFloat( defaultPaint( cal, slot, w, '_fs' ) );
+	return 'line-height' === prop && fs && base && ! Number.isNaN( px ) ? `${ Math.round( ( px / base ) * fs * 100 ) / 100 }px` : v;
+}
+
 // What the node shows at a slot with nothing written. A non-inherited property shows its calibrated default paint. An
-// inherited one (R-47-5) shows what its parent shows, or at the top of the surface what the theme gives the page; a theme
-// element style (a heading's family and weight) beats the parent. ownFontPx( width ): the element's own font size.
+// inherited one (R-47-5) shows the block's own paint of it where its stylesheet sets one (ownPaint), else what its parent
+// shows, or at the top of the surface what the theme gives the page; a theme element style (a heading's family and
+// weight) beats the parent. ownFontPx( width ): the element's own font size.
 export function baselineFn( st, rec, cal, prop, ownFontPx = () => undefined ) {
 	const page = st.page( tagOf( st, rec, cal ) );
 	return ( slot, w ) => {
 		if ( INHERITED.includes( prop ) && ! slot.includes( '::' ) ) {
 			const fs = ownFontPx( w );
+			const own = ownPaint( cal, slot, w, prop, fs );
+			if ( undefined !== own ) {
+				return own;
+			}
 			if ( page.own( prop ) ) {
 				return page.value( prop, w, fs );
 			}

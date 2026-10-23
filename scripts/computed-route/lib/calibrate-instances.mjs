@@ -6,6 +6,7 @@ import { modifierOf } from './db.mjs';
 import { blockElements } from './resolve.mjs';
 import { MARKER_HEX } from './calibrate-props.mjs';
 import { probeMechanisms } from './calibrate-probe.mjs';
+import { HOVER_PROPS, FOCUS_PROPS } from '../../parity/lib/collect.mjs';
 
 // How each setting state is reached before a marker is read (§3.2): 'hover' under a real mouse on the styled element;
 // 'focus' by keyboard-visible focus on it; 'scroll' by scrolling the window past the header offset (the header script
@@ -26,6 +27,29 @@ export const triggerFor = ( state ) => {
 };
 
 const kebab = ( s ) => s.replace( /([a-z0-9])([A-Z])/g, '$1-$2' ).toLowerCase();
+
+// The properties a state's look is recorded for: what the walker compares in a hover or keyboard-focus state.
+export const STATE_LOOK_PROPS = [ ...new Set( [ ...HOVER_PROPS, ...FOCUS_PROPS ] ) ];
+
+// What a state instance shows in its state, as values: every STATE_LOOK_PROPS value on the setting's slots at each
+// width, except the setting's own properties (own, its marker). A change against the fixture's resting look is not
+// enough: a block's default hover colour equal to the fixture's resting colour (a nav link turning primary over primary
+// text) changes nothing there, yet it is the value a draft's hover is compared with (lib/fill-state.mjs::defaultStateLook).
+// stateReads: { width: { path: { prop: value } } }, the instance read in its state. Returns { path: { prop: { width: value } } }.
+export function stateLook( stateReads, slots, own = [] ) {
+	const out = {};
+	for ( const [ w, els ] of Object.entries( stateReads || {} ) ) {
+		for ( const path of slots ) {
+			for ( const prop of STATE_LOOK_PROPS.filter( ( p ) => ! own.includes( p ) ) ) {
+				const v = els?.[ path ]?.[ prop ];
+				if ( undefined !== v && '' !== v ) {
+					( ( out[ path ] ??= {} )[ prop ] ??= {} )[ w ] = v;
+				}
+			}
+		}
+	}
+	return out;
+}
 
 // The element a hover or focus marker is applied to: the selector the block's manifest declares for css_element
 // (post-grid's read-more element is .sgs-post-grid__readmore), else its BEM name, or the instance root (null) for the

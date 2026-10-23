@@ -61,6 +61,53 @@ export function settled( st, rec, ref, row ) {
 	( st.out.settled ??= [] ).push( { node: ref, block: rec.name, slot: '', ...row } );
 }
 
+// Which element of a node wrote each of its settings this run: node -> Map( attr -> { from: the target's slot, prop,
+// direct: the setting sits on that element, value } ). Keyed by the node object, so a throwaway copy
+// (lib/fill-row-lift.mjs::readCopy) keeps its own.
+const OWNERS = new WeakMap();
+const owners = ( st, rec ) => {
+	const node = st.flat[ rec.index ];
+	OWNERS.has( node ) || OWNERS.set( node, new Map() );
+	return OWNERS.get( node );
+};
+
+// Records the element that wrote a setting; a write that left the value as it was keeps the earlier writer.
+export function recordOwner( st, rec, target, prop, attr, direct ) {
+	const value = st.flat[ rec.index ].attributes?.[ attr ];
+	const prior = owners( st, rec ).get( attr );
+	if ( ! prior || json( prior.value ) !== json( value ) ) {
+		owners( st, rec ).set( attr, { from: target.slot, prop, direct, value } );
+	}
+}
+
+const isObj = ( v ) => v && 'object' === typeof v && ! Array.isArray( v );
+
+// The places (`mobile`, `tablet.top`) where two values of one setting both say something and differ.
+export function clashes( a, b, at = '' ) {
+	if ( isObj( a ) && isObj( b ) ) {
+		return Object.keys( b ).filter( ( k ) => k in a ).flatMap( ( k ) => clashes( a[ k ], b[ k ], at ? `${ at }.${ k }` : k ) );
+	}
+	return json( a ) === json( b ) ? [] : [ at || 'every tier' ];
+}
+
+// Whether a write goes ahead over what another element of the node already wrote to the same setting (a property read
+// on the root carried to the setting on an inner element, lib/fill-resolve-state.mjs::alternateSlots, beside that
+// element's own reading). Where the two values differ, the element the setting sits on wins over one carried from
+// another element, and between two of the same kind the first stays. The value not kept is a conflict row naming both:
+// one setting is never overwritten silently.
+export function ownerKeeps( st, rec, ref, target, prop, w, settingSlot ) {
+	const prior = owners( st, rec ).get( w.attr );
+	const at = prior && prior.from !== target.slot ? clashes( prior.value, w.value ) : [];
+	if ( ! at.length ) {
+		return true;
+	}
+	const here = { from: target.slot, prop, direct: target.slot === settingSlot, value: w.value };
+	const [ keep, drop ] = here.direct && ! prior.direct ? [ here, prior ] : [ prior, here ];
+	const where = ( o ) => `${ o.prop } ${ json( o.value ) } read on ${ '' === o.from ? 'the root' : o.from }`;
+	unmapped( st, rec, ref, { slot: drop.from, property: drop.prop, value: json( drop.value ), reason: `conflict: ${ w.attr } (one setting, two elements): ${ where( drop ) } differs from ${ where( keep ) } at ${ at.join( ', ' ) }; the setting keeps ${ keep.direct && ! drop.direct ? 'the value of the element it sits on' : 'the first value' }` } );
+	return keep === here;
+}
+
 // One element's properties at one slot, every one that differs. layer: '::before' | '::after' for a painted pseudo layer.
 export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 	const slot = `${ target.slot }${ layer || '' }`;
@@ -169,7 +216,9 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 				if ( GAP_PROPS.includes( prop ) ) {
 					gapProp[ prop ] = { attrs, draft };
 				}
+				res.writes = res.writes.filter( ( w ) => ownerKeeps( st, rec, ref, target, prop, w, res.slot ) );
 				apply( st, rec, ref, target, prop, res, res.slot );
+				res.writes.forEach( ( w ) => recordOwner( st, rec, target, prop, w.attr, target.slot === res.slot ) );
 			}
 			if ( res.fluid ) {
 				st.out.fluid.push( { node: ref, slot, prop, clamp: res.fluid.clamp, written: res.fluid.accepted ? 'clamp' : 'per-tier', reason: res.fluid.declared ? 'the code declares it as one value and calibration lists its form among the forms the setting takes: held as that one value' : res.fluid.accepted ? 'every sample lies on one line and calibration lists clamp among the setting\'s forms' : `${ attrs.join( ', ' ) } accepts no clamp() (calibration forms): per-tier values from 375, 768 and 1440` } );
