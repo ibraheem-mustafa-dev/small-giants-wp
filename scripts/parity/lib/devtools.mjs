@@ -145,6 +145,26 @@ async function chainOf( cdp, finder, resolveSrc, ancestors, keepDocument ) {
 	return ids;
 }
 
+// A pointer over an element, or a press on it, hovers or presses every element under the pointer, its descendants at that
+// point too (`.link:hover .shape` inside an icon block whose root is the pair). The finder of the deepest element at the
+// visible centre of the finder's element that lies inside it (the element itself when nothing inside it is there), so
+// the forced chain runs from there up through the element and its ancestors. Visually hidden, pointer-transparent and
+// svg-internal elements are passed over the way a pointer passes over them.
+export function pointerTarget( finder, resolveSrc ) {
+	return { js: `() => {
+		const el = (${ resolveSrc })(${ JSON.stringify( finder ) });
+		if ( ! el ) {
+			return null;
+		}
+		const r = el.getBoundingClientRect();
+		const x = Math.min( Math.max( r.left + r.width / 2, 0 ), innerWidth - 1 );
+		const y = Math.min( Math.max( r.top + r.height / 2, 0 ), innerHeight - 1 );
+		let hit = document.elementsFromPoint( x, y ).find( ( e ) => el.contains( e ) ) || el;
+		const svg = hit.closest ? hit.closest( 'svg' ) : null;
+		return svg && el.contains( svg ) && svg !== el ? svg : hit;
+	}` };
+}
+
 // What an ancestor of the forced element matches while the element is in a state: a pointer over or a press on an
 // element hovers or presses the whole chain (so `.card:hover .title` and `.card:active .title` rules apply); focus on an
 // element makes each ancestor :focus-within, never :focus.
@@ -154,7 +174,8 @@ const ANCESTOR_STATE = { hover: 'hover', active: 'active', focus: 'focus-within'
 // DevTools protocol, and the matching state on every ancestor, after its transitions finish; the force is cleared after.
 // read( ) reads the styles in the page (collect.mjs::hoverStyles). Returns its result, or null for a missing element.
 export async function forcedPseudo( cdp, page, finder, resolveSrc, states, read ) {
-	const ids = await nodeChain( cdp, finder, resolveSrc, true );
+	const pointer = states.some( ( s ) => 'hover' === s || 'active' === s );
+	const ids = await nodeChain( cdp, pointer ? pointerTarget( finder, resolveSrc ) : finder, resolveSrc, true );
 	if ( ! ids ) {
 		return null;
 	}

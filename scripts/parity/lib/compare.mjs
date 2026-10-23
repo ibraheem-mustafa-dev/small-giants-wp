@@ -4,6 +4,7 @@ import { sameRatio, sameTracks } from './ratio.mjs';
 import { layoutComparable } from './paint.mjs';
 import { sameTransitions, isTimingLonghand } from './transitions.mjs';
 import { TRANSFORM_PARTS, hasTransformParts, sameTransform, effectiveText } from './transform.mjs';
+import { compareParts } from './parts.mjs';
 
 const PX = /^-?\d+(\.\d+)?px$/;
 // The identity transform in both forms the computed style gives (2D and 3D), whitespace removed.
@@ -319,7 +320,7 @@ export function comparePair( pair, d, l, tol ) {
 	if ( d.hoverUnreached || l.hoverUnreached ) {
 		add( 'hover', 'reached', d.hoverUnreached ? 'unreached' : 'hovered', l.hoverUnreached ? 'unreached' : 'hovered' );
 	}
-	diffs.push( ...compareFocus( d.focus, l.focus, sameValue, tol.px ), ...compareLines( d.lines, l.lines ) );
+	diffs.push( ...compareFocus( d.focus, l.focus, sameValue, tol.px ), ...compareLines( d.lines, l.lines ), ...compareParts( d.parts, l.parts, tol ) );
 	return diffs;
 }
 

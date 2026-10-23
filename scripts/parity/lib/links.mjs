@@ -25,15 +25,16 @@ function collectLinksIn( [ rootSel, exclude ] ) {
 		url: a.href,
 		target: a.getAttribute( 'target' ) || '',
 		rel: a.getAttribute( 'rel' ) || '',
-		id: a.getAttribute( 'id' ) || a.closest( '[id]' )?.getAttribute( 'id' ) || '',
+		id: a.getAttribute( 'id' ) || '',
 		ariaLabel: a.getAttribute( 'aria-label' ) || '',
 		siteInfoKey: a.closest( '[data-sgs-site-info-key]' )?.getAttribute( 'data-sgs-site-info-key' ) || '',
 	} ) );
 }
 
-export function collectLinks( page, side, cfg ) {
+// `lifted`: the exclusions a ref-traced surface lives in on this side (auto-walk.mjs::liftedExclusions), whose links are collected.
+export function collectLinks( page, side, cfg, lifted = [] ) {
 	const root = cfg.linkRoot?.[ side ] || cfg.auto?.root?.[ side ] || null;
-	return page.evaluate( collectLinksIn, [ root, [ ...AUTO_EXCLUDE, ...( cfg.auto?.exclude?.[ side ] || [] ).filter( ( e ) => 'string' === typeof e ) ] ] ).catch( () => [] );
+	return page.evaluate( collectLinksIn, [ root, [ ...AUTO_EXCLUDE.filter( ( sel ) => ! lifted.includes( sel ) ), ...( cfg.auto?.exclude?.[ side ] || [] ).filter( ( e ) => 'string' === typeof e ) ] ] ).catch( () => [] );
 }
 
 const statusCache = new Map();
@@ -86,8 +87,10 @@ const sameLabel = ( a, b ) => a && b && ( a === b || a.includes( b ) || b.includ
 const BLOCK_ADDED_REL = [ 'noopener', 'noreferrer' ];
 const relTokens = ( l ) => String( l.rel || '' ).toLowerCase().split( /\s+/ ).filter( Boolean );
 
-// The attributes beyond the address a draft link carries: where it opens, its rel, its id and its aria-label. A row
+// The attributes beyond the address a draft link carries: where it opens, its rel, its own id and its aria-label. A row
 // when no live link of the same text carries the same. rel tokens a new tab adds itself (noopener, noreferrer) are not a difference.
+// An aria-label names the link: a live link with no aria-label whose own words (visually hidden text included) are that
+// name gives a screen reader the same name, so it is no row.
 export function compareLinkAttributes( d, l, add ) {
 	for ( const x of d || [] ) {
 		const mates = ( l || [] ).filter( ( y ) => sameLabel( y.text, x.text ) );
@@ -105,7 +108,8 @@ export function compareLinkAttributes( d, l, add ) {
 		if ( x.id && ! mates.some( ( y ) => y.id === x.id ) ) {
 			add( `id "${ x.text }"`, x.id, shown( ( y ) => y.id ) );
 		}
-		if ( x.ariaLabel && ! mates.some( ( y ) => y.ariaLabel === x.ariaLabel ) ) {
+		const named = ( y ) => y.ariaLabel === x.ariaLabel || ( ! y.ariaLabel && y.text === x.ariaLabel.replace( /\s+/g, ' ' ).trim().toLowerCase() );
+		if ( x.ariaLabel && ! mates.some( named ) ) {
 			add( `aria-label "${ x.text }"`, x.ariaLabel, shown( ( y ) => y.ariaLabel ) );
 		}
 	}

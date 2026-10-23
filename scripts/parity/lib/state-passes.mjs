@@ -9,6 +9,10 @@ import { INTERACTIVE_CAP } from './auto-compare.mjs';
 
 export const SCROLL_PROPS = [ 'opacity', 'transform', 'translate', 'scale', 'filter' ];
 
+// The read options of one pair's state reads (collect.mjs::hoverStyles): the state's other pairs own their text, and paint
+// properties are read where they paint, as at rest (collect.mjs::collectPair).
+export const readOpts = ( pairs, p, side ) => ( { others: pairs.filter( ( q ) => q !== p ).map( ( q ) => q[ side ] ).filter( Boolean ), paintPart: true } );
+
 // Scroll-in pairs: the animations started ~60ms after each is scrolled to, and its pose once settled
 // (`scrollWait`, default 1500ms). The pre-scroll pose is read by the caller before anything scrolls.
 export async function scrollInPass( page, scrollIns, side, snap, RESOLVE ) {
@@ -44,7 +48,7 @@ export async function hoverPass( page, pairs, side, snap, { state, h, RESOLVE, f
 		pairs.filter( ( q ) => ! snap[ q.name ].missing ).forEach( ( q ) => ( snap[ q.name ].noHover = true ) );
 	}
 	for ( const p of cdp && ! phone ? pairs.filter( ( q ) => ! q.hover && ! snap[ q.name ].missing ) : [] ) {
-		snap[ p.name ].hover = await forcedHover( cdp, page, p[ side ], RESOLVE, () => page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC ] ) );
+		snap[ p.name ].hover = await forcedHover( cdp, page, p[ side ], RESOLVE, () => page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC, readOpts( pairs, p, side ) ] ) );
 	}
 	for ( const p of pairs.filter( ( q ) => q.hover && ! phone ) ) {
 		if ( snap[ p.name ].missing ) {
@@ -70,7 +74,7 @@ export async function hoverPass( page, pairs, side, snap, { state, h, RESOLVE, f
 			await page.mouse.move( at.x, at.y );
 			await page.waitForTimeout( p.hoverWait ?? 800 );
 		}
-		snap[ p.name ].hover = await page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC ] );
+		snap[ p.name ].hover = await page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC, readOpts( pairs, p, side ) ] );
 		await page.mouse.move( 1, 1 );
 		await page.waitForTimeout( 400 );
 	}
@@ -96,7 +100,7 @@ export async function activePass( page, pairs, side, snap, RESOLVE, cdp, { all =
 	}
 	for ( const p of pairs.filter( ( q ) => ( all ? false !== q.active : true === q.active ) && ! snap[ q.name ].missing && ! q[ side ]?.textRun && ! q[ side ]?.group ) ) {
 		const props = p.activeProps || ACTIVE_PROPS;
-		snap[ p.name ].active = await forcedPseudo( cdp, page, p[ side ], RESOLVE, [ 'active' ], () => page.evaluate( hoverStyles, [ p[ side ], props, RESOLVE, PAINT_SRC ] ) );
+		snap[ p.name ].active = await forcedPseudo( cdp, page, p[ side ], RESOLVE, [ 'active' ], () => page.evaluate( hoverStyles, [ p[ side ], props, RESOLVE, PAINT_SRC, readOpts( pairs, p, side ) ] ) );
 	}
 }
 

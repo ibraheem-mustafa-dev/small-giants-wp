@@ -28,8 +28,9 @@ import { fileURLToPath, pathToFileURL } from 'url';
 import { DEFAULT_PROPS, PSEUDO_PROPS, resolveFinder, collectPair, collectRunning, hoverStyles } from './lib/collect.mjs';
 import { PAINT_SRC } from './lib/paint.mjs';
 import { neutralisePass } from './lib/neutralise.mjs';
-import { SCROLL_PROPS, scrollInPass, revealSweep, hoverPass, focusPasses, activePass, readInteractives, sampleLines, settledLines } from './lib/state-passes.mjs';
+import { SCROLL_PROPS, scrollInPass, revealSweep, hoverPass, focusPasses, activePass, readInteractives, sampleLines, settledLines, readOpts } from './lib/state-passes.mjs';
 import { collectLinks, probeLinks, unseenLabels } from './lib/links.mjs';
+import { partsPass } from './lib/parts.mjs';
 import { sampleEntrances, sampleRegion } from './lib/entrances.mjs';
 import { isAccepted } from './lib/compare.mjs';
 import { compareState } from './lib/compare-state.mjs';
@@ -39,7 +40,7 @@ import { collectStructure } from './lib/structure.mjs';
 import { writeContactSheet } from './lib/review.mjs';
 import { makeHelpers, retargetLive } from './lib/helpers.mjs';
 import { sampleTimeline, collectChrome } from './lib/chrome-walk.mjs';
-import { withAutoScroll, collectAutoOn, markClipped, SPACER_ATTR } from './lib/auto-walk.mjs';
+import { withAutoScroll, collectAutoOn, markClipped, liftedExclusions, SPACER_ATTR } from './lib/auto-walk.mjs';
 import closeOnExit from '../lib/close-browser-on-exit.js';
 import { REF_PROPS, elementPath, traceRef, loadUnmatched, loadMispaired, appendUnmatchedReport } from './lib/ref-trace.mjs';
 import { loadDivergences } from './lib/divergences.mjs';
@@ -203,7 +204,7 @@ async function walkSide( browser, side, width, draftStates = null ) {
 		const findings = armed.unfired.map( ( d ) => ( { kind: 'reveal-unfired', tag: d.tag, id: d.id, cls: d.cls, animation: d.animation, top: d.top } ) );
 		const snap = {};
 		for ( const p of pairs ) {
-			snap[ p.name ] = await page.evaluate( collectPair, [ p[ side ], propsFor( p ), RESOLVE, 'live' === side ? refPrefix : null, TRACE, PATH, PAINT_SRC, refPrefix ? PSEUDO_PROPS : null ] );
+			snap[ p.name ] = await page.evaluate( collectPair, [ p[ side ], propsFor( p ), RESOLVE, 'live' === side ? refPrefix : null, TRACE, PATH, PAINT_SRC, refPrefix ? PSEUDO_PROPS : null, readOpts( pairs, p, side ) ] );
 			snap[ p.name ].running = running[ p.name ];
 			if ( cdp && ! snap[ p.name ].missing && ! p[ side ].textRun && ! p[ side ].group ) {
 				snap[ p.name ].declared = await declaredValues( cdp, p[ side ], RESOLVE, DECLARED_PROPS );
@@ -228,14 +229,16 @@ async function walkSide( browser, side, width, draftStates = null ) {
 		for ( const p of scrollIns ) {
 			snap[ p.name ].scroll = { pre: await page.evaluate( hoverStyles, [ p[ side ], SCROLL_PROPS, RESOLVE, PAINT_SRC ] ) };
 		}
-		const auto = autoOn ? await collectAutoOn( page, side, cfg ) : null;
+		// A ref-traced surface inside the header or footer landmark is compared there (auto-walk.mjs::liftedExclusions).
+		const lifted = await liftedExclusions( page, side, cfg, pairs, RESOLVE );
+		const auto = autoOn ? await collectAutoOn( page, side, cfg, lifted ) : null;
 		// Focus and press feedback of the first 60 interactive elements, read now while the page is as collected.
 		await readInteractives( page, pressCdp, auto, RESOLVE, { phone: !! phone.isMobile } );
 		if ( header && ! lean ) {
 			await settledLines( page, pairs, side, RESOLVE, snap, h.lines );
 		}
 		// Links (section 14): the live side's same-origin targets are fetched once per run.
-		const links = false === cfg.links || lean ? null : await collectLinks( page, side, cfg );
+		const links = false === cfg.links || lean ? null : await collectLinks( page, side, cfg, lifted );
 		if ( links && 'live' === side ) {
 			await probeLinks( ctx, page, links );
 		}
@@ -260,6 +263,10 @@ async function walkSide( browser, side, width, draftStates = null ) {
 			}
 		}
 		await hoverPass( page, pairs, side, snap, { state, h, RESOLVE, full: header, phone: !! phone.isMobile, cdp } );
+		// A ref-traced walk reads every pair's inner interactive parts and effect layers too (lib/parts.mjs).
+		if ( cdp && header && ! lean ) {
+			await partsPass( page, pairs, side, snap, RESOLVE, !! phone.isMobile );
+		}
 		if ( header && ! lean ) {
 			await focusPasses( page, pairs, side, snap, RESOLVE, !! phone.isMobile );
 			await activePass( page, pairs, side, snap, RESOLVE, pressCdp, { all: !! cdp } );

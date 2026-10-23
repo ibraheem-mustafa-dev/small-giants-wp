@@ -110,17 +110,23 @@ export function resolveFinder( finder ) {
 
 // Everything the comparison needs about one element pair, at rest. With a ref prefix (ref tracing,
 // lib/ref-trace.mjs) it also returns `trace`: the element's ref, block root class and selector paths.
-// in: [ finder, props, resolveSrc, refPrefix, traceSrc, pathSrc, paintSrc, pseudoProps ]; paintSrc is paint.mjs::PAINT_SRC;
-// pseudoProps (PSEUDO_PROPS, or null to skip) are read on the element's painting ::before and ::after layers.
-export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, pathSrc, paintSrc, pseudoProps = null ] ) {
+// in: [ finder, props, resolveSrc, refPrefix, traceSrc, pathSrc, paintSrc, pseudoProps, opts ]; paintSrc is paint.mjs::PAINT_SRC;
+// pseudoProps (PSEUDO_PROPS, or null to skip) are read on the element's painting ::before and ::after layers. opts (the
+// walker's): `others`, the finders of every other pair in the state on this side, whose elements own their text (an
+// outer pair never reads an inner pair's label, paint.mjs::textCarrier); `paintPart`, read the paint properties from the
+// element that paints them (paint.mjs::paintElement).
+export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, pathSrc, paintSrc, pseudoProps = null, opts = null ] ) {
 	// eslint-disable-next-line no-new-func
 	const resolve = new Function( `return (${ resolveSrc });` )();
 	// eslint-disable-next-line no-new-func
-	const { textCarrier, paintedDecoration, decoratedElement, layoutElement, textRun, groupBox } = new Function( `${ paintSrc }; return { textCarrier, paintedDecoration, decoratedElement, layoutElement, textRun, groupBox };` )();
+	const { textCarrier, paintedDecoration, decoratedElement, layoutElement, textRun, groupBox, paintElement } = new Function( `${ paintSrc }; return { textCarrier, paintedDecoration, decoratedElement, layoutElement, textRun, groupBox, paintElement };` )();
 	const el = resolve( finder );
 	if ( ! el ) {
 		return { missing: true };
 	}
+	// The elements the state's other pairs measure, shown or not (a hidden one's text paints nothing either way), less this
+	// element: text inside one is that pair's, and the paint walk never enters one (an enclosing pair's ground is its own).
+	const owned = new Set( ( opts?.others || [] ).map( ( f ) => resolve( f ) || ( 'string' === typeof f ? document.querySelector( f ) : null ) ).filter( ( o ) => o && o !== el ) );
 	const cs = getComputedStyle( el );
 	const r = el.getBoundingClientRect();
 	// Text properties come from the element painting the first visible text (a button's label span, not the button).
@@ -128,7 +134,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	// A text-run finder ({ textRun: { within, direct } }) measures the block's rendered text only: its extent and its paint.
 	// A group finder ({ group: { paths } }) measures the union box of its elements only (no styles).
 	const run = finder.textRun ? textRun( el, !! finder.textRun.direct, finder.textRun.match || null ) : ( finder.group ? groupBox( finder.group.paths ) : null );
-	const carrier = run ? run.carrier : textCarrier( el );
+	const carrier = run ? run.carrier : textCarrier( el, owned );
 	const ccs = carrier ? getComputedStyle( carrier ) : null;
 	// Layout properties come from the element laying out the children (paint.mjs::LAYOUT_PROPS, layoutElement); a flex
 	// or grid gap of `normal`, and any gap of an element not laying out with flex or grid (block flow ignores it), reads
@@ -136,6 +142,10 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	const LAYOUT = [ 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'justify-content', 'align-items' ];
 	const layoutEl = layoutElement( el );
 	const lcs = getComputedStyle( layoutEl );
+	// Paint properties come from the element painting the ground, shape and border (paint.mjs::PAINT_PROPS, paintElement).
+	const PAINT = [ 'background-color', 'background-image', 'border-radius', 'box-shadow', 'border-top-width', 'border-top-style', 'border-top-color', 'border-bottom-width', 'border-bottom-color', 'border-left-width', 'border-right-width', 'border-left-color', 'border-right-color' ];
+	const paintEl = opts?.paintPart && ! run ? paintElement( el, owned ) : el;
+	const pcs = getComputedStyle( paintEl );
 	// Colours reported as oklab()/color() (colour-mix, relative colours) go through a
 	// canvas, which always hands back #rrggbb or rgba(), so both sides compare in sRGB.
 	const ctx = document.createElement( 'canvas' ).getContext( '2d' );
@@ -154,7 +164,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	};
 	const styles = {};
 	for ( const p of run ? props.filter( ( x ) => ! finder.group && TEXT_PROPS.includes( x ) ) : props ) {
-		const src = TEXT_PROPS.includes( p ) ? ccs : ( LAYOUT.includes( p ) ? lcs : cs );
+		const src = TEXT_PROPS.includes( p ) ? ccs : ( LAYOUT.includes( p ) ? lcs : ( PAINT.includes( p ) ? pcs : cs ) );
 		if ( src && ! /^icon-/.test( p ) ) {
 			const v = src.getPropertyValue( p ).trim();
 			styles[ p ] = /color$/.test( p ) ? srgb( v ) : ( /gap$/.test( p ) && ( 'normal' === v || ! /(^|-)(flex|grid)$/.test( lcs.display ) ) ? '0px' : v );
@@ -261,7 +271,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	let trace;
 	if ( refPrefix ) {
 		// eslint-disable-next-line no-new-func
-		trace = new Function( `return (${ traceSrc });` )()( el, carrier, refPrefix, pathSrc, layoutEl, iconEl, finder.group ? null : decoratedElement( carrier || el ) );
+		trace = new Function( `return (${ traceSrc });` )()( el, carrier, refPrefix, pathSrc, layoutEl, iconEl, finder.group ? null : decoratedElement( carrier || el ), paintEl );
 	}
 	// The words the element paints: innerText without visually hidden text (a screen-reader link name clipped to nothing,
 	// auto-collect.mjs::collectAuto's srOnly test). An element that paints no words is named by its aria-label, else
@@ -369,18 +379,22 @@ export function hoverPointOf( [ finder, resolveSrc ] ) {
 
 // Hover-relevant styles of a pair's element (read at rest and at the hover end state). Text colour and the underline
 // are read where the text is painted, as collectPair reads them: a link whose label sits in a span is judged by the
-// span's colour, not by its root's unused one. in: [ finder, props, resolveSrc, paintSrc ].
-export function hoverStyles( [ finder, props, resolveSrc, paintSrc ] ) {
+// span's colour, not by its root's unused one. in: [ finder, props, resolveSrc, paintSrc, opts ]; opts as collectPair's:
+// `others` keeps an inner pair's label out of the colour read, `paintPart` reads paint properties where they paint.
+export function hoverStyles( [ finder, props, resolveSrc, paintSrc, opts = null ] ) {
 	// eslint-disable-next-line no-new-func
 	const resolve = new Function( `return (${ resolveSrc });` )();
 	// eslint-disable-next-line no-new-func
-	const { textCarrier, paintedDecoration } = new Function( `${ paintSrc }; return { textCarrier, paintedDecoration };` )();
+	const { textCarrier, paintedDecoration, paintElement } = new Function( `${ paintSrc }; return { textCarrier, paintedDecoration, paintElement };` )();
 	const el = resolve( finder );
 	if ( ! el ) {
 		return null;
 	}
 	const cs = getComputedStyle( el );
-	const carrier = textCarrier( el );
+	const owned = new Set( ( opts?.others || [] ).map( ( f ) => resolve( f ) || ( 'string' === typeof f ? document.querySelector( f ) : null ) ).filter( ( o ) => o && o !== el ) );
+	const carrier = textCarrier( el, owned );
+	const PAINT = [ 'background-color', 'background-image', 'border-radius', 'box-shadow', 'border-top-width', 'border-top-style', 'border-top-color', 'border-bottom-width', 'border-bottom-color', 'border-left-width', 'border-right-width', 'border-left-color', 'border-right-color' ];
+	const pcs = opts?.paintPart ? getComputedStyle( paintElement( el, owned ) ) : cs;
 	const deco = props.some( ( p ) => /^text-decoration-/.test( p ) ) ? paintedDecoration( carrier || el ) : null;
 	// Same sRGB normalising as collectPair (oklab()/color() through a canvas).
 	const ctx = document.createElement( 'canvas' ).getContext( '2d' );
@@ -405,7 +419,7 @@ export function hoverStyles( [ finder, props, resolveSrc, paintSrc ] ) {
 		} else if ( /^text-decoration-/.test( p ) ) {
 			v = deco ? deco.getPropertyValue( p ).trim() : 'none';
 		} else {
-			v = cs.getPropertyValue( p ).trim();
+			v = ( PAINT.includes( p ) ? pcs : cs ).getPropertyValue( p ).trim();
 		}
 		out[ p ] = /color$/.test( p ) && 'none' !== v ? srgb( v ) : v;
 	}

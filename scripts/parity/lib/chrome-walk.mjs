@@ -2,6 +2,7 @@
 // pair's painted ground, text inset and (for `inventory: true` roots) inventory, reads what a hover
 // visibly does, and compares all of it. GAP-CHECKLIST.md section 11.
 import { paintedExtras, inventory, timelineSample, hoverDetail } from './chrome.mjs';
+import { PAINT_SRC } from './paint.mjs';
 import { compareExtras, compareInventory, compareTimeline, hoverEffects, compareHover } from './chrome-compare.mjs';
 
 const SAMPLES = [ 30, 120, 250, 450 ];
@@ -31,7 +32,7 @@ export async function collectChrome( page, side, pairs, snap, RESOLVE, timeline 
 		if ( snap[ p.name ].missing ) {
 			continue;
 		}
-		snap[ p.name ].extras = await page.evaluate( paintedExtras, [ p[ side ], RESOLVE ] );
+		snap[ p.name ].extras = await page.evaluate( paintedExtras, [ p[ side ], RESOLVE, PAINT_SRC ] );
 		if ( p.inventory ) {
 			snap[ p.name ].inventory = await page.evaluate( inventory, [ p[ side ], RESOLVE ] );
 		}

@@ -56,9 +56,64 @@ export function layoutElement( el, styleOf = ( e ) => getComputedStyle( e ) ) {
 	}
 }
 
+// The paint properties: read from the element that paints the pair's ground, shape and border (paintElement), not the
+// pair's element.
+export const PAINT_PROPS = [ 'background-color', 'background-image', 'border-radius', 'box-shadow', 'border-top-width', 'border-top-style', 'border-top-color', 'border-bottom-width', 'border-bottom-color', 'border-left-width', 'border-right-width', 'border-left-color', 'border-right-color' ];
+
+// Self-contained. The element whose ground, shape and border a visitor sees as the pair's: the element itself when it
+// paints (a visible background colour or image, a shadow, or a drawn border), else the first that paints down its chain of
+// single rendered children (visually hidden text and svg internals not counted; an icon block's 34px shape inside its
+// 44px link), else the first that paints up its chain of ancestors drawing the same box and holding only it; else the
+// element. `owned` (a Set) holds elements other pairs measure: neither walk enters one.
+export function paintElement( el, owned = null ) {
+	const clear = ( c ) => ! c || 'transparent' === c || /rgba\([^)]*,\s*0\)$/.test( c );
+	const paints = ( e ) => {
+		const s = getComputedStyle( e );
+		if ( 'none' === s.display || 'hidden' === s.visibility ) {
+			return false;
+		}
+		return ! clear( s.backgroundColor ) || 'none' !== s.backgroundImage || 'none' !== s.boxShadow
+			|| [ 'top', 'right', 'bottom', 'left' ].some( ( k ) => parseFloat( s.getPropertyValue( `border-${ k }-width` ) ) > 0 && 'none' !== s.getPropertyValue( `border-${ k }-style` ) && ! clear( s.getPropertyValue( `border-${ k }-color` ) ) );
+	};
+	if ( paints( el ) ) {
+		return el;
+	}
+	const srOnly = ( a ) => {
+		const r = a.getBoundingClientRect();
+		const cs = getComputedStyle( a );
+		return ( 'absolute' === cs.position && r.width <= 2 && r.height <= 2 && 'visible' !== cs.overflow ) || /rect\(0(px)?,? 0(px)?,? 0(px)?,? 0(px)?\)/.test( cs.clip ) || /inset\(50%\)/.test( cs.clipPath );
+	};
+	const free = ( e ) => ! owned || ! owned.has( e );
+	for ( let a = el; ; ) {
+		const kids = [ ...a.children ].filter( ( k ) => k.getClientRects().length && 'none' !== getComputedStyle( k ).display && ! srOnly( k ) );
+		if ( 1 !== kids.length || 'svg' === kids[ 0 ].tagName.toLowerCase() || ! free( kids[ 0 ] ) ) {
+			break;
+		}
+		a = kids[ 0 ];
+		if ( paints( a ) ) {
+			return a;
+		}
+	}
+	const r = el.getBoundingClientRect();
+	for ( let a = el.parentElement; a && a !== document.body && free( a ); a = a.parentElement ) {
+		const b = a.getBoundingClientRect();
+		const kids = [ ...a.children ].filter( ( k ) => k.getClientRects().length && 'none' !== getComputedStyle( k ).display && ! srOnly( k ) );
+		if ( Math.abs( b.width - r.width ) > 2 || Math.abs( b.height - r.height ) > 2 || 1 !== kids.length ) {
+			break;
+		}
+		if ( paints( a ) ) {
+			return a;
+		}
+	}
+	return el;
+}
+
 // Self-contained. The element painting the first visible text inside el (a button's label span, not the button),
-// or null. Text properties at rest and on hover are read from it.
-export function textCarrier( el ) {
+// or null. Text properties at rest and on hover are read from it. Text inside an element of `owned` (a Set of the elements
+// other pairs measure) is that pair's, never this one's: an outer pair whose first text sits in an inner pair's block (the
+// header's phone label) reads its own text or none.
+export function textCarrier( el, owned = null ) {
+	const inner = owned ? [ ...owned ].filter( ( o ) => o !== el && el.contains( o ) ) : [];
 	// Visually hidden text (a screen-reader link name clipped to nothing) paints nothing; the same test as
 	// auto-collect.mjs::collectAuto's srOnly, walked up to `el`.
 	const srOnly = ( from ) => {
@@ -74,7 +129,7 @@ export function textCarrier( el ) {
 	const walker = document.createTreeWalker( el, NodeFilter.SHOW_TEXT, {
 		// The text node's own rects: its parent can be display:contents (no box of its own) and still paint it.
 		acceptNode: ( n ) => {
-			if ( ! n.textContent.trim() || srOnly( n.parentElement ) ) {
+			if ( ! n.textContent.trim() || srOnly( n.parentElement ) || inner.some( ( o ) => o.contains( n ) ) ) {
 				return NodeFilter.FILTER_SKIP;
 			}
 			const range = document.createRange();
@@ -200,4 +255,4 @@ export function lineRows( el ) {
 }
 
 // The source collectPair and hoverStyles rebuild their paint helpers from.
-export const PAINT_SRC = [ textCarrier, paintedDecoration, decoratedElement, layoutElement, textRun, groupBox, lineRows ].map( ( f ) => f.toString() ).join( ';\n' );
+export const PAINT_SRC = [ paintElement, textCarrier, paintedDecoration, decoratedElement, layoutElement, textRun, groupBox, lineRows ].map( ( f ) => f.toString() ).join( ';\n' );

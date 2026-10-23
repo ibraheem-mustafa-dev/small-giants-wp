@@ -6,9 +6,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { scrollAScreenAndAHalf, SPACER_ATTR, withAutoScroll } from '../../parity/lib/auto-walk.mjs';
 
+const { chromium } = await import( 'playwright' );
+
 // A minimal page: scrollTo clamps to the document's height, as a browser does.
 function fakePage( contentHeight, viewport = 900 ) {
-	const body = { children: [], appendChild( el ) {
+	const body = { children: [], querySelectorAll: () => [], appendChild( el ) {
 		this.children.push( el );
 	} };
 	globalThis.innerHeight = viewport;
@@ -55,4 +57,33 @@ test( 'the auto-scrolled state runs the padded scroll on both sides', async () =
 		await st[ side ]( { page: { evaluate: async ( fn, arg ) => calls.push( [ fn, arg ] ) }, wait: async () => {} } );
 		assert.deepEqual( calls, [ [ scrollAScreenAndAHalf, SPACER_ATTR ] ] );
 	}
+} );
+
+// Check A (2026-10 header walk): the live header page is a 239px page wrapper holding a sticky header inside a document the
+// viewport's height. The spacer sat at the end of <body>, outside the wrapper the header sticks in, and was sized from the
+// viewport's height, so the page reached 689 not 1350 and the header scrolled away while the draft's stayed in view.
+const HEADER_PAGE = `<style>html,body{margin:0;min-height:100%}body{min-height:100vh}header{position:sticky;top:0;height:133px;background:#fff}main{height:106px}</style>
+	<div id="wrap"><header id="h">Header</header><main>Below</main></div>`;
+const stuck = async ( html ) => {
+	const browser = await chromium.launch( { headless: true } );
+	const page = await browser.newPage( { viewport: { width: 1440, height: 900 } } );
+	await page.setContent( `<!doctype html><html><body>${ html }</body></html>` );
+	const reached = await page.evaluate( scrollAScreenAndAHalf, SPACER_ATTR );
+	const out = await page.evaluate( ( attr ) => ( { top: document.getElementById( 'h' ).getBoundingClientRect().top, host: document.querySelector( `[${ attr }]` )?.parentElement.id || null } ), SPACER_ATTR );
+	await browser.close();
+	return { reached, ...out };
+};
+
+test( 'MUST FAIL (Check A, header page reached 689 and its header scrolled away): the spacer extends the wrapper the sticky header sits in to the full scroll', async () => {
+	const r = await stuck( HEADER_PAGE );
+	assert.equal( r.reached, 1350 );
+	assert.equal( r.host, 'wrap' );
+	assert.equal( r.top, 0, 'the sticky header is still in view' );
+} );
+
+test( 'negative control: a header that is not sticky still scrolls away under the spacer (a real difference stays one)', async () => {
+	const r = await stuck( HEADER_PAGE.replace( 'position:sticky;', '' ) );
+	assert.equal( r.reached, 1350 );
+	assert.equal( r.host, null, 'no sticky element: the spacer is a child of <body>' );
+	assert.ok( r.top < -1000 );
 } );

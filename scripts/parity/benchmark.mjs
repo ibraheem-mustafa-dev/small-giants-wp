@@ -10,10 +10,11 @@
 // Writes <out>/summary.md and summary.json; exits 0 when every case is caught.
 import fs from 'fs';
 import path from 'path';
-import { spawnSync } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { CONFIGS, CASES } from './benchmark/cases.mjs';
 import { scoreDir } from './benchmark/score.mjs';
+import { serveDraft } from '../computed-route/lib/draft.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const ROOT = path.resolve( HERE, '../..' );
@@ -37,16 +38,26 @@ if ( argv.includes( '--noise' ) ) {
 	}
 }
 
-// The blind config: the page config as it stood before the gaps were found.
-function blindConfig( name ) {
-	const { ref, path: file } = CONFIGS[ name ];
+// Draft folders served for the run (a config's `draft`), closed when it ends.
+const servers = [];
+// The blind config: the page config as it stood before the gaps were found, with a draft address whose host no longer
+// serves the draft pointed at the handoff folder served locally.
+async function blindConfig( name ) {
+	const { ref, path: file, draft } = CONFIGS[ name ];
 	const src = spawnSync( 'git', [ 'show', `${ ref }:${ file }` ], { cwd: ROOT, encoding: 'utf8' } );
 	if ( src.status ) {
 		throw new Error( `git show ${ ref }:${ file } failed: ${ src.stderr }` );
 	}
 	const raw = path.join( outDir, 'configs', `${ name }-${ ref }.mjs` );
 	fs.mkdirSync( path.dirname( raw ), { recursive: true } );
-	fs.writeFileSync( raw, src.stdout );
+	let text = src.stdout;
+	if ( draft ) {
+		const index = JSON.parse( fs.readFileSync( path.join( ROOT, draft.dir, 'MANIFEST.json' ), 'utf8' ) ).entry_drafts[ 0 ];
+		const served = await serveDraft( path.join( ROOT, draft.dir ), { index } );
+		servers.push( served );
+		text = text.replaceAll( draft.from, served.url );
+	}
+	fs.writeFileSync( raw, text );
 	// An old config can predate today's lint (a state with no pair scoped to it): such a state gets
 	// a pair that finds nothing on either side, so it passes lint and measures nothing.
 	const dest = path.join( outDir, 'configs', `${ name }-${ ref }-linted.mjs` );
@@ -59,7 +70,7 @@ export default { ...base, pairs: [ ...base.pairs, ...inert ] };
 	return dest;
 }
 
-function walk( cfgFile, runDir, widths, states, inject ) {
+async function walk( cfgFile, runDir, widths, states, inject ) {
 	const args = [ WALKER, cfgFile, '--out', runDir, '--no-review', '--widths', widths.join( ',' ), '--states', states.join( ',' ), ...extra ];
 	if ( inject?.css ) {
 		args.push( '--inject-live-css', inject.css );
@@ -69,10 +80,10 @@ function walk( cfgFile, runDir, widths, states, inject ) {
 	}
 	const t = Date.now();
 	const report = path.join( runDir, 'report.json' );
-	let res = spawnSync( process.execPath, args, { stdio: [ 'ignore', 'pipe', 'pipe' ], encoding: 'utf8', maxBuffer: 64 << 20 } );
+	let res = await run( args );
 	if ( ! fs.existsSync( report ) ) {
 		console.log( `  ${ path.basename( runDir ) }: crashed, running once more (${ res.stderr.trim().split( '\n' ).find( ( l ) => /Error:/.test( l ) ) || 'no report' })` );
-		res = spawnSync( process.execPath, args, { stdio: [ 'ignore', 'pipe', 'pipe' ], encoding: 'utf8', maxBuffer: 64 << 20 } );
+		res = await run( args );
 	}
 	if ( ! fs.existsSync( report ) ) {
 		throw new Error( `walker wrote no report for ${ runDir }:\n${ res.stdout }\n${ res.stderr }` );
@@ -80,17 +91,30 @@ function walk( cfgFile, runDir, widths, states, inject ) {
 	console.log( `  ${ path.basename( runDir ) }: ${ res.stdout.trim().split( '\n' ).pop() } (${ Math.round( ( Date.now() - t ) / 1000 ) }s)` );
 }
 
+// The walker runs as a child process while this process serves the draft folders, so it is awaited, never run synchronously.
+function run( args ) {
+	return new Promise( ( done ) => {
+		const child = spawn( process.execPath, args, { stdio: [ 'ignore', 'pipe', 'pipe' ] } );
+		let stdout = '';
+		let stderr = '';
+		child.stdout.on( 'data', ( b ) => ( stdout += b ) );
+		child.stderr.on( 'data', ( b ) => ( stderr += b ) );
+		child.on( 'close', () => done( { stdout, stderr } ) );
+	} );
+}
+
 console.log( `Benchmark: ${ cases.length } case(s), out ${ outDir }` );
 for ( const name of new Set( cases.map( ( c ) => c.config ) ) ) {
-	const cfgFile = blindConfig( name );
+	const cfgFile = await blindConfig( name );
 	const widths = [ ...new Set( cases.filter( ( c ) => c.config === name ).flatMap( ( c ) => c.widths ) ) ].sort( ( a, b ) => b - a );
 	const states = [ ...new Set( cases.filter( ( c ) => c.config === name ).flatMap( ( c ) => c.states ) ) ];
 	console.log( `${ name }: control at ${ widths.join( ', ' ) } in ${ states.join( ', ' ) }` );
-	walk( cfgFile, path.join( outDir, `${ name }-control` ), widths, states );
+	await walk( cfgFile, path.join( outDir, `${ name }-control` ), widths, states );
 	for ( const c of cases.filter( ( x ) => x.config === name ) ) {
-		walk( cfgFile, path.join( outDir, `case-${ c.id }` ), c.widths, c.states, c );
+		await walk( cfgFile, path.join( outDir, `case-${ c.id }` ), c.widths, c.states, c );
 	}
 }
+await Promise.all( servers.map( ( x ) => x.close() ) );
 const { score, of } = scoreDir( outDir, { stamp, extra } );
 console.log( `Caught ${ score } of ${ of }. Summary: ${ path.join( outDir, 'summary.md' ) }` );
 process.exit( score === of ? 0 : 1 );
