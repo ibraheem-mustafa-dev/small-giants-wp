@@ -12,6 +12,7 @@ import path from 'path';
 import { serveDraft } from './draft.mjs';
 import { readJson, sha256, walkFolder, REPO } from './handoff.mjs';
 import { loadChromium } from './fill-read.mjs';
+import { browserPidOf, closeBrowser } from './browser-close.mjs';
 
 // The three runtime scripts every known support.js build pins, with the SRI hash it declares for each.
 export const PINNED_SCRIPTS = {
@@ -245,6 +246,7 @@ export async function openSandbox( { folder, index, harPath = null, mode = 'repl
 	const trap = await startTrapProxy();
 	const { chromium } = await loadChromium();
 	const browser = await chromium.launch( { headless, proxy: { server: trap.server } } );
+	const browserPid = await browserPidOf( browser );
 	const context = await browser.newContext( { serviceWorkers: 'block', viewport: { width: widths[ 0 ], height: 900 } } );
 	const requests = [];
 	const blocked = [];
@@ -371,7 +373,7 @@ export async function openSandbox( { folder, index, harPath = null, mode = 'repl
 	const close = async () => {
 		clearTimeout( quiet );
 		await drain();
-		await browser.close();
+		await closeBrowser( browser, browserPid );
 		await srv.close();
 		await trap.close();
 	};

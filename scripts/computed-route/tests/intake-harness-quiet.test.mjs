@@ -4,7 +4,8 @@
 // that writes the clock and starts a 400ms transition and a 700ms timeout; no infinite animation, so the long waits
 // between the interval's ticks are quiet). With skipping on (the default) and off (opts.skipQuiet false, as
 // INTAKE_SKIP_QUIET=0) the rest and clock-sample readings are byte-identical, the settle times agree, and the
-// 6500ms-interval settle drops from about 20 s of wall time to about 2 s (asserted as under half). The readings are
+// 6500ms-interval settle drops from about 1285 page calls to about 112 (asserted as under a quarter: a count of the work
+// done, since wall time includes the browser launch and page load, which a loaded machine stretches). The readings are
 // sensitive to the virtual time an observer or timer fires at (a 4ms shift in the scroll step changes them), so the
 // identity is not vacuous.
 import test from 'node:test';
@@ -23,11 +24,7 @@ const FIXTURE = path.join( HERE, 'fixtures', 'intake-harness-quiet' );
 const INDEX = 'Home.dc.html';
 let harPath;
 
-const read = async ( extra = {} ) => {
-	const t0 = Date.now();
-	const r = await readSurface( { folder: FIXTURE, index: INDEX, harPath, width: 1440, mode: 'rest', ...extra } );
-	return { ...r, ms: Date.now() - t0 };
-};
+const read = ( extra = {} ) => readSurface( { folder: FIXTURE, index: INDEX, harPath, width: 1440, mode: 'rest', ...extra } );
 const bar = ( r, name ) => r.records.find( ( x ) => x.path.endsWith( `div:nth-child(${ { timeout: 2, frames: 3, interval: 4, late: 5, reveal: 7, after: 8 }[ name ] })` ) ) ?? assert.fail( `no ${ name } record` );
 
 test.before( async () => {
@@ -38,7 +35,7 @@ test.before( async () => {
 	}
 } );
 
-test( 'MUST FAIL: rest readings with quiet-step skipping on and off are byte-identical, and skipping cuts the wall time', async () => {
+test( 'MUST FAIL: rest readings with quiet-step skipping on and off are byte-identical', async () => {
 	const on = await read();
 	const off = await read( { skipQuiet: false } );
 	assert.equal( on.jsonl, off.jsonl );
@@ -53,8 +50,31 @@ test( 'MUST FAIL: rest readings with quiet-step skipping on and off are byte-ide
 	assert.equal( bar( on, 'frames' ).declared.width, '60px' );
 	assert.equal( on.summary.settleMs, 19504, 'the boot settle ends on the 16ms step after the third tick' );
 	assert.ok( Number( bar( on, 'reveal' ).declared.width.replace( 'px', '' ) ) > 195, 'the reveal fired after the boot settle' );
-	// Wall time is relative (a loaded machine slows both runs): about 2 s against 22 s when idle.
-	assert.ok( off.ms > 2 * on.ms, `skipping saved too little: ${ off.ms }ms off, ${ on.ms }ms on` );
+} );
+
+// The page calls one boot settle makes: a count of the work done, which a loaded machine does not change.
+const settleCalls = async ( skipQuiet ) => {
+	const h = await openHarness( { folder: FIXTURE, index: INDEX, harPath, skipQuiet } );
+	try {
+		const evaluate = h.page.evaluate.bind( h.page );
+		let calls = 0;
+		h.page.evaluate = ( ...args ) => {
+			calls++;
+			return evaluate( ...args );
+		};
+		const settled = await settleRest( h.page, h.options );
+		return { calls, settleMs: settled.settleMs };
+	} finally {
+		await h.close();
+	}
+};
+
+test( 'MUST FAIL: skipping the quiet stretches cuts the page calls of the 6500ms-interval settle to under a quarter, to the same settle time', async () => {
+	const on = await settleCalls( true );
+	const off = await settleCalls( false );
+	assert.equal( on.settleMs, off.settleMs );
+	assert.ok( off.calls > 1000, `the control: stepping every 16ms makes ${ off.calls } page calls` );
+	assert.ok( on.calls * 4 < off.calls, `skipping saved too little: ${ off.calls } page calls off, ${ on.calls } on` );
 } );
 
 test( 'MUST FAIL: clock-kind sample readings with skipping on and off are byte-identical', async () => {
