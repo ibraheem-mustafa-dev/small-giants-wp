@@ -24,6 +24,7 @@ Each class below says how it is detected, how a "this page matches" claim is fal
 - **Gap:** a state with only page-wide pairs proves the page around the change, not the change.
 - **Detected by:** config lint, before any browser opens: every state after the first needs a pair scoped to it (`states: [...]`); pair names are unique; every accept has a real reason and names a real pair; review keys are `state@width` with a note of at least 40 characters.
 - **Falsified by:** `--lint` failing.
+- **On the route:** Solve runs the same lint (`scripts/parity/lib/lint.mjs::lintRun`, through `scripts/computed-route/lib/walker-lint.mjs::walkerLintFault`) on a surface's generated walker config before it builds or walks anything, and stops with the surface and each problem named (Spec 48 FR-48-12). A surface whose walker config does not exist fails the same way.
 
 ## 3. Screenshot review of every state at every width
 
