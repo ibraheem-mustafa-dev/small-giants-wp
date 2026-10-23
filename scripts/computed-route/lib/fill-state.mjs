@@ -14,11 +14,18 @@
 // surface's own look. Fill writes it through the resolver as the resting state (state null), into the settings the
 // surface paints at rest. A surface shown at rest, and a surface block whose settings hold an open state, keep the
 // state-setting path below.
+//
+// A block's own interaction look (hover, focus, press) shows whatever the draft does, so writing only what the draft's state
+// declares leaves it live. Calibration records it (defaultStateLook): where the block changes a property in that state and
+// the draft does not, the setting that holds the state is written with the draft's resting value (holdDefaults), and a
+// change no setting holds is a named `default-state` gap.
 
 import { setAttr, refOf, walk } from './tree.mjs';
-import { resolveProperty, knownPaths } from './fill-prop.mjs';
+import { resolveProperty, knownPaths, notPainted } from './fill-prop.mjs';
 import { LOOSE } from './resolve.mjs';
-import { settingStates } from './db.mjs';
+import { settingStates, statesVocabulary } from './db.mjs';
+import { longhands } from './calibrate-props.mjs';
+import { alternateSlots } from './fill-resolve-state.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 import { TIMING_PROPS, timingWrites } from './fill-timing.mjs';
 import { motionDb } from './motion-db.mjs';
@@ -112,6 +119,119 @@ export function stateGap( state, held ) {
 	return `no-state-setting: no block setting holds the ${ state } look`;
 }
 
+// The state families a visitor enters on any element at any moment (the `states` table's family column): pointer or
+// keyboard (hover, focus) and press (active).
+const INTERACTION_FAMILIES = [ 'pointer-keyboard', 'press' ];
+
+// The interaction state words of the DB's state vocabulary.
+export function interactionStates( db ) {
+	return new Set( statesVocabulary( db ).rows.filter( ( r ) => INTERACTION_FAMILIES.includes( r.family ) ).map( ( r ) => r.state ) );
+}
+
+// A text colour and the ground it is read against, held together (holdDefaults).
+const PAIR = [ 'color', 'background-color' ];
+
+const pathOf = ( effect ) => effect.slice( 0, effect.lastIndexOf( '|' ) );
+const propOf = ( effect ) => effect.slice( effect.lastIndexOf( '|' ) + 1 );
+
+// The block's own look in one state, per element: { [LOOSE path]: Set of longhands }. Calibration reads each state setting's
+// marker in that state against the block's default read at rest (calibrate.mjs::slotFor), so a change the block makes in the
+// state by itself shows in every such reading of the element, as a side effect (`effects`) or under the setting's own
+// property, which the marker overrides. A property is the block's own when at least one reading lists it as an effect and
+// every reading of that element lists it or owns it; a marker's own side effect (a border following its colour) is in
+// that one reading only. An element the default read never saw (a gradient's <defs>, absent from the default paint), and a
+// reading that shows or hides the element (its `display` changed), is a marker building structure, never a look.
+export function defaultStateLook( cal, state ) {
+	const known = new Set( Object.keys( cal?.elements || {} ).map( LOOSE ) );
+	const readings = {};
+	for ( const s of Object.values( cal?.settings || {} ).filter( ( x ) => state === x.state ) ) {
+		for ( const path of ( s.slots || [ s.slot ] ).filter( ( p ) => ! known.size || known.has( LOOSE( p ) ) ) ) {
+			const effects = ( s.effects || [] ).filter( ( e ) => LOOSE( pathOf( e ) ) === LOOSE( path ) ).map( propOf );
+			if ( effects.includes( 'display' ) ) {
+				continue;
+			}
+			( readings[ LOOSE( path ) ] ??= [] ).push( { own: longhands( s.property ), effects } );
+		}
+	}
+	const out = {};
+	for ( const [ path, list ] of Object.entries( readings ) ) {
+		const props = [ ...new Set( list.flatMap( ( r ) => r.effects ) ) ].filter( ( p ) => list.every( ( r ) => r.effects.includes( p ) || r.own.includes( p ) ) );
+		props.length && ( out[ path ] = new Set( props ) );
+	}
+	return out;
+}
+
+// The draft's resting value of each property on a target: { prop: { width: value } }, leaving out a width where the
+// property paints nothing (lib/fill-prop.mjs::notPainted: a border side with no width, a decoration with no line).
+function restingOf( reads, id ) {
+	const out = {};
+	for ( const w of READ_WIDTHS ) {
+		const styles = reads.widths?.[ w ]?.[ id ]?.styles || {};
+		for ( const [ prop, v ] of Object.entries( styles ) ) {
+			v && ! notPainted( prop, styles ) && ( ( out[ prop ] ??= {} )[ w ] = v );
+		}
+	}
+	return out;
+}
+
+// The elements a held property is resolved on: the target's slot, the slots its resting writer reaches for a carried
+// property (lib/fill-resolve-state.mjs::alternateSlots), and the slots of each resting setting of that property the node
+// carries (an icon's ground colour sits on its shape).
+function holdSlots( cal, node, slot, prop, rest ) {
+	const carried = Object.entries( cal?.settings || {} ).filter( ( [ attr, s ] ) => ! s.state && longhands( s.property ).includes( prop ) && ! [ undefined, null, '' ].includes( node.attributes?.[ attr ] ) ).flatMap( ( [ , s ] ) => s.slots || [ s.slot ] );
+	return [ ...new Set( [ slot, ...alternateSlots( cal, prop, rest ), ...carried ] ) ];
+}
+
+// Holds the block's own interaction looks the draft does not have on one target (see the header). Returns { writes,
+// unmapped, held }; a property the draft's state declares is the state pass's, and a property whose resting value is the
+// element's colour follows the colour (currentcolor), so it is held with it when no setting of its own resolves.
+// taken: Map attr → value of the node's state settings already written (by a declared look, or a hold from another
+// target): a declared look is never overwritten, and two targets holding one setting at different values is a gap.
+// A text colour and its ground (PAIR) are held together or not at all: holding one alone would put the draft's colour
+// beside the block's own hover colour, a pairing neither paints (a brand ground held under a glyph that still swaps to
+// the brand colour vanishes).
+export function holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads, drafts, held, interaction, taken = new Map() } ) {
+	const out = { writes: [], unmapped: [], held: [] };
+	const rest = restingOf( reads, target.id );
+	const read = ( prop ) => READ_WIDTHS.some( ( w ) => reads.widths?.[ w ]?.[ target.id ]?.styles?.[ prop ] );
+	const declared = ( state, prop ) => [ ...drafts.values() ].some( ( d ) => d.state === state && ! d.pseudo && ( d.prop === prop || longhands( d.prop ).includes( prop ) ) );
+	const gapRow = ( prop, state, why ) => ( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( rest[ prop ] || {} ), reason: `default-state: ${ rec.name } changes ${ prop } on ${ state } by itself and the draft does not, and nothing holds it (${ why })` } );
+	for ( const state of interaction ) {
+		const look = defaultStateLook( cal, state );
+		const plan = [];
+		for ( const prop of [ ...new Set( Object.values( look ).flatMap( ( s ) => [ ...s ] ) ) ] ) {
+			const slots = holdSlots( cal, node, target.slot, prop, rest[ prop ] || {} );
+			if ( declared( state, prop ) || ! slots.some( ( p ) => look[ LOOSE( p ) ]?.has( prop ) ) || ( ! rest[ prop ] && read( prop ) ) ) {
+				continue;
+			}
+			const gap = ! rest[ prop ] ? `the draft's resting ${ prop } was not read on this element` : stateGap( state, held );
+			plan.push( { prop, res: gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: rest[ prop ], baseline: () => undefined, slots, calibration: cal, db, snapshot, log: [], state } ) } );
+		}
+		const pairBroken = PAIR.every( ( p ) => plan.some( ( x ) => x.prop === p ) ) && plan.some( ( x ) => PAIR.includes( x.prop ) && 'written' !== x.res.status );
+		for ( const { prop, res } of plan ) {
+			if ( pairBroken && PAIR.includes( prop ) && 'written' === res.status ) {
+				out.unmapped.push( gapRow( prop, state, `it is held with ${ PAIR.find( ( p ) => p !== prop ) }, which cannot be` ) );
+			} else if ( 'written' === res.status ) {
+				for ( const w of res.writes ) {
+					if ( taken.has( w.attr ) ) {
+						same( taken.get( w.attr ), w.value ) || out.unmapped.push( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( rest[ prop ] ), reason: `default-state: ${ w.attr } already holds ${ JSON.stringify( taken.get( w.attr ) ) } on this block, and this element's resting ${ prop } is ${ JSON.stringify( w.value ) }` } );
+						continue;
+					}
+					taken.set( w.attr, w.value );
+					const { before, after } = setAttr( node, w );
+					out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: target.slot, prop, state, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: 'fill-state-hold', hold: `${ rec.name } changes ${ prop } on ${ state } by itself and the draft does not: held at the draft's resting value` } );
+				}
+			} else if ( 'gap' === res.status ) {
+				const follows = rest[ prop ] && READ_WIDTHS.every( ( w ) => undefined === rest[ prop ][ w ] || rest[ prop ][ w ] === rest.color?.[ w ] );
+				follows && 'color' !== prop
+					? out.held.push( { node: ref, slot: target.slot, prop, state, reason: `default-state: ${ prop } follows the element's colour, so the colour's hold holds it` } )
+					: out.unmapped.push( gapRow( prop, state, res.detail ? `${ res.gap }: ${ res.detail }` : res.gap ) );
+			}
+		}
+	}
+	return out;
+}
+
 // Whether the block's motion support holds this target's hover transform (its sgsMotion hover layer, written by
 // lib/fill-motion.mjs::motionWrites), so the state pass leaves it there. A DB without motion tables holds none.
 function motionHolds( mdb, rec, target ) {
@@ -134,6 +254,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 	const sink = createPatch();
 	const snapOf = ( target ) => targetSnap( reads, target );
 	const out = { writes: [], unmapped: [], held: [] };
+	const interaction = interactionStates( db );
 	let mdb = null;
 	try {
 		mdb = motionDb( db );
@@ -149,6 +270,8 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 		const held = settingStates( db, rec.name );
 		const node = flat[ rec.index ];
 		const ref = refOf( node );
+		// The node's state settings written so far, which a hold never overwrites (holdDefaults).
+		const taken = new Map();
 		for ( const target of rec.targets ) {
 			if ( ! knownPaths( cal ).map( LOOSE ).includes( LOOSE( target.slot ) ) ) {
 				continue;
@@ -191,11 +314,18 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 				if ( 'written' === res.status ) {
 					for ( const w of res.writes ) {
 						const { before, after } = setAttr( node, w );
+						atRest || taken.set( w.attr, w.value );
 						out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop, state, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: 'fill-state', ...( 'code' === read ? { read } : {} ), ...( draftDefect ? { draftDefect } : {} ), ...( atRest ? { surface: 'open look written as the resting look' } : {} ) } );
 					}
 				} else if ( 'gap' === res.status ) {
 					out.unmapped.push( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( perWidth ), reason: res.detail ? `${ res.gap }: ${ res.detail }` : res.gap } );
 				}
+			}
+			if ( ! hidden ) {
+				const hold = holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads, drafts, held, interaction, taken } );
+				out.writes.push( ...hold.writes );
+				out.unmapped.push( ...hold.unmapped );
+				out.held.push( ...hold.held );
 			}
 			if ( Object.keys( tokenLooks ).length ) {
 				const snap = snapOf( target );
