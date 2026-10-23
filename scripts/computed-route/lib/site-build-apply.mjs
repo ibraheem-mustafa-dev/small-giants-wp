@@ -3,7 +3,8 @@
 // WP-CLI call: `wp option update` (the hash each template copy was built from, beside part 4's options), `wp post update` and `wp post meta update` (the row key and tree hash the next run compares, and a mega
 // panel's section page), `wp menu`
 // and `wp menu item` (part 3; a new menu is marked with its page-map name, and no item is ever deleted), `wp option update` (part 4), `wp rewrite` (part 5) and `wp sgs <area> set-active`
-// (part 7, through Sgs_Active_Layout::set_active, never a raw option write).
+// (part 7, through Sgs_Active_Layout::set_active, never a raw option write); a site option the draft sets (the route
+// fade, lib/site-build-options.mjs) is one `wp option update <name> <json> --format=json` of the stored array with the draft's keys over it.
 import { execFileSync } from 'child_process';
 import fs from 'fs';
 import os from 'os';
@@ -187,6 +188,8 @@ if ( $t ) {
 			wp( [ 'menu', 'location', 'assign', String( val( a.menu ) ), a.location ] );
 		} else if ( 'option' === a.type ) {
 			wp( [ 'option', 'update', a.name, String( val( a.value ) ) ] );
+		} else if ( 'site-option' === a.type ) {
+			wp( [ 'option', 'update', a.name, JSON.stringify( a.value ), '--format=json' ] );
 		} else if ( 'permalinks' === a.type ) {
 			wp( [ 'rewrite', 'structure', a.value, '--hard' ] );
 			wp( [ 'rewrite', 'flush', '--hard' ] );

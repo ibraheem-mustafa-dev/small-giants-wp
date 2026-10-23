@@ -1,11 +1,14 @@
 // The site build (Spec 48 FR-48-55): every row of the confirmed sites/<client>/build/page-map.json made on one site
 // once, with its menus, front and posts page, permalinks and active header, drawer and footer.
 //   node site-build.mjs <client> --site <secrets name, e.g. indus-test> [--apply] [--repo <root>]
+//   node site-build.mjs <client> --promote-options <Fill run folder or its site-options.json> [--repo <root>]
 // Without --apply it prints the plan and the before-and-after table of every option it would change, and writes
 // nothing. With --apply it runs the four phases in order (posts, menus, layout, site), reading the site again before
 // each, and writes each new post id into its page-map row as it is made. The site the ids were written for is recorded
 // beside the map (page-map.site); a run against another site that shares the client plans from the map without those ids
-// (a post carrying a row key is adopted) and its write-back replaces them. Exit 0 done, 1 failure or a stopped run, 2 usage.
+// (a post carrying a row key is adopted) and its write-back replaces them. The site phase also sets the site options the
+// draft's behaviours need (the route fade) from sites/<client>/build/site-options.json, which --promote-options fills from a
+// Fill run (lib/site-build-options.mjs). Exit 0 done, 1 failure or a stopped run, 2 usage.
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
@@ -13,17 +16,30 @@ import { readIdsSite, readPageMap, rowsForSite, writeIdsSite, writeMenuMap, writ
 import { readState } from './lib/site-build-state.mjs';
 import { readLinkTextReport } from './lib/site-build-labels.mjs';
 import { PHASES, planBuild, tally } from './lib/site-build-plan.mjs';
+import { promoteSiteOptions, withSiteOptions } from './lib/site-build-options.mjs';
 import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );
 const client = args.find( ( a, i ) => ! a.startsWith( '--' ) && ! args[ i - 1 ]?.startsWith( '--' ) );
 const site = opt( '--site' );
-if ( ! client || ! site ) {
+const promote = opt( '--promote-options' );
+if ( ! client || ( ! site && ! promote ) ) {
 	console.error( 'usage: node site-build.mjs <client> --site <site> [--apply] [--repo <root>]' );
+	console.error( '       node site-build.mjs <client> --promote-options <Fill run folder or file> [--repo <root>]' );
 	process.exit( 2 );
 }
 const repo = opt( '--repo' ) || path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
+if ( promote ) {
+	try {
+		const r = promoteSiteOptions( { repo, client, from: promote } );
+		console.log( `${ r.changed ? 'wrote' : 'unchanged' } ${ path.relative( repo, r.file ) }: ${ Object.entries( r.options ).map( ( [ n, o ] ) => `${ n } ${ JSON.stringify( o.value ) }` ).join( '; ' ) }` );
+		process.exit( 0 );
+	} catch ( e ) {
+		console.error( `FAILED: ${ e.message }` );
+		process.exit( 1 );
+	}
+}
 const mapFile = path.join( repo, 'sites', client, 'build', 'page-map.json' );
 const apply = args.includes( '--apply' );
 
@@ -57,7 +73,7 @@ try {
 			p.problems.forEach( ( m ) => console.error( `STOP ${ m }` ) );
 			throw new Error( `${ p.problems.length } problem(s); nothing was written` );
 		}
-		return p;
+		return withSiteOptions( p, { repo, client, runPhp } );
 	};
 	const first = plan();
 	print( first );
