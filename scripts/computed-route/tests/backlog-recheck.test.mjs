@@ -101,7 +101,6 @@ test( 'a gate that now fails for an instrument reason (G3 unrouted, G4 dead) kee
 	assert.match( outcomeOf( unrouted ).reason, /G3 \(I-unrouted\)/ );
 	const dead = await run( { rows: [ row( [ entry() ] ) ] }, env( { db: db( FITS ), cache: () => ( { dead: [ 'paddingTop' ] } ), probes: probes( { measure: { method: 'measured', reaches: true, evidence: 'x' } } ) } ) );
 	assert.equal( dead.backlog.rows[ 0 ].status, 'open' );
-	assert.match( outcomeOf( dead ), /G4 \(I-calibration\)|./ );
 	assert.match( outcomeOf( dead ).reason, /G4 \(I-calibration\).*paddingTop is listed dead/ );
 	assert.equal( dead.backlog.rows[ 0 ].lastRecheck.entries[ 0 ].outcome, 'open' );
 } );
