@@ -6,7 +6,7 @@
 
 import { colourHex } from './tokens.mjs';
 import { shadowParts } from './motion-shadow.mjs';
-import { templateKey } from './fact-key.mjs';
+import { templateKey, templateKeyOf } from './fact-key.mjs';
 import { props, nameOf, words, blob, triggerOf, MINUS, NUMBER, number, durationOf } from './motion-record-text.mjs';
 
 const px = ( n ) => `${ n }px`;
@@ -29,9 +29,57 @@ function stickyOf( r, ctx ) {
 	return /^(?:sticky|fixed)$/.test( String( staticStyle( t?.element, 'position' ) ?? '' ).trim() ) || /\b(?:sticky|fixed)\b/i.test( words( r.element?.description ) );
 }
 
+const PINS = /^(?:sticky|fixed)$/;
+
+// Each device tier and the width the draft is read at for it (lib/fill-read.mjs::READ_WIDTHS), widest first: a narrower
+// tier inherits a wider one's value.
+const TIER_WIDTHS = [ [ 'desktop', 1440 ], [ 'tablet', 768 ], [ 'mobile', 375 ] ];
+
+// The draft's computed position of every root element a template element is, by width: { <template key>: { width:
+// position } }, from lib/fill-read.mjs::readDraft's snapshots (a width that did not render the element has none). Only a
+// root target found by its draft element ID (a tpl finder) names its template element. rootComponent: the entry draft's
+// component, which the served root host is named after.
+export function positionsByTemplate( { reads, nodes, rootComponent = null } ) {
+	const out = {};
+	for ( const t of nodes.flatMap( ( n ) => n.targets ).filter( ( x ) => '' === x.slot && 'string' === typeof x.finder?.tpl ) ) {
+		const key = templateKeyOf( t.finder.tpl, rootComponent );
+		for ( const [ width, snaps ] of Object.entries( reads?.widths || {} ) ) {
+			const position = snaps[ t.id ]?.position;
+			key && position && ( ( out[ key ] ??= {} )[ width ] = position );
+		}
+	}
+	return out;
+}
+
+// headerSticky from the draft's computed position at each tier's width (`by`: { width: position }): `on` at desktop where
+// the header pins there, `off` on every tier where it does not, and a tier that pins inherits (written `on` only beneath an
+// `off`); a tier the draft does not render inherits. null when no tier pins. Without a read of the header, the code's
+// pinning stands at desktop.
+export function stickyTiers( by ) {
+	if ( ! TIER_WIDTHS.some( ( [ , w ] ) => by?.[ w ] ) ) {
+		return { desktop: 'on' };
+	}
+	if ( ! TIER_WIDTHS.some( ( [ , w ] ) => PINS.test( String( by[ w ] ?? '' ) ) ) ) {
+		return null;
+	}
+	const out = {};
+	let inherited = 'off';
+	for ( const [ tier, w ] of TIER_WIDTHS ) {
+		if ( ! by[ w ] ) {
+			continue;
+		}
+		const want = PINS.test( String( by[ w ] ) ) ? 'on' : 'off';
+		if ( 'off' === want || 'desktop' === tier || inherited !== want ) {
+			out[ tier ] = want;
+		}
+		inherited = want;
+	}
+	return out;
+}
+
 // A script that writes a box-shadow once the page has scrolled past a distance: the site header's scrolled shadow and
-// threshold and, for a header the draft pins, its sticky behaviour. The shadow is the `shadowScrolled` shape with its
-// colour split into `shadowScrolledColour`.
+// threshold and, for a header the draft pins, its sticky behaviour per tier (stickyTiers, from `ctx.positions`,
+// positionsByTemplate's map). The shadow is the `shadowScrolled` shape with its colour split into `shadowScrolledColour`.
 export function headerScrollOf( r, ctx ) {
 	const p = props( r ).find( ( q ) => 'box-shadow' === nameOf( q ) );
 	const at = new RegExp( `scrollY\\s*>\\s*${ NUMBER }` ).exec( words( r.source?.code, r.trigger?.detail ) );
@@ -43,13 +91,14 @@ export function headerScrollOf( r, ctx ) {
 		return null;
 	}
 	const colour = colourHex( shadow.colour );
-	const sticky = stickyOf( r, ctx );
+	const by = ctx.positions?.[ templateOfRecord( r, ctx )?.key ];
+	const sticky = by ? stickyTiers( by ) : ( stickyOf( r, ctx ) ? { desktop: 'on' } : null );
 	return {
 		blocks: { 'sgs/site-header': [
 			{ attr: 'scrolledOffset', value: number( at[ 1 ] ) },
 			{ attr: 'shadowScrolled', value: [ shadow.x, shadow.y, shadow.blur, shadow.spread ].map( px ).join( ' ' ) },
 			...( colour ? [ { attr: 'shadowScrolledColour', value: colour, colour: true } ] : [] ),
-			...( sticky ? [ { attr: 'headerSticky', value: { desktop: 'on' } } ] : [] ),
+			...( sticky ? [ { attr: 'headerSticky', value: sticky } ] : [] ),
 		] },
 		sticky: sticky ? templateOfRecord( r, ctx ) : null,
 		notes: [ 'the scrolled shadow switches once the page has scrolled past the threshold' ],

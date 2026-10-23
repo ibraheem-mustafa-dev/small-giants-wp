@@ -108,7 +108,8 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 		}
 		const r = el.getBoundingClientRect();
 		snap.rect = { x: Math.round( r.x * 1000 ) / 1000, y: Math.round( ( r.y + window.scrollY ) * 1000 ) / 1000, w: Math.round( r.width * 1000 ) / 1000, h: Math.round( r.height * 1000 ) / 1000 };
-		snap.inFlow = ! [ 'absolute', 'fixed' ].includes( getComputedStyle( el ).position );
+		snap.position = getComputedStyle( el ).position;
+		snap.inFlow = ! [ 'absolute', 'fixed' ].includes( snap.position );
 		snap.words = ( el.textContent || '' ).replace( /\s+/g, ' ' ).trim();
 		const anchors = el.matches( 'a[href]' ) ? [ el ] : [ ...el.querySelectorAll( 'a[href]' ) ];
 		const sole = 1 === anchors.length && ( el === anchors[ 0 ] || anchors[ 0 ].textContent.replace( /\s+/g, ' ' ).trim() === snap.words );
@@ -272,6 +273,11 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 				snap.styles[ p ] = /color$/.test( p ) ? srgb( v ) : v;
 			}
 		}
+		// collectPair reads a text colour off the element painting the first text; an element with no text (an icon-only link)
+		// keeps its own, which a glyph drawn in currentColor paints and lib/fill-state.mjs::holdDefaults holds with its ground.
+		if ( props.includes( 'color' ) && ! snap.styles.color ) {
+			snap.styles.color = srgb( getComputedStyle( el ).color );
+		}
 		out[ j.id ] = snap;
 	}
 	return out;
@@ -310,7 +316,7 @@ async function openPage( browser, devices, { url, open, width, origin, external,
 }
 
 // What every read of the draft returns:
-//   widths[w][targetId]   the collectPair snapshot (plus rect, inFlow, words, href); { missing: true } when the finder
+//   widths[w][targetId]   the collectPair snapshot (plus rect, position, inFlow, words, href); { missing: true } when the finder
 //                         found nothing visible. READ_WIDTHS carry every property, the other fluid widths only lengths.
 //   declared[w][targetId] every longhand the draft's matched rules declare (FR-48-8), at READ_WIDTHS; the ones beyond
 //                         PROPS (lib/fill-declared.mjs::extraProps) are read rendered into widths[w][targetId].styles too.
@@ -320,6 +326,8 @@ async function openPage( browser, devices, { url, open, width, origin, external,
 //                         `scIf` rows) it also holds the looks behind each set-state sc-if (lib/fill-logic-state.mjs::readLogicStates)
 //                         in the same shape, and `logicGaps`; with `currentGroups` (lib/fill-current-item.mjs::currentItemGroups) it holds
 //                         the current-item looks of a repeated list too.
+//   failures              [{ id, owner (the node index), width, read: 'declared', reason }] each declared read that threw,
+//                         so nothing about that target's declared values there is judged (lib/fill-report.mjs::readFailureRows).
 // nodes: lib/fill-skeleton.mjs::skeletonNodes. open: the regex source of the text to click first. external: allow the
 // draft to load anything beyond its own origin (off by default, so a read is the same offline).
 export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, states = [], logicRows = [], currentGroups = [], log = () => {} } ) {
@@ -327,7 +335,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 	const origin = new URL( url ).origin;
 	const jobs = jobsFor( nodes );
 	const browser = await chromium.launch( { headless, args: [ '--hide-scrollbars' ] } );
-	const result = { origin, widths: {}, declared: {}, sweep: {}, states: {} };
+	const result = { origin, widths: {}, declared: {}, sweep: {}, states: {}, failures: [] };
 	const aborted = new Set();
 	const emptyWidths = [];
 	try {
@@ -349,10 +357,19 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 				result.declared[ width ] = {};
 				const found = jobs.filter( ( x ) => ! result.widths[ width ][ x.id ]?.missing );
 				for ( const j of found ) {
-					result.declared[ width ][ j.id ] = await declaredValues( cdp, j.finder, RESOLVE, null ).catch( ( e ) => {
-						log( `declared read failed for ${ j.id } at ${ width }px (its declared values are not judged there): ${ e.message }` );
+					// A read that throws, or finds no element where the computed read found one, is a recorded outcome (`failures`,
+					// lib/fill-report.mjs::readFailureRows), never only a log line.
+					let reason = null;
+					const own = await declaredValues( cdp, j.finder, RESOLVE, null ).catch( ( e ) => {
+						reason = e.message;
 						return null;
 					} );
+					if ( null === own ) {
+						reason ??= 'the devtools read found no element where the computed read found one';
+						log( `declared read failed for ${ j.id } at ${ width }px (its declared values are not judged there): ${ reason }` );
+						result.failures.push( { id: j.id, owner: j.owner, width, read: 'declared', reason } );
+					}
+					result.declared[ width ][ j.id ] = own;
 				}
 				// A wrapper that only holds an svg or img the draft sizes takes that size as its declared size.
 				for ( const j of found ) {
