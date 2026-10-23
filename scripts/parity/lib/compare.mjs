@@ -2,6 +2,7 @@
 import { compareFocus } from './focus.mjs';
 import { sameRatio, sameTracks } from './ratio.mjs';
 import { layoutComparable } from './paint.mjs';
+import { sameTransitions, isTimingLonghand } from './transitions.mjs';
 import { TRANSFORM_PARTS, hasTransformParts, sameTransform, effectiveText } from './transform.mjs';
 
 const PX = /^-?\d+(\.\d+)?px$/;
@@ -246,7 +247,10 @@ export function comparePair( pair, d, l, tol ) {
 		if ( borderColourIrrelevant( p, d.styles, l.styles ) || partIrrelevant( p, d.styles, l.styles ) || timingIrrelevant( p, d, l ) || equivalent( p, d.styles[ p ], l.styles[ p ], [ d, l ].every( ( x ) => /(^|-)flex$/.test( x.layoutDisplay || '' ) ) ) || ! layoutComparable( p, d, l ) || controlPaddingIrrelevant( p, d, l ) ) {
 			continue;
 		}
-		if ( ! sameValue( p, d.styles[ p ], l.styles[ p ], tol.px ) ) {
+		// A transition timing compares per animated property where both sides transition something (lib/transitions.mjs).
+		const shorthands = [ d.motion?.transition, l.motion?.transition ];
+		const byName = isTimingLonghand( p ) && shorthands.every( ( t ) => t && 'none' !== t ) ? sameTransitions( ...shorthands, p ) : null;
+		if ( ! ( byName ?? sameValue( p, d.styles[ p ], l.styles[ p ], tol.px ) ) ) {
 			add( 'style', p, d.styles[ p ], l.styles[ p ] );
 		}
 	}
@@ -274,7 +278,7 @@ export function comparePair( pair, d, l, tol ) {
 			add( 'motion', 'keyframes', d.keyframes, l.keyframes );
 		}
 		for ( const k of [ 'animation', 'transition' ] ) {
-			if ( ! sameValue( k, d.motion[ k ], l.motion[ k ], 0 ) ) {
+			if ( ! ( ( 'transition' === k && sameTransitions( d.motion[ k ], l.motion[ k ] ) ) || sameValue( k, d.motion[ k ], l.motion[ k ], 0 ) ) ) {
 				add( 'motion', k, d.motion[ k ], l.motion[ k ] );
 			}
 		}

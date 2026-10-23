@@ -61,7 +61,8 @@ if ( ! argv[ 0 ] || ! fs.existsSync( cfgPath ) ) {
 // SGS_LIVE_ORIGIN: measure a local mirror of the live site instead (computed-route solve.mjs --site).
 const cfg = retargetLive( ( await import( pathToFileURL( cfgPath ).href ) ).default, process.env.SGS_LIVE_ORIGIN );
 const onlyStates = flag( '--states' )?.split( ',' );
-const problems = lintConfig( cfg, loadHandScope( cfgPath, cfg ), onlyStates );
+// auto-scrolled is the state withAutoScroll adds after the lint, so --states may name it unless the config opts out.
+const problems = lintConfig( cfg, loadHandScope( cfgPath, cfg ), onlyStates?.filter( ( s ) => 'auto-scrolled' !== s || false === cfg.autoScroll ) );
 if ( problems.length || argv.includes( '--lint' ) ) {
 	console.log( problems.length ? `${ cfg.name }: config lint failed:\n- ${ problems.join( '\n- ' ) }` : `${ cfg.name }: config lint passed.` );
 	process.exit( problems.length ? 1 : 0 );
