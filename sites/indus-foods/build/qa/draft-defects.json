@@ -1,0 +1,142 @@
+{
+	"client": "indus-foods",
+	"takenOn": "2026-10-20T04:58:10.084Z",
+	"defects": [
+		{
+			"id": "defect:Indus Foods Website v2:87",
+			"draftId": "Indus Foods Website v2:87",
+			"construct": "style-hover :hover",
+			"test": "unresolved-binding",
+			"declares": ":hover color: {{ card.textColor }}",
+			"renders": "the {{ }} binding is not resolved where the runtime compiles a style-hover attribute, so the browser drops color and the page never paints it; the rule that paints is .scp6:hover { transform: translateY(-6px) !important; box-shadow: rgba(0, 0, 0, 0.4) 0px 20px 40px -18px !important; }",
+			"owner": "Claude Design",
+			"widths": [
+				375,
+				768,
+				1440
+			],
+			"built": null,
+			"listedOn": "2026-10-23",
+			"sentOn": null
+		},
+		{
+			"id": "defect:Indus Foods Website v2:151",
+			"draftId": "Indus Foods Website v2:151",
+			"construct": "style-hover :hover",
+			"test": "unresolved-binding",
+			"declares": ":hover background: {{ item.mega.hover }}; color: {{ item.mega.fg }}",
+			"renders": "the {{ }} binding is not resolved where the runtime compiles a style-hover attribute, so the browser drops background and color and the page never paints it; the rule that paints is .scpc:hover { --la: 1 !important; --lx: 4px !important; }",
+			"owner": "Claude Design",
+			"widths": [
+				375,
+				768,
+				1440
+			],
+			"built": null,
+			"listedOn": "2026-10-23",
+			"sentOn": null
+		},
+		{
+			"id": "defect:Indus Foods Website v2:160",
+			"draftId": "Indus Foods Website v2:160",
+			"construct": "style-hover :hover",
+			"test": "unresolved-binding",
+			"declares": ":hover color: {{ card.textColor }}",
+			"renders": "the {{ }} binding is not resolved where the runtime compiles a style-hover attribute, so the browser drops color and the page never paints it; the rule that paints is .scpd:hover { transform: translateY(-4px) rotate(-1deg) !important; box-shadow: rgba(0, 0, 0, 0.45) 0px 20px 32px -16px !important; --ax: 4px !important; }",
+			"owner": "Claude Design",
+			"widths": [
+				375,
+				768,
+				1440
+			],
+			"built": null,
+			"listedOn": "2026-10-23",
+			"sentOn": null
+		},
+		{
+			"id": "defect:Indus Foods Website v2:324",
+			"draftId": "Indus Foods Website v2:324",
+			"construct": "style-hover :hover",
+			"test": "unresolved-binding",
+			"declares": ":hover color: {{ hero.fg }}",
+			"renders": "the {{ }} binding is not resolved where the runtime compiles a style-hover attribute, so the browser drops color and the page never paints it; the rule that paints is .scps:hover { }",
+			"owner": "Claude Design",
+			"widths": [
+				375,
+				768,
+				1440
+			],
+			"built": null,
+			"listedOn": "2026-10-23",
+			"sentOn": null
+		},
+		{
+			"id": "defect:Indus Foods Website v2:326",
+			"draftId": "Indus Foods Website v2:326",
+			"construct": "style-hover :hover",
+			"test": "unresolved-binding",
+			"declares": ":hover color: {{ hero.fg }}",
+			"renders": "the {{ }} binding is not resolved where the runtime compiles a style-hover attribute, so the browser drops color and the page never paints it; the rule that paints is .scps:hover { }",
+			"owner": "Claude Design",
+			"widths": [
+				375,
+				768,
+				1440
+			],
+			"built": null,
+			"listedOn": "2026-10-23",
+			"sentOn": null
+		},
+		{
+			"id": "defect:Indus Foods Website v2:338",
+			"draftId": "Indus Foods Website v2:338",
+			"construct": "style-hover :hover",
+			"test": "unresolved-binding",
+			"declares": ":hover color: {{ c.fg }}",
+			"renders": "the {{ }} binding is not resolved where the runtime compiles a style-hover attribute, so the browser drops color and the page never paints it; the rule that paints is .scpt:hover { transform: scale(1.05) translateY(-2px) !important; box-shadow: rgba(0, 0, 0, 0.25) 0px 6px 20px !important; font-weight: 700 !important; }",
+			"owner": "Claude Design",
+			"widths": [
+				375,
+				768,
+				1440
+			],
+			"built": null,
+			"listedOn": "2026-10-23",
+			"sentOn": null
+		},
+		{
+			"id": "defect:Indus Foods Website v2:367",
+			"draftId": "Indus Foods Website v2:367",
+			"construct": "style-hover :hover",
+			"test": "unresolved-binding",
+			"declares": ":hover color: {{ c.fg }}",
+			"renders": "the {{ }} binding is not resolved where the runtime compiles a style-hover attribute, so the browser drops color and the page never paints it; the rule that paints is .scpv:hover { transform: translateY(-8px) !important; box-shadow: rgba(7, 50, 70, 0.6) 0px 30px 50px -26px !important; }",
+			"owner": "Claude Design",
+			"widths": [
+				375,
+				768,
+				1440
+			],
+			"built": null,
+			"listedOn": "2026-10-23",
+			"sentOn": null
+		},
+		{
+			"id": "defect:Indus Foods Website v2:670",
+			"draftId": "Indus Foods Website v2:670",
+			"construct": "transition",
+			"test": "unreached",
+			"declares": "a transition in the draft's code",
+			"renders": "never reached at 375, 768, 1440 px, even with hover, focus, state keys and events forced and the scroll pass run",
+			"owner": "Claude Design",
+			"widths": [
+				375,
+				768,
+				1440
+			],
+			"built": null,
+			"listedOn": "2026-10-23",
+			"sentOn": null
+		}
+	]
+}
