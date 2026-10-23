@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/fill-row-lift.mjs",
+		"find": "\tliftChildren( st, rowRec, copies, held, { fillElement, snapsOf } );\n",
+		"replace": "",
+		"why": "a differing value would be dropped or never reach the icon"
+	},
+	{
+		"file": "lib/fill-row-lift.mjs",
+		"find": "calibrated?.length ? calibrated : [ target.slot ]",
+		"replace": "calibrated?.length ? calibrated.slice( 0, 1 ) : [ target.slot ]",
+		"why": "only the first slot of an element would be read, losing the settings calibrated elsewhere"
+	},
+	{
+		"file": "lib/fill-row-lift.mjs",
+		"find": "if ( 'shape' === element && rowCircle && all &&",
+		"replace": "if ( false && rowCircle && all &&",
+		"why": "a circle would stay a radius row"
+	},
+	{
+		"file": "lib/fill-row-lift.mjs",
+		"find": "if ( own && held.has( keyOf( own ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "an icon would carry what the row already holds"
+	},
+	{
+		"file": "lib/fill-row-lift.mjs",
+		"find": "Math.abs( s.rect.w - s.rect.h ) <= 1",
+		"replace": "true",
+		"why": "a non-square box would become circle"
+	},
+	{
+		"file": "lib/fill-row-lift.mjs",
+		"find": "calibrated?.length ? calibrated : [ target.slot ]",
+		"replace": "calibrated?.length ? calibrated : []",
+		"why": "an element no setting is calibrated on would be silent"
+	},
+	{
+		"file": "lib/fill-row-lift.mjs",
+		"find": "! [ ...heldProps ].some( ( h ) => paints( h, x.property ) )",
+		"replace": "true",
+		"why": "longhand rows of a property the row holds would be raised on the icon"
+	}
+]
