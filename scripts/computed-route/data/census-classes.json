@@ -5,6 +5,7 @@
 	},
 	"unmapped": [
 		{ "class": "state-transition", "pattern": "state transition", "owner": "FR-48-81 States" },
+		{ "class": "layout-hover", "pattern": "hover: Spec 38A §5\\.1 maps a layout-property hover", "owner": "Spec 38A §5.1 (a layout-property hover routed to scale, translate, indent or the underline)" },
 		{ "class": "unpaired-part", "pattern": "^unpaired-part", "owner": "FR-48-3 Stage-0 calibration" },
 		{ "class": "no-declared-part", "pattern": "^no declared part", "owner": "FR-48-3 Stage-0 calibration" },
 		{ "class": "uncalibrated", "pattern": "^uncalibrated|^calibration has no ", "owner": "FR-48-49 Uncalibrated settings" },
