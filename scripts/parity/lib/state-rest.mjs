@@ -1,7 +1,9 @@
 // Every state of draft-live-walk.mjs starts from the page's rest (GAP-CHECKLIST.md section 30). The page at rest is read
 // once, just before the first state's action (after the load, the config's `open` and the load entrances), as a rest
-// signature: the scroll, any scroll lock, the open dialogs, modals, popovers and disclosures, and the fixed layers that
-// cover a quarter of the screen or more. Before every later state the signature is read again: a page still at rest runs
+// signature: the scroll, any scroll lock (html and body overflow, body and html position), the open dialogs, modals,
+// popovers and disclosures, the elements made inert or hidden from assistive technology at page level, the focused
+// element, and every fixed or transformed layer in the viewport whatever its size (a 300px drawer with no ARIA at 1440).
+// Layers are named by tag, id and first class, each name once, so a carousel's slide giving way to the next is no change. Before every later state the signature is read again: a page still at rest runs
 // the state where it is (a wizard step chosen inside a modal the config's `open` opened is at rest), a page that is not
 // (a drawer, a scroll, a lock the previous state left) is loaded afresh and the config's `open` runs again, and a page
 // still not at rest after that is refused with its reason, never measured. A state marked `from: 'previous'` runs on the
@@ -23,30 +25,40 @@ export function restSignature() {
 		return 'hidden' !== cs.visibility && 0 !== Number( cs.opacity ) && r.width > 0 && r.height > 0;
 	};
 	const shown = ( sel ) => [ ...document.querySelectorAll( sel ) ].filter( shows ).length;
-	const screen = innerWidth * innerHeight;
-	const covered = ( e ) => {
+	const inView = ( e ) => {
 		const r = e.getBoundingClientRect();
-		return ( Math.max( 0, Math.min( r.right, innerWidth ) - Math.max( r.left, 0 ) ) * Math.max( 0, Math.min( r.bottom, innerHeight ) - Math.max( r.top, 0 ) ) ) / screen;
+		return r.width > 0 && r.height > 0 && r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight;
 	};
 	const name = ( e ) => {
 		const cls = ( e.getAttribute( 'class' ) || '' ).trim().split( /\s+/ )[ 0 ];
 		return `${ e.localName }${ e.id ? '#' + e.id : '' }${ cls ? '.' + cls : '' }`;
 	};
-	const layers = [ ...document.querySelectorAll( 'body *' ) ].filter( ( e ) => 'fixed' === getComputedStyle( e ).position && shows( e ) && covered( e ) >= 0.25 ).map( name ).sort();
+	const names = ( list ) => [ ...new Set( list.map( name ) ) ].sort().join( ' ' );
+	const layers = names( [ ...document.querySelectorAll( 'body *' ) ].filter( ( e ) => {
+		const cs = getComputedStyle( e );
+		return ( 'fixed' === cs.position || 'none' !== cs.transform ) && shows( e ) && inView( e );
+	} ) );
+	// Page-level aria-hidden: on a child of body, or on an element that is or holds a landmark (an icon's own is not).
+	const LANDMARK = 'main, header, footer, nav, aside, [role="main"], [role="banner"], [role="contentinfo"], [role="navigation"]';
+	const hidden = names( [ ...document.querySelectorAll( '[aria-hidden="true"]' ) ].filter( ( e ) => e.parentElement === document.body || e.matches( LANDMARK ) || e.querySelector( LANDMARK ) ) );
+	const focused = document.activeElement && document.activeElement !== document.body && document.activeElement !== document.documentElement ? name( document.activeElement ) : '';
 	const html = getComputedStyle( document.documentElement );
 	const body = getComputedStyle( document.body );
 	return {
 		scroll: `${ Math.round( scrollX ) },${ Math.round( scrollY ) }`,
-		lock: `${ html.overflowY } ${ body.overflowY } ${ body.position }`,
+		lock: `${ html.overflowY } ${ body.overflowY } ${ body.position } ${ html.position }`,
 		dialogs: shown( 'dialog[open]' ),
 		modals: shown( '[aria-modal="true"], [role="dialog"]' ),
 		popovers: shown( ':popover-open' ),
 		disclosures: document.querySelectorAll( 'details[open], [aria-expanded="true"]' ).length,
-		layers: layers.join( ' ' ),
+		inert: names( [ ...document.querySelectorAll( '[inert]' ) ] ),
+		hidden,
+		focus: focused,
+		layers,
 	};
 }
 
-const LABELS = { scroll: 'scroll', lock: 'scroll lock (html, body overflow-y; body position)', dialogs: 'open dialogs', modals: 'shown modals', popovers: 'open popovers', disclosures: 'open disclosures (details, aria-expanded)', layers: 'fixed layers over a quarter of the screen' };
+const LABELS = { scroll: 'scroll', lock: 'scroll lock (html, body overflow-y; body, html position)', dialogs: 'open dialogs', modals: 'shown modals', popovers: 'open popovers', disclosures: 'open disclosures (details, aria-expanded)', inert: 'inert elements', hidden: 'page-level aria-hidden', focus: 'focused element', layers: 'fixed or transformed layers in the viewport' };
 
 // What differs between the signature at rest and now: one line per field, empty when the page is at rest.
 export function restDiff( rest, now ) {

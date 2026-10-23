@@ -124,8 +124,8 @@ test( 'restDiff names each field that moved; an equal signature is at rest', asy
 	const { restDiff } = await rest();
 	const base = { scroll: '0,0', lock: 'visible visible static', dialogs: 0, modals: 0, popovers: 0, disclosures: 1, layers: '' };
 	assert.deepEqual( restDiff( base, { ...base } ), [] );
-	assert.deepEqual( restDiff( base, { ...base, scroll: '0,400', layers: 'div.drawer' } ), [ 'scroll: 0,0 at rest, 0,400 now', 'fixed layers over a quarter of the screen: none at rest, div.drawer now' ] );
-	for ( const k of [ 'lock', 'dialogs', 'modals', 'popovers', 'disclosures' ] ) {
+	assert.deepEqual( restDiff( base, { ...base, scroll: '0,400', layers: 'div.drawer' } ), [ 'scroll: 0,0 at rest, 0,400 now', 'fixed or transformed layers in the viewport: none at rest, div.drawer now' ] );
+	for ( const k of [ 'lock', 'dialogs', 'modals', 'popovers', 'disclosures', 'inert', 'hidden', 'focus' ] ) {
 		assert.equal( restDiff( base, { ...base, [ k ]: 'x' } ).length, 1, k );
 	}
 	assert.deepEqual( restDiff( null, base ), [ 'no rest signature to compare' ] );
@@ -169,7 +169,7 @@ test( 'restSignature reads the scroll, the lock, an open modal and a covering fi
 			<main>x</main><div id="layer" class="drawer open"></div><div id="chip"></div><div id="ghost"></div><div id="clear"></div>
 			<dialog id="d">hi</dialog><div id="panel" role="dialog">p</div><div id="pop" popover>pop</div><details id="dd"><summary>s</summary>x</details><button aria-expanded="false">m</button>` );
 		const at = await page.evaluate( restSignature );
-		assert.deepEqual( at, { scroll: '0,0', lock: 'visible visible static', dialogs: 0, modals: 0, popovers: 0, disclosures: 0, layers: '' }, 'a small chip, a hidden and a transparent layer are no layers' );
+		assert.deepEqual( at, { scroll: '0,0', lock: 'visible visible static static', dialogs: 0, modals: 0, popovers: 0, disclosures: 0, inert: '', hidden: '', focus: '', layers: 'div#chip' }, 'a small fixed chip is a layer (w2-rest.test.mjs); a hidden and a transparent layer are none' );
 		await page.evaluate( () => {
 			document.getElementById( 'd' ).showModal();
 			document.getElementById( 'layer' ).style.display = 'block';
@@ -183,12 +183,12 @@ test( 'restSignature reads the scroll, the lock, an open modal and a covering fi
 		} );
 		const now = await page.evaluate( restSignature );
 		assert.equal( now.scroll, '0,300' );
-		assert.equal( now.lock, 'clip hidden static' );
+		assert.equal( now.lock, 'clip hidden static static' );
 		assert.equal( now.dialogs, 1 );
 		assert.equal( now.modals, 1 );
 		assert.equal( now.popovers, 1 );
 		assert.equal( now.disclosures, 2, 'an open details element and an expanded control' );
-		assert.equal( now.layers, 'div#layer.drawer' );
+		assert.equal( now.layers, 'dialog#d div#chip div#layer.drawer div#pop', 'the open modal and popover sit in the top layer, fixed' );
 	} finally {
 		await browser.close();
 	}
