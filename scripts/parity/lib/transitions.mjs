@@ -5,6 +5,8 @@
 // The pose properties are one property: a draft's `transform` is a clone's `scale`, `translate`, `rotate` or an SGS
 // motion custom property (`--sgs-mh-*`). A 0s entry animates nothing and is not an entry.
 const POSE = /^(--sgs-mh-.*|scale|translate|rotate|transform)$/;
+// A shorthand transition is compared as the longhand the walker sees change: `background` paints as background-color.
+const SHORTHAND = { background: 'background-color' };
 const TIME = /^-?[\d.]+m?s$/;
 const TOKEN = /(?:cubic-bezier|steps|linear)\([^)]*\)|\S+/g;
 const FIELD = { 'transition-duration': 'duration', 'transition-delay': 'delay', 'transition-timing-function': 'timing' };
@@ -28,7 +30,7 @@ export function parseTransitions( v ) {
 		if ( ! times.length && ! named ) {
 			return null;
 		}
-		const key = POSE.test( prop ) ? 'transform' : prop;
+		const key = POSE.test( prop ) ? 'transform' : ( SHORTHAND[ prop ] ?? prop );
 		if ( 0 === entry.duration || out.has( key ) ) {
 			continue;
 		}
@@ -55,7 +57,11 @@ export function sameTransitions( draft, live, longhand = null ) {
 	if ( d.has( 'all' ) && 1 === d.size ) {
 		return [ ...l.values() ].every( ( e ) => sameEntry( d.get( 'all' ), e, field ) );
 	}
-	return [ ...d ].every( ( [ prop, e ] ) => sameEntry( e, l.get( prop ) ?? l.get( 'all' ), field ) );
+	// A property live does not transition differs in duration only (0s): its delay and easing are not rows too.
+	return [ ...d ].every( ( [ prop, e ] ) => {
+		const match = l.get( prop ) ?? l.get( 'all' );
+		return match ? sameEntry( e, match, field ) : ! [ null, 'duration' ].includes( field );
+	} );
 }
 
 export const isTimingLonghand = ( p ) => p in FIELD;

@@ -39,3 +39,12 @@ test( 'a property the draft animates that the clone does not is a row; a draft w
 	assert.equal( sameTransitions( '0.3s ease', 'color 0.3s ease 0s, opacity 0.2s ease 0s' ), false );
 	assert.equal( sameTransitions( DRAFT, `transform 0.35s ${ EASE } 0.1s, background-color 0.25s ease 0s`, 'transition-delay' ), false );
 } );
+
+test( 'MUST FAIL (header 2026-10: CTA timings): a draft background transition is live background-color; a missing property is a duration row only', () => {
+	assert.equal( sameTransitions( 'background 0.2s ease 0s', 'background-color 0.2s ease 0s' ), true );
+	const missing = [ 'transform 0.2s ease 0s, color 0.2s ease 0s', 'transform 0.2s ease 0s' ];
+	assert.equal( sameTransitions( ...missing, 'transition-duration' ), false );
+	assert.equal( sameTransitions( ...missing ), false );
+	assert.equal( sameTransitions( ...missing, 'transition-delay' ), true );
+	assert.equal( sameTransitions( ...missing, 'transition-timing-function' ), true );
+} );
