@@ -17,6 +17,9 @@ import { transformChannels } from './motion-channels.mjs';
 import { MOTION_STATE_PROPS } from './fill-state-motion.mjs';
 
 // The preset keys and the CSS they set: [ key, [ CSS properties read from the element ], state ]. Padding is the four sides.
+// The keys mirror the snapshot schema's `settings.custom.buttonPresets.<variant>` fields (the extractor writes them,
+// plugins/sgs-blocks/scripts/theme-extractor/presets.py); the CSS each paints is that schema's meaning, not a framework fact
+// the DB holds. The variants come from the snapshot and the DB (presetVariants), never from this list.
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
 export const PRESET_KEYS = [
 	[ 'background', [ 'background-color' ], null ], [ 'text', [ 'color' ], null ], [ 'border', [ 'border-top-color' ], null ],
@@ -33,11 +36,18 @@ export const TRANSFORM_CHANNELS = new Set( [ 'translate(1px, 1px) scale(2) rotat
 // The preset key whose property a motion channel also paints (the hover transform).
 const LIFT_KEY = PRESET_KEYS.find( ( [ , props, state ] ) => state && props.some( ( p ) => MOTION_STATE_PROPS.includes( p ) ) );
 
-// The block settings that hold a preset variant, by framework-DB query: { block: attr } for every block with an `inheritStyle`
-// setting whose values include the preset slugs.
-export function presetBlocks( db, variants ) {
+// The preset variants each block can hold, by framework-DB query: { block: { attr, variants } } for every block with an
+// `inheritStyle` setting, its variants the snapshot's preset names (Object.keys of buttonPresets) that setting's values
+// include. A block whose values hold none of them is still listed: it paints its default variant's hover lift.
+export function presetVariants( db, presets ) {
 	const rows = db.prepare( "SELECT block_slug, attr_name, enum_values FROM block_attributes WHERE attr_name = 'inheritStyle' AND enum_values IS NOT NULL" ).all();
-	return Object.fromEntries( rows.filter( ( r ) => variants.every( ( v ) => JSON.parse( r.enum_values ).includes( v ) ) ).map( ( r ) => [ r.block_slug, r.attr_name ] ) );
+	return Object.fromEntries( rows.map( ( r ) => [ r.block_slug, { attr: r.attr_name, variants: Object.keys( presets || {} ).filter( ( v ) => JSON.parse( r.enum_values ).includes( v ) ) } ] ) );
+}
+
+// The block settings that hold every one of the named preset variants: { block: attr }.
+export function presetBlocks( db, variants ) {
+	const all = presetVariants( db, Object.fromEntries( variants.map( ( v ) => [ v, {} ] ) ) );
+	return Object.fromEntries( Object.entries( all ).filter( ( [ , x ] ) => x.variants.length === variants.length ).map( ( [ b, x ] ) => [ b, x.attr ] ) );
 }
 
 // A preset value as a plain CSS value: a `var(--wp--preset--color--<slug>)` is the palette colour.
@@ -134,14 +144,15 @@ export function presetWrites( { nodes, flat, refOf, reads, rawSnapshot, snapshot
 	if ( ! presets || ! Object.keys( presets ).length ) {
 		return out;
 	}
-	const blocks = presetBlocks( db, Object.keys( presets ).filter( ( v ) => [ 'primary', 'secondary', 'outline' ].includes( v ) ) );
+	const blocks = presetVariants( db, presets );
 	for ( const n of nodes ) {
-		const attr = blocks[ n.name ];
+		const attr = blocks[ n.name ]?.attr;
 		const target = n.targets.find( ( t ) => '' === t.slot );
 		if ( ! attr || ! target ) {
 			continue;
 		}
-		const m = matchPreset( { presets, reads, id: target.id, snapshot } );
+		const held = Object.fromEntries( Object.entries( presets ).filter( ( [ v ] ) => blocks[ n.name ].variants.includes( v ) ) );
+		const m = matchPreset( { presets: held, reads, id: target.id, snapshot } );
 		const node = flat[ n.index ];
 		const ref = refOf( node );
 		// The variant the button paints: the one just matched, else the one it holds, else the block's default (a button that

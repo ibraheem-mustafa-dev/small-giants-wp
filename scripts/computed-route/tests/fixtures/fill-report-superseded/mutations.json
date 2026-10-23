@@ -1,0 +1,8 @@
+[
+	{"file": "lib/fill-report.mjs", "find": "\tconst replaced = supersededWrites( r.writes );", "replace": "\tconst replaced = new Map();", "why": "the old behaviour: a replaced write is listed and counted as written"},
+	{"file": "lib/fill-report.mjs", "find": " && ! ( 'string' === typeof mine && String( valueAt( x.after, at ) ?? '' ).startsWith( mine ) )", "replace": "", "why": "appended Additional CSS would be called replaced"},
+	{"file": "lib/fill-report.mjs", "find": "x.node === w.node && x.attr === w.attr &&", "replace": "x.attr === w.attr &&", "why": "another node's write would replace this one"},
+	{"file": "lib/fill-report.mjs", "find": "return JSON.stringify( before ) === JSON.stringify( after ) ? [] : [ at ];", "replace": "return [ at ];", "why": "an unchanged side would count as changed, so another side's write replaces it"},
+	{"file": "lib/fill-report.mjs", "find": "const replaced = paths.length > 0 && paths.every(", "replace": "const replaced = paths.length > 0 && paths.some(", "why": "a write with one tier replaced would be dropped whole"},
+	{"file": "lib/fill-report.mjs", "find": "counts: { writes: live,", "replace": "counts: { writes: writes.length,", "why": "the count would include replaced writes"}
+]

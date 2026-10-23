@@ -1,0 +1,6 @@
+[
+	{"file": "lib/fill-width-gate.mjs", "find": "\tkept.forEach( ( at, index ) => gate.has( index ) || gate.set( index, at ) );\n", "replace": "", "why": "the old behaviour: a child that relied on the widened wrapper's gate shows where the draft hides it"},
+	{"file": "lib/fill-width-gate.mjs", "find": "kept.set( c.index, { shown: own.shown,", "replace": "kept.set( c.index, { shown: at ? at.shown : [ [ 0, Infinity ] ],", "why": "the child would take the widened range"},
+	{"file": "lib/fill-width-gate.mjs", "find": "filter( ( k ) => ! placed.includes( k ) && ! shownOfNode( k.node, facts, rootComponent ) )", "replace": "filter( ( k ) => ! shownOfNode( k.node, facts, rootComponent ) )", "why": "the placed block would be given the wrapper's gate"},
+	{"file": "lib/fill-width-gate.mjs", "find": "filter( ( k ) => ! placed.includes( k ) && ! shownOfNode( k.node, facts, rootComponent ) )", "replace": "filter( ( k ) => ! placed.includes( k ) )", "why": "a child with its own gate would lose it"}
+]
