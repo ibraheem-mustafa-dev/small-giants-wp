@@ -45,7 +45,7 @@ test( 'MUST FAIL G0: a cache measured on another deploy is I-stale', () => {
 test( 'MUST FAIL G0: a browser or Playwright version that differs from the installed one is I-stale, and an unrecorded version fails too', () => {
 	let i = fresh();
 	i.installed.browserVersion = '146.0.0';
-	assert.match( g0Freshness( i ).evidence, /browserVersion 145\.0\.1.*146\.0\.0/ );
+	assert.match( g0Freshness( i ).evidence.line, /browserVersion 145\.0\.1.*146\.0\.0/ );
 	i = fresh();
 	i.installed.playwrightVersion = '1.59.0';
 	assert.equal( g0Freshness( i ).class, 'I-stale' );
@@ -59,13 +59,13 @@ test( 'MUST FAIL G0: a browser or Playwright version that differs from the insta
 	i = fresh();
 	delete i.cache.browserVersion;
 	i.installed = { playwrightVersion: '1.58.2' };
-	assert.match( g0Freshness( i ).evidence, /not recorded/ );
+	assert.match( g0Freshness( i ).evidence.line, /not recorded/ );
 } );
 
 test( 'MUST FAIL G0: intake hashes that differ from MANIFEST, a wrong schema_version, and unreadable inputs are I-stale', () => {
 	let i = fresh();
 	i.intake.files[ 'support.js' ] = 'other';
-	assert.match( g0Freshness( i ).evidence, /support\.js/ );
+	assert.match( g0Freshness( i ).evidence.line, /support\.js/ );
 	i = fresh();
 	i.manifest.schema_version = '2.0';
 	assert.equal( g0Freshness( i ).class, 'I-stale' );
@@ -164,7 +164,7 @@ test( 'MUST FAIL G5: a string search is not a measurement, an unmeasurable resul
 	assert.equal( ( await g5Emission( { settings, measure: async () => ( { method: 'grep', reaches: false } ) } ) ).class, 'W-route' );
 	assert.equal( ( await g5Emission( { settings, measure: async () => ( { method: 'measured' } ) } ) ).pass, false );
 	assert.equal( ( await g5Emission( { settings, measure: async () => { throw new Error( 'page closed' ); } } ) ).pass, false );
-	assert.match( ( await g5Emission( { settings } ) ).evidence, /no emission measurement was supplied/ );
+	assert.match( ( await g5Emission( { settings } ) ).evidence.line, /no emission measurement was supplied/ );
 } );
 
 // ---- G6
@@ -267,7 +267,7 @@ test( 'MUST FAIL G0: uncommitted edits to the block are I-stale, and an unread c
 	i.blockChanges = [ ' M plugins/sgs-blocks/src/blocks/card/render.php' ];
 	const r = g0Freshness( i );
 	assert.deepEqual( [ r.pass, r.class ], [ false, 'I-stale' ] );
-	assert.match( r.evidence, /uncommitted changes/ );
+	assert.match( r.evidence.line, /uncommitted changes/ );
 	delete i.blockChanges;
 	assert.equal( g0Freshness( i ).class, 'I-stale' );
 	assert.equal( g0Freshness( fresh() ).pass, true );

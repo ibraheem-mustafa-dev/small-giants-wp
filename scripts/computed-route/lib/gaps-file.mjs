@@ -1,10 +1,12 @@
 // gaps.json (Spec 48 FR-48-66): sites/<client>/build/qa/gaps.json holds one row per open item, written from the gate
-// chain's output (gate-chain.mjs). A row carries each of G0 to G7 with pass, fail or not-reached and its evidence, and a
+// chain's output (gate-chain.mjs). A row carries each of G0 to G7 with pass, fail or not-reached and its evidence (a
+// command and its output line, or a file and a key: lib/gate-evidence.mjs), and a
 // row without evidence for a gate it passed, or whose failing gate carries none, is refused when the file is written. A
 // row a fresh walk closed (G7) is not an open item and is left out.
 import fs from 'fs';
 import path from 'path';
 import { GATES, PROBE_CLASS } from './gate-chain.mjs';
+import { isEvidence } from './gate-evidence.mjs';
 
 // The class's owner (FR-48-65).
 export const OWNERS = {
@@ -31,9 +33,13 @@ export function gapRow( r, { surface, publishedOn, firstSeen } ) {
 	if ( ! Array.isArray( r.gates ) || r.gates.length !== GATES.length || r.gates.some( ( g, i ) => g.gate !== GATES[ i ] || ! STATUS[ g.status ] ) ) {
 		throw new Error( `${ r.key }: the row does not carry G0 to G7 with a status each` );
 	}
-	const bare = r.gates.find( ( g ) => 'not-reached' !== g.status && ! text( g.evidence ) );
+	const bare = r.gates.find( ( g ) => 'not-reached' !== g.status && null == g.evidence );
 	if ( bare ) {
 		throw new Error( `${ r.key }: ${ bare.gate } is ${ bare.status } with no evidence` );
+	}
+	const loose = r.gates.find( ( g ) => 'not-reached' !== g.status && ! isEvidence( g.evidence ) );
+	if ( loose ) {
+		throw new Error( `${ r.key }: ${ loose.gate } is ${ loose.status } with evidence that is not a command and its output line, or a file and a key (FR-48-66): ${ JSON.stringify( loose.evidence ) }` );
 	}
 	if ( ! text( r.class ) || ! OWNERS[ r.class ] ) {
 		throw new Error( `${ r.key }: class ${ JSON.stringify( r.class ) } is not one of FR-48-65's` );

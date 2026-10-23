@@ -17,6 +17,7 @@ import { execFileSync, spawnSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { openDb } from './lib/db.mjs';
 import { runChain } from './lib/gate-chain.mjs';
+import { renderEvidence } from './lib/gate-evidence.mjs';
 import { issuesOf } from './lib/triage.mjs';
 import { draftValues, cssProp, settingState } from './lib/solve-rows.mjs';
 import { calibrationForSite } from './solve.mjs';
@@ -178,7 +179,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		const row = { ...issue.rows[ 0 ], solveClass: issue.solveClass };
 		const res = await runChain( row, ctx );
 		out.push( { key: issue.key, solveClass: issue.solveClass, ref: row.ref ?? null, pair: row.pair, property: row.key, widths: [ ...new Set( issue.rows.map( ( x ) => x.width ) ) ], ...res } );
-		console.log( `${ issue.key }: ${ res.gate ? `stopped at ${ res.gate } (${ res.class }): ${ res.evidence }` : `passed all gates: ${ res.class } candidate` }` );
+		console.log( `${ issue.key }: ${ res.gate ? `stopped at ${ res.gate } (${ res.class }): ${ renderEvidence( res.evidence ) }` : `passed all gates: ${ res.class } candidate` }` );
 	}
 	const file = path.resolve( flag( '--out' ) || path.join( path.dirname( reportFile ), 'gate-chain.json' ) );
 	fs.writeFileSync( file, JSON.stringify( { surface: report.surface, rows: out }, null, 1 ) );
