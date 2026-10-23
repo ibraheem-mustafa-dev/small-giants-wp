@@ -96,3 +96,66 @@ export function linkParams( facts ) {
 export function savesProgress( flags, component ) {
 	return ( flags || [] ).some( ( f ) => 'prototype-only' === f.kind && /localStorage|sessionStorage/.test( `${ f.text } ${ f.why }` ) && String( f.draftId || f.location || '' ).startsWith( `${ component }.dc.html` ) );
 }
+
+const quoted = ( s ) => [ ...String( s ).matchAll( /(['"`])((?:\\.|(?!\1).)*)\1/g ) ].map( ( m ) => m[ 2 ].replace( /\\(['"`\\])/g, '$1' ) );
+
+// The validation copy in a component's script (Spec 48 FR-48-57), read from its syntax, never run. Two shapes:
+//   a per-field line, `if (!v.name) errs.name = 'Please enter your name';` : the copy the draft shows for that field when it is
+//     empty (the guard holds `!v.<field>`) and, where the guard holds `v.<field>.length > n`, when it is too long;
+//   a shared line, `if (f.req && empty) errs[f.name] = f.type === 'chips' ? 'a' : f.type === 'check' ? 'b' : 'c';` : one
+//     copy per field type, the last string being every other type's.
+// Returns { fields: { <name>: { required?, tooLong? } }, byType: { <type>: copy, '': the rest } | null }; a script with neither
+// shape returns empty fields and no byType.
+export function requiredCopyOf( src ) {
+	const fields = {};
+	let byType = null;
+	for ( const line of String( src || '' ).split( /\r?\n/ ) ) {
+		const shared = /\bif\s*\(\s*\w+\.req\b[^)]*\)\s*\w+\[\s*\w+\.name\s*\]\s*=\s*([^;]+);/.exec( line );
+		if ( shared ) {
+			const types = {};
+			const parts = shared[ 1 ].split( /\s*:\s*(?=\w+\.type\s*===|['"`])/ );
+			for ( const p of parts ) {
+				const t = /^(?:\w+\.type\s*===\s*(['"`])(\w+)\1\s*\?\s*)?(['"`].*)$/.exec( p.trim() );
+				const copy = t ? quoted( t[ 3 ] )[ 0 ] : null;
+				if ( undefined !== copy ) {
+					types[ t[ 2 ] || '' ] = copy;
+				}
+			}
+			byType = Object.keys( types ).length ? types : byType;
+			continue;
+		}
+		const m = /\bif\s*\((.*)\)\s*errs\.(\w+)\s*=\s*(['"`])((?:\\.|(?!\3).)*)\3\s*;/.exec( line );
+		if ( ! m ) {
+			continue;
+		}
+		const [ , guard, name, , copy ] = m;
+		const slot = fields[ name ] || {};
+		if ( new RegExp( `!\\s*v\\.${ name }\\b(?!\\.)` ).test( guard ) && undefined === slot.required ) {
+			slot.required = copy;
+		}
+		if ( new RegExp( `v\\.${ name }\\.length\\s*>` ).test( guard ) && undefined === slot.tooLong ) {
+			slot.tooLong = copy;
+		}
+		if ( Object.keys( slot ).length ) {
+			fields[ name ] = slot;
+		}
+	}
+	return { fields, byType };
+}
+
+// The copy one rendered control shows: { required?, tooLong? }. keys: the control's name and id; field: the schema field it
+// is ({ name, req, type }) or null. A field the script names takes its own line; a schema field that is required takes the
+// shared per-type line; a control the script does not name gets {}.
+export function copyFor( copy, keys, field = null ) {
+	const own = Object.entries( copy?.fields || {} ).find( ( [ n ] ) => ( keys || [] ).filter( Boolean ).some( ( k ) => k === n || k.endsWith( `-${ n }` ) || k.endsWith( `_${ n }` ) ) );
+	if ( own ) {
+		return own[ 1 ];
+	}
+	if ( copy?.byType && field && undefined !== field.req && null !== field.req && false !== field.req ) {
+		const t = copy.byType[ field.type || 'text' ];
+		const rest = copy.byType[ '' ];
+		const required = undefined !== t ? t : rest;
+		return undefined === required ? {} : { required };
+	}
+	return {};
+}
