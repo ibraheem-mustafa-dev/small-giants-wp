@@ -1,15 +1,92 @@
 [
- { "file": "lib/compare.mjs", "find": "hasBorderWidth = ( s, edge ) => parseFloat( s[ `border-${ edge }-width` ] ?? '1' ) > 0;", "replace": "hasBorderWidth = ( s, edge ) => parseFloat( s[ `border-${ edge }-width` ] ?? '1' ) >= 0;", "why": "zero width counts as a border" },
- { "file": "lib/compare.mjs", "find": "?? '1' ) > 0;\nconst paintsBorder", "replace": "?? '0' ) > 0;\nconst paintsBorder", "why": "unread width treated as no border" },
- { "file": "lib/compare.mjs", "find": "hasBorderWidth( s, edge ) && ! /^(none|hidden)$/", "replace": "true && ! /^(none|hidden)$/", "why": "width ignored when judging paint" },
- { "file": "lib/compare.mjs", "find": "! /^(none|hidden)$/.test( s[ `border-${ edge }-style` ] ?? 'solid' )", "replace": "true", "why": "style none still paints" },
- { "file": "lib/compare.mjs", "find": "?? 'solid' );\n\n// A border colour", "replace": "?? 'none' );\n\n// A border colour", "why": "unread style treated as none" },
- { "file": "lib/compare.mjs", "find": "return ! ( paintsBorder( d, m[ 1 ] ) && paintsBorder( l, m[ 1 ] ) );", "replace": "return ! ( paintsBorder( d, m[ 1 ] ) || paintsBorder( l, m[ 1 ] ) );", "why": "either side paints is enough" },
- { "file": "lib/compare.mjs", "find": "return ! ( paintsBorder( d, m[ 1 ] ) && paintsBorder( l, m[ 1 ] ) );", "replace": "return ! paintsBorder( d, m[ 1 ] );", "why": "live side ignored" },
- { "file": "lib/compare.mjs", "find": "return ! ( paintsBorder( d, m[ 1 ] ) && paintsBorder( l, m[ 1 ] ) );", "replace": "return false;", "why": "colour always compared" },
- { "file": "lib/compare.mjs", "find": "if ( 'color' === m[ 2 ] ) {", "replace": "if ( 'color' !== m[ 2 ] ) {", "why": "colour and style branches swapped" },
- { "file": "lib/compare.mjs", "find": "return ! ( hasBorderWidth( d, m[ 1 ] ) && hasBorderWidth( l, m[ 1 ] ) );", "replace": "return ! ( hasBorderWidth( d, m[ 1 ] ) || hasBorderWidth( l, m[ 1 ] ) );", "why": "style compared when either side has a width" },
- { "file": "lib/compare.mjs", "find": "return ! ( hasBorderWidth( d, m[ 1 ] ) && hasBorderWidth( l, m[ 1 ] ) );", "replace": "return ! paintsBorder( d, m[ 1 ] ) && ! paintsBorder( l, m[ 1 ] );", "why": "style hidden when a none meets a solid at the same width" },
- { "file": "lib/compare.mjs", "find": "return ! ( hasBorderWidth( d, m[ 1 ] ) && hasBorderWidth( l, m[ 1 ] ) );", "replace": "return false;", "why": "style always compared" },
- { "file": "lib/compare.mjs", "find": "if ( ! m ) {\n\t\treturn false;\n\t}\n\tif ( 'color'", "replace": "if ( ! m ) {\n\t\treturn true;\n\t}\n\tif ( 'color'", "why": "non-border properties suppressed" }
+ {
+  "file": "lib/compare.mjs",
+  "find": "hasBorderWidth = ( s, edge ) => parseFloat( s[ `border-${ edge }-width` ] ?? '1' ) > 0;",
+  "replace": "hasBorderWidth = ( s, edge ) => parseFloat( s[ `border-${ edge }-width` ] ?? '1' ) >= 0;",
+  "why": "zero width counts as a border"
+ },
+ {
+  "file": "lib/compare.mjs",
+  "find": "?? '1' ) > 0;\nconst paintsBorder",
+  "replace": "?? '0' ) > 0;\nconst paintsBorder",
+  "why": "unread width treated as no border"
+ },
+ {
+  "file": "lib/compare.mjs",
+  "find": "hasBorderWidth( s, edge ) && ! /^(none|hidden)$/",
+  "replace": "true && ! /^(none|hidden)$/",
+  "why": "width ignored when judging paint"
+ },
+ {
+  "file": "lib/compare.mjs",
+  "find": "! /^(none|hidden)$/.test( s[ `border-${ edge }-style` ] ?? 'solid' )",
+  "replace": "true",
+  "why": "style none still paints"
+ },
+ {
+  "file": "lib/compare.mjs",
+  "find": "?? 'solid' );\n\n// A border colour",
+  "replace": "?? 'none' );\n\n// A border colour",
+  "why": "unread style treated as none"
+ },
+ {
+  "file": "lib/compare.mjs",
+  "find": "return ! ( paintsBorder( d, m[ 1 ] ) && paintsBorder( l, m[ 1 ] ) );",
+  "replace": "return ! ( paintsBorder( d, m[ 1 ] ) || paintsBorder( l, m[ 1 ] ) );",
+  "why": "either side paints is enough"
+ },
+ {
+  "file": "lib/compare.mjs",
+  "find": "return ! ( paintsBorder( d, m[ 1 ] ) && paintsBorder( l, m[ 1 ] ) );",
+  "replace": "return ! paintsBorder( d, m[ 1 ] );",
+  "why": "live side ignored"
+ },
+ {
+  "file": "lib/compare.mjs",
+  "find": "return ! ( paintsBorder( d, m[ 1 ] ) && paintsBorder( l, m[ 1 ] ) );",
+  "replace": "return false;",
+  "why": "colour always compared"
+ },
+ {
+  "file": "lib/compare.mjs",
+  "find": "if ( 'color' === m[ 2 ] ) {",
+  "replace": "if ( 'color' !== m[ 2 ] ) {",
+  "why": "colour and style branches swapped"
+ },
+ {
+  "file": "lib/compare.mjs",
+  "find": "return ! ( hasBorderWidth( d, m[ 1 ] ) && hasBorderWidth( l, m[ 1 ] ) );",
+  "replace": "return ! ( hasBorderWidth( d, m[ 1 ] ) || hasBorderWidth( l, m[ 1 ] ) );",
+  "why": "style compared when either side has a width"
+ },
+ {
+  "file": "lib/compare.mjs",
+  "find": "return ! ( hasBorderWidth( d, m[ 1 ] ) && hasBorderWidth( l, m[ 1 ] ) );",
+  "replace": "return ! paintsBorder( d, m[ 1 ] ) && ! paintsBorder( l, m[ 1 ] );",
+  "why": "style hidden when a none meets a solid at the same width"
+ },
+ {
+  "file": "lib/compare.mjs",
+  "find": "return ! ( hasBorderWidth( d, m[ 1 ] ) && hasBorderWidth( l, m[ 1 ] ) );",
+  "replace": "return false;",
+  "why": "style always compared"
+ },
+ {
+  "file": "lib/compare.mjs",
+  "find": "if ( ! m ) {\n\t\treturn false;\n\t}\n\tif ( 'color'",
+  "replace": "if ( ! m ) {\n\t\treturn true;\n\t}\n\tif ( 'color'",
+  "why": "non-border properties suppressed"
+ },
+ {
+  "file": "lib/auto-compare.mjs",
+  "find": " || borderColourIrrelevant( k, { ...d.rest, ...d[ state ] }, { ...l.rest, ...l[ state ] } )",
+  "replace": "",
+  "why": "focus and press border colour always compared"
+ },
+ {
+  "file": "lib/auto-compare.mjs",
+  "find": "{ ...d.rest, ...d[ state ] }",
+  "replace": "{ ...d[ state ] }",
+  "why": "rest width not merged (cannot hurt here, state carries width)"
+ }
 ]

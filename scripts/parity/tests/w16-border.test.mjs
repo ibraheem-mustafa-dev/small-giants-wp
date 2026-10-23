@@ -74,3 +74,15 @@ test( '(b) reversed: the draft paints and the live side is 0px gives only the wi
 	const rows = run( edge( '3px', CREAM ), edge( '0px', RED, 'none' ) );
 	assert.deepEqual( keys( rows ), [ 'border-bottom-width' ] );
 } );
+
+test( 'focus and press rows: a border colour is no row where one side reads 0px, a row where both paint', async () => {
+	const { compareInteractive } = await import( '../lib/auto-compare.mjs' );
+	const itm = ( w, c ) => ( { type: 'a', name: 'x', rest: { 'border-bottom-width': w, 'border-bottom-color': c }, focus: { 'border-bottom-color': RED } } );
+	const rowsFor = ( dw, lw ) => {
+		const out = [];
+		compareInteractive( { interactives: [ itm( dw, CREAM ) ] }, { interactives: [ { ...itm( lw, CREAM ), focus: { 'border-bottom-color': 'rgb(15, 15, 15)' } } ] }, { px: 1 }, ( k ) => out.push( k ) );
+		return out;
+	};
+	assert.deepEqual( rowsFor( '0px', '3px' ).filter( ( k ) => /color|style/.test( k ) ), [] );
+	assert.equal( rowsFor( '2px', '3px' ).filter( ( k ) => /color/.test( k ) ).length, 1 );
+} );

@@ -122,7 +122,7 @@ const paintsBorder = ( s, edge ) => hasBorderWidth( s, edge ) && ! /^(none|hidde
 // A border colour is compared only where BOTH sides paint a border on that edge; a border style only where both sides
 // have a width there (so a none against a solid at the same width is still a style row).
 // Where only one side has a border, the width row already reports it and the other side's colour is its inherited text colour.
-function borderColourIrrelevant( p, d, l ) {
+export function borderColourIrrelevant( p, d, l ) {
 	const m = p.match( /^border-(top|bottom|left|right)-(color|style)$/ );
 	if ( ! m ) {
 		return false;
