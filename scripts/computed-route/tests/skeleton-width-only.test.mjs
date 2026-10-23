@@ -13,7 +13,8 @@ const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..
 const db = openDb();
 const facts = loadFacts( { db, client: 'eye-care-ward-end', repo: REPO, siteName: 'Example Co' } );
 const nodes = ( list ) => list.flatMap( ( n ) => [ n, ...nodes( n.innerBlocks || [] ) ] );
-const nodeAt = ( r, key ) => nodes( r.skeleton ).find( ( n ) => n.draftRef?.tpl === key );
+const idOf = ( n ) => n.variantKey ?? n.draftRef?.tpl;
+const nodeAt = ( r, key ) => nodes( r.skeleton ).find( ( n ) => idOf( n ) === key );
 const rowAt = ( r, key ) => r.proposal.rows.find( ( x ) => x.key === key );
 
 const at = ( x, y, w = 100 ) => ( { x, y, w, h: 20 } );
@@ -56,7 +57,7 @@ test( 'MUST FAIL (a block is classified on what renders at 1440): width-only des
 test( 'MUST FAIL (a width-only sibling is its own node): the element beside the pills is a node in the same parent, after the one it follows', () => {
 	const r = run( GROUP );
 	const group = nodeAt( r, 'Root/11#0' );
-	assert.deepEqual( group.innerBlocks.map( ( n ) => n.draftRef.tpl ), [ 'Root/13#0', 'Root/14#0', 'Root/18#0', 'Root/20#0', 'Root/21#0' ], 'the pill\'s width variant follows the pill' );
+	assert.deepEqual( group.innerBlocks.map( idOf ), [ 'Root/13#0', 'Root/14#0', 'Root/18#0', 'Root/20#0', 'Root/21#0' ], 'the pill\'s width variant follows the pill' );
 	assert.equal( group.innerBlocks[ 0 ].name, group.innerBlocks[ 1 ].name, 'the same block as the pill beside it' );
 	assert.equal( rowAt( r, 'Root/13#0' ).action, null );
 } );
@@ -69,6 +70,7 @@ test( 'MUST FAIL (a per-width label is one instance per variation): the "Call" l
 	assert.equal( Object.values( call.attributes ).includes( 'Call' ), true, 'its words are the variation' );
 	assert.equal( Object.values( pill.attributes ).includes( 'Order now' ), true, 'the pill keeps its own label' );
 	assert.deepEqual( call.widthShown, [ 375 ] );
+	assert.deepEqual( call.draftRef, pill.draftRef, 'measured on the pill itself, not on the words element' );
 	assert.deepEqual( pill.widthVariants, [ { key: 'Root/18#0', shown: [ 375 ] } ] );
 	assert.equal( rowAt( r, 'Root/18#0' ).rule, 'widthVariant' );
 	assert.equal( call.attributes.href ?? call.attributes.url, pill.attributes.href ?? pill.attributes.url, 'the same link' );
@@ -80,7 +82,7 @@ test( 'MUST FAIL (two or three variations): each width-only label is an instance
 	const three = [ ...without( GROUP, 18 ), el( 18, 14, 'span', 'Call', { depth: 3, widths: [ 375 ], box: at( 110, 0 ) } ), el( 19, 14, 'span', 'Phone us', { depth: 3, widths: [ 768 ], box: at( 110, 0 ) } ) ];
 	const r = run( three );
 	const group = nodeAt( r, 'Root/11#0' );
-	assert.deepEqual( group.innerBlocks.map( ( n ) => n.draftRef.tpl ), [ 'Root/13#0', 'Root/14#0', 'Root/18#0', 'Root/19#0', 'Root/20#0', 'Root/21#0' ] );
+	assert.deepEqual( group.innerBlocks.map( idOf ), [ 'Root/13#0', 'Root/14#0', 'Root/18#0', 'Root/19#0', 'Root/20#0', 'Root/21#0' ] );
 	assert.deepEqual( nodeAt( r, 'Root/14#0' ).widthVariants.map( ( v ) => v.shown ), [ [ 375 ], [ 768 ] ] );
 } );
 

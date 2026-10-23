@@ -153,6 +153,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			const own = { ...node.attributes, [ textAttr ]: m.words( k ) };
 			Object.entries( top.wordBound || {} ).filter( ( [ , kind ] ) => ! isSiteInfoValue( m.words( k ), kind ) ).forEach( ( [ attr ] ) => delete own[ attr ] );
 			made = base( k, top.block, own );
+			// Only the words vary: the variant is the same drawn element (the pill's link, its icon, its look), so Fill
+			// measures it where it measures the default; `variantKey` names the words element, whose widths gate it.
+			Object.assign( made, { draftRef: node.draftRef, draftFingerprint: node.draftFingerprint, variantKey: k.key }, node.draftSlots ? { draftSlots: node.draftSlots } : {} );
 			record( k, { rule: 'widthVariant', source: 'rule widthVariant', reason: `${ k.key } renders only at ${ m.shownAt( k ).join( ' and ' ) }px: its words are one more ${ top.block } beside ${ top.key }, each hidden on the other's widths`, confidence: 1, candidates: [ { block: top.block, score: 1, share: 1, evidence: [] } ] }, { attributes: made.attributes } );
 		} else if ( node && parentBlock ) {
 			made = buildNode( k, parentBlock );

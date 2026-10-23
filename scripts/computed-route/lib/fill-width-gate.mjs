@@ -182,7 +182,8 @@ export function snapEntry( { scope, ref, snap, entries, date } ) {
 // tiers it was read at. The default instance is shown where no variant is.
 export const tierRanges = ( widths ) => widths.map( ( w ) => ( { 375: TIER_RANGES.mobile, 768: TIER_RANGES.tablet, 1440: TIER_RANGES.desktop } )[ w ] ).filter( Boolean ).sort( ( a, b ) => a[ 0 ] - b[ 0 ] ).reduce( ( out, r ) => ( out.length && out.at( -1 )[ 1 ] === r[ 0 ] ? ( out.at( -1 )[ 1 ] = r[ 1 ], out ) : [ ...out, [ ...r ] ] ), [] );
 export function shownOfNode( skeletonNode, facts, rootComponent = null ) {
-	const key = tplKey( skeletonNode.draftRef, rootComponent );
+	// A words-only variant is measured on the default's element; its own words element (`variantKey`) is what is gated.
+	const key = tplKey( skeletonNode.variantKey ? { tpl: skeletonNode.variantKey } : skeletonNode.draftRef, rootComponent );
 	const own = key && facts ? shownAt( facts, key ) : null;
 	if ( skeletonNode.widthShown ) {
 		return own ?? { shown: tierRanges( skeletonNode.widthShown ), via: [ `its element renders at ${ skeletonNode.widthShown.join( ' and ' ) }px` ] };

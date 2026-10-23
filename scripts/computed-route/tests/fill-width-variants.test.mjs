@@ -39,6 +39,12 @@ test( 'MUST FAIL WITHOUT THE OFF-TIER VARIANT: a variant the fact record gates a
 	assert.match( r.flat[ 0 ].attributes.sgsCustomCssNote, /Width gate a width variant/ );
 } );
 
+test( 'MUST FAIL WITHOUT THE VARIANT KEY: a words-only variant measured on the element of its default is gated by its own words element', () => {
+	const facts = factsOf( gate( 'Page/53', { w: '>=', n: 1260 }, 'w >= 1260' ), leaf( 'Page/18', [ 'Page/53' ] ), leaf( 'Page/14', [] ) );
+	const r = run( [ { n: 14, extra: { widthVariants: [ { key: 'Page/18#0', shown: [ 1440 ] } ] } }, { n: 14, extra: { widthShown: [ 1440 ], variantKey: 'Page/18#0' } } ], facts );
+	assert.equal( r.flat[ 1 ].attributes.sgsCustomCss, '@media (max-width: 1259px) { & { display: none; } }', 'the 1260 gate of the words element, not of the shared element' );
+} );
+
 test( 'a node with no variant fields and no fact record is untouched', () => {
 	assert.equal( run( [ { n: 14, extra: {} } ] ).writes.length, 0 );
 } );

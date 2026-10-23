@@ -6,5 +6,6 @@
 	{ "file": "lib/skeleton-propose.mjs", "find": "const own = { ...node.attributes, [ textAttr ]: m.words( k ) };", "replace": "const own = { ...node.attributes };", "why": "the variant would carry the default's words" },
 	{ "file": "lib/skeleton-propose.mjs", "find": "Object.entries( top.wordBound || {} ).filter( ( [ , kind ] ) => ! isSiteInfoValue( m.words( k ), kind ) ).forEach( ( [ attr ] ) => delete own[ attr ] );", "replace": "", "why": "the Call variant would read its label from Site Info and show the number" },
 	{ "file": "lib/skeleton-propose.mjs", "find": "absorbSubtree( e, { block, key: e.key, wordBound: top.wordBound }, drawn,", "replace": "absorbSubtree( e, { block, key: e.key }, drawn,", "why": "the drawn block's word-bound attributes would not reach its variants" },
-	{ "file": "lib/skeleton-classify.mjs", "find": "...( r.wordBound ? { wordBound: r.wordBound } : {} )", "replace": "", "why": "the rule's word-bound attributes would be lost before the node is built" }
+	{ "file": "lib/skeleton-classify.mjs", "find": "...( r.wordBound ? { wordBound: r.wordBound } : {} )", "replace": "", "why": "the rule's word-bound attributes would be lost before the node is built" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "Object.assign( made, { draftRef: node.draftRef, draftFingerprint: node.draftFingerprint, variantKey: k.key }, node.draftSlots ? { draftSlots: node.draftSlots } : {} );", "replace": "", "why": "the words-only variant would be measured on its words element (a transparent, unpadded label) instead of the pill" }
 ]
