@@ -97,8 +97,12 @@ def last_status(log_path: Path) -> str:
 
 def self_test() -> list[str]:
     failures: list[str] = []
-    known = ["eye-care-test", "indus-test", "mamas-test", "sandybrown"]
-    if resolve_targets("all", known)[0] != CANARY or len(resolve_targets("all", known)) != 4:
+    known = ["eye-care-clone-test", "eye-care-test", "indus-test", "mamas-test", "sandybrown"]
+    from deploy_common import TARGETS
+
+    if sorted(known) != sorted(TARGETS):
+        failures.append(f"the self-test target list {sorted(known)} is not deploy_common.TARGETS {sorted(TARGETS)}")
+    if resolve_targets("all", known)[0] != CANARY or len(resolve_targets("all", known)) != 5:
         failures.append("`all` did not resolve to every target, canary first")
     if resolve_targets("eye-care-test, sandybrown,eye-care-test", known) != ["sandybrown", "eye-care-test"]:
         failures.append("a comma list was not de-duplicated with the canary first")

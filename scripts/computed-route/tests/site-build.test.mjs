@@ -26,7 +26,7 @@ const ROWS = () => [
 
 // A WordPress that answers the state read and the writer's WP-CLI calls.
 function fakeSite() {
-	const s = { posts: {}, meta: {}, menus: [], items: [], locations: {}, options: { show_on_front: 'posts', page_on_front: '0', page_for_posts: '0', permalink_structure: '' }, pointers: { header: 0, footer: 0, drawer: 5 }, next: 100, calls: [] };
+	const s = { posts: {}, meta: {}, menus: [], items: [], locations: {}, options: { show_on_front: 'posts', page_on_front: '0', page_for_posts: '0', permalink_structure: '' }, pointers: { header: 0, footer: 0, drawer: 0 }, next: 100, calls: [] };
 	s.state = ( rows ) => {
 		const ids = rows.map( ( r ) => r.id ).filter( Number.isInteger );
 		const marked = Object.keys( s.posts ).map( Number ).filter( ( id ) => s.meta[ id ]?.[ ROW_META ] );
@@ -37,7 +37,7 @@ function fakeSite() {
 			posts: Object.fromEntries( [ ...ids, ...marked ].map( ( id ) => [ String( id ), view( id ) ] ) ),
 			marked: marked.reduce( ( m, id ) => ( { ...m, [ s.meta[ id ][ ROW_META ] ]: [ ...( m[ s.meta[ id ][ ROW_META ] ] || [] ), id ] } ), {} ),
 			menus: s.menus.map( ( m ) => ( { ...m, items: s.items.filter( ( i ) => i.menu === m.id ).map( ( i ) => ( { ...i } ) ) } ) ),
-			locations: { ...s.locations }, registeredLocations: [ 'primary', 'footer' ], templates: [], options: { ...s.options }, pointers: { ...s.pointers },
+			pointerKeys: Object.fromEntries( Object.entries( s.pointers ).map( ( [ area, id ] ) => [ area, s.meta[ id ]?.[ ROW_META ] || '' ] ) ), locations: { ...s.locations }, registeredLocations: [ 'primary', 'footer' ], templates: [], options: { ...s.options }, pointers: { ...s.pointers },
 		};
 	};
 	const flag = ( args, name ) => args.find( ( a ) => a.startsWith( `--${ name }=` ) )?.slice( name.length + 3 );

@@ -3,11 +3,13 @@
 //   node site-build.mjs <client> --site <secrets name, e.g. indus-test> [--apply] [--repo <root>]
 // Without --apply it prints the plan and the before-and-after table of every option it would change, and writes
 // nothing. With --apply it runs the four phases in order (posts, menus, layout, site), reading the site again before
-// each, and writes each new post id into its page-map row as it is made. Exit 0 done, 1 failure or a stopped run, 2 usage.
+// each, and writes each new post id into its page-map row as it is made. The site the ids were written for is recorded
+// beside the map (page-map.site); a run against another site that shares the client plans from the map without those ids
+// (a post carrying a row key is adopted) and its write-back replaces them. Exit 0 done, 1 failure or a stopped run, 2 usage.
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
-import { readPageMap, writeMenuMap, writePageMap } from './lib/site-build-map.mjs';
+import { readIdsSite, readPageMap, rowsForSite, writeIdsSite, writeMenuMap, writePageMap } from './lib/site-build-map.mjs';
 import { readState } from './lib/site-build-state.mjs';
 import { readLinkTextReport } from './lib/site-build-labels.mjs';
 import { PHASES, planBuild, tally } from './lib/site-build-plan.mjs';
@@ -41,7 +43,8 @@ const print = ( plan ) => {
 };
 
 try {
-	const original = readPageMap( mapFile );
+	// The rows as this site sees them: ids written for another site name nothing here.
+	const original = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), site );
 	const runPhp = wpEvalRunner( {}, site, repo );
 	const wp = wpCommand( {}, site, repo );
 	const ids = {};
@@ -64,6 +67,7 @@ try {
 		process.exit( 0 );
 	}
 	const build = wpBuildPage( repo, site );
+	writeIdsSite( mapFile, site );
 	const onId = ( key, id ) => {
 		ids[ key ] = id;
 		rows = writePageMap( mapFile, original, ids );
