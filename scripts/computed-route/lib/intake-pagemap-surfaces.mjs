@@ -220,40 +220,105 @@ function inlineForms( d, tree, roots, routeOf, pageFile ) {
 			const h = d.idx.parent.get( d.idx.parent.get( arr ) );
 			const route = routeOf( d, h );
 			const title = [ 'formTitle', 'title', 'name' ].map( ( k ) => propRefs( d.idx, [ ref( h ) ], k ).map( ( r ) => oneString( d.idx, r.node, r.env ) ).find( Boolean ) ).find( Boolean );
-			out.push( { kind: 'form', label: route || title || 'form', title: title || route, route, dc: stem( d.file ), draftId: `${ d.file }:${ d.idx.line( h ) } (logic) ${ key }` } );
+			out.push( { kind: 'form', label: route || title || 'form', title: title || route, route, dc: stem( d.file ), draftId: `${ d.file }:${ d.idx.line( h ) } (logic) ${ key }`, node: f } );
 		}
 		if ( ! arrays.size ) {
 			const submit = bindingOf( attrOf( f, 'onSubmit' ) );
 			const label = attrOf( f, 'aria-label' ) || ( submit?.expr && ( submit.expr.property?.name || submit.expr.name ) ) || stem( d.file );
-			out.push( { kind: 'form', label, title: label, route: pageFile, dc: stem( d.file ), draftId: tagId( d, f ) } );
+			out.push( { kind: 'form', label, title: label, route: pageFile, dc: stem( d.file ), draftId: tagId( d, f ), node: f } );
 		}
 	}
 	return out;
 }
 
+// The `file:line:col` key of an element id (`file:line:col <tag …>`), undefined for a logic id.
+const tagKey = ( id ) => /^(.+?:\d+:\d+)(\s|$)/.exec( id )?.[ 1 ];
+
+// The route key whose page holds a template node: the draft's own file when that file is a route, else the first route
+// key named in the logic of an sc-if gate above the node's <main> (isPage('checkout'), S.page === 'signin'), read from
+// every object property the gate's name binds; null for a node outside every page (site-wide chrome and overlays).
+function pageOf( d, node, roots, routeKeys ) {
+	if ( routeKeys.has( d.file ) ) {
+		return d.file;
+	}
+	const main = [ node, ...ancestors( node ) ].find( ( u ) => 'main' === u.name );
+	for ( const gate of main && d.idx ? ancestors( main ).filter( ( u ) => 'sc-if' === u.name ) : [] ) {
+		const name = bindingOf( attrOf( gate, 'value' ) )?.expr?.name;
+		const props = name ? d.idx.all.filter( ( n ) => 'ObjectProperty' === n.type && keyName( n ) === name ) : [];
+		const hit = props.flatMap( ( n ) => subtree( d.idx, n.value ) ).find( ( n ) => 'StringLiteral' === n.type && routeKeys.has( n.value ) );
+		if ( hit ) {
+			return hit.value;
+		}
+	}
+	return null;
+}
+
+// The pick lists inside an element: each sc-for whose items hold a control whose click handler is the loop item's own
+// member (`onClick="{{ o.pick }}"`), so a click chooses that item.
+function pickLists( node ) {
+	return descendants( node ).filter( ( c ) => 'sc-for' === c.name && descendants( c ).some( ( x ) => new RegExp( `^\\{\\{\\s*${ attrOf( c, 'as' ) || 'item' }\\.[\\w$]+\\s*\\}\\}$` ).test( attrOf( x, 'onClick' ) || '' ) ) );
+}
+
+// A choice flow (Spec 48 FR-48-30): choices that build one selection, shown as two or more pick lists in an element
+// that holds no <form>. A form submits typed answers and stays a form, whatever pick lists it shows.
+export const isChoiceFlow = ( node ) => 'form' !== node.name && pickLists( node ).length >= 2 && ! descendants( node ).some( ( x ) => 'form' === x.name );
+
+// The mega-menu panels of a panel element that drops below the header: one per outermost sc-if gate it holds (each
+// item opens its own panel), named in order by the header controls that open a panel on focus; one panel when it
+// gates fewer than two.
+function megaPanels( d, header, panel ) {
+	const inside = descendants( panel );
+	const inner = inside.filter( ( x ) => 'sc-if' === x.name && ! ancestors( x ).some( ( u ) => 'sc-if' === u.name && inside.includes( u ) ) );
+	const openers = descendants( header ).filter( ( x ) => attrOf( x, 'onFocus' ) && x !== panel && ! inside.includes( x ) );
+	if ( inner.length < 2 ) {
+		return [ { label: attrOf( panel, 'aria-label' ) || 'Mega menu', node: panel } ];
+	}
+	return inner.map( ( g, i ) => ( { label: inner.length === openers.length ? attrOf( openers[ i ], 'aria-label' ) || innerText( d.text, openers[ i ] ) : `Mega menu ${ i + 1 }`, node: g } ) );
+}
+
 // Every surface and menu the draft code shows. `routeOf( draft, node )` names the route whose page data holds a
-// logic node (or null).
-export function codeSurfaces( exp, routeOf = () => null ) {
+// logic node (or null); `routeKeys` are the routing's route keys and `links` its links. Each surface carries `page` (the
+// route key whose page holds it, null when site-wide) and, for an overlay, `reaches` (the route keys its own links and
+// controls lead to); a page section holding a choice flow is a `choice-flow` surface, and so is a modal overlay that
+// is one. `accountPages` are the route keys whose pages hold a password field.
+export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), links = [] ) {
+	const accountPages = new Set();
 	const surfaces = [];
 	const menus = [];
 	const ok = exp.drafts.filter( ( d ) => ! d.error );
 	const formComponents = new Set();
+	const pageAt = new Map();
+	const nodeAt = new Map();
 	for ( const d of ok ) {
 		const tree = elementTree( d );
 		const component = exp.mounted.has( d.file );
 		const roots = d.idx ? rootRefs( d ) : [];
 		const chrome = tree.nodes.some( ( t ) => /^(nav|header|footer)$/.test( t.name ) );
+		const page = ( node ) => pageOf( d, node, roots, routeKeys );
+		tree.nodes.forEach( ( t ) => {
+			pageAt.set( `${ d.file }:${ t.line }:${ t.col }`, () => page( t ) );
+			nodeAt.set( `${ d.file }:${ t.line }:${ t.col }`, t );
+		} );
+		tree.nodes.filter( ( t ) => 'input' === t.name && 'password' === attrOf( t, 'type' ) ).forEach( ( t ) => accountPages.add( page( t ) ) );
 		if ( component && ( tree.nodes.some( ( t ) => 'form' === t.name ) || ( ! chrome && tree.nodes.filter( ( t ) => FIELDS.has( t.name ) ).length >= 2 ) ) ) {
 			formComponents.add( d.file );
-			surfaces.push( { kind: 'form', label: stem( d.file ), title: stem( d.file ).replace( /([a-z])([A-Z])/g, '$1 $2' ), route: null, dc: stem( d.file ), draftId: `${ d.file } (dc-import)` } );
+			surfaces.push( { kind: 'form', page: null, label: stem( d.file ), title: stem( d.file ).replace( /([a-z])([A-Z])/g, '$1 $2' ), route: null, dc: stem( d.file ), draftId: `${ d.file } (dc-import)` } );
 		} else {
-			surfaces.push( ...inlineForms( d, tree, roots, routeOf, exp.pages.length > 1 && exp.pages.includes( d.file ) ? d.file : null ) );
+			surfaces.push( ...inlineForms( d, tree, roots, routeOf, exp.pages.length > 1 && exp.pages.includes( d.file ) ? d.file : null ).map( ( f ) => ( { ...f, page: page( f.node ) } ) ) );
 		}
 		const found = regions( tree );
+		const flows = tree.nodes.filter( ( t ) => 'section' === t.name && isChoiceFlow( t ) && ! [ t, ...ancestors( t ) ].some( ( u ) => found.some( ( r ) => r.node === u ) )
+			&& ! ancestors( t ).some( ( u ) => 'section' === u.name && isChoiceFlow( u ) ) );
+		for ( const t of flows ) {
+			const label = attrOf( t, 'aria-label' ) || innerText( d.text, descendants( t ).find( ( x ) => /^h[1-6]$/.test( x.name ) ) || t ).slice( 0, 60 );
+			surfaces.push( { kind: 'choice-flow', label, title: label, route: null, page: page( t ), dc: stem( d.file ), draftId: tagId( d, t ), node: t } );
+		}
 		const named = ( kind ) => found.filter( ( r ) => r.kind === kind );
 		for ( const r of found ) {
 			const label = attrOf( r.node, 'aria-label' ) || `${ r.kind[ 0 ].toUpperCase() }${ r.kind.slice( 1 ) }`;
-			surfaces.push( { kind: r.kind, label, title: label, route: null, dc: stem( d.file ), draftId: tagId( d, r.node ), node: r.node } );
+			const kind = 'modal' === r.kind && isChoiceFlow( r.node ) ? 'choice-flow' : r.kind;
+			const reaches = [ ...new Set( links.filter( ( l ) => l.route && [ nodeAt.get( tagKey( l.from ) ), ...ancestors( nodeAt.get( tagKey( l.from ) ) || { parent: null } ) ].includes( r.node ) ).map( ( l ) => l.route ) ) ];
+			surfaces.push( { kind, label, title: label, route: null, page: page( r.node ), nav: descendants( r.node ).some( ( x ) => 'nav' === x.name ), reaches, dc: stem( d.file ), draftId: tagId( d, r.node ), node: r.node } );
 			if ( 'modal' === r.kind || ! d.idx && ! descendants( r.node ).some( ( x ) => 'a' === x.name ) ) {
 				continue;
 			}
@@ -279,58 +344,14 @@ export function codeSurfaces( exp, routeOf = () => null ) {
 		if ( ! panels.length ) {
 			for ( const h of named( 'header' ) ) {
 				for ( const p of descendants( h.node ).filter( ( x ) => /position:absolute/.test( style( x ) ) && /top:100%/.test( style( x ) ) ) ) {
-					surfaces.push( { kind: 'menu', label: attrOf( p, 'aria-label' ) || 'Mega menu', title: attrOf( p, 'aria-label' ) || 'Mega menu', route: null, dc: stem( d.file ), draftId: tagId( d, p ) } );
+					for ( const m of megaPanels( d, h.node, p ) ) {
+						surfaces.push( { kind: 'menu', label: m.label, title: megaPanelTitle( m.label ), route: null, page: null, dc: stem( d.file ), draftId: tagId( d, m.node ) } );
+					}
 				}
 			}
 		}
 	}
-	return { surfaces: surfaces.map( ( { node, ...s } ) => s ), menus, formComponents };
-}
-
-const WORDS = ( s ) => new Set( kebab( s ).split( /[^a-z0-9]+/ ).filter( ( w ) => w.length > 2 && ! [ 'menu', 'mega', 'form', 'drawer', 'modal', 'the', 'and', 'inline', 'site' ].includes( w ) ) );
-const normRoute = ( r ) => ( r ? String( r ).replace( /^\/+/, '' ).replace( /\.dc\.html.*$/, '' ).toLowerCase() : null );
-
-// Cross-checks the code's surfaces with handoff/surfaces.json records (FR-48A-7): { surfaces (code surfaces, then
-// hint-only ones), gaps (one `surfaces-disagree` row per surface one side lacks) }. Only the kinds that become CPT
-// posts take part; a hint record names its kind, `name`, `dc` and `route`.
-export function crossCheck( code, hint ) {
-	const records = ( hint?.records || [] ).filter( ( h ) => KIND_POST_TYPE[ String( h.kind ).toLowerCase() ] )
-		.map( ( h ) => ( { ...h, kind: [ 'choice flow', 'quiz' ].includes( String( h.kind ).toLowerCase() ) ? 'choice-flow' : String( h.kind ).toLowerCase() } ) );
-	if ( ! hint ) {
-		return { surfaces: code, gaps: [] };
-	}
-	const used = new Set();
-	const gaps = [];
-	const out = [];
-	for ( const c of code ) {
-		const same = records.filter( ( h ) => ! used.has( h ) && h.kind === c.kind && ( ! h.dc || h.dc === c.dc ) );
-		const peers = code.filter( ( x ) => x.kind === c.kind && x.dc === c.dc );
-		const score = ( h ) => ( normRoute( h.route ) && normRoute( h.route ) === normRoute( c.route ) ? 3 : 0 )
-			+ ( [ ...WORDS( c.label ) ].some( ( w ) => WORDS( h.name ).has( w ) ) ? 2 : 0 ) + ( h.dc === c.dc ? 1 : 0 );
-		const best = same.map( ( h ) => ( { h, s: score( h ) } ) ).sort( ( a, b ) => b.s - a.s )[ 0 ];
-		const match = best && ( best.s >= 2 || ( 1 === same.length && 1 === peers.length ) ) ? best.h : null;
-		if ( match ) {
-			used.add( match );
-		}
-		out.push( match ? { ...c, hint: match.id } : c );
-	}
-	// Leftovers of one kind in one draft pair in document order when both sides have the same number.
-	for ( const c of out.filter( ( x ) => ! x.hint ) ) {
-		const mine = out.filter( ( x ) => ! x.hint && x.kind === c.kind && x.dc === c.dc );
-		const theirs = records.filter( ( h ) => ! used.has( h ) && h.kind === c.kind && h.dc === c.dc );
-		if ( mine.length === theirs.length && mine.length ) {
-			mine.forEach( ( x, i ) => {
-				x.hint = theirs[ i ].id;
-				used.add( theirs[ i ] );
-			} );
-		}
-	}
-	for ( const c of out.filter( ( x ) => ! x.hint ) ) {
-		gaps.push( { construct: 'surfaces-disagree', draftId: c.draftId, error: `${ KIND_POST_TYPE[ c.kind ] } "${ c.label }" is in the draft code; handoff/surfaces.json has no ${ c.kind } record for it` } );
-	}
-	for ( const h of records.filter( ( r ) => ! used.has( r ) ) ) {
-		out.push( { kind: h.kind, label: h.name, title: h.name, route: normRoute( h.route ) && '*' !== h.route ? normRoute( h.route ) : null, dc: h.dc || null, draftId: `surfaces.json ${ h.id }`, hint: h.id } );
-		gaps.push( { construct: 'surfaces-disagree', draftId: `surfaces.json ${ h.id }`, error: `surfaces.json ${ h.id } ${ h.kind } "${ h.name }" (${ h.dc || 'no dc' }) has no matching surface in the draft code` } );
-	}
-	return { surfaces: out, gaps };
+	// `pageOfTag( draftId )`: the page holding the element a `file:line:col` id names (a logic id: its file when a route).
+	const pageOfTag = ( id ) => pageAt.get( tagKey( id ) )?.() ?? ( routeKeys.has( id.split( ':' )[ 0 ] ) ? id.split( ':' )[ 0 ] : null );
+	return { surfaces: surfaces.map( ( { node, ...s } ) => s ), menus, formComponents, accountPages, pageOfTag };
 }

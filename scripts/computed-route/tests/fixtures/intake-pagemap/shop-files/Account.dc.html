@@ -1,0 +1,12 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>My account | Bakery</title></head><body>
+<x-dc>
+<dc-import name="SiteHeader"></dc-import>
+<main><form onSubmit="{{ saveDetails }}"><input name="first"><input type="password" name="pw"><button>Save</button></form></main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() { return { saveDetails: ( e ) => e.preventDefault() }; }
+}
+</script>
+</body></html>

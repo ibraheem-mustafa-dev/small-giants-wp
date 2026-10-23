@@ -92,6 +92,38 @@
           ]
         }
       },
+      "parts": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "kind",
+            "label",
+            "owner",
+            "draftId"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "owner": {
+              "enum": [
+                "block",
+                "woocommerce",
+                "page",
+                "draft-notes"
+              ]
+            },
+            "draftId": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "id": {
         "type": [
           "integer",

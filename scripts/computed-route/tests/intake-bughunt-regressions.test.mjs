@@ -7,7 +7,7 @@ import { deadFieldVerdict } from '../lib/intake-defects-deadfield.mjs';
 import { fontUrlFamilies } from '../lib/intake-head.mjs';
 import { cssDecls } from '../lib/intake-census-logic.mjs';
 import { matchSelector } from '../lib/intake-inventory-css.mjs';
-import { crossCheck } from '../lib/intake-pagemap-surfaces.mjs';
+import { crossCheck } from '../lib/intake-pagemap-hints.mjs';
 import { parseHoursText } from '../lib/intake-siteinfo-shape.mjs';
 import { parseLogic, readBinding, fnBinding, callsOf } from '../lib/intake-ast.mjs';
 import { evalDeep } from '../lib/intake-ast-eval.mjs';

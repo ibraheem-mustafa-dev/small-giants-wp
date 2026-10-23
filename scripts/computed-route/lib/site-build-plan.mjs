@@ -9,7 +9,7 @@
 // is created; an unmarked post already holding its type and slug (another author's) stops the run, so it is never
 // duplicated or renamed `<slug>-2`, and a stored id naming a same-slug post that has no row key and no tree hash (one a
 // run saved before marking it) is marked and rebuilt. A rebuild never overwrites content a person changed since the build saved it.
-import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, builtTemplate, chooseActive, hasPost, orderRows, pageTreeFor, parentRow, readDecisions, rowKey, templateTreeFor, treeHash, wpType } from './site-build-map.mjs';
+import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, builtTemplate, hasPost, orderRows, pageTreeFor, parentRow, rowKey, templateTreeFor, treeHash, wpType } from './site-build-map.mjs';
 import { desiredMenus, menuLocation } from './site-build-menus.mjs';
 import { readSurfaces } from './site-build-labels.mjs';
 import { CONTENT_META, MENU_META, ROW_META, TEMPLATE_OPTION, isWooDefaultContent } from './site-build-state.mjs';
@@ -32,7 +32,7 @@ function wooRoles( rows ) {
 	];
 }
 
-export function planBuild( { rows, state, repo, client, frontRoute = 'home', linkText = {}, decisions = readDecisions( repo, client ) } ) {
+export function planBuild( { rows, state, repo, client, frontRoute = 'home', linkText = {} } ) {
 	const problems = [];
 	const notes = [];
 	const actions = [];
@@ -300,35 +300,26 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		options.push( { name: 'permalink_structure', before: state.options.permalink_structure, after: PERMALINKS } );
 		actions.push( { phase: 'site', type: 'permalinks', value: PERMALINKS, say: `permalinks ${ JSON.stringify( state.options.permalink_structure ) } -> ${ PERMALINKS }` } );
 	}
-	// Only an empty pointer, one naming a post the site build made, or the owner's decision is ever overwritten; with
-	// several rows of a kind the choice is the owner's (or the pointer already names one of them).
+	// Only an empty pointer or one naming a post the site build made is ever overwritten. A page map holds one layout row
+	// of each kind (Spec 48 FR-48-30); two rows of one kind stop the run naming them, since nothing can tell which one
+	// is the site's.
 	for ( const [ type, area ] of Object.entries( LAYOUT_TYPES ) ) {
 		const mine = rows.filter( ( r ) => r.postType === type );
 		if ( ! mine.length ) {
 			continue;
 		}
-		const current = state.pointers[ area ] || 0;
-		const decided = mine.length > 1 ? decisions?.active?.[ area ] : null;
-		let row = mine[ 0 ];
 		if ( mine.length > 1 ) {
-			const chosen = chooseActive( mine, area, rows, decisions );
-			const live = ! decided && current && mine.find( ( r ) => ids[ rowKey( r ) ] === current );
-			if ( live ) {
-				row = live;
-			} else if ( chosen.problem ) {
-				problems.push( chosen.problem );
-				continue;
-			} else {
-				row = chosen.row;
-			}
+			problems.push( `${ mine.length } ${ area } rows (${ mine.map( rowKey ).join( ', ' ) }); a page map holds one site-wide ${ area }, so the proposal that made the others is wrong (re-run the page map, or remove the rows that belong to a page or a block)` );
+			continue;
 		}
-		const explicit = decisions?.active?.[ area ] === row.slug;
+		const row = mine[ 0 ];
+		const current = state.pointers[ area ] || 0;
 		const built = ids[ rowKey( row ) ];
 		if ( built && current === built ) {
 			continue;
 		}
-		if ( current && ! state.pointerKeys?.[ area ] && ! explicit ) {
-			notes.push( `active ${ area } is post ${ current }, a post not made by the site build, so it is left; to point it at ${ rowKey( row ) } set {"active":{"${ area }":"${ row.slug }"}} in sites/<client>/build/site-build-decisions.json` );
+		if ( current && ! state.pointerKeys?.[ area ] ) {
+			notes.push( `active ${ area } is post ${ current }, a post not made by the site build, so it is left; to point it at ${ rowKey( row ) } set it yourself once the post exists, if that is wanted` );
 			continue;
 		}
 		const id = idOf( rowKey( row ) );

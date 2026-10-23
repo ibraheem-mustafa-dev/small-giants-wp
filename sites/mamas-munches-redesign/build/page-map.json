@@ -1,7 +1,7 @@
 [
   {
     "route": "Account.dc.html",
-    "slug": "account",
+    "slug": "my-account",
     "title": "My account",
     "parent": null,
     "template": null,
@@ -9,11 +9,61 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": null,
+    "parts": [
+      {
+        "kind": "form",
+        "label": "saveAddress",
+        "owner": "woocommerce",
+        "draftId": "Account.dc.html:183:15 <form>"
+      },
+      {
+        "kind": "form",
+        "label": "saveDetails",
+        "owner": "woocommerce",
+        "draftId": "Account.dc.html:203:13 <form>"
+      },
+      {
+        "kind": "form",
+        "label": "savePw",
+        "owner": "woocommerce",
+        "draftId": "Account.dc.html:217:13 <form>"
+      },
+      {
+        "kind": "form",
+        "label": "doSignin",
+        "owner": "woocommerce",
+        "draftId": "SignIn.dc.html:49:9 <form>"
+      },
+      {
+        "kind": "form",
+        "label": "doRegister",
+        "owner": "woocommerce",
+        "draftId": "SignIn.dc.html:62:9 <form>"
+      },
+      {
+        "kind": "form",
+        "label": "doForgot",
+        "owner": "woocommerce",
+        "draftId": "SignIn.dc.html:81:9 <form>"
+      },
+      {
+        "kind": "form",
+        "label": "doReset",
+        "owner": "woocommerce",
+        "draftId": "SignIn.dc.html:102:9 <form>"
+      },
+      {
+        "kind": "modal",
+        "label": "Cancel subscription confirm",
+        "owner": "draft-notes",
+        "draftId": "surfaces.json S-55"
+      }
+    ]
   },
   {
     "route": "Basket.dc.html",
-    "slug": "basket",
+    "slug": "cart",
     "title": "Your basket",
     "parent": null,
     "template": "cart",
@@ -21,7 +71,21 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": null,
+    "parts": [
+      {
+        "kind": "drawer",
+        "label": "Basket",
+        "owner": "block",
+        "draftId": "SiteHeader.dc.html:116:3 <aside aria-label=\"Basket\">"
+      },
+      {
+        "kind": "form",
+        "label": "Basket gift note + upsell",
+        "owner": "draft-notes",
+        "draftId": "surfaces.json S-24"
+      }
+    ]
   },
   {
     "route": "Checkout.dc.html",
@@ -33,19 +97,27 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": null
-  },
-  {
-    "route": "Confirmation.dc.html",
-    "slug": "confirmation",
-    "title": "Order confirmed",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "page",
-    "collection": "static",
-    "flags": [],
-    "id": null
+    "id": null,
+    "parts": [
+      {
+        "kind": "endpoint",
+        "label": "Order confirmed",
+        "owner": "woocommerce",
+        "draftId": "Checkout.dc.html:172 (logic) location.href = 'Confirmation.dc.html'"
+      },
+      {
+        "kind": "form",
+        "label": "pay",
+        "owner": "woocommerce",
+        "draftId": "Checkout.dc.html:36:5 <form>"
+      },
+      {
+        "kind": "header",
+        "label": "Header",
+        "owner": "woocommerce",
+        "draftId": "Checkout.dc.html:18:1 <header>"
+      }
+    ]
   },
   {
     "route": "Contact.dc.html",
@@ -101,7 +173,15 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": null,
+    "parts": [
+      {
+        "kind": "form",
+        "label": "Gift note preview",
+        "owner": "draft-notes",
+        "draftId": "surfaces.json S-22"
+      }
+    ]
   },
   {
     "route": "Help.dc.html",
@@ -129,7 +209,15 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": null,
+    "parts": [
+      {
+        "kind": "form",
+        "label": "Help search + category chips",
+        "owner": "draft-notes",
+        "draftId": "surfaces.json S-37"
+      }
+    ]
   },
   {
     "route": "Home.dc.html",
@@ -175,12 +263,26 @@
     "postType": "product",
     "collection": "live",
     "flags": [],
-    "id": null
+    "id": null,
+    "parts": [
+      {
+        "kind": "form",
+        "label": "Product buy box",
+        "owner": "draft-notes",
+        "draftId": "surfaces.json S-15"
+      },
+      {
+        "kind": "form",
+        "label": "Product gift note",
+        "owner": "draft-notes",
+        "draftId": "surfaces.json S-16"
+      }
+    ]
   },
   {
     "route": "Shop.dc.html",
     "slug": "shop",
-    "title": "Shop",
+    "title": "All Zookies",
     "parent": null,
     "template": "archive-product",
     "menus": [
@@ -203,74 +305,15 @@
     "postType": "shop",
     "collection": "live",
     "flags": [],
-    "id": null
-  },
-  {
-    "route": "SignIn.dc.html",
-    "slug": "sign-in",
-    "title": "Sign in",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "page",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-save-address",
-    "title": "saveAddress",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-save-details",
-    "title": "saveDetails",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-save-pw",
-    "title": "savePw",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-pay",
-    "title": "pay",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "header-checkout",
-    "title": "Header",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_header",
-    "collection": "static",
-    "flags": [],
-    "id": null
+    "id": null,
+    "parts": [
+      {
+        "kind": "form",
+        "label": "Shop filter + sort",
+        "owner": "draft-notes",
+        "draftId": "surfaces.json S-13"
+      }
+    ]
   },
   {
     "slug": "form-send",
@@ -284,45 +327,23 @@
     "id": null
   },
   {
-    "slug": "form-do-signin",
-    "title": "doSignin",
+    "slug": "choice-flow-gifts-she-ll-actually-eat",
+    "title": "Gifts she’ll actually eat",
     "parent": null,
     "template": null,
     "menus": [],
-    "postType": "sgs_form",
+    "postType": "sgs_choice_flow",
     "collection": "static",
     "flags": [],
     "id": null
   },
   {
-    "slug": "form-do-register",
-    "title": "doRegister",
+    "slug": "choice-flow-build-your-zookie",
+    "title": "Build your Zookie",
     "parent": null,
     "template": null,
     "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-do-forgot",
-    "title": "doForgot",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-do-reset",
-    "title": "doReset",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
+    "postType": "sgs_choice_flow",
     "collection": "static",
     "flags": [],
     "id": null
@@ -339,7 +360,7 @@
     "id": null
   },
   {
-    "slug": "header-site-header",
+    "slug": "header",
     "title": "Header",
     "parent": null,
     "template": null,
@@ -356,116 +377,6 @@
     "template": null,
     "menus": [],
     "postType": "sgs_drawer",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "drawer-basket",
-    "title": "Basket",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_drawer",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-build-your-zookie",
-    "title": "Build your Zookie",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-shop-filter-sort",
-    "title": "Shop filter + sort",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-product-buy-box",
-    "title": "Product buy box",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-product-gift-note",
-    "title": "Product gift note",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-gift-finder",
-    "title": "Gift finder",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-gift-note-preview",
-    "title": "Gift note preview",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-basket-gift-note-upsell",
-    "title": "Basket gift note + upsell",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-help-search-category-chips",
-    "title": "Help search + category chips",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "modal-cancel-subscription-confirm",
-    "title": "Cancel subscription confirm",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_modal",
     "collection": "static",
     "flags": [],
     "id": null

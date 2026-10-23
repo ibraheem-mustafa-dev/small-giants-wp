@@ -12,7 +12,9 @@ import { loadExport, readRouting, embeddedManifest } from './intake-routing.mjs'
 import { resolveRef, loadAjv, schemaProblems } from './handoff.mjs';
 import { keyName, isThisMember, subtree, scanTags, decodeEntities } from './intake-ast.mjs';
 import { ref, resolveRefs, propRefs, elementsOf, evalDeep, oneString, loopEnvs } from './intake-ast-eval.mjs';
-import { codeSurfaces, crossCheck, KIND_POST_TYPE, kebab, stem } from './intake-pagemap-surfaces.mjs';
+import { codeSurfaces, KIND_POST_TYPE, kebab, stem } from './intake-pagemap-surfaces.mjs';
+import { crossCheck } from './intake-pagemap-hints.mjs';
+import { wooSlugs, shopTitle, checkoutEndpoints, wooPages, ownedSurfaces } from './intake-pagemap-owners.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const PAGE_MAP_SCHEMA = path.join( HERE, '..', 'data', 'page-map.schema.json' );
@@ -243,6 +245,9 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	const route = routing || readRouting( { folder } );
 	const gaps = [];
 	const { rows, data } = routeRows( exp, route, gaps );
+	const routeOfNode = ( d, node ) => ( data && d === data.d ? [ ...data.values ].find( ( [ , v ] ) => v.start <= node.start && node.end <= v.end )?.[ 0 ] ?? null : null );
+	const code = codeSurfaces( exp, routeOfNode, new Set( route.routes.map( ( x ) => x.key ) ), route.links );
+	wooSlugs( rows, code.accountPages );
 	const used = new Set();
 	const routeSlug = new Map();
 	// Two manifest pages naming one WordPress slug (a signed-out and a signed-in view) are one row.
@@ -264,20 +269,25 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 		}
 	}
 	const home = route.links.find( ( l ) => /^#\/?$/.test( l.href ) && l.route )?.route || rows[ 0 ]?.route || null;
-	const routeOfNode = ( d, node ) => ( data && d === data.d ? [ ...data.values ].find( ( [ , v ] ) => v.start <= node.start && node.end <= v.end )?.[ 0 ] ?? null : null );
+	const endpoints = checkoutEndpoints( rows, route, code.pageOfTag, home, routeSlug );
+	wooPages( rows, code.surfaces, used );
 	const hintFile = path.join( folder, 'surfaces.json' );
 	const hint = undefined !== surfacesHint ? surfacesHint : fs.existsSync( hintFile ) ? JSON.parse( fs.readFileSync( hintFile, 'utf8' ) ) : null;
-	const code = codeSurfaces( exp, routeOfNode );
 	const checked = crossCheck( code.surfaces, hint );
 	gaps.push( ...checked.gaps );
-	const counts = ( kind ) => checked.surfaces.filter( ( s ) => s.kind === kind ).length;
-	for ( const s of checked.surfaces ) {
+	const owned = ownedSurfaces( checked.surfaces, rows, endpoints, routeSlug );
+	const counts = ( kind ) => owned.rows.filter( ( s ) => s.kind === kind ).length;
+	for ( const s of owned.rows ) {
 		const name = /^(header|footer)$/.test( s.kind ) ? kebab( s.dc || '' ) : kebab( s.label ).replace( new RegExp( `^${ SLUG_PREFIX[ s.kind ] }-?` ), '' ) || kebab( s.dc || '' );
 		const base = /^(header|footer)$/.test( s.kind ) && 1 === counts( s.kind ) ? s.kind : [ SLUG_PREFIX[ s.kind ], name ].filter( Boolean ).join( '-' );
 		rows.push( { slug: unique( base, used ), title: s.title || s.label, parent: null, template: null,
 			menus: s.menuItem ? [ { menu: s.menuItem.menu, position: s.menuItem.position, parentItem: null } ] : [],
 			postType: KIND_POST_TYPE[ s.kind ], collection: 'static', flags: [], id: null } );
 	}
+	owned.parts.forEach( ( { row, part } ) => {
+		const to = row || rows.find( ( r ) => 'sgs_header' === r.postType ) || rows[ 0 ];
+		( to.parts ??= [] ).push( part );
+	} );
 	const bySlug = new Map( rows.map( ( r ) => [ r.slug, r ] ) );
 	const rowOf = ( href, file ) => {
 		const k = routeOfHref( href, file, routeSlug, home );
@@ -295,6 +305,7 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 			const row = it.targets.map( ( t ) => rowOf( t, file ) ).find( Boolean );
 			if ( row && listed && ! row.menus.some( ( x ) => x.menu === m.menu && x.parentItem === it.parentItem ) ) {
 				row.menus.push( { menu: m.menu, position: it.position, parentItem: it.parentItem } );
+				shopTitle( row, it.label );
 			} else if ( ! row && it.targets.some( ( t ) => /^#.|\.dc\.html|^\//.test( t ) ) ) {
 				gaps.push( gap( 'menu', m.draftId, `${ m.menu } item "${ it.label }" links to ${ it.targets.join( ', ' ) }, which no page-map row holds` ) );
 			}
@@ -327,6 +338,7 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 			r.parent = up;
 		}
 	}
+	rows.forEach( ( r ) => delete r.shopTitled );
 	return { rows, linkMap: linkMap( exp, route, routeSlug, home, gaps ), gaps };
 }
 
@@ -336,7 +348,7 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 export function pageMapProblems( rows, ajv = loadAjv() ) {
 	const out = [ ...schemaProblems( ajv, PAGE_MAP_SCHEMA, rows ) ];
 	const slugs = new Set();
-	const key = ( type, slug ) => `${ type ?? '' } ${ slug }`;
+	const key = ( type, slug ) => `${ type ?? '' }\u0000${ slug }`;
 	for ( const r of Array.isArray( rows ) ? rows : [] ) {
 		if ( slugs.has( key( r?.postType, r?.slug ) ) ) {
 			out.push( `slug "${ r.slug }" is used by more than one ${ r.postType ?? '' } row` );
