@@ -20,6 +20,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { BLOCKS_DIR, defaultPaint, LOOSE } from './resolve.mjs';
 import { WIDTHS, rowTarget, rowValues, rectAt, reresolve, commit } from './fill-regap.mjs';
+import { innerToRoot } from './fill-same-box.mjs';
 
 const LOGICAL = { 'block-size': 'height', 'inline-size': 'width', 'min-block-size': 'min-height', 'min-inline-size': 'min-width', 'max-block-size': 'max-height', 'max-inline-size': 'max-width' };
 // The size family: physical name -> { kind: exact | min | max, axis: h | w }.
@@ -115,7 +116,11 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 		return null;
 	}
 	const noSize = ( w ) => NO_SIZE.has( String( given[ w ] ?? declaredAt( w ) ?? 'auto' ).trim() );
-	const ask = ( p, draft ) => reresolve( { rec, node, target, slot, prop: p, draft, ctx, resolver } );
+	const noSizeAll = () => widths.every( noSize );
+	// A size declared on an inner element that is the root's content box (the block's own band inside its root) goes to the
+	// root's setting, with the root's padding and border added; the draft's one element is both in the live DOM.
+	const home = '' !== slot && ! noSizeAll() ? innerToRoot( { rec, target, axis: size.axis, reads, cal, widths } ) : null;
+	const ask = ( p, draft ) => reresolve( { rec, node, target: home?.root ?? target, slot: home ? '' : slot, prop: p, draft, ctx, resolver } );
 	const touched = [];
 	// 3: an interactive element's size is never below the target size.
 	const guard = ( px, w, p ) => {
@@ -126,7 +131,7 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 		return px;
 	};
 	const settle = ( p, perWidth, why ) => {
-		const draft = Object.fromEntries( widths.map( ( w ) => [ w, `${ guard( Math.round( perWidth[ w ] * 100 ) / 100, w, p ) }px` ] ) );
+		const draft = Object.fromEntries( widths.map( ( w ) => [ w, `${ guard( Math.round( ( perWidth[ w ] + ( home?.extra[ w ] ?? 0 ) ) * 100 ) / 100, w, p ) }px` ] ) );
 		const res = ask( p, draft );
 		if ( 'written' !== res.status && 'equal' !== res.status ) {
 			return { raise: `the block has no setting that holds ${ p } ${ Object.values( draft ).join( ' / ' ) } (${ res.gap ?? 'gap' }: ${ res.detail ?? '' }); a framework setting is needed` };
@@ -170,7 +175,14 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 		if ( taller.length ) {
 			return { raise: `the content is ${ taller.map( ( [ w, e ] ) => ( null === e ? `of unknown ${ 'h' === size.axis ? 'height' : 'width' } at ${ w }` : `${ Math.round( e ) }px at ${ w }` ) ).join( ', ' ) } against a declared ${ prop } of ${ taller.map( ( [ w ] ) => `${ declared[ w ] }px` ).join( ' / ' ) }, so a minimum would grow the box the draft overflows; not written` };
 		}
-		return settle( `min-${ prop }`, declared, `the draft declares ${ prop } ${ widths.map( ( w ) => `${ declared[ w ] }px` ).join( ' / ' ) }, no setting holds ${ prop } and the content fits, so it is the block's minimum` );
+		return settle( `min-${ prop }`, declared, `the draft declares ${ prop } ${ widths.map( ( w ) => `${ declared[ w ] }px` ).join( ' / ' ) }, no setting holds ${ prop } and the content fits, so it is the block's minimum${ home ? `, written on the root (the draft's ${ slot } is the root's content box; the root's own ${ widths.map( ( w ) => `${ home.extra[ w ] }px` ).join( ' / ' ) } of padding and border is added)` : '' }` );
+	}
+	// A declared minimum or ceiling on the inner element that is the root's content box: the same size on the root.
+	if ( home && ( 'min' === size.kind || 'max' === size.kind ) ) {
+		const declared = Object.fromEntries( widths.map( ( w ) => [ w, pxOf( declaredAt( w ) ?? given[ w ] ) ] ).filter( ( [ , v ] ) => null !== v ) );
+		return Object.keys( declared ).length === widths.length
+			? settle( prop, declared, `the draft declares ${ prop } ${ widths.map( ( w ) => `${ declared[ w ] }px` ).join( ' / ' ) } on ${ slot }, the root's content box, so the root holds it (plus the root's own ${ widths.map( ( w ) => `${ home.extra[ w ] }px` ).join( ' / ' ) } of padding and border)` )
+			: null;
 	}
 	return null;
 }

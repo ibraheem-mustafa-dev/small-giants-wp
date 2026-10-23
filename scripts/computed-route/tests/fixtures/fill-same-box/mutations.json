@@ -1,0 +1,16 @@
+[
+	{ "file": "lib/fill-same-box.mjs", "find": "return painted.find( ( p ) => calSameBox( cal, slot, p ) ) ?? slot;", "replace": "return slot;", "why": "a setting painting the same-box content band would never be the home of a layout keyword" },
+	{ "file": "lib/fill-same-box.mjs", "find": "if ( ! root || '' === slot || ! calSameBox( cal, '', slot, [ axis ] ) ) {", "replace": "if ( ! root || '' === slot ) {", "why": "an inner element calibration measures as a different box would be taken as the root's size" },
+	{ "file": "lib/fill-same-box.mjs", "find": "if ( Math.abs( box - frame - part ) > TOL + 0.5 ) {", "replace": "if ( false ) {", "why": "an inner element filling only part of the root would be taken as the root's content box" },
+	{ "file": "lib/fill-same-box.mjs", "find": "extra[ w ] = Math.round( ( box - part ) * 100 ) / 100;", "replace": "extra[ w ] = 0;", "why": "the root's own border would not be added to the root minimum" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "values[ w ] !== carried || differs( w )", "replace": "values[ w ] !== carried", "why": "a per-device block default that differs from the draft would not be overridden" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "widths.every( ( w ) => null !== base[ w ] && ! differs( w ) ) ) {", "replace": "false ) {", "why": "a default that already does the draft's effect would not settle the row" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "! varies && ! hasOwn &&", "replace": "! varies &&", "why": "a setting the node already carries would count as the block's default" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "( CANNOT_HOLD.test( row.reason ?? '' ) || PAINTS_OTHER.test( row.reason ?? '' ) )", "replace": "( PAINTS_OTHER.test( row.reason ?? '' ) )", "why": "a keyword a per-device setting cannot take would not be a ladder row" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "( CANNOT_HOLD.test( row.reason ?? '' ) || PAINTS_OTHER.test( row.reason ?? '' ) )", "replace": "( CANNOT_HOLD.test( row.reason ?? '' ) )", "why": "a keyword whose setting paints another element would not be a ladder row" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "( ! sizeOf( row.property ?? '' ) && (", "replace": "( ! false && (", "why": "a size keyword would be read by the ladder as well as the size pass" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "const slot = layoutHome( { db, block: rec.name, cal, prop, state, slot: row.slot ?? '' } );", "replace": "const slot = row.slot ?? '';", "why": "a layout keyword would be written at the root, not the content band" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "'' !== slot && ! noSizeAll() ? innerToRoot( { rec, target, axis: size.axis, reads, cal, widths } ) : null;", "replace": "null;", "why": "a size declared on the root's content box would never go to the root" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "( perWidth[ w ] + ( home?.extra[ w ] ?? 0 ) )", "replace": "perWidth[ w ]", "why": "the root's own border would not be added to the written minimum" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "slot: home ? '' : slot, prop: p", "replace": "slot, prop: p", "why": "the root size would be asked at the inner element" }
+]

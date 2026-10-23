@@ -129,7 +129,8 @@
 					"reason": "draws its items, labels and carets from a WordPress menu",
 					"childSlots": {
 						"resting": "itemColour",
-						"current": "itemColourCurrent"
+						"current": "itemColourCurrent",
+						"glyph": "submenuCaretSize"
 					}
 				},
 				{
