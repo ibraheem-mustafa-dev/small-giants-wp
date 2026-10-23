@@ -172,7 +172,7 @@ Review (done 2026-10-23): the full three-rater `/qc-council` over all of Phase 0
 ## Phase 1: fix every known issue (waits on Phase 0's merges)
 One wave per track, every item in it at once.
 - **Track R** runs E, R1, R2, R4–R10, R12 and the R11 diagnoses together. Each owns distinct files, with one exception: R8's transition settings come through E, so R8 lands after E inside the wave.
-- **Track W** runs W13's I-classes, instrument debt and backlog (FR-48-65, -67, -68), FR-48-12's lint gate and FR-48-15's citation check. W7/W8 belong to Track R, which owns `lib/pairs.mjs`.
+- **Track W** runs W13's I-classes, instrument debt and backlog (FR-48-65, -67, -68), FR-48-12's lint gate and FR-48-15's citation check. W7/W8 belong to Track R, which owns `lib/pairs.mjs`. Wave 1 done 2026-10-23 (seven lanes, merges `517573a0d` to `f0bd824af`, review fixes `f88e8570b`): FR-48-65, -67 and -68 built, `gaps.json` written for the first time, FR-48-12 and FR-48-15 built, R7's conservation check built, Phase 0's open points closed (W12), the auto-collect test runs from a worktree, and Eye Care's header walked before and after (W14 to W17 found). The full three-rater review found 11 Critical and Important defects, all fixed red-first with mutations killed. Next wave (Track W): W14 to W17, hover declarations read by the walker for the used sizes (G2 now stops those hover rows as W-walker), `gate-chain.mjs`'s walks gated by the lint, and the review's three Minor items left (I-class evidence in the census JSON, a doubled-scope rule from a WordPress stylesheet classed as custom CSS, `walker-lint.mjs` tests).
 - **Track F** runs F1.
 - **Track S** runs S3 and S4.
 
