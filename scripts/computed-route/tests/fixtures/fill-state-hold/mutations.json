@@ -1,0 +1,20 @@
+[
+	{ "file": "lib/fill-state.mjs", "find": "const hold = holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads, drafts, held, interaction, taken } );", "replace": "const hold = { writes: [], unmapped: [], held: [] };", "why": "the old behaviour: only the draft's declared state looks are written, the block's own look survives" },
+	{ "file": "lib/fill-state.mjs", "find": "props.length && ( out[ path ] = new Set( props ) );", "replace": "out[ path ] = new Set( list.flatMap( ( r ) => [ ...r.effects, ...r.own ] ) );", "why": "every reading's own property and lone side effect would count as the block's look" },
+	{ "file": "lib/fill-state.mjs", "find": "list.every( ( r ) => r.effects.includes( p ) || r.own.includes( p ) )", "replace": "true", "why": "a marker's own side effect would be held" },
+	{ "file": "lib/fill-state.mjs", "find": "if ( declared( state, prop ) || ! slots.some(", "replace": "if ( ! slots.some(", "why": "a hold would overwrite the draft's declared state value" },
+	{ "file": "lib/fill-state.mjs", "find": "draft: rest[ prop ], baseline", "replace": "draft: Object.fromEntries( Object.keys( rest[ prop ] ).map( ( w ) => [ w, 'rgb(216, 202, 80)' ] ) ), baseline", "why": "the hold would not be the draft's resting value" },
+	{ "file": "lib/fill-state.mjs", "find": "return [ ...new Set( [ slot, ...alternateSlots( cal, prop, rest ), ...carried ] ) ];", "replace": "return [ ...new Set( [ slot, ...alternateSlots( cal, prop, rest ) ] ) ];", "why": "a ground colour on an inner shape would never be held" },
+	{ "file": "lib/fill-state.mjs", "find": "follows && 'color' !== prop", "replace": "false", "why": "a property following the colour would be reported as a gap" },
+	{ "file": "lib/fill-state.mjs", "find": "was not read on this element` : stateGap( state, held );", "replace": "was not read on this element` : null;", "why": "a focus or press look with no setting would be resolved as if a setting held it" },
+	{ "file": "lib/fill-state.mjs", "find": "const INTERACTION_FAMILIES = [ 'pointer-keyboard', 'press' ];", "replace": "const INTERACTION_FAMILIES = [ 'pointer-keyboard' ];", "why": "a press look would never be compared" },
+	{ "file": "lib/fill-state.mjs", "find": "const INTERACTION_FAMILIES = [ 'pointer-keyboard', 'press' ];", "replace": "const INTERACTION_FAMILIES = [ 'pointer-keyboard', 'press', 'current', 'open' ];", "why": "a state the visitor does not enter at will would be held" },
+	{ "file": "lib/fill-state.mjs", "find": "filter( ( p ) => ! known.size || known.has( LOOSE( p ) ) )", "replace": "filter( ( p ) => p )", "why": "an element only a marker built (a gradient's defs) would be held" },
+	{ "file": "lib/fill-state.mjs", "find": "filter( ( p ) => ! known.size || known.has( LOOSE( p ) ) )", "replace": "filter( ( p ) => known.has( LOOSE( p ) ) )", "why": "a calibration with no default paint read would hold nothing" },
+	{ "file": "lib/fill-state.mjs", "find": "if ( effects.includes( 'display' ) ) {\n\t\t\t\tcontinue;\n\t\t\t}", "replace": "", "why": "a reading that shows its element would veto the block's look" },
+	{ "file": "lib/fill-state.mjs", "find": "atRest || taken.set( w.attr, w.value );", "replace": "", "why": "a hold from another part would overwrite a declared look" },
+	{ "file": "lib/fill-state.mjs", "find": "if ( taken.has( w.attr ) ) {", "replace": "if ( false ) {", "why": "two parts would silently overwrite each other's hold" },
+	{ "file": "lib/fill-state.mjs", "find": "v && ! notPainted( prop, styles ) &&", "replace": "v &&", "why": "a border with no width would have its colour held" },
+	{ "file": "lib/fill-state.mjs", "find": "if ( pairBroken && PAIR.includes( prop ) && 'written' === res.status ) {", "replace": "if ( false ) {", "why": "a ground would be held without its text colour" },
+	{ "file": "lib/fill-state.mjs", "find": "( ! rest[ prop ] && read( prop ) )", "replace": "! rest[ prop ]", "why": "a colour the draft never read would be passed over in silence, breaking its pair" }
+]
