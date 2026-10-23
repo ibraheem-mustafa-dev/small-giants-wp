@@ -18,6 +18,7 @@ import { detectReferences } from './lib/references.mjs';
 import { latestReport } from './lib/sweep.mjs';
 import { triage, measuredReachFrom } from './lib/triage.mjs';
 import { measuredEmitsFrom } from './lib/cite-emission.mjs';
+import { loadDraftBranches } from './lib/draft-branches-io.mjs';
 import { helperIndex } from './lib/triage-source.mjs';
 import { load as loadLedger } from './lib/ledger.mjs';
 import { calibrationForSite } from './solve.mjs';
@@ -162,6 +163,8 @@ export function surfaceContext( { client, surface, report: reportArg = null, mea
 		ledger: loadLedger( path.join( buildDir, 'qa', 'divergences.json' ) ),
 		measuredReach,
 		// FR-48-15: the CONFIRMED families, one of the two proofs a canvas citation's attribute emits on its element.
+		// FR-48-12 item 2: the draft's sc-if branches each row's draft element sits in, or why they could not be joined.
+		draftBranches: loadDraftBranches( { client, surface, buildDir, surfaces: manifest } ),
 		measuredEmits: measuredEmitsFrom( fs.existsSync( confirmFile ) ? JSON.parse( fs.readFileSync( confirmFile, 'utf8' ) ) : [] ),
 		refs: detectReferences(),
 		helpers: helperIndex( [ ...phpFiles( path.join( PLUGIN, 'includes' ) ), ...phpFiles( BLOCKS_DIR ).filter( ( f ) => ! f.file.endsWith( '/render.php' ) ) ] ),

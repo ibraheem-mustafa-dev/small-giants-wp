@@ -14,6 +14,7 @@ import { sourcePass } from './triage-source.mjs';
 import { USED_VALUES } from '../solve.mjs';
 // The kinds, classes, order and issue key are shared with lib/sweep.mjs so the two counts agree by construction.
 import { citedElementPath, emissionProof, hopCanvasSettable } from './cite-emission.mjs';
+import { classifyBlankDraft, walkedStates } from './draft-branches.mjs';
 import { SOLVE_CLASSES, UNMAPPED, CONTENT, isContentRow, isIssue, issueKey as keyOf } from './issue-classes.mjs';
 
 export const TRIAGE_CLASSES = [ 'W', 'F', 'T', 'U', 'L' ];
@@ -542,6 +543,14 @@ export function triageIssue( issue, ctx ) {
 			mappedStates: Object.keys( ctx.stateMap || {} ), detail: 'the surface maps no setting state to this walker state (FR-47-7 not built)' } );
 		return verdict( 'W', 'unmapped-state' );
 	}
+	// FR-48-12 item 2: a blank draft side explained by the draft's sc-if branches is an unwalked state or absent, never
+	// written and never a gap (lib/draft-branches.mjs). A surface whose branches could not be joined says why.
+	const branches = classifyBlankDraft( issue, { draftOf: ctx.draftBranches?.draftOf, walked: walkedStates( ctx.walk ) } );
+	if ( branches ) {
+		evidence.unshift( branches.evidence );
+		return verdict( 'W', branches.decidedBy );
+	}
+	ctx.draftBranches?.reason && issue.rows.every( ( x ) => null == x.draft ) && evidence.push( { check: 'draft-branches', unjoined: ctx.draftBranches.reason } );
 	// A content row carries the page's words, an element present on one side only, or a link the other side does not
 	// carry. No walker state is unmapped for it and the property-to-setting engine holds no words, so a framework gap
 	// cannot be assessed through it either: it is a route gap until the text channel is built (FR-47-2).
