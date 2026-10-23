@@ -7,8 +7,8 @@
 	},
 	{
 		"file": "lib/fill-held.mjs",
-		"find": "if ( undefined === part || null === part || ! same( row.property, String( part ), values[ x ] ) ) {",
-		"replace": "if ( undefined === part || null === part ) {",
+		"find": "return undefined !== part && null !== part && same( row.property, String( part ), values[ x ] );",
+		"replace": "return undefined !== part && null !== part;",
 		"why": "a corner one pixel off the written one would be held as covered"
 	},
 	{
@@ -25,21 +25,9 @@
 	},
 	{
 		"file": "lib/fill-held.mjs",
-		"find": "if ( widths.every( ( w ) => same( row.property, values[ w ], paintOf( cal, row, rec, w ) ) ) ) {",
-		"replace": "if ( widths.some( ( w ) => same( row.property, values[ w ], paintOf( cal, row, rec, w ) ) ) ) {",
-		"why": "a value held at one width only would be held at all of them"
-	},
-	{
-		"file": "lib/fill-held.mjs",
-		"find": "? BLOCKIFIED[ paint ] ?? paint : paint;",
-		"replace": "? BLOCKIFIED[ paint ] ?? paint : BLOCKIFIED[ paint ] ?? paint;",
-		"why": "an inline display would be blockified under a block parent"
-	},
-	{
-		"file": "lib/fill-held.mjs",
 		"find": "const TOL = 0.5;",
 		"replace": "const TOL = 5;",
-		"why": "a value several pixels from the default paint would be held"
+		"why": "a value several pixels from its parent's would be held as inherited"
 	},
 	{
 		"file": "lib/fill-held.mjs",
@@ -70,5 +58,23 @@
 		"find": "( fam && 'mixed' !== fam.kind ? written[ 'corner' === fam.kind ? partKey( fam.part ) : fam.part ] : undefined ) : written;",
 		"replace": "( fam && 'mixed' !== fam.kind ? written[ 'corner' === fam.kind ? partKey( fam.part ) : fam.part ] : undefined ) : values[ x ];",
 		"why": "a written value that differs from the draft would cover it"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "return same( prop, defaultAt( x ), defaultAt( WIDTH_OF[ wider ] ) ) ? { value: w.after[ wider ] } : null;",
+		"replace": "return { value: w.after[ wider ] };",
+		"why": "a desktop tier would be assumed to cascade over a block's own mobile fallback"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "if ( TIER_OF[ x ] in w.after ) {",
+		"replace": "if ( false ) {",
+		"why": "a written mobile tier would be ignored in favour of the wider one"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "return same( prop, defaultAt( x ), defaultAt( WIDTH_OF[ wider ] ) )",
+		"replace": "return ( undefined === defaultAt( x ) || same( prop, defaultAt( x ), defaultAt( WIDTH_OF[ wider ] ) ) )",
+		"why": "an empty tier calibration never measured would be judged as carried down"
 	}
 ]
