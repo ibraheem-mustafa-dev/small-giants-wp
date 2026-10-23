@@ -15,7 +15,7 @@ const ev = ( line ) => ( { command: 'node gate-chain.mjs', line } );
 const gates = ( failAt ) => GATES.map( ( gate, i ) => ( { gate, status: i < failAt ? 'pass' : ( i === failAt ? 'fail' : 'not-reached' ), evidence: i <= failAt ? ev( `${ gate } read` ) : null } ) );
 const issue = { key: 'k1', solveClass: 'missing', rows: [ { width: 1440 }, { width: 375 }, { width: 1440 } ] };
 const row = ( over = {} ) => ( { ref: 'cr-ref-s-1', pair: 'head', key: 'padding-top', kind: 'style', state: 'rest', width: 1440, draft: '24px', live: '16px', draftId: 'tpl-3', ...over } );
-const ctx = ( over = {} ) => ( { blockOf: () => 'sgs/container', stateOf: () => null, declaredOf: () => '24px', findingOf: () => ( { attribute: 'maxWidth' } ), ...over } );
+const ctx = ( over = {} ) => ( { blockOf: () => 'sgs/container', stateOf: () => null, declaredOf: () => '24px', draftIdOf: ( r ) => r.draftId ?? null, ...over } );
 const res = ( over = {} ) => ( { gate: 'G3', class: 'I-unrouted', evidence: ev( 'x' ), gates: gates( 3 ), candidate: false, settings: null, setting: { block: 'sgs/container', attr: 'maxWidth' }, ...over } );
 const tmp = () => path.join( fs.mkdtempSync( path.join( os.tmpdir(), 'gaps-' ) ), 'qa', 'gaps.json' );
 
@@ -36,9 +36,14 @@ test( 'MUST FAIL: an instrument row\'s attribute is the setting the failing gate
 	assert.equal( gapInput( { issue, row: row(), res: res( { setting: null } ) }, c ).attribute, null );
 } );
 
-test( 'MUST FAIL: a row without a draftId names its draft element by its pair; a draftId wins over the pair', () => {
-	assert.equal( gapInput( { issue, row: row( { draftId: undefined, pair: 'gen-header-0' } ), res: res() }, ctx() ).draftId, 'gen-header-0' );
-	assert.equal( gapInput( { issue, row: row( { draftId: 'tpl-3', pair: 'gen-header-0' } ), res: res() }, ctx() ).draftId, 'tpl-3' );
+test( 'MUST FAIL: the draftId is the draft identity the origin map joins (ctx.draftIdOf) or null, never the walker pair, which keeps its own field; readAt names the width the values were read at', () => {
+	const none = gapInput( { issue, row: row( { draftId: undefined, pair: 'gen-header-0' } ), res: res() }, ctx( { draftIdOf: () => null } ) );
+	assert.deepEqual( [ none.draftId, none.pair, none.readAt ], [ null, 'gen-header-0', 1440 ] );
+	assert.equal( gapInput( { issue, row: row( { pair: 'gen-header-0' } ), res: res() }, ctx( { draftIdOf: () => 'Indus Foods Website v2:87' } ) ).draftId, 'Indus Foods Website v2:87' );
+	const file = tmp();
+	writeGaps( { file, rows: [ none ], surface: 'header', publishedOn: '2026-10-23' } );
+	const g = JSON.parse( fs.readFileSync( file, 'utf8' ) ).rows[ 0 ];
+	assert.deepEqual( [ g.draftId, g.pair, g.readAt ], [ null, 'gen-header-0', 1440 ] );
 } );
 
 test( 'MUST FAIL: the setting state is the one the chain computes; a hover row reads its own state', () => {

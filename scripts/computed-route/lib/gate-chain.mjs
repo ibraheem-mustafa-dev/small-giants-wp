@@ -84,10 +84,14 @@ function g1PairAndPaintRead( i ) {
 	return bad ? fail( 'W-walker', bad ) : ok( `identity pair ${ row.pair } on ${ row.ref }, paints ${ row.key }, state ${ row.state }` );
 }
 
-// G2 Intent. i: { property, declared, renderedDraft, fr34Passes, ledgered }.
+// G2 Intent. i: { property, declared, unread, renderedDraft, fr34Passes, ledgered }. `unread` is null when the walk answered
+// for the declared value (declared null: no rule declares it), else the reason it could not; an unread declaration fails.
 function g2IntentRead( i ) {
-	if ( ! i || blank( i.property ) || 'boolean' !== typeof i.fr34Passes || 'boolean' !== typeof i.ledgered ) {
+	if ( ! i || blank( i.property ) || 'boolean' !== typeof i.fr34Passes || 'boolean' !== typeof i.ledgered || ! ( null === i.unread || 'string' === typeof i.unread ) ) {
 		return fail( 'W-walker', 'the intent input is missing' );
+	}
+	if ( null !== i.unread ) {
+		return fail( 'W-walker', `the declared ${ i.property } is unreadable: ${ i.unread || 'no reason given' }` );
 	}
 	if ( i.ledgered ) {
 		return fail( 'CLIENT', `the row is in the divergence ledger (declared ${ i.declared ?? 'none' }, rendered ${ i.renderedDraft })` );

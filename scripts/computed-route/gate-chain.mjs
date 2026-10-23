@@ -20,7 +20,8 @@ import { openDb } from './lib/db.mjs';
 import { runChain } from './lib/gate-chain.mjs';
 import { renderEvidence } from './lib/gate-evidence.mjs';
 import { issuesOf } from './lib/triage.mjs';
-import { draftValues, cssProp, settingState } from './lib/solve-rows.mjs';
+import { cssProp, settingState } from './lib/solve-rows.mjs';
+import { declaredRead, defectNamed, loadDraftIdentity } from './lib/draft-identity.mjs';
 import { calibrationForSite } from './solve.mjs';
 import { readTree, nodeByRef } from './lib/tree.mjs';
 import { localBlockHash } from './lib/deploy-hash.mjs';
@@ -98,6 +99,7 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 	const calFor = s?.site ? calibrationForSite( s.site, path.join( REPO, 'scripts', 'computed-route', 'cache' ) ) : () => null;
 	const intake = intakeFile && fs.existsSync( intakeFile ) ? JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ) : null;
 	const ancestors = ancestorsOf( db );
+	const draftIdOf = loadDraftIdentity( { buildDir, surface, s, intake } );
 	// An enum setting calibration discovered is routed through discovery: G3 never reads it as an unrouted setting.
 	const discovered = ( r ) => !! calFor( r.block_slug )?.discovered?.[ r.attr_name ];
 	const gateDb = withDiscovery( db, discovered );
@@ -137,11 +139,16 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 					stateListed: !! s?.states && Object.hasOwn( s.states, row.state ) && undefined !== settingState( row, s.states ),
 				};
 			},
+			// The declared value at the row's own state and width (hover declarations for a hover row), and FR-48-34's
+			// defect joined through the row's draft identity; an unreadable identity fails G2 with its reason.
 			G2: ( row ) => {
 				const prop = cssProp( row.key );
-				const dv = draftValues( walk, row.pair, prop, 'hover' === row.kind );
-				const defects = new Set( ( intake?.draftDefects || [] ).flatMap( ( g ) => g.rows || [ g ] ).filter( ( d ) => d.draftId && d.draftId === row.draftId ).flatMap( ( d ) => String( d.evidence?.declared ?? '' ).split( ';' ).map( ( x ) => x.split( ':' )[ 0 ].trim().toLowerCase() ) ) );
-				return { property: prop, declared: dv.declared[ row.width ] ?? null, renderedDraft: row.draft, fr34Passes: defects.has( prop ), ledgered: !! row.decided };
+				const id = draftIdOf( row );
+				if ( ! id.draftId ) {
+					throw new Error( `the row's draft identity is unreadable: ${ id.reason }` );
+				}
+				const { declared, unread } = declaredRead( walk, row, prop );
+				return { property: prop, declared, unread, renderedDraft: row.draft, fr34Passes: defectNamed( intake, id.draftId, prop, 'hover' === row.kind ), ledgered: !! row.decided };
 			},
 			G3: ( row ) => ( { db: gateDb, block: need( blockOf( row ), 'the block of the row' ), ancestors: ancestors( blockOf( row ) ), property: cssProp( row.key ), state: settingState( row, s?.states ) ?? null } ),
 			G4: ( row, soFar ) => ( {
@@ -163,7 +170,9 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 		},
 		// The setting state a row's values belong to: the one G3 reads, null for the resting state or an unmapped walker state.
 		stateOf: ( row ) => settingState( row, s?.states ) ?? null,
-		declaredOf: ( row ) => draftValues( walk, row.pair, cssProp( row.key ), 'hover' === row.kind ).declared[ row.width ] ?? null,
+		declaredOf: ( row ) => declaredRead( walk, row, cssProp( row.key ) ).declared,
+		// The row's draft id (intake's `<component>:<n>`) through the surface's origin map, or null when it is unreadable.
+		draftIdOf: ( row ) => draftIdOf( row ).draftId ?? null,
 	};
 }
 

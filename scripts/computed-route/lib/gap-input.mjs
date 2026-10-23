@@ -13,15 +13,16 @@ function attributeOf( res ) {
 	return 1 === res.settings?.length ? res.settings[ 0 ].attr : null;
 }
 
-// A row names its draft element by `draftId`, else by its pair: the walker pairs elements by draft identity and the pair key is the
-// only draft identity a Solve row carries.
+// A row names its draft element by intake's draft id (`<component>:<n>`), joined through the surface's origin map
+// (ctx.draftIdOf, lib/draft-identity.mjs), or null; the walker pair stays in `pair`. The state, declared and rendered values
+// and the gate evidence are read on the issue's first row, at its width (`readAt`).
 // issue: { key, solveClass, rows }; row: the issue's first row; res: runChain's result.
 export function gapInput( { issue, row, res }, ctx ) {
 	// A class outside FR-48-65 (G7's `closed` apart) is a chain defect, never defaulted.
 	'closed' === res.class || null === res.class || gapClassOf( res.class );
 	return {
-		key: issue.key, solveClass: issue.solveClass, ref: row.ref ?? null, pair: row.pair, property: row.key,
-		widths: [ ...new Set( issue.rows.map( ( x ) => x.width ) ) ], draftId: read( row.draftId ?? row.pair ), state: read( ctx.stateOf( row ) ),
+		key: issue.key, solveClass: issue.solveClass, ref: row.ref ?? null, pair: read( row.pair ), property: row.key, readAt: read( row.width ),
+		widths: [ ...new Set( issue.rows.map( ( x ) => x.width ) ) ], draftId: read( ctx.draftIdOf( row ) ), state: read( ctx.stateOf( row ) ),
 		declared: read( ctx.declaredOf( row ) ), renderedDraft: read( row.draft ), renderedLive: read( row.live ),
 		block: ctx.blockOf( row ), attribute: attributeOf( res ), ...res,
 	};

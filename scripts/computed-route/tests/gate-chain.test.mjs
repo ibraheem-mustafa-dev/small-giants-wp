@@ -87,7 +87,7 @@ test( 'MUST FAIL G1: a word pairing, a mispaired block, an unread side, an inert
 
 // ---- G2
 test( 'MUST FAIL G2: ledgered is CLIENT; a declared value the render contradicts is render-wins, or draft-defect when FR-48-34 passes', () => {
-	const i = { property: 'padding-top', declared: '24px', renderedDraft: '24px', fr34Passes: false, ledgered: false };
+	const i = { property: 'padding-top', declared: '24px', renderedDraft: '24px', fr34Passes: false, ledgered: false, unread: null };
 	assert.equal( g2Intent( i ).pass, true );
 	assert.equal( g2Intent( { ...i, ledgered: true } ).class, 'CLIENT' );
 	assert.equal( g2Intent( { ...i, declared: '8px' } ).class, 'render-wins' );
@@ -96,7 +96,7 @@ test( 'MUST FAIL G2: ledgered is CLIENT; a declared value the render contradicts
 	assert.equal( g2Intent( { ...i, renderedDraft: null } ).class, 'W-walker' );
 	assert.equal( g2Intent( { property: 'padding-top' } ).pass, false );
 	// a declared value the browser serialises in another shape cannot be compared: W-walker, never a pass
-	const shadow = g2Intent( { property: 'box-shadow', declared: '0 1px 2px #000', renderedDraft: 'rgb(0, 0, 0) 0px 1px 2px 0px', fr34Passes: false, ledgered: false } );
+	const shadow = g2Intent( { property: 'box-shadow', declared: '0 1px 2px #000', renderedDraft: 'rgb(0, 0, 0) 0px 1px 2px 0px', fr34Passes: false, ledgered: false, unread: null } );
 	assert.deepEqual( [ shadow.pass, shadow.class ], [ false, 'W-walker' ] );
 } );
 
@@ -197,7 +197,7 @@ function ctxOf( over = {} ) {
 	const inputs = {
 		G0: () => fresh(),
 		G1: ( r ) => g1( {}, r ),
-		G2: () => ( { property: 'padding-top', declared: '24px', renderedDraft: '24px', fr34Passes: false, ledgered: false } ),
+		G2: () => ( { property: 'padding-top', declared: '24px', renderedDraft: '24px', fr34Passes: false, ledgered: false, unread: null } ),
 		G3: () => ( { db: d, block: 'sgs/card', ancestors: [], property: 'padding-top', state: null } ),
 		G4: () => ( { cache: {}, settings: [] } ),
 		G5: () => ( { settings: [] } ),
@@ -218,7 +218,7 @@ test( 'MUST FAIL: a planted row stops at exactly the gate it fails, with that ga
 	const planted = {
 		G0: [ () => ( { ...fresh(), installed: { playwrightVersion: '1.58.2', browserVersion: '9' } } ), 'I-stale' ],
 		G1: [ ( r ) => g1( { pairing: { by: 'words' } }, r ), 'W-walker' ],
-		G2: [ () => ( { property: 'padding-top', declared: '8px', renderedDraft: '24px', fr34Passes: false, ledgered: false } ), 'render-wins' ],
+		G2: [ () => ( { property: 'padding-top', declared: '8px', renderedDraft: '24px', fr34Passes: false, ledgered: false, unread: null } ), 'render-wins' ],
 		G3: [ () => { const d = db(); add( d, 'sgs/card', 'paddingTop', null, null, 'spacing-token', 'sgs' ); return { db: d, block: 'sgs/card', ancestors: [], property: 'padding-top', state: null }; }, 'I-unrouted' ],
 		G4: [ () => ( { cache: { dead: [ 'space' ] }, settings: [ { attr: 'space' } ] } ), 'I-calibration' ],
 		G5: [ () => ( { settings: [ { attr: 'space' } ], measure: async () => ( { method: 'measured', reaches: true } ) } ), 'W-route' ],
