@@ -1,0 +1,8 @@
+[
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "[ t.slot, CONTENT_WIDTHS.some( ( w ) => {",
+		"replace": "[ t.slot, [ at ].some( ( w ) => {",
+		"why": "a part drawn only below the collapse point would read as absent and its block would switch it off (the burger vanished)"
+	}
+]

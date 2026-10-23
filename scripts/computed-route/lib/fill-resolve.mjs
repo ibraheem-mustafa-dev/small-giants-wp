@@ -39,7 +39,12 @@ function fillContent( st, rec, ref, cal ) {
 	const skeletonNode = st.nodes[ rec.index ].node;
 	const at = contentWidth( st, rec );
 	const atDesktop = Object.fromEntries( rec.targets.map( ( t ) => [ t.slot, st.reads.widths[ at ]?.[ t.id ] ] ) );
-	const evidence = Object.fromEntries( rec.targets.filter( ( t ) => '' !== t.slot ).map( ( t ) => [ t.slot, !! atDesktop[ t.slot ] && ! atDesktop[ t.slot ].missing ] ) );
+	// A part is present when the draft draws it at any read width: which widths show it is the width gate's and the block's
+	// own (a burger drawn only below the nav's collapse point is present).
+	const evidence = Object.fromEntries( rec.targets.filter( ( t ) => '' !== t.slot ).map( ( t ) => [ t.slot, CONTENT_WIDTHS.some( ( w ) => {
+		const s = st.reads.widths[ w ]?.[ t.id ];
+		return !! s && ! s.missing;
+	} ) ] ) );
 	const words = Object.fromEntries( Object.entries( atDesktop ).filter( ( [ , s ] ) => s && ! s.missing ).map( ( [ slot, s ] ) => [ slot, s.words ] ) );
 	const hrefs = Object.fromEntries( Object.entries( atDesktop ).filter( ( [ , s ] ) => s && ! s.missing ).map( ( [ slot, s ] ) => [ slot, s.href ] ) );
 	const linkFacts = Object.fromEntries( Object.entries( atDesktop ).filter( ( [ , s ] ) => s && ! s.missing && ( s.target || s.rel || s.id || s.ariaLabel ) ).map( ( [ slot, s ] ) => [ slot, { target: s.target, rel: s.rel, id: s.id, ariaLabel: s.ariaLabel } ] ) );
