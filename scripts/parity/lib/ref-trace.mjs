@@ -40,8 +40,9 @@ export function elementPath( el, refEl ) {
 // paints the first text (collectPair reads text properties from it), so text rows get that element's path; `layoutEl`
 // is the element laying out the children (collectPair reads layout properties from it), so layout rows get its path;
 // `iconEl` is the pair's first painted svg, so icon size rows get its path; `decoEl` is the element whose underline
-// collectPair reads (paint.mjs::decoratedElement), so underline rows get its path.
-export function traceRef( el, carrier, prefix, pathSrc, layoutEl = null, iconEl = null, decoEl = null ) {
+// collectPair reads (paint.mjs::decoratedElement), so underline rows get its path; `paintEl` is the element painting the
+// ground, shape and border (paint.mjs::paintElement), so paint rows get its path.
+export function traceRef( el, carrier, prefix, pathSrc, layoutEl = null, iconEl = null, decoEl = null, paintEl = null ) {
 	// eslint-disable-next-line no-new-func
 	const path = new Function( `return (${ pathSrc });` )();
 	let refEl = null;
@@ -66,7 +67,8 @@ export function traceRef( el, carrier, prefix, pathSrc, layoutEl = null, iconEl 
 		layoutPath: layoutEl && r.contains( layoutEl ) ? path( layoutEl, r ) : null,
 		iconPath: iconEl && r.contains( iconEl ) ? path( iconEl, r ) : null,
 		decoPath: decoEl && r.contains( decoEl ) ? path( decoEl, r ) : null,
-		tags: { path: tagOf( el ), textPath: tagOf( carrier ), layoutPath: tagOf( layoutEl ), iconPath: tagOf( iconEl ), decoPath: tagOf( decoEl ) },
+		paintPath: paintEl && r.contains( paintEl ) ? path( paintEl, r ) : null,
+		tags: { path: tagOf( el ), textPath: tagOf( carrier ), layoutPath: tagOf( layoutEl ), iconPath: tagOf( iconEl ), decoPath: tagOf( decoEl ), paintPath: tagOf( paintEl ) },
 	} );
 	// The enclosing blocks, nearest first: a parent block's setting can paint an element of its child (a form's field
 	// style on each field's control), so Solve can resolve a row against them when the nearest block has no setting.
@@ -85,6 +87,9 @@ export const TEXT_CARRIED = [ 'font-family', 'font-size', 'font-weight', 'font-s
 
 // The properties collectPair reads from the element painting the underline the visitor sees (paint.mjs::decoratedElement).
 export const DECO_CARRIED = [ 'text-decoration-line', 'text-decoration-color', 'text-decoration-thickness', 'text-underline-offset' ];
+
+// The properties collectPair reads from the element painting the ground, shape and border (paint.mjs::PAINT_PROPS).
+export const PAINT_CARRIED = [ 'background-color', 'background-image', 'border-radius', 'box-shadow', 'border-top-width', 'border-top-style', 'border-top-color', 'border-bottom-width', 'border-bottom-color', 'border-left-width', 'border-right-width', 'border-left-color', 'border-right-color' ];
 
 // The properties collectPair reads from the element laying out the children (paint.mjs::LAYOUT_PROPS).
 export const LAYOUT_CARRIED = [ 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'justify-content', 'align-items' ];
@@ -109,6 +114,9 @@ const pathKey = ( d, t ) => {
 	}
 	if ( 'style' === d.kind && /^icon-(width|height|colour)$/.test( d.key ) && null != t.iconPath ) {
 		return 'iconPath';
+	}
+	if ( [ 'style', 'hover', 'active' ].includes( d.kind ) && PAINT_CARRIED.includes( d.key ) && null != t.paintPath ) {
+		return 'paintPath';
 	}
 	return 'path';
 };

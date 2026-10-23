@@ -1,14 +1,18 @@
 // Full-check in-page collectors for draft-live-walk.mjs. Each is
 // passed to page.evaluate(), so each is self-contained. GAP-CHECKLIST.md section 11 says what each proves.
 
-// The ground an element actually paints (its own background, else a ::before/::after, else a
-// child covering 80% of its box), and where its first painted text sits inside its box.
-export function paintedExtras( [ finder, resolveSrc ] ) {
+// The ground an element actually paints (a gradient on the element painting its ground, else its own background, else a
+// ::before/::after, else the element painting its
+// ground and shape (paint.mjs::paintElement, with paintSrc: an icon block's shape inside its link), else a child covering
+// 80% of its box), and where its first painted text sits inside its box.
+export function paintedExtras( [ finder, resolveSrc, paintSrc = null ] ) {
 	// eslint-disable-next-line no-new-func
 	const el = new Function( `return (${ resolveSrc });` )()( finder );
 	if ( ! el ) {
 		return null;
 	}
+	// eslint-disable-next-line no-new-func
+	const paintElement = paintSrc ? new Function( `${ paintSrc }; return paintElement;` )() : null;
 	const r = el.getBoundingClientRect();
 	const clear = ( c ) => ! c || c === 'transparent' || /rgba\([^)]*,\s*0\)$/.test( c );
 	const covers = ( b ) => b.width * b.height >= 0.8 * r.width * r.height;
@@ -23,7 +27,12 @@ export function paintedExtras( [ finder, resolveSrc ] ) {
 	};
 	let ground = 'none';
 	const own = getComputedStyle( el );
-	if ( ! clear( own.backgroundColor ) ) {
+	const painter = paintElement ? paintElement( el ) : el;
+	// A gradient covers its box, so whatever colour sits under it paints nothing: the ground reads as the gradient
+	// (the background-image row compares the gradient itself).
+	if ( /gradient\(/.test( getComputedStyle( painter ).backgroundImage ) ) {
+		ground = 'gradient';
+	} else if ( ! clear( own.backgroundColor ) ) {
 		ground = fold( own.backgroundColor, own.opacity );
 	} else {
 		for ( const p of [ '::before', '::after' ] ) {
@@ -32,6 +41,9 @@ export function paintedExtras( [ finder, resolveSrc ] ) {
 				ground = fold( ps.backgroundColor, ps.opacity );
 				break;
 			}
+		}
+		if ( 'none' === ground && painter !== el && visible( getComputedStyle( painter ) ) && ! clear( getComputedStyle( painter ).backgroundColor ) ) {
+			ground = fold( getComputedStyle( painter ).backgroundColor, getComputedStyle( painter ).opacity );
 		}
 		if ( 'none' === ground ) {
 			const kid = [ ...el.querySelectorAll( '*' ) ].find( ( k ) => {
