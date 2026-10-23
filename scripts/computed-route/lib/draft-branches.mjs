@@ -95,5 +95,6 @@ export function classifyBlankDraft( issue, { draftOf, walked } ) {
 
 const dedupe = ( list ) => [ ...new Map( list.map( ( v ) => [ `${ v.id }|${ v.why }`, v ] ) ).values() ];
 
-// The walker states a walk ran (its runs' states).
-export const walkedStates = ( walk ) => new Set( ( walk?.runs || [] ).map( ( r ) => r.state ) );
+// The walker states a walk measured: its runs' states, less a run the walker refused (the page not at rest) or whose action
+// found nothing to trigger on a side (parity/lib/state-rest.mjs::unmeasuredRun): the state was not reached there.
+export const walkedStates = ( walk ) => new Set( ( walk?.runs || [] ).filter( ( r ) => ! r.refused && ! r.untriggered ).map( ( r ) => r.state ) );

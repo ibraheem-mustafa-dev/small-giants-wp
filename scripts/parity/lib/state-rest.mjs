@@ -7,8 +7,10 @@
 // still not at rest after that is refused with its reason, never measured. A state marked `from: 'previous'` runs on the
 // previous state's page as it is (a step that needs the panel the step before opened); `from: 'rest'` loads afresh
 // whatever the signature says.
-// A state whose action finds nothing to trigger on either side (every click, tap or hover it tried found no target, the
-// Menu button at desktop widths) is one line in the report, not one row per property.
+// A state whose action finds nothing to trigger on either side (every click, tap or hover it tried found no target: a
+// typo in a click target, the Menu button at desktop widths) is one open `(state)` row `nothing-to-trigger`, not one row
+// per property; a state that only means something at some widths says so with `widths` on the state, and is not run at
+// the others.
 import fs from 'fs';
 import path from 'path';
 import { settleAnimations } from './devtools.mjs';
@@ -86,8 +88,8 @@ export function untriggered( log ) {
 }
 
 // A run that is not compared pair by pair: a side refused (one open `(state)` row, `not-at-rest`), or neither side found
-// anything to trigger (no rows; `run.untriggered` holds what each side tried, and `unread` the sides that skipped their
-// reads for it). Returns true when the run is settled here.
+// anything to trigger (one open `(state)` row, `nothing-to-trigger`, naming what each side tried; `run.untriggered` holds
+// the same, and `unread` the sides that skipped their reads for it). Returns true when the run is settled here.
 // One side alone finding nothing is compared as usual (the drive check reports the miss) and noted in `run.untriggered`.
 export function unmeasuredRun( run, d, l ) {
 	if ( d.refused || l.refused ) {
@@ -99,7 +101,11 @@ export function unmeasuredRun( run, d, l ) {
 		const unread = [ d.unread && 'draft', l.unread && 'live' ].filter( Boolean );
 		run.untriggered = { draft: d.untriggered || null, live: l.untriggered || null, ...( unread.length ? { unread } : {} ) };
 	}
-	return !! ( d.untriggered && l.untriggered );
+	if ( d.untriggered && l.untriggered ) {
+		run.pairs[ '(state)' ] = { diffs: [ { kind: 'state', key: 'nothing-to-trigger', draft: `tried ${ d.untriggered }, found nothing`, live: `tried ${ l.untriggered }, found nothing`, accepted: null } ] };
+		return true;
+	}
+	return false;
 }
 
 // The report's lines for the runs that found nothing to trigger or were refused, appended to report.md.

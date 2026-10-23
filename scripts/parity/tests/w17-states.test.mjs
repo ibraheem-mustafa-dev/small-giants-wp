@@ -90,9 +90,10 @@ test( 'MUST FAIL: the first state is measured as loaded; a page still at rest ke
 	assert.equal( runOf( 'keep' ).pairs.drawer.live.text, 'Other words', 'from: previous keeps the drawer open' );
 } );
 
-test( 'MUST FAIL: nothing to trigger on either side is one line and no rows; one side only is still measured', () => {
+test( 'MUST FAIL: nothing to trigger on either side is one line and one (state) row; one side only is still measured', () => {
 	const nothing = runOf( 'nothing' );
-	assert.deepEqual( Object.keys( nothing.pairs ), [], 'no row per property for a state that triggered nothing' );
+	assert.deepEqual( Object.keys( nothing.pairs ), [ '(state)' ], 'no row per property for a state that triggered nothing' );
+	assert.deepEqual( nothing.pairs[ '(state)' ].diffs.map( ( d ) => d.key ), [ 'nothing-to-trigger' ], 'one open row, never silent (w2-trigger.test.mjs)' );
 	assert.match( nothing.untriggered.draft, /nothing/ );
 	assert.deepEqual( nothing.untriggered.unread, [ 'live' ], 'the live side skips its reads when the draft found nothing either' );
 	assert.match( report.md, /- nothing @ 800: nothing to trigger on either side, not measured/ );

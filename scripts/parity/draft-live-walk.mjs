@@ -177,16 +177,20 @@ async function walkSide( browser, side, width, draftStates = null ) {
 	const states = {};
 	// Every state starts from the page's rest (lib/state-rest.mjs): the rest signature is read before the first state's
 	// action; before each later one the page is loaded afresh when it is not at rest, and refused when it still is not.
+	// A state scoped to other widths (`widths` on the state) is not run at this one.
 	let rest = null;
-	for ( const [ index, state ] of cfg.states.entries() ) {
+	for ( const state of cfg.states ) {
+		if ( state.widths && ! state.widths.includes( width ) ) {
+			continue;
+		}
 		h.log = [];
-		const start = 0 === index ? { how: 'first' } : await toRest( page, state, rest, async () => {
+		const start = null === rest ? { how: 'first' } : await toRest( page, state, rest, async () => {
 			await h.goto( cfg[ side ].url );
 			if ( cfg[ side ].open ) {
 				await cfg[ side ].open( h );
 			}
 		} );
-		if ( 0 === index ) {
+		if ( null === rest ) {
 			rest = await readRest( page, 0 );
 		}
 		if ( start.refused ) {

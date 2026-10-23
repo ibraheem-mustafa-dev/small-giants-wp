@@ -1,0 +1,10 @@
+[
+	{ "file": "lib/state-rest.mjs", "find": "if ( d.untriggered && l.untriggered ) {\n\t\trun.pairs[ '(state)' ]", "replace": "if ( false ) {\n\t\trun.pairs[ '(state)' ]", "why": "nothing to trigger on both sides is not settled" },
+	{ "file": "lib/state-rest.mjs", "find": "run.pairs[ '(state)' ] = { diffs: [ { kind: 'state', key: 'nothing-to-trigger',", "replace": "void { diffs: [ { kind: 'state', key: 'nothing-to-trigger',", "why": "settled silently, no row" },
+	{ "file": "lib/state-rest.mjs", "find": "draft: `tried ${ d.untriggered }, found nothing`,", "replace": "draft: 'found nothing',", "why": "the row does not name what the draft tried" },
+	{ "file": "lib/state-rest.mjs", "find": "found nothing`, accepted: null } ] };", "replace": "found nothing`, accepted: 'untriggered' } ] };", "why": "the row is accepted, not open" },
+	{ "file": "draft-live-walk.mjs", "find": "if ( state.widths && ! state.widths.includes( width ) ) {", "replace": "if ( false ) {", "why": "a state is run at widths it is scoped away from" },
+	{ "file": "draft-live-walk.mjs", "find": "if ( state.widths && ! state.widths.includes( width ) ) {", "replace": "if ( state.widths ) {", "why": "a scoped state is never run" },
+	{ "file": "lib/lint.mjs", "find": "if ( ! Array.isArray( st.widths ) || ! st.widths.length || ! st.widths.every( Number.isInteger ) ) {", "replace": "if ( ! Array.isArray( st.widths ) ) {", "why": "an empty or non-numeric widths list passes the lint" },
+	{ "file": "lib/lint.mjs", "find": "if ( ! Array.isArray( st.widths ) || ! st.widths.length || ! st.widths.every( Number.isInteger ) ) {", "replace": "if ( false ) {", "why": "widths never linted" }
+]

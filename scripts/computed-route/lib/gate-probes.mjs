@@ -217,8 +217,17 @@ export function createProbes( o ) {
 		if ( ! ( report.runs || [] ).length ) {
 			throw new Error( 'the fresh walk produced no runs' );
 		}
-		if ( ! report.runs.some( ( r ) => r.state === row.state && r.width === row.width ) ) {
+		const run = report.runs.find( ( r ) => r.state === row.state && r.width === row.width );
+		if ( ! run ) {
 			throw new Error( `the fresh walk has no run at ${ row.width } in the ${ row.state } state, so a missing row shows nothing` );
+		}
+		// A run the walker refused (the page not at rest) or whose action found nothing to trigger on a side measured nothing
+		// there (parity/lib/state-rest.mjs::unmeasuredRun), so a missing row on it shows nothing either.
+		if ( run.refused ) {
+			throw new Error( `the fresh walk refused the ${ row.state } state at ${ row.width } (${ [ run.refused.draft && `draft ${ run.refused.draft }`, run.refused.live && `live ${ run.refused.live }` ].filter( Boolean ).join( '; ' ) }), so a missing row shows nothing` );
+		}
+		if ( run.untriggered ) {
+			throw new Error( `the fresh walk found nothing to trigger in the ${ row.state } state at ${ row.width } (${ [ run.untriggered.draft && `draft tried ${ run.untriggered.draft }`, run.untriggered.live && `live tried ${ run.untriggered.live }` ].filter( Boolean ).join( '; ' ) }), so a missing row shows nothing` );
 		}
 		const same = ( r ) => r.ref === row.ref && r.key === row.key && r.state === row.state && r.width === row.width && ( r.path ?? '' ) === ( row.path ?? '' );
 		const open = openRows( report ).filter( same );
