@@ -1,0 +1,11 @@
+{
+	"_meta": {
+		"purpose": "The layer shape each SGS pointer-effect layer paints, as the parity walker names effect layers (scripts/parity/lib/parts.mjs::effectArm: `added <shape>` or `animated <shape>`, shape circle, band or cover). lib/delivery-map.mjs reads it to tell whether a walker report shows a record's effect playing (or missing) on the live page.",
+		"source": "the SGS Effects layers in plugins/sgs-blocks/schemas/motion.schema.json: a sheen sweeps a band across the element, a ripple grows a circle from the pointer, a curtain covers the element"
+	},
+	"shapes": {
+		"sheen": "band",
+		"ripple": "circle",
+		"curtain": "cover"
+	}
+}

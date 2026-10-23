@@ -201,14 +201,42 @@ export function animationNeeds( record ) {
 			: { walkerOnly: c.reason || `the record is an endless loop or an unnamed effect (${ c.kind }): no setting name in a tree identifies it` };
 }
 
-// Every effect row (an object with kind `effect`) and per-pair effect record (kind `effects`) anywhere in a walker report's runs.
+// The layer shape each SGS pointer effect paints, as the walker names effect layers (data/effect-layers.json).
+const EFFECT_SHAPES = JSON.parse( fs.readFileSync( new URL( '../data/effect-layers.json', import.meta.url ), 'utf8' ) ).shapes;
+
+// A pair's `effects` record on the walker report ({ draft: { <part>: { hover: [layer], press: [layer] } }, live: { ... } },
+// scripts/parity/GAP-CHECKLIST.md section 29) as one row per part and state: { kind: 'effects', part, state, draft, live },
+// each side the list of layers that part showed in that state (an empty list where it showed none).
+function pairEffectRows( effects ) {
+	const out = [];
+	const parts = new Set( [ ...Object.keys( effects.draft || {} ), ...Object.keys( effects.live || {} ) ] );
+	for ( const part of parts ) {
+		for ( const state of [ 'hover', 'press' ] ) {
+			const draft = effects.draft?.[ part ]?.[ state ] || [];
+			const live = effects.live?.[ part ]?.[ state ] || [];
+			if ( draft.length || live.length ) {
+				out.push( { kind: 'effects', part, state, draft, live } );
+			}
+		}
+	}
+	return out;
+}
+
+// Every effect row (an object with kind `effect`) and per-part effect record (kind `effects`, read from each pair's
+// `effects`) anywhere in a walker report's runs.
 export function walkerEffectRows( report ) {
 	const out = [];
 	const scan = ( v ) => {
 		if ( Array.isArray( v ) ) {
 			v.forEach( scan );
 		} else if ( v && 'object' === typeof v ) {
-			'effect' === v.kind || 'effects' === v.kind ? out.push( v ) : Object.values( v ).forEach( scan );
+			if ( 'effect' === v.kind || 'effects' === v.kind ) {
+				out.push( v );
+				return;
+			}
+			for ( const [ k, x ] of Object.entries( v ) ) {
+				'effects' === k && x && 'object' === typeof x && ( 'draft' in x || 'live' in x ) ? out.push( ...pairEffectRows( x ) ) : scan( x );
+			}
 		}
 	};
 	scan( report?.runs );
@@ -218,6 +246,12 @@ export function walkerEffectRows( report ) {
 const lower = ( v ) => String( v ).toLowerCase();
 const noEffect = ( v ) => null == v || 'none' === lower( v ) || ( Array.isArray( v ) && ! v.length );
 const names = ( list ) => ( list || [] ).map( lower );
+// What a walker side lists, as words to match an effect against: each layer's shape (`added band` gives `band`) and the
+// layer text itself, so a side naming an effect directly also matches.
+const layerWords = ( side ) => ( Array.isArray( side ) ? side : String( side ?? '' ).split( /\s*,\s*/ ) ).flatMap( ( l ) => [ lower( l ), lower( l ).split( /\s+/ ).pop() ] );
+// The words that show an effect: its name and the layer shape it paints.
+const effectWords = ( e ) => [ lower( e ), EFFECT_SHAPES[ lower( e ) ] ].filter( Boolean );
+const shows = ( side, e ) => effectWords( e ).some( ( w ) => layerWords( side ).includes( w ) );
 
 // The walker's effect rows ({ kind: 'effect', key: '<part> hover|press', part, draft, live }) are written when one side
 // has an effect layer and the other none, the empty side the string 'none' and the other the comma-joined effect names.
@@ -225,14 +259,14 @@ const names = ( list ) => ( list || [] ).map( lower );
 // is counter-evidence: the live page lacks the effect, whatever the trees hold.
 function walkerMiss( record, needs, rows ) {
 	const want = names( needs.effects );
-	return rows.find( ( r ) => 'effect' === r.kind && noEffect( r.live ) && ( r.animation === record.id || ( ! r.animation && names( String( r.draft ?? '' ).split( /\s*,\s*/ ) ).some( ( d ) => want.includes( d ) ) ) ) );
+	return rows.find( ( r ) => 'effect' === r.kind && noEffect( r.live ) && ( r.animation === record.id || ( ! r.animation && want.some( ( e ) => shows( r.draft, e ) ) ) ) );
 }
 
-// Positive walker evidence is the per-pair effect record { kind: 'effects', part, draft: [names], live: [names],
-// animation? }: the live page plays every effect the record needs, or the record's own id is named in `animation`.
+// Positive walker evidence is a per-part effect record { kind: 'effects', part, state, draft: [layers], live: [layers] }
+// (pairEffectRows): the live part shows every effect the record needs (its name or the layer shape it paints).
 function walkerHit( record, needs, rows ) {
 	const want = names( needs.effects );
-	return rows.find( ( r ) => 'effects' === r.kind && Array.isArray( r.live ) && r.live.length && ( r.animation === record.id || ( ! r.animation && want.length && want.every( ( e ) => names( r.live ).includes( e ) ) ) ) );
+	return rows.find( ( r ) => 'effects' === r.kind && Array.isArray( r.live ) && r.live.length && ( r.animation === record.id || ( ! r.animation && want.length && want.every( ( e ) => shows( r.live, e ) ) ) ) );
 }
 
 const holds = ( node, list ) => list.every( ( s ) => JSON.stringify( node.attributes[ s.attr ] ) === JSON.stringify( s.value ) );

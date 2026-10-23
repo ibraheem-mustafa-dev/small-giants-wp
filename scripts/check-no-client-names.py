@@ -143,7 +143,7 @@ POINTER_RE = re.compile(r"[\w./\-]*(?:nav-qa|gate3c)/[\w./\-]*|[\w-]*(?:tree\.js
 # and keys that go with them, and the local WSL mirror keys). They stay until the target registry moves into sites/<client>/;
 # listed here so the survey counts them instead of hiding them, and so a rename is one decision.
 OPERATIONAL_TOKENS = re.compile(
-    r"(?:local-eye-care|local-indus|eye-care-test|indus-test|eye-care-ward-end|EYECARETEST|INDUSTEST|LOCALINDUS|EYECARE)", re.IGNORECASE
+    r"(?:local-eye-care|local-indus|eye-care-clone-test|eye-care-test|indus-test|eye-care-ward-end|EYECARECLONETEST|EYECARETEST|INDUSTEST|LOCALINDUS|EYECARE)", re.IGNORECASE
 )
 
 # Content is scanned only in text files; these suffixes are skipped outright.

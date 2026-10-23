@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/delivery-map.mjs",
+		"find": "const effectWords = ( e ) => [ lower( e ), EFFECT_SHAPES[ lower( e ) ] ].filter( Boolean );",
+		"replace": "const effectWords = ( e ) => [ lower( e ) ].filter( Boolean );",
+		"why": "the effect's layer shape is what proves it"
+	},
+	{
+		"file": "lib/delivery-map.mjs",
+		"find": "'effects' === k && x && 'object' === typeof x && ( 'draft' in x || 'live' in x ) ? out.push( ...pairEffectRows( x ) ) : scan( x );",
+		"replace": "scan( x );",
+		"why": "a pair's effects record is read"
+	},
+	{
+		"file": "lib/delivery-map.mjs",
+		"find": "return rows.find( ( r ) => 'effect' === r.kind && noEffect( r.live ) && ( r.animation === record.id || ( ! r.animation && want.some( ( e ) => shows( r.draft, e ) ) ) ) );",
+		"replace": "return null;",
+		"why": "a missing effect row fails the key"
+	},
+	{
+		"file": "lib/delivery-map.mjs",
+		"find": "want.every( ( e ) => shows( r.live, e ) )",
+		"replace": "want.length",
+		"why": "the live part must show the needed effect"
+	}
+]
