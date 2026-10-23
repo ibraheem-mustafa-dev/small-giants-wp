@@ -1,0 +1,8 @@
+[
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "t.scoped && 'tpl' !== finderKind( t.finder ) ?",
+		"replace": "t.scoped ?",
+		"why": "a part drawn outside its root's element (the nav's burger) would never be found, so its block switched it off"
+	}
+]

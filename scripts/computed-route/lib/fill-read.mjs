@@ -8,7 +8,7 @@ import { REF_PROPS } from '../../parity/lib/ref-trace.mjs';
 import { PAINT_SRC } from '../../parity/lib/paint.mjs';
 import { openDevtools, settleAnimations, declaredValues } from '../../parity/lib/devtools.mjs';
 import { makeHelpers } from '../../parity/lib/helpers.mjs';
-import { SCOPE_ATTR, scopeFinder, scopeSelector } from './fill-skeleton.mjs';
+import { SCOPE_ATTR, scopeFinder, scopeSelector, finderKind } from './fill-skeleton.mjs';
 import { contentType } from './draft.mjs';
 import { FLUID_WIDTHS, SWEEP_WIDTHS, LENGTH_PROPS } from './fill-values.mjs';
 import { extraProps, readExtras, missingExtras } from './fill-declared.mjs';
@@ -265,11 +265,14 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 	return out;
 }
 
-// Node side: the jobs for one read of every target: roots first so their slots can scope to them.
+// Node side: the jobs for one read of every target: roots first so their slots can scope to them. A tpl finder names one
+// exact draft element page-wide (parity/lib/collect.mjs resolves it, `within` only filters), so it is never scoped: a part
+// the block draws from outside its root's element (an absorbed drawer opener, the nav's burger) or a root the draft does
+// not draw at that width would otherwise never be found.
 export function jobsFor( nodes ) {
 	return nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( {
 		id: t.id,
-		finder: t.scoped ? scopeFinder( t.finder, scopeSelector( n.index ) ) : t.finder,
+		finder: t.scoped && 'tpl' !== finderKind( t.finder ) ? scopeFinder( t.finder, scopeSelector( n.index ) ) : t.finder,
 		mark: t.scoped ? null : n.index,
 		own: ! t.scoped && n.children.length > 0,
 	} ) ) );

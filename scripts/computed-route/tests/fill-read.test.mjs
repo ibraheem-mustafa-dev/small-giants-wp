@@ -170,3 +170,11 @@ test( 'MUST FAIL: a page empty at some widths by design (nothing aborted) does n
 		await partial.close();
 	}
 } );
+
+test( 'MUST FAIL: a tpl slot finder is never scoped to its root (an absorbed burger lies outside the nav element); a selector slot still is', () => {
+	const own = skeletonNodes( [ { name: 'sgs/nav-bar-menu', draftRef: { tpl: 'Root/45#0' }, draftSlots: { '.burger': { tpl: 'Root/59#0' }, '.label': 'span.l' } } ] );
+	const jobs = jobsFor( own );
+	assert.deepEqual( jobs.find( ( j ) => '0:.burger' === j.id ).finder, { tpl: 'Root/59#0' }, 'resolved page-wide as the exact element' );
+	assert.match( jobs.find( ( j ) => '0:.label' === j.id ).finder, /^\[data-fill-scope="0"\] :is\(span\.l\)$/ );
+	assert.equal( jobs.find( ( j ) => '0:.burger' === j.id ).mark, null, 'still a slot, never a root mark' );
+} );
