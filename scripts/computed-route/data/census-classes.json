@@ -1,0 +1,30 @@
+{
+	"_meta": {
+		"purpose": "The named causes of a Fill run's UNMAPPED rows (unmapped.json) and already-held rows (fill-report.json alreadyHeld). Rules are tried in order and the first pattern that matches the row's reason wins; a row no rule matches is a new gap kind and fails census.mjs --check. Patterns are case-insensitive regular expressions over the reason text.",
+		"owner_note": "owner names the Spec 48 item (.claude/specs/48-CLONING-SYSTEM.md) that owns closing the class."
+	},
+	"unmapped": [
+		{ "class": "state-transition", "pattern": "state transition", "owner": "FR-48-81 States" },
+		{ "class": "unpaired-part", "pattern": "^unpaired-part", "owner": "FR-48-3 Stage-0 calibration" },
+		{ "class": "no-declared-part", "pattern": "^no declared part", "owner": "FR-48-3 Stage-0 calibration" },
+		{ "class": "uncalibrated", "pattern": "^uncalibrated|^calibration has no ", "owner": "FR-48-49 Uncalibrated settings" },
+		{ "class": "conflict", "pattern": "^conflict", "owner": "FR-48-21 Stage 5 gap list" },
+		{ "class": "disagree", "pattern": "^disagree", "owner": "FR-48-72 Code-render disagreement rows" },
+		{ "class": "ambiguous", "pattern": "^ambiguous", "owner": "FR-48-3 Stage-0 calibration" },
+		{ "class": "width-ladder", "pattern": "^width-gate|width ladder|holds one value for every width", "owner": "FR-48-27 Two breakpoint width bases" },
+		{ "class": "unmapped-element", "pattern": "^unmapped-element", "owner": "FR-48-21 Stage 5 gap list" },
+		{ "class": "not-plain", "pattern": "^not-plain", "owner": "FR-48-43 Unstated values" },
+		{ "class": "current-item", "pattern": "^current-(item|indicator)", "owner": "FR-48-81 States" },
+		{ "class": "motion", "pattern": "^timing-computed|^sgsMotion refused|endless|shows motion|second entrance|entrance layer", "owner": "FR-48-47 Motion" },
+		{ "class": "content-media-icon", "pattern": "iconSource|draft icon|draft SVG|figcaption|painted image|fact record holds|aria-label|<[a-z]+> is not kept|draws the icon", "owner": "FR-48-82 Content, media and icons" },
+		{ "class": "draft-input", "pattern": "draftRef finder|scrollbar width|focus paints with hover|bound to Site Info", "owner": "FR-48-21 Stage 5 gap list" },
+		{ "class": "dimension", "pattern": "dimension:", "owner": "FR-48-43 Unstated values" },
+		{ "class": "shape", "pattern": "^shape", "owner": "FR-48-2 Accepted value forms" },
+		{ "class": "no-setting", "pattern": "^no-setting|^no setting of the block|^no (font-size|line-height|color|box-shadow|background-image|background-color|justify-content|align-items|flex-direction) setting", "owner": "FR-48-21 Stage 5 gap list (framework setting gap)" }
+	],
+	"held": [
+		{ "class": "held-covered", "pattern": "^covered$", "owner": "FR-48-21 Stage 5 gap list" },
+		{ "class": "held-inherited", "pattern": "^inherited$", "owner": "FR-48-21 Stage 5 gap list" },
+		{ "class": "held-default", "pattern": "^default$", "owner": "FR-48-21 Stage 5 gap list" }
+	]
+}
