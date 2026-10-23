@@ -24,7 +24,8 @@ import { fileURLToPath, pathToFileURL } from 'url';
 import { matchWords } from '../parity/lib/auto-compare.mjs';
 import { wordsByBlock, twinsByBlock, twinPlan, commonPath, wordMatch, choosePartner, chooseControlPartner, chooseGroupPartner, chooseMediaPartner, reconcileHandPairs, configText, pairingStates, mergeWidthFinders, joinFinders, assertReachable, rootFor, collectContext, RECHECK_WIDTHS } from './lib/pairs.mjs';
 import { judgePairScope } from './lib/pair-scope.mjs';
-import { identityAgrees, mispairWhy, relateInPage, fingerprintAgrees, innerVerdicts, identityStates, unalignedRefs } from './lib/identity.mjs';
+import { identityAgrees, mispairWhy, relateInPage, fingerprintAgrees, innerVerdicts, identityStates, unalignedRefs, identityAdd } from './lib/identity.mjs';
+import { readOrigin } from './lib/origin-file.mjs';
 import { resolveFinder } from '../parity/lib/collect.mjs';
 import { collectTagged, handScopes, liveBlocks, draftChains, formControls, groupBoxes, handElements, openDraft, openLive, liftedExclusions, liveReach, mediaPartners } from './lib/pairs-page.mjs';
 
@@ -250,7 +251,8 @@ export async function recheckWidths( { browser, cfg, prefix, width, recheck, sta
 // pair of an origin block takes the tpl finder, a disagreement recorded in `replaced`; a hand pair that disagrees still
 // measures the words' element, so it is listed in `mispaired` (the walker flags the block's rows and Solve never writes
 // through them). An origin block no pair measures (none generated, none by hand: `covered`) is added with its tpl
-// finder, unless the width re-check refused it (its element differs at another width, which one width cannot judge).
+// finder, whatever the word pairing's width re-check said of it: that refusal is about words, so it is kept beside the
+// pair as `crossCheck` and never removes it (Spec 48 FR-48-10 item 2, lib/identity.mjs::identityAdd).
 // A hand pair measuring inside a block (`handInner`) is checked by containment (lib/identity.mjs::innerVerdicts). An
 // identity element whose tag is not the skeleton fingerprint's is not trusted (`tagMismatch`): the draft changed under
 // the tpl number, so the block is neither replaced nor added. `add` false (a later pairing state) checks only.
@@ -305,8 +307,11 @@ export async function identityPass( { browser, cfg, width, state, origin, kept, 
 				delete k[ key ];
 			}
 			Object.assign( k, { draft: { tpl: r.tpl }, identity: true } );
-		} else if ( add && ! handWord( r.ref ) && ! covered.has( r.ref ) && ! /^its (draft element at|width is|height is)|no partner at/.test( left.find( ( l ) => l.ref === r.ref )?.why || '' ) ) {
-			kept.push( { ref: r.ref, draft: { tpl: r.tpl }, identity: true, why: null, words: 0, matched: 0, first: null, last: null } );
+		}
+		const verdict = k ? null : identityAdd( { add, hand: !! handWord( r.ref ), covered: covered.has( r.ref ), wordRefusal: left.find( ( l ) => l.ref === r.ref )?.why } );
+		if ( verdict?.add ) {
+			const { crossCheck } = verdict;
+			kept.push( { ref: r.ref, draft: { tpl: r.tpl }, identity: true, why: null, words: 0, matched: 0, first: null, last: null, ...( crossCheck ? { crossCheck } : {} ) } );
 			counts.added++;
 			const at = left.findIndex( ( l ) => l.ref === r.ref );
 			at >= 0 && left.splice( at, 1 );
@@ -380,7 +385,9 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		// added in the first state only (lib/identity.mjs::identityStates). A block mispaired in any state is mispaired.
 		const originFile = path.join( buildDir, `${ surface }.origin.json` );
 		if ( fs.existsSync( originFile ) ) {
-			const origin = JSON.parse( fs.readFileSync( originFile, 'utf8' ) );
+			// An origin from an earlier export is refused (FR-48-10 item 3): its tpl numbers name another draft's elements.
+			const { origin, verdict } = readOrigin( originFile, path.join( REPO, s.draftDir || path.join( 'sites', client, 'handoff' ), 'MANIFEST.json' ) );
+			verdict.why && console.warn( `origin ${ surface }: ${ verdict.why }` );
 			const leftList = [ ...leftBy.values() ];
 			const once = ( list, x ) => list.some( ( y ) => y.ref === x.ref && ( y.name || null ) === ( x.name || null ) ) || list.push( x );
 			identity = { counts: {}, mispaired: [], replaced: [], uncheckedHand: [], tagMismatch: [] };

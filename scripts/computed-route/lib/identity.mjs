@@ -34,12 +34,80 @@ export function alignByName( a, b ) {
 	return out;
 }
 
+// Whether a block's draft element can hold a child block's, read from their skeleton fingerprints: the child's stamped
+// ancestors (parentTags, root down) must run through the parent's ancestors and then the parent's own tag. False only
+// when the fingerprints prove the child sits outside the parent (a draft <header> holding the main bar while the top
+// bar sits beside it, which the live header holds both of); a fingerprint without parentTags proves nothing.
+export function fingerprintHolds( parent, child ) {
+	const above = parent?.parentTags;
+	const own = child?.parentTags;
+	if ( ! Array.isArray( above ) || ! Array.isArray( own ) || ! parent.tag ) {
+		return true;
+	}
+	const chain = [ ...above, parent.tag ];
+	return own.length >= chain.length && chain.every( ( t, i ) => t === own[ i ] );
+}
+
+// The children of a skeleton node whose draft element the node's own provably does not hold (fingerprintHolds):
+// [ { name, tag } ]. A node with any measures only part of what its block holds, so it is never a pair or an identity.
+export const childrenOutside = ( node ) => ( node?.innerBlocks || [] ).filter( ( c ) => c.draftFingerprint && ! fingerprintHolds( node.draftFingerprint, c.draftFingerprint ) ).map( ( c ) => ( { name: c.name, tag: c.draftFingerprint.tag } ) );
+
+// FR-48-10 item 1: the draft element a list block stands for. key: the node's identity key; byKey: the inventory's
+// records by key (lib/skeleton-inventory.mjs: key, parentKey, tag, membership); claimed: every other node's identity key.
+// A list block whose identity is one item of a run (a copy of an sc-for loop body, or one of several same-tag siblings)
+// that no other node claims an item of stands for the whole run: its identity is the run's parent element when that
+// parent holds the run only and no other node claims it. Otherwise the list has no draft element of its own and the
+// node gets none, never its first item. Returns null (the key stands), { key } or { key: null, why }.
+export function listIdentity( key, byKey, claimed = new Set() ) {
+	const at = byKey[ key ];
+	const loopOf = ( r ) => ( r?.membership || [] ).filter( ( m ) => 'sc-for' === m.kind ).map( ( m ) => m.tpl ).pop() ?? null;
+	const loop = loopOf( at );
+	let item = at;
+	while ( loop && item && loopOf( byKey[ item.parentKey ] ) === loop ) {
+		item = byKey[ item.parentKey ];
+	}
+	const parent = byKey[ item?.parentKey ];
+	if ( ! parent ) {
+		return null;
+	}
+	const kids = Object.values( byKey ).filter( ( r ) => r.parentKey === parent.key );
+	const inRun = ( r ) => ( loop ? loopOf( r ) === loop : r.tag === item.tag && ! loopOf( r ) );
+	const run = kids.filter( inRun );
+	if ( run.length < 2 || run.some( ( r ) => r.key !== item.key && claimed.has( r.key ) ) ) {
+		return null;
+	}
+	if ( claimed.has( parent.key ) ) {
+		return { key: null, why: `its items' parent ${ parent.key } is another block's identity: the list has no draft element of its own` };
+	}
+	if ( kids.some( ( r ) => ! inRun( r ) ) ) {
+		return { key: null, why: `its items' parent ${ parent.key } also holds other content: the list has no draft element of its own` };
+	}
+	return { key: parent.key };
+}
+
+// FR-48-10 item 2: whether pairing adds an identity pair for a block no generated or hand pair measures. A word-based
+// refusal (the width re-check found no word partner at some width) never removes it: word pairing only cross-checks,
+// and the refusal is kept beside the pair (`crossCheck`). Returns { add, crossCheck }.
+export function identityAdd( { add = true, hand = false, covered = false, wordRefusal = null } ) {
+	return { add: !! add && ! hand && ! covered, crossCheck: wordRefusal || null };
+}
+
 // The origin of a committed tree from a skeleton: { origin: { [cr-ref]: { tpl, fingerprint } }, unaligned: [ { ref,
 // block, why } ] }. Siblings align by block name (alignByName); an aligned node's children align in turn. A tree node
-// with no aligned skeleton node, or whose skeleton node names no tpl finder, is listed with why.
-export function originFromSkeleton( skeleton, tree ) {
+// with no aligned skeleton node, or whose skeleton node names no tpl finder, is listed with why. So is a node whose
+// draft element provably does not hold a child's (childrenOutside). With `inventory` (the surface's skeleton inventory)
+// and `listBlocks` (the blocks that render a list from one array attribute), a list block's identity is its run's
+// parent element or none (listIdentity).
+export function originFromSkeleton( skeleton, tree, { inventory = null, listBlocks = new Set() } = {} ) {
 	const origin = {};
 	const unaligned = [];
+	const byKey = Object.fromEntries( ( inventory?.elements || [] ).map( ( e ) => [ e.key, e ] ) );
+	const claimed = new Set();
+	const claim = ( list ) => list.forEach( ( s ) => {
+		s.draftRef?.tpl && claimed.add( s.draftRef.tpl );
+		claim( s.innerBlocks || [] );
+	} );
+	claim( skeleton );
 	const miss = ( list, why ) => {
 		for ( const t of list ) {
 			const ref = refOf( t );
@@ -55,8 +123,14 @@ export function originFromSkeleton( skeleton, tree ) {
 			const s = sk[ i ];
 			const t = tr[ j ];
 			const ref = refOf( t );
-			if ( ref && s.draftRef?.tpl ) {
-				origin[ ref ] = { tpl: s.draftRef.tpl, fingerprint: s.draftFingerprint || null };
+			const outside = ref && s.draftRef?.tpl ? childrenOutside( s ) : [];
+			const list = ref && s.draftRef?.tpl && listBlocks.has( s.name ) ? listIdentity( s.draftRef.tpl, byKey, new Set( [ ...claimed ].filter( ( k ) => k !== s.draftRef.tpl ) ) ) : null;
+			if ( outside.length ) {
+				unaligned.push( { ref, block: t.name, why: `its draft element <${ s.draftFingerprint.tag }> does not hold its child ${ outside.map( ( o ) => `${ o.name } <${ o.tag }>` ).join( ', ' ) }` } );
+			} else if ( list && ! list.key ) {
+				unaligned.push( { ref, block: t.name, why: list.why } );
+			} else if ( ref && s.draftRef?.tpl ) {
+				origin[ ref ] = list ? { tpl: list.key, fingerprint: null } : { tpl: s.draftRef.tpl, fingerprint: s.draftFingerprint || null };
 			} else if ( ref ) {
 				unaligned.push( { ref, block: t.name, why: 'its skeleton node names no tpl finder' } );
 			}

@@ -3,10 +3,13 @@
 // property. The pairs themselves are lib/pairs.mjs::configText's (the same generator Solve's full-coverage walker uses):
 // Fill writes the small base config that generator spreads, and the generator writes the pairs.
 import { configText } from './pairs.mjs';
+import { skeletonPairs } from './origin-pairs.mjs';
 import { refOf, REF_PREFIX } from './tree.mjs';
 
 // The pairs configText takes: { ref, draft } for each node with a draftRef (the finder as the skeleton wrote it, a
-// walker finder on the whole draft page). tree: the filled tree (refs on every node); nodes: skeletonNodes( skeleton ).
+// walker finder on the whole draft page), less a node whose draft element does not hold its children's and with each
+// width variant's pair scoped to its own words (lib/origin-pairs.mjs::skeletonPairs). tree: the filled tree (refs on
+// every node); nodes: skeletonNodes( skeleton ).
 export function walkerPairs( nodes, tree ) {
 	const flat = [];
 	const go = ( list ) => list.forEach( ( n ) => {
@@ -14,7 +17,7 @@ export function walkerPairs( nodes, tree ) {
 		go( n.innerBlocks || [] );
 	} );
 	go( tree );
-	return nodes.filter( ( n ) => undefined !== n.node.draftRef ).map( ( n ) => ( { ref: refOf( flat[ n.index ] ), draft: n.node.draftRef } ) );
+	return skeletonPairs( nodes, flat.map( ( n ) => refOf( n ) ) ).pairs;
 }
 
 // The base config: the draft and live pages, the walker states, the divergence ledger (a path relative to the config
