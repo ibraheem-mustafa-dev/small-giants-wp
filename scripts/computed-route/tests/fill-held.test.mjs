@@ -66,8 +66,9 @@ test( 'MUST FAIL: a row a written shorthand setting already paints is held as co
 	const wrap = { 'text-wrap': 'nowrap', 'text-wrap-mode': 'nowrap', 'white-space-collapse': 'collapse' };
 	const r = run( BTN(), { '0:': btn( wrap, { words: 'Go' } ) }, declaredAt( '0:', { 'text-wrap-mode': 'nowrap', 'white-space-collapse': 'collapse' } ) );
 	assert.equal( r.tree[ 0 ].attributes.textWrap, 'nowrap' );
-	assert.deepEqual( r.unmapped, [], unmappedProps( r ).join() );
-	assert.deepEqual( heldBy( r ), { 'text-wrap-mode': 'covered', 'white-space-collapse': 'covered' } );
+	// text-wrap sets text-wrap-mode to the draft's nowrap; white-space-collapse (collapse) is not the written value.
+	assert.equal( heldBy( r )[ 'text-wrap-mode' ], 'covered' );
+	assert.notEqual( heldBy( r )[ 'white-space-collapse' ], 'covered' );
 	assert.match( r.alreadyHeld[ 0 ].heldDetail, /textWrap was written/ );
 	// Direct rows: a corner row equal to the written corner is covered; one unit apart, or a corner never written, is not.
 	const pill = Object.fromEntries( CORNERS.map( ( c ) => [ c, '999px' ] ) );
@@ -160,4 +161,24 @@ test( 'MUST FAIL: held rows are listed under their reason in the report with cou
 	assert.match( rep.markdown, /### covered \(1\)/ );
 	assert.match( rep.markdown, /\| text-wrap-mode \| nowrap \|/ );
 	assert.match( rep.markdown, /### inherited \(0\)/ );
+} );
+
+test( 'MUST FAIL: a written value that differs from the draft, or a setting that moves the property only as a side effect, covers nothing', () => {
+	const wrap = { 'text-wrap': 'nowrap', 'text-wrap-mode': 'nowrap' };
+	const r = run( BTN(), { '0:': btn( wrap, { words: 'Go' } ) }, declaredAt( '0:', { 'text-wrap-mode': 'nowrap' } ) );
+	const node = r.writes.find( ( w ) => 'textWrap' === w.attr ).node;
+	const row = ( property, value ) => ( { node, block: 'sgs/button', slot: '', property, value, reason: `no-setting: sgs/button has no setting for ${ property }` } );
+	const settle = ( rows ) => r.settleHeld( { unmapped: rows, writes: r.writes } );
+	assert.equal( settle( [ row( 'text-wrap-mode', 'nowrap' ) ] ).alreadyHeld[ 0 ]?.heldReason, 'covered', 'the written value itself is covered' );
+	assert.equal( settle( [ row( 'text-wrap-mode', 'wrap' ) ] ).unmapped.length, 1, 'a written nowrap never covers a draft wrap' );
+	assert.equal( settle( [ row( 'white-space', 'pre' ) ] ).unmapped.length, 1, 'a side effect calibration saw is not the draft value' );
+} );
+
+test( 'MUST FAIL: a written setting covers only the element it paints; the same value read on another measured element stays raised', () => {
+	const pill = Object.fromEntries( CORNERS.map( ( c ) => [ c, '999px' ] ) );
+	const skeleton = [ { name: 'sgs/button', draftRef: '.b', draftSlots: { '.sgs-button__label': '.b span' }, attributes: { text: 'Go' } } ];
+	const r = run( skeleton, { '0:': btn( pill, { words: 'Go' } ), '0:.sgs-button__label': snap( pill, { words: 'Go' } ) }, declaredAt( '0:', pill ) );
+	const node = r.writes.find( ( w ) => 'borderRadius' === w.attr ).node;
+	const row = { node, block: 'sgs/button', slot: '.sgs-button__label', property: CORNERS[ 1 ], value: '999px', reason: `no-setting: sgs/button has no setting for ${ CORNERS[ 1 ] }` };
+	assert.equal( r.settleHeld( { unmapped: [ row ], writes: r.writes } ).unmapped.length, 1, 'the label is not the element borderRadius paints' );
 } );

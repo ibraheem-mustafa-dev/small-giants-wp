@@ -85,9 +85,11 @@ function coveredBySetting( row, values, writes, cal ) {
 		let ok = true;
 		for ( const x of widths ) {
 			const written = valueAt( w.after, x );
-			// A shape setting holds the part this property is: the corner or side the row states must equal the written one.
-			const part = written && 'object' === typeof written && fam && 'mixed' !== fam.kind ? written[ 'corner' === fam.kind ? partKey( fam.part ) : fam.part ] : undefined;
-			if ( undefined !== part && ! same( row.property, part, values[ x ] ) ) {
+			// The written value must equal the draft's at every width: a shape setting by the corner or side the row states,
+			// any other by its value. A value that cannot be compared (a padding box against a height a side effect moves)
+			// covers nothing.
+			const part = written && 'object' === typeof written ? ( fam && 'mixed' !== fam.kind ? written[ 'corner' === fam.kind ? partKey( fam.part ) : fam.part ] : undefined ) : written;
+			if ( undefined === part || null === part || ! same( row.property, String( part ), values[ x ] ) ) {
 				ok = false;
 				break;
 			}
@@ -100,7 +102,7 @@ function coveredBySetting( row, values, writes, cal ) {
 			}
 		}
 		if ( ok ) {
-			return `${ w.attr } was written for this element and ${ c.property && expand( c.property ).includes( physicalOf( row.property ) ) ? `sets ${ row.property } as part of ${ c.property }` : 'changes ' + row.property + ' as a side effect (calibration effects)' }`;
+			return `${ w.attr } was written for this element and paints ${ row.property } at the draft's value`;
 		}
 	}
 	return null;
