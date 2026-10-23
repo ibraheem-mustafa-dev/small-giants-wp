@@ -1,0 +1,20 @@
+[
+	{ "file": "lib/media-stock.mjs", "find": "'https:' === u.protocol && hosts.includes( u.hostname ) && PHOTO_PATH.test( u.pathname )", "replace": "hosts.includes( u.hostname ) && PHOTO_PATH.test( u.pathname )", "why": "an http stock URL is taken for a painted stock image" },
+	{ "file": "lib/media-stock.mjs", "find": "hosts.includes( u.hostname ) && PHOTO_PATH", "replace": "PHOTO_PATH", "why": "a photo path on any host is taken for stock" },
+	{ "file": "lib/media-stock.mjs", "find": "row.width = Math.max( row.width, width || 0 );", "replace": "row.width = width || row.width;", "why": "the last size painted wins instead of the largest" },
+	{ "file": "lib/media-stock.mjs", "find": "if ( ! row.paintedAt.includes( where ) ) {", "replace": "if ( true ) {", "why": "a repeated location is listed twice" },
+	{ "file": "lib/media-stock.mjs", "find": "if ( builds ) {", "replace": "if ( false ) {", "why": "photo IDs a draft builds its URLs from are never found" },
+	{ "file": "lib/media-stock.mjs", "find": "if ( ! url.startsWith( 'https://' ) ) {", "replace": "if ( false ) {", "why": "an http download is attempted" },
+	{ "file": "lib/media-stock.mjs", "find": "if ( res.url && ! String( res.url ).startsWith( 'https://' ) ) {", "replace": "if ( false ) {", "why": "a redirect off https is followed" },
+	{ "file": "lib/media-stock.mjs", "find": "if ( ! STOCK_TYPES[ type ] ) {", "replace": "if ( false ) {", "why": "a non-image response is uploaded as an image" },
+	{ "file": "lib/media-stock.mjs", "find": "if ( declared > MAX_STOCK_BYTES ) {", "replace": "if ( false ) {", "why": "a declared oversize body is read anyway" },
+	{ "file": "lib/media-stock.mjs", "find": "if ( bytes.length > MAX_STOCK_BYTES ) {", "replace": "if ( false ) {", "why": "an oversize body that declared no length is uploaded" },
+	{ "file": "lib/media-stock.mjs", "find": "Math.min( width || DEFAULT_STOCK_WIDTH, MAX_STOCK_WIDTH )", "replace": "( width || DEFAULT_STOCK_WIDTH )", "why": "the width cap is not applied" },
+	{ "file": "lib/media-stock.mjs", "find": "const stock = files.filter( ( f ) => f.stock );", "replace": "const stock = files;", "why": "the review lists local images as stock" },
+	{ "file": "lib/media-upload.mjs", "find": "const had = known.find( ( e ) => e.stock && e.asset === row.key );", "replace": "const had = null;", "why": "a stock preview already live is downloaded and uploaded again on every run" },
+	{ "file": "lib/media-upload.mjs", "find": "if ( ! apply ) {\n\t\t\treport.wouldUpload.push( row.key );", "replace": "if ( false ) {\n\t\t\treport.wouldUpload.push( row.key );", "why": "a dry run downloads and uploads stock previews" },
+	{ "file": "lib/media-upload.mjs", "find": "report.failed.push( { asset: row.key, reason: e.message } );\n\t\t\treturn;", "replace": "throw e;", "why": "one stock download failure aborts the whole run" },
+	{ "file": "lib/media-upload.mjs", "find": "files.push( { ...twin, asset: row.key, source, stock: true, paintedAt: row.paintedAt } );", "replace": "files.push( { asset: row.key, source, sha256: sum, id: ( await postMedia( fetchImpl, creds, row.key, 'twin.jpg', got.type, got.bytes ) ).media.id, url: twin.url, storedSha256: twin.storedSha256, stock: true, paintedAt: row.paintedAt } );", "why": "identical stock bytes upload a second time" },
+	{ "file": "lib/media-upload.mjs", "find": "stock: true, paintedAt: row.paintedAt } );\n\t\treport.uploaded.push( row.key );", "replace": "stock: false, paintedAt: row.paintedAt } );\n\t\treport.uploaded.push( row.key );", "why": "a stock preview is stored as a real image" },
+	{ "file": "lib/media-upload.mjs", "find": "( key && files.find( ( e ) => e.stock && e.asset === key ) ) ||", "replace": "", "why": "a painted stock URL does not reach its entry" }
+]
