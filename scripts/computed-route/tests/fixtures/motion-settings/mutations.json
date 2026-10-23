@@ -1,90 +1,90 @@
 [
 	{
-		"file": "lib/motion-behaviours.mjs",
+		"file": "lib/motion-behaviour-settings.mjs",
 		"find": "{ attr: 'scrolledOffset', value: number( at[ 1 ] ) }",
 		"replace": "{ attr: 'scrolledOffset', value: 50 }",
 		"why": "the scroll threshold is not the code's"
 	},
 	{
-		"file": "lib/motion-behaviours.mjs",
+		"file": "lib/motion-behaviour-settings.mjs",
 		"find": "...( sticky ? [ { attr: 'headerSticky', value: { desktop: 'on' } } ] : [] ),",
 		"replace": "...[],",
 		"why": "a pinned header is not written as sticky"
 	},
 	{
-		"file": "lib/motion-behaviours.mjs",
+		"file": "lib/motion-behaviour-settings.mjs",
 		"find": "return /^(?:sticky|fixed)$/.test( String( staticStyle( t?.element, 'position' ) ?? '' ).trim() ) ||",
 		"replace": "return true ||",
 		"why": "every header is read as pinned"
 	},
 	{
-		"file": "lib/motion-behaviours.mjs",
+		"file": "lib/motion-behaviour-settings.mjs",
 		"find": "const colour = colourHex( shadow.colour );",
 		"replace": "const colour = null;",
 		"why": "the scrolled shadow loses its colour"
 	},
 	{
-		"file": "lib/motion-behaviours.mjs",
+		"file": "lib/motion-behaviour-settings.mjs",
 		"find": "! /\\bdot\\b|status|open/i.test( words( r.element?.description, r.name ) )",
 		"replace": "false",
 		"why": "any endless ring is the dot pulse"
 	},
 	{
-		"file": "lib/motion-behaviours.mjs",
+		"file": "lib/motion-behaviour-settings.mjs",
 		"find": "...( null === gap ? [] : [ { attr: 'scrollToOpenedGap', value: px( gap ) } ] )",
 		"replace": "...[]",
 		"why": "the scroll gap is dropped"
 	},
 	{
-		"file": "lib/motion-behaviours.mjs",
+		"file": "lib/motion-behaviour-settings.mjs",
 		"find": "{ attr: 'autoplaySpeed', value: Math.round( secs * 1000 ) }",
 		"replace": "{ attr: 'autoplaySpeed', value: secs }",
 		"why": "the interval is stored in seconds"
 	},
 	{
-		"file": "lib/motion-behaviours.mjs",
+		"file": "lib/motion-behaviour-settings.mjs",
 		"find": "{ attr: 'slidesVisible', value: 1 }",
 		"replace": "{ attr: 'slidesVisible', value: 3 }",
 		"why": "the slider shows three cards"
 	},
 	{
-		"file": "lib/motion-behaviours.mjs",
+		"file": "lib/motion-behaviour-settings.mjs",
 		"find": "accepted: 'the slide change (it slides rather than fades)",
 		"replace": "acceptedX: 'the slide change (it slides rather than fades)",
 		"why": "the accepted differences are not reported"
 	},
 	{
-		"file": "lib/motion-behaviours.mjs",
+		"file": "lib/motion-behaviour-settings.mjs",
 		"find": "{ attr: 'scrollEffect', value: 'pinned-horizontal' }",
 		"replace": "{ attr: 'scrollEffect', value: 'pinned-journey' }",
 		"why": "the wrong scroll effect"
 	},
 	{
-		"file": "lib/motion-behaviours.mjs",
+		"file": "lib/motion-behaviour-settings.mjs",
 		"find": "...( carousel ? [ { attr: 'mobileLayout', value: 'carousel' } ] : [] )",
 		"replace": "...[]",
 		"why": "the touch strip is not the carousel"
 	},
 	{
-		"file": "lib/motion-behaviours.mjs",
+		"file": "lib/motion-behaviour-settings.mjs",
 		"find": "[ 'panelEdgeOpacity', opacity.from ]",
 		"replace": "[ 'panelEdgeOpacity', opacity.to ]",
 		"why": "the edge opacity is the focus one"
 	},
 	{
-		"file": "lib/motion-behaviours.mjs",
+		"file": "lib/motion-behaviour-settings.mjs",
 		"find": "padded ? 'padded-index-of-total' : 'index-of-total'",
 		"replace": "'index-of-total'",
 		"why": "the zero padding is lost"
 	},
 	{
-		"file": "lib/motion-behaviours.mjs",
+		"file": "lib/motion-behaviour-settings.mjs",
 		"find": "{ attr: 'dateActiveColour', value: colourHex( colour.to ), colour: true }",
 		"replace": "{ attr: 'dateActiveColour', value: colourHex( colour.to ) }",
 		"why": "a palette colour is not written by its slug"
 	},
 	{
-		"file": "lib/motion-behaviours.mjs",
+		"file": "lib/motion-behaviour-settings.mjs",
 		"find": "'scroll-position' !== triggerOf( r ) || ! PINNED.test( blob( r ) ) ) {",
 		"replace": "'scroll-position' !== triggerOf( r ) ) {",
 		"why": "any scroll write is the pinned timeline"
@@ -103,8 +103,8 @@
 	},
 	{
 		"file": "lib/motion-behaviours.mjs",
-		"find": "! /clos|dismiss|exit/i.test( words( r.source?.function, r.trigger?.detail, r.name ) )",
-		"replace": "false",
+		"find": "|| ! namesClose( r ) ) {",
+		"replace": ") {",
 		"why": "any held animation is an exit"
 	},
 	{
@@ -181,7 +181,7 @@
 	},
 	{
 		"file": "lib/fill-motion.mjs",
-		"find": "detail: `${ ref.trigger?.detail ?? '' } (${ r.trigger.detail })`",
+		"find": "detail: `${ base.detail ?? '' } (${ r.trigger.detail })`",
 		"replace": "detail: r.trigger.detail",
 		"why": "a 'same as' record keeps no trigger of its own"
 	},

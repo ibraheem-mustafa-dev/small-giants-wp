@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "\t\t\town = own.filter( ( r ) => ! held.some( ( x ) => x.r === r ) );\n",
+		"replace": "",
+		"why": "a held companion would still reach the part check and be raised as an undeclared part"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "&& blockLevel.some( ( y ) => y.b.effects?.some( ( e ) => e.effect === x.b.by ) ) );",
+		"replace": ");",
+		"why": "a companion would be held with no covering block-level setting written"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "for ( const { r, b } of held.filter( ( x ) => ! blockDone.has( x.r.id ) ) ) {",
+		"replace": "for ( const { r, b } of held ) {",
+		"why": "the companion would be noted once per slot"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "${ timing ? `, whose own return timing stands for the draft's ${ timing }` : '' }",
+		"replace": "",
+		"why": "the draft's return timing the block does not hold would go unnamed"
+	}
+]
