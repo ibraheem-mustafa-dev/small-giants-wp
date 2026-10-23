@@ -10,6 +10,7 @@ import { PAINT_SRC } from '../../parity/lib/paint.mjs';
 import { paintedExtras } from '../../parity/lib/chrome.mjs';
 import { comparePair } from '../../parity/lib/compare.mjs';
 import { openDevtools, forcedHover } from '../../parity/lib/devtools.mjs';
+import { stampRefs } from '../../parity/lib/ref-trace.mjs';
 
 const { chromium } = await import( 'playwright' );
 const RESOLVE = resolveFinder.toString();
@@ -83,4 +84,29 @@ test( 'the paint walk never enters an element another pair measures: a same-box 
 	await page.close();
 	assert.equal( own.styles[ 'background-color' ], 'rgba(0, 0, 0, 0)' );
 	assert.equal( climbed.styles[ 'background-color' ], 'rgb(0, 128, 0)', 'with no pair there, the same-box ancestor that paints is the ground' );
+} );
+
+// Phase 0 review (rater 1, finding 1): the painting element's own size is read, so a 20px dot inside a 44px link
+// against a 44px disc is a row, while the same 34px shape painted inside a 44px wrapper or by a 34px link is none.
+const DOT = '<a id="icon" href="#" style="display:flex;width:44px;height:44px;align-items:center;justify-content:center"><span style="display:block;width:20px;height:20px;border-radius:50%;background:rgb(204,0,0)"></span></a>';
+const DISC = '<a id="icon" href="#" style="display:block;width:44px;height:44px;border-radius:50%;background:rgb(204,0,0)"></a>';
+const sizeRows = ( d, l ) => comparePair( {}, d, l, TOL ).filter( ( r ) => 'box' === r.kind );
+
+test( 'MUST FAIL (review 1): a 20px dot inside a 44px link against a 44px disc of the same colour is a painted-size row', async () => {
+	const r = sizeRows( await snapOf( DOT ), await snapOf( DISC ) );
+	assert.deepEqual( r.map( ( x ) => `${ x.key } ${ x.draft } ${ x.live }` ), [ 'paint-w 20 44', 'paint-h 20 44' ] );
+	stampRefs( r, { ref: 'r1', block: 'b', path: '', paintPath: 'a > span' } );
+	assert.equal( r[ 0 ].path, 'a > span', 'a painted-size row names the painting element' );
+} );
+
+test( 'positive control: the same 34px shape painted by the link or by an inner shape inside a 44px wrapper is no painted-size row', async () => {
+	const r = sizeRows( await snapOf( DRAFT ), await snapOf( LIVE ) );
+	assert.deepEqual( r.filter( ( x ) => /^paint-/.test( x.key ) ), [] );
+	const own = sizeRows( await snapOf( DISC.replace( /44px/g, '40px' ) ), await snapOf( DISC ) );
+	assert.deepEqual( own.map( ( x ) => x.key ), [ 'w', 'h' ], 'a pair painting itself on both sides has its box rows only' );
+} );
+
+test( 'a pair\'s transform-origin is read as the px point its pose turns about (review 5)', async () => {
+	assert.equal( ( await snapOf( DISC ) ).origin, '22px 22px' );
+	assert.equal( ( await snapOf( DISC.replace( 'display:block;', 'display:block;transform-origin:0 0;' ) ) ).origin, '0px 0px' );
 } );

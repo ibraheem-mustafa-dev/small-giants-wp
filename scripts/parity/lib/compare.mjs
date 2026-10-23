@@ -3,7 +3,7 @@ import { compareFocus } from './focus.mjs';
 import { sameRatio, sameTracks } from './ratio.mjs';
 import { layoutComparable } from './paint.mjs';
 import { sameTransitions, isTimingLonghand } from './transitions.mjs';
-import { TRANSFORM_PARTS, hasTransformParts, sameTransform, effectiveText } from './transform.mjs';
+import { TRANSFORM_PARTS, comparePose } from './transform.mjs';
 import { compareParts } from './parts.mjs';
 
 const PX = /^-?\d+(\.\d+)?px$/;
@@ -148,6 +148,9 @@ function partIrrelevant( p, d, l ) {
 const moves = ( x ) => [ x.hover, x.focus, x.active ].some( ( st ) => st && 'object' === typeof st && Object.entries( st ).some( ( [ k, v ] ) => undefined !== x.styles?.[ k ] && String( v ) !== String( x.styles[ k ] ) ) );
 // Whether a side's states were read at all: a hover end state, or a phone run, which has no hover (state-passes.mjs::hoverPass).
 const statesRead = ( x ) => undefined !== x.hover || true === x.noHover;
+// The properties that move in a state read on either side (what a transition can animate), or null while either side's
+// states are unread (lib/transitions.mjs::sameTransitions then compares an `all` as itself).
+const changed = ( d, l ) => ( statesRead( d ) && statesRead( l ) ? [ ...new Set( [ d, l ].flatMap( ( x ) => [ x.hover, x.focus, x.active ].flatMap( ( st ) => ( st && 'object' === typeof st ? Object.keys( st ).filter( ( k ) => String( st[ k ] ) !== String( x.styles?.[ k ] ?? st[ k ] ) ) : [] ) ) ) ) ] : null );
 
 // Motion timings that run nothing: an animation's while neither side animates (no keyframes), a transition's delay and
 // easing while neither side's transition takes any time, and any transition timing while neither side's element changes
@@ -224,6 +227,7 @@ export function comparePair( pair, d, l, tol ) {
 	}
 	const mixed = iconMixed( d, l );
 	const loops = loopSet( d, l );
+	const changes = changed( d, l );
 	if ( pair.text !== false && ! mixed && ! sameWords( d.text, l.text ) ) {
 		add( 'text', 'text', d.text, l.text );
 	}
@@ -231,12 +235,15 @@ export function comparePair( pair, d, l, tol ) {
 		if ( Math.abs( d.box[ k ] - l.box[ k ] ) > tol.box ) {
 			add( 'box', k, d.box[ k ], l.box[ k ] );
 		}
+		// The size of the element painting the ground and shape, where either side paints on another element than the pair's.
+		const [ pd, pl ] = [ d.paintBox, l.paintBox ];
+		if ( pd && pl && ! ( pd.own && pl.own ) && Math.abs( pd[ k ] - pl[ k ] ) > tol.box ) {
+			add( 'box', `paint-${ k }`, pd[ k ], pl[ k ] );
+		}
 	}
-	// translate, rotate, scale and transform are one row: the composed pose (lib/transform.mjs).
-	const posed = ! TRANSFORM_PARTS.some( ( p ) => loops.has( p ) );
-	if ( posed && ( hasTransformParts( d.styles ) || hasTransformParts( l.styles ) ) && ! sameTransform( d.styles, l.styles, tol.px ) ) {
-		add( 'style', 'transform', effectiveText( d.styles ), effectiveText( l.styles ) );
-	}
+	// translate, rotate, scale and transform are one row per state: the composed pose (lib/transform.mjs::comparePose).
+	const poseRows = comparePose( d, l, tol, loops );
+	diffs.push( ...poseRows.filter( ( r ) => 'style' === r.kind ) );
 	for ( const p of new Set( [ ...Object.keys( d.styles ), ...Object.keys( l.styles ) ] ) ) {
 		if ( TRANSFORM_PARTS.includes( p ) ) {
 			continue;
@@ -250,7 +257,7 @@ export function comparePair( pair, d, l, tol ) {
 		}
 		// A transition timing compares per animated property where both sides transition something (lib/transitions.mjs).
 		const shorthands = [ d.motion?.transition, l.motion?.transition ];
-		const byName = isTimingLonghand( p ) && shorthands.every( ( t ) => t && 'none' !== t ) ? sameTransitions( ...shorthands, p ) : null;
+		const byName = isTimingLonghand( p ) && shorthands.every( ( t ) => t && 'none' !== t ) ? sameTransitions( ...shorthands, p, changes ) : null;
 		if ( ! ( byName ?? sameValue( p, d.styles[ p ], l.styles[ p ], tol.px ) ) ) {
 			add( 'style', p, d.styles[ p ], l.styles[ p ] );
 		}
@@ -279,7 +286,9 @@ export function comparePair( pair, d, l, tol ) {
 			add( 'motion', 'keyframes', d.keyframes, l.keyframes );
 		}
 		for ( const k of [ 'animation', 'transition' ] ) {
-			if ( ! ( ( 'transition' === k && sameTransitions( d.motion[ k ], l.motion[ k ] ) ) || sameValue( k, d.motion[ k ], l.motion[ k ], 0 ) ) ) {
+			// A transition compares per animated property; raw text only where either side cannot be parsed.
+			const byName = 'transition' === k ? sameTransitions( d.motion[ k ], l.motion[ k ], null, changes ) : null;
+			if ( ! ( byName ?? sameValue( k, d.motion[ k ], l.motion[ k ], 0 ) ) ) {
 				add( 'motion', k, d.motion[ k ], l.motion[ k ] );
 			}
 		}
@@ -297,11 +306,7 @@ export function comparePair( pair, d, l, tol ) {
 	for ( const [ kind, field ] of [ [ 'hover', 'hover' ], [ 'active', 'active' ] ] ) {
 		if ( d[ field ] && l[ field ] ) {
 			const still = ( s, p ) => undefined !== s.styles?.[ p ] && sameValue( p, s[ field ][ p ], s.styles[ p ], tol.px );
-			const pose = ( s ) => ( { ...s.styles, ...s[ field ] } );
-			const posedStill = ( s ) => sameTransform( s.styles, pose( s ), tol.px );
-			if ( posed && hasTransformParts( d[ field ] ) && ! ( posedStill( d ) && posedStill( l ) ) && ! sameTransform( pose( d ), pose( l ), tol.px ) ) {
-				add( kind, 'transform', effectiveText( pose( d ) ), effectiveText( pose( l ) ) );
-			}
+			diffs.push( ...poseRows.filter( ( r ) => kind === r.kind ) );
 			for ( const p of Object.keys( d[ field ] ) ) {
 				if ( TRANSFORM_PARTS.includes( p ) ) {
 					continue;

@@ -50,3 +50,33 @@ test( 'unreadable parts fall back to raw equality: identical raw values match, d
 	assert.deepEqual( rows( snap( { translate: '50% 0px' } ), snap( { translate: '50% 0px' } ) ), [] );
 	assert.equal( rows( snap( { translate: '50% 0px' } ), snap( { translate: '40% 0px' } ) ).length, 1 );
 } );
+
+// Phase 0 review (rater 1, findings 5, 6, 8 and 10): the pose turns about each side's transform-origin, a linear
+// difference is judged by how far it moves the element's edge, a percentage translate resolves against the box, and the
+// hover pose is compared when either side's hover moves it and while a loop drives another transform property.
+test( 'MUST FAIL (review 5): the same rotation about the top-left and about the centre is a transform row', () => {
+	const r = rows( { ...snap( { rotate: '10deg' } ), origin: '0px 0px' }, { ...snap( { rotate: '10deg' } ), origin: '50px 20px' } );
+	assert.equal( r.length, 1 );
+	assert.deepEqual( rows( { ...snap( { rotate: '10deg' } ), origin: '50% 50%' }, { ...snap( { rotate: '10deg' } ), origin: '50px 20px' } ), [], 'the centre in percent and in px is one origin' );
+} );
+
+test( 'MUST FAIL (review 6): a 1.005 scale on a 1440px hero moves its edge 3.6px and is a row; on a 20px icon it is not', () => {
+	const wide = ( styles ) => ( { ...snap( styles ), box: { w: 1440, h: 600 } } );
+	assert.equal( rows( wide( { scale: '1.005' } ), wide( {} ) ).length, 1 );
+	const icon = ( styles ) => ( { ...snap( styles ), box: { w: 20, h: 20 } } );
+	assert.deepEqual( rows( icon( { scale: '1.005' } ), icon( {} ) ), [] );
+} );
+
+test( 'MUST FAIL (review 8): a draft translateX(-50%) (computed to px) and a live translate: -50% paint the same pose', () => {
+	assert.deepEqual( rows( snap( { transform: 'matrix(1, 0, 0, 1, -50, 0)' } ), snap( { translate: '-50%' } ) ), [] );
+	assert.equal( rows( snap( { transform: 'matrix(1, 0, 0, 1, -50, 0)' } ), snap( { translate: '-40%' } ) ).length, 1 );
+} );
+
+test( 'MUST FAIL (review 10): a hover pose on the live side only is a hover row, and a loop on translate leaves a hover scale measured', () => {
+	const d = { ...snap( {} ), hover: { color: 'red' } };
+	const l = snap( {}, { scale: '1.1' } );
+	assert.deepEqual( rows( d, l ).map( ( x ) => x.kind ), [ 'hover' ] );
+	const looping = ( hover ) => ( { ...snap( { translate: '-200px 0px' }, hover ), loops: [ 'translate' ] } );
+	assert.deepEqual( rows( looping( { scale: '1.1', translate: '-300px 0px' } ), looping( { scale: '1', translate: '-100px 0px' } ) ).map( ( x ) => x.kind ), [ 'hover' ] );
+	assert.deepEqual( rows( looping( { scale: '1.1', translate: '-300px 0px' } ), looping( { scale: '1.1', translate: '-100px 0px' } ) ), [], 'the looping translate itself is not compared' );
+} );

@@ -4,7 +4,8 @@
 // paint.mjs::textCarrier), so each element's text is compared by exactly one pair at each width, in headless Chromium.
 import test, { after, before } from 'node:test';
 import assert from 'node:assert/strict';
-import { DEFAULT_PROPS, resolveFinder, collectPair } from '../../parity/lib/collect.mjs';
+import { DEFAULT_PROPS, resolveFinder, collectPair, hoverStyles } from '../../parity/lib/collect.mjs';
+import { readOpts } from '../../parity/lib/state-passes.mjs';
 import { PAINT_SRC } from '../../parity/lib/paint.mjs';
 import { comparePair } from '../../parity/lib/compare.mjs';
 
@@ -64,4 +65,23 @@ test( 'negative control: an outer pair with no text of its own reads no text pro
 	const live = await read( PAGE( true ).replace( 'font-size:17px', 'font-size:19px' ) );
 	const draft = await read( PAGE( false ) );
 	assert.deepEqual( comparePair( { text: false, box: [] }, draft.outer, live.outer, TOL ).filter( ( r ) => 'font-size' === r.key ).map( ( r ) => r.live ), [ '19px' ] );
+} );
+
+// Phase 0 review (rater 1, finding 9): a pair owns its text only where it reads text properties; an inner pair measuring
+// its box alone leaves its words to the pair around it (the paint walk still never enters it).
+test( 'MUST FAIL (review 9): an inner pair that reads no text properties does not take the outer pair\'s text', async () => {
+	const page = await browser.newPage( { viewport: { width: 1000, height: 600 } } );
+	await page.setContent( '<!doctype html><html><body><header id="outer"><a id="phone" style="font-size:15px;color:rgb(200,0,0)">0121 000 0000</a><nav id="nav"><a style="font-size:13px">Home</a></nav></header></body></html>' );
+	const pairs = [ { name: 'outer', draft: '#outer' }, { name: 'phone', draft: '#phone', props: [ 'padding-top' ] }, { name: 'nav', draft: '#nav' } ];
+	const opts = readOpts( pairs, pairs[ 0 ], 'draft' );
+	const outer = await page.evaluate( collectPair, [ '#outer', DEFAULT_PROPS, RESOLVE, null, null, null, PAINT_SRC, null, opts ] );
+	const hover = await page.evaluate( hoverStyles, [ '#outer', [ 'color' ], RESOLVE, PAINT_SRC, opts ] );
+	await page.close();
+	assert.equal( outer.styles[ 'font-size' ], '15px' );
+	assert.equal( hover.color, 'rgb(200, 0, 0)', 'the hover read takes the same text' );
+	assert.deepEqual( opts.others, [ '#phone', '#nav' ], 'every other pair still bounds the paint walk and the parts' );
+	const box = readOpts( [ ...pairs, { name: 'card', draft: { group: { paths: [ '#nav' ] } } } ], pairs[ 0 ], 'draft' );
+	assert.deepEqual( box.textOthers, [ '#nav' ], 'a group finder measures no text either' );
+	const ref = readOpts( pairs, pairs[ 0 ], 'draft', ( q ) => [ ...DEFAULT_PROPS, ...( q.props || [] ) ] );
+	assert.deepEqual( ref.textOthers, [ '#phone', '#nav' ], 'a walk that reads every pair\'s text props makes each an owner' );
 } );

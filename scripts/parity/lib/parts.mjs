@@ -8,11 +8,12 @@
 import { HOVER_PROPS, hoverPointOf, hoverStyles } from './collect.mjs';
 import { PAINT_SRC } from './paint.mjs';
 import { sameValue } from './compare.mjs';
+import { TRANSFORM_PARTS, sameTransform, effectiveText } from './transform.mjs';
 
 // The interactive parts of a pair element: itself when interactive, and every shown interactive descendant that is not
 // inside an element another pair measures (`others`, that pair reads it). Stored on window.__crParts for the reads that
-// follow. Named by their words, else aria-label or title, lower-case; a repeated name gets #1, #2. in: [ finder,
-// resolveSrc, others ].
+// follow. Named by their words, else aria-label or title, lower-case; a repeated name gets #1, #2. Each carries `pos`, its
+// centre as fractions of the pair element's box, and `box`, its size. in: [ finder, resolveSrc, others ].
 export function listParts( [ finder, resolveSrc, others ] ) {
 	// eslint-disable-next-line no-new-func
 	const resolve = new Function( `return (${ resolveSrc });` )();
@@ -33,12 +34,15 @@ export function listParts( [ finder, resolveSrc, others ] ) {
 	// The elements present now: one a script adds later is an effect layer (effectArm), never a painted layer.
 	window.__crKnown = new WeakSet( parts.flatMap( ( p ) => [ ...p.querySelectorAll( '*' ) ] ) );
 	const seen = new Map();
+	const root = el.getBoundingClientRect();
 	return parts.map( ( p, i ) => {
+		const r = p.getBoundingClientRect();
+		const pos = { x: root.width ? ( r.left + r.width / 2 - root.left ) / root.width : 0.5, y: root.height ? ( r.top + r.height / 2 - root.top ) / root.height : 0.5 };
 		const words = ( p.innerText || '' ).replace( /\s+/g, ' ' ).trim().toLowerCase();
 		const base = words || ( p.getAttribute( 'aria-label' ) || p.getAttribute( 'title' ) || '' ).replace( /\s+/g, ' ' ).trim().toLowerCase() || `(unnamed ${ p.tagName.toLowerCase() })`;
 		const k = seen.get( base ) || 0;
 		seen.set( base, k + 1 );
-		return { i, name: k ? `${ base }#${ k }` : base, root: p === el };
+		return { i, name: k ? `${ base }#${ k }` : base, root: p === el, pos, box: { w: Math.round( r.width ), h: Math.round( r.height ) } };
 	} );
 }
 
@@ -164,9 +168,10 @@ export function partsRestore() {
 	return added.length;
 }
 
-const PART_PROPS = HOVER_PROPS.filter( ( p ) => ! [ 'filter' ].includes( p ) );
+// The hover properties and the point a part's pose turns about.
+const PART_PROPS = [ ...HOVER_PROPS, 'transform-origin' ];
 
-// One pair's parts on one side: [{ name, root, rest, hover, layers: { rest, hover }, effects: { hover, press } }]. Each part
+// One pair's parts on one side: [{ name, root, pos, box, rest, hover, layers: { rest, hover }, effects: { hover, press } }]. Each part
 // is hovered with a real pointer (collect.mjs::hoverPointOf), held `wait` ms, read, then pressed (mouse down, read, the
 // pointer moved off before release so nothing is clicked).
 export async function readParts( page, finder, others, RESOLVE, wait = 800 ) {
@@ -180,7 +185,7 @@ export async function readParts( page, finder, others, RESOLVE, wait = 800 ) {
 		if ( ! at || at.unreached ) {
 			continue;
 		}
-		const rec = { name: part.name, root: part.root, rest: await styles(), layers: { rest: await page.evaluate( partLayers, [ part.i ] ) }, effects: {} };
+		const rec = { name: part.name, root: part.root, pos: part.pos, box: part.box, rest: await styles(), layers: { rest: await page.evaluate( partLayers, [ part.i ] ) }, effects: {} };
 		await page.evaluate( effectArm, [ part.i ] );
 		await page.mouse.move( at.x, at.y );
 		await page.waitForTimeout( wait );
@@ -221,30 +226,78 @@ const sameLayers = ( a = [], b = [], tol = 2 ) => a.length === b.length && a.eve
 	return pa && pb && [ 1, 2, 3, 4 ].every( ( k ) => Math.abs( Number( pa[ k ] ) - Number( pb[ k ] ) ) <= tol ) && sameValue( 'background-color', pa[ 5 ], pb[ 5 ], 0 );
 } );
 
-// Rows for the parts both sides have by name. `part` rows: `<name> hover:<prop>` where hovering moves the property on either
-// side and the end states differ (the part's own element; the pair's root is the hover pass's), `<name> rest:layers` where
-// the painted layers differ at rest, `<name> hover:layers` where hovering changes them on either side and they differ.
-// `effect` rows: `<name> hover` / `<name> press` where one side shows an effect layer and the other none. A part on one side
-// only is no row here (the inventory and the links check report a missing control).
+// The parts of the two sides paired: by name (a repeated name's #n suffix aside), and among parts of one name by where they
+// sit in the pair (`pos`; list order where either lacks it), nearest first. Returns { pairs: [[d, l]] in draft order,
+// draftOnly, liveOnly }.
+export function pairParts( d, l ) {
+	const base = ( n ) => n.replace( /#\d+$/, '' );
+	const rank = ( list, x ) => list.filter( ( y ) => base( y.name ) === base( x.name ) ).indexOf( x );
+	const dist = ( a, b ) => ( a.pos && b.pos ? Math.hypot( a.pos.x - b.pos.x, a.pos.y - b.pos.y ) : Math.abs( rank( d, a ) - rank( l, b ) ) );
+	const cand = d.flatMap( ( a, i ) => l.flatMap( ( b, j ) => ( base( a.name ) === base( b.name ) ? [ [ dist( a, b ), i, j ] ] : [] ) ) );
+	cand.sort( ( x, y ) => x[ 0 ] - y[ 0 ] || x[ 1 ] - y[ 1 ] || x[ 2 ] - y[ 2 ] );
+	const mate = new Map();
+	const taken = new Set();
+	for ( const [ , i, j ] of cand ) {
+		if ( ! mate.has( i ) && ! taken.has( j ) ) {
+			mate.set( i, j );
+			taken.add( j );
+		}
+	}
+	return {
+		pairs: d.map( ( a, i ) => ( mate.has( i ) ? [ a, l[ mate.get( i ) ] ] : null ) ).filter( Boolean ),
+		draftOnly: d.filter( ( a, i ) => ! mate.has( i ) ),
+		liveOnly: l.filter( ( b, j ) => ! taken.has( j ) ),
+	};
+}
+
+// Each part's effect layers on one side, matched or not: { '<part name>': { hover: [...], press: [...] } } for every part
+// that showed a layer in either state (effectRead's `added <shape>` / `animated <shape>`), or null with no parts read.
+export function partEffects( parts ) {
+	if ( ! parts ) {
+		return null;
+	}
+	return Object.fromEntries( parts.filter( ( x ) => x.effects?.hover?.length || x.effects?.press?.length ).map( ( x ) => [ x.name, { hover: x.effects.hover || [], press: x.effects.press || [] } ] ) );
+}
+
+const POSE_KEYS = [ ...TRANSFORM_PARTS, 'transform-origin' ];
+
+// Rows for the parts paired across the two sides (pairParts). `part` rows: `<name> presence` for a part on one side only,
+// `<name> rest:<prop>` where the resting looks differ, `<name> hover:<prop>` where hovering moves the property on either
+// side and the end states differ (the part's own element; the pair's root is the hover pass's, so its looks are not
+// compared here), `<name> rest:transform` / `<name> hover:transform` for the composed pose (lib/transform.mjs, about each
+// part's transform-origin), `<name> rest:layers` where the painted layers differ at rest, `<name> hover:layers` where
+// hovering changes them on either side and they differ. `effect` rows: `<name> hover` / `<name> press` where one side
+// shows an effect layer and the other none (partEffects puts every layer seen on the report).
 export function compareParts( d, l, tol ) {
 	const rows = [];
 	if ( ! d || ! l ) {
 		return rows;
 	}
-	const byName = new Map( l.map( ( x ) => [ x.name, x ] ) );
-	for ( const a of d ) {
-		const b = byName.get( a.name );
-		if ( ! b ) {
-			continue;
-		}
+	const { pairs, draftOnly, liveOnly } = pairParts( d, l );
+	for ( const [ a, b ] of pairs ) {
 		if ( ! a.root && a.rest && a.hover && b.rest && b.hover ) {
-			for ( const p of Object.keys( a.hover ) ) {
+			const side = ( x ) => ( { box: x.box, origin: x.rest[ 'transform-origin' ] } );
+			const opts = { sides: [ side( a ), side( b ) ], boxTol: tol.box };
+			const own = ( x ) => ( { sides: [ side( x ), side( x ) ], boxTol: tol.box } );
+			// A border colour paints only where that state has a border.
+			const unbordered = ( p, st ) => /^border-top-(color|style)$/.test( p ) && [ a, b ].every( ( x ) => 0 === parseFloat( x[ st ][ 'border-top-width' ] ?? '0' ) );
+			for ( const p of Object.keys( a.rest ).filter( ( k ) => ! POSE_KEYS.includes( k ) ) ) {
+				if ( ! unbordered( p, 'rest' ) && ! sameValue( p, a.rest[ p ], b.rest[ p ], tol.px ) ) {
+					rows.push( { kind: 'part', key: `${ a.name } rest:${ p }`, part: a.name, draft: a.rest[ p ], live: b.rest[ p ] } );
+				}
+			}
+			if ( ! sameTransform( a.rest, b.rest, tol.px, opts ) ) {
+				rows.push( { kind: 'part', key: `${ a.name } rest:transform`, part: a.name, draft: effectiveText( a.rest, side( a ) ), live: effectiveText( b.rest, side( b ) ) } );
+			}
+			for ( const p of Object.keys( a.hover ).filter( ( k ) => ! POSE_KEYS.includes( k ) ) ) {
 				const moves = ( x ) => ! sameValue( p, x.rest[ p ], x.hover[ p ], tol.px );
-				// A border colour paints only where that state has a border.
-				const unbordered = /^border-top-(color|style)$/.test( p ) && [ a, b ].every( ( x ) => 0 === parseFloat( x.hover[ 'border-top-width' ] ?? '0' ) );
-				if ( ! unbordered && ( moves( a ) || moves( b ) ) && ! sameValue( p, a.hover[ p ], b.hover[ p ], tol.px ) ) {
+				if ( ! unbordered( p, 'hover' ) && ( moves( a ) || moves( b ) ) && ! sameValue( p, a.hover[ p ], b.hover[ p ], tol.px ) ) {
 					rows.push( { kind: 'part', key: `${ a.name } hover:${ p }`, part: a.name, draft: a.hover[ p ], live: b.hover[ p ] } );
 				}
+			}
+			const posed = ( x ) => ! sameTransform( x.rest, x.hover, tol.px, own( x ) );
+			if ( ( posed( a ) || posed( b ) ) && ! sameTransform( a.hover, b.hover, tol.px, opts ) ) {
+				rows.push( { kind: 'part', key: `${ a.name } hover:transform`, part: a.name, draft: effectiveText( a.hover, side( a ) ), live: effectiveText( b.hover, side( b ) ) } );
 			}
 		}
 		if ( ! sameLayers( a.layers?.rest, b.layers?.rest, tol.box ) ) {
@@ -262,5 +315,7 @@ export function compareParts( d, l, tol ) {
 			}
 		}
 	}
+	rows.push( ...draftOnly.map( ( a ) => ( { kind: 'part', key: `${ a.name } presence`, part: a.name, draft: 'present', live: 'missing' } ) ) );
+	rows.push( ...liveOnly.map( ( b ) => ( { kind: 'part', key: `${ b.name } presence`, part: b.name, draft: 'missing', live: 'present' } ) ) );
 	return rows;
 }
