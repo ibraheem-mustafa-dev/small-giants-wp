@@ -11,6 +11,13 @@ export function loadHandScope( cfgPath, cfg ) {
 	return p ? JSON.parse( fs.readFileSync( p, 'utf8' ) ).handScope || null : null;
 }
 
+// The lint exactly as a walk runs it: the hand pairs' verdicts beside cfgPath, and --states less auto-scrolled, the
+// state withAutoScroll adds after the lint (so --states may name it unless the config opts out). draft-live-walk.mjs and
+// the route's gate (scripts/computed-route/lib/walker-lint.mjs) both call this, so they cannot disagree.
+export function lintRun( cfgPath, cfg, onlyStates = null ) {
+	return lintConfig( cfg, loadHandScope( cfgPath, cfg ), onlyStates?.filter( ( s ) => 'auto-scrolled' !== s || false === cfg.autoScroll ) ?? null );
+}
+
 // Returns a list of problems; an empty list means the config passes. handScope: the verdicts loadHandScope reads; a hand
 // pair whose elements hold different words (lib/pair-scope.mjs::judgePairScope) is a problem, so the run stops before
 // any browser opens. onlyStates: the states this run walks (--states); null walks every state. A state the run does not
