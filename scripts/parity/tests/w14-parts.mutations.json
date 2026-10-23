@@ -1,44 +1,44 @@
 [
 	{
 		"file": "lib/parts.mjs",
-		"find": "round( ( a, b ) => !! a.href && a.href === b.href );",
+		"find": "round( ( a, b ) => !! destOf( a ) && destOf( a ) === destOf( b ) );",
 		"replace": "",
 		"why": "no destination round"
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "round( ( a, b ) => sameKind( a, b ) && ! ( a.href && b.href && a.href !== b.href ) && placed( a, b ) );",
+		"find": "round( ( a, b ) => sameKind( a, b ) && placed( a, b ) );",
 		"replace": "",
 		"why": "no place round"
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "!! a.href && a.href === b.href",
-		"replace": "!! a.href",
+		"find": "round( ( a, b ) => !! destOf( a ) && destOf( a ) === destOf( b ) );",
+		"replace": "round( ( a, b ) => !! destOf( a ) );",
 		"why": "any destination pairs"
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "!! a.href && a.href === b.href",
-		"replace": "a.href === b.href",
+		"find": "round( ( a, b ) => !! destOf( a ) && destOf( a ) === destOf( b ) );",
+		"replace": "round( ( a, b ) => destOf( a ) === destOf( b ) );",
 		"why": "two missing destinations pair"
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "! ( a.href && b.href && a.href !== b.href ) && placed",
-		"replace": "placed",
+		"find": "( ! differ( a, b ) && fits( a, b ) ?",
+		"replace": "( fits( a, b ) ?",
 		"why": "control (c): differing destinations pair by place"
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "! ( a.href && b.href && a.href !== b.href ) && placed",
-		"replace": "! ( a.href && a.href !== b.href ) && placed",
+		"find": "const differ = ( a, b ) => !! ( destOf( a ) && destOf( b ) && destOf( a ) !== destOf( b ) );",
+		"replace": "const differ = ( a, b ) => !! ( destOf( a ) && destOf( a ) !== destOf( b ) );",
 		"why": "a destination on one side only blocks a place pair"
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "round( ( a, b ) => sameKind( a, b ) && ! ( a.href",
-		"replace": "round( ( a, b ) => true && ! ( a.href",
+		"find": "round( ( a, b ) => sameKind( a, b ) && placed( a, b ) );",
+		"replace": "round( ( a, b ) => true && placed( a, b ) );",
 		"why": "place round ignores kind"
 	},
 	{
@@ -85,26 +85,26 @@
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "round( ( a, b ) => base( a.name ) === base( b.name ) );",
+		"find": "round( ( a, b ) => base( a ) === base( b ) );",
 		"replace": "",
 		"why": "no name round"
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "if ( baseName( a.name ) !== baseName( b.name ) ) {",
+		"find": "if ( pa.name !== b.name ) {",
 		"replace": "if ( false ) {",
 		"why": "no label row"
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "if ( baseName( a.name ) !== baseName( b.name ) ) {",
-		"replace": "if ( a.name !== b.name ) {",
+		"find": "if ( pa.name !== b.name ) {",
+		"replace": "if ( a.name !== partLabel( b ) ) {",
 		"why": "a repeated-name suffix is a label"
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "draft: baseName( a.name ), live: baseName( b.name ) } );",
-		"replace": "draft: baseName( a.name ), live: baseName( a.name ) } );",
+		"find": "draft: pa.name, live: b.name } );",
+		"replace": "draft: pa.name, live: pa.name } );",
 		"why": "label row loses the live name"
 	},
 	{
@@ -139,14 +139,14 @@
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "u.pathname.replace(",
-		"replace": "u.pathname.slice( 0 ) + ''.replace(",
+		"find": "u.host.replace( /^www\\./, '' ) + u.pathname.replace(",
+		"replace": "u.host.replace( /^www\\./, '' ) + u.pathname.slice( 0 ) + ''.replace(",
 		"why": "trailing slash kept"
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "+ u.search ).toLowerCase()",
-		"replace": ").toLowerCase()",
+		"find": "u.pathname.replace( /\\/$/, '' ) + u.search ).toLowerCase() : null;",
+		"replace": "u.pathname.replace( /\\/$/, '' ) ).toLowerCase() : null;",
 		"why": "query dropped"
 	},
 	{
@@ -163,7 +163,7 @@
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "href: link ? keyOf( p.getAttribute( 'href' ), p.href, location.origin ) : null,",
+		"find": "href: link ? keyOf( raw, p.href, location.origin ) : null,",
 		"replace": "href: null,",
 		"why": "listParts records no destination"
 	},
