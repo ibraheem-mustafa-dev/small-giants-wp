@@ -42,6 +42,11 @@ test( 'MUST FAIL: a state write or state held row never answers a rest read', ()
 	assert.equal( out.failures.length, 1 );
 } );
 
+test( 'MUST FAIL: a hover confirm record does not answer a rest read', () => {
+	const out = verdict( [ read( 'color', 'red' ) ], { confirm: [ { node: 'cr-ref-header-15', slot: '.link', property: 'color', width: 1440, state: 'hover' } ] } );
+	assert.equal( out.failures.length, 1 );
+} );
+
 test( 'MUST FAIL: the same property on another part or another node does not answer', () => {
 	const out = verdict( [ read( 'color', 'red' ) ], { writes: [ write( 'color', { slot: '.other' } ), write( 'color', { node: 'cr-ref-header-16' } ) ] } );
 	assert.equal( out.failures.length, 1 );
@@ -80,10 +85,10 @@ test( 'MUST FAIL: a malformed read set is an explicit failure with its reason', 
 
 test( 'readSetFile makes one row per declared longhand per width a part was found at', () => {
 	const nodes = [ { name: 'sgs/nav-bar-menu', targets: [ { id: '0:.link', finder: { tpl: 'Root/45#0' } } ] } ];
-	const reads = { declared: { 375: { '0:.link': { color: 'red' } }, 1440: { '0:.link': { color: 'red', 'letter-spacing': '-0.01em' } } }, widths: { 375: { '0:.link': { missing: true } }, 1440: { '0:.link': {} } } };
+	const reads = { declared: { 375: { '0:.link': { color: 'red' } }, 768: { '0:.link': { color: 'blue' } }, 1440: { '0:.link': { color: 'red', 'letter-spacing': '-0.01em' } } }, widths: { 375: { '0:.link': { missing: true } }, 768: { '0:.link': {} }, 1440: { '0:.link': {} } } };
 	const file = readSetFile( { client: 'c', surface: 's', reads, nodes, refs: [ 'cr-ref-s-0' ] } );
-	assert.deepEqual( file.rows.map( ( r ) => `${ r.width } ${ r.property } ${ r.draft }` ), [ '1440 color {"tpl":"Root/45#0"}', '1440 letter-spacing {"tpl":"Root/45#0"}' ] );
-	assert.equal( readRowsOf( file ).length, 2 );
+	assert.deepEqual( file.rows.map( ( r ) => `${ r.width } ${ r.property } ${ r.value } ${ r.draft }` ), [ '768 color blue {"tpl":"Root/45#0"}', '1440 color red {"tpl":"Root/45#0"}', '1440 letter-spacing -0.01em {"tpl":"Root/45#0"}' ] );
+	assert.equal( readRowsOf( file ).length, 3 );
 } );
 
 function plant( reads ) {
