@@ -5,6 +5,7 @@
 // when lib/motion-validate.mjs passes the whole document. The entrances sampled at 375, 768 and 1440
 // (lib/fill-entrance.mjs) are the render check: a width whose measured delay or duration differs from the code by more
 // than one sampling step writes that tier's value, and the difference is reported.
+import { stateMotionRecords, MOTION_STATE_PROPS } from './fill-state-motion.mjs';
 import { validateMotionWrite } from './motion-validate.mjs';
 import { classify, entranceLayer, stateTransitionLayer, hoverLayer, matchByPose } from './motion-layers.mjs';
 import { snapToken, presetFor, intensityPresetFor, effectPresetFor, tokenTypes, clientTokens, clientPalette, tokenises } from './motion-tokens.mjs';
@@ -331,7 +332,7 @@ function finishedEffect( e, { block, target, mdb, schema, offers, ctx, id } ) {
 }
 
 // The motion target a skeleton target is: the block's root for the node's own element, the declared part a slot names.
-function targetName( n, t, targets ) {
+export function targetName( n, t, targets ) {
 	return t.slot ? partForSlot( n.name, t.slot, targets ) : targets.find( ( x ) => 'root' === x.target )?.target || null;
 }
 
@@ -393,7 +394,7 @@ export function sameTriggerResolved( records ) {
 // the entry draft's component (lib/fill-motion.mjs::elementKey); loops: sampleMotion()'s loops by target id; offers:
 // lib/motion-effects.mjs::loadEffectOffers; stateVocab: the `states` table rows that give the words meaning "open"
 // (default: the framework DB's). Returns { writes, unmapped, notes } in the shapes fill-resolve.mjs uses.
-export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null } ) {
+export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null } ) {
 	const out = { writes: [], unmapped: [], notes: [], site: [], handover: [] };
 	// Every settings write is checked against the framework DB's attributes: the handle given, else the framework DB itself.
 	const hasAttr = givenHasAttr ?? ( db ? hasAttrOf( db ) : undefined );
@@ -441,6 +442,10 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 				fresh.length && applyBehaviours( { items: fresh, n, target: null, doc, pending, written, controls, out, where, flat, finish: () => ( { refused: 'a block-level setting' } ), mdb, hasAttr } );
 				fresh.forEach( ( x ) => blockDone.add( x.r.id ) );
 				own = own.filter( ( r ) => ! blockLevel.some( ( x ) => x.r === r ) );
+			}
+			// A hover transform only the state read finds (no inventory record reaches the element) is the same hover layer.
+			if ( reads && targetName( n, t, targets ) && ! own.some( ( r ) => 'hover' === r.trigger?.type && ( r.properties || [] ).some( ( p ) => MOTION_STATE_PROPS.includes( p.property ) ) ) ) {
+				own = [ ...own, ...stateMotionRecords( reads, t ) ];
 			}
 			if ( ! own.length && ! sampled[ t.id ]?.[ 1440 ] && ! loops[ t.id ] ) {
 				continue;

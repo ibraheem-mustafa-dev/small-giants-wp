@@ -21,6 +21,9 @@ import { LOOSE } from './resolve.mjs';
 import { settingStates } from './db.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 import { TIMING_PROPS, timingWrites } from './fill-timing.mjs';
+import { motionDb } from './motion-db.mjs';
+import { targetName } from './fill-motion.mjs';
+import { MOTION_STATE_PROPS } from './fill-state-motion.mjs';
 import { createPatch, tokenRoute, pickValue, pressVariant, ownedBySetting, applyTokenLooks, conflictRow } from './fill-state-tokens.mjs';
 
 export const COVERAGE_WRITES = [
@@ -109,6 +112,16 @@ export function stateGap( state, held ) {
 	return `no-state-setting: no block setting holds the ${ state } look`;
 }
 
+// Whether the block's motion support holds this target's hover transform (its sgsMotion hover layer, written by
+// lib/fill-motion.mjs::motionWrites), so the state pass leaves it there. A DB without motion tables holds none.
+function motionHolds( mdb, rec, target ) {
+	try {
+		return Boolean( targetName( rec, target, mdb.targetsOf( rec.name ) ) );
+	} catch {
+		return false;
+	}
+}
+
 // Writes every state look of every node into the tree in place. opts: { tree, nodes (skeletonNodes), reads, calFor,
 // db, snapshot }. Returns { writes, unmapped, held, patch, patchEntries }: held lists the looks another setting already
 // gives (focus as hover); patch is the theme-snapshot.json patch (settings.custom.focus, settings.custom.buttonPresets,
@@ -121,6 +134,12 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 	const sink = createPatch();
 	const snapOf = ( target ) => targetSnap( reads, target );
 	const out = { writes: [], unmapped: [], held: [] };
+	let mdb = null;
+	try {
+		mdb = motionDb( db );
+	} catch {
+		mdb = null;
+	}
 	for ( const rec of nodes ) {
 		const cal = rec.targets.length ? calFor( rec.name ) : null;
 		if ( ! cal ) {
@@ -147,6 +166,9 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 				const slot = `${ target.slot }${ pseudo }`;
 				if ( pseudo && ! knownPaths( cal ).map( LOOSE ).includes( LOOSE( slot ) ) ) {
 					out.unmapped.push( { node: ref, block: rec.name, slot, property: prop, state, value: JSON.stringify( perWidth ), reason: `unmapped-element: the draft paints ${ pseudo } under ${ state } on "${ target.slot }" and ${ rec.name } has no calibrated ${ pseudo } there` } );
+					continue;
+				}
+				if ( mdb && 'hover' === state && ! pseudo && MOTION_STATE_PROPS.includes( prop ) && motionHolds( mdb, rec, target ) ) {
 					continue;
 				}
 				if ( 'focus' === state && same( drafts.get( `hover|${ pseudo }|${ prop }` )?.perWidth, perWidth ) ) {

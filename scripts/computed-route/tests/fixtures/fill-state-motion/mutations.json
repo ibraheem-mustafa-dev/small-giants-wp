@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "targetName( n, t, targets ) && ! own.some(",
+		"replace": "false && ! own.some(",
+		"why": "a state-look hover would never reach sgsMotion"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "if ( mdb && 'hover' === state && ! pseudo && MOTION_STATE_PROPS.includes( prop ) && motionHolds( mdb, rec, target ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the state pass would raise a transform the motion layer writes"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "/var\\(|calc\\(/.test( declared )",
+		"replace": "false",
+		"why": "a run-time value would be written"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "const i = at < 0 ? 0 : at;",
+		"replace": "const i = 0;",
+		"why": "the shadow's timing would time the transform"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "'hover' !== states ||",
+		"replace": "false ||",
+		"why": "a combined state would be read as hover"
+	}
+]
