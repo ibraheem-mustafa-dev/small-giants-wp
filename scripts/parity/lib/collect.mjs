@@ -112,8 +112,9 @@ export function resolveFinder( finder ) {
 // lib/ref-trace.mjs) it also returns `trace`: the element's ref, block root class and selector paths.
 // in: [ finder, props, resolveSrc, refPrefix, traceSrc, pathSrc, paintSrc, pseudoProps, opts ]; paintSrc is paint.mjs::PAINT_SRC;
 // pseudoProps (PSEUDO_PROPS, or null to skip) are read on the element's painting ::before and ::after layers. opts (the
-// walker's): `others`, the finders of every other pair in the state on this side, whose elements own their text (an
-// outer pair never reads an inner pair's label, paint.mjs::textCarrier); `paintPart`, read the paint properties from the
+// walker's, state-passes.mjs::readOpts): `others`, the finders of every other pair in the state on this side, which the
+// paint walk never enters; `textOthers`, those that read text properties, whose elements own their text (an outer pair
+// never reads an inner pair's label, paint.mjs::textCarrier; every other pair where absent); `paintPart`, read the paint properties from the
 // element that paints them (paint.mjs::paintElement).
 export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, pathSrc, paintSrc, pseudoProps = null, opts = null ] ) {
 	// eslint-disable-next-line no-new-func
@@ -125,8 +126,11 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		return { missing: true };
 	}
 	// The elements the state's other pairs measure, shown or not (a hidden one's text paints nothing either way), less this
-	// element: text inside one is that pair's, and the paint walk never enters one (an enclosing pair's ground is its own).
-	const owned = new Set( ( opts?.others || [] ).map( ( f ) => resolve( f ) || ( 'string' === typeof f ? document.querySelector( f ) : null ) ).filter( ( o ) => o && o !== el ) );
+	// element: the paint walk never enters one (an enclosing pair's ground is its own), and text inside one that reads text
+	// properties (`textOthers`, else every other pair) is that pair's.
+	const ownedOf = ( list ) => new Set( ( list || [] ).map( ( f ) => resolve( f ) || ( 'string' === typeof f ? document.querySelector( f ) : null ) ).filter( ( o ) => o && o !== el ) );
+	const owned = ownedOf( opts?.others );
+	const textOwned = opts?.textOthers ? ownedOf( opts.textOthers ) : owned;
 	const cs = getComputedStyle( el );
 	const r = el.getBoundingClientRect();
 	// Text properties come from the element painting the first visible text (a button's label span, not the button).
@@ -134,7 +138,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	// A text-run finder ({ textRun: { within, direct } }) measures the block's rendered text only: its extent and its paint.
 	// A group finder ({ group: { paths } }) measures the union box of its elements only (no styles).
 	const run = finder.textRun ? textRun( el, !! finder.textRun.direct, finder.textRun.match || null ) : ( finder.group ? groupBox( finder.group.paths ) : null );
-	const carrier = run ? run.carrier : textCarrier( el, owned );
+	const carrier = run ? run.carrier : textCarrier( el, textOwned );
 	const ccs = carrier ? getComputedStyle( carrier ) : null;
 	// Layout properties come from the element laying out the children (paint.mjs::LAYOUT_PROPS, layoutElement); a flex
 	// or grid gap of `normal`, and any gap of an element not laying out with flex or grid (block flow ignores it), reads
@@ -396,8 +400,9 @@ export function hoverStyles( [ finder, props, resolveSrc, paintSrc, opts = null 
 		return null;
 	}
 	const cs = getComputedStyle( el );
-	const owned = new Set( ( opts?.others || [] ).map( ( f ) => resolve( f ) || ( 'string' === typeof f ? document.querySelector( f ) : null ) ).filter( ( o ) => o && o !== el ) );
-	const carrier = textCarrier( el, owned );
+	const ownedOf = ( list ) => new Set( ( list || [] ).map( ( f ) => resolve( f ) || ( 'string' === typeof f ? document.querySelector( f ) : null ) ).filter( ( o ) => o && o !== el ) );
+	const owned = ownedOf( opts?.others );
+	const carrier = textCarrier( el, opts?.textOthers ? ownedOf( opts.textOthers ) : owned );
 	const PAINT = [ 'background-color', 'background-image', 'border-radius', 'box-shadow', 'border-top-width', 'border-top-style', 'border-top-color', 'border-bottom-width', 'border-bottom-color', 'border-left-width', 'border-right-width', 'border-left-color', 'border-right-color' ];
 	const pcs = opts?.paintPart ? getComputedStyle( paintElement( el, owned ) ) : cs;
 	const deco = props.some( ( p ) => /^text-decoration-/.test( p ) ) ? paintedDecoration( carrier || el ) : null;

@@ -204,7 +204,7 @@ async function walkSide( browser, side, width, draftStates = null ) {
 		const findings = armed.unfired.map( ( d ) => ( { kind: 'reveal-unfired', tag: d.tag, id: d.id, cls: d.cls, animation: d.animation, top: d.top } ) );
 		const snap = {};
 		for ( const p of pairs ) {
-			snap[ p.name ] = await page.evaluate( collectPair, [ p[ side ], propsFor( p ), RESOLVE, 'live' === side ? refPrefix : null, TRACE, PATH, PAINT_SRC, refPrefix ? PSEUDO_PROPS : null, readOpts( pairs, p, side ) ] );
+			snap[ p.name ] = await page.evaluate( collectPair, [ p[ side ], propsFor( p ), RESOLVE, 'live' === side ? refPrefix : null, TRACE, PATH, PAINT_SRC, refPrefix ? PSEUDO_PROPS : null, readOpts( pairs, p, side, propsFor ) ] );
 			snap[ p.name ].running = running[ p.name ];
 			if ( cdp && ! snap[ p.name ].missing && ! p[ side ].textRun && ! p[ side ].group ) {
 				snap[ p.name ].declared = await declaredValues( cdp, p[ side ], RESOLVE, DECLARED_PROPS );
@@ -262,14 +262,14 @@ async function walkSide( browser, side, width, draftStates = null ) {
 				fs.writeFileSync( path.join( outDir, `auto-${ side }-${ width }-${ state.name }.json` ), JSON.stringify( auto ) );
 			}
 		}
-		await hoverPass( page, pairs, side, snap, { state, h, RESOLVE, full: header, phone: !! phone.isMobile, cdp } );
+		await hoverPass( page, pairs, side, snap, { state, h, RESOLVE, full: header, phone: !! phone.isMobile, cdp, propsFor } );
 		// A ref-traced walk reads every pair's inner interactive parts and effect layers too (lib/parts.mjs).
 		if ( cdp && header && ! lean ) {
 			await partsPass( page, pairs, side, snap, RESOLVE, !! phone.isMobile );
 		}
 		if ( header && ! lean ) {
 			await focusPasses( page, pairs, side, snap, RESOLVE, !! phone.isMobile );
-			await activePass( page, pairs, side, snap, RESOLVE, pressCdp, { all: !! cdp } );
+			await activePass( page, pairs, side, snap, RESOLVE, pressCdp, { all: !! cdp, propsFor } );
 		}
 		states[ state.name ] = { snap, shot, log, structure, auto, links, mainY, region: h.region, entrances: state.name === firstState ? entrances : null, ...( settled.settled ? {} : { unsettled: settled } ), ...( findings.length ? { findings } : {} ), ...( inert ? { inert } : {} ) };
 		if ( state.autoScrolled ) {

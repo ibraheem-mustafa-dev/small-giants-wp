@@ -1,6 +1,7 @@
 // The per-state passes of draft-live-walk.mjs that move the page: scroll-in reveals, the reveal sweep
 // before a full-page shot, hover end states and keyboard focus rings.
-import { HOVER_PROPS, ACTIVE_PROPS, FOCUS_PROPS, collectRunning, centreOf, hoverPointOf, hoverStyles } from './collect.mjs';
+import { DEFAULT_PROPS, HOVER_PROPS, ACTIVE_PROPS, FOCUS_PROPS, collectRunning, centreOf, hoverPointOf, hoverStyles } from './collect.mjs';
+import { TEXT_CARRIED } from './ref-trace.mjs';
 import { PAINT_SRC } from './paint.mjs';
 import { hoverChrome } from './chrome-walk.mjs';
 import { forcedHover, forcedPseudo } from './devtools.mjs';
@@ -9,9 +10,14 @@ import { INTERACTIVE_CAP } from './auto-compare.mjs';
 
 export const SCROLL_PROPS = [ 'opacity', 'transform', 'translate', 'scale', 'filter' ];
 
-// The read options of one pair's state reads (collect.mjs::hoverStyles): the state's other pairs own their text, and paint
-// properties are read where they paint, as at rest (collect.mjs::collectPair).
-export const readOpts = ( pairs, p, side ) => ( { others: pairs.filter( ( q ) => q !== p ).map( ( q ) => q[ side ] ).filter( Boolean ), paintPart: true } );
+// The read options of one pair's reads (collect.mjs::collectPair, ::hoverStyles): the state's other pairs bound the paint
+// walk and the parts (`others`); those that read text properties (`propsOf`, the walk's property list for a pair; a group
+// finder reads none) own their text (`textOthers`); paint properties are read where they paint.
+export const readOpts = ( pairs, p, side, propsOf = ( q ) => q.props || DEFAULT_PROPS ) => {
+	const others = pairs.filter( ( q ) => q !== p && q[ side ] );
+	const readsText = ( q ) => ! q[ side ].group && propsOf( q ).some( ( x ) => TEXT_CARRIED.includes( x ) );
+	return { others: others.map( ( q ) => q[ side ] ), textOthers: others.filter( readsText ).map( ( q ) => q[ side ] ), paintPart: true };
+};
 
 // Scroll-in pairs: the animations started ~60ms after each is scrolled to, and its pose once settled
 // (`scrollWait`, default 1500ms). The pre-scroll pose is read by the caller before anything scrolls.
@@ -41,14 +47,14 @@ export async function revealSweep( page, y ) {
 // Hover end states of the `hover: true` pairs, under a real pointer aimed at the visible part of the element (collect.mjs::hoverPointOf). With a DevTools session (ref-traced walks) every
 // other pair's hover end state is read too, with :hover forced on it and its ancestors (devtools.mjs::forcedHover).
 // A phone has no hover (Bean 2026-09-28), so phones skip it.
-export async function hoverPass( page, pairs, side, snap, { state, h, RESOLVE, full, phone, cdp = null } ) {
+export async function hoverPass( page, pairs, side, snap, { state, h, RESOLVE, full, phone, cdp = null, propsFor } ) {
 	// A phone marks every pair it measured as having no hover, so compare.mjs::timingIrrelevant can tell "no hover to read"
 	// from "hover never read".
 	if ( phone ) {
 		pairs.filter( ( q ) => ! snap[ q.name ].missing ).forEach( ( q ) => ( snap[ q.name ].noHover = true ) );
 	}
 	for ( const p of cdp && ! phone ? pairs.filter( ( q ) => ! q.hover && ! snap[ q.name ].missing ) : [] ) {
-		snap[ p.name ].hover = await forcedHover( cdp, page, p[ side ], RESOLVE, () => page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC, readOpts( pairs, p, side ) ] ) );
+		snap[ p.name ].hover = await forcedHover( cdp, page, p[ side ], RESOLVE, () => page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC, readOpts( pairs, p, side, propsFor ) ] ) );
 	}
 	for ( const p of pairs.filter( ( q ) => q.hover && ! phone ) ) {
 		if ( snap[ p.name ].missing ) {
@@ -74,7 +80,7 @@ export async function hoverPass( page, pairs, side, snap, { state, h, RESOLVE, f
 			await page.mouse.move( at.x, at.y );
 			await page.waitForTimeout( p.hoverWait ?? 800 );
 		}
-		snap[ p.name ].hover = await page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC, readOpts( pairs, p, side ) ] );
+		snap[ p.name ].hover = await page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC, readOpts( pairs, p, side, propsFor ) ] );
 		await page.mouse.move( 1, 1 );
 		await page.waitForTimeout( 400 );
 	}
@@ -94,13 +100,13 @@ export async function focusPasses( page, pairs, side, snap, RESOLVE, phone ) {
 // the transitions finish (GAP-CHECKLIST.md section 23). `all` (a ref-traced walk, which already holds a DevTools session)
 // reads every pair that does not opt out with `active: false`; otherwise only pairs flagged `active: true`. A text run or a
 // group measures no one element, so it has no pressed state. Unlike hover and focus, a phone is read: a touch presses.
-export async function activePass( page, pairs, side, snap, RESOLVE, cdp, { all = false } = {} ) {
+export async function activePass( page, pairs, side, snap, RESOLVE, cdp, { all = false, propsFor } = {} ) {
 	if ( ! cdp ) {
 		return;
 	}
 	for ( const p of pairs.filter( ( q ) => ( all ? false !== q.active : true === q.active ) && ! snap[ q.name ].missing && ! q[ side ]?.textRun && ! q[ side ]?.group ) ) {
 		const props = p.activeProps || ACTIVE_PROPS;
-		snap[ p.name ].active = await forcedPseudo( cdp, page, p[ side ], RESOLVE, [ 'active' ], () => page.evaluate( hoverStyles, [ p[ side ], props, RESOLVE, PAINT_SRC, readOpts( pairs, p, side ) ] ) );
+		snap[ p.name ].active = await forcedPseudo( cdp, page, p[ side ], RESOLVE, [ 'active' ], () => page.evaluate( hoverStyles, [ p[ side ], props, RESOLVE, PAINT_SRC, readOpts( pairs, p, side, propsFor ) ] ) );
 	}
 }
 
