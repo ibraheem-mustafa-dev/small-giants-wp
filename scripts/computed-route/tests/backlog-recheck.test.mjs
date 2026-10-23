@@ -122,6 +122,9 @@ test( 'F-block closes when the roster now has a matching block and not before; F
 	assert.deepEqual( [ match.backlog.rows[ 0 ].status, match.backlog.rows[ 0 ].closed.evidence[ 0 ].gate ], [ 'closed', 'G6' ] );
 	const empty = await run( { rows: [ row( [ b ] ) ] }, env( { probes: probes( { probe: { matches: [], evidence: 'none' } } ) } ) );
 	assert.equal( empty.backlog.rows[ 0 ].status, 'open' );
+	const noList = await run( { rows: [ row( [ b ] ) ] }, env( { probes: probes( { probe: { evidence: 'no answer' } } ) } ) );
+	assert.equal( noList.backlog.rows[ 0 ].status, 'open' );
+	assert.match( outcomeOf( noList ).reason, /G6 \(W-route\)/ );
 	const f = entry( { class: 'F-behaviour' } );
 	const agrees = await run( { rows: [ row( [ f ] ) ] }, env( { probes: probes( { probe: { flowFails: false, attributeMatches: [], evidence: 'now agrees' } } ) } ) );
 	assert.equal( agrees.backlog.rows[ 0 ].status, 'closed' );
@@ -137,6 +140,8 @@ test( 'MUST FAIL: an entry whose re-check cannot run (F-vocabulary, no block, no
 		[ entry( { state: null } ), /names no walker state/ ],
 		[ entry( { widths: [] } ), /names no width/ ],
 		[ entry( { id: 'header:garbled' } ), /id header:garbled does not carry/ ],
+		[ entry( { id: 'header:cr-ref-header-3||style|padding-top|extra' } ), /does not carry/ ],
+		[ entry( { id: 'footer:cr-ref-header-3||style|padding-top' } ), /does not carry/ ],
 	];
 	for ( const [ e, why ] of bad ) {
 		const en = env();
@@ -204,4 +209,18 @@ test( 'the command refuses a missing backlog; --dry-run reports without writing,
 	assert.equal( after.rows[ 0 ].status, 'open' );
 	assert.match( after.rows[ 0 ].lastRecheck.entries[ 0 ].reason, /surfaces\.json/ );
 	assert.match( after.rows[ 0 ].lastRecheck.commit, /^[0-9a-f]{40}$/ );
+} );
+
+test( 'a setting on an enclosing block counts, an overriddenBy verdict needs a measured box, a row with no entries stays open and the environment is built once per surface', async () => {
+	const measured = { measure: { method: 'measured', emitted: 'e', reaches: true, evidence: 'x' } };
+	const up = await run( { rows: [ row( [ entry() ] ) ] }, env( { db: db( [ 'sgs/container', 'paddingTop', 'padding-top', null, 'spacing-token', 'sgs' ] ), probes: probes( measured ) } ) );
+	assert.equal( up.backlog.rows[ 0 ].status, 'closed' );
+	const over = await run( { rows: [ row( [ entry() ] ) ] }, env( { db: db( FITS ), cache: () => ( { settings: { paddingTop: { overriddenBy: [ '.x' ] } } } ), probes: probes( measured ) } ) );
+	assert.equal( over.backlog.rows[ 0 ].status, 'open' );
+	assert.match( outcomeOf( over ).reason, /G4 \(I-calibration\).*paddingTop is overridden by/ );
+	const none = await run( { rows: [ row( [] ) ] }, env() );
+	assert.deepEqual( [ none.backlog.rows[ 0 ].status, none.stats.entries ], [ 'open', 0 ] );
+	let built = 0;
+	const twice = await recheckBacklog( { backlog: { rows: [ row( [ entry(), entry( { id: 'header:cr-ref-header-4||style|padding-top' } ) ] ) ] }, envFor: async () => { built++; return env(); }, commit: 'c0ffee1', today: '2026-10-23' } );
+	assert.deepEqual( [ built, twice.report.entries.length ], [ 1, 2 ] );
 } );

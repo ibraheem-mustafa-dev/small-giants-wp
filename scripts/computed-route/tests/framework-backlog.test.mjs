@@ -39,6 +39,14 @@ test( 'the same gap on two clients is one row listing both, each with its own su
 	assert.deepEqual( [ stats.merged, stats.newRows, stats.crossClientRows, stats.refusedNonF ], [ 2, 1, 1, 0 ] );
 } );
 
+test( 'two clients that publish the very same id are two entries, a later client with an earlier firstSeen never moves the firstSeen of the row, and a merge counts new and updated rows apart', () => {
+	const first = merge( [ src( 'alpha', [ gap() ] ) ] );
+	const next = merge( [ src( 'beta', [ gap( { firstSeen: '2026-10-01' } ), gap( { id: 'h:new', property: 'color' } ) ] ) ], first.backlog );
+	const row = next.backlog.rows.find( ( r ) => 'sgs/button||padding-top' === r.key );
+	assert.deepEqual( [ row.entries.map( ( e ) => e.client ), row.firstSeen ], [ [ 'alpha', 'beta' ], '2026-10-20' ] );
+	assert.deepEqual( [ next.stats.newRows, next.stats.updatedRows ], [ 1, 1 ] );
+} );
+
 test( 'negative control: a different attribute, property or block is a different row', () => {
 	const rows = [ gap(), gap( { id: 'h:2', attribute: 'paddingTop' } ), gap( { id: 'h:3', property: 'margin-top' } ), gap( { id: 'h:4', block: 'sgs/heading' } ) ];
 	const { backlog, stats } = merge( [ src( 'alpha', rows ) ] );
