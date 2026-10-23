@@ -1,6 +1,6 @@
 // The site build's writer (Spec 48 FR-48-55): runs one phase of a plan (lib/site-build-plan.mjs) against a site.
 // Every post is built through scripts/wp-build-page.js (the editor serialises each block); every other write is a
-// WP-CLI call: `wp post update` and `wp post meta update` (the row key and tree hash the next run compares, and a mega
+// WP-CLI call: `wp option update` (the hash each template copy was built from, beside part 4's options), `wp post update` and `wp post meta update` (the row key and tree hash the next run compares, and a mega
 // panel's section page), `wp menu`
 // and `wp menu item` (part 3; a new menu is marked with its page-map name, and no item is ever deleted), `wp option update` (part 4), `wp rewrite` (part 5) and `wp sgs <area> set-active`
 // (part 7, through Sgs_Active_Layout::set_active, never a raw option write).
@@ -8,7 +8,7 @@ import { execFileSync } from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { MENU_META, ROW_META, SECTION_META, TREE_META } from './site-build-state.mjs';
+import { MENU_META, ROW_META, SECTION_META, TEMPLATE_OPTION, TREE_META } from './site-build-state.mjs';
 
 // How long each editor load and save may take: twice wp-build-page.js's 60 s default, since a shared host can stall an
 // admin page past it; a run stopped by a stall resumes from the posts already made.
@@ -21,7 +21,7 @@ export function wpBuildPage( repo, site ) {
 		const file = path.join( os.tmpdir(), `site-build-${ process.pid }-${ Date.now() }.tree.json` );
 		fs.writeFileSync( file, JSON.stringify( tree ) );
 		const args = [ path.join( repo, 'scripts', 'wp-build-page.js' ), '--env-file', path.join( repo, '.claude', 'secrets', `${ site }.env` ), '--env-key', envKey, '--tree', file,
-			...( target.postId ? [ '--post-id', String( target.postId ) ] : [ '--create', target.create, '--title', target.title, '--slug', target.slug ] ), '--status', 'publish', '--editor-timeout', String( EDITOR_TIMEOUT ) ];
+			...( target.template ? [ '--template', target.template ] : target.postId ? [ '--post-id', String( target.postId ) ] : [ '--create', target.create, '--title', target.title, '--slug', target.slug ] ), '--status', 'publish', '--editor-timeout', String( EDITOR_TIMEOUT ) ];
 		let out = '';
 		try {
 			out = execFileSync( process.execPath, args, { encoding: 'utf8', timeout: 600000, stdio: [ 'ignore', 'pipe', 'pipe' ] } );
@@ -33,6 +33,10 @@ export function wpBuildPage( repo, site ) {
 			fs.rmSync( file, { force: true } );
 		}
 		const result = lastJson( out );
+		// A template save answers with its `<theme>//<slug>` id, not a post id.
+		if ( target.template && result?.ok ) {
+			return result.id;
+		}
 		if ( ! result?.ok || ! Number.isInteger( result.id ) ) {
 			const err = new Error( `wp-build-page.js printed no saved post: ${ out.trim().slice( -400 ) }` );
 			err.id = result?.id || null;
@@ -79,6 +83,9 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 		if ( 'adopt' === a.type ) {
 			refs[ `post:${ a.key }` ] = a.id;
 			onId( a.key, a.id );
+			if ( a.mark ) {
+				wp( [ 'post', 'meta', 'update', String( a.id ), ROW_META, a.key ] );
+			}
 		} else if ( 'create' === a.type ) {
 			let id;
 			try {
@@ -99,6 +106,9 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 		} else if ( 'build' === a.type ) {
 			build( { postId: a.id }, a.tree );
 			wp( [ 'post', 'meta', 'update', String( a.id ), TREE_META, a.hash ] );
+		} else if ( 'template' === a.type ) {
+			build( { template: a.template }, a.tree );
+			wp( [ 'option', 'update', TEMPLATE_OPTION, JSON.stringify( a.hashes ), '--format=json' ] );
 		} else if ( 'section' === a.type ) {
 			wp( [ 'post', 'meta', 'update', String( val( a.id ) ), SECTION_META, String( val( a.page ) ) ] );
 		} else if ( 'update' === a.type ) {

@@ -1,9 +1,12 @@
 // The surfaces manifest builder (Spec 48 section 2): one sites/<client>/build/surfaces.json entry per confirmed
-// page-map row that has a post id. Pure functions over parsed files; manifest.mjs reads and writes them.
+// page-map row that has a post id, and one per shop row (`shop`, `product`, `product_cat`), whose target is the template
+// its tree builds (FR-48-56), not a post. Pure functions over parsed files; manifest.mjs reads and writes them.
+import { builtTemplate } from './site-build-map.mjs';
 // Post type -> key prefix. `page`, `sgs_header` and `sgs_footer` keep their slug.
 export const PREFIXES = { sgs_mega_menu: 'mega-', sgs_drawer: 'drawer-', sgs_modal: 'modal-', sgs_form: 'form-', sgs_choice_flow: 'flow-' };
 // Post type -> handoff record kind.
-export const KINDS = { sgs_header: 'header', sgs_footer: 'footer', sgs_drawer: 'drawer', sgs_mega_menu: 'menu', sgs_modal: 'modal', page: 'page' };
+// A shop row's handoff record is its route's page record.
+export const KINDS = { sgs_header: 'header', sgs_footer: 'footer', sgs_drawer: 'drawer', sgs_mega_menu: 'menu', sgs_modal: 'modal', page: 'page', shop: 'page', product: 'page', product_cat: 'page' };
 // Post type -> the template parts or form a surface provides.
 const PROVIDES = { sgs_header: () => [ 'core/template-part:header' ], sgs_footer: () => [ 'core/template-part:footer' ], sgs_form: ( row ) => [ `sgs/form:${ row.slug }` ] };
 
@@ -172,7 +175,7 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 	const mapKeys = new Set( rows.flatMap( ( r ) => { try { return [ surfaceKey( r ) ]; } catch { return []; } } ) );
 	out.stale = Object.keys( existing ).filter( ( k ) => ! mapKeys.has( k ) );
 	for ( const row of rows ) {
-		if ( null == row.id ) {
+		if ( null == row.id && ! builtTemplate( row ) ) {
 			out.skipped.push( { row: `${ row.postType }:${ row.slug }`, reason: 'no id' } );
 			continue;
 		}
@@ -215,7 +218,7 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 			envFile: target.envFile,
 			envKey: target.envKey,
 			site,
-			target: { postId: row.id },
+			target: builtTemplate( row ) ? { template: builtTemplate( row ) } : { postId: row.id },
 			...( 'page' === row.postType ? {} : { canvas: true } ),
 			walker: `qa/parity/${ key }.fill-base.mjs`,
 			walkerFull: `qa/parity/${ key }.fill.mjs`,

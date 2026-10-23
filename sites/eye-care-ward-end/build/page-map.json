@@ -1,0 +1,344 @@
+[
+  {
+    "route": "home",
+    "slug": "home",
+    "title": "Home",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "shop",
+    "slug": "sunglasses",
+    "title": "Shop",
+    "parent": null,
+    "template": "archive-product",
+    "menus": [
+      {
+        "menu": "drawer-1",
+        "position": 1,
+        "parentItem": null
+      }
+    ],
+    "postType": "shop",
+    "collection": "live",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "product",
+    "slug": "product",
+    "title": "Product",
+    "parent": null,
+    "template": "single-product",
+    "menus": [],
+    "postType": "product",
+    "collection": "live",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "lenses",
+    "slug": "prescription-lenses",
+    "title": "Lenses",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "header",
+        "position": 3,
+        "parentItem": null
+      },
+      {
+        "menu": "drawer-1",
+        "position": 3,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "about",
+    "slug": "about",
+    "title": "About",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer-2",
+        "position": 1,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "help",
+    "slug": "help",
+    "title": "Help",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer-2",
+        "position": 2,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "contact",
+    "slug": "contact",
+    "title": "Contact",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer-2",
+        "position": 3,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "checkout",
+    "slug": "checkout",
+    "title": "Checkout",
+    "parent": null,
+    "template": "checkout",
+    "menus": [],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "done",
+    "slug": "order-received",
+    "title": "Order confirmed",
+    "parent": "checkout",
+    "template": null,
+    "menus": [],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "signin",
+    "slug": "my-account",
+    "title": "Sign in / register",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-submit-contact",
+    "title": "submitContact",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-sign-in",
+    "title": "signIn",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-register",
+    "title": "register",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-send-reset",
+    "title": "sendReset",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-save-reset",
+    "title": "saveReset",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-save",
+    "title": "save",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-save-details",
+    "title": "saveDetails",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "header",
+    "title": "Header",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_header",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "footer",
+    "title": "Footer",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_footer",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "drawer-eye-care-birmingham",
+    "title": "Drawer",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_drawer",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "drawer-your-bag",
+    "title": "Your bag",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_drawer",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "modal-size-guide",
+    "title": "Size guide",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_modal",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "modal-add-prescription-lenses",
+    "title": "Add prescription lenses",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_modal",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "mega-menu-eye-care-birmingham",
+    "title": "Mega menu",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_mega_menu",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "drawer-mobile-menu",
+    "title": "Mobile menu",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_drawer",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "drawer-shop-filter-rail-drawer",
+    "title": "Shop filter rail / drawer",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_drawer",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-addresses",
+    "title": "Addresses",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  }
+]
