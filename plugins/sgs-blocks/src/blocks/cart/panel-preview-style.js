@@ -98,6 +98,8 @@ export function panelElementStyles( attributes, tier, palette ) {
 		close: {
 			color: colour( attributes.panelCloseColour ),
 			'--sgs-cart-editor-close-size': tierLengthPreview( attributes.panelCloseSize, tier ),
+			// A close size set for the tier overrules the button's 44px tap floor, as render.php does.
+			'--sgs-cart-close-tap-min': tierLengthPreview( attributes.panelCloseSize, tier ) ? '0px' : undefined,
 		},
 		footer: {
 			backgroundColor: colour( attributes.panelFooterBg ),

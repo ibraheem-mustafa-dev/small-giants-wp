@@ -8,14 +8,16 @@
 //   `defaultValue` (a select's only when it is one of its options), `defaultChecked` (an input's `checked`, or a
 //   `role="checkbox"` button's `aria-checked`), the file field's `allowedTypes` from `accept`, `tiles` (label, value and the
 //   description line) and `multiSelect` from a group of choice chips, `floatingLabel` and its position from where the label
-//   sits, `msgInvalid` from the schema's validation copy, `valueFromParam` where a link of the draft carries the control's name
+//   sits, `msgInvalid` from the schema's validation copy, `msgRequired` and `msgTooLong` from the copy the draft's own validation
+//   shows for an empty or too-long field (lib/fill-form-schema.mjs::requiredCopyOf; a field the draft gives no copy writes nothing), `valueFromParam` where a link of the draft carries the control's name
 //   as a query parameter, and `conditionalField` / `conditionalOperator` / `conditionalValue` from the draft's `show` test.
 // A form, its steps and its review step get theirs on the nodes the skeleton names as those blocks: `savedProgress`, each
 // step's `label` and the review's `intro` and Edit label. A button is `isSubmit` when the draft's is `type="submit"`.
 import fs from 'node:fs';
 import path from 'node:path';
 import { setAttr } from './tree.mjs';
-import { formSchemaOf, schemaFieldOf, schemaChipsOf, conditionsFromSource, linkParams, savesProgress } from './fill-form-schema.mjs';
+import { formSchemaOf, schemaFieldOf, schemaChipsOf, conditionsFromSource, linkParams, savesProgress, requiredCopyOf, copyFor } from './fill-form-schema.mjs';
+import { parseTplKey } from './fill-skeleton.mjs';
 
 export const COVERAGE_WRITES = [
 	'aria-role:checkbox',
@@ -65,8 +67,8 @@ const num = ( v ) => ( set( v ) && Number.isFinite( Number( v ) ) ? Number( v ) 
 
 // The writes, UNMAPPED rows and notes for one field block. block: its slug; attributes: what the node holds; el: the draft
 // control's `snap.form`; field: the schema field it is ({ field, step }) or null; param: the link parameter names of the
-// draft; condition: { field, op, value } | { reason } | null.
-export function formFieldWrites( { db, block, attributes = {}, el, field = null, params = new Set(), condition = null } ) {
+// draft; condition: { field, op, value } | { reason } | null; copy: { required?, tooLong? } the draft's validation shows for it.
+export function formFieldWrites( { db, block, attributes = {}, el, field = null, params = new Set(), condition = null, copy = {} } ) {
 	const out = { writes: [], unmapped: [], notes: [] };
 	if ( ! el ) {
 		return out;
@@ -146,6 +148,8 @@ export function formFieldWrites( { db, block, attributes = {}, el, field = null,
 	if ( set( f.rxMsg ) ) {
 		put( 'msgInvalid', f.rxMsg, 'validation message' );
 	}
+	set( copy.required ) && put( 'msgRequired', copy.required, 'required message' );
+	set( copy.tooLong ) && put( 'msgTooLong', copy.tooLong, 'too-long message' );
 	const names = [ el.name, el.id, ...( field ? [ f.name ] : [] ) ].filter( Boolean );
 	const linked = [ ...params ].find( ( p ) => names.some( ( n ) => n === p || n.endsWith( `-${ p }` ) ) );
 	if ( linked ) {
@@ -162,7 +166,7 @@ export function formFieldWrites( { db, block, attributes = {}, el, field = null,
 }
 
 // Reads a written value back against the draft fact it came from; returns the problems (empty when they agree).
-export function formReadback( { writes, el, field = null } ) {
+export function formReadback( { writes, el, field = null, copy = {} } ) {
 	const got = Object.fromEntries( writes.map( ( w ) => [ w.attr, w.value ] ) );
 	const bad = [];
 	if ( undefined !== got.autocomplete && got.autocomplete !== el.autocomplete ) {
@@ -173,6 +177,12 @@ export function formReadback( { writes, el, field = null } ) {
 	}
 	if ( undefined !== got.placeholder && ! [ el.placeholder, field?.field?.ph, ...( el.options || [] ).map( ( o ) => o.label ) ].includes( got.placeholder ) ) {
 		bad.push( `placeholder ${ got.placeholder } is not the draft's` );
+	}
+	if ( undefined !== got.msgRequired && got.msgRequired !== copy.required ) {
+		bad.push( `msgRequired ${ got.msgRequired } is not the draft's ${ copy.required }` );
+	}
+	if ( undefined !== got.msgTooLong && got.msgTooLong !== copy.tooLong ) {
+		bad.push( `msgTooLong ${ got.msgTooLong } is not the draft's ${ copy.tooLong }` );
 	}
 	return bad;
 }
@@ -186,6 +196,14 @@ function apply( out, node, ref, rec, w ) {
 	out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: '', prop: '(content)', attr: w.attr, before, after, widths: [], how: 'content' } );
 }
 
+// The component whose template a control comes from: the innermost import in the chain of its `tpl` finder that is one of the
+// candidates (the script that validates it), or null when the finder names no template.
+export function componentOf( target, candidates ) {
+	const key = 'string' === typeof target?.finder?.tpl ? parseTplKey( target.finder.tpl ) : null;
+	const chain = ( key?.chain || [] ).map( ( c ) => c.split( '@' )[ 0 ] );
+	return [ ...chain ].reverse().find( ( c ) => candidates.includes( c ) ) || null;
+}
+
 // Fill's form pass. nodes/flat/refOf: the skeleton nodes, their tree nodes and the ref function; reads: readDraft's result;
 // facts: the fact record (or null); flags: intake's flags; db: the framework DB; source: { component: script text } for the
 // draft's conditions ({ component: script text }, see formSources). Returns { writes, unmapped, notes }.
@@ -194,6 +212,7 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 	const schema = formSchemaOf( facts );
 	const params = linkParams( facts );
 	const conditions = schema ? conditionsFromSource( sources[ schema.component ] ) : {};
+	const copies = Object.fromEntries( Object.entries( sources ).map( ( [ c, src ] ) => [ c, requiredCopyOf( src ) ] ) );
 	const steps = schema ? schema.steps.filter( ( s ) => s.fields.length ) : [];
 	const review = schema ? schema.steps.find( ( s ) => ! s.fields.length ) : null;
 	let stepNo = 0;
@@ -209,10 +228,11 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 		};
 		if ( /^sgs\/form-field-/.test( rec.name ) && el ) {
 			const hit = ( el.chips ? schemaChipsOf( schema, el.chips ) : schemaFieldOf( schema, el ) );
-			const made = formFieldWrites( { db, block: rec.name, attributes: node.attributes || {}, el, field: hit, params, condition: hit ? conditions[ hit.field.name ] || null : null } );
+			const copy = copyFor( copies[ componentOf( target, Object.keys( copies ) ) || schema?.component ], [ el.name, el.id, hit?.field?.name ], hit?.field || null );
+			const made = formFieldWrites( { db, block: rec.name, attributes: node.attributes || {}, el, field: hit, params, condition: hit ? conditions[ hit.field.name ] || null : null, copy } );
 			take( made );
 			// The read-back: every value written must be the draft fact it came from; a disagreement is a named problem in the report.
-			out.unmapped.push( ...readback( { writes: made.writes, el, field: hit } ).map( ( reason ) => ( { node: ref, block: rec.name, property: 'form read-back', value: '', slot: '', reason } ) ) );
+			out.unmapped.push( ...readback( { writes: made.writes, el, field: hit, copy } ).map( ( reason ) => ( { node: ref, block: rec.name, property: 'form read-back', value: '', slot: '', reason } ) ) );
 		} else if ( 'sgs/button' === rec.name && el && 'button' === el.tag && 'submit' === el.type && attrDef( db, 'sgs/button', 'isSubmit' ) ) {
 			apply( out, node, ref, rec, { attr: 'isSubmit', value: true, merge: 'replace' } );
 		} else if ( 'sgs/form' === rec.name && schema && savesProgress( flags, schema.component ) ) {
@@ -228,9 +248,21 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 	return out;
 }
 
-// The scripts of the draft's components that hold a form schema: { component: text } read from `<folder>/<component>.dc.html`.
+// The scripts of the draft's components that hold a form schema or required-field copy: { component: text } read from
+// `<folder>/<component>.dc.html`.
 export function formSources( folder, facts ) {
 	const schema = formSchemaOf( facts );
-	const file = folder && schema ? path.join( folder, `${ schema.component }.dc.html` ) : null;
-	return file && fs.existsSync( file ) ? { [ schema.component ]: fs.readFileSync( file, 'utf8' ) } : {};
+	const out = {};
+	if ( ! folder || ! fs.existsSync( folder ) ) {
+		return out;
+	}
+	for ( const name of fs.readdirSync( folder ).filter( ( n ) => n.endsWith( '.dc.html' ) ) ) {
+		const component = name.slice( 0, -'.dc.html'.length );
+		const text = fs.readFileSync( path.join( folder, name ), 'utf8' );
+		const copy = requiredCopyOf( text );
+		if ( component === schema?.component || copy.byType || Object.keys( copy.fields ).length ) {
+			out[ component ] = text;
+		}
+	}
+	return out;
 }

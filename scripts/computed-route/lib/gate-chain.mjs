@@ -1,13 +1,15 @@
 // The gate chain G0 to G7 (Spec 48 FR-48-64): the checks a Solve row passes, in order, before it may be called a
 // framework gap. A row stops at the first gate it fails and carries that gate's failure class (FR-48-65); a row that
 // passes all eight is a framework-gap candidate for gaps.json (FR-48-66), its F-class named by the live probe (G6).
-// Every gate takes its inputs as one argument and returns { pass, class, evidence }. Nothing fails open: an input that
+// Every gate takes its inputs as one argument and returns { pass, class, evidence }, the evidence a command and its
+// output line or a file and key (lib/gate-evidence.mjs). Nothing fails open: an input that
 // is missing, unreadable or not the shape the gate needs fails that gate, with I-stale (G0, G3, G7) or the gate's own
 // class. The database is read through lib/db.mjs (read-only); live reads (emission, the probes, the re-check) are
 // functions the caller injects, so the chain runs offline on fixtures.
 import { compareDR } from './fill-confirm.mjs';
 import { listedProperties } from './db.mjs';
 import { settingFits } from './triage.mjs';
+import { fromCommand, fromFile } from './gate-evidence.mjs';
 
 export const GATES = [ 'G0', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7' ];
 const ok = ( evidence, extra = {} ) => ( { pass: true, class: null, evidence, ...extra } );
@@ -19,7 +21,7 @@ const time = ( v ) => ( blank( v ) ? NaN : Date.parse( v ) );
 // blockChanges (git status --porcelain lines for the block's source folder; any means uncommitted edits),
 // deployHash (the local build's hash, which calibration also records: a stale remote deploy is not seen here), installed: { playwrightVersion, browserVersion }, manifest: { schema_version,
 // files: { path: sha256 } } (MANIFEST.json), intake: the same shape from intake.json, schemaVersion (expected) }.
-export function g0Freshness( i ) {
+function g0FreshnessRead( i ) {
 	const stale = ( why ) => fail( 'I-stale', why );
 	if ( ! i || 'object' !== typeof i ) {
 		return stale( 'no freshness inputs' );
@@ -66,7 +68,7 @@ export function g0Freshness( i ) {
 }
 
 // G1 Pair and paint. i: { row, pairing: { by: 'identity' | 'words' }, paint: { inert, paints }, stateListed }.
-export function g1PairAndPaint( i ) {
+function g1PairAndPaintRead( i ) {
 	const row = i?.row;
 	if ( ! row || ! i.pairing || ! i.paint || 'boolean' !== typeof i.stateListed ) {
 		return fail( 'W-walker', 'the pairing, paint or state input is missing' );
@@ -82,7 +84,7 @@ export function g1PairAndPaint( i ) {
 }
 
 // G2 Intent. i: { property, declared, renderedDraft, fr34Passes, ledgered }.
-export function g2Intent( i ) {
+function g2IntentRead( i ) {
 	if ( ! i || blank( i.property ) || 'boolean' !== typeof i.fr34Passes || 'boolean' !== typeof i.ledgered ) {
 		return fail( 'W-walker', 'the intent input is missing' );
 	}
@@ -109,7 +111,7 @@ export function g2Intent( i ) {
 // row that exists only on another state fails I-unrouted: nothing routes the property on this state. Otherwise passes,
 // listing the routed settings that fit (none when nothing fits on any state): G4 and G5 decide whether one of them is the
 // route's miss.
-export function g3Db( i ) {
+function g3DbRead( i ) {
 	if ( ! i?.db || blank( i.block ) || blank( i.property ) ) {
 		return fail( 'I-stale', 'the DB, block or property is missing' );
 	}
@@ -148,7 +150,7 @@ export function g3Db( i ) {
 // G4 Calibration. i: { cache, settings: [{ block, attr }] (G3's), state, boxAgrees }. A candidate setting listed as dead,
 // without a marker, with the row's state untested or rejected is instrument debt (I-calibration); an `overriddenBy`
 // verdict stands only while the rendered box agrees.
-export function g4Calibration( i ) {
+function g4CalibrationRead( i ) {
 	if ( ! i || ! Array.isArray( i.settings ) || ( i.settings.length && ! i.cache ) ) {
 		return fail( 'I-calibration', 'the calibration cache or the candidate settings are unreadable' );
 	}
@@ -173,7 +175,7 @@ export function g4Calibration( i ) {
 // G5 Emission and reach. i: { settings, measure(setting) -> { method: 'measured', emitted, reaches, evidence } }. The pass
 // condition is the gap's: no candidate setting's emission reaches the element. A measurement that is not a live
 // measurement (a string search of the CSS, no boolean answer) fails the gate (R-48-4).
-export async function g5Emission( i ) {
+async function g5EmissionRead( i ) {
 	if ( ! i || ! Array.isArray( i.settings ) || ( i.settings.length && 'function' !== typeof i.measure ) ) {
 		return fail( 'W-route', 'no emission measurement was supplied' );
 	}
@@ -202,7 +204,7 @@ export const PROBE_CLASS = { 'missing-setting': 'F-setting', hardcode: 'F-hardco
 // G6 Live probe. i: { kind, probe(kind) -> result }. Missing setting: result.changed === false (a trial finds no setting
 // changes it). Hardcode: result.rule names the winning rule. Missing block: result.matches is an empty list. Behaviour:
 // result.flowFails === true and result.attributeMatches is an empty list.
-export async function g6Probe( i ) {
+async function g6ProbeRead( i ) {
 	if ( ! PROBE_CLASS[ i?.kind ] || 'function' !== typeof i.probe ) {
 		return fail( 'W-route', `no live probe for ${ i?.kind ?? 'an unknown kind' }` );
 	}
@@ -220,7 +222,7 @@ export async function g6Probe( i ) {
 }
 
 // G7 Re-check. i: { recheck() -> { stillOpen } }. A row that a fresh walk no longer shows is dropped as closed.
-export async function g7Recheck( i ) {
+async function g7RecheckRead( i ) {
 	if ( 'function' !== typeof i?.recheck ) {
 		return fail( 'I-stale', 'no re-check was supplied' );
 	}
@@ -235,6 +237,19 @@ export async function g7Recheck( i ) {
 	}
 	return r.stillOpen ? ok( r.evidence ?? 'still open on a fresh walk' ) : fail( 'closed', r.evidence ?? 'a fresh walk no longer shows the row' );
 }
+
+// Each gate's evidence as FR-48-66 asks (lib/gate-evidence.mjs): the gate's reading as the line of the command or the
+// file and key it came from.
+const withSource = ( r, src ) => ( { ...r, evidence: 'string' === typeof src.command ? fromCommand( src.command, r.evidence ) : fromFile( src.file, src.key, r.evidence ) } );
+const slugsOf = ( i ) => [ i?.block, ...( i?.ancestors || [] ) ].filter( Boolean ).map( ( s ) => `'${ s }'` ).join( ', ' );
+export const g0Freshness = ( i ) => withSource( g0FreshnessRead( i ), { file: 'handoff/MANIFEST.json', key: 'files' } );
+export const g1PairAndPaint = ( i ) => withSource( g1PairAndPaintRead( i ), { file: 'the Solve report', key: i?.row?.key ? `${ i.row.pair ?? '' } ${ i.row.key }`.trim() : 'row' } );
+export const g2Intent = ( i ) => withSource( g2IntentRead( i ), { file: 'the Solve report', key: i?.property ? `renderedDraft of ${ i.property }` : 'renderedDraft' } );
+export const g3Db = ( i ) => withSource( g3DbRead( i ), { command: `sgs-framework.db: SELECT block_slug, attr_name, css_property, css_state, role, source FROM block_attributes WHERE source IN ( 'sgs', 'sgs-ext' ) AND block_slug IN ( ${ slugsOf( i ) } )` } );
+export const g4Calibration = ( i ) => withSource( g4CalibrationRead( i ), { file: 'the calibration cache', key: ( i?.settings || [] ).map( ( s ) => s.attr ).join( ', ' ) || 'settings' } );
+export const g5Emission = async ( i ) => withSource( await g5EmissionRead( i ), { command: 'lib/gate-probes.mjs::measure on the live element' } );
+export const g6Probe = async ( i ) => withSource( await g6ProbeRead( i ), { command: `lib/gate-probes.mjs::probe ${ i?.kind ?? '(no kind)' } on the live page` } );
+export const g7Recheck = async ( i ) => withSource( await g7RecheckRead( i ), { command: 'lib/gate-probes.mjs::recheck (a fresh lean walk)' } );
 
 // Runs G0 to G7 on a Solve row. ctx.inputs maps a gate name to a function (row, soFar) -> the gate's input (or a promise
 // of it); a missing builder, a thrown error or an undefined input fails that gate closed. Returns { gate, class,
@@ -251,9 +266,9 @@ export async function runChain( row, ctx ) {
 		let result;
 		try {
 			const input = ctx?.inputs?.[ gate ] ? await ctx.inputs[ gate ]( row, soFar ) : undefined;
-			result = undefined === input ? fail( unreadable[ gate ], `no input for ${ gate }` ) : await fns[ gate ]( input );
+			result = undefined === input ? fail( unreadable[ gate ], fromCommand( `the ${ gate } input builder`, `no input for ${ gate }` ) ) : await fns[ gate ]( input );
 		} catch ( e ) {
-			result = fail( unreadable[ gate ], `${ gate } input failed: ${ String( e.message || e ).slice( 0, 120 ) }` );
+			result = fail( unreadable[ gate ], fromCommand( `the ${ gate } input builder`, `${ gate } input failed: ${ String( e.message || e ).slice( 0, 120 ) }` ) );
 		}
 		soFar[ gate ] = result;
 		gates[ n ] = { gate, status: result.pass ? 'pass' : 'fail', evidence: result.evidence };

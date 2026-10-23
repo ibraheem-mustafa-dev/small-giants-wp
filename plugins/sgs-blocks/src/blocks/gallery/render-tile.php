@@ -122,6 +122,12 @@ if ( ! function_exists( 'sgs_gallery_tile_css' ) ) {
 					'css'          => 'min-height',
 					'unit_default' => 'px',
 				),
+				// A tile height the client set overrules the linked item's 44px tap floor (ruling 11); the flag follows the height per tier.
+				array(
+					'value'     => $attributes['tileMinHeight'] ?? null,
+					'css'       => '--sgs-gallery-tap-min',
+					'transform' => static fn( $raw ): string => '' === trim( (string) $raw ) ? '' : '0px',
+				),
 				array(
 					'value'        => $attributes['tilePadding'] ?? null,
 					'css'          => 'padding',

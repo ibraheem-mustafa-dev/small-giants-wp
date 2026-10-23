@@ -30,6 +30,9 @@ function fixture( surfaceEntry ) {
 	fs.mkdirSync( path.join( runDir, 'round-1' ), { recursive: true } );
 	fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { [ SURFACE ]: { tree: 'tree.json', states: { 'mfx-state': null }, ...surfaceEntry } } ) );
 	fs.writeFileSync( path.join( build, 'tree.json' ), JSON.stringify( tree() ) );
+	// FR-48-15: the live measurement that proves the cited padding setting emits on the row's element.
+	fs.mkdirSync( path.join( build, 'qa' ), { recursive: true } );
+	fs.writeFileSync( path.join( build, 'qa', 'canvas-confirm.json' ), JSON.stringify( [ { 'block': 'sgs/mega-panel', 'setting': 'panelPadding', 'property': 'padding-top', 'verdict': 'CONFIRMED'}, {'block': 'sgs/mega-panel', 'setting': 'brandsEyebrowPadding', 'property': 'padding-top', 'verdict': 'CONFIRMED'}, {'block': 'sgs/mega-panel', 'setting': 'drawerLinkPaddingY', 'property': 'padding-top', 'verdict': 'CONFIRMED'}, {'block': 'sgs/mega-panel', 'setting': 'drawerCardPadding', 'property': 'padding-top', 'verdict': 'CONFIRMED'}, {'block': 'sgs/mega-panel', 'setting': 'drawerCardTagPadding', 'property': 'padding-top', 'verdict': 'CONFIRMED'}, {'block': 'sgs/mega-panel', 'setting': 'groupPadding', 'property': 'padding-top', 'verdict': 'CONFIRMED'}, {'block': 'sgs/mega-panel', 'setting': 'drawerShellPadding', 'property': 'padding-top', 'verdict': 'CONFIRMED' } ] ) );
 	fs.writeFileSync( path.join( root, 'theme-snapshot.json' ), JSON.stringify( { settings: {} } ) );
 	const r = row();
 	fs.writeFileSync( path.join( runDir, 'solve-report.json' ), JSON.stringify( { classes: { hardcode: [], missing: [], unresolved: [ r ], derived: [], other: [] }, gaps: {}, writes: [] } ) );

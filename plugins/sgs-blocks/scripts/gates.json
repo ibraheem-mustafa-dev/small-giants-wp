@@ -1924,5 +1924,23 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 216
+  },
+  {
+    "id": "check-tap-floors-selftest",
+    "cmd": "python scripts/check-tap-floors.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 300,
+    "order": 217
+  },
+  {
+    "id": "check-tap-area-fits-shape",
+    "cmd": "node tests/playwright/tap-area-fits-shape.check.mjs",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 6000,
+    "order": 218
   }
 ]

@@ -314,13 +314,33 @@ final class IconRenderTest extends TestCase {
 
 	// ── Step 7: target size, focus, motion, forced colours (stylesheet) ───────
 
-	public function test_stylesheet_keeps_the_44px_target_and_motion_rules_and_leaves_focus_to_the_system(): void {
+	public function test_stylesheet_keeps_the_44px_default_target_and_motion_rules_and_leaves_focus_to_the_system(): void {
 		$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/icon/style.css' );
-		$this->assertMatchesRegularExpression( '/\.sgs-icon__link \{[^}]*min-inline-size: 44px;[^}]*min-block-size: 44px;/s', $css );
+		$floor = preg_quote( 'var(--sgs-icon-tap-min, var(--sgs-si-tap-min, 44px))', '/' );
+		$this->assertMatchesRegularExpression( '/\.sgs-icon__link \{[^}]*min-inline-size: ' . $floor . ';[^}]*min-block-size: ' . $floor . ';/s', $css, 'the link floor is 44px only when no size is set (ruling 11)' );
 		$this->assertDoesNotMatchRegularExpression( '/\.sgs-icon__link:focus-visible\s*\{[^}]*(outline|box-shadow)/s', $css, 'the keyboard focus indicator is drawn by the unified focus system (theme focus.css), not by this stylesheet' );
 		$this->assertMatchesRegularExpression( '/prefers-reduced-motion: reduce\)[^@]*\.sgs-icon__shape,[^{]*\{\s*transition: none;/s', $css, 'under reduced motion the shape stops its colour transitions' );
 		$this->assertDoesNotMatchRegularExpression( '/transform:[^;]*(scale|translate)\(/', $css, 'hover scale and offset come from the motion model (motion.css), never from this stylesheet' );
 		$this->assertStringContainsString( '@media (forced-colors: active)', $css );
+	}
+
+	/**
+	 * Ruling 11: a size the client set overrules the 44px tap floor in the same tier, so the link wraps the shape;
+	 * with no size set nothing is printed and the stylesheet's 44px applies.
+	 */
+	public function test_a_set_size_overrules_the_44px_tap_floor_per_tier(): void {
+		$this->assertStringNotContainsString( '--sgs-icon-tap-min', $this->css( $this->render( array() ) ), 'no size set: the 44px floor stays' );
+
+		$css = $this->css( $this->render( array( 'shapeSize' => array( 'desktop' => array( 'width' => '34px' ) ) ) ) );
+		$this->assertStringContainsString( '--sgs-icon-shape-w:34px', $css );
+		$this->assertStringContainsString( '--sgs-icon-tap-min:0px', $css );
+
+		$css = $this->css( $this->render( array( 'iconSize' => array( 'desktop' => '17px' ) ) ) );
+		$this->assertStringContainsString( '--sgs-icon-tap-min:0px', $css, 'a glyph size alone sizes the shape too' );
+
+		$css = $this->css( $this->render( array( 'iconSize' => array( 'mobile' => '20px' ) ) ) );
+		$this->assertSame( 1, substr_count( $css, '--sgs-icon-tap-min:0px' ) );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{[^}]*--sgs-icon-tap-min:0px/', $css, 'a mobile-only size lifts the floor at mobile only' );
 	}
 
 	// ── Step 5: registry parity, PHP half ─────────────────────────────────────

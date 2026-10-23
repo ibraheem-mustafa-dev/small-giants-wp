@@ -307,6 +307,10 @@ foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
 	if ( '' !== $shape_h ) {
 		$decls[] = '--sgs-icon-shape-h:' . $shape_h;
 	}
+	// A size the client set overrules the 44px tap floor: the link then wraps the shape exactly (ruling 11).
+	if ( '' !== $icon_size || '' !== $shape_w || '' !== $shape_h ) {
+		$decls[] = '--sgs-icon-tap-min:0px';
+	}
 	$label_gap = sgs_icon_length_value( $label_gap_tiers[ $tier ] ?? '', 640 );
 	if ( '' !== $label_gap ) {
 		$decls[] = '--sgs-icon-label-gap:' . $label_gap;

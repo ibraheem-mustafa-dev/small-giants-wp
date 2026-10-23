@@ -97,6 +97,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const marginLonghands = tierBoxLonghands( margin, previewTier, 'margin' );
 	const style = {
 		'--sgs-cart-icon-size': `${ iconSize }px`,
+		// An icon size other than the 24px default overrules the trigger's 44px tap floor, as render.php does.
+		'--sgs-cart-tap-min': 24 !== iconSize && ! hasPill ? '0px' : undefined,
 		'--sgs-cart-icon-colour': colourVar( iconColour ) || undefined,
 		'--sgs-cart-badge-colour': colourVar( badgeColour ) || undefined,
 		'--sgs-cart-badge-text-colour':

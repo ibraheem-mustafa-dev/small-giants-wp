@@ -38,9 +38,8 @@ def draft_css_sha256(html: str) -> str:
 
 # --------------------------------------------------------------------------- Claude Design drafts
 # A Claude Design draft keeps its real design outside its <style> block: in inline ``style=`` /
-# ``style-hover=`` attributes, in the ``text/x-dc`` script (accent sets, runtime data) and in a
-# README beside it. ``draft_css_sha256`` is blind to all three, so a changed inline colour would
-# leave the FR-33-12 key identical. ``draft_source_sha256`` hashes them as well, for those drafts
+# ``style-hover=`` attributes, in the ``text/x-dc`` script (accent sets, runtime data).
+# ``draft_css_sha256`` is blind to both, so a changed inline colour would leave the FR-33-12 key identical. ``draft_source_sha256`` hashes them as well, for those drafts
 # only; static drafts return None and keep their existing key, snapshot bytes unchanged.
 
 # Content signal, not a filename. The pattern that recognises a DSL draft by its markup.
@@ -75,34 +74,51 @@ def _normalise_newlines(text: str) -> str:
     return text.replace("\r\n", "\n").replace("\r", "\n")
 
 
-def read_readme_text(folder) -> "str | None":
-    """Text of the ``README.md`` (any letter case) beside a draft, or None when there is none.
+MANIFEST_NAME = "MANIFEST.json"
 
-    Same lookup as ``theme-extractor/declared_sources.py::read_readme_tokens`` (first match in
-    sorted directory order), kept here so callers can use it without importing the
-    extractor package.
+
+def is_source_path(path: str) -> bool:
+    """True for a MANIFEST file path the freshness key covers: a draft (``*.html``) or ``tokens/*.css``.
+
+    ``scripts/computed-route/lib/snapshot-freshness.mjs`` applies the same rule.
     """
+    lower = path.replace("\\", "/").lower()
+    return lower.endswith(".html") or (lower.startswith("tokens/") and lower.endswith(".css"))
+
+
+def manifest_source_hashes(folder) -> "dict[str, str] | None":
+    """``{path: sha256}`` for the drafts and ``tokens/*.css`` a Spec 48A export's ``MANIFEST.json`` lists.
+
+    None when ``folder`` holds no ``MANIFEST.json`` (a static or pre-48A draft). The hashes are the
+    MANIFEST's own, so a re-export that changes a draft or a token file changes them and the README
+    never can (C4: the README is not a design input).
+    """
+    import json
     from pathlib import Path
 
     if folder is None:
         return None
-    folder = Path(folder)
-    if not folder.is_dir():
+    manifest = Path(folder) / MANIFEST_NAME
+    if not manifest.is_file():
         return None
-    for child in sorted(folder.iterdir()):
-        if child.is_file() and child.name.lower() == "readme.md":
-            return child.read_text(encoding="utf-8", errors="replace")
-    return None
+    files = json.loads(manifest.read_text(encoding="utf-8")).get("files") or []
+    return {f["path"]: f["sha256"] for f in files
+            if isinstance(f, dict) and f.get("path") and f.get("sha256") and is_source_path(f["path"])}
 
 
-def draft_source_sha256(html: str, readme_text: "str | None" = None) -> "str | None":
-    """sha256 over everything a Claude Design draft's design lives in, or None for any other draft.
+def draft_source_sha256(html: str, folder=None) -> "str | None":
+    """The FR-33-12 source key of a Claude Design draft, or None for any other draft.
 
-    Concatenates, in this fixed order and with line endings normalised (so CRLF and LF checkouts
-    agree): the ``<style>`` CSS, every ``style`` / ``style-hover`` attribute value of the template
-    in document order (each tagged with its attribute name), the whole ``text/x-dc`` script from
-    its opening tag to the end of the file, and the README text when given.
+    For a Spec 48A export (``folder`` holds ``MANIFEST.json``) it is the sha256 over the MANIFEST's
+    hashes of the drafts and ``tokens/*.css``, sorted by path. For any other Claude Design draft it is the
+    sha256 over, in this fixed order and with line endings normalised (so CRLF and LF checkouts agree):
+    the ``<style>`` CSS, every ``style`` / ``style-hover`` attribute value of the template in document
+    order (each tagged with its attribute name), and the whole ``text/x-dc`` script from its opening tag
+    to the end of the file. The README is never hashed (C4).
     """
+    hashes = manifest_source_hashes(folder)
+    if hashes:
+        return hashlib.sha256("\n".join(f"{k}={hashes[k]}" for k in sorted(hashes)).encode("utf-8")).hexdigest()
     if not is_claude_design_draft(html):
         return None
     html = _normalise_newlines(html)
@@ -117,6 +133,5 @@ def draft_source_sha256(html: str, readme_text: "str | None" = None) -> "str | N
         "css:" + extract_css(html),
         "attrs:" + "\n".join(attrs),
         "script:" + script,
-        "readme:" + _normalise_newlines(readme_text or ""),
     ]
     return hashlib.sha256("\x1e".join(parts).encode("utf-8")).hexdigest()

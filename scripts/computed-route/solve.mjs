@@ -29,6 +29,8 @@ import { candidatesOf, applyVerdicts } from './lib/trial.mjs';
 import { openTrial, draftBoxes } from './lib/trial-run.mjs';
 import { surfaceStateCheck } from './lib/state-live.mjs';
 import { loadReasons, refusalsFor } from './lib/state-map-io.mjs';
+import { walkerLintFault } from './lib/walker-lint.mjs';
+import { hopCanvasSettable } from './lib/cite-emission.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -322,7 +324,7 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 				r = { writes: hop.writes, ...debtOf( hop ) };
 				target = { node: hopNode, ref: hop.on.ref, path: hop.on.path };
 			} else if ( hop?.cite ) {
-				r = { ...r, cite: hop.cite, canvasSettable: !! hop.gap };
+				r = { ...r, cite: hop.cite, canvasSettable: hopCanvasSettable( hop, ancestors, prop ) };
 			}
 		}
 		if ( r.gap ) {
@@ -518,6 +520,12 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const treeFile = path.join( buildDir, s.tree );
 	// walkerFull (scripts/computed-route/pairs.mjs): the hand config plus one pair per block, when the surface has one.
 	const walker = path.join( buildDir, s.walkerFull || s.walker );
+	// FR-48-12: a walker config that fails its lint stops the run before anything is built or walked.
+	const lintFault = await walkerLintFault( surface, walker, s.walkStates );
+	if ( lintFault ) {
+		console.error( lintFault );
+		process.exit( 1 );
+	}
 	if ( ! /refPrefix\s*:/.test( fs.readFileSync( walker, 'utf8' ) ) ) {
 		console.error( `${ s.walkerFull || s.walker } has no refPrefix: rows would carry no ref` );
 		process.exit( 2 );

@@ -28,6 +28,9 @@ const ctxOf = ( over = {} ) => ( {
 	roster: [],
 	supportsFor: () => ( {} ),
 	calFor: () => null,
+	// A citation's emission on its element is proven here unless a test says otherwise (FR-48-15: the proof itself is
+	// tested in lint-cite-gates.test.mjs, and its absence below).
+	measuredEmits: () => true,
 	readSource: () => null,
 	resolver: () => ( { gap: 'no-setting', detail: 'no setting' } ),
 	...over,
@@ -319,6 +322,8 @@ test( 'a canvas sibling that declares the property is cited even when it is no a
 	const r = megaRow( { owners: [] } );
 	const v = runMega( { unresolved: [ r ] }, [ r ], megaCtx( true ) ).verdicts[ 0 ];
 	assert.equal( v.decidedBy, 'canvas-settable' );
+	// MUST FAIL (FR-48-15): the same citation with no calibration and no live measurement proving it emits is unconfirmed.
+	assert.equal( runMega( { unresolved: [ r ] }, [ r ], { ...megaCtx( true ), measuredEmits: () => false } ).verdicts[ 0 ].decidedBy, 'unconfirmed' );
 	assert.equal( v.evidence.find( ( e ) => 'canvas-settable' === e.check ).where, 'sibling' );
 } );
 

@@ -125,6 +125,15 @@ final class SocialIconsRenderTest extends TestCase {
 		$this->assertStringContainsString( 'gap:6px', $css );
 		$this->assertStringContainsString( 'justify-content:center', $css );
 		$this->assertStringNotContainsString( '--sgs-si-shape-h', $css, 'height follows width while linked' );
+		$this->assertStringContainsString( '--sgs-si-tap-min:0px', $css, 'a group size overrules every child link\'s 44px tap floor (ruling 11)' );
+	}
+
+	public function test_a_group_shape_size_alone_overrules_the_tap_floor(): void {
+		$css = $this->row_css( $this->render( array( 'childIconShapeSize' => array( 'desktop' => array( 'width' => '34px' ) ) ), $this->standard_children() ) );
+		$this->assertStringContainsString( '--sgs-si-shape-w:34px', $css );
+		$this->assertStringContainsString( '--sgs-si-tap-min:0px', $css );
+		$css = $this->row_css( $this->render( array( 'gap' => array( 'desktop' => '8px' ) ), $this->standard_children() ) );
+		$this->assertStringNotContainsString( '--sgs-si-tap-min', $css, 'a gap is not a size: the floor stays' );
 	}
 
 	/**

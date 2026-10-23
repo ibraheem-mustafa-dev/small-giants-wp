@@ -35,7 +35,7 @@ import { sampleEntrances, sampleRegion } from './lib/entrances.mjs';
 import { isAccepted } from './lib/compare.mjs';
 import { compareState } from './lib/compare-state.mjs';
 import { writeReport, sideBySide } from './lib/report.mjs';
-import { lintConfig, loadHandScope } from './lib/lint.mjs';
+import { lintRun } from './lib/lint.mjs';
 import { collectStructure } from './lib/structure.mjs';
 import { writeContactSheet } from './lib/review.mjs';
 import { makeHelpers, retargetLive } from './lib/helpers.mjs';
@@ -62,8 +62,7 @@ if ( ! argv[ 0 ] || ! fs.existsSync( cfgPath ) ) {
 // SGS_LIVE_ORIGIN: measure a local mirror of the live site instead (computed-route solve.mjs --site).
 const cfg = retargetLive( ( await import( pathToFileURL( cfgPath ).href ) ).default, process.env.SGS_LIVE_ORIGIN );
 const onlyStates = flag( '--states' )?.split( ',' );
-// auto-scrolled is the state withAutoScroll adds after the lint, so --states may name it unless the config opts out.
-const problems = lintConfig( cfg, loadHandScope( cfgPath, cfg ), onlyStates?.filter( ( s ) => 'auto-scrolled' !== s || false === cfg.autoScroll ) );
+const problems = lintRun( cfgPath, cfg, onlyStates );
 if ( problems.length || argv.includes( '--lint' ) ) {
 	console.log( problems.length ? `${ cfg.name }: config lint failed:\n- ${ problems.join( '\n- ' ) }` : `${ cfg.name }: config lint passed.` );
 	process.exit( problems.length ? 1 : 0 );

@@ -62,6 +62,10 @@ foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
 	if ( '' !== $shape_h ) {
 		$decls[] = '--sgs-si-shape-h:' . $shape_h;
 	}
+	// A group size overrules each child link's 44px tap floor: the link then wraps the shape exactly (ruling 11).
+	if ( '' !== $size || '' !== $shape_w || '' !== $shape_h ) {
+		$decls[] = '--sgs-si-tap-min:0px';
+	}
 	$gap = sgs_icon_length_value( $gap_tiers[ $tier ] ?? '', 640 );
 	if ( '' !== $gap ) {
 		$decls[] = 'gap:' . $gap;

@@ -11,8 +11,8 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
-	min-height: 44px;
-	min-width: 44px;
+	min-height: var(--sgs-ss-tap-min, 44px);
+	min-width: var(--sgs-ss-tap-min, 44px);
 	padding: 0.5rem 0.75rem;
 	cursor: pointer;
 	border: none;
@@ -54,7 +54,7 @@
 	display: flex;
 	align-items: center;
 	gap: 8px;
-	min-height: 44px;
+	min-height: var(--sgs-ss-tap-min, 44px);
 	padding: 0.5rem 0.75rem;
 	text-decoration: none;
 	color: inherit;

@@ -1,0 +1,11 @@
+[
+	{ "file": "lib/ledger.mjs", "find": "( undefined === e.path || !! rowPaths( row )?.includes( e.path ) ) &&", "replace": "true &&", "why": "the route matcher ignores the entry's path, so the other same-property row is accepted too" },
+	{ "file": "lib/ledger.mjs", "find": "return hits.find( ( e ) => undefined !== e.path ) || hits[ 0 ] || null;", "replace": "return hits[ 0 ] || null;", "why": "a path-less entry listed first shadows the path-scoped one" },
+	{ "file": "lib/ledger.mjs", "find": "const rowPaths = ( row ) => row.paths ?? ( null == row.path ? null : [ row.path ] );", "replace": "const rowPaths = ( row ) => row.paths ?? null;", "why": "a report row's own path is ignored, so a path-scoped entry never covers it" },
+	{ "file": "lib/ledger.mjs", "find": "if ( undefined !== e.path && onNode.length && ! onNode.some( ( r ) => rowPaths( r )?.includes( e.path ) ) ) {", "replace": "if ( false ) {", "why": "an entry whose path matches no element is never stale" },
+	{ "file": "lib/ledger.mjs", "find": "if ( undefined !== e.path && 'string' !== typeof e.path ) {", "replace": "if ( false ) {", "why": "a non-string path passes validation" },
+	{ "file": "lib/ledger.mjs", "find": "draft: p.draft.styles[ property ], live, paths: tracePaths( trace ) } );", "replace": "draft: p.draft.styles[ property ], live } );", "why": "measurements drop the traced paths, so staleness cannot see an element" },
+	{ "file": "lib/ledger.mjs", "find": "...( scoped && null != d.path ? { path: d.path } : {} ),", "replace": "", "why": "accept --path drops the row's path" },
+	{ "file": "../parity/lib/divergences.mjs", "find": "( undefined === e.path || e.path === diff.path ) &&", "replace": "true &&", "why": "the walker matcher ignores the entry's path" },
+	{ "file": "../parity/lib/divergences.mjs", "find": "return hits.find( ( e ) => undefined !== e.path ) || hits[ 0 ] || null;", "replace": "return hits[ 0 ] || null;", "why": "the walker's path-less entry shadows the path-scoped one" }
+]

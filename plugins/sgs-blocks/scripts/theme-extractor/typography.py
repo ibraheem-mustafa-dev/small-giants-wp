@@ -18,6 +18,10 @@ from collections import Counter
 _NUM_RE = re.compile(r"^([0-9.]+)")
 
 
+class DeclaredValueMissing(ValueError):
+    """A value the extractor would have to invent is absent from the draft: it refuses instead (FR-33-3)."""
+
+
 def _px(value: str, root_px: float) -> float | None:
     """Resolve a computed length to px. Browser computed values are already px, but be unit-aware
     for rem/em against the REAL root (never assume 16)."""
@@ -61,22 +65,34 @@ def representative_paragraph(facts: dict) -> dict | None:
 
 
 def base_typography(facts: dict, trace: list) -> dict:
-    """Return ``styles.typography`` for the theme base body, computed-driven."""
+    """Return ``styles.typography`` for the theme base body, computed-driven.
+
+    Raises ``DeclaredValueMissing`` when no representative ``<p>`` was rendered, or when it lacks a
+    measured size, line height or weight: a base the draft never declared is never emitted (FR-33-3).
+    """
     root_px = _px(facts.get("root", {}).get("fontSize", "16px"), 16.0) or 16.0
     p = representative_paragraph(facts)
-    body = facts.get("body", {})
-    fam = _primary_family((p or body).get("fontFamily", ""))
-    fs_px = _px((p or body).get("fontSize", ""), root_px)
-    lh = _ratio((p or body).get("lineHeight", ""), (p or body).get("fontSize", ""), root_px)
-    weight = (p or body).get("fontWeight", "400")
+    if p is None:
+        raise DeclaredValueMissing(
+            "no representative rendered <p> in the main content flow (no non-chrome paragraph was measured), "
+            "so the base font size, line height and weight cannot be read; the extractor never synthesises "
+            "a base")
+    fs_px = _px(p.get("fontSize", ""), root_px)
+    lh = _ratio(p.get("lineHeight", ""), p.get("fontSize", ""), root_px)
+    weight = p.get("fontWeight")
+    missing = [name for name, value in (("fontSize", fs_px), ("lineHeight", lh), ("fontWeight", weight)) if not value]
+    if missing:
+        raise DeclaredValueMissing(
+            f"the representative <p> has no measured {', '.join(missing)}, so the base typography cannot be "
+            "read; the extractor never synthesises a base")
     out = {
         "fontFamily": "var:preset|font-family|body",
-        "fontSize": f"{int(fs_px)}px" if fs_px else "16px",
-        "lineHeight": str(lh) if lh else "1.6",
-        "fontWeight": str(weight or "400"),
+        "fontSize": f"{int(fs_px)}px",
+        "lineHeight": str(lh),
+        "fontWeight": str(weight),
     }
     trace.append({"kind": "base", "what": "styles.typography", "_source": "declared",
-                  "reason": f"computed on representative <p> '{(p or {}).get('textSample','body')[:32]}'",
+                  "reason": f"computed on representative <p> '{p.get('textSample', '')[:32]}'",
                   "fontSize": out["fontSize"], "lineHeight": out["lineHeight"], "root_px": root_px})
     return out
 
@@ -156,9 +172,14 @@ def heading_base(facts: dict, trace: list) -> dict:
     if ratios:
         lh = Counter(ratios).most_common(1)[0][0]  # MODE — hero outlier loses to the majority
     ls_mode = Counter(ls_values).most_common(1)[0][0] if ls_values else "normal"
-    out = {"lineHeight": str(lh) if lh else "1.2"}
+    out = {"lineHeight": str(lh)} if lh else {}
     if ls_mode != "normal":
         out["letterSpacing"] = ls_mode
+    if not lh:
+        trace.append({"kind": "gap", "what": "styles.elements.heading.typography.lineHeight",
+                      "reason": "no non-chrome heading measured a line height: none is emitted "
+                                "(the framework baseline's value stays)"})
+        return out
     trace.append({"kind": "base", "what": "styles.elements.heading", "_source": "declared",
                   "reason": f"mode line-height ratio {lh} across non-chrome headings "
                             f"(ratios={sorted(set(ratios))}); hero outlier excluded",

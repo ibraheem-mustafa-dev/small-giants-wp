@@ -4,7 +4,7 @@ Three local copies of the Hostinger test sites (database and `wp-content`; Eye C
 
 | Site | URL | Docroot (WSL) | Database |
 |---|---|---|---|
-| Eye Care | http://localhost:8081 | `/var/www/local-eye-care` | `wp_eyecare` |
+| Eye Care (copies `eye-care-clone-test`) | http://localhost:8081 | `/var/www/local-eye-care` | `wp_eyecare` |
 | Sandybrown | http://localhost:8082 | `/var/www/local-sandybrown` | `wp_sandybrown` |
 | Indus | http://localhost:8083 | `/var/www/local-indus` | `wp_indus` |
 
@@ -41,7 +41,7 @@ Use `local-eye-care`, `local-sandybrown` or `local-indus` instead of `all` for o
 The database is not kept in step with the test sites by itself. Before measuring on a mirror, refresh it (from Git Bash, which holds the SSH key):
 
 ```
-bash scripts/local-wp/refresh-from-remote.sh local-eye-care eye-care-test
+bash scripts/local-wp/refresh-from-remote.sh local-eye-care eye-care-clone-test
 ```
 
 It reads both URLs from `.claude/secrets/<name>.env` (`WP_URL_<KEY>`), backs up the local database to `/var/www/<local-site>-before-refresh.sql` in WSL, dumps the test site's database with `mysqldump` (Hostinger's `wp db export` writes nothing) and its `wp-content/uploads`, imports both, rewrites the test site's URL to the mirror's (plain and JSON-escaped), flushes the cache, and fails unless `siteurl` is the mirror's. The mail block, `WP_ENVIRONMENT_TYPE` and cron settings live in files and `wp-config.php`, which it never touches. Then sync the build (above): the mirror runs the repo's build, not the test site's.

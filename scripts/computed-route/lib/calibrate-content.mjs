@@ -31,15 +31,24 @@ export const LINK_ATTRS = [ 'href', 'src', 'target', 'action', 'formaction', 'da
 export const PRESENCE_ROLES = [ 'boolean-visibility', 'presence-boolean' ];
 export const TEXT_ROLES = [ 'content', 'text-content' ];
 export const LINK_ROLES = [ 'link-content', 'link-href' ];
+// The roles of an enum setting with no CSS property that changes what a block renders rather than how it paints (a
+// layout, a mode, a position). Each of its values is read for presence, the way a variant setting's values are.
+export const STRUCTURE_ROLES = [ 'layout', 'select-from-enum' ];
 
 const COLS = 'block_slug, attr_name, attr_type, default_value, enum_values, is_responsive, css_property, css_element, css_state, css_tier, tier_shape, box_family, source, role';
 const list = ( roles ) => roles.map( () => '?' ).join( ', ' );
 
 // One block's content settings by role, SGS-owned only (R-47-10: never native_wp or a core style). `db` is an
-// lib/db.mjs::openDb handle, opened read-only. Returns { presence, text, link }.
+// lib/db.mjs::openDb handle, opened read-only. Returns { presence, text, link, structure }; structure is the SGS-owned
+// enums with no css_property in a STRUCTURE_ROLES role.
 export function contentRowsFor( db, block ) {
-	const rowsOf = ( roles ) => db.prepare( `SELECT ${ COLS } FROM block_attributes WHERE block_slug = ? AND source IN ( 'sgs', 'sgs-ext' ) AND role IN ( ${ list( roles ) } )` ).all( block, ...roles ).map( ( r ) => ( { ...r } ) );
-	return { presence: rowsOf( PRESENCE_ROLES ), text: rowsOf( TEXT_ROLES ), link: rowsOf( LINK_ROLES ) };
+	const rowsOf = ( roles, extra = '' ) => db.prepare( `SELECT ${ COLS } FROM block_attributes WHERE block_slug = ? AND source IN ( 'sgs', 'sgs-ext' ) AND role IN ( ${ list( roles ) } )${ extra }` ).all( block, ...roles ).map( ( r ) => ( { ...r } ) );
+	return {
+		presence: rowsOf( PRESENCE_ROLES ),
+		text: rowsOf( TEXT_ROLES ),
+		link: rowsOf( LINK_ROLES ),
+		structure: rowsOf( STRUCTURE_ROLES, ' AND css_property IS NULL AND enum_values IS NOT NULL' ),
+	};
 }
 
 // A stored default_value is JSON ("_self", false); a value that will not parse is the literal string.
@@ -105,6 +114,24 @@ export function variantPresenceValues( schema, variant, current = {} ) {
 	return [ ...new Set( all.filter( ( v ) => v && v !== resting ) ) ];
 }
 
+// The values of a structure setting that get their own presence reading: every enum value but the empty one (unset) and
+// the one the default instance already renders. Values come from the setting's own enum and the database row's. A
+// setting that is not a string (a sizing object) or is the block's variant setting (planned from variantPresenceValues)
+// has none.
+export function structurePresenceValues( row, schema, variant, current = {} ) {
+	if ( row.attr_name === variant?.variantAttr || ! types( row, schema ).includes( 'string' ) ) {
+		return [];
+	}
+	let fromRow = [];
+	try {
+		fromRow = JSON.parse( row.enum_values || '[]' );
+	} catch {
+		fromRow = [];
+	}
+	const resting = current[ row.attr_name ] ?? defaultOf( row, schema );
+	return [ ...new Set( [ ...( schema?.[ row.attr_name ]?.enum || [] ), ...fromRow ].filter( ( v ) => 'string' === typeof v && v && v !== resting ) ) ];
+}
+
 // Every content instance for one block: one per presence row (its boolean flipped), one per other value of the block's
 // variant setting, one per text row (its marker string) and one per link row (its marker URL). Each carries the
 // preconditions its element needs (lib/calibrate-instances.mjs::preconditionsFor), so a setting gated by a show
@@ -143,6 +170,12 @@ export function planContentInstances( block, { contentRows, variant, schema = {}
 	for ( const value of variantPresenceValues( schema, variant, base ) ) {
 		const row = { attr_name: attr, attr_type: 'string', css_property: null, role: 'variant' };
 		add( row, 'presence', { label: `variant-${ value }`, attrs: { [ attr ]: value }, needle: null }, { value } );
+	}
+	// A layout or mode enum with no CSS property: one presence instance per value, keyed `<attr>=<value>` like a variant.
+	for ( const row of contentRows.structure || [] ) {
+		for ( const value of structurePresenceValues( row, schema, variant, base ) ) {
+			add( row, 'presence', { label: `structure-${ value }`, attrs: { [ row.attr_name ]: value }, needle: null }, { value } );
+		}
 	}
 	return { instances, noMarker };
 }

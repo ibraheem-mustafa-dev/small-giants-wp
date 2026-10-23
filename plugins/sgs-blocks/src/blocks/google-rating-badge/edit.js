@@ -227,7 +227,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 120 }
 						__nextHasNoMarginBottom
 						help={ __(
-							'The tap area stays at least 44px tall whatever the visible height.',
+							'The tap area matches this height. At 0 the badge is sized by its content and the tap area stays 44px.',
 							'sgs-blocks'
 						) }
 						__next40pxDefaultSize

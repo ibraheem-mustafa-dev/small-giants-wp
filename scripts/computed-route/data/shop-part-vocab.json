@@ -1,0 +1,636 @@
+{
+	"_about": "Spec 48 FR-48-60, FR-48-61, FR-48-62: how a draft's shop units (lib/shop-parts-read.mjs) map to the framework. An entry matches a unit when every criterion it names holds: `text` (a regex, case-insensitive, over the unit's ` | `-joined tag, words, aria label, placeholder, input type, handler and href), `tag` (the unit's tag), `parent` (the tag a text run sits in), `branch` (the unit's sc-if and sc-for conditions), `kind` (text, control, image or import). The first matching entry in file order wins, so specific entries come first. `home.settings` are an anchored regex resolved against the framework DB's attributes for `home.block` (an entry whose pattern finds no attribute is refused as stale); `valueFrom: text` writes the unit's literal words into the one setting the pattern names. `home.contains` names a block comment the part or template file must hold. `controlsOnly` surfaces take text runs only through an entry with `claimsText`.",
+	"surfaces": {
+		"buybox": {
+			"mainFlow": "buy"
+		},
+		"filter": {
+			"mainFlow": null,
+			"controlsOnly": true
+		},
+		"drawer": {
+			"mainFlow": "buy"
+		}
+	},
+	"entries": [
+		{
+			"id": "buybox-sticky-bar",
+			"surface": "buybox",
+			"label": "Sticky add-to-basket bar",
+			"branch": "show\\w*bar|sticky",
+			"home": {
+				"type": "setting",
+				"block": "sgs/buybox",
+				"settings": [
+					"^stickyBar$",
+					"^stickyBarBackground$"
+				]
+			}
+		},
+		{
+			"id": "buybox-breadcrumbs",
+			"surface": "buybox",
+			"label": "Breadcrumbs",
+			"text": "breadcrumb",
+			"home": {
+				"type": "part",
+				"file": "theme/sgs-theme/parts/sgs-pdp-buybox.html",
+				"contains": "wp:woocommerce/breadcrumbs"
+			}
+		},
+		{
+			"id": "buybox-title",
+			"surface": "buybox",
+			"label": "Product title",
+			"parent": "^h1$",
+			"home": {
+				"type": "part",
+				"file": "theme/sgs-theme/parts/sgs-pdp-buybox.html",
+				"contains": "wp:post-title"
+			}
+		},
+		{
+			"id": "buybox-rating",
+			"surface": "buybox",
+			"label": "Rating and review count",
+			"text": "★|rating|reviews?\\b",
+			"home": {
+				"type": "part",
+				"file": "theme/sgs-theme/parts/sgs-pdp-buybox.html",
+				"contains": "wp:woocommerce/product-rating"
+			}
+		},
+		{
+			"id": "buybox-subscribe",
+			"surface": "buybox",
+			"label": "Subscribe-and-save choice",
+			"text": "subscri|pickSub|pickOnce|freqs|isSub",
+			"home": {
+				"type": "missing",
+				"reason": "no sgs/buybox setting or part holds a subscription choice (one-off versus repeat delivery with a frequency)"
+			}
+		},
+		{
+			"id": "buybox-subscribe",
+			"surface": "buybox",
+			"label": "Subscribe-and-save choice",
+			"home": {
+				"type": "missing",
+				"reason": "no sgs/buybox setting or part holds a subscription choice (one-off versus repeat delivery with a frequency)"
+			},
+			"branch": "isSub|freqs"
+		},
+		{
+			"id": "buybox-gift-note",
+			"surface": "buybox",
+			"label": "Gift note",
+			"text": "gift|msgLeft|onMsg",
+			"home": {
+				"type": "missing",
+				"reason": "the buy box has no extras slot for a gift tick and note (Spec 27 hand-off, spec 48 section 16)"
+			}
+		},
+		{
+			"id": "buybox-gift-note",
+			"surface": "buybox",
+			"label": "Gift note",
+			"home": {
+				"type": "missing",
+				"reason": "the buy box has no extras slot for a gift tick and note (Spec 27 hand-off, spec 48 section 16)"
+			},
+			"branch": "giftable|giftOn"
+		},
+		{
+			"id": "buybox-quantity",
+			"surface": "buybox",
+			"label": "Quantity stepper",
+			"text": "^[−+-]$|\\bqty\\b|\\b(?:inc|dec)\\b|showQty",
+			"home": {
+				"type": "missing",
+				"reason": "no sgs/buybox setting names a quantity stepper"
+			}
+		},
+		{
+			"id": "buybox-size-guide-link",
+			"surface": "buybox",
+			"label": "Size-guide link beside a picker",
+			"text": "openSizeGuide|which size",
+			"home": {
+				"type": "setting",
+				"block": "sgs/buybox",
+				"settings": [
+					"^pickerLabelLinkAxis$",
+					"^pickerLabelLinkText$",
+					"^pickerLabelLinkUrl$"
+				]
+			}
+		},
+		{
+			"id": "buybox-option-picker",
+			"surface": "buybox",
+			"label": "Option pickers",
+			"tag": "^button$",
+			"branch": "\\b(?:sizes|bases|chips|flavs|amounts|colourTiles|variants|options)\\b",
+			"home": {
+				"type": "setting",
+				"block": "sgs/buybox",
+				"settings": [
+					"^pickerStyle$",
+					"^pickerSwatchStyle$",
+					"^pickerShowSelectedTick$"
+				]
+			}
+		},
+		{
+			"id": "buybox-add-to-basket",
+			"surface": "buybox",
+			"label": "Add-to-basket button",
+			"text": "\\|\\s*add(?:ToBag|FrameOnly|WithLens)?\\s*\\||add to (?:basket|bag|cart)",
+			"tag": "^button$",
+			"home": {
+				"type": "setting",
+				"block": "sgs/buybox",
+				"settings": [
+					"^addToCartLabel$",
+					"^addToCartStyle$",
+					"^addToCartShowPrice$"
+				]
+			}
+		},
+		{
+			"id": "buybox-saving",
+			"surface": "buybox",
+			"label": "RRP and saving",
+			"text": "\\brrp\\b|\\bsave\\b|saveAmount",
+			"home": {
+				"type": "setting",
+				"block": "sgs/buybox",
+				"settings": [
+					"^rrpShowPrice$",
+					"^rrpSavingFormat$",
+					"^rrpSavingPrefix$"
+				]
+			}
+		},
+		{
+			"id": "buybox-price",
+			"surface": "buybox",
+			"label": "Price",
+			"text": "priceLabel|priceTxt|\\bprice\\b",
+			"home": {
+				"type": "built-in",
+				"block": "sgs/buybox",
+				"note": "the block renders the current price from the product"
+			}
+		},
+		{
+			"id": "buybox-stock",
+			"surface": "buybox",
+			"label": "Stock line",
+			"text": "stockLabel|in stock|low stock",
+			"home": {
+				"type": "setting",
+				"block": "sgs/buybox",
+				"settings": [
+					"^showStockStatus$",
+					"^stockInStockLabel$"
+				]
+			}
+		},
+		{
+			"id": "buybox-info-accordion",
+			"surface": "buybox",
+			"label": "Product information accordion",
+			"branch": "^acc$|\\bacc\\b|accordion|a\\.open",
+			"home": {
+				"type": "elsewhere",
+				"note": "the product information accordion is its own surface (sgs/accordion), not a buy box part"
+			}
+		},
+		{
+			"id": "buybox-assurances",
+			"surface": "buybox",
+			"label": "Assurance lines",
+			"branch": "assurances",
+			"home": {
+				"type": "part",
+				"file": "theme/sgs-theme/parts/sgs-pdp-buybox.html",
+				"contains": "wp:sgs/icon-list"
+			}
+		},
+		{
+			"id": "drawer-upsell",
+			"surface": "drawer",
+			"label": "Upsell offer",
+			"text": "upsell|addTrial|taster",
+			"home": {
+				"type": "missing",
+				"reason": "drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16)"
+			}
+		},
+		{
+			"id": "drawer-upsell",
+			"surface": "drawer",
+			"label": "Upsell offer",
+			"home": {
+				"type": "missing",
+				"reason": "drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16)"
+			},
+			"branch": "showUpsell"
+		},
+		{
+			"id": "drawer-gift-note",
+			"surface": "drawer",
+			"label": "Gift tick and note",
+			"text": "gift|msgLeft|onMsg",
+			"home": {
+				"type": "missing",
+				"reason": "drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16)"
+			}
+		},
+		{
+			"id": "drawer-gift-note",
+			"surface": "drawer",
+			"label": "Gift tick and note",
+			"home": {
+				"type": "missing",
+				"reason": "drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16)"
+			},
+			"branch": "gift\\.on"
+		},
+		{
+			"id": "drawer-close",
+			"surface": "drawer",
+			"label": "Close button",
+			"tag": "^button$",
+			"text": "\\|\\s*close(?:Bag|Basket)?\\s*\\|",
+			"home": {
+				"type": "built-in",
+				"block": "sgs/cart",
+				"note": "the panel draws its own close button"
+			}
+		},
+		{
+			"id": "drawer-count",
+			"surface": "drawer",
+			"label": "Item count beside the heading",
+			"text": "#text \\|\\s*\\(\\{\\{\\s*\\w*[cC]ount\\s*\\}\\}\\)",
+			"home": {
+				"type": "setting",
+				"block": "sgs/cart",
+				"settings": [
+					"^panelShowCount$"
+				]
+			}
+		},
+		{
+			"id": "drawer-heading",
+			"surface": "drawer",
+			"label": "Panel heading",
+			"text": "#text \\|\\s*(?:your )?(?:basket|bag)\\s*\\|",
+			"home": {
+				"type": "setting",
+				"block": "sgs/cart",
+				"settings": [
+					"^panelHeading$"
+				],
+				"valueFrom": "text"
+			}
+		},
+		{
+			"id": "drawer-free-delivery",
+			"surface": "drawer",
+			"label": "Free-delivery message",
+			"text": "freeMsg|freeShipNote|free (?:uk )?(?:delivery|shipping)",
+			"home": {
+				"type": "setting",
+				"block": "sgs/cart",
+				"settings": [
+					"^freeDeliveryMessage$",
+					"^freeDeliverySuccessMessage$",
+					"^freeDeliveryThresholdOverride$"
+				]
+			}
+		},
+		{
+			"id": "drawer-quantity",
+			"surface": "drawer",
+			"label": "Line quantity buttons",
+			"text": "\\|\\s*[−+-]\\s*\\||\\.(?:inc|dec)\\b|\\bqty\\b",
+			"home": {
+				"type": "setting",
+				"block": "sgs/cart",
+				"settings": [
+					"^itemShowQty$"
+				]
+			}
+		},
+		{
+			"id": "drawer-remove",
+			"surface": "drawer",
+			"label": "Line remove control",
+			"text": "\\.(?:rm|remove)\\b",
+			"home": {
+				"type": "setting",
+				"block": "sgs/cart",
+				"settings": [
+					"^itemRemoveLabel$"
+				],
+				"valueFrom": "text"
+			}
+		},
+		{
+			"id": "drawer-add-options",
+			"surface": "drawer",
+			"label": "Line add-options control",
+			"text": "\\.addLens|add options",
+			"home": {
+				"type": "setting",
+				"block": "sgs/cart",
+				"settings": [
+					"^itemAddOptionsLabel$"
+				],
+				"valueFrom": "text"
+			}
+		},
+		{
+			"id": "drawer-line-image",
+			"surface": "drawer",
+			"label": "Line thumbnail",
+			"kind": "^image$",
+			"branch": "\\b(?:items|bagItems)\\b",
+			"home": {
+				"type": "setting",
+				"block": "sgs/cart",
+				"settings": [
+					"^itemThumbBg$"
+				]
+			}
+		},
+		{
+			"id": "drawer-line-details",
+			"surface": "drawer",
+			"label": "Line name, variant, brand and total",
+			"branch": "\\b(?:items|bagItems)\\b",
+			"home": {
+				"type": "built-in",
+				"block": "sgs/cart",
+				"note": "each cart line renders its own name, detail and price"
+			}
+		},
+		{
+			"id": "drawer-subtotal",
+			"surface": "drawer",
+			"label": "Subtotal",
+			"text": "subtotal|subText",
+			"home": {
+				"type": "built-in",
+				"block": "sgs/cart",
+				"note": "the panel footer renders the subtotal"
+			}
+		},
+		{
+			"id": "drawer-instalments",
+			"surface": "drawer",
+			"label": "Instalments note",
+			"text": "klarna|payments of|instalment",
+			"home": {
+				"type": "setting",
+				"block": "sgs/cart",
+				"settings": [
+					"^panelInstalmentsCount$",
+					"^panelInstalmentsNote$"
+				]
+			}
+		},
+		{
+			"id": "drawer-note",
+			"surface": "drawer",
+			"label": "Footer note",
+			"text": "\\d\\s*[–-]\\s*\\d\\s*days|dispatch|\\btax\\b|\\bvat\\b",
+			"home": {
+				"type": "setting",
+				"block": "sgs/cart",
+				"settings": [
+					"^panelTaxNote$"
+				],
+				"valueFrom": "text"
+			}
+		},
+		{
+			"id": "drawer-checkout",
+			"surface": "drawer",
+			"label": "Checkout button",
+			"text": "checkout",
+			"tag": "^(?:a|button)$",
+			"home": {
+				"type": "setting",
+				"block": "sgs/cart",
+				"settings": [
+					"^checkoutLabel$"
+				],
+				"valueFrom": "text"
+			}
+		},
+		{
+			"id": "drawer-view-basket",
+			"surface": "drawer",
+			"label": "View-basket link",
+			"text": "(?:basket|cart)\\.",
+			"tag": "^a$",
+			"home": {
+				"type": "setting",
+				"block": "sgs/cart",
+				"settings": [
+					"^viewCartLabel$",
+					"^panelShowViewCart$"
+				]
+			}
+		},
+		{
+			"id": "drawer-empty-message",
+			"surface": "drawer",
+			"label": "Empty-basket message",
+			"branch": "isEmpty|bagEmpty",
+			"tag": "^#text$",
+			"home": {
+				"type": "setting",
+				"block": "sgs/cart",
+				"settings": [
+					"^emptyCartMessage$"
+				],
+				"valueFrom": "text"
+			}
+		},
+		{
+			"id": "drawer-empty-cta",
+			"surface": "drawer",
+			"label": "Empty-basket button",
+			"branch": "isEmpty|bagEmpty",
+			"tag": "^(?:a|button)$",
+			"home": {
+				"type": "setting",
+				"block": "sgs/cart",
+				"settings": [
+					"^emptyCartCtaLabel$"
+				],
+				"valueFrom": "text"
+			}
+		},
+		{
+			"id": "filter-results",
+			"surface": "filter",
+			"label": "Product results grid",
+			"kind": "^import$",
+			"home": {
+				"type": "template-block",
+				"file": "theme/sgs-theme/templates/archive-product.html",
+				"contains": "wp:woocommerce/product-template"
+			}
+		},
+		{
+			"id": "filter-no-results",
+			"surface": "filter",
+			"label": "No-results message",
+			"branch": "noResults",
+			"claimsText": true,
+			"home": {
+				"type": "template-block",
+				"file": "theme/sgs-theme/templates/archive-product.html",
+				"contains": "wp:woocommerce/product-collection-no-results"
+			}
+		},
+		{
+			"id": "filter-result-count",
+			"surface": "filter",
+			"label": "Result count",
+			"text": "resultCount",
+			"tag": "^#text$",
+			"claimsText": true,
+			"home": {
+				"type": "template-block",
+				"file": "theme/sgs-theme/templates/archive-product.html",
+				"contains": "wp:woocommerce/product-results-count"
+			}
+		},
+		{
+			"id": "filter-sort",
+			"surface": "filter",
+			"label": "Sort",
+			"text": "select|\\|\\s*\\w*sort\\w*\\s*\\|",
+			"home": {
+				"type": "template-block",
+				"file": "theme/sgs-theme/templates/archive-product.html",
+				"contains": "wp:woocommerce/catalog-sorting"
+			}
+		},
+		{
+			"id": "filter-swatch-options",
+			"surface": "filter",
+			"label": "Colour swatch options",
+			"branch": "isSwatch",
+			"home": {
+				"type": "missing",
+				"reason": "WooCommerce's filter blocks have no colour-swatch display; the framework's archive template composes none"
+			}
+		},
+		{
+			"id": "filter-price",
+			"surface": "filter",
+			"label": "Price range",
+			"text": "range|setPrice",
+			"home": {
+				"type": "template-block",
+				"file": "theme/sgs-theme/templates/archive-product.html",
+				"contains": "wp:woocommerce/product-filter-price-slider"
+			}
+		},
+		{
+			"id": "filter-search",
+			"surface": "filter",
+			"label": "Filter search",
+			"text": "search",
+			"tag": "^input$",
+			"home": {
+				"type": "template-block",
+				"file": "theme/sgs-theme/templates/archive-product.html",
+				"contains": "wp:sgs/filter-search"
+			}
+		},
+		{
+			"id": "filter-checkbox-list",
+			"surface": "filter",
+			"label": "Checkbox list",
+			"text": "checkbox",
+			"home": {
+				"type": "template-block",
+				"file": "theme/sgs-theme/templates/archive-product.html",
+				"contains": "wp:woocommerce/product-filter-checkbox-list"
+			}
+		},
+		{
+			"id": "filter-clear",
+			"surface": "filter",
+			"label": "Clear button",
+			"text": "clearFilters|clear",
+			"home": {
+				"type": "template-block",
+				"file": "theme/sgs-theme/templates/archive-product.html",
+				"contains": "wp:woocommerce/product-filter-clear-button"
+			}
+		},
+		{
+			"id": "filter-active-chips",
+			"surface": "filter",
+			"label": "Active filter chips",
+			"branch": "hasActive|activeChips",
+			"home": {
+				"type": "template-block",
+				"file": "theme/sgs-theme/templates/archive-product.html",
+				"contains": "wp:woocommerce/product-filter-removable-chips"
+			}
+		},
+		{
+			"id": "filter-popup",
+			"surface": "filter",
+			"label": "Filter pop-up or drawer",
+			"text": "toggleFilters",
+			"home": {
+				"type": "missing",
+				"reason": "a bespoke filter pop-up or drawer; WooCommerce's product-filters block has no open and close control of its own"
+			}
+		},
+		{
+			"id": "filter-group-toggle",
+			"surface": "filter",
+			"label": "Collapsible filter groups",
+			"text": "toggleOpen",
+			"home": {
+				"type": "missing",
+				"reason": "a collapsible heading per filter group; the framework's archive template composes no collapsible filter group"
+			}
+		},
+		{
+			"id": "filter-switch",
+			"surface": "filter",
+			"label": "On-off filter switch",
+			"text": "switch",
+			"home": {
+				"type": "missing",
+				"reason": "an on-off switch filter (for example a product attribute held as yes or no); the framework's archive template composes no switch filter"
+			}
+		},
+		{
+			"id": "filter-options",
+			"surface": "filter",
+			"label": "Taxonomy filter options",
+			"text": "\\b(?:c|i)\\.(?:pick|toggle|set)\\b",
+			"home": {
+				"type": "template-block",
+				"file": "theme/sgs-theme/templates/archive-product.html",
+				"contains": "wp:woocommerce/product-filter-taxonomy",
+				"customCss": "chip or segment presentation, a visual leftover for scoped custom CSS"
+			}
+		}
+	]
+}

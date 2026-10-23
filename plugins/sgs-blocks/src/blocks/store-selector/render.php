@@ -221,6 +221,10 @@ $flag_tablet     = sgs_store_selector_flag_size( $flag_size_tiers, 'tablet' );
 $flag_mobile     = sgs_store_selector_flag_size( $flag_size_tiers, 'mobile' );
 
 $flag_img_sel = $root_sel . ' .sgs-store-selector__flag';
+// A set flag size is the trigger's and each item's tap area; unset keeps style.css's 44px floor.
+if ( is_array( $attributes['flagSize'] ?? null ) && array() !== $attributes['flagSize'] ) {
+	$scoped_css[] = "{$root_sel}{--sgs-ss-tap-min:0px;}";
+}
 $scoped_css[] = "{$flag_img_sel}{width:{$flag_desktop['w']}px;height:{$flag_desktop['h']}px;}";
 if ( $flag_tablet !== $flag_desktop ) {
 	$scoped_css[] = '@media(max-width:1023px){' . "{$flag_img_sel}{width:{$flag_tablet['w']}px;height:{$flag_tablet['h']}px;}}";

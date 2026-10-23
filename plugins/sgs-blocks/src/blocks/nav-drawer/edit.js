@@ -1408,6 +1408,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							height: closeSize || '44px',
 							minWidth: closeSize || '44px',
 							minHeight: closeSize || '44px',
+							'--sgs-nd-close-size': closeSize || '44px',
+							'--sgs-nd-close-tap-min': '0px',
 							/* closeRadius editor-canvas mirror (§4.10) — same reasoning
 							   as the closeSize width/height above: this preview span is
 							   hand-authored JSX, so render.php's scoped closeRadius

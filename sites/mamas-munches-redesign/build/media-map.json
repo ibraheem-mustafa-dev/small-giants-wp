@@ -1,0 +1,72 @@
+{
+	"sites": {
+		"mamas-test": {
+			"files": [
+				{
+					"asset": "sites/mamas-munches-redesign/handoff/assets/logo-horizontal.png",
+					"sha256": "55fd2eef5bfbd2ae7aa067b3cfdfd5f0c2170185540935d152cac25bd8dad49c",
+					"id": 91,
+					"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-horizontal.png",
+					"storedSha256": "33f4d0646d8e2179cc815aa0b78a0dfaa1ed2d72feb56a3d17d238c3b81d5d07",
+					"stock": false
+				},
+				{
+					"asset": "sites/mamas-munches-redesign/handoff/assets/logo-round.png",
+					"sha256": "d1c039733af429dcaf0b2c8a051248cc1702c9501db1fcaf44d58eb427ce7815",
+					"id": 92,
+					"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-round.png",
+					"storedSha256": "8a5c71e64cc2d41f94f62a231e1ac05f84e5e64d57b1a3afc903a3e77e2f7599",
+					"stock": false
+				},
+				{
+					"asset": "sites/mamas-munches-redesign/handoff/assets/photo-bags-pink.jpg",
+					"sha256": "3aee33ac0ff61ff2005175c225879567d0591a9180a22e71543fc72e72179334",
+					"id": 93,
+					"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-bags-pink.jpg",
+					"storedSha256": "7e6342bb9688913f7d30b2096e913852410dec62fead7b905c2629b681aae7da",
+					"stock": false
+				},
+				{
+					"asset": "sites/mamas-munches-redesign/handoff/assets/photo-bun-case.jpg",
+					"sha256": "9875e09f8751f4f974025ad72aee8a773fec2262646e302d59a05209b197335d",
+					"id": 94,
+					"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-bun-case-1.jpg",
+					"storedSha256": "75cd09e81b50f390e90c0270d968a61fc995a9cf4c78acbe8d53c15c64e60711",
+					"stock": false
+				},
+				{
+					"asset": "sites/mamas-munches-redesign/handoff/assets/photo-gift-heart.jpg",
+					"sha256": "7825c0c1f5aaaf160cd0c4b4aab58b0824f99cfa9b927ca5f96fad2f308e3479",
+					"id": 95,
+					"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-gift-heart-1.jpg",
+					"storedSha256": "9042a2f8ec87e6a9756245b52ddb827f74104ba4e4f5963139a8a93efe16cc91",
+					"stock": false
+				},
+				{
+					"asset": "sites/mamas-munches-redesign/handoff/assets/photo-hero-mug.jpg",
+					"sha256": "6f5411ae2730cd6edf90b6a2c71e5714f6f6d9b4dcedf778a083a4538afa7cdf",
+					"id": 96,
+					"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-hero-mug-1.jpg",
+					"storedSha256": "485314beb7174346a54857134456747d3b8632d53f57c52a776a881de6b18147",
+					"stock": false
+				},
+				{
+					"asset": "sites/mamas-munches-redesign/handoff/assets/photo-pair-love.jpg",
+					"sha256": "c100f3ec56b7133a8ec26bb64dfa09d10f6dbc4499468ceabaf4acbeb2ced6f0",
+					"id": 97,
+					"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-pair-love-1.jpg",
+					"storedSha256": "2b139636bfb66495a1b424ddd31d9d293f54b93cee8118ca672f475f7ba197b3",
+					"stock": false
+				},
+				{
+					"asset": "sites/mamas-munches-redesign/handoff/assets/photo-tray-love.jpg",
+					"sha256": "dc2306611ac203dbef6579eee755cf0d4bb6fb250f25216fd88caf17c423f63c",
+					"id": 98,
+					"url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-tray-love.jpg",
+					"storedSha256": "b3c5f2b03b012ef165ff2532d1fa0a6954911bceb368d202b9ad828bdea46f0d",
+					"stock": false
+				}
+			]
+		}
+	}
+}

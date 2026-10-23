@@ -82,8 +82,8 @@
 	   area even in the icon-only (labelCollapse) case, where the visible
 	   label is clipped out of flow and the link would otherwise size down
 	   to the bare icon. */
-	min-width: 44px;
-	min-height: 44px;
+	min-width: var(--sgs-bi-link-min-h, 44px);
+	min-height: var(--sgs-bi-link-min-h, 44px);
 	padding: 0.5em 0.6em;
 	/* Hit-area-extension technique: the padding above grows the TAP target without moving the
 	   visible content — a negative margin equal to the padding cancels its
@@ -97,7 +97,7 @@
 	/* Vertically the box is the larger of the 44px floor and the padded line, so
 	   the block margins cancel all of it beyond one line of text: the link takes
 	   exactly one line in the flow, like unlinked text. */
-	margin-block: calc((1lh - max(44px, 1lh + 1em)) / 2);
+	margin-block: calc((1lh - max(var(--sgs-bi-link-min-h, 44px), 1lh + 1em)) / 2);
 }
 
 .sgs-business-info__link:hover {
@@ -516,7 +516,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 0.4em;
-	min-height: 44px;
+	min-height: var(--sgs-bi-link-min-h, 44px);
 	padding: 8px 18px;
 	/* A visible button occupies its real box: cancel the base link's
 	   hit-area negative margin (-0.5em -0.6em), which exists only to align a

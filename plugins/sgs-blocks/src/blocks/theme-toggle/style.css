@@ -20,8 +20,8 @@ and never touches the icon's own size (that stays 1em/20px, set below). */
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	min-width: 44px;
-	min-height: 44px;
+	min-width: var(--sgs-tt-tap-min, 44px);
+	min-height: var(--sgs-tt-tap-min, 44px);
 }
 
 .sgs-theme-toggle__icon {
