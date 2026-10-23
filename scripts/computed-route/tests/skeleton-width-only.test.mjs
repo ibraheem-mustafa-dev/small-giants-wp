@@ -56,20 +56,40 @@ test( 'MUST FAIL (a block is classified on what renders at 1440): width-only des
 test( 'MUST FAIL (a width-only sibling is its own node): the element beside the pills is a node in the same parent, after the one it follows', () => {
 	const r = run( GROUP );
 	const group = nodeAt( r, 'Root/11#0' );
-	assert.deepEqual( group.innerBlocks.map( ( n ) => n.draftRef.tpl ), [ 'Root/13#0', 'Root/14#0', 'Root/20#0', 'Root/21#0' ] );
+	assert.deepEqual( group.innerBlocks.map( ( n ) => n.draftRef.tpl ), [ 'Root/13#0', 'Root/14#0', 'Root/18#0', 'Root/20#0', 'Root/21#0' ], 'the pill\'s width variant follows the pill' );
 	assert.equal( group.innerBlocks[ 0 ].name, group.innerBlocks[ 1 ].name, 'the same block as the pill beside it' );
 	assert.equal( rowAt( r, 'Root/13#0' ).action, null );
 } );
 
-test( 'MUST FAIL (a width-only element inside a block that draws its own content is listed, never dropped): absorbed with the width named', () => {
+test( 'MUST FAIL (a per-width label is one instance per variation): the "Call" label is its own pill instance beside the pill, each knowing the widths it is shown at', () => {
 	const r = run( GROUP );
-	const row = rowAt( r, 'Root/18#0' );
-	assert.equal( row.action, 'absorbed' );
-	assert.equal( row.into, 'Root/14#0' );
-	assert.match( row.reason, /only at 375px.*no setting holds a per-width label/ );
-	assert.deepEqual( r.proposal.widthAlternatives.map( ( x ) => [ x.key, x.into, x.widths ] ), [ [ 'Root/18#0', 'Root/14#0', [ 375 ] ] ] );
-	assert.ok( nodeAt( r, 'Root/14#0' ).handover.some( ( h ) => /Call/.test( h.detail ) && 'behaviour' === h.owner ), 'the pill\'s node carries the handover' );
-	assert.deepEqual( run( without( GROUP, 18 ) ).proposal.widthAlternatives, [], 'no width-only element, no entry' );
+	const pill = nodeAt( r, 'Root/14#0' );
+	const call = nodeAt( r, 'Root/18#0' );
+	assert.equal( call.name, pill.name, 'the same block as the pill' );
+	assert.equal( Object.values( call.attributes ).includes( 'Call' ), true, 'its words are the variation' );
+	assert.equal( Object.values( pill.attributes ).includes( 'Order now' ), true, 'the pill keeps its own label' );
+	assert.deepEqual( call.widthShown, [ 375 ] );
+	assert.deepEqual( pill.widthVariants, [ { key: 'Root/18#0', shown: [ 375 ] } ] );
+	assert.equal( rowAt( r, 'Root/18#0' ).rule, 'widthVariant' );
+	assert.equal( call.attributes.href ?? call.attributes.url, pill.attributes.href ?? pill.attributes.url, 'the same link' );
+	assert.deepEqual( r.proposal.widthAlternatives, [], 'a built variation is not listed as unbuilt' );
+	assert.equal( nodeAt( run( without( GROUP, 18 ) ), 'Root/14#0' ).widthVariants, undefined, 'no width-only element, no variant' );
+} );
+
+test( 'MUST FAIL (two or three variations): each width-only label is an instance; the default is hidden where any variant shows', () => {
+	const three = [ ...without( GROUP, 18 ), el( 18, 14, 'span', 'Call', { depth: 3, widths: [ 375 ], box: at( 110, 0 ) } ), el( 19, 14, 'span', 'Phone us', { depth: 3, widths: [ 768 ], box: at( 110, 0 ) } ) ];
+	const r = run( three );
+	const group = nodeAt( r, 'Root/11#0' );
+	assert.deepEqual( group.innerBlocks.map( ( n ) => n.draftRef.tpl ), [ 'Root/13#0', 'Root/14#0', 'Root/18#0', 'Root/19#0', 'Root/20#0', 'Root/21#0' ] );
+	assert.deepEqual( nodeAt( r, 'Root/14#0' ).widthVariants.map( ( v ) => v.shown ), [ [ 375 ], [ 768 ] ] );
+} );
+
+test( 'MUST FAIL (a variation that is not words): an icon-only or container variation is built as the sibling block it is', () => {
+	const icon = [ ...without( GROUP, 18 ), el( 18, 14, 'span', '', { depth: 3, widths: [ 375 ], box: at( 110, 0 ), display: 'flex' } ), el( 19, 18, 'a', 'Menu', { depth: 4, widths: [ 375 ], box: at( 110, 0 ), attrs: { href: '/menu' } } ) ];
+	const r = run( icon );
+	assert.ok( nodeAt( r, 'Root/18#0' ), 'a node for the width-only element' );
+	assert.deepEqual( nodeAt( r, 'Root/18#0' ).widthShown, [ 375 ] );
+	assert.equal( nodeAt( r, 'Root/14#0' ).widthVariants[ 0 ].key, 'Root/18#0' );
 } );
 
 // The header: the navigation (a block that draws its own burger) and a compact-only wrapper holding the burger.

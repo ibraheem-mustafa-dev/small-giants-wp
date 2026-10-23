@@ -160,19 +160,37 @@ function snapEntry( { scope, ref, snap, entries, date } ) {
 	return { id: `D-${ next }`, scope, node: ref, state: '*', property: 'breakpoint', expected: { rule: 'breakpoint-snap' }, reason, decided: `${ date } FR-48-50`, snap };
 }
 
+// The widths a skeleton node's content is shown at, or null when nothing gates it. A width-variant instance (the skeleton
+// writes one instance per variation of content no single setting holds: `widthShown` on the variant, `widthVariants` on
+// the default instance) is shown where its own element is: the enclosing sc-if's range when the fact record has one, else the
+// tiers it was read at. The default instance is shown where no variant is.
+export const tierRanges = ( widths ) => widths.map( ( w ) => ( { 375: TIER_RANGES.mobile, 768: TIER_RANGES.tablet, 1440: TIER_RANGES.desktop } )[ w ] ).filter( Boolean ).sort( ( a, b ) => a[ 0 ] - b[ 0 ] ).reduce( ( out, r ) => ( out.length && out.at( -1 )[ 1 ] === r[ 0 ] ? ( out.at( -1 )[ 1 ] = r[ 1 ], out ) : [ ...out, [ ...r ] ] ), [] );
+export function shownOfNode( skeletonNode, facts, rootComponent = null ) {
+	const key = tplKey( skeletonNode.draftRef, rootComponent );
+	const own = key && facts ? shownAt( facts, key ) : null;
+	if ( skeletonNode.widthShown ) {
+		return own ?? { shown: tierRanges( skeletonNode.widthShown ), via: [ `its element renders at ${ skeletonNode.widthShown.join( ' and ' ) }px` ] };
+	}
+	if ( skeletonNode.widthVariants?.length ) {
+		const taken = skeletonNode.widthVariants.flatMap( ( v ) => ( facts ? shownAt( facts, tplKey( { tpl: v.key }, rootComponent ) ) : null )?.shown ?? tierRanges( v.shown ) );
+		const free = complement( taken );
+		return { shown: own ? intersect( own.shown, free ) : free, via: [ `a width variant is shown at ${ skeletonNode.widthVariants.map( ( v ) => v.shown.join( ' and ' ) ).join( ', ' ) }px` ] };
+	}
+	return own;
+}
+
 // Writes the width gates of every skeleton node. nodes: skeletonNodes(); flat: tree nodes by index; refOf: tree node to
 // ref; facts: the fact record (null: nothing written); db: the framework DB; scope: the surface; entries: the ledger's
 // entries (the snap entries continue its numbering). Returns { writes, unmapped, notes, ledger } in the shapes
 // lib/fill-resolve.mjs uses; `ledger` holds the new snap entries.
 export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, entries = [], rootComponent = null, date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes() } ) {
 	const out = { writes: [], unmapped: [], notes: [], ledger: [] };
-	if ( ! facts ) {
+	if ( ! facts && ! nodes.some( ( n ) => n.node.widthShown || n.node.widthVariants ) ) {
 		return out;
 	}
 	const gate = new Map();
 	for ( const n of nodes ) {
-		const key = tplKey( n.node.draftRef, rootComponent );
-		const at = key ? shownAt( facts, key ) : null;
+		const at = shownOfNode( n.node, facts, rootComponent );
 		at && gate.set( n.index, at );
 	}
 	for ( const n of nodes ) {
