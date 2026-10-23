@@ -30,8 +30,26 @@ export function childSlots( { cfg, items, m, finder, settings = {}, states = [] 
 	const current = items.find( isCurrent );
 	rest && ( resting ? out.slots[ rest ] = finder( resting ) : out.notes.push( 'every draft child is marked current, so no resting child' ) );
 	cur && ( current ? out.slots[ cur ] = finder( current ) : out.notes.push( `no draft child is rendered by a "${ stateWord }" sc-if, so no current child slot` ) );
+	// The glyph a child draws beside its label (a navigation item's caret): the calibration setting measured on it (`glyph`,
+	// the setting that sizes it) is read from the draft's own glyph element, the first child that holds one.
+	const glyphPath = cfg.glyph ? slotOf( cfg.glyph ) : null;
+	if ( cfg.glyph && ! glyphPath ) {
+		out.notes.push( `the calibration has no slot for ${ cfg.glyph }, so no glyph slot` );
+	} else if ( glyphPath ) {
+		const found = items.map( ( it ) => withinTree( m, it ).slice( 1 ).find( isGlyph ) ).find( Boolean );
+		found ? out.slots[ glyphPath ] = finder( found ) : out.notes.push( 'no draft child holds a glyph element, so no glyph slot' );
+	}
 	return out;
 }
+
+// A glyph: an element drawn at the widest read width as a small square (at most 48px), with no words of its own (an icon
+// placeholder hole or an svg), or an svg.
+const isGlyph = ( x ) => {
+	const b = x.box?.[ 1440 ];
+	const square = !! b && b.w > 0 && b.w <= 48 && Math.abs( b.w - b.h ) <= 1 && false !== x.visible?.[ 1440 ];
+	const wordless = 'svg' === x.tag || '' === String( x.srcOwnText ?? '' ).replace( /\{\{[^}]*\}\}/g, '' ).trim() && '' !== String( x.srcOwnText ?? '' ).trim();
+	return square && wordless;
+};
 
 // The width a navigation element collapses at: the one `>= N` width threshold, N a threshold the draft's code uses, of the
 // handoff states whose sc-if shows the element. Returns { value } or { note }.
