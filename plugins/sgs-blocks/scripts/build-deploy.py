@@ -28,7 +28,7 @@ Guards (per spec):
       because a deploy of an unfinished edit that reports [DONE] is how a PHP
       fatal reaches live sites unnoticed.
     - The default target is sandybrown; the other TARGETS entries
-      (indus-test, eye-care-test, mamas-test) are flagged explicit_opt_in_required and must
+      (indus-test, eye-care-test, eye-care-clone-test, mamas-test) are flagged explicit_opt_in_required and must
       be named with --target before they will deploy
     - Refuses to deploy if plugins/sgs-blocks/build/ is missing after build step
     - Never hand-roll tar/scp: the remote step swaps directories with a .bak
