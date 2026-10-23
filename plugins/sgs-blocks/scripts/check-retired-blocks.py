@@ -61,8 +61,9 @@ SKIP_PREFIXES = (
 )
 # A client draft lives unchanged under sites/<client>/: its export (a folder starting design_handoff), its handoff folder
 # (Spec 48A) and its mockups. They are the client's input, not framework sources. A design exploration folder under
-# sites/ ("sites/<topic> design/") holds mockups too.
-SKIP_CONTAINS = ("/design_handoff", "/handoff/", "Handoff/", "/mockups/", " design/")
+# sites/ ("sites/<topic> design/") holds mockups too. A Claude Design component file (`*.dc.html`, a draft or a test
+# fixture copied from one) is draft markup wherever it sits: its class names are the draft's, not SGS block slugs.
+SKIP_CONTAINS = ("/design_handoff", "/handoff/", "Handoff/", "/mockups/", " design/", ".dc.html")
 LIVE_ROOTS = ("plugins", "scripts", "theme", "sites", ".claude")
 TEXT_SUFFIXES = {".php", ".js", ".mjs", ".cjs", ".json", ".py", ".md", ".css", ".scss", ".html", ".txt", ".yml", ".yaml", ".sql", ".sh"}
 MAX_BYTES = 3_000_000

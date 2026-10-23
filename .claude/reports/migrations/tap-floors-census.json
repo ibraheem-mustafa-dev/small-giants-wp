@@ -1,0 +1,1409 @@
+{
+ "floors": [
+  {
+   "path": "src/blocks/account/style.css",
+   "line": 84,
+   "block": "account",
+   "selector": ".sgs-account nav.woocommerce-MyAccount-navigation a",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/account/style.css",
+   "line": 199,
+   "block": "account",
+   "selector": "a.sgs-account__quick-card",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/account/style.css",
+   "line": 282,
+   "block": "account",
+   "selector": ".sgs-account__order-link",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/account/style.css",
+   "line": 300,
+   "block": "account",
+   "selector": ".sgs-account form .woocommerce-form__label-for-checkbox",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/account/style.css",
+   "line": 318,
+   "block": "account",
+   "selector": ".sgs-account form input.input-text, .sgs-account form select, .sgs-account form textarea",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/account/style.css",
+   "line": 330,
+   "block": "account",
+   "selector": ".sgs-account form button, .sgs-account form input[type=\"submit\"]",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/account/style.css",
+   "line": 330,
+   "block": "account",
+   "selector": ".sgs-account form button, .sgs-account form input[type=\"submit\"]",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/audio/style.css",
+   "line": 49,
+   "block": "audio",
+   "selector": ".sgs-audio__play",
+   "property": "min-width",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/audio/style.css",
+   "line": 49,
+   "block": "audio",
+   "selector": ".sgs-audio__play",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/audio/style.css",
+   "line": 180,
+   "block": "audio",
+   "selector": ".sgs-audio__ring .sgs-audio__play",
+   "property": "width",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/audio/style.css",
+   "line": 180,
+   "block": "audio",
+   "selector": ".sgs-audio__ring .sgs-audio__play",
+   "property": "height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/audio/style.css",
+   "line": 208,
+   "block": "audio",
+   "selector": ".sgs-audio__toggle",
+   "property": "min-width",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/audio/style.css",
+   "line": 208,
+   "block": "audio",
+   "selector": ".sgs-audio__toggle",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/before-after/style.css",
+   "line": 260,
+   "block": "before-after",
+   "selector": ".wp-block-sgs-before-after__handle",
+   "property": "width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/before-after/style.css",
+   "line": 260,
+   "block": "before-after",
+   "selector": ".wp-block-sgs-before-after__handle",
+   "property": "height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/before-after/style.css",
+   "line": 375,
+   "block": "before-after",
+   "selector": ".wp-block-sgs-before-after__range::-webkit-slider-thumb",
+   "property": "width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/before-after/style.css",
+   "line": 375,
+   "block": "before-after",
+   "selector": ".wp-block-sgs-before-after__range::-webkit-slider-thumb",
+   "property": "height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/before-after/style.css",
+   "line": 382,
+   "block": "before-after",
+   "selector": ".wp-block-sgs-before-after__range::-moz-range-thumb",
+   "property": "width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/before-after/style.css",
+   "line": 382,
+   "block": "before-after",
+   "selector": ".wp-block-sgs-before-after__range::-moz-range-thumb",
+   "property": "height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/before-after/style.css",
+   "line": 438,
+   "block": "before-after",
+   "selector": ".wp-block-sgs-before-after__video-toggle",
+   "property": "width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/before-after/style.css",
+   "line": 438,
+   "block": "before-after",
+   "selector": ".wp-block-sgs-before-after__video-toggle",
+   "property": "height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/brand-strip/style.css",
+   "line": 266,
+   "block": "brand-strip",
+   "selector": ".sgs-brand-strip__item--text, .sgs-brand-strip--layout-row .sgs-brand-strip__item",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/business-info/style.css",
+   "line": 379,
+   "block": "business-info",
+   "selector": ".sgs-business-socials__link",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/business-info/style.css",
+   "line": 379,
+   "block": "business-info",
+   "selector": ".sgs-business-socials__link",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/buybox/style.css",
+   "line": 557,
+   "block": "buybox",
+   "selector": ".sgs-buybox__notify-email",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/buybox/style.css",
+   "line": 590,
+   "block": "buybox",
+   "selector": ".sgs-buybox__notify-consent-label",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/buybox/style.css",
+   "line": 616,
+   "block": "buybox",
+   "selector": ".sgs-buybox__notify-submit",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/buybox/style.css",
+   "line": 959,
+   "block": "buybox",
+   "selector": ".sgs-buybox-guided__meter-btn",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/buybox/style.css",
+   "line": 1164,
+   "block": "buybox",
+   "selector": ".sgs-buybox-guided__nav-btn",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/buybox/style.css",
+   "line": 1164,
+   "block": "buybox",
+   "selector": ".sgs-buybox-guided__nav-btn",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/buybox/style.css",
+   "line": 1260,
+   "block": "buybox",
+   "selector": ".sgs-buybox__bar .buybox__add-to-cart",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/card-grid/style.css",
+   "line": 458,
+   "block": "card-grid",
+   "selector": ".sgs-card-grid__page-btn",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/card-grid/style.css",
+   "line": 458,
+   "block": "card-grid",
+   "selector": ".sgs-card-grid__page-btn",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/cart/style.css",
+   "line": 366,
+   "block": "cart",
+   "selector": ":where(.sgs-cart__panel) .sgs-cart__panel-header",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/cart/style.css",
+   "line": 430,
+   "block": "cart",
+   "selector": ":where(.sgs-cart__panel) .sgs-cart__panel-empty-cta",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/cart/style.css",
+   "line": 579,
+   "block": "cart",
+   "selector": ":where(.sgs-cart__panel) .sgs-cart__item-save-for-later",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/cart/style.css",
+   "line": 602,
+   "block": "cart",
+   "selector": ":where(.sgs-cart__panel) .sgs-cart__item-add-options",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/cart/style.css",
+   "line": 616,
+   "block": "cart",
+   "selector": ":where(.sgs-cart__panel) .sgs-cart__item-remove",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/cart/style.css",
+   "line": 616,
+   "block": "cart",
+   "selector": ":where(.sgs-cart__panel) .sgs-cart__item-remove",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/cart/style.css",
+   "line": 726,
+   "block": "cart",
+   "selector": ":where(.sgs-cart__panel) .sgs-cart__panel-view, :where(.sgs-cart__panel) .sgs-cart__panel-checkout",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/choice-flow/style.css",
+   "line": 100,
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__nav-back",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/choice-flow/style.css",
+   "line": 132,
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__continue",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/choice-flow/style.css",
+   "line": 175,
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__add-to-basket, .sgs-choice-flow__buy-now",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/choice-flow/style.css",
+   "line": 295,
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__nav-back-preview",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/choice-flow/style.css",
+   "line": 378,
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__chrome-close",
+   "property": "width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/choice-flow/style.css",
+   "line": 378,
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__chrome-close",
+   "property": "height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/choice-flow/style.css",
+   "line": 428,
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__chrome-close--text",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/choice-flow/style.css",
+   "line": 770,
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__summary-toggle > summary",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/choice-flow/style.css",
+   "line": 1536,
+   "block": "choice-flow",
+   "selector": ".sgs-choice-flow__skip-button",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/choice-flow-question/style.css",
+   "line": 161,
+   "block": "choice-flow-question",
+   "selector": ".sgs-choice-flow-question__option-button",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/choice-flow-result/style.css",
+   "line": 81,
+   "block": "choice-flow-result",
+   "selector": ".sgs-choice-flow-result__email-input",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/choice-flow-result/style.css",
+   "line": 101,
+   "block": "choice-flow-result",
+   "selector": ".sgs-choice-flow-result__email-submit",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/collapsible-text/style.css",
+   "line": 51,
+   "block": "collapsible-text",
+   "selector": ".sgs-collapsible-text__toggle",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/collapsible-text/style.css",
+   "line": 51,
+   "block": "collapsible-text",
+   "selector": ".sgs-collapsible-text__toggle",
+   "property": "min-width",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/filter-search/style.css",
+   "line": 9,
+   "block": "filter-search",
+   "selector": ".sgs-filter-search__input",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/filter-search/style.css",
+   "line": 31,
+   "block": "filter-search",
+   "selector": ".sgs-filter-search__term-link",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/form/saved-progress/style.css",
+   "line": 50,
+   "block": "form",
+   "selector": ".sgs-form-review__edit",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/form/saved-progress/style.css",
+   "line": 50,
+   "block": "form",
+   "selector": ".sgs-form-review__edit",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/form/style.css",
+   "line": 330,
+   "block": "form",
+   "selector": ".sgs-form-field__input",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/form/style.css",
+   "line": 423,
+   "block": "form",
+   "selector": ".sgs-form-field__option",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/form/style.css",
+   "line": 469,
+   "block": "form",
+   "selector": ".sgs-form-tile",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/form/style.css",
+   "line": 619,
+   "block": "form",
+   "selector": ".sgs-form-field__file-input",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/form/style.css",
+   "line": 753,
+   "block": "form",
+   "selector": ".sgs-form-field__consent",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/form/style.css",
+   "line": 823,
+   "block": "form",
+   "selector": ".sgs-form__progress-step",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/form/style.css",
+   "line": 823,
+   "block": "form",
+   "selector": ".sgs-form__progress-step",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/form/style.css",
+   "line": 930,
+   "block": "form",
+   "selector": ".sgs-form__button",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/form/style.css",
+   "line": 930,
+   "block": "form",
+   "selector": ".sgs-form__button",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/gallery/style.css",
+   "line": 114,
+   "block": "gallery",
+   "selector": ".sgs-gallery__carousel-prev, .sgs-gallery__carousel-next",
+   "property": "width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/gallery/style.css",
+   "line": 114,
+   "block": "gallery",
+   "selector": ".sgs-gallery__carousel-prev, .sgs-gallery__carousel-next",
+   "property": "height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/gallery/style.css",
+   "line": 175,
+   "block": "gallery",
+   "selector": ".sgs-gallery__dot",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/gallery/style.css",
+   "line": 175,
+   "block": "gallery",
+   "selector": ".sgs-gallery__dot",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/gallery/style.css",
+   "line": 478,
+   "block": "gallery",
+   "selector": ".sgs-gallery__lightbox-close",
+   "property": "width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/gallery/style.css",
+   "line": 478,
+   "block": "gallery",
+   "selector": ".sgs-gallery__lightbox-close",
+   "property": "height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/google-reviews/style.css",
+   "line": 198,
+   "block": "google-reviews",
+   "selector": "a.sgs-google-reviews__maps-link",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/google-reviews/style.css",
+   "line": 819,
+   "block": "google-reviews",
+   "selector": ".sgs-google-reviews__dot",
+   "property": "width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/google-reviews/style.css",
+   "line": 819,
+   "block": "google-reviews",
+   "selector": ".sgs-google-reviews__dot",
+   "property": "height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/language-switch/style.css",
+   "line": 34,
+   "block": "language-switch",
+   "selector": ".sgs-language-switch__link",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/language-switch/style.css",
+   "line": 34,
+   "block": "language-switch",
+   "selector": ".sgs-language-switch__link",
+   "property": "min-width",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/language-switch/style.css",
+   "line": 60,
+   "block": "language-switch",
+   "selector": ".sgs-language-switch__trigger",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/language-switch/style.css",
+   "line": 60,
+   "block": "language-switch",
+   "selector": ".sgs-language-switch__trigger",
+   "property": "min-width",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/media/style.css",
+   "line": 169,
+   "block": "media",
+   "selector": ".sgs-video__btn",
+   "property": "width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/media/style.css",
+   "line": 169,
+   "block": "media",
+   "selector": ".sgs-video__btn",
+   "property": "height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/media/style.css",
+   "line": 169,
+   "block": "media",
+   "selector": ".sgs-video__btn",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/modal/style.css",
+   "line": 17,
+   "block": "modal",
+   "selector": ".sgs-modal__trigger",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/nav-bar-menu/style.css",
+   "line": 149,
+   "block": "nav-bar-menu",
+   "selector": ".sgs-nav-bar-menu__link",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/nav-bar-menu/style.css",
+   "line": 219,
+   "block": "nav-bar-menu",
+   "selector": ".sgs-nav-bar-menu__burger",
+   "property": "height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/nav-bar-menu/style.css",
+   "line": 219,
+   "block": "nav-bar-menu",
+   "selector": ".sgs-nav-bar-menu__burger",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/nav-bar-menu/style.css",
+   "line": 219,
+   "block": "nav-bar-menu",
+   "selector": ".sgs-nav-bar-menu__burger",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/nav-bar-menu/style.css",
+   "line": 219,
+   "block": "nav-bar-menu",
+   "selector": ".sgs-nav-bar-menu__burger",
+   "property": "width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/nav-drawer/style.css",
+   "line": 185,
+   "block": "nav-drawer",
+   "selector": ".sgs-nav-drawer__chrome-logo",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/nav-drawer/style.css",
+   "line": 263,
+   "block": "nav-drawer",
+   "selector": ":where(.sgs-nav-drawer__chrome-slot--button)",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/nav-drawer-menu/style.css",
+   "line": 83,
+   "block": "nav-drawer-menu",
+   "selector": ".sgs-nav-drawer-menu__link",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/nav-drawer-menu/style.css",
+   "line": 458,
+   "block": "nav-drawer-menu",
+   "selector": ".sgs-nav-drawer-menu__accordion-summary--row",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/nav-drawer-menu/style.css",
+   "line": 579,
+   "block": "nav-drawer-menu",
+   "selector": ".sgs-nav-drawer-menu__drill-back-btn",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/notice-banner/style.css",
+   "line": 98,
+   "block": "notice-banner",
+   "selector": ".sgs-notice-banner__icon--circle",
+   "property": "width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/notice-banner/style.css",
+   "line": 98,
+   "block": "notice-banner",
+   "selector": ".sgs-notice-banner__icon--circle",
+   "property": "height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/notice-banner/style.css",
+   "line": 160,
+   "block": "notice-banner",
+   "selector": ".sgs-notice-banner__close",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/notice-banner/style.css",
+   "line": 160,
+   "block": "notice-banner",
+   "selector": ".sgs-notice-banner__close",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/notice-banner/style.css",
+   "line": 264,
+   "block": "notice-banner",
+   "selector": ".sgs-notice-banner__pause, .sgs-notice-banner__prev, .sgs-notice-banner__next",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/notice-banner/style.css",
+   "line": 264,
+   "block": "notice-banner",
+   "selector": ".sgs-notice-banner__pause, .sgs-notice-banner__prev, .sgs-notice-banner__next",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/option-picker/style.css",
+   "line": 69,
+   "block": "option-picker",
+   "selector": ".sgs-option-picker__option",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/option-picker/style.css",
+   "line": 817,
+   "block": "option-picker",
+   "selector": ".sgs-option-picker--tile .sgs-option-picker__pill",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/post-grid/style.css",
+   "line": 502,
+   "block": "post-grid",
+   "selector": ".sgs-post-grid__filter",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/post-grid/style.css",
+   "line": 557,
+   "block": "post-grid",
+   "selector": ".sgs-post-grid__page-btn",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/post-grid/style.css",
+   "line": 557,
+   "block": "post-grid",
+   "selector": ".sgs-post-grid__page-btn",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/post-grid/style.css",
+   "line": 609,
+   "block": "post-grid",
+   "selector": ".sgs-post-grid__load-more",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/post-grid/style.css",
+   "line": 637,
+   "block": "post-grid",
+   "selector": ".sgs-post-grid__carousel-prev, .sgs-post-grid__carousel-next",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/post-grid/style.css",
+   "line": 637,
+   "block": "post-grid",
+   "selector": ".sgs-post-grid__carousel-prev, .sgs-post-grid__carousel-next",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/post-grid/style.css",
+   "line": 706,
+   "block": "post-grid",
+   "selector": ".sgs-post-grid__dot",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/post-grid/style.css",
+   "line": 706,
+   "block": "post-grid",
+   "selector": ".sgs-post-grid__dot",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/pricing-table/style.css",
+   "line": 205,
+   "block": "pricing-table",
+   "selector": ".sgs-pricing-table__cta",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/pricing-table/style.css",
+   "line": 447,
+   "block": "pricing-table",
+   "selector": ".sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-label, .sgs-pricing-table__toggle--style-button .sgs-pricing-table__toggle-label",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/product-card/style.css",
+   "line": 473,
+   "block": "product-card",
+   "selector": ".product-card .sgs-option-picker__option",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/product-card/style.css",
+   "line": 477,
+   "block": "product-card",
+   "selector": ".product-card .sgs-option-picker__pill",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/product-card/style.css",
+   "line": 854,
+   "block": "product-card",
+   "selector": ".product-card--live .product-card__thumb",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/product-card/style.css",
+   "line": 854,
+   "block": "product-card",
+   "selector": ".product-card--live .product-card__thumb",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/product-faq/style.css",
+   "line": 48,
+   "block": "product-faq",
+   "selector": ".sgs-product-faq-item__question",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/product-search/style.css",
+   "line": 33,
+   "block": "product-search",
+   "selector": ".sgs-product-search__input",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/product-search/style.css",
+   "line": 48,
+   "block": "product-search",
+   "selector": ".sgs-product-search__submit",
+   "property": "min-width",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/product-search/style.css",
+   "line": 48,
+   "block": "product-search",
+   "selector": ".sgs-product-search__submit",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/product-search/style.css",
+   "line": 100,
+   "block": "product-search",
+   "selector": ".sgs-product-search__results [role=\"option\"]",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/product-search/style.css",
+   "line": 212,
+   "block": "product-search",
+   "selector": ".sgs-product-search__skeleton",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/product-search/style.css",
+   "line": 297,
+   "block": "product-search",
+   "selector": ".sgs-product-search--icon summary.sgs-product-search__icon-toggle",
+   "property": "min-width",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/product-search/style.css",
+   "line": 297,
+   "block": "product-search",
+   "selector": ".sgs-product-search--icon summary.sgs-product-search__icon-toggle",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/product-search/style.css",
+   "line": 362,
+   "block": "product-search",
+   "selector": ".sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle, .sgs-product-search--cmdk .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle",
+   "property": "min-width",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/product-search/style.css",
+   "line": 362,
+   "block": "product-search",
+   "selector": ".sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle, .sgs-product-search--cmdk .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/product-search/style.css",
+   "line": 408,
+   "block": "product-search",
+   "selector": ".sgs-product-search__dialog .sgs-product-search__close",
+   "property": "min-width",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/product-search/style.css",
+   "line": 408,
+   "block": "product-search",
+   "selector": ".sgs-product-search__dialog .sgs-product-search__close",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/site-header-row/style.css",
+   "line": 56,
+   "block": "site-header-row",
+   "selector": ".sgs-site-header-row .wc-block-mini-cart__button",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/site-header-row/style.css",
+   "line": 56,
+   "block": "site-header-row",
+   "selector": ".sgs-site-header-row .wc-block-mini-cart__button",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/table-of-contents/style.css",
+   "line": 67,
+   "block": "table-of-contents",
+   "selector": ".sgs-toc details > summary.sgs-toc__title",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/table-of-contents/style.css",
+   "line": 143,
+   "block": "table-of-contents",
+   "selector": ".sgs-toc__link",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/tabs/style.css",
+   "line": 72,
+   "block": "tabs",
+   "selector": ".sgs-tabs__tab",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/team-member/style.css",
+   "line": 136,
+   "block": "team-member",
+   "selector": ".sgs-team-member__social-link",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/team-member/style.css",
+   "line": 136,
+   "block": "team-member",
+   "selector": ".sgs-team-member__social-link",
+   "property": "min-width",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/testimonial-slider/style.css",
+   "line": 161,
+   "block": "testimonial-slider",
+   "selector": ".sgs-testimonial-slider__arrow",
+   "property": "width",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/testimonial-slider/style.css",
+   "line": 161,
+   "block": "testimonial-slider",
+   "selector": ".sgs-testimonial-slider__arrow",
+   "property": "height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/testimonial-slider/style.css",
+   "line": 233,
+   "block": "testimonial-slider",
+   "selector": ".sgs-testimonial-slider__dot",
+   "property": "width",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/testimonial-slider/style.css",
+   "line": 233,
+   "block": "testimonial-slider",
+   "selector": ".sgs-testimonial-slider__dot",
+   "property": "height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/testimonial-slider/style.css",
+   "line": 295,
+   "block": "testimonial-slider",
+   "selector": ".sgs-testimonial-slider__pause",
+   "property": "width",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/testimonial-slider/style.css",
+   "line": 295,
+   "block": "testimonial-slider",
+   "selector": ".sgs-testimonial-slider__pause",
+   "property": "height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/trust-bar/style.css",
+   "line": 198,
+   "block": "trust-bar",
+   "selector": "@media (max-width: 599px) .sgs-trust-bar--text-only .sgs-trust-bar__badge",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "src/blocks/trustpilot-reviews/style.css",
+   "line": 334,
+   "block": "trustpilot-reviews",
+   "selector": ".sgs-trustpilot-reviews__arrow",
+   "property": "width",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/trustpilot-reviews/style.css",
+   "line": 334,
+   "block": "trustpilot-reviews",
+   "selector": ".sgs-trustpilot-reviews__arrow",
+   "property": "height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/wishlist-panel/style.css",
+   "line": 114,
+   "block": "wishlist-panel",
+   "selector": ".sgs-wishlist-panel__move-to-basket, .sgs-wishlist-panel__remove, .sgs-wishlist-panel__notify-toggle",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/wishlist-panel/style.css",
+   "line": 131,
+   "block": "wishlist-panel",
+   "selector": ".sgs-wishlist-panel__choose-options",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/wishlist-panel/style.css",
+   "line": 140,
+   "block": "wishlist-panel",
+   "selector": ".sgs-wishlist-panel__remove, .sgs-wishlist-panel__notify-toggle",
+   "property": "min-width",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/wishlist-panel/style.css",
+   "line": 172,
+   "block": "wishlist-panel",
+   "selector": ".sgs-wishlist-panel__empty-cta",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/wishlist-panel/style.css",
+   "line": 185,
+   "block": "wishlist-panel",
+   "selector": ":where(.sgs-save-for-later)",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/wishlist-panel/style.css",
+   "line": 210,
+   "block": "wishlist-panel",
+   "selector": ".sgs-wishlist-panel__view-all",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/wishlist-panel/style.css",
+   "line": 307,
+   "block": "wishlist-panel",
+   "selector": ".sgs-wishlist-panel__sort select",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/wishlist-panel/style.css",
+   "line": 329,
+   "block": "wishlist-panel",
+   "selector": ".sgs-wishlist-panel__guest-prompt .wp-element-button, .sgs-wishlist-panel__share-toggle, .sgs-wishlist-panel__share-controls button",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/wishlist-panel/style.css",
+   "line": 360,
+   "block": "wishlist-panel",
+   "selector": ".sgs-wishlist-panel__share-field",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "src/blocks/wishlist-panel/style.css",
+   "line": 369,
+   "block": "wishlist-panel",
+   "selector": ".sgs-wishlist-panel__add-to-mine",
+   "property": "min-height",
+   "value": "44px",
+   "class": "auto-house"
+  },
+  {
+   "path": "includes/nav-menu-submenu-css.php",
+   "line": 599,
+   "block": "includes/nav-menu-submenu-css.php",
+   "selector": "includes/nav-menu-submenu-css.php min-height:44px",
+   "property": "min-height",
+   "value": "44px",
+   "class": "house"
+  },
+  {
+   "path": "includes/nav-menu-submenu-link-css.php",
+   "line": 206,
+   "block": "includes/nav-menu-submenu-link-css.php",
+   "selector": "includes/nav-menu-submenu-link-css.php min-width:44px",
+   "property": "min-width",
+   "value": "44px",
+   "class": "house"
+  }
+ ],
+ "findings": []
+}
