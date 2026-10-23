@@ -4,6 +4,7 @@
 import fs from 'fs';
 import path from 'path';
 import { parseRatio, sameRatio, trackRatios } from '../../parity/lib/ratio.mjs';
+import { assertSnapshotFresh } from './snapshot-freshness.mjs';
 
 export const COVERAGE_WRITES = [
 	'css-function:minmax',
@@ -115,8 +116,10 @@ export function tracksSetting( raw ) {
 	return { value: r.every( ( n ) => 1 === n ) ? `repeat(${ r.length }, minmax(0, 1fr))` : r.map( ( n ) => `minmax(0, ${ n }fr)` ).join( ' ' ) };
 }
 
-// The site's tokens: palette colours, spacing sizes and font sizes, each with a px value where it has one.
+// The site's tokens: palette colours, spacing sizes and font sizes, each with a px value where it has one. Refuses a
+// snapshot that is stale or unstamped for the export beside it (lib/snapshot-freshness.mjs).
 export function loadSnapshot( file ) {
+	assertSnapshotFresh( file );
 	const s = JSON.parse( fs.readFileSync( path.resolve( file ), 'utf8' ) ).settings || {};
 	const len = ( list, key ) => ( list || [] ).map( ( t ) => ( { slug: t.slug, px: toPx( t[ key ] ) } ) ).filter( ( t ) => null !== t.px );
 	return {
