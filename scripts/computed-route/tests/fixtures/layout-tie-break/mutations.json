@@ -1,0 +1,8 @@
+[
+	{ "file": "lib/resolve.mjs", "find": "fits( props[ p2 ].values[ value ] || defaultPaint( calibration, slot, p2, ( a, b ) => lp( a ) === lp( b ) ), atRow( pw ) )", "replace": "fits( props[ p2 ].values[ value ] || defaultPaint( calibration, slot, p2, ( a, b ) => lp( a ) === lp( b ) ), pw )", "why": "a sibling's value at a width the row does not cover would vote" },
+	{ "file": "lib/resolve.mjs", "find": "const score = [ own, matched.length - own ];", "replace": "const score = [ 0, matched.length ];", "why": "evidence on another element would outvote the row's own element (the old count)" },
+	{ "file": "lib/resolve.mjs", "find": "const score = [ own, matched.length - own ];", "replace": "const score = [ own, 0 ];", "why": "another element's evidence would never break a remaining tie" },
+	{ "file": "lib/fill-confirm.mjs", "find": "\t\tout.push( ...effectRecords( { w, record, target, draftId, reads, cal: layer || ! calFor || 'string' !== typeof w.after ? null : calFor( w.block ) } ) );", "replace": "", "why": "the confirm would check only the property the value was chosen for" },
+	{ "file": "lib/fill-confirm.mjs", "find": "verdict: 'agree' === c.dr ? 'confirmed' : 'effect-differs'", "replace": "verdict: 'confirmed'", "why": "an effect the draft does not render would read confirmed" },
+	{ "file": "lib/resolve.mjs", "find": "! e.state && e.values?.[ value ] && ( e.slots || [] ).map( lp ).includes( lp( slot ) )", "replace": "! e.state && e.values?.[ value ]", "why": "an effect measured on another element would be checked against this element's render" }
+]
