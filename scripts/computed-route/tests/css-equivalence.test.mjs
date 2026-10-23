@@ -53,13 +53,13 @@ test( 'MUST FAIL: a draft value the default paint does not give is never held as
 } );
 
 test( 'layer 3: a property that does not apply in its context is inert', () => {
-	const block = { siblings: { display: every( 'block' ) } };
+	const block = { siblings: { display: every( 'block' ), 'column-count': every( 'auto' ), 'column-width': every( 'auto' ) } };
 	assert.equal( ask( 'justify-content', 'normal', { ...block, calibration: paintOf( { 'justify-content': 'center' } ) } ).reason, 'inert' );
 	assert.equal( ask( 'flex-direction', 'row', { ...block, calibration: paintOf( { 'flex-direction': 'column' } ) } ).reason, 'inert' );
 	assert.equal( ask( 'z-index', '5', { siblings: { position: every( 'static' ) }, parent: every( { display: 'block' } ) } ).reason, 'inert' );
 	assert.equal( ask( 'flex-shrink', '0', { parent: every( { display: 'block' } ) } ).reason, 'inert' );
 	assert.equal( ask( 'opacity', '0.5', { siblings: { display: every( 'none' ) } } ).reason, 'inert' );
-	assert.equal( ask( 'z-index', 'auto', { siblings: { position: every( 'relative' ) } } ).reason, 'inert', 'the initial value with no measured paint' );
+	assert.equal( ask( 'z-index', 'auto', { siblings: { position: every( 'relative' ), display: { 375: 'none' } }, calibration: { elements: { '': { 768: { 'z-index': 'auto' }, 1440: { 'z-index': 'auto' } } }, settings: {}, discovered: {} } } ).reason, 'inert', 'hidden at 375, and the initial value the block measurably paints at the others' );
 } );
 
 test( 'MUST FAIL: a planted declaration that changes paint is never called inert', () => {
@@ -81,7 +81,7 @@ test( 'MUST FAIL: a planted declaration that changes paint is never called inert
 	assert.equal( appliesIn( 'flex-shrink', { display: 'block' } ).applies, null );
 	assert.equal( ask( 'flex-shrink', '0' ).verdict, 'gap' );
 	// One width that paints is enough to refuse the row.
-	assert.equal( consult( { slot: '', prop: 'justify-content', perWidth: every( 'center' ), siblings: { display: { 375: 'block', 768: 'flex', 1440: 'flex' } } }, { calibration: paintOf( {} ), db } ).verdict, 'gap' );
+	assert.equal( consult( { slot: '', prop: 'justify-content', perWidth: every( 'center' ), siblings: { display: { 375: 'block', 768: 'flex', 1440: 'flex' }, 'column-count': every( 'auto' ), 'column-width': every( 'auto' ) } }, { calibration: paintOf( {} ), db } ).verdict, 'gap' );
 } );
 
 test( 'layer 4: a discovered value equal to the draft, under a shorthand spelling or a canonical value, is written', () => {

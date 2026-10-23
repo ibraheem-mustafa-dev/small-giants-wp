@@ -1,0 +1,140 @@
+[
+	{
+		"file": "lib/css-equivalence/inert.mjs",
+		"find": "\t[ /\\bgrid(?: lanes)? containers\\b/, gridContainer ],",
+		"replace": "\t[ /\\bgrid(?: lanes)? containers\\b/, ( c ) => false ],",
+		"why": "justify-content on a grid container is called inert"
+	},
+	{
+		"file": "lib/css-equivalence/inert.mjs",
+		"find": "const kinds = APPLIES[ mdn ] ? specKinds( p ) : null;",
+		"replace": "const kinds = null;",
+		"why": "mdn-data's flex-only codes decide again, so grid and block containers are inert"
+	},
+	{
+		"file": "lib/css-equivalence/inert.mjs",
+		"find": "const FLEX = /(?:^|[-\\s])flex$|^-webkit-(?:inline-)?box$/;",
+		"replace": "const FLEX = /(?:^|[-\\s])flex$/;",
+		"why": "a -webkit-box is not treated as flex"
+	},
+	{
+		"file": "lib/css-equivalence/inert.mjs",
+		"find": "const parentOf = ( c ) => ( 'contents' === c.parentDisplay ? undefined : c.parentDisplay );",
+		"replace": "const parentOf = ( c ) => c.parentDisplay;",
+		"why": "a display:contents parent decides a flex item's properties inert"
+	},
+	{
+		"file": "lib/css-equivalence/inert.mjs",
+		"find": "\t[ /\\bblock containers\\b/, blockContainer ],",
+		"replace": "\t[ /\\bblock containers\\b/, ( c ) => false ],",
+		"why": "place-content on a block container is called inert"
+	},
+	{
+		"file": "lib/css-equivalence/inert.mjs",
+		"find": "const multicol = ( c ) => ( false === blockContainer( c ) ? false :",
+		"replace": "const multicol = ( c ) => ( true ? false :",
+		"why": "justify-content on a multicol container is called inert"
+	},
+	{
+		"file": "lib/css-equivalence/inert.mjs",
+		"find": "known( paint[ w ] ) && sameCanonical( prop, paint[ w ], initial ) && sameCanonical( prop, perWidth[ w ], initial )",
+		"replace": "sameCanonical( prop, perWidth[ w ], initial )",
+		"why": "an initial value is inert where the block's paint is unmeasured or another value"
+	},
+	{
+		"file": "lib/css-equivalence/inert.mjs",
+		"find": "known( paint[ w ] ) && sameCanonical( prop, paint[ w ], initial ) && ",
+		"replace": "known( paint[ w ] ) && ",
+		"why": "an initial value is inert where the block measurably paints another value"
+	},
+	{
+		"file": "lib/css-equivalence/effect.mjs",
+		"find": "undefined === values[ w ] ? paintAt( calibration, slot, canon, w, anyIndex )?.value :",
+		"replace": "undefined === values[ w ] ? perWidth[ w ] :",
+		"why": "an unrecorded width is assumed to paint the draft's value, not the default"
+	},
+	{
+		"file": "lib/css-equivalence/effect.mjs",
+		"find": "if ( ws.some( ( w ) => undefined !== values[ w ] ) && ws.every(",
+		"replace": "if ( ws.every(",
+		"why": "a value recording nothing at the draft's widths is written on the default's evidence"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "undefined !== ( values[ w ] ?? base[ w ] ) && same( values[ w ] ?? base[ w ], at( pw, w ) )",
+		"replace": "undefined === values[ w ] || same( values[ w ], at( pw, w ) )",
+		"why": "resolveDiscovered skips the widths discovery did not record"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "if ( rowWidths.some( ( w ) => undefined !== values[ w ] ) && fits(",
+		"replace": "if ( fits(",
+		"why": "resolveDiscovered writes a value recording nothing at the row's widths"
+	},
+	{
+		"file": "lib/css-equivalence/tolerance.mjs",
+		"find": "export const EXACT = [ 'letter-spacing', 'word-spacing' ];",
+		"replace": "export const EXACT = [];",
+		"why": "a fractional letter spacing matches 0px within half a pixel"
+	},
+	{
+		"file": "lib/css-equivalence/tolerance.mjs",
+		"find": "return ( paintCanon( prop, a, ctx ) !== a ) === ( paintCanon( prop, b, ctx ) !== b ) ? PX_TOL : 0;",
+		"replace": "return PX_TOL;",
+		"why": "a keyword read as 0px matches a non-zero length"
+	},
+	{
+		"file": "lib/css-equivalence/tolerance.mjs",
+		"find": "return false === item ? '0px' : v;",
+		"replace": "return '0px';",
+		"why": "an auto minimum height is 0px on a flex item"
+	},
+	{
+		"file": "lib/css-equivalence/tolerance.mjs",
+		"find": "return ( 'start' === s ) === ( 'ltr' === ctx.direction ) ? 'left' : 'right';",
+		"replace": "return 'left';",
+		"why": "start is left in a right-to-left element"
+	},
+	{
+		"file": "lib/css-equivalence/tolerance.mjs",
+		"find": " && /^(?:ltr|rtl)$/.test( ctx.direction ?? '' )",
+		"replace": "",
+		"why": "start is mapped with no direction read"
+	},
+	{
+		"file": "lib/css-equivalence/tolerance.mjs",
+		"find": "Object.keys( MDN ).filter( ( p ) => ! NORMAL_ZERO_LONGHANDS.includes( p ) &&",
+		"replace": "Object.keys( MDN ).filter( ( p ) => false &&",
+		"why": "a gap shorthand's normal is no longer 0px"
+	},
+	{
+		"file": "lib/css-equivalence/values.mjs",
+		"find": "\treturn samePaint( prop, a, b );",
+		"replace": "\treturn String( a ).trim() === String( b ).trim() || Math.abs( parseFloat( a ) - parseFloat( b ) ) <= 0.5;",
+		"why": "the engine compares by its own half-pixel rule, not the shared one"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "if ( ! samePaint( prop, draft[ w ], shown, contextAt( w ) ) ) {",
+		"replace": "if ( ! samePaint( prop, draft[ w ], shown ) ) {",
+		"why": "Fill's tier comparison ignores the element's context"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "const contextOf = ( w ) => ( { position: siblings.position?.[ w ], direction: siblings.direction?.[ w ], ...contextAt( w ) } );",
+		"replace": "const contextOf = ( w ) => contextAt( w );",
+		"why": "resolveProperty never reads the element's own direction or position"
+	},
+	{
+		"file": "lib/confirm-live.mjs",
+		"find": "if ( ! samePaint( row.property, value, live, { position: styles.position, direction: styles.direction } ) ) {",
+		"replace": "if ( 'agree' !== compareRL( row.property, value, live ).rl ) {",
+		"why": "the live judge holds a value within the rendered 1px"
+	},
+	{
+		"file": "lib/confirm-live.mjs",
+		"find": "samePaint( row.property, value, live, { position: styles.position, direction: styles.direction } )",
+		"replace": "samePaint( row.property, value, live )",
+		"why": "the live judge ignores the live element's position"
+	}
+]

@@ -36,15 +36,15 @@ test( 'an undefined baseline never equals a value: nothing is known to be the de
 	assert.deepEqual( tiersDiffering( 'font-weight', { 1440: '400' }, () => undefined ), { 1440: '400' } );
 } );
 
-test( 'canon: normal spacing is 0, start is left, auto min-height is 0, nothing else changes', () => {
+test( 'canon: normal spacing is 0, start is left in a left-to-right element, auto min-height is 0 on a box no flex or grid item, nothing else changes', () => {
 	assert.equal( canon( 'letter-spacing', 'normal' ), '0px' );
 	assert.equal( canon( 'row-gap', 'normal' ), '0px' );
-	assert.equal( canon( 'text-align', 'start' ), 'left' );
-	assert.equal( canon( 'min-height', 'auto' ), '0px' );
+	assert.equal( canon( 'text-align', 'start', { direction: 'ltr' } ), 'left' );
+	assert.equal( canon( 'min-height', 'auto', { parentDisplay: 'block' } ), '0px' );
 	assert.equal( canon( 'line-height', 'normal' ), 'normal' );
 	assert.equal( canon( 'font-size', undefined ), undefined );
 	assert.deepEqual( tiersDiffering( 'letter-spacing', { 1440: 'normal' }, () => '0px' ), {} );
-	assert.deepEqual( tiersDiffering( 'text-align', { 1440: 'start' }, () => 'left' ), {} );
+	assert.deepEqual( tiersDiffering( 'text-align', { 1440: 'start' }, () => 'left', undefined, () => ( { direction: 'ltr' } ) ), {} );
 } );
 
 test( 'MUST FAIL: a leftover that paints nothing (outline, border colour with no width, a decoration with no line) is not a design value', () => {

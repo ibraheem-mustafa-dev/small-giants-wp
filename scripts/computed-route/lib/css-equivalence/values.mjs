@@ -1,15 +1,14 @@
 // Layer 2 of the equivalence engine (Spec 48 FR-48-86): canonical values. Two CSS values paint the same when their
 // canonical forms are equal: a timing keyword is its cubic-bezier() (CSS Easing 1 §2.1, the keyword definitions), a time is
-// milliseconds, a transform list is its composed matrix (lib/css-matrix.mjs), and any other value compares through the
-// parity walker's own comparison (scripts/parity/lib/compare.mjs::sameValue), so the engine never judges a value
-// differently from the walker that closes the row. A shorthand's value is projected onto one of its longhands (a box
+// milliseconds, a transform list is its composed matrix (lib/css-matrix.mjs), and any other value compares by the one
+// tolerance rule Fill and the live judge share (./tolerance.mjs::samePaint, the parity walker's own comparison within that
+// rule's tolerance), so the engine never holds a value Fill would write. A shorthand's value is projected onto one of its longhands (a box
 // family by its sides or corners, a keyword shorthand by the keywords its longhands' grammars list).
-import { sameValue } from '../../../parity/lib/compare.mjs';
 import { transformMatrix, sameMatrix } from '../css-matrix.mjs';
 import { msOf } from '../motion-tokens.mjs';
 import { familyOf, unfoldValue, longhandsOf, keywordsOf, initialOf } from '../css-families.mjs';
+import { samePaint } from './tolerance.mjs';
 
-const PX_TOL = 0.5;
 const TIME = /^(?:transition|animation)-(?:duration|delay)$/;
 const EASING = /^(?:transition|animation)-timing-function$/;
 
@@ -63,7 +62,7 @@ export function sameCanonical( prop, a, b ) {
 		const [ ma, mb ] = [ transformMatrix( a ), transformMatrix( b ) ];
 		return ma && mb ? sameMatrix( ma, mb ) : String( a ).trim() === String( b ).trim();
 	}
-	return sameValue( prop, String( a ).trim(), String( b ).trim(), PX_TOL );
+	return samePaint( prop, a, b );
 }
 
 // Whether two per-width values agree at every width both state, with at least one shared width.

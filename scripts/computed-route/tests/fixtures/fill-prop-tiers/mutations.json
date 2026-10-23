@@ -1,14 +1,14 @@
 [
 	{
 		"file": "lib/fill-prop.mjs",
-		"find": "canon( prop, painted ? painted.value : baseline( w ) )",
-		"replace": "canon( prop, Object.keys( out ).length ? Object.values( out ).at( -1 ) : baseline( w ) )",
+		"find": "const shown = painted ? painted.value : baseline( w );",
+		"replace": "const shown = Object.keys( out ).length ? Object.values( out ).at( -1 ) : baseline( w );",
 		"why": "a written wider tier would be assumed to carry down whatever the block's own fallback paints"
 	},
 	{
 		"file": "lib/fill-prop.mjs",
-		"find": "( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ) );",
-		"replace": "( w ) => baseline( slot, w ) );",
+		"find": "( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ), contextOf );",
+		"replace": "( w ) => baseline( slot, w ), undefined, contextOf );",
 		"why": "resolveProperty would judge the carry by the inherited baseline, not the block's calibrated paint"
 	},
 	{

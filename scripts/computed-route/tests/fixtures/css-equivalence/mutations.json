@@ -1,8 +1,8 @@
 [
 	{
 		"file": "lib/css-equivalence/inert.mjs",
-		"find": "\tflexContainers: ( c ) => when( c.display, ( d ) => FLEX.test( d ) ),",
-		"replace": "\tflexContainers: ( c ) => when( c.display, ( d ) => false ),",
+		"find": "\t[ /\\bflex containers\\b/, flexContainer ],",
+		"replace": "\t[ /\\bflex containers\\b/, ( c ) => false ],",
 		"why": "justify-content on a flex container is called inert"
 	},
 	{
@@ -25,9 +25,9 @@
 	},
 	{
 		"file": "lib/css-equivalence/inert.mjs",
-		"find": "! isInherited( prop ) && ! known( paint[ w ] ) && sameCanonical",
+		"find": "! isInherited( prop ) && known( paint[ w ] ) && sameCanonical( prop, paint[ w ], initial ) && sameCanonical",
 		"replace": "! isInherited( prop ) && sameCanonical",
-		"why": "an initial value is inert even where the block measurably paints another value"
+		"why": "an initial value is inert even where the block measurably paints another value, or its paint is unmeasured"
 	},
 	{
 		"file": "lib/css-equivalence/inert.mjs",
