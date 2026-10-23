@@ -166,7 +166,7 @@ test( 'restSignature reads the scroll, the lock, an open modal and a covering fi
 		await page.setContent( `<style>main{height:3000px}#layer{position:fixed;inset:0;display:none}#chip{position:fixed;top:0;left:0;width:40px;height:40px}
 			#ghost{position:fixed;inset:0;visibility:hidden}#clear{position:fixed;inset:0;opacity:0}#panel{display:none;width:50px;height:50px}</style>
 			<main>x</main><div id="layer" class="drawer open"></div><div id="chip"></div><div id="ghost"></div><div id="clear"></div>
-			<dialog id="d">hi</dialog><div id="panel" role="dialog">p</div><div id="pop" popover>pop</div><button aria-expanded="false">m</button>` );
+			<dialog id="d">hi</dialog><div id="panel" role="dialog">p</div><div id="pop" popover>pop</div><details id="dd"><summary>s</summary>x</details><button aria-expanded="false">m</button>` );
 		const at = await page.evaluate( restSignature );
 		assert.deepEqual( at, { scroll: '0,0', lock: 'visible visible static', dialogs: 0, modals: 0, popovers: 0, disclosures: 0, layers: '' }, 'a small chip, a hidden and a transparent layer are no layers' );
 		await page.evaluate( () => {
@@ -174,6 +174,7 @@ test( 'restSignature reads the scroll, the lock, an open modal and a covering fi
 			document.getElementById( 'layer' ).style.display = 'block';
 			document.getElementById( 'panel' ).style.display = 'block';
 			document.getElementById( 'pop' ).showPopover();
+			document.getElementById( 'dd' ).open = true;
 			document.documentElement.style.overflowY = 'clip';
 			document.querySelector( 'button' ).setAttribute( 'aria-expanded', 'true' );
 			document.body.style.overflowY = 'hidden';
@@ -185,7 +186,7 @@ test( 'restSignature reads the scroll, the lock, an open modal and a covering fi
 		assert.equal( now.dialogs, 1 );
 		assert.equal( now.modals, 1 );
 		assert.equal( now.popovers, 1 );
-		assert.equal( now.disclosures, 1 );
+		assert.equal( now.disclosures, 2, 'an open details element and an expanded control' );
 		assert.equal( now.layers, 'div#layer.drawer' );
 	} finally {
 		await browser.close();

@@ -4,11 +4,23 @@ import { DEFAULT_PROPS, HOVER_PROPS, ACTIVE_PROPS, FOCUS_PROPS, collectRunning, 
 import { TEXT_CARRIED } from './ref-trace.mjs';
 import { PAINT_SRC } from './paint.mjs';
 import { hoverChrome } from './chrome-walk.mjs';
-import { forcedHover, forcedPseudo } from './devtools.mjs';
+import { forcedHover, forcedPseudo, declaredValues, DECLARED_PROPS } from './devtools.mjs';
 import { focusPass } from './focus.mjs';
 import { INTERACTIVE_CAP } from './auto-compare.mjs';
 
 export const SCROLL_PROPS = [ 'opacity', 'transform', 'translate', 'scale', 'filter' ];
+
+// The declared used sizes (devtools.mjs::DECLARED_PROPS) of a pair's element in a state the walk puts it in (`hover`, or
+// `active`), read while that state holds, into snap.declaredIn[ state ]: the state's own counterpart of snap.declared (a
+// hover rule that sets width: 180px where computed style gives only the used pixels). Inside a forced state the
+// document's node ids must stay as forcedPseudo holds them (keepDocument). A text run or a group measures no one element,
+// so it has none; a walk without a DevTools session reads none.
+export async function declaredIn( cdp, snapOf, finder, state, RESOLVE, keepDocument ) {
+	if ( ! cdp || finder?.textRun || finder?.group ) {
+		return;
+	}
+	snapOf.declaredIn = { ...( snapOf.declaredIn || {} ), [ state ]: await declaredValues( cdp, finder, RESOLVE, DECLARED_PROPS, { keepDocument } ) };
+}
 
 // The read options of one pair's reads (collect.mjs::collectPair, ::hoverStyles): the state's other pairs bound the paint
 // walk and the parts (`others`); those that read text properties (`propsOf`, the walk's property list for a pair; a group
@@ -54,7 +66,11 @@ export async function hoverPass( page, pairs, side, snap, { state, h, RESOLVE, f
 		pairs.filter( ( q ) => ! snap[ q.name ].missing ).forEach( ( q ) => ( snap[ q.name ].noHover = true ) );
 	}
 	for ( const p of cdp && ! phone ? pairs.filter( ( q ) => ! q.hover && ! snap[ q.name ].missing ) : [] ) {
-		snap[ p.name ].hover = await forcedHover( cdp, page, p[ side ], RESOLVE, () => page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC, readOpts( pairs, p, side, propsFor ) ] ) );
+		snap[ p.name ].hover = await forcedHover( cdp, page, p[ side ], RESOLVE, async () => {
+			const styles = await page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC, readOpts( pairs, p, side, propsFor ) ] );
+			await declaredIn( cdp, snap[ p.name ], p[ side ], 'hover', RESOLVE, true );
+			return styles;
+		} );
 	}
 	for ( const p of pairs.filter( ( q ) => q.hover && ! phone ) ) {
 		if ( snap[ p.name ].missing ) {
@@ -81,6 +97,8 @@ export async function hoverPass( page, pairs, side, snap, { state, h, RESOLVE, f
 			await page.waitForTimeout( p.hoverWait ?? 800 );
 		}
 		snap[ p.name ].hover = await page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC, readOpts( pairs, p, side, propsFor ) ] );
+		// Under the real pointer the matched rules are the hovered ones.
+		await declaredIn( cdp, snap[ p.name ], p[ side ], 'hover', RESOLVE, false );
 		await page.mouse.move( 1, 1 );
 		await page.waitForTimeout( 400 );
 	}
@@ -106,7 +124,11 @@ export async function activePass( page, pairs, side, snap, RESOLVE, cdp, { all =
 	}
 	for ( const p of pairs.filter( ( q ) => ( all ? false !== q.active : true === q.active ) && ! snap[ q.name ].missing && ! q[ side ]?.textRun && ! q[ side ]?.group ) ) {
 		const props = p.activeProps || ACTIVE_PROPS;
-		snap[ p.name ].active = await forcedPseudo( cdp, page, p[ side ], RESOLVE, [ 'active' ], () => page.evaluate( hoverStyles, [ p[ side ], props, RESOLVE, PAINT_SRC, readOpts( pairs, p, side, propsFor ) ] ) );
+		snap[ p.name ].active = await forcedPseudo( cdp, page, p[ side ], RESOLVE, [ 'active' ], async () => {
+			const styles = await page.evaluate( hoverStyles, [ p[ side ], props, RESOLVE, PAINT_SRC, readOpts( pairs, p, side, propsFor ) ] );
+			await declaredIn( cdp, snap[ p.name ], p[ side ], 'active', RESOLVE, true );
+			return styles;
+		} );
 	}
 }
 
