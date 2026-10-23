@@ -1,0 +1,80 @@
+[
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "e?.ok || problems.push(",
+  "replace": "true || problems.push(",
+  "why": "a done animation key needs no evidence"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "'function' === typeof evidenceFor ? evidenceFor( k ) : { ok: false,",
+  "replace": "'function' === typeof evidenceFor ? evidenceFor( k ) : { ok: true,",
+  "why": "a missing evidence reader passes"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": ".filter( ( e ) => ! facts.effects.has( e ) )",
+  "replace": ".filter( ( e ) => false )",
+  "why": "a missing effect layer is not reported"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": ".filter( ( f ) => ! facts.flags.has( f ) )",
+  "replace": ".filter( ( f ) => false )",
+  "why": "a missing entrance or hover-state layer is not reported"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "'effect' === r.kind && null != r.live &&",
+  "replace": "'effect' === r.kind && true &&",
+  "why": "a walker row with no live side evidences"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "r.animation === record.id || ( ! r.animation",
+  "replace": "true || ( ! r.animation",
+  "why": "a walker row of another animation evidences"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "if ( needs.walkerOnly ) {\n\t\treturn { ok: false,",
+  "replace": "if ( needs.walkerOnly ) {\n\t\treturn { ok: true,",
+  "why": "a record no tree can hold passes"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "'css-media' === record.mechanism",
+  "replace": "false",
+  "why": "a reduced-motion rule needs a tree layer"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "'string' === typeof v.effect && facts.effects.add( v.effect );",
+  "replace": "",
+  "why": "effect layers are never read from the trees"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "'hover' === key && v.state && facts.flags.add( 'hover-state' );",
+  "replace": "'hover' === key && facts.flags.add( 'hover-state' );",
+  "why": "an empty hover panel counts as a hover state"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "'entrance' === key && facts.flags.add( 'entrance' );",
+  "replace": "",
+  "why": "entrance layers are never read"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "if ( needs.native ) {\n\t\treturn { ok: true,",
+  "replace": "if ( false ) {\n\t\treturn { ok: true,",
+  "why": "a native record needs a tree layer"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "if ( k.startsWith( 'animation:' ) ) {",
+  "replace": "if ( false ) {",
+  "why": "no done key is checked for evidence"
+ }
+]
