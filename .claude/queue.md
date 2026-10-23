@@ -43,3 +43,4 @@ The signal between the cloning tool plan's two orchestrator sessions (`.claude/p
 - 2026-10-23 T site-run-start header post 201 (Fill with the wave review's fixes, build; reads the framework DB)
 - 2026-10-23 T site-run-end (header post 201 rebuilt with the wave review's fixes; pairs sites/indus-foods/build/qa/pairs/header-2026-10-22-t2b/, untracked)
 - 2026-10-23 F deployed indus-test 45a194faf (F5 trusted scripted SVG uploads, host marker 45a194faf, payload-verify 97 of 97; live: admin REST upload keeps its script with the trust mark, sideload stripped, direct open sandboxed through the CDN)
+- 2026-10-23 T site-run-start recalibrate sgs/icon on local-indus (its boxShadowHover is uncalibrated; header-looks wave)
