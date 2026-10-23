@@ -6,6 +6,7 @@ import test, { after, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { resolveFinder } from '../../parity/lib/collect.mjs';
 import { readParts, compareParts } from '../../parity/lib/parts.mjs';
+import { compareState } from '../../parity/lib/compare-state.mjs';
 
 const { chromium } = await import( 'playwright' );
 const RESOLVE = resolveFinder.toString();
@@ -91,4 +92,52 @@ test( 'the marks a pointer script leaves (an inline transition, an appended span
 	await readParts( page, '#cta', [], RESOLVE, 50 );
 	assert.equal( await page.evaluate( () => document.getElementById( 'cta' ).outerHTML ), before );
 	await page.close();
+} );
+
+// Phase 0 review (rater 1, finding 7): parts pair by name and then by where they sit in the pair, a part on one side
+// only is a row, the pose properties compare as one composed pose, a part's resting look is compared and a filter on
+// hover is read. Effect layers: every part's layers on hover and press, matched or not, are on the report's pair.
+const LOOK = { color: 'rgb(0, 0, 0)', 'background-color': 'rgba(0, 0, 0, 0)', 'border-top-width': '0px', transform: 'none', scale: 'none', translate: 'none', rotate: 'none', 'transform-origin': '20px 10px', opacity: '1', filter: 'none' };
+const part = ( name, x, hover = {}, rest = {}, extra = {} ) => ( { name, root: false, pos: { x, y: 0.5 }, box: { w: 40, h: 20 }, rest: { ...LOOK, ...rest }, hover: { ...LOOK, ...rest, ...hover }, layers: { rest: [], hover: [] }, effects: { hover: [], press: [] }, ...extra } );
+
+test( 'MUST FAIL (review 7): two parts of one name listed in another order pair by where they sit', () => {
+	const d = [ part( 'home', 0.1, { color: 'rgb(200, 0, 0)' } ), part( 'home#1', 0.9, { color: 'rgb(0, 0, 200)' } ) ];
+	const l = [ part( 'home', 0.9, { color: 'rgb(0, 0, 200)' } ), part( 'home#1', 0.1, { color: 'rgb(200, 0, 0)' } ) ];
+	assert.deepEqual( compareParts( d, l, TOL ), [] );
+} );
+
+test( 'MUST FAIL (review 7): a part on one side only is a presence row', () => {
+	const r = compareParts( [ part( 'home', 0.1 ), part( 'home#1', 0.9 ) ], [ part( 'home', 0.1 ) ], TOL );
+	assert.deepEqual( r.map( ( x ) => `${ x.key } ${ x.draft } ${ x.live }` ), [ 'home#1 presence present missing' ] );
+	assert.deepEqual( compareParts( [ part( 'home', 0.1 ) ], [ part( 'home', 0.1 ), part( 'shop', 0.5 ) ], TOL ).map( ( x ) => `${ x.key } ${ x.draft } ${ x.live }` ), [ 'shop presence missing present' ] );
+} );
+
+test( 'MUST FAIL (review 7): an equal lift written as scale and as a matrix is no part row; a different one is one hover:transform row', () => {
+	assert.deepEqual( compareParts( [ part( 'go', 0.5, { scale: '1.1' } ) ], [ part( 'go', 0.5, { transform: 'matrix(1.1, 0, 0, 1.1, 0, 0)' } ) ], TOL ), [] );
+	const r = compareParts( [ part( 'go', 0.5, { scale: '1.1' } ) ], [ part( 'go', 0.5, { scale: '1.2' } ) ], TOL );
+	assert.deepEqual( r.map( ( x ) => x.key ), [ 'go hover:transform' ] );
+} );
+
+test( 'MUST FAIL (review 7): a part whose resting colour differs is a rest row', () => {
+	const r = compareParts( [ part( 'go', 0.5, {}, { color: 'rgb(200, 0, 0)' } ) ], [ part( 'go', 0.5 ) ], TOL );
+	assert.deepEqual( r.map( ( x ) => `${ x.key } ${ x.draft }` ), [ 'go rest:color rgb(200, 0, 0)' ] );
+} );
+
+test( 'MUST FAIL (review 7): a part that brightens on hover with a filter is read and is a hover:filter row against one that does not', async () => {
+	const css = '<style>#nav a:hover{filter:brightness(1.2)}</style>';
+	const r = await rows( FAITHFUL.replace( '<nav id="nav">', `${ css }<nav id="nav">` ) );
+	const d = await read( DRAFT.replace( '<nav id="nav">', `${ css }<nav id="nav">` ), '#nav' );
+	assert.equal( d[ 0 ].hover.filter, 'brightness(1.2)' );
+	assert.deepEqual( compareParts( d, await read( FAITHFUL, '#nav' ), TOL ).map( ( x ) => x.key ), [ 'home hover:filter', 'about hover:filter' ] );
+	assert.deepEqual( r.filter( ( x ) => /filter/.test( x.key ) ).map( ( x ) => x.key ), [ 'home hover:filter', 'about hover:filter' ] );
+} );
+
+test( 'MUST FAIL (effect layers on the report): each side\'s effect layers on hover and press are on the pair, matched or not', () => {
+	const fx = ( hover, press ) => ( { effects: { hover, press } } );
+	const d = { snap: { cta: { box: { w: 100, h: 40 }, styles: {}, motion: {}, parts: [ part( 'register', 0.5, {}, {}, fx( [ 'added band' ], [ 'added circle' ] ) ), part( 'about', 0.2 ) ] } }, log: [] };
+	const l = { snap: { cta: { box: { w: 100, h: 40 }, styles: {}, motion: {}, parts: [ part( 'register', 0.5, {}, {}, fx( [ 'animated band' ], [] ) ), part( 'about', 0.2 ) ] } }, log: [] };
+	const run = { pairs: {} };
+	compareState( run, d, l, { state: { name: 'rest' }, width: 1440, cfg: {}, accept: [], tol: TOL, header: false, autoOn: false, pairsFor: () => [ { name: 'cta', draft: '#cta', live: '#cta' } ], origins: {}, linksSeen: new Set(), allLiveLinks: [] } );
+	assert.deepEqual( run.pairs.cta.effects, { draft: { register: { hover: [ 'added band' ], press: [ 'added circle' ] } }, live: { register: { hover: [ 'animated band' ], press: [] } } } );
+	assert.deepEqual( run.pairs.cta.diffs.filter( ( x ) => 'effect' === x.kind ).map( ( x ) => x.key ), [ 'register press' ], 'the difference rows stay' );
 } );

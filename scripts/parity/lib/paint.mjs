@@ -62,8 +62,8 @@ export const PAINT_PROPS = [ 'background-color', 'background-image', 'border-rad
 
 // Self-contained. The element whose ground, shape and border a visitor sees as the pair's: the element itself when it
 // paints (a visible background colour or image, a shadow, or a drawn border), else the first that paints down its chain of
-// single rendered children (visually hidden text and svg internals not counted; an icon block's 34px shape inside its
-// 44px link), else the first that paints up its chain of ancestors drawing the same box and holding only it; else the
+// single rendered in-flow children (visually hidden text and svg internals not counted; an icon block's 34px shape inside
+// its 44px link; a positioned layer such as an underline span ends the walk), else the first that paints up its chain of ancestors drawing the same box and holding only it; else the
 // element. `owned` (a Set) holds elements other pairs measure: neither walk enters one.
 export function paintElement( el, owned = null ) {
 	const clear = ( c ) => ! c || 'transparent' === c || /rgba\([^)]*,\s*0\)$/.test( c );
@@ -86,7 +86,8 @@ export function paintElement( el, owned = null ) {
 	const free = ( e ) => ! owned || ! owned.has( e );
 	for ( let a = el; ; ) {
 		const kids = [ ...a.children ].filter( ( k ) => k.getClientRects().length && 'none' !== getComputedStyle( k ).display && ! srOnly( k ) );
-		if ( 1 !== kids.length || 'svg' === kids[ 0 ].tagName.toLowerCase() || ! free( kids[ 0 ] ) ) {
+		// An absolutely or fixed positioned child is a layer over the element (an underline span), never its ground.
+		if ( 1 !== kids.length || 'svg' === kids[ 0 ].tagName.toLowerCase() || ! free( kids[ 0 ] ) || /absolute|fixed/.test( getComputedStyle( kids[ 0 ] ).position ) ) {
 			break;
 		}
 		a = kids[ 0 ];
