@@ -69,14 +69,26 @@ export function restDiff( rest, now ) {
 	return Object.keys( LABELS ).filter( ( k ) => String( rest[ k ] ) !== String( now[ k ] ) ).map( ( k ) => `${ LABELS[ k ] }: ${ shown( rest[ k ] ) } at rest, ${ shown( now[ k ] ) } now` );
 }
 
-// The rest signature once the page's animations finish (after `floor` ms: a script that starts one late).
+// The rest signature once the page's animations finish (after `floor` ms: a script that starts one late), read until two
+// reads in a row agree (at most eight tries 150ms apart; the last read when none do): a page still finishing a change
+// (a disclosure a script opens just after the floor) is read as it ends up.
 export async function readRest( page, floor = 300 ) {
 	await settleAnimations( page, { floor } );
-	return page.evaluate( restSignature );
+	let last = await page.evaluate( restSignature );
+	for ( let i = 0; i < 8; i++ ) {
+		await page.waitForTimeout( 150 );
+		const now = await page.evaluate( restSignature );
+		if ( ! restDiff( last, now ).length ) {
+			return now;
+		}
+		last = now;
+	}
+	return last;
 }
 
 // Brings the page to rest before a state after the first. reload() loads the page afresh and runs the config's `open`.
-// Returns { how: 'previous' | 'at rest' | 'reloaded', refused?: reason }.
+// Returns { how: 'previous' | 'at rest' | 'reloaded', refused?: reason, rest?: the signature a fresh load reached at rest,
+// which the caller keeps as the page's rest from then on }.
 export async function toRest( page, state, rest, reload ) {
 	if ( 'previous' === state.from ) {
 		return { how: 'previous' };
@@ -85,8 +97,9 @@ export async function toRest( page, state, rest, reload ) {
 		return { how: 'at rest' };
 	}
 	await reload();
-	const left = restDiff( rest, await readRest( page ) );
-	return left.length ? { how: 'reloaded', refused: `not at rest after a fresh load: ${ left.join( '; ' ) }` } : { how: 'reloaded' };
+	const now = await readRest( page );
+	const left = restDiff( rest, now );
+	return left.length ? { how: 'reloaded', refused: `not at rest after a fresh load: ${ left.join( '; ' ) }` } : { how: 'reloaded', rest: now };
 }
 
 // The targets a state's action tried and found nothing at, when it found nothing at all: null when the action triggered

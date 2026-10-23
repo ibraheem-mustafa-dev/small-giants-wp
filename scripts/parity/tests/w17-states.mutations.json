@@ -27,7 +27,7 @@
  {"file": "lib/state-rest.mjs", "find": "${ both ? 'nothing to trigger on either side, not measured'", "replace": "${ ! both ? 'nothing to trigger on either side, not measured'", "why": "the line says which case"},
  {"file": "lib/state-rest.mjs", "find": "if ( r.refused ) {", "replace": "if ( false ) {", "why": "a refused run has its line"},
  {"file": "draft-live-walk.mjs", "find": "const start = null === rest ? { how: 'first' }", "replace": "const start = false ? { how: 'first' }", "why": "the first state is measured as loaded"},
- {"file": "draft-live-walk.mjs", "find": "if ( null === rest ) {\n\t\t\trest = await readRest( page, 0 );", "replace": "if ( false ) {\n\t\t\trest = await readRest( page, 0 );", "why": "rest never read"},
+ {"file": "draft-live-walk.mjs", "find": "if ( null === rest ) {\n\t\t\trest = await readRest( page );", "replace": "if ( false ) {\n\t\t\trest = await readRest( page );", "why": "rest never read"},
  {"file": "draft-live-walk.mjs", "find": "\t\t\tif ( cfg[ side ].open ) {\n\t\t\t\tawait cfg[ side ].open( h );\n\t\t\t}\n\t\t} );", "replace": "\t\t} );", "why": "a fresh load runs the config open again"},
  {"file": "draft-live-walk.mjs", "find": "if ( start.refused ) {", "replace": "if ( false ) {", "why": "a refused state is never measured"},
  {"file": "draft-live-walk.mjs", "find": "if ( missed && draftStates?.[ state.name ]?.untriggered ) {", "replace": "if ( false ) {", "why": "live skips its reads when neither side triggered"},

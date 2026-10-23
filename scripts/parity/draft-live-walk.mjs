@@ -190,8 +190,13 @@ async function walkSide( browser, side, width, draftStates = null ) {
 				await cfg[ side ].open( h );
 			}
 		} );
+		// The first rest is read as every later one is (the same floor, two equal reads); a fresh load that reached rest
+		// again refreshes it.
 		if ( null === rest ) {
-			rest = await readRest( page, 0 );
+			rest = await readRest( page );
+		}
+		if ( start.rest ) {
+			rest = start.rest;
 		}
 		if ( start.refused ) {
 			if ( ! onlyStates || onlyStates.includes( state.name ) ) {
