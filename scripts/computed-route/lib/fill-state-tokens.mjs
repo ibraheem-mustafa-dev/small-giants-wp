@@ -65,12 +65,68 @@ export function tokenRoute( { state, prop, held, block, node, slot = '', tag = n
 	return LINK_STATES.includes( state ) ? 'link' : null;
 }
 
+// The browser's own focus ring, which an element shows when the draft declares no focus outline for it (Chromium's
+// user-agent stylesheet: `:focus-visible { outline: auto 1px -webkit-focus-ring-color }`, and
+// `a:-webkit-any-link:focus-visible { outline-offset: 1px }`; the colour is -webkit-focus-ring-color as Chromium computes
+// it). Fill's declared reads leave user-agent rules out (parity/lib/devtools.mjs::declaredValues), so no read carries it.
+export const BROWSER_RING = { 'outline-style': 'auto', 'outline-width': '1px', 'outline-color': 'rgb(16, 16, 16)', 'outline-offset': '0px' };
+const LINK_RING_OFFSET = '1px';
+const OUTLINE_PROPS = FOCUS_PROPS.filter( ( p ) => p.startsWith( 'outline' ) );
+const isFocusState = ( state ) => String( state ).split( '+' ).some( ( s ) => 'focus' === s || 'focus-visible' === s );
+
+// Whether a resting declared map switches the outline off (style none or hidden, or a zero width), so no browser ring
+// shows when the element takes focus.
+function clearsOutline( rest ) {
+	const style = String( rest[ 'outline-style' ] ?? '' ).trim().toLowerCase();
+	const width = String( rest[ 'outline-width' ] ?? '' ).trim();
+	const short = String( rest.outline ?? '' ).trim().toLowerCase();
+	return [ 'none', 'hidden' ].includes( style ) || /^0(?:\.0+)?(?:px|rem|em)?$/.test( width ) || /(?:^|\s)(?:none|hidden|0(?:px)?)(?:\s|$)/.test( short );
+}
+
+// The focus look an element shows when the draft declares no focus outline for it: the browser's ring
+// (BROWSER_RING, with a link's 1px offset) and no focus shadow unless the draft declares one, merged under the
+// draft's own focus look (`focus`, the token look built so far). drafts: the target's state drafts
+// (lib/fill-state.mjs::stateDrafts); reads/id: Fill's reads and the target's id (the resting declared values sit at
+// reads.declared[width][id]); snap: the target's resting snapshot (tag, href, role). Returns null when the element does
+// not take the site ring or the draft declares a focus outline for it (that look is the draft's own); { gap } when the
+// draft's resting code clears the outline and it declares no focus shadow either, so the draft shows no focus
+// indicator at all: the site ring is kept and the case is reported, never removed (WCAG 2.4.7). Else
+// { looks: { focus, focusBrowser } }, focusBrowser naming the properties the browser supplied (applyTokenLooks
+// writes those as browser values, which a draft's declared ring replaces).
+export function ringLook( { drafts, reads, id, snap = {}, focus } ) {
+	const tag = String( snap.tag || '' ).toLowerCase();
+	if ( [ 'input', 'select', 'textarea' ].includes( tag ) || ! takesRing( tag, snap.role ) ) {
+		return null;
+	}
+	const declared = [ ...( drafts?.values() || [] ) ].filter( ( d ) => ! d.pseudo && isFocusState( d.state ) ).map( ( d ) => d.prop );
+	if ( OUTLINE_PROPS.some( ( p ) => declared.includes( p ) ) ) {
+		return null;
+	}
+	const rests = ROOT_FIRST.map( ( w ) => reads?.declared?.[ w ]?.[ id ] ).filter( Boolean );
+	const cleared = rests.find( clearsOutline );
+	if ( cleared ) {
+		if ( declared.includes( 'box-shadow' ) ) {
+			return null;
+		}
+		const value = Object.fromEntries( [ 'outline', ...OUTLINE_PROPS ].filter( ( p ) => undefined !== cleared[ p ] ).map( ( p ) => [ p, cleared[ p ] ] ) );
+		return { gap: { property: 'outline-style', state: 'focus', value: JSON.stringify( value ), reason: 'focus-invisible: the draft clears the outline at rest and declares no focus outline or shadow, so it shows no focus indicator (WCAG 2.4.7); the site ring is kept and the case is left for the owner' } };
+	}
+	const ring = { ...BROWSER_RING, ...( 'a' === tag && snap.href ? { 'outline-offset': LINK_RING_OFFSET } : {} ), 'box-shadow': 'none' };
+	const own = focus || {};
+	return { looks: { focus: { ...ring, ...own }, focusBrowser: Object.keys( ring ).filter( ( p ) => undefined === own[ p ] ) } };
+}
+
+// The declared property each settings.custom.focus key is mapped from (lib/snapshot-tokens.mjs::focusTokens).
+const FOCUS_KEY_PROPS = { width: [ 'outline-width' ], ring: [ 'outline-color' ], offset: [ 'outline-offset' ], near: [ 'box-shadow' ], far: [ 'box-shadow' ], bloom: [ 'box-shadow' ], source: FOCUS_PROPS };
+
 const ROOT_FIRST = [ 1440, 768, 375 ];
 // The value a token reads from a look's per-width values: the widest read width that has one.
 export const pickValue = ( perWidth ) => perWidth[ ROOT_FIRST.find( ( w ) => undefined !== perWidth[ w ] ) ];
 
 // The snapshot patch under construction: { patch, entries, conflicts, set( path, value, from ) }. `set` writes one leaf by
-// its key path; a key already set to another value keeps the first and records the conflict.
+// its key path; a key already set to another value keeps the first and records the conflict, except that a browser
+// value (`from.browser`: the browser's own ring, which the draft never declares) yields to a value the draft declares,
+// whichever comes first, and the browser value is recorded as the dropped one.
 export function createPatch() {
 	const patch = {};
 	const entries = [];
@@ -89,8 +145,19 @@ export function createPatch() {
 		}
 		const key = path[ path.length - 1 ];
 		if ( key in at ) {
+			const prior = entries.findIndex( ( e ) => e.path === name );
+			if ( prior >= 0 && entries[ prior ].browser && ! from?.browser ) {
+				if ( JSON.stringify( at[ key ] ) !== JSON.stringify( value ) ) {
+					const dropped = entries[ prior ];
+					conflicts.push( { path: name, kept: value, dropped: at[ key ], from: dropped, keptFrom: { path: name, value, ...from }, replaced: true } );
+				}
+				at[ key ] = value;
+				entries[ prior ] = { path: name, value, ...from };
+				return;
+			}
 			if ( JSON.stringify( at[ key ] ) !== JSON.stringify( value ) ) {
-				conflicts.push( { path: name, kept: at[ key ], dropped: value, from, keptFrom: entries.find( ( e ) => e.path === name ) } );
+				const keptFrom = entries[ prior ];
+				conflicts.push( { path: name, kept: at[ key ], dropped: value, from, keptFrom, ...( from?.browser && ! keptFrom?.browser ? { replaced: true } : {} ) } );
 			}
 			return;
 		}
@@ -126,9 +193,15 @@ export function applyTokenLooks( { looks, sink, from, target, variant, owned } )
 	const unmapped = [];
 	const asJson = ( d ) => JSON.stringify( d );
 	if ( looks.focus ) {
+		// A key mapped only from properties the browser supplied (ringLook) is a browser value. The browser's ring is
+		// the same on every ground, so its colour also sets the dark-ground ring.
+		const browser = looks.focusBrowser || [];
+		const fromBrowser = ( k ) => FOCUS_KEY_PROPS[ k ].filter( ( p ) => undefined !== looks.focus[ p ] ).every( ( p ) => browser.includes( p ) );
 		const { focus, gaps } = focusTokens( { declared: looks.focus } );
 		for ( const [ k, v ] of Object.entries( focus || {} ) ) {
-			sink.set( [ 'settings', 'custom', 'focus', k ], v, { ...from, state: 'focus' } );
+			const ground = fromBrowser( k ) ? { browser: true } : {};
+			sink.set( [ 'settings', 'custom', 'focus', k ], v, { ...from, state: 'focus', ...ground } );
+			'ring' === k && ground.browser && sink.set( [ 'settings', 'custom', 'focus', 'ringOnDark' ], v, { ...from, state: 'focus', ...ground } );
 		}
 		unmapped.push( ...gaps.map( ( g ) => gapRow( from, g, 'focus', asJson( looks.focus ) ) ) );
 	}
@@ -150,4 +223,4 @@ export function applyTokenLooks( { looks, sink, from, target, variant, owned } )
 }
 
 // A conflict as an unmapped row.
-export const conflictRow = ( c ) => ( { node: c.from.node, block: c.from.block, slot: c.from.slot, property: c.path, state: c.from.state, value: JSON.stringify( c.dropped ), reason: `conflict: ${ c.keptFrom ? `${ c.keptFrom.node } ${ c.keptFrom.slot || 'root' }` : 'an earlier target' } already set ${ c.path } to ${ JSON.stringify( c.kept ) }; ${ c.from.node } ${ c.from.slot || 'root' } wanted ${ JSON.stringify( c.dropped ) }; the first value is kept` } );
+export const conflictRow = ( c ) => ( { node: c.from.node, block: c.from.block, slot: c.from.slot, property: c.path, state: c.from.state, value: JSON.stringify( c.dropped ), reason: c.replaced ? `conflict: ${ c.keptFrom.node } ${ c.keptFrom.slot || 'root' } declares ${ c.path } ${ JSON.stringify( c.kept ) }; it replaces the browser ring's ${ JSON.stringify( c.dropped ) } from ${ c.from.node } ${ c.from.slot || 'root' }` : `conflict: ${ c.keptFrom ? `${ c.keptFrom.node } ${ c.keptFrom.slot || 'root' }` : 'an earlier target' } already set ${ c.path } to ${ JSON.stringify( c.kept ) }; ${ c.from.node } ${ c.from.slot || 'root' } wanted ${ JSON.stringify( c.dropped ) }; the first value is kept` } );

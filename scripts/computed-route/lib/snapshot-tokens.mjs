@@ -75,7 +75,7 @@ function shadowLayers( value ) {
 // source "draft": outline-width → width, outline-color → ring, outline-offset → offset (an outline with no declared
 // offset is 0px, the browser's initial value), a box-shadow glow (a non-inset layer with blur) → near (first glow
 // layer) and far (last) with bloom "1", and no glow → bloom "0". ringOnDark is not mapped: the draft look is read on
-// one ground. Anything focus.css cannot paint is a named gap, never dropped: a dashed or dotted outline, a hard
+// one ground. Anything focus.css cannot paint is a named gap, never dropped: the browser's auto ring style, a dashed or dotted outline, a hard
 // (zero-blur) shadow ring or an inset shadow, an outline switched off, a colour that is not a literal.
 export function focusTokens( look ) {
 	const d = look?.declared ?? look ?? {};
@@ -89,6 +89,8 @@ export function focusTokens( look ) {
 	const outlineOff = [ 'none', 'hidden' ].includes( style );
 	if ( outlineOff ) {
 		gaps.push( 'outline-style:none: the draft draws no outline; focus.css keeps its ring because the glow sizes scale with the ring width' );
+	} else if ( 'auto' === style ) {
+		gaps.push( 'outline-style:auto: the browser\'s own focus ring; focus.css paints a solid outline at its width, colour and offset' );
 	} else if ( style && 'solid' !== style ) {
 		gaps.push( `outline-style:${ style }: focus.css paints a solid outline` );
 	}
