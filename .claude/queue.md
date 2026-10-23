@@ -46,3 +46,4 @@ The signal between the cloning tool plan's two orchestrator sessions (`.claude/p
 - 2026-10-23 T site-run-start recalibrate sgs/icon on local-indus (its boxShadowHover is uncalibrated; header-looks wave)
 - 2026-10-23 T site-run-end (sgs/icon recalibrated on local-indus: 25 settings, was 19; the fixture now renders linked icons, so boxShadowHover and the five other hover settings calibrate on both plain and linked paths; nothing lost)
 - 2026-10-23 T site-run-start header post 201 (header-looks wave: skeleton propose, Fill, build; reads the framework DB)
+- 2026-10-23 T site-run-start recalibrate sgs/nav-bar-menu on local-indus (lane 5: own-element slots, length radius markers), then header Fill and build post 201
