@@ -1,0 +1,20 @@
+# key-level diff: committed sites/indus-foods/theme-snapshot.json -> re-extracted indus-foods (scratch)
+# run: --intake sites/indus-foods/build/intake/intake.json --merge-onto the committed snapshot. The palette is unchanged: the 18 token-file colours the draft uses were emitted as custom-* declared entries and the confirmed map then dropped every one it does not name; --social-google is the one declared token the draft never uses (gap-logged). Added: 6 manifest hashes and a source-sans-3 rendered family (a fresh measurement; not caused by this change).
+# 15 added, 0 removed, 2 changed
++  _sgsExtractor.manifest_sha256.EnquiryForm.dc.html = "cdb4408622be747be444e21c75e3a7096569af77bf7657e7cb45d41e93acbf66"
++  _sgsExtractor.manifest_sha256.Indus Foods Website v2.dc.html = "4db1f8479d1a91fa26c34ec1c69894ba1fd901649fcdcef7b0c0e78b01e322bf"
++  _sgsExtractor.manifest_sha256.TradeApplication.dc.html = "660a8c0c4f9311cbdf28dd07eec4359c1a4d442624848470b483094aeb24ce77"
++  _sgsExtractor.manifest_sha256.tokens/colors.css = "53a0a40ac3df470bc3f808c3b200c0372e0b4306871691cc4b44a0e1a5ac2035"
++  _sgsExtractor.manifest_sha256.tokens/spacing.css = "80d52d6046d3e690b5a5610150903218af5cbbf84028f35032c9a10d6a0515eb"
++  _sgsExtractor.manifest_sha256.tokens/typography.css = "9dcdef1dd3f8e3830a78e14b472900536cebcf3f17a08b945981d2a65816f64b"
++  settings.color.palette[accent-text]._source = "confirmed"
++  settings.color.palette[section-text]._source = "confirmed"
++  settings.typography.fontFamilies[source-sans-3]._source = "rendered"
++  settings.typography.fontFamilies[source-sans-3].fontFamily = "\"Source Sans 3\", \"Source Sans Pro\", system-ui, sans-serif"
++  settings.typography.fontFamilies[source-sans-3].fontStyles = ["normal"]
++  settings.typography.fontFamilies[source-sans-3].fontWeights = ["400", "600", "700"]
++  settings.typography.fontFamilies[source-sans-3].google = true
++  settings.typography.fontFamilies[source-sans-3].name = "Source Sans 3"
++  settings.typography.fontFamilies[source-sans-3].slug = "source-sans-3"
+~  _sgsExtractor.draft_source_sha256 : "65153af30f69b14fccfe149a822f0785bb59780bafb36fb94dc50640f6eeed4f" -> "bc7b563ea991c1cdc00407934af48a25db4342c7241961627f1b62dc50155062"
+~  settings.typography.fontFamilies[body].fontFace : [{"fontFamily": "Source Sans 3", "fontWeight": "400 900", "fontStyle": "normal", "fontDisplay": "swap", "src": ["file:./ -> [{"fontFamily": "Source Sans 3", "fontWeight": "400 700", "fontStyle": "normal", "fontDisplay": "swap", "src": ["file:./
