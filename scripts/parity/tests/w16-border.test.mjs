@@ -69,3 +69,8 @@ test( 'hover: an edge unpainted on one side in the hover state gives no colour r
 	const both = run( {}, {}, hov( '1px', RED ), hov( '1px', CREAM ) );
 	assert.deepEqual( keys( both, 'hover' ), [ 'border-bottom-color' ] );
 } );
+
+test( '(b) reversed: the draft paints and the live side is 0px gives only the width row', () => {
+	const rows = run( edge( '3px', CREAM ), edge( '0px', RED, 'none' ) );
+	assert.deepEqual( keys( rows ), [ 'border-bottom-width' ] );
+} );
