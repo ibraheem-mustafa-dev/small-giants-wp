@@ -32,8 +32,12 @@ export function layoutComparable( prop, d, l ) {
 // and a live wrapper-plus-inner band compare the same layout. A closed <details> that renders its <summary> plus
 // collapsed content counts only its <summary>: a visitor sees one child, and a draft that drops the answer when closed
 // presents the same single child. An open <details>, or one with no rendered <summary>, counts every rendered child.
+// A read that stamps the elements its targets own (Fill: data-fill-owner holds the owning node's index) never descends into
+// an element another node owns: that element is not this one's inner band, so its layout is not this element's.
 export function layoutElement( el, styleOf = ( e ) => getComputedStyle( e ) ) {
 	const lays = ( e ) => /(^|-)(flex|grid)$/.test( styleOf( e ).display );
+	const ownerOf = ( e ) => ( e.getAttribute ? e.getAttribute( 'data-fill-owner' ) : null );
+	const owner = ownerOf( el );
 	for ( let a = el; ; ) {
 		let kids = [ ...a.children ].filter( ( k ) => k.getClientRects().length && 'none' !== styleOf( k ).display );
 		if ( 'DETAILS' === a.tagName && ! a.open && kids.length >= 2 && kids.some( ( k ) => 'SUMMARY' === k.tagName ) ) {
@@ -43,6 +47,9 @@ export function layoutElement( el, styleOf = ( e ) => getComputedStyle( e ) ) {
 			return lays( a ) ? a : el;
 		}
 		if ( 1 !== kids.length ) {
+			return el;
+		}
+		if ( null !== ownerOf( kids[ 0 ] ) && ownerOf( kids[ 0 ] ) !== owner ) {
 			return el;
 		}
 		a = kids[ 0 ];

@@ -91,6 +91,11 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 		return `rgb(${ ( n >> 16 ) & 255 }, ${ ( n >> 8 ) & 255 }, ${ n & 255 })`;
 	};
 	const out = {};
+	// Every target's element is stamped with its node first, so a layout read never descends into an element another node owns
+	// (parity/lib/paint.mjs::layoutElement).
+	for ( const j of jobs ) {
+		resolve( j.finder )?.setAttribute( 'data-fill-owner', String( j.owner ) );
+	}
 	for ( const j of jobs ) {
 		const el = resolve( j.finder );
 		if ( el && null !== j.mark ) {
@@ -274,6 +279,7 @@ export function jobsFor( nodes ) {
 		id: t.id,
 		finder: t.scoped && 'tpl' !== finderKind( t.finder ) ? scopeFinder( t.finder, scopeSelector( n.index ) ) : t.finder,
 		mark: t.scoped ? null : n.index,
+		owner: n.index,
 		// A node with child nodes reads its own text styles at every target, its root and its slots alike (a row's content
 		// band): a text descendant there is another node's element, never this one's look.
 		own: n.children.length > 0,
