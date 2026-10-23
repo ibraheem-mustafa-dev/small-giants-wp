@@ -106,15 +106,30 @@ test( 'MUST FAIL: WooCommerce\'s stock cart page (core blocks inside its cart bl
 	const DEFAULT = '<!-- wp:woocommerce/cart -->\n<div class="wp-block-woocommerce-cart"><!-- wp:woocommerce/empty-cart-block -->\n<div class="wp-block-woocommerce-empty-cart-block"><!-- wp:heading {"textAlign":"center"} -->\n<h2 class="wp-block-heading has-text-align-center">Your cart is currently empty!</h2>\n<!-- /wp:heading -->\n<!-- wp:separator -->\n<hr class="wp-block-separator"/>\n<!-- /wp:separator --></div>\n<!-- /wp:woocommerce/empty-cart-block --></div>\n<!-- /wp:woocommerce/cart -->';
 	const cartPost = ( content ) => ( { 7: { id: 7, type: 'page', slug: 'basket', title: 'Cart', status: 'publish', parent: 0, template: '', rowKey: '', treeHash: '', content } } );
 	const at = ( content, defaults ) => plan( SHOP(), state( { holders: { 'page:basket': [ 7 ] }, posts: cartPost( content ), wooDefaults: defaults } ) );
-	const stock = at( DEFAULT.replace( /\n/g, '\n\n' ), [ DEFAULT ] );
+	const stock = at( DEFAULT.replace( /\n/g, '\n\n' ), { cart: DEFAULT } );
 	assert.deepEqual( stock.problems, [] );
 	assert.deepEqual( stock.actions.filter( ( a ) => 'adopt' === a.type ).map( ( a ) => [ a.key, a.id ] ), [ [ 'page:basket', 7 ] ] );
-	const edited = at( DEFAULT.replace( 'currently empty!', 'empty, browse our shop' ), [ DEFAULT ] );
+	const edited = at( DEFAULT.replace( 'currently empty!', 'empty, browse our shop' ), { cart: DEFAULT } );
 	assert.match( edited.problems.join( '\n' ), /page:basket: post 7 is the page WooCommerce names in woocommerce_cart_page_id, but its content is no longer WooCommerce's default/ );
-	assert.match( at( DEFAULT, [] ).problems.join( '\n' ), /no longer WooCommerce's default/ );
+	assert.match( at( DEFAULT, {} ).problems.join( '\n' ), /no longer WooCommerce's default/ );
 	assert.match( statePhp( SHOP() ), /get_cart_block_content/ );
 	assert.match( statePhp( SHOP() ), /apply_filters\( 'woocommerce_create_pages'/ );
 	assert.match( statePhp( SHOP() ), /new ReflectionMethod\( 'WC_Install', \$m \)/ );
+} );
+
+test( 'MUST FAIL: a held page is compared with its own role\'s default only: a checkout page holding the cart default stops the run', () => {
+	const CART = '<!-- wp:woocommerce/cart -->\n<div class="wp-block-woocommerce-cart"></div>\n<!-- /wp:woocommerce/cart -->';
+	const CHECKOUT = '<!-- wp:woocommerce/checkout -->\n<div class="wp-block-woocommerce-checkout"></div>\n<!-- /wp:woocommerce/checkout -->';
+	const post = ( content ) => ( { 8: { id: 8, type: 'page', slug: 'checkout', title: 'Checkout', status: 'publish', parent: 0, template: '', rowKey: '', treeHash: '', content } } );
+	const at = ( content, defaults ) => plan( SHOP(), state( { holders: { 'page:checkout': [ 8 ] }, posts: post( content ), wooDefaults: defaults } ) );
+	assert.match( at( CART, { cart: CART, checkout: CHECKOUT } ).problems.join( '\n' ), /page:checkout: post 8 is the page WooCommerce names in woocommerce_checkout_page_id, but its content is no longer WooCommerce's default/ );
+	assert.deepEqual( at( CHECKOUT, { cart: CART, checkout: CHECKOUT } ).problems, [] );
+	assert.match( at( CART, { checkout: CHECKOUT } ).problems.join( '\n' ), /no longer WooCommerce's default/, 'woocommerce blocks alone do not pass when the role has a known default' );
+	assert.deepEqual( at( CART, {} ).problems, [], 'with no known default, woocommerce blocks alone are WooCommerce\'s' );
+	assert.deepEqual( at( '[woocommerce_checkout]', { checkout: CHECKOUT } ).problems, [], 'the shortcode case stays' );
+	assert.match( statePhp( SHOP() ), /foreach \( array\( 'cart', 'checkout', 'myaccount' \) as \$role \)/ );
+	assert.match( statePhp( SHOP() ), /\$out\['wooDefaults'\]\[ \$role \] = \(string\) \$p\['content'\];/, 'the defaults are keyed by role' );
+	assert.match( statePhp( SHOP() ), /'name' => _x\( 'checkout', 'Page slug', 'woocommerce' \), 'title' => _x\( 'Checkout', 'Page title', 'woocommerce' \)/ );
 } );
 
 test( 'a shop row\'s page is never given a page template; product and product_cat rows add no menu item', () => {

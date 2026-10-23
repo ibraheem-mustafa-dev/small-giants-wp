@@ -21,23 +21,31 @@ export const TEMPLATE_CONTENT_OPTION = 'sgs_site_build_template_content';
 // The WooCommerce page options part 6 sets, and the page-map role each one takes.
 export const WOO_OPTIONS = [ 'woocommerce_shop_page_id', 'woocommerce_cart_page_id', 'woocommerce_checkout_page_id', 'woocommerce_myaccount_page_id' ];
 
-// Whether a post's content is still what WooCommerce wrote into its own page: empty, a `[woocommerce_*]` shortcode
-// (alone or in a shortcode block), WooCommerce's block markup holding no block of anyone else's, or exactly one of the
-// default page contents the installed WooCommerce generates (`defaults`, read on the site by statePhp: its cart and
-// checkout blocks carry core blocks of WooCommerce's own inside them), compared with whitespace runs collapsed.
-// Unknown content (null) is never the default.
+// The WooCommerce role (a statePhp `wooDefaults` key) each page option names.
+export const WOO_ROLE = { woocommerce_shop_page_id: 'shop', woocommerce_cart_page_id: 'cart', woocommerce_checkout_page_id: 'checkout', woocommerce_myaccount_page_id: 'myaccount' };
+
+// Whether a post's content is still what WooCommerce wrote into its own page for one role: empty, a
+// `[woocommerce_*]` shortcode (alone or in a shortcode block), or exactly that role's default content the installed
+// WooCommerce generates (`roleDefault`, read on the site by statePhp: its cart and checkout blocks carry core blocks of
+// WooCommerce's own inside them), compared with whitespace runs collapsed. Only when the role has no known default
+// does WooCommerce's block markup holding no block of anyone else's count as its own. Unknown content (null) is never
+// the default.
 const squash = ( s ) => String( s ).replace( /\s+/g, ' ' ).trim();
-export function isWooDefaultContent( content, defaults = [] ) {
+export function isWooDefaultContent( content, roleDefault = null ) {
 	if ( 'string' !== typeof content ) {
 		return false;
 	}
-	if ( defaults.some( ( d ) => 'string' === typeof d && '' !== d.trim() && squash( d ) === squash( content ) ) ) {
+	const known = 'string' === typeof roleDefault && '' !== roleDefault.trim();
+	if ( known && squash( roleDefault ) === squash( content ) ) {
 		return true;
 	}
 	// A shortcode block around WooCommerce's shortcode is how its installer writes the My account page.
 	const text = content.replace( /<!--\s+\/?wp:shortcode\s*-->/g, '' ).trim();
 	if ( '' === text || /^\[woocommerce_[a-z_]+[^\]]*\]$/.test( text ) ) {
 		return true;
+	}
+	if ( known ) {
+		return false;
 	}
 	const blocks = [ ...text.matchAll( /<!--\s+\/?wp:([a-z0-9-]+\/[a-z0-9-]+)/g ) ].map( ( m ) => m[ 1 ] );
 	const stripped = text.replace( /<!--[\s\S]*?-->/g, '' ).replace( /<[^>]*>/g, '' ).trim();
@@ -114,10 +122,11 @@ $out['options'] = array();
 foreach ( array( 'show_on_front', 'page_on_front', 'page_for_posts', 'permalink_structure', ${ WOO_OPTIONS.map( ( o ) => `'${ o }'` ).join( ', ' ) } ) as $o ) {
 	$out['options'][ $o ] = (string) get_option( $o );
 }
-// The page contents the installed WooCommerce's page creation writes, after its woocommerce_create_pages filter (which
-// plugins use: sgs-blocks' Account_Pages::add_pages gives My account its sgs/account block): the cart and checkout block
-// contents (protected on WC_Install, so read by reflection) and the account shortcode, run through that filter as
-// WC_Install::create_pages does. isWooDefaultContent compares a held page against them.
+// The page contents the installed WooCommerce's page creation writes, by role, after its woocommerce_create_pages
+// filter (which plugins use: sgs-blocks' Account_Pages::add_pages gives My account its sgs/account block): the cart and
+// checkout block contents (protected on WC_Install, so read by reflection) and the account shortcode, each with the
+// name and title WooCommerce's own array carries, run through that filter as WC_Install::create_pages does.
+// isWooDefaultContent compares a held page against its own role's content only.
 $out['wooDefaults'] = array();
 if ( class_exists( 'WC_Install' ) ) {
 	$made = function ( $m ) {
@@ -129,16 +138,18 @@ if ( class_exists( 'WC_Install' ) ) {
 		return (string) $r->invoke( null );
 	};
 	$pages = apply_filters( 'woocommerce_create_pages', array(
-		'cart'      => array( 'content' => $made( 'get_cart_block_content' ) ),
-		'checkout'  => array( 'content' => $made( 'get_checkout_block_content' ) ),
-		'myaccount' => array( 'content' => '<!-- wp:shortcode -->[woocommerce_my_account]<!-- /wp:shortcode -->' ),
+		'cart'      => array( 'name' => _x( 'cart', 'Page slug', 'woocommerce' ), 'title' => _x( 'Cart', 'Page title', 'woocommerce' ), 'content' => $made( 'get_cart_block_content' ) ),
+		'checkout'  => array( 'name' => _x( 'checkout', 'Page slug', 'woocommerce' ), 'title' => _x( 'Checkout', 'Page title', 'woocommerce' ), 'content' => $made( 'get_checkout_block_content' ) ),
+		'myaccount' => array( 'name' => _x( 'my-account', 'Page slug', 'woocommerce' ), 'title' => _x( 'My account', 'Page title', 'woocommerce' ), 'content' => '<!-- wp:shortcode -->[woocommerce_my_account]<!-- /wp:shortcode -->' ),
 	) );
-	foreach ( (array) $pages as $p ) {
-		if ( is_array( $p ) && isset( $p['content'] ) && '' !== (string) $p['content'] ) {
-			$out['wooDefaults'][] = (string) $p['content'];
+	foreach ( array( 'cart', 'checkout', 'myaccount' ) as $role ) {
+		$p = is_array( $pages ) && isset( $pages[ $role ] ) && is_array( $pages[ $role ] ) ? $pages[ $role ] : array();
+		if ( isset( $p['content'] ) && '' !== (string) $p['content'] ) {
+			$out['wooDefaults'][ $role ] = (string) $p['content'];
 		}
 	}
 }
+$out['wooDefaults'] = (object) $out['wooDefaults'];
 $out['templateHashes'] = (object) (array) get_option( '${ TEMPLATE_OPTION }', array() );
 $out['templateSaved'] = (object) (array) get_option( '${ TEMPLATE_CONTENT_OPTION }', array() );
 $out['customTemplates'] = array();
