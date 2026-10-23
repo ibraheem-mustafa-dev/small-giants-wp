@@ -16,7 +16,7 @@ const gates = ( failAt ) => GATES.map( ( gate, i ) => ( { gate, status: i < fail
 const issue = { key: 'k1', solveClass: 'missing', rows: [ { width: 1440 }, { width: 375 }, { width: 1440 } ] };
 const row = ( over = {} ) => ( { ref: 'cr-ref-s-1', pair: 'head', key: 'padding-top', kind: 'style', state: 'rest', width: 1440, draft: '24px', live: '16px', draftId: 'tpl-3', ...over } );
 const ctx = ( over = {} ) => ( { blockOf: () => 'sgs/container', stateOf: () => null, declaredOf: () => '24px', findingOf: () => ( { attribute: 'maxWidth' } ), ...over } );
-const res = ( over = {} ) => ( { gate: 'G3', class: 'I-unrouted', evidence: ev( 'x' ), gates: gates( 3 ), candidate: false, settings: null, ...over } );
+const res = ( over = {} ) => ( { gate: 'G3', class: 'I-unrouted', evidence: ev( 'x' ), gates: gates( 3 ), candidate: false, settings: null, setting: { block: 'sgs/container', attr: 'maxWidth' }, ...over } );
 const tmp = () => path.join( fs.mkdtempSync( path.join( os.tmpdir(), 'gaps-' ) ), 'qa', 'gaps.json' );
 
 test( 'MUST FAIL: a chain row carries draftId, declared, renderedDraft, renderedLive, block, attribute, state and widths, and gapRow writes it', () => {
@@ -27,6 +27,13 @@ test( 'MUST FAIL: a chain row carries draftId, declared, renderedDraft, rendered
 	const g = JSON.parse( fs.readFileSync( file, 'utf8' ) ).rows[ 0 ];
 	assert.equal( w.rows.length, 1 );
 	assert.deepEqual( [ g.id, g.class, g.draftId, g.declared, g.renderedDraft, g.renderedLive, g.block, g.attribute, g.state, g.widths ], [ 'header:k1', 'I-unrouted', 'tpl-3', '24px', '24px', '16px', 'sgs/container', 'maxWidth', null, [ 1440, 375 ] ] );
+} );
+
+test( 'MUST FAIL: an instrument row\'s attribute is the setting the failing gate judged in the chain result, never a second lookup', () => {
+	const c = ctx( { findingOf: () => ( { attribute: 'textColourScrolled' } ) } );
+	assert.equal( gapInput( { issue, row: row(), res: res( { setting: { block: 'sgs/site-header', attr: 'shadowColourHover' } } ) }, c ).attribute, 'shadowColourHover' );
+	assert.equal( gapInput( { issue, row: row(), res: res( { gate: 'G4', class: 'I-calibration', setting: { block: 'sgs/x', attr: 'gap' } } ) }, c ).attribute, 'gap' );
+	assert.equal( gapInput( { issue, row: row(), res: res( { setting: null } ) }, c ).attribute, null );
 } );
 
 test( 'MUST FAIL: a row without a draftId names its draft element by its pair; a draftId wins over the pair', () => {

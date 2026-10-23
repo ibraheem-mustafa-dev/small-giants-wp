@@ -28,7 +28,7 @@ import { manifestSchemaVersion } from './lib/handoff.mjs';
 import { createProbes, liveTarget } from './lib/gate-probes.mjs';
 import { writeGaps, gapsPath } from './lib/gaps-file.mjs';
 import { gapInput } from './lib/gap-input.mjs';
-import { ancestorsOf, instrumentFinding, withDiscovery } from './lib/gap-classes.mjs';
+import { ancestorsOf, withDiscovery } from './lib/gap-classes.mjs';
 import { debtRows, debtPath, staleSlotMaps, unroutedKnown, writeDebt } from './lib/instrument-debt.mjs';
 import { READ_KEY } from './lib/calibrate-props.mjs';
 import { serveDraft } from './lib/draft.mjs';
@@ -155,9 +155,6 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 			G7: ( row ) => ( { recheck: probes?.recheck ? () => probes.recheck( probed( row ) ) : undefined } ),
 		},
 		blockOf,
-		// The inputs G3 and G4 read for a row, to name the setting a failing instrument gate found.
-		findingOf: ( row ) => instrumentFinding( { db, block: need( blockOf( row ), 'the block of the row' ), ancestors: ancestors( blockOf( row ) ), property: cssProp( row.key ), state: settingState( row, s?.states ) ?? null, cache: calFor( blockOf( row ) ), isDiscovered: discovered,
-			boxAgrees: ! ( pairOf( walk, row )?.diffs || [] ).some( ( d ) => ! d.accepted && 'box' === d.kind ) } ),
 		treeBlocks: () => {
 			const names = new Set();
 			const visit = ( nodes ) => ( nodes || [] ).forEach( ( n ) => ( names.add( n.name ), visit( n.innerBlocks ) ) );

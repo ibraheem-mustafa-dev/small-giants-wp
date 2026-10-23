@@ -100,32 +100,13 @@ export function staleCheck( i ) {
 	return i.blockChanges.length ? fail( `the block has uncommitted changes (${ i.blockChanges.slice( 0, 3 ).join( '; ' ) })` ) : { pass: true, class: null, evidence: `DB ${ i.dbRefreshedAt } after commit ${ i.blockCommittedAt }` };
 }
 
-// A db handle that returns, for block_attributes, only the given row (to ask G3 about one candidate at a time).
-const only = ( db, row ) => ( { prepare: ( sql ) => { const st = db.prepare( sql ); return { all: ( ...a ) => ( /FROM block_attributes/.test( sql ) ? [ row ] : st.all( ...a ) ) }; } } );
-
 // The instrument gates read on one row's block: G3 (the DB's settings, discovery-aware), G4 (the calibration cache) and,
 // when `stale` is given, G0's DB-versus-code check. i: { db, block, ancestors, property, state, cache, isDiscovered, boxAgrees, stale }.
-// Returns { stale, db, calibration, attribute, block }; `attribute` names the setting the failing gate found.
+// Returns { stale, db, calibration, attribute, block }; `attribute` names the setting the failing gate itself judged.
 export function instrumentFinding( i ) {
-	const seen = [];
-	const rec = { prepare: ( sql ) => {
-		const st = withDiscovery( i.db, i.isDiscovered ?? ( () => false ) ).prepare( sql );
-		return { all: ( ...a ) => {
-			const rows = st.all( ...a );
-			/FROM block_attributes/.test( sql ) && seen.push( ...rows );
-			return rows;
-		} };
-	} };
-	const slice = { block: i.block, ancestors: i.ancestors, property: i.property, state: i.state };
-	const g3 = g3Db( { db: rec, ...slice } );
-	let [ g4, attribute ] = [ null, null ];
-	if ( ! g3.pass ) {
-		attribute = seen.find( ( r ) => g3Db( { db: only( rec, r ), ...slice } ).class === g3.class )?.attr_name ?? null;
-	} else {
-		const ask = ( settings ) => g4Calibration( { cache: i.cache, settings, state: i.state, boxAgrees: i.boxAgrees ?? null } );
-		g4 = ask( g3.settings );
-		attribute = g4.pass ? null : g3.settings.find( ( s ) => ! ask( [ s ] ).pass )?.attr ?? null;
-	}
+	const g3 = g3Db( { db: withDiscovery( i.db, i.isDiscovered ?? ( () => false ) ), block: i.block, ancestors: i.ancestors, property: i.property, state: i.state } );
+	const g4 = g3.pass ? g4Calibration( { cache: i.cache, settings: g3.settings, state: i.state, boxAgrees: i.boxAgrees ?? null } ) : null;
+	const attribute = ( ! g3.pass ? g3.setting : g4.pass ? null : g4.setting )?.attr ?? null;
 	return { stale: i.stale ?? null, db: g3, calibration: g4, attribute, block: i.block };
 }
 

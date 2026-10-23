@@ -4,11 +4,11 @@ import { gapClassOf } from './gap-classes.mjs';
 
 const read = ( v ) => ( undefined === v ? null : v );
 
-// The setting a row names: the one a failing instrument gate found (G3 or G4, an I-class row), else the single candidate setting
-// G3 listed, else null (none listed, or several with nothing to choose between them).
-function attributeOf( res, row, ctx ) {
+// The setting a row names: the one a failing instrument gate judged in the chain result (G3 or G4, an I-class row), else
+// the single candidate setting G3 listed, else null (none listed, or several with nothing to choose between them).
+function attributeOf( res ) {
 	if ( [ 'G3', 'G4' ].includes( res.gate ) && String( res.class ).startsWith( 'I-' ) ) {
-		return ctx.findingOf( row ).attribute ?? null;
+		return res.setting?.attr ?? null;
 	}
 	return 1 === res.settings?.length ? res.settings[ 0 ].attr : null;
 }
@@ -23,6 +23,6 @@ export function gapInput( { issue, row, res }, ctx ) {
 		key: issue.key, solveClass: issue.solveClass, ref: row.ref ?? null, pair: row.pair, property: row.key,
 		widths: [ ...new Set( issue.rows.map( ( x ) => x.width ) ) ], draftId: read( row.draftId ?? row.pair ), state: read( ctx.stateOf( row ) ),
 		declared: read( ctx.declaredOf( row ) ), renderedDraft: read( row.draft ), renderedLive: read( row.live ),
-		block: ctx.blockOf( row ), attribute: attributeOf( res, row, ctx ), ...res,
+		block: ctx.blockOf( row ), attribute: attributeOf( res ), ...res,
 	};
 }
