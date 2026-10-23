@@ -85,7 +85,7 @@
  },
  {
   "file": "lib/gate-probes.mjs",
-  "find": "if ( ! f.runs ) {",
+  "find": "if ( ! ( report.runs || [] ).length ) {",
   "replace": "if ( false ) {",
   "why": "an empty walk closes the row"
  },
@@ -100,5 +100,89 @@
   "find": "flowFails: f.open.length > 0,",
   "replace": "flowFails: true,",
   "why": "a flow that now agrees still fails"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "const out = [ ...( Array.isArray( listed ) ? listed.filter( ( v ) => '' !== v ) : [] ) ];",
+  "replace": "const out = [];",
+  "why": "an enum setting is probed without its enum values"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "takes( 'boolean' ) && out.push( true );",
+  "replace": "",
+  "why": "a boolean setting is never switched on"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "takes( 'number', 'integer' ) && out.push( 37, { desktop: 37 } );",
+  "replace": "",
+  "why": "a number setting is probed with text only"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "out.push( 'primary', 'accent', '#12ab34' )",
+  "replace": "out.push( '#12ab34' )",
+  "why": "a slug-only colour setting is probed with a hex only"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "...( KEYWORD_VALUES[ property ] || [] ), ",
+  "replace": "",
+  "why": "a keyword setting is probed with lengths only"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "const own = w.winners.find( ( n ) => 'element.style' !== n && ownRule( n ) );",
+  "replace": "const own = w.winners[ 0 ];",
+  "why": "a core rule or an inline style is taken for an SGS hardcode"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "if ( w.unread ) {",
+  "replace": "if ( false ) {",
+  "why": "unread rules leave a hardcode winner unseen"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "if ( LEAN_BLIND.includes( row.kind ) ||",
+  "replace": "if ( false ||",
+  "why": "a row the lean walk never reads is closed by its absence"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "if ( ! report.runs.some( ( r ) => r.state === row.state && r.width === row.width ) ) {",
+  "replace": "if ( false ) {",
+  "why": "a walk with no run at the row's width and state closes the row"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "need( o.url || o.origin, 'the live origin' )",
+  "replace": "need( o.origin, 'the live origin' )",
+  "why": "a probe opens the home page for every surface"
+ },
+ {
+  "file": "lib/gate-probes-page.mjs",
+  "find": "for ( const s of [ ...document.styleSheets, ...( document.adoptedStyleSheets || [] ) ] ) {\n\t\tsheets++;",
+  "replace": "for ( const s of [ ...document.styleSheets ] ) {\n\t\tsheets++;",
+  "why": "adopted stylesheets are never read"
+ },
+ {
+  "file": "lib/gate-probes-page.mjs",
+  "find": "} else if ( r.styleSheet ) {\n\t\t\t\tlet inner = null;",
+  "replace": "} else if ( false ) {\n\t\t\t\tlet inner = null;",
+  "why": "an @import is never followed"
+ },
+ {
+  "file": "lib/gate-probes-page.mjs",
+  "find": "SKIPPED.some( ( n ) => window[ n ] && r instanceof window[ n ] )",
+  "replace": "false",
+  "why": "@keyframes and @font-face count as unread rules"
+ },
+ {
+  "file": "lib/gate-probes-page.mjs",
+  "find": "return { before, winners, restored, unread };",
+  "replace": "return { before, winners, restored, unread: 0 };",
+  "why": "the unread count never reaches the hardcode result"
  }
 ]

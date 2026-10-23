@@ -8,7 +8,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { openDb } from '../lib/db.mjs';
-import { blockLookup, walkerItems, surfaceRows, groupRows, propertyFamily, tierPattern, blockFamily } from '../lib/census-mechanism.mjs';
+import { blockLookup, walkerItems, surfaceRows, groupRows, propertyFamily, tierPattern, blockFamily, signatureOf } from '../lib/census-mechanism.mjs';
 import { censusAll } from '../census-all.mjs';
 
 const ROOT = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..' );
@@ -150,4 +150,26 @@ test( 'the block family is the root of the parent chain in the framework DB', ()
 	assert.equal( blockFamily( 'sgs/site-header-row', real ), 'sgs/site-header' );
 	assert.equal( blockFamily( 'sgs/button', real ), 'sgs/button' );
 	assert.equal( blockFamily( 'sgs/not-a-block', real ), null );
+} );
+
+test( "MUST FAIL: part and effect rows group by what differs, not by the client's part label, and keep their pointer state and missing side", () => {
+	const part = ( name, prop, draft, live ) => ( { kind: 'part', key: `${ name } hover:${ prop }`, part: name, draft, live } );
+	const effect = ( name, st, draft, live ) => ( { kind: 'effect', key: `${ name } ${ st }`, part: name, draft, live } );
+	const of = ( client, d ) => census( client, 'header', report( [ [ 'x', 1440, 'p', d ] ] ), null );
+	const [ a ] = of( 'client-a', part( 'Book now', 'color', 'red', 'blue' ) );
+	const [ b ] = of( 'client-b', part( 'Reserve', 'color', 'red', 'blue' ) );
+	assert.equal( a.property, 'part:color' );
+	assert.equal( a.state, 'hover', 'a hover row is read in the hover state' );
+	assert.equal( signatureOf( a ), signatureOf( b ), 'two labels, one mechanism' );
+	assert.equal( groupRows( [ a, b ] ).groups.length, 1 );
+	const [ layers ] = of( 'client-a', { kind: 'part', key: 'Book now rest:layers', part: 'Book now', draft: '::before', live: 'none' } );
+	assert.deepEqual( [ layers.property, layers.state ], [ 'part:rest-layers', 'default' ] );
+	const [ liveLacks ] = of( 'client-a', effect( 'Book now', 'hover', 'sheen', 'none' ) );
+	const [ draftLacks ] = of( 'client-a', effect( 'Book now', 'hover', 'none', 'sheen' ) );
+	const [ press ] = of( 'client-b', effect( 'Reserve', 'press', 'ripple', 'none' ) );
+	assert.equal( liveLacks.property, 'effect:hover:live-lacks' );
+	assert.equal( draftLacks.property, 'effect:hover:draft-lacks' );
+	assert.notEqual( signatureOf( liveLacks ), signatureOf( draftLacks ), 'live lacks the effect and draft lacks it are two mechanisms' );
+	assert.deepEqual( [ press.property, press.state ], [ 'effect:press:live-lacks', 'active' ] );
+	assert.equal( groupRows( [ liveLacks, draftLacks, press ] ).groups.length, 3 );
 } );

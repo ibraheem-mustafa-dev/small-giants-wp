@@ -4,7 +4,7 @@
 // row a fresh walk closed (G7) is not an open item and is left out.
 import fs from 'fs';
 import path from 'path';
-import { GATES } from './gate-chain.mjs';
+import { GATES, PROBE_CLASS } from './gate-chain.mjs';
 
 // The class's owner (FR-48-65).
 export const OWNERS = {
@@ -12,6 +12,12 @@ export const OWNERS = {
 	'F-behaviour': 'owning feature spec', 'W-walker': 'Spec 48 §3.6', 'W-route': 'Spec 48', 'I-stale': 'sgs-update-v2.py, calibration',
 	'I-unrouted': 'sgs-update-v2.py', 'I-mistag': 'sgs-update-v2.py', 'I-calibration': 'calibration (§3.2)', 'draft-defect': 'Claude Design',
 	'render-wins': 'the surface report', CLIENT: 'the client\'s ledger',
+};
+
+// The classes each gate can fail with (lib/gate-chain.mjs), the other half of the chain's own contract.
+const GATE_CLASSES = {
+	G0: [ 'I-stale' ], G1: [ 'W-walker' ], G2: [ 'W-walker', 'draft-defect', 'render-wins', 'CLIENT' ], G3: [ 'I-stale', 'I-unrouted', 'I-mistag' ],
+	G4: [ 'I-calibration' ], G5: [ 'W-route' ], G6: [ 'W-route' ], G7: [ 'I-stale', 'closed' ],
 };
 
 export const gapsPath = ( client, root ) => path.join( root, 'sites', client, 'build', 'qa', 'gaps.json' );
@@ -37,6 +43,26 @@ export function gapRow( r, { surface, publishedOn, firstSeen } ) {
 	}
 	if ( ! r.candidate && ! r.gates.some( ( g ) => 'fail' === g.status ) ) {
 		throw new Error( `${ r.key }: a row with no framework candidacy must name the gate it failed` );
+	}
+	// The chain stops at its first failure: every gate before it passed, every gate after it was not reached.
+	const failed = r.gates.findIndex( ( g ) => 'fail' === g.status );
+	for ( let i = 1; i < r.gates.length; i++ ) {
+		const [ prev, g ] = [ r.gates[ i - 1 ], r.gates[ i ] ];
+		if ( 'not-reached' !== g.status && 'pass' !== prev.status ) {
+			throw new Error( `${ r.key }: ${ g.gate } is ${ g.status } after ${ 'fail' === prev.status ? `the failing gate ${ prev.gate }` : `${ prev.gate } was not reached` }` );
+		}
+	}
+	if ( r.candidate ) {
+		if ( ! Object.values( PROBE_CLASS ).includes( r.class ) ) {
+			throw new Error( `${ r.key }: a candidate's class must be the class G6 proved (${ Object.values( PROBE_CLASS ).join( ', ' ) }), not ${ r.class }` );
+		}
+	} else {
+		if ( r.class.startsWith( 'F-' ) ) {
+			throw new Error( `${ r.key }: ${ r.class } is a framework class but the row failed at ${ r.gates[ failed ].gate }` );
+		}
+		if ( ! GATE_CLASSES[ r.gates[ failed ].gate ].includes( r.class ) ) {
+			throw new Error( `${ r.key }: ${ r.gates[ failed ].gate } fails with class ${ GATE_CLASSES[ r.gates[ failed ].gate ].join( ' or ' ) }, not ${ r.class }` );
+		}
 	}
 	return {
 		id: `${ surface }:${ r.key }`, class: r.class, owner: OWNERS[ r.class ], surface, draftId: r.draftId ?? null, block: r.block ?? null, attribute: r.attribute ?? null,

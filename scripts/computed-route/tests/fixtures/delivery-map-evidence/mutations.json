@@ -25,18 +25,6 @@
  },
  {
   "file": "lib/delivery-map.mjs",
-  "find": "'effect' === r.kind && null != r.live &&",
-  "replace": "'effect' === r.kind && true &&",
-  "why": "a walker row with no live side evidences"
- },
- {
-  "file": "lib/delivery-map.mjs",
-  "find": "r.animation === record.id || ( ! r.animation",
-  "replace": "true || ( ! r.animation",
-  "why": "a walker row of another animation evidences"
- },
- {
-  "file": "lib/delivery-map.mjs",
   "find": "if ( needs.walkerOnly ) {\n\t\treturn { ok: false,",
   "replace": "if ( needs.walkerOnly ) {\n\t\treturn { ok: true,",
   "why": "a record no tree can hold passes"
@@ -49,32 +37,110 @@
  },
  {
   "file": "lib/delivery-map.mjs",
-  "find": "'string' === typeof v.effect && facts.effects.add( v.effect );",
-  "replace": "",
-  "why": "effect layers are never read from the trees"
- },
- {
-  "file": "lib/delivery-map.mjs",
-  "find": "'hover' === key && v.state && facts.flags.add( 'hover-state' );",
-  "replace": "'hover' === key && facts.flags.add( 'hover-state' );",
-  "why": "an empty hover panel counts as a hover state"
- },
- {
-  "file": "lib/delivery-map.mjs",
-  "find": "'entrance' === key && facts.flags.add( 'entrance' );",
-  "replace": "",
-  "why": "entrance layers are never read"
- },
- {
-  "file": "lib/delivery-map.mjs",
   "find": "if ( needs.native ) {\n\t\treturn { ok: true,",
   "replace": "if ( false ) {\n\t\treturn { ok: true,",
   "why": "a native record needs a tree layer"
  },
  {
   "file": "lib/delivery-map.mjs",
-  "find": "if ( k.startsWith( 'animation:' ) ) {",
+  "find": "if ( needs.walkerOnly ) {",
   "replace": "if ( false ) {",
-  "why": "no done key is checked for evidence"
+  "why": "a record no tree can hold passes the walker-only guard"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "'entrance' === key && hasContent( v ) && node.flags.add( 'entrance' );",
+  "replace": "",
+  "why": "entrance layers are never read"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "'string' === typeof v.effect && false !== v.enabled && node.effects.add( v.effect );",
+  "replace": "",
+  "why": "effect layers are never read from the trees"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "( r.animation === record.id || ( ! r.animation && want.length &&",
+  "replace": "( ( ! r.animation && want.length &&",
+  "why": "an effect record naming the animation is ignored"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "false !== v.enabled && node.effects.add( v.effect )",
+  "replace": "node.effects.add( v.effect )",
+  "why": "a disabled layer counts"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "'entrance' === key && hasContent( v ) && node.flags.add( 'entrance' )",
+  "replace": "'entrance' === key && node.flags.add( 'entrance' )",
+  "why": "an empty entrance counts"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "'hover' === key && hasContent( v.state ) && node.flags.add( 'hover-state' )",
+  "replace": "'hover' === key && v.state && node.flags.add( 'hover-state' )",
+  "why": "an empty hover state counts"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "facts.nodes.some( ( n ) => effects.every( ( e ) => n.effects.has( e ) ) && flags.every( ( f ) => n.flags.has( f ) ) )",
+  "replace": "( effects.every( ( e ) => facts.effects.has( e ) ) && flags.every( ( f ) => facts.flags.has( f ) ) )",
+  "why": "evidence spread across blocks counts"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "if ( ! effects.length && ! flags.length && ! blocks.length ) {",
+  "replace": "if ( false ) {",
+  "why": "empty needs pass"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "const miss = walkerMiss( record, needs, walkerRows );",
+  "replace": "const miss = null;",
+  "why": "an effect row reporting a miss is ignored"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "'effect' === r.kind && noEffect( r.live ) &&",
+  "replace": "'effect' === r.kind &&",
+  "why": "any effect row is counter-evidence"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "'effects' === r.kind && Array.isArray( r.live ) && r.live.length &&",
+  "replace": "'effects' === r.kind &&",
+  "why": "an empty live list is evidence"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "want.every( ( e ) => names( r.live ).includes( e ) )",
+  "replace": "want.some( ( e ) => names( r.live ).includes( e ) )",
+  "why": "one effect of several is enough"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "k.startsWith( 'animation:' ) || k.startsWith( 'state:' )",
+  "replace": "k.startsWith( 'animation:' )",
+  "why": "a state key needs no evidence"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "lower( run.state ?? '' ) === name",
+  "replace": "true",
+  "why": "a run of any state counts"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": "return open.length ? { ok: false",
+  "replace": "return false ? { ok: false",
+  "why": "open rows ignored"
+ },
+ {
+  "file": "lib/delivery-map.mjs",
+  "find": ".replace( / #\\d+$/, '' )",
+  "replace": "",
+  "why": "a repeated state name loses its base name"
  }
 ]
