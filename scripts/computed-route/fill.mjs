@@ -39,7 +39,7 @@ import { factsFile, loadFacts } from './lib/fact-record.mjs';
 import { currentItemGroups } from './lib/fill-current-item.mjs';
 import { widthGateWrites, maskHiddenVariants } from './lib/fill-width-gate.mjs';
 import { addDefectLooks } from './lib/fill-state-defect.mjs';
-import { presetWrites } from './lib/fill-preset.mjs';
+import { presetWrites, dropPresetMotion } from './lib/fill-preset.mjs';
 import { formWrites, formSources } from './lib/fill-form.mjs';
 import { motionDb } from './lib/motion-db.mjs';
 import { loadMotionSchema } from './lib/motion-schema.mjs';
@@ -231,6 +231,10 @@ export async function fillSurface( o ) {
 		result.writes.push( ...motion.writes );
 		result.unmapped.push( ...motion.unmapped );
 		result.handover.push( ...motion.handover );
+		// R2: where a button's painted preset holds the draft's hover transform, the instance motion leaves its transform channels.
+		const lift = dropPresetMotion( { lifted: presets.lifted, flat, writes: result.writes } );
+		result.writes = lift.writes;
+		result.notes.push( ...lift.notes );
 		result.notes.push( ...motion.notes.map( ( x ) => `${ x.node } ${ x.block }${ x.slot ? ` (${ x.slot })` : '' }: ${ x.text }` ) );
 		// The site-wide options the draft's behaviours set (the route fade): `sgs_motion_settings` keys, merged over what the site holds when site-build applies them.
 		const siteOptions = motion.site.length ? { option: 'sgs_motion_settings', records: motion.site.map( ( s ) => s.record ), value: Object.assign( {}, ...motion.site.map( ( s ) => s.settings ) ) } : null;
