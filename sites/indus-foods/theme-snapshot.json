@@ -855,8 +855,8 @@
       ]
     },
     {
-      "name": "page-no-title",
-      "title": "Page (no title)",
+      "name": "page-with-title",
+      "title": "Page (with title)",
       "postTypes": [
         "page"
       ]

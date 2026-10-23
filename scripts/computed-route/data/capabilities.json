@@ -2711,8 +2711,8 @@
 					"motion": false
 				},
 				{
-					"id": "template:page-no-title",
-					"label": "templates/page-no-title.html",
+					"id": "template:page-with-title",
+					"label": "templates/page-with-title.html",
 					"count": 1,
 					"examples": [],
 					"motion": false

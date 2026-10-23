@@ -15840,7 +15840,7 @@
 			"wave": "site and surfaces",
 			"note": "theme template or part: the page map names the template; no template writer: the site build (FR-48-55) sets each page's template from the page map but never writes a template's or part's content"
 		},
-		"template:page-no-title": {
+		"template:page-with-title": {
 			"recognise": null,
 			"write": null,
 			"check": null,
