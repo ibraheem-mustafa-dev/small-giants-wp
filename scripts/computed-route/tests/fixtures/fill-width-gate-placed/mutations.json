@@ -1,0 +1,10 @@
+[
+	{"file":"lib/fill-width-gate.mjs","find":"const gate = placedChildWidening( nodes, facts, rootComponent );","replace":"const gate = new Map( nodes.map( ( n ) => [ n.index, shownOfNode( n.node, facts, rootComponent ) ] ).filter( ( [ , at ] ) => at ) );","why":"a wrapper would be gated by its own element only, hiding a placed block"},
+	{"file":"lib/fill-width-gate.mjs","find":"export const unite = ( a, b ) => complement( intersect( complement( a ), complement( b ) ) );","replace":"export const unite = ( a ) => a;","why":"the union would drop the placed child's widths"},
+	{"file":"lib/fill-width-gate.mjs","find":"cat ? cat.shown : [ [ 0, Infinity ] ]","replace":"cat ? cat.shown : []","why":"an ungated placed child would count as shown nowhere"},
+	{"file":"lib/fill-width-gate.mjs","find":"( facts.elements?.[ ck ]?.template?.parentChain || [] ).includes( key ) ) {","replace":"false ) {","why":"a child inside the wrapper's own element would widen it"},
+	{"file":"lib/fill-width-gate.mjs","find":"if ( ! ck || ck === key ||","replace":"if ( ck === key ||","why":"an unresolved child key would be read as a placed block"},
+	{"file":"lib/fill-width-gate.mjs","find":"at = { shown, via: [ ...at.via, `widened to hold","replace":"at = { shown, via: [ ...at.via, `holds","why":"the widening reason would not be named"},
+	{"file":"lib/fill-width-gate.mjs","find":"Infinity === at.shown[ 0 ][ 1 ] && ( at = null );","replace":"Infinity === at.shown[ 0 ][ 1 ] && ( at = at );","why":"a wrapper shown at every width would keep a gate"},
+	{"file":"lib/fill-width-gate.mjs","find":"const cat = effective( c );","replace":"const cat = shownOfNode( c.node, facts, rootComponent );","why":"a placed child's own placed children would not propagate"}
+]

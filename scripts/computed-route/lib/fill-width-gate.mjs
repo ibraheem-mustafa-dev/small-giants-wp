@@ -219,6 +219,48 @@ export function maskHiddenVariants( reads, nodes, facts, rootComponent = null ) 
 	return reads;
 }
 
+// The union of two lists of ranges.
+export const unite = ( a, b ) => complement( intersect( complement( a ), complement( b ) ) );
+
+// The width gate of every gated skeleton node (Map: tree index -> { shown, via }), a wrapper's shown range widened to hold every
+// block placed in it: a child node whose draft element is not inside the node's own draft element (a block the skeleton moved
+// into a part's wrapper, lib/skeleton-part-slots.mjs::placePart) is shown by its own gate, or everywhere when it has none, so
+// the wrapper is shown wherever that child is. A child inside the node's element can only be narrower and changes nothing; a
+// child whose element key does not resolve changes nothing. A range widened to every width drops the gate.
+export function placedChildWidening( nodes, facts, rootComponent = null ) {
+	const kids = new Map();
+	nodes.forEach( ( n ) => null !== n.parent && kids.set( n.parent, [ ...( kids.get( n.parent ) || [] ), n ] ) );
+	const keyOf = ( n ) => ( facts ? tplKey( n.node.draftRef, rootComponent ) : null );
+	const memo = new Map();
+	const effective = ( n ) => {
+		if ( memo.has( n.index ) ) {
+			return memo.get( n.index );
+		}
+		let at = shownOfNode( n.node, facts, rootComponent );
+		const key = keyOf( n );
+		for ( const c of at && key ? kids.get( n.index ) || [] : [] ) {
+			const ck = keyOf( c );
+			if ( ! ck || ck === key || ( facts.elements?.[ ck ]?.template?.parentChain || [] ).includes( key ) ) {
+				continue;
+			}
+			const cat = effective( c );
+			const shown = unite( at.shown, cat ? cat.shown : [ [ 0, Infinity ] ] );
+			if ( JSON.stringify( shown ) !== JSON.stringify( at.shown ) ) {
+				at = { shown, via: [ ...at.via, `widened to hold ${ c.name } (${ ck }), shown ${ cat ? cat.via.join( ' and ' ) : 'at every width' }` ] };
+			}
+		}
+		at && at.shown.length === 1 && 0 === at.shown[ 0 ][ 0 ] && Infinity === at.shown[ 0 ][ 1 ] && ( at = null );
+		memo.set( n.index, at );
+		return at;
+	};
+	const gate = new Map();
+	nodes.forEach( ( n ) => {
+		const at = effective( n );
+		at && gate.set( n.index, at );
+	} );
+	return gate;
+}
+
 // Writes the width gates of every skeleton node. nodes: skeletonNodes(); flat: tree nodes by index; refOf: tree node to
 // ref; facts: the fact record (null: nothing written); db: the framework DB; scope: the surface; entries: the ledger's
 // entries (the snap entries continue its numbering). Returns { writes, unmapped, notes, ledger } in the shapes
@@ -228,11 +270,7 @@ export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, entries
 	if ( ! facts && ! nodes.some( ( n ) => n.node.widthShown || n.node.widthVariants ) ) {
 		return out;
 	}
-	const gate = new Map();
-	for ( const n of nodes ) {
-		const at = shownOfNode( n.node, facts, rootComponent );
-		at && gate.set( n.index, at );
-	}
+	const gate = placedChildWidening( nodes, facts, rootComponent );
 	for ( const n of nodes ) {
 		const at = gate.get( n.index );
 		const up = null === n.parent ? null : gate.get( n.parent );

@@ -12,7 +12,7 @@ import { lintSkeleton } from '../lint.mjs';
 import { inventoryModel } from './skeleton-model.mjs';
 import { makeClassifier, overrideFor, W } from './skeleton-classify.mjs';
 import { collapsePoint, childSlots } from './skeleton-child-slots.mjs';
-import { partSlots } from './skeleton-part-slots.mjs';
+import { partSlots, placePart } from './skeleton-part-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes } from './skeleton-form-steps.mjs';
 import { makeRecorder } from './skeleton-write-record.mjs';
@@ -260,10 +260,18 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const rootNode = buildNode( m.root, null );
 	const skeleton = formStepNodes( [].concat( rootNode || [] ), { factRecord, surfaceKind } );
 	// Each absorbed part element is its block node's draftSlots entry at the part's calibrated slot, with its children at
-	// the part's sub-part slots (lib/skeleton-part-slots.mjs).
+	// the part's sub-part slots, and the block node stands in the part's wrapper beside the wrapper's other content, or
+	// the wrapper the part leaves empty is dropped (lib/skeleton-part-slots.mjs).
 	partPending.forEach( ( p ) => {
 		const node = nodeOfKey[ p.into ];
-		if ( ! node || ! db ) {
+		if ( ! node ) {
+			return;
+		}
+		const place = placePart( { e: p.e, node, tree: skeleton, nodeOfKey, m } );
+		place?.placed && ( rowOf[ p.into ].placedIn = place.placed );
+		place?.dropped && Object.assign( rowOf[ place.dropped ], { action: 'remove', reason: place.note } );
+		place?.note && ( rowOf[ p.into ].slotNotes = [ ...( rowOf[ p.into ].slotNotes || [] ), place.note ] );
+		if ( ! db ) {
 			return;
 		}
 		const made = partSlots( { db, block: node.name, cal: { settings: calSettings( node.name ) }, part: p.part, opener: p.e, m, finder } );
