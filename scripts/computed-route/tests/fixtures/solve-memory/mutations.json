@@ -1,0 +1,50 @@
+[
+	{
+	"file": "lib/guard.mjs",
+	"find": "trials.set( r.ref, { ...t, setting: null } );",
+	"replace": "trials.delete( r.ref );",
+	"why": "an exhausted trial would forget its tried suspects and try them again next round"
+ },
+ {
+	"file": "lib/guard.mjs",
+	"find": "t.tried.add( `${ t.setting.ref }|${ t.setting.attr }` );\n\t\t\tt.setting = null;\n\t\t} else {",
+	"replace": "trials.delete( ref );\n\t\t} else {",
+	"why": "a proven culprit's record would be dropped with its tried set"
+ },
+ {
+	"file": "lib/guard.mjs",
+	"find": "for ( const [ ref, t ] of [ ...trials ].filter( ( [ , x ] ) => x.setting ) ) {",
+	"replace": "for ( const [ ref, t ] of [ ...trials ] ) {",
+	"why": "a remembered record with no open trial would be settled as if it held one"
+ },
+ {
+	"file": "lib/solve-loop.mjs",
+	"find": "\t\t\tbaseRound = round;\n\t\t\trecord( r.writes );",
+	"replace": "\t\t\tbaseRound = round;",
+	"why": "a write round would save the tree with no crash record of its writes"
+ },
+ {
+	"file": "lib/solve-loop.mjs",
+	"find": "unjudged.length && record( unjudged, `stopped in round ${ round }: ${ String( e?.message || e ).slice( 0, 300 ) }` );",
+	"replace": "",
+	"why": "a thrown stop would not say why the run ended"
+ },
+ {
+	"file": "lib/solve-loop.mjs",
+	"find": "let prev = resume?.prev || null;",
+	"replace": "let prev = null;",
+	"why": "the next run would write before judging the last run's unjudged writes"
+ },
+ {
+	"file": "solve.mjs",
+	"find": "const later = [ ...( from < 0 ? [] : reads.slice( from + 1 ).filter( ( x ) => ! x.trialOpen ).map( ( x ) => x.report ) ), reportAfter ];",
+	"replace": "const later = [ reportAfter ];",
+	"why": "only the last walk would judge a write, missing a row it moved away earlier"
+ },
+ {
+	"file": "solve.mjs",
+	"find": ".filter( ( x ) => ! x.trialOpen )",
+	"replace": "",
+	"why": "a walk with a guard suspect undone would judge the other writes"
+ }
+]

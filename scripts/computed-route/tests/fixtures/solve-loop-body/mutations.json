@@ -1,0 +1,20 @@
+[
+	{
+	"file": "lib/solve-loop-body.mjs",
+	"find": "return { loopBody: loopBodyCheck( { facts, identityOf: identityFromOrigin( origin, rootComponent ) } ),",
+	"replace": "return { loopBody: null,",
+	"why": "Solve would not load the fact record and origin map: the hop keeps one descendant only"
+ },
+ {
+	"file": "lib/solve-loop-body.mjs",
+	"find": "d.file === path.basename( draftIndex )",
+	"replace": "false",
+	"why": "the origin's Root keys would be named by another draft's component and miss the fact record"
+ },
+ {
+	"file": "solve.mjs",
+	"find": "measuredSlots: ancestors.flatMap( ( a ) => a.measured ), ...( loopBody ? { loopBody } : {} ) } );",
+	"replace": "measuredSlots: ancestors.flatMap( ( a ) => a.measured ) } );",
+	"why": "writeRound would drop the loaded check before the hop"
+ }
+]

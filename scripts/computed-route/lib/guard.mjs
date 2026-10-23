@@ -100,7 +100,8 @@ function confirm( s, rows, blocked, how ) {
 
 // base: the report the last writes were computed from; report: the latest walk; lastWrites: the last write round's
 // writes; blocked: groupKey → breaks-layout gap; trials: Map ref → { setting, rows, tried: Set<'ref|attr'> } carried between
-// rounds. Mutates the tree. Returns every write whose state changed this round (reverted, under trial, or restored);
+// rounds; a node's record outlives its trials (setting null), so a suspect tried once is never tried again for that node
+// (Spec 48 FR-48-5). Mutates the tree. Returns every write whose state changed this round (reverted, under trial, or restored);
 // an empty list means the guard is done.
 export function guardRound( base, report, tree, lastWrites, blocked, calFor, trials ) {
 	const anc = refAncestors( tree );
@@ -109,12 +110,13 @@ export function guardRound( base, report, tree, lastWrites, blocked, calFor, tri
 	const under = ( ref, root ) => ref === root || ( anc.get( ref ) || [] ).includes( root );
 	const changed = [];
 	// Settle last round's trials first: the walk just taken is their verdict.
-	for ( const [ ref, t ] of trials ) {
+	for ( const [ ref, t ] of [ ...trials ].filter( ( [ , x ] ) => x.setting ) ) {
 		const still = bad.filter( ( r ) => under( r.ref, ref ) );
 		if ( ! still.length ) {
 			confirm( t.setting, t.rows, blocked, 'proven: undoing it alone cleared the regression' );
 			changed.push( ...t.setting.writes );
-			trials.delete( ref );
+			t.tried.add( `${ t.setting.ref }|${ t.setting.attr }` );
+			t.setting = null;
 		} else {
 			redo( tree, t.setting );
 			t.setting.writes.forEach( ( w ) => ( w.trial = false, w.restored = true ) );
@@ -159,26 +161,20 @@ export function guardRound( base, report, tree, lastWrites, blocked, calFor, tri
 				confirm( s, rows, blocked, 'calibration names it' );
 				changed.push( ...s.writes );
 			} );
-			trials.delete( r.ref );
 			continue;
 		}
 		const t = trials.get( r.ref ) || { tried: new Set() };
 		const tried = ( s ) => t.tried.has( `${ s.ref }|${ s.attr }` );
 		const next = tiers.map( ( tier ) => suspectOrder( tier.filter( ( s ) => ! tried( s ) ), calFor )[ 0 ] ).find( Boolean );
+		// Every suspect tried: the record stays, with its tried set, so no later round tries them again.
 		if ( ! next ) {
-			trials.delete( r.ref );
+			trials.set( r.ref, { ...t, setting: null } );
 			continue;
 		}
 		undo( tree, next );
 		next.writes.forEach( ( w ) => ( w.trial = true ) );
 		trials.set( r.ref, { ...t, setting: next, rows } );
 		changed.push( ...next.writes );
-	}
-	// A trial whose node no longer regresses on its own rows was settled above; drop empty trial records.
-	for ( const [ ref, t ] of trials ) {
-		if ( ! t.setting ) {
-			trials.delete( ref );
-		}
 	}
 	return changed;
 }

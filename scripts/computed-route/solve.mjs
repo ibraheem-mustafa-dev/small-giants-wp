@@ -29,6 +29,9 @@ import { candidatesOf, applyVerdicts } from './lib/trial.mjs';
 import { openTrial, draftBoxes } from './lib/trial-run.mjs';
 import { surfaceStateCheck } from './lib/state-live.mjs';
 import { loadReasons, refusalsFor } from './lib/state-map-io.mjs';
+import { solveLoopBody } from './lib/solve-loop-body.mjs';
+import { solveLoop } from './lib/solve-loop.mjs';
+import { journalFile, readJournal, resumeFrom, writeJournal } from './lib/solve-journal.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -402,18 +405,25 @@ export function revertRegressions( prev, report, tree, lastWrites, blocked, calF
 	return guardRound( prev, report, tree, lastWrites, blocked, calFor, trials ).filter( ( w ) => w.reverted || w.trial );
 }
 
-// Wrong writes (§3.3): a write a later round reverted, or after which its rows read further from the draft.
-export function wrongWrites( writes, reportAfter, stateMap ) {
-	const rowsAfter = openRows( reportAfter );
+// Wrong writes (§3.3, R-47-9 "any write a later read shows moving away from the draft"): a write a later round reverted,
+// or after which one of its rows reads further from the draft on any later read, the guard reverting it or not. reads:
+// every walk in order, [ { round, report, trialOpen } ]; the reads after the walk a write was computed from (its round) are
+// its later reads, except a walk taken with a guard suspect undone (trialOpen), which measures a tree without that
+// suspect, and reportAfter, the run's last walk, is always one.
+export function wrongWrites( writes, reportAfter, stateMap, reads = [] ) {
+	const rowsOf = new Map();
+	const open = ( rep ) => rowsOf.get( rep ) || rowsOf.set( rep, openRows( rep ) ).get( rep );
 	return writes.filter( ( w ) => {
 		if ( w.reverted ) {
 			return true;
 		}
 		const reverted = writes.some( ( x ) => x.round > w.round && x.ref === w.ref && x.attr === w.attr && JSON.stringify( x.after ) === JSON.stringify( w.before ) );
-		const worse = w.rows.some( ( r0 ) => {
-			const r1 = rowsAfter.find( ( r ) => undefined !== settingState( r, stateMap ) && groupKey( r, settingState( r, stateMap ) ) === w.group && r.width === r0.width );
+		const from = reads.findIndex( ( x ) => x.round === w.round );
+		const later = [ ...( from < 0 ? [] : reads.slice( from + 1 ).filter( ( x ) => ! x.trialOpen ).map( ( x ) => x.report ) ), reportAfter ];
+		const worse = w.rows.some( ( r0 ) => later.some( ( rep ) => {
+			const r1 = open( rep ).find( ( r ) => undefined !== settingState( r, stateMap ) && groupKey( r, settingState( r, stateMap ) ) === w.group && r.width === r0.width );
 			return r1 && rowDistance( r1 ) > rowDistance( { draft: r0.draft, live: r0.live } );
-		} );
+		} ) );
 		return reverted || worse;
 	} );
 }
@@ -424,74 +434,8 @@ export function settingRatio( wrong, writes ) {
 	return { wrong: new Set( wrong.map( key ) ).size, total: new Set( writes.map( key ) ).size };
 }
 
-// The build, walk and write rounds (R-47-9): at most maxRounds write rounds. Guard rounds (revert a named culprit, try
-// one suspect, restore an innocent one) are not write rounds; the walk cap leaves room for a few per write round.
-// maxRounds 0 is measure-only: one build and one walk, never a write. Every step is passed in: build() → { ok, err },
-// walk( round ) → report, guard( prev, report, lastWrites ) → changed writes, write( report, round ) → { writes, gaps }
-// (or a promise of it: the trial runs inside the write step),
-// save() persists the tree. pending() says a guard trial is still open when the walk cap is reached; settle( prev, report,
-// lastWrites ) then judges it on one more walk, so no trial ends unconfirmed. A failed build ends the loop. Returns
-// { report, writes, gaps, rounds, lastWrote, buildFailed: { round, err } or null }; report is undefined when the first
-// build failed.
-export async function solveLoop( { maxRounds, build, walk, guard, write, save, settle = null, pending = () => false, blocked = new Map(), log = console.log } ) {
-	const allWrites = [];
-	let gaps = {};
-	let report;
-	let rounds = 0;
-	let lastWrote = false;
-	let prev = null;
-	let lastWrites = [];
-	let writeRounds = 0;
-	let buildFailed = null;
-	for ( let round = 1; round <= maxRounds * 4 + 1; round++ ) {
-		const b = build( round );
-		if ( ! b.ok ) {
-			console.error( `[FAIL] build in round ${ round }: ${ b.err.slice( -800 ) }` );
-			buildFailed = { round, err: b.err };
-			break;
-		}
-		report = await walk( round );
-		// A round that made rows worse runs the guard against the walk the writes were computed from (prev stays that
-		// walk until the guard is done); the next round measures what it changed.
-		const changed = prev ? guard( prev, report, lastWrites ) : [];
-		if ( changed.length ) {
-			changed.filter( ( w ) => w.reverted ).forEach( ( w ) => gaps[ w.group ] = blocked.get( w.group ) );
-			changed.filter( ( w ) => w.restored ).forEach( ( w ) => delete gaps[ w.group ] );
-			log( `round ${ round }: guard reverted ${ changed.filter( ( w ) => w.reverted ).length }, trying ${ changed.filter( ( w ) => w.trial ).length }, restored ${ changed.filter( ( w ) => w.restored && ! w.trial ).length }` );
-			save();
-			continue;
-		}
-		if ( writeRounds >= maxRounds ) {
-			break;
-		}
-		const r = await write( report, round );
-		gaps = { ...gaps, ...r.gaps };
-		writeRounds++;
-		rounds = writeRounds;
-		lastWrote = r.writes.length > 0;
-		log( `round ${ round } (write round ${ writeRounds }): ${ r.writes.length } writes, ${ Object.keys( r.gaps ).length } gaps` );
-		if ( ! r.writes.length ) {
-			break;
-		}
-		allWrites.push( ...r.writes );
-		lastWrites = r.writes;
-		prev = report;
-		save();
-	}
-	if ( settle && prev && pending() && build( 'settle' ).ok ) {
-		report = await walk( 'settle' );
-		const changed = settle( prev, report, lastWrites );
-		changed.filter( ( w ) => w.reverted ).forEach( ( w ) => gaps[ w.group ] = blocked.get( w.group ) );
-		changed.filter( ( w ) => w.restored ).forEach( ( w ) => delete gaps[ w.group ] );
-		log( `settling walk: guard reverted ${ changed.filter( ( w ) => w.reverted ).length }, restored ${ changed.filter( ( w ) => w.restored ).length }` );
-		save();
-		// A restored setting is back in the tree but was absent from that walk: measure what the tree now holds.
-		if ( changed.some( ( w ) => w.restored ) && build( 'final' ).ok ) {
-			report = await walk( 'final' );
-		}
-	}
-	return { report, writes: allWrites, gaps, rounds, lastWrote, buildFailed };
-}
+// The build, walk and write rounds live in lib/solve-loop.mjs (with the crash journal, Spec 48 FR-48-5).
+export { solveLoop };
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {
 	const argv = process.argv.slice( 2 );
@@ -533,7 +477,10 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		process.exit( 2 );
 	}
 	const calFor = calibrationForSite( s.site );
-	const ctx = { db: openDb(), snapshot: loadSnapshot( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) ), log: [], calFor };
+	// FR-48-14: the fact record and origin map the ancestor hop's loop-body check reads (lib/solve-loop-body.mjs).
+	const { loopBody, note: loopNote } = solveLoopBody( { repo: REPO, client, surface, draftIndex: s.draftIndex } );
+	console.log( `solve ${ surface }: ${ loopNote }` );
+	const ctx = { db: openDb(), snapshot: loadSnapshot( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) ), log: [], calFor, loopBody };
 	const tree = readTree( treeFile );
 	const added = addRefs( tree, surface );
 	writeTree( treeFile, tree );
@@ -562,6 +509,14 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		console.log( `round ${ round } trial: ${ results.length } settings tried, ${ new Set( v.rejected.map( ( w ) => `${ w.ref }|${ w.attr }` ) ).size } rejected before writing` );
 		return { ...r, writes: v.writes, gaps: v.gaps };
 	};
+	// FR-48-5: the crash journal. A record left by a stopped run is judged by this run's first walk before any write.
+	const jFile = journalFile( buildDir, surface );
+	const standing = readJournal( jFile );
+	const resumed = resumeFrom( standing );
+	resumed && console.log( `solve ${ surface }: ${ resumed.note } (${ path.relative( REPO, jFile ) })` );
+	const baseFile = ( baseRound ) => ( 'resumed' === baseRound ? standing?.base ?? null : ( null == baseRound ? null : path.join( outDir, `round-${ baseRound }`, 'report.json' ) ) );
+	// Every walk in order, so a wrong write is judged on every later read, not only the last (FR-48-5).
+	const reads = [];
 	let loopOut;
 	try {
 		loopOut = await solveLoop( {
@@ -571,13 +526,19 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 				assertQuiet( site.sshArgs );
 				return build( s, treeFile );
 			},
-			walk: ( round ) => walk( walker, path.join( outDir, `round-${ round }` ), s.walkStates, site.liveOrigin ),
+			walk: async ( round ) => {
+				const rep = await walk( walker, path.join( outDir, `round-${ round }` ), s.walkStates, site.liveOrigin );
+				reads.push( { round, report: rep, trialOpen: [ ...trials.values() ].some( ( t ) => t.setting ) } );
+				return rep;
+			},
 			guard: ( prev, rep, lastWrites ) => guardRound( prev, rep, tree, lastWrites, blocked, calFor, trials ),
 			// The settling walk only judges open trials: with no last writes the guard opens no new one.
 			settle: ( prev, rep ) => guardRound( prev, rep, tree, [], blocked, calFor, trials ),
 			pending: () => [ ...trials.values() ].some( ( t ) => t.setting ),
 			write: writeStep,
 			save: () => writeTree( treeFile, tree ),
+			journal: ( list, { round, baseRound, stopped = null } ) => writeJournal( jFile, { surface, runDir: outDir, round, base: baseFile( baseRound ), writes: list, stopped } ),
+			resume: resumed?.prev ? resumed : null,
 		} );
 	} finally {
 		await trialRun?.close();
@@ -608,7 +569,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	}
 	// FR-48-81: every paired element's state looks on the draft against the built page (--no-states skips it).
 	const states = argv.includes( '--no-states' ) ? { json: { off: '--no-states' }, markdown: '## States (FR-48-81)\n\nNot checked: --no-states.' } : await surfaceStateCheck( { cfg: retargetLive( ( await import( pathToFileURL( walker ).href ) ).default, site.liveOrigin ), vocab: statesVocabulary( ctx.db ), surfaces, surface, buildDir, headless: ! process.env.SGS_HEADED, log: console.log } );
-	const wrong = wrongWrites( allWrites, report, s.states );
+	const wrong = wrongWrites( allWrites, report, s.states, reads );
 	const unmappedState = writableGroups( report, s.states, refused ).unmappedState.length;
 	const handover = handoverOf( classes );
 	const trial = { verdicts: trialVerdicts, rejected: trialRejected, ...( trialOn ? {} : { off: '--no-trial' } ) };
