@@ -618,8 +618,7 @@
 			"default": "shopping-cart"
 		},
 		"iconSize": {
-			"type": "number",
-			"default": 24
+			"type": "number"
 		},
 		"iconColour": {
 			"type": "string",

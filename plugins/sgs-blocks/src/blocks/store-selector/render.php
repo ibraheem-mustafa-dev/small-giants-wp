@@ -221,9 +221,17 @@ $flag_tablet     = sgs_store_selector_flag_size( $flag_size_tiers, 'tablet' );
 $flag_mobile     = sgs_store_selector_flag_size( $flag_size_tiers, 'mobile' );
 
 $flag_img_sel = $root_sel . ' .sgs-store-selector__flag';
-// A set flag size is the trigger's and each item's tap area; unset keeps style.css's 44px floor.
-if ( is_array( $attributes['flagSize'] ?? null ) && array() !== $attributes['flagSize'] ) {
-	$scoped_css[] = "{$root_sel}{--sgs-ss-tap-min:0px;}";
+// A flag size set at a tier is the trigger's and each item's tap area there; a tier with none keeps style.css's 44px floor.
+$flag_tap_tiers = array(
+	'desktop' => '',
+	'tablet'  => '@media(max-width:1023px){',
+	'mobile'  => '@media(max-width:767px){',
+);
+foreach ( $flag_tap_tiers as $flag_tap_tier => $flag_tap_open ) {
+	$flag_tap_own = $flag_size_tiers[ $flag_tap_tier ] ?? null;
+	if ( is_array( $flag_tap_own ) && ( ! empty( $flag_tap_own['w'] ) || ! empty( $flag_tap_own['h'] ) ) ) {
+		$scoped_css[] = $flag_tap_open . "{$root_sel}{--sgs-ss-tap-min:0px;}" . ( '' === $flag_tap_open ? '' : '}' );
+	}
 }
 $scoped_css[] = "{$flag_img_sel}{width:{$flag_desktop['w']}px;height:{$flag_desktop['h']}px;}";
 if ( $flag_tablet !== $flag_desktop ) {

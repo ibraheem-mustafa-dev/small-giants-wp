@@ -12,9 +12,9 @@ export const CASES = [
 		sized: true,
 	},
 	{
-		name: 'nav-drawer close with no size set: the 44px floor stays',
+		name: 'nav-drawer close at the default 44px closeSize: render always prints the size and the flag',
 		styles: [ 'nav-drawer' ],
-		html: `<div class="sgs-nav-drawer"><button class="sgs-nav-drawer__close">${ box( 16, 16 ) }</button></div>`,
+		html: `<div class="sgs-nav-drawer"><button class="sgs-nav-drawer__close" style="--sgs-nd-close-size:44px;--sgs-nd-close-tap-min:0px">${ box( 16, 16 ) }</button></div>`,
 		sel: '.sgs-nav-drawer__close',
 		expect: { w: 44, h: 44 },
 		sized: false,

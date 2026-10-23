@@ -174,8 +174,8 @@
 	display: flex;
 	justify-content: center;
 	list-style: none;
-	min-height: 44px;
-	min-width: 44px;
+	min-height: var(--sgs-ndm-caret-tap-min, 44px);
+	min-width: var(--sgs-ndm-caret-tap-min, 44px);
 	position: absolute;
 	inset-inline-end: 0;
 	top: 0;

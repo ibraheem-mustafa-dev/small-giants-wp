@@ -98,6 +98,17 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_caret_box_css' ) ) {
 				),
 			)
 		);
+		// A box size the client set overrules the accordion expander's 44px tap floor (ruling 11); the flag follows the size per tier.
+		$css .= sgs_emit_responsive_css(
+			$uid_sel,
+			array(
+				array(
+					'value'     => $size,
+					'css'       => '--sgs-ndm-caret-tap-min',
+					'transform' => static fn( $raw ): string => '' === trim( (string) $raw ) ? '' : '0px',
+				),
+			)
+		);
 		if ( $border['tablet'] ) {
 			$css .= '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $box_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
 		}

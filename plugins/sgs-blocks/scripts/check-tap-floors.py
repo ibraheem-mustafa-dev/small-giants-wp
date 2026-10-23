@@ -353,7 +353,7 @@ def cmd_self_test() -> int:
     # The live register must name only blocks that exist, and give every entry a reason.
     data = json.loads(REGISTER.read_text(encoding="utf-8"))
     for e in data["house"]:
-        if not e.get("reason", "").strip() or not any(BLOCKS.glob(f"**/{e['block']}/style.css")) and not (BLOCKS / e["block"]).exists():
+        if not e.get("reason", "").strip() or not any(BLOCKS.glob(f"**/{e['block']}/style.css")) and not (BLOCKS / e["block"]).exists() and not (PLUGIN / e["block"]).is_file():
             failed += 1
             print(f"FAIL register entry without a reason or block: {e}")
     print(f"\ncheck-tap-floors --self-test: {'OK' if not failed else f'FAIL ({failed})'}")

@@ -64,6 +64,12 @@ if ( ! function_exists( 'sgs_nav_item_padding_css' ) ) {
 						'css'          => 'min-height',
 						'unit_default' => 'px',
 					),
+					// The link that IS a sub-toggle (nav-menu-submenu-link-css.php) reads the same height through this property.
+					array(
+						'value'        => $attributes['itemMinHeight'],
+						'css'          => '--sgs-nav-item-min-h',
+						'unit_default' => 'px',
+					),
 				)
 			);
 		}

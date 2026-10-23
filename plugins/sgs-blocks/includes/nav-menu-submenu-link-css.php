@@ -201,9 +201,9 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_link_css' ) ) {
 		$css .= $uid_sel . ' .' . $bem_root . '__subtoggle{display:inline-flex;align-items:center;justify-content:center;'
 			. 'background:none;border:0;cursor:pointer;color:inherit;font:inherit;}';
 		// The toggle that IS the item's link (no separate <a> beside it) keeps the
-		// full 44px box. The split toggle beside a link draws only its caret area
+		// full 44px box, its height following itemMinHeight when that is set. The split toggle beside a link draws only its caret area
 		// and takes its 44px target from an invisible ::before (nav-bar-menu/style.css).
-		$css .= $uid_sel . ' .' . $bem_root . '__subtoggle.' . $bem_root . '__link{min-width:44px;min-height:44px;padding:0;}';
+		$css .= $uid_sel . ' .' . $bem_root . '__subtoggle.' . $bem_root . '__link{min-width:44px;min-height:var(--sgs-nav-item-min-h, 44px);padding:0;}';
 		// The caret SVG is `1em`, so its size is tied to itemFontSize. `1em` rides
 		// the cascade: it resolves against whatever font-size the caret's own
 		// ancestor chain carries, so it tracks the responsive item tier for free

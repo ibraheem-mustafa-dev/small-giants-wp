@@ -35,7 +35,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const {
 		displayMode,
 		iconName,
-		iconSize,
+		iconSize: iconSizeSet,
 		iconColour,
 		iconColourGradient,
 		iconColourHover,
@@ -91,14 +91,15 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		title: __( 'Bag drawer', 'sgs-blocks' ),
 		help: __( 'Shows the open panel over the canvas so you can style it. Affects this editing session only — it is not saved and does not change the site.', 'sgs-blocks' ),
 	} );
+	const iconSize = iconSizeSet ?? 24;
 	const previewTier = usePreviewTier();
 	const [ palette ] = useSettings( 'color.palette' );
 	const parts = triggerStyles( attributes, previewTier, palette, hasPill );
 	const marginLonghands = tierBoxLonghands( margin, previewTier, 'margin' );
 	const style = {
 		'--sgs-cart-icon-size': `${ iconSize }px`,
-		// An icon size other than the 24px default overrules the trigger's 44px tap floor, as render.php does.
-		'--sgs-cart-tap-min': 24 !== iconSize && ! hasPill ? '0px' : undefined,
+		// An icon size the client set (24 included) overrules the trigger's 44px tap floor, as render.php does.
+		'--sgs-cart-tap-min': undefined !== iconSizeSet && ! hasPill ? '0px' : undefined,
 		'--sgs-cart-icon-colour': colourVar( iconColour ) || undefined,
 		'--sgs-cart-badge-colour': colourVar( badgeColour ) || undefined,
 		'--sgs-cart-badge-text-colour':

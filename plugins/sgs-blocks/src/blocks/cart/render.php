@@ -64,7 +64,8 @@ $display_mode          = in_array( $attributes['displayMode'] ?? 'link', $allowe
 	? (string) $attributes['displayMode']
 	: 'link';
 $icon_name             = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['iconName'] ?? 'shopping-cart' ) );
-$icon_size             = absint( $attributes['iconSize'] ?? 24 );
+$icon_size_set         = isset( $attributes['iconSize'] ) && is_numeric( $attributes['iconSize'] );
+$icon_size             = $icon_size_set ? absint( $attributes['iconSize'] ) : 24;
 $icon_colour           = (string) ( $attributes['iconColour'] ?? '' );
 // Icon/SVG gradient sibling — non-empty wins over iconColour above.
 $icon_colour_gradient       = $attributes['iconColourGradient'] ?? '';
@@ -185,8 +186,8 @@ $ssr_count = 0;
 $sgs_cart_vars = array(
 	'--sgs-cart-icon-size:' . $icon_size . 'px',
 );
-// An icon size other than the 24px default overrules the trigger's 44px tap floor: the trigger wraps the glyph (ruling 11).
-if ( 24 !== $icon_size && 'icon' === $trigger_style ) {
+// An icon size the client set (24 included) overrules the trigger's 44px tap floor: the trigger wraps the glyph (ruling 11).
+if ( $icon_size_set && 'icon' === $trigger_style ) {
 	$sgs_cart_vars[] = '--sgs-cart-tap-min:0px';
 }
 // Unset, the trigger takes the surrounding text colour (style.css's currentColor fallback).

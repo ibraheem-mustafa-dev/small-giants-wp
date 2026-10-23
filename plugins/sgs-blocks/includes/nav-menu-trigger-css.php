@@ -131,7 +131,8 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 			 * an unset tier climbs to the tier above (sgs_resolve_tier()), and
 			 * desktop falls back to `$burger_size`. `min-width` follows the
 			 * resolved width so a width under 44px takes effect; the 44px
-			 * touch target is the burger's `::after` in style.css.
+			 * hit area is the burger's `::after` in style.css, which
+			 * reads `--sgs-burger-tap-min` (0px here, so it fits the set box).
 			 *
 			 * An empty `burgerWidth` (`{}`) resolves every tier to
 			 * `$burger_size`, so the burger stays square.
@@ -149,7 +150,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 
 			$sgs_nm_size_decl_for = static function ( $mode, $width ) use ( $sgs_nm_text_bearing, $burger_size ) {
 				return ( $sgs_nm_text_bearing( $mode ) ? 'width:auto;' : 'width:' . $width . ';' )
-					. 'height:' . $burger_size . ';min-width:' . $width . ';min-height:' . $burger_size . ';';
+					. 'height:' . $burger_size . ';min-width:' . $width . ';min-height:' . $burger_size . ';--sgs-burger-tap-min:0px;';
 			};
 
 			$burger_desktop_width = $sgs_nm_resolve_width( 'desktop' );

@@ -390,6 +390,30 @@
    "reason": "No google-reviews setting sizes this element: mapsLinkFontSize sets its text size only and no setting sizes the carousel dots (arrowSize sizes the arrows, which already follow it)."
   },
   {
+   "block": "includes/nav-detach-chip.php",
+   "selector": "includes/nav-detach-chip.php min-height:44px",
+   "property": "min-height",
+   "reason": "triggerDetachSize is the only setting that sizes the chip, and both its inspector range (ButtonReachPanel.js, min 44) and sgs_nav_detach_chip_tiers (max(44, size)) stop it below 44px, so this floor can never exceed the set size."
+  },
+  {
+   "block": "includes/nav-detach-chip.php",
+   "selector": "includes/nav-detach-chip.php min-width:44px",
+   "property": "min-width",
+   "reason": "triggerDetachSize is the only setting that sizes the chip, and both its inspector range (ButtonReachPanel.js, min 44) and sgs_nav_detach_chip_tiers (max(44, size)) stop it below 44px, so this floor can never exceed the set size."
+  },
+  {
+   "block": "includes/nav-menu-submenu-css.php",
+   "selector": "includes/nav-menu-submenu-css.php min-height:44px",
+   "property": "min-height",
+   "reason": "Settings checked in both nav blocks' block.json: submenuMinWidth (the panel's width), submenuCaretSize (the caret glyph) and the submenu typography; none sizes a sublink's height, so 44px is SGS's own default."
+  },
+  {
+   "block": "includes/nav-menu-submenu-link-css.php",
+   "selector": "includes/nav-menu-submenu-link-css.php min-width:44px",
+   "property": "min-width",
+   "reason": "The link-bearing sub-toggle's width is its label; no setting in either nav block's block.json sizes its width (itemMinHeight sizes the height, which now reads --sgs-nav-item-min-h), so 44px is SGS's own default."
+  },
+  {
    "block": "media",
    "selector": ".sgs-video__btn",
    "property": "height",
@@ -415,45 +439,33 @@
   },
   {
    "block": "nav-bar-menu",
-   "selector": ".sgs-nav-bar-menu .sgs-nav-bar-menu__subtoggle:not(.sgs-nav-bar-menu__link)::before",
-   "property": "height",
-   "reason": "submenuCaretSize sizes the caret glyph this hit area wraps; the floor flag has to be printed by includes/nav-menu-caret-css.php (shared helper, not editable in this lane)."
-  },
-  {
-   "block": "nav-bar-menu",
-   "selector": ".sgs-nav-bar-menu .sgs-nav-bar-menu__subtoggle:not(.sgs-nav-bar-menu__link)::before",
-   "property": "width",
-   "reason": "submenuCaretSize sizes the caret glyph this hit area wraps; the floor flag has to be printed by includes/nav-menu-caret-css.php (shared helper, not editable in this lane)."
-  },
-  {
-   "block": "nav-bar-menu",
    "selector": ".sgs-nav-bar-menu__burger",
    "property": "height",
-   "reason": "burgerSize and burgerWidth override this default in every tier through includes/nav-menu-trigger-css.php (shared helper, not editable in this lane); the literal applies only if that rule prints nothing."
+   "reason": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css prints `.uid .sgs-nav-bar-menu__burger{width:<burgerWidth or burgerSize>;height:<burgerSize>;min-width:<same width>;min-height:<burgerSize>;--sgs-burger-tap-min:0px}` in every tier (burgerSize defaults to 44px, so it always prints), at 0,2,0 over this 0,1,0 literal; the `::after` hit area reads `--sgs-burger-tap-min`, so it fits the set box."
   },
   {
    "block": "nav-bar-menu",
    "selector": ".sgs-nav-bar-menu__burger",
    "property": "min-height",
-   "reason": "burgerSize and burgerWidth override this default in every tier through includes/nav-menu-trigger-css.php (shared helper, not editable in this lane); the literal applies only if that rule prints nothing."
+   "reason": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css prints `.uid .sgs-nav-bar-menu__burger{width:<burgerWidth or burgerSize>;height:<burgerSize>;min-width:<same width>;min-height:<burgerSize>;--sgs-burger-tap-min:0px}` in every tier (burgerSize defaults to 44px, so it always prints), at 0,2,0 over this 0,1,0 literal; the `::after` hit area reads `--sgs-burger-tap-min`, so it fits the set box."
   },
   {
    "block": "nav-bar-menu",
    "selector": ".sgs-nav-bar-menu__burger",
    "property": "min-width",
-   "reason": "burgerSize and burgerWidth override this default in every tier through includes/nav-menu-trigger-css.php (shared helper, not editable in this lane); the literal applies only if that rule prints nothing."
+   "reason": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css prints `.uid .sgs-nav-bar-menu__burger{width:<burgerWidth or burgerSize>;height:<burgerSize>;min-width:<same width>;min-height:<burgerSize>;--sgs-burger-tap-min:0px}` in every tier (burgerSize defaults to 44px, so it always prints), at 0,2,0 over this 0,1,0 literal; the `::after` hit area reads `--sgs-burger-tap-min`, so it fits the set box."
   },
   {
    "block": "nav-bar-menu",
    "selector": ".sgs-nav-bar-menu__burger",
    "property": "width",
-   "reason": "burgerSize and burgerWidth override this default in every tier through includes/nav-menu-trigger-css.php (shared helper, not editable in this lane); the literal applies only if that rule prints nothing."
+   "reason": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css prints `.uid .sgs-nav-bar-menu__burger{width:<burgerWidth or burgerSize>;height:<burgerSize>;min-width:<same width>;min-height:<burgerSize>;--sgs-burger-tap-min:0px}` in every tier (burgerSize defaults to 44px, so it always prints), at 0,2,0 over this 0,1,0 literal; the `::after` hit area reads `--sgs-burger-tap-min`, so it fits the set box."
   },
   {
    "block": "nav-bar-menu",
    "selector": ".sgs-nav-bar-menu__link",
    "property": "min-height",
-   "reason": "itemMinHeight overrides this default through includes/nav-menu-item-padding-css.php (shared helper, not editable in this lane); the literal applies only when it is unset."
+   "reason": "includes/nav-menu-item-padding-css.php::sgs_nav_item_padding_css prints `.uid .sgs-nav-bar-menu__link{min-height:<itemMinHeight>}` per tier at 0,2,0 over this 0,1,0 literal; the link has no width floor or hit-area pseudo-element, so the literal applies only when itemMinHeight is unset."
   },
   {
    "block": "nav-drawer",
@@ -469,21 +481,9 @@
   },
   {
    "block": "nav-drawer-menu",
-   "selector": ".sgs-nav-drawer-menu__accordion-summary",
-   "property": "min-height",
-   "reason": "caretBoxSize sizes this caret box through includes/nav-drawer-menu-caret-box-css.php (shared helper, not editable in this lane), which overrides this default."
-  },
-  {
-   "block": "nav-drawer-menu",
-   "selector": ".sgs-nav-drawer-menu__accordion-summary",
-   "property": "min-width",
-   "reason": "caretBoxSize sizes this caret box through includes/nav-drawer-menu-caret-box-css.php (shared helper, not editable in this lane), which overrides this default."
-  },
-  {
-   "block": "nav-drawer-menu",
    "selector": ".sgs-nav-drawer-menu__accordion-summary--row",
    "property": "min-height",
-   "reason": "The full-width row form of the summary: itemMinHeight and caretBoxSize apply through shared helpers (not editable in this lane) and override this default."
+   "reason": "The row-form summary also carries `.sgs-nav-drawer-menu__link` (nav-drawer-menu-items.php), so the `.uid .sgs-nav-drawer-menu__link{min-height:<itemMinHeight>}` rule from includes/nav-menu-item-padding-css.php::sgs_nav_item_padding_css (0,2,0) beats this 0,1,0 literal; the literal applies only when itemMinHeight is unset. caretBoxSize sizes the caret circle inside the row, never the row."
   },
   {
    "block": "nav-drawer-menu",
@@ -495,7 +495,7 @@
    "block": "nav-drawer-menu",
    "selector": ".sgs-nav-drawer-menu__link",
    "property": "min-height",
-   "reason": "itemMinHeight overrides this default through includes/nav-menu-item-padding-css.php (shared helper, not editable in this lane); the literal applies only when it is unset."
+   "reason": "includes/nav-menu-item-padding-css.php::sgs_nav_item_padding_css prints `.uid .sgs-nav-drawer-menu__link{min-height:<itemMinHeight>}` per tier at 0,2,0 over this 0,1,0 literal; the link has no width floor or hit-area pseudo-element, so the literal applies only when itemMinHeight is unset."
   },
   {
    "block": "notice-banner",
@@ -513,13 +513,13 @@
    "block": "notice-banner",
    "selector": ".sgs-notice-banner__icon--circle",
    "property": "height",
-   "reason": "iconCircleSize overrides this default through includes/notice-banner-icon-badge.php (shared helper, not editable in this lane); the literal applies only when it is unset."
+   "reason": "includes/notice-banner-icon-badge.php::sgs_notice_banner_icon_badge_css prints `.uid .sgs-notice-banner__icon--circle{width:<iconCircleSize>px;height:<iconCircleSize>px}` whenever iconCircleSize differs from 44 (clamped 24 to 96); the badge has no min-width, min-height or hit-area pseudo-element, so the literal is the unset default only."
   },
   {
    "block": "notice-banner",
    "selector": ".sgs-notice-banner__icon--circle",
    "property": "width",
-   "reason": "iconCircleSize overrides this default through includes/notice-banner-icon-badge.php (shared helper, not editable in this lane); the literal applies only when it is unset."
+   "reason": "includes/notice-banner-icon-badge.php::sgs_notice_banner_icon_badge_css prints `.uid .sgs-notice-banner__icon--circle{width:<iconCircleSize>px;height:<iconCircleSize>px}` whenever iconCircleSize differs from 44 (clamped 24 to 96); the badge has no min-width, min-height or hit-area pseudo-element, so the literal is the unset default only."
   },
   {
    "block": "notice-banner",
