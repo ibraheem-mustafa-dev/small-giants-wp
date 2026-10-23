@@ -205,27 +205,27 @@
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "( 'border-top-color' === p && ! [ a, b ].every( ( x ) => draws( x, st ) ) )",
-		"replace": "( 'border-top-color' === p && ! [ a, b ].some( ( x ) => draws( x, st ) ) )",
-		"why": "old both-sides rule for colour"
+		"find": "( 'border-top-color' === p && ! draws( a, st ) )",
+		"replace": "( 'border-top-color' === p && ! draws( b, st ) )",
+		"why": "colour judged on the live part"
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "( 'border-top-color' === p && ! [ a, b ].every( ( x ) => draws( x, st ) ) )",
+		"find": "( 'border-top-color' === p && ! draws( a, st ) )",
 		"replace": "( 'border-top-color' === p )",
-		"why": "colour never compared"
+		"why": "colour always suppressed"
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "( 'border-top-style' === p && ! [ a, b ].every( ( x ) => wide( x, st ) ) )",
+		"find": "( 'border-top-style' === p && ! [ a, b ].some( ( x ) => wide( x, st ) ) )",
 		"replace": "false",
-		"why": "style always compared"
+		"why": "style never suppressed"
 	},
 	{
 		"file": "lib/parts.mjs",
-		"find": "( 'border-top-style' === p && ! [ a, b ].every( ( x ) => wide( x, st ) ) )",
-		"replace": "( 'border-top-style' === p && ! [ a, b ].every( ( x ) => draws( x, st ) ) )",
-		"why": "style needs a drawn style"
+		"find": "( 'border-top-style' === p && ! [ a, b ].some( ( x ) => wide( x, st ) ) )",
+		"replace": "( 'border-top-style' === p && ! [ a, b ].every( ( x ) => wide( x, st ) ) )",
+		"why": "style suppressed where only one side has a width"
 	},
 	{
 		"file": "lib/parts.mjs",

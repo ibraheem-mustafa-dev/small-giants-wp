@@ -119,18 +119,19 @@ const sameWords = ( a, b ) => normText( a ).split( ' ' ).sort().join( ' ' ) === 
 const hasBorderWidth = ( s, edge ) => parseFloat( s[ `border-${ edge }-width` ] ?? '1' ) > 0;
 const paintsBorder = ( s, edge ) => hasBorderWidth( s, edge ) && ! /^(none|hidden)$/.test( s[ `border-${ edge }-style` ] ?? 'solid' );
 
-// A border colour is compared only where BOTH sides paint a border on that edge; a border style only where both sides
-// have a width there (so a none against a solid at the same width is still a style row).
-// Where only one side has a border, the width row already reports it and the other side's colour is its inherited text colour.
+// A border colour is compared only where the draft paints a border on that edge: where it paints none, the width (or
+// style) row already says the live border must go and the draft's colour is only its inherited text colour; where the
+// draft paints one and live does not, the colour is part of what live lacks. A border style is compared where either side
+// has a width there (a none against a solid is a style row; only two 0 widths make it paint nothing on both sides).
 export function borderColourIrrelevant( p, d, l ) {
 	const m = p.match( /^border-(top|bottom|left|right)-(color|style)$/ );
 	if ( ! m ) {
 		return false;
 	}
 	if ( 'color' === m[ 2 ] ) {
-		return ! ( paintsBorder( d, m[ 1 ] ) && paintsBorder( l, m[ 1 ] ) );
+		return ! paintsBorder( d, m[ 1 ] );
 	}
-	return ! ( hasBorderWidth( d, m[ 1 ] ) && hasBorderWidth( l, m[ 1 ] ) );
+	return ! ( hasBorderWidth( d, m[ 1 ] ) || hasBorderWidth( l, m[ 1 ] ) );
 }
 
 // Parts that paint nothing on their own: an underline's colour, thickness and offset while either side

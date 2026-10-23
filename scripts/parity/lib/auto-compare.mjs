@@ -211,9 +211,10 @@ function compareLinkCoverage( D, L, pairs, add ) {
 // :active forced. A draft element pairs with the live element of the same type and name, in reading order; a property
 // differs when it moves off its rest value on at least one side and the two end values differ. Rows are
 // `focus:<property> "<name>"` and `active:<property> "<name>"`, kind auto. An outline's width, colour and offset paint
-// nothing while its style is none, so they are no row while either side's style is none. A border colour or style is
-// no row where either side's border is unpainted in that state (compare.mjs::borderColourIrrelevant) once the pass
-// reads the border width; a pass that did not read it leaves the colour compared.
+// nothing while its style is none, so they are no row while either side's style is none. A border colour is no row
+// where the draft's border is unpainted in that state, a style where neither side has a width
+// (compare.mjs::borderColourIrrelevant), once the pass reads the border width; a pass that did not read it leaves the
+// colour compared.
 export const INTERACTIVE_CAP = 60;
 export function pairInteractives( D, L ) {
 	const taken = new Set();
