@@ -1,0 +1,56 @@
+[
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "structure: rowsOf( STRUCTURE_ROLES, ' AND css_property IS NULL AND enum_values IS NOT NULL' ),",
+		"replace": "structure: [],",
+		"why": "the structure rows are never read, which is the old behaviour"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": " AND css_property IS NULL AND enum_values IS NOT NULL' ),",
+		"replace": " AND enum_values IS NOT NULL' ),",
+		"why": "an enum that paints a CSS property is read for presence too"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "export const STRUCTURE_ROLES = [ 'layout', 'select-from-enum' ];",
+		"replace": "export const STRUCTURE_ROLES = [ 'layout' ];",
+		"why": "the select-from-enum role is dropped"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "'string' === typeof v && v && v !== resting",
+		"replace": "'string' === typeof v && v",
+		"why": "the resting value is planned as a marker"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "'string' === typeof v && v && v !== resting",
+		"replace": "'string' === typeof v && v !== resting",
+		"why": "the empty (unset) value is planned as a marker"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "row.attr_name === variant?.variantAttr || ! types( row, schema ).includes( 'string' )",
+		"replace": "false",
+		"why": "the variant setting is planned twice and a sizing object takes a string marker"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "const resting = current[ row.attr_name ] ?? defaultOf( row, schema );",
+		"replace": "const resting = undefined;",
+		"why": "the default value is never excluded"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "for ( const row of contentRows.structure || [] ) {",
+		"replace": "for ( const row of [] ) {",
+		"why": "structure rows are read but never planned"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "add( row, 'presence', { label: `structure-${ value }`, attrs: { [ row.attr_name ]: value }, needle: null }, { value } );",
+		"replace": "add( row, 'presence', { label: `structure-${ value }`, attrs: { [ row.attr_name ]: value }, needle: null } );",
+		"why": "the instance carries no value, so the cache key loses its =value"
+	}
+]

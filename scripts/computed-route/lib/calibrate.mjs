@@ -10,7 +10,7 @@ export { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT, MARKER_REST_GRADIENT, 
 export { markersFor, formMarkers, FLUID_MARKERS, MARKER_REPEAT, MARKER_REPEAT_TRACKS, MARKER_DURATION_MS, MARKER_EASING, companionWidth, borderPartners, shadowPartners, SHADOW_SHAPE, KEYWORDS } from './calibrate-markers.mjs';
 export { STATE_TRIGGERS, triggerFor, planInstances, preconditionsFor, layoutModes, stateTarget, instanceCtx } from './calibrate-instances.mjs';
 export { readInstancesInPage, readAll, missedReason, SCROLL_Y } from './calibrate-read.mjs';
-export { MARKER_TEXT, MARKER_NUMBER, MARKER_SLUG, MARKER_URL, MARKER_PHONE, LINK_ATTRS, PRESENCE_ROLES, TEXT_ROLES, LINK_ROLES, contentRowsFor, contentMarkerFor, variantPresenceValues, planContentInstances, needlesOf, readContentInPage, readContentAll, presenceFrom, textFrom, linkFrom, collectContent } from './calibrate-content.mjs';
+export { MARKER_TEXT, MARKER_NUMBER, MARKER_SLUG, MARKER_URL, MARKER_PHONE, LINK_ATTRS, PRESENCE_ROLES, TEXT_ROLES, LINK_ROLES, contentRowsFor, contentMarkerFor, variantPresenceValues, structurePresenceValues, STRUCTURE_ROLES, planContentInstances, needlesOf, readContentInPage, readContentAll, presenceFrom, textFrom, linkFrom, collectContent } from './calibrate-content.mjs';
 export { elementPath } from '../../parity/lib/ref-trace.mjs';
 
 // One calibration tree for a block: every instance wrapped in an sgs/container (class cr-cal-<block>-<key>), the
