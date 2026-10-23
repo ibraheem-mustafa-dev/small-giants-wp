@@ -46,6 +46,16 @@ test( 'MUST FAIL: the draftId is the draft identity the origin map joins (ctx.dr
 	assert.deepEqual( [ g.draftId, g.pair, g.readAt ], [ null, 'gen-header-0', 1440 ] );
 } );
 
+test( 'MUST FAIL: the row\'s property is the CSS property its walker key names (lib/solve-rows.mjs::cssProp), the raw key kept as rowKey; a key naming no CSS property gives no property', () => {
+	const ground = gapInput( { issue, row: row( { key: 'painted-ground' } ), res: res() }, ctx() );
+	assert.deepEqual( [ ground.property, ground.rowKey ], [ 'background-color', 'painted-ground' ] );
+	assert.deepEqual( ( ( r ) => [ r.property, r.rowKey ] )( gapInput( { issue, row: row( { key: 'icon-width' } ), res: res() }, ctx() ) ), [ 'width', 'icon-width' ] );
+	assert.deepEqual( ( ( r ) => [ r.property, r.rowKey ] )( gapInput( { issue, row: row( { key: 'y-from-x' } ), res: res() }, ctx() ) ), [ null, 'y-from-x' ] );
+	const file = tmp();
+	writeGaps( { file, rows: [ ground ], surface: 'header', publishedOn: '2026-10-23' } );
+	assert.deepEqual( ( ( g ) => [ g.property, g.rowKey ] )( JSON.parse( fs.readFileSync( file, 'utf8' ) ).rows[ 0 ] ), [ 'background-color', 'painted-ground' ] );
+} );
+
 test( 'MUST FAIL: the setting state is the one the chain computes; a hover row reads its own state', () => {
 	const r = gapInput( { issue, row: row( { state: 'scrolled' } ), res: res() }, ctx( { stateOf: ( x ) => ( 'scrolled' === x.state ? 'scrolled' : null ) } ) );
 	assert.equal( r.state, 'scrolled' );

@@ -56,6 +56,15 @@ test( 'negative control: a different attribute, property or block is a different
 	assert.equal( backlogKey( { block: 'sgs/a', attribute: null, property: 'x' } ), backlogKey( { block: 'sgs/a', attribute: '', property: 'x' } ) );
 } );
 
+test( 'MUST FAIL: a row is keyed by its CSS property, the raw walker key carried alongside; a property that is no CSS property is refused as unkeyed', () => {
+	const ground = gap( { id: 'header:cr-ref-header-1||style|painted-ground', property: 'background-color', rowKey: 'painted-ground' } );
+	const { backlog } = merge( [ src( 'alpha', [ ground ] ) ] );
+	assert.deepEqual( [ backlog.rows[ 0 ].key, backlog.rows[ 0 ].property, backlog.rows[ 0 ].entries[ 0 ].rowKey ], [ 'sgs/button||background-color', 'background-color', 'painted-ground' ] );
+	const raw = merge( [ src( 'alpha', [ gap( { property: 'painted-ground' } ), gap( { id: 'x', property: 'y-from-x' } ) ] ) ] );
+	assert.deepEqual( [ raw.backlog.rows.length, raw.stats.refusedUnkeyed ], [ 0, 2 ] );
+	assert.match( raw.stats.refused[ 0 ].reason, /painted-ground is not a CSS property/ );
+} );
+
 test( 'MUST FAIL: a row with a non-F class is refused and counted, never merged or dropped silently', () => {
 	const rows = [ gap(), gap( { id: 'h:w', class: 'W-route', framework: false } ), gap( { id: 'h:i', class: 'I-calibration', framework: false } ), gap( { id: 'h:c', class: 'CLIENT', framework: false } ) ];
 	const { backlog, stats } = merge( [ src( 'alpha', rows ) ] );

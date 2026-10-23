@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { OWNERS } from './gaps-file.mjs';
+import { isCssProperty } from './css-families.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..', '..' );
 export const BACKLOG_FILE = path.join( REPO, '.claude', 'reports', 'framework-backlog.json' );
@@ -15,7 +16,8 @@ export const SITES_DIR = path.join( REPO, 'sites' );
 const text = ( v ) => 'string' === typeof v && '' !== v.trim();
 const byText = ( a, b ) => ( a < b ? -1 : ( a > b ? 1 : 0 ) );
 
-// The row a gap is filed under: its block, attribute (empty when the gap names none) and property.
+// The row a gap is filed under: its block, attribute (empty when the gap names none) and CSS property (the gates' and the
+// re-check's property, lib/solve-rows.mjs::cssProp; each entry keeps the walker's raw key as rowKey).
 export const backlogKey = ( r ) => `${ r.block }|${ r.attribute ?? '' }|${ r.property }`;
 
 // The rows of one gaps.json; throws, naming the file, when it cannot be read or holds no rows array.
@@ -85,11 +87,14 @@ function refusal( r ) {
 	if ( ! text( r.block ) || ! text( r.property ) ) {
 		return { kind: 'unkeyed', reason: `an F-class row must name its block and property to be keyed (block ${ JSON.stringify( r.block ?? null ) }, property ${ JSON.stringify( r.property ?? null ) })` };
 	}
+	if ( ! isCssProperty( r.property ) ) {
+		return { kind: 'unkeyed', reason: `${ r.property } is not a CSS property, so the row cannot be keyed with the gates' property (lib/solve-rows.mjs::cssProp)` };
+	}
 	return null;
 }
 
 const entryOf = ( client, r, prior, mergedOn ) => ( {
-	client, surface: r.surface ?? null, id: r.id, class: r.class, draftId: r.draftId ?? null, widths: r.widths ?? [], state: r.state ?? null, declared: r.declared ?? null,
+	client, surface: r.surface ?? null, id: r.id, class: r.class, rowKey: r.rowKey ?? null, draftId: r.draftId ?? null, widths: r.widths ?? [], state: r.state ?? null, declared: r.declared ?? null,
 	renderedDraft: r.renderedDraft ?? null, renderedLive: r.renderedLive ?? null, gates: r.gates ?? [], firstSeen: prior?.firstSeen ?? r.firstSeen ?? r.publishedOn ?? mergedOn,
 	publishedOn: r.publishedOn ?? mergedOn,
 } );
