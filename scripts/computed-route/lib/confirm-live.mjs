@@ -8,6 +8,9 @@ import fs from 'fs';
 import path from 'path';
 import { compareDR, TOLERANCE } from './fill-confirm.mjs';
 import { paintedImageCheck } from './fill-media.mjs';
+import { RESOLVER_GAP } from './fill-held.mjs';
+import { canon } from './fill-prop.mjs';
+import { isCssProperty } from './css-families.mjs';
 
 // The rendered tolerance (FR-48-36): ±1px for lengths in place of the declared ±0.5px.
 export const RENDERED_TOL = 1;
@@ -122,9 +125,71 @@ export function fillLive( records, report, { stateMap = null, media = {} } = {} 
 	} );
 }
 
+// The draft's value of an UNMAPPED row per width: a { width: value } JSON, or the one value at every given width.
+function rowValues( row, widths ) {
+	let parsed = null;
+	try {
+		parsed = JSON.parse( row.value );
+	} catch {
+		parsed = null;
+	}
+	if ( parsed && 'object' === typeof parsed && ! Array.isArray( parsed ) && Object.keys( parsed ).length && Object.keys( parsed ).every( ( k ) => /^\d+$/.test( k ) ) ) {
+		return Object.fromEntries( Object.entries( parsed ).map( ( [ w, v ] ) => [ Number( w ), String( v ) ] ) );
+	}
+	return Object.fromEntries( widths.map( ( w ) => [ w, String( row.value ) ] ) );
+}
+
+// The `default` judge of Fill's UNMAPPED rows (lib/fill-held.mjs leaves them raised): a row no setting writes is held as
+// `default` only when the built page already paints the draft's value on the row's element at every width the row states,
+// read where the walker paired that element in a rest state (livePair). The page being built is the judge, so a value a
+// parent changes there (a grid cell's padding) is never held from the block's calibration page. A row with a state, a row
+// whose state is not recorded, a conflict or other non-resolver reason, an element not read live at a width, or a value
+// one unit apart stays raised with its reason. rows: the Fill report's `unmapped`; report: the final walk.
+// Returns { held: [ row + { heldReason: 'default', heldDetail } ], raised: [ row + { liveWhy } ] }.
+export function judgeUnmapped( rows, report, { stateMap = null } = {} ) {
+	const rest = restStates( stateMap );
+	const widths = [ ...new Set( ( report?.runs || [] ).filter( ( r ) => ! rest || rest.includes( r.state ) ).map( ( r ) => r.width ) ) ].sort( ( a, b ) => a - b );
+	const held = [];
+	const raised = [];
+	for ( const row of rows ) {
+		const why = judgeRow( row );
+		why ? raised.push( { ...row, liveWhy: why } ) : held.push( { ...row, heldReason: 'default', heldDetail: `the built page already paints ${ row.property } at the draft's value on this element` } );
+	}
+	return { held, raised };
+
+	function judgeRow( row ) {
+		if ( ! ( 'state' in row ) ) {
+			return 'the row records no state';
+		}
+		if ( null != row.state ) {
+			return `a ${ row.state } row is judged on its state, not at rest`;
+		}
+		if ( ! RESOLVER_GAP.test( String( row.reason ) ) || ! isCssProperty( row.property ) ) {
+			return 'not a property no setting writes';
+		}
+		const values = rowValues( row, widths );
+		if ( ! Object.keys( values ).length ) {
+			return 'no width to judge';
+		}
+		for ( const [ w, value ] of Object.entries( values ) ) {
+			const hit = livePair( report, { node: row.node, slot: row.slot ?? '', draftId: null }, Number( w ), rest );
+			const live = hit.live?.styles?.[ row.property ];
+			if ( undefined === live ) {
+				return `not read live at ${ w }: ${ hit.why ?? 'no value' }`;
+			}
+			const { rl } = compareRL( row.property, canon( row.property, value ), canon( row.property, live ), parseFloat( hit.live.styles[ 'font-size' ] ) || 16 );
+			if ( 'agree' !== rl ) {
+				return `the built page paints ${ live } at ${ w }`;
+			}
+		}
+		return null;
+	}
+}
+
 // Reads a Fill report's confirm records, fills the live half from the final walk and writes confirm-live.json beside
-// Solve's report. Returns { file, counts: { verdict: n } }. A Fill report without a `confirm` list is an error, never
-// an empty pass.
+// Solve's report, with the report's UNMAPPED rows judged against the same walk (judgeUnmapped: `unmapped.held` and
+// `unmapped.raised`). Returns { file, counts: { verdict: n }, unmapped: { held: n, raised: n } }. A Fill report without
+// a `confirm` list is an error, never an empty pass.
 export function writeConfirmLive( outDir, fillReportFile, report, opts = {} ) {
 	const fillReport = JSON.parse( fs.readFileSync( fillReportFile, 'utf8' ) );
 	if ( ! Array.isArray( fillReport.confirm ) ) {
@@ -133,7 +198,9 @@ export function writeConfirmLive( outDir, fillReportFile, report, opts = {} ) {
 	const records = fillLive( fillReport.confirm, report, opts );
 	const counts = {};
 	records.forEach( ( r ) => ( counts[ r.verdict ] = ( counts[ r.verdict ] ?? 0 ) + 1 ) );
+	const unmapped = judgeUnmapped( fillReport.unmapped || [], report, opts );
+	const unmappedCounts = { held: unmapped.held.length, raised: unmapped.raised.length };
 	const file = path.join( outDir, 'confirm-live.json' );
-	fs.writeFileSync( file, JSON.stringify( { counts, confirm: records }, null, 1 ) );
-	return { file, counts };
+	fs.writeFileSync( file, JSON.stringify( { counts, confirm: records, unmappedCounts, unmapped }, null, 1 ) );
+	return { file, counts, unmapped: unmappedCounts };
 }

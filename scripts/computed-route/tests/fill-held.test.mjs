@@ -1,6 +1,6 @@
 // "Unwritten" is decided by paint, not by name (lib/fill-held.mjs): a row no setting writes by name that the element already
-// renders leaves UNMAPPED under one of three named reasons (covered, inherited, default); a value one unit apart, or held at
-// some widths only, stays raised. Built through fillTree with the real framework DB; the draft's reads are fixtures.
+// renders leaves UNMAPPED under one of two named reasons (covered, inherited); a value one unit apart, or held at some widths
+// only, stays raised. A value the block paints by default stays raised here: the built page judges it (tests/held-live.test.mjs). Built through fillTree with the real framework DB; the draft's reads are fixtures.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fillTree } from '../lib/fill-resolve.mjs';
@@ -34,10 +34,10 @@ function reads( spec, declared = {} ) {
 	}
 	return { widths, declared, sweep: {}, origin: 'http://127.0.0.1:1' };
 }
-const run = ( skeleton, spec, declared ) => {
+const run = ( skeleton, spec, declared, cals = CAL ) => {
 	const tree = cleanTree( skeleton );
 	addRefs( tree, 'fx' );
-	const out = fillTree( { tree, nodes: skeletonNodes( skeleton ), reads: reads( spec, declared ), db, snapshot, rawSnapshot: RAW, calFor: ( b ) => CAL[ b ] ?? null, ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
+	const out = fillTree( { tree, nodes: skeletonNodes( skeleton ), reads: reads( spec, declared ), db, snapshot, rawSnapshot: RAW, calFor: ( b ) => cals[ b ] ?? null, ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
 	return { tree, ...out };
 };
 const btn = ( styles, o ) => snap( { display: 'inline-flex', ...styles }, o );
@@ -125,42 +125,57 @@ test( 'MUST FAIL: an inherited property on an element with no text of its own, e
 	assert.equal( settle( [ { ...row( leaf, 'font-size', '19px' ), block: 'sgs/button' } ] ).alreadyHeld.length, 0 );
 } );
 
-test( 'MUST FAIL: a value equal to the calibrated default paint at every width is held as default; one unit apart, one width, or unmeasured is not', () => {
+test( 'MUST FAIL: a value equal to the calibrated default paint is never held at Fill: the calibration page is not the page being built', () => {
 	const r = run( BTN(), { '0:': btn( {}, { words: 'Go' } ) } );
 	const node = refOf( r.tree[ 0 ] );
-	const row = ( property, value, slot = '' ) => ( { node, block: 'sgs/button', slot, property, value, reason: `no-setting: sgs/button has no setting for ${ property }` } );
+	const row = ( property, value ) => ( { node, block: 'sgs/button', slot: '', property, value, reason: `no-setting: sgs/button has no setting for ${ property }` } );
 	const settle = ( rows ) => r.settleHeld( { unmapped: rows, writes: [] } );
-	assert.equal( settle( [ row( 'min-height', '48px' ) ] ).alreadyHeld[ 0 ].heldReason, 'default' );
-	assert.equal( settle( [ row( 'min-height', '48.4px' ) ] ).alreadyHeld.length, 1, 'inside the half-pixel measuring tolerance' );
-	assert.equal( settle( [ row( 'min-height', '49px' ) ] ).unmapped.length, 1, 'one pixel apart stays raised' );
-	assert.equal( settle( [ row( 'min-height', JSON.stringify( { 375: '48px', 768: '48px', 1440: '50px' } ) ) ] ).unmapped.length, 1, 'held at 375 and 768 only' );
-	assert.equal( settle( [ row( 'position', 'sticky' ) ] ).unmapped.length, 1, 'calibration never measured position' );
-	assert.equal( settle( [ row( 'z-index', '200' ) ] ).unmapped.length, 1 );
-	assert.equal( settle( [ row( 'min-height', '48px', '.sgs-button__label' ) ] ).unmapped.length, 1, 'another element has no recorded paint' );
-	// The default paint carries the corners of its radius, so a corner row equal to the paint is held with no setting written.
-	assert.equal( settle( [ row( 'border-bottom-left-radius', '4px' ) ] ).alreadyHeld[ 0 ].heldReason, 'default' );
-} );
-
-test( 'MUST FAIL: a flex or grid item\'s inline display computes to the block form and is held; a block parent does not blockify it', () => {
+	// min-height 48px and a 4px corner are the button's calibrated default paint; a flex item's inline-flex blockifies to flex.
+	for ( const [ property, value ] of [ [ 'min-height', '48px' ], [ 'border-bottom-left-radius', '4px' ], [ 'display', 'inline-flex' ] ] ) {
+		const out = settle( [ row( property, value ) ] );
+		assert.deepEqual( [ out.unmapped.length, out.alreadyHeld.length ], [ 1, 0 ], `${ property } ${ value }` );
+	}
 	const sk = () => [ { name: 'sgs/container', draftRef: 'main', attributes: {}, innerBlocks: [ { name: 'sgs/button', draftRef: '.b', attributes: { text: 'Go' } } ] } ];
 	const flexParent = run( sk(), { '0:': snap( { display: 'flex' } ), '1:': snap( { display: 'flex' }, { words: 'Go' } ) } );
-	const blockParent = run( sk(), { '0:': snap( { display: 'block' } ), '1:': snap( { display: 'flex' }, { words: 'Go' } ) } );
-	const row = ( rr, value ) => ( { node: refOf( rr.tree[ 0 ].innerBlocks[ 0 ] ), block: 'sgs/button', slot: '', property: 'display', value, reason: 'no-setting: no layout setting holds display:flex' } );
-	assert.equal( flexParent.settleHeld( { unmapped: [ row( flexParent, 'flex' ) ], writes: [] } ).alreadyHeld.length, 1 );
-	assert.equal( blockParent.settleHeld( { unmapped: [ row( blockParent, 'flex' ) ], writes: [] } ).unmapped.length, 1 );
-	assert.equal( flexParent.settleHeld( { unmapped: [ row( flexParent, 'grid' ) ], writes: [] } ).unmapped.length, 1 );
+	const display = { node: refOf( flexParent.tree[ 0 ].innerBlocks[ 0 ] ), block: 'sgs/button', slot: '', property: 'display', value: 'flex', reason: 'no-setting: no layout setting holds display:flex' };
+	assert.equal( flexParent.settleHeld( { unmapped: [ display ], writes: [] } ).unmapped.length, 1 );
+} );
+
+// R4: a tier write covers a narrower empty tier only where the block's calibrated paint shows no fallback of its own there.
+test( 'MUST FAIL: covered is judged per tier: an empty tier the block paints with its own fallback is not covered by the wider tier', () => {
+	const withGaps = ( gaps ) => ( { ...CAL, 'sgs/container': { ...CAL[ 'sgs/container' ], elements: { '': Object.fromEntries( THREE.map( ( w ) => [ w, { ...DEFAULT, ...( undefined === gaps[ w ] ? { 'column-gap': undefined, 'row-gap': undefined } : { 'column-gap': gaps[ w ], 'row-gap': gaps[ w ] } ) } ] ) ) } } } );
+	const sk = () => [ { name: 'sgs/container', draftRef: '.row', attributes: {} } ];
+	const judge = ( cals, after, value = '10px' ) => {
+		const r = run( sk(), { '0:': snap( {} ) }, undefined, cals );
+		const node = refOf( r.tree[ 0 ] );
+		const write = { node, index: 0, block: 'sgs/container', slot: '', prop: 'column-gap', attr: 'gap', after, widths: [ 1440 ], how: 'tiers' };
+		const row = { node, block: 'sgs/container', slot: '', property: 'column-gap', value, reason: 'no-setting: sgs/container has no setting for column-gap' };
+		return r.settleHeld( { unmapped: [ row ], writes: [ write ] } );
+	};
+	// The block paints 12px at 1440 and 768 and its own 8px at 375 with nothing written: a desktop 10px leaves 375 at 8px.
+	const fallback = withGaps( { 375: '8px', 768: '12px', 1440: '12px' } );
+	assert.equal( judge( fallback, { desktop: '10px' } ).unmapped.length, 1, 'the mobile fallback paints 8px, not the draft 10px' );
+	// The mobile tier written: 768 carries the desktop value down (12px at both, no fallback of its own) and 375 is its own.
+	assert.equal( judge( fallback, { desktop: '10px', mobile: '10px' } ).alreadyHeld[ 0 ]?.heldReason, 'covered' );
+	// Negative control: a block whose default paint is one value at every width carries the desktop tier down.
+	assert.equal( judge( withGaps( { 375: '12px', 768: '12px', 1440: '12px' } ), { desktop: '10px' } ).alreadyHeld[ 0 ]?.heldReason, 'covered' );
+	// Never measured at 375: nothing is known there, so the empty tier covers nothing.
+	assert.equal( judge( withGaps( { 768: '12px', 1440: '12px' } ), { desktop: '10px' } ).unmapped.length, 1 );
+	// The draft's value at one width only, held where it is written.
+	assert.equal( judge( fallback, { desktop: '10px' }, JSON.stringify( { 1440: '10px' } ) ).alreadyHeld[ 0 ]?.heldReason, 'covered' );
 } );
 
 test( 'MUST FAIL: held rows are listed under their reason in the report with counts, and are not in UNMAPPED', () => {
 	const wrap = { 'text-wrap': 'nowrap', 'text-wrap-mode': 'nowrap' };
 	const r = run( BTN(), { '0:': btn( wrap, { words: 'Go' } ) }, declaredAt( '0:', { 'text-wrap-mode': 'nowrap' } ) );
 	const rep = fillReport( { client: 'c', surface: 's', draft: 'd', nodes: 1, targets: 1, ...r, steps: [], entrances: [], snapshotPatch: { file: null, entries: [] } } );
-	assert.deepEqual( rep.json.counts.alreadyHeld, { total: 1, covered: 1, inherited: 0, default: 0 } );
+	assert.deepEqual( rep.json.counts.alreadyHeld, { total: 1, covered: 1, inherited: 0 } );
 	assert.equal( rep.json.unmapped.length, 0 );
 	assert.equal( rep.json.alreadyHeld[ 0 ].reason, 'covered' );
 	assert.match( rep.markdown, /### covered \(1\)/ );
 	assert.match( rep.markdown, /\| text-wrap-mode \| nowrap \|/ );
 	assert.match( rep.markdown, /### inherited \(0\)/ );
+	assert.doesNotMatch( rep.markdown, /### default/ );
 } );
 
 test( 'MUST FAIL: a written value that differs from the draft, or a setting that moves the property only as a side effect, covers nothing', () => {

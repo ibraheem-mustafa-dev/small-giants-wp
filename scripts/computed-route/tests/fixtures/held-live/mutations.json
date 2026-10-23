@@ -1,0 +1,10 @@
+[
+	{ "file": "lib/confirm-live.mjs", "find": "if ( 'agree' !== rl ) {", "replace": "if ( 'disagree' === rl && false ) {", "why": "a value the built page does not paint would be held as default" },
+	{ "file": "lib/confirm-live.mjs", "find": "if ( undefined === live ) {", "replace": "if ( false ) {", "why": "an element not read live would be judged on an empty value" },
+	{ "file": "lib/confirm-live.mjs", "find": "if ( null != row.state ) {", "replace": "if ( false ) {", "why": "a hover row would be judged on the rest-state read" },
+	{ "file": "lib/confirm-live.mjs", "find": "if ( ! ( 'state' in row ) ) {", "replace": "if ( false ) {", "why": "a row whose state is unknown would be judged at rest" },
+	{ "file": "lib/confirm-live.mjs", "find": "if ( ! RESOLVER_GAP.test( String( row.reason ) ) || ! isCssProperty( row.property ) ) {", "replace": "if ( ! isCssProperty( row.property ) ) {", "why": "a conflict row would be held as default" },
+	{ "file": "lib/confirm-live.mjs", "find": "canon( row.property, value ), canon( row.property, live )", "replace": "value, live", "why": "a gap of normal would not read as the 0 it paints" },
+	{ "file": "lib/confirm-live.mjs", "find": "const widths = [ ...new Set( ( report?.runs || [] ).filter( ( r ) => ! rest || rest.includes( r.state ) ).map( ( r ) => r.width ) ) ]", "replace": "const widths = [ ...new Set( ( report?.runs || [] ).filter( ( r ) => ! rest || rest.includes( r.state ) ).map( ( r ) => r.width ) ) ].slice( -1 )", "why": "a single value would be judged at one width only" },
+	{ "file": "lib/confirm-live.mjs", "find": "const unmapped = judgeUnmapped( fillReport.unmapped || [], report, opts );", "replace": "const unmapped = { held: [], raised: [] };", "why": "the Fill report's UNMAPPED rows would never be judged live" }
+]
