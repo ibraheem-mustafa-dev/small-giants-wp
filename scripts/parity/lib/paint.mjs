@@ -130,11 +130,12 @@ export function paintElement( el, owned = null ) {
 // Self-contained. The element painting the first visible text inside el (a button's label span, not the button),
 // or null. Text properties at rest and on hover are read from it. Text inside an element of `owned` (a Set of the elements
 // other pairs measure) is that pair's, never this one's: an outer pair whose first text sits in an inner pair's block (the
-// header's phone label) reads its own text or none. An element holding another pair's element owns only the text it lays
-// out itself: text reached from it through inline and display: contents boxes alone, never text inside a nested block
-// (a wordmark in the logo link beside an inner pair's span is that block's, on whichever side paints it as text), so
-// both sides apply one rule whatever else their nested blocks hold.
-export function textCarrier( el, owned = null ) {
+// header's phone label) reads its own text or none. Text in a nested block no pair measures belongs to the nearest
+// enclosing pair, so an outer pair reads it (a wordmark in the logo link beside an inner pair's span is the header root's).
+// With `detail`, returns { el, nested } (or null): `nested` when el holds another pair's element and the text is not laid
+// out by el itself (reached through a box other than an inline or display: contents one), the case
+// compare.mjs::comparePair reports as one `text presence` row where the other side paints no text.
+export function textCarrier( el, owned = null, detail = false ) {
 	const inner = owned ? [ ...owned ].filter( ( o ) => o !== el && el.contains( o ) ) : [];
 	// Visually hidden text (a screen-reader link name clipped to nothing) paints nothing; the same test as
 	// auto-collect.mjs::collectAuto's srOnly, walked up to `el`.
@@ -159,7 +160,7 @@ export function textCarrier( el, owned = null ) {
 	const walker = document.createTreeWalker( el, NodeFilter.SHOW_TEXT, {
 		// The text node's own rects: its parent can be display:contents (no box of its own) and still paint it.
 		acceptNode: ( n ) => {
-			if ( ! n.textContent.trim() || srOnly( n.parentElement ) || inner.some( ( o ) => o.contains( n ) ) || ( inner.length && ! laidOutHere( n.parentElement ) ) ) {
+			if ( ! n.textContent.trim() || srOnly( n.parentElement ) || inner.some( ( o ) => o.contains( n ) ) ) {
 				return NodeFilter.FILTER_SKIP;
 			}
 			const range = document.createRange();
@@ -167,7 +168,11 @@ export function textCarrier( el, owned = null ) {
 			return range.getClientRects().length ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
 		},
 	} );
-	return walker.nextNode()?.parentElement || null;
+	const carrier = walker.nextNode()?.parentElement || null;
+	if ( ! detail ) {
+		return carrier;
+	}
+	return carrier ? { el: carrier, nested: inner.length > 0 && ! laidOutHere( carrier ) } : null;
 }
 
 // Self-contained. The underline a visitor sees on the text starting at `from`: text-decoration is not inherited but

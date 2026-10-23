@@ -1,6 +1,6 @@
 [
-	{ "file": "lib/paint.mjs", "find": "|| ( inner.length && ! laidOutHere( n.parentElement ) )", "replace": "", "why": "the own-text rule removed: the draft root reads the wordmark again" },
-	{ "file": "lib/paint.mjs", "find": "( inner.length && ! laidOutHere", "replace": "( true && ! laidOutHere", "why": "the rule applied to a pair holding no other pair (a nested button label is lost)" },
+	{ "file": "lib/paint.mjs", "find": "nested: inner.length > 0 && ! laidOutHere( carrier ) }", "replace": "nested: false }", "why": "nested text is never flagged: the N11 root gives font rows, not one text presence row" },
+	{ "file": "lib/paint.mjs", "find": "inner.some( ( o ) => o.contains( n ) ) ) {", "replace": "false ) {", "why": "text inside an inner pair is the outer pair's again" },
 	{ "file": "lib/paint.mjs", "find": "if ( ! [ 'inline', 'contents' ].includes( getComputedStyle( a ).display ) ) {", "replace": "if ( ! [ 'inline' ].includes( getComputedStyle( a ).display ) ) {", "why": "display: contents no longer counts as laid out here" },
 	{ "file": "lib/paint.mjs", "find": "if ( ! [ 'inline', 'contents' ].includes( getComputedStyle( a ).display ) ) {", "replace": "if ( ! [ 'inline', 'contents', 'flex', 'block' ].includes( getComputedStyle( a ).display ) ) {", "why": "nested blocks count as the element's own text" },
 	{ "file": "lib/paint.mjs", "find": "for ( let a = from; a && a !== el; a = a.parentElement ) {\n\t\t\tif ( ! [", "replace": "for ( let a = from; a && a !== el.parentElement; a = a.parentElement ) {\n\t\t\tif ( ! [", "why": "the walk also tests the element itself" },

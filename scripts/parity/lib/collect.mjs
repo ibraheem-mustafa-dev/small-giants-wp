@@ -140,7 +140,8 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	// A text-run finder ({ textRun: { within, direct } }) measures the block's rendered text only: its extent and its paint.
 	// A group finder ({ group: { paths } }) measures the union box of its elements only (no styles).
 	const run = finder.textRun ? textRun( el, !! finder.textRun.direct, finder.textRun.match || null ) : ( finder.group ? groupBox( finder.group.paths ) : null );
-	const carrier = run ? run.carrier : textCarrier( el, textOwned );
+	const textAt = run ? null : textCarrier( el, textOwned, true );
+	const carrier = run ? run.carrier : ( textAt ? textAt.el : null );
 	const ccs = carrier ? getComputedStyle( carrier ) : null;
 	// Layout properties come from the element laying out the children (paint.mjs::LAYOUT_PROPS, layoutElement); a flex
 	// or grid gap of `normal`, and any gap of an element not laying out with flex or grid (block flow ignores it), reads
@@ -350,6 +351,9 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		pseudo,
 		layoutDisplay: lcs.display,
 		layoutChildren,
+		// Where the text properties were read (paint.mjs::textCarrier): `own` text the pair holds or lays out itself,
+		// `nested` text in a nested block no pair measures inside a pair holding another pair, `none` no text.
+		...( run ? {} : { textFrom: textAt ? ( textAt.nested ? 'nested' : 'own' ) : 'none' } ),
 		tag: el.tagName.toLowerCase(),
 		motion: {
 			animation: cs.animationName.split( ',' ).every( ( n ) => 'none' === n.trim() ) ? 'none' : `${ cs.animationDuration } ${ cs.animationTimingFunction } ${ cs.animationDelay } ${ cs.animationIterationCount } ${ cs.animationFillMode }`,

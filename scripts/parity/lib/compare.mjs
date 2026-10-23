@@ -251,6 +251,14 @@ export function comparePair( pair, d, l, tol ) {
 			add( 'box', `paint-${ k }`, pd[ k ], pl[ k ] );
 		}
 	}
+	// Text on one side read from a nested block no pair measures (paint.mjs::textCarrier, `textFrom`), and no text at all on
+	// the other (a wordmark drawn as an image): one `text presence` row, and no text property row in any state. Both sides
+	// painting text compare as usual.
+	const froms = [ d.textFrom, l.textFrom ];
+	const textAlone = froms.includes( 'nested' ) && froms.includes( 'none' ) && [ ...GLYPH_TEXT ].some( ( p ) => p in d.styles || p in l.styles );
+	if ( textAlone ) {
+		add( 'style', 'text presence', 'none' === d.textFrom ? 'none' : 'text', 'none' === l.textFrom ? 'none' : 'text' );
+	}
 	// translate, rotate, scale and transform are one row per state: the composed pose (lib/transform.mjs::comparePose).
 	const poseRows = comparePose( d, l, tol, loops );
 	diffs.push( ...poseRows.filter( ( r ) => 'style' === r.kind ) );
@@ -259,7 +267,7 @@ export function comparePair( pair, d, l, tol ) {
 			continue;
 		}
 		// icon-colour is its own row only across a glyph and an svg; elsewhere icon-fill and icon-stroke carry the icon's colour.
-		if ( 'icon-colour' === p ? ! mixed : ( loops.has( p ) || ( mixed && ( GLYPH_TEXT.has( p ) || /^icon-(fill|stroke)$/.test( p ) ) ) ) ) {
+		if ( 'icon-colour' === p ? ! mixed : ( loops.has( p ) || ( ( mixed || textAlone ) && GLYPH_TEXT.has( p ) ) || ( mixed && /^icon-(fill|stroke)$/.test( p ) ) ) ) {
 			continue;
 		}
 		if ( borderColourIrrelevant( p, d.styles, l.styles ) || partIrrelevant( p, d.styles, l.styles ) || timingIrrelevant( p, d, l ) || equivalent( p, d.styles[ p ], l.styles[ p ], [ d, l ].every( ( x ) => /(^|-)flex$/.test( x.layoutDisplay || '' ) ) ) || ! layoutComparable( p, d, l ) || controlPaddingIrrelevant( p, d, l ) ) {
@@ -321,7 +329,7 @@ export function comparePair( pair, d, l, tol ) {
 				if ( TRANSFORM_PARTS.includes( p ) ) {
 					continue;
 				}
-				if ( loops.has( p ) || ( mixed && GLYPH_TEXT.has( p ) ) || borderColourIrrelevant( p, { ...d.styles, ...d[ field ] }, { ...l.styles, ...l[ field ] } ) || ( still( d, p ) && still( l, p ) ) ) {
+				if ( loops.has( p ) || ( ( mixed || textAlone ) && GLYPH_TEXT.has( p ) ) || borderColourIrrelevant( p, { ...d.styles, ...d[ field ] }, { ...l.styles, ...l[ field ] } ) || ( still( d, p ) && still( l, p ) ) ) {
 					continue;
 				}
 				if ( ! sameValue( p, d[ field ][ p ], l[ field ][ p ], tol.px ) ) {

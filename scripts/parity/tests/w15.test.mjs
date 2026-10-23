@@ -1,7 +1,7 @@
 // Walker W15 (Track W wave 2), in headless Chromium on local HTML.
 // N11: a root pair read the draft wordmark's text properties while the live read found no text of its own (Eye Care
-// header, gen-header-1, mega-shop @375: draft "Playfair Display", serif / live null). An element holding another
-// text-reading pair owns only the text it lays out itself (paint.mjs::textCarrier), on both sides alike.
+// header, gen-header-1, mega-shop @375: draft "Playfair Display", serif / live null): one `text presence` row
+// (compare.mjs::comparePair over collectPair's textFrom), never a row per font property; tests/w2-text.test.mjs.
 // Gaps: a one-child flex row's gap paints nothing, so it never reads against a block box's 0 (paint.mjs::layoutComparable
 // over collect.mjs::collectPair's layoutChildren); a gap between two or more flex or grid items still compares.
 import test, { after, before } from 'node:test';
@@ -47,13 +47,13 @@ const LIVE_HEADER = `<div id="root" style="font-family:serif;color:rgb(0,0,0)"><
 	<a><img alt="Eye Care Birmingham" width="80" height="20" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="></a>
 	<div id="right"><button style="font-family:monospace">Bag 0</button></div></div></div>`;
 
-test( 'MUST FAIL (N11, Eye Care gen-header-1 mega-shop @375): a root whose words sit in nested blocks beside another pair reads text on neither side', async () => {
+test( 'MUST FAIL (N11, Eye Care gen-header-1 mega-shop @375): a root whose draft words sit in a nested block beside another pair, against a live image wordmark, is one text presence row', async () => {
 	const draft = await read( DRAFT_HEADER, { root: '#root', inner: '#bm' } );
 	const live = await read( LIVE_HEADER, { root: '#root', inner: '#right' } );
 	assert.equal( live.root.styles[ 'font-family' ], undefined, 'live: the only words are the inner pair\'s' );
-	assert.equal( draft.root.styles[ 'font-family' ], undefined, 'draft: the wordmark words are not the root\'s own either' );
+	assert.equal( draft.root.styles[ 'font-family' ], '"Playfair Display", serif', 'draft: the wordmark words are the root\'s (no pair measures their block)' );
 	assert.deepEqual( textRows( draft.root, live.root ), [] );
-	assert.equal( draft.root.hoverColour, live.root.hoverColour, 'the hover read takes the same rule' );
+	assert.deepEqual( comparePair( { text: false, box: [] }, draft.root, live.root, TOL ).filter( ( r ) => 'text presence' === r.key ).map( ( r ) => [ r.draft, r.live ] ), [ [ 'text', 'none' ] ] );
 } );
 
 test( 'control: a root holding another pair still owns the text it lays out itself, and a font that differs is a row', async () => {
@@ -61,10 +61,12 @@ test( 'control: a root holding another pair still owns the text it lays out itse
 	const draft = await read( page( 'serif' ), { root: '#root', nav: '#nav' } );
 	const live = await read( page( 'sans-serif' ), { root: '#root', nav: '#nav' } );
 	assert.equal( draft.root.styles[ 'font-family' ], 'serif' );
+	assert.equal( draft.root.textFrom, 'own', 'text the root lays out itself is its own, not nested' );
 	assert.deepEqual( textRows( draft.root, live.root ).map( ( r ) => [ r.key, r.draft, r.live ] ), [ [ 'font-family', 'serif', 'sans-serif' ] ] );
 	// Own text reached through a box laid out with display: contents counts as the root's own too.
 	const contents = await read( '<div id="root"><span style="display:contents"><i style="font-size:21px">Own</i></span><nav id="nav"><a>Home</a></nav></div>', { root: '#root', nav: '#nav' } );
 	assert.equal( contents.root.styles[ 'font-size' ], '21px' );
+	assert.equal( contents.root.textFrom, 'own' );
 } );
 
 test( 'control: a pair holding no other pair reads its first text however deep (a button label in a span in a div)', async () => {
@@ -78,9 +80,10 @@ test( 'control: a root whose words all belong to inner pairs reads text on neith
 	const live = await read( side( '15px' ), { root: '#root', p: '#p' } );
 	assert.deepEqual( textRows( draft.root, live.root ), [] );
 	assert.ok( textRows( draft.p, live.p ).some( ( r ) => 'font-size' === r.key ), 'the owner still compares them' );
-	// Words in a nested block no pair measures are that block's, not the root's.
-	const loose = await read( '<div id="root"><div style="display:block"><b>Loose</b></div><p id="p">Words</p></div>', { root: '#root', p: '#p' } );
-	assert.equal( loose.root.styles[ 'font-size' ], undefined );
+	// Words in a nested block no pair measures belong to the nearest enclosing pair, the root.
+	const loose = await read( '<div id="root"><div style="display:block"><b style="font-size:17px">Loose</b></div><p id="p">Words</p></div>', { root: '#root', p: '#p' } );
+	assert.equal( loose.root.styles[ 'font-size' ], '17px' );
+	assert.equal( loose.root.textFrom, 'nested' );
 } );
 
 const GAPS = [ 'gap', 'row-gap', 'column-gap', 'display' ];
