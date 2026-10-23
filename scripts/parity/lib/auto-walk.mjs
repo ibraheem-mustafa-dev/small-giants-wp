@@ -8,21 +8,54 @@ import { compareAuto } from './auto-compare.mjs';
 // The header, footer and floating chat belong to the nav track, not a page's parity.
 export const AUTO_EXCLUDE = [ 'header', 'footer', '[role=banner]', '[role=contentinfo]', '.sgs-site-header', '.sgs-site-footer', '.sgs-whatsapp-cta--floating' ];
 
+// A surface that lives inside one of those landmarks (a ref-traced header, footer or drawer walk) is compared there: an
+// exclusion whose element holds one of the config's measured elements on that side is lifted on that side, the rule the
+// pairing command applies (computed-route lib/pairs.mjs::liftExclusions). In the page: [ finders, resolveSrc, exclude ].
+export function liftedIn( [ finders, resolveSrc, exclude ] ) {
+	// eslint-disable-next-line no-new-func
+	const resolve = new Function( `return (${ resolveSrc });` )();
+	const els = finders.map( ( f ) => {
+		try {
+			return resolve( f );
+		} catch {
+			return null;
+		}
+	} ).filter( Boolean );
+	return exclude.filter( ( sel ) => 'string' === typeof sel && [ ...document.querySelectorAll( sel ) ].some( ( x ) => els.some( ( e ) => x.contains( e ) ) ) );
+}
+
+// The exclusions lifted on one side of a ref-traced walk (a page config keeps every exclusion).
+export function liftedExclusions( page, side, cfg, pairs, resolveSrc ) {
+	if ( ! cfg.refPrefix ) {
+		return [];
+	}
+	return page.evaluate( liftedIn, [ pairs.map( ( p ) => p[ side ] ).filter( Boolean ), resolveSrc, AUTO_EXCLUDE ] ).catch( () => [] );
+}
+
 // The height a page must gain to scroll a screen and a half: a page shorter than that (a header or footer surface
 // on its own) is given an empty spacer at the end of <body>, so both sides reach the same scroll position and their
 // scroll handlers (a sticky header's scrolled shadow) run on both. The spacer is removed when the state ends.
+// A sticky element sticks only inside its parent, so the spacer goes at the end of the first sticky element's parent
+// (the page wrapper a sticky header sits in), else of <body>: on a full page that wrapper holds the content below.
 export const SPACER_ATTR = 'data-parity-scroll-spacer';
 
-// In the page: pad when needed, then scroll. Returns the scroll position reached.
+// In the page: pad when needed, then scroll. Returns the scroll position reached. A document shorter than the viewport
+// reports the viewport's height, so the spacer grows by whatever is still missing once it is in place.
 export function scrollAScreenAndAHalf( attr ) {
 	const top = Math.round( innerHeight * 1.5 );
-	const gap = top + innerHeight - document.documentElement.scrollHeight;
+	const short = () => top + innerHeight - document.documentElement.scrollHeight;
+	const gap = short();
 	if ( gap > 0 ) {
 		const spacer = document.createElement( 'div' );
 		spacer.setAttribute( attr, '' );
 		spacer.setAttribute( 'aria-hidden', 'true' );
 		spacer.style.height = `${ gap }px`;
-		document.body.appendChild( spacer );
+		const sticky = [ ...document.body.querySelectorAll( '*' ) ].find( ( e ) => 'sticky' === getComputedStyle( e ).position );
+		( sticky?.parentElement || document.body ).appendChild( spacer );
+		const more = short();
+		if ( more > 0 ) {
+			spacer.style.height = `${ gap + more }px`;
+		}
 	}
 	window.scrollTo( { top, behavior: 'instant' } );
 	return window.scrollY;
@@ -44,9 +77,9 @@ export function withAutoScroll( cfg ) {
 // Collects the page's words and controls (or cfg.auto.root's), marking those inside an open modal: the
 // comparison narrows to the modal only when both sides have one (a live dialog drawer against a draft
 // drawer drawn in the page compares the whole page on both).
-export function collectAutoOn( page, side, cfg ) {
+export function collectAutoOn( page, side, cfg, lifted = [] ) {
 	const opts = cfg.auto || {};
-	const exclude = [ ...AUTO_EXCLUDE, ...( opts.exclude?.[ side ] || [] ) ];
+	const exclude = [ ...AUTO_EXCLUDE.filter( ( sel ) => ! lifted.includes( sel ) ), ...( opts.exclude?.[ side ] || [] ) ];
 	return page.evaluate( ( [ fn, rootSel, ex ] ) => {
 		// eslint-disable-next-line no-new-func
 		const collect = new Function( `return (${ fn });` )();

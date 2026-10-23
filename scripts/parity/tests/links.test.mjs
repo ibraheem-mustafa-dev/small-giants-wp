@@ -46,3 +46,10 @@ test( 'MUST FAIL: a draft link opening in a new tab, with a rel, an id and an ar
 	const full = run( d, [ liveLink( 'book', 'https://x.test/book', { target: '_blank', rel: 'noopener nofollow', id: 'book', ariaLabel: 'Book a visit' } ) ] );
 	assert.deepEqual( full, [] );
 } );
+
+test( 'MUST FAIL (header walk 2026-10: 6 aria-label rows): a live link named by its own hidden words carries the aria-label name of the draft', () => {
+	const d = [ { ...draftLink( 'facebook', 'https://facebook.com/x' ), ariaLabel: 'Facebook' } ];
+	assert.deepEqual( run( d, [ liveLink( 'facebook', 'https://facebook.com/x' ) ] ), [] );
+	// Negative control: a live aria-label naming it otherwise is still a row.
+	assert.deepEqual( run( d, [ liveLink( 'facebook', 'https://facebook.com/x', { ariaLabel: 'Go to Facebook' } ) ] ).map( ( r ) => r.key ), [ 'aria-label "facebook"' ] );
+} );
