@@ -1,0 +1,8 @@
+{
+	"_meta": {
+		"purpose": "The known I-class items FR-48-67 names, each confirmed against the framework DB before it is written to instrument-debt.json (lib/instrument-debt.mjs::unroutedKnown). An item whose css_property is no longer NULL, or that calibration discovered, is not written. The stale slot maps FR-48-67 names are found by lib/instrument-debt.mjs::staleSlotMaps from the calibration cache, not named here."
+	},
+	"unrouted": [
+		{ "block": "sgs/choice-flow", "attribute": "skipAddsToBag" }
+	]
+}
