@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "R[ r.rule ]?.part && partPending.push(",
+		"replace": "false && partPending.push(",
+		"why": "an absorbed part element is never queued, so the nav gets no burger slot"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "out.slots[ homeSlot ] = finder( opener );",
+		"replace": "",
+		"why": "the part's own element is not given a slot"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "cur = list[ Number( nth[ 1 ] ) - 1 ];",
+		"replace": "cur = list[ 0 ];",
+		"why": "every repeated bar is read from the first child"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "} else if ( list.length > 1 && i < steps.length - 1 && NTH.test( steps[ i + 1 ] ) ) {\n\t\t\tcontinue;",
+		"replace": "} else if ( list.length > 1 && i < steps.length - 1 && NTH.test( steps[ i + 1 ] ) ) {\n\t\t\tcur = list[ 0 ];",
+		"why": "an undrawn icon box is invented from the first bar"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "} else if ( 1 === list.length ) {\n\t\t\tcur = list[ 0 ];",
+		"replace": "} else if ( 0 === list.length ) {\n\t\t\tcur = list[ 0 ];",
+		"why": "a drawn icon box is never found"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "if ( null === home ) {",
+		"replace": "if ( false ) {",
+		"why": "a part with no calibrated slot is not reported"
+	}
+]
