@@ -49,6 +49,8 @@ if ( ! function_exists( 'sgs_nav_menu_caret_css' ) ) {
 		$size = sgs_css_single_length_value( $attributes['submenuCaretSize'] ?? '' );
 		if ( '' !== $size ) {
 			$css .= $caret_svg_sel . '{width:' . $size . ';height:' . $size . ';}';
+			// The split item's sub-toggle hit area fits the toggle's own box once a caret size is set.
+			$css .= $uid_sel . '{--sgs-nav-caret-tap-min:0px;}';
 		}
 
 		// Gap from the label — on `.{bem}__link`, which the caret's label

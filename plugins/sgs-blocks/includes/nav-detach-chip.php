@@ -69,8 +69,8 @@ if ( ! function_exists( 'sgs_nav_detach_chip_print_footer' ) ) {
 
 if ( ! function_exists( 'sgs_nav_detach_chip_tiers' ) ) {
 	/**
-	 * Per-tier resolved chip values: after (px or 0), size (px, never below
-	 * 44), offset x/y (px).
+	 * Per-tier resolved chip values: after (px or 0), size (px, at least 16; a
+	 * set size is the chip's tap area, ruling 11), offset x/y (px).
 	 *
 	 * @param array $attributes Block attributes.
 	 * @return array<string,array{after:int,size:float,x:float,y:float}>
@@ -85,7 +85,7 @@ if ( ! function_exists( 'sgs_nav_detach_chip_tiers' ) ) {
 
 			$out[ $tier ] = array(
 				'after' => is_numeric( $after ) ? max( 0, (int) $after ) : 0,
-				'size'  => is_numeric( $size ) ? max( 44.0, round( (float) $size, 1 ) ) : 56.0,
+				'size'  => is_numeric( $size ) ? max( 16.0, round( (float) $size, 1 ) ) : 56.0,
 				'x'     => is_numeric( $offset['x'] ?? null ) ? round( (float) $offset['x'], 1 ) : 20.0,
 				'y'     => is_numeric( $offset['y'] ?? null ) ? round( (float) $offset['y'], 1 ) : 20.0,
 			);
@@ -142,7 +142,7 @@ if ( ! function_exists( 'sgs_nav_detach_chip_css' ) ) {
 		$radius = sgs_css_length_value( $attributes['triggerDetachRadius'] ?? '9999px' );
 
 		$css  = $wrap . '{display:none;position:fixed;top:calc(var(--wp-admin--admin-bar--height, 0px) + var(--sgs-nav-detach-y, 20px));inset-inline-end:var(--sgs-nav-detach-x, 20px);z-index:' . $z . ';}';
-		$css .= $button . '{width:var(--sgs-nav-detach-size, 56px);height:var(--sgs-nav-detach-size, 56px);min-width:44px;min-height:44px;border-radius:' . ( '' !== $radius ? $radius : '9999px' ) . ';}';
+		$css .= $button . '{width:var(--sgs-nav-detach-size, 56px);height:var(--sgs-nav-detach-size, 56px);border-radius:' . ( '' !== $radius ? $radius : '9999px' ) . ';}';
 
 		// Empty paints the opaque surface token: the chip floats over any content,
 		// so a see-through fill would let its glyph vanish over a matching section.

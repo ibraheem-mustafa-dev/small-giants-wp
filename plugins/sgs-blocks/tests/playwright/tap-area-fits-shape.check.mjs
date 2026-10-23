@@ -3,7 +3,8 @@
 //
 // Real Chromium at 375 / 768 / 1440 against static fixtures that load each block's real style.css (no WordPress site,
 // no credentials). Each case file in tests/playwright/tap-area-cases/ exports `CASES`: { name, styles: [block folder],
-// html, sel, expect: { w, h }, sized }. The html carries the custom properties render.php prints for those settings
+// html, sel, expect: { w, h }, sized, pseudo?, widths? }. `pseudo` ('::before' or '::after') measures that pseudo-element's
+// used size instead of the element's box; `widths` limits a case to those viewport widths. The html carries the custom properties render.php prints for those settings
 // (the PHP tests prove render.php prints them); `sized` marks a case whose size comes from a setting.
 //
 // Run:            node tests/playwright/tap-area-fits-shape.check.mjs
@@ -20,7 +21,8 @@ import { fileURLToPath, pathToFileURL } from 'url';
 
 const here = path.dirname( fileURLToPath( import.meta.url ) );
 const pluginRoot = path.resolve( here, '..', '..' );
-const require = createRequire( path.join( pluginRoot, 'package.json' ) );
+// A worktree has no node_modules: SGS_TAP_PLAYWRIGHT_ROOT names the checkout whose Playwright to load.
+const require = createRequire( path.join( process.env.SGS_TAP_PLAYWRIGHT_ROOT ? path.resolve( process.env.SGS_TAP_PLAYWRIGHT_ROOT ) : pluginRoot, 'package.json' ) );
 const subjectRoot = process.env.SGS_TAP_ROOT ? path.resolve( process.env.SGS_TAP_ROOT ) : pluginRoot;
 const { chromium } = require( 'playwright' );
 const BASELINE = process.env.SGS_TAP_BASELINE || '';
@@ -56,18 +58,25 @@ try {
 	for ( const width of WIDTHS ) {
 		const page = await browser.newPage( { viewport: { width, height: 900 } } );
 		for ( const c of cases ) {
+			if ( c.widths && ! c.widths.includes( width ) ) {
+				continue;
+			}
 			await page.setContent( `<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:0;font-size:16px">${ c.html }</body></html>` );
 			for ( const block of c.styles ) {
 				await page.addStyleTag( { content: readCss( block ) } );
 			}
-			const box = await page.evaluate( ( sel ) => {
+			const box = await page.evaluate( ( { sel, pseudo } ) => {
 				const el = document.querySelector( sel );
 				if ( ! el ) {
 					return null;
 				}
+				if ( pseudo ) {
+					const cs = getComputedStyle( el, pseudo );
+					return { w: parseFloat( cs.width ), h: parseFloat( cs.height ) };
+				}
 				const r = el.getBoundingClientRect();
 				return { w: r.width, h: r.height };
-			}, c.sel );
+			}, { sel: c.sel, pseudo: c.pseudo || '' } );
 			const ok = box && Math.abs( box.w - c.expect.w ) <= TOLERANCE && Math.abs( box.h - c.expect.h ) <= TOLERANCE;
 			const read = box ? `${ box.w.toFixed( 1 ) } x ${ box.h.toFixed( 1 ) }` : 'not found';
 			if ( c.sized ) {

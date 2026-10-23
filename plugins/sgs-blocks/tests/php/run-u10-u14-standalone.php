@@ -219,7 +219,7 @@ $printed = (string) ob_get_clean();
 ok( 1 === substr_count( $printed, 'sgs-nav-bar-menu__detach"' ), '5f queued twice, printed once on wp_footer' );
 $ccss = sgs_nav_detach_chip_css( $chip_attrs, '.sgs-nav-bar-menu-abc123', 1100 );
 ok( false !== strpos( $ccss, '{display:none;position:fixed;top:calc(var(--wp-admin--admin-bar--height, 0px)' ), '5g hidden by default, fixed under the admin bar' );
-ok( false !== strpos( $ccss, '--sgs-nav-detach-size:68.6px' ) && false !== strpos( $ccss, '--sgs-nav-detach-size:44px' ), '5h per-tier size, never below 44px' );
+ok( false !== strpos( $ccss, '--sgs-nav-detach-size:68.6px' ) && false !== strpos( $ccss, '--sgs-nav-detach-size:30px' ) && false === strpos( $ccss, 'min-width:44px' ), '5h per-tier size: a set 30px is the chip and its tap area, no 44px floor (ruling 11)' );
 ok( false !== strpos( $ccss, '@media (min-width:1024px) and (max-width:1099px){.sgs-nav-bar-menu-abc123.sgs-nav-bar-menu__detach.is-detached{display:block;}}' ), '5i shown only at ON tiers below the collapse point' );
 ok( '' === sgs_nav_detach_chip_css( array(), '.m', 1100 ), '5j off emits nothing' );
 ok( false !== strpos( $ccss, '.sgs-nav-bar-menu__burger{background-color:var(--wp--preset--color--surface, #FAF9F6);}' ), '5k an empty chip background paints the opaque surface token' );

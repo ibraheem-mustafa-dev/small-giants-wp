@@ -184,8 +184,17 @@ if ( is_array( $sgs_tt_icon_size ) && array() !== $sgs_tt_icon_size ) {
 	);
 	if ( '' !== $sgs_tt_icon_size_css ) {
 		$scoped_css[] = $sgs_tt_icon_size_css;
-		// A set icon size is the tap area; unset keeps style.css's 44px floor.
-		$scoped_css[] = $root_sel . '{--sgs-tt-tap-min:0px;}';
+		// An icon size set at a tier is the tap area there; a tier with none keeps style.css's 44px floor.
+		$scoped_css[] = sgs_emit_responsive_css(
+			$root_sel,
+			array(
+				array(
+					'value'     => $sgs_tt_icon_size,
+					'css'       => '--sgs-tt-tap-min',
+					'transform' => static fn( $raw ): string => '' === trim( (string) $raw ) ? '' : '0px',
+				),
+			)
+		);
 	}
 }
 

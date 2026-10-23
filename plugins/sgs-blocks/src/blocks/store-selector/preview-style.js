@@ -46,6 +46,24 @@ export function flagSizeAtTier( flagSize, tier ) {
 }
 
 /**
+ * Whether a flag size is set at or above a tier, as render.php prints the tap-floor flag per tier.
+ *
+ * @param {Object} flagSize `{ desktop, tablet, mobile }`, each `{ w, h }`.
+ * @param {string} tier     'desktop' | 'tablet' | 'mobile'.
+ * @return {boolean} True when a width or height reaches this tier.
+ */
+function flagSizeSetAtTier( flagSize, tier ) {
+	const start = Math.max( 0, TIER_ORDER.indexOf( tier ) );
+	for ( let i = start; i >= 0; i-- ) {
+		const candidate = flagSize?.[ TIER_ORDER[ i ] ];
+		if ( candidate && 'object' === typeof candidate && ( candidate.w || candidate.h ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
  * @param {Object} attributes Block attributes.
  * @param {string} tier       Previewed device tier.
  * @return {{root: Object, trigger: Object, item: Object, list: Object}} Style objects per canvas element.
@@ -57,7 +75,7 @@ export function storeSelectorPreviewStyles( attributes, tier ) {
 	return {
 		root: {
 			...typographyPreviewStyle( attributes, '', tier ),
-			...( attributes.flagSize && Object.keys( attributes.flagSize ).length ? { '--sgs-ss-tap-min': '0px' } : {} ),
+			...( flagSizeSetAtTier( attributes.flagSize, tier ) ? { '--sgs-ss-tap-min': '0px' } : {} ),
 		},
 		trigger: { ...gapStyle, ...textPaintPreview( attributes.triggerColour, '' ) },
 		item: textPaintPreview( attributes.itemColour, '' ),

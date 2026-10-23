@@ -1566,7 +1566,7 @@
 		"triggerDetachSize": {
 			"type": "object",
 			"default": {},
-			"description": "Per tier, px: chip diameter (default 56, never below 44)."
+			"description": "Per tier, px: chip diameter (default 56, at least 16); the chip's tap area is its size."
 		},
 		"triggerDetachOffset": {
 			"type": "object",
