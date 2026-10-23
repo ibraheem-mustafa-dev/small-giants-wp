@@ -123,7 +123,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		if ( layer || ! notPainted( p, snaps[ w ].styles || {}, snaps[ w ] ) ) {
 			return true;
 		}
-		const why = gapPaintsNothing( p, snaps[ w ].styles || {}, snaps[ w ] );
+		const why = /gap$/.test( p ) ? gapPaintsNothing( p, snaps[ w ].styles || {}, snaps[ w ] ) : null;
 		why && settled( st, rec, ref, { slot, property: p, value: String( valueAt( snaps[ w ], p ) ), reason: 'not-painted', detail: `at ${ w }: ${ why }` } );
 		return false;
 	} ) ) ] ) );
