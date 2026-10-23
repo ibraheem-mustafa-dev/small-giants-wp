@@ -18,11 +18,14 @@
 //   { kind: 'unmapped', reason }                  no SGS effect expresses it (a Spec 38 gap that names the mechanism)
 // `ctx.css` is the draft's CSS text (a list of strings), which a pointer-written custom property must feed through a
 // clip-path or mask for the record to be a pointer-tracked reveal; `ctx.template` is the fact record's template
-// ({ elements: { <key>: { style, realParent, srcLine, ... } } }), which says whether the header the draft shadows is pinned.
+// ({ elements: { <key>: { style, realParent, srcLine, ... } } }), which says whether the header the draft shadows is pinned;
+// `ctx.records` is the whole animation inventory, whose style records give a code-created effect element's declarations
+// (lib/motion-effect-element.mjs: the sheen band's width, the ripple circle's size and colour).
 
 import { poseOf } from './motion-channels.mjs';
 import { props, nameOf, words, blob, triggerOf, MINUS, TIMES, NUMBER, number, round, durationOf, easingOf, compact } from './motion-record-text.mjs';
 import { PINNED, headerScrollOf, dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf } from './motion-behaviour-settings.mjs';
+import { effectElementStyle, colourOf, largerSideFactor } from './motion-effect-element.mjs';
 
 // The attribute selector of the template element a record's script finds its target by (`[data-mag]`), or null.
 export const hostOf = ( r ) => /\[data-[a-z0-9-]+\]/i.exec( words( r.element?.selector, r.trigger?.detail ) )?.[ 0 ] ?? null;
@@ -97,30 +100,43 @@ function tiltResetOf( r ) {
 	return { resetDuration: durationOf( r ), resetEasing: easingOf( r ) };
 }
 
-// A stripe slanted by a constant skewX that slides across its host on pointer entry: a sheen.
-function sheenOf( r ) {
+// A stripe slanted by a constant skewX that slides across its host on pointer entry: a sheen. The band's width is the
+// width the script declares on the stripe it creates (lib/motion-effect-element.mjs); a record whose stripe is not
+// found falls back to a width its notes state.
+function sheenOf( r, ctx ) {
 	const p = props( r ).find( ( q ) => 'transform' === nameOf( q ) && /skewX/i.test( words( q.from, q.to ) ) );
 	if ( 'waapi' !== r.mechanism || 'pointer-move' !== triggerOf( r ) || ! p ) {
 		return null;
 	}
 	const skew = number( new RegExp( `skewX\\(\\s*(${ MINUS }?\\d*\\.?\\d+)deg`, 'i' ).exec( words( p.from ) )?.[ 1 ].replace( '−', '-' ) );
-	return { effect: 'sheen', panel: 'hover', trigger: 'hover', values: compact( { angle: skew, bandWidth: number( new RegExp( `width\\s+${ NUMBER }%`, 'i' ).exec( words( r.notes ) )?.[ 1 ] ), duration: durationOf( r ), easing: easingOf( r ) } ) };
+	const declared = /^(\d*\.?\d+)%$/.exec( effectElementStyle( r, ctx.records )?.width?.value ?? '' )?.[ 1 ];
+	const bandWidth = number( declared ?? new RegExp( `width\\s+${ NUMBER }%`, 'i' ).exec( words( r.notes ) )?.[ 1 ] );
+	return { effect: 'sheen', panel: 'hover', trigger: 'hover', values: compact( { angle: skew, bandWidth, duration: durationOf( r ), easing: easingOf( r ) } ) };
 }
 
-// A circle that grows from the pointer's press and fades: a ripple.
-function rippleOf( r ) {
+// A circle that grows from the pointer's press and fades: a ripple. Its diameter as a multiple of the host's larger side
+// is the scale it grows to times the multiple the script sizes the circle by (lib/motion-effect-element.mjs::
+// largerSideFactor); its peak opacity is its first keyframe's opacity times its declared background colour's alpha, and
+// its colour that background's. What the circle's declarations do not state falls back to the record's notes.
+function rippleOf( r, ctx ) {
 	const list = props( r );
 	const grow = list.find( ( q ) => 'transform' === nameOf( q ) && /scale\(\s*0\s*\)/i.test( words( q.from ) ) );
 	const fade = list.find( ( q ) => 'opacity' === nameOf( q ) );
 	if ( 'waapi' !== r.mechanism || 'press' !== triggerOf( r ) || ! grow || ! fade ) {
 		return null;
 	}
-	const alpha = number( new RegExp( `rgba\\(\\s*255\\s*,\\s*255\\s*,\\s*255\\s*,\\s*${ NUMBER }`, 'i' ).exec( words( r.notes ) )?.[ 1 ] );
+	const style = effectElementStyle( r, ctx.records ) || {};
+	const scaleEnd = number( new RegExp( `^scale\\(\\s*${ NUMBER }\\s*\\)$`, 'i' ).exec( words( grow.to ).trim() )?.[ 1 ] );
+	const side = largerSideFactor( style.width );
+	const paint = colourOf( style[ 'background-color' ]?.value ?? style.background?.value );
+	const noted = number( new RegExp( `rgba\\(\\s*255\\s*,\\s*255\\s*,\\s*255\\s*,\\s*${ NUMBER }`, 'i' ).exec( words( r.notes ) )?.[ 1 ] );
+	const alpha = paint ? paint.alpha : noted;
+	const first = Number.isFinite( Number( fade.from ) ) && null !== fade.from && '' !== fade.from ? Number( fade.from ) : 1;
 	return { effect: 'ripple', panel: 'effects', trigger: 'pointerdown', values: compact( {
 		duration: durationOf( r ), easing: easingOf( r ),
-		sizeFactor: number( new RegExp( `${ NUMBER }\\s*${ TIMES }\\s*max`, 'i' ).exec( words( r.notes ) )?.[ 1 ] ),
-		peakOpacity: null === alpha ? null : round( alpha * ( Number( fade.from ) || 1 ) ),
-		colour: null === alpha ? null : '#ffffff',
+		sizeFactor: null !== side && null !== scaleEnd ? round( side * scaleEnd ) : number( new RegExp( `${ NUMBER }\\s*${ TIMES }\\s*max`, 'i' ).exec( words( r.notes ) )?.[ 1 ] ),
+		peakOpacity: null == alpha ? null : round( alpha * first ),
+		colour: paint ? paint.hex : null === noted ? null : '#ffffff',
 	} ) };
 }
 
@@ -315,7 +331,7 @@ export function recogniseBehaviour( record, ctx = {} ) {
 	if ( reset ) {
 		return done( r, { kind: 'effect', effects: [], hoverState: compact( reset ) } );
 	}
-	for ( const make of [ sheenOf, rippleOf, ( x ) => peekOf( x, ctx ), scrollOf ] ) {
+	for ( const make of [ ( x ) => sheenOf( x, ctx ), ( x ) => rippleOf( x, ctx ), ( x ) => peekOf( x, ctx ), scrollOf ] ) {
 		const e = make( r );
 		if ( e?.unmapped ) {
 			return done( r, { kind: 'unmapped', reason: e.unmapped } );
