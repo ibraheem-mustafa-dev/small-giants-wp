@@ -82,7 +82,8 @@ test( 'only a CONFIRMED live measurement proves emission, for its own block, set
 	assert.equal( proof( 'x', 'margin' ), null );
 	assert.equal( proof( 'x', 'gap', 'sgs/b' ), null );
 	assert.equal( measuredEmitsFrom( 'not a list' )( 'sgs/a', 'x', 'gap' ), false );
-	assert.equal( emissionProof( { block: 'sgs/a' }, { calibration: CAL, elementPath: '', property: 'gap', measuredEmits: m } ), null );
+	// A citation naming no setting proves nothing, even against a lookup that would confirm anything.
+	assert.equal( emissionProof( { block: 'sgs/a' }, { calibration: CAL, elementPath: '', property: 'gap', measuredEmits: () => true } ), null );
 } );
 
 test( 'the cited element is the row itself, the owner path of an enclosing citation, or unknown for a sibling', () => {
