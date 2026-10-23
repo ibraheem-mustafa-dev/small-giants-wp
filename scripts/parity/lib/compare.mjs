@@ -114,14 +114,23 @@ const normText = ( t ) => ( t || '' ).replace( /[\u2018\u2019\u201a\u2032]/g, "'
 // judged by the box sizes and the side-by-side screenshots.
 const sameWords = ( a, b ) => normText( a ).split( ' ' ).sort().join( ' ' ) === normText( b ).split( ' ' ).sort().join( ' ' );
 
-// A border colour or style only matters where that side has a border (a 0 width paints neither).
+// An edge has a border width where its width is above 0 (a snapshot that did not read a width counts as having one, so a
+// missing read never hides a row); it paints where its style is also not none or hidden.
+const hasBorderWidth = ( s, edge ) => parseFloat( s[ `border-${ edge }-width` ] ?? '1' ) > 0;
+const paintsBorder = ( s, edge ) => hasBorderWidth( s, edge ) && ! /^(none|hidden)$/.test( s[ `border-${ edge }-style` ] ?? 'solid' );
+
+// A border colour is compared only where BOTH sides paint a border on that edge; a border style only where both sides
+// have a width there (so a none against a solid at the same width is still a style row).
+// Where only one side has a border, the width row already reports it and the other side's colour is its inherited text colour.
 function borderColourIrrelevant( p, d, l ) {
 	const m = p.match( /^border-(top|bottom|left|right)-(color|style)$/ );
 	if ( ! m ) {
 		return false;
 	}
-	const w = `border-${ m[ 1 ] }-width`;
-	return parseFloat( d[ w ] ?? '1' ) === 0 && parseFloat( l[ w ] ?? '1' ) === 0;
+	if ( 'color' === m[ 2 ] ) {
+		return ! ( paintsBorder( d, m[ 1 ] ) && paintsBorder( l, m[ 1 ] ) );
+	}
+	return ! ( hasBorderWidth( d, m[ 1 ] ) && hasBorderWidth( l, m[ 1 ] ) );
 }
 
 // Parts that paint nothing on their own: an underline's colour, thickness and offset while either side
