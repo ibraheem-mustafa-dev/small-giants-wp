@@ -1,0 +1,14 @@
+[
+	{
+		"file": "lib/site-build-plan.mjs",
+		"find": "\t\tif ( mine.length > 1 ) {\n\t\t\tproblems.push(",
+		"replace": "\t\tif ( false ) {\n\t\t\tproblems.push(",
+		"why": "two layout rows of a kind are not refused"
+	},
+	{
+		"file": "lib/site-build-plan.mjs",
+		"find": "if ( current && ! state.pointerKeys?.[ area ] ) {",
+		"replace": "if ( false ) {",
+		"why": "a foreign pointer is overwritten"
+	}
+]

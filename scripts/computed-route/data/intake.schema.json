@@ -673,7 +673,6 @@
         },
         "parts": {
           "type": "array",
-          "description": "Surfaces this row owns that make no row of their own (FR-48-30): a block's panel, WooCommerce's forms and endpoints, a page's own header, a surfaces.json record the code does not show",
           "items": {
             "type": "object",
             "required": [

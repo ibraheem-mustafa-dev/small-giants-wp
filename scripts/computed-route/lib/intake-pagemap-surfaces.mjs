@@ -351,12 +351,9 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 			}
 		}
 	}
-	// A form inside a choice flow is a step of that flow.
-	const flowNodes = surfaces.filter( ( x ) => 'choice-flow' === x.kind && x.node ).map( ( x ) => x.node );
-	const kept = surfaces.filter( ( x ) => ! ( 'form' === x.kind && x.node && ancestors( x.node ).some( ( u ) => flowNodes.includes( u ) ) ) );
 	// `pageOfTag( draftId )`: the page holding the element a `file:line:col` id names (a logic id: its file when a route).
 	const pageOfTag = ( id ) => pageAt.get( tagKey( id ) )?.() ?? ( routeKeys.has( id.split( ':' )[ 0 ] ) ? id.split( ':' )[ 0 ] : null );
-	return { surfaces: kept.map( ( { node, ...s } ) => s ), menus, formComponents, accountPages, pageOfTag };
+	return { surfaces: surfaces.map( ( { node, ...s } ) => s ), menus, formComponents, accountPages, pageOfTag };
 }
 
 const WORDS = ( s ) => new Set( kebab( s ).split( /[^a-z0-9]+/ ).filter( ( w ) => w.length > 2 && ! [ 'menu', 'mega', 'form', 'drawer', 'modal', 'the', 'and', 'inline', 'site' ].includes( w ) ) );
@@ -395,7 +392,7 @@ export function crossCheck( code, hint ) {
 	// Leftovers of one kind in one draft pair in document order when both sides have the same number.
 	for ( const c of out.filter( ( x ) => ! x.hint ) ) {
 		const mine = out.filter( ( x ) => ! x.hint && x.kind === c.kind && x.dc === c.dc );
-		const theirs = records.filter( ( h ) => ! used.has( h ) && sameKind( h, c ) && h.dc === c.dc );
+		const theirs = records.filter( ( h ) => ! used.has( h ) && h.kind === c.kind && h.dc === c.dc );
 		if ( mine.length === theirs.length && mine.length ) {
 			mine.forEach( ( x, i ) => {
 				x.hint = theirs[ i ].id;

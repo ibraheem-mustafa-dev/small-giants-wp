@@ -177,12 +177,6 @@
     "parts": [
       {
         "kind": "form",
-        "label": "Gift finder",
-        "owner": "draft-notes",
-        "draftId": "surfaces.json S-20"
-      },
-      {
-        "kind": "form",
         "label": "Gift note preview",
         "owner": "draft-notes",
         "draftId": "surfaces.json S-22"
@@ -241,15 +235,7 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": null,
-    "parts": [
-      {
-        "kind": "form",
-        "label": "Build your Zookie",
-        "owner": "draft-notes",
-        "draftId": "surfaces.json S-08"
-      }
-    ]
+    "id": null
   },
   {
     "route": "Product.dc.html",

@@ -1,0 +1,170 @@
+[
+	{
+		"file": "lib/intake-pagemap.mjs",
+		"find": "} else if ( 'drawer' === s.kind && ! s.nav ) {",
+		"replace": "} else if ( false ) {",
+		"why": "a drawer holding no nav becomes a layout row"
+	},
+	{
+		"file": "lib/intake-pagemap.mjs",
+		"find": "&& !! checkout && ( s.reaches || [] ).includes( checkout.route );",
+		"replace": "&& !! checkout && false;",
+		"why": "no overlay is the cart block's panel"
+	},
+	{
+		"file": "lib/intake-pagemap.mjs",
+		"find": "part( 'block', cart || page );",
+		"replace": "part( 'block' );",
+		"why": "the cart panel is not filed on the cart row"
+	},
+	{
+		"file": "lib/intake-pagemap.mjs",
+		"find": "|| 'my-account' === r.slug );",
+		"replace": ");",
+		"why": "my-account is not a WooCommerce page"
+	},
+	{
+		"file": "lib/intake-pagemap.mjs",
+		"find": "&& accountPages.has( r.route ) ? 'my-account'",
+		"replace": "&& false ? 'my-account'",
+		"why": "a page with a password field keeps its own slug"
+	},
+	{
+		"file": "lib/intake-pagemap.mjs",
+		"find": "const slug = 'shop' === r.postType ? 'shop' :",
+		"replace": "const slug = 'shop' === r.postType ? r.slug :",
+		"why": "the shop keeps the manifest slug"
+	},
+	{
+		"file": "lib/intake-pagemap.mjs",
+		"find": "\t\trow.title = label;\n",
+		"replace": "",
+		"why": "the shop keeps the manifest title"
+	},
+	{
+		"file": "lib/intake-pagemap.mjs",
+		"find": "! into.every( ( l ) => pageOfTag( l.from ) === checkout.route )",
+		"replace": "! into.some( ( l ) => pageOfTag( l.from ) === checkout.route )",
+		"why": "one link from checkout makes an endpoint"
+	},
+	{
+		"file": "lib/intake-pagemap.mjs",
+		"find": "if ( r === checkout || r.route === home || ! r.route || ! into.length ||",
+		"replace": "if ( true ||",
+		"why": "no route is an endpoint"
+	},
+	{
+		"file": "lib/intake-pagemap.mjs",
+		"find": "if ( ! rows.some( ( r ) => [ 'shop', 'product' ].includes( r.postType ) ) ) {",
+		"replace": "if ( rows.some( ( r ) => 'never' === r.postType ) ) {",
+		"why": "every client gets WooCommerce pages"
+	},
+	{
+		"file": "lib/intake-pagemap.mjs",
+		"find": "title: panel?.label || 'Cart'",
+		"replace": "title: 'Cart'",
+		"why": "the cart ignores its panel's label"
+	},
+	{
+		"file": "lib/intake-pagemap.mjs",
+		"find": "for ( const w of wanted.filter( ( x ) => ! rows.some( ( r ) => 'page' === r.postType && x.has( r ) ) ) ) {",
+		"replace": "for ( const w of [] ) {",
+		"why": "no WooCommerce page is added"
+	},
+	{
+		"file": "lib/intake-pagemap.mjs",
+		"find": "} else if ( LAYOUT_KIND.has( s.kind ) && page ) {",
+		"replace": "} else if ( false ) {",
+		"why": "a page's own header is a layout row"
+	},
+	{
+		"file": "lib/intake-pagemap.mjs",
+		"find": "\t\tif ( hintOnly ) {\n",
+		"replace": "\t\tif ( false ) {\n",
+		"why": "a hint-only record becomes a row"
+	},
+	{
+		"file": "lib/intake-pagemap.mjs",
+		"find": "} else if ( WOO_ROW( page ) ) {",
+		"replace": "} else if ( false ) {",
+		"why": "WooCommerce's forms become rows"
+	},
+	{
+		"file": "lib/intake-pagemap.mjs",
+		"find": "r.slug === routeSlug.get( page ) ||",
+		"replace": "false ||",
+		"why": "a page merged into another row loses its forms"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "'password' === attrOf( t, 'type' )",
+		"replace": "'email' === attrOf( t, 'type' )",
+		"why": "account pages found by the wrong field"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "\t\tif ( hit ) {\n\t\t\treturn hit.value;\n\t\t}\n",
+		"replace": "",
+		"why": "no page is found from its gate"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "&& pickLists( node ).length >= 2 &&",
+		"replace": "&& pickLists( node ).length >= 3 &&",
+		"why": "two pick lists are not a choice flow"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "&& ! descendants( node ).some( ( x ) => 'form' === x.name );",
+		"replace": "&& true;",
+		"why": "a form with pick lists becomes a choice flow"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "const kind = 'modal' === r.kind && isChoiceFlow( r.node ) ? 'choice-flow' : r.kind;",
+		"replace": "const kind = r.kind;",
+		"why": "an overlay choice flow stays a modal"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "if ( inner.length < 2 ) {",
+		"replace": "if ( true ) {",
+		"why": "one mega panel for all gates"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "label: inner.length === openers.length ?",
+		"replace": "label: false ?",
+		"why": "panels not named by their openers"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": ".includes( r.node ) ).map( ( l ) => l.route ) ) ];",
+		"replace": ".includes( null ) ).map( ( l ) => l.route ) ) ];",
+		"why": "an overlay reaches nothing"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "|| ( 'choice-flow' === c.kind && [ 'modal', 'form' ].includes( h.kind ) );",
+		"replace": ";",
+		"why": "a hint modal never pairs with a code choice flow"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "+ ( samePlace( h, c ) ? 1 : 0 );",
+		"replace": ";",
+		"why": "hints ignore where the surface sits"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "( '*' === h.route ? ! c.page :",
+		"replace": "( '*' === h.route ? true :",
+		"why": "a site-wide hint pairs with a page's surface"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "const flows = tree.nodes.filter( ( t ) => 'section' === t.name && isChoiceFlow( t ) &&",
+		"replace": "const flows = tree.nodes.filter( ( t ) => false &&",
+		"why": "page sections are never choice flows"
+	}
+]

@@ -201,12 +201,6 @@
         "label": "saveDetails",
         "owner": "woocommerce",
         "draftId": "Eye Care Birmingham.dc.html:1979:11 <form>"
-      },
-      {
-        "kind": "form",
-        "label": "Addresses",
-        "owner": "draft-notes",
-        "draftId": "surfaces.json S-49"
       }
     ]
   },
@@ -249,27 +243,7 @@
     "postType": "sgs_header",
     "collection": "static",
     "flags": [],
-    "id": null,
-    "parts": [
-      {
-        "kind": "menu",
-        "label": "Mega menu",
-        "owner": "draft-notes",
-        "draftId": "surfaces.json S-04"
-      },
-      {
-        "kind": "drawer",
-        "label": "Mobile menu",
-        "owner": "draft-notes",
-        "draftId": "surfaces.json S-05"
-      },
-      {
-        "kind": "modal",
-        "label": "Lens configurator",
-        "owner": "draft-notes",
-        "draftId": "surfaces.json S-27"
-      }
-    ]
+    "id": null
   },
   {
     "slug": "footer",

@@ -2,11 +2,21 @@
 <html><head><meta charset="utf-8"><title>Contact | Bakery</title></head><body>
 <x-dc>
 <dc-import name="SiteHeader"></dc-import>
-<main><form onSubmit="{{ send }}"><input name="name"><textarea name="message"></textarea><button>Send</button></form></main>
+<main><section><h2>Ask us anything</h2><form onSubmit="{{ send }}">
+  <sc-for list="{{ topics }}" as="o"><button type="button" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for>
+  <sc-for list="{{ replies }}" as="o"><button type="button" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for>
+  <input name="name"><textarea name="message"></textarea><button>Send</button>
+</form></section></main>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  renderVals() { return { send: ( e ) => e.preventDefault() }; }
+  renderVals() {
+    return {
+      send: ( e ) => e.preventDefault(),
+      topics: [ "Orders", "Allergens" ].map( ( label ) => ( { label, pick: () => this.setState( { topic: label } ) } ) ),
+      replies: [ "Email", "Phone" ].map( ( label ) => ( { label, pick: () => this.setState( { reply: label } ) } ) ),
+    };
+  }
 }
 </script>
 </body></html>

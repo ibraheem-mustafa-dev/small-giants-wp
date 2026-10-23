@@ -1,0 +1,56 @@
+[
+	{
+		"file": "lib/intake-pagemap-regen.mjs",
+		"find": "if ( 'drop' === mark ) {",
+		"replace": "if ( false ) {",
+		"why": "a drop mark is ignored"
+	},
+	{
+		"file": "lib/intake-pagemap-regen.mjs",
+		"find": "[ '', 'null' ].includes( e[ 2 ] ) ? null : e[ 2 ];",
+		"replace": "e[ 2 ];",
+		"why": "an empty parent edit sets an empty string"
+	},
+	{
+		"file": "lib/intake-pagemap-regen.mjs",
+		"find": "&& 'accept' !== marks.get( id ) );",
+		"replace": ");",
+		"why": "an accept for a vanished row is reported"
+	},
+	{
+		"file": "lib/intake-pagemap-regen.mjs",
+		"find": "id: ids.get( rowKey( r ) ) ?? null",
+		"replace": "id: ids.get( `page:${ r.slug }` ) ?? null",
+		"why": "ids carry by slug alone"
+	},
+	{
+		"file": "lib/intake-pagemap-regen.mjs",
+		"find": "if ( ! old.has( k ) ) {",
+		"replace": "if ( false ) {",
+		"why": "added rows are not named"
+	},
+	{
+		"file": "lib/intake-pagemap-regen.mjs",
+		"find": "[ ...old.keys() ].filter( ( k ) => ! now.has( k ) )",
+		"replace": "[]",
+		"why": "removed rows are not named"
+	},
+	{
+		"file": "lib/intake-pagemap-regen.mjs",
+		"find": "\tif ( problems.length ) {\n",
+		"replace": "\tif ( false ) {\n",
+		"why": "an invalid map is written"
+	},
+	{
+		"file": "lib/intake-pagemap-regen.mjs",
+		"find": "'page-map' === r.rowType && r.mark",
+		"replace": "false",
+		"why": "review marks are not read"
+	},
+	{
+		"file": "lib/intake-run.mjs",
+		"find": ", '--page-map': 'page-map' };",
+		"replace": " };",
+		"why": "--page-map is not a mode"
+	}
+]

@@ -18,10 +18,12 @@ const slugsOf = ( map, type ) => map.rows.filter( ( r ) => r.postType === type )
 const row = ( map, slug ) => map.rows.find( ( r ) => r.slug === slug && /^(page|shop|product)$/.test( r.postType ) );
 const parts = ( map, slug ) => ( row( map, slug )?.parts || [] ).map( ( p ) => `${ p.kind }:${ p.label }:${ p.owner }` );
 
-test( 'MUST FAIL (a): one nav drawer row; the bag panel is the cart block\'s and the filter rail the shop\'s', () => {
+test( 'MUST FAIL (a): one nav drawer row; the bag panel is the cart block\'s, the filter rail the shop\'s, any other a block\'s', () => {
 	assert.deepEqual( slugsOf( state, 'sgs_drawer' ), [ 'drawer-menu-panel' ] );
 	assert.deepEqual( parts( state, 'cart' ), [ 'drawer:Your bag:block' ], 'the panel that leads to checkout is the cart block\'s' );
 	assert.deepEqual( parts( state, 'shop' ), [ 'drawer:Drawer:woocommerce' ], 'the filter rail sits on the shop page' );
+	const header = state.rows.find( ( r ) => 'sgs_header' === r.postType );
+	assert.deepEqual( ( header.parts || [] ).map( ( p ) => `${ p.kind }:${ p.label }:${ p.owner }` ), [ 'drawer:Find a store:block' ], 'any other panel with no nav belongs to a block and is kept with the site chrome' );
 } );
 
 test( 'MUST FAIL (b): one site-owned form row; the sign-in and account forms are WooCommerce\'s my-account forms', () => {

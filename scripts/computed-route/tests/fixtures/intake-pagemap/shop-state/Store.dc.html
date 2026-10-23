@@ -38,7 +38,7 @@
   <form onSubmit="{{ sendContact }}"><input name="name"><textarea name="message"></textarea><button>Send</button></form>
 </main></sc-if>
 <sc-if value="{{ isCheckout }}"><main>
-  <section><h2>Pay</h2><button onClick="{{ placeOrder }}">Place order</button></section>
+  <section><h2>Pay</h2><button onClick="{{ placeOrder }}">Place order</button><a href="#" onClick="{{ toShop }}">Continue shopping</a></section>
 </main></sc-if>
 <sc-if value="{{ isDone }}"><main><h1>Thank you</h1></main></sc-if>
 <sc-if value="{{ isSignin }}"><main>
@@ -54,6 +54,7 @@
 <div role="dialog" aria-label="Your bag" style="position:fixed;top:0;bottom:0;right:0;width:400px">
   <p>Your bag is empty</p><button onClick="{{ toCheckout }}">Checkout</button>
 </div>
+<div role="dialog" aria-label="Find a store" style="position:fixed;top:0;bottom:0;right:0;width:360px"><p>Our stores</p></div>
 <div role="dialog" aria-label="Size guide" style="position:fixed;inset:0"><p>Sizes</p></div>
 <div role="dialog" aria-label="Add lenses" style="position:fixed;inset:0">
   <sc-for list="{{ uses }}" as="o"><button onClick="{{ o.pick }}">{{ o.label }}</button></sc-for>
