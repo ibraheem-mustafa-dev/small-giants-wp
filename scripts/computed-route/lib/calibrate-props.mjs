@@ -31,17 +31,23 @@ export const CAL_PSEUDO_PROPS = [ ...new Set( [ ...PSEUDO_PROPS, ...CAL_EXTRA_PS
 // Properties read on ::placeholder and ::first-letter.
 export const TEXT_PSEUDO_PROPS = [ 'color', 'font-size', 'font-family', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'opacity', 'float' ];
 
-// Inherited properties are never default paint (R-47-5 compares them with the parent's live value instead). cursor,
+// Inherited properties are never default paint (R-47-5 compares them with the parent's live value instead), except an
+// element's own paint of one (OWN_INHERITED, recorded under its own `_own:` key). cursor,
 // pointer-events, accent-color and white-space inherit in CSS too but are recorded as default paint: a block's own
 // stylesheet sets them on its elements (a button's pointer, a form's accent, a tab's nowrap), which a comparison with
 // the parent would miss.
 export const INHERITED = [ 'color', 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'text-align', 'text-wrap', 'text-shadow' ];
 
+// The inherited properties whose own paint calibration records (lib/calibrate-read.mjs::readInstancesInPage): where a
+// block's stylesheet sets one on its element (a button's `line-height: 1.2`), the element shows that value whatever its
+// parent shows, so Fill compares the draft with it (lib/fill-resolve-state.mjs::baselineFn), never with the parent's.
+export const OWN_INHERITED = [ ...INHERITED ];
+
 // The key of what calibration reads. Every cache file carries the key it was read under, and one read under another list
 // is stale on every site (lib/cache.mjs, lib/stage0.mjs::blockState): a property added to a list is measured, never taken
-// as absent from a file that did not look for it. The key covers these four lists in their order (reordering one
+// as absent from a file that did not look for it. The key covers these five lists in their order (reordering one
 // re-measures every site); the read widths, the markers and the reader's code are not part of it.
-export const READ_KEY = createHash( 'md5' ).update( JSON.stringify( [ READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, INHERITED ] ) ).digest( 'hex' ).slice( 0, 12 );
+export const READ_KEY = createHash( 'md5' ).update( JSON.stringify( [ READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, INHERITED, OWN_INHERITED ] ) ).digest( 'hex' ).slice( 0, 12 );
 
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
 

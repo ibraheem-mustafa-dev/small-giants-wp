@@ -286,11 +286,14 @@ export function defaultPaint( calibration, slot, prop, same = ( a, b ) => a === 
 }
 
 // A setting with no css_property that calibration showed paints `prop` on `slot` (calibration.discovered): the enum
-// value whose recorded effect equals the draft at every calibrated width. Ties go to the value that also matches most
-// of the element's other draft properties (`siblings`: { prop: { width: value } }). For a sibling property the
-// setting's discovery records (for any of its values), a value recording no change to it leaves it at the element's
-// default paint, so that value is compared with the default instead: a row-direction draft fits `flex` (no recorded
-// flex-direction, so the default row) and not `stack` (recorded column). Returns a write, a gap, or null.
+// value whose recorded effect equals the draft at every calibrated width. Ties go to the value whose measured effect
+// matches more of the element's other draft properties (`siblings`: { prop: { width: value } }), compared at the row's own
+// widths only (a sibling's value at a width the row does not cover says nothing about this write). Every property the
+// setting's discovery records (for any of its values) takes part: a value recording no change to it leaves it at the
+// element's default paint, so that value is compared with the default instead: a row-direction draft fits `flex` (no
+// recorded flex-direction, so the default row) and not `stack` (recorded column). Evidence measured on the row's own
+// element outranks evidence measured on another element of the block: the most matches on `slot` decide, and matches on
+// other elements (an inner wrapper's flex-wrap or min-height) break only a tie that remains.
 // Slots compare under the same `loose` rule every other path comparison uses, taking `anyIndex` from the input, so a
 // setting discovered on a fixture's second repetition is found on a client's first. `state` must equal the state
 // discovery recorded for the entry (an entry recording no state answers rest rows only): a resting measurement can
@@ -304,6 +307,8 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 		const ws = [ 375, 768, 1440 ].filter( ( w ) => undefined !== at( pw, w ) && undefined !== values[ w ] );
 		return ws.length > 0 && ws.every( ( w ) => same( values[ w ], at( pw, w ) ) );
 	};
+	const rowWidths = [ 375, 768, 1440 ].filter( ( w ) => undefined !== at( perWidth, w ) );
+	const atRow = ( pw ) => Object.fromEntries( rowWidths.filter( ( w ) => undefined !== pw[ w ] ).map( ( w ) => [ w, pw[ w ] ] ) );
 	const options = [];
 	for ( const [ attr, props ] of Object.entries( calibration?.discovered || {} ) ) {
 		const d = props[ prop ];
@@ -319,12 +324,9 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 		}
 		for ( const [ value, values ] of Object.entries( d.values ) ) {
 			if ( fits( values, perWidth ) ) {
-				const score = Object.entries( siblings ).filter( ( [ p2, pw ] ) => {
-					if ( p2 === prop || ! props[ p2 ] ) {
-						return false;
-					}
-					return fits( props[ p2 ].values[ value ] || defaultPaint( calibration, slot, p2, ( a, b ) => lp( a ) === lp( b ) ), pw );
-				} ).length;
+				const matched = Object.entries( siblings ).filter( ( [ p2, pw ] ) => p2 !== prop && props[ p2 ] && fits( props[ p2 ].values[ value ] || defaultPaint( calibration, slot, p2, ( a, b ) => lp( a ) === lp( b ) ), atRow( pw ) ) ).map( ( [ p2 ] ) => p2 );
+				const own = matched.filter( ( p2 ) => ( props[ p2 ].slots || [] ).map( lp ).includes( lp( slot ) ) ).length;
+				const score = [ own, matched.length - own ];
 				options.push( { attr, value, score } );
 			}
 		}
@@ -332,12 +334,20 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 	if ( ! options.length ) {
 		return null;
 	}
-	const best = Math.max( ...options.map( ( o ) => o.score ) );
-	const top = options.filter( ( o ) => o.score === best );
+	const bestOwn = Math.max( ...options.map( ( o ) => o.score[ 0 ] ) );
+	const best = Math.max( ...options.filter( ( o ) => o.score[ 0 ] === bestOwn ).map( ( o ) => o.score[ 1 ] ) );
+	const top = options.filter( ( o ) => o.score[ 0 ] === bestOwn && o.score[ 1 ] === best );
 	if ( top.length > 1 ) {
 		return { gap: 'ambiguous', detail: `${ top.map( ( o ) => `${ o.attr }=${ o.value || '(none)' }` ).join( ', ' ) } all give ${ prop } on "${ slot }"` };
 	}
 	return { writes: [ { attr: top[ 0 ].attr, value: top[ 0 ].value, merge: 'replace' } ] };
+}
+
+// What a discovered setting's value changes on an element (calibration.discovered): { prop: { width: value } } for every
+// property calibration recorded for `value` on `slot`, so a write of it can be checked on each (lib/fill-confirm.mjs).
+export function discoveredEffects( calibration, attr, value, slot, anyIndex = false ) {
+	const lp = ( p ) => ( anyIndex ? LOOSE( p ) : String( p ?? '' ) );
+	return Object.fromEntries( Object.entries( calibration?.discovered?.[ attr ] || {} ).filter( ( [ , e ] ) => ! e.state && e.values?.[ value ] && ( e.slots || [] ).map( lp ).includes( lp( slot ) ) ).map( ( [ p, e ] ) => [ p, e.values[ value ] ] ) );
 }
 
 // FR-47-1. input: { block, slot, prop, state, perWidth: { width: value }, fontPx: { width: px }, current: node attrs,

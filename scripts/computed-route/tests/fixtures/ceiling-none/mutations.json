@@ -1,0 +1,8 @@
+[
+	{ "file": "lib/fill-dimensions.mjs", "find": "const relative = 'max' === kind ? widths.filter( ( w ) => undefined === paint[ w ] && relativeCeiling( raw[ w ] ) ) : [];", "replace": "const relative = [];", "why": "a percentage ceiling would stay unknown and the logo would keep it" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "return 'min' === kind ? settle( p, rendered, why ) : ceiling( p, why );", "replace": "return settle( p, rendered, why );", "why": "a ceiling would be written with no known-size or narrower-value check" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "\t\tif ( unknown.length ) {", "replace": "\t\tif ( false ) {", "why": "a ceiling would be written where the draft's rendered size is unknown" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "null === writtenPx( res, w ) || writtenPx( res, w ) < rendered[ w ] - 0.5", "replace": "false", "why": "a ceiling narrower than the draft's box would be written" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "const relativeCeiling = ( v ) => undefined !== v && null !== v && ! NO_SIZE.has( String( v ).trim() ) && null === pxOf( v );", "replace": "const relativeCeiling = ( v ) => undefined !== v && null !== v && null === pxOf( v );", "why": "a ceiling of none would be treated as a ceiling and written" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "const at = ( value ) => ( value && 'object' === typeof value ? WIDER[ w ].map( ( t ) => value[ t ] ).find( ( v ) => undefined !== v && '' !== v ) : value );", "replace": "const at = ( value ) => ( value && 'object' === typeof value ? value[ WIDER[ w ][ 0 ] ] : value );", "why": "a tier carried down from a wider tier would read as no value, refusing a valid ceiling" }
+]

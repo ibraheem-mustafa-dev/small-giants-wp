@@ -6,6 +6,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { census, censusRun, loadRules } from '../lib/fill-census.mjs';
+import { inputHashes } from '../lib/census-reads.mjs';
 
 const ROOT = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..' );
 
@@ -68,10 +69,13 @@ test( 'MUST FAIL: counts, blocks, properties and owner are reported per class', 
 
 test( 'MUST FAIL: census.mjs --check exits 1 on a planted unknown reason and 0 on known ones, reading alreadyHeld', () => {
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'census-' ) );
-	const run = () => spawnSync( process.execPath, [ path.join( ROOT, 'census.mjs' ), dir, '--check' ], { encoding: 'utf8' } );
+	const run = () => spawnSync( process.execPath, [ path.join( ROOT, 'census.mjs' ), dir, '--check' ], { encoding: 'utf8', env: { ...process.env, SGS_REPO_ROOT: dir } } );
 	fs.writeFileSync( path.join( dir, 'unmapped.json' ), JSON.stringify( [ row( 'no-setting: x' ) ] ) );
 	fs.writeFileSync( path.join( dir, 'fill-report.json' ), JSON.stringify( { alreadyHeld: [ row( 'inherited' ) ] } ) );
-	fs.writeFileSync( path.join( dir, 'reads.json' ), JSON.stringify( { version: 1, rows: [] } ) );
+	fs.writeFileSync( path.join( dir, 'filled.tree.json' ), '[]' );
+	fs.writeFileSync( path.join( dir, 'sk.json' ), '[]' );
+	fs.writeFileSync( path.join( dir, 'd.html' ), '<html></html>' );
+	fs.writeFileSync( path.join( dir, 'reads.json' ), JSON.stringify( { version: 2, run: path.basename( dir ), inputs: inputHashes( { root: dir, skeleton: 'sk.json', draft: 'd.html' } ), rows: [] } ) );
 	const ok = run();
 	assert.equal( ok.status, 0, ok.stdout + ok.stderr );
 	assert.match( ok.stdout, /2 rows, 2 classes, 0 unclassified/ );

@@ -8,7 +8,12 @@
 //   1. A floor or ceiling the draft does not declare (`auto`, `none`, 0) but the block paints, against the draft's rendered
 //      size. A floor above the rendered size, or a ceiling below it, is written to the block's min-* / max-* setting at the
 //      rendered size at every width ("match the draft"). The block's paint comes from its calibration (the default paint of
-//      the element); for the block's own root it also comes from the block's stylesheet.
+//      the element); for the block's own root it also comes from the block's stylesheet. A ceiling stands in for the draft's
+//      `none` by effect: a ceiling at or above the element's unconstrained size paints the same, and under `none` the draft's
+//      rendered size is that size. So a ceiling the block paints relative to the page (a percentage of its container, whose
+//      size only the built page knows) is written as the rendered size too. A ceiling is written only when the draft's
+//      rendered size is known at every width the element is read at, and only when the value the setting holds is at or above
+//      that size at every width; otherwise the row stays, with the reason.
 //   2. A declared size in a dimension the block has no setting for: a declared height or width goes to the block's minimum in
 //      that dimension when the draft's content fits inside it at every width (children's extents, plus the element's padding
 //      and border). When the content is taller or wider it is not written (the minimum would grow the box the draft overflows);
@@ -50,6 +55,23 @@ function stylesheetPaint( block, prop ) {
 	const m = cssFloors.get( block ).match( new RegExp( `(?:^|;|\\s)${ prop }\\s*:\\s*([^;]+)` ) );
 	const px = m ? [ ...m[ 1 ].matchAll( /(-?\d+(?:\.\d+)?)px/g ) ].at( -1 )?.[ 1 ] : null;
 	return null === px || undefined === px ? {} : Object.fromEntries( WIDTHS.map( ( w ) => [ w, parseFloat( px ) ] ) );
+}
+
+// A ceiling the block paints as something other than a length or `none` (100%, a calc()): its size is the page's.
+const relativeCeiling = ( v ) => undefined !== v && null !== v && ! NO_SIZE.has( String( v ).trim() ) && null === pxOf( v );
+
+// What a resolver result holds at a width, in px, or null where it cannot be read as px: a tier object carries its nearest
+// wider tier down, and a unit partner write (maxWidthUnit beside maxWidth) names the unit.
+const WIDER = { 375: [ 'mobile', 'tablet', 'desktop' ], 768: [ 'tablet', 'desktop' ], 1440: [ 'desktop' ] };
+function writtenPx( res, w ) {
+	const at = ( value ) => ( value && 'object' === typeof value ? WIDER[ w ].map( ( t ) => value[ t ] ).find( ( v ) => undefined !== v && '' !== v ) : value );
+	const main = ( res.writes || [] ).filter( ( x ) => ! x.unit );
+	const unit = ( res.writes || [] ).find( ( x ) => x.unit );
+	if ( 1 !== main.length || ( unit && 'px' !== String( at( unit.value ) ?? 'px' ) ) ) {
+		return null;
+	}
+	const m = /^(-?\d*\.?\d+)(px)?$/.exec( String( at( main[ 0 ].value ) ?? '' ).trim() );
+	return m ? Number( m[ 1 ] ) : null;
 }
 
 // The size the block paints for a property on an element at each width, in px: { width: px }.
@@ -131,11 +153,16 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 		}
 		return px;
 	};
-	const settle = ( p, perWidth, why ) => {
+	// check( res ): a reason the result must not be written, or null.
+	const settle = ( p, perWidth, why, check = null ) => {
 		const draft = Object.fromEntries( widths.map( ( w ) => [ w, `${ guard( Math.round( ( perWidth[ w ] + ( home?.extra[ w ] ?? 0 ) ) * 100 ) / 100, w, p ) }px` ] ) );
 		const res = ask( p, draft );
 		if ( 'written' !== res.status && 'equal' !== res.status ) {
 			return { raise: `the block has no setting that holds ${ p } ${ Object.values( draft ).join( ' / ' ) } (${ res.gap ?? 'gap' }: ${ res.detail ?? '' }); a framework setting is needed` };
+		}
+		const refused = 'written' === res.status && check ? check( res ) : null;
+		if ( refused ) {
+			return { raise: refused };
 		}
 		'written' === res.status && commit( out, { rec, node, row, prop: p, res, how: 'dimension', note: why } );
 		touched.length && ledger( p );
@@ -151,11 +178,27 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 	const against = ( kind, p ) => {
 		const paint = blockPaint( { block: rec.name, slot, prop: p, cal } );
 		const clash = widths.filter( ( w ) => undefined !== paint[ w ] && ( 'min' === kind ? paint[ w ] > rendered[ w ] + 0.5 : paint[ w ] < rendered[ w ] - 0.5 ) );
-		if ( ! clash.length ) {
+		const raw = defaultPaint( cal, slot, p, ( a, b ) => LOOSE( a ) === LOOSE( b ) );
+		const relative = 'max' === kind ? widths.filter( ( w ) => undefined === paint[ w ] && relativeCeiling( raw[ w ] ) ) : [];
+		if ( ! clash.length && ! relative.length ) {
 			out.notes.push( `${ row.node } ${ rec.name }${ slot ? ` (${ slot })` : '' } ${ row.property }: ${ Object.keys( paint ).length ? `the block's ${ p } (${ Object.values( paint ).join( ' / ' ) }px) does not contradict the draft's rendered size` : `the block paints no ${ p } that is known` }; nothing to write` );
 			return Object.keys( paint ).length ? true : { raise: `the block's own ${ p } is unknown (no calibrated paint), so whether it contradicts the draft's rendered ${ Object.values( rendered ).join( ' / ' ) }px is unproven` };
 		}
-		return settle( p, rendered, `the block paints ${ p } ${ clash.map( ( w ) => `${ paint[ w ] }px` ).join( ' / ' ) } where the draft renders ${ clash.map( ( w ) => `${ Math.round( rendered[ w ] ) }px` ).join( ' / ' ) } (${ row.property } ${ [ ...new Set( widths.map( ( w ) => given[ w ] ?? 'auto' ) ) ].join( ' / ' ) }); the draft's rendered size is written` );
+		const why = `the block paints ${ p } ${ [ ...clash.map( ( w ) => `${ paint[ w ] }px` ), ...relative.map( ( w ) => raw[ w ] ) ].join( ' / ' ) } where the draft renders ${ [ ...clash, ...relative ].map( ( w ) => `${ Math.round( rendered[ w ] ) }px` ).join( ' / ' ) } (${ row.property } ${ [ ...new Set( widths.map( ( w ) => given[ w ] ?? 'auto' ) ) ].join( ' / ' ) }); the draft's rendered size is written`;
+		return 'min' === kind ? settle( p, rendered, why ) : ceiling( p, why );
+	};
+	// A ceiling equal to the draft's none by effect: the rendered size must be known wherever the element is read, and the value
+	// the setting holds must not be below it anywhere.
+	const ceiling = ( p, why ) => {
+		const none = given[ widths[ 0 ] ] ?? 'none';
+		const unknown = WIDTHS.filter( ( w ) => reads.widths?.[ w ]?.[ target.id ] && ! reads.widths[ w ][ target.id ].missing && undefined === rendered[ w ] );
+		if ( unknown.length ) {
+			return { raise: `the block paints a ${ p } ceiling, but the draft's rendered size is unknown at ${ unknown.join( ', ' ) }, so no ceiling equal to ${ row.property } ${ none } can be written` };
+		}
+		return settle( p, rendered, `${ why } as the ceiling (a ceiling at the unconstrained size paints the same as ${ none })`, ( res ) => {
+			const below = widths.filter( ( w ) => null === writtenPx( res, w ) || writtenPx( res, w ) < rendered[ w ] - 0.5 );
+			return below.length ? `the ${ p } the setting would hold (${ below.map( ( w ) => `${ writtenPx( res, w ) ?? 'not a px length' } at ${ w }` ).join( ', ' ) }) is below the draft's rendered ${ below.map( ( w ) => `${ Math.round( rendered[ w ] * 100 ) / 100 }px` ).join( ' / ' ) }, so it would clip the box ${ row.property } ${ none } leaves whole; not written` : null;
+		} );
 	};
 	if ( 'min' === size.kind && widths.every( noSize ) ) {
 		return against( 'min', prop );

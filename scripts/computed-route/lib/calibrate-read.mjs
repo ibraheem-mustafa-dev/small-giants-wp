@@ -2,7 +2,7 @@
 // under its state trigger. Element keys are elementPath() keys from the instance root; a pseudo-element layer is its
 // element's key plus `::before`, `::after`, `::placeholder` or `::first-letter`; a panel the instance controls through
 // aria-controls (a cart dialog moved to <body>, a drawer) is keyed `@controls > <path>` (`@controls:2` for a second).
-import { WIDTHS, CAL_PREFIX, READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS } from './calibrate-props.mjs';
+import { WIDTHS, CAL_PREFIX, READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, OWN_INHERITED } from './calibrate-props.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
 import { EDITOR_TIMEOUT_MS } from './calibrate-chunk.mjs';
 import { probeState, probeMechanisms } from './calibrate-probe.mjs';
@@ -11,13 +11,35 @@ import { listedProperties } from './db.mjs';
 export const SCROLL_Y = 600;
 
 // In-page: every element of each instance (or only the instance `only`), its path and the read properties.
-// Self-contained; pathSrc is elementPath's source.
-export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProps, textPseudoProps, only ] ) {
+// Self-contained; pathSrc is elementPath's source. On the instances listed in ownAt (the default instances), an
+// inherited property (ownProps) an element paints itself is recorded as `_own:<prop>`, with its font size as `_fs`.
+export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProps, textPseudoProps, only, ownProps = [], ownAt = [] ] ) {
 	// eslint-disable-next-line no-new-func
 	const pathOf = new Function( `return (${ pathSrc });` )();
 	const pick = ( cs, list ) => Object.fromEntries( list.map( ( p ) => [ p, cs.getPropertyValue( p ).trim() ] ) );
+	// The inherited properties the element paints itself: a value that is neither its parent's nor, for a line height,
+	// its parent's ratio of the font size carried to its own font size (a unitless line height inherits as that ratio).
+	const ownOf = ( el, cs ) => {
+		const parent = el.parentElement;
+		if ( ! parent ) {
+			return {};
+		}
+		const pcs = getComputedStyle( parent );
+		const fs = parseFloat( cs.fontSize );
+		const pfs = parseFloat( pcs.fontSize );
+		const out = {};
+		for ( const p of ownProps ) {
+			const v = cs.getPropertyValue( p ).trim();
+			const pv = pcs.getPropertyValue( p ).trim();
+			if ( v === pv || ( 'line-height' === p && fs && pfs && Math.abs( parseFloat( v ) - ( parseFloat( pv ) / pfs ) * fs ) < 0.05 ) ) {
+				continue;
+			}
+			out[ `_own:${ p }` ] = v;
+		}
+		return Object.keys( out ).length ? { ...out, _fs: cs.fontSize } : out;
+	};
 	const hasText = ( el ) => [ ...el.childNodes ].some( ( n ) => 3 === n.nodeType && n.textContent.trim() );
-	const collect = ( els, top, keyPrefix ) => {
+	const collect = ( els, top, keyPrefix, own ) => {
 		for ( const el of [ top, ...top.querySelectorAll( '*' ) ] ) {
 			const p = pathOf( el, top );
 			const key = keyPrefix ? ( p ? `${ keyPrefix } > ${ p }` : keyPrefix ) : p;
@@ -25,7 +47,8 @@ export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProp
 				continue;
 			}
 			// _tag: the element's tag, so a setting matched without :nth-of-type steps keeps an input apart from a textarea.
-			els[ key ] = { ...pick( getComputedStyle( el ), props ), _tag: el.tagName.toLowerCase() };
+			const style = getComputedStyle( el );
+			els[ key ] = { ...pick( style, props ), _tag: el.tagName.toLowerCase(), ...( own ? ownOf( el, style ) : {} ) };
 			for ( const ps of [ '::before', '::after' ] ) {
 				const cs = getComputedStyle( el, ps );
 				if ( ! [ 'none', 'normal', '' ].includes( cs.getPropertyValue( 'content' ) ) ) {
@@ -52,19 +75,20 @@ export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProp
 			continue;
 		}
 		const els = {};
-		collect( els, root, '' );
+		const own = ownAt.includes( n );
+		collect( els, root, '', own );
 		const ids = [ ...new Set( [ root, ...root.querySelectorAll( '[aria-controls]' ) ].flatMap( ( e ) => ( e.getAttribute( 'aria-controls' ) || '' ).split( /\s+/ ) ).filter( Boolean ) ) ];
-		ids.map( ( id ) => document.getElementById( id ) ).filter( ( t ) => t && ! root.contains( t ) ).forEach( ( t, i ) => collect( els, t, i ? `@controls:${ i + 1 }` : '@controls' ) );
+		ids.map( ( id ) => document.getElementById( id ) ).filter( ( t ) => t && ! root.contains( t ) ).forEach( ( t, i ) => collect( els, t, i ? `@controls:${ i + 1 }` : '@controls', own ) );
 		// A companion the block prints outside its root (the detached burger chip, queued to wp_footer) carries the
 		// root's per-instance uid class (sgs-<block>-<hex>), so it is read too, keyed @companion.
 		const uid = [ ...root.classList ].find( ( c ) => /^sgs-[a-z0-9-]+-[0-9a-f]{8}$/.test( c ) );
 		if ( uid ) {
-			[ ...document.querySelectorAll( `.${ uid }` ) ].filter( ( c ) => ! root.contains( c ) && ! c.contains( root ) ).forEach( ( c, i ) => collect( els, c, i ? `@companion:${ i + 1 }` : '@companion' ) );
+			[ ...document.querySelectorAll( `.${ uid }` ) ].filter( ( c ) => ! root.contains( c ) && ! c.contains( root ) ).forEach( ( c, i ) => collect( els, c, i ? `@companion:${ i + 1 }` : '@companion', own ) );
 			// The viewport scrim (helpers-scrim.php::sgs_scrim_render) is printed at wp_footer as a child of <body> carrying
 			// `<uid>-scrim`, so it is read keyed @scrim (its tint layer @scrim::before). Its blur, tint and fade compute at
 			// rest; only its own opacity waits for the owner to open.
 			const scrim = document.querySelector( `.${ uid }-scrim` );
-			scrim && ! root.contains( scrim ) && collect( els, scrim, '@scrim' );
+			scrim && ! root.contains( scrim ) && collect( els, scrim, '@scrim', own );
 		}
 		out.push( els );
 	}
@@ -173,14 +197,16 @@ export async function openToggle( page ) {
 	await toggle.evaluate( ( el ) => el.click() );
 }
 
-const args = ( count, only ) => [ count, CAL_PREFIX, READ_PROPS, elementPath.toString(), CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, only ];
+// The reader's arguments: an inherited property's own paint is read on the default instances only, so a marked
+// instance's read carries no `_own:` key for the slot finder to take as a change.
+const args = ( instances, only ) => [ instances.length, CAL_PREFIX, READ_PROPS, elementPath.toString(), CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, only, OWN_INHERITED, instances.flatMap( ( inst, n ) => ( inst.isDefault ? [ n ] : [] ) ) ];
 
 // One state instance under its trigger: hover or keyboard focus on the styled element (its panel opened first when
 // it is hidden), or the state's ancestor class added. A 'probe' state is entered by the first state-vocabulary
 // mechanism that changes the setting's property (lib/calibrate-probe.mjs). Returns { read }, or { read: null, why } when it could not be read:
 // why is 'hidden', 'no instance' or the error the browser raised.
 async function readUnderTrigger( page, instances, n, inst ) {
-	const one = async () => ( await page.evaluate( readInstancesInPage, args( instances.length, n ) ) )[ n ];
+	const one = async () => ( await page.evaluate( readInstancesInPage, args( instances, n ) ) )[ n ];
 	if ( 'probe' === inst.trigger ) {
 		const mark = await page.evaluate( markTargetInPage, [ CAL_PREFIX, n, inst.target, inst.companionClass ] );
 		if ( ! mark ) {
@@ -262,7 +288,7 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 		throw new Error( wrappers ? `the block rendered nothing inside its ${ wrappers } calibration wrapper(s) at ${ w }px (no .${ CAL_PREFIX }0 on the page)` : `the calibration page at ${ w }px holds none of the calibration wrappers (the build did not save, or the page is cached)` );
 	}
 	await page.waitForTimeout( 800 );
-	out[ w ] = await page.evaluate( readInstancesInPage, args( instances.length ) );
+	out[ w ] = await page.evaluate( readInstancesInPage, args( instances ) );
 	const calibrationUrl = page.url();
 	for ( const [ n, inst ] of instances.entries() ) {
 		if ( ! [ 'hover', 'focus', 'class', 'probe' ].includes( inst.trigger ) ) {
@@ -286,7 +312,7 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 		const readScrolled = async ( wait ) => {
 			await page.evaluate( ( y ) => window.scrollTo( { top: y, behavior: 'instant' } ), SCROLL_Y );
 			await page.waitForTimeout( wait );
-			const all = await page.evaluate( readInstancesInPage, args( instances.length ) );
+			const all = await page.evaluate( readInstancesInPage, args( instances ) );
 			const hit = await page.evaluate( ( [ count, prefix ] ) => [ ...Array( count ).keys() ].map( ( n ) => !! document.querySelector( `.${ prefix }${ n } .is-header-scrolled, .${ prefix }${ n }.is-header-scrolled` ) ), [ instances.length, CAL_PREFIX ] );
 			return { all, hit };
 		};

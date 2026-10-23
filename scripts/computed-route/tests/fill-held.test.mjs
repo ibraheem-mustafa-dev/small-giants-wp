@@ -169,7 +169,7 @@ test( 'MUST FAIL: held rows are listed under their reason in the report with cou
 	const wrap = { 'text-wrap': 'nowrap', 'text-wrap-mode': 'nowrap' };
 	const r = run( BTN(), { '0:': btn( wrap, { words: 'Go' } ) }, declaredAt( '0:', { 'text-wrap-mode': 'nowrap' } ) );
 	const rep = fillReport( { client: 'c', surface: 's', draft: 'd', nodes: 1, targets: 1, ...r, steps: [], entrances: [], snapshotPatch: { file: null, entries: [] } } );
-	assert.deepEqual( rep.json.counts.alreadyHeld, { total: 1, covered: 1, inherited: 0 } );
+	assert.deepEqual( rep.json.counts.alreadyHeld, { total: 1, covered: 1, inherited: 0, inert: 0 } );
 	assert.equal( rep.json.unmapped.length, 0 );
 	assert.equal( rep.json.alreadyHeld[ 0 ].reason, 'covered' );
 	assert.match( rep.markdown, /### covered \(1\)/ );

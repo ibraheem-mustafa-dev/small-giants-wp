@@ -283,8 +283,8 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	 * rules. The field controls are rendered by CHILD blocks, so (like the tile and
 	 * file-label mirrors above) this is a formPreviewScope-scoped `<style>` tag, not
 	 * an inline style. Border colour and placeholder colour ride as the same custom
-	 * properties the frontend uses, so style.css's own rules read them. Heights are
-	 * raised to the 44px touch target, as render.php does.
+	 * properties the frontend uses, so style.css's own rules read them. A set height
+	 * is the height, even below 44px, as render.php prints it.
 	 */
 	const fieldTier = ( obj, tier ) =>
 		obj && 'object' === typeof obj
@@ -918,7 +918,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 								presets={ false }
 								label={ __( 'Field minimum height', 'sgs-blocks' ) }
 								hideLabelFromVision
-								help={ __( 'Inputs and selects. Never below 44px; empty keeps the default 44px.', 'sgs-blocks' ) }
+								help={ __( 'Inputs and selects. The height you set, even below 44px; empty keeps the default 44px.', 'sgs-blocks' ) }
 								value={ ownValue ?? '' }
 								placeholder={ inherited ? effectiveValue : '44px' }
 								onChange={ ( val ) => setOwnValue( val || undefined ) }
@@ -935,7 +935,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 								presets={ false }
 								label={ __( 'Textarea minimum height', 'sgs-blocks' ) }
 								hideLabelFromVision
-								help={ __( 'Never below 44px; empty keeps the default 100px.', 'sgs-blocks' ) }
+								help={ __( 'The height you set, even below 44px; empty keeps the default 100px.', 'sgs-blocks' ) }
 								value={ ownValue ?? '' }
 								placeholder={ inherited ? effectiveValue : '100px' }
 								onChange={ ( val ) => setOwnValue( val || undefined ) }

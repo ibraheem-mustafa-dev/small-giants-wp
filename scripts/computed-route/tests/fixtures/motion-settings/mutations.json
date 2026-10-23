@@ -7,7 +7,7 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "...( sticky ? [ { attr: 'headerSticky', value: { desktop: 'on' } } ] : [] ),",
+		"find": "...( sticky ? [ { attr: 'headerSticky', value: sticky } ] : [] ),",
 		"replace": "...[],",
 		"why": "a pinned header is not written as sticky"
 	},

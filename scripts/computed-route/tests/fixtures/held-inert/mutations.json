@@ -1,0 +1,6 @@
+[
+	{ "file": "lib/fill-held.mjs", "find": "\t\t\tif ( 'held:inert' === row.code && RESOLVER_GAP.test( String( row.reason ) ) ) {", "replace": "\t\t\tif ( false ) {", "why": "an inert row would stay in UNMAPPED" },
+	{ "file": "lib/fill-held.mjs", "find": "export const HELD_REASONS = [ 'covered', 'inherited', 'inert' ];", "replace": "export const HELD_REASONS = [ 'covered', 'inherited' ];", "why": "the report and counts would not list the inert reason" },
+	{ "file": "lib/fill-held.mjs", "find": "?.[ 1 ] ?? 'the equivalence engine judged the value to paint nothing'", "replace": "?.[ 0 ] ?? 'the equivalence engine judged the value to paint nothing'", "why": "the engine's reason would be lost (the whole resolver text kept)" },
+	{ "file": "lib/fill-held.mjs", "find": "if ( 'held:inert' === row.code && RESOLVER_GAP.test( String( row.reason ) ) ) {", "replace": "if ( /^held:/.test( String( row.code ) ) ) {", "why": "a default-paint row, or a non-resolver row, would be held without the live judge" }
+]

@@ -15,20 +15,28 @@ export const debtPath = ( client, root ) => path.join( root, 'sites', client, 'b
 
 const blank = ( v ) => null == v || ( 'string' === typeof v && '' === v.trim() ) || ( 'object' === typeof v && 0 === Object.keys( v ).length );
 
-// One debt row from a chain result row ({ key, class, gate, evidence, block, attribute, property }); throws when it is not an
-// I-class row or carries no evidence.
-export function debtRow( r, { surface } ) {
+// One debt row from a chain result row ({ key, class, gate, evidence, block, attribute, property }) found on `surface`
+// (`known`: a known item, id `<surface>:known:<key>`); throws when it is not an I-class row, carries no evidence or names
+// no surface.
+export function debtRow( r, { surface, known = false } ) {
 	if ( ! I_CLASSES.includes( r.class ) ) {
 		throw new Error( `${ r.key }: ${ JSON.stringify( r.class ) } is not an I-class row` );
 	}
 	if ( blank( r.evidence ) ) {
 		throw new Error( `${ r.key }: the ${ r.class } row carries no gate evidence` );
 	}
-	return { id: `${ null === surface ? 'known' : surface }:${ r.key }`, class: r.class, owner: OWNERS[ r.class ], surface, block: r.block ?? null, attribute: r.attribute ?? null, property: r.property ?? null, gate: r.gate ?? null, evidence: r.evidence };
+	if ( blank( surface ) ) {
+		throw new Error( `${ r.key }: the debt row names no surface` );
+	}
+	return { id: `${ surface }:${ known ? 'known:' : '' }${ r.key }`, class: r.class, owner: OWNERS[ r.class ], surface, known, block: r.block ?? null, attribute: r.attribute ?? null, property: r.property ?? null, gate: r.gate ?? null, evidence: r.evidence };
 }
 
 // Every I-class row of the chain's results as debt rows; every row is checked before any is returned.
 export const debtRows = ( rows, { surface } ) => rows.filter( ( r ) => I_CLASSES.includes( r.class ) ).map( ( r ) => debtRow( r, { surface } ) );
+
+// The known items (unroutedKnown's and staleSlotMaps's rows alike) as debt rows of one surface: only those whose block the
+// surface's tree holds (inTree: a Set of block names).
+export const knownRows = ( { rows, inTree, surface } ) => rows.filter( ( r ) => inTree.has( r.block ) ).map( ( r ) => debtRow( r, { surface, known: true } ) );
 
 // The known NULL-css_property items (data/instrument-debt-known.json) the DB confirms today, unless calibration discovered the
 // setting (isDiscovered( { block_slug, attr_name } )): an enum setting calibration discovered is routed through discovery.
@@ -74,12 +82,12 @@ export function staleSlotMaps( { cacheDir, readKey, localHash } ) {
 	return { rows, missing };
 }
 
-// Writes the debt file for a client from debt rows (debtRows for a surface's chain results, the known-item rows with surface
-// null). Rows of other surfaces stay; this surface's rows and every known-item row are replaced. Every row is checked before
-// the file is touched. Returns { file, rows, byOwner }.
+// Writes the debt file for a client from one surface's debt rows (debtRows for its chain results, knownRows for the known
+// items its tree holds). Rows of other surfaces stay, known items included; this surface's rows are replaced, and a row
+// naming no surface is dropped. Every row is checked before the file is touched. Returns { file, rows, byOwner }.
 export function writeDebt( { file, rows, surface, publishedOn } ) {
 	const prior = fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : { groups: [] };
-	const kept = ( prior.groups || [] ).flatMap( ( g ) => g.rows ).filter( ( r ) => null !== r.surface && r.surface !== surface );
+	const kept = ( prior.groups || [] ).flatMap( ( g ) => g.rows ).filter( ( r ) => ! blank( r.surface ) && r.surface !== surface );
 	const all = [ ...kept, ...rows ];
 	const bare = all.find( ( r ) => blank( r.evidence ) );
 	if ( bare ) {

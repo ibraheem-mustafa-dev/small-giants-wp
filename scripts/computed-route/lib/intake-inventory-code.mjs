@@ -392,9 +392,32 @@ function paramNeeds( p, method, node ) {
 	return need;
 }
 
+// Whether a branch guarded by `this.X !== t` sets `this.X = t` inside it and the code path acts on `t` (`site`, the node
+// or the call it is the callee of, reads it): it starts tracking the element just hit and runs on that element.
+function tracksNew( p, branch, node ) {
+	const pairs = [];
+	walkAst( branch.test, ( n ) => {
+		if ( 'BinaryExpression' === n.type && /^!==?$/.test( n.operator ) ) {
+			const [ f, v ] = isThis( n.left ) ? [ n.left, n.right ] : [ n.right, n.left ];
+			if ( isThis( f ) && 'Identifier' === v.type ) {
+				pairs.push( `${ prop( f ) }|${ v.name }` );
+			}
+		}
+	} );
+	const up = p.parents.get( node );
+	const site = 'CallExpression' === up?.type && up.callee === node ? up : node;
+	const reads = new Set();
+	walkAst( site, ( n ) => 'Identifier' === n.type && reads.add( n.name ) );
+	let hit = false;
+	walkAst( branch.consequent, ( n ) => {
+		hit ||= 'AssignmentExpression' === n.type && isThis( n.left ) && 'Identifier' === n.right?.type && pairs.includes( `${ prop( n.left ) }|${ n.right.name }` ) && reads.has( n.right.name );
+	} );
+	return hit;
+}
+
 // The trigger an enclosing guard sets on a code path, or null. An `if` on an error map (`Object.keys( errs ).length`,
 // `errs.x`, `!!err`) runs only when validation fails; an `if` that compares the element it tracks with the one just
-// hit (`this._tiltEl !== t`) runs only when the pointer leaves that element.
+// hit (`this._tiltEl !== t`) runs only when the pointer leaves that element, unless the branch tracks the new one.
 function guardTrigger( p, node ) {
 	let child = node;
 	for ( const a of ancestors( p, node ) ) {
@@ -408,7 +431,11 @@ function guardTrigger( p, node ) {
 		if ( /\b(errs?|errors?|err|invalid)\b/i.test( test ) && ! /^\s*!(?!=)|(?:(?<!!)===?|<=?)\s*[01]\b/.test( test ) ) {
 			return { type: 'validation-fail', detail: `guarded by ${ test }` };
 		}
-		// `this.X !== t` where t is another tracked value (not null, undefined, a literal or a deeper member).
+		// `this.X !== t` where t is another tracked value (not null, undefined, a literal or a deeper member). A branch that
+		// tracks the new element (`this.X = t` inside it) and acts on it runs as the pointer reaches it: the event's own trigger.
+		if ( tracksNew( p, a, node ) ) {
+			continue;
+		}
 		if ( /\bthis\.[\w$]+(?![\w$.(])\s*!==?\s*(?!null\b|undefined\b|['"\d-])[A-Za-z_$][\w$]*\b(?![.(])|\b(?!null\b|undefined\b)[A-Za-z_$][\w$]*\s*!==?\s*this\.[\w$]+(?![\w$.(])/.test( test ) ) {
 			return { type: 'pointer-leave', detail: `runs when the tracked element changes: ${ test }` };
 		}

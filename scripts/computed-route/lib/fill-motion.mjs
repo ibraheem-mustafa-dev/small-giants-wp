@@ -18,6 +18,7 @@ import { setRecord } from './motion-set.mjs';
 import { stateRows } from './state-vocab.mjs';
 import { setAttr } from './tree.mjs';
 import { templateKey, templateKeyOf } from './fact-key.mjs';
+import { positionsByTemplate } from './motion-behaviour-settings.mjs';
 
 export { elementMotion, elementEffects, renderRefutes } from './fill-motion-element.mjs';
 
@@ -218,7 +219,8 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 	const runtimeLoops = unplaced.filter( ( r ) => 'effect' === classify( r, cls ).kind );
 	const used = [];
 	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ), palette: clientPalette( rawSnapshot ), css: draftCss };
-	const idx = behaviourIndex( { records, template, css: draftCss } );
+	// The draft's computed position per template element and width, so a header pinned only at some widths is sticky only there.
+	const idx = behaviourIndex( { records, template, css: draftCss, positions: reads ? positionsByTemplate( { reads, nodes, rootComponent } ) : undefined } );
 	const targetKeys = new Set( nodes.flatMap( ( n ) => n.targets.map( ( t ) => elementKey( t.finder, rootComponent ) ) ).filter( Boolean ) );
 	adoptDrawnBehaviours( byElement, { targetKeys, template, isBehaviour: ( r ) => idx.found.some( ( x ) => x.r === r ) } );
 	const blockDone = new Set();

@@ -7,7 +7,7 @@ import os from 'os';
 import path from 'path';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
-import { debtRow, debtRows, unroutedKnown, staleSlotMaps, writeDebt } from '../lib/instrument-debt.mjs';
+import { debtRow, debtRows, knownRows, unroutedKnown, staleSlotMaps, writeDebt } from '../lib/instrument-debt.mjs';
 import { classifyRows, classCounts, baseClass } from '../lib/census-gap-class.mjs';
 
 const tmp = () => fs.mkdtempSync( path.join( os.tmpdir(), 'debt-' ) );
@@ -99,13 +99,27 @@ test( 'MUST FAIL: a census row on a NULL-routed fitting setting is I-unrouted, n
 	assert.throws( () => baseClass( census( { fillClass: 'bogus' } ) ), /not one of FR-48-65/ );
 } );
 
-test( 'MUST FAIL: known-item rows are replaced on each write, not kept or duplicated', () => {
+test( 'MUST FAIL: known-item rows are keyed to the surface that found them: replaced on that surface\'s next write, kept across another surface\'s', () => {
 	const file = path.join( tmp(), 'instrument-debt.json' );
-	const known = ( key ) => debtRow( chainRow( { key, gate: 'G0', class: 'I-stale', evidence: { file: 'cache/x.json', key: 'slotKey' } } ), { surface: null } );
-	writeDebt( { file, rows: [ known( 'sgs/a:slot-map' ), known( 'sgs/b:slot-map' ) ], surface: 's1', publishedOn: 'd' } );
-	writeDebt( { file, rows: [ known( 'sgs/a:slot-map' ) ], surface: 's1', publishedOn: 'd' } );
-	const ids = JSON.parse( fs.readFileSync( file, 'utf8' ) ).groups.flatMap( ( g ) => g.rows.map( ( r ) => r.id ) );
-	assert.deepEqual( ids, [ 'known:sgs/a:slot-map' ] );
+	const stale = ( block ) => ( { key: `${ block }:slot-map`, class: 'I-stale', gate: 'G0', block, attribute: null, property: null, evidence: { file: 'cache/x.json', key: 'slotKey' } } );
+	const ids = () => JSON.parse( fs.readFileSync( file, 'utf8' ) ).groups.flatMap( ( g ) => g.rows.map( ( r ) => r.id ) ).sort();
+	writeDebt( { file, rows: knownRows( { rows: [ stale( 'sgs/a' ), stale( 'sgs/b' ) ], inTree: new Set( [ 'sgs/a', 'sgs/b' ] ), surface: 's1' } ), surface: 's1', publishedOn: 'd' } );
+	writeDebt( { file, rows: knownRows( { rows: [ stale( 'sgs/a' ), stale( 'sgs/b' ) ], inTree: new Set( [ 'sgs/c' ] ), surface: 's2' } ), surface: 's2', publishedOn: 'd' } );
+	assert.deepEqual( ids(), [ 's1:known:sgs/a:slot-map', 's1:known:sgs/b:slot-map' ] );
+	writeDebt( { file, rows: knownRows( { rows: [ stale( 'sgs/a' ) ], inTree: new Set( [ 'sgs/a', 'sgs/b' ] ), surface: 's1' } ), surface: 's1', publishedOn: 'd' } );
+	assert.deepEqual( ids(), [ 's1:known:sgs/a:slot-map' ] );
+	assert.equal( JSON.parse( fs.readFileSync( file, 'utf8' ) ).groups[ 0 ].rows[ 0 ].known, true );
+	assert.throws( () => debtRow( stale( 'sgs/a' ), { surface: null } ), /names no surface/ );
+} );
+
+test( 'MUST FAIL: the known NULL css_property items and the stale slot maps are filtered by the surface\'s tree alike', () => {
+	const unrouted = unroutedKnown( { db: db( null ) } );
+	assert.equal( unrouted.length, 1 );
+	assert.deepEqual( knownRows( { rows: unrouted, inTree: new Set( [ 'sgs/container' ] ), surface: 's1' } ), [] );
+	assert.deepEqual( knownRows( { rows: unrouted, inTree: new Set( [ 'sgs/choice-flow' ] ), surface: 's1' } ).map( ( r ) => r.id ), [ 's1:known:sgs/choice-flow:skipAddsToBag' ] );
+	// the command passes both kinds, unfiltered, through knownRows for its own surface
+	const src = fs.readFileSync( new URL( '../gate-chain.mjs', import.meta.url ), 'utf8' );
+	assert.match( src, /knownRows\( \{ rows: \[ \.\.\.unroutedKnown\( .* \), \.\.\.stale\.rows \], inTree, surface: report\.surface \} \)/ );
 } );
 
 test( 'negative control: a routed fitting setting on the resting state keeps an F candidate; a stale unknown block or a non-property key is not probed', () => {

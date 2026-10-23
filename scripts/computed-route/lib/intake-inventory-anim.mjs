@@ -4,7 +4,8 @@
 // and stylesheet records of lib/intake-inventory-tpl.mjs. Every record keeps the census rows it covers, so each
 // counted occurrence maps to record IDs (`occurrences`), and the five METHOD.md §4 counts are taken from the census.
 import { codeModel, offsetOf, nodeAt, lineOf, textOf, functionName, triggerOf, reducedMotionOf } from './intake-inventory-code.mjs';
-import { targetOf, waapiEffect, writerSites } from './intake-inventory-target.mjs';
+import { targetOf, animatedTarget, waapiEffect, writerSites } from './intake-inventory-target.mjs';
+import { callPaths } from './intake-inventory-calls.mjs';
 import { templateRecords, animationRecord, applyReducedMotion, traceOf } from './intake-inventory-tpl.mjs';
 import { parseTransition } from './intake-inventory-css.mjs';
 
@@ -120,21 +121,30 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 			add( p?.file ? 'L' : 'A', fallback( owner, file, r, 'waapi' ), [ r ] );
 			continue;
 		}
-		const fx = waapiEffect( p, call );
-		const tr = triggerOf( model, comp, call );
-		const t = p.file ? { tpl: [], selector: textOf( p, call.callee.object ), rule: `inside ${ comp }: ${ textOf( p, call.callee.object ) }` } : targetOf( model, comp, call.callee.object );
 		const fn = functionName( p, call );
 		const owners = p.file ? census.rows.filter( ( x ) => 'helmet-script' === x.kind && x.detail.src && x.detail.src.endsWith( comp ) ).map( ( x ) => x.draftId.split( ':' ).pop() ) : [];
+		// A helper that forwards its parameters into the call is one record per call path, each with that call site's values.
+		for ( const path of callPaths( p, call ) ) {
+		const fx = waapiEffect( p, call, path );
+		const calls = [ ...path.values() ];
+		const outer = calls[ calls.length - 1 ] ?? call;
+		const tr = triggerOf( model, comp, outer );
+		const t = p.file ? { tpl: [], selector: textOf( p, call.callee.object ), rule: `inside ${ comp }: ${ textOf( p, call.callee.object ) }` } : animatedTarget( model, comp, call, path );
+		const chain = calls.map( ( c ) => `${ functionName( p, c ) } (line ${ lineOf( c ) }): ${ textOf( p, c ) }` );
+		// The guard nearest the path's own trigger names it: the outermost call first, the effect's own call last.
+		const rm = [ ...calls.slice().reverse(), call ].map( ( c ) => reducedMotionOf( p, c ) );
 		for ( const trg of triggersOf( tr ) ) {
+		const notes = [ chain.length ? `called from ${ chain.join( '; from ' ) }` : null, null != trg.delay ? `started after setTimeout ${ trg.delay }` : null ].filter( Boolean ).join( '; ' );
 		add( p.file ? 'L' : 'A', {
-			name: `Web Animation in ${ fn } on ${ t.selector }`, mechanism: 'waapi',
+			name: `Web Animation in ${ fn }${ calls.length ? ` from ${ functionName( p, outer ) }` : '' } on ${ t.selector }`, mechanism: 'waapi',
 			element: element( comp, owner, p.file ? { ...t, near: owners } : t, `animated element: ${ t.selector }` ),
 			source: { file, function: fn, ref: /^ref /.test( t.selector ) ? t.selector.slice( 4 ) : null, line: lineOf( call ), code: textOf( p, call ) },
 			trigger: triggerField( trg ), properties: fx.properties, duration_ms: fx.timing.duration, delay_ms: fx.timing.delay ?? 0, stagger: null,
 			easing: fx.timing.easing, iterations: fx.timing.iterations, direction: fx.timing.direction, fill: fx.timing.fill,
-			reduced_motion: reducedMotionOf( p, call ), status: statusOf( trg ), trace: traceOf( [ r ] ),
-			...( null != trg.delay ? { notes: `started after setTimeout ${ trg.delay }` } : {} ),
+			reduced_motion: rm.find( ( x ) => 'skip' === x.behaviour ) ?? rm[ 0 ], status: statusOf( trg ), trace: traceOf( [ r ] ),
+			...( notes ? { notes } : {} ),
 		}, [ r ], { comp, tpl: t.tpl.map( ( n ) => `${ t.comp }:${ n }` ), via: trg.via.map( ( o ) => `${ comp }@${ o }` ), members: trg.members.map( ( m ) => `${ comp }:${ m }` ), trigger: trg } );
+		}
 		}
 	}
 

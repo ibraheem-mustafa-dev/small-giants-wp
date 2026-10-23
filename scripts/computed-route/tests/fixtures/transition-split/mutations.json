@@ -1,0 +1,18 @@
+[
+	{ "file": "lib/fill-timing.mjs", "find": "lists[ p ][ i % lists[ p ].length ]", "replace": "lists[ p ][ Math.min( i, lists[ p ].length - 1 ) ]", "why": "a shorter list stops repeating and holds its last entry" },
+	{ "file": "lib/fill-timing.mjs", "find": "\t\tout.delete( property );\n", "replace": "", "why": "a repeated property keeps its first place" },
+	{ "file": "lib/fill-timing.mjs", "find": "out.delete( property );\n\t\tout.set( property, {", "replace": "out.has( property ) || out.set( property, {", "why": "a repeated property takes its first entry" },
+	{ "file": "lib/fill-timing.mjs", "find": "( 1 === props.length && 'none' === props[ 0 ] )", "replace": "false", "why": "transition-property none still transitions" },
+	{ "file": "lib/fill-timing.mjs", "find": "b.properties.length > a.properties.length ? b : a", "replace": "b.properties.length < a.properties.length ? b : a", "why": "the timing fewest properties share is written" },
+	{ "file": "lib/fill-timing.mjs", "find": "( x ) => sameTiming( prop, x.value, e[ prop ] ) ?? x.value === e[ prop ]", "replace": "( x ) => x.value === e[ prop ]", "why": "0.2s and 200ms are two timings" },
+	{ "file": "lib/fill-timing.mjs", "find": "1 < t.groups.length && out.split.push", "replace": "2 < t.groups.length && out.split.push", "why": "a two-way split is never reported" },
+	{ "file": "lib/fill-timing.mjs", "find": "own[ 'transition-property' ] ?? restDecl( w )[ 'transition-property' ]", "replace": "own[ 'transition-property' ]", "why": "a state list ignores the resting property list" },
+	{ "file": "lib/fill-timing.mjs", "find": "apply( prop, null, both, 'fill-timing-reverse', [ state ] );", "replace": "apply( prop, null, both, 'fill-timing-reverse', [] );", "why": "the reverse write is not the home of the state's split" },
+	{ "file": "lib/fill-timing.mjs", "find": "! attr && motion && [ null, 'hover' ].includes( state )", "replace": "false", "why": "the motion hover layer is never the home" },
+	{ "file": "lib/fill-timing.mjs", "find": "g.properties.some( ( p ) => [ 'transform', 'all' ].includes( p ) )", "replace": "false", "why": "the motion layer's timing is the first listed, not transform's" },
+	{ "file": "lib/fill-timing.mjs", "find": "! [ 'no-setting', 'unmapped-element' ].includes( gap )", "replace": "! [ 'unmapped-element' ].includes( gap )", "why": "a property with no setting is not named as homeless" },
+	{ "file": "lib/fill-timing.mjs", "find": "export const LIST_PROPS = [ ...TIMING_PROPS, 'transition-delay' ];", "replace": "export const LIST_PROPS = [ ...TIMING_PROPS ];", "why": "delays are dropped" },
+	{ "file": "lib/fill-timing.mjs", "find": "'transition-duration' === prop || 'transition-delay' === prop", "replace": "'transition-duration' === prop", "why": "delays compare as easings" },
+	{ "file": "lib/fill-timing.mjs", "find": "\t\t\trow.widths.push( width );\n", "replace": "\t\t\trow.widths = [ width ];\n", "why": "a row keeps only its last width" },
+	{ "file": "lib/fill-timing.mjs", "find": "\tout.unmapped.push( ...splitRows(", "replace": "\t[].push( ...splitRows(", "why": "split rows are dropped" }
+]

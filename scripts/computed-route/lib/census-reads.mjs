@@ -1,10 +1,19 @@
 // The read set of a Fill run (reads.json): every longhand the draft's code declares on a measured part, per read width,
-// from lib/fill-read.mjs::readDraft's `declared` and `widths` (a part not found at a width has no row there).
-import { READ_VERSION } from './census-conservation.mjs';
+// from lib/fill-read.mjs::readDraft's `declared` and `widths` (a part not found at a width has no row there), bound to its
+// run: the run folder's stamp and the sha256 of the skeleton and draft files it was read from.
+import path from 'node:path';
+import { READ_VERSION, fileSha } from './census-conservation.mjs';
 
-// reads: readDraft's result; nodes: lib/fill-skeleton.mjs::skeletonNodes; refs: each flat tree node's lib/tree.mjs::refOf.
-// Returns the reads.json object for the run of `client` and `surface`.
-export function readSetFile( { client, surface, reads, nodes, refs } ) {
+// The input binding of a read set: { skeleton: { file, sha256 }, draft: { file, sha256 } }, files relative to `root`
+// (the repository). Throws when a file cannot be read.
+export function inputHashes( { root, skeleton, draft } ) {
+	const one = ( file ) => ( { file: file.split( path.sep ).join( '/' ), sha256: fileSha( path.join( root, file ) ) } );
+	return { skeleton: one( skeleton ), draft: one( draft ) };
+}
+
+// reads: readDraft's result; nodes: lib/fill-skeleton.mjs::skeletonNodes; refs: each flat tree node's lib/tree.mjs::refOf;
+// run: the run folder's name; inputs: inputHashes. Returns the reads.json object for the run of `client` and `surface`.
+export function readSetFile( { client, surface, run, inputs, reads, nodes, refs } ) {
 	const rows = [];
 	for ( const [ width, byId ] of Object.entries( reads.declared ) ) {
 		for ( const [ id, declared ] of Object.entries( byId ) ) {
@@ -18,5 +27,5 @@ export function readSetFile( { client, surface, reads, nodes, refs } ) {
 			}
 		}
 	}
-	return { version: READ_VERSION, client, surface, rows };
+	return { version: READ_VERSION, client, surface, run, inputs, rows };
 }

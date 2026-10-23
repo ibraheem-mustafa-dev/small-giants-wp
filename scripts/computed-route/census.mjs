@@ -1,7 +1,9 @@
 // Fill census: classifies every UNMAPPED and already-held row of a Fill run into a named cause, then checks conservation.
 //   node census.mjs <run dir> [--json] [--check]
 // --check exits 1 when any row matches no class in data/census-classes.json (a new gap kind), when a property the draft
-// declares ends neither written, held nor unwritten (lib/census-conservation.mjs), or when the run holds no reads.json.
+// declares ends neither written, held nor unwritten (lib/census-conservation.mjs), or when the run holds no reads.json
+// or one not bound to the run (its stamp, its skeleton and draft hashes, its nodes; SGS_REPO_ROOT names the repository the
+// inputs are hashed under). Conserved reads only a widthless held row answers are listed.
 import { censusRun } from './lib/fill-census.mjs';
 import { conservationRun, groupFailures } from './lib/census-conservation.mjs';
 
@@ -19,10 +21,12 @@ if ( args.includes( '--json' ) ) {
 	console.log( `${ result.total } rows, ${ result.classes.length } classes, ${ result.unclassified.length } unclassified` );
 	for ( const c of result.classes ) console.log( `${ String( c.count ).padStart( 4 ) }  ${ c.class }  [${ c.owner }]  blocks: ${ c.blocks.join( ', ' ) }  properties: ${ c.properties.join( ', ' ) }` );
 	for ( const u of result.unclassified ) console.log( `UNCLASSIFIED (${ u.kind }): ${ u.block } ${ u.property }: ${ u.reason }` );
-	if ( 'no-read-set' === conserved.status ) {
-		console.log( `CONSERVATION: not checked: ${ conserved.reason } (node census-reads.mjs <run dir> saves it)` );
+	if ( 'checked' !== conserved.status ) {
+		console.log( `CONSERVATION: not checked: ${ conserved.reason } (node census-reads.mjs <run dir> saves a read set bound to the run)` );
 	} else {
 		console.log( `CONSERVATION: ${ conserved.failures.length ? `${ conserved.failures.length } of ${ conserved.reads } declared reads dropped` : `${ conserved.reads } declared reads, ${ conserved.conserved } conserved, 0 dropped` } (${ conserved.excluded.cssWide } CSS-wide keyword reads excluded)` );
+		const w = conserved.widthlessHolds;
+		w.length && console.log( `  ${ w.length } conserved read${ 1 === w.length ? ' rests' : 's rest' } on a held row that records no width (Fill's alreadyHeld carries none, so the hold answers every width): ${ w.slice( 0, 5 ).map( ( r ) => `${ r.node } ${ r.slot || '(root)' } ${ r.property } @${ r.width }` ).join( '; ' ) }${ w.length > 5 ? '; ...' : '' }` );
 		for ( const g of groupFailures( conserved.failures ) ) {
 			console.log( `  ${ g.block } ${ g.property } (${ g.count })` );
 			for ( const f of g.rows ) console.log( `    ${ f.draft } ${ f.node } ${ f.slot || '(root)' } @${ f.width }: ${ f.value }` );

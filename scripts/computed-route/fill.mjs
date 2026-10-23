@@ -46,7 +46,7 @@ import { motionDb } from './lib/motion-db.mjs';
 import { loadMotionSchema } from './lib/motion-schema.mjs';
 import { sweepSteps } from './lib/fill-values.mjs';
 import { walkerConfigs } from './lib/fill-config.mjs';
-import { fillReport, unmappedList } from './lib/fill-report.mjs';
+import { fillReport, unmappedList, readFailureRows } from './lib/fill-report.mjs';
 import { calibrationFor } from './solve.mjs';
 import { stateMap } from './lib/state-map.mjs';
 import { readMediaMap } from './lib/fill-media.mjs';
@@ -250,9 +250,11 @@ export async function fillSurface( o ) {
 		result.notes.push( ...bound.groups.map( ( g ) => `binding ${ g.binding } sets ${ g.attr } to ${ JSON.stringify( g.value ) } on ${ g.members.length } elements in ${ g.sections } sections: one shared setting` ), ...bound.split.map( ( x ) => `binding ${ x.binding } sets ${ x.attr } to ${ x.values.length } different values: not grouped` ) );
 		// Rows the element already renders (lib/fill-held.mjs) leave UNMAPPED and are listed under their reason in the report.
 		Object.assign( result, result.settleHeld( result ) );
+		// R7: a declared read that failed is an UNMAPPED row with its reason, never only a log line.
+		result.unmapped.push( ...readFailureRows( { reads, nodes, flat, refOf } ) );
 		// FR-48-8: every written style value against what the draft's code declares, at each read width.
 		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.
-		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension' ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent } );
+		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension' ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent, calFor } );
 		// FR-48-8: a declaration that asks the device safe-area inset is named once per element and property.
 		result.notes.push( ...[ ...new Set( result.confirm.filter( ( r ) => r.safeArea ).map( ( r ) => `${ r.node } ${ r.block } ${ r.property }: ${ r.safeArea.note }` ) ) ] );
 		result.confirm.push( ...imageRecords( { images: result.images } ) );

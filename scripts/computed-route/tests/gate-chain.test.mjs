@@ -87,7 +87,7 @@ test( 'MUST FAIL G1: a word pairing, a mispaired block, an unread side, an inert
 
 // ---- G2
 test( 'MUST FAIL G2: ledgered is CLIENT; a declared value the render contradicts is render-wins, or draft-defect when FR-48-34 passes', () => {
-	const i = { property: 'padding-top', declared: '24px', renderedDraft: '24px', fr34Passes: false, ledgered: false };
+	const i = { property: 'padding-top', declared: '24px', renderedDraft: '24px', fr34Passes: false, ledgered: false, unread: null };
 	assert.equal( g2Intent( i ).pass, true );
 	assert.equal( g2Intent( { ...i, ledgered: true } ).class, 'CLIENT' );
 	assert.equal( g2Intent( { ...i, declared: '8px' } ).class, 'render-wins' );
@@ -96,7 +96,7 @@ test( 'MUST FAIL G2: ledgered is CLIENT; a declared value the render contradicts
 	assert.equal( g2Intent( { ...i, renderedDraft: null } ).class, 'W-walker' );
 	assert.equal( g2Intent( { property: 'padding-top' } ).pass, false );
 	// a declared value the browser serialises in another shape cannot be compared: W-walker, never a pass
-	const shadow = g2Intent( { property: 'box-shadow', declared: '0 1px 2px #000', renderedDraft: 'rgb(0, 0, 0) 0px 1px 2px 0px', fr34Passes: false, ledgered: false } );
+	const shadow = g2Intent( { property: 'box-shadow', declared: '0 1px 2px #000', renderedDraft: 'rgb(0, 0, 0) 0px 1px 2px 0px', fr34Passes: false, ledgered: false, unread: null } );
 	assert.deepEqual( [ shadow.pass, shadow.class ], [ false, 'W-walker' ] );
 } );
 
@@ -197,7 +197,7 @@ function ctxOf( over = {} ) {
 	const inputs = {
 		G0: () => fresh(),
 		G1: ( r ) => g1( {}, r ),
-		G2: () => ( { property: 'padding-top', declared: '24px', renderedDraft: '24px', fr34Passes: false, ledgered: false } ),
+		G2: () => ( { property: 'padding-top', declared: '24px', renderedDraft: '24px', fr34Passes: false, ledgered: false, unread: null } ),
 		G3: () => ( { db: d, block: 'sgs/card', ancestors: [], property: 'padding-top', state: null } ),
 		G4: () => ( { cache: {}, settings: [] } ),
 		G5: () => ( { settings: [] } ),
@@ -218,7 +218,7 @@ test( 'MUST FAIL: a planted row stops at exactly the gate it fails, with that ga
 	const planted = {
 		G0: [ () => ( { ...fresh(), installed: { playwrightVersion: '1.58.2', browserVersion: '9' } } ), 'I-stale' ],
 		G1: [ ( r ) => g1( { pairing: { by: 'words' } }, r ), 'W-walker' ],
-		G2: [ () => ( { property: 'padding-top', declared: '8px', renderedDraft: '24px', fr34Passes: false, ledgered: false } ), 'render-wins' ],
+		G2: [ () => ( { property: 'padding-top', declared: '8px', renderedDraft: '24px', fr34Passes: false, ledgered: false, unread: null } ), 'render-wins' ],
 		G3: [ () => { const d = db(); add( d, 'sgs/card', 'paddingTop', null, null, 'spacing-token', 'sgs' ); return { db: d, block: 'sgs/card', ancestors: [], property: 'padding-top', state: null }; }, 'I-unrouted' ],
 		G4: [ () => ( { cache: { dead: [ 'space' ] }, settings: [ { attr: 'space' } ] } ), 'I-calibration' ],
 		G5: [ () => ( { settings: [ { attr: 'space' } ], measure: async () => ( { method: 'measured', reaches: true } ) } ), 'W-route' ],
@@ -230,6 +230,7 @@ test( 'MUST FAIL: a planted row stops at exactly the gate it fails, with that ga
 		assert.deepEqual( [ r.gate, r.class, r.candidate ], [ gate, cls, false ], gate );
 		const at = GATES.indexOf( gate );
 		assert.deepEqual( r.gates.map( ( g ) => g.status ), GATES.map( ( _, n ) => ( n < at ? 'pass' : n === at ? 'fail' : 'not-reached' ) ), gate );
+		assert.equal( r.setting?.attr ?? null, { G3: 'paddingTop', G4: 'space' }[ gate ] ?? null, `${ gate } names the setting it judged` );
 	}
 } );
 
@@ -251,6 +252,55 @@ test( 'MUST FAIL: the CLI reads the highest round of the walks beside a report',
 	}
 	assert.equal( finalWalk( dir ).round, 10 );
 	assert.equal( finalWalk( fs.mkdtempSync( path.join( os.tmpdir(), 'gate-chain-' ) ) ), null );
+} );
+
+test( 'MUST FAIL G3: a routed fitting setting on the row\'s state passes before any NULL-routed name fit is considered; with nothing routed the NULL fit is I-unrouted and named', () => {
+	const d = db();
+	add( d, 'sgs/site-header', 'labelColour', null, null, 'spacing-token', 'sgs' );
+	add( d, 'sgs/site-header', 'textColour', 'color', null, 'spacing-token', 'sgs' );
+	const r = g3Db( { db: d, block: 'sgs/site-header', ancestors: [], property: 'color', state: null } );
+	assert.deepEqual( [ r.pass, r.settings ], [ true, [ { block: 'sgs/site-header', attr: 'textColour' } ] ] );
+	const n = db();
+	add( n, 'sgs/site-header', 'labelColour', null, null, 'spacing-token', 'sgs' );
+	const u = g3Db( { db: n, block: 'sgs/site-header', ancestors: [], property: 'color', state: null } );
+	assert.deepEqual( [ u.pass, u.class, u.setting ], [ false, 'I-unrouted', { block: 'sgs/site-header', attr: 'labelColour' } ] );
+} );
+
+test( 'MUST FAIL G3: a NULL-routed name spelling another property that ends in the row\'s (from the DB\'s routed css_property values or the CSS property list) never fits it; a name carrying a state the DB routes is read on that state', () => {
+	const d = db();
+	add( d, 'sgs/other', 'cardDividerColour', 'card-divider-color', null, 'spacing-token', 'sgs' );
+	add( d, 'sgs/site-header', 'dividerColour', null, null, 'spacing-token', 'sgs' );
+	add( d, 'sgs/site-header', 'shadowColourHover', null, null, 'spacing-token', 'sgs' );
+	add( d, 'sgs/site-header', 'shapeDividerTopColour', null, null, 'spacing-token', 'sgs' );
+	const r = g3Db( { db: d, block: 'sgs/site-header', ancestors: [], property: 'color', state: null } );
+	assert.deepEqual( [ r.pass, r.settings ], [ true, [] ] );
+	// negative control: without the routed card-divider-color row, nothing names a property ending in "divider color", so the name fits
+	const c = db();
+	add( c, 'sgs/site-header', 'dividerColour', null, null, 'spacing-token', 'sgs' );
+	assert.deepEqual( ( ( x ) => [ x.class, x.setting?.attr ] )( g3Db( { db: c, block: 'sgs/site-header', ancestors: [], property: 'color', state: null } ) ), [ 'I-unrouted', 'dividerColour' ] );
+	const h = db();
+	add( h, 'sgs/other', 'linkColourHover', 'color', 'hover', 'spacing-token', 'sgs' );
+	add( h, 'sgs/site-header', 'textColourHover', null, null, 'spacing-token', 'sgs' );
+	const rest = g3Db( { db: h, block: 'sgs/site-header', ancestors: [], property: 'color', state: null } );
+	assert.equal( rest.class, 'I-unrouted' );
+	assert.match( rest.evidence.line, /textColourHover .* on state hover \(read from its name\), not on the resting state/ );
+	const hover = g3Db( { db: h, block: 'sgs/site-header', ancestors: [], property: 'color', state: 'hover' } );
+	assert.match( hover.evidence.line, /textColourHover .*fits color but carries no css_property/ );
+	// negative control: a DB that routes no hover state reads the name on the resting state
+	const plain = db();
+	add( plain, 'sgs/site-header', 'textColourHover', null, null, 'spacing-token', 'sgs' );
+	assert.match( g3Db( { db: plain, block: 'sgs/site-header', ancestors: [], property: 'color', state: null } ).evidence.line, /fits color but carries no css_property/ );
+} );
+
+test( 'MUST FAIL G3 and G4: the failing gate names the setting it judged', () => {
+	const d = db();
+	add( d, 'sgs/card', 'cardSpace', 'padding-top', null, 'content', 'sgs' );
+	assert.deepEqual( g3Db( { db: d, block: 'sgs/card', ancestors: [], property: 'padding-top', state: null } ).setting, { block: 'sgs/card', attr: 'cardSpace' } );
+	const e = db();
+	add( e, 'sgs/card', 'paddingTopHover', 'padding-top', 'hover', 'spacing-token', 'sgs' );
+	assert.deepEqual( g3Db( { db: e, block: 'sgs/card', ancestors: [], property: 'padding-top', state: null } ).setting, { block: 'sgs/card', attr: 'paddingTopHover' } );
+	const g4 = g4Calibration( { cache: { dead: [ 'b' ] }, settings: [ { block: 'sgs/card', attr: 'a' }, { block: 'sgs/card', attr: 'b' } ], state: null, boxAgrees: true } );
+	assert.deepEqual( [ g4.class, g4.setting ], [ 'I-calibration', { block: 'sgs/card', attr: 'b' } ] );
 } );
 
 test( 'MUST FAIL G3: a NULL css_property row that fits on another state is not an unrouted-on-this-state pass either: both lists take the same state rule', () => {

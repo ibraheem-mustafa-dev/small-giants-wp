@@ -47,7 +47,7 @@ export function contentRowsFor( db, block ) {
 		presence: rowsOf( PRESENCE_ROLES ),
 		text: rowsOf( TEXT_ROLES ),
 		link: rowsOf( LINK_ROLES ),
-		structure: rowsOf( STRUCTURE_ROLES, ' AND css_property IS NULL AND enum_values IS NOT NULL' ),
+		structure: rowsOf( STRUCTURE_ROLES, " AND css_property IS NULL AND enum_values IS NOT NULL AND attr_type = 'string'" ),
 	};
 }
 
