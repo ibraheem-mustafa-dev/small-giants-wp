@@ -41,8 +41,8 @@ export const hasAttrOf = ( db ) => ( block, attr ) => declaredAttr( block, attr,
 // through `recordsByElement`; those a script finds by a `[data-*]` hook (no template element of their own) are held
 // by the elements that carry the hook. Returns { hosted: [ { r, b } ], hostsOf(key) } where hostsOf gives the hosted
 // ones for a template element key.
-export function behaviourIndex( { records, template, css } ) {
-	const found = ( records || [] ).map( ( r ) => ( { r, b: recogniseBehaviour( r, { css, template } ) } ) ).filter( ( x ) => x.b );
+export function behaviourIndex( { records, template, css, positions } ) {
+	const found = ( records || [] ).map( ( r ) => ( { r, b: recogniseBehaviour( r, { css, template, positions } ) } ) ).filter( ( x ) => x.b );
 	const hosted = found.filter( ( x ) => null === ( x.r.element?.template_tpl_id ?? null ) && x.b.host );
 	const hosts = hostsFromTemplate( template, hosted.map( ( x ) => x.b.host ) );
 	// A control names the record it controls, not an element: it is applied wherever that record's layer was written.
