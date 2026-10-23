@@ -316,6 +316,26 @@ $sgs_media_atom_css = class_exists( 'SGS_Media_Element' )
 
 $responsive_css  = $media_base_css . $wrap_base_css . $sgs_media_atom_css;
 
+// A height or width the client set overrules the link's 44px tap floor: the link then wraps the image exactly
+// (ruling 11). The flag prints in the tier that sets the size, so it cascades like the size.
+foreach ( array(
+	'desktop' => '',
+	'tablet'  => '@media(max-width:1023px)',
+	'mobile'  => '@media(max-width:767px)',
+) as $sgs_media_tap_tier => $sgs_media_tap_query ) {
+	$sgs_media_tap_sized = false;
+	foreach ( array( 'height', 'maxHeight', 'maxWidth' ) as $sgs_media_tap_attr ) {
+		$sgs_media_tap_val = is_array( $attributes[ $sgs_media_tap_attr ] ?? null ) ? ( $attributes[ $sgs_media_tap_attr ][ $sgs_media_tap_tier ] ?? '' ) : '';
+		if ( is_scalar( $sgs_media_tap_val ) && '' !== trim( (string) $sgs_media_tap_val ) ) {
+			$sgs_media_tap_sized = true;
+		}
+	}
+	if ( $sgs_media_tap_sized ) {
+		$sgs_media_tap_rule = '.' . $scope_esc . '{--sgs-media-tap-min:0px;}';
+		$responsive_css    .= '' === $sgs_media_tap_query ? $sgs_media_tap_rule : $sgs_media_tap_query . '{' . $sgs_media_tap_rule . '}';
+	}
+}
+
 /**
  * Art-direction tier visibility CSS — ONE implementation for every media family
  * in this block (images §11, SVG §12b), so the two can never drift apart.

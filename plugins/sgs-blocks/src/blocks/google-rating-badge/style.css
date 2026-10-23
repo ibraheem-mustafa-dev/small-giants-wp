@@ -262,8 +262,8 @@ a.sgs-google-rating-badge__link::after {
 	position: absolute;
 	top: 50%;
 	left: 50%; /* centring: direction-agnostic, paired with the -50% translate */
-	width: max(100%, 44px);
-	height: max(100%, 44px);
+	width: max(100%, var(--sgs-grb-tap-min, 44px));
+	height: max(100%, var(--sgs-grb-tap-min, 44px));
 	translate: -50% -50%;
 }
 

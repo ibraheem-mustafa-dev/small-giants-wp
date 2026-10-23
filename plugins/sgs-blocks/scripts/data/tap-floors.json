@@ -4,5 +4,258 @@
   "checker": "plugins/sgs-blocks/scripts/check-tap-floors.py --check",
   "key": "block + the rule's selector (whitespace collapsed) + the property"
  },
- "house": []
+ "house": [
+  {
+   "block": "before-after",
+   "selector": ".wp-block-sgs-before-after__handle",
+   "property": "height",
+   "reason": "No before-after setting sizes this control: height and maxWidth size the comparison frame and dividerWidth the divider line, not the handle, thumb or video toggle."
+  },
+  {
+   "block": "before-after",
+   "selector": ".wp-block-sgs-before-after__handle",
+   "property": "width",
+   "reason": "No before-after setting sizes this control: height and maxWidth size the comparison frame and dividerWidth the divider line, not the handle, thumb or video toggle."
+  },
+  {
+   "block": "before-after",
+   "selector": ".wp-block-sgs-before-after__range::-moz-range-thumb",
+   "property": "height",
+   "reason": "No before-after setting sizes this control: height and maxWidth size the comparison frame and dividerWidth the divider line, not the handle, thumb or video toggle."
+  },
+  {
+   "block": "before-after",
+   "selector": ".wp-block-sgs-before-after__range::-moz-range-thumb",
+   "property": "width",
+   "reason": "No before-after setting sizes this control: height and maxWidth size the comparison frame and dividerWidth the divider line, not the handle, thumb or video toggle."
+  },
+  {
+   "block": "before-after",
+   "selector": ".wp-block-sgs-before-after__range::-webkit-slider-thumb",
+   "property": "height",
+   "reason": "No before-after setting sizes this control: height and maxWidth size the comparison frame and dividerWidth the divider line, not the handle, thumb or video toggle."
+  },
+  {
+   "block": "before-after",
+   "selector": ".wp-block-sgs-before-after__range::-webkit-slider-thumb",
+   "property": "width",
+   "reason": "No before-after setting sizes this control: height and maxWidth size the comparison frame and dividerWidth the divider line, not the handle, thumb or video toggle."
+  },
+  {
+   "block": "before-after",
+   "selector": ".wp-block-sgs-before-after__video-toggle",
+   "property": "height",
+   "reason": "No before-after setting sizes this control: height and maxWidth size the comparison frame and dividerWidth the divider line, not the handle, thumb or video toggle."
+  },
+  {
+   "block": "before-after",
+   "selector": ".wp-block-sgs-before-after__video-toggle",
+   "property": "width",
+   "reason": "No before-after setting sizes this control: height and maxWidth size the comparison frame and dividerWidth the divider line, not the handle, thumb or video toggle."
+  },
+  {
+   "block": "card-grid",
+   "selector": ".sgs-card-grid__page-btn",
+   "property": "min-height",
+   "reason": "No card-grid setting sizes the pagination buttons: glyphSize sizes the icon glyph and imageHeight the card image."
+  },
+  {
+   "block": "card-grid",
+   "selector": ".sgs-card-grid__page-btn",
+   "property": "min-width",
+   "reason": "No card-grid setting sizes the pagination buttons: glyphSize sizes the icon glyph and imageHeight the card image."
+  },
+  {
+   "block": "form",
+   "selector": ".sgs-form-field__consent",
+   "property": "min-height",
+   "reason": "No form setting sizes this element: fieldMinHeight and fieldTextareaMinHeight size the text, select and textarea controls and submitMinHeight the submit button, and the remaining settings here are typography, colour and padding."
+  },
+  {
+   "block": "form",
+   "selector": ".sgs-form-field__file-input",
+   "property": "min-height",
+   "reason": "No form setting sizes this element: fieldMinHeight and fieldTextareaMinHeight size the text, select and textarea controls and submitMinHeight the submit button, and the remaining settings here are typography, colour and padding."
+  },
+  {
+   "block": "form",
+   "selector": ".sgs-form-field__input",
+   "property": "min-height",
+   "reason": "fieldMinHeight and fieldTextareaMinHeight print min-height on this element through a scoped rule that outranks this default and is the height as set (render.php::$sgs_field_height no longer floors it); this 44px applies only when neither is set."
+  },
+  {
+   "block": "form",
+   "selector": ".sgs-form-field__option",
+   "property": "min-height",
+   "reason": "No form setting sizes this element: fieldMinHeight and fieldTextareaMinHeight size the text, select and textarea controls and submitMinHeight the submit button, and the remaining settings here are typography, colour and padding."
+  },
+  {
+   "block": "form",
+   "selector": ".sgs-form-review__edit",
+   "property": "min-height",
+   "reason": "No form setting sizes this element: fieldMinHeight and fieldTextareaMinHeight size the text, select and textarea controls and submitMinHeight the submit button, and the remaining settings here are typography, colour and padding."
+  },
+  {
+   "block": "form",
+   "selector": ".sgs-form-review__edit",
+   "property": "min-width",
+   "reason": "No form setting sizes this element: fieldMinHeight and fieldTextareaMinHeight size the text, select and textarea controls and submitMinHeight the submit button, and the remaining settings here are typography, colour and padding."
+  },
+  {
+   "block": "form",
+   "selector": ".sgs-form-tile",
+   "property": "min-height",
+   "reason": "No form setting sizes this element: fieldMinHeight and fieldTextareaMinHeight size the text, select and textarea controls and submitMinHeight the submit button, and the remaining settings here are typography, colour and padding."
+  },
+  {
+   "block": "form",
+   "selector": ".sgs-form__button",
+   "property": "min-height",
+   "reason": "submitMinHeight prints min-height on the submit button through a scoped rule that outranks this default; this 44px applies to the other form buttons and to the submit button with no height set."
+  },
+  {
+   "block": "form",
+   "selector": ".sgs-form__button",
+   "property": "min-width",
+   "reason": "No form setting sizes this element: fieldMinHeight and fieldTextareaMinHeight size the text, select and textarea controls and submitMinHeight the submit button, and the remaining settings here are typography, colour and padding."
+  },
+  {
+   "block": "form",
+   "selector": ".sgs-form__progress-step",
+   "property": "min-height",
+   "reason": "No form setting sizes this element: fieldMinHeight and fieldTextareaMinHeight size the text, select and textarea controls and submitMinHeight the submit button, and the remaining settings here are typography, colour and padding."
+  },
+  {
+   "block": "form",
+   "selector": ".sgs-form__progress-step",
+   "property": "min-width",
+   "reason": "No form setting sizes this element: fieldMinHeight and fieldTextareaMinHeight size the text, select and textarea controls and submitMinHeight the submit button, and the remaining settings here are typography, colour and padding."
+  },
+  {
+   "block": "gallery",
+   "selector": ".sgs-gallery__carousel-prev, .sgs-gallery__carousel-next",
+   "property": "height",
+   "reason": "No gallery setting sizes the carousel arrows, dots or lightbox close button: imageSize and tileMinHeight size the tiles and images."
+  },
+  {
+   "block": "gallery",
+   "selector": ".sgs-gallery__carousel-prev, .sgs-gallery__carousel-next",
+   "property": "width",
+   "reason": "No gallery setting sizes the carousel arrows, dots or lightbox close button: imageSize and tileMinHeight size the tiles and images."
+  },
+  {
+   "block": "gallery",
+   "selector": ".sgs-gallery__dot",
+   "property": "min-height",
+   "reason": "No gallery setting sizes the carousel arrows, dots or lightbox close button: imageSize and tileMinHeight size the tiles and images."
+  },
+  {
+   "block": "gallery",
+   "selector": ".sgs-gallery__dot",
+   "property": "min-width",
+   "reason": "No gallery setting sizes the carousel arrows, dots or lightbox close button: imageSize and tileMinHeight size the tiles and images."
+  },
+  {
+   "block": "gallery",
+   "selector": ".sgs-gallery__lightbox-close",
+   "property": "height",
+   "reason": "No gallery setting sizes the carousel arrows, dots or lightbox close button: imageSize and tileMinHeight size the tiles and images."
+  },
+  {
+   "block": "gallery",
+   "selector": ".sgs-gallery__lightbox-close",
+   "property": "width",
+   "reason": "No gallery setting sizes the carousel arrows, dots or lightbox close button: imageSize and tileMinHeight size the tiles and images."
+  },
+  {
+   "block": "google-reviews",
+   "selector": ".sgs-google-reviews__dot",
+   "property": "height",
+   "reason": "No google-reviews setting sizes this element: mapsLinkFontSize sets its text size only and no setting sizes the carousel dots (arrowSize sizes the arrows, which already follow it)."
+  },
+  {
+   "block": "google-reviews",
+   "selector": ".sgs-google-reviews__dot",
+   "property": "width",
+   "reason": "No google-reviews setting sizes this element: mapsLinkFontSize sets its text size only and no setting sizes the carousel dots (arrowSize sizes the arrows, which already follow it)."
+  },
+  {
+   "block": "google-reviews",
+   "selector": "a.sgs-google-reviews__maps-link",
+   "property": "min-height",
+   "reason": "No google-reviews setting sizes this element: mapsLinkFontSize sets its text size only and no setting sizes the carousel dots (arrowSize sizes the arrows, which already follow it)."
+  },
+  {
+   "block": "media",
+   "selector": ".sgs-video__btn",
+   "property": "height",
+   "reason": "No media setting sizes the video control buttons: height, maxHeight, maxWidth and imageWidth size the media element."
+  },
+  {
+   "block": "media",
+   "selector": ".sgs-video__btn",
+   "property": "min-width",
+   "reason": "No media setting sizes the video control buttons: height, maxHeight, maxWidth and imageWidth size the media element."
+  },
+  {
+   "block": "media",
+   "selector": ".sgs-video__btn",
+   "property": "width",
+   "reason": "No media setting sizes the video control buttons: height, maxHeight, maxWidth and imageWidth size the media element."
+  },
+  {
+   "block": "post-grid",
+   "selector": ".sgs-post-grid__carousel-prev, .sgs-post-grid__carousel-next",
+   "property": "min-height",
+   "reason": "No post-grid setting sizes this control: imageSize sizes the card image, and the filter, pagination, load-more, arrow and dot controls only take typography and colour settings."
+  },
+  {
+   "block": "post-grid",
+   "selector": ".sgs-post-grid__carousel-prev, .sgs-post-grid__carousel-next",
+   "property": "min-width",
+   "reason": "No post-grid setting sizes this control: imageSize sizes the card image, and the filter, pagination, load-more, arrow and dot controls only take typography and colour settings."
+  },
+  {
+   "block": "post-grid",
+   "selector": ".sgs-post-grid__dot",
+   "property": "min-height",
+   "reason": "No post-grid setting sizes this control: imageSize sizes the card image, and the filter, pagination, load-more, arrow and dot controls only take typography and colour settings."
+  },
+  {
+   "block": "post-grid",
+   "selector": ".sgs-post-grid__dot",
+   "property": "min-width",
+   "reason": "No post-grid setting sizes this control: imageSize sizes the card image, and the filter, pagination, load-more, arrow and dot controls only take typography and colour settings."
+  },
+  {
+   "block": "post-grid",
+   "selector": ".sgs-post-grid__filter",
+   "property": "min-height",
+   "reason": "No post-grid setting sizes this control: imageSize sizes the card image, and the filter, pagination, load-more, arrow and dot controls only take typography and colour settings."
+  },
+  {
+   "block": "post-grid",
+   "selector": ".sgs-post-grid__load-more",
+   "property": "min-height",
+   "reason": "No post-grid setting sizes this control: imageSize sizes the card image, and the filter, pagination, load-more, arrow and dot controls only take typography and colour settings."
+  },
+  {
+   "block": "post-grid",
+   "selector": ".sgs-post-grid__page-btn",
+   "property": "min-height",
+   "reason": "No post-grid setting sizes this control: imageSize sizes the card image, and the filter, pagination, load-more, arrow and dot controls only take typography and colour settings."
+  },
+  {
+   "block": "post-grid",
+   "selector": ".sgs-post-grid__page-btn",
+   "property": "min-width",
+   "reason": "No post-grid setting sizes this control: imageSize sizes the card image, and the filter, pagination, load-more, arrow and dot controls only take typography and colour settings."
+  },
+  {
+   "block": "tabs",
+   "selector": ".sgs-tabs__tab",
+   "property": "min-width",
+   "reason": "tabMinHeight sizes the tab height only; no setting sizes its minimum width (tabPadding and tabFontSize move it indirectly)."
+  }
+ ]
 }

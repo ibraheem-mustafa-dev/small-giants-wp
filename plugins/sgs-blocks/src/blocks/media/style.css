@@ -77,8 +77,8 @@
 /* Link wrapper — full-block hit area */
 .wp-block-sgs-media .sgs-media__link {
 	display: block;
-	min-width: 44px;
-	min-height: 44px;
+	min-width: var(--sgs-media-tap-min, 44px);
+	min-height: var(--sgs-media-tap-min, 44px);
 }
 
 /* ===== SVG foreground mode ===== */

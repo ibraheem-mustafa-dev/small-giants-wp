@@ -122,6 +122,11 @@ final class GoogleRatingBadgeTest extends TestCase {
 		}
 	}
 
+	public function test_the_tap_floor_flag_prints_only_beside_a_set_min_height(): void {
+		$this->assertStringContainsString( '--sgs-grb-tap-min:0px', $this->render_full( self::MANUAL + array( 'minHeight' => 30 ) )['css'] );
+		$this->assertStringNotContainsString( '--sgs-grb-tap-min', $this->render_full( self::MANUAL + array( 'minHeight' => 0 ) )['css'] );
+	}
+
 	public function test_full_width_adds_its_modifier_and_the_stylesheet_stretches_the_frame(): void {
 		$this->assertStringContainsString( 'sgs-google-rating-badge--full-width', $this->render( self::MANUAL + array( 'fullWidth' => true ) ) );
 		// Negative control: off by default.
@@ -164,7 +169,7 @@ final class GoogleRatingBadgeTest extends TestCase {
 
 	public function test_the_tap_target_stays_44px_whatever_the_visible_height(): void {
 		$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/google-rating-badge/style.css' );
-		$this->assertMatchesRegularExpression( '#a\.sgs-google-rating-badge__link::after\s*\{[^}]*width:\s*max\(100%,\s*44px\)[^}]*height:\s*max\(100%,\s*44px\)#', $css );
+		$this->assertMatchesRegularExpression( '#a\.sgs-google-rating-badge__link::after\s*\{[^}]*width:\s*max\(100%,\s*var\(--sgs-grb-tap-min,\s*44px\)\)[^}]*height:\s*max\(100%,\s*var\(--sgs-grb-tap-min,\s*44px\)\)#', $css );
 		// The link is the containing block for that box.
 		$this->assertMatchesRegularExpression( '#\.sgs-google-rating-badge__link\s*\{[^}]*position:\s*relative#', $css );
 	}
