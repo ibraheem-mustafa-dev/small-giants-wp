@@ -8,8 +8,9 @@ import { fileURLToPath } from 'url';
 import { candidates, siblings, isPseudoProperty, listedProperties } from './db.mjs';
 import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, round } from './normalise.mjs';
 import { applyClamp } from './fill-values.mjs';
-import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy } from './css-families.mjs';
+import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy, canonicalName } from './css-families.mjs';
 import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword } from './resolve-declared.mjs';
+import { consult } from './css-equivalence/index.mjs';
 
 export const COVERAGE_WRITES = [
 	'aria-attr:aria-hidden',
@@ -413,6 +414,22 @@ function radiusWrite( attr, tiers, def ) {
 	return { writes: [ { attr, value: JSON.parse( vals[ 0 ] ), merge: 'replace' } ] };
 }
 
+// No setting holds the property by name: the equivalence engine (lib/css-equivalence, FR-48-86) is consulted first. A legacy
+// alias or vendor spelling is resolved again under its standard name; a setting whose measured effect equals the draft is
+// written; a row the engine holds (the block's default paint, or a value that paints nothing) stays a no-setting gap
+// carrying `code` 'held:<reason>' and the engine's verdict; anything else is the gap with every layer tried named.
+function noSetting( input, ctx, detail ) {
+	const canon = canonicalName( input.prop );
+	if ( canon !== input.prop && ! input.respelt ) {
+		return resolve( { ...input, prop: canon, respelt: true }, ctx );
+	}
+	const eq = consult( input, ctx );
+	if ( 'write' === eq.verdict ) {
+		return { writes: eq.writes, equivalence: eq };
+	}
+	return { gap: 'no-setting', detail: `${ detail }; ${ 'held' === eq.verdict ? `held (${ eq.reason }): ${ eq.detail }` : eq.detail }`, equivalence: eq, ...( 'held' === eq.verdict ? { code: `held:${ eq.reason }` } : {} ) };
+}
+
 export function resolve( input, ctx ) {
 	const { block, prop, state = null, perWidth, fontPx = {}, current = {} } = input;
 	// anyIndex (a setting of an enclosing block): calibration's fixture repeats the child at other positions, so paths
@@ -426,7 +443,7 @@ export function resolve( input, ctx ) {
 	const rows = [ ...candidates( ctx.db, block, short, state ), ...( short !== prop ? candidates( ctx.db, block, prop, state ) : [] ) ]
 		.filter( ( r, i, all ) => all.findIndex( ( x ) => x.attr_name === r.attr_name ) === i );
 	if ( ! rows.length ) {
-		return resolveDiscovered( { ...input, state }, ctx.calibration ) || { gap: 'no-setting', detail: 'display' === prop && ! state ? `no layout setting holds display:${ [ ...new Set( Object.values( perWidth ) ) ].join( ', ' ) } on ${ block } "${ slot }"` : `${ block } has no setting for ${ prop }${ state ? ' (' + state + ')' : '' }` };
+		return resolveDiscovered( { ...input, state }, ctx.calibration ) || noSetting( { ...input, state }, ctx, 'display' === prop && ! state ? `no layout setting holds display:${ [ ...new Set( Object.values( perWidth ) ) ].join( ', ' ) } on ${ block } "${ slot }"` : `${ block } has no setting for ${ prop }${ state ? ' (' + state + ')' : '' }` );
 	}
 	if ( ! ctx.calibration ) {
 		return { gap: 'uncalibrated', detail: `${ block } has no calibration file` };
@@ -464,7 +481,7 @@ export function resolve( input, ctx ) {
 	}
 	if ( ! tied.length ) {
 		const named = 'display' === prop ? `no layout setting holds display:${ [ ...new Set( Object.values( perWidth ) ) ].join( ', ' ) } on ${ block } "${ slot }"` : `no ${ prop } setting on ${ block } paints "${ slot }"`;
-		return resolveDiscovered( { ...input, state }, ctx.calibration ) || { gap: 'no-setting', detail: `${ named } (candidates: ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) })` };
+		return resolveDiscovered( { ...input, state }, ctx.calibration ) || noSetting( { ...input, state }, ctx, `${ named } (candidates: ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) })` );
 	}
 	const flat = tied.filter( ( r ) => 'flat_sibling' === r.tier_shape );
 	const others = tied.filter( ( r ) => 'flat_sibling' !== r.tier_shape );
