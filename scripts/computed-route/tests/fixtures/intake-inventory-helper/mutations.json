@@ -1,0 +1,18 @@
+[
+	{ "file": "lib/intake-inventory-anim.mjs", "find": "for ( const path of callPaths( p, call ) ) {", "replace": "for ( const path of [ new Map() ] ) {", "why": "the helper is read alone: its parameter names stand in for the keyframes and duration" },
+	{ "file": "lib/intake-inventory-anim.mjs", "find": "const outer = calls[ calls.length - 1 ] ?? call;", "replace": "const outer = call;", "why": "each path takes every caller's trigger instead of its own" },
+	{ "file": "lib/intake-inventory-anim.mjs", "find": "[ ...calls.slice().reverse(), call ].map(", "replace": "[ call, ...calls ].map(", "why": "the reduced-motion guard is named from the helper's first caller, not the path's own listener" },
+	{ "file": "lib/intake-inventory-anim.mjs", "find": "chain.length ? `called from ${ chain.join( '; from ' ) }` : null", "replace": "null", "why": "the call site is not kept" },
+	{ "file": "lib/intake-inventory-calls.mjs", "find": ".flatMap( ( call ) => callPaths( p, call, readsOf( p, call.arguments ), depth + 1 ).map(", "replace": ".flatMap( ( call ) => [ new Map() ].map(", "why": "a caller whose arguments read its own parameters is not followed out, so the host stays a bare parameter" },
+	{ "file": "lib/intake-inventory-calls.mjs", "find": "prop( c.callee ) === m.name && outside( c )", "replace": "false", "why": "no call of a class member is found" },
+	{ "file": "lib/intake-inventory-calls.mjs", "find": "return arg || fallback ? resolveArg( p, arg ?? fallback, path, depth + 1 ) : n;", "replace": "return n;", "why": "a bound parameter is never replaced by its argument" },
+	{ "file": "lib/intake-inventory-calls.mjs", "find": "INSERTS.test( prop( x.callee ) ?? '' ) && x.arguments.some( same )", "replace": "false", "why": "the element a created element is inserted into is never found" },
+	{ "file": "lib/intake-inventory-target.mjs", "find": "call.arguments.map( ( n ) => objectConst( p, resolveArg( p, n, path ) ) )", "replace": "call.arguments.map( ( n ) => resolveArg( p, n, path ) )", "why": "a keyframe list held in a constant is not read through" },
+	{ "file": "lib/intake-inventory-target.mjs", "find": "'const' === p.parents.get( d )?.kind && scopes.includes", "replace": "'let' === p.parents.get( d )?.kind && scopes.includes", "why": "a const keyframe list is not recognised" },
+	{ "file": "lib/intake-inventory-target.mjs", "find": "\t\t\tconst n = resolveArg( p, x.value, path );", "replace": "\t\t\tconst n = x.value;", "why": "an option value forwarded as a parameter keeps the parameter name" },
+	{ "file": "lib/intake-inventory-target.mjs", "find": "rule: 'an element created in code', created: true };", "replace": "rule: 'an element created in code', created: false };", "why": "a created element is never placed by its host" },
+	{ "file": "lib/intake-inventory-target.mjs", "find": "const into = t.created ? insertedInto( p, call.callee.object, path ) : null;", "replace": "const into = null;", "why": "the host is never named" },
+	{ "file": "lib/intake-inventory-code.mjs", "find": "\t\tif ( tracksNew( p, a, node ) ) {", "replace": "\t\tif ( false ) {", "why": "the branch that tracks the element just hit is a pointer leave" },
+	{ "file": "lib/intake-inventory-code.mjs", "find": "reads.has( n.right.name );\n\t} );\n\treturn hit;", "replace": "reads.has( n.right.name );\n\t} );\n\treturn true;", "why": "every tracked-element guard, the leave branch included, runs as the pointer arrives" },
+	{ "file": "lib/intake-inventory-code.mjs", "find": " && reads.has( n.right.name );", "replace": ";", "why": "a branch that tracks the new element but acts on another element counts as the pointer arriving" }
+]
