@@ -5,6 +5,7 @@
 import { walkAst } from './intake-census-logic.mjs';
 import { matchSelector } from './intake-inventory-css.mjs';
 import { isFn, isThis, prop, globalName, textOf, ancestors, memberOf, functionName, literalOf, declaratorsOf } from './intake-inventory-code.mjs';
+import { resolveArg, insertedInto } from './intake-inventory-calls.mjs';
 
 // The template elements a ref field is bound to: Map(field → [{ comp, n, ref }]) for one component, from each `ref`
 // census row → its renderVals key's method (or a member of that name) → `this.<field> = <param>` in that method.
@@ -34,8 +35,9 @@ function refFields( model, comp ) {
 // The element a target expression names (METHOD.md §5.2): { tpl: [n], comp, selector, rule? }. A ref field resolves to
 // its bound element, a query string to the stamped elements it matches, a loop or local variable to what it was
 // taken from, `event.currentTarget` to the elements whose template handler runs the code; anything else keeps its
-// source text as the selection rule (tpl empty).
-export function targetOf( model, comp, expr, depth = 0 ) {
+// source text as the selection rule (tpl empty). `path` (lib/intake-inventory-calls.mjs::callPaths) binds a helper's
+// parameters to one call site's arguments; an element created in code (`document.createElement`) is `created`.
+export function targetOf( model, comp, expr, depth = 0, path = null ) {
 	const p = model.progs.get( comp );
 	const none = ( rule ) => ( { tpl: [], comp, selector: textOf( p, expr ), rule } );
 	if ( ! expr || depth > 5 ) {
@@ -48,7 +50,7 @@ export function targetOf( model, comp, expr, depth = 0 ) {
 			return { tpl: bound.map( ( b ) => b.n ), comp, selector: `ref ${ bound[ 0 ].ref }` };
 		}
 		const set = ( p.refs.get( f ) || [] ).map( ( r ) => p.parents.get( r ) ).find( ( a ) => 'AssignmentExpression' === a?.type && a.left && isThis( a.left ) && prop( a.left ) === f );
-		return set ? { ...targetOf( model, comp, set.right, depth + 1 ), selector: `this.${ f } = ${ textOf( p, set.right ) }` } : none( `this.${ f } is never bound to a template element` );
+		return set ? { ...targetOf( model, comp, set.right, depth + 1, path ), selector: `this.${ f } = ${ textOf( p, set.right ) }` } : none( `this.${ f } is never bound to a template element` );
 	}
 	if ( 'CallExpression' === expr.type && /^(querySelector|querySelectorAll|closest|getElementById|getElementsByClassName)$/.test( prop( expr.callee ) ?? '' ) ) {
 		const s = literalOf( expr.arguments[ 0 ] );
@@ -66,8 +68,11 @@ export function targetOf( model, comp, expr, depth = 0 ) {
 		}
 		return none( `selector ${ sel } matches no stamped template element (code-created or external)` );
 	}
+	if ( 'CallExpression' === expr.type && 'createElement' === prop( expr.callee ) ) {
+		return { tpl: [], comp, selector: textOf( p, expr ), rule: 'an element created in code', created: true };
+	}
 	if ( 'CallExpression' === expr.type && 'from' === prop( expr.callee ) && 'Array' === expr.callee.object?.name ) {
-		return targetOf( model, comp, expr.arguments[ 0 ], depth + 1 );
+		return targetOf( model, comp, expr.arguments[ 0 ], depth + 1, path );
 	}
 	if ( 'MemberExpression' === expr.type && /^(currentTarget|target)$/.test( prop( expr ) ?? '' ) ) {
 		const m = memberOf( p, expr );
@@ -75,19 +80,22 @@ export function targetOf( model, comp, expr, depth = 0 ) {
 		return rows.length ? { tpl: rows.map( ( r ) => r.draftId.slice( r.draftId.lastIndexOf( ':' ) + 1 ) ), comp, selector: `${ textOf( p, expr ) } of ${ rows[ 0 ].detail.event }` } : none( `the event or observer entry target ${ textOf( p, expr ) }, resolved at runtime` );
 	}
 	if ( 'MemberExpression' === expr.type ) {
-		const base = targetOf( model, comp, expr.object, depth + 1 );
+		const base = targetOf( model, comp, expr.object, depth + 1, path );
 		return { tpl: [], near: base.tpl, comp: base.comp, selector: textOf( p, expr ), rule: `a node reached from ${ base.selector }` };
+	}
+	if ( 'Identifier' === expr.type && resolveArg( p, expr, path ) !== expr ) {
+		return targetOf( model, comp, resolveArg( p, expr, path ), depth + 1, path );
 	}
 	if ( 'Identifier' === expr.type ) {
 		for ( const a of ancestors( p, expr ) ) {
 			if ( 'ForOfStatement' === a.type && a.left.declarations?.some( ( d ) => d.id.name === expr.name ) ) {
-				const base = targetOf( model, comp, a.right, depth + 1 );
+				const base = targetOf( model, comp, a.right, depth + 1, path );
 				return { ...base, rule: base.rule ?? `each element of ${ textOf( p, a.right ) }` };
 			}
 			if ( isFn( a ) && a.params.some( ( x ) => x.name === expr.name ) ) {
 				const up = p.parents.get( a );
 				if ( 'CallExpression' === up?.type && /^(forEach|map|filter|some|every)$/.test( prop( up.callee ) ?? '' ) ) {
-					const base = targetOf( model, comp, up.callee.object, depth + 1 );
+					const base = targetOf( model, comp, up.callee.object, depth + 1, path );
 					return { ...base, rule: base.rule ?? `each element of ${ textOf( p, up.callee.object ) }` };
 				}
 				const m = memberOf( p, a );
@@ -105,7 +113,7 @@ export function targetOf( model, comp, expr, depth = 0 ) {
 					}
 				} );
 				if ( decl ) {
-					return targetOf( model, comp, decl.init, depth + 1 );
+					return targetOf( model, comp, decl.init, depth + 1, path );
 				}
 			}
 		}
@@ -164,10 +172,14 @@ function keyframeOffsets( given ) {
 
 // A Web Animations call's effect (METHOD.md §5.4): { properties, timing } with keyframes and options copied
 // literally; a computed value is kept as its source text (`formula`). A property with more than two keyframes also
-// carries `keyframes`: [ { offset (0 to 1), value } ] for every stop, in order.
-export function waapiEffect( p, call ) {
-	const [ kf, opt ] = call.arguments;
-	const val = ( n ) => {
+// carries `keyframes`: [ { offset (0 to 1), value } ] for every stop, in order. On a call path (`path`,
+// lib/intake-inventory-calls.mjs::callPaths) a helper's parameter reads the argument its call site passes, and a local
+// constant holding a keyframe list or options object is read through; an argument that is not a literal keeps the call
+// site's source text.
+export function waapiEffect( p, call, path = null ) {
+	const [ kf, opt ] = call.arguments.map( ( n ) => objectConst( p, resolveArg( p, n, path ) ) );
+	const val = ( raw ) => {
+		const n = resolveArg( p, raw, path );
 		const v = literalOf( n ) ?? constValue( p, n );
 		return undefined === v ? { v: null, f: textOf( p, n ) } : { v };
 	};
@@ -213,18 +225,46 @@ export function waapiEffect( p, call ) {
 	if ( 'ObjectExpression' === opt?.type ) {
 		for ( const x of opt.properties.filter( ( y ) => 'ObjectProperty' === y.type && ! y.computed ) ) {
 			const k = x.key.name ?? x.key.value;
-			const v = literalOf( x.value ) ?? constValue( p, x.value );
+			const n = resolveArg( p, x.value, path );
+			const v = literalOf( n ) ?? constValue( p, n );
 			if ( k in timing ) {
-				timing[ k ] = undefined === v ? ( /^(direction|fill)$/.test( k ) ? null : textOf( p, x.value ) ) : v;
+				timing[ k ] = undefined === v ? ( /^(direction|fill)$/.test( k ) ? null : textOf( p, n ) ) : v;
 			}
 		}
 	} else if ( opt ) {
-		timing.duration = literalOf( opt ) ?? textOf( p, opt );
+		timing.duration = literalOf( opt ) ?? constValue( p, opt ) ?? textOf( p, opt );
 	}
 	if ( 'infinite' !== timing.iterations && 'number' !== typeof timing.iterations ) {
 		timing.iterations = String( timing.iterations );
 	}
 	return { properties, timing, frames: frames ? frames.length : null };
+}
+
+// The keyframe list or options object a `const` local holds (its nearest declaration in scope before the use), else the
+// node itself.
+function objectConst( p, n ) {
+	if ( 'Identifier' !== n?.type ) {
+		return n;
+	}
+	const scopes = ancestors( p, n ).filter( isScope );
+	const own = ( declaratorsOf( p ).get( n.name ) || [] ).filter( ( d ) => d.start < n.start && 'const' === p.parents.get( d )?.kind && scopes.includes( ancestors( p, d ).find( isScope ) ) );
+	const init = own[ own.length - 1 ]?.init;
+	return /^(ArrayExpression|ObjectExpression)$/.test( init?.type ?? '' ) ? init : n;
+}
+
+// The element a Web Animations call animates on a call path: targetOf its receiver. An element created in code is
+// named by the element it is inserted into (its host): no template element of its own, the host's as the nearest, and
+// the host's selector in its own.
+export function animatedTarget( model, comp, call, path = null ) {
+	const p = model.progs.get( comp );
+	const t = targetOf( model, comp, call.callee.object, 0, path );
+	const into = t.created ? insertedInto( p, call.callee.object, path ) : null;
+	if ( ! into ) {
+		return t;
+	}
+	const host = targetOf( model, comp, into, 0, path );
+	const near = host.tpl.length ? host.tpl : host.near || [];
+	return { tpl: [], near, comp: host.comp, selector: `${ textOf( p, call.callee.object ) } inserted into ${ host.selector }`, rule: `an element created in code (${ t.selector }) and inserted into ${ host.selector }` };
 }
 
 // Every JS writer site in a program (METHOD.md §4 "JS style writers"): `<x>.style.<prop> =`, `.style.cssText =`,
