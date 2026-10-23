@@ -21,11 +21,18 @@ export const TEMPLATE_CONTENT_OPTION = 'sgs_site_build_template_content';
 // The WooCommerce page options part 6 sets, and the page-map role each one takes.
 export const WOO_OPTIONS = [ 'woocommerce_shop_page_id', 'woocommerce_cart_page_id', 'woocommerce_checkout_page_id', 'woocommerce_myaccount_page_id' ];
 
-// Whether a post's content is still what WooCommerce wrote into its own page: empty, a `[woocommerce_*]` shortcode, or
-// (alone or in a shortcode block), or WooCommerce's block markup holding no block of anyone else's. Unknown content (null) is never the default.
-export function isWooDefaultContent( content ) {
+// Whether a post's content is still what WooCommerce wrote into its own page: empty, a `[woocommerce_*]` shortcode
+// (alone or in a shortcode block), WooCommerce's block markup holding no block of anyone else's, or exactly one of the
+// default page contents the installed WooCommerce generates (`defaults`, read on the site by statePhp: its cart and
+// checkout blocks carry core blocks of WooCommerce's own inside them), compared with whitespace runs collapsed.
+// Unknown content (null) is never the default.
+const squash = ( s ) => String( s ).replace( /\s+/g, ' ' ).trim();
+export function isWooDefaultContent( content, defaults = [] ) {
 	if ( 'string' !== typeof content ) {
 		return false;
+	}
+	if ( defaults.some( ( d ) => 'string' === typeof d && '' !== d.trim() && squash( d ) === squash( content ) ) ) {
+		return true;
 	}
 	// A shortcode block around WooCommerce's shortcode is how its installer writes the My account page.
 	const text = content.replace( /<!--\s+\/?wp:shortcode\s*-->/g, '' ).trim();
@@ -106,6 +113,31 @@ foreach ( $types as $t ) {
 $out['options'] = array();
 foreach ( array( 'show_on_front', 'page_on_front', 'page_for_posts', 'permalink_structure', ${ WOO_OPTIONS.map( ( o ) => `'${ o }'` ).join( ', ' ) } ) as $o ) {
 	$out['options'][ $o ] = (string) get_option( $o );
+}
+// The page contents the installed WooCommerce's page creation writes, after its woocommerce_create_pages filter (which
+// plugins use: sgs-blocks' Account_Pages::add_pages gives My account its sgs/account block): the cart and checkout block
+// contents (protected on WC_Install, so read by reflection) and the account shortcode, run through that filter as
+// WC_Install::create_pages does. isWooDefaultContent compares a held page against them.
+$out['wooDefaults'] = array();
+if ( class_exists( 'WC_Install' ) ) {
+	$made = function ( $m ) {
+		if ( ! method_exists( 'WC_Install', $m ) ) {
+			return '';
+		}
+		$r = new ReflectionMethod( 'WC_Install', $m );
+		$r->setAccessible( true );
+		return (string) $r->invoke( null );
+	};
+	$pages = apply_filters( 'woocommerce_create_pages', array(
+		'cart'      => array( 'content' => $made( 'get_cart_block_content' ) ),
+		'checkout'  => array( 'content' => $made( 'get_checkout_block_content' ) ),
+		'myaccount' => array( 'content' => '<!-- wp:shortcode -->[woocommerce_my_account]<!-- /wp:shortcode -->' ),
+	) );
+	foreach ( (array) $pages as $p ) {
+		if ( is_array( $p ) && isset( $p['content'] ) && '' !== (string) $p['content'] ) {
+			$out['wooDefaults'][] = (string) $p['content'];
+		}
+	}
 }
 $out['templateHashes'] = (object) (array) get_option( '${ TEMPLATE_OPTION }', array() );
 $out['templateSaved'] = (object) (array) get_option( '${ TEMPLATE_CONTENT_OPTION }', array() );

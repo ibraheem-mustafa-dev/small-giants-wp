@@ -101,6 +101,22 @@ test( 'WooCommerce\'s own default page for a role is taken over and marked; any 
 	assert.ok( ok.actions.some( ( a ) => 'build' === a.type && 'page:checkout' === a.key ) );
 } );
 
+test( 'MUST FAIL: WooCommerce\'s stock cart page (core blocks inside its cart block) is taken over when it equals the installed WooCommerce\'s own default; one edit inside it still stops the run', () => {
+	// The shape WooCommerce's installer writes: core blocks of its own inside the empty-cart part.
+	const DEFAULT = '<!-- wp:woocommerce/cart -->\n<div class="wp-block-woocommerce-cart"><!-- wp:woocommerce/empty-cart-block -->\n<div class="wp-block-woocommerce-empty-cart-block"><!-- wp:heading {"textAlign":"center"} -->\n<h2 class="wp-block-heading has-text-align-center">Your cart is currently empty!</h2>\n<!-- /wp:heading -->\n<!-- wp:separator -->\n<hr class="wp-block-separator"/>\n<!-- /wp:separator --></div>\n<!-- /wp:woocommerce/empty-cart-block --></div>\n<!-- /wp:woocommerce/cart -->';
+	const cartPost = ( content ) => ( { 7: { id: 7, type: 'page', slug: 'basket', title: 'Cart', status: 'publish', parent: 0, template: '', rowKey: '', treeHash: '', content } } );
+	const at = ( content, defaults ) => plan( SHOP(), state( { holders: { 'page:basket': [ 7 ] }, posts: cartPost( content ), wooDefaults: defaults } ) );
+	const stock = at( DEFAULT.replace( /\n/g, '\n\n' ), [ DEFAULT ] );
+	assert.deepEqual( stock.problems, [] );
+	assert.deepEqual( stock.actions.filter( ( a ) => 'adopt' === a.type ).map( ( a ) => [ a.key, a.id ] ), [ [ 'page:basket', 7 ] ] );
+	const edited = at( DEFAULT.replace( 'currently empty!', 'empty, browse our shop' ), [ DEFAULT ] );
+	assert.match( edited.problems.join( '\n' ), /page:basket: post 7 is the page WooCommerce names in woocommerce_cart_page_id, but its content is no longer WooCommerce's default/ );
+	assert.match( at( DEFAULT, [] ).problems.join( '\n' ), /no longer WooCommerce's default/ );
+	assert.match( statePhp( SHOP() ), /get_cart_block_content/ );
+	assert.match( statePhp( SHOP() ), /apply_filters\( 'woocommerce_create_pages'/ );
+	assert.match( statePhp( SHOP() ), /new ReflectionMethod\( 'WC_Install', \$m \)/ );
+} );
+
 test( 'a shop row\'s page is never given a page template; product and product_cat rows add no menu item', () => {
 	const p = plan( SHOP() );
 	const shop = p.actions.find( ( a ) => 'create' === a.type && 'shop:shop' === a.key );

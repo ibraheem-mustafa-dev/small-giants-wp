@@ -87,7 +87,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			// WooCommerce's own default page for this role (the one its page option names, nobody's authorship) is taken over.
 			const wooOption = woo.find( ( [ , , list ] ) => list[ 0 ] === row )?.[ 0 ];
 			if ( 1 === held.length && wooOption && String( state.options[ wooOption ] ) === String( held[ 0 ] ) ) {
-				if ( isWooDefaultContent( state.posts[ String( held[ 0 ] ) ]?.content ) ) {
+				if ( isWooDefaultContent( state.posts[ String( held[ 0 ] ) ]?.content, state.wooDefaults || [] ) ) {
 					ids[ key ] = held[ 0 ];
 					actions.push( { phase: 'posts', type: 'adopt', key, id: held[ 0 ], mark: true, say: `${ key }: take over post ${ held[ 0 ] }, WooCommerce's own page named by ${ wooOption }, and mark it with this row's key` } );
 				} else {
