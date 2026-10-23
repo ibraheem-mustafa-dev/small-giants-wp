@@ -4,9 +4,11 @@
 // Properties read from the element that lays out the pair's children (layoutElement), not the pair's element.
 export const LAYOUT_PROPS = [ 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'justify-content', 'align-items' ];
 
-// Whether a layout or display row means anything. A pair's snapshot carries its layout element's display
-// (collect.mjs::collectPair, layoutDisplay). Gaps always compare: a side not laying out with flex or grid reads its
-// gap as the 0 it paints, so a block stack against a flex column with a gap is a real row. The other layout
+// Whether a layout or display row means anything. A pair's snapshot carries its layout element's display and its count
+// of in-flow rendered items (collect.mjs::collectPair, layoutDisplay and layoutChildren). A gap compares where at least
+// one side lays out two or more items with flex or grid (a side not doing so reads its gap as the 0 it paints, so a
+// block stack against a flex column with a gap is a real row); a gap of a flex row holding one item paints nothing on
+// either side. A snapshot without layoutChildren compares its gaps as before. The other layout
 // properties compare only where both sides lay out their children with flex or grid, and a property of one model
 // (grid tracks, flex wrap and direction) only where both use that model: a block stack and a gapless flex column paint
 // the same, and the children's flow rows judge where the children sit. A display row between two block-level values
@@ -18,7 +20,11 @@ export function layoutComparable( prop, d, l ) {
 	if ( 'display' === prop ) {
 		return ! ( BLOCK_LEVEL.has( d.styles?.display ) && BLOCK_LEVEL.has( l.styles?.display ) );
 	}
-	if ( GAPS.includes( prop ) || ! LAYOUT_PROPS.includes( prop ) || undefined === d.layoutDisplay || undefined === l.layoutDisplay ) {
+	if ( GAPS.includes( prop ) ) {
+		return ! Number.isInteger( d.layoutChildren ) || ! Number.isInteger( l.layoutChildren )
+			|| [ d, l ].some( ( s ) => s.layoutChildren >= 2 && /(^|-)(flex|grid)$/.test( s.layoutDisplay || '' ) );
+	}
+	if ( ! LAYOUT_PROPS.includes( prop ) || undefined === d.layoutDisplay || undefined === l.layoutDisplay ) {
 		return true;
 	}
 	const model = MODEL[ prop ] || /(^|-)(flex|grid)$/;
@@ -112,7 +118,10 @@ export function paintElement( el, owned = null ) {
 // Self-contained. The element painting the first visible text inside el (a button's label span, not the button),
 // or null. Text properties at rest and on hover are read from it. Text inside an element of `owned` (a Set of the elements
 // other pairs measure) is that pair's, never this one's: an outer pair whose first text sits in an inner pair's block (the
-// header's phone label) reads its own text or none.
+// header's phone label) reads its own text or none. An element holding another pair's element owns only the text it lays
+// out itself: text reached from it through inline and display: contents boxes alone, never text inside a nested block
+// (a wordmark in the logo link beside an inner pair's span is that block's, on whichever side paints it as text), so
+// both sides apply one rule whatever else their nested blocks hold.
 export function textCarrier( el, owned = null ) {
 	const inner = owned ? [ ...owned ].filter( ( o ) => o !== el && el.contains( o ) ) : [];
 	// Visually hidden text (a screen-reader link name clipped to nothing) paints nothing; the same test as
@@ -127,10 +136,18 @@ export function textCarrier( el, owned = null ) {
 		}
 		return false;
 	};
+	const laidOutHere = ( from ) => {
+		for ( let a = from; a && a !== el; a = a.parentElement ) {
+			if ( ! [ 'inline', 'contents' ].includes( getComputedStyle( a ).display ) ) {
+				return false;
+			}
+		}
+		return true;
+	};
 	const walker = document.createTreeWalker( el, NodeFilter.SHOW_TEXT, {
 		// The text node's own rects: its parent can be display:contents (no box of its own) and still paint it.
 		acceptNode: ( n ) => {
-			if ( ! n.textContent.trim() || srOnly( n.parentElement ) || inner.some( ( o ) => o.contains( n ) ) ) {
+			if ( ! n.textContent.trim() || srOnly( n.parentElement ) || inner.some( ( o ) => o.contains( n ) ) || ( inner.length && ! laidOutHere( n.parentElement ) ) ) {
 				return NodeFilter.FILTER_SKIP;
 			}
 			const range = document.createRange();
