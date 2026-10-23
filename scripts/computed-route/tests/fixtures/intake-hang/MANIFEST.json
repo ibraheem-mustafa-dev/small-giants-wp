@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-23",
+  "project": "Stuck forced state fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Home.dc.html",
+      "bytes": 730,
+      "sha256": "87f71e81615ead113e17d98f092bea8dd3034602071fd9a100c4b0e8ce75ae45"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    }
+  ]
+}

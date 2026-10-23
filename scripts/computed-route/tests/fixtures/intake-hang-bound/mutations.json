@@ -1,0 +1,17 @@
+[
+	{ "file": "lib/intake-defects-force.mjs", "find": "return Promise.race( [ p, stop ] ).finally", "replace": "return Promise.race( [ p ] ).finally", "why": "a call that never returns would never fail: the hang" },
+	{ "file": "lib/intake-defects-force.mjs", "find": "{ timedOut: true } ) ), ms );", "replace": "{ timedOut: false } ) ), ms );", "why": "a timed-out call would read as an ordinary failure and end the whole page group" },
+	{ "file": "lib/intake-defects-force.mjs", "find": "if ( [ 'clock', 'mouse', 'keyboard' ].includes( k ) && v && 'object' === typeof v ) {", "replace": "if ( false ) {", "why": "a clock step that never returns would hang" },
+	{ "file": "lib/intake-defects-force.mjs", "find": "${ doing() ? ` during ${ doing() }` : '' }", "replace": "", "why": "the timed-out call would not name the forcing step" },
+	{ "file": "lib/intake-defects-force.mjs", "find": "if ( RAW_PAGE === k ) {\n\t\t\t\treturn t;", "replace": "if ( false ) {\n\t\t\t\treturn t;", "why": "a wrapped page would lose its draft errors, so an uncaught draft error would no longer fail the settle" },
+	{ "file": "lib/intake-defects-force.mjs", "find": "' ' ).slice( 0, 60 );", "replace": "' ' ).slice( 0, 0 ) || 'an inline function';", "why": "an inline evaluate would not be named" },
+	{ "file": "lib/intake-defects-force.mjs", "find": "\t\t\t\tif ( ! timedOut( e ) ) {\n\t\t\t\t\tthrow e;\n\t\t\t\t}\n\t\t\t\tu.failed = true;", "replace": "\t\t\t\tthrow e;\n\t\t\t\tu.failed = true;", "why": "a timed-out visit would end the page group's later visits" },
+	{ "file": "lib/intake-defects-force.mjs", "find": "\t\t\t\tawait shut();\n\t\t\t}\n\t\t}\n\t} catch ( e ) {", "replace": "\t\t\t}\n\t\t}\n\t} catch ( e ) {", "why": "the stuck page would be reused for the next visit" },
+	{ "file": "lib/intake-defects-force.mjs", "find": "\t\t\t\tu.failed = true;\n\t\t\t\tu.blocked.push( ...( e.blocked || [] ) );\n\t\t\t\tconst what", "replace": "\t\t\t\tu.blocked.push( ...( e.blocked || [] ) );\n\t\t\t\tconst what", "why": "a timed-out visit would leave its width decided, so a stuck row could read as a defect" },
+	{ "file": "lib/intake-defects-force.mjs", "find": "draftId: `${ v.label }@${ width }`", "replace": "draftId: `${ file }@${ width }`", "why": "the gap row would not name the route that hung" },
+	{ "file": "lib/intake-defects-force.mjs", "find": "\t\t\tlog( `${ v.label } at ${ width }: started` );\n", "replace": "", "why": "a hang would not name its visit in the progress file" },
+	{ "file": "lib/intake-defects-force.mjs", "find": "\t\t\t\tlog( `${ v.label } at ${ width }: timed out (${ what })` );\n", "replace": "", "why": "a timed-out visit would not be logged" },
+	{ "file": "lib/intake-defects-force.mjs", "find": "\tif ( timedOut( e ) ) {\n\t\tthrow e;\n\t}\n\treturn value;", "replace": "\treturn value;", "why": "a forcing CDP call that timed out would be swallowed and the visit would go on calling a stuck page" },
+	{ "file": "lib/intake-harness.mjs", "find": "\t\tif ( e.timedOut ) {\n\t\t\tthrow e;\n\t\t}\n", "replace": "", "why": "a stuck clock step would become a draft-timer error and lose its timed-out mark" },
+	{ "file": "lib/intake-harness.mjs", "find": "pageErrors.get( page[ RAW_PAGE ] ?? page )", "replace": "pageErrors.get( page )", "why": "a wrapped page would lose its draft errors" }
+]
