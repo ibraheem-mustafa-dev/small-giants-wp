@@ -499,14 +499,18 @@ test( 'MUST FAIL: a row nothing on its own or its enclosing blocks can write rea
 	assert.equal( t[ 0 ].innerBlocks[ 0 ].attributes.panelPadding, undefined );
 } );
 
-test( 'MUST FAIL: the real hop, on a canvas, cites the block that can hold the row and the gap says canvas-settable; off a canvas it does not', () => {
-	const on = writeRound( hopReport(), hopTree(), { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: hopCal( { panelPadding: { property: 'padding', slot: '', slots: [ '' ] } } ), canvas: true } );
+test( 'MUST FAIL: the real hop, on a canvas, writes a parent setting that reaches the row\'s element; one that paints only the panel root is cited but not canvas-settable (FR-48-15); off a canvas no citation is canvas-settable', () => {
+	const reaching = hopCal( { panelPadding: { property: 'padding', slot: '', slots: [ '' ], reaches: [ HOP_PANEL_PATH ] } } );
+	const written = writeRound( hopReport(), hopTree(), { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: reaching, canvas: true } );
+	assert.deepEqual( written.writes.map( ( w ) => w.attr ), [ 'panelPadding' ] );
+	const rootOnly = hopCal( { panelPadding: { property: 'padding', slot: '', slots: [ '' ] } } );
+	const on = writeRound( hopReport(), hopTree(), { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: rootOnly, canvas: true } );
 	const g = Object.values( on.gaps )[ 0 ];
 	assert.equal( on.writes.length, 0 );
 	assert.equal( g.gap, 'no-setting' );
-	assert.equal( g.canvasSettable, true );
 	assert.equal( g.cite.setting, 'panelPadding' );
-	const off = writeRound( hopReport(), hopTree(), { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: hopCal( { panelPadding: { property: 'padding', slot: '', slots: [ '' ] } } ), canvas: false } );
+	assert.equal( g.canvasSettable, false );
+	const off = writeRound( hopReport(), hopTree(), { db, snapshot, round: 1, log: [], stateMap: { opening: null }, calFor: rootOnly, canvas: false } );
 	assert.notEqual( Object.values( off.gaps )[ 0 ].canvasSettable, true );
 } );
 
