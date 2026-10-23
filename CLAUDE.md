@@ -18,7 +18,7 @@ SGS is a standalone WordPress block framework and AI website-builder: theme + bl
 
 ## Non-negotiables
 
-- WCAG 2.1 AA (visible focus, 44px touch targets, 4.5:1 contrast), mobile-first. Move to 2.2 AA per public-sector/EU client.
+- WCAG 2.1 AA (visible focus, 4.5:1 contrast), mobile-first. Touch targets are at least 44px, except where a cloned draft draws a smaller control: it keeps the draft's size and never goes below 24px (WCAG 2.2 AA 2.5.8). Move to 2.2 AA per public-sector/EU client.
 - No jQuery; vanilla JS with `viewScriptModule`. Motion follows Spec 38 §1's tiers (vanilla by default, GSAP/Lenis/WebGL only when earned, all npm-bundled and conditionally loaded, no CDN).
 - Every REST endpoint: nonce, capability check, sanitisation, `$wpdb->prepare()`.
 - Every email a site sends (WooCommerce, forms, shop alerts, client notes) goes through `wp_mail()` over the client's own SMTP mailbox (FluentSMTP, set up by `provision-site-mail.py`, `.claude/dev-setup.md` §Site email). SGS code sends through `SGS\Blocks\Mail\Sgs_Mailer`. The N8N webhook (`sgs_n8n_webhook_url`) is an optional automation hook, never the email path.
