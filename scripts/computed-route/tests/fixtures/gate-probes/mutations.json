@@ -1,0 +1,104 @@
+[
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "reaches: true, evidence: `${ where }; ${ setting.block }'s own rule matches`",
+  "replace": "reaches: false, evidence: `${ where }; ${ setting.block }'s own rule matches`",
+  "why": "a rule of the candidate's block never reaches"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "const own = found.hits.filter( ( h ) => belongsTo( h.selector, setting.block ) );",
+  "replace": "const own = found.hits;",
+  "why": "any matching rule counts as the candidate's"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "if ( found.unread ) {",
+  "replace": "if ( false ) {",
+  "why": "unreadable rules still let G5 pass"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "if ( null !== state && ! STATE_PSEUDO[ state ] ) {",
+  "replace": "if ( false ) {",
+  "why": "a state no probe can reproduce is measured at rest"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "if ( state ) {\n\t\t\t\tawait page.hover( selector, { timeout: 15000 } );",
+  "replace": "if ( false ) {\n\t\t\t\tawait page.hover( selector, { timeout: 15000 } );",
+  "why": "a hover row is measured without the pointer"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "if ( ! w.restored ) {",
+  "replace": "if ( false ) {",
+  "why": "a trial that leaves the page changed is accepted"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "if ( ! props.length ) {",
+  "replace": "if ( false ) {",
+  "why": "a setting with no css_property is measured"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "const sgs = live.hits.filter( ( h ) => ownRule( h.selector ) );",
+  "replace": "const sgs = [];",
+  "why": "an SGS rule on the element is ignored"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "return { changed: false, evidence: `no rule from an SGS class",
+  "replace": "return { changed: true, evidence: `no rule from an SGS class",
+  "why": "no listed setting still counts as a change"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "if ( css( a.html ) !== css( b.html ) &&",
+  "replace": "if ( true &&",
+  "why": "a probe value that renders the same CSS counts as a change"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "const render = need( o.renderBlock, 'the block renderer' );",
+  "replace": "const render = o.renderBlock || ( async () => ( { status: 200, html: '' } ) );",
+  "why": "candidates are judged without a renderer"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "if ( 200 !== a.status || 200 !== b.status ) {",
+  "replace": "if ( false ) {",
+  "why": "a failed render is read as no change"
+ },
+ {
+  "file": "lib/gate-probes-page.mjs",
+  "find": "after !== before && winners.push( name );",
+  "replace": "winners.push( name );",
+  "why": "every matching rule is named the winner"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "const open = openRows( report ).filter( same );",
+  "replace": "const open = openRows( report );",
+  "why": "any open row of the walk keeps this row open"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "if ( ! f.runs ) {",
+  "replace": "if ( false ) {",
+  "why": "an empty walk closes the row"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "need( list.length ? 1 : null, 'a word of at least 4 letters to grep the roster with' );",
+  "replace": "",
+  "why": "a roster grep with no usable word reports no match"
+ },
+ {
+  "file": "lib/gate-probes.mjs",
+  "find": "flowFails: f.open.length > 0,",
+  "replace": "flowFails: true,",
+  "why": "a flow that now agrees still fails"
+ }
+]
