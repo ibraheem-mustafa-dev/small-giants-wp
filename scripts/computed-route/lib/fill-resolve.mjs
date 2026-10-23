@@ -21,11 +21,24 @@ import { makeSettle } from './fill-held.mjs';
 
 const PSEUDO_LAYERS = [ '::before', '::after' ];
 
+// The width a node's content (presence, words, links, icon, image) is read at: 1440 where the node is drawn there, else the
+// widest read width it is drawn at (an element shown only on phones, a width variant hidden from 768). Every part of the
+// node is judged at that one width.
+const CONTENT_WIDTHS = [ 1440, 768, 375 ];
+export function contentWidth( st, rec ) {
+	const root = rec.targets.find( ( t ) => '' === t.slot ) ?? rec.targets[ 0 ];
+	return CONTENT_WIDTHS.find( ( w ) => {
+		const s = root && st.reads.widths[ w ]?.[ root.id ];
+		return !! s && ! s.missing;
+	} ) ?? 1440;
+}
+
 // Presence, words and links for one node's elements, and its declared handover (step 5).
 function fillContent( st, rec, ref, cal ) {
 	const node = st.flat[ rec.index ];
 	const skeletonNode = st.nodes[ rec.index ].node;
-	const atDesktop = Object.fromEntries( rec.targets.map( ( t ) => [ t.slot, st.reads.widths[ 1440 ]?.[ t.id ] ] ) );
+	const at = contentWidth( st, rec );
+	const atDesktop = Object.fromEntries( rec.targets.map( ( t ) => [ t.slot, st.reads.widths[ at ]?.[ t.id ] ] ) );
 	const evidence = Object.fromEntries( rec.targets.filter( ( t ) => '' !== t.slot ).map( ( t ) => [ t.slot, !! atDesktop[ t.slot ] && ! atDesktop[ t.slot ].missing ] ) );
 	const words = Object.fromEntries( Object.entries( atDesktop ).filter( ( [ , s ] ) => s && ! s.missing ).map( ( [ slot, s ] ) => [ slot, s.words ] ) );
 	const hrefs = Object.fromEntries( Object.entries( atDesktop ).filter( ( [ , s ] ) => s && ! s.missing ).map( ( [ slot, s ] ) => [ slot, s.href ] ) );
@@ -43,7 +56,7 @@ function fillContent( st, rec, ref, cal ) {
 		local.push( ...r.unmapped.map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
 		// A link setting bound to Site Info: the draft address stays in the setting as the fallback, and Site Info is handed it.
 		for ( const h of r.handover || [] ) {
-			st.out.handover.push( handoverEntry( { owner: 'site-info', kind: 'link', node: ref, block: rec.name, slot: h.slot, evidence: { key: h.attr, draft: h.address, width: 1440, siteInfoKey: h.siteInfoKey }, reason: `${ h.attr } is bound to Site Info "${ h.siteInfoKey }"; the draft links to ${ h.address }, kept as the fallback. Fill Site Info "${ h.siteInfoKey }" from it` } ) );
+			st.out.handover.push( handoverEntry( { owner: 'site-info', kind: 'link', node: ref, block: rec.name, slot: h.slot, evidence: { key: h.attr, draft: h.address, width: at, siteInfoKey: h.siteInfoKey }, reason: `${ h.attr } is bound to Site Info "${ h.siteInfoKey }"; the draft links to ${ h.address }, kept as the fallback. Fill Site Info "${ h.siteInfoKey }" from it` } ) );
 		}
 	};
 	const absent = [ 'presence', 'text', 'link' ].filter( ( k ) => ! cal?.[ k ] );

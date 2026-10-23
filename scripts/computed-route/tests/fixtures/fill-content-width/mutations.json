@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "\treturn CONTENT_WIDTHS.find( ( w ) => {",
+		"replace": "\treturn 1440;\n\treturn CONTENT_WIDTHS.find( ( w ) => {",
+		"why": "an element drawn only on phones would lose its link and icon (read at 1440, where it is missing)"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "\tconst root = rec.targets.find( ( t ) => '' === t.slot ) ?? rec.targets[ 0 ];",
+		"replace": "\tconst root = rec.targets[ 0 ];",
+		"why": "a part read at a width would decide where the whole node is drawn"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "const CONTENT_WIDTHS = [ 1440, 768, 375 ];",
+		"replace": "const CONTENT_WIDTHS = [ 375, 768, 1440 ];",
+		"why": "content would come from the narrowest width, not the widest the node is drawn at"
+	}
+]
