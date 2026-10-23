@@ -1,0 +1,104 @@
+[
+	{
+		"file": "lib/css-equivalence/inert.mjs",
+		"find": "\tflexContainers: ( c ) => when( c.display, ( d ) => FLEX.test( d ) ),",
+		"replace": "\tflexContainers: ( c ) => when( c.display, ( d ) => false ),",
+		"why": "justify-content on a flex container is called inert"
+	},
+	{
+		"file": "lib/css-equivalence/inert.mjs",
+		"find": "const ALSO = { 'z-index': flexOrGridItem };",
+		"replace": "const ALSO = {};",
+		"why": "z-index on a static flex item is called inert"
+	},
+	{
+		"file": "lib/css-equivalence/inert.mjs",
+		"find": "\tpositionedElements: ( c ) => when( c.position, ( p ) => 'static' !== p ),",
+		"replace": "\tpositionedElements: ( c ) => when( c.position, ( p ) => 'relative' === p ),",
+		"why": "z-index on a sticky element is called inert"
+	},
+	{
+		"file": "lib/css-equivalence/inert.mjs",
+		"find": "const when = ( v, test ) => ( known( v ) ? test( v ) : null );",
+		"replace": "const when = ( v, test ) => ( known( v ) ? test( v ) : false );",
+		"why": "an unknown context decides the row inert instead of undecided"
+	},
+	{
+		"file": "lib/css-equivalence/inert.mjs",
+		"find": "! isInherited( prop ) && ! known( paint[ w ] ) && sameCanonical",
+		"replace": "! isInherited( prop ) && sameCanonical",
+		"why": "an initial value is inert even where the block measurably paints another value"
+	},
+	{
+		"file": "lib/css-equivalence/inert.mjs",
+		"find": "\tconst inert = why.every( ( x ) => x.inert );",
+		"replace": "\tconst inert = why.some( ( x ) => x.inert );",
+		"why": "one inert width holds a row that paints at another width"
+	},
+	{
+		"file": "lib/css-equivalence/values.mjs",
+		"find": "\tif ( EASING_KEYWORDS[ s ] ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a timing keyword no longer equals its cubic-bezier"
+	},
+	{
+		"file": "lib/css-equivalence/values.mjs",
+		"find": "\t\treturn listItems( value ).map( ( x ) => msOf( x ) ?? x ).join( ', ' );",
+		"replace": "\t\treturn listItems( value ).map( ( x ) => msOf( x ) ?? x ).sort().join( ', ' );",
+		"why": "a timing list compares as a set, ignoring its pairing with transition-property"
+	},
+	{
+		"file": "lib/css-equivalence/values.mjs",
+		"find": "const KEYWORD_SHORTHANDS = { 'white-space': WHITE_SPACE };",
+		"replace": "const KEYWORD_SHORTHANDS = {};",
+		"why": "white-space: normal no longer reads as white-space-collapse: collapse"
+	},
+	{
+		"file": "lib/css-equivalence/effect.mjs",
+		"find": "\t\t\tconst value = projectLonghand( short, styles[ short ], canon );\n\t\t\tif ( undefined !== value ) {\n\t\t\t\treturn { value, via: short };",
+		"replace": "\t\t\tconst value = undefined;\n\t\t\tif ( undefined !== value ) {\n\t\t\t\treturn { value, via: short };",
+		"why": "a default paint recorded under a shorthand is not read for its longhand"
+	},
+	{
+		"file": "lib/css-equivalence/effect.mjs",
+		"find": "\t\t\tif ( ! d || 'tier_object' === d.tier || ! ( d.slots || [] ).map( key ).includes( key( slot ) ) || ( d.state ?? null ) !== ( state || null ) ) {",
+		"replace": "\t\t\tif ( ! d || 'tier_object' === d.tier || ( d.state ?? null ) !== ( state || null ) ) {",
+		"why": "a value measured on another part is written on this one"
+	},
+	{
+		"file": "lib/css-equivalence/effect.mjs",
+		"find": "\treturn 1 === distinct.length ? distinct[ 0 ] : { ambiguous: distinct.map( ( h ) => `${ h.attr }=${ h.value }` ) };",
+		"replace": "\treturn distinct[ 0 ];",
+		"why": "two settings painting the draft's value are chosen between arbitrarily"
+	},
+	{
+		"file": "lib/css-equivalence/effect.mjs",
+		"find": "\tconst holder = all.find( ( h ) => ! [ 'effect', 'reaches' ].includes( h.via ) );",
+		"replace": "\tconst holder = all[ 0 ];",
+		"why": "a side effect is reported as the setting that holds a timing longhand"
+	},
+	{
+		"file": "lib/css-equivalence/index.mjs",
+		"find": "\tif ( ! state && widths.length && widths.every( ( w ) => undefined !== paintValues[ w ] && sameCanonical( canon, perWidth[ w ], paintValues[ w ] ) ) ) {",
+		"replace": "\tif ( ! state && widths.length && widths.some( ( w ) => undefined !== paintValues[ w ] ) ) {",
+		"why": "any measured default paint holds the row, whatever its value"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "\tconst eq = consult( input, ctx );",
+		"replace": "\tconst eq = { verdict: 'gap', detail: '' };",
+		"why": "the resolver's no-setting branches skip the engine"
+	},
+	{
+		"file": "lib/css-families.mjs",
+		"find": "\tconst alias = WEBREF.get( p )?.legacyAliasOf;\n\tif ( alias ) {\n\t\treturn alias;\n\t}",
+		"replace": "\tconst alias = null;\n\tif ( alias ) {\n\t\treturn alias;\n\t}",
+		"why": "a legacy alias is not resolved to its standard property"
+	},
+	{
+		"file": "lib/css-families.mjs",
+		"find": "w.length > 1 && w.every( ( l ) => l in MDN ) &&",
+		"replace": "w.length > 1 &&",
+		"why": "a draft specification's longhands (box-shadow-color) split a property no browser splits"
+	}
+]

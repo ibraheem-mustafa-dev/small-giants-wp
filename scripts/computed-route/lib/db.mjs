@@ -141,3 +141,19 @@ export function variantInfo( db, block ) {
 	}
 	return { variantAttr: b.variant_attr, variantSlots: db.prepare( 'SELECT variant_value, unique_slot FROM variant_slots WHERE block_slug = ?' ).all( block ).map( plain ) };
 }
+
+// The property_equivalents rows for one draft property (lib/fill-equivalents.mjs evaluates their conditions), or none
+// when the DB predates the table.
+export function equivalentRows( db, prop ) {
+	if ( ! db ) {
+		return [];
+	}
+	try {
+		return db.prepare( 'SELECT draft_property, setting_property, hop, condition FROM property_equivalents WHERE draft_property = ? ORDER BY setting_property' ).all( prop );
+	} catch ( e ) {
+		if ( /no such table/.test( e.message ) ) {
+			return [];
+		}
+		throw e;
+	}
+}
