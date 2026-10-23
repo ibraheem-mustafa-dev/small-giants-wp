@@ -1,0 +1,14 @@
+[
+ { "file": "lib/census-mechanism.mjs", "find": "if ( seen.has( rowKey ) ) {\n\t\t\t\t\tduplicates++;", "replace": "if ( false ) {\n\t\t\t\t\tduplicates++;", "why": "a row a nested pair repeats is counted again" },
+ { "file": "lib/census-mechanism.mjs", "find": "const identity = d.ref ? `${ d.ref }${ SEP }${ d.path || '' }` : `@${ pair }`;", "replace": "const identity = d.ref ? `${ d.ref }${ SEP }` : `@${ pair }`;", "why": "a descendant of a ref merges with its root" },
+ { "file": "lib/census-mechanism.mjs", "find": "const same = [ identity, d.kind, d.key, json( d.draft ), json( d.live ) ].join( SEP );", "replace": "const same = [ identity, d.kind, d.key ].join( SEP );", "why": "rows of one element and key merge whatever their values" },
+ { "file": "lib/census-mechanism.mjs", "find": "const rowKey = [ run.width, run.state, same, n ].join( SEP );", "replace": "const rowKey = [ same, n ].join( SEP );", "why": "rows at different widths and states count as one repeat" },
+ { "file": "lib/census-mechanism.mjs", "find": "parts.some( ( p ) => null === p || undefined === p || '' === p ) ? null :", "replace": "false ? null :", "why": "a row with a missing part still gets a signature" },
+ { "file": "lib/census-mechanism.mjs", "find": "const signature = signatureOf( row );", "replace": "const signature = signatureOf( row ) && `${ row.client } ${ signatureOf( row ) }`;", "why": "each client's identical-mechanism rows form their own group" },
+ { "file": "lib/census-mechanism.mjs", "find": "const rule = hit ? ruleOf( hit ) : null;", "replace": "const rule = hit ? ruleOf( hit ) || { class: 'unnamed' } : null;", "why": "a Fill reason no class names is given a class" },
+ { "file": "lib/census-mechanism.mjs", "find": "return row ? row.slug : null;", "replace": "return row ? row.slug : slug;", "why": "a block the framework DB lacks is given a family" },
+ { "file": "census-all.mjs", "find": "if ( args.includes( '--check' ) && result.unclassified.length ) {", "replace": "if ( false ) {", "why": "--check never fails" },
+ { "file": "lib/census-mechanism.mjs", "find": "return EFFECT_OF.get( k ) ?? ( fam && 'mixed' !== fam.kind ? fam.short : physicalOf( k ) );", "replace": "return fam ? fam.short : physicalOf( k );", "why": "a mixed shorthand swallows its longhands and transform longhands stay apart" },
+ { "file": "lib/census-mechanism.mjs", "find": "side: hit ? 'both' : 'walker-only'", "replace": "side: 'walker-only'", "why": "a row both sources hold reads walker-only" },
+ { "file": "lib/census-mechanism.mjs", "find": "runStates: item.runStates.length === walk.runStates.length ? 'all' : 'some'", "replace": "runStates: 'all'", "why": "a row in one run state only reads as in all" }
+]
