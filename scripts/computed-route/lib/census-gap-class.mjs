@@ -63,11 +63,16 @@ export function classifyRows( rows, { db, calFor, freshness } ) {
 	} );
 }
 
-// Row counts per class, I-class rows named: { counts, instrument: [ { class, client, surface, block, attribute, property, via } ] }.
+// Row counts per class, I-class rows named: { total, counts, instrument: [ { class, client, surface, block, attribute, property, via } ] }.
+// A row carries exactly one class, so the counts sum to `total`, the number of rows given (grouped rows and rows with no
+// signature alike); a row without a single class name throws.
 export function classCounts( rows ) {
 	const counts = {};
 	for ( const r of rows ) {
+		if ( 'string' !== typeof r.gapClass || '' === r.gapClass ) {
+			throw new Error( `census row ${ r.client } ${ r.surface } ${ r.element } carries no single class (${ JSON.stringify( r.gapClass ?? null ) })` );
+		}
 		counts[ r.gapClass ] = ( counts[ r.gapClass ] ?? 0 ) + 1;
 	}
-	return { counts, instrument: rows.filter( ( r ) => r.gapClass?.startsWith( 'I-' ) ).map( ( r ) => ( { class: r.gapClass, client: r.client, surface: r.surface, block: r.slug, attribute: r.gapAttribute, property: r.key, via: r.gapVia } ) ) };
+	return { total: rows.length, counts, instrument: rows.filter( ( r ) => r.gapClass.startsWith( 'I-' ) ).map( ( r ) => ( { class: r.gapClass, client: r.client, surface: r.surface, block: r.slug, attribute: r.gapAttribute, property: r.key, via: r.gapVia } ) ) };
 }

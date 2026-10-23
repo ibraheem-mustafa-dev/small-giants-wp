@@ -70,7 +70,8 @@ const cell = ( v ) => String( v ?? '' ).replace( /\|/g, '\\|' ).replace( /\s+/g,
 
 // The Markdown table of the groups.
 export function renderTable( { groups, unclassified, surfaces, clients, classes = null } ) {
-	const lines = [ `# Mechanism census`, '', `${ groups.reduce( ( n, g ) => n + g.total, 0 ) } rows in ${ groups.length } groups across ${ surfaces } surface(s) of ${ clients.join( ', ' ) }; ${ unclassified.length } with no signature.`, '', ...( classes ? [ `Classes (FR-48-65): ${ Object.entries( classes.counts ).sort( ( a, b ) => b[ 1 ] - a[ 1 ] ).map( ( [ c, n ] ) => `${ c } ${ n }` ).join( ', ' ) }.`, '' ] : [] ), `| ${ SIGNATURE_PARTS.join( ' | ' ) } | classes | rows per client | examples (client, surface, element: draft → live) | Fill reason | owner |`, `|${ '---|'.repeat( SIGNATURE_PARTS.length + 5 ) }` ];
+	const grouped = groups.reduce( ( n, g ) => n + g.total, 0 );
+	const lines = [ `# Mechanism census`, '', `${ grouped + unclassified.length } rows (${ grouped } in ${ groups.length } groups, ${ unclassified.length } with no signature) across ${ surfaces } surface(s) of ${ clients.join( ', ' ) }.`, '', ...( classes ? [ `Classes (FR-48-65, one per row, ${ classes.total } rows): ${ Object.entries( classes.counts ).sort( ( a, b ) => b[ 1 ] - a[ 1 ] ).map( ( [ c, n ] ) => `${ c } ${ n }` ).join( ', ' ) }.`, '' ] : [] ), `| ${ SIGNATURE_PARTS.join( ' | ' ) } | classes | rows per client | examples (client, surface, element: draft → live) | Fill reason | owner |`, `|${ '---|'.repeat( SIGNATURE_PARTS.length + 5 ) }` ];
 	for ( const g of groups ) {
 		const cls = Object.entries( g.classes ).map( ( [ c, n ] ) => `${ c } ${ n }` ).join( ', ' );
 		const per = Object.entries( g.byClient ).map( ( [ c, n ] ) => `${ c } ${ n }` ).join( ', ' );
