@@ -192,8 +192,10 @@ $scss = sgs_nav_bar_menu_trigger_surface_css( array( 'triggerSurface' => array( 
 ok( 0 === strpos( $scss, '@media (min-width:1024px) and (max-width:1099px){' ), '4a inside the desktop tier AND below the collapse point' );
 ok( false !== strpos( $scss, '.m .sgs-nav-bar-menu__burger::after{content:"";position:absolute;inset:0;cursor:pointer;}' ), '4b the ::after stretches' );
 ok( false !== strpos( $scss, '.sgs-site-header-row:has(.m){position:relative;}' ), '4c the row is the containing block' );
-ok( false !== strpos( $scss, '[data-sgs-fx="magnet"]{transform:none;will-change:auto;}' ), '4d the magnet transform leaves the button' );
-ok( false !== strpos( $scss, ':not(.sgs-nav-bar-menu,.sgs-container__inner,:has(.m)))' ) && false !== strpos( $scss, '{z-index:1;}' ), '4e other row blocks sit above the overlay' );
+ok( false !== strpos( $scss, '[data-sgs-fx~="magnet"]{translate:none;transform:none;will-change:auto;}' ), '4d the magnet translate leaves the button, matched as one token of the effect list' );
+ok( false !== strpos( $scss, '>.sgs-nav-bar-menu__burger-icon,' ) && false !== strpos( $scss, '{--sgs-mag-x:inherit;--sgs-mag-y:inherit;translate:var(--sgs-mag-x,0px) var(--sgs-mag-y,0px);}' ), '4d2 the burger icon and label carry the magnet pull instead' );
+ok( false !== strpos( $scss, ' :is(a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])):not(.sgs-nav-bar-menu,.sgs-nav-bar-menu *,:has(.m)){z-index:1;}' ), '4e the links, buttons and fields of other row blocks sit above the overlay' );
+ok( false === strpos( $scss, ')>:not(.sgs-nav-bar-menu' ), '4e2 a whole row block never escapes the overlay, so its plain text passes the tap to the trigger' );
 ok( '' === sgs_nav_bar_menu_trigger_surface_css( array(), '.m', 1100 ), '4f off emits nothing' );
 
 // ── 5. Detaching chip ───────────────────────────────────────────────────────
