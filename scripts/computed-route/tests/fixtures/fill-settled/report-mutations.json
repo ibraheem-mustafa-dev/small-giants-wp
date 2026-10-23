@@ -1,0 +1,6 @@
+[
+	{ "file": "lib/fill-report.mjs", "find": "export const SETTLED = [ 'equal', 'already-set', 'used-size' ];", "replace": "export const SETTLED = [ 'equal', 'already-set', 'used-size', 'other' ];", "why": "the report counts a reason no writer gives" },
+	{ "file": "lib/fill-report.mjs", "find": "unread: r.unread || [], settled, confirm:", "replace": "unread: r.unread || [], confirm:", "why": "the settled rows are left out of fill-report.json" },
+	{ "file": "lib/fill-report.mjs", "find": "settled: { total: settled.length, ...settledBy }", "replace": "settled: { total: settled.length }", "why": "the per-reason counts are dropped" },
+	{ "file": "lib/fill-report.mjs", "find": "| ${ settled.length } (${ SETTLED.map(", "replace": "| 0 (${ SETTLED.map(", "why": "the summary table misstates the settled total" }
+]
