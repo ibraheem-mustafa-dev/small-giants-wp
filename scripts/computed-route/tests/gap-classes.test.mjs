@@ -75,7 +75,8 @@ test( 'MUST FAIL: a NULL-routed fitting setting classes an F candidate as I-unro
 	const f = instrumentFinding( { db: d, ...slice, cache: {} } );
 	const c = classify( F, f );
 	assert.deepEqual( [ c.class, c.via, c.attribute, c.candidate ], [ 'I-unrouted', 'G3', 'maxWidth', false ] );
-	assert.match( c.evidence, /maxWidth/ );
+	assert.match( c.evidence.line, /maxWidth/ );
+	assert.match( c.evidence.command, /block_attributes/ );
 } );
 
 test( 'MUST FAIL: an enum setting calibration discovered is never I-unrouted; an undiscovered one still is', () => {
