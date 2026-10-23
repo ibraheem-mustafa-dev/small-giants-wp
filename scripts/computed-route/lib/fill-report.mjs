@@ -3,6 +3,12 @@
 import { handoverCounts, HANDOVER_OWNERS } from './fill-handover.mjs';
 import { HELD_REASONS, heldCounts } from './fill-held.mjs';
 
+// Why a value Fill read ends with nothing written and nothing unwritten (lib/fill-resolve-element.mjs::settled): `equal`, the
+// element already shows it; `already-set`, the tree already holds the setting's value; `used-size`, the rendered value is a
+// layout result the code does not declare as a length (an auto margin, an undeclared width or height).
+export const SETTLED = [ 'equal', 'already-set', 'used-size' ];
+const settledCounts = ( rows ) => Object.fromEntries( SETTLED.map( ( k ) => [ k, rows.filter( ( s ) => s.reason === k ).length ] ) );
+
 // The confirm record's verdicts (lib/fill-confirm.mjs, FR-48-36).
 const VERDICTS = [ 'confirmed', 'render-wins', 'draft-defect', 'open' ];
 
@@ -19,10 +25,12 @@ export function fillReport( r ) {
 	const counts = handoverCounts( r.handover );
 	const held = r.alreadyHeld || [];
 	const heldBy = heldCounts( held );
+	const settled = r.settled || [];
+	const settledBy = settledCounts( settled );
 	const json = {
 		client: r.client, surface: r.surface, draft: r.draft, nodes: r.nodes, targets: r.targets,
-		counts: { writes: r.writes.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, alreadyHeld: { total: held.length, ...heldBy }, patchKeys: ( r.snapshotPatch?.entries || [] ).length, unread: ( r.unread || [] ).length, confirm: ( r.confirm || [] ).length },
-		writes: r.writes, unmapped: unmappedList( r.unmapped ), alreadyHeld: held.map( ( h ) => ( { property: h.property, value: h.value, node: h.node, block: h.block, slot: h.slot ?? '', state: h.state ?? null, reason: h.heldReason, detail: h.heldDetail } ) ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, snapshotPatch: r.snapshotPatch || { file: null, entries: [] }, unread: r.unread || [], confirm: r.confirm || [],
+		counts: { writes: r.writes.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, alreadyHeld: { total: held.length, ...heldBy }, patchKeys: ( r.snapshotPatch?.entries || [] ).length, unread: ( r.unread || [] ).length, settled: { total: settled.length, ...settledBy }, confirm: ( r.confirm || [] ).length },
+		writes: r.writes, unmapped: unmappedList( r.unmapped ), alreadyHeld: held.map( ( h ) => ( { property: h.property, value: h.value, node: h.node, block: h.block, slot: h.slot ?? '', state: h.state ?? null, reason: h.heldReason, detail: h.heldDetail } ) ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, snapshotPatch: r.snapshotPatch || { file: null, entries: [] }, unread: r.unread || [], settled, confirm: r.confirm || [],
 	};
 	const L = [
 		`# Fill: ${ r.surface }`, '',
@@ -36,6 +44,7 @@ export function fillReport( r ) {
 		`| Already held (the element renders the draft's value; not a gap) | ${ held.length } (${ HELD_REASONS.map( ( k ) => `${ k } ${ heldBy[ k ] }` ).join( ', ' ) }) |`,
 		`| Held by the divergence ledger | ${ r.held.length } |`,
 		`| Not read (settings no read reached and no decision judged) | ${ ( r.unread || [] ).length } |`,
+		`| Settled (read, nothing to write; each row in fill-report.json \`settled\`) | ${ settled.length } (${ SETTLED.map( ( k ) => `${ k } ${ settledBy[ k ] }` ).join( ', ' ) }) |`,
 		`| Confirm records (declared against rendered, FR-48-8) | ${ ( r.confirm || [] ).length } (${ VERDICTS.map( ( v ) => `${ v } ${ ( r.confirm || [] ).filter( ( c ) => c.verdict === v ).length }` ).join( ', ' ) }) |`, '',
 		'## UNMAPPED', '',
 		'Each row is a draft value no block setting can hold (or that the draft paints and the block cannot), with the reason the resolver gave.', '',
