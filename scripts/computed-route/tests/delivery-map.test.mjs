@@ -90,8 +90,8 @@ test( 'MUST FAIL: a number, boolean or array value is refused, never a crash', (
 } );
 
 // A record whose script appends a sheen span to a pointer-tracked host, and the one that pulls the host toward the pointer.
-const SHEEN = { id: 'A-18', status: 'active', mechanism: 'waapi', trigger: { type: 'pointer-move', detail: 'first pointer move onto a new [data-mag] element' }, element: { selector: 'span appended to the [data-mag] element by shine()' }, source: { code: 'sp.animate(kf, { duration: dur })' }, properties: [ { property: 'transform', from: 'translateX(-120%) skewX(-18deg)', to: 'translateX(260%) skewX(-18deg)' } ], duration_ms: 750, easing: 'ease', iterations: 1 };
-const button = ( layers ) => [ { name: 'sgs/button', attributes: { sgsMotion: { v: 1, elements: { root: { hover: { state: { values: { scale: 1.05 } }, effects: layers } } } } }, innerBlocks: [] } ];
+const SHEEN = { id: 'A-18', status: 'active', mechanism: 'waapi', trigger: { type: 'pointer-move', detail: 'first pointer move onto a new [data-mag] element' }, element: { dc: 'Hdr', nearest_tpl_id: '6', selector: 'span appended to the [data-mag] element by shine()' }, source: { code: 'sp.animate(kf, { duration: dur })' }, properties: [ { property: 'transform', from: 'translateX(-120%) skewX(-18deg)', to: 'translateX(260%) skewX(-18deg)' } ], duration_ms: 750, easing: 'ease', iterations: 1 };
+const button = ( layers ) => [ { name: 'sgs/button', draftRef: { tpl: 'Hdr/6#0' }, attributes: { sgsMotion: { v: 1, elements: { root: { hover: { state: { values: { scale: 1.05 } }, effects: layers } } } } }, innerBlocks: [] } ];
 const layer = ( effect, over = {} ) => ( { id: `${ effect }-1`, effect, trigger: 'hover', values: {}, ...over } );
 
 test( 'MUST FAIL: a done animation key whose element lacks its effect layer fails; with the layer it passes', () => {
@@ -105,7 +105,7 @@ test( 'MUST FAIL: a done animation key whose element lacks its effect layer fail
 	const done = { ...good, keys: { ...good.keys, 'animation:A-01': { done: 'abc1234', unit: 'U13a' } } };
 	const raw = JSON.stringify( done );
 	const args = { raw, expected: expectedKeys( 'client-a', root ), units, coverage, hasCommit: ( h ) => 'abc1234' === h };
-	assert.match( mapProblems( { ...args, evidenceFor: keyed( lacking ) } ).join( '; ' ), /animation:A-01: marked done but no sheen effect layer/ );
+	assert.match( mapProblems( { ...args, evidenceFor: keyed( lacking ) } ).join( '; ' ), /animation:A-01: marked done but the block rendering the record's draft element carries no sheen effect layer/ );
 	assert.deepEqual( mapProblems( { ...args, evidenceFor: keyed( holding ) } ), [] );
 	assert.match( mapProblems( args ).join( '; ' ), /animation:A-01: marked done but no evidence reader was supplied/ );
 } );
@@ -124,9 +124,9 @@ test( 'a walker effect row with its live side read evidences a record the trees 
 test( 'evidence by key kind: a reduced-motion rule is native, an entrance needs an entrance layer, an unmapped record needs a walker row', () => {
 	const rm = { id: 'RM-01', status: 'active', mechanism: 'css-media', trigger: { type: 'state' }, properties: [] };
 	assert.match( animationEvidence( rm, treeFacts( [] ) ).why, /natively/ );
-	const entrance = { id: 'A-21', status: 'active', mechanism: 'waapi', trigger: { type: 'load' }, element: { selector: 'main h1' }, properties: [ { property: 'opacity', from: 0, to: 1 } ], duration_ms: 500, iterations: 1 };
-	assert.match( animationEvidence( entrance, treeFacts( [] ) ).why, /no entrance layer/ );
-	const withEntrance = [ { name: 'sgs/hero', attributes: { sgsMotion: { v: 1, elements: { root: { entrance: { base: { trigger: 'load' } } } } } }, innerBlocks: [] } ];
+	const entrance = { id: 'A-21', status: 'active', mechanism: 'waapi', trigger: { type: 'load' }, element: { dc: 'Hdr', template_tpl_id: '6', selector: 'main h1' }, properties: [ { property: 'opacity', from: 0, to: 1 } ], duration_ms: 500, iterations: 1 };
+	assert.match( animationEvidence( entrance, treeFacts( [] ) ).why, /no built block renders the record's draft element Hdr\/6/ );
+	const withEntrance = [ { name: 'sgs/hero', draftRef: { tpl: 'Hdr/6#0' }, attributes: { sgsMotion: { v: 1, elements: { root: { entrance: { base: { trigger: 'load' } } } } } }, innerBlocks: [] } ];
 	assert.equal( animationEvidence( entrance, treeFacts( [ withEntrance ] ) ).ok, true );
 	const loop = { id: 'A-40', status: 'active', mechanism: 'waapi', trigger: { type: 'loop' }, iterations: 'infinite', element: { selector: '[data-ring]' }, properties: [ { property: 'translate', from: '0', to: '4px' } ] };
 	const unnamed = animationEvidence( loop, treeFacts( [ withEntrance ] ) );
@@ -134,17 +134,17 @@ test( 'evidence by key kind: a reduced-motion rule is native, an entrance needs 
 	assert.match( unnamed.why, /endless loop or an unnamed effect/ );
 	const withRow = animationEvidence( loop, treeFacts( [] ), [ { kind: 'effects', part: 'Ring', animation: 'A-40', draft: [ 'drift' ], live: [ 'drift' ] } ] );
 	assert.equal( withRow.ok, true );
-	const hover = { id: 'A-30', status: 'active', mechanism: 'css-transition', trigger: { type: 'hover' }, element: { selector: '.card' }, properties: [ { property: 'transform', from: 'none', to: 'translateY(-4px)' } ], duration_ms: 200, iterations: 1 };
-	const noState = [ { name: 'sgs/button', attributes: { sgsMotion: { v: 1, elements: { root: { hover: { effects: [] } } } } }, innerBlocks: [] } ];
+	const hover = { id: 'A-30', status: 'active', mechanism: 'css-transition', trigger: { type: 'hover' }, element: { dc: 'Hdr', template_tpl_id: '6', selector: '.card' }, properties: [ { property: 'transform', from: 'none', to: 'translateY(-4px)' } ], duration_ms: 200, iterations: 1 };
+	const noState = [ { name: 'sgs/button', draftRef: { tpl: 'Hdr/6#0' }, attributes: { sgsMotion: { v: 1, elements: { root: { hover: { effects: [] } } } } }, innerBlocks: [] } ];
 	assert.match( animationEvidence( hover, treeFacts( [ noState ] ) ).why, /no hover-state layer/ );
 	assert.equal( animationEvidence( hover, treeFacts( [ button( [] ) ] ) ).ok, true );
 } );
 
 // Evidence bound to what a key names: tree layers that are present, enabled and on one block together; an effect row
 // that reports the effect missing is counter-evidence; a state key needs a walker run of its state with no open row.
-const wrapped = ( motion ) => [ { name: 'sgs/container', attributes: { sgsMotion: { v: 1, elements: { root: motion } } }, innerBlocks: [] } ];
-const ENTRANCE = { id: 'A-21', status: 'active', mechanism: 'waapi', trigger: { type: 'load' }, element: { selector: 'main h1' }, properties: [ { property: 'opacity', from: 0, to: 1 } ], duration_ms: 500, iterations: 1 };
-const HOVER = { id: 'A-30', status: 'active', mechanism: 'css-transition', trigger: { type: 'hover' }, element: { selector: '.card' }, properties: [ { property: 'transform', from: 'none', to: 'translateY(-4px)' } ], duration_ms: 200, iterations: 1 };
+const wrapped = ( motion ) => [ { name: 'sgs/container', draftRef: { tpl: 'Hdr/6#0' }, attributes: { sgsMotion: { v: 1, elements: { root: motion } } }, innerBlocks: [] } ];
+const ENTRANCE = { id: 'A-21', status: 'active', mechanism: 'waapi', trigger: { type: 'load' }, element: { dc: 'Hdr', template_tpl_id: '6', selector: 'main h1' }, properties: [ { property: 'opacity', from: 0, to: 1 } ], duration_ms: 500, iterations: 1 };
+const HOVER = { id: 'A-30', status: 'active', mechanism: 'css-transition', trigger: { type: 'hover' }, element: { dc: 'Hdr', template_tpl_id: '6', selector: '.card' }, properties: [ { property: 'transform', from: 'none', to: 'translateY(-4px)' } ], duration_ms: 200, iterations: 1 };
 
 test( 'MUST FAIL: an empty entrance, an empty hover state or a disabled layer is no evidence', () => {
 	assert.equal( animationEvidence( ENTRANCE, treeFacts( [ wrapped( { entrance: {} } ) ] ) ).ok, false );

@@ -16,6 +16,7 @@ import { recogniseBehaviour } from './motion-behaviours.mjs';
 import { classify } from './motion-layers.mjs';
 import { walk as walkTree } from './tree.mjs';
 import { openRows } from './solve-rows.mjs';
+import { boundNodes, nodeElementKeys } from './delivery-bind.mjs';
 
 export const PRIOR = 'prior';
 
@@ -127,13 +128,14 @@ const hasContent = ( v ) => ( Array.isArray( v ) ? v.some( hasContent ) : v && '
 
 // What a client's built trees (sites/<client>/build/trees/**, the block trees written to the live posts) say about motion:
 // { effects: the names of every enabled effect layer, flags: 'entrance' and 'hover-state' when a layer of that kind holds
-// settings, nodes: [{ name, attributes, effects, flags }] for every block, each with its own layers }. A layer with
-// `enabled: false`, an empty entrance and an empty hover state are not layers.
-export function treeFacts( trees ) {
+// settings, nodes: [{ name, attributes, keys, effects, flags }] for every block, each with its own layers and the draft
+// elements it renders (lib/delivery-bind.mjs::nodeElementKeys) }. A layer with `enabled: false`, an empty entrance and an
+// empty hover state are not layers.
+export function treeFacts( trees, rootComponent = null ) {
 	const facts = { effects: new Set(), flags: new Set(), nodes: [] };
 	for ( const tree of trees ) {
 		walkTree( tree, ( n ) => {
-			const node = { name: n.name, attributes: n.attributes || {}, effects: new Set(), flags: new Set() };
+			const node = { name: n.name, attributes: n.attributes || {}, keys: nodeElementKeys( n, rootComponent ), effects: new Set(), flags: new Set() };
 			const scan = ( v, key = '' ) => {
 				if ( Array.isArray( v ) ) {
 					v.forEach( ( x ) => scan( x, key ) );
@@ -272,8 +274,9 @@ function walkerHit( record, needs, rows ) {
 const holds = ( node, list ) => list.every( ( s ) => JSON.stringify( node.attributes[ s.attr ] ) === JSON.stringify( s.value ) );
 
 // { ok, why } for one animation record's done mark: a walker effect row reporting the effect missing fails it; otherwise a
-// walker effect record shows it played, or ONE built block carries every effect layer and flag the record needs (each
-// enabled and holding settings), or the alternative settings the recogniser names are on a block. A record that needs
+// walker effect record shows it played, or the built block that renders the record's own draft element carries every
+// effect layer and flag the record needs (each enabled and holding settings), or the alternative settings the recogniser
+// names are on that block (lib/delivery-bind.mjs::boundNodes); a layer on a sibling or ancestor block is not evidence. A record that needs
 // nothing a tree can hold has no tree evidence. `needsOf` reads a record's needs (a test seam).
 export function animationEvidence( record, facts, walkerRows = [], needsOf = animationNeeds ) {
 	const needs = needsOf( record );
@@ -296,15 +299,16 @@ export function animationEvidence( record, facts, walkerRows = [], needsOf = ani
 		return { ok: false, why: 'the record names no effect layer, flag or block setting a tree could hold, and no walker effect record shows it' };
 	}
 	const missing = [];
-	if ( ( effects.length || flags.length ) && ! facts.nodes.some( ( n ) => effects.every( ( e ) => n.effects.has( e ) ) && flags.every( ( f ) => n.flags.has( f ) ) ) ) {
-		const absent = [ ...effects.filter( ( e ) => ! facts.effects.has( e ) ).map( ( e ) => `no ${ e } effect layer` ), ...flags.filter( ( f ) => ! facts.flags.has( f ) ).map( ( f ) => `no ${ f } layer` ) ];
-		missing.push( ...( absent.length ? absent : [ `no one block carries ${ [ ...effects, ...flags ].join( ' and ' ) } together` ] ) );
+	const own = effects.length || flags.length || needs.alt ? boundNodes( record, facts ) : { nodes: [] };
+	if ( ( effects.length || flags.length ) && ! own.nodes.some( ( n ) => effects.every( ( e ) => n.effects.has( e ) ) && flags.every( ( f ) => n.flags.has( f ) ) ) ) {
+		const absent = [ ...effects.map( ( e ) => `${ e } effect layer` ), ...flags.map( ( f ) => `${ f } layer` ) ];
+		missing.push( own.why || `the block rendering the record's draft element carries no ${ absent.join( ' and ' ) } together` );
 	}
 	missing.push( ...blocks.filter( ( [ name, list ] ) => ! facts.nodes.some( ( n ) => n.name === name && holds( n, list ) ) ).map( ( [ name ] ) => `no ${ name } block with the settings it needs` ) );
-	if ( missing.length && needs.alt && facts.nodes.some( ( n ) => holds( n, needs.alt ) ) ) {
-		return { ok: true, why: `the alternative settings ${ needs.alt.map( ( s ) => s.attr ).join( ', ' ) } are on a block` };
+	if ( missing.length && needs.alt && own.nodes.some( ( n ) => holds( n, needs.alt ) ) ) {
+		return { ok: true, why: `the alternative settings ${ needs.alt.map( ( s ) => s.attr ).join( ', ' ) } are on the block rendering the record's draft element` };
 	}
-	return missing.length ? { ok: false, why: `${ missing.join( ', ' ) } in the built trees, and no walker effect record shows it` } : { ok: true, why: 'one built block carries its effect layers' };
+	return missing.length ? { ok: false, why: `${ missing.join( ', ' ) } in the built trees, and no walker effect record shows it` } : { ok: true, why: blocks.length && ! own.nodes.length ? 'the built blocks carry the settings it needs' : `the block rendering ${ own.nodes[ 0 ].keys.join( ', ' ) } carries its effect layers` };
 }
 
 // { ok, why } for one `state:<surface>:<name>` key's done mark, from the walker reports given: a run of that state exists
