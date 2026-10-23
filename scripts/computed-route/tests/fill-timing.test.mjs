@@ -70,11 +70,11 @@ test( 'the easing follows the same direction rules; a list repeating one value i
 	assert.match( per.unmapped[ 0 ].reason, /^timing-computed/ );
 } );
 
-test( 'a computed timing is a gap only on a block that has a setting for it; a combined state is named', () => {
+test( 'a computed timing is a gap on a block that has a setting for it and a timing-no-home row on one that has none; a combined state is named', () => {
 	const none = run( 'sgs/button', { elements: { '': {} }, settings: {} }, reads( { [ DUR ]: 'var(--t)' } ) );
-	assert.deepEqual( [ none.writes.length, none.unmapped.length ], [ 0, 0 ], 'sgs/button has no role-motion timing setting' );
+	assert.deepEqual( [ none.writes.length, [ ...new Set( none.unmapped.map( ( u ) => u.reason.split( ':' )[ 0 ] ) ) ] ], [ 0, [ 'timing-no-home' ] ], 'sgs/button has no role-motion timing setting' );
 	const plain = run( 'sgs/button', { elements: { '': {} }, settings: {} }, reads( { [ DUR ]: '0.2s' } ) );
-	assert.deepEqual( [ plain.writes.length, plain.unmapped.length ], [ 0, 0 ], 'a literal timing no setting holds is the motion writer is owner, not a gap' );
+	assert.deepEqual( [ plain.writes.length, plain.unmapped.map( ( u ) => u.reason.split( ':' )[ 0 ] ) ], [ 0, [ 'timing-no-home' ] ], 'a literal timing no setting holds is a row (lib/fill-held.mjs moves it to already-held where sgsMotion carries it)' );
 	const some = run( 'sgs/team-member', MEMBER, reads( { [ DUR ]: 'var(--t)' } ) );
 	assert.match( some.unmapped[ 0 ].reason, /^timing-computed/ );
 	const both = run( 'sgs/nav-drawer-menu', DRAWER, reads( {}, [ { states: [ 'hover', 'open' ], declared: { [ DUR ]: '1s' }, rendered: { [ DUR ]: '1s' } } ] ) );

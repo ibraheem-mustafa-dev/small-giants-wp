@@ -138,14 +138,18 @@ export async function fillSurface( o ) {
 		flat[ i ] = n;
 	} );
 	// The skeleton writer's identity: every node that names its draft element by a tpl finder, kept beside the tree (the
-	// built tree itself is unchanged). Written only when the skeleton has any, so a hand-authored skeleton leaves no file.
+	// built tree itself is unchanged). Written with the run's outputs, so a run that aborts (no draft page, no target read)
+	// leaves the tracked file as it was; written only when the skeleton has any, so a hand-authored skeleton leaves no file.
 	const origin = originMap( nodes, flat.map( ( n ) => refOf( n ) ) );
-	if ( Object.keys( origin ).length ) {
+	const writeOrigin = () => {
+		if ( ! Object.keys( origin ).length ) {
+			return;
+		}
 		// FR-48-10: each entry carries the draft hash of the export it was derived from, so pairing refuses it after a re-export.
 		const manifestFile = path.join( buildDir, '..', 'handoff', 'MANIFEST.json' );
 		const hash = fs.existsSync( manifestFile ) ? draftHashOf( JSON.parse( fs.readFileSync( manifestFile, 'utf8' ) ) ) : null;
 		fs.writeFileSync( path.join( buildDir, `${ o.surface }.origin.json` ), `${ JSON.stringify( hash ? stampOrigin( origin, hash ) : origin, null, 2 ) }\n` );
-	}
+	};
 	const served = o.draftDir ? await serveDraft( assertDraftPage( o.draftDir, o.draftIndex || null ), { index: o.draftIndex || null } ) : null;
 	const url = served ? served.url : o.draftUrl;
 	try {
@@ -206,6 +210,8 @@ export async function fillSurface( o ) {
 		addEntries( ledgerFile, stepRungs.ledger );
 		result.writes.push( ...stepRungs.writes );
 		result.notes.push( ...stepRungs.notes );
+		// FR-48-86: each custom-CSS rule's gaps row (the native control it could become), carried in fill-report.json.
+		result.customCssGaps = stepRungs.gaps;
 		// FR-48-50: content the draft's logic shows or hides by width, written as hiding settings (lib/fill-width-gate.mjs); a snapped
 		// threshold's `breakpoint-snap` entry is added to the client's divergence ledger (the file Fill reads), once.
 		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, entries: loadLedger( ledgerFile ), rootComponent: intakeParts.rootComponent } );
@@ -267,6 +273,7 @@ export async function fillSurface( o ) {
 		const divergences = fs.existsSync( ledgerFile ) ? path.relative( outDir, ledgerFile ).split( path.sep ).join( '/' ) : null;
 		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, draftUrl: url, liveUrl: o.liveUrl, open: o.open || null, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening' } );
 		const put = ( name, text ) => fs.writeFileSync( path.join( outDir, name ), text );
+		writeOrigin();
 		put( 'filled.tree.json', `${ JSON.stringify( tree, null, 2 ) }\n` );
 		siteOptions && put( 'site-options.json', `${ JSON.stringify( siteOptions, null, 2 ) }\n` );
 		put( 'fill-report.md', report.markdown );

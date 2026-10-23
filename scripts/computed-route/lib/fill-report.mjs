@@ -32,10 +32,46 @@ export function readFailureRows( { reads, nodes, flat, refOf } ) {
 	} );
 }
 
+const isObj = ( v ) => v && 'object' === typeof v && ! Array.isArray( v );
+
+// The places (`desktop`, `mobile.right`, '' for a whole value) where a write changed its setting: before and after differ.
+function changedPaths( before, after, at = '' ) {
+	if ( isObj( after ) ) {
+		const b = isObj( before ) ? before : {};
+		return [ ...new Set( [ ...Object.keys( b ), ...Object.keys( after ) ] ) ].flatMap( ( k ) => changedPaths( b[ k ], after[ k ], at ? `${ at }.${ k }` : k ) );
+	}
+	return JSON.stringify( before ) === JSON.stringify( after ) ? [] : [ at ];
+}
+const valueAt = ( v, at ) => ( '' === at ? v : at.split( '.' ).reduce( ( o, k ) => ( isObj( o ) ? o[ k ] : undefined ), v ) );
+
+// The writes a later write replaced: Map( index -> index of the write that replaced it ). A write is replaced when
+// every place it changed (a tier, a side, or the whole value) is changed again by a later write on the same node and
+// setting; a later text that extends the earlier one (Additional CSS and its label, appended to) keeps it.
+export function supersededWrites( writes ) {
+	const out = new Map();
+	writes.forEach( ( w, i ) => {
+		const paths = changedPaths( w.before, w.after );
+		let by = null;
+		const replaced = paths.length > 0 && paths.every( ( at ) => {
+			const mine = valueAt( w.after, at );
+			const j = writes.findIndex( ( x, k ) => k > i && x.node === w.node && x.attr === w.attr && changedPaths( x.before, x.after ).some( ( p ) => p === at || p.startsWith( `${ at }.` ) || at.startsWith( `${ p }.` ) || '' === p ) && ! ( 'string' === typeof mine && String( valueAt( x.after, at ) ?? '' ).startsWith( mine ) ) );
+			by = Math.max( by ?? -1, j );
+			return -1 !== j;
+		} );
+		replaced && out.set( i, by );
+	} );
+	return out;
+}
+
 // r: { client, surface, draft (the page or folder read), nodes (count), targets (count), writes, unmapped, notes,
 // handover, spacing, fluid, held, snaps, steps (breakpoint log), entrances: [{ node, block, measured | null }],
-// scale?: the sweep was skipped }. Returns { markdown, json }.
+// customCssGaps (lib/fill-step-rungs.mjs `gaps`), scale?: the sweep was skipped }. Returns { markdown, json }. A write a later
+// write replaced (supersededWrites) stays in `writes` marked `supersededBy` (the later write's index) and is not counted.
 export function fillReport( r ) {
+	const replaced = supersededWrites( r.writes );
+	const writes = r.writes.map( ( w, i ) => ( replaced.has( i ) ? { ...w, supersededBy: replaced.get( i ) } : w ) );
+	const live = writes.length - replaced.size;
+	const gaps = r.customCssGaps || [];
 	const counts = handoverCounts( r.handover );
 	const held = r.alreadyHeld || [];
 	const heldBy = heldCounts( held );
@@ -43,14 +79,15 @@ export function fillReport( r ) {
 	const settledBy = settledCounts( settled );
 	const json = {
 		client: r.client, surface: r.surface, draft: r.draft, nodes: r.nodes, targets: r.targets,
-		counts: { writes: r.writes.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, alreadyHeld: { total: held.length, ...heldBy }, patchKeys: ( r.snapshotPatch?.entries || [] ).length, unread: ( r.unread || [] ).length, settled: { total: settled.length, ...settledBy }, confirm: ( r.confirm || [] ).length },
-		writes: r.writes, unmapped: unmappedList( r.unmapped ), alreadyHeld: held.map( ( h ) => ( { property: h.property, value: h.value, node: h.node, block: h.block, slot: h.slot ?? '', state: h.state ?? null, reason: h.heldReason, detail: h.heldDetail } ) ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, snapshotPatch: r.snapshotPatch || { file: null, entries: [] }, unread: r.unread || [], settled, confirm: r.confirm || [],
+		counts: { writes: live, superseded: replaced.size, customCssGaps: gaps.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, alreadyHeld: { total: held.length, ...heldBy }, patchKeys: ( r.snapshotPatch?.entries || [] ).length, unread: ( r.unread || [] ).length, settled: { total: settled.length, ...settledBy }, confirm: ( r.confirm || [] ).length },
+		writes, customCssGaps: gaps, unmapped: unmappedList( r.unmapped ), alreadyHeld: held.map( ( h ) => ( { property: h.property, value: h.value, node: h.node, block: h.block, slot: h.slot ?? '', state: h.state ?? null, reason: h.heldReason, detail: h.heldDetail } ) ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, snapshotPatch: r.snapshotPatch || { file: null, entries: [] }, unread: r.unread || [], settled, confirm: r.confirm || [],
 	};
 	const L = [
 		`# Fill: ${ r.surface }`, '',
 		`Client ${ r.client }. Draft: ${ r.draft }. ${ r.nodes } nodes, ${ r.targets } measured elements (draftRef and draftSlots). Fill writes rest-state styles, spacing, presence, words, links and motion (each node's sgsMotion: entrances and hover moves) in one root-down pass; hover, focus and active colour states are Solve's.`, '',
 		'| What | Count |', '|---|---|',
-		`| Settings written | ${ r.writes.length } |`,
+		`| Settings written | ${ live } (and ${ replaced.size } a later write on the same setting replaced, marked \`supersededBy\`) |`,
+		`| Custom-CSS rules with a gaps row (the native control each could become) | ${ gaps.length } |`,
 		`| UNMAPPED (framework work, known before the first build) | ${ r.unmapped.length } |`,
 		`| Handover (content outside the tree) | ${ r.handover.length } (${ HANDOVER_OWNERS.map( ( o ) => `${ o } ${ counts[ o ] }` ).join( ', ' ) }) |`,
 		`| Fluid sizes found | ${ r.fluid.length } (${ r.fluid.filter( ( f ) => 'clamp' === f.written ).length } written as clamp()) |`,
@@ -75,7 +112,9 @@ export function fillReport( r ) {
 		'## Handover', '',
 		...table( [ 'Owner', 'Kind', 'Node', 'Element', 'Evidence', 'Reason' ], r.handover.map( ( h ) => [ h.owner, h.kind, h.node, h.slot, h.evidence, h.reason ] ) ),
 		'## Settings written', '',
-		...table( [ 'Node', 'Block', 'Element', 'Property', 'Setting', 'Before', 'After', 'Tiers', 'How' ], r.writes.map( ( w ) => [ w.node, w.block, w.slot, w.prop, w.attr, w.before, w.after, w.widths.join( ',' ), w.read ? `${ w.how } (read ${ w.read }: the render did not confirm it)` : w.how ] ) ),
+		...table( [ 'Node', 'Block', 'Element', 'Property', 'Setting', 'Before', 'After', 'Tiers', 'How' ], writes.map( ( w, i ) => [ w.node, w.block, w.slot, w.prop, w.attr, w.before, w.after, w.widths.join( ',' ), `${ w.read ? `${ w.how } (read ${ w.read }: the render did not confirm it)` : w.how }${ replaced.has( i ) ? ` (superseded by write ${ replaced.get( i ) })` : '' }` ] ) ),
+			'## Custom-CSS gaps', '',
+			...table( [ 'Node', 'Block', 'Element', 'Properties', 'Native control', 'Rule' ], gaps.map( ( g ) => [ g.node, g.block, g.slot, g.properties.join( ', ' ), g.control, g.css ] ) ),
 		'## Theme snapshot patch', '',
 		r.snapshotPatch?.file ? `Keys for the client's theme-snapshot.json, written beside this report as \`${ r.snapshotPatch.file }\` (Fill never edits the snapshot): the draft's focus look, button press looks and link-state looks. Merge it with the snapshot, then run the focus-token gate.` : 'The draft sets no focus, press or link-state look the theme holds; no patch file was written.', '',
 		...table( [ 'Key', 'Value', 'State', 'Node', 'Block', 'Element' ], ( r.snapshotPatch?.entries || [] ).map( ( e ) => [ e.path, e.value, e.state, e.node, e.block, e.slot ] ) ),

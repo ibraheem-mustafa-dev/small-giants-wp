@@ -4,7 +4,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { runTriage } from '../triage.mjs';
@@ -21,10 +20,11 @@ const tree = () => [ { name: 'sgs/mega-panel', attributes: { className: PANEL },
 const row = () => ( { kind: 'style', key: 'padding-top', draft: '26px', live: '0px', ref: GROUP, path: '', pair: 'grp', state: 'mfx-state', width: 1440, accepted: null,
 	owners: [ { ref: PANEL, block: 'sgs-mega-panel', path: PANEL_PATH, tag: 'a' } ] } );
 
-// A throwaway client folder under the OS temp directory, addressed the way runTriage addresses a client (a path under
-// REPO/sites), holding a manifest, a tree, a snapshot, a Solve report and its final walker report.
+// A throwaway client folder under the repository's sites/ (removed after each run), addressed by its folder name as
+// runTriage addresses a client, holding a manifest, a tree, a snapshot, a Solve report and its final walker report. It
+// lives in the repository so the client name is a plain folder name on any drive layout.
 function fixture( surfaceEntry ) {
-	const root = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-triage-manifest-' ) );
+	const root = fs.mkdtempSync( path.join( REPO, 'sites', 'zz-triage-manifest-' ) );
 	const build = path.join( root, 'build' );
 	const runDir = path.join( build, 'qa', 'solve', SURFACE, 'run' );
 	fs.mkdirSync( path.join( runDir, 'round-1' ), { recursive: true } );
@@ -37,7 +37,7 @@ function fixture( surfaceEntry ) {
 	const r = row();
 	fs.writeFileSync( path.join( runDir, 'solve-report.json' ), JSON.stringify( { classes: { hardcode: [], missing: [], unresolved: [ r ], derived: [], other: [] }, gaps: {}, writes: [] } ) );
 	fs.writeFileSync( path.join( runDir, 'round-1', 'report.json' ), JSON.stringify( { runs: [ { state: 'mfx-state', width: 1440, pairs: { grp: { draft: { styles: {} }, live: { trace: { ref: GROUP } }, diffs: [ r ] } } } ] } ) );
-	return { root, client: path.relative( path.join( REPO, 'sites' ), root ), report: path.join( runDir, 'solve-report.json' ), out: path.join( root, 'triage.json' ) };
+	return { root, client: path.basename( root ), report: path.join( runDir, 'solve-report.json' ), out: path.join( root, 'triage.json' ) };
 }
 
 function triageWith( surfaceEntry ) {

@@ -1,0 +1,8 @@
+[
+	{"file": "lib/fill-resolve-element.mjs", "find": "\t\tsettled( st, rec, ref, { slot, property: p, value: String( valueAt( snaps[ w ], p ) ), reason: 'not-painted'", "replace": "\t\t/gap$/.test( p ) && settled( st, rec, ref, { slot, property: p, value: String( valueAt( snaps[ w ], p ) ), reason: 'not-painted'", "why": "the old behaviour: only a gap left out is recorded, every other inert value is dropped silently"},
+	{"file": "lib/fill-resolve-element.mjs", "find": "no outline is drawn`;", "replace": "no line is drawn`;", "why": "an outline would be given a decoration's reason"},
+	{"file": "lib/fill-resolve-element.mjs", "find": "if ( side ) {\n\t\treturn `${ prop } on a", "replace": "if ( false ) {\n\t\treturn `${ prop } on a", "why": "a zero-width border side would be given a decoration's reason"},
+	{"file": "lib/fill-resolve-element.mjs", "find": "if ( /^transition-/.test( prop ) ) {", "replace": "if ( false ) {", "why": "an instant transition would be given a decoration's reason"},
+	{"file": "lib/fill-resolve-element.mjs", "find": "if ( /gap$/.test( prop ) ) {\n\t\treturn gapPaintsNothing( prop, styles, snap );", "replace": "if ( false ) {\n\t\treturn gapPaintsNothing( prop, styles, snap );", "why": "a gap would lose its own reason"},
+	{"file": "lib/fill-resolve-element.mjs", "find": "if ( layer || ! notPainted( p, snaps[ w ].styles || {}, snaps[ w ] ) ) {", "replace": "if ( layer || true ) {", "why": "an inert value would be resolved as if it painted"}
+]

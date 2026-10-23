@@ -1,0 +1,5 @@
+[
+	{"file": "lib/fill-preset.mjs", "find": "const blocks = presetVariants( db, presets );", "replace": "const blocks = presetVariants( db, Object.fromEntries( Object.entries( presets ).filter( ( [ v ] ) => [ 'primary', 'secondary', 'outline' ].includes( v ) ) ) );", "why": "the old hand-written variant list: a client's link variant is never matched"},
+	{"file": "lib/fill-preset.mjs", "find": "const m = matchPreset( { presets: held, reads, id: target.id, snapshot } );", "replace": "const m = matchPreset( { presets, reads, id: target.id, snapshot } );", "why": "a snapshot key no inheritStyle value names would be written"},
+	{"file": "lib/fill-preset.mjs", "find": "variants: Object.keys( presets || {} ).filter( ( v ) => JSON.parse( r.enum_values ).includes( v ) )", "replace": "variants: Object.keys( presets || {} )", "why": "a snapshot key the block's values do not name would be offered"}
+]

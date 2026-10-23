@@ -6,7 +6,8 @@
 // disagree next to a real step (lib/fill-values.mjs::breakpointSteps; a fluid ramp is not a step), adds a scoped `@media` rule
 // on the instance at the draft's threshold, snapped to a tier within 5% (a `breakpoint-snap` ledger entry), through the same
 // Additional CSS writer as lib/fill-width-ladder.mjs. Any property, block and setting: only the writes and the sweep decide.
-// Returns { writes, notes, ledger }.
+// Each rule also returns a gaps row naming the native control it could become (Spec 48 FR-48-86: a custom-CSS write
+// carries one). Returns { writes, notes, ledger, gaps }.
 import { setAttr } from './tree.mjs';
 import { breakpointSteps } from './fill-values.mjs';
 import { mediaRule, scopedCssPuts, snapThreshold, snapEntry, TIER_RANGES } from './fill-width-gate.mjs';
@@ -44,14 +45,17 @@ export function stepStretches( prop, series, tierValue ) {
 	return out;
 }
 
-// The writes of a Fill run grouped by node, slot and property: Map `${node}|${slot}|${prop}` -> { node, slot, prop }.
+// The writes of a Fill run grouped by node, slot and property: [ { node, slot, prop, attrs (the settings written) } ].
 function written( writes ) {
 	const out = new Map();
 	for ( const w of writes ) {
 		if ( ! READ_HOW.includes( w.how ) || w.state || ! w.prop || ! w.node ) {
 			continue;
 		}
-		out.set( `${ w.node }|${ w.slot ?? '' }|${ w.prop }`, { node: w.node, slot: w.slot ?? '', prop: w.prop } );
+		const key = `${ w.node }|${ w.slot ?? '' }|${ w.prop }`;
+		const g = out.get( key ) || { node: w.node, slot: w.slot ?? '', prop: w.prop, attrs: [] };
+		g.attrs.includes( w.attr ) || g.attrs.push( w.attr );
+		out.set( key, g );
 	}
 	return [ ...out.values() ];
 }
@@ -72,7 +76,7 @@ function placeRules( members ) {
 }
 
 export function stepRungWrites( { nodes, flat, refOf, reads, writes, scope = '', entries = [], date = new Date().toISOString().slice( 0, 10 ) } ) {
-	const out = { writes: [], notes: [], ledger: [] };
+	const out = { writes: [], notes: [], ledger: [], gaps: [] };
 	const rules = new Map();
 	const sets = new Map();
 	for ( const g of written( writes ) ) {
@@ -99,8 +103,10 @@ export function stepRungWrites( { nodes, flat, refOf, reads, writes, scope = '',
 					continue;
 				}
 				const key = `${ m.g.node }|${ m.slot }|${ s.snapped.join( '-' ) }`;
-				const rule = rules.get( key ) || { node: m.g.node, rec: m.hit.rec, slot: m.slot, range: s.snapped, decls: [], covers: m.covers };
+				const rule = rules.get( key ) || { node: m.g.node, rec: m.hit.rec, slot: m.slot, range: s.snapped, decls: [], props: [], attrs: [], covers: m.covers };
 				rule.decls.push( `${ m.g.prop }: ${ s.value };` );
+				rule.props.includes( m.g.prop ) || rule.props.push( m.g.prop );
+				m.g.attrs.forEach( ( a ) => rule.attrs.includes( a ) || rule.attrs.push( a ) );
 				rules.set( key, rule );
 			}
 		}
@@ -113,13 +119,28 @@ export function stepRungWrites( { nodes, flat, refOf, reads, writes, scope = '',
 	for ( const [ ref, list ] of byNode ) {
 		const rec = list[ 0 ].rec;
 		const node = flat[ rec.index ];
-		const css = list.map( ( r ) => mediaRule( r.range, `&${ r.slot ? ` ${ r.slot }` : '' } { ${ r.decls.join( ' ' ) } }` ) ).join( ' ' );
+		const ruleCss = ( r ) => mediaRule( r.range, `&${ r.slot ? ` ${ r.slot }` : '' } { ${ r.decls.join( ' ' ) } }` );
+		const css = list.map( ruleCss ).join( ' ' );
 		const label = `Step ladder: ${ list.map( ( r ) => `${ r.slot || 'root' } ${ rangeText( r.range ) } ${ r.decls.join( ' ' ) }` ).join( ', ' ) }`;
 		for ( const x of scopedCssPuts( node, { css, index: rec.index, why: 'step ladder', label } ) ) {
 			const { before, after } = setAttr( node, { attr: x.attr, value: x.value } );
 			out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: '', prop: x.prop, attr: x.attr, before, after, widths: [], how: 'width-gate' } );
 		}
+		out.gaps.push( ...list.map( ( r ) => gapRow( r, rec, ref, ruleCss( r ) ) ) );
 		out.notes.push( `${ ref } ${ rec.name }: the draft changes ${ [ ...new Set( list.flatMap( ( r ) => r.decls.map( ( d ) => d.split( ':' )[ 0 ] ) ) ) ].join( ', ' ) } between the read widths, which a per-device setting cannot hold; written as scoped @media rules in Additional CSS (${ list.map( ( r ) => `${ rangeText( r.range ) }${ r.covers ? ` on every sibling of ${ r.covers } measured` : '' }` ).join( ', ' ) })` );
 	}
 	return out;
+}
+
+// The gaps row of one written rule: the native control it could become is the per-device setting the tier reads were
+// written to, given a step at the rule's own thresholds (the edges that are not a tier boundary).
+function gapRow( r, rec, ref, css ) {
+	const tiers = Object.values( TIER_RANGES ).flat();
+	const edges = r.range.filter( ( e ) => 0 !== e && Infinity !== e && ! tiers.includes( e ) );
+	const at = edges.length ? edges.map( ( e ) => `${ e }px` ).join( ' and ' ) : rangeText( r.range );
+	return {
+		node: ref, block: rec.name, slot: r.slot, properties: r.props, range: r.range, css, how: 'step ladder',
+		control: `${ r.attrs.join( ', ' ) } with a step at ${ at }`,
+		reason: `custom-css: ${ r.props.join( ', ' ) } ${ rangeText( r.range ) } is a scoped @media rule in Additional CSS because ${ r.attrs.join( ', ' ) } holds one value per device tier; native once ${ 1 === r.attrs.length ? 'that setting takes' : 'those settings take' } a step at ${ at }`,
+	};
 }

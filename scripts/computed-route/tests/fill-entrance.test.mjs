@@ -7,6 +7,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { serveDraft } from '../lib/draft.mjs';
+import { loadChromium } from '../lib/fill-read.mjs';
 import { sampleEntrances, sampleMotion, shapeEntrance, translationOf, scaleOf, rotateOf, STEP_MS, JITTER_MS } from '../lib/fill-entrance.mjs';
 
 const pose = ( opacity, transform = 'none', translate = 'none' ) => ( { opacity, transform, translate, scale: 'none', rotate: 'none' } );
@@ -49,6 +50,43 @@ test( 'translationOf reads matrix, matrix3d and the translate property, and adds
 	assert.deepEqual( translationOf( pose( 1 ) ), { x: 0, y: 0 } );
 } );
 
+// The element's CSS animation read through the Web Animations API on its own clock: { delay, duration } from its computed
+// timing, and the animation's currentTime at the first and last frames its opacity or transform changed. A frame a loaded
+// machine drops moves no reading: currentTime is the animation's time at the frame painted, not a wall-clock interval.
+async function animationClock( url, selector ) {
+	const { chromium } = await loadChromium();
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage( { viewport: { width: 1440, height: 900 } } );
+		await page.goto( url );
+		return await page.evaluate( ( sel ) => new Promise( ( done ) => {
+			const el = document.querySelector( sel );
+			let last = null;
+			let firstChange = null;
+			let lastChange = null;
+			const tick = () => {
+				const a = el.getAnimations()[ 0 ];
+				const own = getComputedStyle( el );
+				const pose = `${ own.opacity }|${ own.transform }`;
+				if ( a && null !== last && pose !== last ) {
+					firstChange ??= a.currentTime;
+					lastChange = a.currentTime;
+				}
+				last = pose;
+				if ( a && 'finished' !== a.playState ) {
+					requestAnimationFrame( tick );
+					return;
+				}
+				const t = a ? a.effect.getComputedTiming() : {};
+				done( { delay: t.delay, duration: t.duration, firstChange, lastChange } );
+			};
+			requestAnimationFrame( tick );
+		} ), selector );
+	} finally {
+		await browser.close();
+	}
+}
+
 const HTML = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
 @keyframes rise { from { opacity: 0; transform: translateY(18px) } to { opacity: 1; transform: none } }
 @keyframes turn { from { opacity: 0; transform: rotate(30deg) } to { opacity: 1; transform: none } }
@@ -70,14 +108,14 @@ test( 'in a real browser: a keyframe entrance is sampled for delay, duration, di
 		const raw = await sampleEntrances( { url: served.url, jobs, windowMs: 2500 } );
 		const rise = shapeEntrance( raw.rise );
 		const turn = shapeEntrance( raw.turn );
-		// A real browser reads each time to a frame (about 17ms at 60Hz), and the measured delay runs 188-220ms against
-		// the 225ms where it rounds to 250, so one dropped frame moves the rounded value a whole step. The raw intervals
-		// are held to two frames of what the page sets; the rounding to STEP_MS is pinned by the synthetic tests above.
-		const FRAMES_2 = 34;
-		const rawDelay = raw.rise.start - raw.rise.seenAt;
-		const rawDuration = raw.rise.end - raw.rise.start;
-		assert.ok( Math.abs( rawDelay - 200 ) <= FRAMES_2, `raw delay ${ rawDelay }` );
-		assert.ok( Math.abs( rawDuration - 600 ) <= FRAMES_2, `raw duration ${ rawDuration }` );
+		// The probe's times are wall-clock frames, which a loaded machine drops, so only their order is held here; the delay
+		// and duration are measured on the animation's own clock (animationClock), and the rounding to STEP_MS is pinned by
+		// the synthetic tests above.
+		assert.ok( raw.rise.seenAt <= raw.rise.start && raw.rise.start < raw.rise.end, `probe order ${ raw.rise.seenAt } ${ raw.rise.start } ${ raw.rise.end }` );
+		const clock = await animationClock( served.url, '.rise' );
+		assert.deepEqual( [ clock.delay, clock.duration ], [ 200, 600 ], 'the delay and duration the animation runs with' );
+		assert.ok( clock.firstChange >= 200 && clock.firstChange < 800, `the pose first changes at ${ clock.firstChange }ms of the animation's own time, inside its active phase` );
+		assert.ok( clock.lastChange > clock.firstChange, `the pose keeps changing after ${ clock.firstChange }ms (last at ${ clock.lastChange }ms)` );
 		assert.ok( Math.abs( rise.distancePx - 18 ) <= 1, `distance ${ rise.distancePx }` );
 		assert.equal( rise.opacityFrom, 0 );
 		assert.equal( rise.easing, 'linear', 'the CSS animation curve is read from its keyframes' );

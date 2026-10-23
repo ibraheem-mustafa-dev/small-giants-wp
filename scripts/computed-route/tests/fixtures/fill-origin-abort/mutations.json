@@ -1,0 +1,3 @@
+[
+	{"file": "fill.mjs", "find": "\tconst served = o.draftDir ?", "replace": "\twriteOrigin();\n\tconst served = o.draftDir ?", "why": "the old behaviour: the origin file is written before the draft page is checked"}
+]

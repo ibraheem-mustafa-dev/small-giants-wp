@@ -167,18 +167,20 @@ export function timingWrites( { node, ref, rec, target, cal, db, snapshot, reads
 		}
 	};
 	const gap = ( prop, state, draft, reason ) => out.unmapped.push( { ...where, property: prop, state, value: JSON.stringify( draft ), reason } );
-	// A computed timing is a gap only where the block has a setting for it.
-	out.unmapped.push( ...facts.skipped.filter( ( s ) => candidates( db, rec.name, s.prop ).length ).map( ( s ) => ( { ...where, property: s.prop, state: null, value: '', reason: `timing-computed: ${ s.why }` } ) ) );
+	const part = target.slot || 'this element';
+	// A computed timing is a `timing-computed` gap where the block has a setting for it, and a `timing-no-home` row where none holds it.
+	out.unmapped.push( ...facts.skipped.map( ( s ) => ( { ...where, property: s.prop, state: null, value: '', reason: candidates( db, rec.name, s.prop ).length ? `timing-computed: ${ s.why }` : `timing-no-home: ${ rec.name } has no setting that holds the ${ s.prop } of ${ part }, and ${ s.why }` } ) ) );
 	for ( const prop of LIST_PROPS ) {
 		const rest = facts.rest[ prop ] || null;
-		// A block with no setting for the resting timing is not a gap worth listing: hover transitions on most elements
-		// are the motion writer's hover layer (lib/fill-motion.mjs), and every other element times itself.
 		const res = rest ? resolve( prop, rest, null ) : null;
 		res && tried.set( prop, res );
 		if ( 'written' === res?.status ) {
 			apply( prop, null, res, 'fill-timing' );
 		} else if ( res && ! [ 'no-setting', 'unmapped-element' ].includes( res.gap ) ) {
 			gap( prop, null, rest, `${ res.gap }: ${ res.detail || 'the resting timing has no single value this setting holds' }` );
+		} else if ( res && ! facts.split.some( ( s ) => s.prop === prop && null === s.state ) && ! inertTiming( prop, rest, facts.rest[ 'transition-duration' ] ) ) {
+			// A resting timing no setting of the block holds is a `timing-no-home` row (a split list leaves one per property, splitRows).
+			gap( prop, null, rest, `timing-no-home: ${ rec.name } has no setting that holds the resting ${ prop } of ${ part } (${ res.gap })` );
 		}
 		const pending = [];
 		for ( const [ state, props ] of Object.entries( facts.enter ) ) {
@@ -219,6 +221,14 @@ export function timingWrites( { node, ref, rec, target, cal, db, snapshot, reads
 	}
 	out.unmapped.push( ...splitRows( { facts, homes, tried, where, rec, target, motion: stateHover( reads, target ).base } ) );
 	return out;
+}
+
+// Whether a resting timing times nothing at every width it is read at: a 0s duration or delay (the initial value, no
+// transition and no wait), or an easing whose duration is 0s there. rest: { width: value }; duration: the resting
+// transition-duration by width, or null.
+function inertTiming( prop, rest, duration ) {
+	const zero = ( v ) => 0 === timeToMs( oneTiming( v ) );
+	return Object.entries( rest ).every( ( [ w, v ] ) => ( 'transition-timing-function' === prop ? undefined !== duration?.[ w ] && zero( duration[ w ] ) : zero( v ) ) );
 }
 
 const named = ( groups ) => groups.map( ( g ) => `${ g.properties.join( ', ' ) } at ${ g.value }` ).join( '; ' );

@@ -14,7 +14,7 @@
 	{ "file": "lib/fill-state.mjs", "find": "if ( effects.includes( 'display' ) ) {\n\t\t\t\tcontinue;\n\t\t\t}", "replace": "", "why": "a reading that shows its element would veto the block's look" },
 	{ "file": "lib/fill-state.mjs", "find": "atRest || taken.set( w.attr, w.value );", "replace": "", "why": "a hold from another part would overwrite a declared look" },
 	{ "file": "lib/fill-state.mjs", "find": "if ( taken.has( w.attr ) ) {", "replace": "if ( false ) {", "why": "two parts would silently overwrite each other's hold" },
-	{ "file": "lib/fill-state.mjs", "find": "v && ! notPainted( prop, styles ) &&", "replace": "v &&", "why": "a border with no width would have its colour held" },
+	{ "file": "lib/fill-state.mjs", "find": "v && ! notPainted( prop, styles, snap ) &&", "replace": "v &&", "why": "a border with no width would have its colour held" },
 	{ "file": "lib/fill-state.mjs", "find": "if ( pairBroken && PAIR.includes( prop ) && 'written' === res.status ) {", "replace": "if ( false ) {", "why": "a ground would be held without its text colour" },
 	{ "file": "lib/fill-state.mjs", "find": "( ! rest[ prop ] && read( prop ) )", "replace": "! rest[ prop ]", "why": "a colour the draft never read would be passed over in silence, breaking its pair" }
 ]
