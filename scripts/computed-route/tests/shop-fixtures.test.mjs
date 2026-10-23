@@ -7,16 +7,16 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { ShopFixturesError, applyFixtures, imageChoice, planFixtures } from '../lib/shop-fixtures.mjs';
+import { ShopFixturesError, applyFixtures, imageChoice, planFixtures, ensureImage } from '../lib/shop-fixtures.mjs';
 
 const CREDS = { url: 'https://shop.test', auth: 'Basic x' };
 const reply = ( status, data ) => ( { status, ok: status >= 200 && status < 300, json: async () => data, text: async () => JSON.stringify( data ) } );
 
 // An in-memory WooCommerce REST API: products by SKU, variations per product, media by title.
-function stub( { woo = true } = {} ) {
+function stub( { woo = true, attachments = [ 77 ] } = {} ) {
 	const products = [];
 	const variations = {};
-	const media = [];
+	const media = attachments.map( ( id ) => ( { id, title: { rendered: `attachment-${ id }` } } ) );
 	const posts = [];
 	const impl = async ( url, init = {} ) => {
 		const u = new URL( url );
@@ -55,6 +55,10 @@ function stub( { woo = true } = {} ) {
 			return reply( 201, media.at( -1 ) );
 		}
 		const mm = /^wp\/v2\/media\/(\d+)$/.exec( route );
+		if ( mm && 'GET' === method ) {
+			const m = media.find( ( x ) => x.id === Number( mm[ 1 ] ) );
+			return m ? reply( 200, { id: m.id } ) : reply( 404, { code: 'rest_post_invalid_id' } );
+		}
 		if ( mm && 'POST' === method ) {
 			media.find( ( m ) => m.id === Number( mm[ 1 ] ) ).title.rendered = body.title;
 			return reply( 200, {} );
@@ -123,4 +127,29 @@ test( 'the image is the site\'s media-map entry before any draft asset', async (
 	const r = await applyFixtures( { repo: repoWith( { mapped: true } ), client: 'acme', site: 'acme-test', creds: CREDS, fetchImpl: s.impl } );
 	assert.equal( r.imageUploaded, false );
 	assert.equal( r.products[ 0 ].image, 77 );
+} );
+
+test( 'MUST FAIL: a media-map id is verified on the site before use; a stale one falls back to uploading its asset', async () => {
+	const repo = repoWith( { mapped: true } );
+	const live = stub();
+	assert.deepEqual( await ensureImage( { repo, client: 'acme', choice: imageChoice( repo, 'acme', 'acme-test' ), creds: CREDS, fetchImpl: live.impl, apply: true } ), { id: 77, uploaded: false } );
+	const gone = stub( { attachments: [] } );
+	const r = await ensureImage( { repo, client: 'acme', choice: imageChoice( repo, 'acme', 'acme-test' ), creds: CREDS, fetchImpl: gone.impl, apply: true } );
+	assert.equal( r.uploaded, true, 'the stale attachment is never put on a product' );
+	assert.notEqual( r.id, 77 );
+	assert.equal( await ensureImage( { repo, client: 'acme', choice: { source: 'media-map', id: 77, asset: 'sites/acme/none.jpg' }, creds: CREDS, fetchImpl: gone.impl, apply: true } ), null );
+} );
+
+test( 'MUST FAIL: credentials to a plain-http site are refused before any request; loopback http is allowed', async () => {
+	const s = stub();
+	let calls = 0;
+	const counted = ( url, init ) => {
+		calls++;
+		return s.impl( url, init );
+	};
+	await assert.rejects( planFixtures( { client: 'acme', creds: { url: 'http://shop.test', auth: 'Basic x' }, fetchImpl: counted } ), ( e ) => e instanceof ShopFixturesError && /is not https/.test( e.message ) );
+	await assert.rejects( ensureImage( { repo: repoWith( { mapped: true } ), client: 'acme', choice: { source: 'media-map', id: 77, asset: 'x' }, creds: { url: 'http://shop.test', auth: 'Basic x' }, fetchImpl: counted, apply: true } ), /is not https/ );
+	await assert.rejects( ensureImage( { repo: repoWith(), client: 'acme', choice: { source: 'asset', asset: 'sites/acme/handoff/assets/photo-one.jpg' }, creds: { url: 'http://shop.test', auth: 'Basic x' }, fetchImpl: counted, apply: true } ), /is not https/ );
+	assert.equal( calls, 0 );
+	assert.equal( ( await planFixtures( { client: 'acme', creds: { url: 'http://localhost:8080', auth: 'Basic x' }, fetchImpl: s.impl } ) ).length, 2 );
 } );

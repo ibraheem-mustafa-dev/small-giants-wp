@@ -24,6 +24,7 @@ from token_map import build_draft_root_token_map
 TOKENS_DIR = "tokens"
 _COMMENT_RE = re.compile(r"/\*(.*?)\*/", re.DOTALL)
 _ONE_OFF_RE = re.compile(r"\bone[-\s]*(?:and\s+two[-\s]*)?off\b", re.IGNORECASE)
+_ALIAS_RE = re.compile(r"--([\w-]+)\s*:\s*var\(", re.IGNORECASE)
 _HEX_RE = re.compile(r"#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{3})(?![0-9a-zA-Z])")
 RENDER_DELTA_E = 1.0
 
@@ -40,7 +41,8 @@ def read_token_files(draft_dir) -> dict | None:
 
     ``tokens`` is ``{name: resolved value}`` across every file (later files do not override earlier
     ones: the first declaration of a name wins, in sorted file order); ``one_off`` is the set of
-    ``#RRGGBB`` values a token file's own comment lists as one-offs.
+    ``#RRGGBB`` values a token file's own comment lists as one-offs; ``aliases`` is the set of names whose
+    first declaration is a ``var()`` reference to another token rather than a literal.
     """
     if draft_dir is None:
         return None
@@ -52,14 +54,18 @@ def read_token_files(draft_dir) -> dict | None:
         return None
     tokens: dict = {}
     one_off: set = set()
+    aliases: set = set()
     for path in files:
         css = path.read_text(encoding="utf-8", errors="replace")
+        declared_alias = {m.group(1) for m in _ALIAS_RE.finditer(_COMMENT_RE.sub("", css))}
         for name, value in build_draft_root_token_map(css).items():
+            if name not in tokens and name.lstrip("-") in declared_alias:
+                aliases.add(name)
             tokens.setdefault(name, value)
         for comment in _COMMENT_RE.findall(css):
             if _ONE_OFF_RE.search(comment):
                 one_off.update(_upper_hex(h) for h in _HEX_RE.findall(comment))
-    return {"files": [p.name for p in files], "tokens": tokens, "one_off": one_off}
+    return {"files": [p.name for p in files], "tokens": tokens, "one_off": one_off, "aliases": aliases}
 
 
 def _rendered_colours(facts) -> list:
@@ -82,13 +88,18 @@ def _rendered_colours(facts) -> list:
     return found
 
 
-def palette_entries(token_files: dict, census: dict, facts: dict, trace: list) -> list:
-    """Palette entries for the colour tokens the draft's code uses by exact value; the rest go to the trace."""
+def palette_entries(token_files: dict, census: dict, facts: dict, trace: list, held=()) -> list:
+    """Palette entries for the colour tokens the draft's code uses by exact value; the rest go to the trace.
+
+    Primitive literal tokens are read before ``var()`` aliases, so of two tokens sharing a value the literal
+    is the entry. A used token within delta E 1 of an entry already emitted or of a ``held`` palette colour is
+    an alias of it, not a second entry."""
     rendered = _rendered_colours(facts)
     entries: list = []
-    seen_hex: dict = {}
+    seen_hex: dict = {f"held:{h}": h for h in held}
     non_colour = 0
-    for name in sorted(token_files["tokens"]):
+    aliases = token_files.get("aliases") or set()
+    for name in sorted(token_files["tokens"], key=lambda n: (n in aliases, n)):
         value = token_files["tokens"][name]
         colour = parse_colour(value)
         if colour is None:
@@ -110,11 +121,13 @@ def palette_entries(token_files: dict, census: dict, facts: dict, trace: list) -
                           "reason": "declared but the draft's code never uses this exact value: gap-logged, "
                                     "not emitted (FR-33-1)"})
             continue
-        if upper in seen_hex:
+        twin = next((label for label, hexv in seen_hex.items() if delta_e(colour.hex, hexv) <= RENDER_DELTA_E), None)
+        if twin is not None:
+            what = f"held palette colour {twin[5:]}" if twin.startswith("held:") else f"--{twin}"
             trace.append({"kind": "gap", "what": f"tokens/*.css --{name}", "value": upper,
-                          "reason": f"same value as --{seen_hex[upper]}: an alias, one palette entry"})
+                          "reason": f"within delta E {RENDER_DELTA_E:g} of {what}: an alias, one palette entry"})
             continue
-        seen_hex[upper] = name
+        seen_hex[name] = upper
         nearest = min((delta_e(colour.hex, r.hex) for r in rendered), default=None)
         confirmed = nearest is not None and nearest <= RENDER_DELTA_E
         slug = f"custom-{name}"

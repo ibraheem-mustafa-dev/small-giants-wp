@@ -137,16 +137,16 @@ test( 'MUST FAIL: an embedded data-sgs-manifest is the proposal; the rules fill 
 	assert.deepEqual( linkProblems( m ), [] );
 } );
 
-test( 'classifyRoute: shop, product category, single product, cart, checkout, article, page', () => {
-	assert.equal( classifyRoute( 'shop' ).postType, 'shop' );
+test( 'MUST FAIL: classifyRoute takes no shop, cart or checkout from words: they are only its hint', () => {
+	assert.deepEqual( classifyRoute( 'shop' ), { postType: 'page', template: null, collection: 'static', hint: 'shop' } );
+	assert.equal( classifyRoute( 'Store locator' ).hint, 'shop' );
 	assert.equal( classifyRoute( 'catalogue Request Catalogue' ).postType, 'page', 'a catalogue with no priced items is a page' );
 	assert.equal( classifyRoute( 'catalogue', { prices: true } ).postType, 'product_cat' );
-	assert.deepEqual( classifyRoute( 'Product.dc.html' ), { postType: 'product', template: 'single-product', collection: 'live' }, 'a single product is a product row, never the shop' );
-	assert.equal( classifyRoute( 'product archive' ).postType, 'shop' );
-	assert.equal( classifyRoute( 'Basket' ).template, 'cart' );
-	assert.equal( classifyRoute( 'checkout' ).template, 'checkout' );
+	assert.deepEqual( classifyRoute( 'Product.dc.html' ), { postType: 'product', template: 'single-product', collection: 'live', hint: null }, 'a single product is a product row, never the shop' );
+	assert.deepEqual( [ classifyRoute( 'Basket' ).template, classifyRoute( 'Basket' ).hint ], [ null, 'cart' ] );
+	assert.deepEqual( [ classifyRoute( 'checkout' ).template, classifyRoute( 'checkout' ).hint ], [ null, 'checkout' ] );
 	assert.equal( classifyRoute( 'post' ).postType, 'post' );
-	assert.deepEqual( classifyRoute( 'about' ), { postType: 'page', template: null, collection: 'static' } );
+	assert.deepEqual( classifyRoute( 'about' ), { postType: 'page', template: null, collection: 'static', hint: null } );
 } );
 
 test( 'MUST FAIL: an empty-but-shaped intake record validates; one missing review, or with an off-list row type, is refused', () => {

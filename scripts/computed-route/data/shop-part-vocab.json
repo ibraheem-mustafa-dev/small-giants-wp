@@ -1,5 +1,5 @@
 {
-	"_about": "Spec 48 FR-48-60, FR-48-61, FR-48-62: how a draft's shop units (lib/shop-parts-read.mjs) map to the framework. An entry matches a unit when every criterion it names holds: `text` (a regex, case-insensitive, over the unit's ` | `-joined tag, words, aria label, placeholder, input type, handler and href), `tag` (the unit's tag), `parent` (the tag a text run sits in), `branch` (the unit's sc-if and sc-for conditions), `kind` (text, control, image or import). The first matching entry in file order wins, so specific entries come first. `home.settings` are an anchored regex resolved against the framework DB's attributes for `home.block` (an entry whose pattern finds no attribute is refused as stale); `valueFrom: text` writes the unit's literal words into the one setting the pattern names. `home.contains` names a block comment the part or template file must hold. `controlsOnly` surfaces take text runs only through an entry with `claimsText`.",
+	"_about": "Spec 48 FR-48-60, FR-48-61, FR-48-62: the shop part kinds of a draft's buy box, filter and basket drawer and the framework home of each. A unit (lib/shop-parts-read.mjs) is classified by what the draft's code is and does: an entry's `rule` names a structural test in lib/shop-parts.mjs::RULES (element type, ARIA state, position in the region tree, the handler's effect read from the logic's AST), and the first entry in file order whose rule holds takes the unit. A literal text run with no rule of its own joins the part of a unit in its row when that unit's entry takes `labels` (the label beside a value). `hints` are word patterns kept only as a last resort: a unit only a hint names becomes a reported gap row (a missing part that says the words alone named it), never a mapped part. A hint matches when every criterion it names holds: `text` (a regex, case-insensitive, over the unit's ` | `-joined tag, words, aria label, placeholder, input type, handler and href), `tag`, `parent` (the tag a text run sits in), `branch` (the unit's sc-if and sc-for conditions), `kind` (text, control, image or import). Entry ids are unique. `home.settings` are anchored regexes resolved against the framework DB's attributes for `home.block` (an entry whose pattern finds no attribute is refused as stale); `valueFrom: text` writes the unit's literal words into the one setting the pattern names. `home.contains` names a block comment the part or template file must hold. An entry whose rule and hints match no unit of any draft read is refused as stale. `controlsOnly` surfaces take text runs only through an entry with `claimsText`.",
 	"surfaces": {
 		"buybox": {
 			"mainFlow": "buy"
@@ -17,7 +17,12 @@
 			"id": "buybox-sticky-bar",
 			"surface": "buybox",
 			"label": "Sticky add-to-basket bar",
-			"branch": "show\\w*bar|sticky",
+			"rule": "bar",
+			"hints": [
+				{
+					"branch": "show\\w*bar|sticky"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/buybox",
@@ -28,21 +33,15 @@
 			}
 		},
 		{
-			"id": "buybox-breadcrumbs",
-			"surface": "buybox",
-			"label": "Breadcrumbs",
-			"text": "breadcrumb",
-			"home": {
-				"type": "part",
-				"file": "theme/sgs-theme/parts/sgs-pdp-buybox.html",
-				"contains": "wp:woocommerce/breadcrumbs"
-			}
-		},
-		{
 			"id": "buybox-title",
 			"surface": "buybox",
 			"label": "Product title",
-			"parent": "^h1$",
+			"rule": "h1-text",
+			"hints": [
+				{
+					"parent": "^h1$"
+				}
+			],
 			"home": {
 				"type": "part",
 				"file": "theme/sgs-theme/parts/sgs-pdp-buybox.html",
@@ -53,7 +52,11 @@
 			"id": "buybox-rating",
 			"surface": "buybox",
 			"label": "Rating and review count",
-			"text": "★|rating|reviews?\\b",
+			"hints": [
+				{
+					"text": "★|rating|reviews?\\b"
+				}
+			],
 			"home": {
 				"type": "part",
 				"file": "theme/sgs-theme/parts/sgs-pdp-buybox.html",
@@ -64,47 +67,46 @@
 			"id": "buybox-subscribe",
 			"surface": "buybox",
 			"label": "Subscribe-and-save choice",
-			"text": "subscri|pickSub|pickOnce|freqs|isSub",
+			"hints": [
+				{
+					"text": "subscri|pickSub|pickOnce|freqs|isSub"
+				},
+				{
+					"branch": "isSub|freqs"
+				}
+			],
 			"home": {
 				"type": "missing",
 				"reason": "no sgs/buybox setting or part holds a subscription choice (one-off versus repeat delivery with a frequency)"
 			}
 		},
 		{
-			"id": "buybox-subscribe",
-			"surface": "buybox",
-			"label": "Subscribe-and-save choice",
-			"home": {
-				"type": "missing",
-				"reason": "no sgs/buybox setting or part holds a subscription choice (one-off versus repeat delivery with a frequency)"
-			},
-			"branch": "isSub|freqs"
-		},
-		{
 			"id": "buybox-gift-note",
 			"surface": "buybox",
 			"label": "Gift note",
-			"text": "gift|msgLeft|onMsg",
+			"hints": [
+				{
+					"text": "gift|msgLeft|onMsg"
+				},
+				{
+					"branch": "giftable|giftOn"
+				}
+			],
 			"home": {
 				"type": "missing",
 				"reason": "the buy box has no extras slot for a gift tick and note (Spec 27 hand-off, spec 48 section 16)"
 			}
-		},
-		{
-			"id": "buybox-gift-note",
-			"surface": "buybox",
-			"label": "Gift note",
-			"home": {
-				"type": "missing",
-				"reason": "the buy box has no extras slot for a gift tick and note (Spec 27 hand-off, spec 48 section 16)"
-			},
-			"branch": "giftable|giftOn"
 		},
 		{
 			"id": "buybox-quantity",
 			"surface": "buybox",
 			"label": "Quantity stepper",
-			"text": "^[−+-]$|\\bqty\\b|\\b(?:inc|dec)\\b|showQty",
+			"rule": "stepper",
+			"hints": [
+				{
+					"text": "^[−+-]$|\\bqty\\b|\\b(?:inc|dec)\\b|showQty"
+				}
+			],
 			"home": {
 				"type": "missing",
 				"reason": "no sgs/buybox setting names a quantity stepper"
@@ -114,7 +116,11 @@
 			"id": "buybox-size-guide-link",
 			"surface": "buybox",
 			"label": "Size-guide link beside a picker",
-			"text": "openSizeGuide|which size",
+			"hints": [
+				{
+					"text": "openSizeGuide|which size"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/buybox",
@@ -129,8 +135,13 @@
 			"id": "buybox-option-picker",
 			"surface": "buybox",
 			"label": "Option pickers",
-			"tag": "^button$",
-			"branch": "\\b(?:sizes|bases|chips|flavs|amounts|colourTiles|variants|options)\\b",
+			"rule": "loop-choice",
+			"hints": [
+				{
+					"tag": "^button$",
+					"branch": "\\b(?:sizes|bases|chips|flavs|amounts|colourTiles|variants|options)\\b"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/buybox",
@@ -145,8 +156,13 @@
 			"id": "buybox-add-to-basket",
 			"surface": "buybox",
 			"label": "Add-to-basket button",
-			"text": "\\|\\s*add(?:ToBag|FrameOnly|WithLens)?\\s*\\||add to (?:basket|bag|cart)",
-			"tag": "^button$",
+			"rule": "add-control",
+			"hints": [
+				{
+					"text": "\\|\\s*add(?:ToBag|FrameOnly|WithLens)?\\s*\\||add to (?:basket|bag|cart)",
+					"tag": "^button$"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/buybox",
@@ -161,7 +177,11 @@
 			"id": "buybox-saving",
 			"surface": "buybox",
 			"label": "RRP and saving",
-			"text": "\\brrp\\b|\\bsave\\b|saveAmount",
+			"hints": [
+				{
+					"text": "\\brrp\\b|\\bsave\\b|saveAmount"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/buybox",
@@ -176,7 +196,13 @@
 			"id": "buybox-price",
 			"surface": "buybox",
 			"label": "Price",
-			"text": "priceLabel|priceTxt|\\bprice\\b",
+			"rule": "price",
+			"hints": [
+				{
+					"text": "priceLabel|priceTxt|\\bprice\\b"
+				}
+			],
+			"labels": true,
 			"home": {
 				"type": "built-in",
 				"block": "sgs/buybox",
@@ -187,7 +213,11 @@
 			"id": "buybox-stock",
 			"surface": "buybox",
 			"label": "Stock line",
-			"text": "stockLabel|in stock|low stock",
+			"hints": [
+				{
+					"text": "stockLabel|in stock|low stock"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/buybox",
@@ -201,7 +231,12 @@
 			"id": "buybox-info-accordion",
 			"surface": "buybox",
 			"label": "Product information accordion",
-			"branch": "^acc$|\\bacc\\b|accordion|a\\.open",
+			"rule": "disclosure",
+			"hints": [
+				{
+					"branch": "^acc$|\\bacc\\b|accordion|a\\.open"
+				}
+			],
 			"home": {
 				"type": "elsewhere",
 				"note": "the product information accordion is its own surface (sgs/accordion), not a buy box part"
@@ -211,7 +246,11 @@
 			"id": "buybox-assurances",
 			"surface": "buybox",
 			"label": "Assurance lines",
-			"branch": "assurances",
+			"hints": [
+				{
+					"branch": "assurances"
+				}
+			],
 			"home": {
 				"type": "part",
 				"file": "theme/sgs-theme/parts/sgs-pdp-buybox.html",
@@ -222,27 +261,14 @@
 			"id": "drawer-upsell",
 			"surface": "drawer",
 			"label": "Upsell offer",
-			"text": "upsell|addTrial|taster",
-			"home": {
-				"type": "missing",
-				"reason": "drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16)"
-			}
-		},
-		{
-			"id": "drawer-upsell",
-			"surface": "drawer",
-			"label": "Upsell offer",
-			"home": {
-				"type": "missing",
-				"reason": "drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16)"
-			},
-			"branch": "showUpsell"
-		},
-		{
-			"id": "drawer-gift-note",
-			"surface": "drawer",
-			"label": "Gift tick and note",
-			"text": "gift|msgLeft|onMsg",
+			"hints": [
+				{
+					"text": "upsell|addTrial|taster"
+				},
+				{
+					"branch": "showUpsell"
+				}
+			],
 			"home": {
 				"type": "missing",
 				"reason": "drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16)"
@@ -252,18 +278,30 @@
 			"id": "drawer-gift-note",
 			"surface": "drawer",
 			"label": "Gift tick and note",
+			"hints": [
+				{
+					"text": "gift|msgLeft|onMsg"
+				},
+				{
+					"branch": "gift\\.on"
+				}
+			],
 			"home": {
 				"type": "missing",
 				"reason": "drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16)"
-			},
-			"branch": "gift\\.on"
+			}
 		},
 		{
 			"id": "drawer-close",
 			"surface": "drawer",
 			"label": "Close button",
-			"tag": "^button$",
-			"text": "\\|\\s*close(?:Bag|Basket)?\\s*\\|",
+			"rule": "closes",
+			"hints": [
+				{
+					"text": "\\|\\s*close(?:Bag|Basket)?\\s*\\|",
+					"tag": "^button$"
+				}
+			],
 			"home": {
 				"type": "built-in",
 				"block": "sgs/cart",
@@ -274,7 +312,12 @@
 			"id": "drawer-count",
 			"surface": "drawer",
 			"label": "Item count beside the heading",
-			"text": "#text \\|\\s*\\(\\{\\{\\s*\\w*[cC]ount\\s*\\}\\}\\)",
+			"rule": "count",
+			"hints": [
+				{
+					"text": "#text \\|\\s*\\(\\{\\{\\s*\\w*[cC]ount\\s*\\}\\}\\)"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/cart",
@@ -287,7 +330,11 @@
 			"id": "drawer-heading",
 			"surface": "drawer",
 			"label": "Panel heading",
-			"text": "#text \\|\\s*(?:your )?(?:basket|bag)\\s*\\|",
+			"hints": [
+				{
+					"text": "#text \\|\\s*(?:your )?(?:basket|bag)\\s*\\|"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/cart",
@@ -301,7 +348,11 @@
 			"id": "drawer-free-delivery",
 			"surface": "drawer",
 			"label": "Free-delivery message",
-			"text": "freeMsg|freeShipNote|free (?:uk )?(?:delivery|shipping)",
+			"hints": [
+				{
+					"text": "freeMsg|freeShipNote|free (?:uk )?(?:delivery|shipping)"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/cart",
@@ -316,7 +367,12 @@
 			"id": "drawer-quantity",
 			"surface": "drawer",
 			"label": "Line quantity buttons",
-			"text": "\\|\\s*[−+-]\\s*\\||\\.(?:inc|dec)\\b|\\bqty\\b",
+			"rule": "stepper",
+			"hints": [
+				{
+					"text": "\\|\\s*[−+-]\\s*\\||\\.(?:inc|dec)\\b|\\bqty\\b"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/cart",
@@ -329,7 +385,12 @@
 			"id": "drawer-remove",
 			"surface": "drawer",
 			"label": "Line remove control",
-			"text": "\\.(?:rm|remove)\\b",
+			"rule": "line-edit",
+			"hints": [
+				{
+					"text": "\\.(?:rm|remove)\\b"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/cart",
@@ -343,7 +404,11 @@
 			"id": "drawer-add-options",
 			"surface": "drawer",
 			"label": "Line add-options control",
-			"text": "\\.addLens|add options",
+			"hints": [
+				{
+					"text": "\\.addLens|add options"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/cart",
@@ -357,8 +422,13 @@
 			"id": "drawer-line-image",
 			"surface": "drawer",
 			"label": "Line thumbnail",
-			"kind": "^image$",
-			"branch": "\\b(?:items|bagItems)\\b",
+			"rule": "line-image",
+			"hints": [
+				{
+					"branch": "\\b(?:items|bagItems)\\b",
+					"kind": "^image$"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/cart",
@@ -371,7 +441,12 @@
 			"id": "drawer-line-details",
 			"surface": "drawer",
 			"label": "Line name, variant, brand and total",
-			"branch": "\\b(?:items|bagItems)\\b",
+			"rule": "line-text",
+			"hints": [
+				{
+					"branch": "\\b(?:items|bagItems)\\b"
+				}
+			],
 			"home": {
 				"type": "built-in",
 				"block": "sgs/cart",
@@ -382,7 +457,13 @@
 			"id": "drawer-subtotal",
 			"surface": "drawer",
 			"label": "Subtotal",
-			"text": "subtotal|subText",
+			"rule": "total",
+			"hints": [
+				{
+					"text": "subtotal|subText"
+				}
+			],
+			"labels": true,
 			"home": {
 				"type": "built-in",
 				"block": "sgs/cart",
@@ -393,7 +474,11 @@
 			"id": "drawer-instalments",
 			"surface": "drawer",
 			"label": "Instalments note",
-			"text": "klarna|payments of|instalment",
+			"hints": [
+				{
+					"text": "klarna|payments of|instalment"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/cart",
@@ -407,7 +492,11 @@
 			"id": "drawer-note",
 			"surface": "drawer",
 			"label": "Footer note",
-			"text": "\\d\\s*[–-]\\s*\\d\\s*days|dispatch|\\btax\\b|\\bvat\\b",
+			"hints": [
+				{
+					"text": "\\d\\s*[–-]\\s*\\d\\s*days|dispatch|\\btax\\b|\\bvat\\b"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/cart",
@@ -421,8 +510,13 @@
 			"id": "drawer-checkout",
 			"surface": "drawer",
 			"label": "Checkout button",
-			"text": "checkout",
-			"tag": "^(?:a|button)$",
+			"rule": "form-route",
+			"hints": [
+				{
+					"text": "checkout",
+					"tag": "^(?:a|button)$"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/cart",
@@ -436,8 +530,13 @@
 			"id": "drawer-view-basket",
 			"surface": "drawer",
 			"label": "View-basket link",
-			"text": "(?:basket|cart)\\.",
-			"tag": "^a$",
+			"rule": "page-route",
+			"hints": [
+				{
+					"text": "(?:basket|cart)\\.",
+					"tag": "^a$"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/cart",
@@ -451,8 +550,13 @@
 			"id": "drawer-empty-message",
 			"surface": "drawer",
 			"label": "Empty-basket message",
-			"branch": "isEmpty|bagEmpty",
-			"tag": "^#text$",
+			"rule": "empty-text",
+			"hints": [
+				{
+					"tag": "^#text$",
+					"branch": "isEmpty|bagEmpty"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/cart",
@@ -466,8 +570,13 @@
 			"id": "drawer-empty-cta",
 			"surface": "drawer",
 			"label": "Empty-basket button",
-			"branch": "isEmpty|bagEmpty",
-			"tag": "^(?:a|button)$",
+			"rule": "empty-control",
+			"hints": [
+				{
+					"tag": "^(?:a|button)$",
+					"branch": "isEmpty|bagEmpty"
+				}
+			],
 			"home": {
 				"type": "setting",
 				"block": "sgs/cart",
@@ -481,7 +590,12 @@
 			"id": "filter-results",
 			"surface": "filter",
 			"label": "Product results grid",
-			"kind": "^import$",
+			"rule": "import",
+			"hints": [
+				{
+					"kind": "^import$"
+				}
+			],
 			"home": {
 				"type": "template-block",
 				"file": "theme/sgs-theme/templates/archive-product.html",
@@ -492,7 +606,12 @@
 			"id": "filter-no-results",
 			"surface": "filter",
 			"label": "No-results message",
-			"branch": "noResults",
+			"rule": "empty-text",
+			"hints": [
+				{
+					"branch": "noResults"
+				}
+			],
 			"claimsText": true,
 			"home": {
 				"type": "template-block",
@@ -504,8 +623,13 @@
 			"id": "filter-result-count",
 			"surface": "filter",
 			"label": "Result count",
-			"text": "resultCount",
-			"tag": "^#text$",
+			"rule": "count",
+			"hints": [
+				{
+					"text": "resultCount",
+					"tag": "^#text$"
+				}
+			],
 			"claimsText": true,
 			"home": {
 				"type": "template-block",
@@ -517,7 +641,12 @@
 			"id": "filter-sort",
 			"surface": "filter",
 			"label": "Sort",
-			"text": "select|\\|\\s*\\w*sort\\w*\\s*\\|",
+			"rule": "select",
+			"hints": [
+				{
+					"text": "select|\\|\\s*\\w*sort\\w*\\s*\\|"
+				}
+			],
 			"home": {
 				"type": "template-block",
 				"file": "theme/sgs-theme/templates/archive-product.html",
@@ -528,7 +657,11 @@
 			"id": "filter-swatch-options",
 			"surface": "filter",
 			"label": "Colour swatch options",
-			"branch": "isSwatch",
+			"hints": [
+				{
+					"branch": "isSwatch"
+				}
+			],
 			"home": {
 				"type": "missing",
 				"reason": "WooCommerce's filter blocks have no colour-swatch display; the framework's archive template composes none"
@@ -538,7 +671,12 @@
 			"id": "filter-price",
 			"surface": "filter",
 			"label": "Price range",
-			"text": "range|setPrice",
+			"rule": "range",
+			"hints": [
+				{
+					"text": "range|setPrice"
+				}
+			],
 			"home": {
 				"type": "template-block",
 				"file": "theme/sgs-theme/templates/archive-product.html",
@@ -549,8 +687,13 @@
 			"id": "filter-search",
 			"surface": "filter",
 			"label": "Filter search",
-			"text": "search",
-			"tag": "^input$",
+			"rule": "text-input",
+			"hints": [
+				{
+					"text": "search",
+					"tag": "^input$"
+				}
+			],
 			"home": {
 				"type": "template-block",
 				"file": "theme/sgs-theme/templates/archive-product.html",
@@ -561,7 +704,12 @@
 			"id": "filter-checkbox-list",
 			"surface": "filter",
 			"label": "Checkbox list",
-			"text": "checkbox",
+			"rule": "checkbox",
+			"hints": [
+				{
+					"text": "checkbox"
+				}
+			],
 			"home": {
 				"type": "template-block",
 				"file": "theme/sgs-theme/templates/archive-product.html",
@@ -572,7 +720,12 @@
 			"id": "filter-clear",
 			"surface": "filter",
 			"label": "Clear button",
-			"text": "clearFilters|clear",
+			"rule": "resets",
+			"hints": [
+				{
+					"text": "clearFilters|clear"
+				}
+			],
 			"home": {
 				"type": "template-block",
 				"file": "theme/sgs-theme/templates/archive-product.html",
@@ -583,7 +736,11 @@
 			"id": "filter-active-chips",
 			"surface": "filter",
 			"label": "Active filter chips",
-			"branch": "hasActive|activeChips",
+			"hints": [
+				{
+					"branch": "hasActive|activeChips"
+				}
+			],
 			"home": {
 				"type": "template-block",
 				"file": "theme/sgs-theme/templates/archive-product.html",
@@ -594,7 +751,12 @@
 			"id": "filter-popup",
 			"surface": "filter",
 			"label": "Filter pop-up or drawer",
-			"text": "toggleFilters",
+			"rule": "toggle-panel",
+			"hints": [
+				{
+					"text": "toggleFilters"
+				}
+			],
 			"home": {
 				"type": "missing",
 				"reason": "a bespoke filter pop-up or drawer; WooCommerce's product-filters block has no open and close control of its own"
@@ -604,7 +766,12 @@
 			"id": "filter-group-toggle",
 			"surface": "filter",
 			"label": "Collapsible filter groups",
-			"text": "toggleOpen",
+			"rule": "loop-toggle",
+			"hints": [
+				{
+					"text": "toggleOpen"
+				}
+			],
 			"home": {
 				"type": "missing",
 				"reason": "a collapsible heading per filter group; the framework's archive template composes no collapsible filter group"
@@ -614,7 +781,12 @@
 			"id": "filter-switch",
 			"surface": "filter",
 			"label": "On-off filter switch",
-			"text": "switch",
+			"rule": "switch",
+			"hints": [
+				{
+					"text": "switch"
+				}
+			],
 			"home": {
 				"type": "missing",
 				"reason": "an on-off switch filter (for example a product attribute held as yes or no); the framework's archive template composes no switch filter"
@@ -624,7 +796,12 @@
 			"id": "filter-options",
 			"surface": "filter",
 			"label": "Taxonomy filter options",
-			"text": "\\b(?:c|i)\\.(?:pick|toggle|set)\\b",
+			"rule": "loop-narrow",
+			"hints": [
+				{
+					"text": "\\b(?:c|i)\\.(?:pick|toggle|set)\\b"
+				}
+			],
 			"home": {
 				"type": "template-block",
 				"file": "theme/sgs-theme/templates/archive-product.html",

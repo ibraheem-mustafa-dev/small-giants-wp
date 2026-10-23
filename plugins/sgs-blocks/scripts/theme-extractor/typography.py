@@ -37,6 +37,17 @@ def _px(value: str, root_px: float) -> float | None:
     return n  # px (computed) or unitless number
 
 
+def _root_px(facts: dict) -> float:
+    """The measured root font size in px; refuses when the render did not record one (never assumes 16px)."""
+    raw = (facts.get("root") or {}).get("fontSize", "")
+    root_px = _px(raw, 0.0) if raw and not raw.strip().lower().endswith("em") else None
+    if not root_px:
+        raise DeclaredValueMissing(
+            f"no measured root font size (facts.root.fontSize is {raw!r}), so rem and em values cannot be "
+            "resolved; the extractor never assumes a root size")
+    return root_px
+
+
 def _ratio(line_height: str, font_size: str, root_px: float):
     bare = (line_height or "").strip()
     if re.fullmatch(r"\d+(?:\.\d+)?|\.\d+", bare):
@@ -70,7 +81,7 @@ def base_typography(facts: dict, trace: list) -> dict:
     Raises ``DeclaredValueMissing`` when no representative ``<p>`` was rendered, or when it lacks a
     measured size, line height or weight: a base the draft never declared is never emitted (FR-33-3).
     """
-    root_px = _px(facts.get("root", {}).get("fontSize", "16px"), 16.0) or 16.0
+    root_px = _root_px(facts)
     p = representative_paragraph(facts)
     if p is None:
         raise DeclaredValueMissing(
@@ -78,7 +89,9 @@ def base_typography(facts: dict, trace: list) -> dict:
             "so the base font size, line height and weight cannot be read; the extractor never synthesises "
             "a base")
     fs_px = _px(p.get("fontSize", ""), root_px)
-    lh = _ratio(p.get("lineHeight", ""), p.get("fontSize", ""), root_px)
+    rendered_normal = (p.get("lineHeight") or "").strip().lower() == "normal"
+    # ``normal`` is the rendered value of a line height the draft never states: it is emitted as rendered.
+    lh = "normal" if rendered_normal else _ratio(p.get("lineHeight", ""), p.get("fontSize", ""), root_px)
     weight = p.get("fontWeight")
     missing = [name for name, value in (("fontSize", fs_px), ("lineHeight", lh), ("fontWeight", weight)) if not value]
     if missing:
@@ -94,6 +107,10 @@ def base_typography(facts: dict, trace: list) -> dict:
     trace.append({"kind": "base", "what": "styles.typography", "_source": "declared",
                   "reason": f"computed on representative <p> '{p.get('textSample', '')[:32]}'",
                   "fontSize": out["fontSize"], "lineHeight": out["lineHeight"], "root_px": root_px})
+    if rendered_normal:
+        trace.append({"kind": "base", "what": "styles.typography.lineHeight", "_source": "rendered",
+                      "value": "normal", "reason": "the draft states no line height; the render's computed "
+                                                    "value is normal"})
     return out
 
 
@@ -155,7 +172,7 @@ def heading_base(facts: dict, trace: list) -> dict:
     Only emits letter-spacing if the MAJORITY of non-chrome headings declare a non-``normal`` value
     (Mama's = ``normal`` → omitted; never synthesise the fabricated tracking).
     """
-    root_px = _px(facts.get("root", {}).get("fontSize", "16px"), 16.0) or 16.0
+    root_px = _root_px(facts)
     headings = facts.get("headings", {})
     ratios = []
     ls_values = []
@@ -198,7 +215,7 @@ def heading_sizes(facts: dict, trace: list) -> dict:
     silently change unrelated components. A literal per-tag override avoids that collision while still
     satisfying the iron law: the value shipped is the COMPUTED value on the really-rendered node.
     """
-    root_px = _px(facts.get("root", {}).get("fontSize", "16px"), 16.0) or 16.0
+    root_px = _root_px(facts)
     out = {}
     for tag in ("h1", "h2", "h3", "h4", "h5", "h6"):
         h = facts.get("headings", {}).get(tag)

@@ -1,0 +1,29 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Loaf | Bakery</title></head><body>
+<x-dc>
+<dc-import name="SiteHeader"></dc-import>
+<main><h1>Loaf</h1><a href="Range.dc.html">Back to the range</a><a href="Home.dc.html">Home</a>
+<section><h2>Make it yours</h2>
+  <sc-for list="{{ slices }}" as="o"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}">{{ o.label }}</button></sc-for>
+  <sc-for list="{{ seeds }}" as="o"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}">{{ o.label }}</button></sc-for>
+</section>
+<section><h2>Good to know</h2>
+  <sc-for list="{{ tabs }}" as="t"><button onClick="{{ t.pick }}" role="tab" aria-selected="{{ t.on }}">{{ t.label }}</button></sc-for>
+  <sc-for list="{{ faqs }}" as="a"><button onClick="{{ a.toggle }}" aria-expanded="{{ a.open }}">{{ a.label }}</button></sc-for>
+</section></main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { slice: 0, seed: 0, tab: 0, faq: null };
+  renderVals() {
+    const S = this.state;
+    return {
+      slices: [ 'Whole', 'Sliced' ].map( ( label, i ) => ( { label, on: S.slice === i, pick: () => this.setState( { slice: i } ) } ) ),
+      seeds: [ 'Plain', 'Seeded' ].map( ( label, i ) => ( { label, on: S.seed === i, pick: () => this.setState( { seed: i } ) } ) ),
+      tabs: [ 'Details', 'Delivery' ].map( ( label, i ) => ( { label, on: S.tab === i, pick: () => this.setState( { tab: i } ) } ) ),
+      faqs: [ 'Allergens', 'Storage' ].map( ( label, i ) => ( { label, open: S.faq === i, toggle: () => this.setState( { faq: S.faq === i ? null : i } ) } ) ),
+    };
+  }
+}
+</script>
+</body></html>

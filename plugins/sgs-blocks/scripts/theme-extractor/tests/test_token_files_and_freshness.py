@@ -23,7 +23,7 @@ sys.path.insert(0, str(SCRIPTS))
 
 import extract  # noqa: E402
 import typography  # noqa: E402
-from shared_utils import draft_source_sha256, manifest_source_hashes  # noqa: E402
+from shared_utils import ManifestMismatch, draft_source_sha256, manifest_source_hashes  # noqa: E402
 
 FACTS = json.loads((HERE / "fixtures" / "eye-care-computed-facts.json").read_text(encoding="utf-8"))
 
@@ -50,9 +50,9 @@ def _sha(text: str) -> str:
 
 def _export(root: pathlib.Path, colors: str = COLORS_CSS, readme: str = "# README\n") -> pathlib.Path:
     (root / "tokens").mkdir(parents=True)
-    (root / "tokens" / "colors.css").write_text(colors, encoding="utf-8")
-    (root / "README.md").write_text(readme, encoding="utf-8")
-    (root / "Home.dc.html").write_text(DRAFT, encoding="utf-8")
+    (root / "tokens" / "colors.css").write_bytes(colors.encode("utf-8"))
+    (root / "README.md").write_bytes(readme.encode("utf-8"))
+    (root / "Home.dc.html").write_bytes(DRAFT.encode("utf-8"))
     files = [{"path": "Home.dc.html", "bytes": 1, "sha256": _sha(DRAFT)},
              {"path": "README.md", "bytes": 1, "sha256": _sha(readme)},
              {"path": "tokens/colors.css", "bytes": 1, "sha256": _sha(colors)}]
@@ -173,3 +173,42 @@ def test_the_snapshot_records_the_manifest_hashes_of_drafts_and_tokens_only(tmp_
     snap = _build(root, [])
     assert snap["_sgsExtractor"]["manifest_sha256"] == hashes
     assert snap["_sgsExtractor"]["draft_source_sha256"] == draft_source_sha256(DRAFT, root)
+
+
+def test_a_hand_edited_token_file_the_manifest_does_not_match_refuses(tmp_path, capsys):
+    root = _export(tmp_path / "export")
+    (root / "tokens" / "colors.css").write_bytes(COLORS_CSS.replace("#0A7EA8", "#0A7EA9").encode("utf-8"))
+    with pytest.raises(ManifestMismatch, match="tokens/colors.css"):
+        manifest_source_hashes(root)
+    facts_path = tmp_path / "facts.json"
+    facts_path.write_text(json.dumps(FACTS), encoding="utf-8")
+    code = extract.main(["--client", "acme", "--draft", str(root / "Home.dc.html"), "--facts", str(facts_path),
+                         "--out", str(tmp_path / "out.json"), "--trace", str(tmp_path / "t.json")])
+    assert code != 0
+    assert "tokens/colors.css" in capsys.readouterr().err
+    assert not (tmp_path / "out.json").exists()
+
+
+def test_a_hand_edited_draft_refuses_and_a_listed_file_missing_on_disk_refuses(tmp_path):
+    root = _export(tmp_path / "export")
+    (root / "Home.dc.html").write_bytes((DRAFT + "<!-- edited -->").encode("utf-8"))
+    with pytest.raises(ManifestMismatch, match="Home.dc.html"):
+        manifest_source_hashes(root)
+    other = _export(tmp_path / "other")
+    (other / "tokens" / "colors.css").unlink()
+    with pytest.raises(ManifestMismatch, match="tokens/colors.css"):
+        manifest_source_hashes(other)
+
+
+def test_a_draft_the_manifest_does_not_list_refuses(tmp_path, capsys):
+    root = _export(tmp_path / "export")
+    (root / "Extra.dc.html").write_bytes(DRAFT.encode("utf-8"))
+    with pytest.raises(ManifestMismatch, match="Extra.dc.html"):
+        manifest_source_hashes(root, "Extra.dc.html")
+    assert manifest_source_hashes(root, "Home.dc.html")  # the listed draft passes
+    facts_path = tmp_path / "facts.json"
+    facts_path.write_text(json.dumps(FACTS), encoding="utf-8")
+    code = extract.main(["--client", "acme", "--draft", str(root / "Extra.dc.html"), "--facts", str(facts_path),
+                         "--out", str(tmp_path / "out.json"), "--trace", str(tmp_path / "t.json")])
+    assert code != 0
+    assert "Extra.dc.html" in capsys.readouterr().err

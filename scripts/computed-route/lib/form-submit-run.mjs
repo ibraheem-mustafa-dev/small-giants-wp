@@ -113,3 +113,34 @@ export function targetSite( pyText, target ) {
 	const wp = /"wp_content":\s*"([^"]+)"/.exec( block )?.[ 1 ];
 	return host && wp ? { host, root: wp.replace( /\/wp-content\/?$/, '' ) } : null;
 }
+
+// The SSH endpoint for a target: the target's own `"ssh_host"` / `"ssh_port"` in TARGETS when it carries them, else the
+// shared account in deploy_common.py (`SSH_USER_HOST` and the `-p` port of `SSH_FALLBACK`). { userHost, port, shared } or
+// null when neither is readable.
+export function sshEndpoint( pyText, target ) {
+	const text = String( pyText || '' );
+	const at = text.indexOf( `"${ target }": {` );
+	const block = at < 0 ? '' : text.slice( at, text.indexOf( '}', at ) );
+	const ownHost = /"ssh_host":\s*"([^"]+)"/.exec( block )?.[ 1 ];
+	const ownPort = /"ssh_port":\s*"?(\d+)"?/.exec( block )?.[ 1 ];
+	const userHost = ownHost || /^SSH_USER_HOST\s*=\s*"([^"]+)"/m.exec( text )?.[ 1 ];
+	const port = ownPort || /^SSH_FALLBACK\s*=\s*\[[^\]]*"-p",\s*"(\d+)"/m.exec( text )?.[ 1 ];
+	return userHost && port ? { userHost, port, shared: ! ownHost } : null;
+}
+
+// The `--form` slug as WordPress keys it: { slug, formId } when the argument is already a clean slug (letters, digits,
+// `_`, `-`), else { error }. `formId` is lower-cased, as sanitize_key stores `form_id`.
+export function formSlug( raw ) {
+	const value = String( raw ?? '' );
+	const clean = value.replace( /[^\w-]/g, '' );
+	if ( ! clean ) {
+		return { error: 'the --form slug is empty after sanitising' };
+	}
+	if ( clean !== value ) {
+		return { error: `the --form slug ${ JSON.stringify( value ) } holds characters a slug cannot (it would be read as ${ clean })` };
+	}
+	return { slug: clean, formId: clean.toLowerCase() };
+}
+
+// A value for a SQL LIKE pattern inside a single-quoted literal: `\`, `%` and `_` match only themselves.
+export const likeLiteral = ( s ) => String( s ).replace( /[\\%_]/g, ( c ) => `\\${ c }` );

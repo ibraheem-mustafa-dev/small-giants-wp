@@ -21,8 +21,8 @@ import extract  # noqa: E402
 import heading_weight  # noqa: E402
 from schema_validate import validate_theme_json  # noqa: E402
 
-DRAFT_DIR = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care"
-DRAFT = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html"
+DRAFT_DIR = REPO / "sites/eye-care-ward-end/handoff"
+DRAFT = REPO / "sites/eye-care-ward-end/handoff/Eye Care Birmingham.dc.html"
 FACTS = HERE / "fixtures" / "eye-care-computed-facts.json"
 MAMAS = REPO / "sites/mamas-munches/mockups/homepage/index.html"
 WHAT = "styles.elements.heading.typography.fontWeight"

@@ -16,6 +16,7 @@
 						"reason": "no part or setting in the framework is known for this control (a)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"{{ cur.brand }}"
@@ -30,6 +31,9 @@
 						"contains": "wp:post-title"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"{{ cur.name }}"
@@ -43,20 +47,24 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"{{ cur.code }}"
 					]
 				},
 				{
-					"id": "buybox-rating",
+					"id": "buybox-rating:hint",
 					"label": "Rating and review count",
 					"home": {
-						"type": "part",
-						"file": "theme/sgs-theme/parts/sgs-pdp-buybox.html",
-						"contains": "wp:woocommerce/product-rating"
+						"type": "missing",
+						"reason": "only words name this text (#text) as \"Rating and review count\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "buybox-rating"
 					},
 					"write": null,
+					"by": [
+						"hint"
+					],
 					"units": 1,
 					"sample": [
 						"{{ cur.ratingLabel }} · {{ cur.reviewsLabel }}"
@@ -71,24 +79,26 @@
 						"note": "the block renders the current price from the product"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"{{ cur.priceLabel }}"
 					]
 				},
 				{
-					"id": "buybox-saving",
+					"id": "buybox-saving:hint",
 					"label": "RRP and saving",
 					"home": {
-						"type": "setting",
-						"block": "sgs/buybox",
-						"settings": [
-							"rrpShowPrice",
-							"rrpSavingFormat",
-							"rrpSavingPrefix"
-						]
+						"type": "missing",
+						"reason": "only words name this text (#text) as \"RRP and saving\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "buybox-saving"
 					},
 					"write": null,
+					"by": [
+						"hint"
+					],
 					"units": 3,
 					"sample": [
 						"RRP",
@@ -97,17 +107,17 @@
 					]
 				},
 				{
-					"id": "buybox-stock",
+					"id": "buybox-stock:hint",
 					"label": "Stock line",
 					"home": {
-						"type": "setting",
-						"block": "sgs/buybox",
-						"settings": [
-							"showStockStatus",
-							"stockInStockLabel"
-						]
+						"type": "missing",
+						"reason": "only words name this text (#text) as \"Stock line\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "buybox-stock"
 					},
 					"write": null,
+					"by": [
+						"hint"
+					],
 					"units": 1,
 					"sample": [
 						"{{ stockLabel }}"
@@ -121,6 +131,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"Colour"
@@ -134,6 +145,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"{{ cur.colourName }}"
@@ -152,6 +164,9 @@
 						]
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 2,
 					"sample": [
 						"{{ c.name }}",
@@ -166,6 +181,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"Colourway shots are stand-ins until the real ones land."
@@ -179,24 +195,24 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"Size"
 					]
 				},
 				{
-					"id": "buybox-size-guide-link",
+					"id": "buybox-size-guide-link:hint",
 					"label": "Size-guide link beside a picker",
 					"home": {
-						"type": "setting",
-						"block": "sgs/buybox",
-						"settings": [
-							"pickerLabelLinkAxis",
-							"pickerLabelLinkText",
-							"pickerLabelLinkUrl"
-						]
+						"type": "missing",
+						"reason": "only words name this control (button) as \"Size-guide link beside a picker\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "buybox-size-guide-link"
 					},
 					"write": null,
+					"by": [
+						"hint"
+					],
 					"units": 1,
 					"sample": [
 						"Which size am I?"
@@ -210,6 +226,7 @@
 						"reason": "no part or setting in the framework is known for this control (button)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"Add my prescription from +£59"
@@ -228,6 +245,9 @@
 						]
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"Add to bag as they are {{ cur.priceLabel }}"
@@ -241,6 +261,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"Or 3 payments of {{ cur.klarna }} with"
@@ -254,6 +275,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"Klarna"
@@ -267,6 +289,7 @@
 						"reason": "no part or setting in the framework is known for this text (#text)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"Apple Pay · Google Pay · PayPal"
@@ -280,20 +303,24 @@
 						"reason": "no part or setting in the framework is known for this control (a)"
 					},
 					"write": null,
+					"by": [],
 					"units": 1,
 					"sample": [
 						"Need advice? Message me on WhatsApp — I'm an optician, and I'm happy to help."
 					]
 				},
 				{
-					"id": "buybox-assurances",
+					"id": "buybox-assurances:hint",
 					"label": "Assurance lines",
 					"home": {
-						"type": "part",
-						"file": "theme/sgs-theme/parts/sgs-pdp-buybox.html",
-						"contains": "wp:sgs/icon-list"
+						"type": "missing",
+						"reason": "only words name this text (#text) as \"Assurance lines\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "buybox-assurances"
 					},
 					"write": null,
+					"by": [
+						"hint"
+					],
 					"units": 1,
 					"sample": [
 						"{{ a.text }}"
@@ -320,6 +347,36 @@
 					"line": "{{ cur.code }}: no part or setting in the framework is known for this text (#text) (1 unit)",
 					"mainFlow": "buy",
 					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:buybox-rating:hint",
+					"draftId": "Product:buybox-rating:hint",
+					"construct": "shop buybox part: Rating and review count",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#buybox/buybox-rating:hint",
+					"line": "Rating and review count: only words name this text (#text) as \"Rating and review count\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (1 unit)",
+					"mainFlow": "buy",
+					"why": "only words name this text (#text) as \"Rating and review count\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
+				},
+				{
+					"rowId": "missing:shop:buybox:buybox-saving:hint",
+					"draftId": "Product:buybox-saving:hint",
+					"construct": "shop buybox part: RRP and saving",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#buybox/buybox-saving:hint",
+					"line": "RRP and saving: only words name this text (#text) as \"RRP and saving\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (3 units)",
+					"mainFlow": "buy",
+					"why": "only words name this text (#text) as \"RRP and saving\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
+				},
+				{
+					"rowId": "missing:shop:buybox:buybox-stock:hint",
+					"draftId": "Product:buybox-stock:hint",
+					"construct": "shop buybox part: Stock line",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#buybox/buybox-stock:hint",
+					"line": "Stock line: only words name this text (#text) as \"Stock line\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (1 unit)",
+					"mainFlow": "buy",
+					"why": "only words name this text (#text) as \"Stock line\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
 				},
 				{
 					"rowId": "missing:shop:buybox:unmatched:buybox:colour",
@@ -360,6 +417,16 @@
 					"line": "Size: no part or setting in the framework is known for this text (#text) (1 unit)",
 					"mainFlow": "buy",
 					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:buybox-size-guide-link:hint",
+					"draftId": "Product:buybox-size-guide-link:hint",
+					"construct": "shop buybox part: Size-guide link beside a picker",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#buybox/buybox-size-guide-link:hint",
+					"line": "Size-guide link beside a picker: only words name this control (button) as \"Size-guide link beside a picker\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (1 unit)",
+					"mainFlow": "buy",
+					"why": "only words name this control (button) as \"Size-guide link beside a picker\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
 				},
 				{
 					"rowId": "missing:shop:buybox:unmatched:buybox:add my prescription from +£59",
@@ -410,6 +477,16 @@
 					"line": "Need advice? Message me on WhatsApp — I'm an optician, and I'm happy to help.: no part or setting in the framework is known for this control (a) (1 unit)",
 					"mainFlow": "buy",
 					"why": "no part or setting in the framework is known for this control (a)"
+				},
+				{
+					"rowId": "missing:shop:buybox:buybox-assurances:hint",
+					"draftId": "Product:buybox-assurances:hint",
+					"construct": "shop buybox part: Assurance lines",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#buybox/buybox-assurances:hint",
+					"line": "Assurance lines: only words name this text (#text) as \"Assurance lines\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (1 unit)",
+					"mainFlow": "buy",
+					"why": "only words name this text (#text) as \"Assurance lines\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
 				}
 			]
 		},
@@ -429,6 +506,9 @@
 						"contains": "wp:woocommerce/product-results-count"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"{{ resultCount }}"
@@ -442,6 +522,9 @@
 						"reason": "a bespoke filter pop-up or drawer; WooCommerce's product-filters block has no open and close control of its own"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 3,
 					"sample": [
 						"Filter {{ activeCountLabel }}",
@@ -458,51 +541,12 @@
 						"contains": "wp:woocommerce/catalog-sorting"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"Sort"
-					]
-				},
-				{
-					"id": "filter-active-chips",
-					"label": "Active filter chips",
-					"home": {
-						"type": "template-block",
-						"file": "theme/sgs-theme/templates/archive-product.html",
-						"contains": "wp:woocommerce/product-filter-removable-chips"
-					},
-					"write": null,
-					"units": 1,
-					"sample": [
-						"{{ c.label }} ×"
-					]
-				},
-				{
-					"id": "filter-clear",
-					"label": "Clear button",
-					"home": {
-						"type": "template-block",
-						"file": "theme/sgs-theme/templates/archive-product.html",
-						"contains": "wp:woocommerce/product-filter-clear-button"
-					},
-					"write": null,
-					"units": 2,
-					"sample": [
-						"Clear all",
-						"Clear"
-					]
-				},
-				{
-					"id": "filter-group-toggle",
-					"label": "Collapsible filter groups",
-					"home": {
-						"type": "missing",
-						"reason": "a collapsible heading per filter group; the framework's archive template composes no collapsible filter group"
-					},
-					"write": null,
-					"units": 1,
-					"sample": [
-						"{{ g.label }} {{ g.count }}"
 					]
 				},
 				{
@@ -515,22 +559,48 @@
 						"customCss": "chip or segment presentation, a visual leftover for scoped custom CSS"
 					},
 					"write": null,
-					"units": 2,
+					"by": [
+						"structure"
+					],
+					"units": 4,
 					"sample": [
+						"{{ c.label }} ×",
 						"{{ i.name }}"
 					]
 				},
 				{
-					"id": "filter-swatch-options",
-					"label": "Colour swatch options",
+					"id": "filter-clear",
+					"label": "Clear button",
 					"home": {
-						"type": "missing",
-						"reason": "WooCommerce's filter blocks have no colour-swatch display; the framework's archive template composes none"
+						"type": "template-block",
+						"file": "theme/sgs-theme/templates/archive-product.html",
+						"contains": "wp:woocommerce/product-filter-clear-button"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
+					"units": 3,
+					"sample": [
+						"Clear all",
+						"Clear",
+						"Clear filters"
+					]
+				},
+				{
+					"id": "filter-group-toggle",
+					"label": "Collapsible filter groups",
+					"home": {
+						"type": "missing",
+						"reason": "a collapsible heading per filter group; the framework's archive template composes no collapsible filter group"
+					},
+					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
-						"{{ i.name }}"
+						"{{ g.label }} {{ g.count }}"
 					]
 				},
 				{
@@ -542,6 +612,9 @@
 						"contains": "wp:woocommerce/product-filter-price-slider"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"Maximum price"
@@ -556,6 +629,9 @@
 						"contains": "wp:sgs/filter-search"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"Search brands"
@@ -570,6 +646,9 @@
 						"contains": "wp:woocommerce/product-filter-checkbox-list"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"checkbox"
@@ -583,6 +662,9 @@
 						"reason": "an on-off switch filter (for example a product attribute held as yes or no); the framework's archive template composes no switch filter"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"switch"
@@ -597,6 +679,9 @@
 						"contains": "wp:woocommerce/product-template"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"Frame Card"
@@ -611,11 +696,13 @@
 						"contains": "wp:woocommerce/product-collection-no-results"
 					},
 					"write": null,
-					"units": 3,
+					"by": [
+						"structure"
+					],
+					"units": 2,
 					"sample": [
 						"Nothing matches all of that.",
-						"Loosen a filter, or message me and I'll see what I can find.",
-						"Clear filters"
+						"Loosen a filter, or message me and I'll see what I can find."
 					]
 				}
 			],
@@ -641,16 +728,6 @@
 					"why": "a collapsible heading per filter group; the framework's archive template composes no collapsible filter group"
 				},
 				{
-					"rowId": "missing:shop:filter:filter-swatch-options",
-					"draftId": "Shop filter rail / drawer:filter-swatch-options",
-					"construct": "shop filter part: Colour swatch options",
-					"from": "shop-parts",
-					"key": "Eye Care Birmingham.dc.html#filter/filter-swatch-options",
-					"line": "Colour swatch options: WooCommerce's filter blocks have no colour-swatch display; the framework's archive template composes none (1 unit)",
-					"mainFlow": null,
-					"why": "WooCommerce's filter blocks have no colour-swatch display; the framework's archive template composes none"
-				},
-				{
 					"rowId": "missing:shop:filter:filter-switch",
 					"draftId": "Shop filter rail / drawer:filter-switch",
 					"construct": "shop filter part: On-off filter switch",
@@ -670,18 +747,17 @@
 			"units": 17,
 			"parts": [
 				{
-					"id": "drawer-heading",
+					"id": "drawer-heading:hint",
 					"label": "Panel heading",
 					"home": {
-						"type": "setting",
-						"block": "sgs/cart",
-						"settings": [
-							"panelHeading"
-						]
+						"type": "missing",
+						"reason": "only words name this text (#text) as \"Panel heading\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "drawer-heading"
 					},
-					"write": {
-						"panelHeading": "Bag"
-					},
+					"write": null,
+					"by": [
+						"hint"
+					],
 					"units": 1,
 					"sample": [
 						"Bag"
@@ -698,6 +774,9 @@
 						]
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"({{ bagCount }})"
@@ -712,6 +791,9 @@
 						"note": "the panel draws its own close button"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"×"
@@ -730,6 +812,9 @@
 					"write": {
 						"emptyCartMessage": "Nothing in here yet."
 					},
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"Nothing in here yet."
@@ -748,6 +833,9 @@
 					"write": {
 						"emptyCartCtaLabel": "Shop sunglasses"
 					},
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"Shop sunglasses"
@@ -762,6 +850,9 @@
 						"note": "each cart line renders its own name, detail and price"
 					},
 					"write": null,
+					"by": [
+						"structure"
+					],
 					"units": 5,
 					"sample": [
 						"{{ it.brand }}",
@@ -771,18 +862,17 @@
 					]
 				},
 				{
-					"id": "drawer-add-options",
+					"id": "drawer-add-options:hint",
 					"label": "Line add-options control",
 					"home": {
-						"type": "setting",
-						"block": "sgs/cart",
-						"settings": [
-							"itemAddOptionsLabel"
-						]
+						"type": "missing",
+						"reason": "only words name this control (button) as \"Line add-options control\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "drawer-add-options"
 					},
-					"write": {
-						"itemAddOptionsLabel": "Add my prescription"
-					},
+					"write": null,
+					"by": [
+						"hint"
+					],
 					"units": 1,
 					"sample": [
 						"Add my prescription"
@@ -801,6 +891,9 @@
 					"write": {
 						"itemRemoveLabel": "Remove"
 					},
+					"by": [
+						"structure"
+					],
 					"units": 1,
 					"sample": [
 						"Remove"
@@ -815,6 +908,10 @@
 						"note": "the panel footer renders the subtotal"
 					},
 					"write": null,
+					"by": [
+						"position",
+						"structure"
+					],
 					"units": 2,
 					"sample": [
 						"Subtotal",
@@ -822,68 +919,119 @@
 					]
 				},
 				{
-					"id": "drawer-free-delivery",
+					"id": "drawer-free-delivery:hint",
 					"label": "Free-delivery message",
 					"home": {
-						"type": "setting",
-						"block": "sgs/cart",
-						"settings": [
-							"freeDeliveryMessage",
-							"freeDeliverySuccessMessage",
-							"freeDeliveryThresholdOverride"
-						]
+						"type": "missing",
+						"reason": "only words name this text (#text) as \"Free-delivery message\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "drawer-free-delivery"
 					},
 					"write": null,
+					"by": [
+						"hint"
+					],
 					"units": 1,
 					"sample": [
 						"{{ freeShipNote }}"
 					]
 				},
 				{
-					"id": "drawer-checkout",
+					"id": "drawer-checkout:hint",
 					"label": "Checkout button",
 					"home": {
-						"type": "setting",
-						"block": "sgs/cart",
-						"settings": [
-							"checkoutLabel"
-						]
+						"type": "missing",
+						"reason": "only words name this control (button) as \"Checkout button\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "drawer-checkout"
 					},
-					"write": {
-						"checkoutLabel": "Checkout"
-					},
+					"write": null,
+					"by": [
+						"hint"
+					],
 					"units": 1,
 					"sample": [
 						"Checkout"
 					]
 				},
 				{
-					"id": "drawer-instalments",
+					"id": "drawer-instalments:hint",
 					"label": "Instalments note",
 					"home": {
-						"type": "setting",
-						"block": "sgs/cart",
-						"settings": [
-							"panelInstalmentsCount",
-							"panelInstalmentsNote"
-						]
+						"type": "missing",
+						"reason": "only words name this text (#text) as \"Instalments note\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
+						"hint": "drawer-instalments"
 					},
 					"write": null,
+					"by": [
+						"hint"
+					],
 					"units": 1,
 					"sample": [
 						"Or 3 payments of {{ klarnaLabel }} with Klarna"
 					]
 				}
 			],
-			"missing": []
+			"missing": [
+				{
+					"rowId": "missing:shop:drawer:drawer-heading:hint",
+					"draftId": "Bag drawer:drawer-heading:hint",
+					"construct": "shop drawer part: Panel heading",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#drawer/drawer-heading:hint",
+					"line": "Panel heading: only words name this text (#text) as \"Panel heading\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (1 unit)",
+					"mainFlow": "buy",
+					"why": "only words name this text (#text) as \"Panel heading\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
+				},
+				{
+					"rowId": "missing:shop:drawer:drawer-add-options:hint",
+					"draftId": "Bag drawer:drawer-add-options:hint",
+					"construct": "shop drawer part: Line add-options control",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#drawer/drawer-add-options:hint",
+					"line": "Line add-options control: only words name this control (button) as \"Line add-options control\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (1 unit)",
+					"mainFlow": "buy",
+					"why": "only words name this control (button) as \"Line add-options control\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
+				},
+				{
+					"rowId": "missing:shop:drawer:drawer-free-delivery:hint",
+					"draftId": "Bag drawer:drawer-free-delivery:hint",
+					"construct": "shop drawer part: Free-delivery message",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#drawer/drawer-free-delivery:hint",
+					"line": "Free-delivery message: only words name this text (#text) as \"Free-delivery message\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (1 unit)",
+					"mainFlow": "buy",
+					"why": "only words name this text (#text) as \"Free-delivery message\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
+				},
+				{
+					"rowId": "missing:shop:drawer:drawer-checkout:hint",
+					"draftId": "Bag drawer:drawer-checkout:hint",
+					"construct": "shop drawer part: Checkout button",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#drawer/drawer-checkout:hint",
+					"line": "Checkout button: only words name this control (button) as \"Checkout button\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (1 unit)",
+					"mainFlow": "buy",
+					"why": "only words name this control (button) as \"Checkout button\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
+				},
+				{
+					"rowId": "missing:shop:drawer:drawer-instalments:hint",
+					"draftId": "Bag drawer:drawer-instalments:hint",
+					"construct": "shop drawer part: Instalments note",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#drawer/drawer-instalments:hint",
+					"line": "Instalments note: only words name this text (#text) as \"Instalments note\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (1 unit)",
+					"mainFlow": "buy",
+					"why": "only words name this text (#text) as \"Instalments note\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
+				}
+			]
 		}
 	],
 	"counts": {
 		"units": 70,
-		"parts": 46,
-		"mapped": 31,
-		"missing": 15,
+		"parts": 44,
+		"mapped": 20,
+		"missing": 24,
 		"elsewhere": 0,
+		"hinted": 10,
+		"unmatched": 11,
 		"problems": 0
 	}
 }

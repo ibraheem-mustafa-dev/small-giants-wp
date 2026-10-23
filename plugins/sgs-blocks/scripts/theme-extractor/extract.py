@@ -74,7 +74,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 if str(HERE.parent) not in sys.path:
     sys.path.insert(0, str(HERE.parent))
 from shared_utils import (  # noqa: E402
-    css_sha256, draft_source_sha256, extract_css, is_part_draft, manifest_source_hashes,
+    MANIFEST_NAME, ManifestMismatch, css_sha256, draft_source_sha256, extract_css, is_part_draft, manifest_source_hashes,
 )
 
 # Version of THIS extractor's emit logic — stamped into the snapshot's `_sgsExtractor`
@@ -357,11 +357,16 @@ def _overlay_font_families(baseline: dict, facts: dict, links: list, trace: list
 
 
 def _declared_design(draft_dir, html: str, pass_a_found: bool) -> tuple[dict, dict] | None:
-    """The draft's declared design system (README token table, script variant sets) when Pass A found
-    no palette and there is something to read; None keeps today's behaviour exactly."""
+    """The draft's declared design system when Pass A found no palette and there is something to read;
+    None otherwise. A Spec 48A export (its folder holds ``MANIFEST.json``) declares its design in its code and
+    ``tokens/*.css`` only, so its README is never read (C4) and only the script variant sets count. A pre-48A
+    draft also reads its README token table, layout and radius facts."""
     if draft_dir is None or pass_a_found:
         return None
-    declared = declared_sources.read_readme_tokens(draft_dir)
+    if (pathlib.Path(draft_dir) / MANIFEST_NAME).is_file():
+        declared = {"found": False, "colours": [], "unreadable_tables": 0, "rows_without_hex": [], "layout": {}}
+    else:
+        declared = declared_sources.read_readme_tokens(draft_dir)
     if token_files.read_token_files(draft_dir) is not None:
         declared = {**declared, "colours": [], "unreadable_tables": 0, "rows_without_hex": []}
     variant_sets = variant_sets_mod.read_script_variant_sets(html)
@@ -372,18 +377,14 @@ def _declared_design(draft_dir, html: str, pass_a_found: bool) -> tuple[dict, di
 def _overlay_token_files(snap: dict, tokens: dict, html: str, facts: dict, trace: list) -> list:
     """Add the colour tokens of ``tokens/*.css`` the draft's code uses by value (FR-33-1) to the palette.
 
-    A token whose value an entry from the ``:root`` or declared-design pass already holds as ``declared``
-    is an alias of that entry (one palette entry per colour); every other used token is a
+    A token within delta E 1 of a colour an entry from the ``:root`` or declared-design pass already holds as
+    ``declared`` is an alias of that entry (one palette entry per colour); every other used token is a
     ``custom-<name>`` entry that Bean's confirmed role map renames or drops. Returns the palette."""
     palette = ((snap.setdefault("settings", {}).setdefault("color", {}) or {}).get("palette")) or []
     held = {e["color"].lower() for e in palette
             if isinstance(e.get("color"), str) and e.get("_source") == "declared"}
     census = usage_census.census_colours(html)
-    for entry in token_files.palette_entries(tokens, census, facts, trace):
-        if entry["color"].lower() in held:
-            trace.append({"kind": "gap", "what": f"tokens/*.css {entry['slug']}", "value": entry["color"],
-                          "reason": "value already held by a declared palette entry: an alias"})
-            continue
+    for entry in token_files.palette_entries(tokens, census, facts, trace, held=sorted(held)):
         palette.append(entry)
     snap["settings"]["color"]["palette"] = palette
     return palette
@@ -497,7 +498,9 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
             tag_typ["lineHeight"] = hbase["lineHeight"]
         if tag in hsizes:
             tag_typ["fontSize"] = hsizes[tag]
-    if design:  # declared-design path only: a draft that lands elsewhere keeps its snapshot byte-identical
+    # Declared-design path only (a README or script design, or a Spec 48A export's tokens/*.css): a draft that
+    # lands elsewhere keeps its snapshot byte-identical.
+    if design or tokens is not None:
         heading_weight.apply_heading_weights(elements, facts, baseline, trace)
     if skipped:
         trace.append({"kind": "base", "what": "styles.elements.h1..h6",
@@ -595,14 +598,14 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
         "draft_css_sha256": css_sha256(css),
         "extractor_version": EXTRACTOR_VERSION,
     }
-    # A Claude Design draft keeps its design in inline styles, its script and a README, none of
-    # which the CSS hash sees. Static drafts get no extra key, so their snapshots are unchanged.
+    # A Claude Design draft keeps its design in inline styles and its script (and, for a Spec 48A export,
+    # tokens/*.css), none of which the CSS hash sees. Static drafts get no extra key, so their snapshots are unchanged.
     source_hash = draft_source_sha256(html, draft_dir)
     if source_hash:
         snap["_sgsExtractor"]["draft_source_sha256"] = source_hash
     # A Spec 48A export: the MANIFEST's own hashes of its drafts and tokens/*.css are the freshness key the
     # route gate re-checks (FR-33-12).
-    manifest_hashes = manifest_source_hashes(draft_dir)
+    manifest_hashes = manifest_source_hashes(draft_dir, draft_name)
     if manifest_hashes:
         snap["_sgsExtractor"]["manifest_sha256"] = manifest_hashes
     # Which draft this snapshot describes: any other draft of the client inherits it (FR-33-12).
@@ -838,6 +841,11 @@ def main(argv=None) -> int:
     repo = _repo_root(args.repo_root)
     draft = pathlib.Path(args.draft).resolve()
     html = draft.read_text(encoding="utf-8")
+    try:
+        manifest_source_hashes(draft.parent, draft.name)
+    except ManifestMismatch as exc:
+        print(f"HALT (FR-33-12 MANIFEST does not match the export): {exc}", file=sys.stderr)
+        return 9
     css = extract_css(html)
     if not css.strip():
         print("HALT: no CSS found in draft (parser/empty).", file=sys.stderr)

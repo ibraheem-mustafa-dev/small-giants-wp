@@ -1,7 +1,28 @@
 // The pure parts of the live form submission check (lib/form-submit-run.mjs). Each fails against a stub that returns a constant.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { formSettingsOf, formFieldsOf, testValueFor, successVerdict, originalRecipient, targetSite } from '../lib/form-submit-run.mjs';
+import { formSettingsOf, formFieldsOf, testValueFor, successVerdict, originalRecipient, targetSite, sshEndpoint, formSlug, likeLiteral } from '../lib/form-submit-run.mjs';
+
+test( 'MUST FAIL: a --form slug that sanitising would change or empty is refused; form_id is lower-cased as sanitize_key stores it', () => {
+	assert.deepEqual( formSlug( 'Contact_Us-2' ), { slug: 'Contact_Us-2', formId: 'contact_us-2' } );
+	assert.match( formSlug( '' ).error, /empty/ );
+	assert.match( formSlug( '%%' ).error, /empty/ );
+	assert.match( formSlug( undefined ).error, /empty/ );
+	assert.match( formSlug( "contact' OR 1" ).error, /holds characters a slug cannot \(it would be read as contactOR1\)/ );
+} );
+
+test( 'MUST FAIL: a LIKE value matches `_`, `%` and `\\` only as themselves', () => {
+	assert.equal( likeLiteral( 'a_b%c\\d' ), 'a\\_b\\%c\\\\d' );
+	assert.equal( likeLiteral( 'plain-slug' ), 'plain-slug' );
+} );
+
+test( 'MUST FAIL: the SSH endpoint is the target\'s own host and port when TARGETS carries them, else the shared account', () => {
+	const shared = 'SSH_FALLBACK = ["-i", str(Path.home() / ".ssh" / "id_ed25519"), "-p", "65002"]\nSSH_USER_HOST = "u1@10.0.0.1"\n';
+	const py = `TARGETS = {\n    "a": {\n        "host": "a.test",\n        "wp_content": "domains/a.test/public_html/wp-content",\n    },\n    "b": {\n        "host": "b.test",\n        "ssh_host": "u2@10.0.0.2",\n        "ssh_port": 2222,\n    },\n}\n${ shared }`;
+	assert.deepEqual( sshEndpoint( py, 'a' ), { userHost: 'u1@10.0.0.1', port: '65002', shared: true } );
+	assert.deepEqual( sshEndpoint( py, 'b' ), { userHost: 'u2@10.0.0.2', port: '2222', shared: false } );
+	assert.equal( sshEndpoint( 'TARGETS = {}', 'a' ), null );
+} );
 
 const CONTENT = `<!-- wp:sgs/form {"formId":"enquiry","successMessage":"Thanks, we will reply soon.","notifyEmail":"sales@example.test"} -->
 <!-- wp:sgs/form-field-text {"label":"Name","required":true,"msgRequired":"Please enter your name"} /-->

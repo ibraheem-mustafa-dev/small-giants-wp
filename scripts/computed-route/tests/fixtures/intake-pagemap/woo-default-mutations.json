@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/site-build-state.mjs",
+		"find": "if ( known && squash( roleDefault ) === squash( content ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the role's own default is not recognised"
+	},
+	{
+		"file": "lib/site-build-state.mjs",
+		"find": "\tif ( known ) {\n\t\treturn false;\n\t}\n",
+		"replace": "",
+		"why": "woocommerce blocks alone pass although the role has a known default"
+	},
+	{
+		"file": "lib/site-build-plan.mjs",
+		"find": "state.wooDefaults?.[ WOO_ROLE[ wooOption ] ] ?? null",
+		"replace": "Object.values( state.wooDefaults || {} ).find( ( d ) => d === state.posts[ String( held[ 0 ] ) ]?.content ) ?? null",
+		"why": "a held page matches any role's default"
+	},
+	{
+		"file": "lib/site-build-state.mjs",
+		"find": "$out['wooDefaults'][ $role ] = (string) $p['content'];",
+		"replace": "$out['wooDefaults'][] = (string) $p['content'];",
+		"why": "the defaults are not keyed by role"
+	},
+	{
+		"file": "lib/site-build-state.mjs",
+		"find": "if ( '' === text || /^\\[woocommerce_",
+		"replace": "if ( '' === text || /^\\[NEVER_",
+		"why": "the shortcode case is lost"
+	}
+]

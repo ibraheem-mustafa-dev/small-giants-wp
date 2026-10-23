@@ -85,7 +85,7 @@
 	},
 	{
 		"file": "lib/intake-pagemap-owners.mjs",
-		"find": "} else if ( WOO_ROW( page ) ) {",
+		"find": "} else if ( WOO_ROW( page ) && 'choice-flow' !== s.kind ) {",
 		"replace": "} else if ( false ) {",
 		"why": "WooCommerce's forms become rows"
 	},
@@ -133,7 +133,7 @@
 	},
 	{
 		"file": "lib/intake-pagemap-surfaces.mjs",
-		"find": "label: inner.length === openers.length ?",
+		"find": "label: 1 === opens.length ?",
 		"replace": "label: false ?",
 		"why": "panels not named by their openers"
 	},

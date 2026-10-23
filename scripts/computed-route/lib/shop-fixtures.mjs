@@ -4,7 +4,7 @@
 // finds what exists and creates nothing twice. Content is generic: fixtures name no client.
 import fs from 'node:fs';
 import path from 'node:path';
-import { IMAGE_TYPES, mediaAssets } from './media-upload.mjs';
+import { IMAGE_TYPES, mediaAssets, safeSiteUrl } from './media-upload.mjs';
 
 export class ShopFixturesError extends Error {}
 
@@ -45,8 +45,16 @@ export function imageChoice( repo, client, site ) {
 	return asset ? { source: 'asset', asset } : null;
 }
 
+// Refuses credentials whose site URL is neither https nor loopback http: the application password travels as Basic auth.
+export function requireSafeCreds( creds ) {
+	if ( ! safeSiteUrl( creds?.url ) ) {
+		throw new ShopFixturesError( `${ creds?.url } is not https (plain http is allowed only to localhost), and the application password would travel in the clear` );
+	}
+}
+
 // Refuses a site without WooCommerce: its REST index lists no `wc/v3` namespace.
 export async function requireWooCommerce( { creds, fetchImpl = fetch } ) {
+	requireSafeCreds( creds );
 	const res = await fetchImpl( `${ creds.url }/wp-json/` );
 	const index = res.ok ? await json( res ) : null;
 	if ( ! index ) {
@@ -58,6 +66,7 @@ export async function requireWooCommerce( { creds, fetchImpl = fetch } ) {
 }
 
 const api = ( creds, fetchImpl ) => async ( method, route, body ) => {
+	requireSafeCreds( creds );
 	const res = await fetchImpl( `${ creds.url }/wp-json/${ route }`, { method, headers: { Authorization: creds.auth, 'Content-Type': 'application/json' }, body: body ? JSON.stringify( body ) : undefined } );
 	const data = await json( res );
 	if ( ! res.ok ) {
@@ -89,16 +98,25 @@ export async function planFixtures( { client, creds, fetchImpl = fetch } ) {
 	return plan;
 }
 
-// The attachment id for an image choice: a media-map id as is, else the attachment already titled for this asset, else
-// the asset uploaded now. Returns `{ id, uploaded }`; null when `apply` is off and an upload would be needed.
+// The attachment id for an image choice: a media-map id once `GET wp/v2/media/<id>` finds it on the site (a stale id
+// falls back to its asset), else the attachment already titled for this asset, else the asset uploaded now. Returns
+// `{ id, uploaded }`; null when `apply` is off and an upload would be needed, or a stale id has no local asset.
 export async function ensureImage( { repo, client, choice, creds, fetchImpl = fetch, apply } ) {
 	if ( ! choice ) {
 		return null;
 	}
-	if ( 'media-map' === choice.source ) {
-		return { id: choice.id, uploaded: false };
-	}
 	const call = api( creds, fetchImpl );
+	if ( 'media-map' === choice.source ) {
+		requireSafeCreds( creds );
+		const res = await fetchImpl( `${ creds.url }/wp-json/wp/v2/media/${ encodeURIComponent( choice.id ) }`, { headers: { Authorization: creds.auth } } );
+		const media = res.ok ? await json( res ) : null;
+		if ( media && Number( media.id ) === Number( choice.id ) ) {
+			return { id: choice.id, uploaded: false };
+		}
+		if ( ! choice.asset || ! fs.existsSync( path.join( repo, choice.asset ) ) ) {
+			return null;
+		}
+	}
 	const title = `sgs-fixture-${ client }-${ path.basename( choice.asset ) }`;
 	const found = ( await call( 'GET', `wp/v2/media?search=${ encodeURIComponent( title ) }&per_page=20` ) ).find( ( m ) => m.title?.rendered === title );
 	if ( found ) {
