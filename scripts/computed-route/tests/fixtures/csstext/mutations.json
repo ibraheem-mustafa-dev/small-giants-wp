@@ -1,0 +1,62 @@
+[
+ {
+  "file": "lib/intake-inventory-csstext.mjs",
+  "find": "def && edits.push(",
+  "replace": "false && edits.push(",
+  "why": "no local name is replaced by its definition"
+ },
+ {
+  "file": "lib/intake-inventory-csstext.mjs",
+  "find": "return isArithmetic( init ) ? init : null;",
+  "replace": "return init;",
+  "why": "a call result or non-arithmetic definition is substituted"
+ },
+ {
+  "file": "lib/intake-inventory-csstext.mjs",
+  "find": "if ( ';' === ch && ! depth ) {",
+  "replace": "if ( ';' === ch ) {",
+  "why": "a semicolon inside parentheses ends a declaration"
+ },
+ {
+  "file": "lib/intake-inventory-csstext.mjs",
+  "find": "( 'AssignmentExpression' === x.type && 'Identifier' === x.left.type && x.left.name === id.name )",
+  "replace": "false",
+  "why": "a reassigned variable's first definition is substituted"
+ },
+ {
+  "file": "lib/intake-inventory-csstext.mjs",
+  "find": "return props.length ? props : null;",
+  "replace": "return null;",
+  "why": "the split declarations are discarded"
+ },
+ {
+  "file": "lib/intake-inventory-csstext.mjs",
+  "find": "text && props.push( { property, to: text } );",
+  "replace": "text && props.push( { property, to: text.slice( 0, 160 ) } );",
+  "why": "a literal value is cut at 160 characters"
+ },
+ {
+  "file": "lib/intake-inventory-csstext.mjs",
+  "find": "wrapped( expandedText( p, x.expr ) )",
+  "replace": "p.text.slice( x.expr.start, x.expr.end )",
+  "why": "a hole keeps the call site's text with the name unresolved"
+ },
+ {
+  "file": "lib/intake-inventory-target.mjs",
+  "find": "return cssTextProperties( p, n ) ?? [",
+  "replace": "return [",
+  "why": "the cssText is never split, only kept as one formula"
+ },
+ {
+  "file": "lib/intake-inventory-target.mjs",
+  "find": "formula: p.text.slice( n.start, n.end ) } ];",
+  "replace": "formula: p.text.slice( n.start, n.start + 10 ) } ];",
+  "why": "an unsplittable value is clipped"
+ },
+ {
+  "file": "lib/intake-inventory-csstext.mjs",
+  "find": "return /^(BinaryExpression|UnaryExpression)$/.test( n.type ) && children( n ).every( isArithmetic );",
+  "replace": "return true;",
+  "why": "any expression counts as arithmetic"
+ }
+]
