@@ -1,0 +1,74 @@
+[
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "RESOLVER_GAP.test( String( row.reason ) )",
+		"replace": "true",
+		"why": "a conflict or ambiguity row would be held as if it were a missing setting"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "if ( undefined !== part && ! same( row.property, part, values[ x ] ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a corner one pixel off the written one would be held as covered"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "if ( ! c || ( c.state ?? null ) !== ( row.state ?? null ) || ! reaches( c, row, row.slot ) ) {",
+		"replace": "if ( ! c || ( c.state ?? null ) !== ( row.state ?? null ) ) {",
+		"why": "a written setting on another element or for another property would hold the row"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "rec.children.length > 0 && widths.every(",
+		"replace": "widths.every(",
+		"why": "a text-bearing leaf would be held as inherited"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "if ( INHERITED.includes( row.property ) && rec.children.length",
+		"replace": "if ( true && rec.children.length",
+		"why": "a property that is not inherited would be held as inherited"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "if ( widths.every( ( w ) => same( row.property, values[ w ], paintOf( cal, row, rec, w ) ) ) ) {",
+		"replace": "if ( widths.some( ( w ) => same( row.property, values[ w ], paintOf( cal, row, rec, w ) ) ) ) {",
+		"why": "a value held at one width only would be held at all of them"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "? BLOCKIFIED[ paint ] ?? paint : paint;",
+		"replace": "? BLOCKIFIED[ paint ] ?? paint : BLOCKIFIED[ paint ] ?? paint;",
+		"why": "an inline display would be blockified under a block parent"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "const TOL = 0.5;",
+		"replace": "const TOL = 5;",
+		"why": "a value several pixels from the default paint would be held"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "return null !== ms && list.every( ( x ) => x === ms );",
+		"replace": "return null !== ms && list.some( ( x ) => x === ms );",
+		"why": "a transition list with another time in it would be held as covered"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "Math.max( 0.005, 0.005 * Math.abs( v ) )",
+		"replace": "1",
+		"why": "a hover lift of 1.06 would be held by a state carrying 1.05"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "! other && ! unsupported.length && Object.keys( channels ).length > 0 &&",
+		"replace": "! other &&",
+		"why": "a transform the channels cannot hold would be held as covered"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "calFor: ( block ) => withFamilies( opts.calFor( block ) )",
+		"replace": "calFor: ( block ) => opts.calFor( block )",
+		"why": "corners equal to the default paint would be written, and a corner row would not be judged against the paint"
+	}
+]

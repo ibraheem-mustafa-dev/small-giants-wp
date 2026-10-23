@@ -16,6 +16,8 @@ import { hasRow } from './fill-skeleton.mjs';
 import { liftRow } from './fill-row-lift.mjs';
 import { json, makeState, snapsOf, planSpacing } from './fill-resolve-state.mjs';
 import { fillElement, unmapped } from './fill-resolve-element.mjs';
+import { completePaint } from './css-families.mjs';
+import { makeSettle } from './fill-held.mjs';
 
 const PSEUDO_LAYERS = [ '::before', '::after' ];
 
@@ -72,13 +74,29 @@ function fillContent( st, rec, ref, cal ) {
 	st.out.unmapped.push( ...local.filter( ( u ) => ! declared( u ) ) );
 }
 
+// A calibration whose default paint carries every shorthand family both ways (lib/css-families.mjs::completePaint): the paint
+// holds `border-radius` or its four corners, and Fill judges whichever property the draft states against the other's value.
+const completed = new WeakMap();
+function withFamilies( cal ) {
+	if ( ! cal || ! cal.elements ) {
+		return cal;
+	}
+	if ( ! completed.has( cal ) ) {
+		completed.set( cal, { ...cal, elements: Object.fromEntries( Object.entries( cal.elements ).map( ( [ slot, widths ] ) => [ slot, Object.fromEntries( Object.entries( widths ).map( ( [ w, paint ] ) => [ w, paint && 'object' === typeof paint ? completePaint( paint ) : paint ] ) ) ] ) ) } );
+	}
+	return completed.get( cal );
+}
+
 // Fills the tree in place. tree: the cleaned skeleton (refs added, draft keys removed), nodes: skeletonNodes of the
 // skeleton (same indices), reads: lib/fill-read.mjs::readDraft, calFor( block ): calibration or null, ledger: the
 // divergence entries, ledgerStates: the walker states that are the rest state (the ledger's `state` names one),
 // fixtures: calibration-fixtures.json (null reads every rest paint as the block's default).
-// Returns { writes, unmapped, notes, handover, spacing, fluid, held, snaps }.
+// Returns { writes, unmapped, alreadyHeld, notes, handover, spacing, fluid, held, snaps, settleHeld } — `settleHeld( result )` moves
+// every row of result.unmapped whose value the element already renders (lib/fill-held.mjs) into result.alreadyHeld, for the
+// caller to run once all its writers have added their rows and writes.
 export function fillTree( opts ) {
-	const st = makeState( { ledger: [], ledgerStates: [], origin: '', fixtures: null, ...opts, snaps: [] } );
+	const st = makeState( { ledger: [], ledgerStates: [], origin: '', fixtures: null, ...opts, calFor: ( block ) => withFamilies( opts.calFor( block ) ), snaps: [] } );
+	const settle = makeSettle( st );
 	for ( const rec of st.nodes ) {
 		const ref = refOf( st.flat[ rec.index ] );
 		planSpacing( st, rec );
@@ -125,5 +143,9 @@ export function fillTree( opts ) {
 		const read = rec.targets.filter( ( t ) => Object.keys( snapsOf( st, t.id ) ).length ).map( ( t ) => t.slot );
 		st.out.unread.push( ...unreadOf( { db: st.db, block: rec.name, cal, attributes: st.nodes[ rec.index ].node.attributes || {}, slots: read, written: new Set( st.out.writes.filter( ( w ) => w.index === rec.index ).map( ( w ) => w.attr ) ) } ).map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
 	}
-	return { ...st.out, snaps: st.snaps };
+	const settleHeld = ( result ) => {
+		const r = settle( { unmapped: result.unmapped, writes: result.writes } );
+		return { unmapped: r.unmapped, alreadyHeld: [ ...( result.alreadyHeld || [] ), ...r.alreadyHeld ] };
+	};
+	return { ...st.out, ...settleHeld( { unmapped: st.out.unmapped, writes: st.out.writes } ), snaps: st.snaps, settleHeld };
 }

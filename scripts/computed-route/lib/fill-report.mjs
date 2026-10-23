@@ -1,6 +1,7 @@
 // Fill's report (FR-47-4 step 5): fill-report.md for a reader and fill-report.json for a tool. The UNMAPPED list is the
 // framework work for the surface, known before the first build; the handover list is Solve's shape (§3.3).
 import { handoverCounts, HANDOVER_OWNERS } from './fill-handover.mjs';
+import { HELD_REASONS, heldCounts } from './fill-held.mjs';
 
 // The confirm record's verdicts (lib/fill-confirm.mjs, FR-48-36).
 const VERDICTS = [ 'confirmed', 'render-wins', 'draft-defect', 'open' ];
@@ -16,10 +17,12 @@ export const unmappedList = ( unmapped ) => unmapped.map( ( u ) => ( { property:
 // scale?: the sweep was skipped }. Returns { markdown, json }.
 export function fillReport( r ) {
 	const counts = handoverCounts( r.handover );
+	const held = r.alreadyHeld || [];
+	const heldBy = heldCounts( held );
 	const json = {
 		client: r.client, surface: r.surface, draft: r.draft, nodes: r.nodes, targets: r.targets,
-		counts: { writes: r.writes.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, patchKeys: ( r.snapshotPatch?.entries || [] ).length, unread: ( r.unread || [] ).length, confirm: ( r.confirm || [] ).length },
-		writes: r.writes, unmapped: unmappedList( r.unmapped ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, snapshotPatch: r.snapshotPatch || { file: null, entries: [] }, unread: r.unread || [], confirm: r.confirm || [],
+		counts: { writes: r.writes.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, alreadyHeld: { total: held.length, ...heldBy }, patchKeys: ( r.snapshotPatch?.entries || [] ).length, unread: ( r.unread || [] ).length, confirm: ( r.confirm || [] ).length },
+		writes: r.writes, unmapped: unmappedList( r.unmapped ), alreadyHeld: held.map( ( h ) => ( { property: h.property, value: h.value, node: h.node, block: h.block, slot: h.slot ?? '', state: h.state ?? null, reason: h.heldReason, detail: h.heldDetail } ) ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, snapshotPatch: r.snapshotPatch || { file: null, entries: [] }, unread: r.unread || [], confirm: r.confirm || [],
 	};
 	const L = [
 		`# Fill: ${ r.surface }`, '',
@@ -30,12 +33,16 @@ export function fillReport( r ) {
 		`| Handover (content outside the tree) | ${ r.handover.length } (${ HANDOVER_OWNERS.map( ( o ) => `${ o } ${ counts[ o ] }` ).join( ', ' ) }) |`,
 		`| Fluid sizes found | ${ r.fluid.length } (${ r.fluid.filter( ( f ) => 'clamp' === f.written ).length } written as clamp()) |`,
 		`| Breakpoint steps logged for a human | ${ r.steps.length } |`,
+		`| Already held (the element renders the draft's value; not a gap) | ${ held.length } (${ HELD_REASONS.map( ( k ) => `${ k } ${ heldBy[ k ] }` ).join( ', ' ) }) |`,
 		`| Held by the divergence ledger | ${ r.held.length } |`,
 		`| Not read (settings no read reached and no decision judged) | ${ ( r.unread || [] ).length } |`,
 		`| Confirm records (declared against rendered, FR-48-8) | ${ ( r.confirm || [] ).length } (${ VERDICTS.map( ( v ) => `${ v } ${ ( r.confirm || [] ).filter( ( c ) => c.verdict === v ).length }` ).join( ', ' ) }) |`, '',
 		'## UNMAPPED', '',
 		'Each row is a draft value no block setting can hold (or that the draft paints and the block cannot), with the reason the resolver gave.', '',
 		...table( [ 'Property', 'Value', 'Node', 'Block', 'Element', 'Reason' ], r.unmapped.map( ( u ) => [ u.property, u.value, u.node, u.block, u.slot ?? '', u.reason ] ) ),
+		'## Already held', '',
+		'Rows the resolver could not place by name that the element already renders at every width they state, so nothing needs writing. `covered`: a written setting (or an sgsMotion state) paints this value on this element. `inherited`: an inherited property on an element with no text of its own, equal to its parent. `default`: the value is the calibrated default paint of this element. A value that differs by one unit, or holds at some widths only, stays in UNMAPPED.', '',
+		...HELD_REASONS.flatMap( ( k ) => [ `### ${ k } (${ heldBy[ k ] })`, '', ...table( [ 'Property', 'Value', 'State', 'Node', 'Block', 'Element', 'Held because' ], held.filter( ( h ) => h.heldReason === k ).map( ( h ) => [ h.property, h.value, h.state ?? '', h.node, h.block, h.slot ?? '', h.heldDetail ] ) ) ] ),
 		'## Not read', '',
 		'Settings the block\'s calibration or the framework database knows that no read reached and no decision judged on a measured node: a draftSlots finder the skeleton does not give, or a calibration reading that does not exist. Nothing here was written.', '',
 		...table( [ 'Node', 'Block', 'Kind', 'Element', 'Settings', 'Reason' ], ( r.unread || [] ).map( ( u ) => [ u.node, u.block, u.kind, u.slot, u.settings.join( ', ' ), u.reason ] ) ),

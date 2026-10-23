@@ -222,6 +222,8 @@ export async function fillSurface( o ) {
 		const bound = groupBindings( { facts, nodes, writes: result.writes, rootComponent: intakeParts.rootComponent } );
 		bound.skipped && console.warn( noFactsWarning( path.relative( repo, factsFile( repo, o.client ) ).split( path.sep ).join( '/' ) ) );
 		result.notes.push( ...bound.groups.map( ( g ) => `binding ${ g.binding } sets ${ g.attr } to ${ JSON.stringify( g.value ) } on ${ g.members.length } elements in ${ g.sections } sections: one shared setting` ), ...bound.split.map( ( x ) => `binding ${ x.binding } sets ${ x.attr } to ${ x.values.length } different values: not grouped` ) );
+		// Rows the element already renders (lib/fill-held.mjs) leave UNMAPPED and are listed under their reason in the report.
+		Object.assign( result, result.settleHeld( result ) );
 		// FR-48-8: every written style value against what the draft's code declares, at each read width.
 		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.
 		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset' ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent } );
