@@ -103,6 +103,10 @@ export function rowCanvasStyle( attributes, tier, palette, presetSlugs ) {
 	if ( height ) {
 		style[ '--sgs-si-shape-h' ] = height;
 	}
+	// A group size overrules each child link's 44px tap floor, as render.php does.
+	if ( size || width || height ) {
+		style[ '--sgs-si-tap-min' ] = '0px';
+	}
 	const gapValue = iconLengthValue( resolveTier( gap, tier ).value, 640, presetSlugs );
 	if ( gapValue ) {
 		style.gap = gapValue;

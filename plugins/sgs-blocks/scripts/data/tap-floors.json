@@ -1,0 +1,8 @@
+{
+ "_meta": {
+  "rule": "Ruling 11 (Bean, 2026-10-23): a block's own size setting overrules the 44px house minimum; a tap area fits its own shape. Each entry is a literal 44px floor in a block that has size settings, on an element none of those settings sizes, so 44px stays SGS's own default there.",
+  "checker": "plugins/sgs-blocks/scripts/check-tap-floors.py --check",
+  "key": "block + the rule's selector (whitespace collapsed) + the property"
+ },
+ "house": []
+}

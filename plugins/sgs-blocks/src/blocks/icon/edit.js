@@ -66,6 +66,10 @@ export function canvasRootStyle( attributes, tier, brand, presetSlugs, hoverMap 
 	if ( height ) {
 		style[ '--sgs-icon-shape-h' ] = height;
 	}
+	// A set size overrules the link's 44px tap floor, as render.php does.
+	if ( size || width || height ) {
+		style[ '--sgs-icon-tap-min' ] = '0px';
+	}
 	const own = [
 		[ '--sgs-icon-colour', attributes.iconColour ],
 		[ '--sgs-icon-colour-hover', attributes.iconColourHover ],
