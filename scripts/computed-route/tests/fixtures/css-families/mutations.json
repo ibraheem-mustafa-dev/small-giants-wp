@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/css-families.mjs",
+		"find": "new Set( reads.map( ( r ) => r.template ) ).size > 1",
+		"replace": "false",
+		"why": "a shorthand of different kinds of longhand would count as an edge or corner family and reach its setting from one part"
+	},
+	{
+		"file": "lib/css-families.mjs",
+		"find": "'axis' !== kind && sorted.sort(",
+		"replace": "false && sorted.sort(",
+		"why": "a box family would fold in mdn-data's alphabetical order, not CSS's top, right, bottom, left"
+	},
+	{
+		"file": "lib/css-families.mjs",
+		"find": "'start-end': 'top-right'",
+		"replace": "'start-end': 'top-left'",
+		"why": "a logical corner would map to the wrong physical corner"
+	},
+	{
+		"file": "lib/css-families.mjs",
+		"find": "'rtl' === dir ? { left: 'right', right: 'left' }[ side ] ?? side : side",
+		"replace": "side",
+		"why": "a right-to-left page would read inline-start as the left edge"
+	},
+	{
+		"file": "lib/css-families.mjs",
+		"find": "( 'axis' !== fam.kind || /^(row|column)$/.test( fam.part ) )",
+		"replace": "true",
+		"why": "overflow-x and align-items would lose their own settings to their shorthand's key"
+	},
+	{
+		"file": "lib/css-families.mjs",
+		"find": "...( fam && 'mixed' !== fam.kind ? [ fam.short ] : [] )",
+		"replace": "...( fam ? [ fam.short ] : [] )",
+		"why": "outline-width would reach a composite outline setting"
+	},
+	{
+		"file": "lib/css-families.mjs",
+		"find": "out.css = a === c && b === d ? ( a === b ? a : `${ a } ${ b }` ) : ( b === d ? `${ a } ${ b } ${ c }` : v.join( ' ' ) );",
+		"replace": "out.css = v.join( ' ' );",
+		"why": "a shorthand would never be serialised in its short forms"
+	},
+	{
+		"file": "lib/css-families.mjs",
+		"find": "names.forEach( ( n ) => undefined === out[ n ] && ( out[ n ] = parts[ n ] ) );",
+		"replace": "void 0;",
+		"why": "a paint holding border-radius would not judge a corner row"
+	},
+	{
+		"file": "lib/css-families.mjs",
+		"find": "v.some( ( x ) => '/' === x ) || String( css ).includes( '/' )",
+		"replace": "false",
+		"why": "an elliptical radius would be split into corners it cannot hold"
+	},
+	{
+		"file": "lib/db.mjs",
+		"find": "storedKeys( stored ).some(",
+		"replace": "[ stored ].some(",
+		"why": "a physical edge would not reach a setting stored under logical names"
+	},
+	{
+		"file": "lib/db.mjs",
+		"find": "const wanted = reachedBy( prop );",
+		"replace": "const wanted = [ prop ];",
+		"why": "a longhand would not reach its shorthand's setting"
+	}
+]
