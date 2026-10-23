@@ -52,8 +52,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const previewTier = usePreviewTier();
 	const previewUid = `sgs-wishlist-link-preview-${ clientId }`;
+	// A glyph size set for the preview tier overrules the 44px tap floor, as render.php does.
+	const hasGlyphSize = '' !== ( resolveTier( iconSize, previewTier ).value ?? '' );
 	const blockProps = useBlockProps( {
 		className: `sgs-wishlist-link ${ previewUid }`,
+		style: hasGlyphSize ? { '--sgs-wishlist-tap-min': '0px' } : undefined,
 	} );
 
 	// The icon colour is `color` on the svg (the glyph strokes with

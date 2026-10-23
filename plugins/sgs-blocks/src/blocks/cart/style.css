@@ -19,8 +19,9 @@
 	align-items: center;
 	justify-content: center;
 	position: relative;
-	min-width: 44px;
-	min-height: 44px;
+	/* An icon size the client set prints --sgs-cart-tap-min as 0, so the trigger wraps the glyph; unset keeps 44px. */
+	min-width: var(--sgs-cart-tap-min, 44px);
+	min-height: var(--sgs-cart-tap-min, 44px);
 	/* Button reset: in drawer and flyout modes the trigger is a <button>
 	   (includes/helpers-cart-panel.php), which otherwise paints the browser's
 	   grey fill and outset border; in page mode it is an <a>, which needs none
@@ -328,8 +329,9 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	min-width: 44px;
-	min-height: 44px;
+	/* panelCloseSize prints --sgs-cart-close-tap-min as 0, so the button wraps the glyph it sizes; unset keeps 44px. */
+	min-width: var(--sgs-cart-close-tap-min, 44px);
+	min-height: var(--sgs-cart-close-tap-min, 44px);
 	padding: 0;
 	background: transparent;
 	border: 0;

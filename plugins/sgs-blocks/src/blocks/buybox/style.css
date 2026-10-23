@@ -161,7 +161,6 @@
 	justify-content: center;
 	gap: 10px;
 	min-height: 48px;
-	min-width: 44px;
 	padding: 12px 24px;
 	font-size: var(--sgs-buybox-cta-size, 1.05rem);
 	font-weight: var(--sgs-buybox-cta-weight, 700);

@@ -185,6 +185,10 @@ $ssr_count = 0;
 $sgs_cart_vars = array(
 	'--sgs-cart-icon-size:' . $icon_size . 'px',
 );
+// An icon size other than the 24px default overrules the trigger's 44px tap floor: the trigger wraps the glyph (ruling 11).
+if ( 24 !== $icon_size && 'icon' === $trigger_style ) {
+	$sgs_cart_vars[] = '--sgs-cart-tap-min:0px';
+}
 // Unset, the trigger takes the surrounding text colour (style.css's currentColor fallback).
 if ( '' !== $icon_colour ) {
 	$sgs_cart_vars[] = '--sgs-cart-icon-colour:' . sgs_colour_value( $icon_colour );
