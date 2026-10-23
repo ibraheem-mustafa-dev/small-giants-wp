@@ -4,6 +4,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
 import os from 'os';
 import path from 'path';
+import { reachedBy, storedKeys } from './css-families.mjs';
 
 export const DB_PATH = path.join( os.homedir(), '.claude', 'skills', 'sgs-wp-engine', 'sgs-framework.db' );
 
@@ -92,9 +93,12 @@ export function enumSettings( db, block ) {
 // The settings of a block that paint `prop` (a CSS shorthand such as "padding", or one listed in a comma list such
 // as "padding-bottom,padding-left,...") in `state` (null = rest). Namespaced values go through `cssPropertiesOf`, so
 // `anim:duration` is reached by asking for `animation-duration` and `grid-template-columns:count` is reached only by
-// its exact stored string — never by `grid-template-columns`, whose value it cannot hold.
+// its exact stored string — never by `grid-template-columns`, whose value it cannot hold. A longhand also reaches the
+// setting of its shorthand family (`border-top-left-radius` reaches a `border-radius` setting, `overflow-x` an `overflow`
+// one) and a logical spelling the physical one (lib/css-families.mjs::reachedBy), in any of the block's stored spellings.
 export function candidates( db, block, prop, state = null ) {
-	return attrsFor( db, block ).filter( ( r ) => listedProperties( r.css_property ).includes( prop ) &&
+	const wanted = reachedBy( prop );
+	return attrsFor( db, block ).filter( ( r ) => listedProperties( r.css_property ).some( ( stored ) => storedKeys( stored ).some( ( k ) => wanted.includes( k ) ) ) &&
 		( r.css_state || null ) === ( state || null ) );
 }
 

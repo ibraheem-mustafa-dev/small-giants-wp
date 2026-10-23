@@ -5,9 +5,10 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { candidates, siblings, isPseudoProperty } from './db.mjs';
+import { candidates, siblings, isPseudoProperty, listedProperties } from './db.mjs';
 import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, round } from './normalise.mjs';
 import { applyClamp } from './fill-values.mjs';
+import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy } from './css-families.mjs';
 import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword } from './resolve-declared.mjs';
 
 export const COVERAGE_WRITES = [
@@ -116,23 +117,13 @@ export function blockContext( slug ) {
 	return contextIndex[ slug ] || null;
 }
 
-// A walker property (a longhand) as the database's property and the side of a box it writes.
+// A walker property (a longhand) as the database's property and the part of a shape it writes: { short, side } and, for a
+// corner of border-radius, `corner`. A side of an edge family (padding, margin, border width, colour and style, inset;
+// physical or logical) carries `side`. The families come from mdn-data (lib/css-families.mjs).
 export function splitProperty( prop ) {
-	let m = prop.match( /^(padding|margin)-(top|right|bottom|left)$/ );
-	if ( m ) {
-		return { short: m[ 1 ], side: m[ 2 ] };
-	}
-	m = prop.match( /^border-(top|right|bottom|left)-(width|color|style)$/ );
-	if ( m ) {
-		return { short: `border-${ m[ 2 ] }`, side: m[ 1 ] };
-	}
-	if ( /^(row|column)-gap$/.test( prop ) ) {
-		return { short: 'gap', side: null };
-	}
-	if ( 'text-decoration-line' === prop ) {
-		return { short: 'text-decoration', side: null };
-	}
-	return { short: prop, side: null };
+	const fam = familyOf( prop );
+	const short = settingKey( prop );
+	return { short, side: 'side' === fam?.kind && short !== prop ? fam.part : null, ...( 'corner' === fam?.kind ? { corner: fam.part } : {} ) };
 }
 
 // Measured widths grouped into tiers (Spec 48 FR-48-74). The desktop tier is read at 1440 alone; 1920 is never a
@@ -366,6 +357,46 @@ export function radiusCorners( raw ) {
 	return Object.fromEntries( CORNERS.map( ( k, i ) => [ k, [ a, b, c, d ][ i ] ] ) );
 }
 
+// A longhand that reached its setting through the shorthand family (a corner reaching `border-radius`, a side reaching a
+// single-colour `border-color`, an `overflow-x` reaching `overflow`) is one part of the shape the setting holds, so its value
+// is folded with the element's other parts (`siblings`: { longhand: { width: value } }, a part the draft did not state coming
+// from the shorthand's own reading). A shape setting (border-radius with corners) takes the folded shorthand per tier; a
+// setting that holds one value takes it only when every stated part is equal and is otherwise raised, never written wrong.
+// A part that reached an edge box (padding, margin, border width) writes its own side and is left alone.
+// Returns { tiers } or { gap: 'shape', detail }.
+function foldFamily( { prop, perWidth, siblings = {}, row, attr, tiers } ) {
+	const fam = familyOf( prop );
+	const own = physicalOf( prop );
+	const exact = listedProperties( row.css_property ).some( ( stored ) => storedKeys( stored ).some( ( k ) => k === prop || k === own ) );
+	const isBox = !! row.box_family || 'box_only' === row.tier_shape;
+	// The row and column gap pair is judged by Fill's spacing ownership (the parent's gap follows the rendered gaps between
+	// children, lib/fill-resolve-element.mjs), whose per-tier value is the prop's own, so it is not folded from the raw reads.
+	const owned = 'axis' === fam?.kind && /^(row|column)$/.test( fam.part );
+	if ( ! fam || 'mixed' === fam.kind || exact || owned || ( isBox && 'corner' !== fam.kind ) ) {
+		return { tiers };
+	}
+	const shape = 'corner' === fam.kind && isBox;
+	const out = { ...tiers };
+	for ( const [ w, value ] of Object.entries( perWidth ) ) {
+		const tier = TIER_OF[ w ];
+		if ( ! tier ) {
+			continue;
+		}
+		const whole = siblings[ fam.short ]?.[ w ] ? unfoldValue( fam.short, siblings[ fam.short ][ w ] ) : null;
+		const parts = Object.fromEntries( fam.members.map( ( m ) => [ m, m === own ? value : siblings[ m ]?.[ w ] ?? whole?.[ m ] ] ) );
+		const fold = foldParts( fam.short, parts );
+		if ( shape ) {
+			if ( fold.missing.length || Object.values( parts ).some( ( v ) => /\s/.test( String( v ).trim() ) ) ) {
+				return { gap: 'shape', detail: fold.missing.length ? `${ attr } needs all ${ fam.members.length } corners and the draft states ${ fam.members.length - fold.missing.length } at ${ w }` : `${ attr } cannot hold an elliptical corner (${ Object.values( parts ).join( ', ' ) } at ${ w })` };
+			}
+			out[ tier ] = fold.css;
+		} else if ( ! fold.equal ) {
+			return { gap: 'shape', detail: `${ attr } holds one value for every ${ 'corner' === fam.kind ? 'corner' : ( 'side' === fam.kind ? 'side' : fam.short ) }; draft has ${ fam.members.map( ( m ) => `${ m } ${ parts[ m ] ?? '(unstated)' }` ).join( ', ' ) } at ${ w }` };
+		}
+	}
+	return { tiers: out };
+}
+
 function radiusWrite( attr, tiers, def ) {
 	const perTier = Object.fromEntries( Object.entries( tiers ).map( ( [ t, raw ] ) => [ t, radiusCorners( raw ) ] ) );
 	const bad = Object.entries( perTier ).find( ( [ , c ] ) => ! c );
@@ -423,7 +454,7 @@ export function resolve( input, ctx ) {
 	// A setting painting the slot itself wins; otherwise one whose inherited value calibration saw reach the slot.
 	const tiedBy = ( paths ) => rows.filter( ( r ) => {
 		const c = ctx.calibration.settings?.[ r.attr_name ];
-		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || c.property === prop ) && canGive( r, c ) && holdsDisplay( r );
+		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && canGive( r, c ) && holdsDisplay( r );
 	} );
 	const direct = tiedBy( ( c ) => c.slots || [ c.slot ] );
 	const tied = direct.length ? direct : tiedBy( ( c ) => c.reaches || [] );
@@ -483,6 +514,11 @@ export function resolve( input, ctx ) {
 	const tierPx = ( t ) => fontPx[ { mobile: 375, tablet: 768, desktop: 1440 }[ t ] ] || 16;
 	const fmt = ( t, raw, def ) => formatValue( { prop: short, raw, def, unit, fontPx: tierPx( t ), forms, prefer: typeof current[ attr ] === 'string' ? current[ attr ] : null,
 		snapshot: ctx.snapshot, log: ctx.log || [], where: `${ block } ${ slot } ${ prop }@${ t }` } );
+	const folded = foldFamily( { prop, perWidth, siblings: input.siblings, row, attr, tiers } );
+	if ( folded.gap ) {
+		return folded;
+	}
+	tiers = folded.tiers;
 	if ( 'border-radius' === short && ( row.box_family || 'box_only' === row.tier_shape ) ) {
 		return done( radiusWrite( attr, tiers, schema[ attr ] ) );
 	}
@@ -611,7 +647,7 @@ export function resolveViaAncestor( input, ctx ) {
 		const painted = rows.find( ( r ) => {
 			const c = a.calibration?.settings?.[ r.attr_name ];
 			return c && [ ...( c.slots || ( c.slot ? [ c.slot ] : [] ) ), ...( c.reaches || [] ) ].some( ( p ) => LOOSE( p ) === LOOSE( a.path ) ) &&
-				( ! c.property || c.property === short || c.property === prop ) && ( ( c.state || null ) === ( state || null ) );
+				( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && ( ( c.state || null ) === ( state || null ) );
 		} );
 		// Write-prover 2: the block-context channel. The row's block `usesContext` a key this ancestor
 		// `providesContext`, and the attribute behind that key is one of the candidates.
