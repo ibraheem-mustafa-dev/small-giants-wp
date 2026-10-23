@@ -1,0 +1,26 @@
+[
+	{
+	"file": "lib/trial.mjs",
+	"find": "const top = anchorY && null != live.box.y && null != draft.box.y ? Math.abs( ( live.box.y - anchorY.live ) - ( draft.box.y - anchorY.draft ) ) : 0;",
+	"replace": "const top = 0;",
+	"why": "a margin that moves boxes without resizing them would pass the trial"
+ },
+ {
+	"file": "lib/trial.mjs",
+	"find": "name && ys.every( ( y ) => null != y ) && ( out[ w ] = { before: ys[ 0 ], after: ys[ 1 ], draft: ys[ 2 ] } );",
+	"replace": "name && ( out[ w ] = { before: ys[ 0 ], after: ys[ 1 ], draft: ys[ 2 ] } );",
+	"why": "an anchor missing on the draft would be used as if measured"
+ },
+ {
+	"file": "lib/trial-page.mjs",
+	"find": "return before?.name ?? self;",
+	"replace": "return self;",
+	"why": "the block's own margin would move the anchor with it"
+ },
+ {
+	"file": "lib/trial-page.mjs",
+	"find": "} else if ( ! e.contains( block ) && ! block.contains( e ) &&",
+	"replace": "} else if ( ! block.contains( e ) &&",
+	"why": "the block's container would be the anchor"
+ }
+]

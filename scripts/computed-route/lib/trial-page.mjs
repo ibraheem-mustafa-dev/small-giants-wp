@@ -158,3 +158,29 @@ export function scopeInPage( [ resolveSrc, finders, blockSel ] ) {
 		return e && ( block.contains( e ) || ( block.parentElement?.contains( e ) && block.compareDocumentPosition( e ) & Node.DOCUMENT_POSITION_FOLLOWING ) );
 	} ).map( ( [ n ] ) => n );
 }
+
+// In-page: the pair name (of { name: finder }) a write on the block cannot move, to measure top offsets from: the last pair
+// before the block in document order that neither contains it nor sits inside it, else the pair on the block element
+// itself, else null. [ resolveSrc, finders, blockSel ].
+export function anchorInPage( [ resolveSrc, finders, blockSel ] ) {
+	// eslint-disable-next-line no-new-func
+	const resolve = new Function( `return (${ resolveSrc })` )();
+	const block = document.querySelector( blockSel );
+	if ( ! block ) {
+		return null;
+	}
+	let before = null;
+	let self = null;
+	for ( const [ name, f ] of Object.entries( finders ) ) {
+		const e = resolve( f );
+		if ( ! e ) {
+			continue;
+		}
+		if ( e === block ) {
+			self ||= name;
+		} else if ( ! e.contains( block ) && ! block.contains( e ) && ( block.compareDocumentPosition( e ) & Node.DOCUMENT_POSITION_PRECEDING ) ) {
+			( ! before || ( before.e.compareDocumentPosition( e ) & Node.DOCUMENT_POSITION_FOLLOWING ) ) && ( before = { name, e } );
+		}
+	}
+	return before?.name ?? self;
+}

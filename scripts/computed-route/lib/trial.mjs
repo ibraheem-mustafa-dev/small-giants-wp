@@ -63,31 +63,48 @@ export function withWrite( attributes, write ) {
 	return out;
 }
 
-// One pair's distance to the draft: width, height and left offset from the block (both sides' page positions differ by
-// whatever sits above, so only the offset inside the block is compared). pair: { box }, draft: { box }, blockX: each
-// side's block left edge.
-export function pairDistance( live, draft, blockX ) {
+// One pair's distance to the draft: width, height, left offset from the block, and top offset from an anchor the write
+// cannot move (both sides' page positions differ by whatever sits above, so only offsets are compared). pair: { box },
+// draft: { box }, blockX: each side's block left edge; anchorY: { live, draft }, each side's anchor top, or null when no
+// anchor was measured on both sides (the top offset is then not compared). The top offset is what catches a margin
+// write: it moves the boxes after it, not their size (Spec 48 FR-48-4).
+export function pairDistance( live, draft, blockX, anchorY = null ) {
 	if ( ! live?.box || ! draft?.box ) {
 		return null;
 	}
-	return Math.abs( live.box.w - draft.box.w ) + Math.abs( live.box.h - draft.box.h ) + Math.abs( ( live.box.x - blockX.live ) - ( draft.box.x - blockX.draft ) );
+	const top = anchorY && null != live.box.y && null != draft.box.y ? Math.abs( ( live.box.y - anchorY.live ) - ( draft.box.y - anchorY.draft ) ) : 0;
+	return Math.abs( live.box.w - draft.box.w ) + Math.abs( live.box.h - draft.box.h ) + Math.abs( ( live.box.x - blockX.live ) - ( draft.box.x - blockX.draft ) ) + top;
+}
+
+// The top offset anchor per width for judgeTrial, from the measured pairs: { [width]: { before, after, draft } } (each
+// side's anchor top), for the widths where the anchor pair was measured before, after and on the draft. anchors:
+// { [width]: pair name or null } (lib/trial-page.mjs::anchorInPage).
+export function anchorTops( { before, after, draft, anchors } ) {
+	const out = {};
+	for ( const [ w, name ] of Object.entries( anchors || {} ) ) {
+		const ys = [ before[ w ]?.[ name ], after[ w ]?.[ name ], draft[ w ]?.[ name ] ].map( ( p ) => p?.box?.y );
+		name && ys.every( ( y ) => null != y ) && ( out[ w ] = { before: ys[ 0 ], after: ys[ 1 ], draft: ys[ 2 ] } );
+	}
+	return out;
 }
 
 // The verdict on one trial at all widths. before/after: { [width]: { [pair]: { box } } } measured live; draft: the same
-// for the draft; blockX: { [width]: { live, draft } }. `keep` when the summed distance falls and no pair moves more than
+// for the draft; blockX: { [width]: { live, draft } }; anchorY: anchorTops' { [width]: { before, after, draft } }, so every
+// pair's position is judged, not only its size (a width with no anchor compares sizes and left offsets only). `keep` when the summed distance falls and no pair moves more than
 // tol px further from the draft; `reject` when a pair moves further or the sum rises; `no-box-change` when no box moved
 // (a colour, a border colour: boxes cannot judge it, so the rebuild and walk do, as before). The sum is judged against
 // max( tol, 0.5 * sqrt( n ) ) over the n pair-widths compared: each pair carries about half a pixel of rounding, and
 // that noise grows with the square root of how many are summed. Returns { verdict, keep, delta, sumTol, worse: [ {
 // width, pair, by } ], pairs: [ { width, pair, before, after } ] } (each pair's distance to the draft).
-export function judgeTrial( { before, after, draft, blockX }, tol = 1 ) {
+export function judgeTrial( { before, after, draft, blockX, anchorY = {} }, tol = 1 ) {
 	let delta = 0;
 	const worse = [];
 	const pairs = [];
 	for ( const w of Object.keys( before ) ) {
 		for ( const pair of Object.keys( before[ w ] ) ) {
-			const b = pairDistance( before[ w ][ pair ], draft[ w ]?.[ pair ], blockX[ w ] );
-			const a = pairDistance( after[ w ]?.[ pair ], draft[ w ]?.[ pair ], blockX[ w ] );
+			const y = anchorY[ w ];
+			const b = pairDistance( before[ w ][ pair ], draft[ w ]?.[ pair ], blockX[ w ], y ? { live: y.before, draft: y.draft } : null );
+			const a = pairDistance( after[ w ]?.[ pair ], draft[ w ]?.[ pair ], blockX[ w ], y ? { live: y.after, draft: y.draft } : null );
 			if ( null == b || null == a ) {
 				continue;
 			}
