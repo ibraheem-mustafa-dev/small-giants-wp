@@ -18,17 +18,38 @@ const uniqSorted = ( list ) => [ ...new Set( list ) ].sort( ( a, b ) => a - b );
 const SEP = '\u0001';
 const EFFECT_OF = new Map( Object.entries( VOCAB.composedEffects ).flatMap( ( [ effect, names ] ) => names.map( ( n ) => [ n, effect ] ) ) );
 
+// A part or effect row's key is `<the client's part name> <hover|press|rest>[:<property>]` (the walker's parts pass): the name
+// is the client's label and no part of the mechanism. Returns { state, family } read from the key and the row's two sides
+// (an effect row names the side that lacks the effect), or null for any other row.
+export function partParts( kind, key, cell = {} ) {
+	const m = ( VOCAB.partKind === kind || VOCAB.effectKind === kind ) && /\s(hover|press|rest)(?::(.+))?$/.exec( String( key ?? '' ).trim() );
+	if ( ! m ) {
+		return null;
+	}
+	const state = 'press' === m[ 1 ] ? VOCAB.pressState : 'rest' === m[ 1 ] ? 'default' : m[ 1 ];
+	if ( VOCAB.effectKind === kind ) {
+		const none = ( v ) => String( v ?? VOCAB.noneSide ) === VOCAB.noneSide;
+		return { state, family: `${ VOCAB.effectKind }:${ m[ 1 ] }:${ none( cell.live ) ? 'live-lacks' : none( cell.draft ) ? 'draft-lacks' : 'differs' }` };
+	}
+	return { state, family: `${ VOCAB.partKind }:${ 'layers' === m[ 2 ] ? `${ m[ 1 ] }-layers` : propertyFamily( 'style', m[ 2 ] ) ?? m[ 2 ] }` };
+}
+
 // The family of a property key: a shorthand family's name for a box edge, corner or axis longhand, the composed effect for a
 // transform longhand, the property itself for any other CSS property (a mixed shorthand's longhands stay apart), `box:<key>` for a measured box, `<kind>:<first word>` for a presence, auto-text or link row (its
-// quoted text is the content, not the mechanism), the motion-record family for an inventory ID, and `walker:<key>` for a
+// quoted text is the content, not the mechanism), `part:<property family>` and `effect:<hover|press>:<side that lacks it>` for a
+// part or effect row (the client's part label is dropped), the motion-record family for an inventory ID, and `walker:<key>` for a
 // walker pseudo-key (painted-ground, icon-fill). null when the key is empty.
-export function propertyFamily( kind, key, value = null ) {
+export function propertyFamily( kind, key, value = null, cell = {} ) {
 	const k = String( key ?? '' ).trim();
 	if ( ! k ) {
 		return null;
 	}
 	if ( VOCAB.boxKind === kind ) {
 		return `box:${ k }`;
+	}
+	const part = partParts( kind, k, cell );
+	if ( part ) {
+		return part.family;
 	}
 	if ( VOCAB.keyWordKinds.includes( kind ) ) {
 		return `${ kind }:${ k.split( /\s/ )[ 0 ] }`;
@@ -184,7 +205,8 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 	const used = new Set();
 	const rows = [];
 	for ( const item of walk.items ) {
-		const state = VOCAB.interactionKinds.includes( item.kind ) ? item.kind : 'default';
+		const cell = item.cells[ 0 ];
+			const state = VOCAB.interactionKinds.includes( item.kind ) ? item.kind : partParts( item.kind, item.key, cell )?.state ?? 'default';
 		const key = item.ref ? keyOf( item.ref, item.path, item.key, state ) : null;
 		const hits = key ? fillBy.get( key ) ?? [] : [];
 		const hit = hits.find( ( h ) => 'unmapped' === h.origin ) ?? hits[ 0 ];
@@ -194,10 +216,10 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 		rows.push( {
 			client, surface, element: item.ref ? `${ item.ref }${ item.path ? ` ${ item.path }` : '' }` : item.pair,
 			slug: item.ref ? slugOf( item.ref, hit?.block, item.block ) : null, surfaceLevel: ! item.ref,
-			kind: item.kind, key: item.key, property: propertyFamily( item.kind, item.key ), state,
+			kind: item.kind, key: item.key, property: propertyFamily( item.kind, item.key, null, cell ), state,
 			runStates: item.runStates.length === walk.runStates.length ? 'all' : 'some', tier: tierPattern( item.widths, allWidths ),
 			side: hit ? 'both' : 'walker-only', reason, reasonText: hit?.reason ?? null, owner: rule?.owner ?? null,
-			draft: item.cells[ 0 ].draft, live: item.cells[ 0 ].live, confirm: key ? confirmBy.get( key ) ?? null : null
+			draft: cell.draft, live: cell.live, confirm: key ? confirmBy.get( key ) ?? null : null
 		} );
 	}
 	for ( const f of fill.filter( ( r ) => ! used.has( r ) ) ) {

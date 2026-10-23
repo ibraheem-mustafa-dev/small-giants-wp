@@ -5,12 +5,14 @@
 // cannot reproduce, an unreadable stylesheet that could hold the answer or a missing input throws, and the gate fails
 // with its own class.
 //
-// o: { origin (the live site), db (read-only), states (the surface's walker state map), openPage({ width }) -> page
-// (default: a new Playwright page on origin), walk(row) -> a fresh walker report (default: the walker on a served draft),
+// o: { origin (the live site), url (the surface's own live page; default origin), db (read-only), states (the surface's
+// walker state map), openPage({ width }) -> page (default: a new Playwright page on url), walk(row) -> a fresh walker
+// report (default: the walker on a served draft),
 // renderBlock(block, attrs) -> { status, html } (the block renderer; needed to trial candidate settings), today }.
 import { listedProperties } from './db.mjs';
 import { openRows, settingState, cssProp } from './solve-rows.mjs';
 import { enumerateInPage, winnerInPage } from './gate-probes-page.mjs';
+import { KEYWORDS } from './calibrate-markers.mjs';
 
 const STATE_PSEUDO = { hover: ':hover' };
 const slugOf = ( block ) => String( block ).replace( /^sgs\//, '' ).replace( /[^\w-]/g, '' );
@@ -20,8 +22,39 @@ export const belongsTo = ( selector, block ) => new RegExp( `(?:^|[^\\w-])\\.(?:
 
 const ownRule = ( selector ) => /(?:^|[^\w-])\.(?:wp-block-)?sgs-[\w-]+/.test( selector );
 
-// The probe values a trial writes into a candidate setting, one per shape a setting's value takes.
-export const probeValues = ( property ) => ( /colou?r|background|border-color|fill|stroke/.test( property ) ? [ '#12ab34' ] : [ '37px', { desktop: '37px' } ] );
+// Keyword values calibration's marker table lacks, for properties a block setting can carry as free text.
+const KEYWORD_VALUES = { ...KEYWORDS, display: [ 'flex', 'none', 'grid' ], visibility: [ 'hidden' ], position: [ 'sticky', 'relative' ], overflow: [ 'hidden' ], 'align-self': [ 'center' ], 'justify-self': [ 'center' ], 'text-align': KEYWORDS[ 'text-align' ] };
+
+// The probe values a trial writes into a candidate setting: every value of its enum, true for a boolean, a number for a
+// number (bare and per-device), a theme token slug and a hex for a colour (a slug-only attribute drops a hex), the CSS
+// keywords the property takes, and a length (bare and per-device) for any setting that takes text. `attribute` is the
+// setting's DB row ({ attr_type, enum_values }); one with no row is probed with every shape.
+export function probeValues( property, attribute = {} ) {
+	const types = String( attribute.attr_type ?? '' ).split( '|' ).filter( Boolean );
+	const takes = ( ...t ) => ! types.length || t.some( ( x ) => types.includes( x ) );
+	let listed = [];
+	try {
+		listed = JSON.parse( attribute.enum_values ?? '[]' );
+	} catch ( e ) {
+		listed = [];
+	}
+	const out = [ ...( Array.isArray( listed ) ? listed.filter( ( v ) => '' !== v ) : [] ) ];
+	takes( 'boolean' ) && out.push( true );
+	takes( 'number', 'integer' ) && out.push( 37, { desktop: 37 } );
+	if ( takes( 'string', 'object', 'rich-text', 'array' ) ) {
+		/colou?r|background|border-color|fill|stroke/.test( property ) && out.push( 'primary', 'accent', '#12ab34' );
+		out.push( ...( KEYWORD_VALUES[ property ] || [] ), '37px', { desktop: '37px' } );
+	}
+	return out.filter( ( v, i ) => out.findIndex( ( x ) => JSON.stringify( x ) === JSON.stringify( v ) ) === i );
+}
+
+// The live origin and the surface's own live page from a walker config's live url (its `{cb}` cache-buster filled); an
+// origin override (SGS_LIVE_ORIGIN) keeps the surface's path.
+export function liveTarget( configUrl, originOverride = '' ) {
+	const u = new URL( String( configUrl ).replace( '{cb}', '0' ) );
+	const origin = ( originOverride || u.origin ).replace( /\/+$/, '' );
+	return { origin, url: `${ origin }${ u.pathname }${ u.search }` };
+}
 
 async function defaultOpenPage( origin, { width } ) {
 	const { chromium } = await import( 'playwright' );
@@ -45,7 +78,7 @@ export function createProbes( o ) {
 		}
 		return v;
 	};
-	const open = o.openPage || ( ( a ) => defaultOpenPage( need( o.origin, 'the live origin' ), a ) );
+	const open = o.openPage || ( ( a ) => defaultOpenPage( need( o.url || o.origin, 'the live origin' ), a ) );
 
 	// Opens the live page at the row's width in the state the row was measured in (rest, or the pointer on the element for a
 	// hover) and runs fn( page, selector ); the page is always closed.
@@ -113,14 +146,14 @@ export function createProbes( o ) {
 			throw new Error( `${ live.unread } stylesheet(s) or rule(s) could not be read, so no rule can be ruled out` );
 		}
 		const slugs = [ block, ...( row.ancestors || [] ) ];
-		const rows = o.db.prepare( `SELECT block_slug, attr_name, css_property FROM block_attributes WHERE source IN ( 'sgs', 'sgs-ext' ) AND css_property IS NOT NULL AND block_slug IN ( ${ slugs.map( () => '?' ).join( ',' ) } )` ).all( ...slugs );
+		const rows = o.db.prepare( `SELECT block_slug, attr_name, css_property, attr_type, enum_values FROM block_attributes WHERE source IN ( 'sgs', 'sgs-ext' ) AND css_property IS NOT NULL AND block_slug IN ( ${ slugs.map( () => '?' ).join( ',' ) } )` ).all( ...slugs );
 		const candidates = rows.filter( ( r ) => listedProperties( r.css_property ).includes( prop ) );
 		if ( ! candidates.length ) {
 			return { changed: false, evidence: `no rule from an SGS class declares ${ prop } on ${ row.ref } (${ live.hits.length } other matching rule(s)) and no setting of ${ slugs.join( ', ' ) } lists it` };
 		}
 		const render = need( o.renderBlock, 'the block renderer' );
 		for ( const c of candidates ) {
-			for ( const value of probeValues( prop ) ) {
+			for ( const value of probeValues( prop, c ) ) {
 				const [ a, b ] = [ await render( c.block_slug, {} ), await render( c.block_slug, { [ c.attr_name ]: value } ) ];
 				if ( 200 !== a.status || 200 !== b.status ) {
 					throw new Error( `the block renderer answered ${ a.status }/${ b.status } for ${ c.block_slug }` );
@@ -134,6 +167,9 @@ export function createProbes( o ) {
 		return { changed: false, evidence: `${ candidates.length } candidate setting(s) (${ candidates.map( ( c ) => c.attr_name ).join( ', ' ) }) written with probe values render no CSS declaring ${ prop }, and no SGS rule declares it on ${ row.ref }` };
 	}
 
+	// G6 hardcode: the rule is the SGS rule (a selector naming an sgs- class) whose removal changes the computed value. A
+	// winner that is a WordPress or theme rule or the element's inline style is no SGS hardcode, and a stylesheet or rule
+	// the trial could not read leaves a winner it may not have seen.
 	async function hardcodeRule( row ) {
 		const prop = cssProp( row.key );
 		const w = await onElement( row, ( page, sel ) => page.evaluate( winnerInPage, [ sel, prop ] ) );
@@ -143,7 +179,14 @@ export function createProbes( o ) {
 		if ( ! w.restored ) {
 			throw new Error( 'the trial could not restore the page\'s own rules' );
 		}
-		return w.winners.length ? { rule: w.winners[ 0 ], evidence: `removing ${ prop } from ${ w.winners[ 0 ] } changes ${ row.ref } from ${ w.before }` } : { rule: null, evidence: `no single rule's removal changes ${ prop } on ${ row.ref } (computed ${ w.before })` };
+		const own = w.winners.find( ( n ) => 'element.style' !== n && ownRule( n ) );
+		if ( own ) {
+			return { rule: own, evidence: `removing ${ prop } from ${ own } changes ${ row.ref } from ${ w.before }` };
+		}
+		if ( w.unread ) {
+			throw new Error( `${ w.unread } stylesheet(s) or rule(s) could not be read, so no rule can be ruled out` );
+		}
+		return { rule: null, evidence: w.winners.length ? `the rule that wins ${ prop } on ${ row.ref } is ${ w.winners.join( ', ' ) }, not an SGS rule` : `no single rule's removal changes ${ prop } on ${ row.ref } (computed ${ w.before })` };
 	}
 
 	function rosterMatches( row ) {
@@ -155,16 +198,27 @@ export function createProbes( o ) {
 	}
 
 	// One fresh walk per surface state and width, shared by the flow probe and the re-check.
+	// The kinds of row the fresh walk (--lean) does not read, so its absence from that walk shows nothing.
+	const LEAN_BLIND = [ 'link', 'entrance', 'press' ];
 	const walks = new Map();
 	async function freshOpen( row ) {
+		if ( LEAN_BLIND.includes( row.kind ) || ( /^(part|effect)$/.test( row.kind ) && /\bpress\b/.test( String( row.key ) ) ) ) {
+			throw new Error( `the fresh walk is lean: a ${ row.kind } row is one the lean walk does not read, so its absence proves nothing` );
+		}
 		const key = `${ row.state }|${ row.width }`;
 		if ( ! walks.has( key ) ) {
 			walks.set( key, Promise.resolve( need( o.walk, 'a fresh walk' )( row ) ) );
 		}
 		const report = await walks.get( key );
+		if ( ! ( report.runs || [] ).length ) {
+			throw new Error( 'the fresh walk produced no runs' );
+		}
+		if ( ! report.runs.some( ( r ) => r.state === row.state && r.width === row.width ) ) {
+			throw new Error( `the fresh walk has no run at ${ row.width } in the ${ row.state } state, so a missing row shows nothing` );
+		}
 		const same = ( r ) => r.ref === row.ref && r.key === row.key && r.state === row.state && r.width === row.width && ( r.path ?? '' ) === ( row.path ?? '' );
 		const open = openRows( report ).filter( same );
-		return { open, runs: ( report.runs || [] ).length };
+		return { open };
 	}
 
 	async function probe( row, kind ) {
@@ -193,9 +247,6 @@ export function createProbes( o ) {
 	// G7: still open after a fresh walk on the publish date.
 	async function recheck( row ) {
 		const f = await freshOpen( row );
-		if ( ! f.runs ) {
-			throw new Error( 'the fresh walk produced no runs' );
-		}
 		const day = o.today || new Date().toISOString().slice( 0, 10 );
 		return { stillOpen: f.open.length > 0, evidence: `fresh walk on ${ day }: ${ f.open.length } open row(s) for ${ row.ref } ${ row.key } in ${ row.state } at ${ row.width }` };
 	}

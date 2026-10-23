@@ -23,7 +23,7 @@ import { calibrationForSite } from './solve.mjs';
 import { readTree, nodeByRef } from './lib/tree.mjs';
 import { localBlockHash } from './lib/deploy-hash.mjs';
 import { manifestSchemaVersion } from './lib/handoff.mjs';
-import { createProbes } from './lib/gate-probes.mjs';
+import { createProbes, liveTarget } from './lib/gate-probes.mjs';
 import { writeGaps, gapsPath } from './lib/gaps-file.mjs';
 import { serveDraft } from './lib/draft.mjs';
 import { adminSession, readEnv, renderBlock } from './lib/trial-page.mjs';
@@ -55,10 +55,10 @@ export async function defaultProbes( { s, client, db, tmp = fs.mkdtempSync( path
 	const buildDir = path.join( REPO, 'sites', client, 'build' );
 	const walkerFile = path.join( buildDir, s.walkerFull || s.walker );
 	const cfg = ( await import( pathToFileURL( walkerFile ).href ) ).default;
-	const origin = ( process.env.SGS_LIVE_ORIGIN || new URL( String( cfg.live.url ).replace( '{cb}', '0' ) ).origin ).replace( /\/+$/, '' );
+	const { origin, url } = liveTarget( cfg.live.url, process.env.SGS_LIVE_ORIGIN );
 	let session = null;
 	return createProbes( {
-		origin, db, states: s.states,
+		origin, url, db, states: s.states,
 		walk: async ( row ) => {
 			const served = await serveDraft( path.join( REPO, s.draftDir ), { index: s.draftIndex || null } );
 			const out = path.join( tmp, `walk-${ row.state }-${ row.width }` );
