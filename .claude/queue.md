@@ -50,3 +50,4 @@ The signal between the cloning tool plan's two orchestrator sessions (`.claude/p
 - 2026-10-23 T site-run-end (sgs/nav-bar-menu recalibrated: 134 settings, was 133, burgerBorderRadius gained, burger size and width on the burger; header post 201 rebuilt from Fill 2026-10-23T03-46-53, pairs sites/indus-foods/build/qa/pairs/header-2026-10-23-looks/, untracked)
 - 2026-10-23 T site-run-start header post 201 (after the review fixes: Fill and build; reads the framework DB)
 - 2026-10-23 T site-run-end (header post 201 rebuilt from Fill 2026-10-23T04-45-48 after the review fixes; census 139 rows, 13 classes, 0 unclassified; pairs sites/indus-foods/build/qa/pairs/header-2026-10-23-looks/, untracked)
+- 2026-10-23 S site-setup eye-care-clone-test 67f2bd582 (mintcream WordPress: SGS deployed, theme, snapshot, WooCommerce, mail, Site Info; calibration mirror not yet re-pointed; plan .claude/plans/2026-10-23-cloning-tool-completion.md)
