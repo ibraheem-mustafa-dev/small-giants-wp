@@ -41,7 +41,7 @@ last_updated: 2026-10-22
 **Container band layers and the nav caret** (Bean, 2026-10-22): done and live on all four test sites; the rules are in Spec 02's contentWidth bullet and Spec 36, the record in the plan's Status.
 
 **Resume from:** `plans/2026-10-21-handoff-readers.md`, Status, Next; the tracks signal each other through `.claude/queue.md`.
-- **Track T (the handoff readers session):** T1, T2a, T2b/T3 and the header-looks wave done 2026-10-23 (post 201; hover colours, motion and some CSS still differ; suite 2568 pass, intake re-run red). Next: the header's walker-measured gaps, T4, T5 (`.claude/prompts/2026-10-23-track-t-header-close.md`).
+- **Track T (the handoff readers session):** T1 to the header-looks wave done 2026-10-23. The header walk (611 open differences) and the Spec 48 audit moved the work to `.claude/plans/2026-10-23-cloning-tool-completion.md`: Phase 0 in progress, then known fixes, a three-client re-clone and census, root-cause fixes until identical.
 - **Track F:** done 2026-10-22: F0 to F3 live-verified; F4 (U11) built, 50 setting meanings seeded into `block_attributes.meaning` (reseed `eb57a037c`); closing three-rater council run, fixes merged; indus-test at `d976224be` (host marker). Its recorded open items: the plan's Status, "Track F's closing three-rater /qc-council", and Stage S step 5. Plan: `.claude/plans/2026-10-21-handoff-readers.md`.
 
 ### Front F: Eye Care Birmingham, built by hand (D1149)
