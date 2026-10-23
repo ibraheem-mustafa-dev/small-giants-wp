@@ -1,0 +1,21 @@
+[
+	{ "file": "lib/fill-read.mjs", "find": "snap.styles.color = srgb( getComputedStyle( el ).color );", "replace": "void 0;", "why": "an element with no text reads no colour (R1)" },
+	{ "file": "lib/fill-read.mjs", "find": "snap.position = getComputedStyle( el ).position;", "replace": "snap.position = null;", "why": "the computed position is not read (R11.5)" },
+	{ "file": "lib/fill-read.mjs", "find": "result.failures.push( { id: j.id, owner: j.owner, width, read: 'declared', reason } );", "replace": "", "why": "a failed declared read is only logged (R7)" },
+	{ "file": "lib/fill-read.mjs", "find": "if ( null === own ) {", "replace": "if ( null === own && reason ) {", "why": "a declared read that finds no element ends silently (R7)" },
+	{ "file": "lib/fill-report.mjs", "find": "slot: u.slot ?? '', state: u.state ?? null } ) );", "replace": "slot: u.slot ?? '' } ) );", "why": "the UNMAPPED list drops the row's state (R5)" },
+	{ "file": "lib/fill-report.mjs", "find": "property: READ_FAILED,", "replace": "property: 'declared',", "why": "a failed read's row names no failed read" },
+	{ "file": "lib/fill-report.mjs", "find": "value: `${ f.width }px`, state: null,", "replace": "value: `${ f.width }px`,", "why": "a failed read's row records no state" },
+	{ "file": "lib/fill-unread.mjs", "find": "[].concat( r.attr_type || [] ).includes( 'string' ) && ", "replace": "", "why": "an object setting's enum is listed as a structure choice" },
+	{ "file": "lib/fill-unread.mjs", "find": " && enumStrings( r ).length", "replace": "", "why": "an enum listing no string is listed as a structure choice" },
+	{ "file": "lib/fill-unread.mjs", "find": "filter( ( v ) => 'string' === typeof v && v );", "replace": "filter( ( v ) => v );", "why": "non-string enum values count as choices" },
+	{ "file": "lib/fill-unread.mjs", "find": "import { contentRowsFor, STRUCTURE_ROLES } from './calibrate-content.mjs';", "replace": "import { contentRowsFor } from './calibrate-content.mjs';\nconst STRUCTURE_ROLES = [ 'layout', 'select-from-enum' ];", "why": "the unread list keeps its own copy of the structure roles" },
+	{ "file": "lib/motion-behaviour-settings.mjs", "find": "const by = ctx.positions?.[ templateOfRecord( r, ctx )?.key ];", "replace": "const by = null;", "why": "the header's sticky tiers ignore the draft's position read" },
+	{ "file": "lib/motion-behaviour-settings.mjs", "find": "if ( 'off' === want || 'desktop' === tier || inherited !== want ) {", "replace": "if ( 'desktop' === tier ) {", "why": "a narrower tier where the draft is not sticky is not written off" },
+	{ "file": "lib/motion-behaviour-settings.mjs", "find": "|| 'desktop' === tier || inherited !== want ) {", "replace": "|| 'desktop' === tier ) {", "why": "a pinned tier beneath an off tier inherits off" },
+	{ "file": "lib/motion-behaviour-settings.mjs", "find": "if ( 'off' === want || 'desktop' === tier ||", "replace": "if ( 'desktop' === tier ||", "why": "an off tier is written only where it differs from what it inherits" },
+	{ "file": "lib/motion-behaviour-settings.mjs", "find": "const want = PINS.test( String( by[ w ] ) ) ? 'on' : 'off';", "replace": "const want = 'on';", "why": "every rendered tier is read as pinned" },
+	{ "file": "lib/motion-behaviour-settings.mjs", "find": "if ( ! TIER_WIDTHS.some( ( [ , w ] ) => PINS.test( String( by[ w ] ?? '' ) ) ) ) {", "replace": "if ( false ) {", "why": "a header the render never pins is still written sticky" },
+	{ "file": "lib/motion-behaviour-settings.mjs", "find": "filter( ( x ) => '' === x.slot && 'string'", "replace": "filter( ( x ) => 'string'", "why": "a part's position is taken as the template element's" },
+	{ "file": "lib/motion-behaviour-settings.mjs", "find": "if ( ! by[ w ] ) {", "replace": "if ( false ) {", "why": "a tier the draft does not render is written off" }
+]

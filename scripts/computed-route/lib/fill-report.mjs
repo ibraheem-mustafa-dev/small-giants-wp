@@ -15,8 +15,22 @@ const VERDICTS = [ 'confirmed', 'render-wins', 'draft-defect', 'open' ];
 const cell = ( v ) => String( typeof v === 'object' && null !== v ? JSON.stringify( v ) : v ?? '' ).replace( /\|/g, '\\|' ).replace( /\n/g, ' ' ).slice( 0, 200 );
 const table = ( head, rows ) => ( rows.length ? [ `| ${ head.join( ' | ' ) } |`, `|${ head.map( () => '---' ).join( '|' ) }|`, ...rows.map( ( r ) => `| ${ r.map( cell ).join( ' | ' ) } |` ), '' ] : [ 'None.', '' ] );
 
-// The UNMAPPED list as the contract names it: property, value, node, reason (plus the block and element for a reader).
-export const unmappedList = ( unmapped ) => unmapped.map( ( u ) => ( { property: u.property, value: u.value, node: u.node, reason: u.reason, block: u.block, slot: u.slot ?? '' } ) );
+// The UNMAPPED list as the contract names it: property, value, node, reason (plus the block, the element and the state the
+// row was read in, null at rest, which lib/confirm-live.mjs::judgeUnmapped judges by).
+export const unmappedList = ( unmapped ) => unmapped.map( ( u ) => ( { property: u.property, value: u.value, node: u.node, reason: u.reason, block: u.block, slot: u.slot ?? '', state: u.state ?? null } ) );
+
+// The property an UNMAPPED row names for a draft read that failed: no one property was read.
+export const READ_FAILED = '(declared read)';
+
+// Each failed draft read (lib/fill-read.mjs::readDraft's `failures`) as an UNMAPPED row with its reason, so a read that threw
+// ends recorded rather than silent. nodes: lib/fill-skeleton.mjs::skeletonNodes; flat[index]: the tree node; refOf: its ref.
+export function readFailureRows( { reads, nodes, flat, refOf } ) {
+	return ( reads?.failures || [] ).map( ( f ) => {
+		const rec = nodes.find( ( n ) => n.index === f.owner );
+		const slot = f.id.slice( f.id.indexOf( ':' ) + 1 );
+		return { node: refOf( flat[ f.owner ] ), block: rec?.name ?? '', slot, property: READ_FAILED, value: `${ f.width }px`, state: null, reason: `read-failed: the draft's ${ f.read } values for this element at ${ f.width }px could not be read (${ f.reason }), so none of them is judged there` };
+	} );
+}
 
 // r: { client, surface, draft (the page or folder read), nodes (count), targets (count), writes, unmapped, notes,
 // handover, spacing, fluid, held, snaps, steps (breakpoint log), entrances: [{ node, block, measured | null }],
