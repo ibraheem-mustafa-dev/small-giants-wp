@@ -21,7 +21,8 @@
 // change no setting holds is a named `default-state` gap.
 
 import { setAttr, refOf, walk } from './tree.mjs';
-import { resolveProperty, knownPaths, notPainted } from './fill-prop.mjs';
+import { resolveProperty, knownPaths, notPainted, canon, PX_TOL } from './fill-prop.mjs';
+import { sameValue } from '../../parity/lib/compare.mjs';
 import { LOOSE } from './resolve.mjs';
 import { settingStates, statesVocabulary } from './db.mjs';
 import { longhands } from './calibrate-props.mjs';
@@ -141,7 +142,12 @@ const propOf = ( effect ) => effect.slice( effect.lastIndexOf( '|' ) + 1 );
 // every reading of that element lists it or owns it; a marker's own side effect (a border following its colour) is in
 // that one reading only. An element the default read never saw (a gradient's <defs>, absent from the default paint), and a
 // reading that shows or hides the element (its `display` changed), is a marker building structure, never a look.
-export function defaultStateLook( cal, state ) {
+// A change against the fixture's resting look misses a state value equal to it (a nav link turning primary on hover over
+// a fixture whose link already rests primary), so calibration also records each state reading's look as values (`look`,
+// lib/calibrate-instances.mjs::stateLook). Given the draft's resting look on the target (rest: { prop: { width: value } }),
+// a property is the block's own where a state setting of that property governs the element (the block has a rule for it
+// there) and the recorded state value differs from the draft's resting value at a width both state.
+export function defaultStateLook( cal, state, rest = {} ) {
 	const known = new Set( Object.keys( cal?.elements || {} ).map( LOOSE ) );
 	const readings = {};
 	for ( const s of Object.values( cal?.settings || {} ).filter( ( x ) => state === x.state ) ) {
@@ -158,6 +164,20 @@ export function defaultStateLook( cal, state ) {
 		const props = [ ...new Set( list.flatMap( ( r ) => r.effects ) ) ].filter( ( p ) => list.every( ( r ) => r.effects.includes( p ) || r.own.includes( p ) ) );
 		props.length && ( out[ path ] = new Set( props ) );
 	}
+	const settings = Object.values( cal?.settings || {} ).filter( ( x ) => state === x.state );
+	const governs = ( path, prop ) => settings.some( ( x ) => longhands( x.property ).includes( prop ) && ( x.slots || [ x.slot ] ).some( ( p ) => LOOSE( p ) === path ) );
+	for ( const x of settings ) {
+		for ( const [ raw, props ] of Object.entries( x.look || {} ) ) {
+			const path = LOOSE( raw );
+			if ( known.size && ! known.has( path ) ) {
+				continue;
+			}
+			for ( const [ prop, values ] of Object.entries( props ) ) {
+				const differs = Object.entries( values ).some( ( [ w, v ] ) => undefined !== rest[ prop ]?.[ w ] && ! sameValue( prop, canon( prop, v ), canon( prop, rest[ prop ][ w ] ), PX_TOL ) );
+				differs && governs( path, prop ) && ( out[ path ] ??= new Set() ).add( prop );
+			}
+		}
+	}
 	return out;
 }
 
@@ -166,9 +186,10 @@ export function defaultStateLook( cal, state ) {
 function restingOf( reads, id ) {
 	const out = {};
 	for ( const w of READ_WIDTHS ) {
-		const styles = reads.widths?.[ w ]?.[ id ]?.styles || {};
+		const snap = reads.widths?.[ w ]?.[ id ];
+		const styles = snap?.styles || {};
 		for ( const [ prop, v ] of Object.entries( styles ) ) {
-			v && ! notPainted( prop, styles ) && ( ( out[ prop ] ??= {} )[ w ] = v );
+			v && ! notPainted( prop, styles, snap ) && ( ( out[ prop ] ??= {} )[ w ] = v );
 		}
 	}
 	return out;
@@ -197,7 +218,7 @@ export function holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads
 	const declared = ( state, prop ) => [ ...drafts.values() ].some( ( d ) => d.state === state && ! d.pseudo && ( d.prop === prop || longhands( d.prop ).includes( prop ) ) );
 	const gapRow = ( prop, state, why ) => ( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( rest[ prop ] || {} ), reason: `default-state: ${ rec.name } changes ${ prop } on ${ state } by itself and the draft does not, and nothing holds it (${ why })` } );
 	for ( const state of interaction ) {
-		const look = defaultStateLook( cal, state );
+		const look = defaultStateLook( cal, state, rest );
 		const plan = [];
 		for ( const prop of [ ...new Set( Object.values( look ).flatMap( ( s ) => [ ...s ] ) ) ] ) {
 			const slots = holdSlots( cal, node, target.slot, prop, rest[ prop ] || {} );

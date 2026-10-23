@@ -1,0 +1,20 @@
+[
+	{ "file": "lib/calibrate.mjs", "find": "const look = row.css_state ? stateLook( markReads, slots, props ) : null;", "replace": "const look = null;", "why": "slotFor records no state look" },
+	{ "file": "lib/calibrate.mjs", "find": "stateLook( markReads, slots, props )", "replace": "stateLook( markReads, slots, [] )", "why": "the setting's own marker counts as its look" },
+	{ "file": "lib/calibrate.mjs", "find": "\t\t...( s.look || prev?.look ? { look: mergeLook( prev?.look, s.look ) } : {} ),\n", "replace": "", "why": "mergeSetting drops the state look from the cache entry" },
+	{ "file": "lib/calibrate.mjs", "find": "{ ...ws, ...( out[ path ][ prop ] || {} ) }", "replace": "{ ...( out[ path ][ prop ] || {} ), ...ws }", "why": "a later marker's value replaces the earlier one" },
+	{ "file": "lib/calibrate.mjs", "find": "( out[ path ] ??= {} )[ prop ] = { ...ws", "replace": "( out[ path ] ??= {} )[ prop ] ??= { ...ws", "why": "a width only the later reading holds is dropped" },
+	{ "file": "lib/fill-state.mjs", "find": "const look = defaultStateLook( cal, state, rest );", "replace": "const look = defaultStateLook( cal, state );", "why": "holdDefaults never gives the draft's resting look" },
+	{ "file": "lib/fill-state.mjs", "find": "differs && governs( path, prop ) && ", "replace": "governs( path, prop ) && ", "why": "a recorded value equal to the draft's resting value is held too" },
+	{ "file": "lib/fill-state.mjs", "find": "differs && governs( path, prop ) && ", "replace": "differs && ", "why": "a property no state setting governs is held" },
+	{ "file": "lib/fill-state.mjs", "find": "const settings = Object.values( cal?.settings || {} ).filter( ( x ) => state === x.state );", "replace": "const settings = Object.values( cal?.settings || {} ).filter( ( x ) => x.state );", "why": "another state's look counts" },
+	{ "file": "lib/fill-held.mjs", "find": "undefined === own( w ) && same(", "replace": "same(", "why": "the inherited check ignores the block's own paint" },
+	{ "file": "lib/fill-prop.mjs", "find": "\t\treturn null !== gapPaintsNothing( prop, styles, snap );", "replace": "\t\treturn false;", "why": "a gap always paints" },
+	{ "file": "lib/fill-prop.mjs", "find": "return multicol ? null : `", "replace": "return null && `", "why": "a gap on a block box paints" },
+	{ "file": "lib/fill-prop.mjs", "find": "if ( ! Number.isInteger( children ) || children >= 2 ) {", "replace": "if ( true ) {", "why": "a one-child container's gap paints" },
+	{ "file": "lib/fill-prop.mjs", "find": "if ( ! Number.isInteger( children ) || children >= 2 ) {", "replace": "if ( ! Number.isInteger( children ) || children >= 3 ) {", "why": "a two-child flex row's gap paints nothing" },
+	{ "file": "lib/fill-prop.mjs", "find": "if ( grid && axes.some( ( a ) => trackCount( styles[ a ] ) >= 2 ) ) {", "replace": "if ( false ) {", "why": "a one-child grid with two tracks paints nothing" },
+	{ "file": "lib/fill-prop.mjs", "find": "const multicol = 'row-gap' !== prop && ", "replace": "const multicol = ", "why": "a row gap on a multi-column box paints" },
+	{ "file": "lib/fill-prop.mjs", "find": "\tif ( undefined === display ) {\n\t\treturn null;\n\t}\n\tconst grid", "replace": "\tconst grid", "why": "a reading with no layout display is judged" },
+	{ "file": "lib/fill-prop.mjs", "find": "const display = snap?.layoutDisplay;", "replace": "const display = styles.display;", "why": "the wrapper's own display is judged, not the layout element's" }
+]

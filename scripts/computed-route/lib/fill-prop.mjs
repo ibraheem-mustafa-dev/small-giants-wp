@@ -144,7 +144,7 @@ export { INHERITED };
 // Read from the element that paints the text and from the element that lays out the children (walker rows put them at
 // textPath and layoutPath), so a setting on an inner element can hold them.
 export const CARRIED = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow', 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'justify-content', 'align-items' ];
-const PX_TOL = 0.5;
+export const PX_TOL = 0.5;
 
 const isObj = ( v ) => v && 'object' === typeof v && ! Array.isArray( v );
 const TIER_KEYS = [ 'desktop', 'tablet', 'mobile' ];
@@ -163,9 +163,13 @@ export function canon( prop, v ) {
 }
 
 // Whether a property paints nothing on this element at this width: an outline with no style or width, a border side with
-// no width, a text decoration with no line, a transition that lasts 0s. Such a value is a computed leftover (currentcolor),
-// not a design value. styles: the element's collected styles.
-export function notPainted( prop, styles ) {
+// no width, a text decoration with no line, a transition that lasts 0s, a gap (gapPaintsNothing). Such a value is a
+// computed leftover (currentcolor, a gap's `normal`), not a design value. styles: the element's collected styles; snap:
+// the element's whole reading at this width, where the caller has it (a gap is judged from it).
+export function notPainted( prop, styles, snap = null ) {
+	if ( GAP_PROPS.includes( prop ) ) {
+		return null !== gapPaintsNothing( prop, styles, snap );
+	}
 	const zero = ( v ) => undefined !== v && 0 === parseFloat( v );
 	if ( /^outline-(color|offset)$/.test( prop ) ) {
 		return 'none' === styles[ 'outline-style' ] || zero( styles[ 'outline-width' ] );
@@ -178,6 +182,38 @@ export function notPainted( prop, styles ) {
 		return 'none' === ( styles[ 'text-decoration-line' ] ?? 'none' );
 	}
 	return /^transition-(delay|timing-function)$/.test( prop ) && zero( styles[ 'transition-duration' ] );
+}
+
+const GAP_PROPS = [ 'gap', 'row-gap', 'column-gap' ];
+const isSet = ( v ) => undefined !== v && 'auto' !== String( v ).trim();
+// The explicit tracks a grid template lists (line names left out); 'none' lists none.
+const trackCount = ( v ) => ( undefined === v || 'none' === String( v ).trim() ? 0 : String( v ).replace( /\[[^\]]*\]/g, ' ' ).trim().split( /\s+(?![^(]*\))/ ).filter( Boolean ).length );
+
+// Why a gap paints nothing on this element, or null where it may paint. The reader takes a gap from the element laying
+// out the children (parity/lib/collect.mjs::layoutElement), so it is judged by that element's display (`layoutDisplay`)
+// and its in-flow rendered children (`layoutChildren`), never the wrapper's own display. A gap separates the items of a
+// flex or grid container (and a column gap the columns of a multi-column box), so on any other box it is inert; and a
+// container rendering fewer than two children has no two items to separate, unless it is a grid whose template lists two
+// or more tracks across the gap's axis (the gap still sizes those tracks). A reading without them is never judged.
+export function gapPaintsNothing( prop, styles, snap ) {
+	const display = snap?.layoutDisplay;
+	const children = snap?.layoutChildren;
+	if ( undefined === display ) {
+		return null;
+	}
+	const grid = /grid$/.test( display );
+	if ( ! grid && ! /flex$/.test( display ) ) {
+		const multicol = 'row-gap' !== prop && ( isSet( styles[ 'column-count' ] ) || isSet( styles[ 'column-width' ] ) );
+		return multicol ? null : `${ prop } on a ${ display } box, which lays out no flex or grid items`;
+	}
+	if ( ! Number.isInteger( children ) || children >= 2 ) {
+		return null;
+	}
+	const axes = { 'column-gap': [ 'grid-template-columns' ], 'row-gap': [ 'grid-template-rows' ], gap: [ 'grid-template-columns', 'grid-template-rows' ] }[ prop ];
+	if ( grid && axes.some( ( a ) => trackCount( styles[ a ] ) >= 2 ) ) {
+		return null;
+	}
+	return `${ prop } on a ${ display } container rendering ${ children } child${ 1 === children ? '' : 'ren' }, so no two items to separate`;
 }
 
 // The calibrated default paint of an element at a width (1920 reads as 1440), with a gap of `normal` as the 0 it paints.
