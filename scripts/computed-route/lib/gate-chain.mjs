@@ -9,13 +9,15 @@
 import { compareDR } from './fill-confirm.mjs';
 import { listedProperties } from './db.mjs';
 import { settingFits } from './triage.mjs';
-import { fromCommand, fromFile } from './gate-evidence.mjs';
+import { fromCommand, fromFile, isEvidence } from './gate-evidence.mjs';
 import { nameState } from './name-fit.mjs';
 
 export const GATES = [ 'G0', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7' ];
 const ok = ( evidence, extra = {} ) => ( { pass: true, class: null, evidence, ...extra } );
 const fail = ( cls, evidence, extra = {} ) => ( { pass: false, class: cls, evidence, ...extra } );
 const blank = ( v ) => null == v || '' === String( v ).trim();
+// A walk the lint refused (lib/walk-lint-gate.mjs) is the walker's: W-walker with the lint fault as structured evidence.
+const refused = ( e ) => ( 'W-walker' === e?.gateClass && isEvidence( e.evidence ) ? fail( 'W-walker', e.evidence ) : null );
 const time = ( v ) => ( blank( v ) ? NaN : Date.parse( v ) );
 
 // G0 Freshness. i: { dbRefreshedAt, blockCommittedAt (ISO times), cache: { slotKey, playwrightVersion, browserVersion },
@@ -229,7 +231,7 @@ async function g6ProbeRead( i ) {
 	try {
 		r = await i.probe( i.kind );
 	} catch ( e ) {
-		return fail( 'W-route', `the ${ i.kind } probe failed: ${ String( e.message || e ).slice( 0, 100 ) }` );
+		return refused( e ) ?? fail( 'W-route', `the ${ i.kind } probe failed: ${ String( e.message || e ).slice( 0, 100 ) }` );
 	}
 	const proven = 'missing-setting' === i.kind ? false === r?.changed
 		: 'hardcode' === i.kind ? ! blank( r?.rule )
@@ -247,7 +249,7 @@ async function g7RecheckRead( i ) {
 	try {
 		r = await i.recheck();
 	} catch ( e ) {
-		return fail( 'I-stale', `the re-check failed: ${ String( e.message || e ).slice( 0, 100 ) }` );
+		return refused( e ) ?? fail( 'I-stale', `the re-check failed: ${ String( e.message || e ).slice( 0, 100 ) }` );
 	}
 	if ( 'boolean' !== typeof r?.stillOpen ) {
 		return fail( 'I-stale', 're-check returned no answer' );
@@ -257,7 +259,7 @@ async function g7RecheckRead( i ) {
 
 // Each gate's evidence as FR-48-66 asks (lib/gate-evidence.mjs): the gate's reading as the line of the command or the
 // file and key it came from.
-const withSource = ( r, src ) => ( { ...r, evidence: 'string' === typeof src.command ? fromCommand( src.command, r.evidence ) : fromFile( src.file, src.key, r.evidence ) } );
+const withSource = ( r, src ) => ( { ...r, evidence: isEvidence( r.evidence ) ? r.evidence : 'string' === typeof src.command ? fromCommand( src.command, r.evidence ) : fromFile( src.file, src.key, r.evidence ) } );
 const slugsOf = ( i ) => [ i?.block, ...( i?.ancestors || [] ) ].filter( Boolean ).map( ( s ) => `'${ s }'` ).join( ', ' );
 export const g0Freshness = ( i ) => withSource( g0FreshnessRead( i ), { file: 'handoff/MANIFEST.json', key: 'files' } );
 export const g1PairAndPaint = ( i ) => withSource( g1PairAndPaintRead( i ), { file: 'the Solve report', key: i?.row?.key ? `${ i.row.pair ?? '' } ${ i.row.key }`.trim() : 'row' } );

@@ -27,6 +27,7 @@ import { readTree, nodeByRef } from './lib/tree.mjs';
 import { localBlockHash } from './lib/deploy-hash.mjs';
 import { manifestSchemaVersion } from './lib/handoff.mjs';
 import { createProbes, liveTarget } from './lib/gate-probes.mjs';
+import { walkLintGuard } from './lib/walk-lint-gate.mjs';
 import { writeGaps, gapsPath } from './lib/gaps-file.mjs';
 import { gapInput } from './lib/gap-input.mjs';
 import { ancestorsOf, withDiscovery } from './lib/gap-classes.mjs';
@@ -59,15 +60,19 @@ async function installedVersions() {
 
 // The live probes for a surface (lib/gate-probes.mjs): the live origin from the walker config, a fresh walk of the draft
 // the walker compares, and the block renderer behind the surface's admin login (opened only when a trial needs it).
-export async function defaultProbes( { s, client, db, tmp = fs.mkdtempSync( path.join( os.tmpdir(), 'gate-chain-' ) ) } ) {
+export async function defaultProbes( { s, client, db, surface = null, tmp = fs.mkdtempSync( path.join( os.tmpdir(), 'gate-chain-' ) ) } ) {
 	const buildDir = path.join( REPO, 'sites', client, 'build' );
 	const walkerFile = path.join( buildDir, s.walkerFull || s.walker );
-	const cfg = ( await import( pathToFileURL( walkerFile ).href ) ).default;
-	const { origin, url } = liveTarget( cfg.live.url, process.env.SGS_LIVE_ORIGIN );
+	// FR-48-12: a walker config that fails its lint is never walked; the chain reads the refusal as W-walker with the fault.
+	const lintGuard = walkLintGuard( { surface: surface ?? path.basename( s.walkerFull || s.walker ), walker: walkerFile, root: REPO, states: s.walkStates || null } );
+	// A config that will not load or names no live url is the lint's to report (walkerFile does not load, exports no object), never a crash here.
+	const cfg = await import( pathToFileURL( walkerFile ).href ).then( ( m ) => m.default, () => null );
+	const { origin, url } = cfg?.live?.url ? liveTarget( cfg.live.url, process.env.SGS_LIVE_ORIGIN ) : { origin: process.env.SGS_LIVE_ORIGIN || '', url: '' };
 	let session = null;
 	return createProbes( {
 		origin, url, db, states: s.states,
 		walk: async ( row ) => {
+			await lintGuard();
 			const served = await serveDraft( path.join( REPO, s.draftDir ), { index: s.draftIndex || null } );
 			const out = path.join( tmp, `walk-${ row.state }-${ row.width }` );
 			try {
