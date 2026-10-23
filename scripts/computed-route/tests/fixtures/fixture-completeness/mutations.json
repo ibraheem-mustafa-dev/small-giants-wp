@@ -1,0 +1,44 @@
+[
+	{
+		"file": "tools/fixture-completeness.mjs",
+		"find": "const missing = need.filter( ( c ) => ! rendered.has( c ) );",
+		"replace": "const missing = [];",
+		"why": "a never-rendered element would read as rendered, so a fixture gap would be called unexplained"
+	},
+	{
+		"file": "tools/fixture-completeness.mjs",
+		"find": "const elements = best.missing.filter( ( c ) => ! MODIFIER.test( c ) );",
+		"replace": "const elements = best.missing;",
+		"why": "a missing modifier class would be proposed as an element the fixture must render"
+	},
+	{
+		"file": "tools/fixture-completeness.mjs",
+		"find": "if ( prelude.startsWith( '@' ) ) {",
+		"replace": "if ( false ) {",
+		"why": "rules inside an at-rule would be lost or mis-read"
+	},
+	{
+		"file": "tools/fixture-completeness.mjs",
+		"find": "const dead = cal.dead.filter( ( a ) => all || /hover/i.test( a ) );",
+		"replace": "const dead = cal.dead;",
+		"why": "non-hover dead settings would be judged without --all"
+	},
+	{
+		"file": "tools/fixture-completeness.mjs",
+		"find": "if ( /^\\s*(\\}\\s*)?(else)?if\\s*\\(/.test( lines[ i ] ) )",
+		"replace": "if ( false )",
+		"why": "the proposal would not name the attribute that makes render.php emit the element"
+	},
+	{
+		"file": "tools/fixture-completeness.mjs",
+		"find": "if ( vars.some( ( v ) => r.body.includes( `var(${ v }` ) ) ) out.push( { block, selector: r.selector } );",
+		"replace": "out.push( { block, selector: r.selector } );",
+		"why": "every rule would count as a consumer of every setting"
+	},
+	{
+		"file": "tools/fixture-completeness.mjs",
+		"find": "for ( const key of Object.keys( paint.elements || {} ) ) for ( const c of classesOf( key ) ) set.add( c );",
+		"replace": "",
+		"why": "the fixture's rendered elements would be ignored"
+	}
+]
