@@ -56,9 +56,25 @@ function written( writes ) {
 	return [ ...out.values() ];
 }
 
+// A slot with its position in a repeated set removed (`.bar > .item:nth-of-type(3) > .link` -> `.bar > .item > .link`): the
+// selector of every sibling of the measured one.
+const SIBLING_POS = /:nth-(?:of-type|child)\(\d+\)/g;
+export const siblingSlot = ( slot ) => slot.replace( SIBLING_POS, '' );
+
+// The measured elements of one setting that share a repeated set, as the rules each needs: when every measured sibling of a set shows the
+// same stretches, the rule goes on the whole set (a per-device setting is one block-level attribute, so the unmeasured siblings
+// carry the same draft value as the measured ones); a sibling that disagrees keeps its own rule and the set is not generalised.
+function placeRules( members ) {
+	const sig = ( m ) => JSON.stringify( m.stretches.map( ( x ) => [ x.snapped, x.value ] ) );
+	const same = members.every( ( m ) => sig( m ) === sig( members[ 0 ] ) );
+	const set = siblingSlot( members[ 0 ].g.slot );
+	return same && members[ 0 ].stretches.length && set !== members[ 0 ].g.slot ? [ { ...members[ 0 ], slot: set, covers: members.length } ] : members.map( ( m ) => ( { ...m, slot: m.g.slot, covers: 0 } ) );
+}
+
 export function stepRungWrites( { nodes, flat, refOf, reads, writes, scope = '', entries = [], date = new Date().toISOString().slice( 0, 10 ) } ) {
 	const out = { writes: [], notes: [], ledger: [] };
 	const rules = new Map();
+	const sets = new Map();
 	for ( const g of written( writes ) ) {
 		const hit = rowTarget( { nodes, flat, refOf }, { node: g.node, slot: g.slot } );
 		const series = hit ? reads.sweep?.[ hit.target.id ]?.[ g.prop ] : null;
@@ -66,23 +82,27 @@ export function stepRungWrites( { nodes, flat, refOf, reads, writes, scope = '',
 			continue;
 		}
 		const tierValue = ( tier ) => reads.widths?.[ TIER_READ[ tier ] ]?.[ hit.target.id ]?.styles?.[ g.prop ];
-		for ( const s of stepStretches( g.prop, series, tierValue ) ) {
-			if ( ! SAFE_VALUE.test( s.value ) || /url\(|expression|javascript|@import/i.test( s.value ) ) {
-				continue;
+		const stretches = stepStretches( g.prop, series, tierValue ).filter( ( s ) => SAFE_VALUE.test( s.value ) && ! /url\(|expression|javascript|@import/i.test( s.value ) )
+			.map( ( s ) => ( { ...s, snaps: s.range.map( ( edge ) => ( 0 === edge || Infinity === edge ? null : snapThreshold( edge ) ) ) } ) )
+			.map( ( s ) => ( { ...s, snapped: s.range.map( ( edge, i ) => ( s.snaps[ i ] ? s.snaps[ i ].tier : edge ) ) } ) );
+		const key = `${ g.node }|${ siblingSlot( g.slot ) }|${ g.prop }`;
+		sets.set( key, [ ...( sets.get( key ) || [] ), { g, hit, stretches } ] );
+	}
+	for ( const members of sets.values() ) {
+		for ( const m of placeRules( members ) ) {
+			for ( const s of m.stretches ) {
+				s.snaps.forEach( ( snap, i ) => {
+					snap && out.ledger.push( snapEntry( { scope, ref: m.g.node, snap: { draft: s.range[ i ], tier: snap.tier, distance: snap.distance }, entries: [ ...entries, ...out.ledger ], date } ) );
+				} );
+				// A stretch the snap to a tier absorbs entirely is the tier boundary's: nothing is left to write.
+				if ( s.snapped[ 0 ] >= s.snapped[ 1 ] ) {
+					continue;
+				}
+				const key = `${ m.g.node }|${ m.slot }|${ s.snapped.join( '-' ) }`;
+				const rule = rules.get( key ) || { node: m.g.node, rec: m.hit.rec, slot: m.slot, range: s.snapped, decls: [], covers: m.covers };
+				rule.decls.push( `${ m.g.prop }: ${ s.value };` );
+				rules.set( key, rule );
 			}
-			const snapped = s.range.map( ( edge ) => {
-				const snap = 0 === edge || Infinity === edge ? null : snapThreshold( edge );
-				snap && out.ledger.push( snapEntry( { scope, ref: g.node, snap: { draft: edge, tier: snap.tier, distance: snap.distance }, entries: [ ...entries, ...out.ledger ], date } ) );
-				return snap ? snap.tier : edge;
-			} );
-			// A stretch the snap to a tier absorbs entirely is the tier boundary's: nothing is left to write.
-			if ( snapped[ 0 ] >= snapped[ 1 ] ) {
-				continue;
-			}
-			const key = `${ g.node }|${ g.slot }|${ snapped.join( '-' ) }`;
-			const rule = rules.get( key ) || { node: g.node, rec: hit.rec, slot: g.slot, range: snapped, decls: [] };
-			rule.decls.push( `${ g.prop }: ${ s.value };` );
-			rules.set( key, rule );
 		}
 	}
 	out.ledger = out.ledger.filter( Boolean );
@@ -99,7 +119,7 @@ export function stepRungWrites( { nodes, flat, refOf, reads, writes, scope = '',
 			const { before, after } = setAttr( node, { attr: x.attr, value: x.value } );
 			out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: '', prop: x.prop, attr: x.attr, before, after, widths: [], how: 'width-gate' } );
 		}
-		out.notes.push( `${ ref } ${ rec.name }: the draft changes ${ [ ...new Set( list.flatMap( ( r ) => r.decls.map( ( d ) => d.split( ':' )[ 0 ] ) ) ) ].join( ', ' ) } between the read widths, which a per-device setting cannot hold; written as scoped @media rules in Additional CSS (${ list.map( ( r ) => `${ rangeText( r.range ) }` ).join( ', ' ) })` );
+		out.notes.push( `${ ref } ${ rec.name }: the draft changes ${ [ ...new Set( list.flatMap( ( r ) => r.decls.map( ( d ) => d.split( ':' )[ 0 ] ) ) ) ].join( ', ' ) } between the read widths, which a per-device setting cannot hold; written as scoped @media rules in Additional CSS (${ list.map( ( r ) => `${ rangeText( r.range ) }${ r.covers ? ` on every sibling of ${ r.covers } measured` : '' }` ).join( ', ' ) })` );
 	}
 	return out;
 }
