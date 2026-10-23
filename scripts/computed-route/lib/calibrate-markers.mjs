@@ -330,7 +330,12 @@ function plainMarkers( row, schema, snapshot, current, ctx ) {
 		const cornersOf = ( tier ) => Object.fromEntries( CORNERS.map( ( k, i ) => [ k, `${ BOX[ tier ][ i ] }px` ] ) );
 		const tiered = 'tier_object' === row.tier_shape || ( def.default && 'object' === typeof def.default && 'desktop' in def.default );
 		const value = tiered ? { desktop: cornersOf( 'desktop' ), tablet: cornersOf( 'tablet' ), mobile: cornersOf( 'mobile' ) } : cornersOf( 'desktop' );
-		return [ { label: tiered ? 'corners-tiers' : 'corners', attrs: set( value ), expect: null, box: true } ];
+		const corners = { label: tiered ? 'corners-tiers' : 'corners', attrs: set( value ), expect: null, box: true };
+		// A per-device radius with no box family declares no corner control: the burger's burgerBorderRadius holds one CSS
+		// length per tier (sgs_emit_responsive_css), which ignores a corner object. It gets a length marker beside the
+		// corners, so whichever shape the block reads is the one that lands.
+		const lengths = { label: 'tiers-radius', attrs: set( Object.fromEntries( Object.entries( TIER_PX ).map( ( [ t, n ] ) => [ t, `${ n }px` ] ) ) ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, `${ TIER_PX[ WIDTH_TIER[ w ] ] }px` ] ) ) };
+		return tiered && ! row.box_family ? [ corners, lengths ] : [ corners ];
 	}
 	// A per-tier {x, y} offset (the detached burger chip): each tier gets its own pair, so a dead tier shows.
 	if ( 'tier_object' === row.tier_shape && /\{x, y\}/.test( def.description ?? '' ) ) {

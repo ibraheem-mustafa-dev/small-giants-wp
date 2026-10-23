@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/calibrate-markers.mjs",
+		"find": "return tiered && ! row.box_family ? [ corners, lengths ] : [ corners ];",
+		"replace": "return [ corners ];",
+		"why": "the length marker is never offered, so the burger radius reads dead"
+	},
+	{
+		"file": "lib/calibrate-markers.mjs",
+		"find": "return tiered && ! row.box_family ? [ corners, lengths ] : [ corners ];",
+		"replace": "return [ corners, lengths ];",
+		"why": "a radius with a box family is also given a length marker"
+	},
+	{
+		"file": "lib/calibrate-markers.mjs",
+		"find": "return tiered && ! row.box_family ? [ corners, lengths ] : [ corners ];",
+		"replace": "return [ lengths ];",
+		"why": "the corner marker is dropped for every radius"
+	},
+	{
+		"file": "lib/calibrate-markers.mjs",
+		"find": "`${ TIER_PX[ WIDTH_TIER[ w ] ] }px` ] ) ) };\n\t\treturn tiered",
+		"replace": "'1px' ] ) ) };\n\t\treturn tiered",
+		"why": "the length marker expects the wrong value at every width"
+	}
+]
