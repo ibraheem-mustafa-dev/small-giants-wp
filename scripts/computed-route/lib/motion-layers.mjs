@@ -58,7 +58,7 @@ export function classify( record, ctx = {} ) {
 			return { kind: 'effect' };
 		}
 		// A loop the draft's own code starts (a state change after mount, a timer) is an effect when the render shows it
-		// running on a page nobody touched (lib/fill-motion.mjs::elementEffects asks for that); one a visitor's action
+		// running on a page nobody touched (lib/fill-motion-element.mjs::elementEffects asks for that); one a visitor's action
 		// starts is a behaviour.
 		return INTERACTION.test( t || '' ) ? { kind: 'skip', reason: `an endless animation started on ${ t }: the visitor's ${ t } drives it, recognised by the behaviour recognisers wave (FR-48-80)` } : { kind: 'effect', confirm: true };
 	}
