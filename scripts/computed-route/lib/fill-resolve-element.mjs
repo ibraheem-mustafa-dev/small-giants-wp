@@ -7,7 +7,7 @@ import { usedValueTarget } from './solve-rows.mjs';
 import { PROPS, READ_WIDTHS } from './fill-read.mjs';
 import { extraProps, usedValueDrafts, USED_VALUE } from './fill-declared.mjs';
 import { FLUID_WIDTHS } from './fill-values.mjs';
-import { INHERITED, resolveProperty, notPainted } from './fill-prop.mjs';
+import { INHERITED, resolveProperty, notPainted, gapPaintsNothing } from './fill-prop.mjs';
 import { unpairedPart } from './fill-part-pairing.mjs';
 import { gateFor } from './fill-fixture.mjs';
 import { fillEquivalent } from './fill-equivalents.mjs';
@@ -117,7 +117,16 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 	// A block's layout setting describes the element laying out its children: a draft wrapper around a grid reads as the grid.
 	const valueAt = ( s, p ) => ( layer ? s.pseudo?.[ layer ]?.[ p ] : ( 'display' === p && '' === target.slot && /(flex|grid)$/.test( s.layoutDisplay || '' ) ? s.layoutDisplay : s.styles?.[ p ] ) );
 	const fontPx = Object.fromEntries( Object.entries( snaps ).map( ( [ w, s ] ) => [ w, parseFloat( s.styles?.[ 'font-size' ] ) ] ).filter( ( [ , v ] ) => v ) );
-	const allDrafts = Object.fromEntries( ids.map( ( p ) => [ p, Object.fromEntries( Object.entries( draftOf( snaps, ( s ) => valueAt( s, p ) ) ).filter( ( [ w ] ) => layer || ! notPainted( p, snaps[ w ].styles || {} ) ) ) ] ) );
+	// A value that paints nothing at a width (a gap on a box laying out no flex or grid items) is left out there; a gap left
+	// out is recorded as a settled row with its reason, never dropped silently.
+	const allDrafts = Object.fromEntries( ids.map( ( p ) => [ p, Object.fromEntries( Object.entries( draftOf( snaps, ( s ) => valueAt( s, p ) ) ).filter( ( [ w ] ) => {
+		if ( layer || ! notPainted( p, snaps[ w ].styles || {}, snaps[ w ] ) ) {
+			return true;
+		}
+		const why = gapPaintsNothing( p, snaps[ w ].styles || {}, snaps[ w ] );
+		why && settled( st, rec, ref, { slot, property: p, value: String( valueAt( snaps[ w ], p ) ), reason: 'not-painted', detail: `at ${ w }: ${ why }` } );
+		return false;
+	} ) ) ] ) );
 	const gapProp = {};
 	for ( const prop of ids ) {
 		let draft = allDrafts[ prop ];

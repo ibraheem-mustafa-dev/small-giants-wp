@@ -6,11 +6,11 @@ import { HELD_REASONS, heldCounts } from './fill-held.mjs';
 // Why a value Fill read ends with nothing written and nothing unwritten (lib/fill-resolve-element.mjs::settled): `equal`, the
 // element already shows it; `already-set`, the tree already holds the setting's value; `used-size`, the rendered value is a
 // layout result the code does not declare as a length (an auto margin, an undeclared width or height).
-export const SETTLED = [ 'equal', 'already-set', 'used-size' ];
+export const SETTLED = [ 'equal', 'already-set', 'used-size', 'not-painted' ];
 const settledCounts = ( rows ) => Object.fromEntries( SETTLED.map( ( k ) => [ k, rows.filter( ( s ) => s.reason === k ).length ] ) );
 
 // The confirm record's verdicts (lib/fill-confirm.mjs, FR-48-36).
-const VERDICTS = [ 'confirmed', 'render-wins', 'draft-defect', 'open' ];
+const VERDICTS = [ 'confirmed', 'render-wins', 'draft-defect', 'effect-differs', 'open' ];
 
 const cell = ( v ) => String( typeof v === 'object' && null !== v ? JSON.stringify( v ) : v ?? '' ).replace( /\|/g, '\\|' ).replace( /\n/g, ' ' ).slice( 0, 200 );
 const table = ( head, rows ) => ( rows.length ? [ `| ${ head.join( ' | ' ) } |`, `|${ head.map( () => '---' ).join( '|' ) }|`, ...rows.map( ( r ) => `| ${ r.map( cell ).join( ' | ' ) } |` ), '' ] : [ 'None.', '' ] );
