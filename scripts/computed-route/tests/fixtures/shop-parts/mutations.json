@@ -1,0 +1,56 @@
+[
+	{
+		"file": "lib/shop-parts.mjs",
+		"find": "const hit = entries.find( ( e ) => matches( e, u ) );",
+		"replace": "const hit = entries.find( ( e ) => matches( e, u ) );\n\t\tif ( ! hit ) {\n\t\t\tcontinue;\n\t\t}",
+		"why": "an unmatched unit is dropped instead of becoming a missing-features row"
+	},
+	{
+		"file": "lib/shop-parts.mjs",
+		"find": "if ( problems.length ) {",
+		"replace": "if ( false ) {",
+		"why": "a stale vocabulary entry is accepted"
+	},
+	{
+		"file": "lib/shop-parts.mjs",
+		"find": "if ( ! hit.length ) {",
+		"replace": "if ( false ) {",
+		"why": "a settings pattern that finds no DB attribute is accepted"
+	},
+	{
+		"file": "lib/shop-parts.mjs",
+		"find": "} else if ( ! text.includes( home.contains ) ) {",
+		"replace": "} else if ( false ) {",
+		"why": "a template that lost the named block is accepted"
+	},
+	{
+		"file": "lib/shop-parts.mjs",
+		"find": "return Object.entries( e.rx ).every( ( [ k, rx ] ) => rx.test( field[ k ] ) );",
+		"replace": "return Object.entries( e.rx ).some( ( [ k, rx ] ) => rx.test( field[ k ] ) );",
+		"why": "an entry matches on any one criterion instead of all"
+	},
+	{
+		"file": "lib/shop-parts.mjs",
+		"find": "const hit = entries.find( ( e ) => matches( e, u ) );",
+		"replace": "const hit = entries.findLast( ( e ) => matches( e, u ) );",
+		"why": "the last matching entry wins instead of the first"
+	},
+	{
+		"file": "lib/shop-parts.mjs",
+		"find": "const parts = s.problem ? [] : matchSurface( s.kind, s.units, vocab );\n\t\tconst missing = parts.filter( ( p ) => 'missing' === p.home.type )",
+		"replace": "const parts = s.problem ? [] : matchSurface( s.kind, s.units, vocab );\n\t\tconst missing = parts.filter( ( p ) => 'missing' === p.home.type && ! p.id.startsWith( 'unmatched' ) )",
+		"why": "an unmatched part is placed but gets no missing-features row"
+	},
+	{
+		"file": "lib/shop-parts.mjs",
+		"find": "if ( cfg.controlsOnly && 'text' === u.kind && ! hit?.claimsText ) {",
+		"replace": "if ( cfg.controlsOnly && 'text' === u.kind ) {",
+		"why": "a claimed text run on a control-only surface is dropped"
+	},
+	{
+		"file": "lib/shop-parts.mjs",
+		"find": "const value = 'setting' === h.type && 'text' === h.valueFrom ? literal( p.units.find( ( u ) => literal( u.label ) )?.label ) : null;",
+		"replace": "const value = null;",
+		"why": "no literal label is written to its setting"
+	}
+]

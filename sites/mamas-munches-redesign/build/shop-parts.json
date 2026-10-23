@@ -1,0 +1,931 @@
+{
+	"client": "mamas-munches-redesign",
+	"surfaces": [
+		{
+			"kind": "buybox",
+			"record": "Product buy box",
+			"file": "Product.dc.html",
+			"problem": null,
+			"units": 39,
+			"parts": [
+				{
+					"id": "unmatched:buybox:{{ eyebrow }}",
+					"label": "{{ eyebrow }}",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ eyebrow }}"
+					]
+				},
+				{
+					"id": "buybox-title",
+					"label": "Product title",
+					"home": {
+						"type": "part",
+						"file": "theme/sgs-theme/parts/sgs-pdp-buybox.html",
+						"contains": "wp:post-title"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ p.name }}"
+					]
+				},
+				{
+					"id": "buybox-rating",
+					"label": "Rating and review count",
+					"home": {
+						"type": "part",
+						"file": "theme/sgs-theme/parts/sgs-pdp-buybox.html",
+						"contains": "wp:woocommerce/product-rating"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"★★★★★ 4.3 · 8 Trustpilot reviews"
+					]
+				},
+				{
+					"id": "unmatched:buybox:{{ p.short }}",
+					"label": "{{ p.short }}",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ p.short }}"
+					]
+				},
+				{
+					"id": "unmatched:buybox:1 · how many",
+					"label": "1 · How many",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"1 · How many"
+					]
+				},
+				{
+					"id": "buybox-option-picker",
+					"label": "Option pickers",
+					"home": {
+						"type": "setting",
+						"block": "sgs/buybox",
+						"settings": [
+							"pickerStyle",
+							"pickerSwatchStyle",
+							"pickerShowSelectedTick"
+						]
+					},
+					"write": null,
+					"units": 5,
+					"sample": [
+						"{{ o.n }} {{ o.priceTxt }} {{ o.each }} {{ o.tag }}",
+						"{{ o.name }}",
+						"✓ {{ o.name }}",
+						"{{ o.label }}"
+					]
+				},
+				{
+					"id": "unmatched:buybox:2 · base",
+					"label": "2 · Base",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"2 · Base"
+					]
+				},
+				{
+					"id": "unmatched:buybox:3 · chips",
+					"label": "3 · Chips",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"3 · Chips"
+					]
+				},
+				{
+					"id": "unmatched:buybox:4 · flavours",
+					"label": "4 · Flavours",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"4 · Flavours"
+					]
+				},
+				{
+					"id": "unmatched:buybox:up to 3, split evenly",
+					"label": "Up to 3, split evenly",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Up to 3, split evenly"
+					]
+				},
+				{
+					"id": "unmatched:buybox:{{ split }}",
+					"label": "{{ split }}",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ split }}"
+					]
+				},
+				{
+					"id": "buybox-subscribe",
+					"label": "Subscribe-and-save choice",
+					"home": {
+						"type": "missing",
+						"reason": "no sgs/buybox setting or part holds a subscription choice (one-off versus repeat delivery with a frequency)"
+					},
+					"write": null,
+					"units": 3,
+					"sample": [
+						"Subscribe & save 10% Skip, swap flavours or cancel any time {{ subTxt }} {{ onceTxt }}",
+						"{{ f.label }}",
+						"One-off box {{ onceTxt }}"
+					]
+				},
+				{
+					"id": "unmatched:buybox:amount",
+					"label": "Amount",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Amount"
+					]
+				},
+				{
+					"id": "unmatched:buybox:comes as a printed card in an envelope, ready for the shower. she redeems it online once baby arrives and builds her own box.",
+					"label": "Comes as a printed card in an envelope, ready for the shower. She redeems it online once baby arrives and builds her own box.",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Comes as a printed card in an envelope, ready for the shower. She redeems it online once baby arrives and builds her own box."
+					]
+				},
+				{
+					"id": "unmatched:buybox:what’s inside",
+					"label": "What’s inside",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"What’s inside"
+					]
+				},
+				{
+					"id": "unmatched:buybox:{{ x }}",
+					"label": "{{ x }}",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ x }}"
+					]
+				},
+				{
+					"id": "buybox-gift-note",
+					"label": "Gift note",
+					"home": {
+						"type": "missing",
+						"reason": "the buy box has no extras slot for a gift tick and note (Spec 27 hand-off, spec 48 section 16)"
+					},
+					"write": null,
+					"units": 5,
+					"sample": [
+						"checkbox",
+						"Send it as a gift",
+						"Add a note. We’ll leave the prices off.",
+						"Congratulations, mama!"
+					]
+				},
+				{
+					"id": "buybox-quantity",
+					"label": "Quantity stepper",
+					"home": {
+						"type": "missing",
+						"reason": "no sgs/buybox setting names a quantity stepper"
+					},
+					"write": null,
+					"units": 3,
+					"sample": [
+						"−",
+						"{{ qty }}",
+						"+"
+					]
+				},
+				{
+					"id": "buybox-add-to-basket",
+					"label": "Add-to-basket button",
+					"home": {
+						"type": "setting",
+						"block": "sgs/buybox",
+						"settings": [
+							"addToCartLabel",
+							"addToCartStyle",
+							"addToCartShowPrice"
+						]
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ addLabel }}"
+					]
+				},
+				{
+					"id": "unmatched:buybox:baked fresh when you order",
+					"label": "Baked fresh when you order",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Baked fresh when you order"
+					]
+				},
+				{
+					"id": "unmatched:buybox:with you in 3–5 days",
+					"label": "With you in 3–5 days",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"With you in 3–5 days"
+					]
+				},
+				{
+					"id": "unmatched:buybox:free uk delivery over £35",
+					"label": "Free UK delivery over £35",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Free UK delivery over £35"
+					]
+				},
+				{
+					"id": "buybox-info-accordion",
+					"label": "Product information accordion",
+					"home": {
+						"type": "elsewhere",
+						"note": "the product information accordion is its own surface (sgs/accordion), not a buy box part"
+					},
+					"write": null,
+					"units": 2,
+					"sample": [
+						"{{ a.t }} +",
+						"{{ a.body }}"
+					]
+				},
+				{
+					"id": "buybox-sticky-bar",
+					"label": "Sticky add-to-basket bar",
+					"home": {
+						"type": "setting",
+						"block": "sgs/buybox",
+						"settings": [
+							"stickyBar",
+							"stickyBarBackground"
+						]
+					},
+					"write": null,
+					"units": 3,
+					"sample": [
+						"{{ priceTxt }}",
+						"{{ barSub }}",
+						"{{ barLabel }}"
+					]
+				}
+			],
+			"missing": [
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:{{ eyebrow }}",
+					"draftId": "Product buy box:unmatched:buybox:{{ eyebrow }}",
+					"construct": "shop buybox part: {{ eyebrow }}",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/unmatched:buybox:{{ eyebrow }}",
+					"line": "{{ eyebrow }}: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:{{ p.short }}",
+					"draftId": "Product buy box:unmatched:buybox:{{ p.short }}",
+					"construct": "shop buybox part: {{ p.short }}",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/unmatched:buybox:{{ p.short }}",
+					"line": "{{ p.short }}: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:1 · how many",
+					"draftId": "Product buy box:unmatched:buybox:1 · how many",
+					"construct": "shop buybox part: 1 · How many",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/unmatched:buybox:1 · how many",
+					"line": "1 · How many: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:2 · base",
+					"draftId": "Product buy box:unmatched:buybox:2 · base",
+					"construct": "shop buybox part: 2 · Base",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/unmatched:buybox:2 · base",
+					"line": "2 · Base: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:3 · chips",
+					"draftId": "Product buy box:unmatched:buybox:3 · chips",
+					"construct": "shop buybox part: 3 · Chips",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/unmatched:buybox:3 · chips",
+					"line": "3 · Chips: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:4 · flavours",
+					"draftId": "Product buy box:unmatched:buybox:4 · flavours",
+					"construct": "shop buybox part: 4 · Flavours",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/unmatched:buybox:4 · flavours",
+					"line": "4 · Flavours: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:up to 3, split evenly",
+					"draftId": "Product buy box:unmatched:buybox:up to 3, split evenly",
+					"construct": "shop buybox part: Up to 3, split evenly",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/unmatched:buybox:up to 3, split evenly",
+					"line": "Up to 3, split evenly: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:{{ split }}",
+					"draftId": "Product buy box:unmatched:buybox:{{ split }}",
+					"construct": "shop buybox part: {{ split }}",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/unmatched:buybox:{{ split }}",
+					"line": "{{ split }}: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:buybox-subscribe",
+					"draftId": "Product buy box:buybox-subscribe",
+					"construct": "shop buybox part: Subscribe-and-save choice",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/buybox-subscribe",
+					"line": "Subscribe-and-save choice: no sgs/buybox setting or part holds a subscription choice (one-off versus repeat delivery with a frequency) (3 units)",
+					"mainFlow": "buy",
+					"why": "no sgs/buybox setting or part holds a subscription choice (one-off versus repeat delivery with a frequency)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:amount",
+					"draftId": "Product buy box:unmatched:buybox:amount",
+					"construct": "shop buybox part: Amount",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/unmatched:buybox:amount",
+					"line": "Amount: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:comes as a printed card in an envelope, ready for the shower. she redeems it online once baby arrives and builds her own box.",
+					"draftId": "Product buy box:unmatched:buybox:comes as a printed card in an envelope, ready for the shower. she redeems it online once baby arrives and builds her own box.",
+					"construct": "shop buybox part: Comes as a printed card in an envelope, ready for the shower. She redeems it online once baby arrives and builds her own box.",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/unmatched:buybox:comes as a printed card in an envelope, ready for the shower. she redeems it online once baby arrives and builds her own box.",
+					"line": "Comes as a printed card in an envelope, ready for the shower. She redeems it online once baby arrives and builds her own box.: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:what’s inside",
+					"draftId": "Product buy box:unmatched:buybox:what’s inside",
+					"construct": "shop buybox part: What’s inside",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/unmatched:buybox:what’s inside",
+					"line": "What’s inside: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:{{ x }}",
+					"draftId": "Product buy box:unmatched:buybox:{{ x }}",
+					"construct": "shop buybox part: {{ x }}",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/unmatched:buybox:{{ x }}",
+					"line": "{{ x }}: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:buybox-gift-note",
+					"draftId": "Product buy box:buybox-gift-note",
+					"construct": "shop buybox part: Gift note",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/buybox-gift-note",
+					"line": "Gift note: the buy box has no extras slot for a gift tick and note (Spec 27 hand-off, spec 48 section 16) (5 units)",
+					"mainFlow": "buy",
+					"why": "the buy box has no extras slot for a gift tick and note (Spec 27 hand-off, spec 48 section 16)"
+				},
+				{
+					"rowId": "missing:shop:buybox:buybox-quantity",
+					"draftId": "Product buy box:buybox-quantity",
+					"construct": "shop buybox part: Quantity stepper",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/buybox-quantity",
+					"line": "Quantity stepper: no sgs/buybox setting names a quantity stepper (3 units)",
+					"mainFlow": "buy",
+					"why": "no sgs/buybox setting names a quantity stepper"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:baked fresh when you order",
+					"draftId": "Product buy box:unmatched:buybox:baked fresh when you order",
+					"construct": "shop buybox part: Baked fresh when you order",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/unmatched:buybox:baked fresh when you order",
+					"line": "Baked fresh when you order: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:with you in 3–5 days",
+					"draftId": "Product buy box:unmatched:buybox:with you in 3–5 days",
+					"construct": "shop buybox part: With you in 3–5 days",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/unmatched:buybox:with you in 3–5 days",
+					"line": "With you in 3–5 days: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:free uk delivery over £35",
+					"draftId": "Product buy box:unmatched:buybox:free uk delivery over £35",
+					"construct": "shop buybox part: Free UK delivery over £35",
+					"from": "shop-parts",
+					"key": "Product.dc.html#buybox/unmatched:buybox:free uk delivery over £35",
+					"line": "Free UK delivery over £35: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				}
+			]
+		},
+		{
+			"kind": "filter",
+			"record": "Shop filter + sort",
+			"file": "Shop.dc.html",
+			"problem": null,
+			"units": 6,
+			"parts": [
+				{
+					"id": "filter-sort",
+					"label": "Sort",
+					"home": {
+						"type": "template-block",
+						"file": "theme/sgs-theme/templates/archive-product.html",
+						"contains": "wp:woocommerce/catalog-sorting"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"select"
+					]
+				},
+				{
+					"id": "filter-options",
+					"label": "Taxonomy filter options",
+					"home": {
+						"type": "template-block",
+						"file": "theme/sgs-theme/templates/archive-product.html",
+						"contains": "wp:woocommerce/product-filter-taxonomy",
+						"customCss": "chip or segment presentation, a visual leftover for scoped custom CSS"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ c.label }} {{ c.n }}"
+					]
+				}
+			],
+			"missing": []
+		},
+		{
+			"kind": "drawer",
+			"record": "Basket drawer (right)",
+			"file": "SiteHeader.dc.html",
+			"problem": null,
+			"units": 31,
+			"parts": [
+				{
+					"id": "drawer-heading",
+					"label": "Panel heading",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"panelHeading"
+						]
+					},
+					"write": {
+						"panelHeading": "Your basket"
+					},
+					"units": 1,
+					"sample": [
+						"Your basket"
+					]
+				},
+				{
+					"id": "drawer-count",
+					"label": "Item count beside the heading",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"panelShowCount"
+						]
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"({{ count }})"
+					]
+				},
+				{
+					"id": "drawer-close",
+					"label": "Close button",
+					"home": {
+						"type": "built-in",
+						"block": "sgs/cart",
+						"note": "the panel draws its own close button"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"×"
+					]
+				},
+				{
+					"id": "drawer-free-delivery",
+					"label": "Free-delivery message",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"freeDeliveryMessage",
+							"freeDeliverySuccessMessage",
+							"freeDeliveryThresholdOverride"
+						]
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ freeMsg }}"
+					]
+				},
+				{
+					"id": "drawer-line-image",
+					"label": "Line thumbnail",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"itemThumbBg"
+						]
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ it.img }}"
+					]
+				},
+				{
+					"id": "drawer-line-details",
+					"label": "Line name, variant, brand and total",
+					"home": {
+						"type": "built-in",
+						"block": "sgs/cart",
+						"note": "each cart line renders its own name, detail and price"
+					},
+					"write": null,
+					"units": 3,
+					"sample": [
+						"{{ it.name }}",
+						"{{ it.variant }}",
+						"{{ it.total }}"
+					]
+				},
+				{
+					"id": "drawer-quantity",
+					"label": "Line quantity buttons",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"itemShowQty"
+						]
+					},
+					"write": null,
+					"units": 3,
+					"sample": [
+						"−",
+						"{{ it.qty }}",
+						"+"
+					]
+				},
+				{
+					"id": "drawer-remove",
+					"label": "Line remove control",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"itemRemoveLabel"
+						]
+					},
+					"write": {
+						"itemRemoveLabel": "Remove"
+					},
+					"units": 1,
+					"sample": [
+						"Remove"
+					]
+				},
+				{
+					"id": "drawer-gift-note",
+					"label": "Gift tick and note",
+					"home": {
+						"type": "missing",
+						"reason": "drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16)"
+					},
+					"write": null,
+					"units": 4,
+					"sample": [
+						"checkbox",
+						"This is a gift",
+						"Congratulations, mama! Thinking of you…",
+						"{{ msgLeft }} characters left"
+					]
+				},
+				{
+					"id": "unmatched:drawer:add a message. we leave the prices off.",
+					"label": "Add a message. We leave the prices off.",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Add a message. We leave the prices off."
+					]
+				},
+				{
+					"id": "drawer-upsell",
+					"label": "Upsell offer",
+					"home": {
+						"type": "missing",
+						"reason": "drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16)"
+					},
+					"write": null,
+					"units": 6,
+					"sample": [
+						"assets/photo-bun-case.jpg",
+						"Add a Taster Trio for a friend",
+						"3 Classic Zookies · £5, postage included",
+						"Add"
+					]
+				},
+				{
+					"id": "drawer-subtotal",
+					"label": "Subtotal",
+					"home": {
+						"type": "built-in",
+						"block": "sgs/cart",
+						"note": "the panel footer renders the subtotal"
+					},
+					"write": null,
+					"units": 2,
+					"sample": [
+						"Subtotal",
+						"{{ subText }}"
+					]
+				},
+				{
+					"id": "drawer-note",
+					"label": "Footer note",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"panelTaxNote"
+						]
+					},
+					"write": {
+						"panelTaxNote": "Baked fresh for you · with you in 3–5 days"
+					},
+					"units": 1,
+					"sample": [
+						"Baked fresh for you · with you in 3–5 days"
+					]
+				},
+				{
+					"id": "drawer-checkout",
+					"label": "Checkout button",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"checkoutLabel"
+						]
+					},
+					"write": {
+						"checkoutLabel": "Checkout securely"
+					},
+					"units": 1,
+					"sample": [
+						"Checkout securely"
+					]
+				},
+				{
+					"id": "drawer-view-basket",
+					"label": "View-basket link",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"viewCartLabel",
+							"panelShowViewCart"
+						]
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"View full basket"
+					]
+				},
+				{
+					"id": "unmatched:drawer:assets/logo-round.png",
+					"label": "assets/logo-round.png",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this image (img)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"assets/logo-round.png"
+					]
+				},
+				{
+					"id": "drawer-empty-message",
+					"label": "Empty-basket message",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"emptyCartMessage"
+						]
+					},
+					"write": {
+						"emptyCartMessage": "Your basket is empty"
+					},
+					"units": 1,
+					"sample": [
+						"Your basket is empty"
+					]
+				},
+				{
+					"id": "drawer-empty-cta",
+					"label": "Empty-basket button",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"emptyCartCtaLabel"
+						]
+					},
+					"write": {
+						"emptyCartCtaLabel": "Browse the shop"
+					},
+					"units": 1,
+					"sample": [
+						"Browse the shop"
+					]
+				}
+			],
+			"missing": [
+				{
+					"rowId": "missing:shop:drawer:drawer-gift-note",
+					"draftId": "Basket drawer (right):drawer-gift-note",
+					"construct": "shop drawer part: Gift tick and note",
+					"from": "shop-parts",
+					"key": "SiteHeader.dc.html#drawer/drawer-gift-note",
+					"line": "Gift tick and note: drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16) (4 units)",
+					"mainFlow": "buy",
+					"why": "drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16)"
+				},
+				{
+					"rowId": "missing:shop:drawer:unmatched:drawer:add a message. we leave the prices off.",
+					"draftId": "Basket drawer (right):unmatched:drawer:add a message. we leave the prices off.",
+					"construct": "shop drawer part: Add a message. We leave the prices off.",
+					"from": "shop-parts",
+					"key": "SiteHeader.dc.html#drawer/unmatched:drawer:add a message. we leave the prices off.",
+					"line": "Add a message. We leave the prices off.: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:drawer:drawer-upsell",
+					"draftId": "Basket drawer (right):drawer-upsell",
+					"construct": "shop drawer part: Upsell offer",
+					"from": "shop-parts",
+					"key": "SiteHeader.dc.html#drawer/drawer-upsell",
+					"line": "Upsell offer: drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16) (6 units)",
+					"mainFlow": "buy",
+					"why": "drawer content beyond sgs/cart's settings needs the extras slot (Spec 27 hand-off, spec 48 section 16)"
+				},
+				{
+					"rowId": "missing:shop:drawer:unmatched:drawer:assets/logo-round.png",
+					"draftId": "Basket drawer (right):unmatched:drawer:assets/logo-round.png",
+					"construct": "shop drawer part: assets/logo-round.png",
+					"from": "shop-parts",
+					"key": "SiteHeader.dc.html#drawer/unmatched:drawer:assets/logo-round.png",
+					"line": "assets/logo-round.png: no part or setting in the framework is known for this image (img) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this image (img)"
+				}
+			]
+		}
+	],
+	"counts": {
+		"units": 76,
+		"parts": 44,
+		"mapped": 21,
+		"missing": 22,
+		"elsewhere": 1,
+		"problems": 0
+	}
+}

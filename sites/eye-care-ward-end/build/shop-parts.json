@@ -1,0 +1,889 @@
+{
+	"client": "eye-care-ward-end",
+	"surfaces": [
+		{
+			"kind": "buybox",
+			"record": "Product",
+			"file": "Eye Care Birmingham.dc.html",
+			"problem": null,
+			"units": 23,
+			"parts": [
+				{
+					"id": "unmatched:buybox:{{ cur.brand }}",
+					"label": "{{ cur.brand }}",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this control (a)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ cur.brand }}"
+					]
+				},
+				{
+					"id": "buybox-title",
+					"label": "Product title",
+					"home": {
+						"type": "part",
+						"file": "theme/sgs-theme/parts/sgs-pdp-buybox.html",
+						"contains": "wp:post-title"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ cur.name }}"
+					]
+				},
+				{
+					"id": "unmatched:buybox:{{ cur.code }}",
+					"label": "{{ cur.code }}",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ cur.code }}"
+					]
+				},
+				{
+					"id": "buybox-rating",
+					"label": "Rating and review count",
+					"home": {
+						"type": "part",
+						"file": "theme/sgs-theme/parts/sgs-pdp-buybox.html",
+						"contains": "wp:woocommerce/product-rating"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ cur.ratingLabel }} · {{ cur.reviewsLabel }}"
+					]
+				},
+				{
+					"id": "buybox-price",
+					"label": "Price",
+					"home": {
+						"type": "built-in",
+						"block": "sgs/buybox",
+						"note": "the block renders the current price from the product"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ cur.priceLabel }}"
+					]
+				},
+				{
+					"id": "buybox-saving",
+					"label": "RRP and saving",
+					"home": {
+						"type": "setting",
+						"block": "sgs/buybox",
+						"settings": [
+							"rrpShowPrice",
+							"rrpSavingFormat",
+							"rrpSavingPrefix"
+						]
+					},
+					"write": null,
+					"units": 3,
+					"sample": [
+						"RRP",
+						"{{ cur.rrp }}",
+						"You save {{ cur.saveAmount }}"
+					]
+				},
+				{
+					"id": "buybox-stock",
+					"label": "Stock line",
+					"home": {
+						"type": "setting",
+						"block": "sgs/buybox",
+						"settings": [
+							"showStockStatus",
+							"stockInStockLabel"
+						]
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ stockLabel }}"
+					]
+				},
+				{
+					"id": "unmatched:buybox:colour",
+					"label": "Colour",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Colour"
+					]
+				},
+				{
+					"id": "unmatched:buybox:{{ cur.colourname }}",
+					"label": "{{ cur.colourName }}",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ cur.colourName }}"
+					]
+				},
+				{
+					"id": "buybox-option-picker",
+					"label": "Option pickers",
+					"home": {
+						"type": "setting",
+						"block": "sgs/buybox",
+						"settings": [
+							"pickerStyle",
+							"pickerSwatchStyle",
+							"pickerShowSelectedTick"
+						]
+					},
+					"write": null,
+					"units": 2,
+					"sample": [
+						"{{ c.name }}",
+						"{{ s.name }} {{ s.mm }}"
+					]
+				},
+				{
+					"id": "unmatched:buybox:colourway shots are stand-ins until the real ones land.",
+					"label": "Colourway shots are stand-ins until the real ones land.",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Colourway shots are stand-ins until the real ones land."
+					]
+				},
+				{
+					"id": "unmatched:buybox:size",
+					"label": "Size",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Size"
+					]
+				},
+				{
+					"id": "buybox-size-guide-link",
+					"label": "Size-guide link beside a picker",
+					"home": {
+						"type": "setting",
+						"block": "sgs/buybox",
+						"settings": [
+							"pickerLabelLinkAxis",
+							"pickerLabelLinkText",
+							"pickerLabelLinkUrl"
+						]
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Which size am I?"
+					]
+				},
+				{
+					"id": "unmatched:buybox:add my prescription from +£59",
+					"label": "Add my prescription from +£59",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this control (button)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Add my prescription from +£59"
+					]
+				},
+				{
+					"id": "buybox-add-to-basket",
+					"label": "Add-to-basket button",
+					"home": {
+						"type": "setting",
+						"block": "sgs/buybox",
+						"settings": [
+							"addToCartLabel",
+							"addToCartStyle",
+							"addToCartShowPrice"
+						]
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Add to bag as they are {{ cur.priceLabel }}"
+					]
+				},
+				{
+					"id": "unmatched:buybox:or 3 payments of {{ cur.klarna }} with",
+					"label": "Or 3 payments of {{ cur.klarna }} with",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Or 3 payments of {{ cur.klarna }} with"
+					]
+				},
+				{
+					"id": "unmatched:buybox:klarna",
+					"label": "Klarna",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Klarna"
+					]
+				},
+				{
+					"id": "unmatched:buybox:apple pay · google pay · paypal",
+					"label": "Apple Pay · Google Pay · PayPal",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this text (#text)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Apple Pay · Google Pay · PayPal"
+					]
+				},
+				{
+					"id": "unmatched:buybox:need advice? message me on whatsapp — i'm an optician, and i'm happy to help.",
+					"label": "Need advice? Message me on WhatsApp — I'm an optician, and I'm happy to help.",
+					"home": {
+						"type": "missing",
+						"reason": "no part or setting in the framework is known for this control (a)"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Need advice? Message me on WhatsApp — I'm an optician, and I'm happy to help."
+					]
+				},
+				{
+					"id": "buybox-assurances",
+					"label": "Assurance lines",
+					"home": {
+						"type": "part",
+						"file": "theme/sgs-theme/parts/sgs-pdp-buybox.html",
+						"contains": "wp:sgs/icon-list"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ a.text }}"
+					]
+				}
+			],
+			"missing": [
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:{{ cur.brand }}",
+					"draftId": "Product:unmatched:buybox:{{ cur.brand }}",
+					"construct": "shop buybox part: {{ cur.brand }}",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#buybox/unmatched:buybox:{{ cur.brand }}",
+					"line": "{{ cur.brand }}: no part or setting in the framework is known for this control (a) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this control (a)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:{{ cur.code }}",
+					"draftId": "Product:unmatched:buybox:{{ cur.code }}",
+					"construct": "shop buybox part: {{ cur.code }}",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#buybox/unmatched:buybox:{{ cur.code }}",
+					"line": "{{ cur.code }}: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:colour",
+					"draftId": "Product:unmatched:buybox:colour",
+					"construct": "shop buybox part: Colour",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#buybox/unmatched:buybox:colour",
+					"line": "Colour: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:{{ cur.colourname }}",
+					"draftId": "Product:unmatched:buybox:{{ cur.colourname }}",
+					"construct": "shop buybox part: {{ cur.colourName }}",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#buybox/unmatched:buybox:{{ cur.colourname }}",
+					"line": "{{ cur.colourName }}: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:colourway shots are stand-ins until the real ones land.",
+					"draftId": "Product:unmatched:buybox:colourway shots are stand-ins until the real ones land.",
+					"construct": "shop buybox part: Colourway shots are stand-ins until the real ones land.",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#buybox/unmatched:buybox:colourway shots are stand-ins until the real ones land.",
+					"line": "Colourway shots are stand-ins until the real ones land.: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:size",
+					"draftId": "Product:unmatched:buybox:size",
+					"construct": "shop buybox part: Size",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#buybox/unmatched:buybox:size",
+					"line": "Size: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:add my prescription from +£59",
+					"draftId": "Product:unmatched:buybox:add my prescription from +£59",
+					"construct": "shop buybox part: Add my prescription from +£59",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#buybox/unmatched:buybox:add my prescription from +£59",
+					"line": "Add my prescription from +£59: no part or setting in the framework is known for this control (button) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this control (button)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:or 3 payments of {{ cur.klarna }} with",
+					"draftId": "Product:unmatched:buybox:or 3 payments of {{ cur.klarna }} with",
+					"construct": "shop buybox part: Or 3 payments of {{ cur.klarna }} with",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#buybox/unmatched:buybox:or 3 payments of {{ cur.klarna }} with",
+					"line": "Or 3 payments of {{ cur.klarna }} with: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:klarna",
+					"draftId": "Product:unmatched:buybox:klarna",
+					"construct": "shop buybox part: Klarna",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#buybox/unmatched:buybox:klarna",
+					"line": "Klarna: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:apple pay · google pay · paypal",
+					"draftId": "Product:unmatched:buybox:apple pay · google pay · paypal",
+					"construct": "shop buybox part: Apple Pay · Google Pay · PayPal",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#buybox/unmatched:buybox:apple pay · google pay · paypal",
+					"line": "Apple Pay · Google Pay · PayPal: no part or setting in the framework is known for this text (#text) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this text (#text)"
+				},
+				{
+					"rowId": "missing:shop:buybox:unmatched:buybox:need advice? message me on whatsapp — i'm an optician, and i'm happy to help.",
+					"draftId": "Product:unmatched:buybox:need advice? message me on whatsapp — i'm an optician, and i'm happy to help.",
+					"construct": "shop buybox part: Need advice? Message me on WhatsApp — I'm an optician, and I'm happy to help.",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#buybox/unmatched:buybox:need advice? message me on whatsapp — i'm an optician, and i'm happy to help.",
+					"line": "Need advice? Message me on WhatsApp — I'm an optician, and I'm happy to help.: no part or setting in the framework is known for this control (a) (1 unit)",
+					"mainFlow": "buy",
+					"why": "no part or setting in the framework is known for this control (a)"
+				}
+			]
+		},
+		{
+			"kind": "filter",
+			"record": "Shop filter rail / drawer",
+			"file": "Eye Care Birmingham.dc.html",
+			"problem": null,
+			"units": 30,
+			"parts": [
+				{
+					"id": "filter-result-count",
+					"label": "Result count",
+					"home": {
+						"type": "template-block",
+						"file": "theme/sgs-theme/templates/archive-product.html",
+						"contains": "wp:woocommerce/product-results-count"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ resultCount }}"
+					]
+				},
+				{
+					"id": "filter-popup",
+					"label": "Filter pop-up or drawer",
+					"home": {
+						"type": "missing",
+						"reason": "a bespoke filter pop-up or drawer; WooCommerce's product-filters block has no open and close control of its own"
+					},
+					"write": null,
+					"units": 3,
+					"sample": [
+						"Filter {{ activeCountLabel }}",
+						"×",
+						"Show {{ resultCount }}"
+					]
+				},
+				{
+					"id": "filter-sort",
+					"label": "Sort",
+					"home": {
+						"type": "template-block",
+						"file": "theme/sgs-theme/templates/archive-product.html",
+						"contains": "wp:woocommerce/catalog-sorting"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Sort"
+					]
+				},
+				{
+					"id": "filter-active-chips",
+					"label": "Active filter chips",
+					"home": {
+						"type": "template-block",
+						"file": "theme/sgs-theme/templates/archive-product.html",
+						"contains": "wp:woocommerce/product-filter-removable-chips"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ c.label }} ×"
+					]
+				},
+				{
+					"id": "filter-clear",
+					"label": "Clear button",
+					"home": {
+						"type": "template-block",
+						"file": "theme/sgs-theme/templates/archive-product.html",
+						"contains": "wp:woocommerce/product-filter-clear-button"
+					},
+					"write": null,
+					"units": 2,
+					"sample": [
+						"Clear all",
+						"Clear"
+					]
+				},
+				{
+					"id": "filter-group-toggle",
+					"label": "Collapsible filter groups",
+					"home": {
+						"type": "missing",
+						"reason": "a collapsible heading per filter group; the framework's archive template composes no collapsible filter group"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ g.label }} {{ g.count }}"
+					]
+				},
+				{
+					"id": "filter-options",
+					"label": "Taxonomy filter options",
+					"home": {
+						"type": "template-block",
+						"file": "theme/sgs-theme/templates/archive-product.html",
+						"contains": "wp:woocommerce/product-filter-taxonomy",
+						"customCss": "chip or segment presentation, a visual leftover for scoped custom CSS"
+					},
+					"write": null,
+					"units": 2,
+					"sample": [
+						"{{ i.name }}"
+					]
+				},
+				{
+					"id": "filter-swatch-options",
+					"label": "Colour swatch options",
+					"home": {
+						"type": "missing",
+						"reason": "WooCommerce's filter blocks have no colour-swatch display; the framework's archive template composes none"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ i.name }}"
+					]
+				},
+				{
+					"id": "filter-price",
+					"label": "Price range",
+					"home": {
+						"type": "template-block",
+						"file": "theme/sgs-theme/templates/archive-product.html",
+						"contains": "wp:woocommerce/product-filter-price-slider"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Maximum price"
+					]
+				},
+				{
+					"id": "filter-search",
+					"label": "Filter search",
+					"home": {
+						"type": "template-block",
+						"file": "theme/sgs-theme/templates/archive-product.html",
+						"contains": "wp:sgs/filter-search"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Search brands"
+					]
+				},
+				{
+					"id": "filter-checkbox-list",
+					"label": "Checkbox list",
+					"home": {
+						"type": "template-block",
+						"file": "theme/sgs-theme/templates/archive-product.html",
+						"contains": "wp:woocommerce/product-filter-checkbox-list"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"checkbox"
+					]
+				},
+				{
+					"id": "filter-switch",
+					"label": "On-off filter switch",
+					"home": {
+						"type": "missing",
+						"reason": "an on-off switch filter (for example a product attribute held as yes or no); the framework's archive template composes no switch filter"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"switch"
+					]
+				},
+				{
+					"id": "filter-results",
+					"label": "Product results grid",
+					"home": {
+						"type": "template-block",
+						"file": "theme/sgs-theme/templates/archive-product.html",
+						"contains": "wp:woocommerce/product-template"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Frame Card"
+					]
+				},
+				{
+					"id": "filter-no-results",
+					"label": "No-results message",
+					"home": {
+						"type": "template-block",
+						"file": "theme/sgs-theme/templates/archive-product.html",
+						"contains": "wp:woocommerce/product-collection-no-results"
+					},
+					"write": null,
+					"units": 3,
+					"sample": [
+						"Nothing matches all of that.",
+						"Loosen a filter, or message me and I'll see what I can find.",
+						"Clear filters"
+					]
+				}
+			],
+			"missing": [
+				{
+					"rowId": "missing:shop:filter:filter-popup",
+					"draftId": "Shop filter rail / drawer:filter-popup",
+					"construct": "shop filter part: Filter pop-up or drawer",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#filter/filter-popup",
+					"line": "Filter pop-up or drawer: a bespoke filter pop-up or drawer; WooCommerce's product-filters block has no open and close control of its own (3 units)",
+					"mainFlow": null,
+					"why": "a bespoke filter pop-up or drawer; WooCommerce's product-filters block has no open and close control of its own"
+				},
+				{
+					"rowId": "missing:shop:filter:filter-group-toggle",
+					"draftId": "Shop filter rail / drawer:filter-group-toggle",
+					"construct": "shop filter part: Collapsible filter groups",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#filter/filter-group-toggle",
+					"line": "Collapsible filter groups: a collapsible heading per filter group; the framework's archive template composes no collapsible filter group (1 unit)",
+					"mainFlow": null,
+					"why": "a collapsible heading per filter group; the framework's archive template composes no collapsible filter group"
+				},
+				{
+					"rowId": "missing:shop:filter:filter-swatch-options",
+					"draftId": "Shop filter rail / drawer:filter-swatch-options",
+					"construct": "shop filter part: Colour swatch options",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#filter/filter-swatch-options",
+					"line": "Colour swatch options: WooCommerce's filter blocks have no colour-swatch display; the framework's archive template composes none (1 unit)",
+					"mainFlow": null,
+					"why": "WooCommerce's filter blocks have no colour-swatch display; the framework's archive template composes none"
+				},
+				{
+					"rowId": "missing:shop:filter:filter-switch",
+					"draftId": "Shop filter rail / drawer:filter-switch",
+					"construct": "shop filter part: On-off filter switch",
+					"from": "shop-parts",
+					"key": "Eye Care Birmingham.dc.html#filter/filter-switch",
+					"line": "On-off filter switch: an on-off switch filter (for example a product attribute held as yes or no); the framework's archive template composes no switch filter (1 unit)",
+					"mainFlow": null,
+					"why": "an on-off switch filter (for example a product attribute held as yes or no); the framework's archive template composes no switch filter"
+				}
+			]
+		},
+		{
+			"kind": "drawer",
+			"record": "Bag drawer",
+			"file": "Eye Care Birmingham.dc.html",
+			"problem": null,
+			"units": 17,
+			"parts": [
+				{
+					"id": "drawer-heading",
+					"label": "Panel heading",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"panelHeading"
+						]
+					},
+					"write": {
+						"panelHeading": "Bag"
+					},
+					"units": 1,
+					"sample": [
+						"Bag"
+					]
+				},
+				{
+					"id": "drawer-count",
+					"label": "Item count beside the heading",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"panelShowCount"
+						]
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"({{ bagCount }})"
+					]
+				},
+				{
+					"id": "drawer-close",
+					"label": "Close button",
+					"home": {
+						"type": "built-in",
+						"block": "sgs/cart",
+						"note": "the panel draws its own close button"
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"×"
+					]
+				},
+				{
+					"id": "drawer-empty-message",
+					"label": "Empty-basket message",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"emptyCartMessage"
+						]
+					},
+					"write": {
+						"emptyCartMessage": "Nothing in here yet."
+					},
+					"units": 1,
+					"sample": [
+						"Nothing in here yet."
+					]
+				},
+				{
+					"id": "drawer-empty-cta",
+					"label": "Empty-basket button",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"emptyCartCtaLabel"
+						]
+					},
+					"write": {
+						"emptyCartCtaLabel": "Shop sunglasses"
+					},
+					"units": 1,
+					"sample": [
+						"Shop sunglasses"
+					]
+				},
+				{
+					"id": "drawer-line-details",
+					"label": "Line name, variant, brand and total",
+					"home": {
+						"type": "built-in",
+						"block": "sgs/cart",
+						"note": "each cart line renders its own name, detail and price"
+					},
+					"write": null,
+					"units": 5,
+					"sample": [
+						"{{ it.brand }}",
+						"{{ it.lineLabel }}",
+						"{{ it.name }}",
+						"{{ it.lensLine }}"
+					]
+				},
+				{
+					"id": "drawer-add-options",
+					"label": "Line add-options control",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"itemAddOptionsLabel"
+						]
+					},
+					"write": {
+						"itemAddOptionsLabel": "Add my prescription"
+					},
+					"units": 1,
+					"sample": [
+						"Add my prescription"
+					]
+				},
+				{
+					"id": "drawer-remove",
+					"label": "Line remove control",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"itemRemoveLabel"
+						]
+					},
+					"write": {
+						"itemRemoveLabel": "Remove"
+					},
+					"units": 1,
+					"sample": [
+						"Remove"
+					]
+				},
+				{
+					"id": "drawer-subtotal",
+					"label": "Subtotal",
+					"home": {
+						"type": "built-in",
+						"block": "sgs/cart",
+						"note": "the panel footer renders the subtotal"
+					},
+					"write": null,
+					"units": 2,
+					"sample": [
+						"Subtotal",
+						"{{ subtotalLabel }}"
+					]
+				},
+				{
+					"id": "drawer-free-delivery",
+					"label": "Free-delivery message",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"freeDeliveryMessage",
+							"freeDeliverySuccessMessage",
+							"freeDeliveryThresholdOverride"
+						]
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"{{ freeShipNote }}"
+					]
+				},
+				{
+					"id": "drawer-checkout",
+					"label": "Checkout button",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"checkoutLabel"
+						]
+					},
+					"write": {
+						"checkoutLabel": "Checkout"
+					},
+					"units": 1,
+					"sample": [
+						"Checkout"
+					]
+				},
+				{
+					"id": "drawer-instalments",
+					"label": "Instalments note",
+					"home": {
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"panelInstalmentsCount",
+							"panelInstalmentsNote"
+						]
+					},
+					"write": null,
+					"units": 1,
+					"sample": [
+						"Or 3 payments of {{ klarnaLabel }} with Klarna"
+					]
+				}
+			],
+			"missing": []
+		}
+	],
+	"counts": {
+		"units": 70,
+		"parts": 46,
+		"mapped": 31,
+		"missing": 15,
+		"elsewhere": 0,
+		"problems": 0
+	}
+}
