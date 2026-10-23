@@ -1,0 +1,44 @@
+[
+	{
+		"find": "plan.push( { kind: def.kind, sku: def.body.sku, action: found ? 'exists' : 'create',",
+		"replace": "plan.push( { kind: def.kind, sku: def.body.sku, action: 'create',",
+		"why": "the plan ignores existing products and always creates",
+		"file": "lib/shop-fixtures.mjs"
+	},
+	{
+		"find": "const [ product ] = await call( 'GET', `wc/v3/products?sku=${ encodeURIComponent( def.body.sku ) }&status=any` );\n\tif ( ! product ) {",
+		"replace": "const product = null;\n\tif ( ! product ) {",
+		"why": "existing products are never found",
+		"file": "lib/shop-fixtures.mjs"
+	},
+	{
+		"find": "if ( ! ( index.namespaces || [] ).includes( 'wc/v3' ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a site without WooCommerce is accepted",
+		"file": "lib/shop-fixtures.mjs"
+	},
+	{
+		"find": "def.variations.filter( ( v ) => ! ( found?.haveOptions || [] ).includes( v.option ) )",
+		"replace": "def.variations",
+		"why": "every variation is re-created on a rerun",
+		"file": "lib/shop-fixtures.mjs"
+	},
+	{
+		"find": "if ( 'media-map' === choice.source ) {",
+		"replace": "if ( false ) {",
+		"why": "the media-map id is ignored",
+		"file": "lib/shop-fixtures.mjs"
+	},
+	{
+		"find": "const found = ( await call( 'GET', `wp/v2/media?search=${ encodeURIComponent( title ) }&per_page=20` ) ).find( ( m ) => m.title?.rendered === title );",
+		"replace": "const found = null;",
+		"why": "the image is uploaded again on every rerun",
+		"file": "lib/shop-fixtures.mjs"
+	},
+	{
+		"find": "if ( 'create' === step.action ) {",
+		"replace": "if ( true ) {",
+		"why": "existing products are created again at apply time",
+		"file": "lib/shop-fixtures.mjs"
+	}
+]
