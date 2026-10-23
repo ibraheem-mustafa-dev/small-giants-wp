@@ -1,0 +1,9 @@
+[
+	{ "file": "gate-chain.mjs", "find": "await lintGuard( row.state );", "replace": "await lintGuard();", "why": "the guard lints every state the surface covers" },
+	{ "file": "gate-chain.mjs", "find": "await lintGuard( row.state );", "replace": "", "why": "no lint before a walk" },
+	{ "file": "lib/walk-lint-gate.mjs", "find": "const scope = null === state ? states : [ state ];", "replace": "const scope = states;", "why": "the state is ignored" },
+	{ "file": "lib/walk-lint-gate.mjs", "find": "const key = JSON.stringify( scope );", "replace": "const key = 'one';", "why": "one verdict for every state" },
+	{ "file": "lib/walk-lint-gate.mjs", "find": "verdict.catch( () => verdicts.delete( key ) );", "replace": "verdict.catch( () => 0 );", "why": "a refusal is cached forever" },
+	{ "file": "lib/walk-lint-gate.mjs", "find": "if ( ! verdicts.has( key ) ) {", "replace": "if ( true ) {", "why": "a pass is not kept" },
+	{ "file": "lib/walk-lint-gate.mjs", "find": "if ( fault ) {\n\t\t\t\t\tthrow lintRefusal", "replace": "if ( false ) {\n\t\t\t\t\tthrow lintRefusal", "why": "a fault never refuses" }
+]
