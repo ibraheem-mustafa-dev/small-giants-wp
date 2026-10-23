@@ -333,8 +333,9 @@ export function commitExists( hash, root = REPO ) {
 // Every reason the map is wrong, as sentences; empty when it is right. A value is a unit id ("U14"), { done: <commit or
 // "prior">, unit } or { accepted: <reason>, unit }; "prior" is allowed only for a coverage key whose entry is covered. A
 // done animation or state key needs evidenceFor(key) -> { ok, why } (`animationEvidence`, `stateEvidence`); with no reader it fails.
-// A coverage key's evidence is the coverage map's own status.
-export function mapProblems( { raw, expected, units, coverage, hasCommit, evidenceFor } ) {
+// A done state key's commit must change that surface's files: touches(key, commit) -> { ok, why }
+// (lib/delivery-state-files.mjs::stateCommitEvidence); with no reader it fails. A coverage key's evidence is the coverage map's own status.
+export function mapProblems( { raw, expected, units, coverage, hasCommit, evidenceFor, touches } ) {
 	const problems = [];
 	let map;
 	try {
@@ -382,6 +383,9 @@ export function mapProblems( { raw, expected, units, coverage, hasCommit, eviden
 				}
 			} else if ( ! hasCommit( v.done ) ) {
 				problems.push( `${ k }: done commit ${ v.done } does not exist` );
+			} else if ( k.startsWith( 'state:' ) ) {
+				const t = 'function' === typeof touches ? touches( k, v.done ) : { ok: false, why: 'no surface file reader was supplied' };
+				t?.ok || problems.push( `${ k }: done commit ${ v.done } does not change the surface: ${ t?.why ?? 'no reason given' }` );
 			}
 			if ( 'gap' === status ) {
 				problems.push( `${ k }: marked done but the coverage map still has it as a gap` );

@@ -196,7 +196,7 @@ test( 'MUST FAIL: a state key marked done needs a walker run of its state with n
 	assert.match( mapProblems( args ).join( '; ' ), /state:S-01:open: marked done but no evidence reader was supplied/ );
 	const refused = mapProblems( { ...args, evidenceFor: () => ( { ok: false, why: 'the walker never ran the open state' } ) } );
 	assert.match( refused.join( '; ' ), /state:S-01:open: marked done but the walker never ran the open state/ );
-	assert.deepEqual( mapProblems( { ...args, evidenceFor: () => ( { ok: true, why: 't' } ) } ), [] );
+	assert.deepEqual( mapProblems( { ...args, evidenceFor: () => ( { ok: true, why: 't' } ), touches: () => ( { ok: true, why: 't' } ) } ), [] );
 
 	const run = ( state, diffs ) => ( { runs: [ { state, width: 1440, pairs: { p: { diffs } } } ] } );
 	const openRow = { kind: 'style', key: 'color', ref: 'cr-ref-a', draft: 'red', live: 'blue' };
