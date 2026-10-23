@@ -125,6 +125,7 @@ Each row lands in the phase and track named.
 | W15 | Second-client walk N11: the `text: false` root pair `gen-header-1` reads the wordmark's text properties on the draft side and `undefined` live (63 rows in the documented runs; suspect `230daa592`). | Prove the cause in `collect.mjs::collectPair`, then read both sides or neither. Track W, next wave. |
 | W16 | Second-client walk N10: a border colour is compared where the border is 0px on one side, duplicating the width row (39 rows). | A border colour row only where both sides paint a border; control: a visible border of the wrong colour is still caught. Track W, next wave. |
 | W17 | Second-client walk N12: a state does not close what the previous state opened (the 375 scrolled shot keeps the nav drawer open on both sides; `header-bar` `y-in-main` 294 against -69), so 521 rows inherit the previous state. | Reset to the page's rest between states. Track W, next wave. |
+| W18 | Found by Track R's R11 diagnoses (`.claude/reports/2026-10-23-track-r-r11-diagnoses.md`, item 1b): a pass-through `height:100%` box (the Indus draft `<nav style="height:100%;display:flex;align-items:center">`, 84px) is compared against a live auto-height root (42px) whose items sit in identical boxes; `sgs/nav-bar-menu` has no root height setting, and the box paints nothing. | Compare a pass-through box that paints nothing through its items (W4's identity pairing), keeping a control where the items move. Track W, after wave 2. |
 
 ### The Fill route (Track R, Phase 1)
 | ID | Issue (proof) | Existing setting | Solution |
