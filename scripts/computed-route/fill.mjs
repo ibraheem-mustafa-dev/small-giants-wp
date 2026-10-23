@@ -179,8 +179,10 @@ export async function fillSurface( o ) {
 		const states = fillStates( { tree, nodes, reads, calFor, db, snapshot } );
 		result.writes.push( ...states.writes );
 		result.notes.push( ...defectLooks.listed.map( ( d ) => `draft defect ${ d.draftId } (${ d.state } ${ d.prop }, ${ d.declared }): the draft never paints it; built from the code value ${ JSON.stringify( d.built ) } by width; listed for Bean (intake.json draftDefects, FR-48-69)` ), ...defectLooks.gaps.map( ( g ) => `draft defect ${ g.draftId } (${ g.state } ${ g.prop }${ g.width ? ` at ${ g.width }px` : '' }): not built: ${ g.reason }` ) );
-		// FR-48-69: the client's draft-defects list, rebuilt from intake with the value each defect was built as.
-		writeDraftDefects( draftDefectsFile( { client: o.client, repo, listed: defectLooks.listed } ), { client: o.client, repo } );
+		// FR-48-69: the client's draft-defects list, rebuilt from intake (when intake has run) with the value each defect was built as.
+		if ( fs.existsSync( path.join( repo, 'sites', o.client, 'build', 'intake', 'intake.json' ) ) ) {
+			writeDraftDefects( draftDefectsFile( { client: o.client, repo, listed: defectLooks.listed } ), { client: o.client, repo } );
+		}
 		result.unmapped.push( ...states.unmapped );
 		// A logo whose width changes with the screen is written as its per-device size (lib/fill-logo-size.mjs).
 		const logos = logoSizeWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped } );

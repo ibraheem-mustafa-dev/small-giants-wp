@@ -1,0 +1,9 @@
+[
+	{ "file": "lib/fill-prop.mjs", "find": "( canon( prop, a ) !== a ) === ( canon( prop, b ) !== b ) ? PX_TOL : 0", "replace": "PX_TOL", "why": "the old tolerance: -0.17px against normal compares within 0.5px and nothing is written" },
+	{ "file": "lib/fill-prop.mjs", "find": "( canon( prop, a ) !== a ) === ( canon( prop, b ) !== b ) ? PX_TOL : 0", "replace": "0", "why": "no tolerance at all: two lengths 0.3px apart are written" },
+	{ "file": "lib/fill-resolve-element.mjs", "find": "\t\t\tsettled( st, rec, ref, { slot, property: prop, value: json( w.value ), reason: 'already-set'", "replace": "\t\t\tfalse && settled( st, rec, ref, { slot, property: prop, value: json( w.value ), reason: 'already-set'", "why": "a write the tree already holds ends with no record" },
+	{ "file": "lib/fill-resolve-element.mjs", "find": "\t\t\tif ( auto.length ) {", "replace": "\t\t\tif ( false ) {", "why": "a declared auto margin is dropped silently" },
+	{ "file": "lib/fill-resolve-element.mjs", "find": "u.notPlain.length || Object.keys( u.draft ).length ? unmapped(", "replace": "false ? unmapped(", "why": "a declared var() width is settled as a used size instead of an UNMAPPED row" },
+	{ "file": "lib/fill-resolve-element.mjs", "find": "\t\t\tif ( undeclared.length ) {", "replace": "\t\t\tif ( false ) {", "why": "an undeclared used-value property is dropped silently" },
+	{ "file": "lib/fill-resolve-element.mjs", "find": "if ( 'equal' === res.status || 'equal' === eq?.status ) {", "replace": "if ( false ) {", "why": "an equal result ends with no record" }
+]

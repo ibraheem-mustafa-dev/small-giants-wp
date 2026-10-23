@@ -187,6 +187,11 @@ export function defaultPaint( cal, slot, width, prop ) {
 	return /gap$/.test( prop ) && 'normal' === v ? '0px' : v;
 }
 
+// The px tolerance two values compare within: none when exactly one of them is a keyword canon() paints as 0px (a normal
+// letter spacing, an auto minimum height). The walker (parity/lib/compare.mjs::sameValue) compares such a keyword as text,
+// so -0.17px against normal is a difference there; only an exact 0px matches it here.
+const toleranceFor = ( prop, a, b ) => ( ( canon( prop, a ) !== a ) === ( canon( prop, b ) !== b ) ? PX_TOL : 0 );
+
 // The tiers whose draft value differs from what the node shows there: its baseline, or what the tiers already chosen paint
 // there, judged as the held side judges a write (lib/fill-held.mjs::paintedAt): an empty tier shows the nearest wider
 // chosen tier only where the block's default paint of the property is the same at both widths, and otherwise the block's
@@ -202,7 +207,8 @@ export function tiersDiffering( prop, draft, baseline, defaultAt = baseline ) {
 			continue;
 		}
 		const painted = paintedAt( { after: Object.fromEntries( Object.entries( out ).map( ( [ x, v ] ) => [ TIER_OF[ x ], v ] ) ) }, w, prop, fallbackAt );
-		if ( ! sameValue( prop, canon( prop, draft[ w ] ), canon( prop, painted ? painted.value : baseline( w ) ), PX_TOL ) ) {
+		const shown = painted ? painted.value : baseline( w );
+		if ( ! sameValue( prop, canon( prop, draft[ w ] ), canon( prop, shown ), toleranceFor( prop, draft[ w ], shown ) ) ) {
 			out[ w ] = draft[ w ];
 		}
 	}
