@@ -130,10 +130,26 @@ export function tiersOf( hidden ) {
 	return Object.keys( TIER_RANGES ).filter( ( t ) => hidden.some( ( [ lo, hi ] ) => lo <= TIER_RANGES[ t ][ 0 ] && hi >= TIER_RANGES[ t ][ 1 ] ) );
 }
 
-// The scoped @media rule hiding a range (width in whole px; the rule `&` is the instance, includes/custom-css.php).
-export function mediaRule( [ lo, hi ] ) {
+// The scoped @media rule over a range (width in whole px; the rule `&` is the instance, includes/custom-css.php); the body
+// hides the instance unless the caller gives its own.
+export function mediaRule( [ lo, hi ], body = '& { display: none; }' ) {
 	const cond = [ lo > 0 ? `(min-width: ${ lo }px)` : null, Infinity > hi ? `(max-width: ${ hi - 1 }px)` : null ].filter( Boolean ).join( ' and ' );
-	return `@media ${ cond } { & { display: none; } }`;
+	return `@media ${ cond } { ${ body } }`;
+}
+
+// The three settings that hold a scoped rule on a node (Additional CSS, its scope key and its label): [ { attr, value, prop } ]
+// to write, appending to what the node holds; empty when the node already holds the rule text. Every writer of a scoped
+// rule (the width gate, the width ladder) goes through this one function.
+export function scopedCssPuts( node, { css, label, index, why } ) {
+	const had = ( a ) => node.attributes?.[ a ] || '';
+	if ( had( 'sgsCustomCss' ).includes( css ) ) {
+		return [];
+	}
+	return [
+		{ attr: 'sgsCustomCss', value: [ had( 'sgsCustomCss' ), css ].filter( Boolean ).join( ' ' ), prop: `${ why }: scoped @media rule` },
+		{ attr: 'sgsCustomCssId', value: had( 'sgsCustomCssId' ) || `wgate${ index }`.slice( 0, 16 ), prop: `${ why }: scope key` },
+		{ attr: 'sgsCustomCssNote', value: [ had( 'sgsCustomCssNote' ), label ].filter( Boolean ).join( '; ' ), prop: `${ why }: label` },
+	];
 }
 
 // The setting each block draws its own alternative below (the nav's burger under its collapse point), as the skeleton
@@ -151,7 +167,7 @@ export function ownBreakpoint( db, block, collapse = collapseAttributes() ) {
 const holdsAttr = ( db, block, attr ) => !! db.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );
 
 // A divergence-ledger entry for one snap (FR-48-50 step 1), numbered after the entries already in the ledger.
-function snapEntry( { scope, ref, snap, entries, date } ) {
+export function snapEntry( { scope, ref, snap, entries, date } ) {
 	const reason = `the draft's width threshold ${ snap.draft }px snapped to the ${ snap.tier }px tier (distance ${ snap.distance }px, within 5% of the tier)`;
 	if ( entries.some( ( e ) => e.node === ref && 'breakpoint' === e.property && e.reason === reason ) ) {
 		return null;
@@ -160,19 +176,37 @@ function snapEntry( { scope, ref, snap, entries, date } ) {
 	return { id: `D-${ next }`, scope, node: ref, state: '*', property: 'breakpoint', expected: { rule: 'breakpoint-snap' }, reason, decided: `${ date } FR-48-50`, snap };
 }
 
+// The widths a skeleton node's content is shown at, or null when nothing gates it. A width-variant instance (the skeleton
+// writes one instance per variation of content no single setting holds: `widthShown` on the variant, `widthVariants` on
+// the default instance) is shown where its own element is: the enclosing sc-if's range when the fact record has one, else the
+// tiers it was read at. The default instance is shown where no variant is.
+export const tierRanges = ( widths ) => widths.map( ( w ) => ( { 375: TIER_RANGES.mobile, 768: TIER_RANGES.tablet, 1440: TIER_RANGES.desktop } )[ w ] ).filter( Boolean ).sort( ( a, b ) => a[ 0 ] - b[ 0 ] ).reduce( ( out, r ) => ( out.length && out.at( -1 )[ 1 ] === r[ 0 ] ? ( out.at( -1 )[ 1 ] = r[ 1 ], out ) : [ ...out, [ ...r ] ] ), [] );
+export function shownOfNode( skeletonNode, facts, rootComponent = null ) {
+	const key = tplKey( skeletonNode.draftRef, rootComponent );
+	const own = key && facts ? shownAt( facts, key ) : null;
+	if ( skeletonNode.widthShown ) {
+		return own ?? { shown: tierRanges( skeletonNode.widthShown ), via: [ `its element renders at ${ skeletonNode.widthShown.join( ' and ' ) }px` ] };
+	}
+	if ( skeletonNode.widthVariants?.length ) {
+		const taken = skeletonNode.widthVariants.flatMap( ( v ) => ( facts ? shownAt( facts, tplKey( { tpl: v.key }, rootComponent ) ) : null )?.shown ?? tierRanges( v.shown ) );
+		const free = complement( taken );
+		return { shown: own ? intersect( own.shown, free ) : free, via: [ `a width variant is shown at ${ skeletonNode.widthVariants.map( ( v ) => v.shown.join( ' and ' ) ).join( ', ' ) }px` ] };
+	}
+	return own;
+}
+
 // Writes the width gates of every skeleton node. nodes: skeletonNodes(); flat: tree nodes by index; refOf: tree node to
 // ref; facts: the fact record (null: nothing written); db: the framework DB; scope: the surface; entries: the ledger's
 // entries (the snap entries continue its numbering). Returns { writes, unmapped, notes, ledger } in the shapes
 // lib/fill-resolve.mjs uses; `ledger` holds the new snap entries.
 export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, entries = [], rootComponent = null, date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes() } ) {
 	const out = { writes: [], unmapped: [], notes: [], ledger: [] };
-	if ( ! facts ) {
+	if ( ! facts && ! nodes.some( ( n ) => n.node.widthShown || n.node.widthVariants ) ) {
 		return out;
 	}
 	const gate = new Map();
 	for ( const n of nodes ) {
-		const key = tplKey( n.node.draftRef, rootComponent );
-		const at = key ? shownAt( facts, key ) : null;
+		const at = shownOfNode( n.node, facts, rootComponent );
 		at && gate.set( n.index, at );
 	}
 	for ( const n of nodes ) {
@@ -215,14 +249,12 @@ export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, entries
 			out.notes.push( `${ ref } ${ n.name }: shown only at ${ at.shown.map( ( [ lo, hi ] ) => `${ lo }-${ Infinity === hi ? 'up' : hi - 1 }` ).join( ', ' ) } (${ via }); hidden on ${ tiers.join( ', ' ) }${ snaps.length ? `; snapped ${ snaps.map( ( s ) => `${ s.draft } to ${ s.tier }` ).join( ', ' ) }` : '' }` );
 			continue;
 		}
-		const css = hidden.map( mediaRule ).join( ' ' );
-		const had = ( a ) => node.attributes?.[ a ] || '';
-		if ( had( 'sgsCustomCss' ).includes( css ) ) {
+		const css = hidden.map( ( r ) => mediaRule( r ) ).join( ' ' );
+		const puts = scopedCssPuts( node, { css, index: n.index, why: `width gate (${ via })`, label: `Width gate ${ via }: hidden at ${ hidden.map( ( [ lo, hi ] ) => `${ lo }-${ Infinity === hi ? 'up' : hi - 1 }px` ).join( ', ' ) }` } );
+		if ( ! puts.length ) {
 			continue;
 		}
-		put( 'sgsCustomCss', [ had( 'sgsCustomCss' ), css ].filter( Boolean ).join( ' ' ), `width gate (${ via }): scoped @media rule` );
-		put( 'sgsCustomCssId', had( 'sgsCustomCssId' ) || `wgate${ n.index }`.slice( 0, 16 ), 'width gate: scope key' );
-		put( 'sgsCustomCssNote', [ had( 'sgsCustomCssNote' ), `Width gate ${ via }: hidden at ${ hidden.map( ( [ lo, hi ] ) => `${ lo }-${ Infinity === hi ? 'up' : hi - 1 }px` ).join( ', ' ) }` ].filter( Boolean ).join( '; ' ), 'width gate: label' );
+		puts.forEach( ( x ) => put( x.attr, x.value, x.prop ) );
 		out.notes.push( `${ ref } ${ n.name }: ${ via } has no tier-aligned hiding setting and no breakpoint setting; written as a scoped @media rule in Additional CSS` );
 	}
 	return out;

@@ -122,27 +122,57 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// The children of an element whose block draws them itself: each is a row absorbed into it, never a block.
 	// A child carrying its own client decision is still absorbed (its block draws it), but the row says the decision no
 	// longer applies, so the review shows it instead of dropping it.
-	const absorbSubtree = ( e, top, why, rule, node = null ) => {
+	const absorbSubtree = ( e, top, why, rule, node = null, parentBlock = null ) => {
 		m.blockKids( e ).forEach( ( k ) => {
 			const own = overrides( k, m.words( k ) );
 			const stale = 'client decision' === own?.source ? `the client decision for ${ k.key } (${ own.block || 'remove' }) no longer applies: ${ top.block } draws this element` : null;
 			record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ why }`, confidence: 1, candidates: [], rule, into: top.key, stale } );
-			absorbSubtree( k, top, why, rule, node );
+			absorbSubtree( k, top, why, rule, node, parentBlock );
 		} );
-		absorbWidthKids( e, top, rule, node );
+		absorbWidthKids( e, top, rule, node, parentBlock );
 	};
-	// An element that renders only at some widths inside a block that draws its own content cannot be a node of its own: it
-	// is absorbed with the width alternative named, and listed in the proposal's widthAlternatives (and as a handover entry
-	// on the block's node) so the review shows it and it reaches Bean.
+	// An element that renders only at some widths inside a block that draws its own content (a label "Call" shown below 768
+	// beside the number shown above it) is a width variation no single setting holds: it becomes one block instance per
+	// variation (FR-48-50). A variation with words is the block's own node again with those words in its text setting; any
+	// other content (an icon, a different child count) is built as the sibling block it is. Fill's width gate hides each
+	// instance on the other's widths. An element no instance can be made of is listed in the proposal's widthAlternatives
+	// and as a handover entry on the block's node, so the review shows it and it reaches Bean.
 	const widthAlternatives = [];
-	function absorbWidthKids( e, top, rule, node ) {
+	const variantsOf = new Map();
+	const takeVariants = ( node ) => {
+		const list = variantsOf.get( node ) || [];
+		variantsOf.delete( node );
+		return list;
+	};
+	function widthVariant( k, top, node, parentBlock ) {
+		const textAttr = node && m.words( k ) ? facts.firstAttrByRole( top.block, 'text-content' ) : null;
+		let made = null;
+		if ( textAttr && node.attributes?.[ textAttr ] ) {
+			made = base( k, top.block, { ...node.attributes, [ textAttr ]: m.words( k ) } );
+			record( k, { rule: 'widthVariant', source: 'rule widthVariant', reason: `${ k.key } renders only at ${ m.shownAt( k ).join( ' and ' ) }px: its words are one more ${ top.block } beside ${ top.key }, each hidden on the other's widths`, confidence: 1, candidates: [ { block: top.block, score: 1, share: 1, evidence: [] } ] }, { attributes: made.attributes } );
+		} else if ( node && parentBlock ) {
+			made = buildNode( k, parentBlock );
+		}
+		const list = [].concat( made || [] ).filter( Boolean );
+		if ( ! list.length ) {
+			return false;
+		}
+		list[ 0 ].widthShown = m.shownAt( k );
+		node.widthVariants = [ ...( node.widthVariants || [] ), { key: k.key, shown: m.shownAt( k ) } ];
+		variantsOf.set( node, [ ...( variantsOf.get( node ) || [] ), ...list ] );
+		return true;
+	}
+	function absorbWidthKids( e, top, rule, node, parentBlock = null ) {
 		m.widthKids( e ).forEach( ( k ) => {
+			if ( widthVariant( k, top, node, parentBlock ) ) {
+				return;
+			}
 			const at = m.shownAt( k ).join( ' and ' );
 			const what = m.words( k ) ? `a label shown only at ${ at }px inside a block with one label: no setting holds a per-width label` : `an element shown only at ${ at }px inside a block that draws its own content: no setting holds a per-width alternative`;
 			record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ what }`, confidence: 1, candidates: [], rule, into: top.key } );
 			widthAlternatives.push( { key: k.key, into: top.key, block: top.block, widths: m.shownAt( k ), words: m.words( k ), reason: what } );
 			node && ( node.handover ||= [] ).push( { owner: 'behaviour', kind: m.words( k ) ? 'text' : 'presence', detail: `${ k.key }${ m.words( k ) ? ` "${ m.words( k ) }"` : '' }: ${ what }` } );
-			absorbSubtree( k, top, what, rule, node );
+			absorbSubtree( k, top, what, rule, node, parentBlock );
 		} );
 	}
 	const finder = ( e ) => m.tplFinder( e );
@@ -433,12 +463,12 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			Object.keys( cs.slots ).length && ( node.draftSlots = { ...node.draftSlots, ...cs.slots }, row.slots = { ...row.slots, ...cs.slots } );
 			const notes = [ ...cs.notes, ...( collapse?.note ? [ collapse.note ] : [] ) ];
 			notes.length && ( row.slotNotes = notes );
-			absorbSubtree( e, { block, key: e.key }, drawn, r.rule || 'drawsChildren', node );
-			return node;
+			absorbSubtree( e, { block, key: e.key }, drawn, r.rule || 'drawsChildren', node, parentBlock );
+			return [ node, ...takeVariants( node ) ];
 		}
 		if ( ! m.blockKids( e ).length && m.widthKids( e ).length && 'leaf' === composition[ block ]?.composition_role ) {
-			absorbWidthKids( e, { block, key: e.key }, 'drawsChildren', node );
-			return node;
+			absorbWidthKids( e, { block, key: e.key }, 'drawsChildren', node, parentBlock );
+			return [ node, ...takeVariants( node ) ];
 		}
 		const kids = m.blockKids( e );
 		const rowBlock = facts.rowBlocks.find( ( x ) => x.slug === block );

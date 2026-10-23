@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/skeleton-propose.mjs", "find": "if ( widthVariant( k, top, node, parentBlock ) ) {", "replace": "if ( false ) {", "why": "a per-width label would be absorbed again instead of being an instance" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "drawn, r.rule || 'drawsChildren', node, parentBlock );", "replace": "drawn, r.rule || 'drawsChildren', node, null );", "why": "a variation that is not words would not be built as its own block" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "node.widthVariants = [ ...( node.widthVariants || [] ), { key: k.key, shown: m.shownAt( k ) } ];", "replace": "", "why": "the default instance would not know which variants hide it" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "list[ 0 ].widthShown = m.shownAt( k );", "replace": "", "why": "the variant instance would not know its widths" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "made = base( k, top.block, { ...node.attributes, [ textAttr ]: m.words( k ) } );", "replace": "made = base( k, top.block, { ...node.attributes } );", "why": "the variant would carry the default's words" }
+]
