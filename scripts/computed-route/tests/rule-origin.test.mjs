@@ -19,3 +19,19 @@ test( 'MUST FAIL: the doubled sgs-c- scope classes a lifted rule custom-css; a s
 	assert.equal( ruleOrigin( { rule: '.sgs-c-ab12.sgs-c-ab12', owner: '' } ), 'custom-css', 'a winner names its selector as rule' );
 	assert.deepEqual( withOrigin( [ { selector: '.a', owner: '' } ] ), [ { selector: '.a', owner: '', origin: 'stylesheet' } ] );
 } );
+
+test( 'MUST FAIL: a rule whose stylesheet WordPress or the theme owns is never custom-css, whatever its selector', () => {
+	const scope = '.sgs-c-ab12.sgs-c-ab12 h2';
+	for ( const owner of [ 'wp-block-library-css', 'wp-block-library-theme-css', 'global-styles-inline-css', 'classic-theme-styles-inline-css', 'core-block-supports-inline-css', 'sgs-theme-style-css', 'sgs-blocks-style-css' ] ) {
+		assert.equal( ruleOrigin( { selector: scope, owner } ), 'stylesheet', `owner ${ owner }` );
+	}
+	for ( const sheet of [ 'https://x.test/wp-includes/css/dist/block-library/style.min.css?ver=7.1', 'https://x.test/wp-content/themes/sgs-theme/style.css', 'https://x.test/wp-content/plugins/sgs-blocks/build/blocks/hero/style-index.css' ] ) {
+		assert.equal( ruleOrigin( { selector: scope, owner: '', sheet } ), 'stylesheet', `sheet ${ sheet }` );
+	}
+	assert.equal( ruleOrigin( { selector: '.sgs-button-1', owner: 'sgs-custom-css-c1', sheet: 'inline <style>' } ), 'custom-css', 'a real residual element stays custom-css' );
+	assert.equal( ruleOrigin( { selector: scope, owner: 'sgs-custom-css-c1', sheet: 'inline <style>' } ), 'custom-css' );
+	assert.equal( ruleOrigin( { selector: scope, owner: '', sheet: 'inline <style>' } ), 'custom-css', 'a doubled scope from an unowned inline style' );
+	assert.equal( ruleOrigin( { selector: scope, owner: 'sgs-blocks-collected', sheet: 'inline <style>' } ), 'custom-css', 'the collected sheet carries lifted residuals' );
+	assert.equal( ruleOrigin( { selector: scope, owner: '', sheet: 'https://x.test/wp-content/uploads/sgs-css/sgs-1-abc.css' } ), 'custom-css', 'the collected file in uploads' );
+	assert.equal( ruleOrigin( { selector: '.a', owner: 'wp-block-library-css' } ), 'stylesheet' );
+} );
