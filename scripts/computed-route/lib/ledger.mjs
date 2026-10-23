@@ -22,6 +22,9 @@ export function validate( entries ) {
 	const ids = new Set();
 	entries.forEach( ( e, i ) => {
 		KEYS.filter( ( k ) => undefined === e[ k ] ).forEach( ( k ) => problems.push( `entry ${ e.id || '#' + i } has no ${ k }` ) );
+		if ( undefined !== e.path && 'string' !== typeof e.path ) {
+			problems.push( `entry ${ e.id } path must be a selector path string ("" is the node's own element)` );
+		}
 		if ( ids.has( e.id ) ) {
 			problems.push( `entry ${ e.id } is listed twice` );
 		}
@@ -57,18 +60,32 @@ export function load( file ) {
 
 const slugClass = ( node ) => 'sgs-' + node.replace( /^sgs\//, '' );
 
-// The entry covering one row: { ref, block, property, state, width, kind? }. Same matching as the walker's
-// lib/divergences.mjs: state 'hover' matches hover rows; any other state names the walker state.
+// The element paths a row sits on: its own `path` (a walker report row), or `paths` (a measurement, which holds every
+// path of its traced pair). Null when the row names none.
+const rowPaths = ( row ) => row.paths ?? ( null == row.path ? null : [ row.path ] );
+
+// Whether an entry covers the row's node (its ref, its block slug or '*'), ignoring state, property and width.
+const nodeOk = ( e, row ) => '*' === e.node || e.node === row.ref || !! ( row.block && e.node.includes( '/' ) && slugClass( e.node ) === row.block );
+
+// The entry covering one row: { ref, block, property, state, width, path?, kind? }. Same matching as the walker's
+// lib/divergences.mjs: state 'hover' matches hover rows; any other state names the walker state. An entry with a `path`
+// (FR-48-9) covers only the row on that element path, and wins over a path-less entry for the same row; a row that names
+// no path is never covered by a path-scoped entry.
 export function match( entries, row ) {
 	const stateOk = ( e ) => '*' === e.state || ( 'hover' === e.state ? 'hover' === row.kind : e.state === row.state );
-	return entries.find( ( e ) => stateOk( e ) &&
+	const hits = entries.filter( ( e ) => stateOk( e ) &&
 		( e.pseudo ?? null ) === ( row.pseudo ?? null ) &&
 		( '*' === e.property || e.property === row.property ) &&
 		( ! e.widths || e.widths.includes( row.width ) ) &&
-		( '*' === e.node || e.node === row.ref || ( row.block && e.node.includes( '/' ) && slugClass( e.node ) === row.block ) ) ) || null;
+		( undefined === e.path || !! rowPaths( row )?.includes( e.path ) ) &&
+		nodeOk( e, row ) );
+	return hits.find( ( e ) => undefined !== e.path ) || hits[ 0 ] || null;
 }
 
-// Every measured property of every traced pair in a walker report: { ref, block, property, state, width, draft, live }.
+// Every element path of one traced pair: the measured element's, and where its text, layout, icon, underline and paint sit.
+const tracePaths = ( t ) => [ ...new Set( [ t.path, t.textPath, t.layoutPath, t.iconPath, t.decoPath, t.paintPath ].filter( ( x ) => null != x ) ) ];
+
+// Every measured property of every traced pair in a walker report: { ref, block, property, state, width, draft, live, paths }.
 export function measurements( report ) {
 	const out = [];
 	for ( const run of report.runs || [] ) {
@@ -78,7 +95,7 @@ export function measurements( report ) {
 				continue;
 			}
 			for ( const [ property, live ] of Object.entries( p.live.styles || {} ) ) {
-				out.push( { ref: trace.ref, block: trace.block, property, state: run.state, width: run.width, draft: p.draft.styles[ property ], live } );
+				out.push( { ref: trace.ref, block: trace.block, property, state: run.state, width: run.width, draft: p.draft.styles[ property ], live, paths: tracePaths( trace ) } );
 			}
 		}
 	}
@@ -92,13 +109,19 @@ const same = ( a, b ) => {
 	return n( a ) === n( b ) || ( /px$/.test( a ) && /px$/.test( b ) && Math.abs( pa - pb ) <= 0.5 );
 };
 
-// Stale entries: a cr-ref node no longer in the tree, or a measured row where live now equals the draft.
+// Stale entries: a cr-ref node no longer in the tree, a path-scoped entry whose path no measured element of its node has,
+// or a measured row where live now equals the draft.
 // refs: the set of refs in the surface's tree; rows: measurements().
 export function stale( entries, { refs, rows } ) {
 	const out = [];
 	for ( const e of entries ) {
 		if ( e.node.startsWith( 'cr-ref-' ) && refs && ! refs.has( e.node ) ) {
 			out.push( { id: e.id, why: `node ${ e.node } no longer exists` } );
+			continue;
+		}
+		const onNode = rows.filter( ( r ) => nodeOk( e, r ) );
+		if ( undefined !== e.path && onNode.length && ! onNode.some( ( r ) => rowPaths( r )?.includes( e.path ) ) ) {
+			out.push( { id: e.id, why: `path "${ e.path }" matches no element of ${ e.node }` } );
 			continue;
 		}
 		const hits = rows.filter( ( r ) => match( [ e ], r ) );
@@ -128,8 +151,9 @@ export function migrateAccepts( accepts, { scope, firstId = 1, decided } ) {
 
 // Builds the entry accepting one report row (by its id), dated today. rule names a RULES entry in place of the row's
 // live value; everyWidth drops the width (every width); everyProperty covers every property of the row's node (a
-// decided replacement such as a real embed for a draft sketch).
-export function entryFromRow( report, rowId, { reason, scope, entries, source = 'Bean', rule = null, everyWidth = false, everyProperty = false } ) {
+// decided replacement such as a real embed for a draft sketch); scoped keeps the row's element path, so the entry
+// covers that element alone (FR-48-9).
+export function entryFromRow( report, rowId, { reason, scope, entries, source = 'Bean', rule = null, everyWidth = false, everyProperty = false, scoped = false } ) {
 	for ( const run of report.runs || [] ) {
 		for ( const p of Object.values( run.pairs || {} ) ) {
 			const d = ( p.diffs || [] ).find( ( x ) => x.id === rowId );
@@ -140,7 +164,7 @@ export function entryFromRow( report, rowId, { reason, scope, entries, source = 
 					throw new Error( `row ${ rowId } names no node, so it cannot cover every property` );
 				}
 				return { id: `D-${ next }`, scope, node, state: run.state, property: everyProperty ? '*' : d.key,
-					...( everyWidth ? {} : { widths: [ run.width ] } ), expected: rule || everyProperty ? { rule: rule || 'bean-choice' } : { value: String( d.live ) },
+					...( everyWidth ? {} : { widths: [ run.width ] } ), ...( scoped && null != d.path ? { path: d.path } : {} ), expected: rule || everyProperty ? { rule: rule || 'bean-choice' } : { value: String( d.live ) },
 					reason, decided: `${ new Date().toISOString().slice( 0, 10 ) } ${ source }` };
 			}
 		}

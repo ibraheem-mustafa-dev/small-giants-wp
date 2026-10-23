@@ -1,7 +1,7 @@
 // Divergence ledger (GAP-CHECKLIST.md section 16, Spec 48 FR-47-5). A config may name a site's divergences.json
 // (`divergences: '<path>'`, relative to the config file). Each entry records an intended difference:
-//   { id, scope, node, state, property, widths, expected: { value } | { rule }, reason, register: [ register item ids ], decided }
-// A row matches an entry on node (its ref, its block, or '*'), state, property (or '*', every property) and width. A rule entry accepts the
+//   { id, scope, node, path?, state, property, widths, expected: { value } | { rule }, reason, register: [ register item ids ], decided }
+// A row matches an entry on node (its ref, its block, or '*'), state, property (or '*', every property) and width (and, when the entry names a `path`, the row's element path). A rule entry accepts the
 // row; a value entry accepts it only while live shows that value, and otherwise reports the expected value as the
 // row's draft side. Kept separate from the computed route's own ledger: the walker imports nothing from it.
 import fs from 'fs';
@@ -28,11 +28,14 @@ export function divergenceFor( entries, ctx, diff ) {
 	const stateOk = ( e ) => '*' === e.state || ( 'hover' === e.state ? 'hover' === diff.kind : e.state === ctx.state );
 	// A pseudo layer's row (diff.pseudo) matches only an entry naming that layer (e.pseudo), and an element's entry only
 	// the element's own rows.
-	return entries.find( ( e ) => stateOk( e ) &&
+	// An entry with a `path` (FR-48-9) covers only the row on that element path and wins over a path-less entry.
+	const hits = entries.filter( ( e ) => stateOk( e ) &&
 		( e.pseudo ?? null ) === ( diff.pseudo ?? null ) &&
 		( '*' === e.property || e.property === diff.key ) &&
 		( ! e.widths || e.widths.includes( ctx.width ) ) &&
-		( '*' === e.node || e.node === diff.ref || ( diff.block && e.node.includes( '/' ) && slugClass( e.node ) === diff.block ) ) ) || null;
+		( undefined === e.path || e.path === diff.path ) &&
+		( '*' === e.node || e.node === diff.ref || ( diff.block && e.node.includes( '/' ) && slugClass( e.node ) === diff.block ) ) );
+	return hits.find( ( e ) => undefined !== e.path ) || hits[ 0 ] || null;
 }
 
 // Judges one row against the ledger: returns the accept reason, or null with the row's draft swapped for the
