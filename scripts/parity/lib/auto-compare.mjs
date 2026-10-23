@@ -4,7 +4,7 @@
 // are paired only for that last check: a draft and a live page build the same control from different
 // elements (a swatch button against a label and input), so their presence, size and place are left to
 // the words around them, the named pairs and the screenshot review.
-import { sameValue, sameDecoration } from './compare.mjs';
+import { sameValue, sameDecoration, borderColourIrrelevant } from './compare.mjs';
 import { lcsPairs, repairRepeats } from './auto-align.mjs';
 
 // Consecutive indices grouped into runs: [[3,4,5],[9]].
@@ -211,7 +211,9 @@ function compareLinkCoverage( D, L, pairs, add ) {
 // :active forced. A draft element pairs with the live element of the same type and name, in reading order; a property
 // differs when it moves off its rest value on at least one side and the two end values differ. Rows are
 // `focus:<property> "<name>"` and `active:<property> "<name>"`, kind auto. An outline's width, colour and offset paint
-// nothing while its style is none, so they are no row while either side's style is none.
+// nothing while its style is none, so they are no row while either side's style is none. A border colour or style is
+// no row where either side's border is unpainted in that state (compare.mjs::borderColourIrrelevant) once the pass
+// reads the border width; a pass that did not read it leaves the colour compared.
 export const INTERACTIVE_CAP = 60;
 export function pairInteractives( D, L ) {
 	const taken = new Set();
@@ -234,7 +236,7 @@ export function compareInteractive( D, L, t, add ) {
 			}
 			const moved = ( s, k ) => ! s.rest || ! sameValue( k, s.rest[ k ], s[ state ][ k ], t.px );
 			for ( const k of Object.keys( d[ state ] ) ) {
-				if ( ! ( moved( d, k ) || moved( l, k ) ) || ( /^outline-(width|color|offset)$/.test( k ) && ( none( d[ state ] ) || none( l[ state ] ) ) ) ) {
+				if ( ! ( moved( d, k ) || moved( l, k ) ) || ( /^outline-(width|color|offset)$/.test( k ) && ( none( d[ state ] ) || none( l[ state ] ) ) ) || borderColourIrrelevant( k, { ...d.rest, ...d[ state ] }, { ...l.rest, ...l[ state ] } ) ) {
 					continue;
 				}
 				if ( ! sameValue( k, d[ state ][ k ], l[ state ][ k ], t.px ) ) {
