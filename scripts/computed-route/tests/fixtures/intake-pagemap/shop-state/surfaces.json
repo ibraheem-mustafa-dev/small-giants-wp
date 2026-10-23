@@ -1,0 +1,8 @@
+{ "schema_version": "1.0", "records": [
+  { "id": "S-01", "kind": "header", "name": "Header", "dc": "Store", "route": "*" },
+  { "id": "S-02", "kind": "drawer", "name": "Mobile menu", "dc": "Store", "route": "*" },
+  { "id": "S-03", "kind": "drawer", "name": "Filter rail", "dc": "Store", "route": "shop" },
+  { "id": "S-04", "kind": "modal", "name": "Lens configurator", "dc": "Store", "route": "*" },
+  { "id": "S-05", "kind": "modal", "name": "Size guide", "dc": "Store", "route": "*" },
+  { "id": "S-06", "kind": "form", "name": "Newsletter", "dc": "Store", "route": "home" }
+] }

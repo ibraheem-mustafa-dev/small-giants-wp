@@ -1,0 +1,90 @@
+<!doctype html>
+<html><head><meta charset="utf-8"></head><body>
+<script type="application/json" data-sgs-manifest>
+{ "pages": [
+  { "id": "home", "label": "Home", "kind": "front page", "wp": { "slug": "home", "parent": null, "type": "page" } },
+  { "id": "shop", "label": "Shop", "kind": "product archive", "wp": { "slug": "frames", "parent": null, "type": "product archive" } },
+  { "id": "contact", "label": "Contact", "kind": "content page", "wp": { "slug": "contact", "parent": null, "type": "page" } },
+  { "id": "checkout", "label": "Checkout", "kind": "checkout", "wp": { "slug": "checkout", "parent": null, "type": "page" } },
+  { "id": "done", "label": "Order confirmed", "kind": "content page", "wp": { "slug": "order-received", "parent": "checkout", "type": "page" } },
+  { "id": "signin", "label": "Sign in", "kind": "account", "wp": { "slug": "sign-in", "parent": null, "type": "page" } },
+  { "id": "account", "label": "Your account", "kind": "account", "wp": { "slug": "your-account", "parent": null, "type": "page" } }
+] }
+</script>
+<x-dc>
+<header>
+  <nav>
+    <a href="#" onClick="{{ toShop }}" onMouseEnter="{{ openA }}" onFocus="{{ openA }}">Frames</a>
+    <a href="#" onClick="{{ toContact }}" onMouseEnter="{{ openB }}" onFocus="{{ openB }}">Help</a>
+  </nav>
+  <button onClick="{{ openMenu }}" aria-label="Menu">Menu</button>
+  <button onClick="{{ toSignin }}" aria-label="Account">Account</button>
+  <sc-if value="{{ megaAny }}">
+  <div class="sgs-mega-menu" style="position:absolute;left:0;right:0;top:100%">
+    <sc-if value="{{ megaA }}"><div><a href="#" onClick="{{ toShop }}">All frames</a></div></sc-if>
+    <sc-if value="{{ megaB }}"><div><a href="#" onClick="{{ toContact }}">Contact us</a></div></sc-if>
+  </div>
+  </sc-if>
+</header>
+<sc-if value="{{ isHome }}"><main><h1>Welcome</h1></main></sc-if>
+<sc-if value="{{ isShop }}"><main>
+  <aside style="position:fixed;top:0;bottom:0;left:0;width:300px">
+    <sc-for list="{{ shapes }}" as="o"><button onClick="{{ o.pick }}">{{ o.label }}</button></sc-for>
+    <sc-for list="{{ sorts }}" as="o"><button onClick="{{ o.pick }}">{{ o.label }}</button></sc-for>
+  </aside>
+  <h1>All frames</h1>
+</main></sc-if>
+<sc-if value="{{ isContact }}"><main>
+  <form onSubmit="{{ sendContact }}"><input name="name"><textarea name="message"></textarea><button>Send</button></form>
+</main></sc-if>
+<sc-if value="{{ isCheckout }}"><main>
+  <section><h2>Pay</h2><button onClick="{{ placeOrder }}">Place order</button></section>
+</main></sc-if>
+<sc-if value="{{ isDone }}"><main><h1>Thank you</h1></main></sc-if>
+<sc-if value="{{ isSignin }}"><main>
+  <form onSubmit="{{ signIn }}"><input type="email" name="email"><input type="password" name="pw"><button>Sign in</button></form>
+</main></sc-if>
+<sc-if value="{{ isAccount }}"><main>
+  <form onSubmit="{{ saveDetails }}"><input name="first"><input type="password" name="pw"><button>Save</button></form>
+</main></sc-if>
+<footer><nav><a href="#" onClick="{{ toHome }}">Home</a></nav></footer>
+<div role="dialog" aria-label="Menu panel" style="position:fixed;top:0;bottom:0;left:0;width:320px">
+  <nav><a href="#" onClick="{{ toShop }}">Frames</a><a href="#" onClick="{{ toContact }}">Contact</a></nav>
+</div>
+<div role="dialog" aria-label="Your bag" style="position:fixed;top:0;bottom:0;right:0;width:400px">
+  <p>Your bag is empty</p><button onClick="{{ toCheckout }}">Checkout</button>
+</div>
+<div role="dialog" aria-label="Size guide" style="position:fixed;inset:0"><p>Sizes</p></div>
+<div role="dialog" aria-label="Add lenses" style="position:fixed;inset:0">
+  <sc-for list="{{ uses }}" as="o"><button onClick="{{ o.pick }}">{{ o.label }}</button></sc-for>
+  <sc-for list="{{ finishes }}" as="o"><button onClick="{{ o.pick }}">{{ o.label }}</button></sc-for>
+  <input name="sph"><input name="cyl"><input name="axis">
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { page: 'home', mega: null };
+  go(p) { this.setState({ page: p }); }
+  renderVals() {
+    const S = this.state;
+    const isPage = (p) => S.page === p;
+    return {
+      isHome: isPage('home'), isShop: isPage('shop'), isContact: isPage('contact'), isCheckout: isPage('checkout'), isDone: isPage('done'),
+      isSignin: S.page === 'signin', isAccount: S.page === 'account',
+      megaAny: !!S.mega, megaA: S.mega === 'a', megaB: S.mega === 'b',
+      openA: () => this.setState({ mega: 'a' }), openB: () => this.setState({ mega: 'b' }), openMenu: () => this.setState({ menu: true }),
+      toShop: () => this.go('shop'), toContact: () => this.go('contact'), toHome: () => this.go('home'), toCheckout: () => this.go('checkout'),
+      toSignin: () => this.go('signin'),
+      placeOrder: () => this.go('done'),
+      sendContact: (e) => e.preventDefault(),
+      signIn: (e) => { e.preventDefault(); this.go('account'); },
+      saveDetails: (e) => e.preventDefault(),
+      shapes: [ { label: 'Round', pick: () => this.setState({ shape: 'round' }) }, { label: 'Square', pick: () => this.setState({ shape: 'square' }) } ],
+      sorts: [ { label: 'Price', pick: () => this.setState({ sort: 'price' }) } ],
+      uses: [ { label: 'Distance', pick: () => this.setState({ use: 'distance' }) } ],
+      finishes: [ { label: 'Clear', pick: () => this.setState({ finish: 'clear' }) } ],
+    };
+  }
+}
+</script>
+</body></html>

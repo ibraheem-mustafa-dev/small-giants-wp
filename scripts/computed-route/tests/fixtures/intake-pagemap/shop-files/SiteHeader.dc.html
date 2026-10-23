@@ -1,0 +1,21 @@
+<!doctype html>
+<html><head><meta charset="utf-8"></head><body>
+<x-dc>
+<header>
+  <nav><a href="Shop.dc.html">Shop</a><a href="Contact.dc.html">Contact</a><a href="SignIn.dc.html">Sign in</a></nav>
+  <button onClick="{{ openNav }}">Menu</button>
+</header>
+<aside aria-label="Menu" style="position:fixed;top:0;bottom:0;left:0;width:300px">
+  <nav><a href="Home.dc.html">Home</a><a href="Shop.dc.html">Shop</a></nav>
+</aside>
+<aside aria-label="Basket" style="position:fixed;top:0;bottom:0;right:0;width:300px">
+  <p>Your basket</p><a href="Basket.dc.html">View basket</a><a href="Checkout.dc.html">Checkout</a>
+</aside>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { nav: false };
+  renderVals() { return { openNav: () => this.setState({ nav: true }) }; }
+}
+</script>
+</body></html>

@@ -231,6 +231,9 @@ function inlineForms( d, tree, roots, routeOf, pageFile ) {
 	return out;
 }
 
+// The `file:line:col` key of an element id (`file:line:col <tag …>`), undefined for a logic id.
+const tagKey = ( id ) => /^(.+?:\d+:\d+)(\s|$)/.exec( id )?.[ 1 ];
+
 // The route key whose page holds a template node: the draft's own file when that file is a route, else the first route
 // key named in the logic of an sc-if gate above the node's <main> (isPage('checkout'), S.page === 'signin'), read from
 // every object property the gate's name binds; null for a node outside every page (site-wide chrome and overlays).
@@ -274,23 +277,28 @@ function megaPanels( d, header, panel ) {
 }
 
 // Every surface and menu the draft code shows. `routeOf( draft, node )` names the route whose page data holds a
-// logic node (or null); `routeKeys` are the routing's route keys. Each surface carries `page` (the route key whose page
-// holds it, null when site-wide); a page section holding a choice flow is a `choice-flow` surface, and so is a modal
-// overlay that is one. `accountPages` are the route keys whose pages hold a password field.
-export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set() ) {
+// logic node (or null); `routeKeys` are the routing's route keys and `links` its links. Each surface carries `page` (the
+// route key whose page holds it, null when site-wide) and, for an overlay, `reaches` (the route keys its own links and
+// controls lead to); a page section holding a choice flow is a `choice-flow` surface, and so is a modal overlay that
+// is one. `accountPages` are the route keys whose pages hold a password field.
+export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), links = [] ) {
 	const accountPages = new Set();
 	const surfaces = [];
 	const menus = [];
 	const ok = exp.drafts.filter( ( d ) => ! d.error );
 	const formComponents = new Set();
 	const pageAt = new Map();
+	const nodeAt = new Map();
 	for ( const d of ok ) {
 		const tree = elementTree( d );
 		const component = exp.mounted.has( d.file );
 		const roots = d.idx ? rootRefs( d ) : [];
 		const chrome = tree.nodes.some( ( t ) => /^(nav|header|footer)$/.test( t.name ) );
 		const page = ( node ) => pageOf( d, node, roots, routeKeys );
-		tree.nodes.forEach( ( t ) => pageAt.set( `${ d.file }:${ t.line }:${ t.col }`, () => page( t ) ) );
+		tree.nodes.forEach( ( t ) => {
+			pageAt.set( `${ d.file }:${ t.line }:${ t.col }`, () => page( t ) );
+			nodeAt.set( `${ d.file }:${ t.line }:${ t.col }`, t );
+		} );
 		tree.nodes.filter( ( t ) => 'input' === t.name && 'password' === attrOf( t, 'type' ) ).forEach( ( t ) => accountPages.add( page( t ) ) );
 		if ( component && ( tree.nodes.some( ( t ) => 'form' === t.name ) || ( ! chrome && tree.nodes.filter( ( t ) => FIELDS.has( t.name ) ).length >= 2 ) ) ) {
 			formComponents.add( d.file );
@@ -309,7 +317,8 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set() )
 		for ( const r of found ) {
 			const label = attrOf( r.node, 'aria-label' ) || `${ r.kind[ 0 ].toUpperCase() }${ r.kind.slice( 1 ) }`;
 			const kind = 'modal' === r.kind && isChoiceFlow( r.node ) ? 'choice-flow' : r.kind;
-			surfaces.push( { kind, label, title: label, route: null, page: page( r.node ), nav: descendants( r.node ).some( ( x ) => 'nav' === x.name ), dc: stem( d.file ), draftId: tagId( d, r.node ), node: r.node } );
+			const reaches = [ ...new Set( links.filter( ( l ) => l.route && [ nodeAt.get( tagKey( l.from ) ), ...ancestors( nodeAt.get( tagKey( l.from ) ) || { parent: null } ) ].includes( r.node ) ).map( ( l ) => l.route ) ) ];
+			surfaces.push( { kind, label, title: label, route: null, page: page( r.node ), nav: descendants( r.node ).some( ( x ) => 'nav' === x.name ), reaches, dc: stem( d.file ), draftId: tagId( d, r.node ), node: r.node } );
 			if ( 'modal' === r.kind || ! d.idx && ! descendants( r.node ).some( ( x ) => 'a' === x.name ) ) {
 				continue;
 			}
@@ -346,12 +355,18 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set() )
 	const flowNodes = surfaces.filter( ( x ) => 'choice-flow' === x.kind && x.node ).map( ( x ) => x.node );
 	const kept = surfaces.filter( ( x ) => ! ( 'form' === x.kind && x.node && ancestors( x.node ).some( ( u ) => flowNodes.includes( u ) ) ) );
 	// `pageOfTag( draftId )`: the page holding the element a `file:line:col` id names (a logic id: its file when a route).
-	const pageOfTag = ( id ) => pageAt.get( /^(.+?:\d+:\d+)/.exec( id )?.[ 1 ] )?.() ?? ( routeKeys.has( id.split( ':' )[ 0 ] ) ? id.split( ':' )[ 0 ] : null );
+	const pageOfTag = ( id ) => pageAt.get( tagKey( id ) )?.() ?? ( routeKeys.has( id.split( ':' )[ 0 ] ) ? id.split( ':' )[ 0 ] : null );
 	return { surfaces: kept.map( ( { node, ...s } ) => s ), menus, formComponents, accountPages, pageOfTag };
 }
 
 const WORDS = ( s ) => new Set( kebab( s ).split( /[^a-z0-9]+/ ).filter( ( w ) => w.length > 2 && ! [ 'menu', 'mega', 'form', 'drawer', 'modal', 'the', 'and', 'inline', 'site' ].includes( w ) ) );
 const normRoute = ( r ) => ( r ? String( r ).replace( /^\/+/, '' ).replace( /\.dc\.html.*$/, '' ).toLowerCase() : null );
+// A hint record's kind names the same surface as a code surface's: equal kinds, or a hint modal or form that the code
+// shows as a choice flow (the code reads what the surface does; the hint names how it is shown).
+const sameKind = ( h, c ) => h.kind === c.kind || ( 'choice-flow' === c.kind && [ 'modal', 'form' ].includes( h.kind ) );
+// Whether a hint record sits where the code surface does: a site-wide record (`*`) with a surface outside every page,
+// or the record's route with the surface's page.
+const samePlace = ( h, c ) => ( '*' === h.route ? ! c.page : !! c.page && normRoute( h.route ) === normRoute( c.page ) );
 
 // Cross-checks the code's surfaces with handoff/surfaces.json records (FR-48A-7): { surfaces (code surfaces, then
 // hint-only ones), gaps (one `surfaces-disagree` row per surface one side lacks) }. Only the kinds that become CPT
@@ -366,10 +381,10 @@ export function crossCheck( code, hint ) {
 	const gaps = [];
 	const out = [];
 	for ( const c of code ) {
-		const same = records.filter( ( h ) => ! used.has( h ) && h.kind === c.kind && ( ! h.dc || h.dc === c.dc ) );
+		const same = records.filter( ( h ) => ! used.has( h ) && sameKind( h, c ) && ( ! h.dc || h.dc === c.dc ) );
 		const peers = code.filter( ( x ) => x.kind === c.kind && x.dc === c.dc );
 		const score = ( h ) => ( normRoute( h.route ) && normRoute( h.route ) === normRoute( c.route ) ? 3 : 0 )
-			+ ( [ ...WORDS( c.label ) ].some( ( w ) => WORDS( h.name ).has( w ) ) ? 2 : 0 ) + ( h.dc === c.dc ? 1 : 0 );
+			+ ( [ ...WORDS( c.label ) ].some( ( w ) => WORDS( h.name ).has( w ) ) ? 2 : 0 ) + ( h.dc === c.dc ? 1 : 0 ) + ( samePlace( h, c ) ? 1 : 0 );
 		const best = same.map( ( h ) => ( { h, s: score( h ) } ) ).sort( ( a, b ) => b.s - a.s )[ 0 ];
 		const match = best && ( best.s >= 2 || ( 1 === same.length && 1 === peers.length ) ) ? best.h : null;
 		if ( match ) {
@@ -380,7 +395,7 @@ export function crossCheck( code, hint ) {
 	// Leftovers of one kind in one draft pair in document order when both sides have the same number.
 	for ( const c of out.filter( ( x ) => ! x.hint ) ) {
 		const mine = out.filter( ( x ) => ! x.hint && x.kind === c.kind && x.dc === c.dc );
-		const theirs = records.filter( ( h ) => ! used.has( h ) && h.kind === c.kind && h.dc === c.dc );
+		const theirs = records.filter( ( h ) => ! used.has( h ) && sameKind( h, c ) && h.dc === c.dc );
 		if ( mine.length === theirs.length && mine.length ) {
 			mine.forEach( ( x, i ) => {
 				x.hint = theirs[ i ].id;

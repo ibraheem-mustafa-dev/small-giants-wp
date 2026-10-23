@@ -1,0 +1,12 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Checkout | Bakery</title></head><body>
+<x-dc>
+<header><a href="Home.dc.html">Bakery</a><p>Secure checkout</p></header>
+<main><form onSubmit="{{ pay }}"><input name="card"><button>Pay</button></form></main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() { return { pay: ( e ) => { e.preventDefault(); location.href = "Confirmation.dc.html"; } }; }
+}
+</script>
+</body></html>

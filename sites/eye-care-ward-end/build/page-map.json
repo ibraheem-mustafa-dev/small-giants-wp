@@ -211,6 +211,25 @@
     ]
   },
   {
+    "slug": "cart",
+    "title": "Your bag",
+    "parent": null,
+    "template": "cart",
+    "menus": [],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null,
+    "parts": [
+      {
+        "kind": "drawer",
+        "label": "Your bag",
+        "owner": "block",
+        "draftId": "Eye Care Birmingham.dc.html:2087:5 <div aria-label=\"Your bag\">"
+      }
+    ]
+  },
+  {
     "slug": "form-submit-contact",
     "title": "submitContact",
     "parent": null,
@@ -232,12 +251,6 @@
     "flags": [],
     "id": null,
     "parts": [
-      {
-        "kind": "drawer",
-        "label": "Your bag",
-        "owner": "block",
-        "draftId": "Eye Care Birmingham.dc.html:2087:5 <div aria-label=\"Your bag\">"
-      },
       {
         "kind": "menu",
         "label": "Mega menu",

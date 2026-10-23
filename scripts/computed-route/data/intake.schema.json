@@ -203,33 +203,13 @@
               "draftId"
             ],
             "properties": {
-              "rowId": {
-                "type": "string"
-              },
-              "draftId": {
-                "type": "string"
-              },
-              "text": {
-                "type": "string"
-              },
-              "field": {
-                "type": "string"
-              },
-              "ours": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "theirs": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "why": {
-                "type": "string"
-              }
+              "rowId": { "type": "string" },
+              "draftId": { "type": "string" },
+              "text": { "type": "string" },
+              "field": { "type": "string" },
+              "ours": { "type": [ "string", "null" ] },
+              "theirs": { "type": [ "string", "null" ] },
+              "why": { "type": "string" }
             }
           }
         },
@@ -244,30 +224,11 @@
               "recordIds"
             ],
             "properties": {
-              "occurrence": {
-                "type": "string"
-              },
-              "kind": {
-                "type": "string"
-              },
-              "role": {
-                "enum": [
-                  "effect",
-                  "trigger",
-                  "context",
-                  "surface"
-                ]
-              },
-              "recordIds": {
-                "type": "array",
-                "minItems": 1,
-                "items": {
-                  "type": "string"
-                }
-              },
-              "why": {
-                "type": "string"
-              }
+              "occurrence": { "type": "string" },
+              "kind": { "type": "string" },
+              "role": { "enum": [ "effect", "trigger", "context", "surface" ] },
+              "recordIds": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+              "why": { "type": "string" }
             }
           }
         },

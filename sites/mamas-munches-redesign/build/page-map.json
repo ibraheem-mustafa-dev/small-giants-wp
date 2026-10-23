@@ -74,6 +74,12 @@
     "id": null,
     "parts": [
       {
+        "kind": "drawer",
+        "label": "Basket",
+        "owner": "block",
+        "draftId": "SiteHeader.dc.html:116:3 <aside aria-label=\"Basket\">"
+      },
+      {
         "kind": "form",
         "label": "Basket gift note + upsell",
         "owner": "draft-notes",
@@ -376,15 +382,7 @@
     "postType": "sgs_header",
     "collection": "static",
     "flags": [],
-    "id": null,
-    "parts": [
-      {
-        "kind": "drawer",
-        "label": "Basket",
-        "owner": "block",
-        "draftId": "SiteHeader.dc.html:116:3 <aside aria-label=\"Basket\">"
-      }
-    ]
+    "id": null
   },
   {
     "slug": "drawer-menu",

@@ -1,0 +1,23 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Home | Bakery</title></head><body>
+<x-dc>
+<dc-import name="SiteHeader"></dc-import>
+<main><section id="build"><h2>Build your box</h2>
+  <sc-for list="{{ bases }}" as="o"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}">{{ o.label }}</button></sc-for>
+  <sc-for list="{{ sizes }}" as="o"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}">{{ o.label }}</button></sc-for>
+  <a href="Shop.dc.html">Add to basket</a>
+</section></main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { base: 0, size: 0 };
+  renderVals() {
+    const S = this.state;
+    return {
+      bases: [ "Oat", "Spelt" ].map( ( label, i ) => ( { label, on: S.base === i, pick: () => this.setState( { base: i } ) } ) ),
+      sizes: [ "6", "12" ].map( ( label, i ) => ( { label, on: S.size === i, pick: () => this.setState( { size: i } ) } ) ),
+    };
+  }
+}
+</script>
+</body></html>

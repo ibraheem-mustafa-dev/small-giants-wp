@@ -244,7 +244,7 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	const gaps = [];
 	const { rows, data } = routeRows( exp, route, gaps );
 	const routeOfNode = ( d, node ) => ( data && d === data.d ? [ ...data.values ].find( ( [ , v ] ) => v.start <= node.start && node.end <= v.end )?.[ 0 ] ?? null : null );
-	const code = codeSurfaces( exp, routeOfNode, new Set( route.routes.map( ( x ) => x.key ) ) );
+	const code = codeSurfaces( exp, routeOfNode, new Set( route.routes.map( ( x ) => x.key ) ), route.links );
 	wooSlugs( rows, code.accountPages );
 	const used = new Set();
 	const routeSlug = new Map();
@@ -268,6 +268,7 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	}
 	const home = route.links.find( ( l ) => /^#\/?$/.test( l.href ) && l.route )?.route || rows[ 0 ]?.route || null;
 	const endpoints = checkoutEndpoints( rows, route, code.pageOfTag, home, routeSlug );
+	wooPages( rows, code.surfaces, used );
 	const hintFile = path.join( folder, 'surfaces.json' );
 	const hint = undefined !== surfacesHint ? surfacesHint : fs.existsSync( hintFile ) ? JSON.parse( fs.readFileSync( hintFile, 'utf8' ) ) : null;
 	const checked = crossCheck( code.surfaces, hint );
@@ -380,27 +381,55 @@ function checkoutEndpoints( rows, route, pageOfTag, home, routeSlug ) {
 	return out;
 }
 
-const WOO_ROW = ( r ) => r && ( [ 'shop', 'product', 'product_cat' ].includes( r.postType ) || [ 'cart', 'checkout' ].includes( r.template ) || 'my-account' === r.slug );
+// The cart block's own panel: an overlay holding no nav whose links lead to the checkout page.
+const cartPanel = ( s, checkout ) => 'drawer' === s.kind && ! s.nav && !! checkout && ( s.reaches || [] ).includes( checkout.route );
+
+// A shop client (a `shop` or `product` row) always has WooCommerce's cart, checkout and my-account pages, since the site
+// build points WooCommerce's page settings at them: each the draft gives no route gets a row with WooCommerce's slug.
+// The cart takes the label of the cart block's panel when the draft shows one ("Your bag"), else "Cart".
+function wooPages( rows, surfaces, used ) {
+	if ( ! rows.some( ( r ) => [ 'shop', 'product' ].includes( r.postType ) ) ) {
+		return;
+	}
+	const checkout = rows.find( ( r ) => 'page' === r.postType && 'checkout' === r.template );
+	const panel = surfaces.find( ( s ) => cartPanel( s, checkout ) );
+	const wanted = [
+		{ slug: 'cart', title: panel?.label || 'Cart', template: 'cart', has: ( r ) => 'cart' === r.template },
+		{ slug: 'checkout', title: 'Checkout', template: 'checkout', has: ( r ) => 'checkout' === r.template },
+		{ slug: 'my-account', title: 'My account', template: null, has: ( r ) => 'my-account' === r.slug },
+	];
+	for ( const w of wanted.filter( ( x ) => ! rows.some( ( r ) => 'page' === r.postType && x.has( r ) ) ) ) {
+		used.add( w.slug );
+		rows.push( { slug: w.slug, title: w.title, parent: null, template: w.template, menus: [], postType: 'page', collection: 'static', flags: [], id: null } );
+	}
+}
+
+const WOO_ROW =( r ) => r && ( [ 'shop', 'product', 'product_cat' ].includes( r.postType ) || [ 'cart', 'checkout' ].includes( r.template ) || 'my-account' === r.slug );
 const LAYOUT_KIND = new Set( [ 'header', 'footer', 'drawer' ] );
 
 // Which surfaces become rows (FR-48-30, by what each is): a site-wide header, footer and nav drawer are the layout
-// rows; a header or footer inside a page is that page's own part; a drawer holding no nav is its block's panel (part
-// of the page holding it, else of the site chrome); a form, modal or choice flow inside a WooCommerce page (shop,
+// rows; a header or footer inside a page is that page's own part; a drawer holding no nav is its block's panel (the
+// cart block's panel, one leading to checkout, is a part of the cart row; any other is a part of the page holding it,
+// else of the site chrome); a form, modal or choice flow inside a WooCommerce page (shop,
 // product, cart, checkout, my account) is WooCommerce's or its shop block's; a surfaces.json record with no surface in
 // the draft code is a part of its page (the code shows nothing to build). Returns { rows: the surfaces that become
 // rows, parts: [ { row, part } ] } with `row` the owning row (null for the site chrome).
 function ownedSurfaces( surfaces, rows, endpoints, routeSlug ) {
 	const rowOfPage = ( page ) => ( page ? rows.find( ( r ) => r.slug === routeSlug.get( page ) || ( r.route && kebab( r.route ) === kebab( page ) ) ) : null ) || null;
 	const parts = endpoints.map( ( e ) => ( { row: e.checkout, part: e.part } ) );
+	const checkout = rows.find( ( r ) => 'page' === r.postType && 'checkout' === r.template );
+	const cart = rows.find( ( r ) => 'page' === r.postType && 'cart' === r.template ) || null;
 	const out = [];
 	for ( const s of surfaces ) {
 		const hintOnly = s.draftId.startsWith( 'surfaces.json ' );
 		const page = rowOfPage( s.page ?? ( hintOnly ? s.route : null ) );
-		const part = ( owner ) => parts.push( { row: page, part: { kind: s.kind, label: s.label, owner, draftId: s.draftId } } );
+		const part = ( owner, row = page ) => parts.push( { row, part: { kind: s.kind, label: s.label, owner, draftId: s.draftId } } );
 		if ( hintOnly ) {
 			part( 'draft-notes' );
 		} else if ( LAYOUT_KIND.has( s.kind ) && page ) {
 			part( WOO_ROW( page ) ? 'woocommerce' : 'page' );
+		} else if ( cartPanel( s, checkout ) ) {
+			part( 'block', cart || page );
 		} else if ( 'drawer' === s.kind && ! s.nav ) {
 			part( 'block' );
 		} else if ( WOO_ROW( page ) ) {
@@ -418,7 +447,7 @@ function ownedSurfaces( surfaces, rows, endpoints, routeSlug ) {
 export function pageMapProblems( rows, ajv = loadAjv() ) {
 	const out = [ ...schemaProblems( ajv, PAGE_MAP_SCHEMA, rows ) ];
 	const slugs = new Set();
-	const key = ( type, slug ) => `${ type ?? '' } ${ slug }`;
+	const key = ( type, slug ) => `${ type ?? '' }\u0000${ slug }`;
 	for ( const r of Array.isArray( rows ) ? rows : [] ) {
 		if ( slugs.has( key( r?.postType, r?.slug ) ) ) {
 			out.push( `slug "${ r.slug }" is used by more than one ${ r.postType ?? '' } row` );
