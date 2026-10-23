@@ -31,7 +31,7 @@ import { slotMapSkip, paintSkip, dueOutputs, splitCalibration, writeSlotMap, wri
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
-import { WIDTHS, READ_KEY, buildTree, slotFor, foldReading, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, instanceCtx, readAll, missedReason } from './lib/calibrate.mjs';
+import { WIDTHS, READ_KEY, buildTree, slotFor, foldReading, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, instanceCtx, stateTarget, readAll, missedReason } from './lib/calibrate.mjs';
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
 import { refsFor, refGate, checkRefsExist, fixtureRoles, resolveFixture, wpEvalRunner } from './lib/calibration-refs.mjs';
 
@@ -272,8 +272,8 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 		// A scrolled marker is compared with its variant's default read scrolled too, so the state's own look is not
 		// counted as the marker's effect.
 		const s = 'scroll' === inst.trigger
-			? slotFor( inst.row, inst.marker, inst.defScrolled, inst.readScrolled, { containerQuery } )
-			: slotFor( inst.row, inst.marker, inst.def, inst.read, { containerQuery } );
+			? slotFor( inst.row, inst.marker, inst.defScrolled, inst.readScrolled, { containerQuery, own: stateTarget( block, inst.row ) } )
+			: slotFor( inst.row, inst.marker, inst.def, inst.read, { containerQuery, own: stateTarget( block, inst.row ) } );
 		foldReading( { settings, dead, oneWidth }, inst, s );
 	} );
 	// Dead: no marker of the setting changed anything (a setting with one live marker is not dead).
