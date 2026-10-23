@@ -13,6 +13,7 @@ import { specHit } from './skeleton-facts.mjs';
 import { besideStrips, insideStrips, slotPlan } from './skeleton-header-slots.mjs';
 import { buildFooterRows as footerRowsOf } from './skeleton-footer-slots.mjs';
 import { childSlots, collapsePoint } from './skeleton-child-slots.mjs';
+import { partSlots } from './skeleton-part-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 
 export const COVERAGE_WRITES = [
@@ -183,6 +184,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		} );
 	}
 	const finder = ( e ) => m.tplFinder( e );
+	// The block nodes by their element key, and the absorbed part elements waiting for their block's node.
+	const nodeOfKey = {};
+	const partPending = [];
 	// The top of the tree an element sits in: the surface root, or the root of a header strip read beside it (parentKey null).
 	const rootOf = ( e ) => {
 		let t = e;
@@ -427,6 +431,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		if ( 'absorbed' === r.action ) {
 			record( e, r );
 			absorbSubtree( e, { block: 'the element before it', key: r.into }, r.reason, r.rule );
+			// An absorbed element that is one of the absorbing block's own parts (the drawer's opener, the navigation's burger)
+			// becomes the node's slot for that part once the block's node exists.
+			R[ r.rule ]?.part && partPending.push( { e, into: r.into, part: R[ r.rule ].part } );
 			return null;
 		}
 		const top = r.candidates[ 0 ];
@@ -451,6 +458,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const clash = Object.keys( carry ).filter( ( k ) => undefined !== top.attributes?.[ k ] && String( top.attributes[ k ] ) !== String( carry[ k ] ) );
 		r.handover && handover.push( r.handover );
 		const node = base( e, block, a );
+		nodeOfKey[ e.key ] = node;
 		handover.length && ( node.handover = handover );
 		const clashSaid = clash.map( ( k ) => `the client decision sets ${ k } ${ top.attributes[ k ] }, which is not applied; the build carries ${ carry[ k ] } (${ said[ k ] })` );
 		const row = record( e, r, { attributes: a, ...( Object.keys( carry ).length ? { carried: said } : {} ), ...( missing.length ? { carriedMissing: missing } : {} ), ...( clash.length ? { stale: [ r.stale, ...clashSaid ].filter( Boolean ).join( '; ' ) } : {} ) } );
@@ -619,6 +627,20 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 
 	const rootNode = buildNode( m.root, null );
 	const skeleton = [].concat( rootNode || [] );
+	// Each absorbed part element is its block node's draftSlots entry at the part's calibrated slot, with its children at
+	// the part's sub-part slots (lib/skeleton-part-slots.mjs).
+	partPending.forEach( ( p ) => {
+		const node = nodeOfKey[ p.into ];
+		if ( ! node || ! db ) {
+			return;
+		}
+		const made = partSlots( { db, block: node.name, cal: { settings: calSettings( node.name ) }, part: p.part, opener: p.e, m, finder } );
+		if ( Object.keys( made.slots ).length ) {
+			node.draftSlots = { ...node.draftSlots, ...made.slots };
+			rowOf[ p.into ].slots = { ...rowOf[ p.into ].slots, ...made.slots };
+		}
+		made.notes.length && ( rowOf[ p.into ].slotNotes = [ ...( rowOf[ p.into ].slotNotes || [] ), ...made.notes ] );
+	} );
 	// A surface the client already built as a post: that post's block tree is the skeleton, so every row is settled by it.
 	rows.forEach( ( x ) => {
 		const top = rootOf( m.byKey[ x.key ] );

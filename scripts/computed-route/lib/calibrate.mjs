@@ -92,7 +92,7 @@ function formAccepted( marker, changes ) {
 // slots: every element the marker reaches (a non-inherited property can land on the root and an inner element alike;
 // an inherited one only counts where it is set, the shallowest). effects: other properties the marker changed on those
 // elements ("path|prop"), the side effects Solve's regression guard matches regressions against.
-export function slotFor( row, marker, defReads, markReads, { containerQuery = false } = {} ) {
+export function slotFor( row, marker, defReads, markReads, { containerQuery = false, own = null } = {} ) {
 	const props = longhands( row.css_property );
 	const changes = [];
 	const side = new Set();
@@ -117,7 +117,8 @@ export function slotFor( row, marker, defReads, markReads, { containerQuery = fa
 	}
 	// The written element: one where the value equals the marker if any, the shallowest such (inherited values repeat lower down).
 	const depth = ( p ) => ( '' === p ? 0 : p.split( ' > ' ).length );
-	const pool = changes.some( ( c ) => c.hit ) ? changes.filter( ( c ) => c.hit ) : changes;
+	const hitPool = changes.some( ( c ) => c.hit ) ? changes.filter( ( c ) => c.hit ) : changes;
+	const pool = ownPool( hitPool, own );
 	const best = pool.reduce( ( a, c ) => ( depth( c.path ) < depth( a.path ) ? c : a ) );
 	const inherited = props.every( ( p ) => INHERITED.includes( p ) );
 	const slots = inherited ? [ best.path ] : [ ...new Set( pool.map( ( c ) => c.path ) ) ].sort( ( a, b ) => depth( a ) - depth( b ) );
@@ -138,6 +139,21 @@ export function slotFor( row, marker, defReads, markReads, { containerQuery = fa
 	// formAccepted: only for a marker whose form has an acceptance rule (FORM_ACCEPT).
 	const accepted = FORM_ACCEPT[ marker.form ] ? { formAccepted: formAccepted( marker, changes ) } : {};
 	return { slot: best.path, slots, ...accepted, ...( misses.length ? { misses } : {} ), ...( reaches ? { reaches } : {} ), ...( overriddenBy.length ? { overriddenBy } : {} ), property: splitProperty( best.prop ).short, transform, reachedAt, oneWidth: ! containerQuery && 'tier_object' === row.tier_shape && reachedAt.length < WIDTHS.length, ...( containerQuery && reachedAt.length < WIDTHS.length ? { containerTier: true } : {} ), effects };
+}
+
+// The setting's own element (`own`: the selector its css_element names, null for the wrapper) when the marker reached
+// it: an ancestor of that element that changed with it only grows to hold it (a nav root hugging its burger), so it is
+// not a slot of the setting. Ancestors stay when the own element was not reached, or the setting has no own element.
+export function ownPool( pool, own ) {
+	if ( ! own ) {
+		return pool;
+	}
+	const norm = ( p ) => String( p ?? '' ).replace( /:nth-of-type\(\d+\)/g, '' );
+	const sel = norm( own );
+	const isOwn = ( p ) => { const n = norm( p ); return n === sel || n.endsWith( ` > ${ sel }` ) || n.split( ' > ' ).pop() === sel; };
+	const owned = pool.filter( ( c ) => isOwn( c.path ) );
+	const ancestorOfOwn = ( p ) => ! isOwn( p ) && owned.some( ( o ) => '' === p || o.path.startsWith( `${ p } > ` ) );
+	return pool.filter( ( c ) => ! ancestorOfOwn( c.path ) );
 }
 
 const pathDepth = ( p ) => ( '' === p ? 0 : p.split( ' > ' ).length );

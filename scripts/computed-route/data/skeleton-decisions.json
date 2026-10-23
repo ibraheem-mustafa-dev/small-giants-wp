@@ -262,6 +262,7 @@
 		"drawerOpener": {
 			"taughtBy": { "client": "indus-foods", "key": "Indus Foods Website v2/59", "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6" },
 			"clients": [ "indus-foods" ],
+			"part": "burger",
 			"reason": "a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it"
 		},
 		"pillButton": {

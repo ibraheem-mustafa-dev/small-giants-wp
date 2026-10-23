@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/calibrate.mjs",
+		"find": "\tif ( ! own ) {\n\t\treturn pool;\n\t}\n\tconst norm",
+		"replace": "\tif ( true ) {\n\t\treturn pool;\n\t}\n\tconst norm",
+		"why": "the own element is never consulted, so the hugging root stays the slot"
+	},
+	{
+		"file": "lib/calibrate.mjs",
+		"find": "owned.some( ( o ) => '' === p || o.path.startsWith( `${ p } > ` ) )",
+		"replace": "true",
+		"why": "every non-own element is dropped, even one that is not an ancestor of the own element or when it was never reached"
+	},
+	{
+		"file": "lib/calibrate.mjs",
+		"find": "return pool.filter( ( c ) => ! ancestorOfOwn( c.path ) );",
+		"replace": "return pool.filter( ( c ) => isOwn( c.path ) );",
+		"why": "descendants of the own element are dropped from the slots"
+	},
+	{
+		"file": "lib/calibrate.mjs",
+		"find": "String( p ?? '' ).replace( /:nth-of-type\\(\\d+\\)/g, '' );\n\tconst sel",
+		"replace": "String( p ?? '' );\n\tconst sel",
+		"why": "an indexed bar path never matches its element"
+	},
+	{
+		"file": "lib/calibrate.mjs",
+		"find": "n.endsWith( ` > ${ sel }` ) || n.split( ' > ' ).pop() === sel",
+		"replace": "false",
+		"why": "a nested own element is never matched"
+	},
+	{
+		"file": "lib/calibrate.mjs",
+		"find": "const pool = ownPool( hitPool, own );",
+		"replace": "const pool = hitPool;",
+		"why": "slotFor ignores the own element"
+	}
+]
