@@ -34,9 +34,9 @@ const ICON_CAL = { block: 'sgs/icon', elements: { '': paint( REST ), '.sgs-icon_
 
 // The footer row: three brand links, each a 40px white circle with a 1px warm-grey border, holding an 18px glyph.
 const LINK = { ...REST, 'background-color': 'rgb(255, 255, 255)', 'border-top-width': '1px', 'border-right-width': '1px', 'border-bottom-width': '1px', 'border-left-width': '1px', 'border-top-style': 'solid', 'border-right-style': 'solid', 'border-bottom-style': 'solid', 'border-left-style': 'solid', 'border-top-color': 'rgb(230, 225, 218)', 'border-right-color': 'rgb(230, 225, 218)', 'border-bottom-color': 'rgb(230, 225, 218)', 'border-left-color': 'rgb(230, 225, 218)', 'transition-duration': '0.25s', width: '40px' };
-const snap = ( styles, w ) => ( { styles, pseudo: {}, rect: { x: 0, y: 0, w, h: w }, inFlow: true, words: '', href: null } );
+const snap = ( styles, w, h ) => ( { styles, pseudo: {}, rect: { x: 0, y: 0, w, h: h ?? w }, inFlow: true, words: '', href: null } );
 
-function run( { linkOf = () => LINK } = {} ) {
+function run( { linkOf = () => LINK, glyphOf = () => '18px', iconCal = ICON_CAL, rowCal = ROW_CAL, heightOf = () => undefined } = {} ) {
 	const skeleton = expandSiteInfoRows( [ { name: 'sgs/social-icons', attributes: {}, draftRef: '.row', siteInfoRow: [ 'instagram', 'google', 'whatsapp' ], childRefs: { instagram: 'a.ig', google: 'a.gg', whatsapp: 'a.wa' } } ] );
 	const nodes = skeletonNodes( skeleton );
 	const tree = cleanTree( skeleton );
@@ -44,11 +44,11 @@ function run( { linkOf = () => LINK } = {} ) {
 	const glyphTarget = ( i ) => nodes[ i ].targets.find( ( t ) => '' !== t.slot );
 	const byWidth = ( w ) => ( {
 		'0:': snap( { display: 'flex', gap: '10px' }, 300 ),
-		...Object.fromEntries( [ 1, 2, 3 ].flatMap( ( i ) => [ [ `${ i }:`, snap( linkOf( i ), 40 ) ], [ glyphTarget( i ).id, snap( { width: '18px' }, 18 ) ] ] ) ),
+		...Object.fromEntries( [ 1, 2, 3 ].flatMap( ( i ) => [ [ `${ i }:`, snap( linkOf( i, w ), 40, heightOf( i ) ) ], [ glyphTarget( i ).id, snap( { width: glyphOf( i, w ) }, 18 ) ] ] ) ),
 	} );
-	const declared = Object.fromEntries( WIDTHS.map( ( w ) => [ w, Object.fromEntries( [ 1, 2, 3 ].flatMap( ( i ) => [ [ `${ i }:`, { width: '40px' } ], [ glyphTarget( i ).id, { width: '18px' } ] ] ) ) ] ) );
+	const declared = Object.fromEntries( WIDTHS.map( ( w ) => [ w, Object.fromEntries( [ 1, 2, 3 ].flatMap( ( i ) => [ [ `${ i }:`, { width: '40px' } ], [ glyphTarget( i ).id, { width: glyphOf( i, w ) } ] ] ) ) ] ) );
 	const reads = { widths: Object.fromEntries( WIDTHS.map( ( w ) => [ w, byWidth( w ) ] ) ), declared, sweep: {}, origin: 'http://127.0.0.1:1' };
-	const out = fillTree( { tree, nodes, reads, db: openDb(), snapshot: { palette: [], spacing: [], fontSizes: [] }, rawSnapshot: {}, calFor: ( b ) => ( 'sgs/icon' === b ? ICON_CAL : ROW_CAL ), ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
+	const out = fillTree( { tree, nodes, reads, db: openDb(), snapshot: { palette: [], spacing: [], fontSizes: [] }, rawSnapshot: {}, calFor: ( b ) => ( 'sgs/icon' === b ? iconCal : rowCal ), ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
 	return { tree, out, nodes };
 }
 
@@ -75,15 +75,57 @@ test( 'MUST FAIL: the footer row takes the shared look once, and the icons carry
 			assert.equal( icon.attributes[ a ], undefined, `${ a } is not on the icon` );
 		}
 	}
-	const iconRows = out.unmapped.filter( ( u ) => 'sgs/icon' === u.block && ! [ '(content)', 'display' ].includes( u.property ) );
+	const iconRows = out.unmapped.filter( ( u ) => 'sgs/icon' === u.block && ! [ '(content)', 'display', 'transition-duration' ].includes( u.property ) );
 	assert.deepEqual( iconRows, [], 'no UNMAPPED icon rows for settings the row holds' );
 } );
 
-test( 'negative control: copies that disagree are reported on the row, never averaged', () => {
-	const { tree, out } = run( { linkOf: ( i ) => ( 2 === i ? { ...LINK, 'background-color': 'rgb(37, 211, 102)' } : LINK ) } );
-	assert.equal( tree[ 0 ].attributes.childIconBackground, undefined );
-	const row = out.unmapped.find( ( u ) => 'sgs/social-icons' === u.block && 'background-color' === u.property );
-	assert.ok( row, 'the disagreement is an UNMAPPED row' );
-	assert.match( row.reason, /^disagree:/ );
-	assert.ok( undefined !== tree[ 0 ].attributes.childIconBorderColour, 'the settings every copy agrees on are still written' );
+test( 'MUST FAIL: copies that disagree keep their own value on each icon, never averaged and never raised while the icon has the setting', () => {
+	const colour = { 1: 'rgb(10, 102, 194)', 2: 'rgb(24, 119, 242)', 3: 'rgb(255, 255, 255)' };
+	const { tree, out } = run( { linkOf: ( i ) => ( { ...LINK, 'background-color': colour[ i ] } ) } );
+	assert.equal( tree[ 0 ].attributes.childIconBackground, undefined, 'the row holds no background' );
+	assert.deepEqual( tree[ 0 ].innerBlocks.map( ( c ) => c.attributes.backgroundColour ), [ '#0A66C2', '#1877F2', '#FFFFFF' ] );
+	assert.ok( undefined !== tree[ 0 ].attributes.childIconBorderColour, 'the settings every copy agrees on are still written on the row' );
+	assert.equal( out.unmapped.filter( ( u ) => 'background-color' === u.property ).length, 0 );
 } );
+
+test( "MUST FAIL: one icon that differs takes its own value and the other two take the agreed value of the row", () => {
+	const { tree } = run( { glyphOf: ( i ) => ( 2 === i ? '15px' : '18px' ) } );
+	assert.equal( tree[ 0 ].attributes.childIconSize, undefined );
+	assert.deepEqual( tree[ 0 ].innerBlocks.map( ( c ) => c.attributes.iconSize ), [ { desktop: '18px' }, { desktop: '15px' }, { desktop: '18px' } ] );
+} );
+
+test( 'MUST FAIL: a per-tier disagreement is a disagreement, held on each icon with its tiers', () => {
+	const { tree } = run( { glyphOf: ( i, w ) => ( 2 === i && 375 === w ? '12px' : '18px' ) } );
+	assert.equal( tree[ 0 ].attributes.childIconSize, undefined );
+	assert.deepEqual( tree[ 0 ].innerBlocks[ 1 ].attributes.iconSize, { desktop: '18px', mobile: '12px' } );
+} );
+
+test( 'MUST FAIL: an icon with no setting for the differing value is raised by block and property, not dropped', () => {
+	const noBg = { ...ICON_CAL, settings: { iconSize: ICON_CAL.settings.iconSize } };
+	const { tree, out } = run( { iconCal: noBg, linkOf: ( i ) => ( { ...LINK, 'background-color': 1 === i ? 'rgb(10, 102, 194)' : LINK[ 'background-color' ] } ) } );
+	assert.equal( tree[ 0 ].innerBlocks[ 0 ].attributes.backgroundColour, undefined );
+	assert.ok( out.unmapped.some( ( u ) => 'sgs/icon' === u.block && 'background-color' === u.property ), 'raised on sgs/icon' );
+} );
+
+test( "MUST FAIL: a square box with 50% corners on every icon is the shape setting circle of the row, not a radius row", () => {
+	const round = { ...LINK, 'border-top-left-radius': '50%', 'border-top-right-radius': '50%', 'border-bottom-right-radius': '50%', 'border-bottom-left-radius': '50%' };
+	const { tree, out } = run( { linkOf: () => round } );
+	assert.equal( tree[ 0 ].attributes.childIconShape, 'circle' );
+	assert.ok( ! out.unmapped.some( ( u ) => /radius/.test( u.property ) ), 'no radius row' );
+	const oval = run( { linkOf: () => round, heightOf: () => undefined } );
+	assert.equal( oval.tree[ 0 ].attributes.childIconShape, 'circle' );
+} );
+
+test( 'MUST FAIL: a box that is not square keeps the radius as a value, not circle', () => {
+	const round = { ...LINK, 'border-top-left-radius': '50%', 'border-top-right-radius': '50%', 'border-bottom-right-radius': '50%', 'border-bottom-left-radius': '50%' };
+	const { tree } = run( { linkOf: () => round, heightOf: ( i ) => ( 2 === i ? 60 : undefined ) } );
+	assert.notEqual( tree[ 0 ].attributes.childIconShape, 'circle' );
+} );
+
+test( 'MUST FAIL: settings of one element calibrated at different slots are each read where they sit', () => {
+	const split = { ...ROW_CAL, settings: { ...ROW_CAL.settings, childIconShapeSize: at( '.sgs-icon:nth-of-type(1)', 'width' ) } };
+	const { tree } = run( { rowCal: split } );
+	assert.deepEqual( tree[ 0 ].attributes.childIconShapeSize, { desktop: { width: '40px' } } );
+	assert.ok( undefined !== tree[ 0 ].attributes.childIconBackground, 'the colour sitting one element deeper is written too' );
+} );
+

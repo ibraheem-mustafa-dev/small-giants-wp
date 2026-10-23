@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "const unpaired = target.paired ? [] : res.writes.map(",
+		"replace": "const unpaired = [] || res.writes.map(",
+		"why": "a decoy value from the root would be written"
+	},
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": "if ( null === home || LOOSE( readSlot ) === home ) {",
+		"replace": "if ( true ) {",
+		"why": "every part write would count as paired"
+	},
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": "WIDTHS.every( ( w ) => undefined !== here[ w ] && here[ w ] === part[ w ] )",
+		"replace": "false",
+		"why": "a part measured as the same box would be refused"
+	},
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": "if ( ! element || 'wrapper' === element ) {",
+		"replace": "if ( ! element ) {",
+		"why": "a wrapper setting would be checked as a part"
+	}
+]
