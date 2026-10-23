@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-step-rungs.mjs",
+		"find": "const touches = steps.has( series[ i ].width ) || ( j + 1 < series.length && steps.has( series[ j + 1 ].width ) );",
+		"replace": "const touches = true;",
+		"why": "a fluid ramp would be written as a rule"
+	},
+	{
+		"file": "lib/fill-step-rungs.mjs",
+		"find": "! sameValue( s.value, tierValue( tierOf( s.width ) ) ) )",
+		"replace": "true )",
+		"why": "a stretch the tier read already stands for would be written"
+	},
+	{
+		"file": "lib/fill-step-rungs.mjs",
+		"find": "const READ_HOW = [ 'tiers', 'single' ];",
+		"replace": "const READ_HOW = [ 'tiers', 'single', 'clamp', 'motion' ];",
+		"why": "a clamp or a motion layer would be judged against the tier reads"
+	},
+	{
+		"file": "lib/fill-step-rungs.mjs",
+		"find": "if ( snapped[ 0 ] >= snapped[ 1 ] ) {",
+		"replace": "if ( false ) {",
+		"why": "a stretch the snap absorbs would write an empty range"
+	},
+	{
+		"file": "lib/fill-step-rungs.mjs",
+		"find": "0 === edge || Infinity === edge ? null : snapThreshold( edge )",
+		"replace": "null",
+		"why": "a threshold near a tier would not snap to it or leave a ledger entry"
+	}
+]
