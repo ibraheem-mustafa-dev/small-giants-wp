@@ -33,6 +33,8 @@ const SSH = [ '-i', path.join( process.env.HOME || process.env.USERPROFILE, '.ss
 const quote = ( x ) => `'${ String( x ).replace( /'/g, `'\\''` ) }'`;
 const wp = ( ...a ) => execFileSync( 'ssh', [ ...SSH, `cd ${ site.root } && wp ${ a.map( quote ).join( ' ' ) }` ], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 } ).trim();
 const sql = ( q ) => wp( 'db', 'query', q, '--skip-column-names' );
+// A site value as a PHP single-quoted literal: only `\` and `'` are special there, so nothing in it runs as PHP.
+const phpLiteral = ( v ) => `'${ String( v ?? '' ).replace( /\\/g, '\\\\' ).replace( /'/g, "\\'" ) }'`;
 const safeSlug = slug.replace( /[^\w-]/g, '' );
 const prefix = wp( 'db', 'prefix' );
 const results = [];
@@ -116,7 +118,7 @@ try {
 	check( 'success state', v.ok, v.why );
 	const rows = countAfter( 'sgs_form_submissions', subBefore, `form_id='${ safeSlug }'` );
 	check( 'stored submission', 1 === rows, `${ rows } new row(s) in sgs_form_submissions for ${ slug }` );
-	const want = wp( 'eval', `echo \\SGS\\Blocks\\Mail\\Sgs_Mailer::owner_recipient( ${ JSON.stringify( settings.notifyEmail ) } );` ).toLowerCase();
+	const want = wp( 'eval', `echo \\SGS\\Blocks\\Mail\\Sgs_Mailer::owner_recipient( ${ phpLiteral( settings.notifyEmail ) } );` ).toLowerCase();
 	const mails = sql( `SELECT CONCAT(\`to\`, ' || ', subject) FROM ${ prefix }fsmpt_email_logs WHERE id > ${ mailBefore } ORDER BY id` ).split( '\n' ).filter( Boolean );
 	const owner = mails.map( ( l ) => originalRecipient( { to: l.split( ' || ' )[ 0 ], subject: l.split( ' || ' ).slice( 1 ).join( ' || ' ) } ) );
 	check( 'owner email recipient', owner.includes( want ), `owner_recipient is ${ want }; mail log recipients: ${ owner.join( ', ' ) || 'none' }` );
