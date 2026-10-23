@@ -863,7 +863,8 @@ if ( '' !== $sgs_nd_close_size ) {
 	$sgs_nd_close_text_bearing = in_array( $sgs_nd_close_style, array( 'text-swap', 'icon-and-text' ), true );
 	$css                      .= $close_sel . '{'
 		. ( $sgs_nd_close_text_bearing ? 'width:auto;' : 'width:' . $sgs_nd_close_size . ';' )
-		. 'height:' . $sgs_nd_close_size . ';min-width:' . $sgs_nd_close_size . ';min-height:' . $sgs_nd_close_size . ';}';
+		. 'height:' . $sgs_nd_close_size . ';min-width:' . $sgs_nd_close_size . ';min-height:' . $sgs_nd_close_size . ';'
+		. '--sgs-nd-close-size:' . $sgs_nd_close_size . ';--sgs-nd-close-tap-min:0px;}';
 
 	// ── §4.1 "Per-tier sizing, not only per-tier spans": tablet/mobile get
 	// their OWN width/padding, keyed to THEIR OWN resolved style, so a desktop

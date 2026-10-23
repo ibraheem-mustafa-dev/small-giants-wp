@@ -202,7 +202,9 @@ if ( '' !== (string) ( $attributes['iconGap'] ?? '' ) ) {
 }
 // Minimum height (minHeight); unset keeps the variant's style.css minimum.
 if ( '' !== (string) ( $attributes['minHeight'] ?? '' ) ) {
-	$btn_decls[] = 'min-height:' . sgs_css_length_value( (string) $attributes['minHeight'] );
+	$sgs_wa_min_height = sgs_css_length_value( (string) $attributes['minHeight'] );
+	$btn_decls[]       = 'min-height:' . $sgs_wa_min_height;
+	$btn_decls[]       = '--sgs-wa-min-height:' . $sgs_wa_min_height;
 }
 // Icon size (iconSize): the glyph is square, so one length sets both sides.
 if ( '' !== (string) ( $attributes['iconSize'] ?? '' ) ) {

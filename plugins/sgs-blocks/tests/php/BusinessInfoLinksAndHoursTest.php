@@ -26,6 +26,15 @@ final class BusinessInfoLinksAndHoursTest extends TestCase {
 		putenv( 'SGS_QA_OPTIONS' );
 	}
 
+	public function test_the_link_floor_property_prints_only_beside_a_set_link_min_height(): void {
+		$this->site_info( array( 'phone' => '0121 000 0000' ) );
+		$set   = $this->render_block( 'sgs/business-info', array( 'displayType' => 'phone', 'linkMinHeight' => array( 'desktop' => '30' ) ) )['html'];
+		$unset = $this->render_block( 'sgs/business-info', array( 'displayType' => 'phone' ) )['html'];
+
+		$this->assertStringContainsString( '--sgs-bi-link-min-h:30px', $set );
+		$this->assertStringNotContainsString( '--sgs-bi-link-min-h', $unset );
+	}
+
 	public function test_address_link_prefers_the_maps_cid(): void {
 		$this->site_info( array( 'address' => '644 Washwood Heath Rd<br>Birmingham B8 2HQ', 'maps_cid' => '1234567890', 'socials' => array( 'google' => 'https://g.page/eye-care' ) ) );
 		$html = $this->render_block( 'sgs/business-info', array( 'displayType' => 'address', 'addressLink' => true ) )['html'];

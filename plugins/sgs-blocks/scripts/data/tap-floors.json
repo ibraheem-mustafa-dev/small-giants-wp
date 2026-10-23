@@ -4,5 +4,168 @@
   "checker": "plugins/sgs-blocks/scripts/check-tap-floors.py --check",
   "key": "block + the rule's selector (whitespace collapsed) + the property"
  },
- "house": []
+ "house": [
+  {
+   "block": "brand-strip",
+   "selector": ".sgs-brand-strip__item--text, .sgs-brand-strip--layout-row .sgs-brand-strip__item",
+   "property": "min-height",
+   "reason": "A text or row-layout tile is content-sized; maxHeight, columns and brandTextMinWidth size logo squares and the width floor, none sets the height of a text tile (F2 candidate)."
+  },
+  {
+   "block": "business-info",
+   "selector": ".sgs-business-socials__link",
+   "property": "min-height",
+   "reason": "The socials row link is a fixed 2.75em box; iconSize sizes the glyph inside the contact links only and no setting sizes this link (F2 candidate)."
+  },
+  {
+   "block": "business-info",
+   "selector": ".sgs-business-socials__link",
+   "property": "min-width",
+   "reason": "The socials row link is a fixed 2.75em box; iconSize sizes the glyph inside the contact links only and no setting sizes this link (F2 candidate)."
+  },
+  {
+   "block": "modal",
+   "selector": ".sgs-modal__trigger",
+   "property": "min-height",
+   "reason": "dialogWidth sizes the dialog, not the trigger; the trigger takes its height from font-size and padding only (F2 candidate)."
+  },
+  {
+   "block": "nav-bar-menu",
+   "selector": ".sgs-nav-bar-menu .sgs-nav-bar-menu__subtoggle:not(.sgs-nav-bar-menu__link)::before",
+   "property": "height",
+   "reason": "submenuCaretSize sizes the caret glyph this hit area wraps; the floor flag has to be printed by includes/nav-menu-caret-css.php (shared helper, not editable in this lane)."
+  },
+  {
+   "block": "nav-bar-menu",
+   "selector": ".sgs-nav-bar-menu .sgs-nav-bar-menu__subtoggle:not(.sgs-nav-bar-menu__link)::before",
+   "property": "width",
+   "reason": "submenuCaretSize sizes the caret glyph this hit area wraps; the floor flag has to be printed by includes/nav-menu-caret-css.php (shared helper, not editable in this lane)."
+  },
+  {
+   "block": "nav-bar-menu",
+   "selector": ".sgs-nav-bar-menu__burger",
+   "property": "height",
+   "reason": "burgerSize and burgerWidth override this default in every tier through includes/nav-menu-trigger-css.php (shared helper, not editable in this lane); the literal applies only if that rule prints nothing."
+  },
+  {
+   "block": "nav-bar-menu",
+   "selector": ".sgs-nav-bar-menu__burger",
+   "property": "min-height",
+   "reason": "burgerSize and burgerWidth override this default in every tier through includes/nav-menu-trigger-css.php (shared helper, not editable in this lane); the literal applies only if that rule prints nothing."
+  },
+  {
+   "block": "nav-bar-menu",
+   "selector": ".sgs-nav-bar-menu__burger",
+   "property": "min-width",
+   "reason": "burgerSize and burgerWidth override this default in every tier through includes/nav-menu-trigger-css.php (shared helper, not editable in this lane); the literal applies only if that rule prints nothing."
+  },
+  {
+   "block": "nav-bar-menu",
+   "selector": ".sgs-nav-bar-menu__burger",
+   "property": "width",
+   "reason": "burgerSize and burgerWidth override this default in every tier through includes/nav-menu-trigger-css.php (shared helper, not editable in this lane); the literal applies only if that rule prints nothing."
+  },
+  {
+   "block": "nav-bar-menu",
+   "selector": ".sgs-nav-bar-menu__link",
+   "property": "min-height",
+   "reason": "itemMinHeight overrides this default through includes/nav-menu-item-padding-css.php (shared helper, not editable in this lane); the literal applies only when it is unset."
+  },
+  {
+   "block": "nav-drawer",
+   "selector": ".sgs-nav-drawer__chrome-logo",
+   "property": "min-height",
+   "reason": "chromeLogoWidth sizes the logo image width and chromeRowHeight the row; neither sets the logo link height."
+  },
+  {
+   "block": "nav-drawer",
+   "selector": ":where(.sgs-nav-drawer__chrome-slot--button)",
+   "property": "min-height",
+   "reason": "The chromeButton* settings set border, colour, radius and padding; none sets the slot button height (F2 candidate)."
+  },
+  {
+   "block": "nav-drawer-menu",
+   "selector": ".sgs-nav-drawer-menu__accordion-summary",
+   "property": "min-height",
+   "reason": "caretBoxSize sizes this caret box through includes/nav-drawer-menu-caret-box-css.php (shared helper, not editable in this lane), which overrides this default."
+  },
+  {
+   "block": "nav-drawer-menu",
+   "selector": ".sgs-nav-drawer-menu__accordion-summary",
+   "property": "min-width",
+   "reason": "caretBoxSize sizes this caret box through includes/nav-drawer-menu-caret-box-css.php (shared helper, not editable in this lane), which overrides this default."
+  },
+  {
+   "block": "nav-drawer-menu",
+   "selector": ".sgs-nav-drawer-menu__accordion-summary--row",
+   "property": "min-height",
+   "reason": "The full-width row form of the summary: itemMinHeight and caretBoxSize apply through shared helpers (not editable in this lane) and override this default."
+  },
+  {
+   "block": "nav-drawer-menu",
+   "selector": ".sgs-nav-drawer-menu__drill-back-btn",
+   "property": "min-height",
+   "reason": "Fixed drill-down chrome; no setting sizes the back button."
+  },
+  {
+   "block": "nav-drawer-menu",
+   "selector": ".sgs-nav-drawer-menu__link",
+   "property": "min-height",
+   "reason": "itemMinHeight overrides this default through includes/nav-menu-item-padding-css.php (shared helper, not editable in this lane); the literal applies only when it is unset."
+  },
+  {
+   "block": "notice-banner",
+   "selector": ".sgs-notice-banner__close",
+   "property": "min-height",
+   "reason": "iconSize and iconCircleSize size the message icon; no setting sizes the close button (F2 candidate)."
+  },
+  {
+   "block": "notice-banner",
+   "selector": ".sgs-notice-banner__close",
+   "property": "min-width",
+   "reason": "iconSize and iconCircleSize size the message icon; no setting sizes the close button (F2 candidate)."
+  },
+  {
+   "block": "notice-banner",
+   "selector": ".sgs-notice-banner__icon--circle",
+   "property": "height",
+   "reason": "iconCircleSize overrides this default through includes/notice-banner-icon-badge.php (shared helper, not editable in this lane); the literal applies only when it is unset."
+  },
+  {
+   "block": "notice-banner",
+   "selector": ".sgs-notice-banner__icon--circle",
+   "property": "width",
+   "reason": "iconCircleSize overrides this default through includes/notice-banner-icon-badge.php (shared helper, not editable in this lane); the literal applies only when it is unset."
+  },
+  {
+   "block": "notice-banner",
+   "selector": ".sgs-notice-banner__pause, .sgs-notice-banner__prev, .sgs-notice-banner__next",
+   "property": "min-height",
+   "reason": "No setting sizes the pause and arrow controls (F2 candidate)."
+  },
+  {
+   "block": "notice-banner",
+   "selector": ".sgs-notice-banner__pause, .sgs-notice-banner__prev, .sgs-notice-banner__next",
+   "property": "min-width",
+   "reason": "No setting sizes the pause and arrow controls (F2 candidate)."
+  },
+  {
+   "block": "site-header-row",
+   "selector": ".sgs-site-header-row .wc-block-mini-cart__button",
+   "property": "min-height",
+   "reason": "minHeight sizes the row; the mini-cart button is WooCommerce markup with no SGS size setting."
+  },
+  {
+   "block": "site-header-row",
+   "selector": ".sgs-site-header-row .wc-block-mini-cart__button",
+   "property": "min-width",
+   "reason": "minHeight sizes the row; the mini-cart button is WooCommerce markup with no SGS size setting."
+  },
+  {
+   "block": "trust-bar",
+   "selector": ".sgs-trust-bar--text-only .sgs-trust-bar__badge",
+   "property": "min-height",
+   "reason": "badgeSize, iconCircleSize and badgeImageSize size icons and images; a text-only badge has none, and its height comes from padding (F2 candidate)."
+  }
+ ]
 }
