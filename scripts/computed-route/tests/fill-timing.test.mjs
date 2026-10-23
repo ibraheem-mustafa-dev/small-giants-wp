@@ -58,12 +58,14 @@ test( 'MUST FAIL: with no setting for the state, the one timing goes to the sett
 	assert.equal( differs.attrs.transitionDuration, '200' );
 } );
 
-test( 'the easing follows the same direction rules; a list repeating one value is that value, a time per property is a named gap', () => {
+test( 'the easing follows the same direction rules; a list repeating one value is that value, a computed list is a named gap', () => {
 	const r = run( 'sgs/nav-drawer-menu', DRAWER, reads( {}, [ look( 'open', EASE, 'ease-out, ease-out' ) ] ) );
 	assert.deepEqual( summary( r ), [ [ 'submenuAnimationEasing', 'open', 'fill-timing' ] ] );
 	assert.equal( oneTiming( 'cubic-bezier(0.4, 0, 0.2, 1), cubic-bezier(0.4, 0, 0.2, 1)' ), 'cubic-bezier(0.4, 0, 0.2, 1)' );
 	assert.equal( oneTiming( '0.2s, 0.4s' ), null );
-	const per = run( 'sgs/team-member', MEMBER, reads( { [ DUR ]: '0.2s, 0.4s' } ) );
+	const all = run( 'sgs/team-member', MEMBER, reads( { [ DUR ]: '0.2s, 0.4s' } ) );
+	assert.equal( all.attrs.transitionDuration, '200', 'with no transition-property (all), only the first time is used' );
+	const per = run( 'sgs/team-member', MEMBER, reads( { [ DUR ]: 'calc(0.2s * 2), 0.4s' } ) );
 	assert.equal( per.writes.length, 0 );
 	assert.match( per.unmapped[ 0 ].reason, /^timing-computed/ );
 } );
@@ -83,7 +85,7 @@ test( 'timingFacts splits the resting timing from each state\'s, per read width'
 	const f = timingFacts( reads( { [ DUR ]: '300ms' }, [ look( 'open', DUR, '0.5s' ) ] ), 't' );
 	assert.deepEqual( f.rest[ DUR ], { 375: '300ms', 768: '300ms', 1440: '300ms' } );
 	assert.deepEqual( f.enter.open[ DUR ], { 375: '0.5s', 768: '0.5s', 1440: '0.5s' } );
-	assert.deepEqual( timingFacts( reads(), 't' ), { rest: {}, enter: {}, skipped: [] } );
+	assert.deepEqual( timingFacts( reads(), 't' ), { rest: {}, enter: {}, skipped: [], split: [] } );
 } );
 
 test( 'MUST FAIL: Fill\'s state pass writes a timing through the timing rules, and the one-look-one-state path no longer carries it', () => {
