@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'fs';
 
 const COLLECT_SRC = readFileSync( new URL( '../lib/auto-collect.mjs', import.meta.url ), 'utf8' ).replace( /^export function/m, 'function' );
-const { chromium } = await import( 'playwright' );
+const { chromium } = await import( new URL( '../../computed-route/node_modules/playwright/index.mjs', import.meta.url ).href );
 let browser;
 before( async () => {
 	browser = await chromium.launch( { headless: true } );
