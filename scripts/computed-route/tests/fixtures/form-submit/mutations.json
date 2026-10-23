@@ -1,0 +1,11 @@
+[
+	{ "file": "lib/form-submit-run.mjs", "find": "\tif ( ! clean ) {\n\t\treturn { error: 'the --form slug is empty after sanitising' };", "replace": "\tif ( false ) {\n\t\treturn { error: 'the --form slug is empty after sanitising' };", "why": "an empty slug lists every form" },
+	{ "file": "lib/form-submit-run.mjs", "find": "\tif ( clean !== value ) {", "replace": "\tif ( false ) {", "why": "a slug sanitising changed is used silently" },
+	{ "file": "lib/form-submit-run.mjs", "find": "formId: clean.toLowerCase() }", "replace": "formId: clean }", "why": "form_id is compared in the argument's case, not sanitize_key's" },
+	{ "file": "lib/form-submit-run.mjs", "find": "replace( /[\\\\%_]/g,", "replace": "replace( /[\\\\%]/g,", "why": "`_` stays a LIKE wildcard" },
+	{ "file": "lib/form-submit-run.mjs", "find": "replace( /[\\\\%_]/g,", "replace": "replace( /[%_]/g,", "why": "a backslash is not escaped in the LIKE value" },
+	{ "file": "lib/form-submit-run.mjs", "find": "const userHost = ownHost ||", "replace": "const userHost =", "why": "a target's own SSH host is ignored" },
+	{ "file": "lib/form-submit-run.mjs", "find": "const port = ownPort ||", "replace": "const port =", "why": "a target's own SSH port is ignored" },
+	{ "file": "lib/form-submit-run.mjs", "find": "shared: ! ownHost }", "replace": "shared: true }", "why": "the report names a target's own host as the shared one" },
+	{ "file": "lib/form-submit-run.mjs", "find": "return userHost && port ? { userHost, port, shared: ! ownHost } : null;", "replace": "return { userHost, port, shared: ! ownHost };", "why": "an unreadable endpoint runs ssh with no host" }
+]

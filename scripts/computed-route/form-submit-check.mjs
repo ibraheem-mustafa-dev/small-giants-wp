@@ -11,7 +11,7 @@ import path from 'path';
 import { execFileSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { chromium } from 'playwright';
-import { formSettingsOf, formFieldsOf, testValueFor, successVerdict, originalRecipient, targetSite } from './lib/form-submit-run.mjs';
+import { formSettingsOf, formFieldsOf, testValueFor, successVerdict, originalRecipient, targetSite, sshEndpoint, formSlug, likeLiteral } from './lib/form-submit-run.mjs';
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );
@@ -22,20 +22,32 @@ if ( ! client || ! target || ! slug ) {
 	console.error( 'usage: node form-submit-check.mjs <client> --site <target> --form <slug> [--repo <root>]' );
 	process.exit( 2 );
 }
+const picked = formSlug( slug );
+if ( picked.error ) {
+	console.error( picked.error );
+	process.exit( 2 );
+}
 const repo = opt( '--repo' ) || path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
-const site = targetSite( fs.readFileSync( path.join( repo, 'plugins/sgs-blocks/scripts/deploy_common.py' ), 'utf8' ), target );
+const deployCommon = fs.readFileSync( path.join( repo, 'plugins/sgs-blocks/scripts/deploy_common.py' ), 'utf8' );
+const site = targetSite( deployCommon, target );
 if ( ! site ) {
 	console.error( `target ${ target } is not in deploy_common.py::TARGETS` );
 	process.exit( 2 );
 }
-const SSH = [ '-i', path.join( process.env.HOME || process.env.USERPROFILE, '.ssh', 'id_ed25519' ), '-p', '65002', 'u945238940@141.136.39.73' ];
+// The target's own SSH host and port when TARGETS carries them, else the shared account deploy_common.py names.
+const endpoint = sshEndpoint( deployCommon, target );
+if ( ! endpoint ) {
+	console.error( `no SSH endpoint for ${ target } in deploy_common.py (neither the target's ssh_host/ssh_port nor SSH_USER_HOST/SSH_FALLBACK)` );
+	process.exit( 2 );
+}
+const SSH = [ '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=20', '-i', path.join( process.env.HOME || process.env.USERPROFILE, '.ssh', 'id_ed25519' ), '-p', endpoint.port, endpoint.userHost ];
 // One `wp` command on the site; each argument is single-quoted for the remote shell.
 const quote = ( x ) => `'${ String( x ).replace( /'/g, `'\\''` ) }'`;
 const wp = ( ...a ) => execFileSync( 'ssh', [ ...SSH, `cd ${ site.root } && wp ${ a.map( quote ).join( ' ' ) }` ], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 } ).trim();
 const sql = ( q ) => wp( 'db', 'query', q, '--skip-column-names' );
 // A site value as a PHP single-quoted literal: only `\` and `'` are special there, so nothing in it runs as PHP.
 const phpLiteral = ( v ) => `'${ String( v ?? '' ).replace( /\\/g, '\\\\' ).replace( /'/g, "\\'" ) }'`;
-const safeSlug = slug.replace( /[^\w-]/g, '' );
+const { slug: safeSlug, formId } = picked;
 const prefix = wp( 'db', 'prefix' );
 const results = [];
 const check = ( name, ok, why ) => {
@@ -56,7 +68,7 @@ if ( ! settings || ! fields.length ) {
 	process.exit( 0 );
 }
 // The page carrying the form: a published page or post that references it, else the form post's own address.
-const carrier = sql( `SELECT ID FROM ${ prefix }posts WHERE post_status='publish' AND post_type IN ('page','post') AND post_content LIKE '%"formId":"${ safeSlug }"%' LIMIT 1` ).split( '\n' )[ 0 ];
+const carrier = sql( `SELECT ID FROM ${ prefix }posts WHERE post_status='publish' AND post_type IN ('page','post') AND post_content LIKE '%"formId":"${ likeLiteral( safeSlug ) }"%' LIMIT 1` ).split( '\n' )[ 0 ];
 const url = wp( 'post', 'list', `--post__in=${ carrier || postId }`, '--post_type=any', '--post_status=any', '--field=url' ).split( '\n' )[ 0 ];
 console.log( `form ${ slug }: post ${ postId }, ${ fields.length } fields (${ fields.filter( ( f ) => f.required ).length } required), page ${ url }` );
 
@@ -116,7 +128,7 @@ try {
 	const successText = await page.locator( '.sgs-form__message--success:visible' ).first().innerText().catch( () => '' );
 	const v = successVerdict( { settings, finalUrl: page.url(), successText } );
 	check( 'success state', v.ok, v.why );
-	const rows = countAfter( 'sgs_form_submissions', subBefore, `form_id='${ safeSlug }'` );
+	const rows = countAfter( 'sgs_form_submissions', subBefore, `form_id='${ formId }'` );
 	check( 'stored submission', 1 === rows, `${ rows } new row(s) in sgs_form_submissions for ${ slug }` );
 	const want = wp( 'eval', `echo \\SGS\\Blocks\\Mail\\Sgs_Mailer::owner_recipient( ${ phpLiteral( settings.notifyEmail ) } );` ).toLowerCase();
 	const mails = sql( `SELECT CONCAT(\`to\`, ' || ', subject) FROM ${ prefix }fsmpt_email_logs WHERE id > ${ mailBefore } ORDER BY id` ).split( '\n' ).filter( Boolean );
