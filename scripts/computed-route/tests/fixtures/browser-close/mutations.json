@@ -1,0 +1,9 @@
+[
+	{ "file": "lib/browser-close.mjs", "find": "\t\t\tkill();\n", "replace": "\t\t\tvoid kill;\n", "why": "a wedged browser would never be killed, so close() would wait on the page again" },
+	{ "file": "lib/browser-close.mjs", "find": "after( graceMs, true ) ] );", "replace": "after( graceMs, false ) ] );", "why": "a close that has not finished by the grace time would count as finished and the browser would not be killed" },
+	{ "file": "lib/browser-close.mjs", "find": "closing.then( () => false )", "replace": "closing.then( () => true )", "why": "a close that finished in time would be killed anyway" },
+	{ "file": "lib/browser-close.mjs", "find": "Promise.resolve().then( close ).catch( () => {} );", "replace": "Promise.resolve().then( close );", "why": "a browser that is already gone would make close() throw" },
+	{ "file": "lib/browser-close.mjs", "find": "await Promise.race( [ closing, after( graceMs ) ] );", "replace": "await closing;", "why": "a process that stays open after the kill would hold close() again" },
+	{ "file": "lib/browser-close.mjs", "find": "\t\t} catch {\n\t\t\t// The process is already gone.\n\t\t}\n", "replace": "\t\t} finally {\n\t\t}\n", "why": "a kill that throws would make close() throw" },
+	{ "file": "lib/browser-close.mjs", "find": "?.id ?? null )", "replace": "?.id ?? 0 )", "why": "an unreadable pid would be a pid of 0 that kill signals as the process group" }
+]
