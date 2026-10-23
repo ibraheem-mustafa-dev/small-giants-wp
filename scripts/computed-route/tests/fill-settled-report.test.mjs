@@ -10,5 +10,5 @@ test( 'the report counts and lists the settled rows by reason', () => {
 	const { json, markdown } = fillReport( { ...base, settled } );
 	assert.deepEqual( json.counts.settled, { total: 2, equal: 1, 'already-set': 0, 'used-size': 1, 'not-painted': 0 } );
 	assert.equal( json.settled.length, 2 );
-	assert.match( markdown, /Settled .*\| 2 \(equal 1, already-set 0, used-size 1\) \|/ );
+	assert.match( markdown, /Settled .*\| 2 \(equal 1, already-set 0, used-size 1, not-painted 0\) \|/ );
 } );
