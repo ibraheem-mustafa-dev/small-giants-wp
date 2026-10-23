@@ -1,0 +1,8 @@
+[
+	{ "file": "lib/solve-summary.mjs", "find": "`; unmapped held ${ held }, raised ${ raised }`", "replace": "''", "why": "the summary would drop the held and raised counts again" },
+	{ "file": "lib/solve-summary.mjs", "find": "raised ${ raised }`", "replace": "raised ${ held }`", "why": "the raised count would print the held count" },
+	{ "file": "lib/solve-summary.mjs", "find": "Number.isInteger( held ) && Number.isInteger( raised )", "replace": "Number.isInteger( held )", "why": "a result missing its raised count would print undefined as a count" },
+	{ "file": "lib/solve-summary.mjs", "find": "Number.isInteger( held ) && Number.isInteger( raised ) ?", "replace": "( held || raised ) ?", "why": "zero held and zero raised would read as not judged" },
+	{ "file": "lib/solve-summary.mjs", "find": "JSON.stringify( cl?.counts ?? {} )", "replace": "'{}'", "why": "the confirm counts would vanish from the line" },
+	{ "file": "solve.mjs", "find": "\t\tconsole.log( confirmLiveLine( cl ) );", "replace": "\t\tconsole.log( `confirm-live: ${ JSON.stringify( cl.counts ) } -> ${ cl.file }` );", "why": "solve.mjs would print the old line without the held and raised counts" }
+]
