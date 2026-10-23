@@ -28,6 +28,8 @@ import { sampleMotion } from './lib/fill-entrance.mjs';
 import { confirmRecords, defectIndex } from './lib/fill-confirm.mjs';
 import { imageRecords } from './lib/fill-media.mjs';
 import { logoSizeWrites } from './lib/fill-logo-size.mjs';
+import { widthLadderWrites } from './lib/fill-width-ladder.mjs';
+import { dimensionWrites } from './lib/fill-dimensions.mjs';
 import { scrollbarPatch, mergePatch } from './lib/fill-scrollbar.mjs';
 import { motionWrites } from './lib/fill-motion.mjs';
 import { draftCssOf, templateOf } from './lib/fill-behaviour.mjs';
@@ -180,6 +182,14 @@ export async function fillSurface( o ) {
 		result.writes.push( ...logos.writes );
 		result.unmapped = logos.unmapped;
 		result.notes.push( ...logos.notes );
+		// A per-width difference no single setting holds, then a block's built-in size against the draft's (lib/fill-width-ladder.mjs, lib/fill-dimensions.mjs); their divergence-ledger entries are added to the client's ledger.
+		const ladder = widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped, calFor, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ) } );
+		addEntries( ledgerFile, ladder.ledger );
+		const dims = dimensionWrites( { nodes, flat, refOf, reads, db, unmapped: ladder.unmapped, calFor, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ) } );
+		addEntries( ledgerFile, dims.ledger );
+		result.writes.push( ...ladder.writes, ...dims.writes );
+		result.unmapped = dims.unmapped;
+		result.notes.push( ...ladder.notes, ...dims.notes );
 		// FR-48-50: content the draft's logic shows or hides by width, written as hiding settings (lib/fill-width-gate.mjs); a snapped
 		// threshold's `breakpoint-snap` entry is added to the client's divergence ledger (the file Fill reads), once.
 		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, entries: loadLedger( ledgerFile ), rootComponent: intakeParts.rootComponent } );
@@ -224,7 +234,7 @@ export async function fillSurface( o ) {
 		result.notes.push( ...bound.groups.map( ( g ) => `binding ${ g.binding } sets ${ g.attr } to ${ JSON.stringify( g.value ) } on ${ g.members.length } elements in ${ g.sections } sections: one shared setting` ), ...bound.split.map( ( x ) => `binding ${ x.binding } sets ${ x.attr } to ${ x.values.length } different values: not grouped` ) );
 		// FR-48-8: every written style value against what the draft's code declares, at each read width.
 		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.
-		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset' ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent } );
+		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension' ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent } );
 		// FR-48-8: a declaration that asks the device safe-area inset is named once per element and property.
 		result.notes.push( ...[ ...new Set( result.confirm.filter( ( r ) => r.safeArea ).map( ( r ) => `${ r.node } ${ r.block } ${ r.property }: ${ r.safeArea.note }` ) ) ] );
 		result.confirm.push( ...imageRecords( { images: result.images } ) );

@@ -1,0 +1,11 @@
+[
+	{ "file": "lib/fill-dimensions.mjs", "find": "'min' === kind ? paint[ w ] > rendered[ w ] + 0.5", "replace": "'min' === kind ? paint[ w ] < rendered[ w ] + 0.5", "why": "a floor above the draft would no longer be a contradiction" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "if ( px < MIN_TARGET && interactive( reads, target, w ) ) {", "replace": "if ( false ) {", "why": "an interactive size under 24px would be written as drawn" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "null === e || e > declared[ w ] + 0.5 )", "replace": "null === e || e > declared[ w ] + 9999 )", "why": "a declared height under taller content would be written" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "return Object.keys( out ).length || '' !== slot ? out : stylesheetPaint( block, prop );", "replace": "return out;", "why": "the block's own stylesheet floor would not be known without calibration" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "if ( 'exact' === size.kind && widths.every( noSize ) ) {", "replace": "if ( false ) {", "why": "an auto height or width would not check the block's minimum" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "if ( 'max' === size.kind && widths.every( noSize ) ) {", "replace": "if ( false ) {", "why": "a ceiling below the draft would stay in force" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "'min-block-size': 'min-height', ", "replace": "", "why": "the logical minimum would not be read as the physical one" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "ONLY_GAPS.test( row.reason ?? '' ) && ! row.state ?", "replace": "ONLY_GAPS.test( row.reason ?? '' ) ?", "why": "a state row would be written as the resting size" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "touched.length && ledger( p );", "replace": "", "why": "a raised touch target would leave no ledger entry" }
+]

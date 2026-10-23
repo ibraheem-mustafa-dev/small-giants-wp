@@ -1,0 +1,6 @@
+[
+	{ "file": "lib/fill-width-gate.mjs", "find": "const free = complement( taken );", "replace": "const free = [ [ 0, Infinity ] ];", "why": "the default instance would stay visible where a variant shows" },
+	{ "file": "lib/fill-width-gate.mjs", "find": "if ( skeletonNode.widthShown ) {", "replace": "if ( false ) {", "why": "a variant instance would not be hidden on the other's widths" },
+	{ "file": "lib/fill-width-gate.mjs", "find": "if ( ! facts && ! nodes.some( ( n ) => n.node.widthShown || n.node.widthVariants ) ) {", "replace": "if ( ! facts ) {", "why": "variants would be ignored without a fact record" },
+	{ "file": "lib/fill-width-gate.mjs", "find": "( facts ? shownAt( facts, tplKey( { tpl: v.key }, rootComponent ) ) : null )?.shown ?? tierRanges( v.shown )", "replace": "tierRanges( v.shown )", "why": "an off-tier variant threshold from the fact record would be flattened to tiers" }
+]

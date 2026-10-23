@@ -412,6 +412,9 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/check-refs.test.mjs` | `check-refs` verdicts: missing, ambiguous and outside targets are refused (MUST FAIL); `skeletonTargets` lists generated icons. |
 | `tests/fill-read.test.mjs` | FR-47-4: a local draft read in headless Chromium — widths, the carrier rule, scoping, the declared width, fluid samples and the sweep. |
 | `tests/fill-mirror.test.mjs` | FR-47-4: a script on another origin is blocked, answered from a `--mirror`, and the flag parses. |
+| `tests/fill-width-ladder.test.mjs` | FR-48-50: the width ladder's four rungs over enum, free, colour and length values, a state value, two widths agreeing, a snapped and an unsnapped threshold, and unsafe CSS refused. |
+| `tests/fill-dimensions.test.mjs` | FR-48-8: a floor above the draft, a ceiling below it, a declared height with content that fits and with taller content, per-tier sizes, `auto`, the logical forms and the 24px target size. |
+| `tests/fill-width-variants.test.mjs` | FR-48-50: width-variant instances hidden on each other's widths (two and three variants, an off-tier threshold). |
 | `tests/fill-prop.test.mjs` | FR-47-4: tier carry, canonical values, not-painted leftovers, and that every write is the resolver's. |
 | `tests/fill-spacing.test.mjs` | Spec 48 §3.4 step 3: one unequal gap hands every gap to the children and writes the parent gap as 0 (MUST FAIL); a declared gap under space-between is the parent gap though the render spreads wider, a rendered gap below it is reported, a declared gap the render matches is written as declared, one it contradicts is reported and the rendered decision kept, a flex column's block axis, no layout or a normal gap leaves the rendered rule (each MUST FAIL); equal, single, zero, both axes, tolerance, hidden and out-of-flow children. |
 | `tests/fill-values.test.mjs` | FR-47-4: a stepped value is never fluid and a step at 800px is logged against 768 (MUST FAIL); clamp shapes and the sweep log. |
@@ -520,7 +523,7 @@ Measures a rendered design draft and writes block settings through the framework
 - `resolveViaAncestor(input, ctx)` → FR-47-8 / R-47-12's canvas hop, invoked only after the caller's `owners` retry has exhausted, so the order is direct match → calibration `reaches` tie → the caller's hop → this one, and deleting the one call restores the previous behaviour exactly. Candidates are taken in the row's own state, so a resting setting is never cited for an open or hover row. Returns `{ writes, on, via, cite }` where a prover holds (the ancestor's calibration covers the element, or a `providesContext`/`usesContext` pair carries the attribute) **and** its paint reaches exactly one measured descendant (R-47-5); `{ gap: 'canvas-settable', detail, cite }` on a canvas otherwise; `{ cite }` off a canvas, leaving the row's class untouched, because an ordinary page's blocks are the route's own output and a missing setting there is a real gap; and null when nothing in the chain declares the property in that state.
 - `isSizeBox(def)` → true for a per-device `{ width, height }` size setting's schema entry (its block.json description reads `{desktop:{width,height},…}`; `icon/render.php` reads `shapeSize[tier]['width']` and ignores a plain length), so its marker and write take that shape.
 - `resolve` returns `{ gap: 'shape' }` for a pseudo-namespaced setting whose measured value is not one of its declared keywords (`includes/animation-timing-clamp.php` clamps to instant, fast, medium, slow, extra-slow): writing a measured duration would be coerced back to the default on render.
-- `ONE_VALUE_EVERY_WIDTH`: The structured code of the shape gap a single-value setting raises when the draft's value differs by width; the passes that act on that gap (lib/fill-logo-size.mjs) match this code, never the reason's wording.
+- `ONE_VALUE_EVERY_WIDTH`: The structured code of the shape gap a single-value setting raises when the draft's value differs by width; the passes that act on that gap (lib/fill-logo-size.mjs, lib/fill-width-ladder.mjs) match this code, never the reason's wording.
 
 ### `lib/tree.mjs`
 - `REF_PREFIX`: `cr-ref-`.
@@ -1894,6 +1897,21 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `logoSizeSettings`: { width, max, unit } setting names a block has for a logo's size, or null.
 - `logoSizeWrites({ nodes, flat, refOf, reads, db, unmapped })` → `{ writes, unmapped, notes }`: a logo whose one width setting cannot hold the draft's per-width sizes (the coded gap row) is written as its per-device size setting instead.
 
+### `lib/fill-dimensions.mjs`
+- `SIZE_FAMILY`: the size properties (height, width, min-*, max-*) with their kind (exact, min, max) and axis; the logical forms (block-size, inline-size) map onto them.
+- `physical`: the physical name of a size property (`min-block-size` is `min-height`).
+- `sizeOf`: { kind, axis } of a size property, or null.
+- `MIN_TARGET`: 24: the px an interactive element's written height or width never goes below (WCAG 2.2 AA 2.5.8).
+- `dimensionWrites({ nodes, flat, refOf, reads, db, unmapped, calFor, snapshot, scope, entries, date })` → `{ writes, unmapped, notes, ledger }`: a block's floor or ceiling the draft does not declare is written at the draft's rendered size, a declared size in a dimension with no setting goes to the block's minimum when the content fits (else the row stays with the reason), and an interactive size under 24px is written as 24px with a `touch-target` ledger entry.
+
+### `lib/fill-regap.mjs`
+- `TIER_OF`: the tier name of each read width.
+- `rowTarget`: the skeleton node and target an unmapped row names, or null.
+- `rowValues`: a row's per-width values; a width the row omits takes the draft's rendered value there.
+- `rectAt`: the draft's rendered box of a target at a width, or null.
+- `reresolve`: runs the generic resolver (lib/fill-prop.mjs::resolveProperty) on a changed per-width draft for a gap row's element, with no baseline.
+- `commit`: writes a resolver result into the node and records each write.
+
 ### `lib/fill-map.mjs`
 - `zoomOf`: The zoom a Google Maps embed address asks for (`z=15`, or `zoom=15`), a whole number from 1 to 20; null when it names none.
 - `mapDecisions`: embeds: { width: { src, filter, h } } the iframe the draft paints at each read width (lib/fill-read.mjs `embed`; a width the element is not shown at is absent). schema: the block's settings. attributes: what the node already holds.
@@ -1943,7 +1961,16 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `mediaRule`: The scoped @media rule hiding a range (width in whole px; the rule `&` is the instance, includes/custom-css.php).
 - `collapseAttributes`: The setting each block draws its own alternative below (the nav's burger under its collapse point), as the skeleton rules name it: data/skeleton-decisions.json `rules.navigation.collapseAttribute`, { block: attr }.
 - `ownBreakpoint`: The numeric collapse setting a block holds, by framework-DB query: the attribute the skeleton rules name for the block, when the block holds it as a number; null for any other block, whatever other breakpoint-like numbers it holds.
+- `tierRanges`: the width ranges of the tiers a list of read widths (375, 768, 1440) stands for, merged.
+- `shownOfNode`: the widths a skeleton node's content is shown at: its enclosing sc-if's range, or for a width-variant instance (`widthShown` on the variant, `widthVariants` on the default instance) the range of its own element, the default instance being shown where no variant is.
+- `scopedCssPuts`: the `sgsCustomCss`, scope key and label writes that append a scoped rule to a node; empty when the node holds the rule already. The one writer of a scoped rule.
+- `snapEntry`: the `breakpoint-snap` ledger entry of one snapped threshold, numbered after the entries held.
 - `widthGateWrites`: Writes the width gates of every skeleton node. nodes: skeletonNodes(); flat: tree nodes by index; refOf: tree node to ref; facts: the fact record (null: nothing written); db: the framework DB; scope: the surface; entries: the ledger's entries (the snap entries continue its numbering). Returns { writes, unmapped, notes, ledger } in the shapes lib/fill-resolve.mjs uses; `ledger` holds the new snap entries.
+
+### `lib/fill-width-ladder.mjs`
+- `isLadderRow`: whether an unmapped row is a one-value-every-width gap or a value the setting's enum does not hold.
+- `effectOf`: what a value does in its element's context, as one canonical word (`normal` justify-content in a flex container is the start value; `space-between` with one visible child is too).
+- `widthLadderWrites({ nodes, flat, refOf, reads, db, unmapped, calFor, snapshot, scope, entries, date })` → `{ writes, unmapped, notes, ledger }`: a per-width difference no single setting holds is written as an equal-in-effect value, a tier-shaped sibling, the block's own breakpoint setting, or a scoped `@media` rule, in that order.
 
 ### `lib/loop-body.mjs`
 - `loopKeyOf`: The innermost `sc-for` a template element sits in, or null.

@@ -5,7 +5,7 @@ import path from 'path';
 
 // Rule names an entry may use instead of a value, each with its meaning. An unknown rule name fails the run.
 export const RULES = {
-	'touch-target': 'Live keeps the 44px touch target where the draft is smaller (house rule).',
+	'touch-target': 'An interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8): a smaller draft size is written as 24px (house rule).',
 	'bean-choice': 'Bean chose a value other than the draft\'s; the reason names the decision and date.',
 	'real-data': 'Live shows real data (counts, prices, stock) where the draft shows placeholder data.',
 	'not-painted': 'The property differs with no visible effect; the reason says why nothing paints.',
