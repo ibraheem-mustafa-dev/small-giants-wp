@@ -32,7 +32,7 @@ import { fileURLToPath, pathToFileURL } from 'url';
 import { DEFAULT_PROPS, PSEUDO_PROPS, resolveFinder, collectPair, collectRunning, hoverStyles } from './lib/collect.mjs';
 import { PAINT_SRC } from './lib/paint.mjs';
 import { neutralisePass } from './lib/neutralise.mjs';
-import { SCROLL_PROPS, scrollInPass, revealSweep, hoverPass, focusPasses, activePass, readInteractives, sampleLines, settledLines, readOpts } from './lib/state-passes.mjs';
+import { SCROLL_PROPS, scrollInPass, revealSweep, hoverPass, focusPasses, activePass, readInteractives, sampleLines, settledLines, readOpts, declaredAt } from './lib/state-passes.mjs';
 import { collectLinks, probeLinks, unseenLabels } from './lib/links.mjs';
 import { partsPass } from './lib/parts.mjs';
 import { sampleEntrances, sampleRegion } from './lib/entrances.mjs';
@@ -253,6 +253,7 @@ async function walkSide( browser, side, width, draftStates = null ) {
 			snap[ p.name ].running = running[ p.name ];
 			if ( cdp && ! snap[ p.name ].missing && ! p[ side ].textRun && ! p[ side ].group ) {
 				snap[ p.name ].declared = await declaredValues( cdp, p[ side ], RESOLVE, DECLARED_PROPS );
+				snap[ p.name ].declaredPath = declaredAt( snap[ p.name ] );
 			}
 		}
 		// Layout rows proven inert on the live page in this state (GAP-CHECKLIST 8), before any scroll moves it.

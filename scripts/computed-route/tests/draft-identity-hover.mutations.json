@@ -1,7 +1,12 @@
 [
-	{ "file": "lib/draft-identity.mjs", "find": "if ( 'hover' === row.kind || 'active' === row.kind ) {", "replace": "if ( 'hover' === row.kind ) {", "why": "a pressed row reads the rest declarations" },
-	{ "file": "lib/draft-identity.mjs", "find": "if ( 'hover' === row.kind || 'active' === row.kind ) {", "replace": "if ( false ) {", "why": "state rows read the rest declarations" },
-	{ "file": "lib/draft-identity.mjs", "find": "const inState = d.declaredIn?.[ row.kind ];", "replace": "const inState = d.declared;", "why": "a hover row reads the rest declarations" },
-	{ "file": "lib/draft-identity.mjs", "find": "if ( ! inState || 'object' !== typeof inState ) {", "replace": "if ( false ) {", "why": "a missing state read passes as declared none" },
-	{ "file": "lib/draft-identity.mjs", "find": "return { declared: inState[ prop ] ?? null, unread: null };", "replace": "return { declared: null, unread: null };", "why": "the state's declared value is dropped" }
+	{ "file": "lib/draft-identity.mjs", "find": "const inState = 'hover' === row.kind || 'active' === row.kind;", "replace": "const inState = 'hover' === row.kind;", "why": "a pressed row reads the rest declarations" },
+	{ "file": "lib/draft-identity.mjs", "find": "const inState = 'hover' === row.kind || 'active' === row.kind;", "replace": "const inState = false;", "why": "state rows read the rest declarations" },
+	{ "file": "lib/draft-identity.mjs", "find": "const read = inState ? d.declaredIn?.[ row.kind ] : d.declared;", "replace": "const read = d.declared;", "why": "a hover row reads the rest declarations" },
+	{ "file": "lib/draft-identity.mjs", "find": "if ( ! read || 'object' !== typeof read ) {", "replace": "if ( false ) {", "why": "a missing state read passes as declared none" },
+	{ "file": "lib/draft-identity.mjs", "find": "return { declared: read[ prop ] ?? null, unread: null };", "replace": "return { declared: null, unread: null };", "why": "the state's declared value is dropped" },
+	{ "file": "lib/draft-identity.mjs", "find": "if ( row.pseudo ) {", "replace": "if ( false ) {", "why": "a pseudo row reads the pair element's declarations" },
+	{ "file": "lib/draft-identity.mjs", "find": "if ( row.part || 'part' === row.kind ) {", "replace": "if ( false ) {", "why": "a part row reads the pair element's declarations" },
+	{ "file": "lib/draft-identity.mjs", "find": "if ( 'string' !== typeof d.declaredPath ) {", "replace": "if ( false ) {", "why": "a walk with no recorded element still answers" },
+	{ "file": "lib/draft-identity.mjs", "find": "if ( ( row.path ?? '' ) !== d.declaredPath ) {", "replace": "if ( false ) {", "why": "a row on another element reads the pair element's declarations" },
+	{ "file": "lib/draft-identity.mjs", "find": "if ( ( row.path ?? '' ) !== d.declaredPath ) {", "replace": "if ( row.path && row.path !== d.declaredPath ) {", "why": "a row on the ref element is taken as the declarations' element whatever was read" }
 ]

@@ -29,8 +29,10 @@ const db = new DatabaseSync( ':memory:' );
 db.exec( 'CREATE TABLE blocks ( slug TEXT, parent_block TEXT )' );
 const surfaces = { header: { tree: 'tree.json', draftIndex: 'Draft.dc.html', states: { rest: null } } };
 const walk = { runs: [
-	{ state: 'rest', width: 1440, pairs: { head: { draft: { declared: { width: '8px' }, declaredIn: { hover: { width: '12px' } } } }, bare: { draft: { styles: {} } }, lost: { draft: { missing: true, declared: {} } } } },
-	{ state: 'other', width: 1440, pairs: { head: { draft: { declared: { width: '99px' } } } } },
+	{ state: 'rest', width: 1440, pairs: { head: { draft: { declared: { width: '8px' }, declaredIn: { hover: { width: '12px' } }, declaredPath: '' } }, bare: { draft: { styles: {} } }, lost: { draft: { missing: true, declared: {} } },
+		pressed: { draft: { declared: { height: '40px' }, declaredIn: { active: { height: '36px' } }, declaredPath: '' } }, inner: { draft: { declared: { width: '8px' }, declaredPath: '.sgs-card__inner' } },
+		unplaced: { draft: { declared: { width: '8px' } } } } },
+	{ state: 'other', width: 1440, pairs: { head: { draft: { declared: { width: '99px' }, declaredPath: '' } } } },
 ] };
 const ctxOf = ( over = {} ) => buildContext( { report: {}, walk, surfaces, surface: 'header', client: 'demo', probes: null, installed: {}, db, intakeFile, ...over } );
 const row = ( over = {} ) => ( { ref: 'cr-ref-header-1', path: '', pair: 'head', key: 'width', kind: 'style', state: 'rest', width: 1440, draft: '24px', live: '16px', ...over } );
@@ -98,4 +100,25 @@ test( 'MUST FAIL: an unreadable draft identity fails G2; gaps.json\'s draftId is
 	const none = ctxOf( { surface: 'footer', surfaces: { footer: surfaces.header } } );
 	await assert.rejects( async () => none.inputs.G2( row() ), /no footer\.origin\.json/ );
 	assert.deepEqual( draftIdentity( { origin: { a: { tpl: 'Root/3#0' } }, rootComponent: 'Draft' } )( { ref: 'a', path: '' } ), { draftId: 'Draft:3' } );
+} );
+
+// Track W wave 2 fix 8: the declarations are read on the pair's element (snap.declaredPath, in the rows' path space), so a
+// row on a pseudo layer, an interactive part or another element of the pair (a paint child, a text carrier) has no
+// declaration read for it: unread with its reason, never the pair element's value.
+test( 'MUST FAIL: a pseudo, part or other-element row is unread, never answered with the declarations of the pair element', () => {
+	assert.match( declaredRead( walk, row( { pseudo: '::before' } ), 'width' ).unread, /::before/ );
+	assert.match( declaredRead( walk, row( { kind: 'part', part: 'shop' } ), 'width' ).unread, /part shop/ );
+	assert.match( declaredRead( walk, row( { path: '.sgs-card__shape' } ), 'width' ).unread, /\.sgs-card__shape.*not the element the declarations were read on/ );
+	assert.match( declaredRead( walk, row( { pair: 'unplaced' } ), 'width' ).unread, /recorded no element/ );
+	assert.match( declaredRead( walk, row( { pair: 'inner' } ), 'width' ).unread, /not the element the declarations were read on/, 'a row on the ref element, declarations read inside it' );
+	// Controls: the element the declarations were read on answers, at its own path.
+	assert.deepEqual( declaredRead( walk, row( { pair: 'inner', path: '.sgs-card__inner' } ), 'width' ), { declared: '8px', unread: null } );
+	assert.deepEqual( declaredRead( walk, row(), 'width' ), { declared: '8px', unread: null } );
+	// A property outside the used sizes still has nothing to read, whatever the row.
+	assert.deepEqual( declaredRead( walk, row( { pseudo: '::before' } ), 'color' ), { declared: null, unread: null } );
+} );
+
+test( 'control: a pressed row reads the pressed declarations, never the rest ones', () => {
+	assert.deepEqual( declaredRead( walk, row( { pair: 'pressed', kind: 'active' } ), 'height' ), { declared: '36px', unread: null } );
+	assert.deepEqual( declaredRead( walk, row( { pair: 'pressed' } ), 'height' ), { declared: '40px', unread: null }, 'the rest row reads rest' );
 } );

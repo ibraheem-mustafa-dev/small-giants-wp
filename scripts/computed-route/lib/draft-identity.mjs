@@ -49,7 +49,10 @@ export function loadDraftIdentity( { buildDir, surface, s, intake } ) {
 // read it: { declared, unread }. `unread` is null when the walk answers (declared is the value, or null when no rule
 // declares it), else the reason it cannot: no pair at that state and width, a used size the walk did not read (no
 // DevTools session). A hover or pressed row reads the declarations the walker recorded while that state held
-// (snap.declaredIn.hover / .active), and fails as unread where the walk recorded none. A property outside the
+// (snap.declaredIn.hover / .active), and fails as unread where the walk recorded none. The declarations are read on the
+// pair's element, whose path in the rows' path space the walk records as snap.declaredPath: a row on a pseudo layer, an
+// interactive part, or another element (a paint child, a text carrier: a `path` other than declaredPath) has no
+// declaration read for it, and a walk that recorded no element cannot say which element it read. A property outside the
 // walker's used sizes (DECLARED_PROPS) has no declaration read: its computed value is the declared one resolved.
 export function declaredRead( walk, row, prop ) {
 	const run = ( walk?.runs || [] ).find( ( x ) => x.state === row.state && x.width === row.width );
@@ -60,17 +63,24 @@ export function declaredRead( walk, row, prop ) {
 	if ( ! DECLARED_PROPS.includes( prop ) ) {
 		return { declared: null, unread: null };
 	}
-	if ( 'hover' === row.kind || 'active' === row.kind ) {
-		const inState = d.declaredIn?.[ row.kind ];
-		if ( ! inState || 'object' !== typeof inState ) {
-			return { declared: null, unread: `the walk read no ${ row.kind } declarations on pair ${ row.pair }` };
-		}
-		return { declared: inState[ prop ] ?? null, unread: null };
+	if ( row.pseudo ) {
+		return { declared: null, unread: `the walk reads declarations on the pair's element, not its ${ row.pseudo } layer` };
 	}
-	if ( ! d.declared || 'object' !== typeof d.declared ) {
-		return { declared: null, unread: `the walk read no declarations on pair ${ row.pair } (no DevTools session)` };
+	if ( row.part || 'part' === row.kind ) {
+		return { declared: null, unread: `the walk reads declarations on the pair's element, not its part ${ row.part ?? row.key }` };
 	}
-	return { declared: d.declared[ prop ] ?? null, unread: null };
+	const inState = 'hover' === row.kind || 'active' === row.kind;
+	const read = inState ? d.declaredIn?.[ row.kind ] : d.declared;
+	if ( ! read || 'object' !== typeof read ) {
+		return { declared: null, unread: inState ? `the walk read no ${ row.kind } declarations on pair ${ row.pair }` : `the walk read no declarations on pair ${ row.pair } (no DevTools session)` };
+	}
+	if ( 'string' !== typeof d.declaredPath ) {
+		return { declared: null, unread: `the walk recorded no element for the declarations on pair ${ row.pair }` };
+	}
+	if ( ( row.path ?? '' ) !== d.declaredPath ) {
+		return { declared: null, unread: `the row's element ${ row.path || '(the pair element)' } is not the element the declarations were read on (${ d.declaredPath || 'the pair element' })` };
+	}
+	return { declared: read[ prop ] ?? null, unread: null };
 }
 
 // Whether intake records an FR-48-34 draft defect for the property on the row's draft element: a defect row with the
