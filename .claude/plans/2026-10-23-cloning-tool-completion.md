@@ -210,6 +210,22 @@ Repeat Phase 2 (only the surfaces a fix touched, plus one full pass at the end) 
 
 ### Next
 - [x] Phase 0, done 2026-10-23: P1 to P5, the review and its fixes. Main-checkout proof after the last merge: route suite 2694 of 2695 (only the known intake re-run red); check-approved 157/0; freeze diff unchanged (Indus 120/11/11, Mama's 182/7/0); lint, `capabilities.mjs --gate` and the client-name check pass. The Indus header walk reads 682 open rows, every one a real difference or a row a later item owns: the measurement artefacts are gone, and the walker now sees parts, effects, focus and resting looks it was blind to. The delivery map fails 18 Indus keys: A-18 and A-19 on the walker's live evidence, 14 with no built tree yet, A-10 a site option, and A-16 and A-40 unnamed loops.
+- [x] Phase 1 Track S (2026-10-23): S3, S4 and S5 built and merged, then the three-rater review and one fix lane (`e005e5730`). Main-checkout proof: route suite 3092 with only the known intake re-run red; extractor 320 of 320; the three `intake.mjs --page-map` runs 0 changes; the three site-build dry runs plan with no stop (Indus 0/2/0, Mama's 27/10/4, Eye Care 24/11/4 creates/changes/adoptions).
+  - **S5:** the page map classifies each surface by what it is (`lib/intake-pagemap-owners.mjs`, `lib/intake-pagemap-commerce.mjs`); `chooseActive` and `site-build-decisions.json` are gone; `intake.mjs --page-map <client>` regenerates offline. Eye Care matches `eye-care-test`'s types and counts. Bean confirmed the three maps on 2026-10-23, with two rulings: a page title uses the draft's wording ("Your bag", "Sign in / register"), and the shop keeps WooCommerce's `/shop/` and product addresses, not the manifest's `/sunglasses` and `/frames/`.
+  - **S3:** the extractor reads `tokens/*.css`, refuses its undeclared fallbacks, re-hashes and stamps the MANIFEST files, and reads no README on a 48A export. The route's freshness gate (`lib/snapshot-freshness.mjs`) is built but not yet called by `loadSnapshot`.
+  - **S4:**
+    - FR-48-57: required and too-long copy, the form step and review nodes, and `form-submit-check.mjs`. Its live run waits on Phase 2, because the forms are placeholders.
+    - FR-48-58: stock previews uploaded (indus-test 30, eye-care-clone-test 9; reruns upload 0).
+    - Site options: applied from `sites/<client>/build/site-options.json`.
+    - FR-48-60 to -62: shop parts matched by structure into `build/shop-parts.json`, and fixture products on mamas-test (107, 108) and eye-care-clone-test (82, 83).
+  - **Sites:** the `local-eye-care` mirror copies `eye-care-clone-test` (`cr-calibration` 23). mamas-test went through Appendix A: WooCommerce pages 100 to 103, noindex and mail.
+  - **Before Phase 2 (Track S unless named):**
+    1. Bean marks Mama's palette roles and Eye Care's role map (Eye Care has no intake record). Then re-extract and commit the three snapshots, show Bean the diffs, push them, and wire `assertSnapshotFresh` into `loadSnapshot`.
+    2. Bean marks Mama's three Site Info rows.
+    3. Track F: `page.html` becomes a blank canvas (Bean, 2026-10-23), deployed to the three client test sites.
+    4. Calibrate Eye Care's block set on `local-eye-care` (its paint folder is now `eye-care-clone-test`'s, empty).
+    5. Track R: `lib/motion-behaviours.mjs::routeFadeOf` misses Indus's record A-12, and Fill does not yet read `build/shop-parts.json`.
+  - **Still classified by words:** the `single-product` and `post` rows, and `lib/shop-parts-read.mjs`'s `NAMES` file pick.
 - [x] Phase 1 Track F (2026-10-23): F1 done and live on indus-test (`7778b1e8a`); F3 done (`4b5674467`); F2 waits on Track R's settings map.
 - [ ] Phase 1, as four sessions Bean runs, one per track (Track R from `.claude/prompts/2026-10-23-track-r-phase1.md`, Track S from `-track-s-phase1.md`). Track F's wave is done; Track W's wave 1 is done and its wave 2 (W14 to W17 and the items in Phase 1's Track W line) is next.
 - [ ] Phase 2 to Phase 4 as above. Phase 2 starts once every Phase 1 track has closed, and Bean has confirmed the regenerated page maps (S5).
