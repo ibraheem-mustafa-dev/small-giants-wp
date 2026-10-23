@@ -22,7 +22,7 @@ sys.path.insert(0, str(SCRIPTS))
 
 import extract  # noqa: E402
 import shared_utils  # noqa: E402
-from shared_utils import draft_css_sha256, draft_source_sha256, read_readme_text  # noqa: E402
+from shared_utils import draft_css_sha256, draft_source_sha256  # noqa: E402
 
 MAMAS = REPO / "sites/mamas-munches/mockups/homepage/index.html"
 FACTS = PKG / "mamas-computed-facts.json"
@@ -42,12 +42,12 @@ class Page { static ACC = { navy: { acc: '#3A4A6B', ink: '#2B3A55' } }; }
 README = "# Design tokens\n\n| Role | Hex |\n|---|---|\n| Ink | #111111 |\n"
 
 
-def _h(html=CLAUDE_DESIGN, readme=README):
-    return draft_source_sha256(html, readme)
+def _h(html=CLAUDE_DESIGN):
+    return draft_source_sha256(html)
 
 
 def test_static_draft_returns_none():
-    assert draft_source_sha256(MAMAS.read_text(encoding="utf-8"), README) is None
+    assert draft_source_sha256(MAMAS.read_text(encoding="utf-8")) is None
 
 
 def test_claude_design_draft_returns_a_sha256_hex():
@@ -71,22 +71,13 @@ def test_script_accent_change_changes_the_hash():
     assert _h(CLAUDE_DESIGN.replace("#3A4A6B", "#3A4A6C")) != _h()
 
 
-def test_readme_change_changes_the_hash():
-    assert _h(readme=README + "| Accent | #9C8B78 |\n") != _h()
-
-
-def test_missing_readme_differs_from_present_readme():
-    assert _h(readme=None) != _h()
-
-
 def test_style_block_change_changes_the_hash():
     assert _h(CLAUDE_DESIGN.replace("--x: 1", "--x: 2")) != _h()
 
 
 def test_crlf_and_lf_hash_the_same():
     crlf_html = CLAUDE_DESIGN.replace("\n", "\r\n")
-    crlf_readme = README.replace("\n", "\r\n")
-    assert _h(crlf_html, crlf_readme) == _h()
+    assert _h(crlf_html) == _h()
 
 
 def test_data_style_attribute_is_not_read_as_an_inline_style():
@@ -101,13 +92,6 @@ def test_css_hash_is_untouched_by_the_new_function():
     html_a = CLAUDE_DESIGN
     html_b = CLAUDE_DESIGN.replace("color: #111111", "color: #999999")
     assert draft_css_sha256(html_a) == draft_css_sha256(html_b)
-
-
-def test_read_readme_text_is_case_insensitive_and_none_when_missing(tmp_path):
-    assert read_readme_text(tmp_path) is None
-    assert read_readme_text(None) is None
-    (tmp_path / "ReadMe.MD").write_text(README, encoding="utf-8")
-    assert read_readme_text(tmp_path) == README
 
 
 # --------------------------------------------------------------------------- build_snapshot
@@ -136,19 +120,13 @@ def test_static_draft_snapshot_has_no_source_key_and_identical_bytes():
     assert dump(with_dir) == dump(without_dir)
 
 
-def test_claude_design_snapshot_embeds_the_source_hash_including_readme(tmp_path):
+def test_claude_design_snapshot_embeds_the_source_hash_and_ignores_the_readme(tmp_path):
     (tmp_path / "README.md").write_text(README, encoding="utf-8")
     html = _dsl_html()
     snap = _build(html, tmp_path)
-    assert snap["_sgsExtractor"]["draft_source_sha256"] == draft_source_sha256(html, README)
+    assert snap["_sgsExtractor"]["draft_source_sha256"] == draft_source_sha256(html, tmp_path)
     (tmp_path / "README.md").write_text(README + "more\n", encoding="utf-8")
-    assert _build(html, tmp_path)["_sgsExtractor"]["draft_source_sha256"] != snap["_sgsExtractor"]["draft_source_sha256"]
-
-
-def test_claude_design_snapshot_without_readme_uses_none(tmp_path):
-    html = _dsl_html()
-    snap = _build(html, tmp_path)
-    assert snap["_sgsExtractor"]["draft_source_sha256"] == draft_source_sha256(html, None)
+    assert _build(html, tmp_path)["_sgsExtractor"]["draft_source_sha256"] == snap["_sgsExtractor"]["draft_source_sha256"]
 
 
 def test_merge_onto_keeps_the_source_hash(tmp_path):

@@ -57,6 +57,7 @@ import presets as presets_mod
 import palette_refs
 import role_defaults
 import site_palette
+import token_files
 import usage_census
 import used_fonts
 import used_layout
@@ -73,7 +74,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 if str(HERE.parent) not in sys.path:
     sys.path.insert(0, str(HERE.parent))
 from shared_utils import (  # noqa: E402
-    css_sha256, draft_source_sha256, extract_css, is_part_draft, read_readme_text,
+    css_sha256, draft_source_sha256, extract_css, is_part_draft, manifest_source_hashes,
 )
 
 # Version of THIS extractor's emit logic — stamped into the snapshot's `_sgsExtractor`
@@ -319,9 +320,16 @@ def _overlay_font_families(baseline: dict, facts: dict, links: list, trace: list
     fams = baseline.setdefault("settings", {}).setdefault("typography", {}).setdefault("fontFamilies", [])
     by_slug = {f.get("slug"): f for f in fams}
     body_stack = typo_mod.representative_paragraph(facts)
-    body_fam = (body_stack or facts.get("body", {})).get("fontFamily") or "sans-serif"
-    head_fam = facts.get("headings", {}).get("h1", {}).get("fontFamily") \
-        or facts.get("headings", {}).get("h2", {}).get("fontFamily") or body_fam
+    body_fam = (body_stack or {}).get("fontFamily")
+    if not body_fam:
+        raise typo_mod.DeclaredValueMissing(
+            "no representative rendered <p> font family: the body family is never synthesised")
+    head_fam = next((h["fontFamily"] for h in (facts.get("headings", {}).get(t) for t in ("h1", "h2", "h3"))
+                     if h and h.get("fontFamily")), None)
+    if not head_fam:
+        trace.append({"kind": "gap", "what": "settings.typography.fontFamilies[heading, display]",
+                      "reason": "no non-chrome h1, h2 or h3 rendered: the framework heading family is kept "
+                                "(a blind spot, not a measured value)"})
 
     bundled = _bundled_faces_by_family(baseline)
 
@@ -336,7 +344,7 @@ def _overlay_font_families(baseline: dict, facts: dict, links: list, trace: list
             by_slug["body"]["fontFace"] = face
         else:
             by_slug["body"].pop("fontFace", None)
-    for slug in ("heading", "display"):
+    for slug in ("heading", "display") if head_fam else ():
         if slug in by_slug:
             by_slug[slug]["fontFamily"] = head_fam
             by_slug[slug]["name"] = f"{slug.title()} ({head_fam.split(',')[0].strip()})"
@@ -354,9 +362,31 @@ def _declared_design(draft_dir, html: str, pass_a_found: bool) -> tuple[dict, di
     if draft_dir is None or pass_a_found:
         return None
     declared = declared_sources.read_readme_tokens(draft_dir)
+    if token_files.read_token_files(draft_dir) is not None:
+        declared = {**declared, "colours": [], "unreadable_tables": 0, "rows_without_hex": []}
     variant_sets = variant_sets_mod.read_script_variant_sets(html)
     has_colours = declared["found"] and any(r.get("hexes") for r in declared.get("colours", []))
     return (declared, variant_sets) if has_colours or variant_sets else None
+
+
+def _overlay_token_files(snap: dict, tokens: dict, html: str, facts: dict, trace: list) -> list:
+    """Add the colour tokens of ``tokens/*.css`` the draft's code uses by value (FR-33-1) to the palette.
+
+    A token whose value an entry from the ``:root`` or declared-design pass already holds as ``declared``
+    is an alias of that entry (one palette entry per colour); every other used token is a
+    ``custom-<name>`` entry that Bean's confirmed role map renames or drops. Returns the palette."""
+    palette = ((snap.setdefault("settings", {}).setdefault("color", {}) or {}).get("palette")) or []
+    held = {e["color"].lower() for e in palette
+            if isinstance(e.get("color"), str) and e.get("_source") == "declared"}
+    census = usage_census.census_colours(html)
+    for entry in token_files.palette_entries(tokens, census, facts, trace):
+        if entry["color"].lower() in held:
+            trace.append({"kind": "gap", "what": f"tokens/*.css {entry['slug']}", "value": entry["color"],
+                          "reason": "value already held by a declared palette entry: an alias"})
+            continue
+        palette.append(entry)
+    snap["settings"]["color"]["palette"] = palette
+    return palette
 
 
 def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict, trace: list,
@@ -394,6 +424,9 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
         pal = ((settings.get("color", {}) or {}).get("palette", [])) or []  # baseline (from deepcopy)
         trace.append({"kind": "derive-skip", "reason": "Pass A + Pass B recovered nothing usable → "
                       "framework baseline palette kept UNCHANGED (never a guessed theme)"})
+    tokens = token_files.read_token_files(draft_dir)
+    if tokens is not None:
+        pal = _overlay_token_files(snap, tokens, html, facts, trace)
     if confirmed is not None:
         # FR-33-2: Bean's confirmed role map (intake review) is what the snapshot uses. Applied before
         # anything resolves a colour to a slug, so presets and references see the confirmed palette.
@@ -431,7 +464,8 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     hbase = typo_mod.heading_base(facts, trace)
     elements = styles.setdefault("elements", {})
     heading_typ = elements.setdefault("heading", {}).setdefault("typography", {})
-    heading_typ["lineHeight"] = hbase["lineHeight"]
+    if "lineHeight" in hbase:
+        heading_typ["lineHeight"] = hbase["lineHeight"]
     heading_typ["fontFamily"] = "var:preset|font-family|heading"
     if "letterSpacing" in hbase:
         heading_typ["letterSpacing"] = hbase["letterSpacing"]
@@ -459,7 +493,8 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
             continue
         tag_typ = elements.setdefault(tag, {}).setdefault("typography", {})
         tag_typ["fontFamily"] = "var:preset|font-family|heading"
-        tag_typ["lineHeight"] = hbase["lineHeight"]
+        if "lineHeight" in hbase:
+            tag_typ["lineHeight"] = hbase["lineHeight"]
         if tag in hsizes:
             tag_typ["fontSize"] = hsizes[tag]
     if design:  # declared-design path only: a draft that lands elsewhere keeps its snapshot byte-identical
@@ -562,9 +597,14 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     }
     # A Claude Design draft keeps its design in inline styles, its script and a README, none of
     # which the CSS hash sees. Static drafts get no extra key, so their snapshots are unchanged.
-    source_hash = draft_source_sha256(html, read_readme_text(draft_dir))
+    source_hash = draft_source_sha256(html, draft_dir)
     if source_hash:
         snap["_sgsExtractor"]["draft_source_sha256"] = source_hash
+    # A Spec 48A export: the MANIFEST's own hashes of its drafts and tokens/*.css are the freshness key the
+    # route gate re-checks (FR-33-12).
+    manifest_hashes = manifest_source_hashes(draft_dir)
+    if manifest_hashes:
+        snap["_sgsExtractor"]["manifest_sha256"] = manifest_hashes
     # Which draft this snapshot describes: any other draft of the client inherits it (FR-33-12).
     if draft_name:
         snap["_sgsExtractor"]["source_draft"] = draft_name
@@ -833,8 +873,12 @@ def main(argv=None) -> int:
                   f"entry: {', '.join(unmarked)}", file=sys.stderr)
 
     trace: list = []
-    snap = build_snapshot(args.client, css, facts, html, baseline, trace, repo, draft_dir=draft.parent,
-                          draft_name=draft.name, confirmed=confirmed, draft_slugs=draft_slugs)
+    try:
+        snap = build_snapshot(args.client, css, facts, html, baseline, trace, repo, draft_dir=draft.parent,
+                              draft_name=draft.name, confirmed=confirmed, draft_slugs=draft_slugs)
+    except typo_mod.DeclaredValueMissing as exc:
+        print(f"HALT (FR-33-3 no synthesised base): {exc}", file=sys.stderr)
+        return 8
 
     if args.merge_onto:
         existing_path = pathlib.Path(args.merge_onto)

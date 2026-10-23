@@ -162,6 +162,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `answer-sheet.mjs` | Answer-sheet scorer (route-accuracy R1): `--client <slug> --surface <s>[,<s>...] [--report f] [--triage f] [--solve f] [--sheet f] [--baseline f] [--write-baseline] [--detail]`; scores the frozen hand-labelled rows of `<build>/qa/answer-sheet.json` against each surface's walk, triage and Solve report (by default the files its baseline entry was written from, else its triage and the walk and Solve report that names; `none` leaves one out), prints the pass counts per label (false alarms per pattern) with the outcomes behind them, exits 1 when a row that passed in `<build>/qa/answer-sheet-baseline.json` fails now, and exits 2 when a file it names is missing (walks under `qa/solve/` are not in git). |
 | `lib/db.mjs` | Read-only `block_attributes` queries. |
 | `lib/normalise.mjs` | Value parsing and token snapping from `theme-snapshot.json`, with the snap log. |
+| `lib/snapshot-freshness.mjs` | FR-33-12 freshness gate (built, not yet called by `lib/normalise.mjs::loadSnapshot`): refuses a `theme-snapshot.json` whose recorded MANIFEST hashes are absent or differ from the export's current `handoff/MANIFEST.json`. |
 | `lib/resolve.mjs` | The one property-to-setting engine. |
 | `lib/resolve-declared.mjs` | FR-48-36: the declared value a confirmed row writes, in the form the setting holds (a unit setting switches unit; a setting with no unit partner holds a relative length only where calibration proved a string form). |
 | `lib/tree.mjs` | Trees: read, write, refs, setting writes, live-site safety. |
@@ -548,6 +549,12 @@ Measures a rendered design draft and writes block settings through the framework
 - `modifierOf(stored)` → the property a modifier row modifies (`grid-template-columns:count` → `grid-template-columns`), or null: a modifier is a fitting setting for that property but never a resolver candidate for it.
 - `isPseudoProperty(stored)` → whether the stored value is namespaced under `PSEUDO_NAMESPACES`, so it holds a keyword slug rather than a measured CSS value.
 
+### `lib/snapshot-freshness.mjs`
+- `isSourcePath(file)` → true for a draft (`*.html`) or `tokens/*.css`: the files the key covers (`shared_utils.py::is_source_path` is the extractor's twin).
+- `manifestHashes(manifest)` → `{ path: sha256 }` for the covered files of a parsed `MANIFEST.json`.
+- `freshnessProblem(recorded, current)` → null when equal, else the reason (no recorded key, or the paths that differ).
+- `assertSnapshotFresh(file)` → throws a message naming the snapshot, the changed files and `extract.py` when `<site>/handoff/MANIFEST.json` exists and `_sgsExtractor.manifest_sha256` is absent or differs; a site folder with no MANIFEST is not gated and there is no bypass.
+
 ### `lib/normalise.mjs`
 - `COVERAGE_WRITES`: the coverage IDs whose register entry names this module as its writer, listed one per line and sorted; `coverageProblems` refuses a declared ID whose entry names another module and an entry naming this module that is not listed.
 - `COLOUR_DE`, `LENGTH_TOL`: snap tolerances (ΔE 2, 0.5px).
@@ -558,7 +565,7 @@ Measures a rendered design draft and writes block settings through the framework
 - `parseColour(v)` → `{ r, g, b, a }` from hex or rgb(a).
 - `toHex(c)` → `#RRGGBB` or `#RRGGBBAA`.
 - `deltaE(a, b)` → CIE76 distance.
-- `loadSnapshot(file)` → `{ palette, spacing, fontSizes }` with px values.
+- `loadSnapshot(file)` → `{ palette, spacing, fontSizes }` with px values (it does not yet call `assertSnapshotFresh`; FR-33-12 Status says when it will).
 - `snapColour(value, snapshot, { log, where, prefer })` → `{ form: 'slug'|'hex', value, distance, kind }`, logged.
 - `snapLength(px, tokens, { log, where })` → `{ slug, distance, kind }` or null, logged.
 - `ratioSetting(raw, def)` → `{ value }` or `{ error }`: a measured `aspect-ratio` in the setting's form (the enum value painting the same ratio, `"w / h"` for a free string, `auto` as the empty setting; `auto w / h` cannot be held).
