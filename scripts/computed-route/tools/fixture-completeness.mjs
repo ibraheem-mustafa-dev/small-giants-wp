@@ -10,6 +10,12 @@
 //   fixture-gap    a required element class was never rendered; the proposal names it and the render.php condition
 //   variant-gated  only a modifier class or attribute selector is missing (another attribute value is needed)
 //   unexplained    every required class was rendered (or no consumer rule was found): the cause is not a missing element
+// A setting no custom property carries is not "no consumer": most hover settings are emitted by render.php (or a shared
+// helper under includes/) as a literal scoped rule, with the selector beside the call. `emission` finds that call by the
+// attribute's name, or by the longest suffix a helper builds the name from (`'LinkColourHover'` with a prefix), and reads the
+// classes and the link (`a`) the selector needs; those are judged against the rendered elements like a stylesheet selector.
+// A gradient setting with no emitter of its own is the twin of its flat sibling (`gradient-twin`). Every `unexplained` row
+// carries a `cause` (`variable-unconsumed`, `no-emitter`, `gradient-twin`, `scoped-rule`, `rendered`) and the files that emit it.
 // Read-only; it changes no fixture and writes nothing.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -82,7 +88,10 @@ export function renderedClasses( cacheDir, block ) {
 		const file = path.join( cacheDir, d.name, `${ slugOf( block ) }.paint.json` );
 		if ( ! d.isDirectory() || ! fs.existsSync( file ) ) continue;
 		const paint = JSON.parse( fs.readFileSync( file, 'utf8' ) );
-		for ( const key of Object.keys( paint.elements || {} ) ) for ( const c of classesOf( key ) ) set.add( c );
+		for ( const key of Object.keys( paint.elements || {} ) ) {
+			for ( const c of classesOf( key ) ) set.add( c );
+			if ( /(^|[\s>+~])a([\s>+~.#:[]|$)/.test( key ) ) set.add( '<a>' );
+		}
 	}
 	return set;
 }
@@ -98,8 +107,97 @@ export function emitCondition( php, cls ) {
 	return { line: null, attrs: [] };
 }
 
+
+// The suffixes of a camel-case setting name a helper may build it from (`linkColourHover` -> `LinkColourHover`,
+// `ColourHover`, `Hover`), longest first; only those long enough to be specific are used.
+export function nameSuffixes( attr ) {
+	const out = [ attr.charAt( 0 ).toUpperCase() + attr.slice( 1 ) ];
+	for ( let i = 1; i < attr.length; i++ ) {
+		if ( /[A-Z]/.test( attr[ i ] ) ) out.push( attr.slice( i ) );
+	}
+	return out.filter( ( x ) => x.length >= 12 );
+}
+
+// The statements of a PHP source: runs of lines up to one ending in `;`, `{` or `}`, comments dropped.
+export function statements( text ) {
+	const out = [];
+	let cur = [];
+	for ( const raw of text.replace( /<\?php/g, '' ).split( /\r?\n/ ) ) {
+		const line = raw.replace( /^\s*(\/\/|\*|\/\*).*$/, '' ).trim();
+		if ( ! line ) continue;
+		cur.push( line );
+		if ( /[;{}]$/.test( line ) ) {
+			out.push( cur.join( ' ' ) );
+			cur = [];
+		}
+	}
+	return cur.length ? [ ...out, cur.join( ' ' ) ] : out;
+}
+
+const varsIn = ( stmt ) => [ ...stmt.matchAll( /\$(\w+)/g ) ].map( ( m ) => m[ 1 ] );
+const assigned = ( stmt ) => /^\$(\w+)\s*=[^=]/.exec( stmt )?.[ 1 ] ?? null;
+
+// What a setting's emission statements name: the statements that hold its name, the statements that read a variable the
+// setting's value flows into (three hops), and the definitions of the other variables those read, as { classes, anchor }.
+export function selectorsOf( text, name ) {
+	const all = statements( text );
+	const seeds = all.filter( ( st ) => st.includes( `'${ name }'` ) || st.includes( `"${ name }"` ) );
+	const flow = new Set( seeds.map( assigned ).filter( Boolean ) );
+	const used = new Set( seeds );
+	for ( let hop = 0; hop < 3; hop++ ) {
+		for ( const st of all ) {
+			if ( used.has( st ) ) continue;
+			const mentions = varsIn( st );
+			if ( mentions.some( ( v ) => flow.has( v ) ) ) {
+				used.add( st );
+				assigned( st ) && flow.add( assigned( st ) );
+			}
+		}
+	}
+	// The other variables those statements read (`$link = $selector . ' a'`) are defined by statements that join in.
+	const read = new Set( [ ...used ].flatMap( ( st ) => varsIn( st ) ).filter( ( v ) => ! flow.has( v ) ) );
+	for ( const st of all ) if ( read.has( assigned( st ) ) ) used.add( st );
+	const lits = [ ...used ].flatMap( ( st ) => st.match( /'[^'\n]*'|"[^"\n]*"/g ) || [] ).join( ' ' );
+	return { classes: [ ...new Set( classesOf( lits.match( /\.sgs-[\w-]+/g )?.join( ' ' ) || '' ) ) ], anchor: /['"][^'"]*(\s|>)a(:[\w-]+)*(\s|['"])/.test( lits ) || /['"]\s*a['"]/.test( lits ) };
+}
+
+// The emitters of a setting: each PHP source (`{ file, text }`) that names it, or the longest suffix a helper builds it from,
+// with the classes and anchor its selectors name. `own` first (the block's), then `shared` (includes/), then `others` (another
+// block's sources: a parent whose setting its child block paints, read from block context under `contextKey`).
+export function emission( attr, own, shared, others = [], contextKey = '' ) {
+	const found = [];
+	for ( const [ where, list ] of [ [ 'block', own ], [ 'shared', shared ], [ 'other-block', others ] ] ) {
+		const names = [ attr, ...( 'shared' === where ? nameSuffixes( attr ) : [] ), ...( 'other-block' === where && contextKey ? [ contextKey ] : [] ) ];
+		for ( const src of list ) {
+			const name = names.find( ( n ) => src.text.includes( `'${ n }'` ) || src.text.includes( `"${ n }"` ) );
+			if ( name ) found.push( { where, file: src.file, name, ...selectorsOf( src.text, name ) } );
+		}
+		if ( found.length ) break;
+	}
+	return found;
+}
+
+// The block-context key a parent provides a setting under: `sgs/accordion` + `headerColourHover` -> `sgs/accordionHeaderColourHover`.
+const contextKey = ( block, attr ) => `sgs/${ slugOf( block ).replace( /-(\w)/g, ( m, c ) => c.toUpperCase() ) }${ attr.charAt( 0 ).toUpperCase() }${ attr.slice( 1 ) }`;
+
+// True when a rendered element selector holds an anchor.
+const rendersAnchor = ( rendered ) => rendered.has( '<a>' );
+
+// The verdict for a setting no custom property carries, from its emitters and the rendered elements.
+function scopedVerdict( { block, attr, vars, hits, rendered, twin } ) {
+	if ( ! hits.length ) {
+		return twin ? { block, attr, class: 'unexplained', cause: 'gradient-twin', vars, twin, why: `the gradient twin of ${ twin.attr }; it follows that setting's verdict (${ twin.class })` } : { block, attr, class: 'unexplained', cause: 'no-emitter', vars, why: 'no style.css rule consumes a custom property of this setting' };
+	}
+	const files = [ ...new Set( hits.map( ( h ) => h.file ) ) ];
+	const classes = [ ...new Set( hits.flatMap( ( h ) => h.classes ) ) ];
+	const missing = classes.filter( ( c ) => ! rendered.has( c ) && ! MODIFIER.test( c ) );
+	if ( missing.length ) return { block, attr, class: 'fixture-gap', cause: 'scoped-rule', vars, emitters: files, missing, proposal: { block, render: missing, whenCondition: null, setAttributes: [] } };
+	if ( hits.some( ( h ) => h.anchor ) && ! rendersAnchor( rendered ) ) return { block, attr, class: 'fixture-gap', cause: 'scoped-rule', vars, emitters: files, missing: [ 'a' ], proposal: { block, render: [ 'a' ], whenCondition: null, setAttributes: [] } };
+	return { block, attr, class: 'unexplained', cause: 'scoped-rule', vars, emitters: files, why: `emitted as a literal scoped rule by ${ files.join( ', ' ) }; every class it names is rendered, so a guard in that code or a hover that does not paint is the cause (a live hover probe decides)` };
+}
+
 // One dead setting's verdict.
-export function judge( { block, attr, php, rulesByBlock, rendered, phpByBlock = new Map() } ) {
+export function judge( { block, attr, php, rulesByBlock, rendered, phpByBlock = new Map(), srcs = new Map(), shared = [] } ) {
 	let vars = varsOf( php, attr );
 	// A setting a child block's render.php reads (an accordion's header colours live in accordion-item): that block's
 	// variables and stylesheet count as the setting's own.
@@ -128,14 +226,15 @@ export function judge( { block, attr, php, rulesByBlock, rendered, phpByBlock = 
 		const named = new Map( [ ...rulesByBlock ].filter( ( [ b ] ) => b !== block && ( php.includes( `'${ b }'` ) || php.includes( `"${ b }"` ) || php.includes( `sgs-${ slugOf( b ) }` ) ) ) );
 		hits = consumers( named, vars );
 	}
-	if ( ! hits.length ) return { block, attr, class: 'unexplained', vars, why: 'no style.css rule consumes a custom property of this setting' };
+	if ( ! hits.length && vars.length ) return { block, attr, class: 'unexplained', cause: 'variable-unconsumed', vars, why: `render.php sets ${ vars.join( ', ' ) } but no style.css rule consumes a custom property of this setting` };
+	if ( ! hits.length ) return scopedVerdict( { block, attr, vars, hits: emission( attr, srcs.get( block ) || [], shared, [ ...srcs ].filter( ( [ b ] ) => b !== block ).flatMap( ( [ , list ] ) => list ), contextKey( block, attr ) ), rendered } );
 	let best = null;
 	for ( const h of hits ) {
 		for ( const part of h.selector.split( ',' ) ) {
 			const need = [ ...new Set( classesOf( part ) ) ];
 			const missing = need.filter( ( c ) => ! rendered.has( c ) );
 			const brackets = /\[[^\]]+\]/.test( part.replace( /:not\([^)]*\)/g, '' ) );
-			if ( ! missing.length && ! brackets ) return { block, attr, class: 'unexplained', vars, selector: part.trim(), why: `every class of a consuming selector (${ need.map( ( c ) => '.' + c ).join( ' ' ) }) is rendered by the fixture` };
+			if ( ! missing.length && ! brackets ) return { block, attr, class: 'unexplained', cause: 'rendered', vars, selector: part.trim(), why: `every class of a consuming selector (${ need.map( ( c ) => '.' + c ).join( ' ' ) }) is rendered by the fixture` };
 			if ( ! best || missing.length < best.missing.length ) best = { selector: part.trim(), missing, brackets, owner: h.block };
 		}
 	}
@@ -147,18 +246,27 @@ export function judge( { block, attr, php, rulesByBlock, rendered, phpByBlock = 
 	return { block, attr, class: 'variant-gated', vars, selector: best.selector, missing: best.missing, why: best.brackets && ! best.missing.length ? 'the selector needs an attribute value' : 'the selector needs a modifier class set by another attribute value' };
 }
 
+// Every PHP file under a folder (not descending into other blocks) as { file, text }; none when the folder is absent.
+function phpFiles( dir, label ) {
+	if ( ! fs.existsSync( dir ) ) return [];
+	return fs.readdirSync( dir, { withFileTypes: true } ).filter( ( f ) => f.isFile() && f.name.endsWith( '.php' ) ).map( ( f ) => ( { file: `${ label }/${ f.name }`, text: fs.readFileSync( path.join( dir, f.name ), 'utf8' ) } ) );
+}
+
 // Runs the check over a cache and a blocks source folder. Options: { cacheDir, srcDir, blocks, all }.
-export function check( { cacheDir = DEFAULT_CACHE, srcDir = DEFAULT_SRC, blocks = null, all = false } = {} ) {
+export function check( { cacheDir = DEFAULT_CACHE, srcDir = DEFAULT_SRC, blocks = null, all = false, includesDir = path.resolve( srcDir, '..', '..', 'includes' ) } = {} ) {
 	const rulesByBlock = new Map();
 	for ( const d of fs.readdirSync( srcDir, { withFileTypes: true } ) ) {
 		const css = path.join( srcDir, d.name, 'style.css' );
 		if ( d.isDirectory() && fs.existsSync( css ) ) rulesByBlock.set( `sgs/${ d.name }`, cssRules( fs.readFileSync( css, 'utf8' ) ) );
 	}
 	const phpByBlock = new Map();
+	const srcs = new Map();
 	for ( const d of fs.readdirSync( srcDir, { withFileTypes: true } ) ) {
 		const p = path.join( srcDir, d.name, 'render.php' );
 		if ( d.isDirectory() && fs.existsSync( p ) ) phpByBlock.set( `sgs/${ d.name }`, fs.readFileSync( p, 'utf8' ) );
+		if ( d.isDirectory() ) srcs.set( `sgs/${ d.name }`, phpFiles( path.join( srcDir, d.name ), `src/blocks/${ d.name }` ) );
 	}
+	const shared = phpFiles( includesDir, 'includes' ).filter( ( f ) => ! /cli-commands|\.generated\./.test( f.file ) );
 	const rows = [];
 	for ( const f of fs.readdirSync( cacheDir ).filter( ( n ) => n.endsWith( '.json' ) && ! /\.(tree|refused|paint)\.json$/.test( n ) ) ) {
 		const cal = JSON.parse( fs.readFileSync( path.join( cacheDir, f ), 'utf8' ) );
@@ -167,7 +275,13 @@ export function check( { cacheDir = DEFAULT_CACHE, srcDir = DEFAULT_SRC, blocks 
 		if ( ! dead.length ) continue;
 		const php = phpByBlock.get( cal.block ) || '';
 		const rendered = renderedClasses( cacheDir, cal.block );
-		for ( const attr of dead ) rows.push( judge( { block: cal.block, attr, php, rulesByBlock, rendered, phpByBlock } ) );
+		const mine = dead.map( ( attr ) => judge( { block: cal.block, attr, php, rulesByBlock, rendered, phpByBlock, srcs, shared } ) );
+		for ( const r of mine ) {
+			// A gradient setting with no emitter of its own paints with its flat sibling: it follows that sibling's verdict.
+			const base = r.attr.replace( /Gradient$/, '' );
+			const sibling = base !== r.attr && 'no-emitter' === r.cause ? mine.find( ( x ) => x.attr === base ) : null;
+			rows.push( sibling ? { ...r, cause: 'gradient-twin', twin: { attr: base, class: sibling.class, cause: sibling.cause }, why: `the gradient twin of ${ base }; it follows that setting's verdict (${ sibling.class }, ${ sibling.cause })` } : r );
+		}
 	}
 	return rows;
 }
