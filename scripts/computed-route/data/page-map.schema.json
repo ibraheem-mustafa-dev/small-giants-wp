@@ -92,6 +92,39 @@
           ]
         }
       },
+      "parts": {
+        "type": "array",
+        "description": "Surfaces this row owns that make no row of their own (FR-48-30): a block's panel, WooCommerce's forms and endpoints, a page's own header, a surfaces.json record the code does not show",
+        "items": {
+          "type": "object",
+          "required": [
+            "kind",
+            "label",
+            "owner",
+            "draftId"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "owner": {
+              "enum": [
+                "block",
+                "woocommerce",
+                "page",
+                "draft-notes"
+              ]
+            },
+            "draftId": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "id": {
         "type": [
           "integer",

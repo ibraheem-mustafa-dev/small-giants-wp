@@ -243,6 +243,9 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	const route = routing || readRouting( { folder } );
 	const gaps = [];
 	const { rows, data } = routeRows( exp, route, gaps );
+	const routeOfNode = ( d, node ) => ( data && d === data.d ? [ ...data.values ].find( ( [ , v ] ) => v.start <= node.start && node.end <= v.end )?.[ 0 ] ?? null : null );
+	const code = codeSurfaces( exp, routeOfNode, new Set( route.routes.map( ( x ) => x.key ) ) );
+	wooSlugs( rows, code.accountPages );
 	const used = new Set();
 	const routeSlug = new Map();
 	// Two manifest pages naming one WordPress slug (a signed-out and a signed-in view) are one row.
@@ -264,20 +267,24 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 		}
 	}
 	const home = route.links.find( ( l ) => /^#\/?$/.test( l.href ) && l.route )?.route || rows[ 0 ]?.route || null;
-	const routeOfNode = ( d, node ) => ( data && d === data.d ? [ ...data.values ].find( ( [ , v ] ) => v.start <= node.start && node.end <= v.end )?.[ 0 ] ?? null : null );
+	const endpoints = checkoutEndpoints( rows, route, code.pageOfTag, home, routeSlug );
 	const hintFile = path.join( folder, 'surfaces.json' );
 	const hint = undefined !== surfacesHint ? surfacesHint : fs.existsSync( hintFile ) ? JSON.parse( fs.readFileSync( hintFile, 'utf8' ) ) : null;
-	const code = codeSurfaces( exp, routeOfNode );
 	const checked = crossCheck( code.surfaces, hint );
 	gaps.push( ...checked.gaps );
-	const counts = ( kind ) => checked.surfaces.filter( ( s ) => s.kind === kind ).length;
-	for ( const s of checked.surfaces ) {
+	const owned = ownedSurfaces( checked.surfaces, rows, endpoints, routeSlug );
+	const counts = ( kind ) => owned.rows.filter( ( s ) => s.kind === kind ).length;
+	for ( const s of owned.rows ) {
 		const name = /^(header|footer)$/.test( s.kind ) ? kebab( s.dc || '' ) : kebab( s.label ).replace( new RegExp( `^${ SLUG_PREFIX[ s.kind ] }-?` ), '' ) || kebab( s.dc || '' );
 		const base = /^(header|footer)$/.test( s.kind ) && 1 === counts( s.kind ) ? s.kind : [ SLUG_PREFIX[ s.kind ], name ].filter( Boolean ).join( '-' );
 		rows.push( { slug: unique( base, used ), title: s.title || s.label, parent: null, template: null,
 			menus: s.menuItem ? [ { menu: s.menuItem.menu, position: s.menuItem.position, parentItem: null } ] : [],
 			postType: KIND_POST_TYPE[ s.kind ], collection: 'static', flags: [], id: null } );
 	}
+	owned.parts.forEach( ( { row, part } ) => {
+		const to = row || rows.find( ( r ) => 'sgs_header' === r.postType ) || rows[ 0 ];
+		( to.parts ??= [] ).push( part );
+	} );
 	const bySlug = new Map( rows.map( ( r ) => [ r.slug, r ] ) );
 	const rowOf = ( href, file ) => {
 		const k = routeOfHref( href, file, routeSlug, home );
@@ -295,6 +302,7 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 			const row = it.targets.map( ( t ) => rowOf( t, file ) ).find( Boolean );
 			if ( row && listed && ! row.menus.some( ( x ) => x.menu === m.menu && x.parentItem === it.parentItem ) ) {
 				row.menus.push( { menu: m.menu, position: it.position, parentItem: it.parentItem } );
+				shopTitle( row, it.label );
 			} else if ( ! row && it.targets.some( ( t ) => /^#.|\.dc\.html|^\//.test( t ) ) ) {
 				gaps.push( gap( 'menu', m.draftId, `${ m.menu } item "${ it.label }" links to ${ it.targets.join( ', ' ) }, which no page-map row holds` ) );
 			}
@@ -327,7 +335,81 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 			r.parent = up;
 		}
 	}
+	rows.forEach( ( r ) => delete r.shopTitled );
 	return { rows, linkMap: linkMap( exp, route, routeSlug, home, gaps ), gaps };
+}
+
+// WooCommerce's own pages keep WooCommerce's slugs: the shop `shop`, the cart and checkout pages `cart` and
+// `checkout`, and every page holding a password field (sign-in, register, account details) the one `my-account` page,
+// so two such routes collapse into one row through the twin rule.
+function wooSlugs( rows, accountPages ) {
+	for ( const r of rows ) {
+		const slug = 'shop' === r.postType ? 'shop' : 'page' === r.postType && [ 'cart', 'checkout' ].includes( r.template ) ? r.template
+			: 'page' === r.postType && ! r.template && accountPages.has( r.route ) ? 'my-account' : null;
+		if ( slug ) {
+			r.slug = slug;
+			r.explicit = true;
+		}
+	}
+}
+
+// The shop row's title is the label of the first menu item that links to it (WooCommerce's shop page keeps slug `shop`
+// and shows the draft's own name for it).
+function shopTitle( row, label ) {
+	if ( 'shop' === row.postType && ! row.shopTitled && label ) {
+		row.title = label;
+		row.shopTitled = true;
+	}
+}
+
+// WooCommerce endpoints of the checkout page (order received): a route every link to which comes from inside the
+// checkout page. Each leaves the rows, its links resolve to the checkout row, and it is returned for the checkout
+// row's parts.
+function checkoutEndpoints( rows, route, pageOfTag, home, routeSlug ) {
+	const checkout = rows.find( ( r ) => 'page' === r.postType && 'checkout' === r.template );
+	const out = [];
+	for ( const r of checkout ? [ ...rows ] : [] ) {
+		const into = route.links.filter( ( l ) => l.route === r.route );
+		if ( r === checkout || r.route === home || ! r.route || ! into.length || ! into.every( ( l ) => pageOfTag( l.from ) === checkout.route ) ) {
+			continue;
+		}
+		rows.splice( rows.indexOf( r ), 1 );
+		routeSlug.set( r.route, checkout.slug );
+		out.push( { checkout, part: { kind: 'endpoint', label: r.title, owner: 'woocommerce', draftId: into[ 0 ].from } } );
+	}
+	return out;
+}
+
+const WOO_ROW = ( r ) => r && ( [ 'shop', 'product', 'product_cat' ].includes( r.postType ) || [ 'cart', 'checkout' ].includes( r.template ) || 'my-account' === r.slug );
+const LAYOUT_KIND = new Set( [ 'header', 'footer', 'drawer' ] );
+
+// Which surfaces become rows (FR-48-30, by what each is): a site-wide header, footer and nav drawer are the layout
+// rows; a header or footer inside a page is that page's own part; a drawer holding no nav is its block's panel (part
+// of the page holding it, else of the site chrome); a form, modal or choice flow inside a WooCommerce page (shop,
+// product, cart, checkout, my account) is WooCommerce's or its shop block's; a surfaces.json record with no surface in
+// the draft code is a part of its page (the code shows nothing to build). Returns { rows: the surfaces that become
+// rows, parts: [ { row, part } ] } with `row` the owning row (null for the site chrome).
+function ownedSurfaces( surfaces, rows, endpoints, routeSlug ) {
+	const rowOfPage = ( page ) => ( page ? rows.find( ( r ) => r.slug === routeSlug.get( page ) || ( r.route && kebab( r.route ) === kebab( page ) ) ) : null ) || null;
+	const parts = endpoints.map( ( e ) => ( { row: e.checkout, part: e.part } ) );
+	const out = [];
+	for ( const s of surfaces ) {
+		const hintOnly = s.draftId.startsWith( 'surfaces.json ' );
+		const page = rowOfPage( s.page ?? ( hintOnly ? s.route : null ) );
+		const part = ( owner ) => parts.push( { row: page, part: { kind: s.kind, label: s.label, owner, draftId: s.draftId } } );
+		if ( hintOnly ) {
+			part( 'draft-notes' );
+		} else if ( LAYOUT_KIND.has( s.kind ) && page ) {
+			part( WOO_ROW( page ) ? 'woocommerce' : 'page' );
+		} else if ( 'drawer' === s.kind && ! s.nav ) {
+			part( 'block' );
+		} else if ( WOO_ROW( page ) ) {
+			part( 'woocommerce' );
+		} else {
+			out.push( s );
+		}
+	}
+	return { rows: out, parts };
 }
 
 // Problems with a page map: schema violations (data/page-map.schema.json), a slug used twice within one post type

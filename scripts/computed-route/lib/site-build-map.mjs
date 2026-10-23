@@ -136,33 +136,6 @@ export function treeFor( repo, client, row, menuIds ) {
 export const templateTreeFor = ( repo, client, row ) => treeFor( repo, client, row, {} );
 export const pageTreeFor = ( repo, client, row, menuIds ) => ( 'shop' === row.postType ? { tree: placeholderTree( row, menuIds ), source: 'placeholder' } : treeFor( repo, client, row, menuIds ) );
 
-// The owner's choice among several rows of one layout kind (a checkout header beside the site header): the
-// `active` map of sites/<client>/build/site-build-decisions.json ({ active: { header: '<slug>' } }), else none.
-export function readDecisions( repo, client ) {
-	const file = path.join( repo, 'sites', client, 'build', 'site-build-decisions.json' );
-	return fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : {};
-}
-
-// The row of one layout kind (`area`: header, drawer or footer) that gets the active pointer when the map holds several
-// (a checkout header beside the site header, a bag drawer beside the menu drawer): only the owner's decision chooses.
-// With none, `problem` names the candidates and the file to set, and `suggested` is the first row whose slug shares no
-// word with a page row's slug or route (a variant named for its page is not the site's own), else the first.
-// Returns { row, suggested, problem }.
-export function chooseActive( mine, area, rows, decisions ) {
-	const slugs = mine.map( ( r ) => r.slug ).join( ', ' );
-	const wanted = decisions?.active?.[ area ];
-	if ( wanted ) {
-		const row = mine.find( ( r ) => r.slug === wanted );
-		return row ? { row, suggested: row, problem: null } : { row: null, suggested: null, problem: `site-build-decisions.json names "${ wanted }" as the active ${ area }, which is no ${ area } row (${ slugs })` };
-	}
-	const words = ( text ) => String( text || '' ).toLowerCase().split( /[^a-z0-9]+/ ).filter( ( w ) => w.length > 2 && ! [ area, 'site', 'menu' ].includes( w ) );
-	const surfaceTypes = [ ...Object.keys( LAYOUT_TYPES ), 'sgs_mega_menu', 'sgs_form', 'sgs_modal' ];
-	const pageWords = new Set( rows.filter( ( r ) => ! surfaceTypes.includes( r.postType ) ).flatMap( ( r ) => [ ...words( r.slug ), ...words( r.route ) ] ) );
-	const own = mine.filter( ( r ) => ! words( r.slug ).some( ( w ) => pageWords.has( w ) ) );
-	const suggested = own[ 0 ] || mine[ 0 ];
-	return { row: null, suggested, problem: `${ mine.length } ${ area } rows (${ slugs }) and no choice of the active one; set {"active":{"${ area }":"<slug>"}} in sites/<client>/build/site-build-decisions.json (${ rowKey( suggested ) } is the likeliest)` };
-}
-
 // The site a page map's ids were written for, recorded beside the map (`page-map.site`) because the map's own layout
 // carries nothing but the ids; null before any run recorded one.
 const idsSiteFile = ( mapFile ) => path.join( path.dirname( mapFile ), 'page-map.site' );

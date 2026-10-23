@@ -13,8 +13,8 @@
   },
   {
     "route": "shop",
-    "slug": "sunglasses",
-    "title": "Shop",
+    "slug": "shop",
+    "title": "Sunglasses",
     "parent": null,
     "template": "archive-product",
     "menus": [
@@ -27,7 +27,15 @@
     "postType": "shop",
     "collection": "live",
     "flags": [],
-    "id": null
+    "id": null,
+    "parts": [
+      {
+        "kind": "drawer",
+        "label": "Shop filter rail / drawer",
+        "owner": "draft-notes",
+        "draftId": "surfaces.json S-17"
+      }
+    ]
   },
   {
     "route": "product",
@@ -39,7 +47,15 @@
     "postType": "product",
     "collection": "live",
     "flags": [],
-    "id": null
+    "id": null,
+    "parts": [
+      {
+        "kind": "choice-flow",
+        "label": "Good to know",
+        "owner": "woocommerce",
+        "draftId": "Eye Care Birmingham.dc.html:1151:3 <section>"
+      }
+    ]
   },
   {
     "route": "lenses",
@@ -128,19 +144,15 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": null
-  },
-  {
-    "route": "done",
-    "slug": "order-received",
-    "title": "Order confirmed",
-    "parent": "checkout",
-    "template": null,
-    "menus": [],
-    "postType": "page",
-    "collection": "static",
-    "flags": [],
-    "id": null
+    "id": null,
+    "parts": [
+      {
+        "kind": "endpoint",
+        "label": "Order confirmed",
+        "owner": "woocommerce",
+        "draftId": "Eye Care Birmingham.dc.html:1618:9 <button>"
+      }
+    ]
   },
   {
     "route": "signin",
@@ -152,77 +164,55 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": null,
+    "parts": [
+      {
+        "kind": "form",
+        "label": "signIn",
+        "owner": "woocommerce",
+        "draftId": "Eye Care Birmingham.dc.html:1677:7 <form>"
+      },
+      {
+        "kind": "form",
+        "label": "register",
+        "owner": "woocommerce",
+        "draftId": "Eye Care Birmingham.dc.html:1687:7 <form>"
+      },
+      {
+        "kind": "form",
+        "label": "sendReset",
+        "owner": "woocommerce",
+        "draftId": "Eye Care Birmingham.dc.html:1702:7 <form>"
+      },
+      {
+        "kind": "form",
+        "label": "saveReset",
+        "owner": "woocommerce",
+        "draftId": "Eye Care Birmingham.dc.html:1725:7 <form>"
+      },
+      {
+        "kind": "form",
+        "label": "save",
+        "owner": "woocommerce",
+        "draftId": "Eye Care Birmingham.dc.html:1930:19 <form>"
+      },
+      {
+        "kind": "form",
+        "label": "saveDetails",
+        "owner": "woocommerce",
+        "draftId": "Eye Care Birmingham.dc.html:1979:11 <form>"
+      },
+      {
+        "kind": "form",
+        "label": "Addresses",
+        "owner": "draft-notes",
+        "draftId": "surfaces.json S-49"
+      }
+    ]
   },
   {
     "slug": "form-submit-contact",
     "title": "submitContact",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-sign-in",
-    "title": "signIn",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-register",
-    "title": "register",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-send-reset",
-    "title": "sendReset",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-save-reset",
-    "title": "saveReset",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-save",
-    "title": "save",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_form",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
-    "slug": "form-save-details",
-    "title": "saveDetails",
     "parent": null,
     "template": null,
     "menus": [],
@@ -240,7 +230,33 @@
     "postType": "sgs_header",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": null,
+    "parts": [
+      {
+        "kind": "drawer",
+        "label": "Your bag",
+        "owner": "block",
+        "draftId": "Eye Care Birmingham.dc.html:2087:5 <div aria-label=\"Your bag\">"
+      },
+      {
+        "kind": "menu",
+        "label": "Mega menu",
+        "owner": "draft-notes",
+        "draftId": "surfaces.json S-04"
+      },
+      {
+        "kind": "drawer",
+        "label": "Mobile menu",
+        "owner": "draft-notes",
+        "draftId": "surfaces.json S-05"
+      },
+      {
+        "kind": "modal",
+        "label": "Lens configurator",
+        "owner": "draft-notes",
+        "draftId": "surfaces.json S-27"
+      }
+    ]
   },
   {
     "slug": "footer",
@@ -265,17 +281,6 @@
     "id": null
   },
   {
-    "slug": "drawer-your-bag",
-    "title": "Your bag",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_drawer",
-    "collection": "static",
-    "flags": [],
-    "id": null
-  },
-  {
     "slug": "modal-size-guide",
     "title": "Size guide",
     "parent": null,
@@ -287,19 +292,19 @@
     "id": null
   },
   {
-    "slug": "modal-add-prescription-lenses",
+    "slug": "choice-flow-add-prescription-lenses",
     "title": "Add prescription lenses",
     "parent": null,
     "template": null,
     "menus": [],
-    "postType": "sgs_modal",
+    "postType": "sgs_choice_flow",
     "collection": "static",
     "flags": [],
     "id": null
   },
   {
-    "slug": "mega-menu-eye-care-birmingham",
-    "title": "Mega menu",
+    "slug": "mega-menu-sunglasses",
+    "title": "Sunglasses mega menu",
     "parent": null,
     "template": null,
     "menus": [],
@@ -309,34 +314,34 @@
     "id": null
   },
   {
-    "slug": "drawer-mobile-menu",
-    "title": "Mobile menu",
+    "slug": "mega-menu-brands",
+    "title": "Brands mega menu",
     "parent": null,
     "template": null,
     "menus": [],
-    "postType": "sgs_drawer",
+    "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
     "id": null
   },
   {
-    "slug": "drawer-shop-filter-rail-drawer",
-    "title": "Shop filter rail / drawer",
+    "slug": "mega-menu-lenses",
+    "title": "Lenses mega menu",
     "parent": null,
     "template": null,
     "menus": [],
-    "postType": "sgs_drawer",
+    "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
     "id": null
   },
   {
-    "slug": "form-addresses",
-    "title": "Addresses",
+    "slug": "mega-menu-help",
+    "title": "Help mega menu",
     "parent": null,
     "template": null,
     "menus": [],
-    "postType": "sgs_form",
+    "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
     "id": null

@@ -44,7 +44,7 @@ const hashMap = proposePageMap( { folder: FIX( 'hash' ), routing: hashRouting } 
 test( 'MUST FAIL: every route and every CPT surface has one row', () => {
 	assert.deepEqual( rowProblems( hashMap, hashRouting, [ 'post-first', 'post-second' ] ), [] );
 	assert.deepEqual( hashMap.rows.filter( ( r ) => CPT.test( r.postType ) ).map( ( r ) => `${ r.postType }:${ r.slug }` ).sort(), [
-		'sgs_choice_flow:choice-flow-quote-builder', 'sgs_drawer:drawer-site-menu', 'sgs_footer:footer', 'sgs_form:form-contact', 'sgs_form:form-enquiry',
+		'sgs_drawer:drawer-site-menu', 'sgs_footer:footer', 'sgs_form:form-contact', 'sgs_form:form-enquiry',
 		'sgs_header:header', 'sgs_mega_menu:mega-menu-about', 'sgs_mega_menu:mega-menu-services', 'sgs_modal:modal-size-guide' ] );
 	const dropped = { ...hashMap, rows: hashMap.rows.filter( ( r ) => 'team' !== r.route ) };
 	assert.deepEqual( rowProblems( dropped, hashRouting ), [ 'route team has no row' ] );
@@ -128,7 +128,7 @@ test( 'MUST FAIL: a surface one source lacks is still a row plus a surfaces-disa
 test( 'MUST FAIL: an embedded data-sgs-manifest is the proposal; the rules fill what it lacks', () => {
 	const m = proposePageMap( { folder: FIX( 'manifest' ) } );
 	const routes = m.rows.filter( ( r ) => r.route ).map( ( r ) => `${ r.route }:${ r.slug }:${ r.postType }` );
-	assert.deepEqual( routes, [ 'home:home:page', 'shop:glasses:shop', 'signin:my-account:page', 'faq:faq:page' ], 'wp slugs and types come from the manifest' );
+	assert.deepEqual( routes, [ 'home:home:page', 'shop:shop:shop', 'signin:my-account:page', 'faq:faq:page' ], 'wp slugs and types come from the manifest' );
 	assert.equal( bySlug( m, 'glasses' ).template, 'archive-product' );
 	assert.ok( m.linkMap.some( ( l ) => 'my-account' === l.slug ), 'the signed-in view shares the one my-account row' );
 	assert.ok( m.gaps.some( ( g ) => 'page-map' === g.construct && g.error.includes( '"help"' ) ), 'a manifest parent naming no row is a gap row' );

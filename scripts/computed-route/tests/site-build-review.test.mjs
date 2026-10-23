@@ -18,7 +18,7 @@ const state = ( o = {} ) => ( {
 	options: { show_on_front: 'posts', page_on_front: '0', page_for_posts: '0', permalink_structure: '/%postname%/', woocommerce_shop_page_id: '6', woocommerce_cart_page_id: '7', woocommerce_checkout_page_id: '8', woocommerce_myaccount_page_id: '9' },
 	pointers: { header: 0, footer: 0, drawer: 0 }, pointerKeys: {}, templateHashes: {}, templateContent: {}, templateSaved: {}, customTemplates: [], ...o,
 } );
-const plan = ( rows, st = state(), extra = {} ) => planBuild( { rows, state: st, repo: os.tmpdir(), client: 'none', decisions: {}, ...extra } );
+const plan = ( rows, st = state(), extra = {} ) => planBuild( { rows, state: st, repo: os.tmpdir(), client: 'none', ...extra } );
 const repoWith = ( files ) => {
 	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'site-build-review-' ) );
 	for ( const [ rel, body ] of Object.entries( files ) ) {
@@ -37,7 +37,7 @@ const SHOP = () => [
 	row( { slug: 'account', title: 'My account' } ),
 ];
 const SHOP_TREES = { 'sites/c/build/trees/shop/shop.json': TREE, 'sites/c/build/trees/product/product.json': TREE };
-const planWithTrees = ( rows, st ) => planBuild( { rows, state: st, repo: repoWith( SHOP_TREES ), client: 'c', decisions: {} } );
+const planWithTrees = ( rows, st ) => planBuild( { rows, state: st, repo: repoWith( SHOP_TREES ), client: 'c' } );
 
 // 1 -----------------------------------------------------------------------------------------------------------------
 test( 'MUST FAIL: a shop row and a page row with one slug claim one WordPress slug and stop the run', () => {
@@ -181,28 +181,23 @@ test( 'MUST FAIL: a template hash recorded for a copy the site no longer holds i
 const HEADERS = () => [ row( { slug: 'home', title: 'Home' } ), row( { slug: 'header', title: 'Header', route: undefined, postType: 'sgs_header', id: 50 } ), row( { slug: 'header-two', title: 'Header two', route: undefined, postType: 'sgs_header', id: 51 } ) ].map( noUndefined );
 const headerPosts = { 50: post( 50, 'sgs_header:header', { treeHash: 'x' } ), 51: post( 51, 'sgs_header:header-two', { treeHash: 'x' } ) };
 const pointerAction = ( p ) => p.actions.find( ( a ) => 'pointer' === a.type && 'header' === a.area );
-test( 'MUST FAIL: several rows of one layout kind and no decision stop the run unless the active pointer already names one of them', () => {
+test( 'MUST FAIL: several rows of one layout kind stop the run even when the active pointer already names one of them', () => {
 	const stopped = plan( HEADERS(), state( { posts: headerPosts } ) );
 	assert.equal( stopped.problems.length, 1 );
-	assert.match( stopped.problems[ 0 ], /2 header rows \(header, header-two\).*site-build-decisions\.json/ );
-	const kept = plan( HEADERS(), state( { posts: headerPosts, pointers: { header: 51, footer: 0, drawer: 0 }, pointerKeys: { header: 'sgs_header:header-two' } } ) );
-	assert.deepEqual( kept.problems, [] );
-	assert.equal( pointerAction( kept ), undefined );
-	const decided = plan( HEADERS(), state( { posts: headerPosts } ), { decisions: { active: { header: 'header-two' } } } );
-	assert.equal( pointerAction( decided ).id, 51 );
+	assert.match( stopped.problems[ 0 ], /2 header rows \(sgs_header:header, sgs_header:header-two\)/ );
+	const named = plan( HEADERS(), state( { posts: headerPosts, pointers: { header: 51, footer: 0, drawer: 0 }, pointerKeys: { header: 'sgs_header:header-two' } } ) );
+	assert.match( named.problems[ 0 ], /2 header rows/ );
 } );
 
-test( 'MUST FAIL: a pointer is overwritten only when it is empty or names a post carrying a row key, or the owner decided', () => {
+test( 'MUST FAIL: a pointer is overwritten only when it is empty or names a post carrying a row key', () => {
 	const one = () => [ row( { slug: 'home', title: 'Home' } ), noUndefined( row( { slug: 'header', title: 'Header', route: undefined, postType: 'sgs_header', id: 50 } ) ) ];
 	const posts = { 50: post( 50, 'sgs_header:header', { treeHash: 'x' } ) };
 	const foreign = plan( one(), state( { posts, pointers: { header: 77, footer: 0, drawer: 0 } } ) );
 	assert.equal( pointerAction( foreign ), undefined );
-	assert.match( foreign.notes.join( '\n' ), /active header is post 77.*not made by the site build.*site-build-decisions\.json/ );
+	assert.match( foreign.notes.join( '\n' ), /active header is post 77.*not made by the site build, so it is left/ );
 	assert.equal( pointerAction( plan( one(), state( { posts, pointers: { header: 0, footer: 0, drawer: 0 } } ) ) ).id, 50 );
 	const ours = plan( one(), state( { posts, pointers: { header: 77, footer: 0, drawer: 0 }, pointerKeys: { header: 'sgs_header:old' } } ) );
 	assert.equal( pointerAction( ours ).id, 50 );
-	const decided = plan( one(), state( { posts, pointers: { header: 77, footer: 0, drawer: 0 } } ), { decisions: { active: { header: 'header' } } } );
-	assert.equal( pointerAction( decided ).id, 50 );
 } );
 
 // 7 -----------------------------------------------------------------------------------------------------------------
