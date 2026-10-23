@@ -3,7 +3,7 @@
 // hidden on the other's widths, through the visibility flags when the boundaries are tiers, else a scoped @media rule.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { widthGateWrites } from '../lib/fill-width-gate.mjs';
+import { widthGateWrites, maskHiddenVariants } from '../lib/fill-width-gate.mjs';
 import { openDb } from '../lib/db.mjs';
 
 const db = openDb();
@@ -47,4 +47,20 @@ test( 'MUST FAIL WITHOUT THE VARIANT KEY: a words-only variant measured on the e
 
 test( 'a node with no variant fields and no fact record is untouched', () => {
 	assert.equal( run( [ { n: 14, extra: {} } ] ).writes.length, 0 );
+} );
+
+test( 'MUST FAIL WITHOUT THE READ MASK: two instances measured on one element are each read only where they are shown', () => {
+	const box = { rect: { x: 0, y: 0, w: 143, h: 34 }, inFlow: true, styles: {} };
+	const reads = { widths: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { '0:': { ...box }, '1:': { ...box }, '2:': { ...box } } ] ) ) };
+	const nodes = [
+		{ index: 0, node: { draftRef: { tpl: 'Page/14#0' }, widthVariants: [ { key: 'Page/18#0', shown: [ 375 ] } ] }, targets: [ { id: '0:' } ] },
+		{ index: 1, node: { draftRef: { tpl: 'Page/14#0' }, widthShown: [ 375 ], variantKey: 'Page/18#0' }, targets: [ { id: '1:' } ] },
+		{ index: 2, node: { draftRef: { tpl: 'Page/20#0' } }, targets: [ { id: '2:' } ] },
+	];
+	maskHiddenVariants( reads, nodes, null, 'Page' );
+	assert.deepEqual( reads.widths[ 375 ][ '0:' ], { missing: true }, 'the number pill is not drawn on phones' );
+	assert.equal( reads.widths[ 375 ][ '1:' ].rect.w, 143, 'the Call pill is' );
+	assert.deepEqual( [ 768, 1440 ].map( ( w ) => reads.widths[ w ][ '1:' ] ), [ { missing: true }, { missing: true } ], 'the Call pill is not drawn from 768' );
+	assert.equal( reads.widths[ 1440 ][ '0:' ].rect.w, 143 );
+	assert.deepEqual( [ 375, 768, 1440 ].map( ( w ) => reads.widths[ w ][ '2:' ].rect.w ), [ 143, 143, 143 ], 'a node with no variant is untouched' );
 } );

@@ -196,6 +196,29 @@ export function shownOfNode( skeletonNode, facts, rootComponent = null ) {
 	return own;
 }
 
+// A width-variant instance is not drawn at the widths it is hidden at (the live page hides it there), so its reads at
+// those widths are missing for every pass that follows: two instances measured on one draft element (a words-only
+// variant shares its default's) never stand side by side as two children in one box. Mutates reads.widths in place.
+export function maskHiddenVariants( reads, nodes, facts, rootComponent = null ) {
+	for ( const n of nodes ) {
+		if ( ! n.node?.widthShown && ! n.node?.widthVariants?.length ) {
+			continue;
+		}
+		const shown = shownOfNode( n.node, facts, rootComponent )?.shown;
+		if ( ! shown ) {
+			continue;
+		}
+		for ( const [ w, byId ] of Object.entries( reads.widths || {} ) ) {
+			if ( ! shown.some( ( [ lo, hi ] ) => Number( w ) >= lo && Number( w ) < hi ) ) {
+				n.targets.forEach( ( t ) => {
+					byId[ t.id ] = { missing: true };
+				} );
+			}
+		}
+	}
+	return reads;
+}
+
 // Writes the width gates of every skeleton node. nodes: skeletonNodes(); flat: tree nodes by index; refOf: tree node to
 // ref; facts: the fact record (null: nothing written); db: the framework DB; scope: the surface; entries: the ledger's
 // entries (the snap entries continue its numbering). Returns { writes, unmapped, notes, ledger } in the shapes
