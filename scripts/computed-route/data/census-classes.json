@@ -4,28 +4,28 @@
 		"owner_note": "owner names the Spec 48 item (.claude/specs/48-CLONING-SYSTEM.md) that owns closing the class."
 	},
 	"unmapped": [
-		{ "class": "state-transition", "pattern": "state transition", "owner": "FR-48-81 States" },
-		{ "class": "layout-hover", "pattern": "hover: Spec 38A §5\\.1 maps a layout-property hover", "owner": "Spec 38A §5.1 (a layout-property hover routed to scale, translate, indent or the underline)" },
-		{ "class": "unpaired-part", "pattern": "^unpaired-part", "owner": "FR-48-3 Stage-0 calibration" },
-		{ "class": "no-declared-part", "pattern": "^no declared part", "owner": "FR-48-3 Stage-0 calibration" },
-		{ "class": "uncalibrated", "pattern": "^uncalibrated|^calibration has no ", "owner": "FR-48-49 Uncalibrated settings" },
-		{ "class": "conflict", "pattern": "^conflict", "owner": "FR-48-21 Stage 5 gap list" },
-		{ "class": "disagree", "pattern": "^disagree", "owner": "FR-48-72 Code-render disagreement rows" },
-		{ "class": "ambiguous", "pattern": "^ambiguous", "owner": "FR-48-3 Stage-0 calibration" },
-		{ "class": "width-ladder", "pattern": "^width-gate|width ladder|holds one value for every width", "owner": "FR-48-27 Two breakpoint width bases" },
-		{ "class": "unmapped-element", "pattern": "^unmapped-element", "owner": "FR-48-21 Stage 5 gap list" },
-		{ "class": "not-plain", "pattern": "^not-plain", "owner": "FR-48-43 Unstated values" },
-		{ "class": "current-item", "pattern": "^current-(item|indicator)", "owner": "FR-48-81 States" },
-		{ "class": "motion", "pattern": "^timing-computed|^sgsMotion refused|endless|shows motion|second entrance|entrance layer", "owner": "FR-48-47 Motion" },
-		{ "class": "content-media-icon", "pattern": "iconSource|draft icon|draft SVG|figcaption|painted image|fact record holds|aria-label|<[a-z]+> is not kept|draws the icon", "owner": "FR-48-82 Content, media and icons" },
-		{ "class": "draft-input", "pattern": "draftRef finder|scrollbar width|focus paints with hover|bound to Site Info", "owner": "FR-48-21 Stage 5 gap list" },
-		{ "class": "dimension", "pattern": "dimension:", "owner": "FR-48-43 Unstated values" },
-		{ "class": "shape", "pattern": "^shape", "owner": "FR-48-2 Accepted value forms" },
-		{ "class": "no-setting", "pattern": "^no-setting|^no setting of the block|^no (font-size|line-height|color|box-shadow|background-image|background-color|justify-content|align-items|flex-direction) setting", "owner": "FR-48-21 Stage 5 gap list (framework setting gap)" }
+		{ "class": "state-transition", "pattern": "state transition", "owner": "FR-48-81 States", "frClass": "W-route" },
+		{ "class": "layout-hover", "pattern": "hover: Spec 38A §5\\.1 maps a layout-property hover", "owner": "Spec 38A §5.1 (a layout-property hover routed to scale, translate, indent or the underline)", "frClass": "W-route" },
+		{ "class": "unpaired-part", "pattern": "^unpaired-part", "owner": "FR-48-3 Stage-0 calibration", "frClass": "W-walker" },
+		{ "class": "no-declared-part", "pattern": "^no declared part", "owner": "FR-48-3 Stage-0 calibration", "frClass": "W-walker" },
+		{ "class": "uncalibrated", "pattern": "^uncalibrated|^calibration has no ", "owner": "FR-48-49 Uncalibrated settings", "frClass": "I-calibration" },
+		{ "class": "conflict", "pattern": "^conflict", "owner": "FR-48-21 Stage 5 gap list", "frClass": "W-route" },
+		{ "class": "disagree", "pattern": "^disagree", "owner": "FR-48-72 Code-render disagreement rows", "frClass": "render-wins" },
+		{ "class": "ambiguous", "pattern": "^ambiguous", "owner": "FR-48-3 Stage-0 calibration", "frClass": "W-route" },
+		{ "class": "width-ladder", "pattern": "^width-gate|width ladder|holds one value for every width", "owner": "FR-48-27 Two breakpoint width bases", "frClass": "W-route" },
+		{ "class": "unmapped-element", "pattern": "^unmapped-element", "owner": "FR-48-21 Stage 5 gap list", "frClass": "W-walker" },
+		{ "class": "not-plain", "pattern": "^not-plain", "owner": "FR-48-43 Unstated values", "frClass": "W-route" },
+		{ "class": "current-item", "pattern": "^current-(item|indicator)", "owner": "FR-48-81 States", "frClass": "W-route" },
+		{ "class": "motion", "pattern": "^timing-computed|^sgsMotion refused|endless|shows motion|second entrance|entrance layer", "owner": "FR-48-47 Motion", "frClass": "W-route" },
+		{ "class": "content-media-icon", "pattern": "iconSource|draft icon|draft SVG|figcaption|painted image|fact record holds|aria-label|<[a-z]+> is not kept|draws the icon", "owner": "FR-48-82 Content, media and icons", "frClass": "W-route" },
+		{ "class": "draft-input", "pattern": "draftRef finder|scrollbar width|focus paints with hover|bound to Site Info", "owner": "FR-48-21 Stage 5 gap list", "frClass": "W-walker" },
+		{ "class": "dimension", "pattern": "dimension:", "owner": "FR-48-43 Unstated values", "frClass": "W-route" },
+		{ "class": "shape", "pattern": "^shape", "owner": "FR-48-2 Accepted value forms", "frClass": "W-route" },
+		{ "class": "no-setting", "pattern": "^no-setting|^no setting of the block|^no (font-size|line-height|color|box-shadow|background-image|background-color|justify-content|align-items|flex-direction) setting", "owner": "FR-48-21 Stage 5 gap list (framework setting gap)", "frClass": "F-setting", "candidate": true }
 	],
 	"held": [
-		{ "class": "held-covered", "pattern": "^covered$", "owner": "FR-48-21 Stage 5 gap list" },
-		{ "class": "held-inherited", "pattern": "^inherited$", "owner": "FR-48-21 Stage 5 gap list" },
-		{ "class": "held-default", "pattern": "^default$", "owner": "FR-48-21 Stage 5 gap list" }
+		{ "class": "held-covered", "pattern": "^covered$", "owner": "FR-48-21 Stage 5 gap list", "frClass": "held" },
+		{ "class": "held-inherited", "pattern": "^inherited$", "owner": "FR-48-21 Stage 5 gap list", "frClass": "held" },
+		{ "class": "held-default", "pattern": "^default$", "owner": "FR-48-21 Stage 5 gap list", "frClass": "held" }
 	]
 }

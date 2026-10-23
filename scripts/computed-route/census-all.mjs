@@ -1,6 +1,8 @@
 // The mechanism census across every surface and client: groups each surface's newest walker report and Fill run by
 // mechanism signature (block family, property family, state, tier pattern, side, Fill reason class).
 //   node census-all.mjs [--clients a,b] [--root <repo root>] [--out <file>] [--json] [--check]
+// Each row also carries its FR-48-65 class (lib/census-gap-class.mjs): the Fill reason's class, with an I-class where the block's
+// fitting setting is NULL-routed, mistagged, uncalibrated or stale. The calibration cache is read from <root>/scripts/computed-route/cache.
 // --out writes Markdown, or JSON when the file ends in .json. --check exits 1 when a row has no signature (a part the
 // framework DB, the property families or data/census-classes.json cannot name). Exit 2 on usage.
 import fs from 'node:fs';
@@ -9,6 +11,8 @@ import { fileURLToPath } from 'node:url';
 import { openDb } from './lib/db.mjs';
 import { loadRules } from './lib/fill-census.mjs';
 import { blockLookup, surfaceRows, groupRows, SIGNATURE_PARTS } from './lib/census-mechanism.mjs';
+import { classifyRows, classCounts, gitFreshness } from './lib/census-gap-class.mjs';
+import { calibrationForSite } from './solve.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const args = process.argv.slice( 2 );
@@ -65,12 +69,13 @@ export function clientRows( client, qa, lookup, rules ) {
 const cell = ( v ) => String( v ?? '' ).replace( /\|/g, '\\|' ).replace( /\s+/g, ' ' ).slice( 0, 60 );
 
 // The Markdown table of the groups.
-export function renderTable( { groups, unclassified, surfaces, clients } ) {
-	const lines = [ `# Mechanism census`, '', `${ groups.reduce( ( n, g ) => n + g.total, 0 ) } rows in ${ groups.length } groups across ${ surfaces } surface(s) of ${ clients.join( ', ' ) }; ${ unclassified.length } with no signature.`, '', `| ${ SIGNATURE_PARTS.join( ' | ' ) } | rows per client | examples (client, surface, element: draft → live) | Fill reason | owner |`, `|${ '---|'.repeat( SIGNATURE_PARTS.length + 4 ) }` ];
+export function renderTable( { groups, unclassified, surfaces, clients, classes = null } ) {
+	const lines = [ `# Mechanism census`, '', `${ groups.reduce( ( n, g ) => n + g.total, 0 ) } rows in ${ groups.length } groups across ${ surfaces } surface(s) of ${ clients.join( ', ' ) }; ${ unclassified.length } with no signature.`, '', ...( classes ? [ `Classes (FR-48-65): ${ Object.entries( classes.counts ).sort( ( a, b ) => b[ 1 ] - a[ 1 ] ).map( ( [ c, n ] ) => `${ c } ${ n }` ).join( ', ' ) }.`, '' ] : [] ), `| ${ SIGNATURE_PARTS.join( ' | ' ) } | classes | rows per client | examples (client, surface, element: draft → live) | Fill reason | owner |`, `|${ '---|'.repeat( SIGNATURE_PARTS.length + 5 ) }` ];
 	for ( const g of groups ) {
+		const cls = Object.entries( g.classes ).map( ( [ c, n ] ) => `${ c } ${ n }` ).join( ', ' );
 		const per = Object.entries( g.byClient ).map( ( [ c, n ] ) => `${ c } ${ n }` ).join( ', ' );
 		const ex = g.examples.map( ( e ) => `${ e.client } ${ e.surface } ${ cell( e.element ) }: ${ cell( e.draft ) } → ${ cell( e.live ) }` ).join( '<br>' );
-		lines.push( `| ${ SIGNATURE_PARTS.map( ( p ) => g.parts[ p ] ).join( ' | ' ) } | ${ per } | ${ ex } | ${ cell( g.reasonText ) } | ${ cell( g.owner ) } |` );
+		lines.push( `| ${ SIGNATURE_PARTS.map( ( p ) => g.parts[ p ] ).join( ' | ' ) } | ${ cls } | ${ per } | ${ ex } | ${ cell( g.reasonText ) } | ${ cell( g.owner ) } |` );
 	}
 	// Rows with no signature: counted by client, surface and the part that is missing, then the first few in full.
 	const missing = ( u ) => SIGNATURE_PARTS.filter( ( p ) => null === u[ p ] || undefined === u[ p ] || '' === u[ p ] ).join( '+' );
@@ -86,14 +91,35 @@ export function renderTable( { groups, unclassified, surfaces, clients } ) {
 	return lines.join( '\n' ) + '\n';
 }
 
+// The calibration of a block on the site a surface builds on (sites/<client>/build/surfaces.json), or null when the surface
+// names no site or the block has no cache.
+function calibrationReader( repo ) {
+	const cacheDir = path.join( repo, 'scripts', 'computed-route', 'cache' );
+	const sites = new Map();
+	const readers = new Map();
+	return ( client, surface, block ) => {
+		const file = path.join( repo, 'sites', client, 'build', 'surfaces.json' );
+		sites.has( file ) || sites.set( file, fs.existsSync( file ) ? readJson( file ) : {} );
+		const site = sites.get( file )[ surface ]?.site;
+		if ( ! site ) {
+			return null;
+		}
+		const key = `${ site }${ block }`;
+		readers.has( key ) || readers.set( key, calibrationForSite( site, cacheDir )( block ) );
+		return readers.get( key );
+	};
+}
+
 // Runs the census over the given clients' folders under `root`.
 export function censusAll( { root: repo, clients, db = openDb() } ) {
 	const lookup = blockLookup( db );
 	const rules = loadRules();
 	const all = clients ?? dirs( path.join( repo, 'sites' ) ).filter( ( c ) => fs.existsSync( path.join( repo, 'sites', c, 'build', 'qa' ) ) );
-	const surfaces = all.flatMap( ( c ) => clientRows( c, path.join( repo, 'sites', c, 'build', 'qa' ), lookup, rules ) );
-	const { groups, unclassified } = groupRows( surfaces.flatMap( ( s ) => s.rows ) );
-	return { clients: all, surfaces, groups, unclassified };
+	const raw = all.flatMap( ( c ) => clientRows( c, path.join( repo, 'sites', c, 'build', 'qa' ), lookup, rules ) );
+	const classed = classifyRows( raw.flatMap( ( s ) => s.rows ), { db, calFor: calibrationReader( repo ), freshness: gitFreshness( { repo, db } ) } );
+	const surfaces = raw.map( ( s ) => ( { ...s, rows: classed.filter( ( r ) => r.client === s.client && r.surface === s.surface ) } ) );
+	const { groups, unclassified } = groupRows( classed );
+	return { clients: all, surfaces, groups, unclassified, classes: classCounts( classed ) };
 }
 
 if ( process.argv[ 1 ] === fileURLToPath( import.meta.url ) ) {
@@ -102,7 +128,7 @@ if ( process.argv[ 1 ] === fileURLToPath( import.meta.url ) ) {
 		process.exit( 2 );
 	}
 	const result = censusAll( { root, clients: flag( '--clients' )?.split( ',' ) ?? null } );
-	const summary = { clients: result.clients, surfaces: result.surfaces.length, groups: result.groups, unclassified: result.unclassified };
+	const summary = { clients: result.clients, surfaces: result.surfaces.length, groups: result.groups, unclassified: result.unclassified, classes: result.classes };
 	const out = flag( '--out' );
 	if ( out ) {
 		fs.writeFileSync( out, out.endsWith( '.json' ) ? JSON.stringify( summary, null, 1 ) : renderTable( { ...summary, surfaces: result.surfaces.length } ) );

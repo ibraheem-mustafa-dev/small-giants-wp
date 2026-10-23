@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 // Gate chain command (Spec 48 FR-48-64, FR-48-66): runs G0 to G7 (lib/gate-chain.mjs) on every distinct open issue of a
 // Solve report, prints each row's first failing gate, class and evidence, and writes gaps.json.
-//   node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--probes <module.mjs>] [--out <file>]
+//   node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--probes <module.mjs>] [--out <file>] [--debt-out <file>]
 // With --client the surface's tree, state map and site come from sites/<client>/build/surfaces.json (the block of each row
 // is read from the tree; without it G0 fails every row, the block being unknown). The final walk is the highest
 // round-N/report.json beside the report. The live gates G5 to G7 run lib/gate-probes.mjs against the surface's live site
 // (the walker config's live url, or SGS_LIVE_ORIGIN) and a fresh walk of the draft served from the surface's draftDir; a
 // module given with --probes replaces them (its default export is { measure(row, setting), probe(row, kind), recheck(row) }).
-// Writes gate-chain.json beside the report (or --out) and, with --client, sites/<client>/build/qa/gaps.json (FR-48-66;
-// the date it is published on is today's). Reads the DB read-only.
+// Writes gate-chain.json beside the report (or --out) and, with --client, sites/<client>/build/qa/instrument-debt.json (FR-48-67,
+// or --debt-out): every I-class row grouped by owner, plus the known items (lib/instrument-debt.mjs). Reads the DB read-only.
 import fs from 'fs';
 import path from 'path';
 import { createRequire } from 'module';
@@ -25,11 +25,15 @@ import { localBlockHash } from './lib/deploy-hash.mjs';
 import { manifestSchemaVersion } from './lib/handoff.mjs';
 import { createProbes, liveTarget } from './lib/gate-probes.mjs';
 import { writeGaps, gapsPath } from './lib/gaps-file.mjs';
+import { ancestorsOf, gapClassOf, instrumentFinding, withDiscovery } from './lib/gap-classes.mjs';
+import { debtRows, debtPath, staleSlotMaps, unroutedKnown, writeDebt } from './lib/instrument-debt.mjs';
+import { READ_KEY } from './lib/calibrate-props.mjs';
 import { serveDraft } from './lib/draft.mjs';
 import { adminSession, readEnv, renderBlock } from './lib/trial-page.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
-const REPO = path.resolve( HERE, '..', '..' );
+// SGS_REPO_ROOT points the reads (sites, the calibration cache, the build) at another checkout of the repository.
+const REPO = process.env.SGS_REPO_ROOT ? path.resolve( process.env.SGS_REPO_ROOT ) : path.resolve( HERE, '..', '..' );
 
 // The newest walker report beside a Solve report: the highest round-N/report.json.
 export function finalWalk( dir ) {
@@ -88,16 +92,12 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 	const buildDir = client ? path.join( REPO, 'sites', client, 'build' ) : null;
 	const tree = s && buildDir ? readTree( path.join( buildDir, s.tree ) ) : null;
 	const blockOf = ( row ) => ( tree && row.ref ? nodeByRef( tree, row.ref )?.name ?? null : null );
-	const calFor = s?.site ? calibrationForSite( s.site ) : () => null;
+	const calFor = s?.site ? calibrationForSite( s.site, path.join( REPO, 'scripts', 'computed-route', 'cache' ) ) : () => null;
 	const intake = intakeFile && fs.existsSync( intakeFile ) ? JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ) : null;
-	const parentOf = db.prepare( 'SELECT parent_block FROM blocks WHERE slug = ?' );
-	const ancestors = ( b ) => {
-		const out = [];
-		for ( let p = parentOf.get( b )?.parent_block; p && ! out.includes( p ); p = parentOf.get( p )?.parent_block ) {
-			out.push( p );
-		}
-		return out;
-	};
+	const ancestors = ancestorsOf( db );
+	// An enum setting calibration discovered is routed through discovery: G3 never reads it as an unrouted setting.
+	const discovered = ( r ) => !! calFor( r.block_slug )?.discovered?.[ r.attr_name ];
+	const gateDb = withDiscovery( db, discovered );
 	const need = ( v, what ) => {
 		if ( null == v ) {
 			throw new Error( `${ what } is not readable` );
@@ -140,7 +140,7 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 				const defects = new Set( ( intake?.draftDefects || [] ).flatMap( ( g ) => g.rows || [ g ] ).filter( ( d ) => d.draftId && d.draftId === row.draftId ).flatMap( ( d ) => String( d.evidence?.declared ?? '' ).split( ';' ).map( ( x ) => x.split( ':' )[ 0 ].trim().toLowerCase() ) ) );
 				return { property: prop, declared: dv.declared[ row.width ] ?? null, renderedDraft: row.draft, fr34Passes: defects.has( prop ), ledgered: !! row.decided };
 			},
-			G3: ( row ) => ( { db, block: need( blockOf( row ), 'the block of the row' ), ancestors: ancestors( blockOf( row ) ), property: cssProp( row.key ), state: settingState( row, s?.states ) ?? null } ),
+			G3: ( row ) => ( { db: gateDb, block: need( blockOf( row ), 'the block of the row' ), ancestors: ancestors( blockOf( row ) ), property: cssProp( row.key ), state: settingState( row, s?.states ) ?? null } ),
 			G4: ( row, soFar ) => ( {
 				cache: calFor( blockOf( row ) ),
 				settings: need( soFar.G3?.settings, 'the candidate settings' ),
@@ -152,6 +152,15 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 			G7: ( row ) => ( { recheck: probes?.recheck ? () => probes.recheck( probed( row ) ) : undefined } ),
 		},
 		blockOf,
+		// The inputs G3 and G4 read for a row, to name the setting a failing instrument gate found.
+		findingOf: ( row ) => instrumentFinding( { db, block: need( blockOf( row ), 'the block of the row' ), ancestors: ancestors( blockOf( row ) ), property: cssProp( row.key ), state: settingState( row, s?.states ) ?? null, cache: calFor( blockOf( row ) ), isDiscovered: discovered,
+			boxAgrees: ! ( pairOf( walk, row )?.diffs || [] ).some( ( d ) => ! d.accepted && 'box' === d.kind ) } ),
+		treeBlocks: () => {
+			const names = new Set();
+			const visit = ( nodes ) => ( nodes || [] ).forEach( ( n ) => ( names.add( n.name ), visit( n.innerBlocks ) ) );
+			visit( tree );
+			return names;
+		},
 		declaredOf: ( row ) => draftValues( walk, row.pair, cssProp( row.key ), 'hover' === row.kind ).declared[ row.width ] ?? null,
 	};
 }
@@ -164,7 +173,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	};
 	const reportFile = argv.find( ( a, i ) => ! a.startsWith( '--' ) && ( 0 === i || ! argv[ i - 1 ].startsWith( '--' ) ) );
 	if ( ! reportFile ) {
-		console.error( 'usage: node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--probes <module.mjs>] [--out <file>]' );
+		console.error( 'usage: node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--probes <module.mjs>] [--out <file>] [--debt-out <file>]' );
 		process.exit( 2 );
 	}
 	const report = JSON.parse( fs.readFileSync( reportFile, 'utf8' ) );
@@ -172,15 +181,33 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const walk = finalWalk( path.dirname( path.resolve( reportFile ) ) );
 	const surfacesFile = client ? path.join( REPO, 'sites', client, 'build', 'surfaces.json' ) : null;
 	const probes = flag( '--probes' ) ? ( await import( pathToFileURL( path.resolve( flag( '--probes' ) ) ).href ) ).default : null;
-	const ctx = buildContext( { report, walk, surfaces: surfacesFile ? JSON.parse( fs.readFileSync( surfacesFile, 'utf8' ) ) : null, surface: report.surface, client, probes, installed: await installedVersions(), db: openDb(), intakeFile: client ? path.join( REPO, 'sites', client, 'build', 'intake', 'intake.json' ) : null } );
+	const surfaces = surfacesFile ? JSON.parse( fs.readFileSync( surfacesFile, 'utf8' ) ) : null;
+	const ctx = buildContext( { report, walk, surfaces, surface: report.surface, client, probes, installed: await installedVersions(), db: openDb(), intakeFile: client ? path.join( REPO, 'sites', client, 'build', 'intake', 'intake.json' ) : null } );
 	const out = [];
 	for ( const issue of issuesOf( report, report.surface ) ) {
 		const row = { ...issue.rows[ 0 ], solveClass: issue.solveClass };
 		const res = await runChain( row, ctx );
-		out.push( { key: issue.key, solveClass: issue.solveClass, ref: row.ref ?? null, pair: row.pair, property: row.key, widths: [ ...new Set( issue.rows.map( ( x ) => x.width ) ) ], ...res } );
+		// A class outside FR-48-65 (G7's `closed` apart) is a chain defect, never defaulted.
+		'closed' === res.class || null === res.class || gapClassOf( res.class );
+		const block = ctx.blockOf( row );
+		const attribute = [ 'G3', 'G4' ].includes( res.gate ) && String( res.class ).startsWith( 'I-' ) ? ctx.findingOf( row ).attribute : null;
+		out.push( { key: issue.key, solveClass: issue.solveClass, ref: row.ref ?? null, pair: row.pair, property: row.key, widths: [ ...new Set( issue.rows.map( ( x ) => x.width ) ) ], block, attribute, ...res } );
 		console.log( `${ issue.key }: ${ res.gate ? `stopped at ${ res.gate } (${ res.class }): ${ res.evidence }` : `passed all gates: ${ res.class } candidate` }` );
 	}
 	const file = path.resolve( flag( '--out' ) || path.join( path.dirname( reportFile ), 'gate-chain.json' ) );
 	fs.writeFileSync( file, JSON.stringify( { surface: report.surface, rows: out }, null, 1 ) );
 	console.log( `gate chain: ${ out.length } rows, ${ out.filter( ( r ) => r.candidate ).length } framework-gap candidates. Written ${ file }` );
+	// FR-48-67: every I-class row, and the known items whose inputs are present, grouped by owner beside gaps.json.
+	if ( client ) {
+		const db = openDb();
+		const cacheDir = path.join( REPO, 'scripts', 'computed-route', 'cache' );
+		const inTree = ctx.treeBlocks();
+		const stale = staleSlotMaps( { cacheDir, readKey: READ_KEY, localHash: ( short ) => {
+			const dir = path.join( REPO, 'plugins', 'sgs-blocks', 'build', 'blocks', short );
+			return fs.existsSync( dir ) ? localBlockHash( dir ) : null;
+		} } );
+		const known = [ ...unroutedKnown( { db, isDiscovered: ( r ) => !! calibrationForSite( surfaces?.[ report.surface ]?.site ?? '', cacheDir )( r.block_slug )?.discovered?.[ r.attr_name ] } ), ...stale.rows.filter( ( r ) => inTree.has( r.block ) ) ];
+		const written = writeDebt( { file: path.resolve( flag( '--debt-out' ) || debtPath( client, REPO ) ), rows: [ ...debtRows( out, { surface: report.surface } ), ...known.map( ( r ) => debtRows( [ r ], { surface: null } )[ 0 ] ) ], surface: report.surface, publishedOn: new Date().toISOString().slice( 0, 10 ) } );
+		console.log( `instrument debt: ${ written.rows.length } rows by owner ${ JSON.stringify( written.byOwner ) }; ${ debtRows( out, { surface: report.surface } ).length } from the chain, ${ known.length } known items${ stale.missing.length ? `; inputs missing: ${ stale.missing.slice( 0, 3 ).join( '; ' ) }` : '' }. Written ${ written.file }` );
+	}
 }
