@@ -177,19 +177,24 @@ async function walkSide( browser, side, width, draftStates = null ) {
 	const states = {};
 	// Every state starts from the page's rest (lib/state-rest.mjs): the rest signature is read before the first state's
 	// action; before each later one the page is loaded afresh when it is not at rest, and refused when it still is not.
-	// A state scoped to other widths (`widths` on the state) is not run at this one.
+	// A state scoped to other widths (`widths` on the state) is not run at this one. A state marked `from: 'previous'`
+	// whose previous state was refused or not run here is refused too: the page it would run on is not that state's.
 	let rest = null;
+	let previous = null;
 	for ( const state of cfg.states ) {
 		if ( state.widths && ! state.widths.includes( width ) ) {
+			previous = { name: state.name, refused: `not run at ${ width }px` };
 			continue;
 		}
 		h.log = [];
-		const start = null === rest ? { how: 'first' } : await toRest( page, state, rest, async () => {
+		const chainBroken = null !== rest && 'previous' === state.from && previous?.refused ? { how: 'previous', refused: `its previous state ${ previous.name } was refused (${ previous.refused }), so the page it runs on was never reached` } : null;
+		const start = chainBroken || ( null === rest ? { how: 'first' } : await toRest( page, state, rest, async () => {
 			await h.goto( cfg[ side ].url );
 			if ( cfg[ side ].open ) {
 				await cfg[ side ].open( h );
 			}
-		} );
+		} ) );
+		previous = { name: state.name, refused: start.refused || null };
 		// The first rest is read as every later one is (the same floor, two equal reads); a fresh load that reached rest
 		// again refreshes it.
 		if ( null === rest ) {

@@ -64,12 +64,16 @@ export default {
 			live: ( h ) => h.click( '.buybox__add-to-cart', { wait: 300 } ),
 		},
 		{
+			// Opens the bag holding the line `added` put in it: the draft's bag lives in the page, so a fresh load empties it.
 			name: 'drawer-open',
+			from: 'previous',
 			draft: ( h ) => h.clickText( '^bag', { tag: 'button,a', wait: 900 } ),
 			live: ( h ) => h.click( '.sgs-cart__trigger', { quiet: true, wait: 1200 } ),
 		},
 		{
+			// Removes the line from the drawer `drawer-open` left open.
 			name: 'line-removed',
+			from: 'previous',
 			draft: ( h ) => h.clickText( '^remove$', { within: D, tag: 'button', wait: 900 } ),
 			live: ( h ) => h.click( '.sgs-cart__item-remove', { quiet: true, wait: 1200 } ),
 		},

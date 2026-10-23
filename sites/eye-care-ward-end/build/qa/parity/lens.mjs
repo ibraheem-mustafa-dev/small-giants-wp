@@ -50,13 +50,14 @@ export default {
 			await h.waitFor( L );
 		},
 	},
+	// Each question after the first answers the one the state before left on screen, so it runs on that state's page.
 	states: [
 		{ name: 'q1-use' },
-		{ name: 'q2-thickness', ...choose( 'Distance' ) },
-		{ name: 'q3-finish', ...choose( 'Thin' ) },
-		{ name: 'q4-prescription', ...choose( 'Polarised' ) },
-		{ name: 'q4-upload', ...pickRx( 'Upload a photo' ) },
-		{ name: 'q4-type', ...pickRx( 'Type it in' ) },
+		{ name: 'q2-thickness', from: 'previous', ...choose( 'Distance' ) },
+		{ name: 'q3-finish', from: 'previous', ...choose( 'Thin' ) },
+		{ name: 'q4-prescription', from: 'previous', ...choose( 'Polarised' ) },
+		{ name: 'q4-upload', from: 'previous', ...pickRx( 'Upload a photo' ) },
+		{ name: 'q4-type', from: 'previous', ...pickRx( 'Type it in' ) },
 	],
 	pairs: [
 		{
