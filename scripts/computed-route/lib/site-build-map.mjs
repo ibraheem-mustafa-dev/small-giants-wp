@@ -7,8 +7,18 @@ import path from 'path';
 
 // The layout surfaces whose trees bind a menu, built after the menus; the active pointer each one takes (part 7).
 export const LAYOUT_TYPES = { sgs_header: 'header', sgs_drawer: 'drawer', sgs_footer: 'footer' };
-// Post types this script cannot build yet: a shop client's product template and catalogue pages (parts 1 and 6).
+// A shop client's rows (FR-48-55 parts 1 and 6, FR-48-56). `product` and `product_cat` rows make no post: the products
+// and categories are WooCommerce's data, and the row's tree builds the site's own copy of its template. A `shop` row is
+// the WooCommerce shop page (a `page`, whose id is `woocommerce_shop_page_id`) and its tree builds the archive template.
 export const SHOP_TYPES = [ 'product', 'product_cat', 'shop' ];
+export const POSTLESS_TYPES = [ 'product', 'product_cat' ];
+const TEMPLATE_DEFAULTS = { product: 'single-product', product_cat: 'archive-product', shop: 'archive-product' };
+
+// The WordPress post type a row is made as.
+export const wpType = ( row ) => ( 'shop' === row.postType ? 'page' : row.postType );
+export const hasPost = ( row ) => ! POSTLESS_TYPES.includes( row.postType );
+// The template a shop row's tree builds (FR-48-56): its own `template`, else its type's WooCommerce template; null for any other row.
+export const builtTemplate = ( row ) => ( SHOP_TYPES.includes( row.postType ) ? row.template || TEMPLATE_DEFAULTS[ row.postType ] : null );
 
 export const rowKey = ( row ) => `${ row.postType }:${ row.slug }`;
 
@@ -119,6 +129,37 @@ export function placeholderTree( row, menuIds = {} ) {
 export function treeFor( repo, client, row, menuIds ) {
 	const file = path.join( repo, 'sites', client, 'build', 'trees', row.postType, `${ row.slug }.json` );
 	return fs.existsSync( file ) ? { tree: JSON.parse( fs.readFileSync( file, 'utf8' ) ), source: path.relative( repo, file ).split( path.sep ).join( '/' ) } : { tree: placeholderTree( row, menuIds ), source: 'placeholder' };
+}
+
+// The tree a shop row's template is built from: its stage 3 tree, else the same placeholder a page row gets (FR-48-55 part 1).
+// A `shop` row's own page always takes the placeholder; its tree file is the template's.
+export const templateTreeFor = ( repo, client, row ) => treeFor( repo, client, row, {} );
+export const pageTreeFor = ( repo, client, row, menuIds ) => ( 'shop' === row.postType ? { tree: placeholderTree( row, menuIds ), source: 'placeholder' } : treeFor( repo, client, row, menuIds ) );
+
+// The owner's choice among several rows of one layout kind (a checkout header beside the site header): the
+// `active` map of sites/<client>/build/site-build-decisions.json ({ active: { header: '<slug>' } }), else none.
+export function readDecisions( repo, client ) {
+	const file = path.join( repo, 'sites', client, 'build', 'site-build-decisions.json' );
+	return fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : {};
+}
+
+// The row of one layout kind (`area`: header, drawer or footer) that gets the active pointer when the map holds several
+// (a checkout header beside the site header, a bag drawer beside the menu drawer): the owner's decision, else the first
+// row whose slug shares no word with a page row's slug or route (a variant named for its page is not the site's own),
+// else the first. Returns { row, note, problem }.
+export function chooseActive( mine, area, rows, decisions ) {
+	const slugs = mine.map( ( r ) => r.slug ).join( ', ' );
+	const wanted = decisions?.active?.[ area ];
+	if ( wanted ) {
+		const row = mine.find( ( r ) => r.slug === wanted );
+		return row ? { row, note: null, problem: null } : { row: null, note: null, problem: `site-build-decisions.json names "${ wanted }" as the active ${ area }, which is no ${ area } row (${ slugs })` };
+	}
+	const words = ( text ) => String( text || '' ).toLowerCase().split( /[^a-z0-9]+/ ).filter( ( w ) => w.length > 2 && ! [ area, 'site', 'menu' ].includes( w ) );
+	const surfaceTypes = [ ...Object.keys( LAYOUT_TYPES ), 'sgs_mega_menu', 'sgs_form', 'sgs_modal' ];
+	const pageWords = new Set( rows.filter( ( r ) => ! surfaceTypes.includes( r.postType ) ).flatMap( ( r ) => [ ...words( r.slug ), ...words( r.route ) ] ) );
+	const own = mine.filter( ( r ) => ! words( r.slug ).some( ( w ) => pageWords.has( w ) ) );
+	const row = own[ 0 ] || mine[ 0 ];
+	return { row, problem: null, note: `${ rowKey( row ) } is the active ${ area } of ${ mine.length } (${ slugs }); to choose another, set {"active":{"${ area }":"<slug>"}} in sites/<client>/build/site-build-decisions.json` };
 }
 
 export const treeHash = ( tree ) => crypto.createHash( 'sha256' ).update( JSON.stringify( tree ) ).digest( 'hex' );

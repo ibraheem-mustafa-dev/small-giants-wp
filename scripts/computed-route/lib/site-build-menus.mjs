@@ -8,7 +8,7 @@
 //     SGS_Nav_Menu_Source::is_destination_url), placed after the positioned top-level items in first-mention order.
 // Items come out in display order (each parent, then its children by position); `order` is the item's menu_order.
 import { megaPanelLabel } from './page-map-names.mjs';
-import { menuSurfaceKind, rowKey } from './site-build-map.mjs';
+import { hasPost, menuSurfaceKind, rowKey, wpType } from './site-build-map.mjs';
 
 const labelOf = ( row ) => ( 'sgs_mega_menu' === row.postType ? megaPanelLabel( row.title ) : row.title );
 
@@ -18,7 +18,9 @@ export function desiredMenus( rows, linkText = {}, surfaces = {} ) {
 	const menus = {};
 	// Mega row key -> its section page's row key, from every menu that pairs them.
 	const sections = {};
-	const entries = rows.flatMap( ( row ) => ( row.menus || [] ).map( ( m ) => ( { row, menu: m.menu, position: m.position, parentItem: m.parentItem || null } ) ) );
+	// A row that makes no post (a `product` or `product_cat` row, FR-48-55 part 1) has nothing for a menu item to open.
+	rows.filter( ( r ) => ! hasPost( r ) && ( r.menus || [] ).length ).forEach( ( r ) => notes.push( `${ rowKey( r ) }: a ${ r.postType } row makes no post, so its ${ r.menus.map( ( m ) => m.menu ).join( ', ' ) } menu entr${ 1 === r.menus.length ? 'y adds' : 'ies add' } no item; link the menu item to a product or category in Appearance > Menus` ) );
+	const entries = rows.filter( hasPost ).flatMap( ( row ) => ( row.menus || [] ).map( ( m ) => ( { row, menu: m.menu, position: m.position, parentItem: m.parentItem || null } ) ) );
 	const names = [ ...new Set( entries.map( ( e ) => e.menu ) ) ];
 	for ( const name of names ) {
 		// The draft's link text for the surface this menu feeds; a header menu a drawer also binds (no drawer menu) falls back to the drawer's.
@@ -57,7 +59,7 @@ export function desiredMenus( rows, linkText = {}, surfaces = {} ) {
 			key: `post:${ rowKey( e.row ) }@${ e.parentItem || '' }`,
 			kind: 'post',
 			rowKey: rowKey( e.row ),
-			postType: e.row.postType,
+			postType: wpType( e.row ),
 			label: e.text || labelOf( e.row ),
 			// The stored item title: a mega item carries its label, a post item shows the post's own title ('') unless the
 			// draft's link text differs from it.

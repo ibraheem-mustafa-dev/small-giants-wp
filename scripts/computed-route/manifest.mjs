@@ -8,7 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { buildManifest, surfaceKey } from './lib/manifest-build.mjs';
 import { openDb } from './lib/db.mjs';
-import { readPageMap } from './lib/site-build-map.mjs';
+import { builtTemplate, readPageMap } from './lib/site-build-map.mjs';
 import { stateRows } from './lib/state-vocab.mjs';
 
 const USAGE = 'usage: node manifest.mjs <client> --site <site> [--apply] [--repo <root>] [--db <file>] [--only <key,key>]';
@@ -68,7 +68,7 @@ try {
 	const rows = readPageMap( path.join( dir, 'build', 'page-map.json' ) );
 	const only = given[ '--only' ] ? given[ '--only' ].split( ',' ).filter( Boolean ) : null;
 	if ( only ) {
-		const valid = rows.filter( ( r ) => null != r.id ).map( surfaceKey );
+		const valid = rows.filter( ( r ) => null != r.id || builtTemplate( r ) ).map( surfaceKey );
 		const unknown = only.filter( ( k ) => ! valid.includes( k ) );
 		unknown.length && usage( `--only names ${ unknown.join( ', ' ) }, which no page-map row with an id generates; valid keys: ${ valid.join( ', ' ) }` );
 	}

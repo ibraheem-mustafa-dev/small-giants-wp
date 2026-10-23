@@ -8,10 +8,10 @@
 // deleted. A row without an id adopts the one post carrying its key (a page map an intake rerun reset, FR-48-17), else
 // is created; an unmarked post already holding its type and slug (another author's, or one an interrupted run saved
 // before marking it) stops the run, so it is never duplicated or renamed `<slug>-2`.
-import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, orderRows, parentRow, rowKey, treeFor, treeHash } from './site-build-map.mjs';
+import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, builtTemplate, chooseActive, hasPost, orderRows, pageTreeFor, parentRow, readDecisions, rowKey, templateTreeFor, treeHash, wpType } from './site-build-map.mjs';
 import { desiredMenus, menuLocation } from './site-build-menus.mjs';
 import { readSurfaces } from './site-build-labels.mjs';
-import { MENU_META, ROW_META } from './site-build-state.mjs';
+import { MENU_META, ROW_META, TEMPLATE_OPTION } from './site-build-state.mjs';
 
 export const PERMALINKS = '/%postname%/';
 export const PHASES = [ 'posts', 'menus', 'layout', 'site' ];
@@ -19,12 +19,25 @@ const CREATES = [ 'create', 'menu', 'item-add' ];
 
 const shown = ( v ) => ( v && 'object' === typeof v && v.ref ? `(new ${ v.ref })` : String( v ) );
 
-export function planBuild( { rows, state, repo, client, frontRoute = 'home', linkText = {} } ) {
+// The WooCommerce page options (part 6) and the page-map row each takes: a row's template (cart, checkout), its type
+// (shop) or WooCommerce's own page name (my-account, account) says which. Each entry is [ option, role, candidate rows ].
+function wooRoles( rows ) {
+	const pagesOf = ( test ) => rows.filter( ( r ) => hasPost( r ) && test( r ) );
+	return [
+		[ 'woocommerce_shop_page_id', 'shop', pagesOf( ( r ) => 'shop' === r.postType ) ],
+		[ 'woocommerce_cart_page_id', 'cart', pagesOf( ( r ) => 'page' === r.postType && 'cart' === r.template ) ],
+		[ 'woocommerce_checkout_page_id', 'checkout', pagesOf( ( r ) => 'page' === r.postType && 'checkout' === r.template ) ],
+		[ 'woocommerce_myaccount_page_id', 'my account', pagesOf( ( r ) => 'page' === r.postType && [ 'my-account', 'account' ].includes( r.slug ) ) ],
+	];
+}
+
+export function planBuild( { rows, state, repo, client, frontRoute = 'home', linkText = {}, decisions = readDecisions( repo, client ) } ) {
 	const problems = [];
 	const notes = [];
 	const actions = [];
 	const options = [];
-	rows.filter( ( r ) => SHOP_TYPES.includes( r.postType ) ).forEach( ( r ) => problems.push( `${ rowKey( r ) }: a ${ r.postType } row is a shop client's (FR-48-55 parts 1 and 6), which this script does not build yet` ) );
+	const shopClient = rows.some( ( r ) => SHOP_TYPES.includes( r.postType ) );
+	const woo = shopClient ? wooRoles( rows ) : [];
 	let ordered = [];
 	try {
 		ordered = orderRows( rows );
@@ -34,10 +47,14 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 	const ids = {};
 	for ( const row of ordered ) {
 		const key = rowKey( row );
+		if ( ! hasPost( row ) ) {
+			ids[ key ] = null;
+			continue;
+		}
 		if ( Number.isInteger( row.id ) ) {
 			const p = state.posts[ String( row.id ) ];
-			if ( ! p || p.type !== row.postType || 'trash' === p.status ) {
-				problems.push( `${ key }: its stored id ${ row.id } ${ p && p.type !== row.postType ? `is a ${ p.type }, not a ${ row.postType }` : 'no longer exists on the site' }; restore the post or clear the row's id` );
+			if ( ! p || p.type !== wpType( row ) || 'trash' === p.status ) {
+				problems.push( `${ key }: its stored id ${ row.id } ${ p && p.type !== wpType( row ) ? `is a ${ p.type }, not a ${ wpType( row ) }` : 'no longer exists on the site' }; restore the post or clear the row's id` );
 			} else if ( p.rowKey !== key ) {
 				problems.push( `${ key }: its stored id ${ row.id } is a post the site build did not make for this row (${ p.rowKey ? `it carries ${ p.rowKey }` : 'it carries no row key' }); correct the id, or mark the post with "wp post meta update ${ row.id } ${ ROW_META } ${ key }"` );
 			}
@@ -52,10 +69,15 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 			actions.push( { phase: 'posts', type: 'adopt', key, id: marked[ 0 ], say: `${ key }: the page map's id is empty; adopt post ${ marked[ 0 ] }, which carries this row's key` } );
 		} else {
 			const held = ( state.holders?.[ key ] || [] ).filter( ( id ) => ! marked.includes( id ) );
-			if ( held.length ) {
-				problems.push( `${ key }: post ${ held.join( ', ' ) } already holds this ${ row.postType } slug and carries no site-build row key; if an interrupted run made it, mark it with "wp post meta update ${ held[ 0 ] } ${ ROW_META } ${ key }", otherwise rename or delete it` );
+			// WooCommerce's own default page for this role (the one its page option names, nobody's authorship) is taken over.
+			const wooOption = woo.find( ( [ , , list ] ) => list[ 0 ] === row )?.[ 0 ];
+			if ( 1 === held.length && wooOption && String( state.options[ wooOption ] ) === String( held[ 0 ] ) ) {
+				ids[ key ] = held[ 0 ];
+				actions.push( { phase: 'posts', type: 'adopt', key, id: held[ 0 ], mark: true, say: `${ key }: take over post ${ held[ 0 ] }, WooCommerce's own page named by ${ wooOption }, and mark it with this row's key` } );
+			} else if ( held.length ) {
+				problems.push( `${ key }: post ${ held.join( ', ' ) } already holds this ${ wpType( row ) } slug and carries no site-build row key; if an interrupted run made it, mark it with "wp post meta update ${ held[ 0 ] } ${ ROW_META } ${ key }", otherwise rename or delete it` );
 			}
-			ids[ key ] = null;
+			ids[ key ] ??= null;
 		}
 	}
 	const wanted = desiredMenus( rows, linkText, readSurfaces( repo, client ) );
@@ -75,24 +97,28 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 	// Posts and layout surfaces (parts 1 and 2).
 	for ( const row of ordered ) {
 		const key = rowKey( row );
+		if ( ! hasPost( row ) ) {
+			continue;
+		}
 		const phase = LAYOUT_TYPES[ row.postType ] ? 'layout' : 'posts';
 		const parent = parentRow( rows, row );
 		if ( row.parent && ! parent ) {
 			problems.push( `${ key }: its parent "${ row.parent }" is no ${ row.postType } row of the page map` );
 			continue;
 		}
-		if ( row.template && ! ( state.templates?.[ row.postType ] || [] ).includes( row.template ) ) {
+		// A shop row's `template` is the template its tree builds (below), not a page template its page takes.
+		if ( 'shop' !== row.postType && row.template && ! ( state.templates?.[ row.postType ] || [] ).includes( row.template ) ) {
 			problems.push( `${ key }: template "${ row.template }" is not one the theme registers for a ${ row.postType }` );
 			continue;
 		}
-		const { tree, source } = treeFor( repo, client, row, menuIds );
+		const { tree, source } = pageTreeFor( repo, client, row, menuIds );
 		const hash = treeHash( tree );
 		const binds = LAYOUT_TYPES[ row.postType ] && boundMenu( LAYOUT_TYPES[ row.postType ], Object.keys( menuIds ) );
 		const unbound = 'placeholder' === source && [ 'header', 'drawer' ].includes( LAYOUT_TYPES[ row.postType ] ) && wanted.menus[ binds ] && ! menuIds[ binds ];
-		const fields = { post_parent: parent ? idOf( rowKey( parent ) ) : 0, page_template: row.template || '' };
+		const fields = { post_parent: parent ? idOf( rowKey( parent ) ) : 0, page_template: 'shop' === row.postType ? '' : row.template || '' };
 		if ( ! ids[ key ] ) {
 			const after = Object.fromEntries( Object.entries( fields ).filter( ( [ , v ] ) => v ) );
-			actions.push( { phase, type: 'create', key, postType: row.postType, title: row.title, slug: row.slug, tree, hash, fields: after, say: `${ key }: create "${ row.title }" from the ${ source } tree${ unbound ? ' (its menu is bound once the menus exist)' : '' }${ Object.keys( after ).length ? `, then set ${ Object.entries( after ).map( ( [ k, v ] ) => `${ k }=${ shown( v ) }` ).join( ', ' ) }` : '' }` } );
+			actions.push( { phase, type: 'create', key, postType: wpType( row ), title: row.title, slug: row.slug, tree, hash, fields: after, say: `${ key }: create "${ row.title }" from the ${ source } tree${ unbound ? ' (its menu is bound once the menus exist)' : '' }${ Object.keys( after ).length ? `, then set ${ Object.entries( after ).map( ( [ k, v ] ) => `${ k }=${ shown( v ) }` ).join( ', ' ) }` : '' }` } );
 			continue;
 		}
 		const p = state.posts[ String( ids[ key ] ) ];
@@ -106,6 +132,30 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 		if ( Object.keys( diff ).length ) {
 			actions.push( { phase, type: 'update', key, id: p.id, fields: diff, say: `${ key }: post ${ p.id }: ${ Object.entries( diff ).map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } -> ${ shown( v ) }` ).join( '; ' ) }` } );
 		}
+	}
+
+	// Site-owned template copies (FR-48-56): a shop row's tree builds the template it names, once per template, rebuilt only
+	// when its tree changed. A template two rows name is built from the row with a stage 3 tree, else the first.
+	const builders = new Map();
+	for ( const row of rows.filter( builtTemplate ) ) {
+		builders.set( builtTemplate( row ), [ ...( builders.get( builtTemplate( row ) ) || [] ), { row, ...templateTreeFor( repo, client, row ) } ] );
+	}
+	let hashes = { ...( state.templateHashes || {} ) };
+	for ( const [ slug, list ] of builders ) {
+		const pick = list.find( ( c ) => 'placeholder' !== c.source ) || list[ 0 ];
+		list.filter( ( c ) => c !== pick ).forEach( ( c ) => notes.push( `${ rowKey( c.row ) }: names the ${ slug } template, which ${ rowKey( pick.row ) } builds; this row adds nothing to it` ) );
+		const hash = treeHash( pick.tree );
+		if ( hashes[ slug ] === hash ) {
+			continue;
+		}
+		if ( ! hashes[ slug ] && ( state.customTemplates || [] ).includes( slug ) ) {
+			problems.push( `${ rowKey( pick.row ) }: the site already holds its own saved copy of the ${ slug } template that the site build did not make; clear it in Site Editor > Templates ("Clear customisations") so the site build can take it over` );
+			continue;
+		}
+		options.push( { name: `${ TEMPLATE_OPTION }[${ slug }]`, before: hashes[ slug ] ? hashes[ slug ].slice( 0, 12 ) : '(none)', after: hash.slice( 0, 12 ) } );
+		const verb = hashes[ slug ] ? 'rebuild' : 'build';
+		hashes = { ...hashes, [ slug ]: hash };
+		actions.push( { phase: 'posts', type: 'template', key: rowKey( pick.row ), template: slug, tree: pick.tree, hash, hashes, say: `${ rowKey( pick.row ) }: ${ verb } the site's own ${ slug } template from the ${ pick.source } tree` } );
 	}
 
 	// Section pages (Spec 36 FR-36-5): each mega panel links its menu items to the page on its menu slot.
@@ -171,7 +221,7 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 			actions.push( { phase: 'site', type: 'option', name, value, say: `option ${ name }: ${ JSON.stringify( before ) } -> ${ shown( value ) }` } );
 		}
 	};
-	const front = rows.find( ( r ) => 'page' === r.postType && r.route === frontRoute );
+	const front = rows.find( ( r ) => 'page' === r.postType && r.route === frontRoute ) || rows.find( ( r ) => 'page' === r.postType && r.slug === frontRoute );
 	// The posts page: the one page other than the front page whose items are live (FR-48-30: they come from WordPress);
 	// with two such pages the map does not say which, so the option is left and the candidates are named.
 	const blogs = rows.filter( ( r ) => 'page' === r.postType && 'live' === r.collection && r !== front );
@@ -182,10 +232,23 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 		option( 'show_on_front', 'page' );
 		option( 'page_on_front', idOf( rowKey( front ) ) );
 	} else {
-		notes.push( `no page row has route "${ frontRoute }"; the front page is left as it is` );
+		notes.push( `no page row has route or slug "${ frontRoute }"; the front page is left as it is` );
 	}
 	if ( 1 === blogs.length ) {
 		option( 'page_for_posts', idOf( rowKey( blogs[ 0 ] ) ) );
+	}
+	// WooCommerce pages (part 6, shop clients only); only a post this build made or took over is ever named.
+	if ( shopClient ) {
+		for ( const [ name, role, list ] of woo ) {
+			if ( ! list.length ) {
+				notes.push( `no page row is the ${ role } page; ${ name } is left as it is` );
+				continue;
+			}
+			if ( list.length > 1 ) {
+				notes.push( `${ list.map( rowKey ).join( ' and ' ) } could all be the ${ role } page; ${ name } takes ${ rowKey( list[ 0 ] ) }` );
+			}
+			option( name, idOf( rowKey( list[ 0 ] ) ) );
+		}
 	}
 	if ( state.options.permalink_structure !== PERMALINKS ) {
 		options.push( { name: 'permalink_structure', before: state.options.permalink_structure, after: PERMALINKS } );
@@ -193,13 +256,15 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 	}
 	for ( const [ type, area ] of Object.entries( LAYOUT_TYPES ) ) {
 		const mine = rows.filter( ( r ) => r.postType === type );
-		if ( mine.length > 1 ) {
-			problems.push( `${ mine.map( rowKey ).join( ' and ' ) }: one ${ area } can be active` );
-		} else if ( mine.length && ( ! ids[ rowKey( mine[ 0 ] ) ] || state.pointers[ area ] !== ids[ rowKey( mine[ 0 ] ) ] ) ) {
-			const id = idOf( rowKey( mine[ 0 ] ) );
+		const active = mine.length > 1 ? chooseActive( mine, area, rows, decisions ) : { row: mine[ 0 ], note: null, problem: null };
+		if ( active.problem ) {
+			problems.push( active.problem );
+		} else if ( active.row && ( ! ids[ rowKey( active.row ) ] || state.pointers[ area ] !== ids[ rowKey( active.row ) ] ) ) {
+			const id = idOf( rowKey( active.row ) );
 			options.push( { name: `sgs_active_${ area }_cpt_id`, before: String( state.pointers[ area ] || 0 ), after: shown( id ) } );
 			actions.push( { phase: 'site', type: 'pointer', area, id, say: `active ${ area }: ${ state.pointers[ area ] || 'none' } -> ${ shown( id ) }` } );
 		}
+		active.note && notes.push( active.note );
 	}
 	return problems.length ? { actions: [], problems, notes, options: [] } : { actions, problems, notes, options };
 }

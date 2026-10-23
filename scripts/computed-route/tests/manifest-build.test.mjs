@@ -512,3 +512,18 @@ test( 'MUST FAIL (FR-48-6): with no state context the key names stand in and the
 	const withFacts = run( [ row( 'sgs_drawer', 'menu', 5, { title: 'D' } ) ], [ rec( 'S-2', 'drawer', 'D', states, { dc: 'Site' } ) ], { facts: { state: { Site: { keys: [ 'bp', 'mega' ], widthKeys: [ 'bp' ] } } } } );
 	assert.deepEqual( [ Object.keys( withFacts.entries[ 'drawer-menu' ].states ), withFacts.noFacts ], [ [ 'panel-sun' ], [] ] );
 } );
+
+test( 'a shop, product or product_cat row is a surface whose target is its template, with or without an id; a page row with no id is still skipped', () => {
+	const out = run( [
+		row( 'shop', 'shop', null, { route: 'shop', template: 'archive-product' } ),
+		row( 'product', 'product', null, { route: 'product', template: 'single-product' } ),
+		row( 'product_cat', 'frames', null, { route: 'frames' } ),
+		row( 'page', 'about', null ),
+	], [ rec( 'S-1', 'page', 'Shop', undefined, { page_key: 'shop' } ) ] );
+	assert.deepEqual( Object.entries( out.entries ).map( ( [ k, e ] ) => [ k, e.target ] ), [ [ 'shop', { template: 'archive-product' } ], [ 'product', { template: 'single-product' } ], [ 'frames', { template: 'archive-product' } ] ] );
+	assert.equal( out.entries.shop.canvas, true );
+	assert.equal( out.entries.shop.tree, 'trees/shop/shop.json' );
+	assert.deepEqual( out.skipped, [ { row: 'page:about', reason: 'no id' } ] );
+	assert.ok( ! out.unmatched.some( ( u ) => 'shop' === u.key ), 'a shop row matches its route\'s page record' );
+	assert.deepEqual( run( [ row( 'shop', 'shop', 12, { template: 'archive-product' } ) ] ).entries.shop.target, { template: 'archive-product' } );
+} );
