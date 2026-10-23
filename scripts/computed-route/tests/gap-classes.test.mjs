@@ -79,6 +79,20 @@ test( 'MUST FAIL: a NULL-routed fitting setting classes an F candidate as I-unro
 	assert.match( c.evidence.command, /block_attributes/ );
 } );
 
+test( 'MUST FAIL: the finding names the setting G3 itself judged, never another row a per-setting re-run fails the same way', () => {
+	const d = db();
+	add( d, 'sgs/container', 'maxWidthHover', 'max-width', 'hover', 'spacing-token', 'sgs' );
+	add( d, 'sgs/container', 'maxWidth', null, null, 'spacing-token', 'sgs' );
+	const f = instrumentFinding( { db: d, ...slice, cache: {} } );
+	assert.equal( f.db.class, 'I-unrouted' );
+	assert.match( f.db.evidence.line, /^sgs\/container maxWidth / );
+	assert.equal( f.attribute, 'maxWidth' );
+	const e = db();
+	add( e, 'sgs/container', 'maxWidth', 'max-width', null, 'spacing-token', 'sgs' );
+	add( e, 'sgs/container', 'contentWidth', 'max-width', null, 'spacing-token', 'sgs' );
+	assert.equal( instrumentFinding( { db: e, ...slice, cache: { dead: [ 'contentWidth' ] } } ).attribute, 'contentWidth' );
+} );
+
 test( 'MUST FAIL: an enum setting calibration discovered is never I-unrouted; an undiscovered one still is', () => {
 	const d = db();
 	add( d, 'sgs/container', 'maxWidth', null, null, 'spacing-token', 'sgs' );

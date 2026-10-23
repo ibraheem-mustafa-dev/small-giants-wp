@@ -6,7 +6,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { conservation, conservationRun, groupFailures, longhandsOf, readRowsOf } from '../lib/census-conservation.mjs';
-import { readSetFile } from '../lib/census-reads.mjs';
+import { inputHashes, readSetFile } from '../lib/census-reads.mjs';
 
 const ROOT = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..' );
 
@@ -77,29 +77,85 @@ test( 'MUST FAIL: failures group by block then property', () => {
 } );
 
 test( 'MUST FAIL: a malformed read set is an explicit failure with its reason', () => {
-	assert.throws( () => readRowsOf( { version: 2, rows: [] } ), /not a read set/ );
-	assert.throws( () => readRowsOf( { version: 1, rows: [ { ...read( 'a', '1' ), width: 'x' } ] } ), /numeric width/ );
-	assert.throws( () => readRowsOf( { version: 1, rows: [ { ...read( 'a', '1' ), slot: undefined } ] } ), /no slot/ );
-	assert.throws( () => readRowsOf( { version: 1, rows: [ { ...read( 'a', '1' ), value: null } ] } ), /no value/ );
+	assert.throws( () => readRowsOf( { version: 1, rows: [] } ), /not a read set/ );
+	assert.throws( () => readRowsOf( { version: 3, rows: [] } ), /not a read set/ );
+	assert.throws( () => readRowsOf( { version: 2, rows: [ { ...read( 'a', '1' ), width: 'x' } ] } ), /numeric width/ );
+	assert.throws( () => readRowsOf( { version: 2, rows: [ { ...read( 'a', '1' ), slot: undefined } ] } ), /no slot/ );
+	assert.throws( () => readRowsOf( { version: 2, rows: [ { ...read( 'a', '1' ), value: null } ] } ), /no value/ );
 } );
 
 test( 'readSetFile makes one row per declared longhand per width a part was found at', () => {
 	const nodes = [ { name: 'sgs/nav-bar-menu', targets: [ { id: '0:.link', finder: { tpl: 'Root/45#0' } } ] } ];
 	const reads = { declared: { 375: { '0:.link': { color: 'red' } }, 768: { '0:.link': { color: 'blue' } }, 1440: { '0:.link': { color: 'red', 'letter-spacing': '-0.01em' } } }, widths: { 375: { '0:.link': { missing: true } }, 768: { '0:.link': {} }, 1440: { '0:.link': {} } } };
-	const file = readSetFile( { client: 'c', surface: 's', reads, nodes, refs: [ 'cr-ref-s-0' ] } );
+	const inputs = { skeleton: { file: 'a', sha256: 'b' }, draft: { file: 'c', sha256: 'd' } };
+	const file = readSetFile( { client: 'c', surface: 's', run: '2026-10-23T10-00-00', inputs, reads, nodes, refs: [ 'cr-ref-s-0' ] } );
+	assert.deepEqual( [ file.version, file.run, file.inputs ], [ 2, '2026-10-23T10-00-00', inputs ] );
 	assert.deepEqual( file.rows.map( ( r ) => `${ r.width } ${ r.property } ${ r.value } ${ r.draft }` ), [ '768 color blue {"tpl":"Root/45#0"}', '1440 color red {"tpl":"Root/45#0"}', '1440 letter-spacing -0.01em {"tpl":"Root/45#0"}' ] );
 	assert.equal( readRowsOf( file ).length, 3 );
 } );
 
-function plant( reads ) {
-	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'conserve-' ) );
-	const report = { client: 'c', surface: 's', writes: [ write( 'color' ) ], alreadyHeld: [], confirm: [], ledger: [] };
+// A planted repository root with the run's skeleton and draft, and a run folder inside it whose reads.json is bound to them.
+function plant( reads, { held = [] } = {} ) {
+	const root = fs.mkdtempSync( path.join( os.tmpdir(), 'conserve-' ) );
+	fs.mkdirSync( path.join( root, 'sk' ) );
+	fs.writeFileSync( path.join( root, 'sk', 's.skeleton.json' ), '[{"name":"sgs/nav-bar-menu"}]' );
+	fs.writeFileSync( path.join( root, 'sk', 'Draft.dc.html' ), '<html></html>' );
+	const dir = path.join( root, 'runs', '2026-10-23T10-00-00' );
+	fs.mkdirSync( dir, { recursive: true } );
+	const report = { client: 'c', surface: 's', writes: [ write( 'color' ) ], alreadyHeld: held, confirm: [], ledger: [] };
 	fs.writeFileSync( path.join( dir, 'fill-report.json' ), JSON.stringify( report ) );
 	fs.writeFileSync( path.join( dir, 'unmapped.json' ), '[]' );
-	reads && fs.writeFileSync( path.join( dir, 'reads.json' ), JSON.stringify( { version: 1, client: 'c', surface: 's', rows: reads } ) );
-	return dir;
+	fs.writeFileSync( path.join( dir, 'filled.tree.json' ), JSON.stringify( [ { name: 'sgs/nav-bar-menu', attributes: { className: 'cr-ref-header-15' }, innerBlocks: [] } ] ) );
+	const inputs = inputHashes( { root, skeleton: 'sk/s.skeleton.json', draft: 'sk/Draft.dc.html' } );
+	reads && fs.writeFileSync( path.join( dir, 'reads.json' ), JSON.stringify( { version: 2, client: 'c', surface: 's', run: '2026-10-23T10-00-00', inputs, rows: reads } ) );
+	return { dir, root };
 }
-const check = ( dir ) => spawnSync( process.execPath, [ path.join( ROOT, 'census.mjs' ), dir, '--check' ], { encoding: 'utf8' } );
+const check = ( { dir, root } ) => spawnSync( process.execPath, [ path.join( ROOT, 'census.mjs' ), dir, '--check' ], { encoding: 'utf8', env: { ...process.env, SGS_REPO_ROOT: root } } );
+const rewrite = ( dir, change ) => {
+	const f = path.join( dir, 'reads.json' );
+	fs.writeFileSync( f, JSON.stringify( change( JSON.parse( fs.readFileSync( f, 'utf8' ) ) ) ) );
+};
+
+test( 'MUST FAIL: a read set is bound to its run: another run\'s stamp, a skeleton or draft changed since it was saved, a hash the run records otherwise, or a node the run\'s tree does not hold leaves the run unchecked and fails --check', () => {
+	const cases = [
+		[ ( p ) => rewrite( p.dir, ( r ) => ( { ...r, run: '2026-10-22T09-00-00' } ) ), /saved for run 2026-10-22T09-00-00, not 2026-10-23T10-00-00/ ],
+		[ ( p ) => fs.writeFileSync( path.join( p.root, 'sk', 's.skeleton.json' ), '[{"name":"sgs/other"}]' ), /the skeleton sk\/s\.skeleton\.json changed since the read set was saved/ ],
+		[ ( p ) => fs.writeFileSync( path.join( p.root, 'sk', 'Draft.dc.html' ), '<html>2</html>' ), /the draft sk\/Draft\.dc\.html changed/ ],
+		[ ( p ) => rewrite( p.dir, ( r ) => ( { ...r, inputs: { draft: r.inputs.draft } } ) ), /binds no skeleton hash/ ],
+		[ ( p ) => rewrite( p.dir, ( r ) => ( { ...r, inputs: { ...r.inputs, skeleton: { file: r.inputs.skeleton.file } } } ) ), /binds no skeleton hash/ ],
+		[ ( p ) => rewrite( p.dir, ( r ) => ( { ...r, rows: r.rows.map( ( x ) => ( { ...x, node: 'cr-ref-header-99' } ) ) } ) ), /cr-ref-header-99 \(sgs\/nav-bar-menu\), which the run's filled\.tree\.json does not hold/ ],
+		[ ( p ) => fs.writeFileSync( path.join( p.dir, 'fill-report.json' ), JSON.stringify( { client: 'c', surface: 's', inputs: { skeleton: 'f00', draft: 'f00' } } ) ), /the run recorded skeleton f00/ ],
+		[ ( p ) => fs.unlinkSync( path.join( p.dir, 'filled.tree.json' ) ), /no filled\.tree\.json/ ],
+	];
+	for ( const [ spoil, why ] of cases ) {
+		const p = plant( [ read( 'color', 'red' ) ] );
+		spoil( p );
+		const r = conservationRun( p.dir, { root: p.root } );
+		assert.equal( r.status, 'unbound', String( why ) );
+		assert.match( r.reason, why );
+		const c = check( p );
+		assert.equal( c.status, 1, String( why ) );
+		assert.match( c.stdout, /CONSERVATION: not checked/ );
+	}
+	// negative control: the untouched run is bound, and a hash the run records that matches passes
+	const p = plant( [ read( 'color', 'red' ) ] );
+	assert.equal( conservationRun( p.dir, { root: p.root } ).status, 'checked' );
+	assert.equal( check( p ).status, 0 );
+	const rec = JSON.parse( fs.readFileSync( path.join( p.dir, 'reads.json' ), 'utf8' ) ).inputs;
+	fs.writeFileSync( path.join( p.dir, 'fill-report.json' ), JSON.stringify( { client: 'c', surface: 's', writes: [ write( 'color' ) ], inputs: { skeleton: rec.skeleton.sha256, draft: rec.draft.sha256 } } ) );
+	assert.equal( conservationRun( p.dir, { root: p.root } ).status, 'checked' );
+} );
+
+test( 'MUST FAIL: Fill\'s held rows carry no width, so a read they conserve is listed as resting on a widthless hold', () => {
+	const held = { node: 'cr-ref-header-15', slot: '.link', property: 'font-size', state: null, reason: 'inherited' };
+	const out = verdict( [ read( 'font-size', '17px', { width: 375 } ), read( 'color', 'red' ) ], { writes: [ write( 'color' ) ], alreadyHeld: [ held ] } );
+	assert.equal( out.conserved, 2 );
+	assert.deepEqual( out.widthlessHolds.map( ( r ) => `${ r.property } ${ r.width } ${ r.how }` ), [ 'font-size 375 inherited' ] );
+	// negative control: a read a write at its width also answers does not rest on the hold
+	assert.deepEqual( verdict( [ read( 'font-size', '17px' ) ], { writes: [ write( 'font-size' ) ], alreadyHeld: [ held ] } ).widthlessHolds, [] );
+	const c = check( plant( [ read( 'color', 'red' ), read( 'font-size', '17px' ) ], { held: [ held ] } ) );
+	assert.match( c.stdout, /1 conserved read rests on a held row that records no width/ );
+} );
 
 test( 'MUST FAIL: census.mjs --check exits 1 on a dropped declared value and lists its row', () => {
 	const bad = check( plant( [ read( 'color', 'red' ), read( 'letter-spacing', '-0.01em' ) ] ) );
@@ -114,21 +170,22 @@ test( 'MUST FAIL: census.mjs --check exits 1 on a dropped declared value and lis
 } );
 
 test( 'MUST FAIL: a run with no read set is reported as such and fails --check, never clean', () => {
-	const dir = plant( null );
-	assert.equal( conservationRun( dir ).status, 'no-read-set' );
-	const bad = check( dir );
+	const p = plant( null );
+	assert.equal( conservationRun( p.dir ).status, 'no-read-set' );
+	const bad = check( p );
 	assert.equal( bad.status, 1 );
 	assert.match( bad.stdout, /CONSERVATION: not checked/ );
 } );
 
 test( 'MUST FAIL: a read set of another surface is refused', () => {
-	const dir = plant( [ read( 'color', 'red' ) ] );
+	const { dir } = plant( [ read( 'color', 'red' ) ] );
 	const f = path.join( dir, 'reads.json' );
 	fs.writeFileSync( f, JSON.stringify( { ...JSON.parse( fs.readFileSync( f, 'utf8' ) ), surface: 'footer' } ) );
 	assert.throws( () => conservationRun( dir ), /read set of c\/footer/ );
 } );
 
 test( 'MUST FAIL: --json carries the conservation result', () => {
-	const r = spawnSync( process.execPath, [ path.join( ROOT, 'census.mjs' ), plant( [ read( 'letter-spacing', '-0.01em' ) ] ), '--json' ], { encoding: 'utf8' } );
+	const p = plant( [ read( 'letter-spacing', '-0.01em' ) ] );
+	const r = spawnSync( process.execPath, [ path.join( ROOT, 'census.mjs' ), p.dir, '--json' ], { encoding: 'utf8', env: { ...process.env, SGS_REPO_ROOT: p.root } } );
 	assert.equal( JSON.parse( r.stdout ).conservation.failures[ 0 ].property, 'letter-spacing' );
 } );

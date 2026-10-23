@@ -60,12 +60,29 @@ test( 'MUST FAIL: a citation of an attribute that emits nothing on the element i
 	assert.equal( hopCanvasSettable( { gap: 'no-setting', cite }, [ { ref: 'A', path: '.sgs-a__other', calibration: CAL } ], 'gap' ), false );
 } );
 
+test( 'MUST FAIL: a sibling citation (the cited block does not enclose the element) is proven only by the live measurement, never by the setting painting something', () => {
+	const cite = { block: 'sgs/a', ref: 'A', setting: 'gap' };
+	assert.equal( calibrationEmits( CAL, 'gap', null ), false );
+	assert.equal( emissionProof( cite, { calibration: CAL, elementPath: null, property: 'gap' } ), null );
+	assert.equal( emissionProof( cite, { calibration: CAL, elementPath: null, property: 'gap', measuredEmits: () => true } ), 'measured' );
+} );
+
+test( 'MUST FAIL: a paint on one repetition never proves another: two different :nth-of-type indexes differ', () => {
+	const li = { settings: { bg: { slots: [ '.sgs-l > li:nth-of-type(1)' ] }, all: { slots: [ '.sgs-l > li' ] } } };
+	assert.equal( calibrationEmits( li, 'bg', '.sgs-l > li:nth-of-type(2)' ), false );
+	assert.equal( calibrationEmits( li, 'bg', '.sgs-l > li:nth-of-type(1)' ), true );
+	// negative control: an index on one side only is the fixture and the client numbering repetitions differently
+	assert.equal( calibrationEmits( li, 'bg', '.sgs-l > li' ), true );
+	assert.equal( calibrationEmits( li, 'all', '.sgs-l > li:nth-of-type(3)' ), true );
+	assert.equal( calibrationEmits( li, 'all', '.sgs-l > span' ), false );
+	assert.equal( calibrationEmits( li, 'bg', '.sgs-l > li:nth-of-type(1) > a' ), false, 'a deeper element is another path' );
+} );
+
 test( 'calibration slots, slot and reaches each prove emission on the element; positions are loose', () => {
 	assert.equal( calibrationEmits( CAL, 'gap', '.sgs-a__b' ), true );
 	assert.equal( calibrationEmits( CAL, 'pad', '.sgs-a' ), true );
 	assert.equal( calibrationEmits( CAL, 'reach', '.sgs-a__c' ), true );
 	assert.equal( calibrationEmits( CAL, 'reach', '.sgs-a__b' ), false );
-	assert.equal( calibrationEmits( CAL, 'gap', null ), true );
 	assert.equal( calibrationEmits( CAL, 'none', null ), false );
 	assert.equal( emissionProof( { block: 'sgs/a', setting: 'gap' }, { calibration: CAL, elementPath: '.sgs-a__b', property: 'gap' } ), 'calibration' );
 	assert.equal( hopCanvasSettable( { gap: 'no-setting', cite: { block: 'sgs/a', ref: 'A', setting: 'gap' } }, [ { ref: 'A', path: '.sgs-a__b', calibration: CAL } ], 'gap' ), true );

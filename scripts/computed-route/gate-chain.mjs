@@ -20,7 +20,8 @@ import { openDb } from './lib/db.mjs';
 import { runChain } from './lib/gate-chain.mjs';
 import { renderEvidence } from './lib/gate-evidence.mjs';
 import { issuesOf } from './lib/triage.mjs';
-import { draftValues, cssProp, settingState } from './lib/solve-rows.mjs';
+import { cssProp, settingState } from './lib/solve-rows.mjs';
+import { declaredRead, defectNamed, loadDraftIdentity } from './lib/draft-identity.mjs';
 import { calibrationForSite } from './solve.mjs';
 import { readTree, nodeByRef } from './lib/tree.mjs';
 import { localBlockHash } from './lib/deploy-hash.mjs';
@@ -28,8 +29,8 @@ import { manifestSchemaVersion } from './lib/handoff.mjs';
 import { createProbes, liveTarget } from './lib/gate-probes.mjs';
 import { writeGaps, gapsPath } from './lib/gaps-file.mjs';
 import { gapInput } from './lib/gap-input.mjs';
-import { ancestorsOf, instrumentFinding, withDiscovery } from './lib/gap-classes.mjs';
-import { debtRows, debtPath, staleSlotMaps, unroutedKnown, writeDebt } from './lib/instrument-debt.mjs';
+import { ancestorsOf, withDiscovery } from './lib/gap-classes.mjs';
+import { debtRows, debtPath, knownRows, staleSlotMaps, unroutedKnown, writeDebt } from './lib/instrument-debt.mjs';
 import { READ_KEY } from './lib/calibrate-props.mjs';
 import { serveDraft } from './lib/draft.mjs';
 import { adminSession, readEnv, renderBlock } from './lib/trial-page.mjs';
@@ -98,6 +99,7 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 	const calFor = s?.site ? calibrationForSite( s.site, path.join( REPO, 'scripts', 'computed-route', 'cache' ) ) : () => null;
 	const intake = intakeFile && fs.existsSync( intakeFile ) ? JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ) : null;
 	const ancestors = ancestorsOf( db );
+	const draftIdOf = loadDraftIdentity( { buildDir, surface, s, intake } );
 	// An enum setting calibration discovered is routed through discovery: G3 never reads it as an unrouted setting.
 	const discovered = ( r ) => !! calFor( r.block_slug )?.discovered?.[ r.attr_name ];
 	const gateDb = withDiscovery( db, discovered );
@@ -107,12 +109,21 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 		}
 		return v;
 	};
+	// The block of a row for G0. A row naming no node is the walker's (W-walker) and a node the surface tree does not hold
+	// is the route's (W-route), never stale instrument data; only an unreadable tree is I-stale.
+	const treeBlock = ( row ) => {
+		const block = blockOf( row );
+		if ( ! block && tree ) {
+			throw Object.assign( new Error( row.ref ? `the surface tree holds no node ${ row.ref }` : 'the row names no node' ), { gateClass: row.ref ? 'W-route' : 'W-walker' } );
+		}
+		return need( block, 'the block of the row' );
+	};
 	// The row as the probes read it: its block and that block's ancestors, which the settings it may take are looked up on.
 	const probed = ( row ) => ( { ...row, block: blockOf( row ), ancestors: ancestors( blockOf( row ) ), words: [ row.key, row.draftId ].filter( Boolean ) } );
 	return {
 		inputs: {
 			G0: ( row ) => {
-				const block = need( blockOf( row ), 'the block of the row' );
+				const block = treeBlock( row );
 				const short = block.replace( /^sgs\//, '' );
 				const manifest = JSON.parse( fs.readFileSync( path.join( REPO, 'sites', need( client, '--client' ), 'handoff', 'MANIFEST.json' ), 'utf8' ) );
 				return {
@@ -137,11 +148,16 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 					stateListed: !! s?.states && Object.hasOwn( s.states, row.state ) && undefined !== settingState( row, s.states ),
 				};
 			},
+			// The declared value at the row's own state and width (hover declarations for a hover row), and FR-48-34's
+			// defect joined through the row's draft identity; an unreadable identity fails G2 with its reason.
 			G2: ( row ) => {
 				const prop = cssProp( row.key );
-				const dv = draftValues( walk, row.pair, prop, 'hover' === row.kind );
-				const defects = new Set( ( intake?.draftDefects || [] ).flatMap( ( g ) => g.rows || [ g ] ).filter( ( d ) => d.draftId && d.draftId === row.draftId ).flatMap( ( d ) => String( d.evidence?.declared ?? '' ).split( ';' ).map( ( x ) => x.split( ':' )[ 0 ].trim().toLowerCase() ) ) );
-				return { property: prop, declared: dv.declared[ row.width ] ?? null, renderedDraft: row.draft, fr34Passes: defects.has( prop ), ledgered: !! row.decided };
+				const id = draftIdOf( row );
+				if ( ! id.draftId ) {
+					throw new Error( `the row's draft identity is unreadable: ${ id.reason }` );
+				}
+				const { declared, unread } = declaredRead( walk, row, prop );
+				return { property: prop, declared, unread, renderedDraft: row.draft, fr34Passes: defectNamed( intake, id.draftId, prop, 'hover' === row.kind ), ledgered: !! row.decided };
 			},
 			G3: ( row ) => ( { db: gateDb, block: need( blockOf( row ), 'the block of the row' ), ancestors: ancestors( blockOf( row ) ), property: cssProp( row.key ), state: settingState( row, s?.states ) ?? null } ),
 			G4: ( row, soFar ) => ( {
@@ -155,9 +171,6 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 			G7: ( row ) => ( { recheck: probes?.recheck ? () => probes.recheck( probed( row ) ) : undefined } ),
 		},
 		blockOf,
-		// The inputs G3 and G4 read for a row, to name the setting a failing instrument gate found.
-		findingOf: ( row ) => instrumentFinding( { db, block: need( blockOf( row ), 'the block of the row' ), ancestors: ancestors( blockOf( row ) ), property: cssProp( row.key ), state: settingState( row, s?.states ) ?? null, cache: calFor( blockOf( row ) ), isDiscovered: discovered,
-			boxAgrees: ! ( pairOf( walk, row )?.diffs || [] ).some( ( d ) => ! d.accepted && 'box' === d.kind ) } ),
 		treeBlocks: () => {
 			const names = new Set();
 			const visit = ( nodes ) => ( nodes || [] ).forEach( ( n ) => ( names.add( n.name ), visit( n.innerBlocks ) ) );
@@ -166,7 +179,9 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 		},
 		// The setting state a row's values belong to: the one G3 reads, null for the resting state or an unmapped walker state.
 		stateOf: ( row ) => settingState( row, s?.states ) ?? null,
-		declaredOf: ( row ) => draftValues( walk, row.pair, cssProp( row.key ), 'hover' === row.kind ).declared[ row.width ] ?? null,
+		declaredOf: ( row ) => declaredRead( walk, row, cssProp( row.key ) ).declared,
+		// The row's draft id (intake's `<component>:<n>`) through the surface's origin map, or null when it is unreadable.
+		draftIdOf: ( row ) => draftIdOf( row ).draftId ?? null,
 	};
 }
 
@@ -212,8 +227,8 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			const dir = path.join( REPO, 'plugins', 'sgs-blocks', 'build', 'blocks', short );
 			return fs.existsSync( dir ) ? localBlockHash( dir ) : null;
 		} } );
-		const known = [ ...unroutedKnown( { db, isDiscovered: ( r ) => !! calibrationForSite( surfaces?.[ report.surface ]?.site ?? '', cacheDir )( r.block_slug )?.discovered?.[ r.attr_name ] } ), ...stale.rows.filter( ( r ) => inTree.has( r.block ) ) ];
-		const written = writeDebt( { file: path.resolve( flag( '--debt-out' ) || debtPath( client, REPO ) ), rows: [ ...debtRows( out, { surface: report.surface } ), ...known.map( ( r ) => debtRows( [ r ], { surface: null } )[ 0 ] ) ], surface: report.surface, publishedOn: new Date().toISOString().slice( 0, 10 ) } );
+		const known = knownRows( { rows: [ ...unroutedKnown( { db, isDiscovered: ( r ) => !! calibrationForSite( surfaces?.[ report.surface ]?.site ?? '', cacheDir )( r.block_slug )?.discovered?.[ r.attr_name ] } ), ...stale.rows ], inTree, surface: report.surface } );
+		const written = writeDebt( { file: path.resolve( flag( '--debt-out' ) || debtPath( client, REPO ) ), rows: [ ...debtRows( out, { surface: report.surface } ), ...known ], surface: report.surface, publishedOn: new Date().toISOString().slice( 0, 10 ) } );
 		console.log( `instrument debt: ${ written.rows.length } rows by owner ${ JSON.stringify( written.byOwner ) }; ${ debtRows( out, { surface: report.surface } ).length } from the chain, ${ known.length } known items${ stale.missing.length ? `; inputs missing: ${ stale.missing.slice( 0, 3 ).join( '; ' ) }` : '' }. Written ${ written.file }` );
 	}
 }

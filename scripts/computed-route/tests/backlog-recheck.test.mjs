@@ -72,7 +72,8 @@ test( 'MUST FAIL: a setting that now fits and reaches the element closes the row
 	assert.equal( r.status, 'closed' );
 	assert.deepEqual( [ r.closed.commit, r.closed.on ], [ 'c0ffee1', '2026-10-23' ] );
 	assert.deepEqual( r.closed.evidence.map( ( x ) => [ x.client, x.id, x.width, x.gate ] ), [ [ 'alpha', entry().id, 1440, 'G5' ] ] );
-	assert.match( r.closed.evidence[ 0 ].evidence, /emits .*padding-top: 24px.*reaches the element/ );
+	assert.match( r.closed.evidence[ 0 ].evidence.line, /emits .*padding-top: 24px.*reaches the element/ );
+	assert.equal( r.closed.evidence[ 0 ].evidence.command, 'lib/gate-probes.mjs::measure on the live element' );
 	assert.deepEqual( [ res.stats.newlyClosed, res.stats.closed ], [ 1, 1 ] );
 } );
 
@@ -98,22 +99,45 @@ test( 'a measurement that is not a live measurement, or a throw, never closes a 
 test( 'a gate that now fails for an instrument reason (G3 unrouted, G4 dead) keeps the row open with that gate and class', async () => {
 	const unrouted = await run( { rows: [ row( [ entry() ] ) ] }, env( { db: db( [ 'sgs/button', 'paddingTop', null, null, 'spacing-token', 'sgs' ] ) } ) );
 	assert.equal( unrouted.backlog.rows[ 0 ].status, 'open' );
-	assert.match( outcomeOf( unrouted ).reason, /G3 \(I-unrouted\)/ );
+	assert.match( outcomeOf( unrouted ).reason, /G3 \(I-unrouted\): sgs\/button paddingTop .* \[sgs-framework\.db: SELECT/ );
+	assert.doesNotMatch( outcomeOf( unrouted ).reason, /"command"/ );
 	const dead = await run( { rows: [ row( [ entry() ] ) ] }, env( { db: db( FITS ), cache: () => ( { dead: [ 'paddingTop' ] } ), probes: probes( { measure: { method: 'measured', reaches: true, evidence: 'x' } } ) } ) );
 	assert.equal( dead.backlog.rows[ 0 ].status, 'open' );
 	assert.match( outcomeOf( dead ).reason, /G4 \(I-calibration\).*paddingTop is listed dead/ );
 	assert.equal( dead.backlog.rows[ 0 ].lastRecheck.entries[ 0 ].outcome, 'open' );
 } );
 
-test( 'an F-hardcode row never closes on the hardcode probe alone: a probe that names no winning rule leaves it open, a setting that reaches closes it', async () => {
+test( 'MUST FAIL: an F-hardcode row closes only when the winning-rule probe positively names no SGS rule; a probe with no answer or a setting that reaches leaves it open', async () => {
 	const h = entry( { class: 'F-hardcode' } );
-	const none = await run( { rows: [ row( [ h ], { classes: [ 'F-hardcode' ] } ) ] }, env( { probes: probes( { probe: { rule: null, evidence: 'no SGS rule wins' } } ) } ) );
-	assert.equal( none.backlog.rows[ 0 ].status, 'open' );
-	assert.match( outcomeOf( none ).reason, /G6 \(W-route\)/ );
+	const gone = await run( { rows: [ row( [ h ], { classes: [ 'F-hardcode' ] } ) ] }, env( { probes: probes( { probe: { rule: null, evidence: 'the rule that wins padding-top is .wp-site-blocks, not an SGS framework rule' } } ) } ) );
+	assert.deepEqual( [ gone.backlog.rows[ 0 ].status, gone.backlog.rows[ 0 ].closed?.evidence[ 0 ].gate ], [ 'closed', 'G6' ] );
+	const unanswered = await run( { rows: [ row( [ h ], { classes: [ 'F-hardcode' ] } ) ] }, env( { probes: probes( { probe: { evidence: 'no answer' } } ) } ) );
+	assert.equal( unanswered.backlog.rows[ 0 ].status, 'open' );
+	assert.match( outcomeOf( unanswered ).reason, /G6 \(W-route\)/ );
 	const named = await run( { rows: [ row( [ h ], { classes: [ 'F-hardcode' ] } ) ] }, env( { probes: probes( { probe: { rule: '.sgs-button', evidence: 'removing it changes the value' } } ) } ) );
 	assert.match( outcomeOf( named ).reason, /still holds/ );
-	const reaches = await run( { rows: [ row( [ h ], { classes: [ 'F-hardcode' ] } ) ] }, env( { db: db( FITS ), probes: probes( { measure: { method: 'measured', reaches: true, emitted: 'e', evidence: 'x' } } ) } ) );
-	assert.equal( reaches.backlog.rows[ 0 ].status, 'closed' );
+	const reaches = await run( { rows: [ row( [ h ], { classes: [ 'F-hardcode' ] } ) ] }, env( { db: db( FITS ), probes: probes( { measure: { method: 'measured', reaches: true, emitted: 'e', evidence: 'x' }, probe: { rule: '.sgs-button', evidence: 'removing it changes the value' } } ) } ) );
+	assert.equal( reaches.backlog.rows[ 0 ].status, 'open' );
+	assert.match( outcomeOf( reaches ).reason, /G5 \(W-route\).*does not close an F-hardcode/ );
+} );
+
+test( 'MUST FAIL: a setting that reaches never closes an F-block or F-behaviour row; only its own probe can', async () => {
+	const measure = { method: 'measured', reaches: true, emitted: 'e', evidence: 'x' };
+	for ( const [ cls, still ] of [ [ 'F-block', { matches: [], evidence: 'no block matches' } ], [ 'F-behaviour', { flowFails: true, attributeMatches: [], evidence: 'the flow still fails' } ] ] ) {
+		const res = await run( { rows: [ row( [ entry( { class: cls } ) ], { classes: [ cls ] } ) ] }, env( { db: db( FITS ), probes: probes( { measure, probe: still } ) } ) );
+		assert.equal( res.backlog.rows[ 0 ].status, 'open', cls );
+		assert.equal( outcomeOf( res ).gate, 'G5', cls );
+	}
+	const agrees = await run( { rows: [ row( [ entry( { class: 'F-block' } ) ] ) ] }, env( { db: db( FITS ), probes: probes( { measure, probe: { matches: [ 'sgs/accordion' ], evidence: '1 block matches' } } ) } ) );
+	assert.deepEqual( [ agrees.backlog.rows[ 0 ].status, agrees.backlog.rows[ 0 ].closed.evidence[ 0 ].gate ], [ 'closed', 'G6' ] );
+} );
+
+test( 'MUST FAIL: a walker state the state map cannot map keeps the row open with that reason and never re-checks it against the resting settings', async () => {
+	const e = env( { db: db( FITS ), probes: probes( { measure: { method: 'measured', reaches: true, emitted: 'e', evidence: 'x' } } ) } );
+	const res = await run( { rows: [ row( [ entry( { state: 'scrolled-hover' } ) ] ) ] }, e );
+	assert.equal( res.backlog.rows[ 0 ].status, 'open' );
+	assert.match( outcomeOf( res ).reason, /walker state scrolled-hover maps to no setting state/ );
+	assert.deepEqual( e.probes.calls, [] );
 } );
 
 test( 'F-block closes when the roster now has a matching block and not before; F-behaviour closes only when the flow agrees on a fresh walk, a name match alone leaves it open', async () => {

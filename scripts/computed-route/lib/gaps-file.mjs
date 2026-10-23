@@ -18,7 +18,7 @@ export const OWNERS = {
 
 // The classes each gate can fail with (lib/gate-chain.mjs), the other half of the chain's own contract.
 const GATE_CLASSES = {
-	G0: [ 'I-stale' ], G1: [ 'W-walker' ], G2: [ 'W-walker', 'draft-defect', 'render-wins', 'CLIENT' ], G3: [ 'I-stale', 'I-unrouted', 'I-mistag' ],
+	G0: [ 'I-stale', 'W-walker', 'W-route' ], G1: [ 'W-walker' ], G2: [ 'W-walker', 'draft-defect', 'render-wins', 'CLIENT' ], G3: [ 'I-stale', 'I-unrouted', 'I-mistag' ],
 	G4: [ 'I-calibration' ], G5: [ 'W-route' ], G6: [ 'W-route' ], G7: [ 'I-stale', 'closed' ],
 };
 
@@ -27,8 +27,10 @@ export const gapsPath = ( client, root ) => path.join( root, 'sites', client, 'b
 const STATUS = { pass: 'pass', fail: 'fail', 'not-reached': 'not-reached' };
 const text = ( v ) => 'string' === typeof v && '' !== v.trim();
 
-// One gaps.json row from a chain result row ({ key, class, gate, gates, candidate, ref, pair, property, widths, state,
-// draftId, block, attribute, declared, renderedDraft, renderedLive }); throws when the row is incomplete.
+// One gaps.json row from a chain result row ({ key, class, gate, gates, candidate, ref, pair, property (the CSS
+// property), rowKey (the walker's raw key), widths, readAt
+// (the width the values and evidence were read at), state, draftId, block, attribute, declared, renderedDraft,
+// renderedLive }); throws when the row is incomplete.
 export function gapRow( r, { surface, publishedOn, firstSeen } ) {
 	if ( ! Array.isArray( r.gates ) || r.gates.length !== GATES.length || r.gates.some( ( g, i ) => g.gate !== GATES[ i ] || ! STATUS[ g.status ] ) ) {
 		throw new Error( `${ r.key }: the row does not carry G0 to G7 with a status each` );
@@ -71,8 +73,8 @@ export function gapRow( r, { surface, publishedOn, firstSeen } ) {
 		}
 	}
 	return {
-		id: `${ surface }:${ r.key }`, class: r.class, owner: OWNERS[ r.class ], surface, draftId: r.draftId ?? null, block: r.block ?? null, attribute: r.attribute ?? null,
-		property: r.property ?? null, widths: r.widths ?? [], state: r.state ?? null, declared: r.declared ?? null, renderedDraft: r.renderedDraft ?? null,
+		id: `${ surface }:${ r.key }`, class: r.class, owner: OWNERS[ r.class ], surface, draftId: r.draftId ?? null, pair: r.pair ?? null, block: r.block ?? null, attribute: r.attribute ?? null,
+		property: r.property ?? null, rowKey: r.rowKey ?? null, widths: r.widths ?? [], readAt: r.readAt ?? null, state: r.state ?? null, declared: r.declared ?? null, renderedDraft: r.renderedDraft ?? null,
 		renderedLive: r.renderedLive ?? null, gates: r.gates.map( ( g ) => ( { gate: g.gate, status: g.status, evidence: g.evidence ?? null } ) ),
 		firstSeen: firstSeen ?? publishedOn, publishedOn, killed: false, framework: r.class.startsWith( 'F-' ),
 	};

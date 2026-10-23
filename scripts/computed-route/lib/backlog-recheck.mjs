@@ -1,19 +1,22 @@
 // Re-check of the cross-client framework backlog (Spec 48 FR-48-68): re-runs G3 to G6 (lib/gate-chain.mjs's own gate
 // functions) for every width of every entry of every open row, against the injected environment, and closes a row only on
-// positive evidence that the gap no longer holds: a setting now reaches the element (G5 measured it), a trial now changes
-// the property (G6, missing setting), a roster block now matches (G6, missing block) or the flow now agrees on a fresh
-// walk (G6, behaviour). A hardcode closes through G5 alone: the winning-rule probe cannot tell a setting's own rule from a
-// hardcode. A gate that fails for any other reason, a throw or a missing input leaves the row open with that reason.
-// A row closes when every width of every entry closed; a closed row is never re-run.
+// positive evidence from the row's own class that the gap no longer holds: an F-setting when a setting now reaches the
+// element (G5 measured it) or a trial now changes the property (G6, missing setting); an F-hardcode when the winning-rule
+// probe now names no SGS framework rule (G6 answers `rule: null`); an F-block when a roster block now matches (G6, missing
+// block); an F-behaviour when the flow now agrees on a fresh walk (G6, behaviour). A G5 reach closes only an F-setting;
+// for every other class the re-check goes on to that class's own probe. A walker state the surface's state map does not
+// map to a setting state, a gate that fails for any other reason, a throw or a missing input leaves the row open with
+// that reason. A row closes when every width of every entry closed; a closed row is never re-run.
 //
 // env (one per client and surface): { db (read-only), cache(block) -> the calibration cache or null, states (the surface's
 // walker state map), probes: { measure(row, setting), probe(row, kind) } }.
 import { g3Db, g4Calibration, g5Emission, g6Probe, PROBE_CLASS } from './gate-chain.mjs';
 import { cssProp, settingState } from './solve-rows.mjs';
+import { renderEvidence } from './gate-evidence.mjs';
 
 const KIND_OF = Object.fromEntries( Object.entries( PROBE_CLASS ).map( ( [ kind, cls ] ) => [ cls, kind ] ) );
 const text = ( v ) => 'string' === typeof v && '' !== v.trim();
-const said = ( v ) => ( 'string' === typeof v ? v : JSON.stringify( v ) );
+const said = ( v ) => renderEvidence( v );
 const because = ( gate, res ) => `${ gate } (${ res.class }): ${ said( res.evidence ) }`;
 
 // The probe-side proof, per kind, that the gap no longer holds, read from the probe's own answer.
@@ -21,7 +24,7 @@ const CONTRADICTS = {
 	'missing-setting': ( r ) => true === r?.changed,
 	'missing-block': ( r ) => Array.isArray( r?.matches ) && r.matches.length > 0,
 	behaviour: ( r ) => false === r?.flowFails,
-	hardcode: () => false,
+	hardcode: ( r ) => !! r && Object.hasOwn( r, 'rule' ) && null === r.rule,
 };
 
 // The ancestors of a block, nearest first.
@@ -62,7 +65,10 @@ async function recheckWidth( entry, id, width, env ) {
 	const base = { ...id, state: entry.state, width, draftId: entry.draftId ?? null, block: entry.block };
 	const ancestors = ancestorsOf( env.db, entry.block );
 	const row = { ...base, ancestors, words: [ id.key, entry.draftId ].filter( Boolean ) };
-	const state = settingState( row, env.states ) ?? null;
+	const state = settingState( row, env.states );
+	if ( undefined === state ) {
+		return { outcome: 'open', gate: null, reason: `the walker state ${ entry.state } maps to no setting state in the surface's state map (not writable), so no setting can be re-checked on it`, evidence: null };
+	}
 	const stop = ( gate, res ) => ( { outcome: 'open', gate, reason: because( gate, res ), evidence: null } );
 	const g3 = g3Db( { db: env.db, block: entry.block, ancestors, property: cssProp( id.key ), state } );
 	if ( ! g3.pass ) {
@@ -81,8 +87,11 @@ async function recheckWidth( entry, id, width, env ) {
 			return m;
 		} : undefined,
 	} );
-	if ( ! g5.pass ) {
-		return reached ? { outcome: 'closed', gate: 'G5', reason: 'a setting now fits and reaches the element', evidence: g5.evidence } : stop( 'G5', g5 );
+	if ( ! g5.pass && ! reached ) {
+		return stop( 'G5', g5 );
+	}
+	if ( ! g5.pass && 'F-setting' === entry.class ) {
+		return { outcome: 'closed', gate: 'G5', reason: 'a setting now fits and reaches the element', evidence: g5.evidence };
 	}
 	const kind = KIND_OF[ entry.class ];
 	let answer;
@@ -93,7 +102,8 @@ async function recheckWidth( entry, id, width, env ) {
 	if ( ! g6.pass ) {
 		return answer && CONTRADICTS[ kind ]( answer ) ? { outcome: 'closed', gate: 'G6', reason: `the ${ kind } probe no longer proves the gap`, evidence: g6.evidence } : stop( 'G6', g6 );
 	}
-	return { outcome: 'open', gate: null, reason: `the gap still holds: G3 to G6 pass (${ said( g6.evidence ) })`, evidence: null };
+	return g5.pass ? { outcome: 'open', gate: null, reason: `the gap still holds: G3 to G6 pass (${ said( g6.evidence ) })`, evidence: null }
+		: { outcome: 'open', gate: 'G5', reason: `${ because( 'G5', g5 ) }; a reach does not close an ${ entry.class } row and its own probe still proves the gap (${ said( g6.evidence ) })`, evidence: null };
 }
 
 // One entry, every width. Returns { outcome, gate, reason, widths: [{ width, outcome, gate, reason, evidence }] }; the entry
