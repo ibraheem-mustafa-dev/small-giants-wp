@@ -19,7 +19,7 @@ import declared_sources as ds  # noqa: E402
 import variant_sets as vs  # noqa: E402
 
 FIXTURES = HERE / "fixtures"
-OPTICIAN = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care"
+OPTICIAN = HERE / "fixtures" / "pre48a-optician"  # a pre-48A export: draft, README, variant sets
 MAMAS = REPO / "sites/mamas-munches/mockups/homepage"
 
 
@@ -165,7 +165,7 @@ def test_optician_readme():
 
 @_SKIP_EYE
 def test_optician_variant_sets():
-    html = (REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html").read_text(encoding="utf-8")
+    html = (OPTICIAN / "draft.dc.html").read_text(encoding="utf-8")
     accent = vs.read_script_variant_sets(html)["accent"]
     assert accent["default"] == "taupe"
     assert accent["options"] == ["taupe", "sage", "navy"]

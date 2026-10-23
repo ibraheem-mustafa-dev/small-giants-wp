@@ -86,12 +86,18 @@ def is_source_path(path: str) -> bool:
     return lower.endswith(".html") or (lower.startswith("tokens/") and lower.endswith(".css"))
 
 
-def manifest_source_hashes(folder) -> "dict[str, str] | None":
+class ManifestMismatch(Exception):
+    """A Spec 48A export's ``MANIFEST.json`` does not describe the files on disk: a listed draft or
+    ``tokens/*.css`` whose bytes hash differently or is missing, or a draft the MANIFEST does not list."""
+
+
+def manifest_source_hashes(folder, draft_name: "str | None" = None) -> "dict[str, str] | None":
     """``{path: sha256}`` for the drafts and ``tokens/*.css`` a Spec 48A export's ``MANIFEST.json`` lists.
 
-    None when ``folder`` holds no ``MANIFEST.json`` (a static or pre-48A draft). The hashes are the
-    MANIFEST's own, so a re-export that changes a draft or a token file changes them and the README
-    never can (C4: the README is not a design input).
+    None when ``folder`` holds no ``MANIFEST.json`` (a static or pre-48A draft). Each listed file is re-hashed
+    on disk, so a re-export that changes a draft or a token file changes the key and the README never can (C4:
+    the README is not a design input). Raises ``ManifestMismatch`` naming the file when a listed file's bytes
+    do not match its MANIFEST hash or it is missing, and when ``draft_name`` is given but not listed.
     """
     import json
     from pathlib import Path
@@ -102,8 +108,18 @@ def manifest_source_hashes(folder) -> "dict[str, str] | None":
     if not manifest.is_file():
         return None
     files = json.loads(manifest.read_text(encoding="utf-8")).get("files") or []
-    return {f["path"]: f["sha256"] for f in files
-            if isinstance(f, dict) and f.get("path") and f.get("sha256") and is_source_path(f["path"])}
+    listed = {f["path"]: f["sha256"] for f in files
+              if isinstance(f, dict) and f.get("path") and f.get("sha256") and is_source_path(f["path"])}
+    if draft_name is not None and draft_name not in listed:
+        raise ManifestMismatch(f"{draft_name}: the extracted draft is not listed in {manifest}")
+    for path, claimed in listed.items():
+        on_disk = Path(folder) / path
+        if not on_disk.is_file():
+            raise ManifestMismatch(f"{path}: listed in {manifest} but missing on disk")
+        actual = hashlib.sha256(on_disk.read_bytes()).hexdigest()
+        if actual != claimed:
+            raise ManifestMismatch(f"{path}: sha256 on disk {actual} differs from the MANIFEST's {claimed}")
+    return listed
 
 
 def draft_source_sha256(html: str, folder=None) -> "str | None":

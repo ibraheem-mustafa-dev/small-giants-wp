@@ -21,8 +21,9 @@ sys.path.insert(0, str(PKG.parent))
 
 import extract  # noqa: E402
 
-DRAFT_DIR = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care"
-DRAFT = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html"
+# The pre-48A export (draft, README and script variant sets) the cached facts were measured on.
+DRAFT_DIR = HERE / "fixtures" / "pre48a-optician"
+DRAFT = DRAFT_DIR / "draft.dc.html"
 FACTS = HERE / "fixtures" / "eye-care-computed-facts.json"
 README_FIXTURE = HERE / "fixtures" / "declared-readme.md"
 MAMAS = REPO / "sites/mamas-munches/mockups/homepage/index.html"

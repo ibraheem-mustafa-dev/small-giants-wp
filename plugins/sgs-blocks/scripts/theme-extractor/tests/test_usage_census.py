@@ -18,7 +18,7 @@ sys.path.insert(0, str(PKG))
 import declared_sources as ds  # noqa: E402
 import usage_census as uc  # noqa: E402
 
-DRAFT = REPO / "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html"
+DRAFT = HERE / "fixtures" / "pre48a-optician" / "draft.dc.html"  # a pre-48A export with its README
 
 
 def _spans(colour: str, n: int, prop: str = "color") -> str:
