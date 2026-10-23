@@ -235,6 +235,11 @@ export function comparePair( pair, d, l, tol ) {
 		if ( Math.abs( d.box[ k ] - l.box[ k ] ) > tol.box ) {
 			add( 'box', k, d.box[ k ], l.box[ k ] );
 		}
+		// The size of the element painting the ground and shape, where either side paints on another element than the pair's.
+		const [ pd, pl ] = [ d.paintBox, l.paintBox ];
+		if ( pd && pl && ! ( pd.own && pl.own ) && Math.abs( pd[ k ] - pl[ k ] ) > tol.box ) {
+			add( 'box', `paint-${ k }`, pd[ k ], pl[ k ] );
+		}
 	}
 	// translate, rotate, scale and transform are one row: the composed pose (lib/transform.mjs).
 	const posed = ! TRANSFORM_PARTS.some( ( p ) => loops.has( p ) );

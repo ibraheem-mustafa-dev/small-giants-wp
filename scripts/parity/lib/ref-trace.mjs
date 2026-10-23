@@ -41,7 +41,7 @@ export function elementPath( el, refEl ) {
 // is the element laying out the children (collectPair reads layout properties from it), so layout rows get its path;
 // `iconEl` is the pair's first painted svg, so icon size rows get its path; `decoEl` is the element whose underline
 // collectPair reads (paint.mjs::decoratedElement), so underline rows get its path; `paintEl` is the element painting the
-// ground, shape and border (paint.mjs::paintElement), so paint rows get its path.
+// ground, shape and border (paint.mjs::paintElement), so paint rows and its size rows (`paint-w`, `paint-h`) get its path.
 export function traceRef( el, carrier, prefix, pathSrc, layoutEl = null, iconEl = null, decoEl = null, paintEl = null ) {
 	// eslint-disable-next-line no-new-func
 	const path = new Function( `return (${ pathSrc });` )();
@@ -115,7 +115,7 @@ const pathKey = ( d, t ) => {
 	if ( 'style' === d.kind && /^icon-(width|height|colour)$/.test( d.key ) && null != t.iconPath ) {
 		return 'iconPath';
 	}
-	if ( [ 'style', 'hover', 'active' ].includes( d.kind ) && PAINT_CARRIED.includes( d.key ) && null != t.paintPath ) {
+	if ( ( ( [ 'style', 'hover', 'active' ].includes( d.kind ) && PAINT_CARRIED.includes( d.key ) ) || ( 'box' === d.kind && /^paint-[wh]$/.test( d.key ) ) ) && null != t.paintPath ) {
 		return 'paintPath';
 	}
 	return 'path';

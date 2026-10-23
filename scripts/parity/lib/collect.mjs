@@ -298,6 +298,9 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		text: ( paintedText.trim() || el.getAttribute( 'aria-label' ) || hiddenText ).replace( /\s+/g, ' ' ).trim().slice( 0, 400 ),
 		keyframes: cs.animationName.split( ',' ).every( ( n ) => 'none' === n.trim() ) ? 'none' : cs.animationName.split( ',' ).map( ( n ) => keyframes( n.trim() ) ).join( ' | ' ),
 		box: run ? run.box : { x: Math.round( r.x ), y: Math.round( r.y + window.scrollY ), w: Math.round( r.width ), h: Math.round( r.height ) },
+		// The painting element's own size (opts.paintPart): a 20px dot inside a 44px link is not a 44px disc, whatever its
+		// colour and radius. `own` when the pair's element paints itself (its box rows already say its size).
+		...( opts?.paintPart && ! run ? { paintBox: { w: Math.round( paintEl.getBoundingClientRect().width ), h: Math.round( paintEl.getBoundingClientRect().height ), own: paintEl === el } } : {} ),
 		// A text run's rows (paint.mjs::textRun): compared as the spacing between them.
 		...( run?.rows ? { rows: run.rows } : {} ),
 		styles,
