@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/skeleton-child-slots.mjs", "find": "const glyphPath = cfg.glyph ? slotOf( cfg.glyph ) : null;", "replace": "const glyphPath = null;", "why": "the glyph element would never be read, so the caret stays at the block's default size" },
+	{ "file": "lib/skeleton-child-slots.mjs", "find": "return square && wordless;", "replace": "return square;", "why": "a square element with words of its own would be taken as the glyph" },
+	{ "file": "lib/skeleton-child-slots.mjs", "find": "return square && wordless;", "replace": "return wordless;", "why": "a wordless element that is not a small square (an underline strip, a hole label) would be taken as the glyph" }
+]
