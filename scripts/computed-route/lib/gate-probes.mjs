@@ -12,6 +12,7 @@
 import { listedProperties } from './db.mjs';
 import { openRows, settingState, cssProp } from './solve-rows.mjs';
 import { enumerateInPage, winnerInPage } from './gate-probes-page.mjs';
+import { withOrigin } from './rule-origin.mjs';
 import { KEYWORDS } from './calibrate-markers.mjs';
 
 const STATE_PSEUDO = { hover: ':hover' };
@@ -118,7 +119,7 @@ export function createProbes( o ) {
 		if ( found.absent ) {
 			throw new Error( `${ row.ref } is not on the live page` );
 		}
-		const own = found.hits.filter( ( h ) => 'custom-css' !== h.origin && belongsTo( h.selector, setting.block ) );
+		const own = withOrigin( found.hits ).filter( ( h ) => 'custom-css' !== h.origin && belongsTo( h.selector, setting.block ) );
 		const where = `${ found.hits.length } matching rule(s) declare ${ props.join( '/' ) } on ${ row.ref } across ${ found.sheets } stylesheet(s)`;
 		if ( own.length ) {
 			return { method: 'measured', emitted: `${ own[ 0 ].selector } { ${ own[ 0 ].property }: ${ own[ 0 ].value } }`, reaches: true, evidence: `${ where }; ${ setting.block }'s own rule matches` };
@@ -139,7 +140,7 @@ export function createProbes( o ) {
 		if ( live.absent ) {
 			throw new Error( `${ row.ref } is not on the live page` );
 		}
-		const sgs = live.hits.filter( ( h ) => 'custom-css' !== h.origin && ownRule( h.selector ) );
+		const sgs = withOrigin( live.hits ).filter( ( h ) => 'custom-css' !== h.origin && ownRule( h.selector ) );
 		if ( sgs.length ) {
 			return { changed: true, evidence: `an SGS rule declares ${ prop } on ${ row.ref }: ${ sgs[ 0 ].selector }` };
 		}
@@ -169,7 +170,7 @@ export function createProbes( o ) {
 	}
 
 	// G6 hardcode: the rule is the SGS framework rule (a selector naming an sgs- class, in a stylesheet that is not a block's
-	// sgsCustomCss residual: the rule's origin, not its text, decides) whose removal changes the computed value. A
+	// sgsCustomCss residual: lib/rule-origin.mjs::ruleOrigin) whose removal changes the computed value. A
 	// winner that is a WordPress or theme rule or the element's inline style is no SGS hardcode, and a stylesheet or rule
 	// the trial could not read leaves a winner it may not have seen.
 	async function hardcodeRule( row ) {
@@ -181,14 +182,15 @@ export function createProbes( o ) {
 		if ( ! w.restored ) {
 			throw new Error( 'the trial could not restore the page\'s own rules' );
 		}
-		const own = w.winners.find( ( n ) => 'stylesheet' === n.origin && ownRule( n.rule ) )?.rule;
+		const winners = withOrigin( w.winners );
+		const own = winners.find( ( n ) => 'stylesheet' === n.origin && ownRule( n.rule ) )?.rule;
 		if ( own ) {
 			return { rule: own, evidence: `removing ${ prop } from ${ own } changes ${ row.ref } from ${ w.before }` };
 		}
 		if ( w.unread ) {
 			throw new Error( `${ w.unread } stylesheet(s) or rule(s) could not be read, so no rule can be ruled out` );
 		}
-		return { rule: null, evidence: w.winners.length ? `the rule that wins ${ prop } on ${ row.ref } is ${ w.winners.map( ( n ) => ( 'custom-css' === n.origin ? `${ n.rule } (the block's own sgsCustomCss)` : n.rule ) ).join( ', ' ) }, not an SGS framework rule` : `no single rule's removal changes ${ prop } on ${ row.ref } (computed ${ w.before })` };
+		return { rule: null, evidence: winners.length ? `the rule that wins ${ prop } on ${ row.ref } is ${ winners.map( ( n ) => ( 'custom-css' === n.origin ? `${ n.rule } (the block's own sgsCustomCss)` : n.rule ) ).join( ', ' ) }, not an SGS framework rule` : `no single rule's removal changes ${ prop } on ${ row.ref } (computed ${ w.before })` };
 	}
 
 	function rosterMatches( row ) {

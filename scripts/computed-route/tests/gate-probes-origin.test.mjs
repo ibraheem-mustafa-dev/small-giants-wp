@@ -45,3 +45,16 @@ test( 'MUST FAIL G5 and G6 missing setting: a custom-CSS rule is no framework em
 	const custom = await probes( CUSTOM ).probe( row, 'missing-setting' );
 	assert.equal( custom.changed, false );
 } );
+
+// On the front end the CSS registry lifts the residual into the one consolidated sheet, so its element is gone; the
+// scoper's doubled per-instance scope (`.sgs-c-<uid>.sgs-c-<uid>`, custom-css.php::sgs_custom_css_uid) still marks it.
+const LIFTED_EL = '<a class="cr-ref-o sgs-button sgs-button-1234abcd sgs-c-ab12 sgs-c-cd34 sgs-c-0a1b2c3d-2" href="#">Go</a>';
+const lifted = ( selector ) => `<style id="sgs-blocks-css">${ selector } { word-spacing: 3px; }</style>${ LIFTED_EL }`;
+
+test( 'MUST FAIL: a lifted custom-CSS rule in an ordinary stylesheet is classed by its doubled scope; a single or mixed sgs-c- class stays a framework rule', async () => {
+	assert.equal( ( await probes( lifted( '.sgs-c-ab12.sgs-c-ab12' ) ).probe( row, 'hardcode' ) ).rule, null, 'the doubled scope is the route\'s own write' );
+	assert.equal( ( await probes( lifted( '.sgs-c-0a1b2c3d-2.sgs-c-0a1b2c3d-2' ) ).probe( row, 'hardcode' ) ).rule, null, 'a hash uid with its occurrence suffix' );
+	assert.equal( ( await probes( lifted( '.sgs-c-ab12.sgs-c-ab12.sgs-button-1234abcd' ) ).measure( row, { block: 'sgs/button', attr: 'wordGap' } ) ).reaches, false );
+	assert.equal( ( await probes( lifted( '.sgs-c-ab12' ) ).probe( row, 'hardcode' ) ).rule, '.sgs-c-ab12' );
+	assert.equal( ( await probes( lifted( '.sgs-c-ab12.sgs-c-cd34' ) ).probe( row, 'hardcode' ) ).rule, '.sgs-c-ab12.sgs-c-cd34' );
+} );
