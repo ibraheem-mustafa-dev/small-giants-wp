@@ -1,0 +1,12 @@
+[
+	{ "file": "lib/collect.mjs", "find": "if ( layerItem( box, '::before' ) ) {", "replace": "if ( false ) {", "why": "a ::before is no item" },
+	{ "file": "lib/collect.mjs", "find": "if ( layerItem( box, '::after' ) ) {", "replace": "if ( false ) {", "why": "an ::after is no item" },
+	{ "file": "lib/collect.mjs", "find": "return ! [ 'none', 'normal', '' ].includes( s.content.trim() ) && 'none' !== s.display && ! /absolute|fixed/.test( s.position );", "replace": "return true;", "why": "every layer an item, painting or not" },
+	{ "file": "lib/collect.mjs", "find": "return ! [ 'none', 'normal', '' ].includes( s.content.trim() ) && 'none' !== s.display && ! /absolute|fixed/.test( s.position );", "replace": "return ! [ 'none', 'normal', '' ].includes( s.content.trim() ) && ! /absolute|fixed/.test( s.position );", "why": "an undisplayed layer counts" },
+	{ "file": "lib/collect.mjs", "find": "return ! [ 'none', 'normal', '' ].includes( s.content.trim() ) && 'none' !== s.display && ! /absolute|fixed/.test( s.position );", "replace": "return ! [ 'none', 'normal', '' ].includes( s.content.trim() ) && 'none' !== s.display;", "why": "a positioned layer counts" },
+	{ "file": "lib/collect.mjs", "find": "} else if ( 1 === k.nodeType && 'contents' === getComputedStyle( k ).display ) {\n\t\t\t\tcountItems( k );", "replace": "} else if ( 1 === k.nodeType && 'contents' === getComputedStyle( k ).display ) {\n\t\t\t\tlayoutChildren += 1;", "why": "a contents wrapper is one item" },
+	{ "file": "lib/collect.mjs", "find": "} else if ( 1 === k.nodeType && 'contents' === getComputedStyle( k ).display ) {\n\t\t\t\tcountItems( k );", "replace": "} else if ( false ) {\n\t\t\t\tcountItems( k );", "why": "a contents wrapper is not stepped into" },
+	{ "file": "lib/paint.mjs", "find": "if ( kids.length + layers >= 2 ) {", "replace": "if ( kids.length >= 2 ) {", "why": "layoutElement ignores painting layers" },
+	{ "file": "lib/paint.mjs", "find": "const flat = ( a ) => [ ...a.children ].flatMap( ( k ) => ( contents( k ) ? [ k, ...flat( k ) ] : [ k ] ) );", "replace": "const flat = ( a ) => [ ...a.children ];", "why": "layoutElement does not step through display: contents" },
+	{ "file": "lib/paint.mjs", "find": "return ! [ 'none', 'normal', '' ].includes( c ) && 'none' !== s.display && ! /absolute|fixed/.test( s.position || '' );", "replace": "return 'none' !== s.display;", "why": "layoutElement counts every layer" }
+]

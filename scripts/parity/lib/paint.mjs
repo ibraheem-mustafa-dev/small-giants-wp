@@ -32,24 +32,36 @@ export function layoutComparable( prop, d, l ) {
 }
 
 // Self-contained (passed to page.evaluate as source). The element whose layout a pair's layout properties describe:
-// the first flex or grid container with two or more rendered children, found from the element down a chain of single
+// the first flex or grid container with two or more rendered items, found from the element down a chain of single
 // rendered children (a block wrapper, flex or not, holding one inner band that lays out the items), else the element.
+// A display: contents child has no box: its children stand in its place. A painting ::before or ::after in flow (an icon
+// layer beside a label) is an item too, so an element holding one child and such a layer lays out two items.
 // A gap or alignment between fewer than two items paints nothing. The same rule on both sides, so a draft row element
 // and a live wrapper-plus-inner band compare the same layout. A closed <details> that renders its <summary> plus
 // collapsed content counts only its <summary>: a visitor sees one child, and a draft that drops the answer when closed
 // presents the same single child. An open <details>, or one with no rendered <summary>, counts every rendered child.
 // A read that stamps the elements its targets own (Fill: data-fill-owner holds the owning node's index) never descends into
 // an element another node owns: that element is not this one's inner band, so its layout is not this element's.
-export function layoutElement( el, styleOf = ( e ) => getComputedStyle( e ) ) {
+export function layoutElement( el, styleOf = ( e, ps ) => getComputedStyle( e, ps ) ) {
 	const lays = ( e ) => /(^|-)(flex|grid)$/.test( styleOf( e ).display );
 	const ownerOf = ( e ) => ( e.getAttribute ? e.getAttribute( 'data-fill-owner' ) : null );
 	const owner = ownerOf( el );
+	const contents = ( k ) => 'contents' === styleOf( k ).display;
+	const flat = ( a ) => [ ...a.children ].flatMap( ( k ) => ( contents( k ) ? [ k, ...flat( k ) ] : [ k ] ) );
+	// A real element's ::before or ::after that generates an in-flow box; a style without `content` (a test stub) has none.
+	const layer = ( e, ps ) => {
+		const s = styleOf( e, ps );
+		const c = String( s.content ?? 'none' ).trim();
+		return ! [ 'none', 'normal', '' ].includes( c ) && 'none' !== s.display && ! /absolute|fixed/.test( s.position || '' );
+	};
 	for ( let a = el; ; ) {
-		let kids = [ ...a.children ].filter( ( k ) => k.getClientRects().length && 'none' !== styleOf( k ).display );
+		const all = flat( a );
+		const layers = [ a, ...all.filter( contents ) ].reduce( ( n, e ) => n + [ '::before', '::after' ].filter( ( ps ) => layer( e, ps ) ).length, 0 );
+		let kids = all.filter( ( k ) => ! contents( k ) && k.getClientRects().length && 'none' !== styleOf( k ).display );
 		if ( 'DETAILS' === a.tagName && ! a.open && kids.length >= 2 && kids.some( ( k ) => 'SUMMARY' === k.tagName ) ) {
 			kids = kids.filter( ( k ) => 'SUMMARY' === k.tagName );
 		}
-		if ( kids.length >= 2 ) {
+		if ( kids.length + layers >= 2 ) {
 			return lays( a ) ? a : el;
 		}
 		if ( 1 !== kids.length ) {

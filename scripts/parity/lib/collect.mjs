@@ -149,19 +149,38 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	const layoutEl = layoutElement( el );
 	const lcs = getComputedStyle( layoutEl );
 	// The layout element's in-flow rendered items (`layoutChildren`): each child element with a box that is not absolutely
-	// or fixed positioned, and each run of painted text between them (a flex or grid container wraps it in one anonymous
-	// item). paint.mjs::layoutComparable and computed-route lib/fill-prop.mjs::gapPaintsNothing judge a gap by it.
+	// or fixed positioned, each painting ::before and ::after layer in flow (content not none, display not none), and each
+	// run of painted text between them (a flex or grid container wraps it in one anonymous item). A display: contents
+	// child has no box of its own: its children and its painting layers are the items. paint.mjs::layoutComparable and
+	// computed-route lib/fill-prop.mjs::gapPaintsNothing judge a gap by it.
 	let layoutChildren = 0;
 	let inText = false;
-	for ( const k of layoutEl.childNodes ) {
-		if ( 3 === k.nodeType ) {
-			layoutChildren += k.textContent.trim() && ! inText ? 1 : 0;
-			inText = inText || !! k.textContent.trim();
-		} else if ( 1 === k.nodeType && k.getClientRects().length && 'none' !== getComputedStyle( k ).display && ! /absolute|fixed/.test( getComputedStyle( k ).position ) ) {
+	const layerItem = ( e, ps ) => {
+		const s = getComputedStyle( e, ps );
+		return ! [ 'none', 'normal', '' ].includes( s.content.trim() ) && 'none' !== s.display && ! /absolute|fixed/.test( s.position );
+	};
+	const countItems = ( box ) => {
+		if ( layerItem( box, '::before' ) ) {
 			layoutChildren += 1;
 			inText = false;
 		}
-	}
+		for ( const k of box.childNodes ) {
+			if ( 3 === k.nodeType ) {
+				layoutChildren += k.textContent.trim() && ! inText ? 1 : 0;
+				inText = inText || !! k.textContent.trim();
+			} else if ( 1 === k.nodeType && 'contents' === getComputedStyle( k ).display ) {
+				countItems( k );
+			} else if ( 1 === k.nodeType && k.getClientRects().length && 'none' !== getComputedStyle( k ).display && ! /absolute|fixed/.test( getComputedStyle( k ).position ) ) {
+				layoutChildren += 1;
+				inText = false;
+			}
+		}
+		if ( layerItem( box, '::after' ) ) {
+			layoutChildren += 1;
+			inText = false;
+		}
+	};
+	countItems( layoutEl );
 	// Paint properties come from the element painting the ground, shape and border (paint.mjs::PAINT_PROPS, paintElement).
 	const PAINT = [ 'background-color', 'background-image', 'border-radius', 'box-shadow', 'border-top-width', 'border-top-style', 'border-top-color', 'border-bottom-width', 'border-bottom-color', 'border-left-width', 'border-right-width', 'border-left-color', 'border-right-color' ];
 	const paintEl = opts?.paintPart && ! run ? paintElement( el, owned ) : el;
