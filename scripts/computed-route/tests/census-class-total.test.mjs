@@ -2,8 +2,13 @@
 // total (grouped rows and rows with no signature together), and the table header states that total.
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { DatabaseSync } from 'node:sqlite';
-import { classifyRows, classCounts } from '../lib/census-gap-class.mjs';
+import { classifyRows, classCounts, gitFreshness } from '../lib/census-gap-class.mjs';
+import { isEvidence } from '../lib/gate-evidence.mjs';
 import { groupRows } from '../lib/census-mechanism.mjs';
 import { renderTable } from '../census-all.mjs';
 
@@ -18,7 +23,7 @@ const db = () => {
 	return d;
 };
 const fresh = () => ( { pass: true, class: null, evidence: 'fresh' } );
-const stale = () => ( { pass: false, class: 'I-stale', evidence: 'old' } );
+const stale = () => ( { pass: false, class: 'I-stale', evidence: { command: 'git log', line: 'old' } } );
 const row = ( over = {} ) => ( { client: 'c', surface: 's', element: 'cr-ref-s-1', slug: 'sgs/container', block: 'sgs/container', kind: 'style', key: 'max-width', property: 'max-width', state: 'default', runStates: 'all', tier: 'all', side: 'both', reason: 'no-setting', fillClass: 'F-setting', fillCandidate: true, ...over } );
 
 // One planted row touches three classes at once (a Fill F-setting reason, a NULL-routed fitting setting, a stale block); a second
@@ -57,4 +62,53 @@ test( 'negative control: rows of different classes stay separate and still sum t
 	const c = classCounts( rows );
 	assert.deepEqual( c.counts, { 'W-walker': 1, held: 1 } );
 	assert.equal( c.total, 2 );
+} );
+
+// ---- I-class evidence (FR-48-66 form: a command and its output line, or a file and a key)
+test( 'MUST FAIL: each I-class row carries structured evidence, and the census JSON names it', () => {
+	const ev = ( e ) => ( { pass: false, class: 'I-stale', evidence: e } );
+	const stale = classifyRows( [ row() ], { db: db(), calFor: () => ( {} ), freshness: () => ev( { command: 'git log -1', line: 'the DB predates the block' } ) } );
+	assert.deepEqual( stale[ 0 ].gapEvidence, { command: 'git log -1', line: 'the DB predates the block' } );
+	const unrouted = classifyRows( [ row() ], { db: db(), calFor: () => ( {} ), freshness: () => ( { pass: true, class: null, evidence: { command: 'git log', line: 'ok' } } ) } );
+	assert.equal( unrouted[ 0 ].gapClass, 'I-unrouted' );
+	assert.ok( isEvidence( unrouted[ 0 ].gapEvidence ), 'the DB gate\'s reading is evidence' );
+	assert.match( unrouted[ 0 ].gapEvidence.command, /block_attributes/ );
+	for ( const rows of [ stale, unrouted ] ) {
+		const counted = classCounts( rows ).instrument;
+		assert.equal( counted.length, 1 );
+		assert.deepEqual( counted[ 0 ].evidence, rows[ 0 ].gapEvidence );
+		assert.ok( isEvidence( counted[ 0 ].evidence ) );
+	}
+} );
+
+test( 'MUST FAIL: an I-class row with free-text or no evidence is refused, never counted', () => {
+	for ( const gapEvidence of [ 'old', null, undefined, {}, { command: 'x' }, [ 'a' ] ] ) {
+		assert.throws( () => classCounts( [ { client: 'c', surface: 's', element: 'e', gapClass: 'I-stale', gapEvidence } ] ), /I-stale with no evidence for its class/, JSON.stringify( gapEvidence ) ?? 'undefined' );
+	}
+	for ( const gapClass of [ 'I-unrouted', 'I-mistag', 'I-calibration' ] ) {
+		assert.throws( () => classCounts( [ { client: 'c', surface: 's', element: 'e', gapClass, gapEvidence: 'free text' } ] ), new RegExp( `${ gapClass } with no evidence` ), gapClass );
+	}
+	assert.equal( classCounts( [ { gapClass: 'W-walker', gapEvidence: null } ] ).total, 1, 'a non-I row needs none' );
+} );
+
+test( 'MUST FAIL: gitFreshness gives the commands that read the DB time, the commit and the changes as the evidence', () => {
+	const root = fs.mkdtempSync( path.join( os.tmpdir(), 'census-fresh-' ) );
+	process.on( 'exit', () => fs.rmSync( root, { recursive: true, force: true } ) );
+	const git = ( ...a ) => execFileSync( 'git', a, { cwd: root, encoding: 'utf8' } );
+	git( 'init', '-q' );
+	fs.mkdirSync( path.join( root, 'plugins/sgs-blocks/src/blocks/card' ), { recursive: true } );
+	fs.writeFileSync( path.join( root, 'plugins/sgs-blocks/src/blocks/card/block.json' ), '{}' );
+	git( 'add', '-A' );
+	git( '-c', 'user.email=a@b.c', '-c', 'user.name=t', 'commit', '-q', '-m', 'x' );
+	const d = new DatabaseSync( ':memory:' );
+	d.exec( "CREATE TABLE schema_metadata ( key TEXT, value TEXT ); INSERT INTO schema_metadata VALUES ( 'last_full_refresh_ts', '2020-01-01T00:00:00Z' );" );
+	const check = gitFreshness( { repo: root, db: d } )( 'sgs/card' );
+	assert.equal( check.class, 'I-stale' );
+	assert.ok( isEvidence( check.evidence ) );
+	assert.match( check.evidence.command, /git log -1 --format=%cI -- plugins\/sgs-blocks\/src\/blocks\/card/ );
+	assert.match( check.evidence.command, /git status --porcelain/ );
+	assert.match( check.evidence.line, /the DB was refreshed 2020-01-01T00:00:00Z, before the block's last commit/ );
+	const missing = gitFreshness( { repo: path.join( root, 'none' ), db: d } )( 'sgs/card' );
+	assert.ok( isEvidence( missing.evidence ), 'an unreadable git is evidence too' );
+	assert.match( missing.evidence.line, /git could not be read/ );
 } );

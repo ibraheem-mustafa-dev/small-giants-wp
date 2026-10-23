@@ -4,6 +4,7 @@
 // instrumentFinding): a NULL-routed, mistagged, uncalibrated or stale fitting setting makes it an I-class row.
 import { execFileSync } from 'node:child_process';
 import { isCssProperty } from './css-families.mjs';
+import { fromCommand, isEvidence, renderEvidence } from './gate-evidence.mjs';
 import { GAP_CLASSES, HELD, UNASSESSED, ancestorsOf, classify, gapClassOf, instrumentFinding, staleCheck } from './gap-classes.mjs';
 
 // The DB-versus-code check per block (memoised): the DB's refresh time against the block's last commit and its uncommitted
@@ -23,7 +24,8 @@ export function gitFreshness( { repo, db } ) {
 			} catch ( e ) {
 				check = { pass: false, class: 'I-stale', evidence: `git could not be read for ${ dir }: ${ String( e.message || e ).slice( 0, 80 ) }` };
 			}
-			memo.set( slug, check );
+			// The reading as FR-48-66 evidence: the commands that produced it (lib/gate-evidence.mjs).
+			memo.set( slug, { ...check, evidence: fromCommand( `git log -1 --format=%cI -- ${ dir }; git status --porcelain -- ${ dir }; sgs-framework.db: SELECT value FROM schema_metadata WHERE key = 'last_full_refresh_ts'`, check.evidence ) } );
 		}
 		return memo.get( slug );
 	};
@@ -63,16 +65,20 @@ export function classifyRows( rows, { db, calFor, freshness } ) {
 	} );
 }
 
-// Row counts per class, I-class rows named: { total, counts, instrument: [ { class, client, surface, block, attribute, property, via } ] }.
+// Row counts per class, I-class rows named: { total, counts, instrument: [ { class, client, surface, block, attribute, property, via, evidence } ] }.
 // A row carries exactly one class, so the counts sum to `total`, the number of rows given (grouped rows and rows with no
-// signature alike); a row without a single class name throws.
+// signature alike); a row without a single class name throws, and so does an I-class row whose evidence is not a command
+// and its output line or a file and key (lib/gate-evidence.mjs: free text is not evidence).
 export function classCounts( rows ) {
 	const counts = {};
 	for ( const r of rows ) {
 		if ( 'string' !== typeof r.gapClass || '' === r.gapClass ) {
 			throw new Error( `census row ${ r.client } ${ r.surface } ${ r.element } carries no single class (${ JSON.stringify( r.gapClass ?? null ) })` );
 		}
+		if ( r.gapClass.startsWith( 'I-' ) && ! isEvidence( r.gapEvidence ) ) {
+			throw new Error( `census row ${ r.client } ${ r.surface } ${ r.element } is ${ r.gapClass } with no evidence for its class (${ renderEvidence( r.gapEvidence ) })` );
+		}
 		counts[ r.gapClass ] = ( counts[ r.gapClass ] ?? 0 ) + 1;
 	}
-	return { total: rows.length, counts, instrument: rows.filter( ( r ) => r.gapClass.startsWith( 'I-' ) ).map( ( r ) => ( { class: r.gapClass, client: r.client, surface: r.surface, block: r.slug, attribute: r.gapAttribute, property: r.key, via: r.gapVia } ) ) };
+	return { total: rows.length, counts, instrument: rows.filter( ( r ) => r.gapClass.startsWith( 'I-' ) ).map( ( r ) => ( { class: r.gapClass, client: r.client, surface: r.surface, block: r.slug, attribute: r.gapAttribute, property: r.key, via: r.gapVia, evidence: r.gapEvidence } ) ) };
 }
