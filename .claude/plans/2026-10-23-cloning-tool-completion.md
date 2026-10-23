@@ -210,7 +210,7 @@ Repeat Phase 2 (only the surfaces a fix touched, plus one full pass at the end) 
 ### Next
 - [x] Phase 0, done 2026-10-23: P1 to P5, the review and its fixes. Main-checkout proof after the last merge: route suite 2694 of 2695 (only the known intake re-run red); check-approved 157/0; freeze diff unchanged (Indus 120/11/11, Mama's 182/7/0); lint, `capabilities.mjs --gate` and the client-name check pass. The Indus header walk reads 682 open rows, every one a real difference or a row a later item owns: the measurement artefacts are gone, and the walker now sees parts, effects, focus and resting looks it was blind to. The delivery map fails 18 Indus keys: A-18 and A-19 on the walker's live evidence, 14 with no built tree yet, A-10 a site option, and A-16 and A-40 unnamed loops.
 - [x] Phase 1 Track F (2026-10-23): F1 done and live on indus-test (`7778b1e8a`); F2 waits on Track R's settings map.
-- [ ] Phase 1, as four sessions Bean runs, one per track, from `.claude/prompts/2026-10-23-track-r-phase1.md`, `-track-w-phase1.md`, `-track-s-phase1.md` and `-track-f-phase1.md`. Tracks R and W are the large ones; S and F are smaller and can share a day.
+- [ ] Phase 1, as four sessions Bean runs, one per track (Track R from `.claude/prompts/2026-10-23-track-r-phase1.md`, Track S from `-track-s-phase1.md`). Track F's wave is done; Track W's wave 1 is done and its wave 2 (W14 to W17 and the items in Phase 1's Track W line) is next.
 - [ ] Phase 2 to Phase 4 as above. Phase 2 starts once every Phase 1 track has closed, and Bean has confirmed the regenerated page maps (S5).
 
 ## Verification
