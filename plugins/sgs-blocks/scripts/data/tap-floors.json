@@ -390,18 +390,6 @@
    "reason": "No google-reviews setting sizes this element: mapsLinkFontSize sets its text size only and no setting sizes the carousel dots (arrowSize sizes the arrows, which already follow it)."
   },
   {
-   "block": "includes/nav-detach-chip.php",
-   "selector": "includes/nav-detach-chip.php min-height:44px",
-   "property": "min-height",
-   "reason": "triggerDetachSize is the only setting that sizes the chip, and both its inspector range (ButtonReachPanel.js, min 44) and sgs_nav_detach_chip_tiers (max(44, size)) stop it below 44px, so this floor can never exceed the set size."
-  },
-  {
-   "block": "includes/nav-detach-chip.php",
-   "selector": "includes/nav-detach-chip.php min-width:44px",
-   "property": "min-width",
-   "reason": "triggerDetachSize is the only setting that sizes the chip, and both its inspector range (ButtonReachPanel.js, min 44) and sgs_nav_detach_chip_tiers (max(44, size)) stop it below 44px, so this floor can never exceed the set size."
-  },
-  {
    "block": "includes/nav-menu-submenu-css.php",
    "selector": "includes/nav-menu-submenu-css.php min-height:44px",
    "property": "min-height",

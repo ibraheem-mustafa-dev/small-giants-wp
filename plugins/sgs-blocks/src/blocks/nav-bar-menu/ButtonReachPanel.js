@@ -118,7 +118,7 @@ export default function ButtonReachPanel( { attributes, setAttributes } ) {
 						{ ( { ownValue, effectiveValue, setOwnValue } ) => (
 							<RangeControl
 								label={ __( 'Button size (px)', 'sgs-blocks' ) }
-								min={ 44 }
+								min={ 16 }
 								max={ 120 }
 								value={ ownValue ?? effectiveValue ?? 56 }
 								onChange={ ( value ) => setOwnValue( value ?? undefined ) }
