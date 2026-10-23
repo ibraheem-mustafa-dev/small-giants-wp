@@ -162,7 +162,7 @@ Each row lands in the phase and track named.
 | P4 | W | W12, plus W13's G5–G7 probes and the `gaps.json` writer | P3 | `delivery-map.mjs indus-foods --check` fails on A-18/A-19 (MUST FAIL test) | done 2026-10-23 (`82a82224d`, `2dca642b1`, `2e315026f`, merge `c2407168f`; 40 of 40 mutations red). `--check` now fails on 18 Indus keys: A-18 and A-19 are absent live (R9); 14 home-page keys have no built tree yet (Phase 2); A-10 is a site option; A-16 and A-40 are unnamed loops no tree setting identifies. Open: the walker effect-row shape (`{ kind: 'effect', effect, animation?, live }`) to confirm against P3b; entrance evidence is not yet tied to the record's surface. |
 | P5 | W | W11, `census-all.mjs` | nothing (started early; rechecked against P3's report format at P3's merge) | The header's groups classified with 0 unclassified | done 2026-10-23 (`7346197bc`, merge `f13a178c2`): the Indus header's 330 rows (walker and Fill) in 182 mechanism groups, 0 unclassified; 12 of 12 mutations red. Open: W4's mispaired rows still read as real until P3 lands; Eye Care's October Solve walks have no Fill tree, so `--check` over every client fails on 884 rows without a block until Phase 2 replaces that data. |
 
-Review: Phase 0 wave 0a gets the full three-rater `/qc-council` (the walker is a shared mechanism), then one fix agent.
+Review (done 2026-10-23): the full three-rater `/qc-council` over all of Phase 0 (`62c6ed2e8..HEAD`) found 29 issues plus the effect-row mismatch the main thread had confirmed. Three fix lanes (the walker, the proof chain, the site build) reproduced every finding with a MUST FAIL test before fixing it, 86 mutations red, merges `cf4b4de39`, `51bf509bf` and `4ab666188`. The main thread then adapted the delivery map to the walker's effect record (`116e035b1`: an effect counts as shown by its layer shape, `data/effect-layers.json`), so `delivery-map.mjs indus-foods --check --walk <report>` now fails A-18 and A-19 on the walker's live evidence ("the live page lacks added band"; "added circle").
 
 ## Phase 1: fix every known issue (waits on Phase 0's merges)
 One wave per track, every item in it at once.
@@ -203,8 +203,9 @@ Repeat Phase 2 (only the surfaces a fix touched, plus one full pass at the end) 
 - [x] Spec 48 updated (FR-48-86 added; FR-48-76, -51, -81 and -8 Status lines corrected); handoff-readers rulings 11 and 14 and closing standard #5 updated; the project `CLAUDE.md` touch-target line reworded.
 
 ### Next
-- [ ] Phase 0: P1, P2 and P3 running; then P4 and P5; then the three-rater review.
-- [ ] Phase 1 to Phase 4 as above.
+- [x] Phase 0, done 2026-10-23: P1 to P5, the review and its fixes. Main-checkout proof after the last merge: route suite 2694 of 2695 (only the known intake re-run red); check-approved 157/0; freeze diff unchanged (Indus 120/11/11, Mama's 182/7/0); lint, `capabilities.mjs --gate` and the client-name check pass. The Indus header walk reads 682 open rows, every one a real difference or a row a later item owns: the measurement artefacts are gone, and the walker now sees parts, effects, focus and resting looks it was blind to. The delivery map fails 18 Indus keys: A-18 and A-19 on the walker's live evidence, 14 with no built tree yet, A-10 a site option, and A-16 and A-40 unnamed loops.
+- [ ] Phase 1, as four sessions Bean runs, one per track, from `.claude/prompts/2026-10-23-track-r-phase1.md`, `-track-w-phase1.md`, `-track-s-phase1.md` and `-track-f-phase1.md`. Tracks R and W are the large ones; S and F are smaller and can share a day.
+- [ ] Phase 2 to Phase 4 as above. Phase 2 starts once every Phase 1 track has closed, and Bean has confirmed the regenerated page maps (S5).
 
 ## Verification
 - Per unit: MUST FAIL tests across the variant list, red mutations with 0 skipped, `capabilities.mjs --gate`, and the real-run proof.
