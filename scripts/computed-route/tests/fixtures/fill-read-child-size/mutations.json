@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "( ! own[ side ] || 'auto' === own[ side ] ) && ( own[ side ] = sized[ side ] );",
+		"replace": "void sized;",
+		"why": "a sized svg would not give its wrapper a declared size (the nav caret stays unwritten)"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "null !== kw && null !== kh && Math.abs( kr.width - r.width ) <= 1 && Math.abs( kr.height - r.height ) <= 1 ?",
+		"replace": "null !== kw && null !== kh ?",
+		"why": "a wrapper with words or padding around the svg would take the svg size"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "( /^\\d+(\\.\\d+)?(px)?$/.test(",
+		"replace": "( /^[\\d.%]+(px)?$/.test(",
+		"why": "a percentage attribute size would be read as a pixel length"
+	}
+]

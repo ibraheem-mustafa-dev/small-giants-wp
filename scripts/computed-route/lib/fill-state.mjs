@@ -23,7 +23,7 @@ import { READ_WIDTHS } from './fill-read.mjs';
 import { TIMING_PROPS, timingWrites } from './fill-timing.mjs';
 import { motionDb } from './motion-db.mjs';
 import { targetName } from './fill-motion.mjs';
-import { MOTION_STATE_PROPS } from './fill-state-motion.mjs';
+import { MOTION_STATE_PROPS, stateHover } from './fill-state-motion.mjs';
 import { createPatch, tokenRoute, pickValue, pressVariant, ownedBySetting, applyTokenLooks, conflictRow } from './fill-state-tokens.mjs';
 
 export const COVERAGE_WRITES = [
@@ -169,7 +169,13 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 					continue;
 				}
 				if ( mdb && 'hover' === state && ! pseudo && MOTION_STATE_PROPS.includes( prop ) && motionHolds( mdb, rec, target ) ) {
-					continue;
+					// Only what the motion writer writes (lib/fill-motion.mjs reads the same lib/fill-state-motion.mjs::stateHover) is left to it;
+					// a hover transform it cannot hold (a var() or calc(), a width with none) is raised below with its reason.
+					const held = stateHover( reads, target );
+					if ( held.base ) {
+						held.gaps.forEach( ( reason ) => out.unmapped.push( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( perWidth ), reason: `hover-motion: ${ reason }` } ) );
+						continue;
+					}
 				}
 				if ( 'focus' === state && same( drafts.get( `hover|${ pseudo }|${ prop }` )?.perWidth, perWidth ) ) {
 					out.held.push( { node: ref, slot: target.slot, prop, state, reason: 'focus paints with hover: the hover setting writes it' } );

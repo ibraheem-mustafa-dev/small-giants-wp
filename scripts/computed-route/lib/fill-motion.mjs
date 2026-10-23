@@ -5,7 +5,7 @@
 // when lib/motion-validate.mjs passes the whole document. The entrances sampled at 375, 768 and 1440
 // (lib/fill-entrance.mjs) are the render check: a width whose measured delay or duration differs from the code by more
 // than one sampling step writes that tier's value, and the difference is reported.
-import { stateMotionRecords, MOTION_STATE_PROPS } from './fill-state-motion.mjs';
+import { stateMotionRecords, hoverDevices, MOTION_STATE_PROPS } from './fill-state-motion.mjs';
 import { validateMotionWrite } from './motion-validate.mjs';
 import { classify, entranceLayer, stateTransitionLayer, hoverLayer, matchByPose } from './motion-layers.mjs';
 import { snapToken, presetFor, intensityPresetFor, effectPresetFor, tokenTypes, clientTokens, clientPalette, tokenises } from './motion-tokens.mjs';
@@ -185,6 +185,12 @@ function finishedEntrance( record, { mdb, ctx, sampled, named = null } ) {
 // One hover layer from an element's hover records, token-snapped and preset-named: { layer, notes, unmapped }.
 function finishedHover( records, { mdb, ctx } ) {
 	const h = hoverLayer( records, mdb );
+	const tiered = records.find( ( r ) => Object.keys( r.tiers || {} ).length );
+	if ( h.layer && tiered ) {
+		const d = hoverDevices( tiered, h.layer, ( rec ) => hoverLayer( [ rec ], mdb ).layer, ( k ) => Boolean( mdb.field( 'hover.state', `values.${ k }` )?.perDevice ) );
+		Object.keys( d.devices ).length && ( h.layer.devices = d.devices );
+		h.unmapped.push( ...d.unmapped );
+	}
 	if ( h.layer ) {
 		snapLayer( h.layer, ( p ) => mdb.field( 'hover.state', p ), ctx, [ 'duration', 'easing', 'distance' ] );
 		const preset = presetFor( { ...h.layer, trigger: 'hover' }, mdb.presets( 'hover' ) );

@@ -1,0 +1,20 @@
+[
+	{
+		"file": "../parity/lib/paint.mjs",
+		"find": "if ( null !== ownerOf( kids[ 0 ] ) && ownerOf( kids[ 0 ] ) !== owner ) {",
+		"replace": "if ( false ) {",
+		"why": "a wrapper holding only another node's element would read that element's layout (the tablet button wrapper took the burger's column and 4px gap)"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "resolve( j.finder )?.setAttribute( 'data-fill-owner', String( j.owner ) );",
+		"replace": "",
+		"why": "no element would be stamped with its node, so a layout read could cross into another node's element"
+	},
+	{
+		"file": "../parity/lib/paint.mjs",
+		"find": "ownerOf( kids[ 0 ] ) !== owner ) {",
+		"replace": "true ) {",
+		"why": "a wrapper's own node's inner band would stop the descent, and a block wrapper holding one band would lose the band's layout"
+	}
+]

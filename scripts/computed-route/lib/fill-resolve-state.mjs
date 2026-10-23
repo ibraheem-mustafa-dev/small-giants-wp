@@ -20,8 +20,13 @@ export function valueText( draft ) {
 	return vals.every( ( v ) => v === vals[ 0 ] ) ? String( vals[ 0 ] ) : json( draft );
 }
 
+// Whether a calibrated slot path reaches an element of a block nested in this one: a step named by another block's root
+// class (`.sgs-button`, `.sgs-button:nth-of-type(1)`), where the block's own parts are BEM elements (`.sgs-container__inner`).
+// A setting at such a slot (a parent's `child*` setting) is read from the nested block's own element, never from the parent's.
+export const reachesChildBlock = ( slot ) => String( slot ?? '' ).split( /\s*>\s*|\s+/ ).some( ( step ) => /^\.sgs-[a-z0-9]+(?:-[a-z0-9]+)*(?::nth-of-type\(\d+\))?$/.test( step ) );
+
 // The settings (other than the slot itself) a carried property could be painted by: the slots of the block's settings for
-// that property, from calibration.
+// that property, from calibration, except those that paint a nested block's element.
 export function alternateSlots( cal, prop, draft = {} ) {
 	// A layout setting calibration discovered painting display sits on the element laying out the children. A hide
 	// (display:none at any width) stays on the element's own slot: the layout element is not the one the draft hides.
@@ -35,7 +40,7 @@ export function alternateSlots( cal, prop, draft = {} ) {
 		return [];
 	}
 	const short = prop.replace( /^(row|column)-gap$/, 'gap' );
-	return Object.values( cal?.settings || {} ).filter( ( s ) => ( s.property === prop || s.property === short ) && ! s.state ).flatMap( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ] );
+	return Object.values( cal?.settings || {} ).filter( ( s ) => ( s.property === prop || s.property === short ) && ! s.state ).flatMap( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ] ).filter( ( p ) => ! reachesChildBlock( p ) );
 }
 
 // The state a Fill run reads: one object built once, passed to every step.

@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": ".filter( ( p ) => ! reachesChildBlock( p ) );",
+		"replace": ";",
+		"why": "a parent's child* setting would be written from the parent's own inherited value (childBtnFontSize 19px against 15px pills)"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "(?::nth-of-type\\(\\d+\\))?$/.test( step )",
+		"replace": "(?::nth-of-type\\(\\d+\\))?$/.test( '' )",
+		"why": "no slot would be taken for a nested block's element"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "String( slot ?? '' ).split( /\\s*>\\s*|\\s+/ ).some(",
+		"replace": "String( slot ?? '' ).split( /\\s*>\\s*|\\s+/ ).slice( 0, 1 ).some(",
+		"why": "a nested block below one of the block's own parts would still be offered the parent's value"
+	}
+]

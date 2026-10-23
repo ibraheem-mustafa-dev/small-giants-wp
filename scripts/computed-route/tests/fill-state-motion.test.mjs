@@ -64,3 +64,48 @@ test( 'a transition list splits outside parentheses', () => {
 	assert.deepEqual( splitList( 'cubic-bezier(.34, 1.56, .64, 1), ease' ), [ 'cubic-bezier(.34, 1.56, .64, 1)', 'ease' ] );
 	assert.equal( typeof stateDrafts, 'function' );
 } );
+
+const perWidth = ( id, byWidth, timing = { 375: TIMING, 768: TIMING, 1440: TIMING } ) => {
+	const states = {};
+	for ( const w of [ 375, 768, 1440 ] ) {
+		const t = byWidth[ w ];
+		states[ w ] = { looks: { [ id ]: t ? [ { states: [ 'hover' ], declared: { transform: t }, rendered: { transform: MATRIX }, read: 'entered' } ] : [] } };
+	}
+	return { widths: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { [ id ]: { styles: timing[ w ] } } ] ) ), declared: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { [ id ]: timing[ w ] } ] ) ), states };
+};
+
+test( 'MUST FAIL: a var() hover transform on a motion block is raised with its reason, not dropped', () => {
+	const cal = { settings: {}, elements: { '': { 375: {}, 768: {}, 1440: {} } } };
+	const r = perWidth( '0:', { 375: 'scale(var(--s))', 768: 'scale(var(--s))', 1440: 'scale(var(--s))' } );
+	const out = fillStates( { tree: [ { name: 'sgs/icon', attributes: {} } ], nodes: [ { index: 0, name: 'sgs/icon', targets: [ { id: '0:', slot: '', finder: 'a' } ] } ], reads: r, calFor: () => cal, db: openDb( motionFixtureDb( { 'sgs/icon': [] } ) ), snapshot: { palette: [], spacing: [], fontSizes: [] } } );
+	assert.ok( out.unmapped.some( ( u ) => 'transform' === u.property && ! /^hover-motion/.test( u.reason ) ), JSON.stringify( out.unmapped ) );
+} );
+
+test( 'MUST FAIL: a width whose hover transform holds a var() is raised while the other widths still reach the motion layer', () => {
+	const cal = { settings: {}, elements: { '': { 375: {}, 768: {}, 1440: {} } } };
+	const r = perWidth( '0:', { 375: 'scale(var(--s))', 768: 'scale(1.15)', 1440: 'scale(1.15)' } );
+	const out = fillStates( { tree: [ { name: 'sgs/icon', attributes: {} } ], nodes: [ { index: 0, name: 'sgs/icon', targets: [ { id: '0:', slot: '', finder: 'a' } ] } ], reads: r, calFor: () => cal, db: openDb( motionFixtureDb( { 'sgs/icon': [] } ) ), snapshot: { palette: [], spacing: [], fontSizes: [] } } );
+	assert.ok( out.unmapped.some( ( u ) => 'transform' === u.property && /375px/.test( u.reason ) ), JSON.stringify( out.unmapped ) );
+	assert.equal( run( 'sgs/icon', r ).flat[ 0 ].attributes.sgsMotion?.elements?.root?.hover?.state?.values?.scale, 1.15 );
+} );
+
+test( 'MUST FAIL: a hover that differs by width is held per device, not collapsed to the first width read', () => {
+	const { flat, out } = run( 'sgs/icon', perWidth( '0:', { 375: 'scale(1.05)', 768: 'scale(1.1)', 1440: 'scale(1.15)' } ) );
+	const hover = flat[ 0 ].attributes.sgsMotion?.elements?.root?.hover?.state;
+	assert.equal( hover?.values?.scale, 1.15, JSON.stringify( out.unmapped ) );
+	assert.equal( hover.devices?.tablet?.scale, 1.1 );
+	assert.equal( hover.devices?.mobile?.scale, 1.05 );
+} );
+
+test( 'MUST FAIL: a width with no hover transform takes the neutral pose on its device', () => {
+	const { flat } = run( 'sgs/icon', perWidth( '0:', { 375: null, 768: 'scale(1.15)', 1440: 'scale(1.15)' } ) );
+	const hover = flat[ 0 ].attributes.sgsMotion?.elements?.root?.hover?.state;
+	assert.equal( hover?.devices?.mobile?.scale, 1 );
+	assert.equal( hover?.devices?.tablet, undefined );
+} );
+
+test( 'MUST FAIL: an easing that differs by width is raised, since the hover layer holds one easing', () => {
+	const other = { ...TIMING, 'transition-timing-function': 'ease, linear' };
+	const { out } = run( 'sgs/icon', perWidth( '0:', { 375: 'scale(1.15)', 768: 'scale(1.15)', 1440: 'scale(1.15)' }, { 375: other, 768: TIMING, 1440: TIMING } ) );
+	assert.ok( out.unmapped.some( ( u ) => /holds easing for all devices/.test( u.reason ) ), JSON.stringify( out.unmapped ) );
+} );

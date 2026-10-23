@@ -29,6 +29,7 @@ import { confirmRecords, defectIndex } from './lib/fill-confirm.mjs';
 import { imageRecords } from './lib/fill-media.mjs';
 import { logoSizeWrites } from './lib/fill-logo-size.mjs';
 import { widthLadderWrites } from './lib/fill-width-ladder.mjs';
+import { stepRungWrites } from './lib/fill-step-rungs.mjs';
 import { dimensionWrites } from './lib/fill-dimensions.mjs';
 import { scrollbarPatch, mergePatch } from './lib/fill-scrollbar.mjs';
 import { motionWrites } from './lib/fill-motion.mjs';
@@ -191,6 +192,11 @@ export async function fillSurface( o ) {
 		result.writes.push( ...ladder.writes, ...dims.writes );
 		result.unmapped = dims.unmapped;
 		result.notes.push( ...ladder.notes, ...dims.notes );
+		// A step between the read widths that a written per-device setting cannot hold, as a scoped @media rule at the draft's threshold (lib/fill-step-rungs.mjs).
+		const stepRungs = stepRungWrites( { nodes, flat, refOf, reads, writes: result.writes, scope: o.surface, entries: loadLedger( ledgerFile ) } );
+		addEntries( ledgerFile, stepRungs.ledger );
+		result.writes.push( ...stepRungs.writes );
+		result.notes.push( ...stepRungs.notes );
 		// FR-48-50: content the draft's logic shows or hides by width, written as hiding settings (lib/fill-width-gate.mjs); a snapped
 		// threshold's `breakpoint-snap` entry is added to the client's divergence ledger (the file Fill reads), once.
 		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, entries: loadLedger( ledgerFile ), rootComponent: intakeParts.rootComponent } );

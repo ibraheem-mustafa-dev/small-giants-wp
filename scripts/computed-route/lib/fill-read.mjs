@@ -91,6 +91,11 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 		return `rgb(${ ( n >> 16 ) & 255 }, ${ ( n >> 8 ) & 255 }, ${ n & 255 })`;
 	};
 	const out = {};
+	// Every target's element is stamped with its node first, so a layout read never descends into an element another node owns
+	// (parity/lib/paint.mjs::layoutElement).
+	for ( const j of jobs ) {
+		resolve( j.finder )?.setAttribute( 'data-fill-owner', String( j.owner ) );
+	}
 	for ( const j of jobs ) {
 		const el = resolve( j.finder );
 		if ( el && null !== j.mark ) {
@@ -251,6 +256,13 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 			ratio = media.naturalWidth > 0 && media.naturalHeight > 0 ? media.naturalWidth / media.naturalHeight : ( attrs.every( ( n ) => n > 0 ) ? attrs[ 0 ] / attrs[ 1 ] : null );
 		}
 		snap.intrinsic = ratio ? { tag: media.localName, ratio } : null;
+		// The size a wrapper takes from its one child: an svg or img the draft sizes with width and height attributes, that is the
+		// wrapper's only content and fills its box (a caret span holding an 11px svg). The wrapper declares no size of its own.
+		const kid = 1 === el.children.length && ! el.matches( 'img, svg' ) && /^(svg|img)$/.test( el.children[ 0 ].localName ) ? el.children[ 0 ] : null;
+		const attrPx = ( a ) => ( /^\d+(\.\d+)?(px)?$/.test( String( kid?.getAttribute( a ) ?? '' ).trim() ) ? parseFloat( kid.getAttribute( a ) ) : null );
+		const [ kw, kh ] = [ attrPx( 'width' ), attrPx( 'height' ) ];
+		const kr = kid ? kid.getBoundingClientRect() : null;
+		snap.childSize = kid && null !== kw && null !== kh && Math.abs( kr.width - r.width ) <= 1 && Math.abs( kr.height - r.height ) <= 1 ? { width: `${ kw }px`, height: `${ kh }px`, tag: kid.localName } : null;
 		snap.role = el.getAttribute( 'role' );
 		snap.className = String( el.getAttribute( 'class' ) || '' );
 		if ( j.own ) {
@@ -274,6 +286,7 @@ export function jobsFor( nodes ) {
 		id: t.id,
 		finder: t.scoped && 'tpl' !== finderKind( t.finder ) ? scopeFinder( t.finder, scopeSelector( n.index ) ) : t.finder,
 		mark: t.scoped ? null : n.index,
+		owner: n.index,
 		// A node with child nodes reads its own text styles at every target, its root and its slots alike (a row's content
 		// band): a text descendant there is another node's element, never this one's look.
 		own: n.children.length > 0,
@@ -340,6 +353,16 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 						log( `declared read failed for ${ j.id } at ${ width }px (its declared values are not judged there): ${ e.message }` );
 						return null;
 					} );
+				}
+				// A wrapper that only holds an svg or img the draft sizes takes that size as its declared size.
+				for ( const j of found ) {
+					const sized = result.widths[ width ][ j.id ]?.childSize;
+					const own = result.declared[ width ][ j.id ];
+					if ( sized && own ) {
+						for ( const side of [ 'width', 'height' ] ) {
+							( ! own[ side ] || 'auto' === own[ side ] ) && ( own[ side ] = sized[ side ] );
+						}
+					}
 				}
 				// What the code declares beyond Fill's list, read rendered too (FR-48-8), into the same snapshot.
 				const extras = Object.fromEntries( found.map( ( j ) => [ j.id, extraProps( result.declared[ width ][ j.id ], PROPS ) ] ) );
