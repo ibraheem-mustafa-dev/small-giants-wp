@@ -63,6 +63,14 @@ TARGETS = {
         "explicit_opt_in_required": True,
         "client": "eye-care-ward-end",
     },
+    # Second Eye Care test site: the fresh WordPress for the full re-clone of the Eye Care draft;
+    # eye-care-test is left untouched. Credentials: .claude/secrets/eye-care-clone-test.env (gitignored).
+    "eye-care-clone-test": {
+        "host": "mintcream-lyrebird-224487.hostingersite.com",
+        "wp_content": "domains/mintcream-lyrebird-224487.hostingersite.com/public_html/wp-content",
+        "explicit_opt_in_required": True,
+        "client": "eye-care-ward-end",
+    },
     # Dedicated Mama's Munches redesign test site: a fresh WordPress for the redesign draft
     # (sites/mamas-munches-redesign/), independent of sandybrown, which keeps the live catalogue.
     # Credentials: .claude/secrets/mamas-test.env (gitignored).
