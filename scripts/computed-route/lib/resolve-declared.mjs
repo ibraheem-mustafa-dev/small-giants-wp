@@ -93,3 +93,32 @@ export function declaredLength( { prop, declared, def, unit, forms = [], box = f
 	}
 	return { value: `${ Number( m[ 1 ] ) }${ m[ 2 ] ?? '' }` };
 }
+
+// The keywords a size property's CSS takes (CSS Sizing 3): `none` only on a max-*, `auto` on a width, height or min-*, and the
+// three intrinsic keywords on any of them. The block-size and inline-size forms are their physical property.
+const INTRINSIC = [ 'fit-content', 'min-content', 'max-content' ];
+const EVERY_KEYWORD = [ 'auto', 'none', ...INTRINSIC ];
+const SIZE_KEYWORDS = { exact: [ 'auto', ...INTRINSIC ], min: [ 'auto', ...INTRINSIC ], max: [ 'none', ...INTRINSIC ] };
+const SIZE_PROP = /^(min-|max-)?(width|height|block-size|inline-size)$/;
+
+// A size keyword as a setting's value: { value } where the setting's emitter prints a bare keyword, { error } where the
+// property does not take the keyword (`none` on a min-height) or this setting cannot print it, and null where `prop` is not a
+// size property or `raw` is not a size keyword. A setting prints a keyword when it is a tier object (includes/helpers-responsive.php::
+// sgs_responsive_format_atom_value passes a non-numeric string through includes/helpers-css-safety.php::sgs_css_length_value,
+// which returns a bare keyword unchanged) or a string with no unit partner. A setting with a unit partner (`maxWidthUnit`) or
+// holding a number stores a bare number and the emitter prints `<number><unit>` (or strips to digits), so a keyword is lost.
+export function sizeKeyword( { prop, raw, def, unit } ) {
+	const m = SIZE_PROP.exec( String( prop ?? '' ) );
+	const v = String( raw ?? '' ).trim().toLowerCase();
+	if ( ! m || ! EVERY_KEYWORD.includes( v ) ) {
+		return null;
+	}
+	if ( ! SIZE_KEYWORDS[ m[ 1 ] ? m[ 1 ].slice( 0, 3 ) : 'exact' ].includes( v ) ) {
+		return { error: `${ raw } cannot be held (${ prop } does not take ${ raw })` };
+	}
+	const types = [].concat( def?.type || [] );
+	if ( undefined !== unit ) {
+		return { error: `${ raw } cannot be held (the setting stores a number beside a unit, so the keyword is not printed)` };
+	}
+	return types.includes( 'object' ) || types.includes( 'string' ) ? { value: v } : { error: `${ raw } cannot be held (the setting stores a number, so the keyword is not printed)` };
+}

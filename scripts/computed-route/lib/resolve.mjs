@@ -9,7 +9,7 @@ import { candidates, siblings, isPseudoProperty, listedProperties } from './db.m
 import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, round } from './normalise.mjs';
 import { applyClamp } from './fill-values.mjs';
 import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy } from './css-families.mjs';
-import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword } from './resolve-declared.mjs';
+import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword } from './resolve-declared.mjs';
 
 export const COVERAGE_WRITES = [
 	'aria-attr:aria-hidden',
@@ -226,6 +226,10 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 			return { error: `${ raw } is not one non-negative time` };
 		}
 		return { value: [].concat( def?.type || [] ).includes( 'string' ) && ! [].concat( def?.type || [] ).includes( 'number' ) ? String( ms ) : ms };
+	}
+	const keyword = sizeKeyword( { prop, raw, def, unit } );
+	if ( keyword ) {
+		return keyword;
 	}
 	const px = toPx( raw, fontPx );
 	if ( null === px ) {

@@ -1,0 +1,56 @@
+[
+	{
+		"file": "lib/resolve.mjs",
+		"find": "const keyword = sizeKeyword( { prop, raw, def, unit } );\n\tif ( keyword ) {",
+		"replace": "const keyword = null;\n\tif ( keyword ) {",
+		"why": "the resolver never asks the keyword rule (the old behaviour)"
+	},
+	{
+		"file": "lib/resolve-declared.mjs",
+		"find": "if ( undefined !== unit ) {\n\t\treturn { error: `${ raw } cannot be held (the setting stores a number beside a unit",
+		"replace": "if ( false ) {\n\t\treturn { error: `${ raw } cannot be held (the setting stores a number beside a unit",
+		"why": "a unit-partnered setting is given the keyword it would print as <keyword><unit>"
+	},
+	{
+		"file": "lib/resolve-declared.mjs",
+		"find": "return types.includes( 'object' ) || types.includes( 'string' ) ? { value: v }",
+		"replace": "return true ? { value: v }",
+		"why": "a number-typed setting is given a keyword the render strips"
+	},
+	{
+		"file": "lib/resolve-declared.mjs",
+		"find": "return types.includes( 'object' ) || types.includes( 'string' ) ? { value: v }",
+		"replace": "return types.includes( 'string' ) ? { value: v }",
+		"why": "a tier-object setting is refused its keyword"
+	},
+	{
+		"file": "lib/resolve-declared.mjs",
+		"find": "if ( ! SIZE_KEYWORDS[ m[ 1 ] ? m[ 1 ].slice( 0, 3 ) : 'exact' ].includes( v ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a keyword the property does not take (none on min-height) is written"
+	},
+	{
+		"file": "lib/resolve-declared.mjs",
+		"find": "max: [ 'none', ...INTRINSIC ] }",
+		"replace": "max: [ 'auto', ...INTRINSIC ] }",
+		"why": "none is not taken by a ceiling"
+	},
+	{
+		"file": "lib/resolve-declared.mjs",
+		"find": "exact: [ 'auto', ...INTRINSIC ], min: [ 'auto', ...INTRINSIC ]",
+		"replace": "exact: [ 'auto', ...INTRINSIC ], min: [ 'auto' ]",
+		"why": "an intrinsic keyword is refused on a floor"
+	},
+	{
+		"file": "lib/resolve-declared.mjs",
+		"find": "const v = String( raw ?? '' ).trim().toLowerCase();",
+		"replace": "const v = String( raw ?? '' ).trim();",
+		"why": "a keyword's case is not folded"
+	},
+	{
+		"file": "lib/resolve-declared.mjs",
+		"find": "const SIZE_PROP = /^(min-|max-)?(width|height|block-size|inline-size)$/;",
+		"replace": "const SIZE_PROP = /^(min-|max-)?(width|height)$/;",
+		"why": "the logical block-size and inline-size forms are not size properties"
+	}
+]
