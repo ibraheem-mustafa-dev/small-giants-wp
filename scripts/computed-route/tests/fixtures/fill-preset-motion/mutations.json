@@ -1,0 +1,122 @@
+[
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "lift.same && out.lifted.push( { node: ref, index: n.index } );",
+		"replace": "m && lift.same && out.lifted.push( { node: ref, index: n.index } );",
+		"why": "a button that matches no variant would keep both lifts, as the real header does"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "lift.same && out.lifted.push( { node: ref, index: n.index } );",
+		"replace": "out.lifted.push( { node: ref, index: n.index } );",
+		"why": "a preset lift that differs from the draft's would still take the motion lift away"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "lift.same && out.lifted.push( { node: ref, index: n.index } );",
+		"replace": "void ref;",
+		"why": "no node would be handed to the motion drop, so both writers would paint"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "const effective = m?.variant ?? node.attributes?.[ attr ] ?? presetDefault( db, n.name, attr );",
+		"replace": "const effective = m?.variant ?? node.attributes?.[ attr ];",
+		"why": "the block's default variant would be ignored"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "const want = plain( presets[ variant ]?.[ key ] ?? presets.default?.[ key ], snapshot );",
+		"replace": "const want = plain( presets[ variant ]?.[ key ], snapshot );",
+		"why": "the default look's lift fallback would be ignored"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "if ( ! want || 'none' === want ) {",
+		"replace": "if ( ! want ) {",
+		"why": "a variant whose lift is none would count as the lift"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "return { same, clash: ! same && lifts.length > 0, want, got: lifts[ 0 ] };",
+		"replace": "return { same, clash: false, want, got: lifts[ 0 ] };",
+		"why": "a differing lift would not be named"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "Object.values( state?.devices || {} ).forEach( strip );",
+		"replace": "void 0;",
+		"why": "a per-device lift would still paint over the preset"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "delete state.preset;",
+		"replace": "void 0;",
+		"why": "a preset name would stamp the dropped channels back"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "! Object.keys( state.devices || {} ).length && delete state.devices;",
+		"replace": "void 0;",
+		"why": "an emptied devices object would stay"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "delete state.devices[ tier ];",
+		"replace": "void tier;",
+		"why": "an emptied device tier would stay"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "const left = Object.keys( state.values || {} ).length || state.devices;",
+		"replace": "const left = 0;",
+		"why": "the hover timing would be thrown away with the lift"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "null === w.before ? delete node.attributes.sgsMotion : ( node.attributes.sgsMotion = w.before );",
+		"replace": "void node;",
+		"why": "an emptied motion would stay in the tree"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "out.writes = out.writes.filter( ( x ) => x !== w );",
+		"replace": "void w;",
+		"why": "an emptied motion write would stay in the list"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "w.after = setAttr( node, { attr: 'sgsMotion', value: doc } ).after;",
+		"replace": "void node;",
+		"why": "the tree would not take the stripped motion"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "[ 'translate(1px, 1px) scale(2) rotate(1deg)', 'scaleX(2) scaleY(3) rotateX(1deg) rotateY(2deg)' ]",
+		"replace": "[ 'translate(1px, 1px) scale(2) rotate(1deg)' ]",
+		"why": "the per-axis scale and the 3D turns would not count as transform channels"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "const w = out.writes.find( ( x ) => x.node === ref && 'sgsMotion' === x.attr && 'motion' === x.how );",
+		"replace": "const w = out.writes.find( ( x ) => 'sgsMotion' === x.attr && 'motion' === x.how );",
+		"why": "another node's motion write would be edited"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "const same = got.length > 0 && got.every(",
+		"replace": "const same = got.every(",
+		"why": "a button read at no width would count as lifted"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "reads.widths?.[ width ]?.[ id ] && ! reads.widths[ width ][ id ].missing );",
+		"replace": "reads.widths?.[ width ]?.[ id ] );",
+		"why": "a width where the button is absent would be compared"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "const shown = READ_WIDTHS.filter( ( width ) => reads.widths?.[ width ]?.[ id ] && ! reads.widths[ width ][ id ].missing );",
+		"replace": "const shown = READ_WIDTHS;",
+		"why": "a hidden width would fail the lift"
+	}
+]
