@@ -6,8 +6,10 @@
 //              setting whose parts include the property (and whose written part equals the draft's), a setting calibration
 //              saw change the property as a side effect, or an sgsMotion state that carries the transform and the transition;
 //   inherited  an inherited property on an element that holds no text of its own (a container whose descendants state their
-//              own text looks), equal to what its parent renders.
-// A value the block paints by default is never judged here: the calibration page is not the page being built, where a
+//              own text looks), equal to what its parent renders;
+//   inert      the equivalence engine judged the value to paint nothing at every width it states (the resolver's `code`
+//              'held:inert', lib/css-equivalence/inert.mjs), listed with the engine's reason.
+// A value the block paints by default is never judged here (the engine's 'held:default' row stays raised): the calibration page is not the page being built, where a
 // parent can change it (a grid cell's padding). Such a row stays raised and the live read of the built page judges it
 // (lib/confirm-live.mjs::judgeUnmapped).
 // A row is held only when every width it states is. A value that differs by one unit, or that holds at one width only, stays
@@ -23,7 +25,9 @@ import { msOf, easingOf, clientTokens } from './motion-tokens.mjs';
 
 const WIDTHS = [ 375, 768, 1440 ];
 const TOL = 0.5;
-export const HELD_REASONS = [ 'covered', 'inherited' ];
+export const HELD_REASONS = [ 'covered', 'inherited', 'inert' ];
+// The engine's reason, as the resolver wrote it into the row (lib/resolve.mjs::noSetting).
+const inertDetail = ( row ) => /held \(inert\): (.*)$/.exec( String( row.reason ) )?.[ 1 ] ?? 'the equivalence engine judged the value to paint nothing';
 // The reasons a resolver gave for a property it could not place; any other reason (a conflict, a not-plain value, an
 // ambiguity, an uncalibrated block) is a real gap and is never judged here.
 export const RESOLVER_GAP = /^(?:no-setting|shape):/;
@@ -152,6 +156,10 @@ export function makeSettle( st ) {
 		const kept = [];
 		const alreadyHeld = [];
 		for ( const row of unmapped ) {
+			if ( 'held:inert' === row.code && RESOLVER_GAP.test( String( row.reason ) ) ) {
+				alreadyHeld.push( { ...row, heldReason: 'inert', heldDetail: inertDetail( row ) } );
+				continue;
+			}
 			const rec = recOf.get( row.node );
 			const target = rec?.targets.find( ( t ) => t.slot === ( row.slot ?? '' ) );
 			const held = rec && target && RESOLVER_GAP.test( String( row.reason ) ) && isCssProperty( row.property ) ? classify( { ...row, slot: row.slot ?? '' }, rec, target ) : null;
