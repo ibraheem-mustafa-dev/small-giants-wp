@@ -19,6 +19,26 @@
       "product": 71
     }
   },
+  "eye-care-clone-test": {
+    "envFile": ".claude/secrets/eye-care-clone-test.env",
+    "envKey": "EYECARECLONETEST",
+    "postId": 23,
+    "image": {
+      "id": 37,
+      "url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/use-varifocal.png"
+    },
+    "refs": {
+      "menu": 17,
+      "menuItem": 33,
+      "drawer": 27,
+      "image": {
+        "id": 37,
+        "url": "https://mintcream-lyrebird-224487.hostingersite.com/wp-content/uploads/2026/10/use-varifocal.png"
+      },
+      "logo": 38,
+      "product": 39
+    }
+  },
   "sandybrown": {
     "envFile": ".claude/secrets/sandybrown.env",
     "envKey": "SANDYBROWN",
@@ -42,12 +62,12 @@
   "local-eye-care": {
     "envFile": ".claude/secrets/local-eye-care.env",
     "envKey": "LOCALEYECARE",
-    "mirrorOf": "eye-care-test",
-    "postId": 668,
+    "mirrorOf": "eye-care-clone-test",
+    "postId": 23,
     "pluginDir": "//wsl.localhost/Ubuntu/var/www/local-eye-care/wp-content/plugins/sgs-blocks",
     "image": {
-      "id": 458,
-      "url": "http://localhost:8081/wp-content/uploads/2026/09/use-varifocal.png"
+      "id": 37,
+      "url": "http://localhost:8081/wp-content/uploads/2026/10/use-varifocal.png"
     }
   },
   "local-sandybrown": {
