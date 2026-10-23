@@ -20,9 +20,18 @@ import { siblings, candidates } from './db.mjs';
 import { setAttr } from './tree.mjs';
 import { mediaRule, scopedCssPuts, snapThreshold, snapEntry, ownBreakpoint, collapseAttributes } from './fill-width-gate.mjs';
 import { WIDTHS, TIER_OF, rowTarget, rowValues, reresolve, commit } from './fill-regap.mjs';
+import { layoutHome } from './fill-same-box.mjs';
+import { defaultPaint } from './fill-prop.mjs';
+import { sizeOf } from './fill-dimensions.mjs';
 
-// The gap rows this pass reads: the one-value-every-width shape gap, and a value the setting's enum does not hold.
-export const isLadderRow = ( row ) => ONE_VALUE_EVERY_WIDTH === row.code || / is not one of /.test( row.reason ?? '' );
+// The gap rows this pass reads: the one-value-every-width shape gap, a value the setting's enum does not hold, a keyword a
+// tier-shaped setting's object shape cannot take ("shape: row cannot be held" on a per-device setting), and a property no
+// setting paints at this element though the block has settings for it (`paints ""`: the block's setting paints another
+// element that may be the same box). The size family is lib/fill-dimensions.mjs's own.
+const CANNOT_HOLD = /^shape: .+ cannot be held/;
+const PAINTS_OTHER = /^no-setting: no .+ setting on .+ paints "/;
+export const isLadderRow = ( row ) => ONE_VALUE_EVERY_WIDTH === row.code || / is not one of /.test( row.reason ?? '' ) ||
+	( ! sizeOf( row.property ?? '' ) && ( CANNOT_HOLD.test( row.reason ?? '' ) || PAINTS_OTHER.test( row.reason ?? '' ) ) );
 
 const STATE_PSEUDO = { hover: ':hover', focus: ':focus-visible', 'focus-visible': ':focus-visible', active: ':active', 'focus-within': ':focus-within' };
 const BOX = /(flex|grid)$/;
@@ -133,7 +142,10 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 	const node = flat[ rec.index ];
 	const prop = row.property;
 	const state = row.state ?? null;
-	const slot = row.slot ?? '';
+	const cal = ctx.calFor( rec.name );
+	// The element a setting of the block paints for this property: the row's own element, or the block's content band when
+	// calibration measured it as the same box (the draft's one element is both).
+	const slot = layoutHome( { db, block: rec.name, cal, prop, state, slot: row.slot ?? '' } );
 	const raw = rowValues( row, reads, target );
 	const widths = WIDTHS.filter( ( w ) => undefined !== raw[ w ] );
 	if ( ! widths.length ) {
@@ -159,20 +171,33 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 			return took( res, 'width-ladder', `the draft's ${ [ ...new Set( widths.map( ( w ) => raw[ w ] ) ) ].join( ' / ' ) } does the same as "${ cand }" at every width; written as that one value` );
 		}
 	}
-	if ( ! varies ) {
-		return false;
-	}
 	const values = Object.fromEntries( widths.map( ( w ) => [ w, keywordOf( effs[ w ] ) ] ) );
+	// What the block paints on this element by default at each width, as an effect (null where calibration measured none).
+	const base = Object.fromEntries( widths.map( ( w ) => {
+		const b = defaultPaint( cal, slot, w, prop );
+		return [ w, undefined === b ? null : effectOf( prop, b, env( w ) ) ];
+	} ) );
+	const differs = ( w ) => null !== base[ w ] && base[ w ] !== effs[ w ];
+	const hasOwn = candidates( db, rec.name, prop, state ).some( ( r ) => undefined !== node.attributes?.[ r.attr_name ] );
+	// The block's own default already does at every width what the draft does: nothing to write, and the row is settled.
+	if ( ! varies && ! hasOwn && widths.every( ( w ) => null !== base[ w ] && ! differs( w ) ) ) {
+		out.notes.push( `${ row.node } ${ rec.name }${ slot ? ` (${ slot })` : '' } ${ prop }: the block's own default paint (${ widths.map( ( w ) => `${ base[ w ] } at ${ w }` ).join( ', ' ) }) does what the draft's ${ [ ...new Set( widths.map( ( w ) => raw[ w ] ) ) ].join( ' / ' ) } does; nothing to write` );
+		return true;
+	}
 	// Rung 2: a tier-shaped setting painting the same element.
-	const cal = ctx.calFor( rec.name );
 	const tiered = candidates( db, rec.name, prop, state )
 		.filter( ( r ) => [ 'tier_object', 'flat_sibling' ].includes( r.tier_shape ) && paints( cal, r.attr_name.replace( /(Tablet|Mobile)$/, '' ), slot ) );
+	if ( ! varies && ! ( tiered.length && widths.some( differs ) ) ) {
+		return false;
+	}
 	if ( tiered.length ) {
 		const r = tiered[ 0 ];
 		const tiers = {};
 		let carried = null;
 		for ( const w of [ ...widths ].reverse() ) {
-			if ( values[ w ] !== carried ) {
+			// A tier is written where the value changes, and where the block's own default for that device differs from the
+			// draft's (a per-device default such as a column stack on mobile is an explicit value of its own).
+			if ( values[ w ] !== carried || differs( w ) ) {
 				tiers[ TIER_OF[ w ] ] = values[ w ];
 				carried = values[ w ];
 			}
@@ -183,6 +208,9 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 		if ( writes.every( ( w ) => w.attr ) ) {
 			return took( { writes, included: Object.fromEntries( widths.map( ( w ) => [ w, true ] ) ) }, 'width-ladder', `${ r.attr_name } holds a value per device, so the draft's ${ widths.map( ( w ) => `${ values[ w ] } at ${ w }` ).join( ', ' ) } is written there` );
 		}
+	}
+	if ( ! varies ) {
+		return false;
 	}
 	// Rung 3: the block's own breakpoint draws the narrow alternative.
 	const own = ownBreakpoint( db, rec.name, collapse );
