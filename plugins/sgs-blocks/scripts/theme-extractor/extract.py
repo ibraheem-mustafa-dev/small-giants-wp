@@ -440,9 +440,6 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     # A framework slug the draft left unset follows the client's related colour, never the framework hex.
     role_defaults.apply_role_defaults(snap, baseline, trace)
     pal = ((snap.get("settings", {}).get("color", {}) or {}).get("palette", [])) or pal
-    slug_by_hex = palette_refs.slug_by_hex(pal) if design else {
-        e["color"].lower(): e["slug"] for e in pal
-        if isinstance(e.get("color"), str) and e["color"].startswith("#")}
 
     # BASE TYPOGRAPHY (FR-33-3 — the drift-killer)
     styles["typography"] = typo_mod.base_typography(facts, trace)
@@ -454,9 +451,11 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     body = facts.get("body", {})
     bg_hex = _hex(_theme_background(facts, trace))
     txt_hex = _hex(body.get("color", ""))
+    # Several slugs can hold one hex: each page role references the slug whose job it is (page ground = surface,
+    # body text = text), never whichever slug a lookup by value meets first or last.
     styles["color"] = {
-        "background": _var_or_hex(bg_hex, slug_by_hex, "color"),
-        "text": _var_or_hex(txt_hex, slug_by_hex, "color"),
+        "background": _var_or_hex(bg_hex, palette_refs.slug_for_role(pal, bg_hex, palette_refs.PAGE_BACKGROUND_SLUGS)),
+        "text": _var_or_hex(txt_hex, palette_refs.slug_for_role(pal, txt_hex, palette_refs.PAGE_TEXT_SLUGS)),
     }
 
     # HEADING base (regenerated from computed — no fabricated 1.15). MERGE onto the framework
@@ -848,10 +847,8 @@ def _hex(v: str):
     return c.hex if c else None
 
 
-def _var_or_hex(hexv, slug_by_hex, kind):
-    if hexv and hexv in slug_by_hex:
-        return f"var:preset|color|{slug_by_hex[hexv]}"
-    return hexv or ""
+def _var_or_hex(hexv, slug):
+    return f"var:preset|color|{slug}" if hexv and slug else (hexv or "")
 
 
 def main(argv=None) -> int:

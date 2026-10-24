@@ -98,6 +98,25 @@ def test_must_fail_a_translucent_colour_fills_a_framework_slug_only_at_the_frame
     assert opaque["text"]["hex"] == "#3a2a22", "a fully opaque alpha byte is dropped"
 
 
+EYE_CARE = REPO / "sites/eye-care-ward-end/build/intake/intake.json"
+
+
+def test_must_fail_near_identical_tokens_on_one_slug_are_one_colour_the_first_declared():
+    # Eye Care's real rows: --acc-soft (#EFEAE2) and --surface-soft (#F0EBE3) differ by under ΔE 1, so intake merges
+    # them and Accept all gives both accent-light.
+    rows = {r["token"]: r for r in json.loads(EYE_CARE.read_text(encoding="utf-8"))["palette"]["rows"]}
+    pair = [(t, rows[t]["hex"], "accent-light") for t in ("--surface-soft", "--acc-soft")]
+    confirmed, _ = cp.confirmed_map(_intake(pair, {t: "accept" for t, _, _ in pair}), FRAMEWORK, COLOURS)
+    assert confirmed["accent-light"]["hex"] == "#f0ebe3", "--surface-soft is declared first in these rows"
+    assert confirmed["accent-light"]["tokens"] == ["--surface-soft", "--acc-soft"]
+    flipped, _ = cp.confirmed_map(_intake(list(reversed(pair)), {t: "accept" for t, _, _ in pair}), FRAMEWORK, COLOURS)
+    assert flipped["accent-light"]["hex"] == "#efeae2", "the first row's hex wins whatever order the marks are in"
+    with pytest.raises(cp.ConfirmError, match="one slug cannot hold two colours"):
+        cp.confirmed_map(_intake([("--a", "#EFEAE2", "accent-light"), ("--b", "#E6E1DA", "accent-light")], {"--a": "accept", "--b": "accept"}), FRAMEWORK, COLOURS)
+    with pytest.raises(cp.ConfirmError, match="one slug cannot hold two colours"):
+        cp.confirmed_map(_intake([("--a", "#3A2A224D", "custom-rule"), ("--b", "#3A2A2247", "custom-rule")], {"--a": "accept", "--b": "accept"}), FRAMEWORK, COLOURS)
+
+
 @pytest.mark.parametrize("mark", ["role:heading,brand-blue", "role:heading,", "role:,heading"])
 def test_a_bad_slug_anywhere_in_a_several_role_mark_is_refused(mark):
     intake = _intake([("--text-heading", "#2C3E50", "heading")], {"--text-heading": mark})

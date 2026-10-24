@@ -8,8 +8,9 @@ from __future__ import annotations
 
 from declared_sources import HEX_RE, normalise_hex
 
-# Slug preference when one hex serves several slugs (page background and body text resolve here).
-PAGE_SLUG_PREFERENCE = ("surface", "surface-alt", "text")
+# The slugs whose job each page role is, in preference order, when one hex serves several slugs.
+PAGE_BACKGROUND_SLUGS = ("surface", "surface-alt")
+PAGE_TEXT_SLUGS = ("text",)
 # Button preset keys -> role group, and each group's slug preference.
 BUTTON_KEY_GROUP = {"background": "fill", "hover-background": "fill", "text": "text",
                     "hover-text": "text", "border": "edge", "hover-border": "edge"}
@@ -18,13 +19,15 @@ BUTTON_SLUG_PREFERENCE = {"fill": ("primary", "accent", "surface", "surface-alt"
                           "edge": ("primary", "border", "accent")}
 
 
-def slug_by_hex(palette: list) -> dict[str, str]:
-    """hex (lower-case) -> slug; when several slugs share a hex, page background and body text win."""
-    hexes = {e["slug"]: e["color"].lower() for e in palette
-             if isinstance(e.get("color"), str) and e["color"].startswith("#")}
-    mapping = {colour: slug for slug, colour in hexes.items()}
-    mapping.update({hexes[slug]: slug for slug in PAGE_SLUG_PREFERENCE if slug in hexes})
-    return mapping
+def slug_for_role(palette: list, hexv: str | None, preference: tuple) -> str | None:
+    """The slug a page role references for ``hexv``: the first slug of ``preference`` (the slugs whose job the
+    role is) holding that hex, else the first palette slug holding it in palette order; None when none does."""
+    if not hexv:
+        return None
+    wanted = hexv.lower()
+    held = [e["slug"] for e in palette
+            if isinstance(e.get("color"), str) and e["color"].startswith("#") and e["color"].lower() == wanted]
+    return next((s for s in preference if s in held), held[0] if held else None)
 
 
 def tokenise_button_presets(snap: dict, trace: list, derived: dict) -> None:
