@@ -84,11 +84,19 @@ test( 'MUST FAIL WITHOUT THE BROWSER RING: a draft ring declared on one target r
 	}
 } );
 
-test( 'MUST FAIL WITHOUT THE BROWSER RING: two browser rings at different offsets keep the first and report the second', () => {
+test( 'MUST FAIL: two browser rings at different offsets keep the first and raise no conflict (neither is a draft value)', () => {
 	const sink = createPatch();
 	apply( sink, 'link', ringFor( { tag: 'a', href: '#' } ).looks );
 	apply( sink, 'button', ringFor( { tag: 'button' } ).looks );
 	assert.equal( sink.patch.settings.custom.focus.offset, '1px' );
+	assert.equal( sink.conflicts.find( ( c ) => 'settings.custom.focus.offset' === c.path ), undefined );
+} );
+
+test( 'negative control: two different declared focus offsets still conflict, the first kept', () => {
+	const sink = createPatch();
+	apply( sink, 'link', { focus: { 'outline-width': '2px', 'outline-style': 'solid', 'outline-color': 'rgb(0, 0, 255)', 'outline-offset': '3px' } } );
+	apply( sink, 'button', { focus: { 'outline-width': '2px', 'outline-style': 'solid', 'outline-color': 'rgb(0, 0, 255)', 'outline-offset': '1px' } } );
+	assert.equal( sink.patch.settings.custom.focus.offset, '3px' );
 	const row = conflictRow( sink.conflicts.find( ( c ) => 'settings.custom.focus.offset' === c.path ) );
 	assert.equal( row.node, 'button' );
 	assert.match( row.reason, /the first value is kept/ );
