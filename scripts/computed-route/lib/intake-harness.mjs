@@ -152,8 +152,12 @@ export function bootStorageKeys( logicSource ) {
 const prepared = new WeakSet();
 const pageErrors = new WeakMap();
 
-// The draft errors seen on a prepared page: { page: [uncaught], console: [console.error texts] }.
-export const draftErrors = ( page ) => pageErrors.get( page ) ?? { page: [], console: [] };
+// The key a wrapped page (lib/intake-defects-force.mjs::bounded) answers with the page it wraps, so a page known by
+// its wrapper keeps its draft errors.
+export const RAW_PAGE = Symbol( 'the wrapped page' );
+
+// The draft errors seen on a prepared page (or its wrapper): { page: [uncaught], console: [console.error texts] }.
+export const draftErrors = ( page ) => pageErrors.get( page[ RAW_PAGE ] ?? page ) ?? { page: [], console: [] };
 
 const assertNoPageErrors = ( page, when ) => {
 	const { page: errs } = draftErrors( page );
@@ -222,7 +226,8 @@ export async function ensureFonts( page, opts = {} ) {
 }
 
 // Moves virtual time by ms (real time when the clock is disabled for a negative control). A draft timer that throws
-// fails the run with its message.
+// fails the run with its message; a call a bounded page timed out (lib/intake-defects-force.mjs::bounded) is rethrown
+// as it is.
 async function advance( page, ms, o ) {
 	if ( o.disable.includes( 'clock' ) ) {
 		await page.waitForTimeout( ms );
@@ -231,6 +236,9 @@ async function advance( page, ms, o ) {
 	try {
 		await page.clock.runFor( ms );
 	} catch ( e ) {
+		if ( e.timedOut ) {
+			throw e;
+		}
 		throw new Error( `harness: a draft timer threw while the clock ran: ${ e.message.split( '\n' )[ 0 ] }` );
 	}
 }

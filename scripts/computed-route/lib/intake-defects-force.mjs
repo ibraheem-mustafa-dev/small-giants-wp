@@ -9,10 +9,11 @@
 //   - code-wired listeners, drag types and delegated targets included (lib/intake-defects-gesture.mjs);
 //   - the harness's scroll pass (settleRest) after the state is set.
 // What to force is read statically (lib/intake-defects-keys.mjs); openForcedPage holds one harness page per width with
-// the probes on it.
+// the probes on it. Every browser call a forced page makes is bounded (bounded), so a call that never returns fails its
+// visit, never the intake.
 import { openSandbox } from './intake-sandbox.mjs';
 import { forceable } from './state-vocab.mjs';
-import { preparePage, gotoDraft, settleRest, drainTimeouts } from './intake-harness.mjs';
+import { preparePage, gotoDraft, settleRest, drainTimeouts, RAW_PAGE } from './intake-harness.mjs';
 import { traceInit, collect } from './intake-census-trace.mjs';
 import { setDraftState, snapshotDraftState, restoreDraftState, draftStateChanged, fireTrigger, listenerInit, fireListeners } from './intake-state.mjs';
 import { handlerInit, gestureIn, POINTER_TYPES, DRAG_TYPES } from './intake-defects-gesture.mjs';
@@ -65,24 +66,139 @@ function enclosingIfs( { comp, n } ) {
 	return { ifs, loopVars };
 }
 
+// A browser call that did not return within its bound (bounded): an in-page promise that never resolves or a draft
+// script that never yields.
+export const timedOut = ( e ) => true === e?.timedOut;
+
+// `p`, or a rejection with `timedOut` naming the call (`what()`) once `ms` pass first.
+function within( p, ms, what ) {
+	let t = null;
+	const stop = new Promise( ( _, fail ) => {
+		t = setTimeout( () => fail( Object.assign( new Error( `${ what() } did not return within ${ ms / 1000 }s` ), { timedOut: true } ) ), ms );
+	} );
+	return Promise.race( [ p, stop ] ).finally( () => clearTimeout( t ) );
+}
+
+// A catch handler that answers `value` for a failed call and rethrows a timed-out one.
+export const unless = ( value ) => ( e ) => {
+	if ( timedOut( e ) ) {
+		throw e;
+	}
+	return value;
+};
+
+// A call's name: the method, with an evaluate's in-page function (its name, else its first 60 characters) or a CDP
+// method name.
+const fnName = ( f ) => f.name || String( f ).replace( /\s+/g, ' ' ).slice( 0, 60 );
+const callName = ( name, k, a ) => `${ name }.${ String( k ) }${ 'function' === typeof a[ 0 ] ? `(${ fnName( a[ 0 ] ) })` : 'string' === typeof a[ 0 ] ? `(${ a[ 0 ] })` : '' }`;
+
+// `obj` (a Playwright page, its clock, mouse or keyboard, or a CDP session) with every method that returns a promise
+// bounded to `ms`; `doing()` names the forcing step the call ran in. The wrapper answers RAW_PAGE with `obj`.
+export function bounded( obj, ms, name, doing = () => '' ) {
+	return new Proxy( obj, {
+		get( t, k ) {
+			if ( RAW_PAGE === k ) {
+				return t;
+			}
+			const v = Reflect.get( t, k, t );
+			if ( [ 'clock', 'mouse', 'keyboard' ].includes( k ) && v && 'object' === typeof v ) {
+				return bounded( v, ms, `${ name }.${ k }`, doing );
+			}
+			if ( 'function' !== typeof v ) {
+				return v;
+			}
+			return ( ...a ) => {
+				const r = v.apply( t, a );
+				return r && 'function' === typeof r.then ? within( r, ms, () => `${ callName( name, k, a ) }${ doing() ? ` during ${ doing() }` : '' }` ) : r;
+			};
+		},
+	} );
+}
+
+// The session calls that change the page's state (the rest only read it, settle it or run its clock).
+const FORCING = [ 'setState', 'restore', 'dispatch', 'dispatchAt', 'hoverChain', 'forcePseudo', 'gestures', 'listeners', 'wiggle' ];
+
+// The forcing step a session call is: its name, with the row (draft ID, event or pseudo-class) or the state patch.
+const stepOf = ( k, a ) => {
+	const row = a.find( ( x ) => x?.draftId );
+	if ( row ) {
+		const what = row.detail?.event || ( row.detail?.pseudo ? `:${ row.detail.pseudo }` : '' );
+		return `${ k } ${ row.draftId }${ what ? ` (${ what })` : '' }`;
+	}
+	return 'setState' === k ? `setState ${ a[ 0 ] } ${ JSON.stringify( a[ 1 ] ) }` : k;
+};
+
+// A page group's visits at one width on one forced page: `open(v)` opens it at the first visit, `visit(s, v, i)` moves
+// it to each later one and forces there. A visit whose browser call times out becomes a gap row naming its route, width
+// and the call, its page is closed and the next visit opens a fresh one (from that visit's rest, not the state the
+// earlier visits left), so one stuck page never stops the rest. Any other error ends the run as a gap row naming the
+// page group. `log` gets one line as each visit starts. Returns { gaps, blocked, failed }.
+export async function forcedVisits( { file, slice, width, open, visit, log = () => {} } ) {
+	const u = { gaps: [], blocked: [], failed: false };
+	let s = null;
+	const shut = async () => {
+		const was = s;
+		s = null;
+		if ( was ) {
+			await was.close();
+			u.blocked.push( ...was.blocked );
+		}
+	};
+	try {
+		for ( const [ i, v ] of slice.entries() ) {
+			log( `${ v.label } at ${ width }: started` );
+			try {
+				const fresh = ! s;
+				s ||= await open( v );
+				await visit( s, v, i, fresh );
+			} catch ( e ) {
+				if ( ! timedOut( e ) ) {
+					throw e;
+				}
+				u.failed = true;
+				u.blocked.push( ...( e.blocked || [] ) );
+				const what = e.message.split( '\n' )[ 0 ];
+				u.gaps.push( { construct: 'defect-visit', draftId: `${ v.label }@${ width }`, error: `the forced visit timed out: ${ what }` } );
+				log( `${ v.label } at ${ width }: timed out (${ what })` );
+				await shut();
+			}
+		}
+	} catch ( e ) {
+		u.failed = true;
+		u.blocked.push( ...( e.blocked || [] ) );
+		u.gaps.push( { construct: 'defect-visit', draftId: `${ file }@${ width }`, error: e.message.split( '\n' ).slice( 0, 3 ).join( ' ' ) } );
+	} finally {
+		await shut();
+	}
+	return u;
+}
+
 // One harness page at one width with the probes on: CDP coverage, DOM and CSS. Returns a session:
 // { page, origin, width, rest, collect(), setState(comp, patch), enclosingIfs(row), forcePseudo(row), dispatch(row),
 //   dispatchAt(row, index), copies(row), gestures(), snapshot(slot), restore(slot), changed(slot), coverage(), settle(),
 //   close(), blocked } (`blocked`: the sandbox's aborted requests). A failure to open carries the requests blocked so far
-// as the error's `blocked`. `forcePseudoState`, `drag` and `coords` false exist only for the tests' negative controls.
-export async function openForcedPage( { folder, entry, harPath, file = entry, hash = '', width, harness = {}, timeout = 60000, forcePseudoState = true, drag = true, coords = true } ) {
+// as the error's `blocked`. Every page and CDP call after preparePage, the session's own and its callers' through
+// `page`, is bounded to `callTimeout` ms (bounded; default `timeout`), naming the session step it ran in.
+// `forcePseudoState`, `drag` and `coords` false exist only for the tests' negative controls.
+export async function openForcedPage( { folder, entry, harPath, file = entry, hash = '', width, harness = {}, timeout = 60000, callTimeout = timeout, forcePseudoState = true, drag = true, coords = true } ) {
 	const sb = await openSandbox( { folder, index: entry, harPath, mode: 'replay', widths: [ width ], timeout } );
+	// The session step running and the last forcing step (FORCING) started: a page stuck by a forced state often fails
+	// in the settle or check after it, so a timed-out call names both.
+	let step = '';
+	let forced = '';
+	const doing = () => `${ step }${ forced && forced !== step ? ` after ${ forced }` : '' }`;
 	try {
-		const page = await sb.newPage();
-		await page.setViewportSize( { width, height: 900 } );
-		const cdp = await page.context().newCDPSession( page );
+		const raw = await sb.newPage();
+		await raw.setViewportSize( { width, height: 900 } );
+		const cdp = bounded( await raw.context().newCDPSession( raw ), callTimeout, 'cdp', doing );
 		const scripts = new Map();
 		cdp.on( 'Debugger.scriptParsed', ( e ) => scripts.set( e.scriptId, e ) );
 		await cdp.send( 'Debugger.enable' );
 		await cdp.send( 'Debugger.setSkipAllPauses', { skip: true } );
 		await cdp.send( 'Profiler.enable' );
 		await cdp.send( 'Profiler.startPreciseCoverage', { callCount: true, detailed: true } );
-		const opts = await preparePage( page, harness );
+		const opts = await preparePage( raw, harness );
+		const page = bounded( raw, callTimeout, 'page', doing );
 		await page.addInitScript( traceInit );
 		await page.addInitScript( listenerInit );
 		await page.addInitScript( handlerInit );
@@ -94,15 +210,15 @@ export async function openForcedPage( { folder, entry, harPath, file = entry, ha
 		const frame = () => page.evaluate( () => window.__sgsHarness.frame() );
 		// Node IDs for selectors from one DOM.getDocument (a new one invalidates the IDs before it); null when gone.
 		const nodesOf = async ( sels ) => {
-			const doc = await cdp.send( 'DOM.getDocument', { depth: 0 } ).catch( () => null );
+			const doc = await cdp.send( 'DOM.getDocument', { depth: 0 } ).catch( unless( null ) );
 			const out = [];
 			for ( const selector of sels ) {
-				out.push( doc ? ( await cdp.send( 'DOM.querySelector', { nodeId: doc.root.nodeId, selector } ).catch( () => ( {} ) ) ).nodeId || null : null );
+				out.push( doc ? ( await cdp.send( 'DOM.querySelector', { nodeId: doc.root.nodeId, selector } ).catch( unless( {} ) ) ).nodeId || null : null );
 			}
 			return out;
 		};
-		// A forcing call on a node React has since replaced fails; that node is skipped, never the visit.
-		const send = ( method, params ) => cdp.send( method, params ).catch( () => null );
+		// A forcing call on a node React has since replaced fails; that node is skipped, never the visit (a timed-out one fails it).
+		const send = ( method, params ) => cdp.send( method, params ).catch( unless( null ) );
 		const mapped = new Map();
 		const session = {
 			page, origin: sb.origin, width, rest,
@@ -242,7 +358,7 @@ export async function openForcedPage( { folder, entry, harPath, file = entry, ha
 						const meta = scripts.get( s.scriptId );
 						let where = [];
 						if ( meta && ! meta.url ) {
-							const src = ( await cdp.send( 'Debugger.getScriptSource', { scriptId: s.scriptId } ).catch( () => ( { scriptSource: '' } ) ) ).scriptSource;
+							const src = ( await cdp.send( 'Debugger.getScriptSource', { scriptId: s.scriptId } ).catch( unless( { scriptSource: '' } ) ) ).scriptSource;
 							where = [ ...texts ].filter( ( [ , t ] ) => t && src.includes( t ) ).map( ( [ comp, t ] ) => ( { comp, base: src.indexOf( t ) } ) );
 						} else if ( meta?.url?.startsWith( `${ sb.origin }/` ) ) {
 							const f = decodeURIComponent( new URL( meta.url ).pathname.slice( 1 ) );
@@ -258,6 +374,21 @@ export async function openForcedPage( { folder, entry, harPath, file = entry, ha
 			close: () => sb.close(),
 			blocked: sb.blocked,
 		};
+		// The outermost session call running is the forcing step a timed-out browser call names.
+		for ( const [ k, fn ] of Object.entries( session ) ) {
+			if ( 'function' === typeof fn && 'close' !== k ) {
+				session[ k ] = async ( ...a ) => {
+					const outer = ! step;
+					step = outer ? stepOf( k, a ) : step;
+					forced = outer && FORCING.includes( k ) ? step : forced;
+					try {
+						return await fn( ...a );
+					} finally {
+						step = outer ? '' : step;
+					}
+				};
+			}
+		}
 		return session;
 	} catch ( e ) {
 		await sb.close();

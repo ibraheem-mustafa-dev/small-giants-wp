@@ -3,7 +3,8 @@
 // (its unreached defects and its incomplete-forcing gap rows, by census row ID) over every route. Both passes read the
 // bound style-* rules on every page they open (test 1), so test 1 still sees every route. The result has
 // lib/intake-defects.mjs::proposeDraftDefects' shape ({ rows, groups, notDefects, gaps, blocked }) plus `passes`, and the intake
-// record keeps one review row per group (defectReviewRows).
+// record keeps one review row per group (defectReviewRows). Each pass logs a line as each visit starts at each width, so a
+// slow or stuck visit is named in the progress file.
 import { unreachedDefects, boundStyleRows, readPageBindings, bindingVerdicts } from './intake-defects.mjs';
 import { defectGroups } from './intake-defects-keys.mjs';
 
@@ -30,14 +31,14 @@ export async function twoPassDefects( { folder, entry, harPath, census, visits, 
 	const marked = census.rows.some( ( r ) => 'boolean' === typeof r.unreached );
 	const base = { folder, entry, harPath, widths, onPage, reads, flags, census: marked ? census : { ...census, rows: [] } };
 	const t0 = Date.now();
-	const a = await unreachedDefects( { ...base, visits: visits.slice( 0, firstPass ) } );
+	const a = await unreachedDefects( { ...base, visits: visits.slice( 0, firstPass ), log: ( l ) => log( `  defects pass A: ${ l }` ) } );
 	const msA = Date.now() - t0;
 	const unreached = census.rows.filter( ( r ) => true === r.unreached );
 	const retried = ( g ) => unreached.filter( ( r ) => r.kind === g.construct && r.draftId === g.draftId && /forcing was incomplete/.test( g.error ) );
 	const only = new Set( [ ...a.rows.map( ( r ) => r.censusId ), ...a.gaps.flatMap( retried ).map( ( r ) => r.id ) ] );
 	log( `  defects pass A: ${ visits.slice( 0, firstPass ).length } visits, ${ a.rows.length } defects and ${ only.size - a.rows.length } incomplete left for pass B (${ ( msA / 1000 ).toFixed( 1 ) }s${ fellBack( a ) })` );
 	const t1 = Date.now();
-	const b = await unreachedDefects( { ...base, visits, only } );
+	const b = await unreachedDefects( { ...base, visits, only, log: ( l ) => log( `  defects pass B: ${ l }` ) } );
 	const msB = Date.now() - t1;
 	log( `  defects pass B: ${ visits.length } visits, ${ only.size } candidates, ${ b.rows.length } defects (${ ( msB / 1000 ).toFixed( 1 ) }s${ fellBack( b ) })` );
 	const inOnly = ( x ) => only.has( x.censusId );

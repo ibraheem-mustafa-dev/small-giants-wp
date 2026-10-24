@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<main style="padding:24px;font-family:system-ui,sans-serif;color:#222">
+  <h1>Stuck forced state fixture</h1>
+  <sc-if value="{{ spinning }}">
+    <p class="spinning">Spinning</p>
+  </sc-if>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { spin: false };
+
+  componentDidUpdate() {
+    if ( this.state.spin ) {
+      for ( ;; ) {
+        this.turns = ( this.turns || 0 ) + 1;
+      }
+    }
+  }
+
+  renderVals() {
+    return { spinning: this.state.spin };
+  }
+}
+</script>
+</body>
+</html>

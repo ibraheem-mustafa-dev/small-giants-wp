@@ -13,7 +13,7 @@
 //      `deadKind` (lib/intake-defects-static.mjs::DEAD_KINDS).
 import { boundStyleRows, readPageBindings, bindingVerdicts } from './intake-defects-binding.mjs';
 import { groupVisits } from './intake-census-runtime.mjs';
-import { openForcedPage } from './intake-defects-force.mjs';
+import { forcedVisits, openForcedPage } from './intake-defects-force.mjs';
 import { conditionKeys, patchesOf, propsGating, defectGroups, mountedProps } from './intake-defects-keys.mjs';
 import { buildModel, codeTarget, countAt } from './intake-census-map.mjs';
 import { deadCodeVerdict, prototypeOnlyWhy, dataGatedWhy } from './intake-defects-static.mjs';
@@ -43,10 +43,12 @@ export const motionModifier = ( r ) => [ 'transition', 'keyframes' ].includes( r
 // forcing off ({ pseudo, state, events, props, deadCode, deadField, dataGate, reducedMotion, drag, coords, chain }: false); it
 // exists only for the tests' negative
 // controls. `only` (a Set of census row IDs) limits the candidates, for a second pass over more visits. `flags`
-// (lib/intake-flags.mjs::proposeFlags rows, optional) lets a construct be prototype-only (FR-48-33). Returns { rows,
+// (lib/intake-flags.mjs::proposeFlags rows, optional) lets a construct be prototype-only (FR-48-33). `log` gets one line
+// as each visit starts at each width and one for each visit whose browser call timed out (lib/intake-defects-force.mjs::forcedVisits:
+// that visit is a gap row and its width undecided, never a hang). Returns { rows,
 // notDefects, gaps, blocked, units } (`blocked`: every forced page's aborted requests; `units`: how many width-and-visit-run units ran, which
 // INTAKE_PARALLEL_VISITS and INTAKE_PARALLEL_WIDTHS raise).
-export async function unreachedDefects( { folder, entry, harPath, census, visits = [ entry ], widths = WIDTHS, harness = {}, timeout = 60000, onPage = null, reads = null, force = {}, only = null, flags = null } ) {
+export async function unreachedDefects( { folder, entry, harPath, census, visits = [ entry ], widths = WIDTHS, harness = {}, timeout = 60000, onPage = null, reads = null, force = {}, only = null, flags = null, log = () => {} } ) {
 	const out = { rows: [], notDefects: [], gaps: [], blocked: [] };
 	const unreached = census.rows.filter( ( r ) => true === r.unreached );
 	census.rows.filter( ( r ) => null === r.unreached && r.traceGap ).forEach( ( r ) => out.gaps.push( { construct: r.kind, draftId: r.draftId, error: `the census could not decide reach (${ r.traceGap }); not tested as a draft defect` } ) );
@@ -81,35 +83,22 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 	const groups = groupVisits( visits, entry );
 	// One unit of work: a run of a page group's visits (all of them, or a slice) at one width, on the plan `on`, with onPage
 	// writing into `into`. Returns the unit's gap rows, blocked requests and whether a visit failed.
-	const runUnit = async ( { width, group, slice, last }, on, into ) => {
-		const u = { gaps: [], blocked: [], failed: false };
+	const runUnit = ( { width, group, slice, last }, on, into ) => {
 		let call = 0;
-		let s = null;
-		try {
-			s = await openForcedPage( { folder, entry, harPath, file: group.file, hash: slice[ 0 ].hash, width, harness, timeout, forcePseudoState: false !== force.pseudo, drag: false !== force.drag, coords: false !== force.coords } );
-			for ( const [ i, v ] of slice.entries() ) {
-				if ( i ) {
-					await s.page.evaluate( ( h ) => {
-						window.location.hash = h;
-					}, v.hash );
-					await s.settle();
-				}
-				if ( onPage ) {
-					await onPage( s, { width, visit: v.label }, into );
-				}
-				await forceVisit( s, { plan: on, source, texts, files, selectors, triggers, width, force, last: last && i === slice.length - 1, call: call++ } );
+		const open = ( v ) => openForcedPage( { folder, entry, harPath, file: group.file, hash: v.hash, width, harness, timeout, forcePseudoState: false !== force.pseudo, drag: false !== force.drag, coords: false !== force.coords } );
+		const visit = async ( s, v, i, fresh ) => {
+			if ( ! fresh ) {
+				await s.page.evaluate( ( h ) => {
+					window.location.hash = h;
+				}, v.hash );
+				await s.settle();
 			}
-		} catch ( e ) {
-			u.failed = true;
-			u.blocked.push( ...( e.blocked || [] ) );
-			u.gaps.push( { construct: 'defect-visit', draftId: `${ group.file }@${ width }`, error: e.message.split( '\n' ).slice( 0, 3 ).join( ' ' ) } );
-		} finally {
-			if ( s ) {
-				await s.close();
-				u.blocked.push( ...s.blocked );
+			if ( onPage ) {
+				await onPage( s, { width, visit: v.label }, into );
 			}
-		}
-		return u;
+			await forceVisit( s, { plan: on, source, texts, files, selectors, triggers, width, force, last: last && i === slice.length - 1, call: call++ } );
+		};
+		return forcedVisits( { file: group.file, slice, width, open, visit, log } );
 	};
 	const fold = ( u, width ) => {
 		out.gaps.push( ...u.gaps );
