@@ -49,15 +49,15 @@
 	},
 	{
 		"file": "lib/motion-tilt.mjs",
-		"find": "return stated ?? ( null === k ? null : Math.round( k * Math.SQRT1_2 * 10 ) / 10 );",
+		"find": "return null === k ? stated : Math.round( k * 0.5 * 10 ) / 10;",
 		"replace": "return stated;",
 		"why": "a tilt written as the distance from the centre times a factor would lose its angle"
 	},
 	{
 		"file": "lib/motion-tilt.mjs",
-		"find": "Math.round( k * Math.SQRT1_2 * 10 )",
-		"replace": "Math.round( k * 10 )",
-		"why": "the factor would be taken for the corner angle"
+		"find": "Math.round( k * 0.5 * 10 )",
+		"replace": "Math.round( k * Math.SQRT1_2 * 10 )",
+		"why": "the corner angle would be written, so the clone tilts about √2 times too far at a corner"
 	},
 	{
 		"file": "lib/motion-tilt.mjs",
@@ -142,5 +142,11 @@
 		"find": "&& null != a.source?.function && a.source.function",
 		"replace": "&& a.source?.function",
 		"why": "two records naming no function would be the same handler"
+	},
+	{
+		"file": "lib/fill-behaviour.mjs",
+		"find": "( b.unread || [] ).forEach( ( u ) => refuse( r.id, `${ u.field }: ${ u.reason }` ) );",
+		"replace": "",
+		"why": "a value the recogniser could not read would be dropped silently by Fill"
 	}
 ]

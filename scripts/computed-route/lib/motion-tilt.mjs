@@ -14,13 +14,15 @@ export const fromPointer = ( p ) => /client[XY]|pointer|\bx\b[^.]*\by\b|\(x\b|\b
 // (`Math.hypot(x - 0.5, y - 0.5) * 16`): the factor.
 const HYPOT = new RegExp( `hypot\\(\\s*\\w+\\s*[-\\u2212]\\s*0?\\.5\\s*,\\s*\\w+\\s*[-\\u2212]\\s*0?\\.5\\s*\\)\\s*${ TIMES }\\s*${ NUMBER }`, 'i' );
 
-// The tilt's largest angle from its formula: a stated maximum (`max ≈ 11.3deg`), a factor of degrees (`× 12deg`), or a
-// distance from the centre times a factor, whose largest value is at a corner (the factor times √0.5). Null when the
-// formula states none of them.
+// The tilt's largest angle, as SGS's follow-pointer layer holds it: per axis, reached at an edge (fx-follow-pointer.js
+// turns each axis by up to `--sgs-tilt-max`, so a corner turns about √2 times as far). A rotation of the distance from
+// the centre times a factor (`Math.hypot(x - 0.5, y - 0.5) * 16`) reaches an edge at half its factor (8deg) and a corner
+// at √0.5 of it (11.3deg), as the per-axis maximum of 8 does; else a stated maximum (`max ≈ 11.3deg`) or a factor of
+// degrees (`× 12deg`). Null when the formula states none of them.
 function angleOf( f ) {
 	const stated = number( new RegExp( `max\\s*[\\u2248~=]\\s*${ NUMBER }\\s*deg`, 'i' ).exec( f )?.[ 1 ] ) ?? number( new RegExp( `${ TIMES }\\s*${ NUMBER }\\s*deg`, 'i' ).exec( f )?.[ 1 ] );
 	const k = number( HYPOT.exec( f )?.[ 1 ] );
-	return stated ?? ( null === k ? null : Math.round( k * Math.SQRT1_2 * 10 ) / 10 );
+	return null === k ? stated : Math.round( k * 0.5 * 10 ) / 10;
 }
 
 // A script-written rotation from the pointer's position: a tilt (the hover state's followPointer), with a glare layer

@@ -96,7 +96,7 @@ const hostsWith = ( ...layers ) => ( { elements: Object.fromEntries( layers.flat
 ] ) ) } );
 
 test( 'MUST FAIL: the tilt\'s largest angle is read from the pointer distance times a factor, the corner angle (16 x √0.5)', () => {
-	assert.equal( recogniseBehaviour( TILT, { records: ALL } ).hoverState.maxAngle, 11.3 );
+	assert.equal( recogniseBehaviour( TILT, { records: ALL } ).hoverState.maxAngle, 8, 'the per-axis edge angle SGS holds: half the factor' );
 } );
 
 test( 'MUST FAIL: a tilt whose formula states no angle raises a named row instead of the default angle standing silently', () => {
@@ -149,4 +149,12 @@ test( 'the same-handler rule: the same function in another file, or two records 
 	const NULL_FN = { ...GX, id: 'J-8', source: { ...GX.source, function: null } };
 	assert.equal( recogniseBehaviour( NULL_FN, { records: [ tiltNoFn, NULL_FN ] } ).effects[ 0 ].effect, 'cursor-field' );
 	assert.deepEqual( recogniseBehaviour( tiltNoFn, { records: [ tiltNoFn, NULL_FN ] } ).effects, [] );
+} );
+
+test( 'MUST FAIL: Fill raises the value the recogniser could not read as a named row on the node, beside the effect it writes', () => {
+	const bare = { ...TILT, properties: [ { ...TILT.properties[ 0 ], formula: "(0.5 - y) + ' ' + (x - 0.5) + ' 0 ' + a + 'deg'" } ] };
+	const { out } = run( [ bare ] );
+	assert.ok( out.unmapped.some( ( u ) => 'J-1' === u.value && /^maxAngle: .*states no largest angle/.test( u.reason ) ), JSON.stringify( out.unmapped ) );
+	// The control: the readable tilt raises no such row.
+	assert.ok( ! run( ALL ).out.unmapped.some( ( u ) => /^maxAngle: /.test( u.reason ?? '' ) ) );
 } );

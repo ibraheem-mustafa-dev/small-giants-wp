@@ -157,6 +157,9 @@ export function applyBehaviours( { items, n, target, doc, pending, written, cont
 			}
 			note( r.id, `${ b.effects[ 0 ].effect } is the ${ n.name } setting ${ b.alt.settings.map( ( s ) => `${ s.attr } ${ JSON.stringify( s.value ) }` ).join( ', ' ) }` );
 		} else {
+			// A value the recogniser could not read from the draft (a tilt's largest angle, glare cards that disagree) is a
+			// named row; the effect is still written with the values it could read.
+			( b.unread || [] ).forEach( ( u ) => refuse( r.id, `${ u.field }: ${ u.reason }` ) );
 			for ( const e of b.effects ) {
 				const id = `${ e.effect }-${ layerCount( doc.elements[ target ], e.effect, 'hover' === e.panel ) + 1 }`;
 				const w = finish( e, id );

@@ -102,7 +102,7 @@ test( 'MUST FAIL: the sheen and ripple values come from the keyframes and the cr
 test( 'MUST FAIL: a pointer handler writing rotate from the pointer is a tilt (follow-pointer with its angle and spring back) with a glare for the highlight it writes', () => {
 	const { out, doc } = run( [ node( 0, 'sgs/container', '10' ) ], [ TILT, TILT_RESET ], hosted( '10', 'data-lean' ) );
 	assert.deepEqual( reasons( out ), [] );
-	assert.deepEqual( doc.elements.root.hover.state.values, { followPointer: true, maxAngle: 11.3, resetDuration: 600, resetEasing: 'cubic-bezier(.34,1.56,.64,1)' } );
+	assert.deepEqual( doc.elements.root.hover.state.values, { followPointer: true, maxAngle: 8, resetDuration: 600, resetEasing: 'cubic-bezier(.34,1.56,.64,1)' } );
 	assert.equal( layerOf( doc, 'hover.effects', 'glare' ).effect, 'glare' );
 } );
 
