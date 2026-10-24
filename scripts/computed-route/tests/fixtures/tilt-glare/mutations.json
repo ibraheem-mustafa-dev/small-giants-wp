@@ -40,5 +40,11 @@
 		"find": " : 'close' === b.kind ? 'close' : 'no SGS effect';",
 		"replace": " : 'no SGS effect';",
 		"why": "a close row would be named no SGS effect"
+	},
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": "\t&& null != a.source?.function && a.source.function === b.source?.function && ( a.source?.file ?? null ) === ( b.source?.file ?? null );",
+		"replace": ";",
+		"why": "a pointer write on the tilting element from another handler would be read as its glare"
 	}
 ]

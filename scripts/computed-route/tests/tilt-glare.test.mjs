@@ -16,12 +16,14 @@ const schema = loadMotionSchema();
 const mdb = motionDb( openDb( motionFixtureDb( { 'sgs/container': [] } ) ) );
 const HOST = "e.target.closest && e.target.closest('[data-lean]')";
 const rec = ( id, over ) => ( { id, name: `js-style-write in bind on ${ HOST }`, mechanism: 'js-style-write', status: 'active', element: { dc: 'Site', template_tpl_id: null, selector: HOST }, trigger: { type: 'pointer-move', detail: 'pointermove listener on document' }, properties: [], duration_ms: 0, delay_ms: 0, easing: null, iterations: 1, ...over } );
-const TILT = rec( 'J-1', { duration_ms: 600, properties: [ { property: 'rotate', from: null, to: null, formula: "(0.5 - y) + ' ' + (x - 0.5) + ' 0 ' + (Math.hypot(x - 0.5, y - 0.5) * 16).toFixed(2) + 'deg'" } ], source: { code: "t.style.rotate = (0.5 - y) + ' ' + (x - 0.5) + ' 0 ' + (Math.hypot(x - 0.5, y - 0.5) * 16).toFixed(2) + 'deg'" } } );
-const GX = rec( 'J-2', { properties: [ { property: '--gx', from: null, to: null, formula: "(x * 100).toFixed(1) + '%'" } ], source: { code: "t.style.setProperty('--gx', (x * 100).toFixed(1) + '%')" } } );
-const GY = rec( 'J-3', { properties: [ { property: '--gy', from: null, to: null, formula: "(y * 100).toFixed(1) + '%'" } ], source: { code: "t.style.setProperty('--gy', (y * 100).toFixed(1) + '%')" } } );
+const TILT = rec( 'J-1', { duration_ms: 600, properties: [ { property: 'rotate', from: null, to: null, formula: "(0.5 - y) + ' ' + (x - 0.5) + ' 0 ' + (Math.hypot(x - 0.5, y - 0.5) * 16).toFixed(2) + 'deg'" } ], source: { file: 'Site.dc.html', function: 'bind', code: "t.style.rotate = (0.5 - y) + ' ' + (x - 0.5) + ' 0 ' + (Math.hypot(x - 0.5, y - 0.5) * 16).toFixed(2) + 'deg'" } } );
+const GX = rec( 'J-2', { properties: [ { property: '--gx', from: null, to: null, formula: "(x * 100).toFixed(1) + '%'" } ], source: { file: 'Site.dc.html', function: 'bind', code: "t.style.setProperty('--gx', (x * 100).toFixed(1) + '%')" } } );
+const GY = rec( 'J-3', { properties: [ { property: '--gy', from: null, to: null, formula: "(y * 100).toFixed(1) + '%'" } ], source: { file: 'Site.dc.html', function: 'bind', code: "t.style.setProperty('--gy', (y * 100).toFixed(1) + '%')" } } );
 // The same pointer write on an element no tilt rotates (another hook): a cursor field.
 const FIELD = { ...GX, id: 'J-4', element: { dc: 'Site', template_tpl_id: null, selector: "e.target.closest('[data-look]')" } };
 const ALL = [ TILT, GX, GY, FIELD ];
+// The same pointer write on the tilting element but from a handler of its own (another function): not that tilt's glare.
+const OWN = { ...GX, id: 'J-5', source: { ...GX.source, function: 'trackPointer' } };
 
 const run = ( records ) => {
 	const nodes = [ { index: 0, name: 'sgs/container', targets: [ { id: '0:', slot: '', finder: { tpl: 'Site/10#0' } } ] } ];
@@ -52,6 +54,9 @@ test( 'control: a pointer custom-property write on an element no tilt rotates st
 	assert.equal( recogniseBehaviour( FIELD, { records: ALL } ).effects[ 0 ].effect, 'cursor-field' );
 	// And with no tilt in the inventory, the same glare record is read as a cursor field (the pointer write alone is the evidence).
 	assert.equal( recogniseBehaviour( GX, { records: [ GX, GY ] } ).effects[ 0 ].effect, 'cursor-field' );
+	// A pointer write on the tilting element from another handler is a cursor field, and gives the tilt no glare.
+	assert.equal( recogniseBehaviour( OWN, { records: [ TILT, OWN ] } ).effects[ 0 ].effect, 'cursor-field' );
+	assert.deepEqual( recogniseBehaviour( TILT, { records: [ TILT, OWN ] } ).effects, [] );
 } );
 
 test( 'MUST FAIL: the effect rows give the tilt one row "glare + follow-pointer", no cursor-field row for its glare position, and the cursor field elsewhere its own row', () => {

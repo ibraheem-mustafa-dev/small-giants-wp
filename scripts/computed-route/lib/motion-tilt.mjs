@@ -22,8 +22,11 @@ export function tiltOf( r, ctx = {} ) {
 	return { hoverState: compact( { followPointer: true, maxAngle: angle } ), glare };
 }
 
-// Whether two records write the same element: the same draft and the same element expression.
-const sameElement = ( a, b ) => null != a.element?.selector && a.element.selector === b.element?.selector && ( a.element?.dc ?? null ) === ( b.element?.dc ?? null );
+// Whether two records write the same element from the same handler: the same draft and element expression, written by
+// the same function of the same file (a tilt's glare position is set by the handler that rotates it; an unrelated pointer
+// write on the same element, from a handler of its own, is not its glare).
+const sameElement = ( a, b ) => null != a.element?.selector && a.element.selector === b.element?.selector && ( a.element?.dc ?? null ) === ( b.element?.dc ?? null )
+	&& null != a.source?.function && a.source.function === b.source?.function && ( a.source?.file ?? null ) === ( b.source?.file ?? null );
 
 // A pointer handler that writes only custom properties, each from the pointer's position: a position for a highlight or
 // a reveal to read. True or false.
