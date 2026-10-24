@@ -25,9 +25,12 @@ import { createRequire } from 'module';
 import { statusOf } from './clone-coverage.mjs';
 import { headMissing } from './intake-head.mjs';
 import { PROPS as FILL_PROPS } from './fill-read.mjs';
+import { CONTEXT_PROPS } from '../../parity/lib/collect.mjs';
 
 const MDN_PROPERTIES = createRequire( import.meta.url )( 'mdn-data/css/properties.json' );
-const FILL_READS = new Set( FILL_PROPS );
+// What Fill reads and carries: its list without the context reads (direction, column-count, column-width), which it reads
+// only to judge other values and never writes from the computed read (lib/fill-resolve-element.mjs::fillElement).
+export const FILL_READS = new Set( FILL_PROPS.filter( ( p ) => ! CONTEXT_PROPS.has( p ) ) );
 // The longhands a property sets, by mdn-data's `computed` list, recursively (`border` → `border-width` → its four
 // sides); a longhand is itself.
 export function longhands( prop, seen = new Set() ) {
@@ -38,7 +41,7 @@ export function longhands( prop, seen = new Set() ) {
 	seen.add( prop );
 	return [ ...new Set( c.flatMap( ( l ) => longhands( l, seen ) ) ) ];
 }
-// The properties of a CSS group a draft used that Fill does not read (lib/fill-read.mjs::PROPS, which Fill clones end to
+// The properties of a CSS group a draft used that Fill does not read and carry (FILL_READS, which Fill clones end to
 // end): a shorthand counts as read only when every longhand is. A custom property is read: it never paints on its own,
 // and its value reaches Fill through the properties that use it (`var()`).
 export const unreadProperties = ( props ) => [ ...props ].filter( ( p ) => ! p.startsWith( '--' ) && ! longhands( p ).every( ( l ) => FILL_READS.has( l ) ) ).sort();

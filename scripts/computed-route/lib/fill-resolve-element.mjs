@@ -15,18 +15,24 @@ import { compareDR } from './fill-confirm.mjs';
 import { elementContext } from './fill-held.mjs';
 import { GAP_PROPS, valueText, json, alternateSlots, baselineFn, ledgerView, gapTarget, draftOf } from './fill-resolve-state.mjs';
 
-// Writes one resolver result into the node, recording each change. Returns the number of settings changed.
+// Writes one resolver result into the node, recording each change. Returns the number of settings changed. `slot` is the
+// element the setting sits on; `res.readSlot`, when it differs, the element the value was read on (a property read on the
+// root carried to a setting on an inner element), kept on the row as `readSlot` so the read stays answered. A row's
+// `widths` are the tiers it changes; `res.answers`, every read width the result leaves showing the draft's value (a
+// width the resolver left out already shows it, or takes it from a wider tier), kept on the row as `answers`.
 export function apply( st, rec, ref, target, prop, res, slot ) {
 	const node = st.flat[ rec.index ];
+	const widths = Object.keys( res.included || {} ).map( Number );
+	const from = { ...( undefined !== res.readSlot && res.readSlot !== slot ? { readSlot: res.readSlot } : {} ), ...( res.answers ? { answers: res.answers } : {} ) };
 	let changed = 0;
 	for ( const w of res.writes ) {
 		if ( json( w.value ) === json( node.attributes?.[ w.attr ] ) ) {
-			settled( st, rec, ref, { slot, property: prop, value: json( w.value ), reason: 'already-set', detail: `${ w.attr } already holds this value in the tree` } );
+			settled( st, rec, ref, { slot, ...from, property: prop, value: json( w.value ), widths: res.answers || widths, reason: 'already-set', detail: `${ w.attr } already holds this value in the tree` } );
 			continue;
 		}
 		const { before, after } = setAttr( node, w );
 		changed++;
-		st.out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: res.how, ...( w.unit ? { unit: true } : {} ) } );
+		st.out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, ...from, prop, attr: w.attr, before, after, widths, how: res.how, ...( w.unit ? { unit: true } : {} ) } );
 		// The switch the fixture turned on for this setting (childIconShowBackground for childIconBackground).
 		const gate = gateFor( st, rec.name, st.calFor( rec.name ), blockSchema( rec.name ), w.attr, node.attributes );
 		if ( gate ) {
@@ -56,8 +62,9 @@ export function unmapped( st, rec, ref, row ) {
 	st.out.unmapped.push( { node: ref, block: rec.name, slot: '', ...row } );
 }
 
-// A value read that ends with nothing to write and nothing unwritten (lib/fill-report.mjs::SETTLED names the reasons). A
-// throwaway state (lib/fill-row-lift.mjs::readCopy) starts its own list.
+// A value read that ends with nothing to write and nothing unwritten (lib/fill-report.mjs::SETTLED names the reasons), with
+// the read widths it answers (`widths`). A throwaway state (lib/fill-row-lift.mjs::readCopy) starts its own list, which
+// the row lift carries onto the icon it read.
 export function settled( st, rec, ref, row ) {
 	( st.out.settled ??= [] ).push( { node: ref, block: rec.name, slot: '', ...row } );
 }
@@ -131,7 +138,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		if ( layer || ! notPainted( p, snaps[ w ].styles || {}, snaps[ w ] ) ) {
 			return true;
 		}
-		settled( st, rec, ref, { slot, property: p, value: String( valueAt( snaps[ w ], p ) ), reason: 'not-painted', detail: `at ${ w }: ${ notPaintedWhy( p, snaps[ w ].styles || {}, snaps[ w ] ) }` } );
+		settled( st, rec, ref, { slot, property: p, value: String( valueAt( snaps[ w ], p ) ), widths: [ Number( w ) ], reason: 'not-painted', detail: `at ${ w }: ${ notPaintedWhy( p, snaps[ w ].styles || {}, snaps[ w ] ) }` } );
 		return false;
 	} ) ) ] ) );
 	const gapProp = {};
@@ -161,7 +168,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		if ( ! layer && /^margin-(left|right)$/.test( prop ) ) {
 			const auto = Object.keys( draft ).filter( ( w ) => 'auto' === st.reads.declared?.[ w ]?.[ target.id ]?.[ prop ] );
 			if ( auto.length ) {
-				settled( st, rec, ref, { slot, property: prop, value: valueText( Object.fromEntries( auto.map( ( w ) => [ w, draft[ w ] ] ) ) ), reason: 'used-size', detail: `the code declares ${ prop }: auto at ${ auto.join( ', ' ) }px, the used size that centres the box` } );
+				settled( st, rec, ref, { slot, property: prop, value: valueText( Object.fromEntries( auto.map( ( w ) => [ w, draft[ w ] ] ) ) ), widths: auto.map( Number ), reason: 'used-size', detail: `the code declares ${ prop }: auto at ${ auto.join( ', ' ) }px, the used size that centres the box` } );
 			}
 			auto.forEach( ( w ) => delete draft[ w ] );
 			if ( ! Object.keys( draft ).length ) {
@@ -175,7 +182,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			if ( t.gap ) {
 				// A declared width the setting cannot take at every width is a row; a width the code never declares is the used size.
 				const u = usedValueDrafts( draft, ( w ) => st.reads.declared?.[ w ]?.[ target.id ]?.width );
-				const row = { slot, property: prop, value: valueText( draft ) };
+				const row = { slot, property: prop, value: valueText( draft ), widths: Object.keys( draft ).map( Number ) };
 				u.notPlain.length || Object.keys( u.draft ).length ? unmapped( st, rec, ref, { ...row, reason: `${ t.gap }: ${ t.detail }` } ) : settled( st, rec, ref, { ...row, reason: 'used-size', detail: t.detail } );
 				continue;
 			}
@@ -189,7 +196,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			// A width the code declares no length at (nothing, auto or a CSS-wide keyword) renders a layout result.
 			const undeclared = Object.keys( rendered ).filter( ( w ) => ! ( w in draft ) && ! u.notPlain.some( ( n ) => String( n.width ) === w ) );
 			if ( undeclared.length ) {
-				settled( st, rec, ref, { slot, property: prop, value: valueText( Object.fromEntries( undeclared.map( ( w ) => [ w, rendered[ w ] ] ) ) ), reason: 'used-size', detail: `the code declares no ${ prop } length at ${ undeclared.join( ', ' ) }px: the rendered value is a layout result` } );
+				settled( st, rec, ref, { slot, property: prop, value: valueText( Object.fromEntries( undeclared.map( ( w ) => [ w, rendered[ w ] ] ) ) ), widths: undeclared.map( Number ), reason: 'used-size', detail: `the code declares no ${ prop } length at ${ undeclared.join( ', ' ) }px: the rendered value is a layout result` } );
 			}
 			if ( ! Object.keys( draft ).length ) {
 				// Nothing plain to write; an element of fixed ratio still takes its rendered height as a maximum height.
@@ -209,7 +216,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			notPlain.forEach( ( row ) => unmapped( st, rec, ref, row ) );
 		}
 		if ( 'equal' === res.status || 'equal' === eq?.status ) {
-			settled( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: 'equal', detail: 'the element already shows this value at every width (its parent, the theme or its calibrated default paint)' } );
+			settled( st, rec, ref, { slot, property: prop, value: valueText( draft ), widths: Object.keys( draft ).map( Number ), reason: 'equal', detail: 'the element already shows this value at every width (its parent, the theme or its calibrated default paint)' } );
 		}
 		if ( 'gap' === res.status && ( ! eq || 'gap' === eq.status ) ) {
 			unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: `${ res.gap }: ${ res.detail }${ eq ? `; ${ eq.detail }` : '' }`, ...( res.code ? { code: res.code } : {} ) } );
@@ -233,7 +240,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 					gapProp[ prop ] = { attrs, draft };
 				}
 				res.writes = res.writes.filter( ( w ) => ownerKeeps( st, rec, ref, target, prop, w, res.slot ) );
-				apply( st, rec, ref, target, prop, res, res.slot );
+				apply( st, rec, ref, target, prop, { ...res, readSlot: slot, answers: Object.keys( draft ).map( Number ) }, res.slot );
 				res.writes.forEach( ( w ) => recordOwner( st, rec, target, prop, w.attr, target.slot === res.slot ) );
 			}
 			if ( res.fluid ) {

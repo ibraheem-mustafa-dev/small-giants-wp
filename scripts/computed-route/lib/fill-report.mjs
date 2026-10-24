@@ -5,8 +5,21 @@ import { HELD_REASONS, heldCounts } from './fill-held.mjs';
 
 // Why a value Fill read ends with nothing written and nothing unwritten (lib/fill-resolve-element.mjs::settled): `equal`, the
 // element already shows it; `already-set`, the tree already holds the setting's value; `used-size`, the rendered value is a
-// layout result the code does not declare as a length (an auto margin, an undeclared width or height).
-export const SETTLED = [ 'equal', 'already-set', 'used-size', 'not-painted' ];
+// layout result the code does not declare as a length (an auto margin, an undeclared width or height); `not-painted`, the
+// value paints nothing there; `row-held`, a generated icon's value the icon row's shared setting holds
+// (lib/fill-row-lift.mjs::liftChildren); `logo-size`, `width-ladder` and `dimension`, an UNMAPPED row that pass wrote or
+// settled (passSettled).
+export const SETTLED = [ 'equal', 'already-set', 'used-size', 'not-painted', 'row-held', 'logo-size', 'width-ladder', 'dimension' ];
+
+const rowKey = ( u ) => JSON.stringify( [ u.node, u.slot ?? '', u.property, u.value, u.state ?? null ] );
+
+// The UNMAPPED rows a later Fill pass (lib/fill-logo-size.mjs, lib/fill-width-ladder.mjs, lib/fill-dimensions.mjs) took out
+// of `before` because it wrote or settled them, as settled rows naming the pass (`reason`), one per node a row names, so
+// a read the pass answered stays answered. A row the pass keeps, or raises again with a longer reason, is not one.
+export function passSettled( before, after, reason ) {
+	const kept = new Set( after.map( rowKey ) );
+	return before.filter( ( u ) => ! kept.has( rowKey( u ) ) ).flatMap( ( u ) => ( u.nodes?.length ? u.nodes : [ u.node ] ).map( ( node ) => ( { node, block: u.block, slot: u.slot ?? '', property: u.property, value: u.value, ...( u.state ? { state: u.state } : {} ), reason, detail: `lib/fill-${ reason }.mjs wrote or settled it (was: ${ u.reason })` } ) ) );
+}
 const settledCounts = ( rows ) => Object.fromEntries( SETTLED.map( ( k ) => [ k, rows.filter( ( s ) => s.reason === k ).length ] ) );
 
 // The confirm record's verdicts (lib/fill-confirm.mjs, FR-48-36).
@@ -17,7 +30,7 @@ const table = ( head, rows ) => ( rows.length ? [ `| ${ head.join( ' | ' ) } |`,
 
 // The UNMAPPED list as the contract names it: property, value, node, reason (plus the block, the element and the state the
 // row was read in, null at rest, which lib/confirm-live.mjs::judgeUnmapped judges by).
-export const unmappedList = ( unmapped ) => unmapped.map( ( u ) => ( { property: u.property, value: u.value, node: u.node, reason: u.reason, block: u.block, slot: u.slot ?? '', state: u.state ?? null } ) );
+export const unmappedList = ( unmapped ) => unmapped.map( ( u ) => ( { property: u.property, value: u.value, node: u.node, reason: u.reason, block: u.block, slot: u.slot ?? '', state: u.state ?? null, ...( u.nodes?.length > 1 ? { nodes: u.nodes } : {} ) } ) );
 
 // The property an UNMAPPED row names for a draft read that failed: no one property was read.
 export const READ_FAILED = '(declared read)';

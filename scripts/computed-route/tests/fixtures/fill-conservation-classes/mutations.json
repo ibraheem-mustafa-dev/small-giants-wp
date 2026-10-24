@@ -1,0 +1,110 @@
+[
+ {
+  "file": "lib/census-conservation.mjs",
+  "find": "\tfor ( const s of report.settled || [] ) {\n\t\tout.push(",
+  "replace": "\tfor ( const s of [] ) {\n\t\tout.push(",
+  "why": "settled rows are not outcomes (the 265 equal, already-set, used-size and not-painted drops)"
+ },
+ {
+  "file": "lib/census-conservation.mjs",
+  "find": "widths: s.widths?.length ? s.widths : null, outcome: 'held', how: `settled:",
+  "replace": "widths: null, outcome: 'held', how: `settled:",
+  "why": "a settled row answers every width"
+ },
+ {
+  "file": "lib/fill-resolve-element.mjs",
+  "find": "settled( st, rec, ref, { slot, property: prop, value: valueText( draft ), widths: Object.keys( draft ).map( Number ), reason: 'equal'",
+  "replace": "settled( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: 'equal'",
+  "why": "the equal row carries no widths"
+ },
+ {
+  "file": "lib/fill-resolve-element.mjs",
+  "find": "...( undefined !== res.readSlot && res.readSlot !== slot ? { readSlot: res.readSlot } : {} ),",
+  "replace": "",
+  "why": "a value carried to an inner element loses the element it was read on"
+ },
+ {
+  "file": "lib/census-conservation.mjs",
+  "find": "...( undefined === o.readSlot ? [] : [ at( o.node, o.readSlot ) ] )",
+  "replace": "",
+  "why": "the check ignores readSlot"
+ },
+ {
+  "file": "lib/census-conservation.mjs",
+  "find": "property: w.covers ?? w.prop,",
+  "replace": "property: w.prop,",
+  "why": "a scoped rule's label answers nothing"
+ },
+ {
+  "file": "lib/census-conservation.mjs",
+  "find": "for ( const node of u.nodes?.length ? u.nodes : [ u.node ] ) {",
+  "replace": "for ( const node of [ u.node ] ) {",
+  "why": "a row raised once answers only its last icon"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "\t\t\treading.settled.forEach( ( r ) => keep( { ...r, node: cref, block: c.name, slot: slotOf } ) );\n",
+  "replace": "",
+  "why": "the icon's settled rows are dropped with the throwaway copy"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "\t\t\t\t\tskipped( attr ) && '(switch)' !== reading.props[ attr ] && rowHeld(",
+  "replace": "\t\t\t\t\tfalse && rowHeld(",
+  "why": "a value the row holds leaves no row on the icon"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "rows.set( k, { ...u, node: cref, block: c.name, slot: slotOf, nodes:",
+  "replace": "rows.set( k, { ...u, node: cref, block: c.name, nodes:",
+  "why": "the raised row keeps the calibrated path, not the read slot"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "nodes: [ ...new Set( [ ...( prior?.nodes || [] ), cref ] ) ] } );",
+  "replace": "nodes: [ cref ] } );",
+  "why": "the raised row names only its last icon"
+ },
+ {
+  "file": "lib/fill-report.mjs",
+  "find": "\treturn before.filter( ( u ) => ! kept.has( rowKey( u ) ) ).flatMap(",
+  "replace": "\treturn before.filter( ( u ) => false && ! kept.has( rowKey( u ) ) ).flatMap(",
+  "why": "a row a pass takes is not recorded"
+ },
+ {
+  "file": "lib/fill-report.mjs",
+  "find": "( u.nodes?.length ? u.nodes : [ u.node ] ).map( ( node ) =>",
+  "replace": "[ u.node ].map( ( node ) =>",
+  "why": "one settled row for a row naming several icons"
+ },
+ {
+  "file": "lib/fill-declared.mjs",
+  "find": "extraProps( declared, read.filter( ( p ) => undefined !== styles?.[ p ] ) );",
+  "replace": "extraProps( declared, read );",
+  "why": "a sticky top is never read"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "\t\t\t\t\trowHeld( 'border-radius', readWidths, 'circle' );\n",
+  "replace": "",
+  "why": "the icon's corners the row's circle holds leave no row"
+ },
+ {
+  "file": "lib/intake-missing.mjs",
+  "find": "export const FILL_READS = new Set( FILL_PROPS.filter( ( p ) => ! CONTEXT_PROPS.has( p ) ) );",
+  "replace": "export const FILL_READS = new Set( FILL_PROPS );",
+  "why": "a draft's direction: rtl is reported as read and carried"
+ },
+ {
+  "file": "lib/census-conservation.mjs",
+  "find": "...( w.answers || [] )",
+  "replace": "",
+  "why": "a write answers only the tiers it changes"
+ },
+ {
+  "file": "lib/fill-resolve-element.mjs",
+  "find": ", answers: Object.keys( draft ).map( Number ) }, res.slot );",
+  "replace": " }, res.slot );",
+  "why": "the write does not name the read widths it answers"
+ }
+]

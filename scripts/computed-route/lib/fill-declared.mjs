@@ -29,6 +29,12 @@ export function extraProps( declared, read ) {
 	return Object.fromEntries( Object.entries( declared || {} ).filter( ( [ p, v ] ) => ! read.includes( p ) && ! MOTION.test( p ) && ! isShorthand( p ) && ! CSS_WIDE.test( String( v ).trim() ) ) );
 }
 
+// The properties to read rendered beside a target's snapshot at one width: every one its code declares (extraProps) that
+// the snapshot holds no value for. A property of Fill's list the collector reads only in some layouts (`left` and `top`
+// only on an absolutely or fixed positioned element) is read here when the code declares it anyway (a sticky `top`).
+// styles: the snapshot's styles; read: Fill's own list.
+export const unreadDeclared = ( declared, styles, read ) => extraProps( declared, read.filter( ( p ) => undefined !== styles?.[ p ] ) );
+
 // The extra properties a target's code declares at some read width but whose rendered value is not read at another:
 // { id: { width: [prop] } }. result: lib/fill-read.mjs::readDraft's result so far; read: Fill's own list.
 export function missingExtras( result, read, widths ) {

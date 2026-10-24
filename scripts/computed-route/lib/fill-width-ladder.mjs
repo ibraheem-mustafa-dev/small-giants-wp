@@ -265,7 +265,8 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 	const puts = scopedCssPuts( node, { css: css.css, index: rec.index, why: `width ladder (${ prop })`, label } );
 	for ( const x of puts ) {
 		const { before, after } = setAttr( node, { attr: x.attr, value: x.value } );
-		out.writes.push( { node: row.node, index: rec.index, block: rec.name, slot: '', prop: x.prop, attr: x.attr, before, after, widths: [], how: 'width-gate' } );
+		// `covers` and `readSlot` name the property and the element it was read on that the rule answers (`prop` is its label).
+		out.writes.push( { node: row.node, index: rec.index, block: rec.name, slot: '', ...( row.slot ? { readSlot: row.slot } : {} ), prop: x.prop, covers: prop, attr: x.attr, before, after, widths: [], how: 'width-gate' } );
 	}
 	out.notes.push( `${ row.node } ${ rec.name }${ slot ? ` (${ slot })` : '' } ${ prop }: no setting holds ${ widths.map( ( w ) => `${ raw[ w ] } at ${ w }` ).join( ', ' ) }; written as a scoped @media rule in Additional CSS (${ css.ranges.map( ( s ) => `${ rangeText( s.range ) } ${ s.value }` ).join( ', ' ) })` );
 	return true;
