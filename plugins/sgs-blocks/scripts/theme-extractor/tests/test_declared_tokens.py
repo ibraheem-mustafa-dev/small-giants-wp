@@ -91,9 +91,11 @@ def test_the_optician_focus_ring_is_its_accent():
     assert verify_against_draft.resolve(snap, snap["settings"]["custom"]["focus"]["ring"]).upper() == "#9C8B78"
 
 
-def test_the_gate_reports_the_committed_redesign_snapshot_and_passes_it_once_applied(tmp_path):
+def test_the_gate_reports_a_snapshot_without_the_declared_tokens_and_passes_it_once_applied(tmp_path):
     baseline = json.loads((REPO / "theme" / "sgs-theme" / "theme.json").read_text(encoding="utf-8"))
-    before = verify_against_draft.compare(_committed(REDESIGN), _handoff(REDESIGN), _intake(REDESIGN), {}, baseline)
+    # a frozen copy of the redesign snapshot as it stood before the draft's declared tokens were read
+    stale = json.loads((pathlib.Path(__file__).parent / "fixtures" / "mamas-redesign-pre-reextract.snapshot.json").read_text(encoding="utf-8"))
+    before = verify_against_draft.compare(stale, _handoff(REDESIGN), _intake(REDESIGN), {}, baseline)
     open_before = {r["path"] for r in before if r["verdict"] == "mismatch"}
     assert {"settings.custom.gutter.mobile", "settings.custom.focus.ring", "styles.typography.lineHeight"} <= open_before
     after = verify_against_draft.compare(_applied(REDESIGN), _handoff(REDESIGN), _intake(REDESIGN), {}, baseline)
