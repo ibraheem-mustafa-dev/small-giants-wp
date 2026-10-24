@@ -34,7 +34,35 @@ const inertDetail = ( row ) => /held \(inert\): (.*)$/.exec( String( row.reason 
 // ambiguity, an uncalibrated block) is a real gap and is never judged here.
 export const RESOLVER_GAP = /^(?:no-setting|shape):/;
 
-const same = ( prop, a, b ) => undefined !== a && undefined !== b && sameValue( prop, canon( prop, a ), canon( prop, b ), TOL );
+const same = ( prop, a, b, ctx = {} ) => undefined !== a && undefined !== b && sameValue( prop, canon( prop, a, ctx ), canon( prop, b, ctx ), TOL );
+
+// The draft element's context at a width for canon() ({ parentDisplay, position, direction }, each where the read has it).
+// The parent of a node's root element is the element laying out the parent node's children (its read layoutDisplay, else
+// its display); the parent of an inner element is the element one step up its slot path (the root for a first step), where
+// the node has a target there. An unread parent leaves parentDisplay undefined, so canon() stays undecided.
+export function elementContext( st, rec, target, w ) {
+	const own = st.reads.widths?.[ w ]?.[ target.id ];
+	const readAt = ( id ) => {
+		const s = st.reads.widths?.[ w ]?.[ id ];
+		return s && ! s.missing ? s : null;
+	};
+	let parentDisplay;
+	if ( '' === target.slot ) {
+		const up = null === rec.parent ? null : ( st.nodes[ rec.parent ]?.targets || [] ).find( ( t ) => '' === t.slot );
+		const s = up ? readAt( up.id ) : null;
+		parentDisplay = s ? s.layoutDisplay || s.styles?.display : undefined;
+	} else {
+		const steps = target.slot.split( /\s*>\s*/ );
+		const upSlot = steps.slice( 0, -1 ).join( ' > ' );
+		const up = ( rec.targets || [] ).find( ( t ) => t.slot === upSlot );
+		parentDisplay = up ? readAt( up.id )?.styles?.display : undefined;
+	}
+	return {
+		...( undefined !== parentDisplay ? { parentDisplay } : {} ),
+		...( own && ! own.missing && own.position ? { position: own.position } : {} ),
+		...( own && ! own.missing && own.styles?.direction ? { direction: own.styles.direction } : {} ),
+	};
+}
 
 // The row's value per width: a { width: value } JSON, or one value at every width the element was read at.
 function valuesOf( row, snaps ) {
@@ -93,8 +121,9 @@ function reaches( c, row, slot ) {
 	} );
 }
 
-// covered, by a written setting: at every width the row states, what the write paints there (paintedAt) equals the draft's.
-function coveredBySetting( row, values, writes, cal ) {
+// covered, by a written setting: at every width the row states, what the write paints there (paintedAt) equals the draft's,
+// compared in the element's context there (contextAt( width ), elementContext).
+function coveredBySetting( row, values, writes, cal, contextAt = () => ( {} ) ) {
 	const fam = familyOf( row.property );
 	const defaultAt = ( x ) => defaultPaint( cal, row.slot, x, row.property );
 	for ( const w of writes ) {
@@ -111,7 +140,7 @@ function coveredBySetting( row, values, writes, cal ) {
 			// (a padding box against a height a side effect moves) covers nothing.
 			const written = painted.value;
 			const part = written && 'object' === typeof written ? ( fam && 'mixed' !== fam.kind ? written[ 'corner' === fam.kind ? partKey( fam.part ) : fam.part ] : undefined ) : written;
-			return undefined !== part && null !== part && same( row.property, String( part ), values[ x ] );
+			return undefined !== part && null !== part && same( row.property, String( part ), values[ x ], contextAt( x ) );
 		} );
 		if ( ok ) {
 			return `${ w.attr } was written for this element and paints ${ row.property } at the draft's value`;
@@ -177,7 +206,8 @@ export function makeSettle( st ) {
 			}
 			const cal = st.calFor( rec.name );
 			const mine = writes.filter( ( w ) => w.node === row.node );
-			const covered = coveredBySetting( row, values, mine, cal ) ?? coveredByMotion( row, values, mine, tokens );
+			const contextAt = ( w ) => elementContext( st, rec, target, w );
+			const covered = coveredBySetting( row, values, mine, cal, contextAt ) ?? coveredByMotion( row, values, mine, tokens );
 			if ( covered ) {
 				return { reason: 'covered', detail: covered };
 			}
@@ -188,7 +218,7 @@ export function makeSettle( st ) {
 			// inherited: no text of its own (its text lives in child nodes), no paint of its own from the block's stylesheet,
 			// and the parent renders the same value.
 			const own = ( w ) => ownPaint( cal, row.slot, w, row.property, parseFloat( snaps[ w ]?.styles?.[ 'font-size' ] ) || undefined );
-			if ( INHERITED.includes( row.property ) && rec.children.length > 0 && widths.every( ( w ) => undefined === own( w ) && same( row.property, values[ w ], parentValue( rec, '' === row.slot ? null : row.slot, row.property, w ) ) ) ) {
+			if ( INHERITED.includes( row.property ) && rec.children.length > 0 && widths.every( ( w ) => undefined === own( w ) && same( row.property, values[ w ], parentValue( rec, '' === row.slot ? null : row.slot, row.property, w ), contextAt( w ) ) ) ) {
 				return { reason: 'inherited', detail: `${ row.property } is inherited and this element holds no text of its own; its parent renders the same value` };
 			}
 			return null;

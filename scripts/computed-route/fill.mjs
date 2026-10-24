@@ -43,6 +43,8 @@ import { addDefectLooks } from './lib/fill-state-defect.mjs';
 import { draftDefectsFile, writeDraftDefects } from './lib/draft-defects-file.mjs';
 import { presetWrites, dropPresetMotion } from './lib/fill-preset.mjs';
 import { formWrites, formSources } from './lib/fill-form.mjs';
+import { loadShopParts, shopPartWrites } from './lib/fill-shop-parts.mjs';
+import { blockSchema } from './lib/resolve.mjs';
 import { motionDb } from './lib/motion-db.mjs';
 import { loadMotionSchema } from './lib/motion-schema.mjs';
 import { sweepSteps } from './lib/fill-values.mjs';
@@ -228,6 +230,11 @@ export async function fillSurface( o ) {
 		result.writes.push( ...forms.writes );
 		result.unmapped.push( ...forms.unmapped );
 		result.notes.push( ...forms.notes );
+		// FR-48-60 to FR-48-62: the draft's own values of the shop parts (build/shop-parts.json) on the blocks that hold them.
+		const shop = shopPartWrites( { record: loadShopParts( buildDir ), nodes, flat, refOf, attrExists: ( b, a ) => Object.hasOwn( blockSchema( b ) || {}, a ), writes: result.writes } );
+		result.writes.push( ...shop.writes );
+		result.unmapped.push( ...shop.unmapped );
+		result.notes.push( ...shop.notes );
 		// FR-48-8: the draft's scrollbar colours, written to the theme's scrollbar tokens (the same snapshot patch).
 		const bars = scrollbarPatch( { nodes, flat, refOf, reads, snapshot, site: rawSnapshot?.settings?.custom?.scrollbar } );
 		states.patch = mergePatch( states.patch, bars.patch );
