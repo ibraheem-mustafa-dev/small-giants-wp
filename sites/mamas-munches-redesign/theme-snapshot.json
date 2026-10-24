@@ -581,12 +581,17 @@
         "ring": "var(--wp--preset--color--text)",
         "near": "var(--wp--preset--color--accent)",
         "far": "var(--wp--preset--color--accent)",
-        "ringOnDark": "#fea620",
+        "ringOnDark": "var(--wp--preset--color--text)",
         "nearOnDark": "var(--wp--preset--color--accent)",
         "farOnDark": "var(--wp--preset--color--accent)",
         "signatureA": "var(--wp--preset--color--primary)",
         "signatureB": "var(--wp--preset--color--accent)",
-        "signatureC": "var(--wp--preset--color--accent-light)"
+        "signatureC": "var(--wp--preset--color--accent-light)",
+        "offset": "3px",
+        "style": "solid",
+        "bloom": "0",
+        "ringOnly": "1",
+        "source": "draft"
       },
       "scrollbar": {
         "thumb": "var(--wp--preset--color--primary)",

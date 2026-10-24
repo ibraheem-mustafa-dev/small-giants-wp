@@ -592,7 +592,12 @@
         "farOnDark": "var(--wp--preset--color--accent)",
         "signatureA": "var(--wp--preset--color--primary)",
         "signatureB": "var(--wp--preset--color--accent)",
-        "signatureC": "var(--wp--preset--color--accent-light)"
+        "signatureC": "var(--wp--preset--color--accent-light)",
+        "offset": "2px",
+        "style": "solid",
+        "bloom": "0",
+        "ringOnly": "1",
+        "source": "draft"
       },
       "scrollbar": {
         "thumb": "var(--wp--preset--color--primary)",
