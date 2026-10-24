@@ -26,6 +26,7 @@ import { poseOf } from './motion-channels.mjs';
 import { props, nameOf, words, blob, triggerOf, MINUS, TIMES, NUMBER, number, round, durationOf, easingOf, compact } from './motion-record-text.mjs';
 import { PINNED, headerScrollOf, dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf } from './motion-behaviour-settings.mjs';
 import { effectElementStyle, colourOf, largerSideFactor } from './motion-effect-element.mjs';
+import { templateKey } from './fact-key.mjs';
 
 // The attribute selector of the template element a record's script finds its target by (`[data-mag]`), or null.
 export const hostOf = ( r ) => /\[data-[a-z0-9-]+\]/i.exec( words( r.element?.selector, r.trigger?.detail ) )?.[ 0 ] ?? null;
@@ -100,24 +101,36 @@ function tiltResetOf( r ) {
 	return { resetDuration: durationOf( r ), resetEasing: easingOf( r ) };
 }
 
-// A stripe slanted by a constant skewX that slides across its host on pointer entry: a sheen. The band's width is the
-// width the script declares on the stripe it creates (lib/motion-effect-element.mjs); a record whose stripe is not
-// found falls back to a width its notes state.
+// The one colour of a band painted `linear-gradient( <direction>, transparent, <colour>, transparent )`, the shape the
+// sheen layer paints (assets/css/fx-sheen.css), as { hex, alpha }; null for any other background.
+function bandColourOf( value ) {
+	const m = /^linear-gradient\((.*)\)$/i.exec( String( value ?? '' ).trim() );
+	const args = m ? m[ 1 ].split( /,(?![^(]*\))/ ).map( ( x ) => x.trim() ) : [];
+	const stops = /^(?:-?\d*\.?\d+(?:deg|turn|rad|grad)|to\s)/i.test( args[ 0 ] ?? '' ) ? args.slice( 1 ) : args;
+	return 3 === stops.length && /^transparent$/i.test( stops[ 0 ] ) && /^transparent$/i.test( stops[ 2 ] ) ? colourOf( stops[ 1 ] ) : null;
+}
+
+// A stripe slanted by a constant skewX that slides across its host on pointer entry: a sheen. Its angle is the skew of
+// its keyframes; its band width, colour and strength are the declarations the script gives the stripe it creates
+// (lib/motion-effect-element.mjs): the width as a share of the host, and a band painted transparent, one colour,
+// transparent, whose colour is the band's colour and whose alpha is its opacity. A value the stripe's declarations do
+// not state is not written (the sheen's own default stands).
 function sheenOf( r, ctx ) {
 	const p = props( r ).find( ( q ) => 'transform' === nameOf( q ) && /skewX/i.test( words( q.from, q.to ) ) );
 	if ( 'waapi' !== r.mechanism || 'pointer-move' !== triggerOf( r ) || ! p ) {
 		return null;
 	}
 	const skew = number( new RegExp( `skewX\\(\\s*(${ MINUS }?\\d*\\.?\\d+)deg`, 'i' ).exec( words( p.from ) )?.[ 1 ].replace( '−', '-' ) );
-	const declared = /^(\d*\.?\d+)%$/.exec( effectElementStyle( r, ctx.records )?.width?.value ?? '' )?.[ 1 ];
-	const bandWidth = number( declared ?? new RegExp( `width\\s+${ NUMBER }%`, 'i' ).exec( words( r.notes ) )?.[ 1 ] );
-	return { effect: 'sheen', panel: 'hover', trigger: 'hover', values: compact( { angle: skew, bandWidth, duration: durationOf( r ), easing: easingOf( r ) } ) };
+	const style = effectElementStyle( r, ctx.records ) || {};
+	const bandWidth = number( /^(\d*\.?\d+)%$/.exec( style.width?.value ?? '' )?.[ 1 ] );
+	const band = bandColourOf( style[ 'background-image' ]?.value ?? style.background?.value );
+	return { effect: 'sheen', panel: 'hover', trigger: 'hover', values: compact( { angle: skew, bandWidth, colour: band?.hex ?? null, opacity: band ? round( band.alpha ) : null, duration: durationOf( r ), easing: easingOf( r ) } ) };
 }
 
 // A circle that grows from the pointer's press and fades: a ripple. Its diameter as a multiple of the host's larger side
-// is the scale it grows to times the multiple the script sizes the circle by (lib/motion-effect-element.mjs::
+// is the scale its keyframes grow it to times the multiple the script sizes the circle by (lib/motion-effect-element.mjs::
 // largerSideFactor); its peak opacity is its first keyframe's opacity times its declared background colour's alpha, and
-// its colour that background's. What the circle's declarations do not state falls back to the record's notes.
+// its colour that background's. A value the circle's keyframes and declarations do not state is not written.
 function rippleOf( r, ctx ) {
 	const list = props( r );
 	const grow = list.find( ( q ) => 'transform' === nameOf( q ) && /scale\(\s*0\s*\)/i.test( words( q.from ) ) );
@@ -129,14 +142,12 @@ function rippleOf( r, ctx ) {
 	const scaleEnd = number( new RegExp( `^scale\\(\\s*${ NUMBER }\\s*\\)$`, 'i' ).exec( words( grow.to ).trim() )?.[ 1 ] );
 	const side = largerSideFactor( style.width );
 	const paint = colourOf( style[ 'background-color' ]?.value ?? style.background?.value );
-	const noted = number( new RegExp( `rgba\\(\\s*255\\s*,\\s*255\\s*,\\s*255\\s*,\\s*${ NUMBER }`, 'i' ).exec( words( r.notes ) )?.[ 1 ] );
-	const alpha = paint ? paint.alpha : noted;
 	const first = Number.isFinite( Number( fade.from ) ) && null !== fade.from && '' !== fade.from ? Number( fade.from ) : 1;
 	return { effect: 'ripple', panel: 'effects', trigger: 'pointerdown', values: compact( {
 		duration: durationOf( r ), easing: easingOf( r ),
-		sizeFactor: null !== side && null !== scaleEnd ? round( side * scaleEnd ) : number( new RegExp( `${ NUMBER }\\s*${ TIMES }\\s*max`, 'i' ).exec( words( r.notes ) )?.[ 1 ] ),
-		peakOpacity: null == alpha ? null : round( alpha * first ),
-		colour: paint ? paint.hex : null === noted ? null : '#ffffff',
+		sizeFactor: null !== side && null !== scaleEnd ? round( side * scaleEnd ) : null,
+		peakOpacity: paint ? round( paint.alpha * first ) : null,
+		colour: paint ? paint.hex : null,
 	} ) };
 }
 
@@ -221,10 +232,24 @@ function controlOf( r ) {
 	return 'waapi-control' === r.mechanism && p && of && Number.isFinite( Number( p.to ) ) && Number( p.to ) >= 0 && Number( p.to ) <= 1 ? { of, rate: Number( p.to ) } : null;
 }
 
+// Whether the element a record animates is the page: the template element it names is the document's `<main>` or
+// `<body>`, or the root element of its component (no parent, outside the helmet), whatever the ref or selector that
+// reaches it is called. A record that names no element of the given template is read by its selector alone: the
+// element it selects is `main` or `body`.
+function isPageElement( r, ctx ) {
+	const tpls = [ r.element?.template_tpl_id ].flat().filter( ( v ) => null !== v && undefined !== v );
+	const elements = ctx.template?.elements;
+	const named = elements && r.element?.dc ? tpls.map( ( tpl ) => elements[ templateKey( { dc: r.element.dc, tpl } ) ] ).filter( Boolean ) : [];
+	if ( named.length ) {
+		return named.every( ( e ) => /^(?:main|body)$/i.test( String( e.realTag ?? e.tag ?? '' ) ) || ( ! e.parent && ! e.inHelmet ) );
+	}
+	return /(?:^|[^\w-])(?:main|body)(?![\w-])/i.test( String( r.element?.selector ?? '' ) );
+}
+
 // The page fades in on a route change: the site's page transition (a site option, not a block layer).
-function routeFadeOf( r ) {
+function routeFadeOf( r, ctx ) {
 	const list = props( r );
-	if ( 'route' !== triggerOf( r ) || ! /^(?:waapi|css-animation)$/.test( r.mechanism ) || list.length !== 1 || 'opacity' !== nameOf( list[ 0 ] ) || ! ( Number( list[ 0 ].from ) < Number( list[ 0 ].to ) ) || ! /\bmain\b|\bbody\b|page/i.test( words( r.element?.selector, r.element?.description ) ) ) {
+	if ( 'route' !== triggerOf( r ) || ! /^(?:waapi|css-animation)$/.test( r.mechanism ) || list.length !== 1 || 'opacity' !== nameOf( list[ 0 ] ) || ! ( Number( list[ 0 ].from ) < Number( list[ 0 ].to ) ) || ! isPageElement( r, ctx ) ) {
 		return null;
 	}
 	return { style: 'fade', durationMs: durationOf( r ), easing: easingOf( r ) };
@@ -288,7 +313,7 @@ export function recogniseBehaviour( record, ctx = {} ) {
 	if ( scrollResetOf( r ) ) {
 		return done( r, { kind: 'native', reason: 'the draft scrolls to the top when its route changes; each SGS page is its own page load, which starts at the top' } );
 	}
-	const fade = routeFadeOf( r );
+	const fade = routeFadeOf( r, ctx );
 	if ( fade ) {
 		return done( r, { kind: 'site', option: 'page-transition', value: { ...fade, settings: compact( { page_transitions: true, page_transition_style: fade.style, page_transition_duration: fade.durationMs, page_transition_easing: fade.easing } ) }, notes: [ `the page fades in on a route change: the site's page transition (${ fade.style }, ${ fade.durationMs }ms ${ fade.easing }) with the custom duration and easing, which win over the style's own`, 'the draft fades only the page body; SGS fades the page (an accepted difference, Ruling 5)' ] } );
 	}

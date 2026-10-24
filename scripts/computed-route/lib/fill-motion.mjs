@@ -18,6 +18,7 @@ import { setRecord } from './motion-set.mjs';
 import { stateRows } from './state-vocab.mjs';
 import { setAttr } from './tree.mjs';
 import { templateKey, templateKeyOf } from './fact-key.mjs';
+import { staggerPlans, applyStagger } from './fill-motion-stagger.mjs';
 import { positionsByTemplate } from './motion-behaviour-settings.mjs';
 
 export { elementMotion, elementEffects, renderRefutes } from './fill-motion-element.mjs';
@@ -223,6 +224,11 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 	const idx = behaviourIndex( { records, template, css: draftCss, positions: reads ? positionsByTemplate( { reads, nodes, rootComponent } ) : undefined } );
 	const targetKeys = new Set( nodes.flatMap( ( n ) => n.targets.map( ( t ) => elementKey( t.finder, rootComponent ) ) ).filter( Boolean ) );
 	adoptDrawnBehaviours( byElement, { targetKeys, template, isBehaviour: ( r ) => idx.found.some( ( x ) => x.r === r ) } );
+	// A list entrance with a per-item delay is the stagger of the block holding the items, so the items do not also take it.
+	const staggers = staggerPlans( { records, template, nodes, keyOf: ( finder ) => elementKey( finder, rootComponent ) } );
+	for ( const p of staggers.filter( ( x ) => x.stagger ) ) {
+		p.items.forEach( ( k ) => byElement.has( k ) && byElement.set( k, byElement.get( k ).filter( ( r ) => r !== p.r ) ) );
+	}
 	const blockDone = new Set();
 	const written = new Map();
 	const controls = [ ...idx.controls ];
@@ -269,7 +275,9 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			if ( reads && targetName( n, t, targets ) && ! own.some( ( r ) => 'hover' === r.trigger?.type && ( r.properties || [] ).some( ( p ) => MOTION_STATE_PROPS.includes( p.property ) ) ) ) {
 				own = [ ...own, ...stateMotionRecords( reads, t ) ];
 			}
-			if ( ! own.length && ! sampled[ t.id ]?.[ 1440 ] && ! loops[ t.id ] ) {
+			const lists = staggers.filter( ( p ) => p.at?.t === t && ! p.refused );
+			out.unmapped.push( ...staggers.filter( ( p ) => p.at?.t === t && p.refused ).map( ( p ) => ( { ...where, property: 'motion', value: p.r.id, reason: p.refused } ) ) );
+			if ( ! own.length && ! sampled[ t.id ]?.[ 1440 ] && ! loops[ t.id ] && ! lists.length ) {
 				continue;
 			}
 			const target = targetName( n, t, targets );
@@ -291,6 +299,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 				doc.elements[ target ] = { ...( doc.elements[ target ] || {} ), ...m.element };
 				pending.push( target );
 			}
+			used.push( ...applyStagger( { plans: lists, doc, own: m.element, where, out, pending, emArgs: { mdb, ctx, offers: stateOffers } } ) );
 			const fx = elementEffects( own, { mdb, loops: loops[ t.id ] || null, runtimeLoops, cls } );
 			used.push( ...fx.css.map( ( c ) => c.record.id ) );
 			out.notes.push( ...fx.notes.map( ( text ) => ( { ...where, text } ) ) );
@@ -328,6 +337,12 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 	}
 	applyControls( { controls, written, out, schema } );
 	applyGlobals( { found: idx.found, out } );
+	// A site option set from an element of the template (the route fade on the page's `<main>`) is the whole site's, so every
+	// surface's run writes it, whether or not that element is one of its targets.
+	for ( const { r, b } of idx.found.filter( ( x ) => 'site' === x.b.kind && ! out.site.some( ( s ) => s.record === x.r.id ) ) ) {
+		out.site.push( { record: r.id, option: b.option, ...b.value } );
+		b.notes.forEach( ( text ) => out.notes.push( { node: 'site', block: '', slot: '', text: `${ r.id }: ${ text }` } ) );
+	}
 	// A record on this surface that nothing above wrote, reported or noted is named, never left silent.
 	const homeOf = makeHomeOf( { records, nodes, keyOf: ( finder ) => elementKey( finder, rootComponent ), idx } );
 	out.unmapped.push( ...silentRows( { records, accounted: accountedIds( { used, written, out } ), refOf: ( n ) => refOf( flat[ n.index ] ), homeOf } ) );

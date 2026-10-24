@@ -1,0 +1,22 @@
+[
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "return c && f ? { ...f, cap: null === f.cap ? c.offset : Math.min( f.cap, c.offset ) } : null;", "replace": "return c && f ? { ...f, cap: null } : null;", "why": "a Math.min maximum would be dropped" },
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "const cap = null !== a.cap ? a.cap + b.offset : null !== b.cap ? b.cap + a.offset : null;", "replace": "const cap = null !== a.cap ? a.cap : null !== b.cap ? b.cap : null;", "why": "the maximum would no longer include the start offset" },
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "return { offset: a.offset + b.offset, step: a.step + b.step, cap, index, bare: a.bare || b.bare };", "replace": "return { offset: a.offset, step: a.step + b.step, cap, index, bare: a.bare || b.bare };", "why": "the start offset would be lost" },
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "return c.offset >= 0 ? { offset: f.offset * c.offset, step: f.step * c.offset,", "replace": "return c.offset >= 0 ? { offset: f.offset * c.offset, step: f.step,", "why": "the step would not be the index's multiplier" },
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "if ( 'LogicalExpression' === n.type", "replace": "if ( false && 'LogicalExpression' === n.type", "why": "an index read with a fallback would be refused" },
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "if ( ! a || ! b || ( a.index && b.index && a.index !== b.index ) ) {", "replace": "if ( ! a || ! b ) {", "why": "a formula over two names would pass as one index" },
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "if ( ! f || f.bare ) {", "replace": "if ( ! f ) {", "why": "a bare name would pass as an index with a 1ms step" },
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "if ( f && ! f.index ) {\n\t\treturn null;", "replace": "if ( false ) {\n\t\treturn null;", "why": "a constant formula would be refused instead of left alone" },
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "&& step <= LIMITS.step", "replace": "", "why": "a step the schema refuses would be written" },
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "return checked( { offset: s.base_ms ?? 0, step: s.ms, cap: s.cap_ms ?? null }", "replace": "return checked( { offset: 0, step: s.ms, cap: s.cap_ms ?? null }", "why": "the stagger field's start offset would be lost" },
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "return chains[ 0 ].find( ( k ) => ! items.includes( k ) && chains.every( ( c ) => c.includes( k ) ) ) ?? null;", "replace": "return chains[ 0 ][ 0 ] ?? null;", "why": "the holder would be the first item's parent, not the element holding every item" },
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "} else if ( ! root && hit.length ) {", "replace": "} else if ( false ) {", "why": "a list held by a part would be silently dropped" },
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "if ( doc.stagger ) {", "replace": "if ( false ) {", "why": "a second list would overwrite the first stagger" },
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "if ( ownEntrance ) {", "replace": "if ( false ) {", "why": "the items' entrance would replace the block's own" },
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "doc.stagger = { apply: true, ...p.stagger };", "replace": "doc.stagger = { ...p.stagger };", "why": "the items would not take the block's entrance" },
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "[ { ...p.r, delay_ms: 0, stagger: null } ]", "replace": "[ { ...p.r, delay_ms: 140, stagger: null } ]", "why": "the entrance would carry a delay the stagger already holds" },
+	{ "file": "lib/fill-motion.mjs", "find": "p.items.forEach( ( k ) => byElement.has( k ) && byElement.set( k, byElement.get( k ).filter( ( r ) => r !== p.r ) ) );", "replace": "", "why": "each item would also take the entrance itself" },
+	{ "file": "lib/fill-motion.mjs", "find": "out.unmapped.push( ...staggers.filter( ( p ) => p.at?.t === t && p.refused )", "replace": "[].push( ...staggers.filter( ( p ) => p.at?.t === t && p.refused )", "why": "a refused formula would be silent" },
+	{ "file": "lib/fill-motion.mjs", "find": "&& ! loops[ t.id ] && ! lists.length ) {", "replace": "&& ! loops[ t.id ] ) {", "why": "a holder with no records of its own would be skipped" },
+	{ "file": "lib/fill-motion-stagger.mjs", "find": "const stop = chain.find( ( k ) => targets.has( k ) || template.elements[ k ]?.attrs?.ref );", "replace": "const stop = chain.find( ( k ) => targets.has( k ) );", "why": "a list whose own scope is no target would be written on a block further up" }
+]

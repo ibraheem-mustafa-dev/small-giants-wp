@@ -41,7 +41,7 @@ const effect = ( r, records ) => recogniseBehaviour( r, { records } ).effects[ 0
 test( 'MUST FAIL: the sheen band\'s width is the width the script declares on the band it creates', () => {
 	const e = effect( SHEEN, [ RIPPLE, SHEEN, SHEEN_STYLE ] );
 	assert.equal( e.effect, 'sheen' );
-	assert.deepEqual( e.values, { angle: -18, bandWidth: 60, duration: 750, easing: EASE } );
+	assert.deepEqual( e.values, { angle: -18, bandWidth: 60, colour: '#ffffff', opacity: 0.45, duration: 750, easing: EASE } );
 	// A band declared in pixels is not a share of its host: no width is written.
 	assert.equal( effect( SHEEN, [ SHEEN, style( 'J-58', 'shine', 94, 'pointer-move', [ { property: 'width', from: null, to: '40px' } ] ) ] ).values.bandWidth, undefined );
 } );
@@ -87,14 +87,14 @@ test( 'MUST FAIL: the circle is the style record of the call path\'s innermost f
 	assert.equal( effectElementStyle( { ...SHEEN, element: { dc: 'Site', template_tpl_id: '12', selector: 'ref x' } }, [ SHEEN_STYLE ] ), null );
 } );
 
-test( 'the notes stay the fallback only where the keyframes and declarations do not state a value', () => {
+test( 'MUST FAIL: the notes are never read for a value: what the keyframes and declarations do not state is not written', () => {
 	const noted = { ...SHEEN, notes: 'Span: absolute, width 45%' };
-	assert.equal( effect( noted, [ noted ] ).values.bandWidth, 45 );
-	assert.equal( effect( { ...noted, notes: `${ SHEEN.notes }; width 45%` }, [ noted, SHEEN_STYLE ] ).values.bandWidth, 60, 'a declared width beats the notes' );
+	assert.equal( effect( noted, [ noted ] ).values.bandWidth, undefined );
+	assert.equal( effect( { ...noted, notes: `${ SHEEN.notes }; width 45%` }, [ noted, SHEEN_STYLE ] ).values.bandWidth, 60, 'the declared width, whatever the notes say' );
 	const rippleNoted = { ...RIPPLE, notes: 'Span diameter = 1.8 × max(width, height), background rgba(255,255,255,.5)' };
-	assert.deepEqual( effect( rippleNoted, [ rippleNoted ] ).values, { duration: 650, easing: EASE, sizeFactor: 1.8, peakOpacity: 0.5, colour: '#ffffff' } );
+	assert.deepEqual( effect( rippleNoted, [ rippleNoted ] ).values, { duration: 650, easing: EASE } );
 	const both = { ...RIPPLE, notes: `${ RIPPLE.notes }; ${ rippleNoted.notes }` };
-	assert.deepEqual( effect( both, [ both, RIPPLE_STYLE( `(${ MAX })` ) ] ).values, { duration: 650, easing: EASE, sizeFactor: 2.2, peakOpacity: 0.35, colour: '#ffffff' }, 'the declarations beat the notes' );
+	assert.deepEqual( effect( both, [ both, RIPPLE_STYLE( `(${ MAX })` ) ] ).values, { duration: 650, easing: EASE, sizeFactor: 2.2, peakOpacity: 0.35, colour: '#ffffff' }, 'the declarations, whatever the notes say' );
 } );
 
 test( 'the declaration readers', () => {
