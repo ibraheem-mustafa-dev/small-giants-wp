@@ -4,11 +4,13 @@
 // token snapping every layer of the writer goes through.
 import { hoverDevices } from './fill-state-motion.mjs';
 import { classify, entranceLayer, stateTransitionLayer, hoverLayer, matchByPose } from './motion-layers.mjs';
-import { snapToken, presetFor, intensityPresetFor, tokenises } from './motion-tokens.mjs';
+import { snapToken, presetFor, intensityPresetFor, tokenises, easingOf } from './motion-tokens.mjs';
 import { loopEffect, loopCheck, chooseEffect, runtimeLoopsFor, smilLoop, marqueeTag, measuredLoopOf } from './motion-loops.mjs';
 import { loopKeyframesCss, loopName, isLoopRecord } from './motion-loop-css.mjs';
 import { entranceCheck } from './motion-check.mjs';
 import { stateTrigger } from './motion-states.mjs';
+import { oneTiming, sameTiming } from './fill-timing.mjs';
+import { timeToMs } from './resolve.mjs';
 
 // Every duration, easing and distance of a layer's values (and its device overrides) to a token reference where one
 // equals it. `fieldOf(path)` gives the DB field for a values path.
@@ -68,14 +70,62 @@ function finishedEntrance( record, { mdb, ctx, sampled, named = null } ) {
 	return { layer: e.layer, notes: [ ...e.notes, ...check.differences.map( ( d ) => `render check ${ d }` ) ] };
 }
 
-// One hover layer from an element's hover records, token-snapped and preset-named: { layer, notes, unmapped }.
-function finishedHover( records, { mdb, ctx } ) {
-	const h = hoverLayer( records, mdb );
+// A hover the draft drives from an ancestor's :hover through a custom property (lib/intake-inventory-tpl.mjs).
+const ANCESTOR_HOVER = /^the parent's style-hover\b/;
+// A px length, or a `var(--x, <px>)` whose fallback is one (the custom property is unset at rest), else null.
+const pxLength = ( v ) => {
+	const s = String( v ?? '' ).trim();
+	const m = /^var\(\s*--[\w-]+\s*,\s*([^()]+)\)$/.exec( s );
+	const x = ( m ? m[ 1 ] : s ).trim();
+	return /^-?(?:\d+(?:\.\d+)?|\.\d+)px$/.test( x ) ? x : null;
+};
+
+// The width a hover grows or shrinks an element to, a real width change the hover layer holds as `width` with the
+// resting `restWidth` (motion.schema.json HoverStateValues): { values, taken (the records it read), unmapped } or null
+// when no record changes the width or the layer has no width fields. Its timing is the record's own.
+function widthHover( records, mdb ) {
+	const taken = records.filter( ( r ) => ( r.properties || [] ).some( ( p ) => 'width' === p.property ) );
+	if ( ! taken.length || ! mdb.field( 'hover.state', 'values.width' ) || ! mdb.field( 'hover.state', 'values.restWidth' ) ) {
+		return null;
+	}
+	const r = taken[ 0 ];
+	const p = r.properties.find( ( x ) => 'width' === x.property );
+	const [ rest, to ] = [ pxLength( p.from ), pxLength( p.to ) ];
+	if ( ! rest || ! to ) {
+		return { values: null, taken, unmapped: [ `width hover from ${ p.from } to ${ p.to }: the hover layer's width and restWidth take px lengths, and ${ rest ? p.to : p.from } is not one` ] };
+	}
+	const at = ( k ) => p[ k ] ?? r[ k ];
+	const values = { restWidth: rest, width: to, duration: 'number' === typeof at( 'duration_ms' ) ? at( 'duration_ms' ) : 0 };
+	'number' === typeof at( 'delay_ms' ) && at( 'delay_ms' ) > 0 && ( values.delay = at( 'delay_ms' ) );
+	/^(?:linear|ease|ease-in|ease-out|ease-in-out)$|^(?:cubic-bezier|linear)\(/.test( String( at( 'easing' ) ?? '' ).trim() ) && ( values.easing = String( at( 'easing' ) ).trim() );
+	return { values, taken, unmapped: taken.slice( 1 ).map( ( x ) => `${ x.id }: a second width hover on the same element: the hover layer holds one width` ) };
+}
+
+// One hover layer from an element's hover records, token-snapped and preset-named: { layer, notes, unmapped }. A width
+// hover (widthHover) joins the layer; a hover the draft drives from an ancestor's :hover takes the block's item host as
+// its source (`item`: supports.sgs.animationItems), which `itemHost` says the block declares.
+function finishedHover( records, { mdb, ctx, itemHost = false } ) {
+	const w = widthHover( records, mdb );
+	const others = w ? records.map( ( r ) => ( w.taken.includes( r ) ? { ...r, properties: r.properties.filter( ( p ) => 'width' !== p.property ) } : r ) ) : records;
+	const h = hoverLayer( others, mdb );
+	if ( w ) {
+		h.unmapped.push( ...w.unmapped );
+		if ( w.values && ! h.layer ) {
+			h.layer = { values: w.values };
+		} else if ( w.values ) {
+			const timed = [ 'duration', 'delay', 'easing' ].filter( ( k ) => undefined !== w.values[ k ] && undefined !== h.layer.values[ k ] && w.values[ k ] !== h.layer.values[ k ] );
+			timed.length && h.unmapped.push( `the width hover's ${ timed.join( ', ' ) } (${ timed.map( ( k ) => w.values[ k ] ).join( ', ' ) }) differs from the element's other hover (${ timed.map( ( k ) => h.layer.values[ k ] ).join( ', ' ) }), and the layer holds one timing` );
+			Object.assign( h.layer.values, { restWidth: w.values.restWidth, width: w.values.width } );
+		}
+	}
 	const tiered = records.find( ( r ) => Object.keys( r.tiers || {} ).length );
 	if ( h.layer && tiered ) {
 		const d = hoverDevices( tiered, h.layer, ( rec ) => hoverLayer( [ rec ], mdb ).layer, ( k ) => Boolean( mdb.field( 'hover.state', `values.${ k }` )?.perDevice ) );
 		Object.keys( d.devices ).length && ( h.layer.devices = d.devices );
 		h.unmapped.push( ...d.unmapped );
+	}
+	if ( h.layer && records.some( ( r ) => ANCESTOR_HOVER.test( String( r.trigger?.detail ?? '' ) ) ) ) {
+		itemHost ? ( h.layer.source = 'item' ) : h.unmapped.push( `the draft drives this hover from an ancestor's hover, and the block declares no item host (supports.sgs.animationItems) for the hover layer's Card hovered source, so it is written to play on the element's own hover` );
 	}
 	if ( h.layer ) {
 		snapLayer( h.layer, ( p ) => mdb.field( 'hover.state', p ), ctx, [ 'duration', 'easing', 'distance' ] );
@@ -120,7 +170,7 @@ function pickEntrance( own, measured, runtime, others = [] ) {
 // lib/motion-states.mjs::stateTrigger) lets a one-shot animation the draft starts on a state change become a state or
 // open entrance on a block that publishes that state (an animation on either, a transition only on a named state);
 // `target` is the part the element is.
-export function elementMotion( records, { mdb, ctx, sampled, runtime = [], offers = null, target = 'root' } ) {
+export function elementMotion( records, { mdb, ctx, sampled, runtime = [], offers = null, target = 'root', itemHost = false } ) {
 	const element = {};
 	const named = new Map();
 	const kinds = records.map( ( r ) => {
@@ -148,7 +198,7 @@ export function elementMotion( records, { mdb, ctx, sampled, runtime = [], offer
 	}
 	const hovers = kinds.filter( ( x ) => 'hover' === x.c.kind ).map( ( x ) => x.r );
 	if ( hovers.length ) {
-		const h = finishedHover( hovers, { mdb, ctx } );
+		const h = finishedHover( hovers, { mdb, ctx, itemHost } );
 		unmapped.push( ...h.unmapped.map( ( reason ) => ( { record: hovers.map( ( x ) => x.id ).join( ',' ), reason } ) ) );
 		notes.push( ...h.notes );
 		if ( h.layer ) {
@@ -204,4 +254,55 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [],
 		out.notes.push( `the render shows an endless animation on this element that no code record explains, so nothing is written (R-47-4)` );
 	}
 	return out;
+}
+
+const TIER = { 1440: 'desktop', 768: 'tablet', 375: 'mobile' };
+
+// The motion hover layer's paint timing from lib/fill-timing.mjs::paintTimings' result: { values: { paintDuration, paintEasing }, devices:
+// { tablet|mobile: { paintDuration } }, notes, unmapped } (values null when nothing is written). Unset, the layer's paint
+// runs on the client's transition.fast (its duration and easing; the framework's duration.fast and ease without it), so
+// a draft paint timing equal to it at every width is not written. Otherwise both fields are written from the widest
+// width (set alone, either field's other half falls back to duration.fast or easing.default, not to transition.fast),
+// a narrower width's duration where it differs from the wider tier's, and an easing that differs between widths, which
+// the layer holds for all devices at once, is a row. ctx: { types, tokens } (lib/motion-tokens.mjs).
+export function paintLayer( paint, ctx ) {
+	const out = { values: null, devices: {}, notes: [], unmapped: [] };
+	const widths = Object.keys( paint ).map( Number ).sort( ( a, b ) => b - a );
+	if ( ! widths.length ) {
+		return out;
+	}
+	const fast = splitTiming( ctx.tokens?.[ 'transition.fast' ] ) ?? { duration: String( ctx.tokens?.[ 'duration.fast' ] ?? '200ms' ), easing: 'ease' };
+	const dur = ( w ) => paint[ w ][ 'transition-duration' ].value;
+	const ease = ( w ) => paint[ w ][ 'transition-timing-function' ].value;
+	const sameEase = ( a, b ) => null !== curve( a ) && curve( a ) === curve( b );
+	const asFast = widths.every( ( w ) => sameTiming( 'transition-duration', dur( w ), fast.duration ) && sameEase( ease( w ), fast.easing ) );
+	if ( asFast ) {
+		out.notes.push( `the draft times colour, background, border colour and shadow at ${ dur( widths[ 0 ] ) } ${ ease( widths[ 0 ] ) }, the client's transition.fast, which the hover layer's paint runs on unset; nothing is written` );
+		return out;
+	}
+	const snap = ( v, type ) => snapToken( v, type, { ...ctx, prefer: [ type ] } );
+	const ms = ( w ) => timeToMs( oneTiming( dur( w ) ) );
+	out.values = { paintDuration: snap( ms( widths[ 0 ] ), 'duration' ), paintEasing: snap( oneTiming( ease( widths[ 0 ] ) ) ?? ease( widths[ 0 ] ), 'easing' ) };
+	let wider = widths[ 0 ];
+	for ( const w of widths.slice( 1 ) ) {
+		if ( ! sameTiming( 'transition-duration', dur( w ), dur( wider ) ) && TIER[ w ] ) {
+			out.devices[ TIER[ w ] ] = { paintDuration: snap( ms( w ), 'duration' ) };
+		}
+		if ( ! sameEase( ease( w ), ease( widths[ 0 ] ) ) ) {
+			out.unmapped.push( `the draft eases colour, background, border colour and shadow with ${ ease( w ) } at ${ w }px and ${ ease( widths[ 0 ] ) } at ${ widths[ 0 ] }px, and the hover layer holds paintEasing for all devices at once` );
+		}
+		wider = w;
+	}
+	return out;
+}
+
+// An easing as one canonical curve: a keyword is its cubic-bezier (CSS Easing 1 §2.2), so `ease` is the
+// cubic-bezier(0.25, 0.1, 0.25, 1) a token may spell out. null when it cannot be read.
+const KEYWORD = { ease: 'cubic-bezier(.25,.1,.25,1)', 'ease-in': 'cubic-bezier(.42,0,1,1)', 'ease-out': 'cubic-bezier(0,0,.58,1)', 'ease-in-out': 'cubic-bezier(.42,0,.58,1)' };
+const curve = ( v ) => easingOf( KEYWORD[ String( oneTiming( v ) ?? v ).trim().toLowerCase() ] ?? oneTiming( v ) ?? v );
+
+// A `<duration> <easing>` pair (a transition token's value) as { duration, easing }, or null.
+function splitTiming( text ) {
+	const m = /^\s*(-?[\d.]+m?s)\s+(.+?)\s*$/.exec( String( text ?? '' ) );
+	return m ? { duration: m[ 1 ], easing: m[ 2 ] } : null;
 }

@@ -12,7 +12,8 @@ import { effectPresetFor, tokenTypes, clientTokens, clientPalette } from './moti
 import { writeEffect, loadEffectOffers, PANEL_LISTS } from './motion-effects.mjs';
 import { applyBehaviours, applyControls, applyGlobals, applySettings, applyStrip, behaviourIndex, hasAttrOf } from './fill-behaviour.mjs';
 import { accountedIds, silentRows, makeHomeOf, readingProgressHandover } from './fill-motion-account.mjs';
-import { elementMotion, elementEffects, snapLayer } from './fill-motion-element.mjs';
+import { elementMotion, elementEffects, snapLayer, paintLayer } from './fill-motion-element.mjs';
+import { paintTimings } from './fill-timing.mjs';
 import { openWords } from './motion-states.mjs';
 import { setRecord } from './motion-set.mjs';
 import { stateRows } from './state-vocab.mjs';
@@ -147,6 +148,28 @@ function finishedEffect( e, { block, target, mdb, schema, offers, ctx, id } ) {
 // The motion target a skeleton target is: the block's root for the node's own element, the declared part a slot names.
 export function targetName( n, t, targets ) {
 	return t.slot ? partForSlot( n.name, t.slot, targets ) : targets.find( ( x ) => 'root' === x.target )?.target || null;
+}
+
+// Whether a block declares an item host for the hover layer's Card hovered source (supports.sgs.animationItems, read
+// from the framework DB's block_supports row): false without a DB handle.
+const hostsByDb = new WeakMap();
+function itemHost( db, block ) {
+	if ( ! db ) {
+		return false;
+	}
+	const hosts = hostsByDb.get( db ) ?? new Map();
+	hostsByDb.set( db, hosts );
+	if ( ! hosts.has( block ) ) {
+		const row = db.prepare( "SELECT support_value FROM block_supports WHERE block_slug = ? AND support_name = 'sgs'" ).get( block );
+		let items = '';
+		try {
+			items = String( JSON.parse( row?.support_value ?? '{}' )?.animationItems ?? '' );
+		} catch {
+			items = '';
+		}
+		hosts.set( block, '' !== items.trim() );
+	}
+	return hosts.get( block );
 }
 
 // Validates one node's document and writes it, or reports it refused.
@@ -290,11 +313,20 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 				}
 				continue;
 			}
-			const m = elementMotion( own, { mdb, ctx, sampled: sampled[ t.id ], runtime, offers: stateOffers, target } );
+			const m = elementMotion( own, { mdb, ctx, sampled: sampled[ t.id ], runtime, offers: stateOffers, target, itemHost: itemHost( db, n.name ) } );
 			m.unmapped.push( ...sets.filter( ( s ) => s.reason ).map( ( s ) => ( { record: '<set>', reason: s.reason } ) ) );
 			used.push( ...m.used );
 			out.notes.push( ...m.notes.map( ( text ) => ( { ...where, text } ) ) );
 			out.unmapped.push( ...m.unmapped.map( ( u ) => ( { ...where, property: 'motion', value: u.record, reason: u.reason } ) ) );
+			// The hover layer times colour, background, border colour and shadow apart from the movement (paintDuration, paintEasing).
+			const hover = m.element.hover?.state;
+			if ( hover && reads ) {
+				const paint = paintLayer( paintTimings( reads, t.id ), ctx );
+				paint.values && Object.assign( hover.values, paint.values );
+				Object.entries( paint.devices ).forEach( ( [ tier, v ] ) => ( ( hover.devices ??= {} )[ tier ] = { ...( hover.devices[ tier ] || {} ), ...v } ) );
+				out.notes.push( ...paint.notes.map( ( text ) => ( { ...where, text } ) ) );
+				out.unmapped.push( ...paint.unmapped.map( ( reason ) => ( { ...where, property: 'transition-timing-function', value: 'paintEasing', reason: `timing-conflict: ${ reason }` } ) ) );
+			}
 			if ( Object.keys( m.element ).length ) {
 				doc.elements[ target ] = { ...( doc.elements[ target ] || {} ), ...m.element };
 				pending.push( target );

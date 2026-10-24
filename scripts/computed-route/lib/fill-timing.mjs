@@ -96,6 +96,50 @@ export function propertyTimings( decl, prop ) {
 	return { value: most.value, groups };
 }
 
+// The colour-and-shadow properties the motion hover layer times on their own (sgsMotion hover.state.values.paintDuration
+// and paintEasing; includes/motion/class-sgs-motion-emitter.php::HOVER_PAINT); a draft's `background` and per-side border
+// colours are the same paint.
+const PAINT = /^(?:color|background(?:-color)?|border(?:-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?)?-color|box-shadow)$/;
+export const isPaint = ( property ) => PAINT.test( property );
+
+// The paint timing one target's resting rule gives at each width, per longhand: { [width]: { [longhand]: { value, groups } } }
+// over the paint properties the transition list names (a property `all` covers stands for the paint properties the
+// element's hover look declares there), value being the timing most of them share (a tie keeps the draft's order).
+// A width with no paint property timed is left out.
+export function paintTimings( reads, id ) {
+	const out = {};
+	for ( const w of READ_WIDTHS ) {
+		const decl = restDeclOf( reads, id, w );
+		if ( true === reads.widths?.[ w ]?.[ id ]?.missing || undefined === decl[ 'transition-duration' ] ) {
+			continue;
+		}
+		const entries = transitionEntries( decl );
+		const all = entries.find( ( e ) => 'all' === e.property );
+		const hovered = ( reads.states?.[ w ]?.looks?.[ id ] || [] ).filter( ( l ) => 'hover' === [ ...l.states ].sort().join( '+' ) && ! l.pseudo ).flatMap( ( l ) => Object.keys( l.declared || {} ) );
+		const paint = [ ...entries.filter( ( e ) => isPaint( e.property ) ), ...( all ? [ ...new Set( hovered ) ].filter( ( p ) => isPaint( p ) && ! entries.some( ( e ) => e.property === p ) ).map( ( p ) => ( { ...all, property: p } ) ) : [] ) ];
+		if ( ! paint.length ) {
+			continue;
+		}
+		out[ w ] = Object.fromEntries( LIST_PROPS.map( ( prop ) => {
+			const groups = [];
+			for ( const e of paint ) {
+				const g = groups.find( ( x ) => sameTiming( prop, x.value, e[ prop ] ) ?? x.value === e[ prop ] );
+				g ? g.properties.push( e.property ) : groups.push( { value: String( e[ prop ] ).toLowerCase(), properties: [ e.property ] } );
+			}
+			return [ prop, { value: groups.reduce( ( a, b ) => ( b.properties.length > a.properties.length ? b : a ) ).value, groups } ];
+		} ) );
+	}
+	return out;
+}
+
+// The resting rule's transition longhands at a width: the cascade winner of the resting read, its property list the
+// rendered one where the code states none.
+function restDeclOf( reads, id, w ) {
+	const declared = reads.declared?.[ w ]?.[ id ] || {};
+	const rendered = reads.widths?.[ w ]?.[ id ]?.styles || {};
+	return { 'transition-property': declared[ 'transition-property' ] ?? rendered[ 'transition-property' ], ...pick( declared ) };
+}
+
 const perWidth = ( byWidth ) => ( Object.keys( byWidth ).length ? byWidth : null );
 const pick = ( o ) => Object.fromEntries( [ 'transition-property', ...LIST_PROPS ].filter( ( p ) => undefined !== o?.[ p ] ).map( ( p ) => [ p, o[ p ] ] ) );
 
@@ -107,11 +151,7 @@ const pick = ( o ) => Object.fromEntries( [ 'transition-property', ...LIST_PROPS
 // the code), its property list the look's own, else the resting one.
 export function timingFacts( reads, id ) {
 	const out = { rest: {}, enter: {}, skipped: [], split: [] };
-	const restDecl = ( w ) => {
-		const declared = reads.declared?.[ w ]?.[ id ] || {};
-		const rendered = reads.widths?.[ w ]?.[ id ]?.styles || {};
-		return { 'transition-property': declared[ 'transition-property' ] ?? rendered[ 'transition-property' ], ...pick( declared ) };
-	};
+	const restDecl = ( w ) => restDeclOf( reads, id, w );
 	const take = ( prop, state, w, decl, onto ) => {
 		const t = propertyTimings( decl, prop );
 		if ( t?.computed ) {
@@ -219,7 +259,7 @@ export function timingWrites( { node, ref, rec, target, cal, db, snapshot, reads
 			}
 		}
 	}
-	out.unmapped.push( ...splitRows( { facts, homes, tried, where, rec, target, motion: stateHover( reads, target ).base } ) );
+	out.unmapped.push( ...splitRows( { facts, homes, tried, where, rec, target, motion: stateHover( reads, target ).base, paint: paintTimings( reads, target.id ) } ) );
 	return out;
 }
 
@@ -236,11 +276,13 @@ const named = ( groups ) => groups.map( ( g ) => `${ g.properties.join( ', ' ) }
 // The rows a list that times its properties differently leaves, one per longhand, state and split, with the widths it is
 // read at. Where a setting took the longhand, it holds one timing for every property the element transitions, so the
 // timing most properties share is written and each other timing is a `timing-conflict` row naming its properties. Where
-// the motion hover layer times the element (lib/fill-state-motion.mjs::stateHover found a hover transform), that layer's
-// one timing is transform's, and each other timing is a `timing-conflict` row. Where the block has no setting for the
-// longhand on this element, each property is a `timing-no-home` row; any other gap leaves a `timing-split` row for the
-// properties its reported value does not cover.
-function splitRows( { facts, homes, tried, where, rec, target, motion } ) {
+// the motion hover layer times the element (lib/fill-state-motion.mjs::stateHover found a hover transform), the layer
+// holds two timings: transform's for the movement, and one for colour, background, border colour and shadow (paint,
+// paintTimings: the timing most paint properties share, written by lib/fill-motion.mjs::motionWrites as paintDuration and
+// paintEasing). A property either timing holds leaves no row; each other is a `timing-conflict` row. Where the block has
+// no setting for the longhand on this element, each property is a `timing-no-home` row; any other gap leaves a
+// `timing-split` row for the properties its reported value does not cover.
+function splitRows( { facts, homes, tried, where, rec, target, motion, paint = {} } ) {
 	const rows = new Map();
 	const part = target.slot || 'this element';
 	for ( const { prop, state, width, value, groups } of facts.split ) {
@@ -249,12 +291,11 @@ function splitRows( { facts, homes, tried, where, rec, target, motion } ) {
 		const layer = ! attr && motion && [ null, 'hover' ].includes( state );
 		const ref = layer ? groups.find( ( g ) => g.properties.some( ( p ) => [ 'transform', 'all' ].includes( p ) ) ) || groups[ 0 ] : groups.find( ( g ) => sameTiming( prop, g.value, value ) ?? g.value === value );
 		const others = groups.filter( ( g ) => g !== ref );
-		const lines = attr || layer || ! [ 'no-setting', 'unmapped-element' ].includes( gap )
+		const lines = layer ? layerLines( { prop, part, groups, ref, paint: null === state ? paint[ width ]?.[ prop ] : undefined } )
+			: attr || ! [ 'no-setting', 'unmapped-element' ].includes( gap )
 			? [ { draft: others, reason: attr
 				? `timing-conflict: ${ attr } holds one ${ prop } for every property ${ part } transitions; ${ ref.value } is written (${ ref.properties.join( ', ' ) }), and the draft times ${ named( others ) }`
-				: layer
-					? `timing-conflict: the motion hover layer (sgsMotion) times every property ${ part } transitions with transform's ${ prop } ${ ref.value }; the draft times ${ named( others ) }`
-					: `timing-split: the ${ prop } reported for ${ part } is ${ ref.value } (${ ref.properties.join( ', ' ) }); the draft also times ${ named( others ) }` } ]
+				: `timing-split: the ${ prop } reported for ${ part } is ${ ref.value } (${ ref.properties.join( ', ' ) }); the draft also times ${ named( others ) }` } ]
 			: groups.flatMap( ( g ) => g.properties.map( ( p ) => ( { draft: [ { value: g.value, properties: [ p ] } ], reason: `timing-no-home: ${ rec.name } has no setting that holds the ${ prop } of ${ p } on ${ part } (the draft's ${ g.value })` } ) ) );
 		for ( const { draft, reason } of lines ) {
 			const key = `${ prop }|${ state }|${ reason }`;
@@ -266,6 +307,20 @@ function splitRows( { facts, homes, tried, where, rec, target, motion } ) {
 	return [ ...rows.values() ];
 }
 
+// The rows the motion hover layer's two timings leave for one longhand at one width: a paint property timed other than the
+// paint timing, and any other property timed other than transform's (ref). paint: paintTimings' entry for the resting
+// rule, or undefined (a state rule's timing, which the paint timing is not read from: every property is then movement).
+function layerLines( { prop, part, groups, ref, paint } ) {
+	const same = ( a, b ) => sameTiming( prop, a, b ) ?? a === b;
+	const off = ( keep ) => groups.map( ( g ) => ( { value: g.value, properties: g.properties.filter( ( p ) => keep( p, g ) ) } ) ).filter( ( g ) => g.properties.length );
+	const movement = off( ( p, g ) => ! ( paint && isPaint( p ) ) && g !== ref );
+	const painted = paint ? off( ( p, g ) => isPaint( p ) && ! same( g.value, paint.value ) ) : [];
+	return [
+		...( movement.length ? [ { draft: movement, reason: `timing-conflict: the motion hover layer (sgsMotion) times the movement of ${ part } with transform's ${ prop } ${ ref.value }; the draft times ${ named( movement ) }` } ] : [] ),
+		...( painted.length ? [ { draft: painted, reason: `timing-conflict: the motion hover layer (sgsMotion) times colour, background, border colour and shadow of ${ part } with one ${ prop }, ${ paint.value } (${ paint.groups.find( ( g ) => same( g.value, paint.value ) ).properties.join( ', ' ) }); the draft times ${ named( painted ) }` } ] : [] ),
+	];
+}
+
 // Whether two per-width timings ({ width: value }) are one timing at every width, by sameTiming's canonical reading
 // (`.2s` is `200ms`); a value it cannot read compares as written.
 function sameAtWidths( prop, a, b ) {
@@ -275,7 +330,7 @@ function sameAtWidths( prop, a, b ) {
 
 // Whether a live timing is the draft's: times within 10ms, easings by their canonical spelling. null when either cannot
 // be read as one.
-function sameTiming( prop, a, b ) {
+export function sameTiming( prop, a, b ) {
 	if ( 'transition-duration' === prop || 'transition-delay' === prop ) {
 		const [ x, y ] = [ timeToMs( oneTiming( a ) ), timeToMs( oneTiming( b ) ) ];
 		return null === x || null === y ? null : Math.abs( x - y ) <= 10;
