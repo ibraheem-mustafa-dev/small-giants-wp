@@ -239,7 +239,10 @@ test( 'MUST FAIL: a motion or timing write answers only the longhands it writes'
 	assert.deepEqual( dropped( write( 'transition-duration', { how: 'fill-timing' } ) ), [ 'animation-name', 'transition-delay', 'transition-property', 'transition-timing-function' ] );
 	assert.deepEqual( dropped( write( 'transition-delay', { how: 'single' } ) ), [ 'animation-name', 'transition-duration', 'transition-property', 'transition-timing-function' ] );
 	const layer = write( 'motion root', { how: 'motion', attr: 'sgsMotion', after: { v: 1, elements: { root: { hover: { state: { values: { duration: 200, easing: 'ease', scale: 1.1 } } } } } } } );
-	assert.deepEqual( dropped( layer ), [ 'animation-name', 'transition-delay', 'transition-property' ] );
+	// The layer's timing answers a read only with its value: 'x' is not 200ms, ease or 0s.
+	assert.deepEqual( dropped( layer ), reads.map( ( r ) => r.property ).sort() );
+	const timed = [ [ 'transition-duration', '0.2s' ], [ 'transition-timing-function', 'ease' ], [ 'transition-delay', '0s' ], [ 'transition-property', 'transform' ] ].map( ( [ p, v ] ) => read( p, v ) );
+	assert.deepEqual( verdict( timed, { writes: [ layer ] } ).failures.map( ( f ) => f.property ), [ 'transition-property' ] );
 	assert.deepEqual( dropped( write( 'J-12 scrolledOffset', { how: 'motion', attr: 'scrolledOffset', after: 8 } ) ), reads.map( ( r ) => r.property ).sort() );
 	// negative control: a transition shorthand write answers every transition longhand
 	assert.deepEqual( dropped( write( 'transition' ) ), [ 'animation-name' ] );
@@ -257,4 +260,78 @@ test( 'MUST FAIL: a settled row with no reason conserves nothing and fails --che
 	const c = check( p );
 	assert.equal( c.status, 1, c.stdout );
 	assert.match( c.stdout, /SETTLED WITH NO REASON: sgs\/nav-bar-menu cr-ref-header-15 \.link color/ );
+} );
+
+// The council's honesty proof: a part's layer timing and a value the root layer does not give never conserve the root's read.
+const motionWrite = ( elements ) => write( 'motion root', { how: 'motion', attr: 'sgsMotion', after: { v: 1, elements } } );
+const layerOf = ( values ) => ( { hover: { state: { values } } } );
+
+test( 'MUST FAIL: an sgsMotion write answers a timing read only from its root layer and only with the read\'s value at every entry', () => {
+	const dur = ( value ) => [ read( 'transition-duration', value ) ];
+	// The root layer moves only; the part's layer carries the duration: the root's read is not the write's.
+	assert.equal( verdict( dur( '0.3s' ), { writes: [ motionWrite( { root: layerOf( { scale: 1.1 } ), burger: layerOf( { duration: 400 } ) } ) ] } ).failures.length, 1 );
+	assert.equal( verdict( dur( '0.4s' ), { writes: [ motionWrite( { root: layerOf( { scale: 1.1 } ), burger: layerOf( { duration: 400 } ) } ) ] } ).failures.length, 1 );
+	// A list with one entry the layer does not give is not answered; every entry given (a paint timing among them) is.
+	assert.equal( verdict( dur( '0.2s, 0.25s, 0.2s, 0.2s' ), { writes: [ motionWrite( { root: layerOf( { duration: 200 } ) } ) ] } ).failures.length, 1 );
+	assert.equal( verdict( dur( '0.2s, 0.2s' ), { writes: [ motionWrite( { root: layerOf( { duration: 200 } ) } ) ] } ).conserved, 1 );
+	assert.equal( verdict( dur( '0.2s, 0.25s' ), { writes: [ motionWrite( { root: layerOf( { duration: 200, paintDuration: 250 } ) } ) ] } ).conserved, 1 );
+	// Easing by its canonical spelling, a token through the client's tokens (an unknown token is never equal), delay 0 when unset.
+	const ease = [ read( 'transition-timing-function', 'cubic-bezier(.2, .8, .2, 1)' ) ];
+	const tokenWrite = { writes: [ motionWrite( { root: layerOf( { duration: 200, easing: 'token:easing.button' } ) } ) ] };
+	assert.equal( conservation( { reads: ease, report: tokenWrite, unmapped: [], tokens: { 'easing.button': 'cubic-bezier(0.2, 0.8, 0.2, 1)' } } ).conserved, 1 );
+	assert.equal( conservation( { reads: ease, report: tokenWrite, unmapped: [] } ).failures.length, 1 );
+	assert.equal( verdict( [ read( 'transition-timing-function', 'ease' ) ], { writes: [ motionWrite( { root: layerOf( { easing: 'ease-out' } ) } ) ] } ).failures.length, 1 );
+	assert.equal( verdict( [ read( 'transition-delay', '0s, 0s' ) ], { writes: [ motionWrite( { root: layerOf( { duration: 200 } ) } ) ] } ).conserved, 1 );
+	assert.equal( verdict( [ read( 'transition-delay', '0.04s' ) ], { writes: [ motionWrite( { root: layerOf( { duration: 200 } ) } ) ] } ).failures.length, 1 );
+	assert.equal( verdict( [ read( 'transition-delay', '0.04s' ) ], { writes: [ motionWrite( { root: layerOf( { duration: 200, delay: 40 } ) } ) ] } ).conserved, 1 );
+	// An empty root layer gives nothing.
+	assert.equal( verdict( dur( '0s' ), { writes: [ motionWrite( { root: layerOf( {} ) } ) ] } ).failures.length, 1 );
+	assert.equal( verdict( [ read( 'transition-delay', '0s' ) ], { writes: [ motionWrite( { root: layerOf( {} ) } ) ] } ).failures.length, 1 );
+} );
+
+test( 'MUST FAIL: an unwritten row answers a read only where its value at the read\'s width is the read\'s', () => {
+	const fw = [ read( 'font-weight', '600', { width: 768 } ) ];
+	const row = ( value ) => [ { node: 'cr-ref-header-15', slot: '.link', property: 'font-weight', value, state: null, reason: 'no-setting: x' } ];
+	assert.equal( verdict( fw, {}, row( '{"768":"700"}' ) ).failures.length, 1 );
+	assert.equal( verdict( fw, {}, row( '700' ) ).failures.length, 1 );
+	assert.equal( verdict( fw, {}, row( '{"768":"600"}' ) ).conserved, 1 );
+	assert.equal( verdict( fw, {}, row( '600' ) ).conserved, 1 );
+	// Paint compares as paint, a list as a list, timing groups by every group's value, display by blockification.
+	const colour = [ { node: 'cr-ref-header-15', slot: '.link', property: 'color', value: '#ff0000', reason: 'x' } ];
+	assert.equal( verdict( [ read( 'color', 'rgb(255, 0, 0)' ) ], {}, colour ).conserved, 1 );
+	assert.equal( verdict( [ read( 'color', 'rgb(0, 0, 255)' ) ], {}, colour ).failures.length, 1 );
+	const list = [ { node: 'cr-ref-header-15', slot: '.link', property: 'transition-property', value: 'Opacity, transform', reason: 'x' } ];
+	assert.equal( verdict( [ read( 'transition-property', 'opacity, transform' ) ], {}, list ).conserved, 1 );
+	const groups = [ { node: 'cr-ref-header-15', slot: '.link', property: 'transition-duration', value: '[{"properties":["box-shadow"],"value":"0.25s"}]', reason: 'timing-conflict: x' } ];
+	assert.equal( verdict( [ read( 'transition-duration', '0.2s, 0.25s' ) ], {}, groups ).conserved, 1 );
+	assert.equal( verdict( [ read( 'transition-duration', '0.2s, 0.3s' ) ], {}, groups ).failures.length, 1 );
+	assert.equal( verdict( [ read( 'transition-duration', '0.2s, 0.25s' ) ], {}, [ { ...groups[ 0 ], value: '[{"properties":["box-shadow"],"value":"0.25s"},{"properties":["color"],"value":"0.4s"}]' } ] ).failures.length, 1 );
+	assert.equal( verdict( [ read( 'transition-duration', '0.25s' ) ], {}, [ { ...groups[ 0 ], value: '[]' } ] ).failures.length, 1 );
+	const display = ( value ) => [ { node: 'cr-ref-header-15', slot: '.link', property: 'display', value, reason: 'no-setting: x' } ];
+	assert.equal( verdict( [ read( 'display', 'inline-flex' ) ], {}, display( 'flex' ) ).conserved, 1 );
+	assert.equal( verdict( [ read( 'display', 'inline-flex' ) ], {}, display( 'grid' ) ).failures.length, 1 );
+	assert.equal( verdict( [ read( 'display', 'flex' ) ], {}, display( 'inline-flex' ) ).failures.length, 1 );
+	assert.equal( verdict( [ read( 'color', 'inline-flex' ) ], {}, [ { ...colour[ 0 ], value: 'flex' } ] ).failures.length, 1 );
+} );
+
+test( 'MUST FAIL: a settled row of any look whose reason is not one Fill gives is unreasoned', () => {
+	const s = { node: 'cr-ref-header-15', block: 'sgs/nav-bar-menu', slot: '.link', property: 'color', widths: [ 1440 ] };
+	const of = ( settled ) => verdict( [ read( 'color', 'red' ) ], { settled } );
+	assert.deepEqual( of( [ { ...s, reason: 'zzz-not-a-reason' } ] ).unreasoned.map( ( u ) => u.reason ), [ 'zzz-not-a-reason' ] );
+	assert.equal( of( [ { ...s, reason: 'zzz-not-a-reason' } ] ).failures.length, 1 );
+	assert.deepEqual( of( [ { ...s, state: 'hover' } ] ).unreasoned.map( ( u ) => u.state ), [ 'hover' ] );
+	assert.equal( of( [ { ...s, state: 'hover', reason: 'zzz' } ] ).unreasoned.length, 1 );
+	// negative control: every reason Fill gives, at rest or in a state, is reasoned.
+	assert.deepEqual( of( [ { ...s, reason: 'motion' }, { ...s, state: 'hover', reason: 'width-ladder' } ] ).unreasoned, [] );
+	assert.equal( of( [ { ...s, reason: 'motion' } ] ).conserved, 1 );
+} );
+
+test( 'MUST FAIL: a checked run reads the client\'s theme tokens, so a token timing answers its read', () => {
+	const p = plant( [ read( 'transition-timing-function', 'cubic-bezier(0.2, 0.8, 0.2, 1)' ) ] );
+	const f = path.join( p.dir, 'fill-report.json' );
+	fs.writeFileSync( f, JSON.stringify( { ...JSON.parse( fs.readFileSync( f, 'utf8' ) ), writes: [ motionWrite( { root: layerOf( { easing: 'token:easing.button' } ) } ) ] } ) );
+	assert.equal( conservationRun( p.dir, { root: p.root } ).failures.length, 1, 'no snapshot: the token is unknown' );
+	fs.mkdirSync( path.join( p.root, 'sites', 'c' ), { recursive: true } );
+	fs.writeFileSync( path.join( p.root, 'sites', 'c', 'theme-snapshot.json' ), JSON.stringify( { settings: { custom: { easing: { button: 'cubic-bezier(0.2, 0.8, 0.2, 1)' } } } } ) );
+	assert.equal( conservationRun( p.dir, { root: p.root } ).conserved, 1 );
 } );

@@ -25,7 +25,7 @@ if ( args.includes( '--json' ) ) {
 		console.log( `CONSERVATION: not checked: ${ conserved.reason } (node census-reads.mjs <run dir> saves a read set bound to the run)` );
 	} else {
 		console.log( `CONSERVATION: ${ conserved.failures.length ? `${ conserved.failures.length } of ${ conserved.reads } declared reads dropped` : `${ conserved.reads } declared reads, ${ conserved.conserved } conserved, 0 dropped` } (${ conserved.excluded.cssWide } CSS-wide keyword reads excluded)` );
-		for ( const s of conserved.unreasoned ) console.log( `  SETTLED WITH NO REASON: ${ s.block } ${ s.node } ${ s.slot || '(root)' } ${ s.property }` );
+		for ( const s of conserved.unreasoned ) console.log( `  SETTLED WITH ${ s.reason ? `AN UNKNOWN REASON ${ s.reason }` : 'NO REASON' }: ${ s.block } ${ s.node } ${ s.slot || '(root)' } ${ s.property }${ s.state ? ` (${ s.state })` : '' }` );
 		const w = conserved.widthlessHolds;
 		w.length && console.log( `  ${ w.length } conserved read${ 1 === w.length ? ' rests' : 's rest' } on a held row that records no width, so the hold answers every width (${ [ ...new Set( w.map( ( r ) => r.how ) ) ].join( ', ' ) }): ${ w.slice( 0, 5 ).map( ( r ) => `${ r.node } ${ r.slot || '(root)' } ${ r.property } @${ r.width } (${ r.how })` ).join( '; ' ) }${ w.length > 5 ? '; ...' : '' }` );
 		for ( const g of groupFailures( conserved.failures ) ) {

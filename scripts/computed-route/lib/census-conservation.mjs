@@ -12,6 +12,10 @@ import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { CSS_WIDE } from './fill-declared.mjs';
+import { SETTLED } from './fill-report.mjs';
+import { msOf, easingOf, clientTokens } from './motion-tokens.mjs';
+import { sameCanonical } from './css-equivalence/values.mjs';
+import { parseColour } from './normalise.mjs';
 import { refOf, walk } from './tree.mjs';
 
 const MDN = createRequire( import.meta.url )( 'mdn-data/css/properties.json' );
@@ -49,42 +53,53 @@ export function longhandsOf( property ) {
 
 const at = ( node, slot ) => `${ node }|${ slot ?? '' }`;
 
-// The longhands one motion-pass write sets: the timing longhands each value of its sgsMotion layer writes (on the layer's
-// element, the write's slot), the write's own property when it names one (fill-timing writes name it), else none (a
+// The timing values the sgsMotion root layer gives each longhand: { longhand: [ value ] } from its state values (duration
+// and paintDuration both time transition-duration entries; a layer that sets no delay runs at 0ms,
+// class-sgs-motion-emitter.php::hover_state). Only the root element's layers time the write's element: a part's layer
+// times the part.
+export function rootLayerTimings( doc ) {
+	const out = {};
+	for ( const layer of Object.values( doc?.elements?.root || {} ) ) {
+		const values = layer?.state?.values || {};
+		if ( ! Object.keys( values ).length ) {
+			continue;
+		}
+		for ( const [ k, v ] of Object.entries( values ) ) {
+			LAYER_LONGHANDS[ k ] && ( out[ LAYER_LONGHANDS[ k ] ] ??= [] ).push( v );
+		}
+		undefined === values.delay && undefined === values.paintDelay && ( out[ 'transition-delay' ] ??= [] ).push( 0 );
+	}
+	return out;
+}
+
+// The longhands one motion-pass write sets: the timing longhands its sgsMotion root layer's values write (on the write's
+// element, rootLayerTimings), the write's own property when it names one (fill-timing writes name it), else none (a
 // scroll or magnet setting writes no CSS longhand the read set holds).
 export function motionLonghands( w ) {
 	if ( 'sgsMotion' === w.attr && w.after && 'object' === typeof w.after ) {
-		const out = new Set();
-		for ( const el of Object.values( w.after.elements || {} ) ) {
-			for ( const layer of Object.values( el || {} ) ) {
-				for ( const k of Object.keys( layer?.state?.values || {} ) ) {
-					LAYER_LONGHANDS[ k ] && out.add( LAYER_LONGHANDS[ k ] );
-				}
-			}
-		}
-		return [ ...out ];
+		return Object.keys( rootLayerTimings( w.after ) );
 	}
 	return MDN[ w.covers ?? w.prop ] ? [ w.covers ?? w.prop ] : [];
 }
 
-// A width-keyed UNMAPPED value ({ "768": "700" }) names the widths the row stands for; a plain value stands for every
-// width the draft declared it at (lib/fill-resolve-state.mjs::valueText collapses agreeing widths).
-function unmappedWidths( value ) {
-	try {
-		const v = JSON.parse( value );
-		if ( v && 'object' === typeof v && ! Array.isArray( v ) ) {
-			const ws = Object.keys( v ).map( Number );
-			return ws.length && ws.every( Number.isFinite ) ? ws : null;
-		}
-	} catch {}
-	return null;
+const ENTRIES = ( v ) => String( v ?? '' ).split( /,(?![^(]*\))/ ).map( ( x ) => x.trim() ).filter( Boolean );
+// Whether a timing longhand's read value is what the layer gives it at every entry of the list: each entry equals one of
+// the layer's values for that longhand (times by ms, easings by their canonical spelling; a 'token:' value read through
+// the client's tokens, an unknown token never equal).
+export function layerGives( prop, raw, given, tokens = {} ) {
+	const tok = ( v ) => ( 'string' === typeof v && v.startsWith( 'token:' ) ? tokens[ v.slice( 6 ) ] : v );
+	const read = 'transition-timing-function' === prop ? easingOf : msOf;
+	const have = ( given || [] ).map( ( v ) => read( tok( v ) ) ).filter( ( v ) => null !== v && undefined !== v );
+	const entries = ENTRIES( raw );
+	return !! have.length && !! entries.length && entries.every( ( x ) => have.includes( read( x ) ) );
 }
 
 // The outcome rows of a run as { node, slot (the element the row answers for: a write's or settled row's readSlot where it
 // has one), property, properties (a motion write's longhands), widths (null = every width), outcome, how }. `report` is
 // fill-report.json, `unmapped` is unmapped.json. Rows of another look (a state) are left out: the read set is the rest look.
 // A write that names no widths answers none. A confirm record counts as written only when its verdict says the element
-// shows the value. `unreasoned` lists the settled rows that record no reason.
+// shows the value. An sgsMotion write carries its root layer's timing values (`timings`, rootLayerTimings). `unreasoned`
+// lists the settled rows, of any look, whose reason is not one Fill gives (lib/fill-report.mjs::SETTLED).
 export function outcomesOf( { report, unmapped } ) {
 	const out = [];
 	const unreasoned = [];
@@ -93,14 +108,15 @@ export function outcomesOf( { report, unmapped } ) {
 			continue;
 		}
 		const widths = [ ...new Set( [ ...( w.widths || [] ), ...( w.answers || [] ) ] ) ];
-		out.push( { node: w.node, slot: w.readSlot ?? w.slot, writtenOn: w.slot, property: w.covers ?? w.prop, ...( MOTION_HOW.includes( w.how ) ? { properties: motionLonghands( w ) } : {} ), widths, outcome: 'written', how: w.how } );
+		const motion = MOTION_HOW.includes( w.how ) ? { properties: motionLonghands( w ), ...( 'sgsMotion' === w.attr ? { timings: rootLayerTimings( w.after ) } : {} ) } : {};
+		out.push( { node: w.node, slot: w.readSlot ?? w.slot, writtenOn: w.slot, property: w.covers ?? w.prop, ...motion, widths, outcome: 'written', how: w.how } );
 	}
 	for ( const s of report.settled || [] ) {
-		if ( ! atRest( s.state ) ) {
+		if ( ! SETTLED.includes( s.reason ) ) {
+			unreasoned.push( { node: s.node, block: s.block, slot: s.slot ?? '', property: s.property, state: s.state ?? null, reason: s.reason ?? null } );
 			continue;
 		}
-		if ( ! s.reason ) {
-			unreasoned.push( { node: s.node, block: s.block, slot: s.slot ?? '', property: s.property } );
+		if ( ! atRest( s.state ) ) {
 			continue;
 		}
 		// A settled row answers the widths it records, and none when it records none.
@@ -121,7 +137,7 @@ export function outcomesOf( { report, unmapped } ) {
 			continue;
 		}
 		for ( const node of u.nodes?.length ? u.nodes : [ u.node ] ) {
-			out.push( { node, slot: u.slot, property: u.property, value: u.value, widths: unmappedWidths( u.value ), outcome: 'unwritten', how: 'unmapped' } );
+			out.push( { node, slot: u.slot, property: u.property, value: u.value, widths: null, outcome: 'unwritten', how: 'unmapped' } );
 		}
 	}
 	Object.defineProperty( out, 'unreasoned', { value: unreasoned } );
@@ -129,16 +145,47 @@ export function outcomesOf( { report, unmapped } ) {
 }
 
 // Whether one outcome row answers one read: (the index has matched node and element) a property that is the read's or a
-// shorthand setting it (a motion write: one of the longhands it writes), and a width it states (null: every width).
-function answers( o, read ) {
+// shorthand setting it (a motion write: one of the longhands it writes, where its root layer gives the read's value,
+// layerGives), and a width it states (null: every width). An unwritten row with a value answers only where its value
+// at the read's width is the read's (unwrittenSays). tokens: the client's theme tokens (motion-tokens.mjs::clientTokens).
+function answers( o, read, tokens ) {
 	if ( o.widths && ! o.widths.includes( read.width ) ) {
 		return false;
 	}
+	if ( 'unwritten' === o.outcome && o.value && ! unwrittenSays( o.value, read ) ) {
+		return false;
+	}
 	if ( o.properties ) {
-		return o.properties.includes( read.property );
+		return o.properties.includes( read.property ) && ( ! o.timings || layerGives( read.property, read.value, o.timings[ read.property ], tokens ) );
 	}
 	return !! o.property && longhandsOf( o.property ).includes( read.property );
 }
+
+// Whether an UNMAPPED row's value speaks for one read: its value at the read's width (a width-keyed object's entry, else
+// the value) is the read's, as a list (LIST), as a canonical value (css-equivalence/values.mjs::sameCanonical: times,
+// easings, transforms, paint) or as one colour in two spellings (normalise.mjs::parseColour); a list of timing groups ([{ properties, value }],
+// lib/fill-timing.mjs::splitRows) speaks for a read whose list holds every group's value.
+function unwrittenSays( value, read ) {
+	let held = value;
+	try {
+		held = JSON.parse( value );
+	} catch {}
+	if ( Array.isArray( held ) ) {
+		const entries = ENTRIES( read.value ).map( ( x ) => x.toLowerCase() );
+		return !! held.length && held.every( ( g ) => entries.includes( String( g?.value ?? '' ).toLowerCase() ) );
+	}
+	const at = valueAtWidth( value, read.width );
+	if ( undefined === at || null === at ) {
+		return false;
+	}
+	const [ a, b ] = [ String( at ), String( read.value ) ];
+	const [ ca, cb ] = [ parseColour( a ), parseColour( b ) ];
+	return LIST( a ) === LIST( b ) || sameCanonical( read.property, a, b ) || ( !! ca && !! cb && [ 'r', 'g', 'b', 'a' ].every( ( k ) => ca[ k ] === cb[ k ] ) ) || ( 'display' === read.property && BLOCKIFIED[ LIST( b ) ] === LIST( a ) );
+}
+
+// A declared inner display and the outer display a flex or grid item computes it to (CSS Display 3 §2.7): Fill reads the
+// computed display, so its row for an item declared inline-flex says flex.
+const BLOCKIFIED = { 'inline-flex': 'flex', 'inline-grid': 'grid', 'inline-block': 'block', inline: 'block', 'inline-table': 'table', 'inline flow-root': 'block' };
 
 // The writers that act on a row the generic pass left UNMAPPED (fill.mjs's later passes): a write of theirs says the
 // element did not already show the value.
@@ -170,9 +217,9 @@ function contradiction( found, read ) {
 // longhands a shorthand leaves implied), `failures` is every other read that no outcome answers or whose outcomes
 // contradict each other (contradiction(), named in `why`), and `widthlessHolds`
 // every conserved read only an `alreadyHeld` row answers: Fill records no width for a hold, so such a row answers every
-// width and the hold may not cover this one; `unreasoned` every settled row that records no reason (it conserves nothing
+// width and the hold may not cover this one; `unreasoned` every settled row whose reason is not one Fill gives (it conserves nothing
 // and fails the check).
-export function conservation( { reads, report, unmapped } ) {
+export function conservation( { reads, report, unmapped, tokens = {} } ) {
 	const index = new Map();
 	const outcomes = outcomesOf( { report, unmapped } );
 	for ( const o of outcomes ) {
@@ -184,7 +231,7 @@ export function conservation( { reads, report, unmapped } ) {
 	let conserved = 0;
 	let cssWide = 0;
 	for ( const read of reads ) {
-		const by = ( index.get( at( read.node, read.slot ) ) || [] ).filter( ( o ) => answers( o, read ) );
+		const by = ( index.get( at( read.node, read.slot ) ) || [] ).filter( ( o ) => answers( o, read, tokens ) );
 		if ( CSS_WIDE.test( String( read.value ).trim() ) ) {
 			cssWide++;
 		} else if ( by.length && contradiction( by, read ) ) {
@@ -282,5 +329,7 @@ export function conservationRun( dir, { root = process.env.SGS_REPO_ROOT ? path.
 	if ( unbound ) {
 		return { status: 'unbound', reason: unbound, ...none };
 	}
-	return { status: 'checked', ...conservation( { reads: rows, report, unmapped: read( 'unmapped.json' ) } ) };
+	const snapshot = path.join( root, 'sites', String( report.client ), 'theme-snapshot.json' );
+	const tokens = fs.existsSync( snapshot ) ? clientTokens( JSON.parse( fs.readFileSync( snapshot, 'utf8' ) ) ) : {};
+	return { status: 'checked', ...conservation( { reads: rows, report, unmapped: read( 'unmapped.json' ), tokens } ) };
 }
