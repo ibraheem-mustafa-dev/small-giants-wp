@@ -11,14 +11,20 @@ import { HELD_REASONS, heldCounts } from './fill-held.mjs';
 // settled (passSettled).
 export const SETTLED = [ 'equal', 'already-set', 'used-size', 'not-painted', 'row-held', 'logo-size', 'width-ladder', 'dimension' ];
 
-const rowKey = ( u ) => JSON.stringify( [ u.node, u.slot ?? '', u.property, u.value, u.state ?? null ] );
+// The file of each pass a settled row names.
+const PASS_FILE = { 'logo-size': 'fill-logo-size.mjs', 'width-ladder': 'fill-width-ladder.mjs', dimension: 'fill-dimensions.mjs' };
+const sameRead = ( u, a ) => ( u.node === a.node || ( u.nodes || [] ).includes( a.node ) ) && ( u.slot ?? '' ) === a.slot && u.property === a.property && String( u.value ) === String( a.value ) && ( u.state ?? null ) === ( a.state ?? null );
 
-// The UNMAPPED rows a later Fill pass (lib/fill-logo-size.mjs, lib/fill-width-ladder.mjs, lib/fill-dimensions.mjs) took out
-// of `before` because it wrote or settled them, as settled rows naming the pass (`reason`), one per node a row names, so
-// a read the pass answered stays answered. A row the pass keeps, or raises again with a longer reason, is not one.
-export function passSettled( before, after, reason ) {
-	const kept = new Set( after.map( rowKey ) );
-	return before.filter( ( u ) => ! kept.has( rowKey( u ) ) ).flatMap( ( u ) => ( u.nodes?.length ? u.nodes : [ u.node ] ).map( ( node ) => ( { node, block: u.block, slot: u.slot ?? '', property: u.property, value: u.value, ...( u.state ? { state: u.state } : {} ), reason, detail: `lib/fill-${ reason }.mjs wrote or settled it (was: ${ u.reason })` } ) ) );
+// The UNMAPPED rows a later Fill pass (lib/fill-logo-size.mjs, lib/fill-width-ladder.mjs, lib/fill-dimensions.mjs) wrote
+// or settled, as settled rows naming the pass (`reason`): one per entry of the pass's `answered` list
+// (lib/fill-regap.mjs::answer, one per node, with the read widths it answers). A row the pass took out of `before`
+// without answering it is no settled row, so its read shows as dropped; a node the pass answered and still leaves in
+// `after` stays unwritten.
+export function passSettled( before, after, reason, answered = [] ) {
+	return answered.filter( ( a ) => ! after.some( ( u ) => sameRead( u, a ) ) ).map( ( a ) => {
+		const was = before.find( ( u ) => sameRead( u, a ) );
+		return { node: a.node, block: a.block, slot: a.slot, ...( a.readSlot ? { readSlot: a.readSlot } : {} ), property: a.property, value: a.value, ...( a.state ? { state: a.state } : {} ), widths: a.widths, reason, detail: `lib/${ PASS_FILE[ reason ] } wrote or settled it${ was ? ` (was: ${ was.reason })` : '' }` };
+	} );
 }
 const settledCounts = ( rows ) => Object.fromEntries( SETTLED.map( ( k ) => [ k, rows.filter( ( s ) => s.reason === k ).length ] ) );
 

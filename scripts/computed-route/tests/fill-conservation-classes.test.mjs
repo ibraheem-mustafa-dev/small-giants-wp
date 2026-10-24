@@ -108,12 +108,13 @@ test( 'MUST FAIL: an UNMAPPED row raised once for several icons answers each ico
 	assert.deepEqual( out.failures, [] );
 } );
 
-test( 'MUST FAIL: a row a later pass takes out of UNMAPPED is a settled row naming the pass, one per node; a kept or re-raised row is not', () => {
+test( 'MUST FAIL: a row a later pass answered is a settled row naming the pass, one per node it answered; a kept, re-raised or unanswered row is not', () => {
 	const a = { node: 'n1', slot: '', property: 'height', value: '46px', reason: 'no-setting: x' };
-	const b = { node: 'n2', nodes: [ 'n2', 'n3' ], slot: '.i', property: 'height', value: '17px', reason: 'no-setting: y' };
+	const b = { node: 'n3', nodes: [ 'n2', 'n3' ], slot: '.i', property: 'height', value: '17px', reason: 'no-setting: y' };
 	const c = { node: 'n4', slot: '', property: 'width', value: '9px', reason: 'no-setting: z' };
-	const rows = passSettled( [ a, b, c ], [ { ...c, reason: `${ c.reason }; dimension: no` } ], 'dimension' );
-	assert.deepEqual( rows.map( ( r ) => [ r.node, r.slot, r.property, r.reason ] ), [ [ 'n1', '', 'height', 'dimension' ], [ 'n2', '.i', 'height', 'dimension' ], [ 'n3', '.i', 'height', 'dimension' ] ] );
+	const answered = [ { ...a, widths: [ 375, 768 ] }, { ...b, node: 'n2', widths: [ 768 ] }, { ...b, widths: [ 768 ] } ];
+	const rows = passSettled( [ a, b, c ], [ { ...c, reason: `${ c.reason }; dimension: no` }, { ...b, nodes: undefined } ], 'dimension', answered );
+	assert.deepEqual( rows.map( ( r ) => [ r.node, r.slot, r.property, r.reason, r.widths ] ), [ [ 'n1', '', 'height', 'dimension', [ 375, 768 ] ], [ 'n2', '.i', 'height', 'dimension', [ 768 ] ] ], 'n3 the pass left, and c it re-raised, are not settled' );
 	assert.ok( [ 'logo-size', 'width-ladder', 'dimension', 'row-held' ].every( ( r ) => SETTLED.includes( r ) ) );
 } );
 
@@ -131,20 +132,20 @@ const at = ( slot, property, forms = [] ) => ( { slot, slots: [ slot ], property
 const ROW_CAL = { block: 'sgs/social-icons', elements: { '': tiers( { display: 'flex' } ), [ SHAPE ]: tiers( REST ), [ GLYPH ]: tiers( { width: '32px' } ) }, settings: { childIconBackground: at( SHAPE, 'background-color', [ 'hex', 'slug' ] ), childIconShapeSize: at( SHAPE, 'width' ), childIconSize: at( GLYPH, 'width' ) }, discovered: {} };
 const ICON_CAL = { block: 'sgs/icon', elements: { '': tiers( REST ), '.sgs-icon__shape': tiers( REST ), '.sgs-icon__shape > .sgs-icon__svg': tiers( { width: '32px' } ) }, settings: { iconSize: at( '.sgs-icon__shape > .sgs-icon__svg', 'width' ), backgroundColour: at( '.sgs-icon__shape', 'background-color', [ 'hex' ] ) }, discovered: {}, link: { linkUrl: { path: '', attr: 'href' } } };
 
-function rowRun() {
+function rowRun( { iconCal = ICON_CAL, linkExtra = {} } = {} ) {
 	const skeleton = expandSiteInfoRows( [ { name: 'sgs/social-icons', attributes: {}, draftRef: '.row', siteInfoRow: [ 'instagram', 'google', 'whatsapp' ], childRefs: { instagram: 'a.ig', google: 'a.gg', whatsapp: 'a.wa' } } ] );
 	const nodes = skeletonNodes( skeleton );
 	const tree = cleanTree( skeleton );
 	addRefs( tree, 'footer' );
 	const glyph = ( i ) => nodes[ i ].targets.find( ( t ) => '' !== t.slot ).id;
-	const link = { ...REST, 'background-color': 'rgb(255, 255, 255)', width: '40px', height: '40px', 'box-sizing': 'border-box', 'align-items': 'center', fill: 'rgb(1, 2, 3)', 'border-top-left-radius': '50%', 'border-top-right-radius': '50%', 'border-bottom-right-radius': '50%', 'border-bottom-left-radius': '50%' };
+	const link = { ...REST, 'background-color': 'rgb(255, 255, 255)', width: '40px', height: '40px', 'box-sizing': 'border-box', 'align-items': 'center', fill: 'rgb(1, 2, 3)', 'border-top-left-radius': '50%', 'border-top-right-radius': '50%', 'border-bottom-right-radius': '50%', 'border-bottom-left-radius': '50%', ...linkExtra };
 	const box = ( styles, w ) => ( { styles, pseudo: {}, rect: { x: 0, y: 0, w, h: w }, inFlow: true, words: '', href: null } );
 	const byWidth = () => ( { '0:': box( { display: 'flex' }, 300 ), ...Object.fromEntries( [ 1, 2, 3 ].flatMap( ( i ) => [ [ `${ i }:`, box( link, 40 ) ], [ glyph( i ), box( { width: '18px', 'box-sizing': 'content-box', fill: 'rgb(1, 2, 3)' }, 18 ) ] ] ) ) } );
 	// What the draft's code declares on each icon: its size, background and circle (the row holds them), a box sizing and
 	// alignment and a glyph fill no icon setting holds.
-	const declared = Object.fromEntries( THREE.map( ( w ) => [ w, Object.fromEntries( [ 1, 2, 3 ].flatMap( ( i ) => [ [ `${ i }:`, { width: '40px', height: '40px', 'background-color': 'rgb(255, 255, 255)', 'box-sizing': 'border-box', 'align-items': 'center', 'border-top-left-radius': '50%', 'border-top-right-radius': '50%', 'border-bottom-right-radius': '50%', 'border-bottom-left-radius': '50%' } ], [ glyph( i ), { width: '18px', 'box-sizing': 'content-box', fill: 'rgb(1, 2, 3)' } ] ] ) ) ] ) );
+	const declared = Object.fromEntries( THREE.map( ( w ) => [ w, Object.fromEntries( [ 1, 2, 3 ].flatMap( ( i ) => [ [ `${ i }:`, { width: '40px', height: '40px', 'background-color': 'rgb(255, 255, 255)', 'box-sizing': 'border-box', 'align-items': 'center', 'border-top-left-radius': '50%', 'border-top-right-radius': '50%', 'border-bottom-right-radius': '50%', 'border-bottom-left-radius': '50%', ...linkExtra } ], [ glyph( i ), { width: '18px', 'box-sizing': 'content-box', fill: 'rgb(1, 2, 3)' } ] ] ) ) ] ) );
 	const reads = { widths: Object.fromEntries( FIVE.map( ( w ) => [ w, byWidth() ] ) ), declared, sweep: {}, origin: 'http://127.0.0.1:1' };
-	const out = fillTree( { tree, nodes, reads, db, snapshot, rawSnapshot: {}, calFor: ( b ) => ( 'sgs/icon' === b ? ICON_CAL : ROW_CAL ), ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
+	const out = fillTree( { tree, nodes, reads, db, snapshot, rawSnapshot: {}, calFor: ( b ) => ( 'sgs/icon' === b ? iconCal : ROW_CAL ), ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
 	return { out, tree, nodes, v: verdict( out, tree, nodes, declared ) };
 }
 
@@ -160,7 +161,7 @@ test( 'MUST FAIL: a value the row holds for an icon is a row-held settled row on
 	for ( const ref of icons ) {
 		assert.ok( out.settled.some( ( s ) => s.node === ref && 'row-held' === s.reason && 'width' === s.property && '' === s.slot ), `${ ref } names the size the row holds` );
 		assert.ok( out.settled.some( ( s ) => s.node === ref && 'row-held' === s.reason && 'border-radius' === s.property && '' === s.slot ), `${ ref } names the circle the row holds` );
-		assert.ok( out.settled.some( ( s ) => s.node === ref && 'equal' === s.reason && 'display' === s.property && '' === s.slot ), `${ ref } keeps its read's equal display` );
+		assert.ok( out.settled.some( ( s ) => s.node === ref && 'equal' === s.reason && 'display' === s.property && '' === ( s.readSlot ?? s.slot ) ), `${ ref } keeps its read's equal display, read on the root` );
 	}
 } );
 
@@ -176,4 +177,15 @@ test( 'MUST FAIL: an icon\'s UNMAPPED row names the element it was read on and e
 
 test( 'MUST FAIL: a direction or column count in the draft is not reported as read and carried (Fill reads the context properties only to judge others)', () => {
 	assert.deepEqual( unreadProperties( [ 'direction', 'column-count', 'column-width', 'color' ] ), [ 'column-count', 'column-width', 'direction' ] );
+} );
+
+test( 'MUST FAIL: an icon property one calibrated slot leaves unwritten is not also called equal because another slot\'s default paints it', () => {
+	// The shape element sits at two slots (the colour on the root, the background on the shape); the root shrinks (1), the
+	// shape does not (0), and the draft link does not shrink: the root's verdict, unwritten, stands for the read.
+	const cal = { ...ICON_CAL, elements: { ...ICON_CAL.elements, '': tiers( { ...REST, 'flex-shrink': '1' } ), '.sgs-icon__shape': tiers( { ...REST, 'flex-shrink': '0' } ) }, settings: { ...ICON_CAL.settings, iconColour: at( '', 'color', [ 'hex' ] ) } };
+	const { out, v } = rowRun( { iconCal: cal, linkExtra: { 'flex-shrink': '0' } } );
+	const shrink = ( rows ) => rows.filter( ( r ) => 'flex-shrink' === r.property && 'sgs/icon' === r.block );
+	assert.ok( shrink( out.unmapped ).length >= 1, `the root's verdict is raised (unmapped ${ JSON.stringify( shrink( out.unmapped ) ) })` );
+	assert.deepEqual( shrink( out.settled ).filter( ( s ) => 'equal' === s.reason && '' === ( s.readSlot ?? s.slot ) ), [], 'no equal row answers the root read' );
+	assert.deepEqual( v.failures.filter( ( f ) => 'flex-shrink' === f.property ), [] );
 } );

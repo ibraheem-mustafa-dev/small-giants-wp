@@ -142,3 +142,15 @@ test( 'MUST FAIL: a draft element is never read at a pseudo-element slot, and a 
 	const keys = out.unmapped.map( ( u ) => `${ u.node }|${ u.property }|${ u.state || '' }|${ u.value }` );
 	assert.equal( new Set( keys ).size, keys.length, 'each row once' );
 } );
+
+test( 'MUST FAIL: an icon value the row\'s setting was not written from stays UNMAPPED, never row-held', () => {
+	// The draft draws no bottom border (0px, the row's default, so the row's border width is written from the other three
+	// sides only); the icon's own default bottom border is 3px, so the icon's 0px is a value nothing on the page holds.
+	const thick = { ...REST, 'border-bottom-width': '3px' };
+	const iconCal = { ...ICON_CAL, elements: { ...ICON_CAL.elements, '': paint( thick ), '.sgs-icon__shape': paint( thick ) } };
+	const { out } = run( { iconCal, linkOf: () => ( { ...LINK, 'border-bottom-width': '0px' } ) } );
+	assert.ok( out.unmapped.some( ( u ) => 'sgs/icon' === u.block && 'border-bottom-width' === u.property ), `the bottom stays unwritten (unmapped ${ JSON.stringify( out.unmapped.map( ( u ) => u.property ) ) })` );
+	assert.deepEqual( out.settled.filter( ( s ) => 'row-held' === s.reason && 'border-bottom-width' === s.property ), [] );
+	// Positive: a side the row's setting was written from is row-held.
+	assert.ok( out.settled.some( ( s ) => 'row-held' === s.reason && 'border-top-width' === s.property ) || ! out.unmapped.some( ( u ) => 'border-top-width' === u.property ), 'the top side is held by the row' );
+} );

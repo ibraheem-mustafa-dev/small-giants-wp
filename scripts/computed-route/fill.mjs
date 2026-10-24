@@ -198,8 +198,8 @@ export async function fillSurface( o ) {
 		// A logo whose width changes with the screen is written as its per-device size (lib/fill-logo-size.mjs).
 		const logos = logoSizeWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped } );
 		result.writes.push( ...logos.writes );
-		// Each row a pass takes out of UNMAPPED is a settled row naming the pass (lib/fill-report.mjs::passSettled).
-		( result.settled ??= [] ).push( ...passSettled( result.unmapped, logos.unmapped, 'logo-size' ) );
+		// Each row a pass wrote or settled (its `answered` list) is a settled row naming the pass (lib/fill-report.mjs::passSettled).
+		( result.settled ??= [] ).push( ...passSettled( result.unmapped, logos.unmapped, 'logo-size', logos.answered ) );
 		result.unmapped = logos.unmapped;
 		result.notes.push( ...logos.notes );
 		// A per-width difference no single setting holds, then a block's built-in size against the draft's (lib/fill-width-ladder.mjs, lib/fill-dimensions.mjs); their divergence-ledger entries are added to the client's ledger.
@@ -208,7 +208,7 @@ export async function fillSurface( o ) {
 		const dims = dimensionWrites( { nodes, flat, refOf, reads, db, unmapped: ladder.unmapped, calFor, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ) } );
 		addEntries( ledgerFile, dims.ledger );
 		result.writes.push( ...ladder.writes, ...dims.writes );
-		result.settled.push( ...passSettled( result.unmapped, ladder.unmapped, 'width-ladder' ), ...passSettled( ladder.unmapped, dims.unmapped, 'dimension' ) );
+		result.settled.push( ...passSettled( result.unmapped, ladder.unmapped, 'width-ladder', ladder.answered ), ...passSettled( ladder.unmapped, dims.unmapped, 'dimension', dims.answered ) );
 		result.unmapped = dims.unmapped;
 		result.notes.push( ...ladder.notes, ...dims.notes );
 		// A step between the read widths that a written per-device setting cannot hold, as a scoped @media rule at the draft's threshold (lib/fill-step-rungs.mjs).

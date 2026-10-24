@@ -1,13 +1,13 @@
 [
  {
   "file": "lib/census-conservation.mjs",
-  "find": "\tfor ( const s of report.settled || [] ) {\n\t\tout.push(",
-  "replace": "\tfor ( const s of [] ) {\n\t\tout.push(",
+  "find": "\tfor ( const s of report.settled || [] ) {\n\t\t// A settled row",
+  "replace": "\tfor ( const s of [] ) {\n\t\t// A settled row",
   "why": "settled rows are not outcomes (the 265 equal, already-set, used-size and not-painted drops)"
  },
  {
   "file": "lib/census-conservation.mjs",
-  "find": "widths: s.widths?.length ? s.widths : null, outcome: 'held', how: `settled:",
+  "find": "widths: s.widths?.length ? s.widths : [], outcome: 'held', how: `settled:",
   "replace": "widths: null, outcome: 'held', how: `settled:",
   "why": "a settled row answers every width"
  },
@@ -43,7 +43,7 @@
  },
  {
   "file": "lib/fill-row-lift.mjs",
-  "find": "\t\t\treading.settled.forEach( ( r ) => keep( { ...r, node: cref, block: c.name, slot: slotOf } ) );\n",
+  "find": "\t\t\treading.settled.forEach( ( r ) => keep( { ...r, node: cref, block: c.name, slot: r.slot ?? '', ...( LOOSE( r.slot ?? '' ) !== LOOSE( slotOf ) ? { readSlot: slotOf } : {} ) } ) );\n",
   "replace": "",
   "why": "the icon's settled rows are dropped with the throwaway copy"
  },
@@ -67,15 +67,9 @@
  },
  {
   "file": "lib/fill-report.mjs",
-  "find": "\treturn before.filter( ( u ) => ! kept.has( rowKey( u ) ) ).flatMap(",
-  "replace": "\treturn before.filter( ( u ) => false && ! kept.has( rowKey( u ) ) ).flatMap(",
+  "find": "return answered.filter( ( a ) => ! after.some( ( u ) => sameRead( u, a ) ) ).map(",
+  "replace": "return answered.filter( ( a ) => false && ! after.some( ( u ) => sameRead( u, a ) ) ).map(",
   "why": "a row a pass takes is not recorded"
- },
- {
-  "file": "lib/fill-report.mjs",
-  "find": "( u.nodes?.length ? u.nodes : [ u.node ] ).map( ( node ) =>",
-  "replace": "[ u.node ].map( ( node ) =>",
-  "why": "one settled row for a row naming several icons"
  },
  {
   "file": "lib/fill-declared.mjs",
@@ -103,8 +97,26 @@
  },
  {
   "file": "lib/fill-resolve-element.mjs",
-  "find": ", answers: Object.keys( draft ).map( Number ) }, res.slot );",
+  "find": ", answers: answeredWidths( prop, draft, res ) }, res.slot );",
   "replace": " }, res.slot );",
   "why": "the write does not name the read widths it answers"
+ },
+ {
+  "file": "lib/fill-report.mjs",
+  "find": "return answered.filter( ( a ) => ! after.some( ( u ) => sameRead( u, a ) ) ).map( ( a ) => {",
+  "replace": "return answered.map( ( a ) => {",
+  "why": "a node the pass answered and still leaves unwritten is settled"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "out.settled = out.settled.filter( ( r ) => 'equal' !== r.reason || ! raised.has( r.property ) );",
+  "replace": "",
+  "why": "an equal row from another slot answers a read the root leaves unwritten"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "reading.settled.forEach( ( r ) => keep( { ...r, node: cref, block: c.name, slot: r.slot ?? '', ...( LOOSE( r.slot ?? '' ) !== LOOSE( slotOf ) ? { readSlot: slotOf } : {} ) } ) );",
+  "replace": "reading.settled.forEach( ( r ) => keep( { ...r, node: cref, block: c.name, slot: r.slot ?? '' } ) );",
+  "why": "a copy's settled row loses the draft element it was read as"
  }
 ]

@@ -42,7 +42,8 @@ function paints( held, prop ) {
 const keyOf = ( r ) => `${ r.css_element }|${ r.css_property }|${ r.css_state || '' }`;
 
 // One copy's reading of one element, written into a throwaway copy of the node: { values: { attr: final value },
-// props: { attr: prop }, widths: { attr: [read widths] }, unmapped: [rows], settled: [rows] }.
+// props: { attr: prop }, covers: { attr: [every property written to it] }, widths: { attr: [read widths] }, unmapped: [rows],
+// settled: [rows] }.
 function readCopy( st, rec, ref, cal, target, path, snaps, fillElement ) {
 	const node = structuredClone( st.flat[ rec.index ] );
 	const flat = st.flat.slice();
@@ -52,13 +53,19 @@ function readCopy( st, rec, ref, cal, target, path, snaps, fillElement ) {
 	fillElement( sub, rec, ref, cal, { id: target.id, slot: path, paired: true }, snaps );
 	const values = {};
 	const props = {};
+	const covers = {};
 	const widths = {};
 	for ( const w of sub.out.writes ) {
 		values[ w.attr ] = node.attributes[ w.attr ];
 		props[ w.attr ] = w.prop;
+		covers[ w.attr ] = [ ...new Set( [ ...( covers[ w.attr ] || [] ), w.prop ] ) ];
 		widths[ w.attr ] = [ ...new Set( [ ...( w.widths || [] ), ...( w.answers || [] ) ] ) ].sort( ( a, b ) => a - b );
 	}
-	return { values, props, widths, unmapped: sub.out.unmapped, settled: sub.out.settled };
+	// A property whose value the setting already held (another side of the same border) is one it was written from too.
+	for ( const r of ( sub.out.settled || [] ).filter( ( x ) => 'already-set' === x.reason && x.attr in values ) ) {
+		covers[ r.attr ] = [ ...new Set( [ ...covers[ r.attr ], r.property ] ) ];
+	}
+	return { values, props, covers, widths, unmapped: sub.out.unmapped, settled: sub.out.settled };
 }
 
 // The element a calibrated slot sits on: a pseudo-element layer (`::before`, `::after`) is painted on its host element,
@@ -73,7 +80,7 @@ function readElement( st, rec, ref, cal, element, target, snaps, fillElement ) {
 	const calibrated = ( elementSlots( st.db, rec.name, cal )[ element ] || [] ).map( hostOf ).filter( ( s, i, all ) => all.findIndex( ( x ) => LOOSE( x ) === LOOSE( s ) ) === i );
 	// An element none of the block's settings is calibrated on is still read where the draft element sits, so what it paints is raised.
 	const slots = calibrated.length ? calibrated : [ target.slot ];
-	const out = { values: {}, props: {}, widths: {}, unmapped: [], settled: [] };
+	const out = { values: {}, props: {}, covers: {}, widths: {}, unmapped: [], settled: [] };
 	for ( const slot of slots ) {
 		const r = readCopy( st, rec, ref, cal, target, slot, snaps, fillElement );
 		const elsewhere = new Set( attrsFor( st.db, rec.name ).filter( ( a ) => a.css_element === element && ! a.css_state && undefined !== cal.settings?.[ a.attr_name ]?.slot && LOOSE( hostOf( cal.settings[ a.attr_name ].slot ) ) !== LOOSE( slot ) ).flatMap( ( a ) => String( a.css_property ).split( ',' ) ) );
@@ -82,12 +89,17 @@ function readElement( st, rec, ref, cal, element, target, snaps, fillElement ) {
 			if ( ( undefined === home || LOOSE( hostOf( home ) ) === LOOSE( slot ) ) && ! ( attr in out.values ) ) {
 				out.values[ attr ] = value;
 				out.props[ attr ] = r.props[ attr ];
+				out.covers[ attr ] = r.covers[ attr ];
 				out.widths[ attr ] = r.widths[ attr ];
 			}
 		}
 		out.unmapped.push( ...r.unmapped.filter( ( u ) => ! elsewhere.has( u.property ) ) );
 		out.settled.push( ...r.settled );
 	}
+	// A property one calibrated slot leaves unwritten is not shown by the element because another slot's default paint
+	// happens to equal it: the unwritten verdict stands, and the equal row is not kept as an answer to the read.
+	const raised = new Set( out.unmapped.map( ( u ) => u.property ) );
+	out.settled = out.settled.filter( ( r ) => 'equal' !== r.reason || ! raised.has( r.property ) );
 	return out;
 }
 
@@ -116,7 +128,8 @@ function withCircle( reading, attr ) {
 export function liftRow( st, rowRec, ref, cal, { fillElement, snapsOf } ) {
 	const copies = rowRec.children.map( ( c ) => st.nodes[ c ] ).filter( ( c ) => c.targets.length );
 	const node = st.flat[ rowRec.index ];
-	const held = new Set();
+	// The row settings written for every icon: keyOf( setting ) -> the properties every copy's read wrote it from.
+	const held = new Map();
 	const rowAttr = new Map( attrsFor( st.db, rowRec.name ).map( ( r ) => [ r.attr_name, r ] ) );
 	const rowCircle = circleAttr( st.db, rowRec.name );
 	for ( const [ element, slotOf ] of ELEMENTS ) {
@@ -124,10 +137,10 @@ export function liftRow( st, rowRec, ref, cal, { fillElement, snapsOf } ) {
 		const snapsFor = ( c ) => ( targetOf( c ) ? snapsOf( st, targetOf( c ).id ) : {} );
 		const readings = copies.map( ( c ) => ( Object.keys( snapsFor( c ) ).length ? readElement( st, rowRec, ref, cal, element, targetOf( c ), snapsFor( c ), fillElement ) : null ) );
 		const all = readings.length === copies.length && readings.every( Boolean );
-		const lift = ( attr, value, prop ) => {
+		const lift = ( attr, value, prop, covers = [ prop ] ) => {
 			const { before, after } = setAttr( node, { attr, value, merge: 'replace' } );
 			st.out.writes.push( { node: ref, index: rowRec.index, block: rowRec.name, slot: '', prop, attr, before, after, widths: [], how: 'row-lift' } );
-			rowAttr.has( attr ) && held.add( keyOf( rowAttr.get( attr ) ) );
+			rowAttr.has( attr ) && held.set( keyOf( rowAttr.get( attr ) ), new Set( covers ) );
 		};
 		if ( 'shape' === element && rowCircle && all && copies.every( ( c ) => isCircle( snapsFor( c ) ) ) ) {
 			lift( rowCircle, 'circle', 'border-radius' );
@@ -140,7 +153,8 @@ export function liftRow( st, rowRec, ref, cal, { fillElement, snapsOf } ) {
 		for ( const attr of [ ...new Set( live.flatMap( ( r ) => Object.keys( r.values ) ) ) ] ) {
 			const seen = live.map( ( r ) => json( r.values[ attr ] ?? null ) );
 			if ( all && seen.every( ( v ) => v === seen[ 0 ] ) ) {
-				lift( attr, live[ 0 ].values[ attr ], live.find( ( r ) => r.props[ attr ] ).props[ attr ] );
+				const covers = ( live[ 0 ].covers?.[ attr ] || [] ).filter( ( p ) => live.every( ( r ) => ( r.covers?.[ attr ] || [] ).includes( p ) ) );
+				lift( attr, live[ 0 ].values[ attr ], live.find( ( r ) => r.props[ attr ] ).props[ attr ], covers );
 			}
 		}
 	}
@@ -153,7 +167,7 @@ function liftChildren( st, rowRec, copies, held, { fillElement, snapsOf } ) {
 	// One settled row per icon, element, property and reason: each calibrated slot an element is read at settles it again.
 	const settledRows = new Map();
 	const keep = ( r ) => {
-		const k = json( [ r.node, r.slot, r.property, r.reason ] );
+		const k = json( [ r.node, r.slot, r.readSlot ?? null, r.property, r.reason ] );
 		const prior = settledRows.get( k );
 		settledRows.set( k, prior ? { ...prior, widths: [ ...new Set( [ ...( prior.widths || [] ), ...( r.widths || [] ) ] ) ].sort( ( a, b ) => a - b ) } : r );
 	};
@@ -184,7 +198,8 @@ function liftChildren( st, rowRec, copies, held, { fillElement, snapsOf } ) {
 					rowHeld( 'border-radius', readWidths, 'circle' );
 				}
 			}
-			reading.settled.forEach( ( r ) => keep( { ...r, node: cref, block: c.name, slot: slotOf } ) );
+			// A copy's settled row keeps the element it was judged on; the draft element it was read as is its readSlot.
+			reading.settled.forEach( ( r ) => keep( { ...r, node: cref, block: c.name, slot: r.slot ?? '', ...( LOOSE( r.slot ?? '' ) !== LOOSE( slotOf ) ? { readSlot: slotOf } : {} ) } ) );
 			const skipped = ( attr ) => childAttr.has( attr ) && held.has( keyOf( childAttr.get( attr ) ) );
 			// A switch (childIconShowBackground's twin) is written only with a value it turns on.
 			const carried = Object.keys( reading.values ).some( ( a ) => '(switch)' !== reading.props[ a ] && ! skipped( a ) );
@@ -196,10 +211,13 @@ function liftChildren( st, rowRec, copies, held, { fillElement, snapsOf } ) {
 				const { before, after } = setAttr( cnode, { attr, value, merge: 'replace' } );
 				st.out.writes.push( { node: cref, index: c.index, block: c.name, slot: slotOf, prop: reading.props[ attr ], attr, before, after, widths: [], how: 'row-child' } );
 			}
-			const heldProps = new Set( [ ...childAttr.values() ].filter( ( r ) => r.css_element === element && held.has( keyOf( r ) ) ).flatMap( ( r ) => String( r.css_property ).split( ',' ) ) );
+			// A value is row-held only where every copy's read wrote the row's setting from this property (or a shorthand of
+			// it): the copies agreed on that value, so the row's setting paints this icon's value. A setting written from other
+			// properties only is not proven to, so the row stays UNMAPPED.
+			const heldFrom = [ ...childAttr.values() ].filter( ( r ) => r.css_element === element && held.has( keyOf( r ) ) ).flatMap( ( r ) => String( r.css_property ).split( ',' ).map( ( h ) => [ h, held.get( keyOf( r ) ) ] ) );
 			for ( const u of reading.unmapped ) {
-				if ( [ ...heldProps ].some( ( h ) => paints( h, u.property ) ) ) {
-					rowHeld( u.property, null, u.value );
+				if ( heldFrom.some( ( [ h, from ] ) => paints( h, u.property ) && [ ...from ].some( ( p ) => paints( p, u.property ) ) ) ) {
+					rowHeld( u.property, u.widths, u.value );
 					continue;
 				}
 				const k = json( [ u.property, u.value, u.reason ] );

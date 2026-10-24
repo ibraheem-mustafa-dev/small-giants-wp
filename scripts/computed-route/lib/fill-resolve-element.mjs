@@ -13,6 +13,7 @@ import { gateFor } from './fill-fixture.mjs';
 import { fillEquivalent } from './fill-equivalents.mjs';
 import { compareDR } from './fill-confirm.mjs';
 import { elementContext } from './fill-held.mjs';
+import { samePaint } from './css-equivalence/tolerance.mjs';
 import { GAP_PROPS, valueText, json, alternateSlots, baselineFn, ledgerView, gapTarget, draftOf } from './fill-resolve-state.mjs';
 
 // Writes one resolver result into the node, recording each change. Returns the number of settings changed. `slot` is the
@@ -27,7 +28,7 @@ export function apply( st, rec, ref, target, prop, res, slot ) {
 	let changed = 0;
 	for ( const w of res.writes ) {
 		if ( json( w.value ) === json( node.attributes?.[ w.attr ] ) ) {
-			settled( st, rec, ref, { slot, ...from, property: prop, value: json( w.value ), widths: res.answers || widths, reason: 'already-set', detail: `${ w.attr } already holds this value in the tree` } );
+			settled( st, rec, ref, { slot, ...from, property: prop, value: json( w.value ), widths: res.answers || widths, reason: 'already-set', attr: w.attr, detail: `${ w.attr } already holds this value in the tree` } );
 			continue;
 		}
 		const { before, after } = setAttr( node, w );
@@ -42,6 +43,36 @@ export function apply( st, rec, ref, target, prop, res, slot ) {
 		}
 	}
 	return changed;
+}
+
+const TIER_KEYS = [ 'desktop', 'tablet', 'mobile' ];
+const TIER_WIDTH = { mobile: 375, tablet: 768, desktop: 1440 };
+// The tiers a width shows, nearest first: a tier left empty shows the next wider one.
+const chainAt = ( w ) => ( w < 768 ? [ 'mobile', 'tablet', 'desktop' ] : w < 1024 ? [ 'tablet', 'desktop' ] : [ 'desktop' ] );
+
+// The read widths a written result leaves showing the draft's value (`answers`): a width answers when the tier it shows is
+// one the result writes and the draft value that tier holds (its own width's) paints the same as the draft there, or when
+// no written tier reaches it (the resolver judged that it already shows the value). A Tablet or Mobile sibling holds its
+// tier; any other plain value holds every width. A fluid value answers every width it was fitted to.
+export function answeredWidths( prop, draft, res ) {
+	const widths = Object.keys( draft ).map( Number );
+	if ( [ 'clamp', 'declared-fluid' ].includes( res.how ) ) {
+		return widths;
+	}
+	const held = new Set();
+	for ( const w of ( res.writes || [] ).filter( ( x ) => ! x.unit ) ) {
+		if ( isObj( w.value ) && TIER_KEYS.some( ( k ) => k in w.value ) ) {
+			TIER_KEYS.filter( ( k ) => undefined !== w.value[ k ] && '' !== w.value[ k ] ).forEach( ( k ) => held.add( k ) );
+		} else {
+			held.add( /Tablet$/.test( w.attr ) ? 'tablet' : /Mobile$/.test( w.attr ) ? 'mobile' : 'desktop' );
+		}
+	}
+	return widths.filter( ( w ) => {
+		const tier = chainAt( w ).find( ( t ) => held.has( t ) );
+		const from = tier ? TIER_WIDTH[ tier ] : null;
+		const source = null === from ? undefined : res.included?.[ from ] ?? draft[ from ];
+		return undefined === source || from === w || samePaint( prop, draft[ w ], source );
+	} );
 }
 
 // The fixed-ratio equivalent for a property whose declared values are not plain. When it lands a write, the not-plain
@@ -240,7 +271,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 					gapProp[ prop ] = { attrs, draft };
 				}
 				res.writes = res.writes.filter( ( w ) => ownerKeeps( st, rec, ref, target, prop, w, res.slot ) );
-				apply( st, rec, ref, target, prop, { ...res, readSlot: slot, answers: Object.keys( draft ).map( Number ) }, res.slot );
+				apply( st, rec, ref, target, prop, { ...res, readSlot: slot, answers: answeredWidths( prop, draft, res ) }, res.slot );
 				res.writes.forEach( ( w ) => recordOwner( st, rec, target, prop, w.attr, target.slot === res.slot ) );
 			}
 			if ( res.fluid ) {

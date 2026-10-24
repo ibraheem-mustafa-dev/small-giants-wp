@@ -26,10 +26,10 @@ if ( args.includes( '--json' ) ) {
 	} else {
 		console.log( `CONSERVATION: ${ conserved.failures.length ? `${ conserved.failures.length } of ${ conserved.reads } declared reads dropped` : `${ conserved.reads } declared reads, ${ conserved.conserved } conserved, 0 dropped` } (${ conserved.excluded.cssWide } CSS-wide keyword reads excluded)` );
 		const w = conserved.widthlessHolds;
-		w.length && console.log( `  ${ w.length } conserved read${ 1 === w.length ? ' rests' : 's rest' } on a held row that records no width (Fill's alreadyHeld carries none, so the hold answers every width): ${ w.slice( 0, 5 ).map( ( r ) => `${ r.node } ${ r.slot || '(root)' } ${ r.property } @${ r.width }` ).join( '; ' ) }${ w.length > 5 ? '; ...' : '' }` );
+		w.length && console.log( `  ${ w.length } conserved read${ 1 === w.length ? ' rests' : 's rest' } on a held row that records no width, so the hold answers every width (${ [ ...new Set( w.map( ( r ) => r.how ) ) ].join( ', ' ) }): ${ w.slice( 0, 5 ).map( ( r ) => `${ r.node } ${ r.slot || '(root)' } ${ r.property } @${ r.width } (${ r.how })` ).join( '; ' ) }${ w.length > 5 ? '; ...' : '' }` );
 		for ( const g of groupFailures( conserved.failures ) ) {
 			console.log( `  ${ g.block } ${ g.property } (${ g.count })` );
-			for ( const f of g.rows ) console.log( `    ${ f.draft } ${ f.node } ${ f.slot || '(root)' } @${ f.width }: ${ f.value }` );
+			for ( const f of g.rows ) console.log( `    ${ f.draft } ${ f.node } ${ f.slot || '(root)' } @${ f.width }: ${ f.value }${ f.why ? ` (${ f.why })` : '' }` );
 		}
 	}
 }

@@ -1,50 +1,62 @@
 [
-	{
-		"file": "lib/fill-row-lift.mjs",
-		"find": "\tliftChildren( st, rowRec, copies, held, { fillElement, snapsOf } );\n",
-		"replace": "",
-		"why": "a differing value would be dropped or never reach the icon"
-	},
-	{
-		"file": "lib/fill-row-lift.mjs",
-		"find": "const slots = calibrated.length ? calibrated : [ target.slot ];",
-		"replace": "const slots = calibrated.length ? calibrated.slice( 0, 1 ) : [ target.slot ];",
-		"why": "only the first slot of an element would be read, losing the settings calibrated elsewhere"
-	},
-	{
-		"file": "lib/fill-row-lift.mjs",
-		"find": "if ( 'shape' === element && rowCircle && all &&",
-		"replace": "if ( false && rowCircle && all &&",
-		"why": "a circle would stay a radius row"
-	},
-	{
-		"file": "lib/fill-row-lift.mjs",
-		"find": "const skipped = ( attr ) => childAttr.has( attr ) && held.has( keyOf( childAttr.get( attr ) ) );",
-		"replace": "const skipped = ( attr ) => false;",
-		"why": "an icon would carry what the row already holds"
-	},
-	{
-		"file": "lib/fill-row-lift.mjs",
-		"find": "Math.abs( s.rect.w - s.rect.h ) <= 1",
-		"replace": "true",
-		"why": "a non-square box would become circle"
-	},
-	{
-		"file": "lib/fill-row-lift.mjs",
-		"find": "const slots = calibrated.length ? calibrated : [ target.slot ];",
-		"replace": "const slots = calibrated.length ? calibrated : [];",
-		"why": "an element no setting is calibrated on would be silent"
-	},
-	{
-		"file": "lib/fill-row-lift.mjs",
-		"find": "! [ ...heldProps ].some( ( h ) => paints( h, x.property ) )",
-		"replace": "true",
-		"why": "longhand rows of a property the row holds would be raised on the icon"
-	},
-	{
-		"file": "lib/fill-row-lift.mjs",
-		"find": "const hostOf = ( slot ) => String( slot ?? '' ).replace( /::(?:before|after)$/, '' );",
-		"replace": "const hostOf = ( slot ) => String( slot ?? '' );",
-		"why": "a draft element would be read as a ::before layer and every property it paints raised there"
-	}
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "\tliftChildren( st, rowRec, copies, held, { fillElement, snapsOf } );\n",
+  "replace": "",
+  "why": "a differing value would be dropped or never reach the icon"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "const slots = calibrated.length ? calibrated : [ target.slot ];",
+  "replace": "const slots = calibrated.length ? calibrated.slice( 0, 1 ) : [ target.slot ];",
+  "why": "only the first slot of an element would be read, losing the settings calibrated elsewhere"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "if ( 'shape' === element && rowCircle && all &&",
+  "replace": "if ( false && rowCircle && all &&",
+  "why": "a circle would stay a radius row"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "const skipped = ( attr ) => childAttr.has( attr ) && held.has( keyOf( childAttr.get( attr ) ) );",
+  "replace": "const skipped = ( attr ) => false;",
+  "why": "an icon would carry what the row already holds"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "Math.abs( s.rect.w - s.rect.h ) <= 1",
+  "replace": "true",
+  "why": "a non-square box would become circle"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "const slots = calibrated.length ? calibrated : [ target.slot ];",
+  "replace": "const slots = calibrated.length ? calibrated : [];",
+  "why": "an element no setting is calibrated on would be silent"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "if ( heldFrom.some( ( [ h, from ] ) => paints( h, u.property ) && [ ...from ].some( ( p ) => paints( p, u.property ) ) ) ) {",
+  "replace": "if ( false ) {",
+  "why": "longhand rows of a property the row holds would be raised on the icon"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "const hostOf = ( slot ) => String( slot ?? '' ).replace( /::(?:before|after)$/, '' );",
+  "replace": "const hostOf = ( slot ) => String( slot ?? '' );",
+  "why": "a draft element would be read as a ::before layer and every property it paints raised there"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "if ( heldFrom.some( ( [ h, from ] ) => paints( h, u.property ) && [ ...from ].some( ( p ) => paints( p, u.property ) ) ) ) {",
+  "replace": "if ( heldFrom.some( ( [ h ] ) => paints( h, u.property ) ) ) {",
+  "why": "any row setting painting the property holds the icon's value (main's rowHeld)"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "\t\tcovers[ r.attr ] = [ ...new Set( [ ...covers[ r.attr ], r.property ] ) ];\n",
+  "replace": "",
+  "why": "a side the setting already held is not one it was written from"
+ }
 ]
