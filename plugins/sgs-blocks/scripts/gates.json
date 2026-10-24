@@ -1728,42 +1728,6 @@
     "order": 188
   },
   {
-    "id": "check-snapshot-focus-tokens-self-test",
-    "cmd": "python scripts/check-snapshot-focus-tokens.py --self-test",
-    "tier": "fast",
-    "added_D": null,
-    "added_commit": null,
-    "budget_ms": null,
-    "order": 189
-  },
-  {
-    "id": "check-snapshot-focus-tokens",
-    "cmd": "python scripts/check-snapshot-focus-tokens.py --check",
-    "tier": "fast",
-    "added_D": null,
-    "added_commit": null,
-    "budget_ms": null,
-    "order": 190
-  },
-  {
-    "id": "check-snapshot-scrollbar-tokens-self-test",
-    "cmd": "python scripts/check-snapshot-scrollbar-tokens.py --self-test",
-    "tier": "fast",
-    "added_D": null,
-    "added_commit": null,
-    "budget_ms": null,
-    "order": 197
-  },
-  {
-    "id": "check-snapshot-scrollbar-tokens",
-    "cmd": "python scripts/check-snapshot-scrollbar-tokens.py --check",
-    "tier": "fast",
-    "added_D": null,
-    "added_commit": null,
-    "budget_ms": null,
-    "order": 198
-  },
-  {
     "id": "survey-rich-text-formats-self-test",
     "cmd": "node scripts/survey-rich-text-formats.js --self-test",
     "tier": "fast",

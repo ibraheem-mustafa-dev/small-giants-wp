@@ -137,7 +137,7 @@ A gate that reads a block's own source reads it through `plugins/sgs-blocks/scri
 
 A block whose stylesheet lays repeated items out as a flex row declares `css:flex-wrap` for that element and offers the shared `FlexWrapControl` control (`src/components/FlexWrapControl.js`): `scripts/check-row-flex-wrap.py --check` (fast tier) reports a row with no setting, and its header lists the named exclusions (single controls, tab list, marquee and slider lanes, fixed step indicators).
 
-Keyboard focus is one system (`theme/sgs-theme/assets/css/focus.css`, Spec 32 §14.5): `scripts/check-focus-system.js --check` fails any block rule that draws its own focus outline or box-shadow, suppresses one, or reads a retired focus token (blocks hand in `--sgs-focus-under` and `--sgs-focus-offset` instead), and `scripts/check-snapshot-focus-tokens.py --check` holds every snapshot's `settings.custom.focus` to 3:1.
+Keyboard focus is one system (`theme/sgs-theme/assets/css/focus.css`, Spec 32 §14.5): `scripts/check-focus-system.js --check` fails any block rule that draws its own focus outline or box-shadow, suppresses one, or reads a retired focus token (blocks hand in `--sgs-focus-under` and `--sgs-focus-offset` instead). `scripts/check-snapshot-focus-tokens.py` (contrast as warnings only) is not wired into any gate tier: contrast never blocks or distracts a build (Bean, 2026-10-24).
 
 ## Where the rest of this file moved
 
