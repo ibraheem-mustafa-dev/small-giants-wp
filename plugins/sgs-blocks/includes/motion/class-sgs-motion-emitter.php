@@ -50,6 +50,16 @@ final class Sgs_Motion_Emitter {
 	/** Hover colour and shadow properties whose timing the hover state owns (FR-38A-7). */
 	const HOVER_PAINT = array( 'color', 'background-color', 'border-color', 'box-shadow' );
 
+	/**
+	 * The hover state's colour-and-shadow timing override: field key => its slot. Unset, the HOVER_PAINT properties run on
+	 * the client's `transition.fast` (a duration and easing pair); either field set replaces that half, the other half
+	 * taking `duration.fast` or `easing.default`.
+	 */
+	const PAINT_TIMING = array(
+		'paintDuration' => 'duration',
+		'paintEasing'   => 'easing',
+	);
+
 	const MH_PREFIX = '--sgs-mh-';
 	const ME_PREFIX = '--sgs-me-';
 
@@ -263,11 +273,14 @@ final class Sgs_Motion_Emitter {
 		$tiers       = self::tier_values( $state );
 		$map         = self::property_channels();
 		$owners      = array();
+		// The movement timing: the client's hover movement token (settings.custom.hover), whose framework default is
+		// duration.fast and easing.emphasised.
 		$timing      = array(
-			'transition-duration'        => self::token_or( 'token:duration.fast', '200ms' ),
+			'transition-duration'        => 'var(--wp--custom--hover--duration, ' . self::token_or( 'token:duration.fast', '200ms' ) . ')',
 			'transition-delay'           => '0ms',
-			'transition-timing-function' => self::token_or( 'token:easing.emphasised', 'cubic-bezier(0.2, 0.7, 0.2, 1)' ),
+			'transition-timing-function' => 'var(--wp--custom--hover--easing, ' . self::token_or( 'token:easing.emphasised', 'cubic-bezier(0.2, 0.7, 0.2, 1)' ) . ')',
 		);
+		$paint       = array();
 		$follows     = Sgs_Motion_Rotation::follows( $tiers['desktop'] );
 		$follow      = Sgs_Motion_Rotation::follow_defaults();
 		$angles      = Sgs_Motion_Rotation::empty_angles();
@@ -282,6 +295,11 @@ final class Sgs_Motion_Emitter {
 			foreach ( $tiers[ $tier ] as $key => $value ) {
 				$prop = $fields[ $key ]['css'] ?? null;
 				$css  = self::value_css( $def, (string) $key, $value );
+				if ( isset( self::PAINT_TIMING[ $key ] ) && null !== $css ) {
+					$paint[ self::PAINT_TIMING[ $key ] ] = $css;
+					$timing_changed                     = true;
+					continue;
+				}
 				if ( null === $prop || null === $css ) {
 					continue;
 				}
@@ -308,8 +326,13 @@ final class Sgs_Motion_Emitter {
 			// A tier repeats the whole list when its timing or its owner set differs from the wider tier's.
 			if ( $timing_changed || count( $owners ) !== $owner_count ) {
 				$trans[ $tier ] = array();
-				foreach ( array_merge( array_keys( $owners ), self::HOVER_PAINT ) as $prop ) {
+				foreach ( array_keys( $owners ) as $prop ) {
 					$trans[ $tier ][] = $prop . ' ' . $timing['transition-duration'] . ' ' . $timing['transition-timing-function'] . ' ' . $timing['transition-delay'];
+				}
+				$paint_timing = array() === $paint ? 'var(--wp--custom--transition--fast, ' . self::token_or( 'token:duration.fast', '200ms' ) . ' ease)'
+					: ( $paint['duration'] ?? self::token_or( 'token:duration.fast', '200ms' ) ) . ' ' . ( $paint['easing'] ?? self::token_or( 'token:easing.default', 'ease' ) );
+				foreach ( self::HOVER_PAINT as $prop ) {
+					$trans[ $tier ][] = $prop . ' ' . $paint_timing . ' ' . $timing['transition-delay'];
 				}
 				if ( $follows ) {
 					$trans[ $tier ] = array_merge( $trans[ $tier ], Sgs_Motion_Rotation::follow_entries( $follow ) );

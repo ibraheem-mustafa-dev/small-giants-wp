@@ -2892,6 +2892,26 @@
 						"state": "hover",
 						"perDevice": false
 					}
+				},
+				"paintDuration": {
+					"$ref": "#/$defs/duration",
+					"description": "Colour, background, border and shadow timing on hover; unset, the site's transition.fast.",
+					"x-sgs-field": {
+						"fieldType": "duration",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": true
+					}
+				},
+				"paintEasing": {
+					"$ref": "#/$defs/easing",
+					"description": "Colour, background, border and shadow easing on hover; unset, the site's transition.fast.",
+					"x-sgs-field": {
+						"fieldType": "easing",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": false
+					}
 				}
 			},
 			"additionalProperties": false
@@ -3025,6 +3045,9 @@
 					"$ref": "#/$defs/duration"
 				},
 				"delay": {
+					"$ref": "#/$defs/duration"
+				},
+				"paintDuration": {
 					"$ref": "#/$defs/duration"
 				}
 			},

@@ -1,0 +1,158 @@
+[
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "agreedDeclared( st, target, prop, draft, fontPx ), contextAt } );",
+		"replace": "agreedDeclared( st, target, prop, draft, fontPx ) } );",
+		"why": "fillElement passes no context to resolveProperty"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "const own = PROPS.filter( ( p ) => ! CONTEXT_PROPS.has( p ) );",
+		"replace": "const own = PROPS;",
+		"why": "the context reads are written (or raised) as properties"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "parentDisplay = s ? s.layoutDisplay || s.styles?.display : undefined;",
+		"replace": "parentDisplay = undefined;",
+		"why": "a root element's parent display is never read"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "parentDisplay = s ? s.layoutDisplay || s.styles?.display : undefined;",
+		"replace": "parentDisplay = s ? s.styles?.display : undefined;",
+		"why": "the parent's own display, not the element laying out its children"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "const upSlot = steps.slice( 0, -1 ).join( ' > ' );",
+		"replace": "const upSlot = '';",
+		"why": "every inner element's parent is taken as the root"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "...( own && ! own.missing && own.position ? { position: own.position } : {} ),",
+		"replace": "",
+		"why": "the element's own position is left out"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "...( own && ! own.missing && own.styles?.direction ? { direction: own.styles.direction } : {} ),",
+		"replace": "",
+		"why": "the element's own direction is left out"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "same( row.property, String( part ), values[ x ], contextAt( x ) )",
+		"replace": "same( row.property, String( part ), values[ x ] )",
+		"why": "the held side compares with no context"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "const contextAt = ( w ) => elementContext( st, rec, target, w );",
+		"replace": "const contextAt = () => ( {} );",
+		"why": "classify builds no context"
+	},
+	{
+		"file": "lib/fill-equivalents.mjs",
+		"find": " && ! ( Number.isFinite( content ) && content > r.h + PX_TOL );",
+		"replace": ";",
+		"why": "rendersAt ignores the content height"
+	},
+	{
+		"file": "lib/fill-equivalents.mjs",
+		"find": ", ( w ) => contentExtent( { nodes: st.nodes, reads: st.reads }, rec, target, 'h', w ) ) ) {",
+		"replace": " ) ) {",
+		"why": "fillEquivalent passes no content height"
+	},
+	{
+		"file": "lib/fill-equivalents.mjs",
+		"find": "const contextAt = ( w ) => ( ctxTarget ? elementContext( st, at, ctxTarget, w ) : {} );",
+		"replace": "const contextAt = () => ( {} );",
+		"why": "the equivalent setting is resolved with no context"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "if ( Number.isFinite( scroll ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the box's scroll height is never read as its content"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "return mark ? t.slice( 0, mark.index ).trim() : '';",
+		"replace": "return /^\\s*copyright\\b/i.test( t ) ? 'Copyright' : '';",
+		"why": "the old rule: Copyright or nothing"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "a.copyrightPrefix = copyrightPrefixOf( t );",
+		"replace": "a.copyrightPrefix = /^\\s*copyright\\b/i.test( t ) ? 'Copyright' : '';",
+		"why": "contentAttrs keeps the old rule"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": " ?? /\\b(?:19|20)\\d{2}\\b/.exec( t );",
+		"replace": ";",
+		"why": "a line with no mark gives no prefix before its year"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "const t = String( text ?? '' ).replace( /\\s+/g, ' ' ).trim();",
+		"replace": "const t = String( text ?? '' );",
+		"why": "spacing is not collapsed"
+	},
+	{
+		"file": "lib/fill-shop-parts.mjs",
+		"find": "if ( ! attrExists( block, attr ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a setting the block lacks is written"
+	},
+	{
+		"file": "lib/fill-shop-parts.mjs",
+		"find": "if ( other && undefined !== held ) {",
+		"replace": "if ( false ) {",
+		"why": "another writer's value is overwritten"
+	},
+	{
+		"file": "lib/fill-shop-parts.mjs",
+		"find": "if ( json( held ) === json( value ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a value already held is written again"
+	},
+	{
+		"file": "lib/fill-shop-parts.mjs",
+		"find": "if ( ! isObj( record ) || ! Array.isArray( record.surfaces ) || record.surfaces.some( ( s ) => ! isObj( s ) || ! Array.isArray( s.parts ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a malformed record is accepted"
+	},
+	{
+		"file": "lib/fill-shop-parts.mjs",
+		"find": "if ( ! fs.existsSync( file ) ) {\n\t\treturn null;",
+		"replace": "if ( false ) {\n\t\treturn null;",
+		"why": "a missing record throws"
+	},
+	{
+		"file": "lib/fill-shop-parts.mjs",
+		"find": "&& isObj( p.write ) && Object.keys( p.write ).length )",
+		"replace": ")",
+		"why": "a part with no value is written"
+	},
+	{
+		"file": "lib/fill-shop-parts.mjs",
+		"find": "const homes = nodes.filter( ( rec ) => rec.name === block );",
+		"replace": "const homes = nodes;",
+		"why": "a value lands on every block"
+	},
+	{
+		"file": "lib/fill-shop-parts.mjs",
+		"find": "how: 'shop-part',",
+		"replace": "how: 'content',",
+		"why": "the write is not named as a shop part"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "( layer ? ids : [ ...new Set( [ ...ids, ...CONTEXT_PROPS ] ) ] ).map(",
+		"replace": "ids.map(",
+		"why": "the context reads leave the siblings the resolver judges with"
+	}
+]

@@ -32,7 +32,7 @@ import { TIMING_PROPS, timingWrites } from './fill-timing.mjs';
 import { motionDb } from './motion-db.mjs';
 import { targetName } from './fill-motion.mjs';
 import { MOTION_STATE_PROPS, stateHover } from './fill-state-motion.mjs';
-import { createPatch, tokenRoute, pickValue, pressVariant, ownedBySetting, applyTokenLooks, conflictRow } from './fill-state-tokens.mjs';
+import { createPatch, tokenRoute, pickValue, pressVariant, ownedBySetting, applyTokenLooks, conflictRow, ringLook, takesRing } from './fill-state-tokens.mjs';
 
 export const COVERAGE_WRITES = [
 	'aria-attr:aria-checked',
@@ -147,7 +147,9 @@ const propOf = ( effect ) => effect.slice( effect.lastIndexOf( '|' ) + 1 );
 // lib/calibrate-instances.mjs::stateLook). Given the draft's resting look on the target (rest: { prop: { width: value } }),
 // a property is the block's own where a state setting of that property governs the element (the block has a rule for it
 // there) and the recorded state value differs from the draft's resting value at a width both state.
-export function defaultStateLook( cal, state, rest = {} ) {
+// ctxAt( width ): the element's context there for canon() ({ position, direction }: lib/fill-prop.mjs::canon), so a
+// keyword canon decides only from the context (min-height auto, text-align start) compares as it paints.
+export function defaultStateLook( cal, state, rest = {}, ctxAt = () => ( {} ) ) {
 	const known = new Set( Object.keys( cal?.elements || {} ).map( LOOSE ) );
 	const readings = {};
 	for ( const s of Object.values( cal?.settings || {} ).filter( ( x ) => state === x.state ) ) {
@@ -173,7 +175,7 @@ export function defaultStateLook( cal, state, rest = {} ) {
 				continue;
 			}
 			for ( const [ prop, values ] of Object.entries( props ) ) {
-				const differs = Object.entries( values ).some( ( [ w, v ] ) => undefined !== rest[ prop ]?.[ w ] && ! sameValue( prop, canon( prop, v ), canon( prop, rest[ prop ][ w ] ), PX_TOL ) );
+				const differs = Object.entries( values ).some( ( [ w, v ] ) => undefined !== rest[ prop ]?.[ w ] && ! sameValue( prop, canon( prop, v, ctxAt( w ) ), canon( prop, rest[ prop ][ w ], ctxAt( w ) ), PX_TOL ) );
 				differs && governs( path, prop ) && ( out[ path ] ??= new Set() ).add( prop );
 			}
 		}
@@ -195,6 +197,20 @@ function restingOf( reads, id ) {
 	return out;
 }
 
+// The target's own context per read width, as the state read has it: its position (the snapshot's, else its styles') and
+// its direction. Returns { at( width ) (canon's ctx), siblings (resolveProperty's { position, direction } per width) }.
+// The parent's display is not part of a target's read, so a value canon decides from it stays undecided.
+export function stateContext( reads, id ) {
+	const siblings = { position: {}, direction: {} };
+	for ( const w of READ_WIDTHS ) {
+		const snap = reads.widths?.[ w ]?.[ id ];
+		const position = snap?.position ?? snap?.styles?.position;
+		position && ( siblings.position[ w ] = position );
+		snap?.styles?.direction && ( siblings.direction[ w ] = snap.styles.direction );
+	}
+	return { at: ( w ) => ( { position: siblings.position[ w ], direction: siblings.direction[ w ] } ), siblings };
+}
+
 // The elements a held property is resolved on: the target's slot, the slots its resting writer reaches for a carried
 // property (lib/fill-resolve-state.mjs::alternateSlots), and the slots of each resting setting of that property the node
 // carries (an icon's ground colour sits on its shape).
@@ -214,11 +230,12 @@ function holdSlots( cal, node, slot, prop, rest ) {
 export function holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads, drafts, held, interaction, taken = new Map() } ) {
 	const out = { writes: [], unmapped: [], held: [] };
 	const rest = restingOf( reads, target.id );
+	const ctx = stateContext( reads, target.id );
 	const read = ( prop ) => READ_WIDTHS.some( ( w ) => reads.widths?.[ w ]?.[ target.id ]?.styles?.[ prop ] );
 	const declared = ( state, prop ) => [ ...drafts.values() ].some( ( d ) => d.state === state && ! d.pseudo && ( d.prop === prop || longhands( d.prop ).includes( prop ) ) );
 	const gapRow = ( prop, state, why ) => ( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( rest[ prop ] || {} ), reason: `default-state: ${ rec.name } changes ${ prop } on ${ state } by itself and the draft does not, and nothing holds it (${ why })` } );
 	for ( const state of interaction ) {
-		const look = defaultStateLook( cal, state, rest );
+		const look = defaultStateLook( cal, state, rest, ctx.at );
 		const plan = [];
 		for ( const prop of [ ...new Set( Object.values( look ).flatMap( ( s ) => [ ...s ] ) ) ] ) {
 			const slots = holdSlots( cal, node, target.slot, prop, rest[ prop ] || {} );
@@ -226,7 +243,7 @@ export function holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads
 				continue;
 			}
 			const gap = ! rest[ prop ] ? `the draft's resting ${ prop } was not read on this element` : stateGap( state, held );
-			plan.push( { prop, res: gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: rest[ prop ], baseline: () => undefined, slots, calibration: cal, db, snapshot, log: [], state } ) } );
+			plan.push( { prop, res: gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: rest[ prop ], baseline: () => undefined, slots, calibration: cal, db, snapshot, log: [], state, siblings: ctx.siblings } ) } );
 		}
 		const pairBroken = PAIR.every( ( p ) => plan.some( ( x ) => x.prop === p ) ) && plan.some( ( x ) => PAIR.includes( x.prop ) && 'written' !== x.res.status );
 		for ( const { prop, res } of plan ) {
@@ -251,6 +268,19 @@ export function holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads
 		}
 	}
 	return out;
+}
+
+// A hover look written to a setting also paints keyboard focus (every SGS hover setting renders through
+// includes/helpers-hover-state.php::sgs_hover_state_rules, on :hover and :focus-visible together). Where the draft has no
+// focus look of that property on an element that takes focus, the draft keeps its resting look on focus and the block
+// shows the hover look; no setting separates the two, so the row is named (the block's hover render is Track F's), never
+// dropped. Returns the reason, or null. attrs: the settings the hover look was written to.
+export function focusSharesHover( { drafts, pseudo = '', prop, snap = {}, attrs = [] } ) {
+	const focusLook = [ ...drafts.values() ].some( ( d ) => d.pseudo === pseudo && ( d.prop === prop || longhands( d.prop ).includes( prop ) ) && String( d.state ).split( '+' ).some( ( s ) => 'focus' === s || 'focus-visible' === s ) );
+	if ( focusLook || ! takesRing( snap.tag, snap.role ) ) {
+		return null;
+	}
+	return `focus-shares-hover: ${ attrs.join( ', ' ) } paints the draft's hover ${ prop } on :focus-visible too, and the draft keeps its resting ${ prop } on focus; no setting separates focus from hover (the block's hover render, Track F)`;
 }
 
 // Whether the block's motion support holds this target's hover transform (its sgsMotion hover layer, written by
@@ -302,6 +332,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 			out.writes.push( ...timing.writes );
 			out.unmapped.push( ...timing.unmapped );
 			const drafts = stateDrafts( reads, target.id );
+			const ctx = stateContext( reads, target.id );
 			const hidden = SURFACE_BLOCKS.includes( rec.name ) && hiddenAtRest( reads, target.id );
 			const tokenLooks = {};
 			for ( const { state, prop, pseudo, perWidth, read, draftDefect } of drafts.values() ) {
@@ -331,13 +362,15 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 				}
 				const atRest = 'open' === state && hidden && ! held.has( state );
 				const gap = atRest ? null : stateGap( state, held );
-				const res = gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot ], calibration: cal, db, snapshot, log: [], state: atRest ? null : state } );
+				const res = gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot ], calibration: cal, db, snapshot, log: [], state: atRest ? null : state, siblings: ctx.siblings } );
 				if ( 'written' === res.status ) {
 					for ( const w of res.writes ) {
 						const { before, after } = setAttr( node, w );
 						atRest || taken.set( w.attr, w.value );
 						out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop, state, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: 'fill-state', ...( 'code' === read ? { read } : {} ), ...( draftDefect ? { draftDefect } : {} ), ...( atRest ? { surface: 'open look written as the resting look' } : {} ) } );
 					}
+					const shared = 'hover' === state ? focusSharesHover( { drafts, pseudo, prop, snap: snapOf( target ), attrs: res.writes.map( ( w ) => w.attr ) } ) : null;
+					shared && out.unmapped.push( { node: ref, block: rec.name, slot, property: prop, state: 'focus', value: JSON.stringify( perWidth ), reason: shared } );
 				} else if ( 'gap' === res.status ) {
 					out.unmapped.push( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( perWidth ), reason: res.detail ? `${ res.gap }: ${ res.detail }` : res.gap } );
 				}
@@ -348,6 +381,9 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 				out.unmapped.push( ...hold.unmapped );
 				out.held.push( ...hold.held );
 			}
+			const ring = ringLook( { drafts, reads, id: target.id, snap: snapOf( target ), focus: tokenLooks.focus } );
+			ring?.looks && Object.assign( tokenLooks, ring.looks );
+			ring?.gap && out.unmapped.push( { node: ref, block: rec.name, slot: target.slot, ...ring.gap } );
 			if ( Object.keys( tokenLooks ).length ) {
 				const snap = snapOf( target );
 				const from = { node: ref, block: rec.name, slot: target.slot, index: rec.index };

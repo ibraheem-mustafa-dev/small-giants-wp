@@ -8,7 +8,11 @@
  * A host with its own border sets --sgs-focus-host-border to that border's width, so the G3 band sits outside the ring.
  * Two optional site tokens shape the whole look: settings.custom.focus.offset (--wp--custom--focus--offset, a length; the
  * gap between the element and the ring, default the width) and settings.custom.focus.bloom (--wp--custom--focus--bloom,
- * a number 0 to 1 scaling the near and far glow, default 1; 0 is no glow). An absent token leaves today's rendering unchanged.
+ * a number 0 to 1 scaling the near and far glow, default 1; 0 is no glow). settings.custom.focus.style
+ * (--wp--custom--focus--style) is the ring's outline-style, default solid; `auto` paints the browser's own ring.
+ * settings.custom.focus.ringOnly (--wp--custom--focus--ring-only, 1 or 0, default 0) at 1 drops the hairline and the glow,
+ * so the focused element shows the ring and keeps its resting shadow (--sgs-focus-under). An absent token leaves today's
+ * rendering unchanged.
  */
 @property --sgs-focus-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
 @keyframes sgs-focus-spin { to { --sgs-focus-angle: 360deg; } }
@@ -26,6 +30,10 @@
    of the two-tone pair (the light inner token on a light ground, the ink on a dark one), so the core and the hairline
    are never the same colour and one of them always reaches 3:1 on a photo. --sgs-focus-ring-on-light is the light-ground
    ring on every ground, so a block whose surface turns light at a breakpoint can take it. */
+/* --sgs-focus-keep is 1, or 0 under the ringOnly switch: it scales the hairline and the glow layers to nothing. */
+:root {
+	--sgs-focus-keep: calc(1 - var(--wp--custom--focus--ring-only, 0));
+}
 :root,
 .sgs-on-light,
 .sgs-on-dark {
@@ -70,7 +78,7 @@
 .sgs-focus--inset,
 .sgs-focus--inset.sgs-focus-card > .sgs-block-link-overlay {
 	--sgs-focus-offset: calc(var(--sgs-focus-width) * -1);
-	--sgs-focus-halo: inset 0 0 0 calc(var(--sgs-focus-width) * 2) var(--sgs-focus-hairline);
+	--sgs-focus-halo: inset 0 0 0 calc(var(--sgs-focus-width) * 2 * var(--sgs-focus-keep, 1)) var(--sgs-focus-hairline);
 }
 
 /* 2. The indicator: one declaration set, six arms (element, adjacent proxy, scoped proxy, card proxy, card overlay, editor preview).
@@ -85,14 +93,27 @@
 .sgs-focus-card:has(.sgs-focus-source:focus-visible):not(#wpadminbar *),
 .sgs-focus-card:has(.sgs-focus-source:focus-visible) > .sgs-block-link-overlay:not(#wpadminbar *),
 .sgs-focus-preview:not(#wpadminbar *) {
-	outline: var(--sgs-focus-width) solid var(--sgs-focus-ring);
+	outline: var(--sgs-focus-width) var(--wp--custom--focus--style, solid) var(--sgs-focus-ring);
 	outline-offset: var(--sgs-focus-offset, var(--wp--custom--focus--offset, var(--sgs-focus-width)));
 	box-shadow:
 		var(--sgs-focus-halo,
-			0 0 0 var(--sgs-focus-offset, var(--wp--custom--focus--offset, var(--sgs-focus-width))) var(--sgs-focus-hairline),
-			0 0 calc(var(--sgs-focus-width) * 6) calc(var(--sgs-focus-width) * 2) color-mix(in srgb, var(--sgs-focus-near) calc(55% * var(--wp--custom--focus--bloom, 1)), transparent),
-			0 0 calc(var(--sgs-focus-width) * 15) calc(var(--sgs-focus-width) * 5) color-mix(in srgb, var(--sgs-focus-far) calc(30% * var(--wp--custom--focus--bloom, 1)), transparent)),
+			0 0 0 calc(var(--sgs-focus-offset, var(--wp--custom--focus--offset, var(--sgs-focus-width))) * var(--sgs-focus-keep, 1)) var(--sgs-focus-hairline),
+			0 0 calc(var(--sgs-focus-width) * 6) calc(var(--sgs-focus-width) * 2) color-mix(in srgb, var(--sgs-focus-near) calc(55% * var(--wp--custom--focus--bloom, 1) * var(--sgs-focus-keep, 1)), transparent),
+			0 0 calc(var(--sgs-focus-width) * 15) calc(var(--sgs-focus-width) * 5) color-mix(in srgb, var(--sgs-focus-far) calc(30% * var(--wp--custom--focus--bloom, 1) * var(--sgs-focus-keep, 1)), transparent)),
 		var(--sgs-focus-under, 0 0 #0000);
+}
+/* The ringOnly switch, exactly: where style queries run, the focused element's box-shadow is its resting shadow alone
+   (none when it hands in none), so its computed value equals an unfocused one. Elsewhere --sgs-focus-keep has already
+   scaled the hairline and glow layers to nothing. */
+@container style(--wp--custom--focus--ring-only: 1) {
+	:focus-visible:not(#wpadminbar *, .editor-styles-wrapper :is([contenteditable], .block-editor-block-list__block, .components-button, [class*="block-editor-"]), [tabindex="-1"], .sgs-focus-source, input[type="range"]),
+	.sgs-focus-source:focus-visible + .sgs-focus-proxy:not(#wpadminbar *),
+	.sgs-focus-scope:has(.sgs-focus-source:focus-visible) .sgs-focus-proxy:not(#wpadminbar *),
+	.sgs-focus-card:has(.sgs-focus-source:focus-visible):not(#wpadminbar *),
+	.sgs-focus-card:has(.sgs-focus-source:focus-visible) > .sgs-block-link-overlay:not(#wpadminbar *),
+	.sgs-focus-preview:not(#wpadminbar *) {
+		box-shadow: var(--sgs-focus-under, none);
+	}
 }
 /* A focus source draws nothing itself: its proxy (adjacent, scoped or the card) carries the one ring. */
 .sgs-focus-source:focus-visible:not(#wpadminbar *) {
@@ -124,13 +145,13 @@ input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *) {
 	.sgs-focus-source:focus-visible + .sgs-focus-proxy:not(#wpadminbar *),
 	.sgs-focus-card .sgs-focus-source:focus-visible:not(#wpadminbar *),
 	.sgs-focus-preview:not(#wpadminbar *) {
-		outline: var(--sgs-focus-width) solid var(--sgs-focus-ring);
+		outline: var(--sgs-focus-width) var(--wp--custom--focus--style, solid) var(--sgs-focus-ring);
 		outline-offset: var(--sgs-focus-offset, var(--wp--custom--focus--offset, var(--sgs-focus-width)));
 		box-shadow:
 			var(--sgs-focus-halo,
-				0 0 0 var(--sgs-focus-offset, var(--wp--custom--focus--offset, var(--sgs-focus-width))) var(--sgs-focus-hairline),
-				0 0 calc(var(--sgs-focus-width) * 6) calc(var(--sgs-focus-width) * 2) color-mix(in srgb, var(--sgs-focus-near) calc(55% * var(--wp--custom--focus--bloom, 1)), transparent),
-				0 0 calc(var(--sgs-focus-width) * 15) calc(var(--sgs-focus-width) * 5) color-mix(in srgb, var(--sgs-focus-far) calc(30% * var(--wp--custom--focus--bloom, 1)), transparent)),
+				0 0 0 calc(var(--sgs-focus-offset, var(--wp--custom--focus--offset, var(--sgs-focus-width))) * var(--sgs-focus-keep, 1)) var(--sgs-focus-hairline),
+				0 0 calc(var(--sgs-focus-width) * 6) calc(var(--sgs-focus-width) * 2) color-mix(in srgb, var(--sgs-focus-near) calc(55% * var(--wp--custom--focus--bloom, 1) * var(--sgs-focus-keep, 1)), transparent),
+				0 0 calc(var(--sgs-focus-width) * 15) calc(var(--sgs-focus-width) * 5) color-mix(in srgb, var(--sgs-focus-far) calc(30% * var(--wp--custom--focus--bloom, 1) * var(--sgs-focus-keep, 1)), transparent)),
 			var(--sgs-focus-under, 0 0 #0000);
 	}
 	@media (forced-colors: active) {

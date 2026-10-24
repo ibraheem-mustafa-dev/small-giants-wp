@@ -779,6 +779,10 @@ Every focusable element in the framework shows one keyboard focus look, defined 
 | `nearOnDark` | `var(--wp--preset--color--accent)` | the true accent | the inner bloom on dark grounds |
 | `farOnDark` | `var(--wp--preset--color--accent)` | the true accent | the outer bloom on dark grounds |
 | `signatureA`, `signatureB`, `signatureC` | `primary`, `accent`, `accent-light` palette references | same | the G3 conic stops and bloom |
+| `offset` (optional) | unset (the width) | the draft's ring gap, a length | the gap between the element and the ring |
+| `bloom` (optional) | unset (1) | 0 to 1 | scales the near and far glow; 0 is no glow |
+| `style` (optional) | unset (`solid`) | the draft's `outline-style`; `auto` is the browser's own ring | the core's outline-style on every arm outside forced colours |
+| `ringOnly` (optional) | unset (0) | 1 where the draft shows a ring and nothing else (the browser's ring) | 1 drops the hairline and the glow: `--sgs-focus-keep` scales those layers to nothing, and where style queries run (`@container style(--wp--custom--focus--ring-only: 1)`) the arms paint only the element's resting shadow (`var(--sgs-focus-under, none)`), so its computed `box-shadow` equals the unfocused one |
 
 `plugins/sgs-blocks/scripts/check-snapshot-focus-tokens.py` (`--check`, `--fix` (`--recalibrate` recomputes `ring` and `ringOnDark` that are already set), `--survey`, `--self-test`; rules in `plugins/sgs-blocks/scripts/snapshot_focus_tokens.py`) classes every opaque palette entry that is not a text, link, border or solid signal colour (`snapshot_focus_tokens.py::is_ground_slug`: the surfaces, section bands, tints, brand colours and footer) as a light or dark ground by the rule `plugins/sgs-blocks/includes/helpers-colour-wcag.php::sgs_colour_background_tone` uses, requires the ring to reach 3:1 on every ground of its tone and `inner` against `ink` to reach 9:1, shifts a failing accent by OKLCH lightness the shortest distance that reaches 3:1, and never overwrites a hand-set value. `plugins/sgs-blocks/scripts/push-theme-snapshot.py::roster_guard` refuses a snapshot missing any `custom.focus.<key>`.
 
