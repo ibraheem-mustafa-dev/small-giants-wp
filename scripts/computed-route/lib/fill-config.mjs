@@ -9,15 +9,16 @@ import { refOf, REF_PREFIX } from './tree.mjs';
 // The pairs configText takes: { ref, draft } for each node with a draftRef (the finder as the skeleton wrote it, a
 // walker finder on the whole draft page), less a node whose draft element does not hold its children's and with each
 // width variant's pair scoped to its own words (lib/origin-pairs.mjs::skeletonPairs). tree: the filled tree (refs on
-// every node); nodes: skeletonNodes( skeleton ).
-export function walkerPairs( nodes, tree ) {
+// every node); nodes: skeletonNodes( skeleton ); inventory: the surface's skeleton inventory, which adds a pair for each
+// part a block renders whose draft element sits outside the block's (lib/origin-pairs.mjs::outsideSlotPairs).
+export function walkerPairs( nodes, tree, inventory = null ) {
 	const flat = [];
 	const go = ( list ) => list.forEach( ( n ) => {
 		flat.push( n );
 		go( n.innerBlocks || [] );
 	} );
 	go( tree );
-	return skeletonPairs( nodes, flat.map( ( n ) => refOf( n ) ) ).pairs;
+	return skeletonPairs( nodes, flat.map( ( n ) => refOf( n ) ), { inventory } ).pairs;
 }
 
 // The base config: the draft and live pages, the walker states, the divergence ledger (a path relative to the config
@@ -43,12 +44,12 @@ export function baseConfigText( { surface, draftUrl, liveUrl, open = null, diver
 }
 
 // Both files' names and texts: { baseFile, baseText, fullFile, fullText }. The full file is what Solve and the walker run.
-export function walkerConfigs( { surface, nodes, tree, draftUrl, liveUrl, open, divergences, state } ) {
+export function walkerConfigs( { surface, nodes, tree, inventory = null, draftUrl, liveUrl, open, divergences, state } ) {
 	const baseFile = `${ surface }.fill-base.mjs`;
 	return {
 		baseFile,
 		baseText: baseConfigText( { surface, draftUrl, liveUrl, open, divergences, state } ),
 		fullFile: `${ surface }.fill.mjs`,
-		fullText: configText( baseFile, surface, walkerPairs( nodes, tree ) ),
+		fullText: configText( baseFile, surface, walkerPairs( nodes, tree, inventory ) ),
 	};
 }

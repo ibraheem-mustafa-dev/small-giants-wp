@@ -279,7 +279,10 @@ export async function fillSurface( o ) {
 		const steps = sweepSteps( reads.sweep, ( id ) => ( { node: refOf( flat[ Number( id.split( ':' )[ 0 ] ) ] ), slot: id.slice( id.indexOf( ':' ) + 1 ) } ) );
 		const report = fillReport( { client: o.client, surface: o.surface, draft: o.draftDir ? `${ o.draftDir } (served locally)` : url, nodes: nodes.length, targets: nodes.reduce( ( t, n ) => t + n.targets.length, 0 ), ...result, steps, entrances, snapshotPatch: { file: patchFile, entries: states.patchEntries }, sweepSkipped: false === o.sweep } );
 		const divergences = fs.existsSync( ledgerFile ) ? path.relative( outDir, ledgerFile ).split( path.sep ).join( '/' ) : null;
-		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, draftUrl: url, liveUrl: o.liveUrl, open: o.open || null, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening' } );
+		// The skeleton inventory beside the skeleton places each slot's draft element (a part drawn outside its block's).
+		const invFile = o.skeleton.replace( /\.skeleton\.json$/, '.inventory.json' );
+		const inventory = invFile !== o.skeleton && fs.existsSync( invFile ) ? JSON.parse( fs.readFileSync( invFile, 'utf8' ) ) : null;
+		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, inventory, draftUrl: url, liveUrl: o.liveUrl, open: o.open || null, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening' } );
 		const put = ( name, text ) => fs.writeFileSync( path.join( outDir, name ), text );
 		writeOrigin();
 		put( 'filled.tree.json', `${ JSON.stringify( tree, null, 2 ) }\n` );

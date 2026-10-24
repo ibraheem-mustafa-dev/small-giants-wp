@@ -65,3 +65,24 @@ test( 'the draft url can be overridden for a locally served draft, and the open 
 	assert.equal( cfg.draft.url, 'http://d/' );
 	assert.equal( cfg.divergences, undefined );
 } );
+
+test( 'MUST FAIL WITHOUT PART PAIRS: a part a block renders inside itself whose draft element sits outside the block\'s pairs on its own; parts inside it and inside the block do not', async () => {
+	// The draft draws the navigation's burger (R/9) in the row (R/5), outside the <nav> (R/3); its bars (R/10) sit inside
+	// the burger and the link (R/4) inside the nav.
+	const skeleton = [ { name: 'sgs/container', draftRef: { tpl: 'R/5#0' }, attributes: {}, innerBlocks: [
+		{ name: 'sgs/nav', draftRef: { tpl: 'R/3#0' }, attributes: {}, draftSlots: { '.sgs-nav__link': { tpl: 'R/4#0' }, '.sgs-nav__wrap > .sgs-nav__burger': { tpl: 'R/9#0' }, '.sgs-nav__burger > .sgs-nav__bar:nth-of-type(1)': { tpl: 'R/10#0' } } },
+	] } ];
+	const inventory = { elements: [ { key: 'R/5#0', parentKey: null }, { key: 'R/3#0', parentKey: 'R/5#0' }, { key: 'R/4#0', parentKey: 'R/3#0' }, { key: 'R/9#0', parentKey: 'R/5#0' }, { key: 'R/10#0', parentKey: 'R/9#0' } ] };
+	const tree = cleanTree( skeleton );
+	addRefs( tree, 'fx' );
+	const nodes = skeletonNodes( skeleton );
+	assert.deepEqual( walkerPairs( nodes, tree, inventory ), [
+		{ ref: 'cr-ref-fx-0', draft: { tpl: 'R/5#0' } },
+		{ ref: 'cr-ref-fx-1', slot: '.sgs-nav__wrap > .sgs-nav__burger', draft: { tpl: 'R/9#0' } },
+		{ ref: 'cr-ref-fx-1', draft: { tpl: 'R/3#0' } },
+	] );
+	assert.equal( walkerPairs( nodes, tree ).length, 2, 'no inventory: no part pair' );
+	const cfg = await load( walkerConfigs( { surface: 'fx', nodes, tree, inventory, draftUrl: 'http://d/', liveUrl: 'http://l/' } ) );
+	assert.deepEqual( cfg.pairs.map( ( p ) => [ p.name, p.live ] ), [ [ 'gen-fx-0', '.cr-ref-fx-0' ], [ 'gen-fx-1__burger', '.cr-ref-fx-1 .sgs-nav__wrap > .sgs-nav__burger' ], [ 'gen-fx-1', '.cr-ref-fx-1' ] ] );
+	assert.deepEqual( lintConfig( cfg ), [], 'the walker accepts the part pair' );
+} );
