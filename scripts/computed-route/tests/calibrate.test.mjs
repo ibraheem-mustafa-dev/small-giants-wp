@@ -8,7 +8,7 @@ test( 'each setting state the database uses has its trigger', () => {
 	assert.equal( triggerFor( null ), null );
 	assert.equal( triggerFor( 'hover' ), 'hover' );
 	assert.equal( triggerFor( 'scrolled' ), 'scroll' );
-	assert.equal( triggerFor( 'open' ), 'fixture' );
+	assert.equal( triggerFor( 'open' ), 'open' );
 	assert.equal( triggerFor( 'current' ), 'fixture' );
 	assert.equal( triggerFor( 'focus' ), 'focus' );
 	assert.equal( triggerFor( 'shrunk' ), 'class' );

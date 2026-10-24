@@ -223,3 +223,30 @@ test( 'MUST FAIL (a link trigger that focus does not open): ArrowDown opens it, 
 		await browser.close();
 	}
 } );
+
+// sgs/nav-bar-menu itemColourOpen (includes/nav-menu-css.php): the item link's colour while its own panel trigger is
+// aria-expanded="true"; the fixture renders every trigger shut, and a burger whose drawer sits outside the instance
+// comes first.
+const OPEN_ITEM = `<style>.cr-ref-cal-1 .sgs-x__item:has(> [aria-expanded="true"]) > .sgs-x__link{color:rgb(19, 87, 155)}</style>
+	<div class="cr-ref-cal-0"><button aria-controls="d0" aria-expanded="false">Menu</button><div class="sgs-x__item"><a class="sgs-x__link" href="#" aria-controls="p0" aria-expanded="false">Shop</a><div id="p0" hidden>panel</div></div></div>
+	<div class="cr-ref-cal-1"><button id="b1" aria-controls="d1" aria-expanded="false">Menu</button><div class="sgs-x__item"><a class="sgs-x__link" href="#" aria-controls="p1" aria-expanded="false">Shop</a><div id="p1" hidden>panel</div></div></div>
+	<div id="d0" hidden>drawer</div><div id="d1" hidden>drawer</div>`;
+
+test( 'MUST FAIL (itemColourOpen dead): an open-state instance is read with its own panel trigger open, never the burger\'s drawer', async () => {
+	const { chromium } = await import( 'playwright' );
+	const { triggerFor } = await import( '../lib/calibrate.mjs' );
+	const browser = await chromium.launch();
+	try {
+		const page = await ( await browser.newContext() ).newPage();
+		await page.context().route( 'http://cal.test/**', ( route ) => route.fulfill( { contentType: 'text/html', body: OPEN_ITEM } ) );
+		const open = { trigger: triggerFor( 'open' ), target: null, row: { css_state: 'open' } };
+		const reads = await readAll( page, 'http://cal.test/calibration', [ { isDefault: true }, open ] );
+		for ( const w of WIDTHS ) {
+			const link = Object.entries( reads[ w ][ 1 ] ).find( ( [ k ] ) => k.endsWith( '.sgs-x__link' ) );
+			assert.equal( link?.[ 1 ].color, 'rgb(19, 87, 155)', `the open read at ${ w }px` );
+			assert.notEqual( reads[ w ][ 0 ][ Object.keys( reads[ w ][ 0 ] ).find( ( k ) => k.endsWith( '.sgs-x__link' ) ) ].color, 'rgb(19, 87, 155)', 'the default instance stays shut' );
+		}
+	} finally {
+		await browser.close();
+	}
+} );

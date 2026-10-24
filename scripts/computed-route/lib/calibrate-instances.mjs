@@ -11,11 +11,12 @@ import { HOVER_PROPS, FOCUS_PROPS } from '../../parity/lib/collect.mjs';
 // How each setting state is reached before a marker is read (§3.2): 'hover' under a real mouse on the styled element;
 // 'focus' by keyboard-visible focus on it; 'scroll' by scrolling the window past the header offset (the header script
 // toggles is-header-scrolled); 'class' by adding the state's ancestor class (a shrunk header row sets
-// is-header-shrunk on its ancestors); 'fixture' when the fixture renders the state at rest (an accordion item saved
-// open, the first tab, a nav item linking to the page itself). Any other state the state vocabulary can enter gets
+// is-header-shrunk on its ancestors); 'open' by opening a disclosure the instance owns, unless the fixture renders one
+// open already (lib/calibrate-open.mjs); 'fixture' when the fixture renders the state at rest (the first tab, a nav
+// item linking to the page itself). Any other state the state vocabulary can enter gets
 // 'probe' (lib/calibrate-probe.mjs: the vocabulary's mechanisms tried on the target and its ancestors); a state with
 // neither is reported, never calibrated.
-export const STATE_TRIGGERS = { hover: 'hover', focus: 'focus', 'focus-visible': 'focus', scrolled: 'scroll', shrunk: 'class', open: 'fixture', current: 'fixture' };
+export const STATE_TRIGGERS = { hover: 'hover', focus: 'focus', 'focus-visible': 'focus', scrolled: 'scroll', shrunk: 'class', open: 'open', current: 'fixture' };
 export const STATE_CLASSES = { shrunk: 'is-header-shrunk' };
 
 // The trigger for a setting state (null = rest), or undefined when the state has none.

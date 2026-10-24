@@ -267,7 +267,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 			return;
 		}
 		const name = inst.row.attr_name;
-		if ( [ 'hover', 'focus', 'class' ].includes( inst.trigger ) && inst.hoverMissed ) {
+		if ( [ 'hover', 'focus', 'class', 'open' ].includes( inst.trigger ) && inst.hoverMissed ) {
 			untested.push( `${ name }:${ inst.row.css_state } (${ missedReason( inst.hoverWhy ) })` );
 			return;
 		}
