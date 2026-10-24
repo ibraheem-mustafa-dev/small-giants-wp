@@ -2,7 +2,7 @@
 import { compareFocus } from './focus.mjs';
 import { sameRatio, sameTracks } from './ratio.mjs';
 import { layoutComparable } from './paint.mjs';
-import { sameTransitions, isTimingLonghand } from './transitions.mjs';
+import { sameTransitions, isTimingLonghand, parseTransitions, readCovers } from './transitions.mjs';
 import { TRANSFORM_PARTS, comparePose } from './transform.mjs';
 import { compareParts } from './parts.mjs';
 import { CONTEXT_PROPS } from './collect.mjs';
@@ -168,9 +168,15 @@ export const changed = ( d, l ) => ( statesRead( d ) && statesRead( l ) ? [ ...n
 // easing while neither side's transition takes any time, and any transition timing while neither side's element changes
 // in any state read on both sides (a heading carrying the site's hover timing with no hover effect paints no motion).
 // Where every state walked at this width is known (`every`, lib/state-changes.mjs::everyStateChanges), "changes" means
-// in any of them, so a row whose scrolled state collapses keeps its timing rows though its hover moves nothing.
+// in any of them, so a row whose scrolled state collapses keeps its timing rows though its hover moves nothing; and
+// "nothing changes" holds only for what the walk read: every property either side transitions must be in `every.read`
+// (an `all`, a custom property or an unread `visibility` entry may animate something no read saw).
+const transitionsRead = ( x, read ) => {
+	const m = parseTransitions( x.motion?.transition );
+	return !! m && [ ...m.keys() ].every( ( k ) => 'all' !== k && readCovers( k, read ) );
+};
 function timingIrrelevant( p, d, l, every = null ) {
-	if ( /^transition-/.test( p ) && ( every ? ! every.length : statesRead( d ) && statesRead( l ) && ! moves( d ) && ! moves( l ) ) ) {
+	if ( /^transition-/.test( p ) && ( every ? ! every.changes.length && transitionsRead( d, every.read ) && transitionsRead( l, every.read ) : statesRead( d ) && statesRead( l ) && ! moves( d ) && ! moves( l ) ) ) {
 		return true;
 	}
 	// Animation timings compare only where both sides animate with CSS keyframes: a side animating from script (the
@@ -276,16 +282,24 @@ export function passThroughHeld( k, d, l, tol ) {
 // tol.box. Where either length differs the ratio row stays beside the box rows.
 const ratioHeld = ( p, d, l, tol ) => 'aspect-ratio' === p && [ 'w', 'h' ].every( ( k ) => Math.abs( d.box[ k ] - l.box[ k ] ) <= tol.box );
 
-// A text property in a state (GAP-CHECKLIST 35): where neither side holds text the walk reads no text property at rest
-// (collect.mjs::collectPair takes them from the text carrier), and the state passes read the element's own unused
-// colour (a logo whose svg paints literal fills, against an image). Such a property paints nothing on either side, so it
-// is not compared. One side painting text keeps the row. An icon's colour in a state is read from the icon itself
-// (collect.mjs::hoverStyles `icon`), so an svg following currentColor is still judged.
-const stateTextUnread = ( p, d, l ) => TEXT_CARRIED.includes( p ) && undefined === d.styles?.[ p ] && undefined === l.styles?.[ p ];
+// A text property in a state (GAP-CHECKLIST 35): an element holding no text on either side (`textFrom` `none`: no text
+// carrier, collect.mjs::collectPair, never a property the pair's own `props` list left unread) has its state colour read
+// from the element itself (collect.mjs::hoverStyles' fallback), which paints only where something inside follows it. So
+// such a property is not compared only when each side's element shows nothing a colour or font size can reach
+// (`textless`): replaced elements only (`replaced`, a logo image), or its one svg (`svg`) for `color`, the svg's colour
+// being judged by the state's icon read (`icon`): both sides read an icon in the state and at rest (the icon rows below
+// compare them), or this side's icon keeps its resting fill and stroke. Anything else on either side (burger bars drawn
+// with `background: currentColor`, a ::before glyph, two svgs, nothing read) keeps the row.
+const iconJudged = ( x, y, field, mixed, tol ) => {
+	const read = ( s ) => !! s[ field ]?.icon && [ 'icon-fill', 'icon-stroke' ].every( ( k ) => undefined !== s.styles?.[ k ] );
+	return read( x ) && ( ( read( y ) && ! mixed ) || [ 'icon-fill', 'icon-stroke' ].every( ( k ) => sameValue( k, x[ field ].icon[ k ], x.styles[ k ], tol.px ) ) );
+};
+const stateTextNone = ( p, d, l, field, mixed, tol ) => TEXT_CARRIED.includes( p ) && [ [ d, l ], [ l, d ] ].every( ( [ x, y ] ) => 'none' === x.textFrom &&
+	( 'replaced' === x.textless || ( 'svg' === x.textless && 'color' === p && iconJudged( x, y, field, mixed, tol ) ) ) );
 
-// Returns [{ kind, key, draft, live }] for one pair in one state at one width. `every` is the pair's change set across
-// every state walked at this width (lib/state-changes.mjs::everyStateChanges), or null where it is not known; the
-// transition comparison then uses this state's hover, focus and pressed changes only.
+// Returns [{ kind, key, draft, live }] for one pair in one state at one width. `every` is the pair's change and read sets
+// across every state walked at this width ({ changes, read }, lib/state-changes.mjs::everyStateChanges), or null where
+// they are not known; the transition comparison then uses this state's hover, focus and pressed changes only.
 export function comparePair( pair, d, l, tol, every = null ) {
 	const diffs = [];
 	const add = ( kind, key, draft, live ) => diffs.push( { kind, key, draft, live } );
@@ -301,8 +315,9 @@ export function comparePair( pair, d, l, tol, every = null ) {
 	}
 	const mixed = iconMixed( d, l );
 	const loops = loopSet( d, l );
-	const everyState = Array.isArray( every );
-	const changes = everyState ? every : changed( d, l );
+	const everyState = Array.isArray( every?.changes ) && Array.isArray( every?.read );
+	const changes = everyState ? every.changes : changed( d, l );
+	const read = everyState ? every.read : null;
 	if ( pair.text !== false && ! mixed && ! sameWords( d.text, l.text ) ) {
 		add( 'text', 'text', d.text, l.text );
 	}
@@ -340,7 +355,7 @@ export function comparePair( pair, d, l, tol, every = null ) {
 		}
 		// A transition timing compares per animated property where both sides transition something (lib/transitions.mjs).
 		const shorthands = [ d.motion?.transition, l.motion?.transition ];
-		const byName = isTimingLonghand( p ) && shorthands.every( ( t ) => t && 'none' !== t ) ? sameTransitions( ...shorthands, p, changes, everyState ) : null;
+		const byName = isTimingLonghand( p ) && shorthands.every( ( t ) => t && 'none' !== t ) ? sameTransitions( ...shorthands, p, changes, read ) : null;
 		if ( ! ( byName ?? sameValue( p, d.styles[ p ], l.styles[ p ], tol.px ) ) ) {
 			add( 'style', p, d.styles[ p ], l.styles[ p ] );
 		}
@@ -370,7 +385,7 @@ export function comparePair( pair, d, l, tol, every = null ) {
 		}
 		for ( const k of [ 'animation', 'transition' ] ) {
 			// A transition compares per animated property; raw text only where either side cannot be parsed.
-			const byName = 'transition' === k ? sameTransitions( d.motion[ k ], l.motion[ k ], null, changes, everyState ) : null;
+			const byName = 'transition' === k ? sameTransitions( d.motion[ k ], l.motion[ k ], null, changes, read ) : null;
 			if ( ! ( byName ?? sameValue( k, d.motion[ k ], l.motion[ k ], 0 ) ) ) {
 				add( 'motion', k, d.motion[ k ], l.motion[ k ] );
 			}
@@ -394,7 +409,7 @@ export function comparePair( pair, d, l, tol, every = null ) {
 				if ( TRANSFORM_PARTS.includes( p ) || 'icon' === p ) {
 					continue;
 				}
-				if ( loops.has( p ) || stateTextUnread( p, d, l ) || ( ( mixed || textAlone ) && GLYPH_TEXT.has( p ) ) || borderColourIrrelevant( p, { ...d.styles, ...d[ field ] }, { ...l.styles, ...l[ field ] } ) || ( still( d, p ) && still( l, p ) ) ) {
+				if ( loops.has( p ) || stateTextNone( p, d, l, field, mixed, tol ) || ( ( mixed || textAlone ) && GLYPH_TEXT.has( p ) ) || borderColourIrrelevant( p, { ...d.styles, ...d[ field ] }, { ...l.styles, ...l[ field ] } ) || ( still( d, p ) && still( l, p ) ) ) {
 					continue;
 				}
 				if ( ! sameValue( p, d[ field ][ p ], l[ field ][ p ], tol.px ) ) {

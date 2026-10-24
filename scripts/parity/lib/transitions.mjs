@@ -24,8 +24,8 @@ const FIELD = { 'transition-duration': 'duration', 'transition-delay': 'delay', 
 
 const seconds = ( t ) => ( t.endsWith( 'ms' ) ? parseFloat( t ) / 1000 : parseFloat( t ) );
 
-// Map of property → { duration, delay, timing, implied } (seconds as numbers, timing as text; implied for a shorthand's
-// longhand it does not name), or null when unreadable.
+// Map of property → { duration, delay, timing, implied, of } (seconds as numbers, timing as text; implied for a
+// shorthand's longhand it does not name; `of`, the property the entry names), or null when unreadable.
 export function parseTransitions( v ) {
 	const out = new Map();
 	if ( ! v || 'none' === v.trim() ) {
@@ -46,7 +46,7 @@ export function parseTransitions( v ) {
 		longhands.forEach( ( key, i ) => {
 			out.delete( key );
 			if ( 0 !== entry.duration || 0 !== entry.delay ) {
-				out.set( key, { ...entry, implied: i > 0 } );
+				out.set( key, { ...entry, implied: i > 0, of: prop } );
 			}
 		} );
 	}
@@ -92,6 +92,11 @@ const sameEntry = ( a, b, field ) => !! b && ( field ? [ field ] : [ 'duration',
 // padding-block-start is padding-top), so a transition naming one is matched with a change read as the other.
 const PHYSICAL = [ [ /block-size/, 'height' ], [ /inline-size/, 'width' ], [ /-block-start$/, '-top' ], [ /-block-end$/, '-bottom' ], [ /-inline-start$/, '-left' ], [ /-inline-end$/, '-right' ] ];
 const physical = ( k ) => PHYSICAL.reduce( ( v, [ re, to ] ) => v.replace( re, to ), k );
+// Whether the walk read property k on both sides in every state it walked (`read`, lib/state-changes.mjs::
+// everyStateChanges): k itself, the physical longhand a logical name sets, or, for `padding` and `margin`, all four
+// sides. Only a read property can be known not to move.
+const SIDES = [ 'top', 'right', 'bottom', 'left' ];
+export const readCovers = ( k, read ) => Array.isArray( read ) && ( read.includes( k ) || read.includes( physical( k ) ) || ( /^(padding|margin)$/.test( k ) && SIDES.every( ( s ) => read.includes( `${ k }-${ s }` ) ) ) );
 // A box extent that differs between states (`box:h`, `box:w`, from lib/state-changes.mjs::everyStateChanges) moves
 // that axis's sizes and every padding and margin.
 const BOX_MOVES = { 'box:h': /^((min-|max-)?height|padding|margin)(-|$)/, 'box:w': /^((min-|max-)?width|padding|margin)(-|$)/ };
@@ -114,14 +119,16 @@ const poseSet = ( m ) => {
 // when known) are compared too, so a draft `all` that animates a moving transform is not matched by a live colour-only
 // transition; while they are unknown an `all` on one side only is itself compared. Null when either side cannot be
 // read (the caller compares raw text).
-// `everyState` says `changes` holds every property that moves in any state walked on either side at this width (the
-// scrolled rest included, lib/state-changes.mjs::everyStateChanges), not only the hover, focus and pressed reads. Then
-// an entry only one side names (the other has neither it nor an `all`) on a property in no change set animates
-// nothing and is not compared (a live `color 0.25s` on an icon whose colour never changes). Only while both sides
-// transition something: a side with no transition at all against one that has some (a draft `transition: none`
-// against a live scroll-collapse transition) stays a difference whatever the walk saw move. The pose is compared as
-// before.
-export function sameTransitions( draft, live, longhand = null, changes = null, everyState = false ) {
+// `read` (with `changes` from lib/state-changes.mjs::everyStateChanges) is the properties the walk read on both sides in
+// every state it walked at this width, the scrolled rest included, and in every hover, focus and pressed read it made;
+// `changes` then holds every property among them that moves in any of those states. An entry only one side names (the
+// other has neither it nor an `all`) on a property that was read throughout and is in no change set animates nothing
+// and is not compared (a live `color 0.25s` on an icon whose colour never changes). A property the walk did not read
+// (`visibility`, `clip-path`, `margin`, `gap`, `max-height`, a custom property such as `--progress`) is never known to
+// stay still, so its entry is compared. Only while both sides transition something: a side with no transition at all
+// against one that has some (a draft `transition: none` against a live scroll-collapse transition) stays a difference
+// whatever the walk saw move. The pose is compared as before.
+export function sameTransitions( draft, live, longhand = null, changes = null, read = null ) {
 	const d = parseTransitions( draft );
 	const l = parseTransitions( live );
 	if ( ! d || ! l ) {
@@ -136,7 +143,8 @@ export function sameTransitions( draft, live, longhand = null, changes = null, e
 	}
 	// A property one side does not transition differs in duration only (0s): its delay and easing are not rows too.
 	const absent = ! [ null, 'duration' ].includes( field );
-	const still = ( k ) => everyState && Array.isArray( changes ) && d.size > 0 && l.size > 0 && ! movesIn( k, changes );
+	// An entry that came from a shorthand (`border-color`) is still only where every longhand it animates is.
+	const still = ( k ) => Array.isArray( changes ) && d.size > 0 && l.size > 0 && ( SHORTHAND[ ( d.get( k ) ?? l.get( k ) )?.of ] || [ k ] ).every( ( x ) => readCovers( x, read ) && ! movesIn( x, changes ) );
 	return [ ...keys ].every( ( k ) => {
 		if ( 'pose' === k ) {
 			const [ a, b ] = [ poseSet( d ), poseSet( l ) ];

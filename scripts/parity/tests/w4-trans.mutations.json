@@ -55,20 +55,20 @@
 	},
 	{
 		"file": "lib/transitions.mjs",
-		"find": "everyState && Array.isArray( changes ) && d.size > 0 && l.size > 0 && ! movesIn( k, changes )",
-		"replace": "everyState && Array.isArray( changes ) && ! movesIn( k, changes )",
+		"find": "Array.isArray( changes ) && d.size > 0 && l.size > 0 && ( SHORTHAND",
+		"replace": "Array.isArray( changes ) && ( SHORTHAND",
 		"why": "the drop no longer needs both sides to transition"
 	},
 	{
 		"file": "lib/transitions.mjs",
-		"find": "everyState && Array.isArray( changes ) && d.size > 0 && l.size > 0 && ! movesIn( k, changes )",
-		"replace": "everyState && Array.isArray( changes ) && d.size > 0 && l.size > 0",
+		"find": "readCovers( x, read ) && ! movesIn( x, changes ) )",
+		"replace": "readCovers( x, read ) )",
 		"why": "the drop ignores the change set"
 	},
 	{
-		"file": "lib/transitions.mjs",
-		"find": "everyState && Array.isArray( changes ) && d.size > 0",
-		"replace": "Array.isArray( changes ) && d.size > 0",
+		"file": "lib/compare.mjs",
+		"find": "const read = everyState ? every.read : null;",
+		"replace": "const read = everyState ? every.read : Object.keys( d.styles );",
 		"why": "the drop applies to hover-only change sets"
 	},
 	{
@@ -97,8 +97,8 @@
 	},
 	{
 		"file": "lib/state-changes.mjs",
-		"find": "if ( 1 === snaps.length && ( snaps[ 0 ].d.noHover || snaps[ 0 ].l.noHover ) ) {",
-		"replace": "if ( false ) {",
+		"find": "if ( snaps.some( ( s ) => [ s.d, s.l ].some( ( x ) => x.noHover",
+		"replace": "if ( snaps.length > 1 && snaps.some( ( s ) => [ s.d, s.l ].some( ( x ) => x.noHover",
 		"why": "a phone run with one state is treated as known"
 	},
 	{
@@ -106,12 +106,6 @@
 		"find": " || s.d.missing || s.l.missing ) ) {",
 		"replace": " ) ) {",
 		"why": "a state missing the element is treated as known"
-	},
-	{
-		"file": "lib/state-changes.mjs",
-		"find": "if ( null === own ) {\n\t\t\treturn null;\n\t\t}",
-		"replace": "if ( null === own ) {\n\t\t\tcontinue;\n\t\t}",
-		"why": "a state whose hover was not read is skipped"
 	},
 	{
 		"file": "lib/state-changes.mjs",
@@ -133,26 +127,32 @@
 	},
 	{
 		"file": "lib/compare.mjs",
-		"find": "( every ? ! every.length : statesRead( d )",
-		"replace": "( statesRead( d )",
+		"find": "( every ? ! every.changes.length",
+		"replace": "( false ? ! every.changes.length",
 		"why": "timingIrrelevant ignores the cross-state set"
 	},
 	{
 		"file": "lib/compare.mjs",
-		"find": "const changes = everyState ? every : changed( d, l );",
+		"find": "const changes = everyState ? every.changes : changed( d, l );",
 		"replace": "const changes = changed( d, l );",
 		"why": "comparePair ignores the cross-state set"
 	},
 	{
 		"file": "lib/compare.mjs",
-		"find": "sameTransitions( d.motion[ k ], l.motion[ k ], null, changes, everyState )",
+		"find": "sameTransitions( d.motion[ k ], l.motion[ k ], null, changes, read )",
 		"replace": "sameTransitions( d.motion[ k ], l.motion[ k ], null, changes )",
 		"why": "the shorthand row never drops"
 	},
 	{
 		"file": "lib/compare.mjs",
-		"find": "sameTransitions( ...shorthands, p, changes, everyState )",
+		"find": "sameTransitions( ...shorthands, p, changes, read )",
 		"replace": "sameTransitions( ...shorthands, p, changes )",
 		"why": "the longhand rows never drop"
+	},
+	{
+		"file": "lib/transitions.mjs",
+		"find": " || ( /^(padding|margin)$/.test( k ) && SIDES.every( ( s ) => read.includes( `${ k }-${ s }` ) ) )",
+		"replace": "",
+		"why": "a padding shorthand never read through its four sides"
 	}
 ]

@@ -1,14 +1,14 @@
 [
 	{
 		"file": "lib/compare.mjs",
-		"find": "if ( loops.has( p ) || stateTextUnread( p, d, l ) ||",
+		"find": "if ( loops.has( p ) || stateTextNone( p, d, l, field, mixed, tol ) ||",
 		"replace": "if ( loops.has( p ) ||",
 		"why": "a state text property no side read at rest is compared again"
 	},
 	{
 		"file": "lib/compare.mjs",
-		"find": "&& undefined === d.styles?.[ p ] && undefined === l.styles?.[ p ];",
-		"replace": "&& ( undefined === d.styles?.[ p ] || undefined === l.styles?.[ p ] );",
+		"find": "TEXT_CARRIED.includes( p ) && [ [ d, l ], [ l, d ] ].every(",
+		"replace": "TEXT_CARRIED.includes( p ) && [ [ d, l ], [ l, d ] ].some(",
 		"why": "one side painting text is enough to drop the row"
 	},
 	{
@@ -67,8 +67,8 @@
 	},
 	{
 		"file": "lib/compare-state.mjs",
-		"find": ".filter( ( x ) => ! ( 'presence' === x.kind && bareWrapper(",
-		"replace": ".filter( ( x ) => ! ( 'presence' === x.kind && false && bareWrapper(",
+		"find": "'presence' === x.kind && bareWrapper(",
+		"replace": "'presence' === x.kind && false && bareWrapper(",
 		"why": "the bare wrapper rule is off"
 	},
 	{
@@ -103,8 +103,8 @@
 	},
 	{
 		"file": "lib/collect.mjs",
-		"find": "} else if ( paints( k ) ) {\n\t\t\t\t\t\town = true;",
-		"replace": "} else if ( false ) {\n\t\t\t\t\t\town = true;",
+		"find": "} else if ( holds ? paints( k ) :",
+		"replace": "} else if ( holds ? false :",
 		"why": "a painting wrapper around a nested pair is not own content"
 	},
 	{

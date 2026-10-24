@@ -97,8 +97,8 @@
 	},
 	{
 		"file": "lib/collect.mjs",
-		"find": "\t\twalk( el );\n",
-		"replace": "",
+		"find": "\t\twalk( el );\n\t\tfor ( const e of placed ) {",
+		"replace": "\t\tfor ( const e of placed ) {",
 		"why": "no text run or non-interactive element is an item"
 	},
 	{
@@ -277,8 +277,8 @@
 	},
 	{
 		"file": "lib/collect.mjs",
-		"find": "\t\t\t\t\t\twalk( k );\n",
-		"replace": "",
+		"find": "if ( held.has( k ) ) {\n\t\t\t\t\t\twalk( k );\n",
+		"replace": "if ( held.has( k ) ) {\n",
 		"why": "wrappers holding links are not walked"
 	},
 	{
