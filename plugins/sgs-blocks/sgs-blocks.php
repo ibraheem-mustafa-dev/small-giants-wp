@@ -99,6 +99,9 @@ require_once SGS_BLOCKS_PATH . 'includes/heading-anchors.php';
 // Device visibility — server-side class injection for show/hide per device.
 require_once SGS_BLOCKS_PATH . 'includes/device-visibility.php';
 
+// Keyboard focus keeps the resting look (`sgsFocusRests`): the per-block render stack that `sgs_hover_state_rules()` reads.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-focus-rests.php';
+
 // Media top tone (U-13 §4.3) — measures a new image upload's top-20% tone at
 // `wp_generate_attachment_metadata` time and stores `_sgs_top_tone` meta, so
 // helpers-surface-tone.php's image layer (loaded per-render via

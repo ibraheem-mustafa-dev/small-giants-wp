@@ -439,8 +439,14 @@ final class Sgs_Motion_Renderer {
 		if ( ! empty( $attrs['sgsBlockLink'] ) || ! empty( $attrs['sgsBlockLinkAuto'] ) ) {
 			$root_attrs['data-sgs-hover-group'] = '';
 		}
-		$doc = $frame['doc'];
+		// `sgsFocusRests`: the block's hover state and hover effects play on pointer hover only, so every element the
+		// renderer marks carries `data-sgs-focus-rests`, which the focus arm of `assets/css/motion.css` excludes.
+		$focus_rests = ! empty( $attrs[ \SGS\Blocks\Sgs_Focus_Rests::ATTR ] );
+		$doc         = $frame['doc'];
 		if ( array() === $doc ) {
+			if ( $focus_rests && array() !== $root_attrs ) {
+				$root_attrs['data-sgs-focus-rests'] = '';
+			}
 			if ( array() !== $root_attrs ) {
 				self::note_features( $root_attrs, false );
 				Sgs_Motion_Assets::enqueue_used();
@@ -535,6 +541,12 @@ final class Sgs_Motion_Renderer {
 					'layers' => array(),
 				);
 				self::note_features( array( 'data-sgs-mitem' => '' ), false );
+			}
+		}
+		if ( $focus_rests ) {
+			$root_attrs['data-sgs-focus-rests'] = '';
+			foreach ( $plans as $index => $plan ) {
+				$plans[ $index ]['attrs']['data-sgs-focus-rests'] = '';
 			}
 		}
 		self::note_features( $root_attrs, false );

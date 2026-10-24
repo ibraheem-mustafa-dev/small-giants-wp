@@ -314,10 +314,11 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 
 			$hover_decl_str = implode( '', $hover_decls );
 			$css           .= sgs_hover_guarded_rule( $hover_selector, $hover_decl_str );
-			$css           .= $focus_selector . '{' . $hover_decl_str . '}';
+			$focus_rests    = sgs_focus_rests_active();
+			$css           .= $focus_rests ? '' : $focus_selector . '{' . $hover_decl_str . '}';
 			if ( $text_gradient_hover_safe && '' !== $colour_text_hover_effective ) {
 				$css .= sgs_hover_media_wrap( sgs_text_colour_gradient_fallback_rule( $hover_selector, $colour_text_hover_effective ) );
-				$css .= sgs_text_colour_gradient_fallback_rule( $focus_selector, $colour_text_hover_effective );
+				$css .= $focus_rests ? '' : sgs_text_colour_gradient_fallback_rule( $focus_selector, $colour_text_hover_effective );
 			}
 		}
 
@@ -412,7 +413,9 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 			$css .= sgs_hover_media_wrap(
 				sgs_border_gradient_css( $hover_only_selector, $colour_border_hover_gradient, null, $gradient_width )
 			);
-			$css .= sgs_border_gradient_css( $focus_only_selector, $colour_border_hover_gradient, null, $gradient_width );
+			if ( ! sgs_focus_rests_active() ) {
+				$css .= sgs_border_gradient_css( $focus_only_selector, $colour_border_hover_gradient, null, $gradient_width );
+			}
 		}
 
 		return $css;

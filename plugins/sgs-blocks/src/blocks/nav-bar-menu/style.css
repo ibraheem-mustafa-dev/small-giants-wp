@@ -497,7 +497,7 @@
 
 @supports not (background-color: color-mix(in srgb, currentColor 8%, transparent)) {
 	.sgs-nav-bar-menu__burger:hover,
-	.sgs-nav-bar-menu__burger:focus-visible {
+	.sgs-nav-bar-menu__burger:focus-visible:where(:not(.sgs-focus-rests)) {
 		background-color: rgba(128, 128, 128, 0.12);
 	}
 }

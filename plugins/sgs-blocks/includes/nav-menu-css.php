@@ -410,7 +410,7 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 			// which items take this hover colour — see its own definition above.
 			$css .= sgs_hover_state_rules( $link_hover_sel . ',' . $caret_svg_sel, $item_colour_hover_decl, ':focus-visible' );
 			$css .= sgs_text_colour_gradient_fallback_rule(
-				$link_hover_sel . ':hover,' . $caret_svg_sel . ':hover,' . $link_hover_sel . ':focus-visible,' . $caret_svg_sel . ':focus-visible',
+				$link_hover_sel . ':hover,' . $caret_svg_sel . ':hover' . ( sgs_focus_rests_active() ? '' : ',' . $link_hover_sel . ':focus-visible,' . $caret_svg_sel . ':focus-visible' ),
 				$item_colour_hover_effective
 			);
 		}

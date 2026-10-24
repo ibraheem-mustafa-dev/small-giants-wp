@@ -30,6 +30,7 @@ return array(
 	'sgsCustomCss' => array( 'type' => 'string' ),
 	'sgsCustomCssId' => array( 'type' => 'string' ),
 	'sgsCustomCssNote' => array( 'type' => 'string' ),
+	'sgsFocusRests' => array( 'type' => 'boolean' ),
 	'sgsHeightDesktop' => array( 'type' => 'number' ),
 	'sgsHeightMobile' => array( 'type' => 'number' ),
 	'sgsHeightTablet' => array( 'type' => 'number' ),

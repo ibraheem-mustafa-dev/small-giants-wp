@@ -84,13 +84,29 @@ if ( ! function_exists( 'sgs_hover_guarded_rule' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_focus_rests_active' ) ) {
+	/**
+	 * Whether the block rendering now keeps its resting look on keyboard focus (`sgsFocusRests`).
+	 *
+	 * `Sgs_Focus_Rests` (`includes/class-sgs-focus-rests.php`) keeps a per-block render stack and publishes the
+	 * flag of the block on top, so a nested block without the setting is unaffected. Every emitter that pairs a hover
+	 * rule with a `:focus-visible` or `:focus-within` twin of the same declarations skips the twin while this is true.
+	 *
+	 * @return bool
+	 */
+	function sgs_focus_rests_active(): bool {
+		return ! empty( $GLOBALS['sgs_focus_rests_active'] );
+	}
+}
+
 if ( ! function_exists( 'sgs_hover_state_rules' ) ) {
 	/**
 	 * Emit a hover state as a touch-safe PAIR: a guarded hover rule plus an
 	 * unguarded focus rule carrying the identical declarations.
 	 *
 	 * Replaces the `{sel}:hover,{sel}:focus-x{decls}` one-rule shape that every
-	 * paint helper used before 2026-09-03.
+	 * paint helper used before 2026-09-03. While `sgs_focus_rests_active()` is true (the block's `sgsFocusRests`
+	 * setting) the focus rule is left out.
 	 *
 	 * @param string $selector One or more comma-separated base selectors.
 	 * @param string $decls    CSS declarations, no braces.
@@ -136,6 +152,12 @@ if ( ! function_exists( 'sgs_hover_state_rules' ) ) {
 				$hover_selector .= ',[data-sgs-hover-group]:hover ' . $part . $suffix;
 				$focus_selector .= ',[data-sgs-hover-group]:focus-within ' . $part . $suffix;
 			}
+		}
+
+		// Keyboard focus keeps the resting look (`sgsFocusRests`): the guarded hover rule only; the focus ring is
+		// focus.css's.
+		if ( sgs_focus_rests_active() ) {
+			return sgs_hover_guarded_rule( $hover_selector, $decls );
 		}
 
 		return sgs_hover_guarded_rule( $hover_selector, $decls )

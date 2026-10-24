@@ -78,10 +78,10 @@ if ( ! function_exists( 'sgs_sibling_dim_css' ) ) {
 
 		$css  = $list_sel . ' > ' . $item_sel . $paint_sel . '{transition:color ' . sgs_item_motion_transition( $attributes ) . ',opacity ' . sgs_item_motion_transition( $attributes ) . ';}';
 		$css .= sgs_hover_media_wrap( SGS_HOVER_NOT_TOUCH . ' ' . $hover_sel . '{' . $body . ';}' );
-		$css .= $key_sel . '{' . $body . ';}';
+		$css .= sgs_focus_rests_active() ? '' : $key_sel . '{' . $body . ';}';
 		// Browsers without background-clip:text get the gradient's first stop.
 		$css .= sgs_hover_media_wrap( sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $hover_sel, $value ) );
-		$css .= sgs_text_colour_gradient_fallback_rule( $key_sel, $value );
+		$css .= sgs_focus_rests_active() ? '' : sgs_text_colour_gradient_fallback_rule( $key_sel, $value );
 		$css .= '@media (prefers-reduced-motion: reduce){' . $list_sel . ' > ' . $item_sel . $paint_sel . '{transition:none;}}';
 		return $css;
 	}
@@ -192,8 +192,10 @@ if ( ! function_exists( 'sgs_label_roll_css' ) ) {
 			. SGS_HOVER_NOT_TOUCH . ' ' . $t . ':hover .sgs-roll>.sgs-roll__b{transform:none;}'
 		);
 		// Keyboard: the element itself, or a focused link inside it.
-		$css .= $t . ':is(:focus-visible, :has(:focus-visible)) .sgs-roll>.sgs-roll__a{transform:' . $out . ';}';
-		$css .= $t . ':is(:focus-visible, :has(:focus-visible)) .sgs-roll>.sgs-roll__b{transform:none;}';
+		if ( ! sgs_focus_rests_active() ) {
+			$css .= $t . ':is(:focus-visible, :has(:focus-visible)) .sgs-roll>.sgs-roll__a{transform:' . $out . ';}';
+			$css .= $t . ':is(:focus-visible, :has(:focus-visible)) .sgs-roll>.sgs-roll__b{transform:none;}';
+		}
 		if ( '' !== $open_sel ) {
 			$o    = $scope_sel . $open_sel;
 			$css .= $o . ' .sgs-roll>.sgs-roll__a,' . $o . ' .sgs-roll>.sgs-roll__b{transform:' . $out . ';}';

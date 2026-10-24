@@ -64,7 +64,7 @@ if ( ! function_exists( 'sgs_separators_swap_hover_css' ) ) {
 	function sgs_separators_swap_hover_css( string $item, string $pseudo, array $heads, string $decls ): string {
 		$hover = implode( ',', sgs_separators_hover_selectors( $item, $pseudo, $heads, ':hover' ) );
 		$focus = implode( ',', sgs_separators_hover_selectors( $item, $pseudo, $heads, ':focus' ) );
-		return sgs_hover_guarded_rule( $hover, $decls ) . $focus . '{' . $decls . '}';
+		return sgs_hover_guarded_rule( $hover, $decls ) . ( sgs_focus_rests_active() ? '' : $focus . '{' . $decls . '}' );
 	}
 }
 

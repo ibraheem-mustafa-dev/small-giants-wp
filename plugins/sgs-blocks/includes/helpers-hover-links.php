@@ -39,6 +39,6 @@ if ( ! function_exists( 'sgs_hover_link_inherit_css' ) ) {
 
 		return sgs_hover_media_wrap(
 			SGS_HOVER_NOT_TOUCH . ' ' . $selector . ' a:not(.wp-element-button):hover{color:inherit}'
-		) . $selector . ' a:not(.wp-element-button):focus-visible{color:inherit}';
+		) . ( sgs_focus_rests_active() ? '' : $selector . ' a:not(.wp-element-button):focus-visible{color:inherit}' );
 	}
 }

@@ -215,7 +215,9 @@
 /* ── Hover state (§9, FR-38A-17): the hover values are the to-values times an engagement flag. The flag is set by
    the source's :hover only inside the pointer guard (and the touch-input guard, includes/helpers-hover-state.php),
    and by :focus-visible / :focus-within outside it, so keyboard users get the same result. Root, group and item flags
-   inherit, and every root, group and item resets its own to 0, so a target follows its NEAREST root, group or item. ── */
+   inherit, and every root, group and item resets its own to 0, so a target follows its NEAREST root, group or item.
+   A block with `sgsFocusRests` stamps `data-sgs-focus-rests` on its marked elements, and the focus arm skips them:
+   its hover state plays on pointer hover only. ── */
 [data-sgs-mh] { --sgs-mh-on: 0; }
 [data-sgs-mh="root"] { --sgs-mh-on: var(--sgs-mh-root-on, 0); }
 [data-sgs-mh="group"] { --sgs-mh-on: var(--sgs-mh-group-on, 0); }
@@ -224,10 +226,10 @@
 [data-sgs-hover-group] { --sgs-mh-group-on: 0; }
 [data-sgs-mitem] { --sgs-mh-item-on: 0; }
 
-[data-sgs-mh="self"]:focus-visible { --sgs-mh-on: 1; }
-[data-sgs-mroot]:focus-within { --sgs-mh-root-on: 1; }
-[data-sgs-hover-group]:focus-within { --sgs-mh-group-on: 1; }
-[data-sgs-mitem]:focus-within { --sgs-mh-item-on: 1; }
+[data-sgs-mh="self"]:focus-visible:not([data-sgs-focus-rests]) { --sgs-mh-on: 1; }
+[data-sgs-mroot]:focus-within:not([data-sgs-focus-rests]) { --sgs-mh-root-on: 1; }
+[data-sgs-hover-group]:focus-within:not([data-sgs-focus-rests]) { --sgs-mh-group-on: 1; }
+[data-sgs-mitem]:focus-within:not([data-sgs-focus-rests]) { --sgs-mh-item-on: 1; }
 
 @media (hover: hover) and (pointer: fine) {
 	:where(:root:not(.sgs-touch-input)) [data-sgs-mh="self"]:hover { --sgs-mh-on: 1; }

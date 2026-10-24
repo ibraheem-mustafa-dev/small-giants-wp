@@ -76,6 +76,14 @@
 			}
 		},
 		{
+			"id": "focusRests",
+			"file": "focus-rests.js",
+			"rule": { "mode": "denylist", "requiresClassName": false, "hideSlug": "focusRests" },
+			"attributes": {
+				"sgsFocusRests": { "type": "boolean", "default": false, "role": "behaviour" }
+			}
+		},
+		{
 			"id": "responsiveVisibility",
 			"file": "responsive-visibility.js",
 			"rule": { "mode": "universal", "requiresClassName": true, "hideSlug": null },

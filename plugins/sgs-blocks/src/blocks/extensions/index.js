@@ -43,6 +43,7 @@ import './responsive-device-toggle';
 import './hover-effects';
 import './child-sizing';
 import './custom-css';
+import './focus-rests';
 import './block-defaults';
 import './image-controls';
 import './responsive-visibility';

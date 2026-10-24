@@ -224,7 +224,9 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 					$out['rules'][] = sgs_hover_media_wrap(
 						sgs_border_gradient_css( SGS_HOVER_NOT_TOUCH . ' ' . $selector . ':hover', $hover_grad, null, $ring_width )
 					);
-					$out['rules'][] = sgs_border_gradient_css( $selector . ':focus-within', $hover_grad, null, $ring_width );
+					if ( ! sgs_focus_rests_active() ) {
+						$out['rules'][] = sgs_border_gradient_css( $selector . ':focus-within', $hover_grad, null, $ring_width );
+					}
 				} elseif ( '' !== $hover_flat ) {
 					$out['hover'][] = 'border-color:' . sgs_colour_value( $hover_flat );
 				}

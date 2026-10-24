@@ -288,7 +288,7 @@ function sgs_text_states_css( string $selector, array $attributes, array $map ):
 	if ( '' !== $hover_resolved && $hover_resolved !== $normal_resolved ) {
 		$css .= sgs_hover_media_wrap(
 			sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $selector . ':hover', $hover_resolved )
-		) . sgs_text_colour_gradient_fallback_rule( $selector . ':focus-visible', $hover_resolved );
+		) . ( sgs_focus_rests_active() ? '' : sgs_text_colour_gradient_fallback_rule( $selector . ':focus-visible', $hover_resolved ) );
 	}
 
 	return $css;
