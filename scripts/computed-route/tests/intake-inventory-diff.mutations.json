@@ -1,0 +1,10 @@
+[
+	{"file": "lib/intake-inventory-diff.mjs", "find": ".toLowerCase().replace( /(?<![\\w#.])(-?)(\\d*\\.?\\d+)(?![\\d.])/g, ( m, sign, n ) => String( Number( sign + n ) ) );", "replace": ".toLowerCase();", "why": "numbers inside a value compared as spelt (.01ms against 0.01ms is a row again)"},
+	{"file": "lib/intake-inventory-diff.mjs", "find": "/(?<![\\w#.])(-?)(\\d*\\.?\\d+)(?![\\d.])/g", "replace": "/(?<![\\w.])(-?)(\\d*\\.?\\d+)(?![\\d.])/g", "why": "a hex colour's leading digits respelt (#00aa00 equals #0aa00)"},
+	{"file": "lib/intake-inventory-diff.mjs", "find": "/(?<![\\w#.])(-?)(\\d*\\.?\\d+)(?![\\d.])/g, ( m, sign, n ) => String( Number( sign + n ) ) )", "replace": "/(?<![\\w#.])(-?)(\\d*\\.?\\d+)(?![\\d.])/g, ( m, sign, n ) => String( Number( n ) ) )", "why": "the sign dropped (translateX(-120%) equals translateX(120%))"},
+	{"file": "lib/intake-inventory-diff.mjs", "find": "const at = cost ? list.reduce(", "replace": "const at = false ? list.reduce(", "why": "records at one call site pair in order again (sheen against ripple)"},
+	{"file": "lib/intake-inventory-diff.mjs", "find": "( cost( o, t ) < cost( list[ best ], t ) ? i : best )", "replace": "( cost( o, t ) > cost( list[ best ], t ) ? i : best )", "why": "the least alike record is paired"},
+	{"file": "lib/intake-inventory-diff.mjs", "find": "return t ? ( pairs.push( [ o, t ] ), false ) : true;", "replace": "return true;", "why": "a record covered by a several-element record of theirs is only ours again"},
+	{"file": "lib/intake-inventory-diff.mjs", "find": "names( x ).length > 1 && names( x ).includes( String( o.element?.template_tpl_id ) )", "replace": "names( x ).length > 1", "why": "an element the record does not name is covered too"},
+	{"file": "lib/intake-inventory-diff.mjs", "find": "if ( ! listed.has( once ) ) {", "replace": "if ( true ) {", "why": "a difference two covered records share is listed twice"}
+]

@@ -657,8 +657,19 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 				// animatable structure to work with. Always wrapped (both `icon`
 				// and `icon-and-text`), unlike the custom-icon branch below.
 				$bar_count = 2 === $bar_count ? 2 : 3;
+				// Each bar carries the shared `__burger-bar` class and its own `__burger-bar-N`: the motion model's
+				// Bar 1, 2 and 3 parts are one class each (Spec 38A §6.2), and a two-bar glyph prints no Bar 3.
+				$bar_classes = array(
+					'sgs-nav-bar-menu__burger-bar-1',
+					'sgs-nav-bar-menu__burger-bar-2',
+					'sgs-nav-bar-menu__burger-bar-3',
+				);
+				$bars_html   = '';
+				foreach ( array_slice( $bar_classes, 0, $bar_count ) as $bar_class ) {
+					$bars_html .= '<span class="sgs-nav-bar-menu__burger-bar ' . $bar_class . '"></span>';
+				}
 				$icon_html = '<span class="sgs-nav-bar-menu__burger-icon' . ( 2 === $bar_count ? ' sgs-nav-bar-menu__burger-icon--two-bar' : '' ) . '" aria-hidden="true">'
-					. str_repeat( '<span class="sgs-nav-bar-menu__burger-bar"></span>', $bar_count )
+					. $bars_html
 					. '</span>';
 			} else {
 				// ⚠ Under `icon-and-text` a real visible word names the button, so the
@@ -723,4 +734,33 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 			esc_attr( $wrap_class )
 		);
 	}
+}
+
+if ( ! function_exists( 'sgs_nav_bar_menu_burger_base_transition' ) ) {
+	/**
+	 * The burger's morph transition, handed to the motion emitter for the bar and icon-box parts.
+	 *
+	 * A hover layer on a bar writes a scoped `transition` list that replaces style.css's own (the morph pose's `transform`
+	 * and `opacity`, on the `--sgs-nbm-burger-morph-*` timing), so the open and close morph would jump. The emitter appends
+	 * these entries to the part's list instead (`Sgs_Motion_Emitter::emit`, filter `sgs_motion_base_transition`).
+	 *
+	 * @param array  $entries Entries so far.
+	 * @param string $block   Block name.
+	 * @param string $target  Motion part key.
+	 * @return array Entries with the morph's own.
+	 */
+	function sgs_nav_bar_menu_burger_base_transition( $entries, $block = '', $target = '' ) {
+		if ( 'sgs/nav-bar-menu' !== $block ) {
+			return $entries;
+		}
+		$timing = 'var(--sgs-nbm-burger-morph-duration, 200ms) var(--sgs-nbm-burger-morph-easing, ease)';
+		if ( in_array( $target, array( 'burger-bar-1', 'burger-bar-2', 'burger-bar-3' ), true ) ) {
+			$entries[] = 'transform ' . $timing;
+			$entries[] = 'opacity ' . $timing;
+		} elseif ( 'burger-icon' === $target ) {
+			$entries[] = 'transform ' . $timing;
+		}
+		return $entries;
+	}
+	add_filter( 'sgs_motion_base_transition', 'sgs_nav_bar_menu_burger_base_transition', 10, 3 );
 }

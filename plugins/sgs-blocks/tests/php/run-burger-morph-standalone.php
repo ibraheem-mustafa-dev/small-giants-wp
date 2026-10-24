@@ -112,6 +112,12 @@ function cut_between( string $source, string $start, string $end ): string {
 // declarations only (each guarded by function_exists()), so nothing runs on
 // require.
 // ══════════════════════════════════════════════════════════════════════════
+if ( ! function_exists( 'add_filter' ) ) {
+	/** The markup file registers its burger transition filter at load; this runner reads the function directly. */
+	function add_filter( ...$args ) {
+		return true;
+	}
+}
 require_once dirname( __DIR__, 2 ) . '/includes/nav-menu-markup.php';
 
 // ══════════════════════════════════════════════════════════════════════════

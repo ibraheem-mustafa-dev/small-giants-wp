@@ -2,5 +2,6 @@
 	{ "file": "lib/ledger.mjs", "find": "if ( CONTEXT_PROPS.has( property ) ) {", "replace": "if ( false ) {", "why": "the ledger records context reads as measurements" },
 	{ "file": "lib/ledger.mjs", "find": "if ( CONTEXT_PROPS.has( property ) ) {", "replace": "if ( true ) {", "why": "the ledger records nothing" },
 	{ "file": "lib/calibrate-props.mjs", "find": "[ READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, INHERITED, OWN_INHERITED ]", "replace": "[ CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, INHERITED, OWN_INHERITED ]", "why": "the read key ignores the property list" },
-	{ "file": "lib/calibrate-props.mjs", "find": "...DEFAULT_PROPS.filter( ( p ) => ! /^icon-/.test( p ) )", "replace": "...DEFAULT_PROPS.filter( ( p ) => ! /^(icon-|direction)/.test( p ) )", "why": "calibration drops direction" }
+	{ "file": "lib/calibrate-props.mjs", "find": "...DEFAULT_PROPS.filter( ( p ) => ! /^icon-/.test( p ) )", "replace": "...DEFAULT_PROPS.filter( ( p ) => ! /^(icon-|direction)/.test( p ) )", "why": "calibration drops direction" },
+	{ "file": "lib/calibrate-props.mjs", "find": "[ READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, INHERITED, OWN_INHERITED ]", "replace": "[ READ_PROPS.filter( ( p ) => ! [ 'direction', 'column-count', 'column-width' ].includes( p ) ), CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, INHERITED, OWN_INHERITED ]", "why": "the read key ignores the three context reads" }
 ]

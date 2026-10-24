@@ -1,0 +1,87 @@
+{
+	"client": "indus-foods",
+	"source": "from-marks",
+	"roles": {
+		"--border-accent": [
+			"accent"
+		],
+		"--brand-blue": [
+			"primary"
+		],
+		"--brand-blue-hover": [
+			"primary-dark"
+		],
+		"--brand-blue-light": [
+			"custom-brand-blue-light"
+		],
+		"--brand-gold": [
+			"accent"
+		],
+		"--brand-gold-light": [
+			"accent-light"
+		],
+		"--brand-gold-mid": [],
+		"--brand-gold-pale": [],
+		"--grey-body": [
+			"text"
+		],
+		"--grey-muted": [],
+		"--ink": [
+			"custom-ink"
+		],
+		"--selection-bg": [
+			"accent"
+		],
+		"--selection-fg": [
+			"custom-ink"
+		],
+		"--slate": [
+			"footer-bg"
+		],
+		"--social-facebook": [],
+		"--social-google": [],
+		"--social-linkedin": [],
+		"--surface-cool": [
+			"surface-alt"
+		],
+		"--surface-header": [
+			"surface"
+		],
+		"--surface-section-blue": [
+			"primary"
+		],
+		"--surface-section-gold": [
+			"section"
+		],
+		"--surface-topbar": [
+			"primary"
+		],
+		"--surface-warm": [],
+		"--surface-white": [
+			"surface"
+		],
+		"--text-body": [
+			"text"
+		],
+		"--text-heading": [
+			"heading",
+			"accent-text",
+			"section-text"
+		],
+		"--text-link": [
+			"link"
+		],
+		"--text-link-hover": [
+			"link-hover"
+		],
+		"--text-muted": [
+			"text-muted"
+		],
+		"--tint-on-blue": [
+			"primary-text"
+		],
+		"--whatsapp-green": [
+			"whatsapp"
+		]
+	}
+}

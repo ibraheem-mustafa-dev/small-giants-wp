@@ -5,9 +5,11 @@
 //     sites/<client>/build/page-map.json. --record (re)records the replay file; without it a missing one is an error.
 //     --widths sets the replay check, runtime census, recording and draft-defect widths (the skeleton inventory always
 //     reads 375, 768 and 1440); --surfaces limits the skeleton step to those surface slugs or surfaces.json ids.
-//   node scripts/computed-route/intake.mjs --apply-review <client> [--repo <path>]
+//   node scripts/computed-route/intake.mjs --apply-review <client> [--section <row type>[,...]] [--repo <path>]
 //     reads review.md back, writes the dated marks into intake.json and the confirmed page-map.json, and saves Bean's
-//     block:<slug> marks and accepted finaliser picks to sites/<client>/build/skeleton/decisions.json.
+//     block:<slug> marks and accepted finaliser picks to sites/<client>/build/skeleton/decisions.json. --section
+//     checks and writes the marks of the named review sections only (not page-map or skeleton-block), leaving every
+//     other row and its mark as it was.
 //   node scripts/computed-route/intake.mjs --finalise <client>      writes build/intake/finalise-request.json (the
 //     low-confidence and unresolved skeleton rows) for an agent run with prompts/skeleton-finaliser.md.
 //   node scripts/computed-route/intake.mjs --apply-picks <client>   applies that agent's finalise-picks.json to
@@ -21,11 +23,16 @@
 //   node scripts/computed-route/intake.mjs --page-map <client>      rebuilds only build/page-map.json offline from the
 //     export, with Bean's saved page-map review marks and the current map's ids carried by row key, and prints every
 //     changed row (lib/intake-pagemap-regen.mjs).
+//   node scripts/computed-route/intake.mjs --palette-only <client> [--record] [--into-intake]   writes build/intake/palette.json
+//     (the palette proposal and its colour usage) from the draft tokens and one 1440 rest reading per route, without
+//     the other stages; --record records the replay file first; --into-intake also replaces intake.json's palette block and
+//     review.md's palette section, keeping a mark only where its slugs equal the new proposal's (lib/intake-palette-run.mjs).
 // Exit 0 pass, 1 a failure (named on stderr), 2 usage. --repo points every path at another repository root (tests).
 import { parseArgs, runIntake, applyIntakeReview, recordProblems, pathsFor, USAGE } from './lib/intake-run.mjs';
 import { runFinalise, runApplyPicks, runRender, runRerunSkeletons } from './lib/intake-run-finalise.mjs';
 import { runFacts } from './lib/intake-facts-run.mjs';
 import { runPageMap } from './lib/intake-pagemap-regen.mjs';
+import { runPaletteOnly } from './lib/intake-palette-run.mjs';
 
 const o = parseArgs( process.argv.slice( 2 ) );
 if ( o.error ) {
@@ -42,6 +49,7 @@ const modes = {
 	'rerun-skeletons': () => runRerunSkeletons( at, o, { log, recordProblems } ),
 	facts: () => runFacts( o, { log } ),
 	'page-map': () => runPageMap( o, { log } ),
+	'palette-only': () => runPaletteOnly( o, { log } ),
 	run: () => runIntake( o ),
 };
 process.exitCode = await modes[ o.mode ]();

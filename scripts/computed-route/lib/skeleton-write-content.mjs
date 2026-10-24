@@ -5,6 +5,15 @@
 // The factory takes the writer's shared context (`ctx`).
 import { LOGO_HANDOVER } from './skeleton-write-units.mjs';
 
+// The words a draft's copyright line prints before its © mark (sgs/business-info prints `{copyrightPrefix} © {year} {line}`):
+// "Copyright © 2026 Acme" gives "Copyright", "© 2026 Acme" gives "" (the block then omits the word). A line with no mark
+// ("(c)" counts as one) gives the words before its year, and a line with neither gives "".
+export function copyrightPrefixOf( text ) {
+	const t = String( text ?? '' ).replace( /\s+/g, ' ' ).trim();
+	const mark = /©|&copy;|\(c\)/i.exec( t ) ?? /\b(?:19|20)\d{2}\b/.exec( t );
+	return mark ? t.slice( 0, mark.index ).trim() : '';
+}
+
 export function makeContent( ctx ) {
 	const { m, facts, view, carried, surfaceKind } = ctx;
 	const { composition, enumOf } = facts;
@@ -30,7 +39,7 @@ export function makeContent( ctx ) {
 		if ( top.siteInfoKind && facts.displayTypes.includes( top.siteInfoKind ) && enumOf( block, 'displayType' ) ) {
 			a.displayType = top.siteInfoKind;
 			if ( 'copyright' === top.siteInfoKind && attrExists( block, 'copyrightPrefix' ) ) {
-				a.copyrightPrefix = /^\s*copyright\b/i.test( t ) ? 'Copyright' : '';
+				a.copyrightPrefix = copyrightPrefixOf( t );
 			}
 			handover.push( { owner: 'site-info', kind: 'text', detail: `Site Info "${ top.siteInfoKind }" must read: ${ m.textWithBreaks( e ) }` } );
 			return { a, handover };

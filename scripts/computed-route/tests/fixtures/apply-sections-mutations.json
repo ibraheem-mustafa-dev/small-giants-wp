@@ -1,0 +1,11 @@
+[
+	{ "file": "lib/intake-review.mjs", "find": "const rows = all.filter( ( r ) => inScope( r.rowType ) );", "replace": "const rows = all;", "why": "only the named sections are checked and marked" },
+	{ "file": "lib/intake-review.mjs", "find": "const review = ( intake.review || [] ).filter( ( r ) => ! inScope( r.rowType ) );", "replace": "const review = [];", "why": "every other row keeps its review entry" },
+	{ "file": "lib/intake-review.mjs", "find": "const inScope = ( t ) => ! sections || sections.includes( t );", "replace": "const inScope = ( t ) => true;", "why": "the scope is the named sections" },
+	{ "file": "lib/intake-review.mjs", "find": "review: sections ? review.sort( ( a, b ) => at( a ) - at( b ) ) : review", "replace": "review", "why": "the review keeps its row order" },
+	{ "file": "lib/intake-run.mjs", "find": "{ today, sections: o.sections }", "replace": "{ today }", "why": "--section reaches the apply" },
+	{ "file": "lib/intake-run.mjs", "find": "if ( o.sections && ! res.intake.paletteOnly ) {", "replace": "if ( false ) {", "why": "a sectioned apply writes no page map" },
+	{ "file": "lib/intake-run.mjs", "find": "if ( o.sections.includes( 'page-map' ) || o.sections.includes( 'skeleton-block' ) ) {", "replace": "if ( false ) {", "why": "a sectioned apply of page-map or skeleton-block is refused" },
+	{ "file": "lib/intake-run.mjs", "find": "if ( o.sections && 'apply' !== o.mode ) {", "replace": "if ( false ) {", "why": "--section goes with --apply-review only" },
+	{ "file": "lib/intake-run.mjs", "find": "if ( ! o.sections.length || bad ) {", "replace": "if ( ! o.sections.length ) {", "why": "--section names real sections" }
+]

@@ -56,6 +56,8 @@ import { delegatedMove, inheritedItem, movedEntranceTarget } from './stagger-app
 
 /** Hover colour and shadow properties whose timing the hover state owns (FR-38A-7). */
 const HOVER_PAINT = [ 'color', 'background-color', 'border-color', 'box-shadow' ];
+// The hover state's colour-and-shadow timing override (Sgs_Motion_Emitter::PAINT_TIMING): field key => its slot.
+const PAINT_TIMING = { paintDuration: 'duration', paintEasing: 'easing' };
 
 const has = ( obj, key ) => Object.prototype.hasOwnProperty.call( obj, key );
 
@@ -82,14 +84,20 @@ function hoverState( state, decls, trans, channels ) {
 	const tiers = tierValues( state );
 	const map = propertyChannels();
 	const owners = {};
+	// The movement timing: the client's hover movement token (settings.custom.hover), whose framework default is
+	// duration.fast and easing.emphasised.
 	const timing = {
-		'transition-duration': tokenOr( 'token:duration.fast', '200ms' ),
+		'transition-duration': `var(--wp--custom--hover--duration, ${ tokenOr(
+			'token:duration.fast',
+			'200ms'
+		) })`,
 		'transition-delay': '0ms',
-		'transition-timing-function': tokenOr(
+		'transition-timing-function': `var(--wp--custom--hover--easing, ${ tokenOr(
 			'token:easing.emphasised',
 			'cubic-bezier(0.2, 0.7, 0.2, 1)'
-		),
+		) })`,
 	};
+	const paint = {};
 	const isFollow = follows( tiers.desktop );
 	const follow = followDefaults();
 	const angles = emptyAngles();
@@ -104,6 +112,11 @@ function hoverState( state, decls, trans, channels ) {
 		Object.entries( tiers[ tier ] ).forEach( ( [ key, value ] ) => {
 			const prop = f[ key ]?.css ?? null;
 			const css = valueCss( def, key, value );
+			if ( has( PAINT_TIMING, key ) && css !== null ) {
+				paint[ PAINT_TIMING[ key ] ] = css;
+				timingChanged = true;
+				return;
+			}
 			if ( prop === null || css === null ) {
 				return;
 			}
@@ -129,10 +142,28 @@ function hoverState( state, decls, trans, channels ) {
 		}
 		// A tier repeats the whole list when its timing or its owner set differs from the wider tier's.
 		if ( timingChanged || Object.keys( owners ).length !== ownerCount ) {
-			trans[ tier ] = [ ...Object.keys( owners ), ...HOVER_PAINT ].map(
-				( prop ) =>
-					`${ prop } ${ timing[ 'transition-duration' ] } ${ timing[ 'transition-timing-function' ] } ${ timing[ 'transition-delay' ] }`
-			);
+			const paintTiming =
+				Object.keys( paint ).length === 0
+					? `var(--wp--custom--transition--fast, ${ tokenOr(
+							'token:duration.fast',
+							'200ms'
+					  ) } ease)`
+					: `${
+							paint.duration ??
+							tokenOr( 'token:duration.fast', '200ms' )
+					  } ${
+							paint.easing ?? tokenOr( 'token:easing.default', 'ease' )
+					  }`;
+			trans[ tier ] = [
+				...Object.keys( owners ).map(
+					( prop ) =>
+						`${ prop } ${ timing[ 'transition-duration' ] } ${ timing[ 'transition-timing-function' ] } ${ timing[ 'transition-delay' ] }`
+				),
+				...HOVER_PAINT.map(
+					( prop ) =>
+						`${ prop } ${ paintTiming } ${ timing[ 'transition-delay' ] }`
+				),
+			];
 			if ( isFollow ) {
 				trans[ tier ] = [ ...trans[ tier ], ...followEntries( follow ) ];
 			}
@@ -142,6 +173,12 @@ function hoverState( state, decls, trans, channels ) {
 	Object.keys( owners ).forEach( ( prop ) => {
 		if ( map[ prop ] ) {
 			channels[ map[ prop ] ] = true;
+		}
+	} );
+	TIERS.forEach( ( tier ) => {
+		// A resting width alone still sets the width, so the part rests at its own length without a hover width.
+		if ( has( decls[ tier ], '--sgs-w-rest' ) ) {
+			channels.width = true;
 		}
 	} );
 	angleChannels( angles, channels );

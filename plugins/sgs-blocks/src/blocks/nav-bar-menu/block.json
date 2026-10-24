@@ -75,6 +75,8 @@
 			},
 			"containerKind": "layout",
 			"collection": true,
+			"animationItems": ".sgs-nav-bar-menu__burger",
+			"_comment_animationItems": "The menu button is a repeated-item host for the motion model's item hover (source item), so hovering or focusing the button drives the hover state of its three bar parts: matched through Sgs_Motion_Targets::item_matches().",
 			"scrim": {
 				"open": " [data-sgs-mega-trigger][aria-expanded=\"true\"]"
 			},
@@ -263,6 +265,7 @@
 				"burger-bar": {
 					"label": "Burger bar",
 					"order": 9.6,
+					"motion": false,
 					"clusters": [
 						"layout"
 					],
@@ -270,7 +273,49 @@
 					"attrMap": {
 						"css:height": "burgerBarThickness"
 					},
-					"_note": "Each bar of the default burger glyph (`.sgs-nav-bar-menu__burger-bar`). burgerBarThickness writes --sgs-nbm-bar-h on the icon box, which the bars read for their height and the bar-stack height and morph poses read for their geometry (includes/nav-menu-trigger-css.php)."
+					"_note": "All bars of the default burger glyph together (`.sgs-nav-bar-menu__burger-bar`, carried by every bar beside its own `-1`, `-2` or `-3` class). burgerBarThickness writes --sgs-nbm-bar-h on the icon box, which the bars read for their height and the bar-stack height and morph poses read for their geometry (includes/nav-menu-trigger-css.php). Not a motion target: motion reaches each bar through burger-bar-1, burger-bar-2 and burger-bar-3, so a layer never sits on one bar twice."
+				},
+				"burger-bar-1": {
+					"label": "Burger bar 1",
+					"order": 9.61,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "burgerBar1",
+					"attrMap": {
+						"css:border-radius": "burgerBar1BorderRadius"
+					},
+					"absentIn": [ "burger-text", "burger-custom-icon" ],
+					"absentWhy": "The default three-bar glyph prints the bars only when the trigger shows the icon and the icon is the default menu glyph; a text-only trigger and a custom icon print none.",
+					"_note": "Bar 1 of the default burger glyph (`.sgs-nav-bar-menu__burger-bar-1`, beside the shared `.sgs-nav-bar-menu__burger-bar`): a motion part of its own, so its rest length (the motion model's restWidth), hover length (width), hover duration and delay come through the Hover panel, and a bar can be shorter than the icon box and grow on hover. Its corner rounding is burgerBar1BorderRadius. The Hover state's source is Card hovered (item) so the burger BUTTON drives the bars: supports.sgs.animationItems lists the button."
+				},
+				"burger-bar-2": {
+					"label": "Burger bar 2",
+					"order": 9.62,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "burgerBar2",
+					"attrMap": {
+						"css:border-radius": "burgerBar2BorderRadius"
+					},
+					"absentIn": [ "burger-text", "burger-custom-icon" ],
+					"absentWhy": "The default three-bar glyph prints the bars only when the trigger shows the icon and the icon is the default menu glyph; a text-only trigger and a custom icon print none.",
+					"_note": "Bar 2 of the default burger glyph (`.sgs-nav-bar-menu__burger-bar-2`, beside the shared `.sgs-nav-bar-menu__burger-bar`): a motion part of its own, so its rest length (the motion model's restWidth), hover length (width), hover duration and delay come through the Hover panel, and a bar can be shorter than the icon box and grow on hover. Its corner rounding is burgerBar2BorderRadius. The Hover state's source is Card hovered (item) so the burger BUTTON drives the bars: supports.sgs.animationItems lists the button."
+				},
+				"burger-bar-3": {
+					"label": "Burger bar 3",
+					"order": 9.63,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "burgerBar3",
+					"attrMap": {
+						"css:border-radius": "burgerBar3BorderRadius"
+					},
+					"absentIn": [ "burger-text", "burger-custom-icon", "two-bar" ],
+					"absentWhy": "The default three-bar glyph prints the bars only when the trigger shows the icon and the icon is the default menu glyph (a text-only trigger and a custom icon print none), and the two-bar glyph (`burgerBarCount` 2) prints only Bars 1 and 2.",
+					"_note": "Bar 3 of the default burger glyph (`.sgs-nav-bar-menu__burger-bar-3`, beside the shared `.sgs-nav-bar-menu__burger-bar`): a motion part of its own, so its rest length (the motion model's restWidth), hover length (width), hover duration and delay come through the Hover panel, and a bar can be shorter than the icon box and grow on hover. Its corner rounding is burgerBar3BorderRadius. The Hover state's source is Card hovered (item) so the burger BUTTON drives the bars: supports.sgs.animationItems lists the button."
 				},
 				"burger-icon": {
 					"label": "Burger icon box",
@@ -282,8 +327,11 @@
 					"attrMap": {
 						"css:width": "burgerIconWidth",
 						"css:height": "burgerIconHeight",
-						"css:gap": "burgerBarGap"
+						"css:gap": "burgerBarGap",
+						"css:align-items": "burgerBarAlign"
 					},
+					"absentIn": [ "burger-text", "burger-custom-icon" ],
+					"absentWhy": "The bar-stack box prints around the default glyph only when the trigger shows the icon and the icon is the default menu glyph; a text-only trigger prints no glyph and a custom icon in icon mode prints its SVG bare.",
 					"_note": "U-18 G6. The `.sgs-nav-bar-menu__burger-icon` bar-stack BOX — a genuinely separate element from `burger` above, whose own `css:width`/`css:height` are already claimed by `burgerWidth` (the BUTTON's width) and `burgerSize` (the BUTTON's height). Its own element, matching `detach-chip`'s precedent for a sub-part that cannot share its parent's element entry. `burgerIconHeight` writes the `--sgs-nbm-icon-h` custom property (not a bare `height` declaration) because `.sgs-nav-bar-menu__burger-icon--two-bar` already sets that property at full (0,1,0) specificity in style.css; the emitted rule targets `.sgs-nav-bar-menu__burger-icon` at (0,2,0) so it wins, and every morph pose (`x`, `x-rotate`, `line`, two-bar) already derives its travel from that one property, so setting it here reaches every pose for free. `burgerIconWidth` writes a new `--sgs-nbm-icon-w` custom property, declared with its 24px default and consumed by a `width: var(--sgs-nbm-icon-w)` read in the same zero-specificity `:where()` box rule in style.css, mirroring how `height` reads `--sgs-nbm-icon-h` there."
 				},
 				"burger": {
@@ -314,7 +362,9 @@
 						"css:line-height": "burgerLineHeight",
 						"css:text-transform": "burgerTextTransform",
 						"css:letter-spacing": "burgerLetterSpacing",
-						"css:gap": "burgerTextGap"
+						"css:gap": "burgerTextGap",
+						"css:box-shadow": "burgerShadow",
+						"css:box-shadow-color": "burgerShadowColour"
 					},
 					"states": {
 						"hover": {
@@ -816,6 +866,37 @@
 			"type": "object",
 			"default": {},
 			"description": "Thickness of the default glyph's bars, per device: a {desktop,tablet,mobile} tier object of CSS lengths. Written to --sgs-nbm-bar-h, which the bars, the bar-stack height and every morph pose read. Unset keeps 2px."
+		},
+		"burgerBar1BorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "Corner radius of Bar 1 of the default glyph, per device: a {desktop,tablet,mobile} tier object of CSS lengths. Unset keeps style.css's 1px."
+		},
+		"burgerBar2BorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "Corner radius of Bar 2 of the default glyph, per device: a {desktop,tablet,mobile} tier object of CSS lengths. Unset keeps style.css's 1px."
+		},
+		"burgerBar3BorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "Corner radius of Bar 3 of the default three-bar glyph, per device: a {desktop,tablet,mobile} tier object of CSS lengths. Unset keeps style.css's 1px."
+		},
+		"burgerBarAlign": {
+			"type": "string",
+			"default": "",
+			"enum": [ "", "start", "center", "end" ],
+			"description": "Which side the default glyph's bars line up on when they are shorter than the icon box (Bar lengths are set in each bar's Hover panel): start, centre or end. Empty keeps the start side."
+		},
+		"burgerShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Box shadow of the menu button, composed with burgerShadowColour by sgs_shadow_box_decls(); the shared shadow control, with the automatic lift on hover. Empty draws no shadow."
+		},
+		"burgerShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "The shadow's colour. The name is fixed by ShadowControl.js::shadowAttrKeys, which composes it as <base>Colour."
 		},
 		"burgerTextGap": {
 			"type": "object",

@@ -1422,9 +1422,62 @@
       "mega-item": "mega panel columns are classed only inside a rendered sgs_mega_menu panel post; get_post() in the harness returns the one global post for every ID and there is no WP_Post, so the panel post cannot be supplied",
       "mega-row": "mega panel rows are classed only inside a rendered sgs_mega_menu panel post (see mega-item); the harness cannot supply a second post or a WP_Post"
      }
+    },
+    "burger-text": {
+     "why": "a text-only trigger (triggerMode text on every tier) prints the label and no glyph, so the burger icon box and its three bars are absent",
+     "attrs": {
+      "triggerMode": {
+       "desktop": "text",
+       "tablet": "text",
+       "mobile": "text"
+      },
+      "triggerLabel": "Menu"
+     },
+     "post": {
+      "ID": 7,
+      "post_type": "wp_navigation",
+      "post_content": "<!-- wp:core/navigation-link {\"label\": \"Home\", \"url\": \"https://example.test/\", \"kind\": \"custom\"} /--><!-- wp:core/navigation-link {\"label\": \"Sale\", \"url\": \"https://example.test/sale\", \"kind\": \"custom\", \"description\": \"New\"} /--><!-- wp:core/navigation-submenu {\"label\": \"Services\", \"url\": \"https://example.test/services\", \"kind\": \"custom\"} --><!-- wp:core/navigation-link {\"label\": \"Design\", \"url\": \"https://example.test/design\", \"kind\": \"custom\"} /--><!-- wp:core/navigation-link {\"label\": \"Build\", \"url\": \"https://example.test/build\", \"kind\": \"custom\"} /--><!-- /wp:core/navigation-submenu -->"
+     },
+     "unexercised": {
+      "mega-item": "mega panel columns are classed only inside a rendered sgs_mega_menu panel post; get_post() in the harness returns the one global post for every ID and there is no WP_Post, so the panel post cannot be supplied",
+      "mega-row": "mega panel rows are classed only inside a rendered sgs_mega_menu panel post (see mega-item); the harness cannot supply a second post or a WP_Post"
+     }
+    },
+    "burger-custom-icon": {
+     "why": "a custom triggerIcon (not the default lucide menu glyph) prints the chosen SVG bare in icon mode, with no burger icon box or bars",
+     "attrs": {
+      "triggerIcon": {
+       "source": "lucide",
+       "name": "align-justify"
+      }
+     },
+     "post": {
+      "ID": 7,
+      "post_type": "wp_navigation",
+      "post_content": "<!-- wp:core/navigation-link {\"label\": \"Home\", \"url\": \"https://example.test/\", \"kind\": \"custom\"} /--><!-- wp:core/navigation-link {\"label\": \"Sale\", \"url\": \"https://example.test/sale\", \"kind\": \"custom\", \"description\": \"New\"} /--><!-- wp:core/navigation-submenu {\"label\": \"Services\", \"url\": \"https://example.test/services\", \"kind\": \"custom\"} --><!-- wp:core/navigation-link {\"label\": \"Design\", \"url\": \"https://example.test/design\", \"kind\": \"custom\"} /--><!-- wp:core/navigation-link {\"label\": \"Build\", \"url\": \"https://example.test/build\", \"kind\": \"custom\"} /--><!-- /wp:core/navigation-submenu -->"
+     },
+     "unexercised": {
+      "mega-item": "mega panel columns are classed only inside a rendered sgs_mega_menu panel post; get_post() in the harness returns the one global post for every ID and there is no WP_Post, so the panel post cannot be supplied",
+      "mega-row": "mega panel rows are classed only inside a rendered sgs_mega_menu panel post (see mega-item); the harness cannot supply a second post or a WP_Post"
+     }
+    },
+    "two-bar": {
+     "why": "burgerBarCount 2 prints the two-bar glyph: Bars 1 and 2 and the --two-bar icon modifier, with no Bar 3",
+     "attrs": {
+      "burgerBarCount": 2
+     },
+     "post": {
+      "ID": 7,
+      "post_type": "wp_navigation",
+      "post_content": "<!-- wp:core/navigation-link {\"label\": \"Home\", \"url\": \"https://example.test/\", \"kind\": \"custom\"} /--><!-- wp:core/navigation-link {\"label\": \"Sale\", \"url\": \"https://example.test/sale\", \"kind\": \"custom\", \"description\": \"New\"} /--><!-- wp:core/navigation-submenu {\"label\": \"Services\", \"url\": \"https://example.test/services\", \"kind\": \"custom\"} --><!-- wp:core/navigation-link {\"label\": \"Design\", \"url\": \"https://example.test/design\", \"kind\": \"custom\"} /--><!-- wp:core/navigation-link {\"label\": \"Build\", \"url\": \"https://example.test/build\", \"kind\": \"custom\"} /--><!-- /wp:core/navigation-submenu -->"
+     },
+     "unexercised": {
+      "mega-item": "mega panel columns are classed only inside a rendered sgs_mega_menu panel post; get_post() in the harness returns the one global post for every ID and there is no WP_Post, so the panel post cannot be supplied",
+      "mega-row": "mega panel rows are classed only inside a rendered sgs_mega_menu panel post (see mega-item); the harness cannot supply a second post or a WP_Post"
+     }
     }
    },
-   "pathsWhy": "render.php resolves one menu (SGS_Nav_Menu_Source::get_menu_blocks) and always renders the flat bar through sgs_nav_bar_menu_render_items; an empty menu returns '' (no parts). Items fork on type: a plain link, a submenu item (dropdown panel wrap, submenu, sub-items, sub-links), a sgs_mega_menu item (mega panel wrap, mega-item and mega-row classes) and a disabled item (non-motion part). The burger prints the three-bar default glyph (burger-icon, burger-bar) unless a custom triggerIcon replaces it, and is dropped when showBurger is off. The dropdown path reaches every part except the mega columns and rows, which need a mega panel post the harness cannot supply."
+   "pathsWhy": "render.php resolves one menu (SGS_Nav_Menu_Source::get_menu_blocks) and always renders the flat bar through sgs_nav_bar_menu_render_items; an empty menu returns '' (no parts). Items fork on type: a plain link, a submenu item (dropdown panel wrap, submenu, sub-items, sub-links), a sgs_mega_menu item (mega panel wrap, mega-item and mega-row classes) and a disabled item (non-motion part). The burger prints the three-bar default glyph (burger-icon, burger-bar) unless a custom triggerIcon replaces it, and is dropped when showBurger is off. The dropdown path reaches every part except the mega columns and rows, which need a mega panel post the harness cannot supply. The burger forks three more ways: a text-only trigger (no glyph), a custom triggerIcon (a bare SVG with no icon box or bars) and burgerBarCount 2 (Bars 1 and 2 only)."
   },
   "nav-drawer": {
    "base": {},

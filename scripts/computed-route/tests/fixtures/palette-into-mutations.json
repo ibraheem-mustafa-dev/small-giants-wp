@@ -1,0 +1,15 @@
+[
+	{ "file": "lib/intake-palette-into.mjs", "find": "if ( ! sameSet( named, rowRoles( row ) ) ) {", "replace": "if ( false ) {", "why": "a mark whose slugs differ from the new proposal is dropped" },
+	{ "file": "lib/intake-palette-into.mjs", "find": "return oldRow ? rowRoles( oldRow ) : null;", "replace": "return [];", "why": "accept names the old proposal's roles" },
+	{ "file": "lib/intake-palette-into.mjs", "find": "( ticked && 'palette-role' === parsed.rowSection[ id ] ? 'accept' : null )", "replace": "null", "why": "a ticked palette Accept all counts as accept" },
+	{ "file": "lib/intake-palette-into.mjs", "find": "?? applied.get( id )?.mark ?? null;", "replace": "?? null;", "why": "an applied mark in intake.json is read" },
+	{ "file": "lib/intake-palette-into.mjs", "find": "if ( prior?.mark === mark ) {", "replace": "if ( true ) {", "why": "only an applied mark stays in intake.json" },
+	{ "file": "lib/intake-palette-into.mjs", "find": "const entry = { rowId: rr.rowId, rowType: 'palette-role', contentHash: rr.contentHash, mark };", "replace": "const entry = { rowId: rr.rowId, rowType: 'palette-role', contentHash: applied.get( rr.rowId )?.contentHash ?? rr.contentHash, mark };", "why": "a kept mark carries the new row hash" },
+	{ "file": "lib/intake-palette-into.mjs", "find": "paletteOnly: { note: PALETTE_ONLY_NOTE }, ", "replace": "", "why": "a created intake.json says it is palette-only" },
+	{ "file": "lib/intake-palette-into.mjs", "find": "const review = ( next.review || [] ).filter( ( r ) => 'palette-role' !== r.rowType );", "replace": "const review = [];", "why": "the other review entries are kept" },
+	{ "file": "lib/intake-palette-into.mjs", "find": "lines.splice( at.start, at.end - at.start, ...section );", "replace": "lines.splice( at.start, lines.length - at.start, ...section );", "why": "only the palette section of review.md is replaced" },
+	{ "file": "lib/intake-palette-into.mjs", "find": "md = fresh;", "replace": "md = fresh.replace( /\\n## Palette[\\s\\S]*$/, '\\n' );", "why": "a created review.md holds the palette section" },
+	{ "file": "lib/intake-run.mjs", "find": "if ( res.intake.paletteOnly ) {", "replace": "if ( false ) {", "why": "--apply-review writes a palette-only record" },
+	{ "file": "lib/intake-run.mjs", "find": "if ( o.intoIntake && 'palette-only' !== o.mode ) {", "replace": "if ( false ) {", "why": "--into-intake goes with --palette-only only" },
+	{ "file": "lib/intake-review.mjs", "find": "'palette-role': [ 'token', 'hex', 'role', 'roles' ],", "replace": "'palette-role': [ 'token', 'hex', 'role' ],", "why": "a row's role list is part of its content hash" }
+]

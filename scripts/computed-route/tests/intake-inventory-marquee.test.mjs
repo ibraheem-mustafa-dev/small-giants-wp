@@ -66,3 +66,14 @@ test( 'loopingKeys refuses a nearest host when the record is finite or not a tra
 	const own = { records: [ { iterations: 'infinite', element: { dc: 'App', template_tpl_id: '4' }, properties: [ { property: 'transform', from: 'translateX(0)', to: 'translateX(-50%)' } ] } ] };
 	assert.deepEqual( [ ...loopingKeys( own ) ], [ 'App/4' ], 'the control: an own template element still qualifies' );
 } );
+
+test( 'MUST FAIL (FR-48-6 rule 1): loopingKeys refuses an endless float, which turns back, and keeps a one-way track', () => {
+	const rec = ( o ) => ( { iterations: 'infinite', element: { dc: 'App', template_tpl_id: '5' }, ...o } );
+	const float = rec( { direction: 'alternate', properties: [ { property: 'transform', from: 'translateY(0)', to: 'translateY(-12px)' } ] } );
+	assert.equal( loopingKeys( { records: [ float ] } ).size, 0, 'an alternating translate (a float) is not a track' );
+	assert.equal( loopingKeys( { records: [ rec( { direction: 'alternate-reverse', properties: float.properties } ) ] } ).size, 0, 'nor alternate-reverse' );
+	const bob = rec( { direction: 'normal', properties: [ { property: 'transform', from: 'translateY(0)', to: 'translateY( 0 )' } ] } );
+	assert.equal( loopingKeys( { records: [ bob ] } ).size, 0, 'a translate that ends where it starts is not a track' );
+	const track = rec( { direction: 'normal', properties: [ { property: 'transform', from: 'translateX(0)', to: "'translateX(-' + dist + 'px)'", formula: "'translateX(-' + dist + 'px)'" } ] } );
+	assert.deepEqual( [ ...loopingKeys( { records: [ track ] } ) ], [ 'App/5' ], 'the control: a one-way track built in code still qualifies' );
+} );

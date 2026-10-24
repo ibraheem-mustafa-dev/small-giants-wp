@@ -5,6 +5,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { checkApproval } from '../lib/approved-check.mjs';
 import { resolveApproval } from '../lib/approved-identity.mjs';
+import { tallyApprovals } from '../check-approved.mjs';
 
 const row = ( key, block, extra = {} ) => ( { key, surface: 's', tag: 'span', block, ...extra } );
 const rowsOf = ( list ) => Object.fromEntries( list.map( ( r ) => [ `skeleton:s:${ r.key }`, r ] ) );
@@ -35,4 +36,14 @@ test( 'MUST FAIL a named row with no current fingerprint is unchecked, never exa
 	assert.equal( resolveApproval( approval, { rows, fingerprints: { s: { 'Root/9#0': FP } } } ).how, 'unchecked', 'the named element holds none' );
 	assert.equal( resolveApproval( { rowId: 'not a skeleton row', fingerprint: FP }, { rows: { 'not a skeleton row': row( 'k', 'sgs/text' ) }, fingerprints: {} } ).how, 'unchecked', 'not a skeleton row' );
 	assert.equal( resolveApproval( approval, { rows, fingerprints: { s: { 'Root/5#0': FP } } } ).how, 'exact', 'a compared fingerprint that agrees is exact' );
+} );
+
+test( 'MUST FAIL an approval whose element a re-run moved to another row ID is measured at the row the intake carried its mark to', () => {
+	const rows = rowsOf( [ row( 'Root/9#0', 'sgs/site-header-row' ) ] );
+	const approved = { category3: { batch1: [ { rowId: 'skeleton:strip:Root/9#0', approvedBlock: 'sgs/site-header-row (top row)' } ] } };
+	const review = [ { rowId: 'skeleton:s:Root/9#0', realignedFrom: 'skeleton:strip:Root/9#0' } ];
+	const out = tallyApprovals( approved, { rows, fingerprints: {}, review } );
+	assert.equal( out.match, 1 );
+	assert.deepEqual( out.moved, [ 'batch1 skeleton:strip:Root/9#0 -> skeleton:s:Root/9#0' ] );
+	assert.deepEqual( tallyApprovals( approved, { rows, fingerprints: {} } ).noRow, [ 'batch1 skeleton:strip:Root/9#0' ], 'control: with no carried row the approval names no row' );
 } );

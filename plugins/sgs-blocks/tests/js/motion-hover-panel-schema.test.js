@@ -82,6 +82,8 @@ describe( 'fields the schema may or may not hold', () => {
 			'grayscale',
 			'brightness',
 			'indent',
+			'restWidth',
+			'width',
 			'followPointer',
 			'maxAngle',
 			'axisLock',

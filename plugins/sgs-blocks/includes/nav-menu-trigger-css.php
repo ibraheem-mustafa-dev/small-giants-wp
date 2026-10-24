@@ -297,6 +297,34 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 				),
 			)
 		);
+		// Corner rounding per bar (burgerBar1BorderRadius .. burgerBar3BorderRadius) on each bar's own class; a
+		// two-bar glyph prints no Bar 3, so none is written for it. The scoped rule (0,2,0) beats style.css's `:where()` 1px.
+		for ( $sgs_nm_bar_n = 1; $sgs_nm_bar_n <= $sgs_nm_bar_count; $sgs_nm_bar_n++ ) {
+			$css .= sgs_emit_responsive_css(
+				$uid_sel . ' .sgs-nav-bar-menu__burger-bar-' . $sgs_nm_bar_n,
+				array(
+					array(
+						'value'        => $attributes[ 'burgerBar' . $sgs_nm_bar_n . 'BorderRadius' ] ?? array(),
+						'css'          => 'border-radius',
+						'unit_default' => 'px',
+					),
+				)
+			);
+		}
+		// Which side the bars line up on when a motion rest width makes them shorter than the icon box.
+		$sgs_nm_bar_align = (string) ( $attributes['burgerBarAlign'] ?? '' );
+		if ( in_array( $sgs_nm_bar_align, array( 'start', 'center', 'end' ), true ) ) {
+			$css .= $uid_sel . ' .sgs-nav-bar-menu__burger-icon{align-items:' . ( 'center' === $sgs_nm_bar_align ? 'center' : 'flex-' . $sgs_nm_bar_align ) . ';}';
+		}
+		// The button's own shadow, the shared control: every drawn `box-shadow` carries `--sgs-focus-under` so
+		// keyboard focus keeps it, and the automatic lift on hover is the shared touch-guarded rule.
+		$sgs_nm_burger_shadow        = (string) ( $attributes['burgerShadow'] ?? '' );
+		$sgs_nm_burger_shadow_colour = (string) ( $attributes['burgerShadowColour'] ?? '' );
+		$sgs_nm_burger_shadow_decls  = sgs_focus_under_decls( sgs_shadow_box_decls( $sgs_nm_burger_shadow, $sgs_nm_burger_shadow_colour ) );
+		if ( array() !== $sgs_nm_burger_shadow_decls ) {
+			$css .= $burger_sel . '{' . implode( ';', $sgs_nm_burger_shadow_decls ) . ';}'
+				. sgs_shadow_hover_rules( $burger_sel, $sgs_nm_burger_shadow, $sgs_nm_burger_shadow_colour, $attributes, 'sgs/nav-bar-menu' );
+		}
 		$css .= sgs_emit_responsive_css(
 			$burger_sel,
 			array(

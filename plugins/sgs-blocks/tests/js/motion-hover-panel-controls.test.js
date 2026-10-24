@@ -323,20 +323,41 @@ describe( 'the custom curve', () => {
 	} );
 } );
 
-describe( 'one timing for the state change', () => {
-	it( 'carries an exact 400ms set in the panel to the colour, background, border and shadow transition', () => {
-		mount( withState( { ...SCALE } ) );
-		choose( 'Duration', '__exact__' );
-		typeInto( 'Exact duration (ms)', '400' );
-		expect( stateOf().values.duration ).toBe( 400 );
-		const css = emitScopedCss( current, {
+describe( 'the movement and the colour-and-shadow timings', () => {
+	const PAINT = [ 'color', 'background-color', 'border-color', 'box-shadow' ];
+	const cssOf = ( motion ) =>
+		emitScopedCss( motion, {
 			blockName: 'sgs/hero',
 			elements: {},
 			root: '.sgs-t',
 		} ).css;
-		[ 'color', 'background-color', 'border-color', 'box-shadow' ].forEach(
-			( property ) => expect( css ).toContain( `${ property } 400ms` )
+
+	it( 'MUST FAIL WITHOUT THE SPLIT: an exact 400ms in the panel times the movement, and colour and shadow keep the site fast transition', () => {
+		mount( withState( { ...SCALE } ) );
+		choose( 'Duration', '__exact__' );
+		typeInto( 'Exact duration (ms)', '400' );
+		expect( stateOf().values.duration ).toBe( 400 );
+		const css = cssOf( current );
+		expect( css ).toContain( '--sgs-mh-s 400ms' );
+		PAINT.forEach( ( property ) => {
+			expect( css ).toContain( `${ property } var(--wp--custom--transition--fast` );
+			expect( css ).not.toContain( `${ property } 400ms` );
+		} );
+	} );
+
+	it( 'MUST FAIL WITHOUT THE OVERRIDE: the colour and shadow fields time those four properties alone; the movement keeps the hover token', () => {
+		const css = cssOf(
+			withState( { ...SCALE, values: { ...SCALE.values, paintDuration: 300, paintEasing: 'ease-in' } } )
 		);
+		PAINT.forEach( ( property ) => expect( css ).toContain( `${ property } 300ms ease-in 0ms` ) );
+		expect( css ).toContain(
+			'--sgs-mh-s var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms'
+		);
+	} );
+
+	it( 'draws the colour and shadow timing fields in their own group', () => {
+		mount( withState( { ...SCALE } ) );
+		expect( document.body.textContent ).toContain( 'Colour and shadow timing' );
 	} );
 } );
 

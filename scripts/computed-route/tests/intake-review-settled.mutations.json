@@ -1,0 +1,7 @@
+[
+	{"file": "lib/intake-review.mjs", "find": "( intake.missingFeatures || [] ).filter( ( r ) => ! settled( r ) ).forEach(", "replace": "( intake.missingFeatures || [] ).filter( ( r ) => true ).forEach(", "why": "a settled element's stale missing-feature row is listed again"},
+	{"file": "lib/intake-review.mjs", "find": "return own.length > 0 && ! skeletonMissing( own ).length;", "replace": "return ! skeletonMissing( own ).length;", "why": "a row with no skeleton row to judge by is dropped"},
+	{"file": "lib/intake-review.mjs", "find": "return own.length > 0 && ! skeletonMissing( own ).length;", "replace": "return own.length > 0;", "why": "a still-unresolved element's row is dropped"},
+	{"file": "lib/intake-review.mjs", "find": "const own = 'skeleton' === m.from && m.key ? skRows.filter( ( r ) => r.key === m.key ) : [];", "replace": "const own = 'skeleton' === m.from ? skRows.filter( ( r ) => r.key === m.key || ! m.key ) : [];", "why": "a row without a key is judged by every skeleton row"},
+	{"file": "lib/intake-review.mjs", "find": "const own = 'skeleton' === m.from && m.key ? skRows.filter( ( r ) => r.key === m.key ) : [];", "replace": "const own = 'skeleton' === m.from && m.key ? skRows : [];", "why": "a row is judged by other elements' skeleton rows"}
+]

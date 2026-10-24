@@ -70,7 +70,7 @@ test( 'control: a draft nav that paints anything (ground, image, border, shadow,
 	for ( const nav of paints ) {
 		const d = await read( DRAFT( nav ) );
 		const l = await read( LIVE() );
-		assert.ok( boxRows( d, l ).some( ( r ) => 'h' === r[ 0 ] ), nav );
+		assert.deepEqual( boxRows( d, l ).filter( ( r ) => 'h' === r[ 0 ] ), [ [ 'h', d.box.h, 42 ] ], nav );
 	}
 	const d = await read( `<style>#n::after{content:"";display:block;width:4px;height:4px}</style>${ DRAFT() }` );
 	assert.deepEqual( boxRows( d, await read( LIVE() ) ).filter( ( r ) => 'h' === r[ 0 ] ), [ [ 'h', 84, 42 ] ], '::after layer' );
@@ -86,10 +86,10 @@ test( 'control: an underline positioned at the draft nav\'s foot sits 21px lower
 test( 'control: only the live side differs (the live nav or its wrapper paints, the live wrapper has a second child), so the row stays', async () => {
 	const d = await read( DRAFT() );
 	assert.deepEqual( boxRows( d, await read( LIVE( 'background:#eee' ) ) ), [ [ 'h', 84, 42 ] ], 'live nav ground' );
-	assert.ok( boxRows( d, await read( LIVE( '', LINK, 'display:flex;border-bottom:2px solid red' ) ) ).some( ( r ) => 'h' === r[ 0 ] ), 'live wrapper border' );
+	assert.deepEqual( boxRows( d, await read( LIVE( '', LINK, 'display:flex;border-bottom:2px solid red' ) ) ), [ [ 'h', 84, 42 ], [ 'paint-h', 84, 44 ] ], 'live wrapper border' );
 	const twin = LIVE( '', LINK, 'display:block' ).replace( '</nav></div>', '</nav><span>Tagline</span></div>' );
 	assert.equal( ( await read( twin ) ).passThrough.line.h, null );
-	assert.ok( boxRows( d, await read( twin ) ).some( ( r ) => 'h' === r[ 0 ] ), 'live wrapper holds a second child' );
+	assert.deepEqual( boxRows( d, await read( twin ) ), [ [ 'h', 84, 42 ] ], 'live wrapper holds a second child' );
 } );
 
 test( 'control: no single-line flex container on the cross axis (a block parent, a wrapping row, a column) keeps the row', async () => {
@@ -97,7 +97,7 @@ test( 'control: no single-line flex container on the cross axis (a block parent,
 	for ( const row of [ 'display:block;height:84px;padding:0 60px', 'display:flex;flex-wrap:wrap;align-items:center;height:84px;padding:0 60px', 'display:flex;flex-direction:column;justify-content:center;height:84px;padding:0 60px' ] ) {
 		const d = await read( DRAFT( '', '', row ) );
 		assert.equal( d.passThrough.line.h, null, row );
-		assert.ok( boxRows( d, l ).some( ( r ) => 'h' === r[ 0 ] ), row );
+		assert.deepEqual( boxRows( d, l ).filter( ( r ) => 'h' === r[ 0 ] ), [ [ 'h', d.box.h, 42 ] ], row );
 	}
 } );
 
@@ -141,10 +141,10 @@ test( 'control: a live wrapper holding text beside the nav, or painting a layer,
 	const d = await read( DRAFT() );
 	const text = LIVE( '', LINK, 'display:block' ).replace( '</nav></div>', '</nav>Tagline</div>' );
 	assert.equal( ( await read( text ) ).passThrough.line.h, null, 'text' );
-	assert.ok( boxRows( d, await read( text ) ).some( ( r ) => 'h' === r[ 0 ] ), 'text' );
+	assert.deepEqual( boxRows( d, await read( text ) ), [ [ 'h', 84, 42 ] ], 'text' );
 	const layer = `<style>.w::after{content:"";display:block;width:4px;height:4px}</style>${ LIVE( '', LINK, 'display:block" class="w' ) }`;
 	assert.equal( ( await read( layer ) ).passThrough.line.h, null, 'layer' );
-	assert.ok( boxRows( d, await read( layer ) ).some( ( r ) => 'h' === r[ 0 ] ), 'layer' );
+	assert.deepEqual( boxRows( d, await read( layer ) ), [ [ 'h', 84, 42 ] ], 'layer' );
 } );
 
 test( 'MUST FAIL: a box holding no links is compared through its in-flow children; a child that moves keeps the row', async () => {
@@ -191,4 +191,52 @@ test( 'control: a box hugging its link (66px) against a 63px box whose link over
 	const d = await read( hug( '', 66 ) );
 	const l = await read( hug( 'height:63px', 64 ) );
 	assert.deepEqual( boxRows( d, l ), [ [ 'h', 66, 63 ] ] );
+} );
+
+test( 'control: a draft nav whose effect changes what it shows (clip-path, paint containment, a mask, opacity, a blend mode, overflow clip) keeps the row', async () => {
+	const l = await read( LIVE() );
+	for ( const nav of [ 'clip-path:inset(0 0 60px 0)', 'contain:paint', 'contain:content', 'mask-image:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5))', '-webkit-mask-image:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5))', '-webkit-mask-box-image:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5))', 'opacity:.2', 'mix-blend-mode:multiply', 'overflow:clip' ] ) {
+		assert.deepEqual( boxRows( await read( DRAFT( nav ) ), l ), [ [ 'h', 84, 42 ] ], nav );
+	}
+	// Control: the live nav carries the effect and the draft does not, so the row stays too.
+	assert.deepEqual( boxRows( await read( DRAFT() ), await read( LIVE( 'opacity:.2' ) ) ), [ [ 'h', 84, 42 ] ], 'live opacity' );
+} );
+
+test( 'control: a draft nav holding three identical links against a live nav holding one keeps the row (the items are counted)', async () => {
+	const home = `<a href="/" style="${ LINK };width:73px">Home</a>`;
+	const d = await read( DRAFT().replace( /<a href="\/about"[^>]*>About<\/a>/, `${ home }${ home }` ) );
+	const l = await read( LIVE().replace( /<a href="\/about"[^>]*>About<\/a><button[^>]*>v<\/button>/, '' ) );
+	assert.equal( d.passThrough.items.length, 3 );
+	assert.equal( l.passThrough.items.length, 1 );
+	assert.deepEqual( boxRows( d, l ), [ [ 'h', 84, 42 ] ] );
+} );
+
+test( 'control: draft text or a non-interactive child beside the links, absent from the live nav, keeps the row', async () => {
+	const l = await read( LIVE() );
+	assert.deepEqual( boxRows( await read( DRAFT( '', 'Menu text' ) ), l ), [ [ 'h', 84, 42 ] ], 'bare text' );
+	assert.deepEqual( boxRows( await read( DRAFT( '', '<span style="display:block;width:20px;height:42px"></span>' ).replace( 'width:90px', 'width:70px' ) ), l ), [ [ 'h', 84, 42 ] ], 'empty span at the links\' extent' );
+	// Control: the same text on both sides is an item of each, so the row still drops.
+	assert.deepEqual( boxRows( await read( DRAFT( '', '<span>Menu text</span>' ) ), await read( LIVE().replace( '</nav>', '<span>Menu text</span></nav>' ) ) ), [] );
+} );
+
+test( 'control: a draft nav overflowing its row (120px in an 84px row, unclipped) keeps the row', async () => {
+	const d = await read( DRAFT().replace( 'height:100%;', 'height:120px;' ) );
+	assert.equal( d.box.h, 120 );
+	assert.deepEqual( boxRows( d, await read( LIVE() ) ), [ [ 'h', 120, 42 ] ] );
+	// One edge at a time: the nav starts at the row's top and runs past its foot, then ends at its foot and starts above
+	// its top, its padding keeping the links where the live row centres them.
+	const far = await read( DRAFT( 'align-self:flex-start;align-items:flex-start;padding-top:21px;box-sizing:border-box' ).replace( 'height:100%;', 'height:120px;' ) );
+	const near = await read( DRAFT( 'align-self:flex-end;align-items:flex-end;padding-bottom:21px;box-sizing:border-box' ).replace( 'height:100%;', 'height:120px;' ) );
+	assert.deepEqual( [ far.passThrough.items[ 0 ][ 0 ] - far.passThrough.line.h[ 0 ], near.passThrough.items[ 0 ][ 0 ] - near.passThrough.line.h[ 0 ] ], [ 21, 21 ] );
+	assert.deepEqual( boxRows( far, await read( LIVE() ) ), [ [ 'h', 120, 42 ] ], 'far edge' );
+	assert.deepEqual( boxRows( near, await read( LIVE() ) ), [ [ 'h', 120, 42 ] ], 'near edge' );
+} );
+
+test( 'control: draft text inside a wrapper holding the links, or a draft control the live nav lacks, keeps the row', async () => {
+	const l = await read( LIVE() );
+	const wrapped = DRAFT().replace( /(<nav id="n"[^>]*>)(.*)(<\/nav>)/, '$1<div style="display:flex;align-items:center">$2Menu text</div>$3' );
+	assert.deepEqual( boxRows( await read( wrapped ), l ), [ [ 'h', 84, 42 ] ], 'text beside the links in a wrapper' );
+	const button = `<button style="${ LINK };width:32px;border:0;padding:0;background:none">v</button>`;
+	const two = await read( DRAFT( '', `${ button }${ button }` ).replace( 'width:90px', 'width:58px' ) );
+	assert.deepEqual( boxRows( two, l ), [ [ 'h', 84, 42 ] ], 'two draft controls against one live' );
 } );

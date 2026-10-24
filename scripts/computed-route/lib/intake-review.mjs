@@ -19,8 +19,8 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { isUnwiredEntry } from './intake-defects-static.mjs';
-import { realign, fingerprintDiff } from './identity.mjs';
 import { effectRows } from './motion-behaviours.mjs';
+import { skeletonMissing } from './intake-missing.mjs';
 
 export const ROW_TYPES = [ 'page-map', 'palette-role', 'site-info', 'flag', 'draft-defect', 'not-a-defect', 'missing-feature', 'effect', 'skeleton-block', 'inventory-diff', 'notice' ];
 export const SECTION_TITLES = {
@@ -90,7 +90,7 @@ export function markProblem( rowType, mark ) {
 
 export const HASH_FIELDS = {
 	'page-map': [ 'route', 'slug', 'title', 'parent', 'template', 'postType', 'collection', 'menus', 'flags' ],
-	'palette-role': [ 'token', 'hex', 'role' ],
+	'palette-role': [ 'token', 'hex', 'role', 'roles' ],
 	'site-info': [ 'key', 'value', 'normalised' ],
 	flag: [ 'kind', 'text', 'url' ],
 	'not-a-defect': [ 'censusId', 'why', 'note' ],
@@ -199,12 +199,20 @@ export function reviewRows( intake ) {
 		`${ r.route ?? '(no route)' } → ${ r.title } (${ r.postType }, ${ r.collection }${ r.template ? `, ${ r.template }` : '' })`,
 		`${ r.parent ? `${ r.parent }/` : '' }${ r.slug }`,
 		[ ...( r.menus || [] ).map( ( m ) => `${ m.menu } #${ m.position }` ), ...( r.flags || [] ) ].join( ', ' ) ) );
-	( intake.palette?.rows || [] ).forEach( ( r ) => add( 'palette-role', r, r.token, `${ r.token } ${ r.hex }`, r.role ? `role:${ r.role }` : 'no slug (one-off)', [ r.confidence, r.why ].filter( Boolean ).join( ': ' ) ) );
+	( intake.palette?.rows || [] ).forEach( ( r ) => add( 'palette-role', r, r.token, `${ r.token } ${ r.hex }`, r.roles?.length > 1 ? `role:${ r.roles.join( ',' ) }` : r.role ? `role:${ r.role }` : 'no slug (one-off)', [ r.confidence, r.why ].filter( Boolean ).join( ': ' ) ) );
 	( intake.siteInfo?.rows || [] ).forEach( ( r ) => add( 'site-info', r, r.key, `${ r.key }: ${ text( r.value ) }`, text( r.normalised ), ( r.sources || [] ).map( ( s ) => s.draftId || s.location ).filter( Boolean ).join( ', ' ) ) );
 	( intake.flags || [] ).forEach( ( r ) => add( 'flag', r, r.draftId, `${ r.kind }: ${ r.text ?? r.url ?? '' }`, 'accept-flagged', r.why || '' ) );
 	( intake.draftDefects || [] ).forEach( ( r ) => add( 'draft-defect', r, r.draftId, describe( r ), text( r.proposed ?? r.intent ?? 'build the code\'s intent' ), text( r.why ?? r.reason ) ) );
 	unwiredRows( intake ).forEach( ( r ) => add( 'not-a-defect', r, r.draftId, `${ r.censusId ?? r.draftId } ${ text( r.note ) }`, 'not-a-defect', UNWIRED_NOTE ) );
-	( intake.missingFeatures || [] ).forEach( ( r ) => {
+	// A missing feature the skeleton raised is listed while the record's own skeleton still leaves its element without a
+	// block (lib/intake-missing.mjs::skeletonMissing over that element's rows): a later skeleton re-run that settles the
+	// element (a block, absorbed or removed) leaves the earlier row behind in missingFeatures.
+	const skRows = Object.values( intake.skeletons || {} ).flatMap( ( s ) => s.rows || [] );
+	const settled = ( m ) => {
+		const own = 'skeleton' === m.from && m.key ? skRows.filter( ( r ) => r.key === m.key ) : [];
+		return own.length > 0 && ! skeletonMissing( own ).length;
+	};
+	( intake.missingFeatures || [] ).filter( ( r ) => ! settled( r ) ).forEach( ( r ) => {
 		const block = r.block ?? r.proposedBlock ?? null;
 		// A seen-but-unsupported row (clone coverage, or a head item lib/intake-head.mjs does not clone) is a tracked gap:
 		// Accept all marks it with its Phase 4 wave, or `difference` when Bean excluded the capability (Bean, 2026-10-18);
@@ -428,20 +436,24 @@ export const isoDay = () => new Date().toISOString().slice( 0, 10 );
 // value), else the first value for a DEFAULTED row type (flag, not-a-defect), else no mark. A mark kept unchanged on a row with an unchanged hash
 // keeps its markedOn and carriedFrom; any other new mark is dated `today`. Returns { intake (review rebuilt from the
 // record's rows), problems, missing: [{ rowId, rowType, why }] }; non-empty problems or missing means the review fails.
-export function applyReview( intake, markdown, { today = isoDay() } = {} ) {
-	const rows = reviewRows( intake );
-	const known = new Map( rows.map( ( r ) => [ r.rowId, r ] ) );
+// `sections` (row types) limits the check and the marks to those sections: every other row keeps its intake.json
+// review entry as it was, and review.md's other sections are not read for marks.
+export function applyReview( intake, markdown, { today = isoDay(), sections = null } = {} ) {
+	const inScope = ( t ) => ! sections || sections.includes( t );
+	const all = reviewRows( intake );
+	const rows = all.filter( ( r ) => inScope( r.rowType ) );
+	const known = new Map( all.map( ( r ) => [ r.rowId, r ] ) );
 	const prior = new Map( ( intake.review || [] ).map( ( r ) => [ r.rowId, r ] ) );
 	const parsed = parseReview( markdown );
 	const problems = [ ...parsed.problems ];
-	for ( const [ id, t ] of Object.entries( parsed.rowSection ) ) {
+	for ( const [ id, t ] of Object.entries( parsed.rowSection ).filter( ( [ , s ] ) => inScope( s ) ) ) {
 		if ( ! known.has( id ) ) {
 			problems.push( `row ${ id } (${ t } section) is not a row of this intake` );
 		} else if ( known.get( id ).rowType !== t ) {
 			problems.push( `row ${ id } sits in the ${ t } section but is a ${ known.get( id ).rowType } row` );
 		}
 	}
-	const review = [];
+	const review = ( intake.review || [] ).filter( ( r ) => ! inScope( r.rowType ) );
 	const missing = [];
 	for ( const r of rows ) {
 		if ( ! ( r.rowId in parsed.rowSection ) ) {
@@ -465,80 +477,17 @@ export function applyReview( intake, markdown, { today = isoDay() } = {} ) {
 		const old = prior.get( r.rowId );
 		const keep = old && old.contentHash === r.contentHash && null !== mark && old.mark === mark;
 		review.push( { rowId: r.rowId, rowType: r.rowType, contentHash: r.contentHash, mark, markedOn: null === mark ? null : keep ? old.markedOn : today, carriedFrom: keep ? old.carriedFrom ?? null : null,
-			...( old?.changed && old.contentHash === r.contentHash ? { changed: true } : {} ) } );
+			...( old?.changed && old.contentHash === r.contentHash ? { changed: true } : {} ),
+			// The row ID the element had before a re-export moved it (lib/intake-review-carry.mjs::carryOver) stays while the row holds.
+			...( old?.realignedFrom && old.contentHash === r.contentHash ? { realignedFrom: old.realignedFrom } : {} ) } );
 		if ( null === mark ) {
 			missing.push( { rowId: r.rowId, rowType: r.rowType, why } );
 		}
 	}
-	return { intake: { ...intake, review }, problems, missing };
+	const order = new Map( all.map( ( r, i ) => [ r.rowId, i ] ) );
+	const at = ( r ) => order.get( r.rowId ) ?? all.length;
+	return { intake: { ...intake, review: sections ? review.sort( ( a, b ) => at( a ) - at( b ) ) : review }, problems, missing };
 }
 
-// The new intake's review rows after a re-export: a row whose rowId (which carries its draft ID) and content hash match
-// the previous intake's row keeps its mark, markedOn and carriedFrom (the previous takenOn, or the date it was first
-// carried from); every other row is unmarked. A row present before with a different hash gets `changed: true` (kept by
-// applyReview while the hash holds), and `changed` lists those rowIds too.
-export function carryOver( previousIntake, intake ) {
-	const prior = new Map( ( previousIntake?.review || [] ).map( ( r ) => [ r.rowId, r ] ) );
-	const changed = [];
-	// A skeleton row id whose fingerprint now names another element is not the row the mark was written on, whatever its content.
-	const drifted = driftedRows( previousIntake, intake );
-	const review = reviewRows( intake ).map( ( r ) => {
-		const old = drifted.has( r.rowId ) ? null : prior.get( r.rowId );
-		const base = { rowId: r.rowId, rowType: r.rowType, contentHash: r.contentHash, mark: null, markedOn: null, carriedFrom: null };
-		if ( ! old ) {
-			return base;
-		}
-		if ( old.contentHash !== r.contentHash || old.rowType !== r.rowType ) {
-			changed.push( r.rowId );
-			return { ...base, changed: true };
-		}
-		return null === old.mark ? base : { ...base, mark: old.mark, markedOn: old.markedOn, carriedFrom: old.carriedFrom ?? previousIntake.takenOn };
-	} );
-	const lost = ( previousIntake?.review || [] ).filter( ( o ) => null !== o.mark && ( drifted.has( o.rowId ) || ! review.some( ( r ) => r.rowId === o.rowId ) ) );
-	const { realigned, refused } = carryLost( { lost, previousIntake, intake, review } );
-	return { review, changed, realigned, refused };
-}
-
-// The skeleton row ids both runs have whose fingerprints disagree (the source line apart).
-function driftedRows( previousIntake, intake ) {
-	const now = Object.values( skeletonRowsOf( intake ) ).flat();
-	const byId = new Map( now.map( ( r ) => [ r.rowId, r ] ) );
-	return new Set( Object.values( skeletonRowsOf( previousIntake ) ).flat().filter( ( r ) => r.fingerprint && byId.get( r.rowId )?.fingerprint && fingerprintDiff( r.fingerprint, byId.get( r.rowId ).fingerprint, [ 'line' ] ).length ).map( ( r ) => r.rowId ) );
-}
-
-const skeletonRowsOf = ( intake ) => Object.fromEntries( ( Array.isArray( intake?.skeletons ) ? intake.skeletons.map( ( s ) => [ s.surface, s ] ) : Object.entries( intake?.skeletons || {} ) ).map( ( [ slug, s ] ) => [ slug, s.rows || [] ] ) );
-
-// Marks whose row id the new run no longer has (a re-export renumbered the template). A skeleton mark follows its element
-// when lib/identity.mjs::realign maps the previous row's fingerprint to a new row whose proposed block and action are the
-// same; every other mark is refused with why. Mutates `review` (the new rows) to carry the realigned marks; returns
-// { realigned: [ 'old -> new' ], refused: [ 'rowId: why' ] }: a mark is carried or listed, never dropped.
-function carryLost( { lost, previousIntake, intake, review } ) {
-	const realigned = [];
-	const refused = [];
-	const was = skeletonRowsOf( previousIntake );
-	const now = skeletonRowsOf( intake );
-	const maps = {};
-	for ( const o of lost ) {
-		const m = /^skeleton:([^:]+):(.+)$/.exec( o.rowId );
-		const prevRow = m && ( was[ m[ 1 ] ] || [] ).find( ( r ) => r.rowId === o.rowId );
-		if ( ! prevRow?.fingerprint ) {
-			refused.push( `${ o.rowId }: mark "${ o.mark }" not carried (${ m ? 'the previous row carries no fingerprint to re-align by' : 'the row is not in the new export' })` );
-			continue;
-		}
-		maps[ m[ 1 ] ] ||= realign( ( was[ m[ 1 ] ] || [] ).filter( ( r ) => r.fingerprint ).map( ( r ) => ( { key: r.key, fingerprint: r.fingerprint } ) ), ( now[ m[ 1 ] ] || [] ).filter( ( r ) => r.fingerprint ).map( ( r ) => ( { key: r.key, fingerprint: r.fingerprint } ) ) );
-		const to = maps[ m[ 1 ] ].map[ prevRow.key ];
-		const next = to && ( now[ m[ 1 ] ] || [] ).find( ( r ) => r.key === to );
-		const target = next && review.find( ( r ) => r.rowId === next.rowId );
-		const why = ! to ? maps[ m[ 1 ] ].refused.find( ( r ) => r.key === prevRow.key )?.why || 'no element of the new export agrees with its fingerprint'
-			: ! target ? `${ to } has no review row`
-				: null !== target.mark ? `${ to } already carries a mark`
-					: prevRow.block !== next.block || ( prevRow.action ?? null ) !== ( next.action ?? null ) ? `the element moved to ${ to } but its proposal changed (${ prevRow.block } to ${ next.block })` : null;
-		if ( why ) {
-			refused.push( `${ o.rowId }: mark "${ o.mark }" not carried (${ why })` );
-			continue;
-		}
-		Object.assign( target, { mark: o.mark, markedOn: o.markedOn, carriedFrom: o.carriedFrom ?? previousIntake.takenOn, realignedFrom: o.rowId } );
-		realigned.push( `${ o.rowId } -> ${ next.rowId }` );
-	}
-	return { realigned, refused };
-}
+// Carrying marks across a re-run lives in lib/intake-review-carry.mjs (by row ID and content, then by the element's content).
+export { carryOver } from './intake-review-carry.mjs';
