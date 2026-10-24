@@ -12,6 +12,7 @@ import { applyClamp } from './fill-values.mjs';
 import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy, canonicalName } from './css-families.mjs';
 import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword } from './resolve-declared.mjs';
 import { consult } from './css-equivalence/index.mjs';
+import { sameAlignment } from './css-equivalence/keywords.mjs';
 
 export const COVERAGE_WRITES = [
 	'aria-attr:aria-hidden',
@@ -173,8 +174,9 @@ export function timeToMs( raw ) {
 	return Math.round( parseFloat( m[ 1 ] ) * ( 's' === m[ 2 ].toLowerCase() ? 1000 : 1 ) );
 }
 
-// One measured value in the setting's form. Returns { value } or { error }.
-function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, log, where } ) {
+// One measured value in the setting's form. Returns { value } or { error }. layout: the draft element's display, flex-wrap
+// and flex-direction at the tier's width, for an enum value spelt as another alignment keyword of the same edge.
+function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, log, where, layout = {} } ) {
 	if ( COLOUR_PROPS.includes( prop ) ) {
 		const s = snapColour( raw, snapshot, { log, where, prefer } );
 		if ( ! s ) {
@@ -192,7 +194,8 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 		return tracksSetting( raw );
 	}
 	if ( Array.isArray( def?.enum ) ) {
-		return def.enum.includes( raw ) ? { value: raw } : { error: `${ raw } is not one of ${ def.enum.join( ', ' ) }` };
+		const hit = def.enum.includes( raw ) ? raw : def.enum.find( ( v ) => '' !== v && sameAlignment( prop, v, raw, layout ) );
+		return undefined !== hit ? { value: hit } : { error: `${ raw } is not one of ${ def.enum.join( ', ' ) }` };
 	}
 	if ( 'font-weight' === prop ) {
 		return { value: String( raw ) };
@@ -551,8 +554,14 @@ export function resolve( input, ctx ) {
 		: ( confirm && ! fluid ? debt( `${ prop } reads ${ confirm.at1440 } at 1440 and ${ confirm.at1920 } at 1920 and the draft declares no fluid form: desktop written from 1440` ) : null );
 	const done = ( out ) => ( out.writes ? { ...out, ...( fluid ? { fluid } : {} ), ...( instrumentDebt ? { instrumentDebt } : {} ) } : out );
 	const tierPx = ( t ) => fontPx[ { mobile: 375, tablet: 768, desktop: 1440 }[ t ] ] || 16;
+	// The draft element's layout context at a tier's width (else the one value every read width agrees on).
+	const layoutAt = ( t ) => Object.fromEntries( [ 'display', 'flex-wrap', 'flex-direction' ].map( ( p ) => {
+		const pw = input.siblings?.[ p ] || {};
+		const all = [ ...new Set( Object.values( pw ) ) ];
+		return [ p, pw[ { mobile: 375, tablet: 768, desktop: 1440 }[ t ] ] ?? ( 1 === all.length ? all[ 0 ] : undefined ) ];
+	} ) );
 	const fmt = ( t, raw, def ) => formatValue( { prop: short, raw, def, unit, fontPx: tierPx( t ), forms, prefer: typeof current[ attr ] === 'string' ? current[ attr ] : null,
-		snapshot: ctx.snapshot, log: ctx.log || [], where: `${ block } ${ slot } ${ prop }@${ t }` } );
+		snapshot: ctx.snapshot, log: ctx.log || [], where: `${ block } ${ slot } ${ prop }@${ t }`, layout: layoutAt( t ) } );
 	const folded = foldFamily( { prop, perWidth, siblings: input.siblings, row, attr, tiers } );
 	if ( folded.gap ) {
 		return folded;
