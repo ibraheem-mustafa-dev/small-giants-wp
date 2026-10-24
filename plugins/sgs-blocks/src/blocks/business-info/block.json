@@ -19,6 +19,16 @@
 	"textdomain": "sgs-blocks",
 	"icon": "building",
 	"attributes": {
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the social links wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
 		"separators": {
 			"type": "object",
 			"default": {
@@ -843,6 +853,18 @@
 				]
 			},
 			"elements": {
+				"socials": {
+					"motion": false,
+					"label": "Social links row",
+					"order": 90,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "The `.sgs-business-socials` row, shown when the block displays social media links."
+				},
 				"wrapper": {
 					"label": "Info box",
 					"order": 1,

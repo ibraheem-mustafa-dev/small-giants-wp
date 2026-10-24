@@ -46,6 +46,18 @@
 				]
 			},
 			"elements": {
+				"list": {
+					"motion": false,
+					"label": "Breadcrumb trail",
+					"order": 90,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "The `<ol class=\"sgs-breadcrumbs__list\">` row of crumbs."
+				},
 				"wrapper": {
 					"label": "Breadcrumb bar",
 					"order": 1,
@@ -145,6 +157,16 @@
 		"root": ".wp-block-sgs-breadcrumbs"
 	},
 	"attributes": {
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the items wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
 		"padding": {
 			"type": "object",
 			"default": {

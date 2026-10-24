@@ -32,6 +32,7 @@ import {
 	SgsLengthControl,
 	SgsSeparatorControl,
 	LinkUnderlineControl,
+	FlexWrapSelect,
 } from '../../components';
 
 import {
@@ -256,6 +257,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ 'socials' === displayType && (
+						<FlexWrapSelect label={ __( 'Wrap social links', 'sgs-blocks' ) } value={ attributes.flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
+					) }
 					<Notice
 						isDismissible={ false }
 						status="info"

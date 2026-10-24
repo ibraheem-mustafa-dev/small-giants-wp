@@ -32,6 +32,18 @@
 				"panelPadding": [ "panelPadding" ]
 			},
 			"elements": {
+				"list": {
+					"motion": false,
+					"label": "Language list",
+					"order": 90,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "The `<ul class=\"sgs-language-switch__list\">` row of language links."
+				},
 				"link": {
 					"label": "Language link",
 					"order": 1,
@@ -83,6 +95,16 @@
 		"root": ".sgs-language-switch"
 	},
 	"attributes": {
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the languages wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
 		"display": {
 			"type": "string",
 			"enum": [ "inline", "single-link", "disclosure" ],

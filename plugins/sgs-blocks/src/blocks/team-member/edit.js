@@ -39,7 +39,7 @@ import {
 	RangeControl,
 	Button,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, shadowAttrKeys, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { FlexWrapSelect, ResponsiveBoxControl, ResponsiveControl, ShadowControl, shadowAttrKeys, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
@@ -611,6 +611,7 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 						<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
 							{ __( 'Social profile links displayed below the bio. Hidden in Compact mode.', 'sgs-blocks' ) }
 						</p>
+						<FlexWrapSelect label={ __( 'Wrap social links', 'sgs-blocks' ) } value={ attributes.flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
 						{ socialLinks.map( ( link, index ) => (
 							<SocialLinkItemEditor
 								key={ index }
@@ -857,7 +858,7 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 				) }
 				{ /* Social links preview in editor — shown only in full mode. */ }
 				{ ! isCompact && socialLinks.length > 0 && (
-					<div className="sgs-team-member__social">
+					<div className="sgs-team-member__social" style={ attributes.flexWrap ? { flexWrap: attributes.flexWrap } : undefined }>
 						{ socialLinks.map( ( link, i ) => (
 							link.url && (
 								<span

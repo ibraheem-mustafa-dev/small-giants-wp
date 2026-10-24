@@ -536,6 +536,12 @@ $root_sel = '.' . $uid;
 
 $scoped_css = array();
 
+// Social links row: flex-wrap on the list (empty keeps style.css's wrapping).
+$sgs_flex_wrap = (string) ( $attributes['flexWrap'] ?? '' );
+if ( 'socials' === $display_type && in_array( $sgs_flex_wrap, array( 'nowrap', 'wrap' ), true ) ) {
+	$scoped_css[] = $root_sel . ' .sgs-business-socials,' . $root_sel . '.sgs-business-socials{flex-wrap:' . $sgs_flex_wrap . ';}';
+}
+
 // Open-status pill and dot colours: custom properties on the block root; an unset colour emits nothing.
 if ( 'open-status' === $display_type ) {
 	$sgs_bi_os_css = sgs_business_info_open_status_css( $attributes, $root_sel );

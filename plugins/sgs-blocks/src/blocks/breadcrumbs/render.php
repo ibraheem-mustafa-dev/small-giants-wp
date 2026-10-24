@@ -162,6 +162,11 @@ if ( '' !== $breadcrumbs_item_gap ) {
 	$scoped_css[] = "{$root_sel} .sgs-breadcrumbs__list,{$root_sel} .sgs-breadcrumbs__item{gap:{$breadcrumbs_item_gap};}";
 }
 
+$sgs_flex_wrap = (string) ( $attributes['flexWrap'] ?? '' );
+if ( in_array( $sgs_flex_wrap, array( 'nowrap', 'wrap' ), true ) ) {
+	$scoped_css[] = $root_sel . ' .sgs-breadcrumbs__list' . '{flex-wrap:' . $sgs_flex_wrap . ';}';
+}
+
 // --- Link colour gradient support (FR-?-?). Resolve flat/gradient siblings,
 // emit direct scoped rules alongside the custom properties above. ---
 $link_colour_effective = sgs_resolve_text_colour_or_gradient( $link_colour, $link_colour_gradient );

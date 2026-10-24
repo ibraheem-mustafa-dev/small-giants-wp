@@ -67,6 +67,7 @@
 						"css:padding": "padding",
 						"css:margin": "margin",
 						"css:gap": "stepGap",
+						"css:flex-wrap": "flexWrap",
 						"css:border-radius": "borderRadius",
 						"css:border-width": "borderWidth",
 						"css:border-color": "borderColour",
@@ -260,6 +261,16 @@
 		"root": ".sgs-process-steps"
 	},
 	"attributes": {
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the steps wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
 		"shadowLiftOnHover": {
 			"type": "boolean",
 			"default": true

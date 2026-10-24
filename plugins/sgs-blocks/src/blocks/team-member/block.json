@@ -188,6 +188,7 @@
 					],
 					"prefix": "socialLink",
 					"attrMap": {
+						"css:flex-wrap": "flexWrap",
 						"css:font-size": "socialLinkFontSize",
 						"css:font-weight": "socialLinkFontWeight",
 						"css:font-style": "socialLinkFontStyle",
@@ -243,6 +244,16 @@
 		"root": ".wp-block-sgs-team-member"
 	},
 	"attributes": {
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the social links wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
 		"shadowLiftOnHover": {
 			"type": "boolean",
 			"default": true

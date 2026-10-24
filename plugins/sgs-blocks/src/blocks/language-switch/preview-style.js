@@ -44,6 +44,9 @@ export function languageSwitchPreview( attributes, tier, palette ) {
 			...( panelBackground ? { backgroundColor: panelBackground } : {} ),
 			...tierBoxLonghands( attributes.panelPadding, tier, 'padding' ),
 		},
-		listStyle: gap ? { gap } : {},
+		listStyle: {
+			...( gap ? { gap } : {} ),
+			...( 'nowrap' === attributes.flexWrap || 'wrap' === attributes.flexWrap ? { flexWrap: attributes.flexWrap } : {} ),
+		},
 	};
 }

@@ -165,6 +165,11 @@ if ( '' !== $gap_mobile ) {
 	$scoped_css[] = '@media(max-width:767px){' . $root_sel . ' .sgs-language-switch__list{gap:' . $gap_mobile . ';}}';
 }
 
+$sgs_flex_wrap = (string) ( $attributes['flexWrap'] ?? '' );
+if ( in_array( $sgs_flex_wrap, array( 'nowrap', 'wrap' ), true ) ) {
+	$scoped_css[] = $root_sel . ' .sgs-language-switch__list' . '{flex-wrap:' . $sgs_flex_wrap . ';}';
+}
+
 // Panel padding — box-object tier, disclosure panel only.
 $panel_padding_tiers  = sgs_responsive_normalise_object( $attributes['panelPadding'] ?? null, true );
 $panel_padding_desktop = is_array( $panel_padding_tiers['desktop'] ?? null ) ? $panel_padding_tiers['desktop'] : array();

@@ -6,7 +6,7 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
-import { SgsColourPanel, textRow, ResponsiveBoxControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl } from '../../components';
+import { FlexWrapSelect, SgsColourPanel, textRow, ResponsiveBoxControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier, tierBoxLonghands, sgsLengthPreview, sgsBorderPreview } from '../../utils';
 
 const SEPARATOR_OPTIONS = [
@@ -83,6 +83,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	// and each item; style.css keeps its spacing-10 gap when it is unset.
 	const itemGap = sgsLengthPreview( attributes.itemGap );
 	const gapStyle = itemGap ? { gap: itemGap } : undefined;
+	// render.php's flexWrap: on the list only.
+	const listStyle = attributes.flexWrap ? { ...gapStyle, flexWrap: attributes.flexWrap } : gapStyle;
 	// Link and separator paint: a flat colour reaches them through the root's
 	// custom properties; a gradient is painted on the element itself, as render.php does.
 	const linkPaint = attributes.linkColourGradient
@@ -142,6 +144,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Breadcrumbs Settings', 'sgs-blocks' ) }>
+					<FlexWrapSelect label={ __( 'Wrap crumbs', 'sgs-blocks' ) } value={ attributes.flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
 					<ToggleControl
 						label={ __( 'Show home link', 'sgs-blocks' ) }
 						checked={ showHome }
@@ -281,7 +284,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<nav { ...blockProps } aria-label={ __( 'Breadcrumbs', 'sgs-blocks' ) }>
-				<ol className="sgs-breadcrumbs__list" style={ gapStyle }>
+				<ol className="sgs-breadcrumbs__list" style={ listStyle }>
 					{ showHome && (
 						<li className="sgs-breadcrumbs__item" style={ gapStyle }>
 							<a href="#" style={ linkPaint }>{ homeLabel }</a>

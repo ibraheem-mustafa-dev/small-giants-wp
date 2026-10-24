@@ -510,6 +510,11 @@ $sgs_tm_typo_css = array(
 	sgs_typography_css_rule( $attributes, 'bio', $root_sel . ' .sgs-team-member__bio,' . $root_sel . ' .sgs-team-member__overlay-bio' ),
 	sgs_typography_css_rule( $attributes, 'socialLink', $root_sel . ' .sgs-team-member__social-link' ),
 );
+$sgs_flex_wrap = (string) ( $attributes['flexWrap'] ?? '' );
+if ( in_array( $sgs_flex_wrap, array( 'nowrap', 'wrap' ), true ) ) {
+	$scoped_css[] = $root_sel . ' .sgs-team-member__social' . '{flex-wrap:' . $sgs_flex_wrap . ';}';
+}
+
 foreach ( array_filter( $sgs_tm_typo_css ) as $sgs_tm_typo_rule ) {
 	$scoped_css[] = $sgs_tm_typo_rule;
 }

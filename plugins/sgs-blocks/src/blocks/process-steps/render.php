@@ -409,6 +409,11 @@ if ( '' !== (string) ( $attributes['stepGap'] ?? '' ) ) {
 	$scoped_css[] = $root_sel . '{gap:' . sgs_css_length_value( (string) $attributes['stepGap'] ) . ';}';
 }
 
+$sgs_flex_wrap = (string) ( $attributes['flexWrap'] ?? '' );
+if ( in_array( $sgs_flex_wrap, array( 'nowrap', 'wrap' ), true ) ) {
+	$scoped_css[] = $root_sel . '{flex-wrap:' . $sgs_flex_wrap . ';}';
+}
+
 // List layout only: space between the number and its text (numberGap); unset
 // keeps style.css's column-gap. Scoped with the uid so it out-ranks style.css.
 if ( 'list' === $layout && '' !== (string) ( $attributes['numberGap'] ?? '' ) ) {

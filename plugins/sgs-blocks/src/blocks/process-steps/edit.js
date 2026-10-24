@@ -23,7 +23,7 @@ const HEADING_LEVEL_OPTIONS = [
 	{ label: __( 'Paragraph (not a heading)', 'sgs-blocks' ), value: 'p' },
 ];
 
-import { IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls, SgsLengthControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
+import { FlexWrapSelect, IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls, SgsLengthControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import {
 	backgroundPaintPreview,
@@ -301,6 +301,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
 			'--sgs-transition-easing': transitionEasing || undefined,
 			gap: stepGap || undefined,
+			flexWrap: attributes.flexWrap || undefined,
 		},
 	} );
 
@@ -708,6 +709,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						onChange={ ( val ) => setAttributes( { stepGap: val || '' } ) }
 						presets={ false }
 					/>
+					<FlexWrapSelect label={ __( 'Wrap steps', 'sgs-blocks' ) } value={ attributes.flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
 					{ 'list' === layout && (
 						<SgsLengthControl
 							label={ __( 'Space between number and text', 'sgs-blocks' ) }
