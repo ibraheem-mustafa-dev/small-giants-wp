@@ -36,6 +36,8 @@ LINE_HEIGHT_RE = re.compile(_PREFIX + r"(?:lh|leading|line-height)-(body|heading
 TRACKING_RE = re.compile(_PREFIX + r"(?:track|tracking|letter-spacing)-(h[1-6])$")
 BODY_SIZE_RE = re.compile(_PREFIX + r"(?:fs-body|text-body-size|text-base|size-body|font-size-body)$")
 FOCUS_RE = re.compile(_PREFIX + r"focus(?:-ring)?$")
+LINK_FOCUS_SELECTORS = frozenset({"a:focus", "a:focus-visible"})
+_CSS_LINK_FOCUS_RE = re.compile(r"(?:^|[}\s,])a:focus(?:-visible)?\s*\{([^}]*)\}")
 FAMILY_RE = re.compile(_PREFIX + r"font-(display|heading|body)$")
 _LENGTH_RE = re.compile(r"^-?\d*\.?\d+(?:px|rem|em)$|^0$")
 _NUMBER_RE = re.compile(r"^\d*\.?\d+$")
@@ -139,6 +141,10 @@ def read_roles(draft_dir) -> dict:
             put("link-colour", "link", parse_colour(value).hex, src)
         elif selector == "a:hover" and prop == "color" and parse_colour(value):
             put("link-colour", "link-hover", parse_colour(value).hex, src)
+        elif selector in LINK_FOCUS_SELECTORS and prop == "color" and parse_colour(value):
+            put("link-focus", "colour", parse_colour(value).hex, src)
+        elif selector in LINK_FOCUS_SELECTORS and prop in ("text-decoration", "text-decoration-line"):
+            put("link-focus", "decoration", value.split()[0], src)
     return roles
 
 
@@ -255,9 +261,50 @@ def _set_body_size(snap: dict, value: str) -> None:
     snap.setdefault("styles", {}).setdefault("typography", {})["fontSize"] = "var:preset|font-size|regular"
 
 
-def apply(snap: dict, draft_dir, trace: list) -> dict:
+def _css_link_focus(css: str) -> dict:
+    """``{colour, decoration}`` from a bare ``a:focus`` / ``a:focus-visible`` rule in the draft's own CSS."""
+    found: dict = {}
+    for m in _CSS_LINK_FOCUS_RE.finditer(css or ""):
+        for decl in m.group(1).split(";"):
+            prop, _, value = decl.partition(":")
+            prop, value = prop.strip().lower(), value.strip()
+            if prop == "color" and parse_colour(value):
+                found.setdefault("colour", (parse_colour(value).hex, "draft CSS a:focus {color}"))
+            elif prop in ("text-decoration", "text-decoration-line") and value:
+                found.setdefault("decoration", (value.split()[0], "draft CSS a:focus {text-decoration}"))
+    return found
+
+
+def apply_link_focus(snap: dict, roles: dict, css: str, trace: list) -> None:
+    """``styles.elements.link[':focus-visible']`` exists only where the draft declares a link focus look.
+
+    The framework ``theme.json`` carries a link focus look (hover colour, underline) that ``build_snapshot`` copies
+    into every snapshot; a draft that declares none gets the key removed, a draft that declares one gets its
+    colour and decoration."""
+    declared = {**_css_link_focus(css), **(roles.get("link-focus") or {})}
+    link = (((snap.get("styles") or {}).get("elements") or {}).get("link"))
+    if not isinstance(link, dict):
+        return
+    if not declared:
+        if link.pop(":focus-visible", None) is not None:
+            trace.append({"kind": "declared", "what": "styles.elements.link.:focus-visible", "value": "(removed)",
+                          "_source": "declared", "reason": "the draft declares no link focus look (no a:focus or "
+                          "a:focus-visible rule in tokens/*.css or its CSS)"})
+        return
+    entry: dict = {}
+    if "colour" in declared:
+        entry["color"] = {"text": _colour_ref(snap, declared["colour"][0], ("link", "link-hover", "primary"), True)}
+    if "decoration" in declared:
+        entry["typography"] = {"textDecoration": declared["decoration"][0]}
+    link[":focus-visible"] = entry
+    trace.append({"kind": "declared", "what": "styles.elements.link.:focus-visible", "value": entry,
+                  "_source": "declared", "reason": ", ".join(v[1] for v in declared.values())})
+
+
+def apply(snap: dict, draft_dir, trace: list, css: str = "") -> dict:
     """Write every declared value of an ``APPLIED_ROLES`` role into ``snap``; one trace row per value."""
     roles = read_roles(draft_dir)
+    apply_link_focus(snap, roles, css, trace)
     if not roles:
         return snap
     tracked = bool((roles.get("heading-tracking") or {}))
