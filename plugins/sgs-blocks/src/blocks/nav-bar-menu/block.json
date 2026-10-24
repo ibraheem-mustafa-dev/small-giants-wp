@@ -386,7 +386,9 @@
 						"hover": {
 							"attrMap": {
 								"css:color": "burgerColourHover",
-								"css:background-color": "burgerHoverColour"
+								"css:background-color": "burgerHoverColour",
+								"css:box-shadow": "burgerShadowHover",
+								"css:box-shadow-color": "burgerShadowColourHover"
 							}
 						}
 					},
@@ -913,6 +915,16 @@
 			"type": "string",
 			"default": "",
 			"description": "The shadow's colour. The name is fixed by ShadowControl.js::shadowAttrKeys, which composes it as <base>Colour."
+		},
+		"burgerShadowHover": {
+			"type": "string",
+			"default": "",
+			"description": "Box shadow of the menu button while hovered or focused, composed with burgerShadowColourHover (or burgerShadowColour) by sgs_shadow_decls(); the shared shadow control's Hover shape. Set, it replaces the automatic lift. Its timing is the Hover state's shadow duration and easing. Empty keeps the automatic lift of burgerShadow."
+		},
+		"burgerShadowColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "The hover shadow's colour. The name is fixed by ShadowControl.js::shadowAttrKeys, which composes it as <base>ColourHover. Empty keeps burgerShadowColour."
 		},
 		"burgerTextGap": {
 			"type": "object",

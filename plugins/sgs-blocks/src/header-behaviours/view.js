@@ -619,6 +619,9 @@ import {
 				// write an inline height onto a row that is already correct.
 				collapsed: null,
 				collapseTimer: null,
+				// Until this timestamp the row's own collapse or restore is
+				// still moving the page under the visitor (see setRowCollapsed).
+				settleUntil: 0,
 			};
 		} );
 
@@ -682,6 +685,13 @@ import {
 			}
 			row.collapsed = collapse;
 			window.clearTimeout( row.collapseTimer );
+			// Collapsing or restoring a row above the page content changes the
+			// document height, and the browser's scroll anchoring then moves
+			// scrollY by the same amount (a collapse reads as a scroll UP, a
+			// restore as a scroll DOWN). For the length of the transition that
+			// shift is the row's own doing, not the visitor's, so onScrollTick
+			// takes no direction from it (settleUntil).
+			row.settleUntil = window.performance.now() + transitionMs( el ) + SETTLE_MARGIN_MS;
 
 			if ( collapse ) {
 				// Measure BEFORE the class lands — afterwards the padding is
@@ -735,9 +745,13 @@ import {
 
 		let rafScheduled = false;
 		let prevScrollY = window.scrollY;
+		// Allowance beyond the transition for the scroll-anchoring shift and
+		// the frame that reports it.
+		const SETTLE_MARGIN_MS = 100;
 
 		function onScrollTick() {
 			rafScheduled = false;
+			const now = window.performance.now();
 			const scrollY = window.scrollY;
 			// Rows hold still while a drawer grown out of their header is open.
 			if ( document.querySelector( '[data-sgs-drawer-grown]' ) ) {
@@ -781,7 +795,10 @@ import {
 				if ( row.hideOnScrollTiers.indexOf( tier ) !== -1 ) {
 					if ( rowCollapsesWhenHidden( row ) ) {
 						row.el.classList.add( 'is-row-collapse-mode' );
-						if ( scrollingDown ) {
+						if ( now < row.settleUntil ) {
+							// The row is still moving the page itself: no
+							// direction can be read from this scroll.
+						} else if ( scrollingDown ) {
 							setRowCollapsed( row, true );
 						} else if ( scrollingUp ) {
 							setRowCollapsed( row, false );

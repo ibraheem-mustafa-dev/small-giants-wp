@@ -17551,14 +17551,6 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
-      "attr": "burgerShadow",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_element": "burger"
-      }
-    },
-    {
-      "slug": "sgs/nav-bar-menu",
       "attr": "burgerSize",
       "fields": {
         "css_property": "height",
@@ -36054,10 +36046,36 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "burgerShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "burgerShadowColour",
       "fields": {
         "css_property": "box-shadow-color",
         "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerShadowColourHover",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "burger",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "burger",
+        "css_state": "hover"
       }
     },
     {

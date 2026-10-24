@@ -200,6 +200,7 @@
  * collapse path wins deterministically rather than by source order. */
 .sgs-row-behaviour[data-sgs-row-hide-on-scroll].is-row-collapse-mode.is-row-hidden {
 	transform: none;
+	min-block-size: 0; /* a row's own Minimum height would otherwise hold it open */
 	padding-top: 0;
 	padding-bottom: 0;
 	border-block-width: 0;

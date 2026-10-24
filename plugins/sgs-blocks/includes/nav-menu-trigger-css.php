@@ -338,14 +338,27 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 		if ( in_array( $sgs_nm_bar_align, array( 'start', 'center', 'end' ), true ) ) {
 			$css .= $uid_sel . ' .sgs-nav-bar-menu__burger-icon{align-items:' . ( 'center' === $sgs_nm_bar_align ? 'center' : 'flex-' . $sgs_nm_bar_align ) . ';}';
 		}
-		// The button's own shadow, the shared control: every drawn `box-shadow` carries `--sgs-focus-under` so
-		// keyboard focus keeps it, and the automatic lift on hover is the shared touch-guarded rule.
-		$sgs_nm_burger_shadow        = (string) ( $attributes['burgerShadow'] ?? '' );
-		$sgs_nm_burger_shadow_colour = (string) ( $attributes['burgerShadowColour'] ?? '' );
-		$sgs_nm_burger_shadow_decls  = sgs_focus_under_decls( sgs_shadow_box_decls( $sgs_nm_burger_shadow, $sgs_nm_burger_shadow_colour ) );
-		if ( array() !== $sgs_nm_burger_shadow_decls ) {
-			$css .= $burger_sel . '{' . implode( ';', $sgs_nm_burger_shadow_decls ) . ';}'
-				. sgs_shadow_hover_rules( $burger_sel, $sgs_nm_burger_shadow, $sgs_nm_burger_shadow_colour, $attributes, 'sgs/nav-bar-menu' );
+		// The button's own shadow, the shared control: the resting shape and colour, an optional hover shape
+		// and colour (burgerShadowHover / burgerShadowColourHover, as sgs/button's boxShadowHover), and when
+		// neither hover value is set the automatic lift. Every drawn `box-shadow` carries `--sgs-focus-under`
+		// so keyboard focus keeps it; the hover pair is the shared touch-guarded rule.
+		$sgs_nm_burger_shadow = sgs_shadow_decls(
+			$attributes,
+			array(
+				'base'         => 'burgerShadow',
+				'colour'       => 'burgerShadowColour',
+				'hover'        => 'burgerShadowHover',
+				'hover_colour' => 'burgerShadowColourHover',
+			),
+			'sgs/nav-bar-menu'
+		);
+		$sgs_nm_burger_shadow['normal'] = sgs_focus_under_decls( $sgs_nm_burger_shadow['normal'] );
+		$sgs_nm_burger_shadow['hover']  = sgs_focus_under_decls( $sgs_nm_burger_shadow['hover'] );
+		if ( array() !== $sgs_nm_burger_shadow['normal'] ) {
+			$css .= $burger_sel . '{' . implode( ';', $sgs_nm_burger_shadow['normal'] ) . ';}';
+		}
+		if ( array() !== $sgs_nm_burger_shadow['hover'] ) {
+			$css .= sgs_hover_state_rules( $burger_sel, implode( ';', $sgs_nm_burger_shadow['hover'] ), ':focus-visible' );
 		}
 		$css .= sgs_emit_responsive_css(
 			$burger_sel,

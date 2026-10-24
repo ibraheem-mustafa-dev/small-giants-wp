@@ -128,6 +128,8 @@ export default function BurgerPanel( {
 				burgerBarAlign: stored.burgerBarAlign,
 				burgerShadow: stored.burgerShadow,
 				burgerShadowColour: stored.burgerShadowColour,
+				burgerShadowHover: stored.burgerShadowHover,
+				burgerShadowColourHover: stored.burgerShadowColourHover,
 			};
 		},
 		[ clientId ]
@@ -418,7 +420,7 @@ export default function BurgerPanel( {
 				label={ __( 'Button shadow', 'sgs-blocks' ) }
 				attributes={ burgerBox }
 				setAttributes={ setAttributes }
-				attrNames={ shadowAttrKeys( 'burgerShadow' ) }
+				attrNames={ shadowAttrKeys( 'burgerShadow', { hover: true, hoverColour: true } ) }
 			/>
 
 			{ /* Space between the default glyph's bars, per device. Writes the

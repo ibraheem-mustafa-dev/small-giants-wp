@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9446,
+    "row_count": 9448,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -5641,6 +5641,8 @@
     "sgs/nav-bar-menu::burgerPadding": "layout",
     "sgs/nav-bar-menu::burgerShadow": "visual",
     "sgs/nav-bar-menu::burgerShadowColour": "color",
+    "sgs/nav-bar-menu::burgerShadowColourHover": "color",
+    "sgs/nav-bar-menu::burgerShadowHover": "visual",
     "sgs/nav-bar-menu::burgerSize": "select-from-enum",
     "sgs/nav-bar-menu::burgerTextGap": "layout",
     "sgs/nav-bar-menu::burgerTextTransform": "typography",
