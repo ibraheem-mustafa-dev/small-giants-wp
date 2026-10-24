@@ -84,12 +84,32 @@ test( 'MUST FAIL WITHOUT THE BROWSER RING: a draft ring declared on one target r
 	}
 } );
 
-test( 'MUST FAIL: two browser rings at different offsets keep the first and raise no conflict (neither is a draft value)', () => {
+test( 'MUST FAIL: two browser rings at different offsets keep the first and are one reported row (the site token holds one offset)', () => {
 	const sink = createPatch();
 	apply( sink, 'link', ringFor( { tag: 'a', href: '#' } ).looks );
 	apply( sink, 'button', ringFor( { tag: 'button' } ).looks );
+	apply( sink, 'button-2', ringFor( { tag: 'button' } ).looks );
 	assert.equal( sink.patch.settings.custom.focus.offset, '1px' );
-	assert.equal( sink.conflicts.find( ( c ) => 'settings.custom.focus.offset' === c.path ), undefined );
+	const rows = sink.conflicts.filter( ( c ) => 'settings.custom.focus.offset' === c.path ).map( conflictRow );
+	assert.equal( rows.length, 1, 'one row for the key, however many elements differ' );
+	assert.equal( rows[ 0 ].node, 'button' );
+	assert.equal( rows[ 0 ].value, '"0px"' );
+	assert.match( rows[ 0 ].reason, /holds one value: link root shows "1px" \(kept\), button root shows "0px"/ );
+	assert.deepEqual( sink.conflicts.filter( ( c ) => 'settings.custom.focus.offset' !== c.path ), [], 'the rings agree on every other key' );
+} );
+
+test( 'negative control: a declared ring replaces both browser values, before or after them, and the split row goes', () => {
+	const declared = { 'outline-style': 'solid', 'outline-width': '3px', 'outline-color': 'rgb(255, 0, 128)', 'outline-offset': '2px', 'box-shadow': 'none' };
+	for ( const order of [ [ 'link', 'button', 'draft' ], [ 'draft', 'link', 'button' ] ] ) {
+		const sink = createPatch();
+		for ( const which of order ) {
+			apply( sink, which, 'draft' === which ? { focus: declared } : ringFor( 'link' === which ? { tag: 'a', href: '#' } : { tag: 'button' } ).looks );
+		}
+		assert.equal( sink.patch.settings.custom.focus.offset, '2px', order.join( ' then ' ) );
+		const rows = sink.conflicts.filter( ( c ) => 'settings.custom.focus.offset' === c.path );
+		assert.ok( rows.every( ( c ) => c.replaced && ! c.split ), order.join( ' then ' ) );
+		assert.deepEqual( rows.map( ( c ) => [ c.from.node, c.dropped ] ).sort(), [ [ 'button', '0px' ], [ 'link', '1px' ] ], order.join( ' then ' ) );
+	}
 } );
 
 test( 'negative control: two different declared focus offsets still conflict, the first kept', () => {

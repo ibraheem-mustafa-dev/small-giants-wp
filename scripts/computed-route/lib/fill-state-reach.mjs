@@ -5,6 +5,8 @@ import { READ_WIDTHS } from './fill-read.mjs';
 import { TIMING_PROPS } from './fill-timing.mjs';
 import { INHERITED } from './fill-prop.mjs';
 import { targetName } from './fill-motion.mjs';
+import { LOOSE } from './resolve.mjs';
+import { longhands } from './calibrate-props.mjs';
 
 // One target's state looks grouped by state, pseudo-element and property across the read widths: Map
 // `${state}|${pseudo-element or ''}|${prop}` →
@@ -58,6 +60,22 @@ export function ancestorLook( reads, rec, target, state, prop ) {
 	const declares = ( a ) => states( a ) || READ_WIDTHS.some( ( w ) => undefined !== reads.declared?.[ w ]?.[ a.id ]?.[ prop ] );
 	const nearest = ( rec.targets || [] ).filter( ( a ) => above( a ) && declares( a ) ).sort( ( a, b ) => b.slot.length - a.slot.length )[ 0 ];
 	return nearest && states( nearest ) ? nearest : null;
+}
+
+// Whether the ancestor's written state look holds the block's own `state` change of the element's `prop` (holdDefaults'
+// follow): no state setting of the block changes `prop` on the element (its own property at one of its slots, or a side
+// effect recorded there) from below the ancestor (a setting painting the ancestor's slot, or an element above it, reaches
+// the element through the ancestor, whose own value stops a further one), so the element paints no state rule of its own, and a
+// state setting painting the ancestor's `aprop` at its slot was written (taken: the node's state settings written so far,
+// attr → value). cal: the block's calibration.
+export function ancestorHolds( { cal, state, slot, prop, ancestor, aprop, taken } ) {
+	const settings = Object.entries( cal?.settings || {} ).filter( ( [ , s ] ) => state === s.state );
+	const paints = ( s, path ) => ( s.slots || [ s.slot ] ).some( ( x ) => LOOSE( x ) === LOOSE( path ) );
+	const sideEffect = ( s ) => ( s.effects || [] ).some( ( e ) => e.slice( e.lastIndexOf( '|' ) + 1 ) === prop && LOOSE( e.slice( 0, e.lastIndexOf( '|' ) ) ) === LOOSE( slot ) );
+	const anc = LOOSE( ancestor.slot );
+	const through = ( s ) => ( s.slots || [ s.slot ] ).some( ( x ) => LOOSE( x ) === anc || ( '' === LOOSE( x ) ? '' !== anc : anc.startsWith( `${ LOOSE( x ) } ` ) ) );
+	const own = settings.filter( ( [ , s ] ) => ( ( longhands( s.property ).includes( prop ) && paints( s, slot ) ) || sideEffect( s ) ) && ! through( s ) );
+	return ! own.length && settings.some( ( [ attr, s ] ) => longhands( s.property ).includes( aprop ) && paints( s, ancestor.slot ) && taken.has( attr ) );
 }
 
 // Whether the block's motion support holds this target's hover transform (its sgsMotion hover layer, written by

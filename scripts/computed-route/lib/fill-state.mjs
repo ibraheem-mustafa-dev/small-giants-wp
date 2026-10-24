@@ -32,7 +32,7 @@ import { READ_WIDTHS } from './fill-read.mjs';
 import { timingWrites } from './fill-timing.mjs';
 import { motionDb } from './motion-db.mjs';
 import { exactHome } from './fill-part-pairing.mjs';
-import { stateDrafts, ancestorLook, motionHolds } from './fill-state-reach.mjs';
+import { stateDrafts, ancestorLook, ancestorHolds, motionHolds } from './fill-state-reach.mjs';
 
 export { stateDrafts, ancestorLook, motionHolds };
 import { MOTION_STATE_PROPS, stateHover } from './fill-state-motion.mjs';
@@ -200,7 +200,11 @@ function holdSlots( cal, node, slot, prop, rest ) {
 export function holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads, drafts, held, interaction, taken = new Map() } ) {
 	const out = { writes: [], unmapped: [], held: [] };
 	const rest = restingOf( reads, target.id );
-	const follows = ( state, prop ) => ancestorLook( reads, rec, target, state, prop ) || ( 'color' !== prop && rest[ prop ] && READ_WIDTHS.every( ( w ) => undefined === rest[ prop ][ w ] || rest[ prop ][ w ] === rest.color?.[ w ] ) && ancestorLook( reads, rec, target, state, 'color' ) );
+	// The ancestor whose declared look the element follows on `state` (its own `prop`, else its colour for a property
+	// resting at its colour), only where that ancestor's written state look holds the element's change, and its colour's
+	// for a property that follows the colour (ancestorHolds).
+	const landed = ( from, state, prop, aprop ) => from && ancestorHolds( { cal, state, slot: target.slot, prop, ancestor: from, aprop, taken } ) ? from : null;
+	const follows = ( state, prop ) => landed( ancestorLook( reads, rec, target, state, prop ), state, prop, prop ) || ( 'color' !== prop && rest[ prop ] && READ_WIDTHS.every( ( w ) => undefined === rest[ prop ][ w ] || rest[ prop ][ w ] === rest.color?.[ w ] ) && ( ( from ) => landed( from, state, prop, 'color' ) && landed( from, state, 'color', 'color' ) )( ancestorLook( reads, rec, target, state, 'color' ) ) );
 	const ctx = stateContext( reads, target.id );
 	const read = ( prop ) => READ_WIDTHS.some( ( w ) => reads.widths?.[ w ]?.[ target.id ]?.styles?.[ prop ] );
 	const declared = ( state, prop ) => [ ...drafts.values() ].some( ( d ) => d.state === state && ! d.pseudo && ( d.prop === prop || longhands( d.prop ).includes( prop ) ) );

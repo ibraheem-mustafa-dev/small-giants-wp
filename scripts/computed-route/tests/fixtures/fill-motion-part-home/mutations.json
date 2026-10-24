@@ -1,0 +1,9 @@
+[
+	{"file":"lib/fill-motion.mjs","find":"return 1 === homed.length ? homed[ 0 ].target : null;","replace":"return homed.length ? homed[ 0 ].target : null;","why":"ambiguous home takes first"},
+	{"file":"lib/fill-motion.mjs","find":"if ( hit || ! home ) {","replace":"if ( true ) {","why":"home never used"},
+	{"file":"lib/fill-part-pairing.mjs","find":"partHome( db, block, cal, element, null, String )","replace":"partHome( db, block, cal, element, null )","why":"exact uses loose key"},
+	{"file":"lib/fill-motion.mjs","find":"( ! positional || classes.has( base( t ) ) )","replace":"true","why":"a link calibrated as the item part's home is the item part"},
+	{"file":"lib/fill-motion.mjs","find":"+$/, '' );","replace":"+$/, '-' );","why":"a bar's slot lacks its -N class, so bars find no part"},
+	{"file":"lib/fill-motion.mjs","find":"( ! positional || classes.has( base( t ) ) )","replace":"classes.has( base( t ) )","why":"a part drawn by a shared wrapper class (the content band's .sgs-container__inner) would find no part"},
+	{"file":"lib/fill-motion.mjs","find":"const positional = /:nth-(?:of-type|child)","replace":"const positional = /:nth-(?:child)","why":"an :nth-of-type home would answer any slot"}
+]

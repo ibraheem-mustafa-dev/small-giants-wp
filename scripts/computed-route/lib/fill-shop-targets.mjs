@@ -2,7 +2,8 @@
 // `build/shop-parts.json` carries, for each part, the template key (`<dc>/<data-dc-tpl>`, lib/fact-key.mjs::templateKey) of
 // every draft element its units were found on. A part whose home settings paint one framework part (the settings' shared
 // DB css_element: the basket line's thumbnail, the sticky bar) has a calibrated slot on the block (lib/fill-part-pairing.mjs::partHome);
-// the part's first located element becomes the measuring target of that slot on every node of the block, so the resting pass
+// the part's located element (its one locator, else the deepest element ancestor all its locators share: a bar whose
+// units are its price text and its button is the bar) becomes the measuring target of that slot on every node of the block, so the resting pass
 // writes its style values to the settings of that part like any other target. A part whose settings paint no part, or
 // several, or whose element the fact record has no instance for, is a note naming why it is not measured.
 import { attrsFor } from './db.mjs';
@@ -21,6 +22,27 @@ export function partElement( db, part ) {
 		return { element: elements[ 0 ] };
 	}
 	return { why: elements.length ? `its settings paint several parts (${ elements.join( ', ' ) })` : 'none of its settings paints a part of the block' };
+}
+
+// The template key of the draft element a part's locators locate: the one locator, else the deepest ancestor in the fact
+// record's template ancestry (the element itself, then its parentChain) that every locator shares and that is an element,
+// not an sc-if or sc-for wrapper. Returns { key } or { why }.
+const WRAPPERS = new Set( [ 'sc-if', 'sc-for' ] );
+export function locatedElement( facts, locators ) {
+	if ( 1 === locators.length ) {
+		return { key: locators[ 0 ] };
+	}
+	const chainOf = ( k ) => {
+		const t = facts?.elements?.[ k ]?.template;
+		return t ? [ k, ...( t.parentChain || [] ) ] : null;
+	};
+	const missing = locators.filter( ( k ) => ! chainOf( k ) );
+	if ( missing.length ) {
+		return { why: `the fact record has no template ancestry for ${ missing.join( ', ' ) }, so the element its ${ locators.length } locators share is unknown` };
+	}
+	const chains = locators.map( chainOf );
+	const shared = chains[ 0 ].find( ( k ) => chains.every( ( c ) => c.includes( k ) ) && ! WRAPPERS.has( facts.elements[ k ]?.template?.tag ) );
+	return shared ? { key: shared } : { why: `its locators ${ locators.join( ', ' ) } share no ancestor element` };
 }
 
 // The served-space instance key of a template key: the fact record's first instance (lowest copy) of that element, in the
@@ -50,7 +72,12 @@ export function shopPartTargets( { record, nodes, facts, rootComponent, db, calF
 				out.notes.push( `shop part ${ part.id } (${ s.kind }): ${ named.why }, so its draft elements are not measured` );
 				continue;
 			}
-			const key = part.locators[ 0 ];
+			const located = locatedElement( facts, part.locators );
+			if ( ! located.key ) {
+				out.notes.push( `shop part ${ part.id } (${ s.kind }): ${ located.why }, so the ${ named.element } part of ${ block } is not measured` );
+				continue;
+			}
+			const key = located.key;
 			const instance = instanceOf( facts, key, rootComponent );
 			if ( ! instance ) {
 				out.notes.push( `shop part ${ part.id } (${ s.kind }): the fact record has no instance of ${ key }, so the ${ named.element } part of ${ block } is not measured` );

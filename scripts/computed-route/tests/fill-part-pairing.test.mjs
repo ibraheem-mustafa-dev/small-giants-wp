@@ -85,3 +85,41 @@ test( 'MUST FAIL: a wrapper setting is never held to part pairing, whichever slo
 	assert.equal( unpairedPart( { db, block: 'sgs/nav-bar-menu', cal, attr: 'navBg', readSlot: '', prop: 'background-color', value: 'red' } ), null );
 	assert.match( unpairedPart( { db, block: 'sgs/nav-bar-menu', cal, attr: 'burgerSize', readSlot: '', prop: 'height', value: '100%' } ), /^unpaired-part/ );
 } );
+
+// lib/fill-part-pairing.mjs::unpairedPart and ::rendered on their own: the burger part is homed at BURGER (burgerBg,
+// burgerBorderRadius and burgerColour calibrated there); the read element is the nav root or a child of the burger.
+import { rendered } from '../lib/fill-part-pairing.mjs';
+const KID = `${ BURGER } > .sgs-nav-bar-menu__burger-icon`;
+const calWith = ( { root = paint( {} ), burger = paint( {} ), kid = paint( {} ), reaches = [] } = {} ) => ( {
+	...CAL,
+	elements: { '': root, [ BURGER ]: burger, [ KID ]: kid },
+	settings: { ...CAL.settings, burgerColour: { ...at( BURGER, 'color' ), reaches: [ BURGER, ...reaches ] }, burgerSize: { ...at( BURGER, 'height' ), reaches: [ BURGER, ...reaches ] } },
+} );
+const ask = ( cal, attr, readSlot, prop ) => unpairedPart( { db, block: 'sgs/nav-bar-menu', cal, attr, readSlot, prop, value: 'x' } );
+
+test( 'MUST FAIL: an inherited setting value that calibration saw reach the read element is paired; a non-inherited one is not', () => {
+	const cal = calWith( { burger: paint( { color: 'rgb(0, 0, 0)', height: '40px' } ), kid: paint( { color: 'rgb(9, 9, 9)', height: '18px' } ), reaches: [ KID ] } );
+	assert.equal( ask( cal, 'burgerColour', KID, 'color' ), null, 'the colour reached the icon' );
+	assert.match( ask( cal, 'burgerSize', KID, 'height' ), /^unpaired-part/, 'a height never reaches by inheritance' );
+	// Negative control: an inherited value calibration did not see reach the element is unpaired.
+	assert.match( ask( calWith( { burger: paint( { color: 'rgb(0, 0, 0)' } ), kid: paint( { color: 'rgb(9, 9, 9)' } ) } ), 'burgerColour', KID, 'color' ), /^unpaired-part/ );
+} );
+
+test( 'MUST FAIL: a width where the read element is hidden is not compared, and no shown width pairs nothing', () => {
+	const burger = paint( { height: '40px' } );
+	const kid = { ...paint( { height: '40px' } ), 375: { display: 'none', height: '100%' } };
+	assert.equal( ask( calWith( { burger, kid } ), 'burgerSize', KID, 'height' ), null, 'equal where both render' );
+	const hidden = Object.fromEntries( THREE.map( ( w ) => [ w, { display: 'none', height: '40px' } ] ) );
+	assert.match( ask( calWith( { burger, kid: hidden } ), 'burgerSize', KID, 'height' ), /^unpaired-part/, 'never shown: nothing measured, so not the same box' );
+	// Negative control: a shown width that differs is still unpaired.
+	assert.match( ask( calWith( { burger, kid: paint( { height: '18px' } ) } ), 'burgerSize', KID, 'height' ), /^unpaired-part/ );
+} );
+
+test( 'MUST FAIL: an element under a hidden ancestor of the block does not render; the element itself and the root count', () => {
+	const cal = calWith( { burger: { ...paint( {} ), 768: { display: 'none' } } } );
+	assert.equal( rendered( cal, KID, 768 ), false, 'the burger above it is display:none at 768' );
+	assert.equal( rendered( cal, KID, 1440 ), true );
+	assert.equal( rendered( calWith( { kid: { ...paint( {} ), 375: { display: 'none' } } } ), KID, 375 ), false );
+	assert.equal( rendered( calWith( { root: { ...paint( {} ), 375: { display: 'none' } } } ), KID, 375 ), false, 'the block root hidden' );
+	assert.equal( rendered( { elements: {} }, KID, 375 ), true, 'an unread display counts as rendered' );
+} );

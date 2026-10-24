@@ -1,0 +1,98 @@
+{
+	"source": "sites/mamas-munches-redesign/build/intake/facts.json elements Product/5, 140 to 145 (template tag, parent, parentChain, words; instances as recorded)",
+	"elements": {
+		"Product/5": {
+			"template": {
+				"key": "Product/5",
+				"tag": "div",
+				"parent": null,
+				"parentChain": [],
+				"words": ""
+			},
+			"instances": []
+		},
+		"Product/140": {
+			"template": {
+				"key": "Product/140",
+				"tag": "sc-if",
+				"parent": "Product/5",
+				"parentChain": [
+					"Product/5"
+				],
+				"words": ""
+			},
+			"instances": []
+		},
+		"Product/141": {
+			"template": {
+				"key": "Product/141",
+				"tag": "div",
+				"parent": "Product/140",
+				"parentChain": [
+					"Product/140",
+					"Product/5"
+				],
+				"words": ""
+			},
+			"instances": []
+		},
+		"Product/142": {
+			"template": {
+				"key": "Product/142",
+				"tag": "div",
+				"parent": "Product/141",
+				"parentChain": [
+					"Product/141",
+					"Product/140",
+					"Product/5"
+				],
+				"words": ""
+			},
+			"instances": []
+		},
+		"Product/143": {
+			"template": {
+				"key": "Product/143",
+				"tag": "div",
+				"parent": "Product/142",
+				"parentChain": [
+					"Product/142",
+					"Product/141",
+					"Product/140",
+					"Product/5"
+				],
+				"words": "{{ priceTxt }}"
+			},
+			"instances": []
+		},
+		"Product/144": {
+			"template": {
+				"key": "Product/144",
+				"tag": "div",
+				"parent": "Product/142",
+				"parentChain": [
+					"Product/142",
+					"Product/141",
+					"Product/140",
+					"Product/5"
+				],
+				"words": "{{ barSub }}"
+			},
+			"instances": []
+		},
+		"Product/145": {
+			"template": {
+				"key": "Product/145",
+				"tag": "button",
+				"parent": "Product/141",
+				"parentChain": [
+					"Product/141",
+					"Product/140",
+					"Product/5"
+				],
+				"words": "{{ barLabel }}"
+			},
+			"instances": []
+		}
+	}
+}

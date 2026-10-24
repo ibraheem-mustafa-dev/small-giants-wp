@@ -117,8 +117,8 @@ export function adoptDrawnBehaviours( byElement, { targetKeys, template, isBehav
 // The declared part a slot finder's element is: the part whose class (its declared `css_element` selector, else
 // `sgs-<slug>__<part>`) is a class of the slot selector's last compound; else, for a slot that names its element by
 // position only (`__burger-bar:nth-of-type(2)`, an element whose own `__burger-bar-2` class the path does not carry), the
-// one part whose own resting settings calibration measured at exactly that slot (home: lib/fill-part-pairing.mjs::exactHome).
-// Returns the target name or null.
+// one part whose own resting settings calibration measured at exactly that slot (home: lib/fill-part-pairing.mjs::exactHome)
+// (a positional slot only where its last compound carries the part's base class). Returns the target name or null.
 export function partForSlot( block, slotFinder, targets, home = null ) {
 	const sel = 'string' === typeof slotFinder ? slotFinder : null;
 	if ( ! sel ) {
@@ -131,7 +131,16 @@ export function partForSlot( block, slotFinder, targets, home = null ) {
 	if ( hit || ! home ) {
 		return hit ? hit.target : null;
 	}
-	const homed = targets.filter( ( t ) => 'part' === t.kind && home( t.cssElement ) === sel );
+	// A home that names one copy of a repeated element by position (an :nth-of-type or :nth-child step) answers only for a
+	// slot whose last compound carries the part's own base class (its name less any `-N` copy suffix): a bar's slot carries
+	// `__burger-bar`; the third nav link, where calibration measured the item part's settings, carries no `__item`. A home
+	// with no position step is the one element the part is (a row's content band drawn as `.sgs-container__inner`).
+	const base = ( t ) => {
+		const el = String( t.cssElement || '' );
+		return ( el.startsWith( '.' ) ? el.slice( 1 ) : `sgs-${ slug }__${ el }` ).replace( /-\d+$/, '' );
+	};
+	const positional = /:nth-(?:of-type|child)\(/.test( sel );
+	const homed = targets.filter( ( t ) => 'part' === t.kind && ( ! positional || classes.has( base( t ) ) ) && home( t.cssElement ) === sel );
 	return 1 === homed.length ? homed[ 0 ].target : null;
 }
 

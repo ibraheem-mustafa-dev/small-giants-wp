@@ -126,12 +126,14 @@ export const pickValue = ( perWidth ) => perWidth[ ROOT_FIRST.find( ( w ) => und
 // The snapshot patch under construction: { patch, entries, conflicts, set( path, value, from ) }. `set` writes one leaf by
 // its key path; a key already set to another value keeps the first and records the conflict, except that a browser
 // value (`from.browser`: the browser's own ring, which the draft never declares) yields to a value the draft declares,
-// whichever comes first, and the browser value is recorded as the dropped one. A conflict is only ever between two
-// declared values or a declared and a browser one: of two browser values that differ, the first is kept unreported.
+// whichever comes first, and the browser value is recorded as the dropped one. Two browser values that differ (a link's
+// 1px ring offset, a button's 0px) keep the first and are reported once per key (`split`: the site token holds one value);
+// a declared value that later replaces the kept browser value replaces the split one too, which is then reported as replaced.
 export function createPatch() {
 	const patch = {};
 	const entries = [];
 	const conflicts = [];
+	const splits = new Map();
 	const set = ( path, value, from ) => {
 		let at = patch;
 		const name = path.join( '.' );
@@ -152,12 +154,28 @@ export function createPatch() {
 					const dropped = entries[ prior ];
 					conflicts.push( { path: name, kept: value, dropped: at[ key ], from: dropped, keptFrom: { path: name, value, ...from }, replaced: true } );
 				}
+				const split = splits.get( name );
+				if ( split ) {
+					splits.delete( name );
+					conflicts.splice( conflicts.indexOf( split ), 1 );
+					if ( JSON.stringify( split.dropped ) !== JSON.stringify( value ) ) {
+						conflicts.push( { path: name, kept: value, dropped: split.dropped, from: split.from, keptFrom: { path: name, value, ...from }, replaced: true } );
+					}
+				}
 				at[ key ] = value;
 				entries[ prior ] = { path: name, value, ...from };
 				return;
 			}
-			// Two browser values that differ (a link's 1px offset, a button's 0px) are no draft values: no conflict.
-			if ( JSON.stringify( at[ key ] ) !== JSON.stringify( value ) && ! ( from?.browser && entries[ prior ]?.browser ) ) {
+			// Two browser values that differ (a link's 1px offset, a button's 0px): one split row per key.
+			if ( JSON.stringify( at[ key ] ) !== JSON.stringify( value ) && from?.browser && entries[ prior ]?.browser ) {
+				if ( ! splits.has( name ) ) {
+					const split = { path: name, kept: at[ key ], dropped: value, from, keptFrom: entries[ prior ], split: true };
+					splits.set( name, split );
+					conflicts.push( split );
+				}
+				return;
+			}
+			if ( JSON.stringify( at[ key ] ) !== JSON.stringify( value ) ) {
 				const keptFrom = entries[ prior ];
 				conflicts.push( { path: name, kept: at[ key ], dropped: value, from, keptFrom, ...( from?.browser && ! keptFrom?.browser ? { replaced: true } : {} ) } );
 			}
@@ -259,4 +277,4 @@ export function applyTokenLooks( { looks, sink, from, target, variant, owned } )
 }
 
 // A conflict as an unmapped row.
-export const conflictRow = ( c ) => ( { node: c.from.node, block: c.from.block, slot: c.from.slot, property: c.path, state: c.from.state, value: JSON.stringify( c.dropped ), reason: c.replaced ? `conflict: ${ c.keptFrom.node } ${ c.keptFrom.slot || 'root' } declares ${ c.path } ${ JSON.stringify( c.kept ) }; it replaces the browser ring's ${ JSON.stringify( c.dropped ) } from ${ c.from.node } ${ c.from.slot || 'root' }` : `conflict: ${ c.keptFrom ? `${ c.keptFrom.node } ${ c.keptFrom.slot || 'root' }` : 'an earlier target' } already set ${ c.path } to ${ JSON.stringify( c.kept ) }; ${ c.from.node } ${ c.from.slot || 'root' } wanted ${ JSON.stringify( c.dropped ) }; the first value is kept` } );
+export const conflictRow = ( c ) => ( { node: c.from.node, block: c.from.block, slot: c.from.slot, property: c.path, state: c.from.state, value: JSON.stringify( c.dropped ), reason: c.split ? `conflict: the browser's own focus ring differs between elements and the site focus token ${ c.path } holds one value: ${ c.keptFrom.node } ${ c.keptFrom.slot || 'root' } shows ${ JSON.stringify( c.kept ) } (kept), ${ c.from.node } ${ c.from.slot || 'root' } shows ${ JSON.stringify( c.dropped ) }, which the site ring gives ${ JSON.stringify( c.kept ) } instead` : c.replaced ? `conflict: ${ c.keptFrom.node } ${ c.keptFrom.slot || 'root' } declares ${ c.path } ${ JSON.stringify( c.kept ) }; it replaces the browser ring's ${ JSON.stringify( c.dropped ) } from ${ c.from.node } ${ c.from.slot || 'root' }` : `conflict: ${ c.keptFrom ? `${ c.keptFrom.node } ${ c.keptFrom.slot || 'root' }` : 'an earlier target' } already set ${ c.path } to ${ JSON.stringify( c.kept ) }; ${ c.from.node } ${ c.from.slot || 'root' } wanted ${ JSON.stringify( c.dropped ) }; the first value is kept` } );
