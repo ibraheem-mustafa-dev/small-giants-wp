@@ -1,5 +1,5 @@
 {
-	"generated": "2026-10-22T23:06:57.230Z",
+	"generated": "2026-10-24T08:20:56.422Z",
 	"inventory": "2026-10-22T21:25:40.057Z",
 	"source": "http://127.0.0.1:58607/",
 	"surface": "sticky-header",
@@ -73,27 +73,16 @@
 		"inventoryElements": 54,
 		"parts": 11,
 		"rows": 43,
-		"skeletonNodes": 14,
-		"expandedNodes": 18,
+		"skeletonNodes": 15,
+		"expandedNodes": 19,
 		"low": 0,
-		"removed": 30,
+		"removed": 29,
 		"unresolved": 0,
 		"byRule": {
 			"clientBuiltSurface": 43
 		}
 	},
-	"widthAlternatives": [
-		{
-			"key": "Root/18#0",
-			"into": "Root/14#0",
-			"block": "sgs/button",
-			"widths": [
-				375
-			],
-			"words": "Call",
-			"reason": "a label shown only at 375px inside a block with one label: no setting holds a per-width label"
-		}
-	],
+	"widthAlternatives": [],
 	"problems": [],
 	"rows": [
 		{
@@ -394,22 +383,31 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "Call",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/button: a label shown only at 375px inside a block with one label: no setting holds a per-width label",
-			"source": null,
+			"block": "sgs/button",
+			"action": null,
+			"reason": "Root/18#0 renders only at 375px: its words are one more sgs/button beside Root/14#0, each hidden on the other's widths",
+			"source": "rule widthVariant",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "clientBuiltSurface",
-			"into": "Root/14#0",
-			"candidates": [],
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": []
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_18_0@375.png"
 			},
 			"snippet": "<span data-dc-tpl=\"18\">Call</span>",
-			"attributes": {},
+			"attributes": {
+				"label": "Call",
+				"linkSource": "phone"
+			},
 			"strip": "Root/9#0",
 			"builtPost": {
 				"site": "sandybrown",
@@ -1121,8 +1119,28 @@
 				},
 				".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link": {
 					"tpl": "Root/47#0"
+				},
+				".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret": {
+					"tpl": "Root/50#0"
+				},
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger": {
+					"tpl": "Root/59#0"
+				},
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)": {
+					"tpl": "Root/60#0"
+				},
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)": {
+					"tpl": "Root/61#0"
+				},
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)": {
+					"tpl": "Root/62#0"
 				}
 			},
+			"placedIn": "Root/56#0",
+			"slotNotes": [
+				"sgs/nav-bar-menu stands in Root/56#0 where its Root/59#0 part is, beside the wrapper's other content",
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon: the draft has no element for .sgs-nav-bar-menu__burger-icon"
+			],
 			"builtPost": {
 				"site": "sandybrown",
 				"postType": "sgs_header",

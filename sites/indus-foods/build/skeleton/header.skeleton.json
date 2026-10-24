@@ -97,12 +97,40 @@
 									"line": 29
 								},
 								"innerBlocks": [],
-								"handover": [
+								"widthVariants": [
 									{
-										"owner": "behaviour",
-										"kind": "text",
-										"detail": "Root/18#0 \"Call\": a label shown only at 375px inside a block with one label: no setting holds a per-width label"
+										"key": "Root/18#0",
+										"shown": [
+											375
+										]
 									}
+								]
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Call",
+									"linkSource": "phone"
+								},
+								"draftRef": {
+									"tpl": "Root/14#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scp0",
+									"styleHash": "a8233049",
+									"parentTags": [
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 29
+								},
+								"innerBlocks": [],
+								"variantKey": "Root/18#0",
+								"widthShown": [
+									375
 								]
 							},
 							{
@@ -262,39 +290,54 @@
 									"line": 68
 								},
 								"innerBlocks": []
+							},
+							{
+								"name": "sgs/nav-bar-menu",
+								"attributes": {
+									"ref": 5,
+									"collapsePoint": 1024
+								},
+								"draftRef": {
+									"tpl": "Root/45#0"
+								},
+								"draftFingerprint": {
+									"tag": "nav",
+									"cls": "",
+									"styleHash": "1c0176c2",
+									"parentTags": [
+										"header",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 45
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": {
+										"tpl": "Root/47#1"
+									},
+									".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link": {
+										"tpl": "Root/47#0"
+									},
+									".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret": {
+										"tpl": "Root/50#0"
+									},
+									".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger": {
+										"tpl": "Root/59#0"
+									},
+									".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)": {
+										"tpl": "Root/60#0"
+									},
+									".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)": {
+										"tpl": "Root/61#0"
+									},
+									".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)": {
+										"tpl": "Root/62#0"
+									}
+								}
 							}
 						]
-					},
-					{
-						"name": "sgs/nav-bar-menu",
-						"attributes": {
-							"ref": 5,
-							"collapsePoint": 1024
-						},
-						"draftRef": {
-							"tpl": "Root/45#0"
-						},
-						"draftFingerprint": {
-							"tag": "nav",
-							"cls": "",
-							"styleHash": "1c0176c2",
-							"parentTags": [
-								"header",
-								"div",
-								"div"
-							],
-							"textHash": "1505",
-							"line": 45
-						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": {
-								"tpl": "Root/47#1"
-							},
-							".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link": {
-								"tpl": "Root/47#0"
-							}
-						}
 					},
 					{
 						"name": "sgs/button",

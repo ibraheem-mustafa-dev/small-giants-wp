@@ -8,7 +8,8 @@
       "parentTags": [],
       "textHash": "1505",
       "line": 37
-    }
+    },
+    "draft": "0fe5aee1c396a997"
   },
   "cr-ref-header-1": {
     "tpl": "Root/9#0",
@@ -22,7 +23,8 @@
     },
     "slots": {
       ".sgs-container__inner": "Root/10#0"
-    }
+    },
+    "draft": "0fe5aee1c396a997"
   },
   "cr-ref-header-2": {
     "tpl": "Root/11#0",
@@ -36,9 +38,26 @@
       ],
       "textHash": "1505",
       "line": 27
-    }
+    },
+    "draft": "0fe5aee1c396a997"
   },
   "cr-ref-header-3": {
+    "tpl": "Root/13#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp0",
+      "styleHash": "a8233049",
+      "parentTags": [
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "61ec7831",
+      "line": 28
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-header-4": {
     "tpl": "Root/14#0",
     "fingerprint": {
       "tag": "a",
@@ -51,9 +70,26 @@
       ],
       "textHash": "1505",
       "line": 29
-    }
+    },
+    "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-header-4": {
+  "cr-ref-header-5": {
+    "tpl": "Root/14#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp0",
+      "styleHash": "a8233049",
+      "parentTags": [
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 29
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-header-6": {
     "tpl": "Root/20#0",
     "fingerprint": {
       "tag": "a",
@@ -66,9 +102,10 @@
       ],
       "textHash": "f9b825f5",
       "line": 30
-    }
+    },
+    "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-header-10": {
+  "cr-ref-header-12": {
     "tpl": "Root/40#0",
     "fingerprint": {
       "tag": "div",
@@ -82,9 +119,10 @@
     },
     "slots": {
       ".sgs-container__inner": "Root/41#0"
-    }
+    },
+    "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-header-11": {
+  "cr-ref-header-13": {
     "tpl": "Root/43#0",
     "fingerprint": {
       "tag": "indus-logo",
@@ -98,9 +136,43 @@
       ],
       "textHash": "1505",
       "line": 41
-    }
+    },
+    "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-header-12": {
+  "cr-ref-header-14": {
+    "tpl": "Root/56#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "f4aede7b",
+      "parentTags": [
+        "header",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 66
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-header-15": {
+    "tpl": "Root/58#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp2",
+      "styleHash": "54fbc7ec",
+      "parentTags": [
+        "header",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "61ec7831",
+      "line": 68
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-header-16": {
     "tpl": "Root/45#0",
     "fingerprint": {
       "tag": "nav",
@@ -116,10 +188,16 @@
     },
     "slots": {
       ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": "Root/47#1",
-      ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link": "Root/47#0"
-    }
+      ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link": "Root/47#0",
+      ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret": "Root/50#0",
+      ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger": "Root/59#0",
+      ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)": "Root/60#0",
+      ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)": "Root/61#0",
+      ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)": "Root/62#0"
+    },
+    "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-header-13": {
+  "cr-ref-header-17": {
     "tpl": "Root/54#0",
     "fingerprint": {
       "tag": "a",
@@ -132,6 +210,7 @@
       ],
       "textHash": "61ec7831",
       "line": 61
-    }
+    },
+    "draft": "0fe5aee1c396a997"
   }
 }
