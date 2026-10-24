@@ -125,6 +125,30 @@ function cssRules( { prop, slot, state, widths, values, series } ) {
 
 const rangeText = ( [ lo, hi ] ) => ( Infinity === hi ? `${ lo }px and up` : `${ lo }-${ hi - 1 }px` );
 
+// The skeleton target of the element the ladder writes (`slot`): the row's own target, or the node's target at that slot when
+// the row's element is another one (the block paints the property on a part that is the same box as the row's element).
+export function writtenTarget( rec, target, slot ) {
+	return ( slot !== ( target.slot ?? '' ) && rec.targets.find( ( t ) => ( t.slot ?? '' ) === slot ) ) || target;
+}
+
+// The draft's per-width values for the element being written: the row's values (lib/fill-regap.mjs::rowValues) when the
+// row is on that element; otherwise, where the draft draws the written element as an element of its own, that element's
+// rendered value at each width, and the row's value only at a width it has no read.
+export function valuesAt( row, reads, target, home ) {
+	const own = rowValues( row, reads, target );
+	if ( home === target ) {
+		return own;
+	}
+	const out = {};
+	for ( const w of WIDTHS ) {
+		const read = reads.widths?.[ w ]?.[ home.id ];
+		const v = read && ! read.missing ? read.styles?.[ row.property ] : undefined;
+		const pick = undefined !== v && '' !== v ? v : own[ w ];
+		undefined !== pick && ( out[ w ] = pick );
+	}
+	return out;
+}
+
 export function widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped, calFor = () => null, snapshot = null, scope = '', entries = [], date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes(), resolver } ) {
 	const out = { writes: [], unmapped: [], notes: [], ledger: [] };
 	const ctx = { reads, db, calFor, snapshot };
@@ -146,15 +170,16 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 	// The element a setting of the block paints for this property: the row's own element, or the block's content band when
 	// calibration measured it as the same box (the draft's one element is both).
 	const slot = layoutHome( { db, block: rec.name, cal, prop, state, slot: row.slot ?? '' } );
-	const raw = rowValues( row, reads, target );
+	const home = writtenTarget( rec, target, slot );
+	const raw = valuesAt( row, reads, target, home );
 	const widths = WIDTHS.filter( ( w ) => undefined !== raw[ w ] );
 	if ( ! widths.length ) {
 		return false;
 	}
-	const env = ( w ) => ( { display: reads.widths?.[ w ]?.[ target.id ]?.layoutDisplay || reads.widths?.[ w ]?.[ target.id ]?.styles?.display || '', children: visibleChildren( { nodes, reads }, rec, w ) } );
+	const env = ( w ) => ( { display: reads.widths?.[ w ]?.[ home.id ]?.layoutDisplay || reads.widths?.[ w ]?.[ home.id ]?.styles?.display || '', children: visibleChildren( { nodes, reads }, rec, w ) } );
 	const effs = Object.fromEntries( widths.map( ( w ) => [ w, effectOf( prop, raw[ w ], env( w ) ) ] ) );
 	const varies = new Set( Object.values( effs ) ).size > 1;
-	const ask = ( draft, p = prop ) => reresolve( { rec, node, target, slot, prop: p, draft, ctx, state, resolver } );
+	const ask = ( draft, p = prop ) => reresolve( { rec, node, target: home, slot, prop: p, draft, ctx, state, resolver } );
 	const took = ( res, how, note ) => {
 		commit( out, { rec, node, row, prop, res, how, note } );
 		out.notes.push( `${ row.node } ${ rec.name }${ slot ? ` (${ slot })` : '' } ${ prop }${ state ? ` ${ state }` : '' }: ${ note }` );
@@ -227,7 +252,7 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 		}
 	}
 	// Rung 4: a scoped @media rule.
-	const series = reads.sweep?.[ target.id ]?.[ prop ];
+	const series = reads.sweep?.[ home.id ]?.[ prop ];
 	const css = cssRules( { prop, slot, state, widths, values, series } );
 	if ( ! css ) {
 		return false;
