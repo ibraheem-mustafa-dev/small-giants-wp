@@ -29,7 +29,11 @@ export const PRESENT = '(rendered)';
 // The walker's list reads only the top border's style; a border on any other side needs its own, or a width written
 // without a style would paint nothing.
 const SIDE_STYLES = [ 'border-right-style', 'border-bottom-style', 'border-left-style' ];
-export const PROPS = [ ...new Set( [ ...DEFAULT_PROPS, ...REF_PROPS, ...SIDE_STYLES ] ) ].filter( ( p ) => ! /^(animation-|icon-)/.test( p ) && 'gap' !== p );
+// A block's flex sizing is its root's as a flex item (sgsChildSizing), so on a root these are read on the flex item the
+// root is: the element itself, or a wrapper holding only it that paints nothing (flexItemsInPage). They are never swept
+// (the sweep reads each element's own value).
+export const FLEX_ITEM_PROPS = [ 'flex-shrink' ];
+export const PROPS = [ ...new Set( [ ...DEFAULT_PROPS, ...REF_PROPS, ...SIDE_STYLES, ...FLEX_ITEM_PROPS ] ) ].filter( ( p ) => ! /^(animation-|icon-)/.test( p ) && 'gap' !== p );
 
 // Playwright, from the route's own pinned install (scripts/computed-route/node_modules, FR-48-75).
 export async function loadChromium() {
@@ -79,10 +83,60 @@ export function jobsFor( nodes ) {
 		finder: t.scoped && 'tpl' !== finderKind( t.finder ) ? scopeFinder( t.finder, scopeSelector( n.index ) ) : t.finder,
 		mark: t.scoped ? null : n.index,
 		owner: n.index,
+		root: '' === ( t.slot ?? '' ),
 		// A node with child nodes reads its own text styles at every target, its root and its slots alike (a row's content
 		// band): a text descendant there is another node's element, never this one's look.
 		own: n.children.length > 0,
 	} ) ) );
+}
+
+// In-page. For each root job, the flex item its element is: the outermost of the element and the wrappers above it that
+// sits in a flex container, a wrapper counting only while it holds just the one below and paints nothing (no background,
+// border, padding, shadow, outline or text of its own) and is no other node's element. Returns { id: { shrink, w, h,
+// depth (wrappers climbed) } | null (no flex item) }; a job whose element is not found is left out.
+export function flexItemsInPage( [ jobs, resolveSrc ] ) {
+	// eslint-disable-next-line no-new-func
+	const resolve = new Function( `return (${ resolveSrc });` )();
+	const SIDES = [ 'Top', 'Right', 'Bottom', 'Left' ];
+	const flexParent = ( el ) => !! el.parentElement && /flex$/.test( getComputedStyle( el.parentElement ).display );
+	const bare = ( el, owner ) => {
+		const cs = getComputedStyle( el );
+		const own = el.getAttribute( 'data-fill-owner' );
+		return 1 === el.children.length && ! [ ...el.childNodes ].some( ( n ) => 3 === n.nodeType && n.textContent.trim() ) && ( null === own || own === owner )
+			&& 'rgba(0, 0, 0, 0)' === cs.backgroundColor && 'none' === cs.backgroundImage && 'none' === cs.boxShadow && ( 'none' === cs.outlineStyle || 0 === parseFloat( cs.outlineWidth ) )
+			&& SIDES.every( ( s ) => 0 === parseFloat( cs[ `border${ s }Width` ] ) && 0 === parseFloat( cs[ `padding${ s }` ] ) );
+	};
+	const out = {};
+	for ( const j of jobs.filter( ( x ) => x.root ) ) {
+		const el = resolve( j.finder );
+		if ( ! el ) {
+			continue;
+		}
+		const chain = [ el ];
+		while ( chain[ 0 ].parentElement && bare( chain[ 0 ].parentElement, String( j.owner ) ) ) {
+			chain.unshift( chain[ 0 ].parentElement );
+		}
+		// The outermost flex item of the chain: a wrapper that is itself a flex container holds the element as its own one
+		// item, so the box that sits in the row is the wrapper.
+		const item = chain.find( flexParent );
+		const r = item?.getBoundingClientRect();
+		out[ j.id ] = item ? { shrink: getComputedStyle( item ).flexShrink, w: Math.round( r.width * 1000 ) / 1000, h: Math.round( r.height * 1000 ) / 1000, depth: chain.length - 1 - chain.indexOf( item ) } : null;
+	}
+	return out;
+}
+
+// The flex item reads (flexItemsInPage) into the snapshots: a root target that is a flex item holds the item's values in
+// place of its element's own, and the item's box as `flexItem`; every other target keeps its element's own read.
+export function applyFlexItems( widths, jobs, items ) {
+	for ( const j of jobs ) {
+		const snap = widths?.[ j.id ];
+		const item = j.root ? items?.[ j.id ] : null;
+		if ( ! item || ! snap || snap.missing || ! snap.styles ) {
+			continue;
+		}
+		snap.styles[ 'flex-shrink' ] = item.shrink;
+		snap.flexItem = { w: item.w, h: item.h, depth: item.depth };
+	}
 }
 
 // Opens one page on the draft at a width (a phone at 375, as the walker reads it), runs the draft's open step (a click
@@ -124,6 +178,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 	const result = { origin, widths: {}, declared: {}, sweep: {}, states: {}, failures: [] };
 	const aborted = new Set();
 	const emptyWidths = [];
+	const flexItems = {};
 	try {
 		for ( const width of [ ...new Set( [ ...READ_WIDTHS, ...FLUID_WIDTHS ] ) ] ) {
 			const { ctx, page } = await openPage( browser, devices, { url, open, width, origin, external, mirror, aborted } );
@@ -139,6 +194,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 				}
 			}
 			if ( full ) {
+				flexItems[ width ] = await page.evaluate( flexItemsInPage, [ jobs, RESOLVE ] );
 				const cdp = await openDevtools( page );
 				result.declared[ width ] = {};
 				const found = jobs.filter( ( x ) => ! result.widths[ width ][ x.id ]?.missing );
@@ -213,6 +269,10 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 			}
 			await ctx.close();
 		}
+		// Last, so no later read of the element's own value replaces the flex item's.
+		for ( const width of READ_WIDTHS ) {
+			applyFlexItems( result.widths[ width ], jobs, flexItems[ width ] );
+		}
 		if ( sweep ) {
 			const { ctx, page } = await openPage( browser, devices, { url, open, width: 1440, origin, external, mirror } );
 			for ( const width of SWEEP_WIDTHS ) {
@@ -222,7 +282,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 				for ( const [ id, s ] of Object.entries( snaps ) ) {
 					const series = ( result.sweep[ id ] ??= {} );
 					( series[ PRESENT ] ??= [] ).push( { width, value: s.missing ? 'absent' : 'present' } );
-					for ( const prop of PROPS ) {
+					for ( const prop of PROPS.filter( ( p ) => ! FLEX_ITEM_PROPS.includes( p ) ) ) {
 						( series[ prop ] ??= [] ).push( { width, value: s.styles?.[ prop ] } );
 					}
 				}

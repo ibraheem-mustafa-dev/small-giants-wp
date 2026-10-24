@@ -1,0 +1,164 @@
+[
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "const shown = painted ? painted.value : inOwnContext( prop, baseline( w ), baselineContextAt( w ) );",
+		"replace": "const shown = painted ? painted.value : baseline( w );",
+		"why": "the baseline is judged in the draft's context only"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "contextOf, baselineContext );",
+		"replace": "contextOf );",
+		"why": "resolveProperty passes no baseline context"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "return there !== initial && String( there ).trim() === String( v ).trim() ? initial : v;",
+		"replace": "return v;",
+		"why": "a value is never read back as the initial value"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "return { parentDisplay: paint._parentDisplay,",
+		"replace": "return { parentDisplay: paint.display,",
+		"why": "the element's own display taken for its parent's"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "const paint = undefined !== key ? cal.elements[ key ]?.[ String( 1920 === width ? 1440 : width ) ] : undefined;",
+		"replace": "const paint = undefined !== key ? cal.elements[ key ]?.[ String( width ) ] : undefined;",
+		"why": "1920 does not read as 1440"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "if ( ! paint || undefined === paint._parentDisplay ) {",
+		"replace": "if ( ! paint ) {",
+		"why": "a paint with no recorded context still gives one"
+	},
+	{
+		"file": "lib/calibrate-read.mjs",
+		"find": "...( own ? { ...ownOf( el, style ), ...contextOf( el, style ) } : {} )",
+		"replace": "...( own ? ownOf( el, style ) : {} ), ...contextOf( el, style )",
+		"why": "a marked instance carries the context too"
+	},
+	{
+		"file": "lib/calibrate-read.mjs",
+		"find": "_parentDisplay: el.parentElement ? getComputedStyle( el.parentElement ).display : 'block'",
+		"replace": "_parentDisplay: getComputedStyle( el ).display",
+		"why": "the element's own display recorded"
+	},
+	{
+		"file": "lib/calibrate-read.mjs",
+		"find": "_position: cs.position",
+		"replace": "_position: 'static'",
+		"why": "the position is not read"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "...SIDE_STYLES, ...FLEX_ITEM_PROPS ]",
+		"replace": "...SIDE_STYLES ]",
+		"why": "Fill does not read flex-shrink"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "return 1 === el.children.length &&",
+		"replace": "return true &&",
+		"why": "a wrapper with a sibling is climbed"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "&& 0 === parseFloat( cs[ `padding${ s }` ] ) );",
+		"replace": ");",
+		"why": "a padded wrapper is climbed"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "for ( const j of jobs.filter( ( x ) => x.root ) ) {",
+		"replace": "for ( const j of jobs ) {",
+		"why": "an inner slot is read as a flex item"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "snap.flexItem = { w: item.w, h: item.h, depth: item.depth };",
+		"replace": "",
+		"why": "the item's box is not kept"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "root: '' === ( t.slot ?? '' ),",
+		"replace": "root: true,",
+		"why": "every target is a root"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "if ( 'flex-shrink' === row.property ) {",
+		"replace": "if ( false ) {",
+		"why": "the flex-shrink row is not handled"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "const fixedAt = WIDTHS.filter( ( w ) => undefined !== given[ w ] && 0 === parseFloat( given[ w ] ) );",
+		"replace": "const fixedAt = WIDTHS.filter( ( w ) => undefined !== given[ w ] );",
+		"why": "a width the draft shrinks at is fixed"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "const shrinks = fixedAt.filter( ( w ) => parseFloat( paint[ w ] ) > 0 );",
+		"replace": "const shrinks = fixedAt;",
+		"why": "a root that never shrinks is fixed anyway"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "modes[ TIER_OF[ w ] ] = 'fit';",
+		"replace": "",
+		"why": "a narrower shrinking tier inherits the fixed one"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "if ( ! sizing || ! attrRow( db, rec.name, SIZING_WIDTH ) || ! String( sizing.enum_values ?? '' ).includes( '\"fixed\"' ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a block without child sizing is written"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "const sizeAt = ( w ) => reads.widths?.[ w ]?.[ target.id ]?.flexItem?.w ?? rectAt( reads, target, w )?.w;",
+		"replace": "const sizeAt = ( w ) => rectAt( reads, target, w )?.w;",
+		"why": "the element's box, not the flex item's"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "while ( chain[ 0 ].parentElement && bare( chain[ 0 ].parentElement, String( j.owner ) ) ) {",
+		"replace": "while ( false ) {",
+		"why": "no wrapper is climbed"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "const item = chain.find( flexParent );",
+		"replace": "const item = chain.findLast( flexParent );",
+		"why": "the innermost flex item is taken"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "const item = chain.find( flexParent );",
+		"replace": "const item = chain.find( flexParent ) ?? chain[ 0 ];",
+		"why": "an element in no flex row is a flex item"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "const item = j.root ? items?.[ j.id ] : null;",
+		"replace": "const item = items?.[ j.id ];",
+		"why": "an inner slot takes a flex item read"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "\tif ( fluid.length ) {\n\t\treturn { raise: NATURAL_SIZE };\n\t}",
+		"replace": "",
+		"why": "a natural size is pinned to the read widths' px"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "const fluid = fixedAt.filter( ( w ) => null === pxOf( reads.declared?.[ w ]?.[ target.id ]?.width ?? '' ) );",
+		"replace": "const fluid = fixedAt.filter( ( w ) => undefined === reads.declared?.[ w ]?.[ target.id ]?.width );",
+		"why": "a declared clamp() or auto counts as a px width"
+	}
+]
