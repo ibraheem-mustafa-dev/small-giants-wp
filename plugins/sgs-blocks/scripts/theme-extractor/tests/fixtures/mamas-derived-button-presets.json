@@ -10,7 +10,8 @@
     "hover-border": "#e69099",
     "min-height": "44px",
     "padding": "10px 18px 10px 18px",
-    "text": "#3a2e26"
+    "text": "#3a2e26",
+    "hover-text": "#3a2e26"
   },
   "primary": {
     "background": "#e68a95",
