@@ -1,0 +1,2970 @@
+{
+ "_about": "Button facts measure.js read on each entry draft of sites/mamas-munches-redesign/handoff (MANIFEST entry_drafts order), 2026-10-24.",
+ "pages": {
+  "Home.dc.html": {
+   "buttons": [
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>section>div>div>div:nth-of-type(2)>a",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "10px",
+      "paddingBottom": "0px",
+      "paddingLeft": "28px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "17px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -3, -3)",
+      "boxShadow": "rgb(58, 42, 34) 7px 7px 0px 0px"
+     },
+     "count": 3,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 10px 0px 28px": 1
+     },
+     "companions": {
+      "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700": 2
+     },
+     "textLen": 15,
+     "w": 212,
+     "h": 60
+    },
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>section>div>div>div:nth-of-type(2)>a:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "26px",
+      "paddingBottom": "0px",
+      "paddingLeft": "26px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "17px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -3, -3)",
+      "boxShadow": "rgb(58, 42, 34) 7px 7px 0px 0px"
+     },
+     "count": 2,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 26px 0px 26px": 1
+     },
+     "companions": {
+      "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700": 2
+     },
+     "textLen": 11,
+     "w": 144,
+     "h": 60
+    },
+    {
+     "classKey": "sig:rgb(249, 213, 211)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|28px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>main>section:nth-of-type(2)>div>div>a",
+     "rest": {
+      "backgroundColor": "rgb(249, 213, 211)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "28px",
+      "paddingTop": "0px",
+      "paddingRight": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 213, 211)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(0.999962, -0.00872654, 0.00872654, 0.999962, -4, -4)",
+      "boxShadow": "rgb(58, 42, 34) 8px 8px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {
+      "sig:rgb(252, 235, 190)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|28px|none|400": 1
+     },
+     "textLen": 140,
+     "w": 610,
+     "h": 445
+    },
+    {
+     "classKey": "sig:rgb(252, 235, 190)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|28px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>main>section:nth-of-type(2)>div>div>a:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(252, 235, 190)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "28px",
+      "paddingTop": "0px",
+      "paddingRight": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(252, 235, 190)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(0.999962, 0.00872654, -0.00872654, 0.999962, -4, -4)",
+      "boxShadow": "rgb(58, 42, 34) 8px 8px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {
+      "sig:rgb(249, 213, 211)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|28px|none|400": 1
+     },
+     "textLen": 145,
+     "w": 610,
+     "h": 445
+    },
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "section:nth-of-type(3)>div>div>div:nth-of-type(2)>div:nth-of-type(2)>button",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "18px",
+      "paddingBottom": "0px",
+      "paddingLeft": "12px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "700",
+      "minHeight": "48px",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px"
+     },
+     "count": 4,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 18px 0px 12px": 1,
+      "0px 18px 0px 18px": 1,
+      "0px 16px 0px 10px": 2
+     },
+     "companions": {
+      "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state": 22
+     },
+     "textLen": 11,
+     "w": 148,
+     "h": 48
+    },
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "section:nth-of-type(3)>div>div>div:nth-of-type(2)>div:nth-of-type(2)>button:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "18px",
+      "paddingBottom": "0px",
+      "paddingLeft": "12px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "700",
+      "minHeight": "48px",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px"
+     },
+     "count": 13,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 18px 0px 12px": 1,
+      "0px 18px 0px 18px": 3,
+      "0px 16px 0px 10px": 9
+     },
+     "companions": {
+      "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state": 22
+     },
+     "textLen": 9,
+     "w": 139,
+     "h": 48
+    },
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|400|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "section:nth-of-type(3)>div>div>div:nth-of-type(5)>div:nth-of-type(2)>button",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "20px",
+      "paddingTop": "12px",
+      "paddingRight": "8px",
+      "paddingBottom": "12px",
+      "paddingLeft": "8px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "minHeight": "84px",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px"
+     },
+     "count": 3,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "12px 8px 12px 8px": 2,
+      "10px 16px 10px 16px": 1
+     },
+     "companions": {
+      "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|400|state": 2,
+      "sig:rgba(255, 250, 240, 0.45)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|400|state": 1
+     },
+     "textLen": 16,
+     "w": 190,
+     "h": 89
+    },
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|400|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "section:nth-of-type(3)>div>div>div:nth-of-type(5)>div:nth-of-type(2)>button:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "20px",
+      "paddingTop": "12px",
+      "paddingRight": "8px",
+      "paddingBottom": "12px",
+      "paddingLeft": "8px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "minHeight": "84px",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "12px 8px 12px 8px": 1
+     },
+     "companions": {
+      "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|400|state": 2
+     },
+     "textLen": 30,
+     "w": 190,
+     "h": 89
+    },
+    {
+     "classKey": "sig:rgba(255, 250, 240, 0.45)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|400|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>section:nth-of-type(3)>div>div:nth-of-type(2)>div:nth-of-type(2)>button:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgba(255, 250, 240, 0.45)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "20px",
+      "paddingTop": "10px",
+      "paddingRight": "16px",
+      "paddingBottom": "10px",
+      "paddingLeft": "16px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "minHeight": "60px",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgba(255, 250, 240, 0.45)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "none",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "10px 16px 10px 16px": 1
+     },
+     "companions": {
+      "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|400|state": 1
+     },
+     "textLen": 17,
+     "w": 471,
+     "h": 60
+    },
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|24px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>main>section:nth-of-type(4)>div>div:nth-of-type(2)>a",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "24px",
+      "paddingTop": "0px",
+      "paddingRight": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "matrix(0.999848, -0.0174524, 0.0174524, 0.999848, 0, 0)"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -4, -6)",
+      "boxShadow": "rgb(58, 42, 34) 8px 8px 0px 0px"
+     },
+     "count": 4,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {},
+     "textLen": 130,
+     "w": 303,
+     "h": 386
+    },
+    {
+     "classKey": "sig:rgb(252, 235, 190)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|24px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>main>section:nth-of-type(4)>div>div:nth-of-type(3)>a",
+     "rest": {
+      "backgroundColor": "rgb(252, 235, 190)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "24px",
+      "paddingTop": "22px",
+      "paddingRight": "24px",
+      "paddingBottom": "22px",
+      "paddingLeft": "24px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(252, 235, 190)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -4, -4)",
+      "boxShadow": "rgb(58, 42, 34) 8px 8px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "22px 24px 22px 24px": 1
+     },
+     "companions": {},
+     "textLen": 103,
+     "w": 582,
+     "h": 152
+    },
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "section:nth-of-type(7)>div>div>div:nth-of-type(2)>div>button",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "1px",
+      "paddingRight": "6px",
+      "paddingBottom": "1px",
+      "paddingLeft": "6px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "20px",
+      "fontWeight": "400",
+      "minHeight": "auto",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 5px 5px 0px 0px"
+     },
+     "count": 2,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {},
+     "textLen": 1,
+     "w": 52,
+     "h": 52
+    },
+    {
+     "classKey": "sig:rgb(58, 42, 34)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>main>section:nth-of-type(7)>div>div:nth-of-type(3)>button",
+     "rest": {
+      "backgroundColor": "rgb(58, 42, 34)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "none",
+      "boxShadow": "none"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 0px 0px 0px": 1
+     },
+     "companions": {
+      "sig:rgba(0, 0, 0, 0)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|400": 3
+     },
+     "textLen": 0,
+     "w": 34,
+     "h": 12
+    },
+    {
+     "classKey": "sig:rgba(0, 0, 0, 0)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>main>section:nth-of-type(7)>div>div:nth-of-type(3)>button:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(58, 42, 34)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "none",
+      "boxShadow": "none"
+     },
+     "count": 3,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 0px 0px 0px": 3
+     },
+     "companions": {
+      "sig:rgb(58, 42, 34)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|400": 3
+     },
+     "textLen": 0,
+     "w": 12,
+     "h": 12
+    },
+    {
+     "classKey": "sig:rgba(0, 0, 0, 0)|rgb(58, 42, 34)|rgb(58, 42, 34)|0px|0px|none|400|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>section:nth-of-type(8)>div>div:nth-of-type(2)>div>button",
+     "rest": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "0px",
+      "borderTopStyle": "none",
+      "borderTopLeftRadius": "0px",
+      "paddingTop": "16px",
+      "paddingRight": "20px",
+      "paddingBottom": "16px",
+      "paddingLeft": "20px",
+      "fontFamily": "\"Young Serif\", serif",
+      "fontSize": "19px",
+      "fontWeight": "400",
+      "minHeight": "68px",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "0px",
+      "transform": "none",
+      "boxShadow": "none"
+     },
+     "count": 4,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "16px 20px 16px 20px": 4
+     },
+     "companions": {},
+     "textLen": 27,
+     "w": 702,
+     "h": 68
+    }
+   ]
+  },
+  "Shop.dc.html": {
+   "buttons": [
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>div>main>section>div:nth-of-type(2)>button",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "18px",
+      "paddingBottom": "0px",
+      "paddingLeft": "18px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "15px",
+      "fontWeight": "700",
+      "minHeight": "46px",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 18px 0px 18px": 1
+     },
+     "companions": {
+      "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state": 6
+     },
+     "textLen": 4,
+     "w": 89,
+     "h": 46
+    },
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>div>main>section>div:nth-of-type(2)>button:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "18px",
+      "paddingBottom": "0px",
+      "paddingLeft": "18px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "15px",
+      "fontWeight": "700",
+      "minHeight": "46px",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px"
+     },
+     "count": 6,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 18px 0px 18px": 6
+     },
+     "companions": {
+      "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state": 6
+     },
+     "textLen": 8,
+     "w": 126,
+     "h": 46
+    },
+    {
+     "classKey": "sig:rgb(249, 213, 211)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|28px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>main>section:nth-of-type(2)>div>div:nth-of-type(3)>a",
+     "rest": {
+      "backgroundColor": "rgb(249, 213, 211)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "28px",
+      "paddingTop": "40px",
+      "paddingRight": "40px",
+      "paddingBottom": "40px",
+      "paddingLeft": "40px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 213, 211)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -4, -4)",
+      "boxShadow": "rgb(58, 42, 34) 8px 8px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "40px 40px 40px 40px": 1
+     },
+     "companions": {
+      "sig:rgb(252, 235, 190)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|28px|none|400": 1
+     },
+     "textLen": 143,
+     "w": 610,
+     "h": 264
+    },
+    {
+     "classKey": "sig:rgb(252, 235, 190)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|28px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>main>section:nth-of-type(2)>div>div:nth-of-type(3)>a:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(252, 235, 190)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "28px",
+      "paddingTop": "40px",
+      "paddingRight": "40px",
+      "paddingBottom": "40px",
+      "paddingLeft": "40px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(252, 235, 190)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -4, -4)",
+      "boxShadow": "rgb(58, 42, 34) 8px 8px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "40px 40px 40px 40px": 1
+     },
+     "companions": {
+      "sig:rgb(249, 213, 211)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|28px|none|400": 1
+     },
+     "textLen": 167,
+     "w": 610,
+     "h": 264
+    },
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|28px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>div>main>section:nth-of-type(2)>div>a",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "28px",
+      "paddingTop": "0px",
+      "paddingRight": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "minHeight": "0px",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -4, -4)",
+      "boxShadow": "rgb(58, 42, 34) 8px 8px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {},
+     "textLen": 117,
+     "w": 1240,
+     "h": 204
+    }
+   ]
+  },
+  "Product.dc.html": {
+   "buttons": [
+    {
+     "classKey": "sig:rgb(243, 230, 204)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|16px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>div>div>div>div:nth-of-type(2)>button",
+     "rest": {
+      "backgroundColor": "rgb(243, 230, 204)",
+      "backgroundImage": "url(\"file:///C:/Users/Bean/Projects/small-giants-wp/.claude/worktrees/agent-ade1a0c514311a5e1/sites/mamas-munches-redesign/handoff/assets/photo-pair-love.jpg\")",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "16px",
+      "paddingTop": "1px",
+      "paddingRight": "6px",
+      "paddingBottom": "1px",
+      "paddingLeft": "6px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "minHeight": "auto",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)"
+     },
+     "hover": {
+      "backgroundColor": "rgb(243, 230, 204)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px"
+     },
+     "count": 4,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {},
+     "textLen": 0,
+     "w": 88,
+     "h": 88
+    },
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|400|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>div:nth-of-type(2)>div:nth-of-type(2)>div>div:nth-of-type(2)>button",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "20px",
+      "paddingTop": "12px",
+      "paddingRight": "6px",
+      "paddingBottom": "12px",
+      "paddingLeft": "6px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "minHeight": "82px",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px"
+     },
+     "count": 3,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "12px 6px 12px 6px": 2,
+      "10px 18px 10px 18px": 1
+     },
+     "companions": {
+      "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|400|state": 2,
+      "sig:rgba(255, 250, 240, 0.45)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|400|state": 1
+     },
+     "textLen": 16,
+     "w": 165,
+     "h": 87
+    },
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|400|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>div:nth-of-type(2)>div:nth-of-type(2)>div>div:nth-of-type(2)>button:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "20px",
+      "paddingTop": "12px",
+      "paddingRight": "6px",
+      "paddingBottom": "12px",
+      "paddingLeft": "6px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "minHeight": "82px",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "12px 6px 12px 6px": 1
+     },
+     "companions": {
+      "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|400|state": 2
+     },
+     "textLen": 30,
+     "w": 165,
+     "h": 87
+    },
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)>button",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "16px",
+      "paddingBottom": "0px",
+      "paddingLeft": "10px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "15px",
+      "fontWeight": "700",
+      "minHeight": "46px",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px"
+     },
+     "count": 3,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 16px 0px 10px": 1,
+      "0px 16px 0px 16px": 1,
+      "0px 14px 0px 8px": 1
+     },
+     "companions": {
+      "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state": 14
+     },
+     "textLen": 11,
+     "w": 137,
+     "h": 46
+    },
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(2)>button:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "16px",
+      "paddingBottom": "0px",
+      "paddingLeft": "10px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "15px",
+      "fontWeight": "700",
+      "minHeight": "46px",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px"
+     },
+     "count": 14,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 16px 0px 10px": 1,
+      "0px 16px 0px 16px": 3,
+      "0px 14px 0px 8px": 10
+     },
+     "companions": {
+      "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state": 14
+     },
+     "textLen": 9,
+     "w": 128,
+     "h": 46
+    },
+    {
+     "classKey": "sig:rgba(255, 250, 240, 0.45)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|400|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>div>div>div:nth-of-type(2)>div:nth-of-type(3)>button",
+     "rest": {
+      "backgroundColor": "rgba(255, 250, 240, 0.45)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "20px",
+      "paddingTop": "10px",
+      "paddingRight": "18px",
+      "paddingBottom": "10px",
+      "paddingLeft": "18px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "minHeight": "72px",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgba(255, 250, 240, 0.45)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "none",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "10px 18px 10px 18px": 1
+     },
+     "companions": {
+      "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|400|state": 1
+     },
+     "textLen": 70,
+     "w": 574,
+     "h": 72
+    },
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>div>div>div:nth-of-type(2)>div:nth-of-type(5)>button",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "1px",
+      "paddingRight": "6px",
+      "paddingBottom": "1px",
+      "paddingLeft": "6px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "18px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -3, -3)",
+      "boxShadow": "rgb(58, 42, 34) 7px 7px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {},
+     "textLen": 22,
+     "w": 574,
+     "h": 64
+    },
+    {
+     "classKey": "sig:rgba(0, 0, 0, 0)|rgb(58, 42, 34)|rgb(58, 42, 34)|0px|0px|none|400|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>div>div:nth-of-type(2)>div:nth-of-type(7)>div>button",
+     "rest": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "0px",
+      "borderTopStyle": "none",
+      "borderTopLeftRadius": "0px",
+      "paddingTop": "14px",
+      "paddingRight": "18px",
+      "paddingBottom": "14px",
+      "paddingLeft": "18px",
+      "fontFamily": "\"Young Serif\", serif",
+      "fontSize": "18px",
+      "fontWeight": "400",
+      "minHeight": "60px",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "0px",
+      "transform": "none",
+      "boxShadow": "none"
+     },
+     "count": 4,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "14px 18px 14px 18px": 4
+     },
+     "companions": {},
+     "textLen": 24,
+     "w": 570,
+     "h": 60
+    }
+   ]
+  },
+  "Basket.dc.html": {
+   "buttons": [
+    {
+     "classKey": "sig:rgba(0, 0, 0, 0)|rgb(58, 42, 34)|rgb(58, 42, 34)|0px|0px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(3)>div>button",
+     "rest": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "0px",
+      "borderTopStyle": "none",
+      "borderTopLeftRadius": "0px",
+      "paddingTop": "1px",
+      "paddingRight": "6px",
+      "paddingBottom": "1px",
+      "paddingLeft": "6px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "20px",
+      "fontWeight": "400",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "0px",
+      "transform": "none",
+      "boxShadow": "none"
+     },
+     "count": 4,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {},
+     "textLen": 1,
+     "w": 42,
+     "h": 40
+    },
+    {
+     "classKey": "sig:rgba(0, 0, 0, 0)|rgb(58, 42, 34)|rgb(58, 42, 34)|0px|0px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div:nth-of-type(2)>div>div:nth-of-type(2)>div:nth-of-type(2)>div:nth-of-type(3)>button",
+     "rest": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "0px",
+      "borderTopStyle": "none",
+      "borderTopLeftRadius": "0px",
+      "paddingTop": "10px",
+      "paddingRight": "0px",
+      "paddingBottom": "10px",
+      "paddingLeft": "0px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "14px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "0px",
+      "transform": "none",
+      "boxShadow": "none"
+     },
+     "count": 2,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "10px 0px 10px 0px": 2
+     },
+     "companions": {},
+     "textLen": 6,
+     "w": 52,
+     "h": 37
+    },
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>main>div>div:nth-of-type(2)>aside>a",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "18px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -3, -3)",
+      "boxShadow": "rgb(58, 42, 34) 7px 7px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {},
+     "textLen": 19,
+     "w": 428,
+     "h": 62
+    },
+    {
+     "classKey": "sig:rgb(0, 0, 0)|rgb(255, 255, 255)|rgb(58, 42, 34)|2px|999px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>div>div:nth-of-type(2)>aside>div:nth-of-type(5)>button",
+     "rest": {
+      "backgroundColor": "rgb(0, 0, 0)",
+      "backgroundImage": "none",
+      "color": "rgb(255, 255, 255)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "1px",
+      "paddingRight": "6px",
+      "paddingBottom": "1px",
+      "paddingLeft": "6px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "13.3333px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(0, 0, 0)",
+      "color": "rgb(255, 255, 255)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "none",
+      "boxShadow": "none"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {
+      "sig:rgb(255, 255, 255)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700": 1
+     },
+     "textLen": 9,
+     "w": 210,
+     "h": 48
+    },
+    {
+     "classKey": "sig:rgb(255, 255, 255)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>div>div:nth-of-type(2)>aside>div:nth-of-type(5)>button:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "1px",
+      "paddingRight": "6px",
+      "paddingBottom": "1px",
+      "paddingLeft": "6px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "13.3333px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "none",
+      "boxShadow": "none"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {
+      "sig:rgb(0, 0, 0)|rgb(255, 255, 255)|rgb(58, 42, 34)|2px|999px|none|700": 1
+     },
+     "textLen": 10,
+     "w": 210,
+     "h": 48
+    }
+   ]
+  },
+  "Checkout.dc.html": {
+   "buttons": [
+    {
+     "classKey": "sig:rgb(0, 0, 0)|rgb(255, 255, 255)|rgb(58, 42, 34)|2px|999px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>div>form>div>div:nth-of-type(2)>button",
+     "rest": {
+      "backgroundColor": "rgb(0, 0, 0)",
+      "backgroundImage": "none",
+      "color": "rgb(255, 255, 255)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "1px",
+      "paddingRight": "6px",
+      "paddingBottom": "1px",
+      "paddingLeft": "6px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(0, 0, 0)",
+      "color": "rgb(255, 255, 255)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "none",
+      "boxShadow": "none"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {
+      "sig:rgb(255, 255, 255)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700": 1,
+      "sig:rgb(255, 196, 57)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700": 1
+     },
+     "textLen": 9,
+     "w": 209,
+     "h": 52
+    },
+    {
+     "classKey": "sig:rgb(255, 255, 255)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>div>form>div>div:nth-of-type(2)>button:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "1px",
+      "paddingRight": "6px",
+      "paddingBottom": "1px",
+      "paddingLeft": "6px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "none",
+      "boxShadow": "none"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {
+      "sig:rgb(0, 0, 0)|rgb(255, 255, 255)|rgb(58, 42, 34)|2px|999px|none|700": 1,
+      "sig:rgb(255, 196, 57)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700": 1
+     },
+     "textLen": 10,
+     "w": 209,
+     "h": 52
+    },
+    {
+     "classKey": "sig:rgb(255, 196, 57)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>div>form>div>div:nth-of-type(2)>button:nth-of-type(3)",
+     "rest": {
+      "backgroundColor": "rgb(255, 196, 57)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "1px",
+      "paddingRight": "6px",
+      "paddingBottom": "1px",
+      "paddingLeft": "6px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 196, 57)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "none",
+      "boxShadow": "none"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {
+      "sig:rgb(0, 0, 0)|rgb(255, 255, 255)|rgb(58, 42, 34)|2px|999px|none|700": 1,
+      "sig:rgb(255, 255, 255)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700": 1
+     },
+     "textLen": 6,
+     "w": 209,
+     "h": 52
+    },
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|700|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>div>form>fieldset:nth-of-type(2)>div>button",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "20px",
+      "paddingTop": "1px",
+      "paddingRight": "6px",
+      "paddingBottom": "1px",
+      "paddingLeft": "6px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "700",
+      "minHeight": "76px",
+      "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "none",
+      "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {
+      "sig:rgb(255, 255, 255)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|700|state": 1
+     },
+     "textLen": 24,
+     "w": 289,
+     "h": 76
+    },
+    {
+     "classKey": "sig:rgb(255, 255, 255)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|700|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>div>form>fieldset:nth-of-type(2)>div>button:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "20px",
+      "paddingTop": "1px",
+      "paddingRight": "6px",
+      "paddingBottom": "1px",
+      "paddingLeft": "6px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "700",
+      "minHeight": "76px",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "none",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {
+      "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|700|state": 1
+     },
+     "textLen": 33,
+     "w": 289,
+     "h": 76
+    },
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|14px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>div>form>fieldset:nth-of-type(3)>div>button",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "14px",
+      "paddingTop": "0px",
+      "paddingRight": "18px",
+      "paddingBottom": "0px",
+      "paddingLeft": "18px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "13.3333px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "none",
+      "boxShadow": "none"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 18px 0px 18px": 1
+     },
+     "companions": {},
+     "textLen": 12,
+     "w": 122,
+     "h": 54
+    },
+    {
+     "classKey": "sig:rgb(252, 235, 190)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|18px|none|400|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>div>form>fieldset:nth-of-type(3)>div:nth-of-type(3)>button",
+     "rest": {
+      "backgroundColor": "rgb(252, 235, 190)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "18px",
+      "paddingTop": "10px",
+      "paddingRight": "16px",
+      "paddingBottom": "10px",
+      "paddingLeft": "16px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "minHeight": "66px",
+      "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(252, 235, 190)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "none",
+      "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "10px 16px 10px 16px": 1
+     },
+     "companions": {
+      "sig:rgb(255, 255, 255)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|18px|none|400|state": 1
+     },
+     "textLen": 57,
+     "w": 587,
+     "h": 66
+    },
+    {
+     "classKey": "sig:rgb(255, 255, 255)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|18px|none|400|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>div>form>fieldset:nth-of-type(3)>div:nth-of-type(3)>button:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "18px",
+      "paddingTop": "10px",
+      "paddingRight": "16px",
+      "paddingBottom": "10px",
+      "paddingLeft": "16px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "minHeight": "66px",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "none",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "10px 16px 10px 16px": 1
+     },
+     "companions": {
+      "sig:rgb(252, 235, 190)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|18px|none|400|state": 1
+     },
+     "textLen": 56,
+     "w": 587,
+     "h": 66
+    },
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>div>main>div>form>button",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "1px",
+      "paddingRight": "6px",
+      "paddingBottom": "1px",
+      "paddingLeft": "6px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "19px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -3, -3)",
+      "boxShadow": "rgb(58, 42, 34) 7px 7px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {},
+     "textLen": 10,
+     "w": 643,
+     "h": 66
+    },
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|14px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>main>div>aside>div:nth-of-type(4)>button",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "14px",
+      "paddingTop": "0px",
+      "paddingRight": "16px",
+      "paddingBottom": "0px",
+      "paddingLeft": "16px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "13.3333px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "none",
+      "boxShadow": "none"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 16px 0px 16px": 1
+     },
+     "companions": {},
+     "textLen": 5,
+     "w": 71,
+     "h": 48
+    }
+   ]
+  },
+  "Confirmation.dc.html": {
+   "buttons": [
+    {
+     "classKey": "sig:rgb(252, 235, 190)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|26px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>main>section:nth-of-type(2)>div>div:nth-of-type(2)>a",
+     "rest": {
+      "backgroundColor": "rgb(252, 235, 190)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "26px",
+      "paddingTop": "22px",
+      "paddingRight": "22px",
+      "paddingBottom": "22px",
+      "paddingLeft": "22px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(252, 235, 190)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -4, -4)",
+      "boxShadow": "rgb(58, 42, 34) 8px 8px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "22px 22px 22px 22px": 1
+     },
+     "companions": {},
+     "textLen": 143,
+     "w": 490,
+     "h": 180
+    },
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|26px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>div>main>section:nth-of-type(2)>div>a",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "dashed",
+      "borderTopLeftRadius": "26px",
+      "paddingTop": "22px",
+      "paddingRight": "22px",
+      "paddingBottom": "22px",
+      "paddingLeft": "22px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -4, -4)",
+      "boxShadow": "rgb(58, 42, 34) 8px 8px 0px 0px"
+     },
+     "count": 2,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "22px 22px 22px 22px": 2
+     },
+     "companions": {
+      "sig:rgb(249, 213, 211)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|26px|none|400": 1
+     },
+     "textLen": 88,
+     "w": 1000,
+     "h": 105
+    },
+    {
+     "classKey": "sig:rgb(249, 213, 211)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|26px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>main>section:nth-of-type(2)>div>div:nth-of-type(3)>a",
+     "rest": {
+      "backgroundColor": "rgb(249, 213, 211)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "26px",
+      "paddingTop": "22px",
+      "paddingRight": "22px",
+      "paddingBottom": "22px",
+      "paddingLeft": "22px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 213, 211)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -4, -4)",
+      "boxShadow": "rgb(58, 42, 34) 8px 8px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": true,
+     "inChrome": false,
+     "paddings": {
+      "22px 22px 22px 22px": 1
+     },
+     "companions": {
+      "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|26px|none|400": 1
+     },
+     "textLen": 40,
+     "w": 490,
+     "h": 104
+    }
+   ]
+  },
+  "Account.dc.html": {
+   "buttons": [
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>section:nth-of-type(2)>div>div>div>a",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "30px",
+      "paddingBottom": "0px",
+      "paddingLeft": "30px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "17px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -3, -3)",
+      "boxShadow": "rgb(58, 42, 34) 7px 7px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 30px 0px 30px": 1
+     },
+     "companions": {
+      "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700": 1
+     },
+     "textLen": 9,
+     "w": 140,
+     "h": 60
+    },
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>section:nth-of-type(2)>div>div>div>a:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "26px",
+      "paddingBottom": "0px",
+      "paddingLeft": "26px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "17px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -3, -3)",
+      "boxShadow": "rgb(58, 42, 34) 7px 7px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 26px 0px 26px": 1
+     },
+     "companions": {
+      "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700": 1
+     },
+     "textLen": 17,
+     "w": 203,
+     "h": 60
+    }
+   ]
+  },
+  "SignIn.dc.html": {
+   "buttons": [
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>section:nth-of-type(2)>div>div>div>button",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "1px",
+      "paddingRight": "6px",
+      "paddingBottom": "1px",
+      "paddingLeft": "6px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "700",
+      "minHeight": "52px",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {
+      "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state": 1
+     },
+     "textLen": 7,
+     "w": 279,
+     "h": 52
+    },
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>section:nth-of-type(2)>div>div>div>button:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "1px",
+      "paddingRight": "6px",
+      "paddingBottom": "1px",
+      "paddingLeft": "6px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "700",
+      "minHeight": "52px",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {
+      "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state": 1
+     },
+     "textLen": 14,
+     "w": 279,
+     "h": 52
+    },
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "section:nth-of-type(2)>div>div>form>div>button",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "30px",
+      "paddingBottom": "0px",
+      "paddingLeft": "30px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "17px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -3, -3)",
+      "boxShadow": "rgb(58, 42, 34) 7px 7px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 30px 0px 30px": 1
+     },
+     "companions": {
+      "sig:rgba(0, 0, 0, 0)|rgb(58, 42, 34)|rgb(58, 42, 34)|0px|0px|none|700": 1
+     },
+     "textLen": 9,
+     "w": 140,
+     "h": 60
+    },
+    {
+     "classKey": "sig:rgba(0, 0, 0, 0)|rgb(58, 42, 34)|rgb(58, 42, 34)|0px|0px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "section:nth-of-type(2)>div>div>form>div>button:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "0px",
+      "borderTopStyle": "none",
+      "borderTopLeftRadius": "0px",
+      "paddingTop": "10px",
+      "paddingRight": "0px",
+      "paddingBottom": "10px",
+      "paddingLeft": "0px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "15px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "0px",
+      "transform": "none",
+      "boxShadow": "none"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "10px 0px 10px 0px": 1
+     },
+     "companions": {
+      "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700": 1
+     },
+     "textLen": 24,
+     "w": 184,
+     "h": 38
+    }
+   ]
+  },
+  "Contact.dc.html": {
+   "buttons": [
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|26px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>main>section:nth-of-type(2)>div>div>a",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "26px",
+      "paddingTop": "22px",
+      "paddingRight": "22px",
+      "paddingBottom": "22px",
+      "paddingLeft": "22px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "minHeight": "auto",
+      "boxShadow": "none",
+      "transform": "matrix(0.999848, -0.0174524, 0.0174524, 0.999848, 0, 0)"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -4, -4)",
+      "boxShadow": "rgb(58, 42, 34) 8px 8px 0px 0px"
+     },
+     "count": 3,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "22px 22px 22px 22px": 3
+     },
+     "companions": {},
+     "textLen": 70,
+     "w": 405,
+     "h": 210
+    },
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div:nth-of-type(2)>div>form>div>div:nth-of-type(2)>button",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "16px",
+      "paddingBottom": "0px",
+      "paddingLeft": "16px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "15px",
+      "fontWeight": "700",
+      "minHeight": "44px",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 16px 0px 16px": 1
+     },
+     "companions": {
+      "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state": 4
+     },
+     "textLen": 8,
+     "w": 98,
+     "h": 44
+    },
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div:nth-of-type(2)>div>form>div>div:nth-of-type(2)>button:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "16px",
+      "paddingBottom": "0px",
+      "paddingLeft": "16px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "15px",
+      "fontWeight": "700",
+      "minHeight": "44px",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px"
+     },
+     "count": 4,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 16px 0px 16px": 4
+     },
+     "companions": {
+      "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state": 4
+     },
+     "textLen": 6,
+     "w": 74,
+     "h": 44
+    },
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "section:nth-of-type(2)>div>div:nth-of-type(2)>div>form>button",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "30px",
+      "paddingBottom": "0px",
+      "paddingLeft": "30px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "17px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -3, -3)",
+      "boxShadow": "rgb(58, 42, 34) 7px 7px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 30px 0px 30px": 1
+     },
+     "companions": {},
+     "textLen": 14,
+     "w": 200,
+     "h": 60
+    },
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|20px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>section:nth-of-type(2)>div>div:nth-of-type(2)>div:nth-of-type(2)>a",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "20px",
+      "paddingTop": "12px",
+      "paddingRight": "18px",
+      "paddingBottom": "12px",
+      "paddingLeft": "18px",
+      "fontFamily": "\"Young Serif\", serif",
+      "fontSize": "18px",
+      "fontWeight": "400",
+      "minHeight": "64px",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -3, -3)",
+      "boxShadow": "rgb(58, 42, 34) 6px 6px 0px 0px"
+     },
+     "count": 4,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "12px 18px 12px 18px": 4
+     },
+     "companions": {},
+     "textLen": 27,
+     "w": 477,
+     "h": 64
+    }
+   ]
+  },
+  "Gifts.dc.html": {
+   "buttons": [
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "section>div>div>div:nth-of-type(2)>div:nth-of-type(2)>button",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "16px",
+      "paddingBottom": "0px",
+      "paddingLeft": "16px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "15px",
+      "fontWeight": "700",
+      "minHeight": "44px",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px"
+     },
+     "count": 5,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 16px 0px 16px": 5
+     },
+     "companions": {
+      "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state": 5
+     },
+     "textLen": 11,
+     "w": 126,
+     "h": 44
+    },
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "section>div>div>div:nth-of-type(2)>div:nth-of-type(2)>button:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "16px",
+      "paddingBottom": "0px",
+      "paddingLeft": "16px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "15px",
+      "fontWeight": "700",
+      "minHeight": "44px",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px"
+     },
+     "count": 2,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 16px 0px 16px": 2
+     },
+     "companions": {
+      "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state": 5
+     },
+     "textLen": 15,
+     "w": 148,
+     "h": 44
+    },
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "main>section>div>div>div:nth-of-type(2)>a",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "17px",
+      "fontWeight": "700",
+      "minHeight": "auto",
+      "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 213, 211)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -3, -3)",
+      "boxShadow": "rgb(58, 42, 34) 7px 7px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {},
+     "companions": {},
+     "textLen": 14,
+     "w": 530,
+     "h": 56
+    },
+    {
+     "classKey": "sig:rgb(252, 235, 190)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|32px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>div>div>main>section:nth-of-type(5)>a",
+     "rest": {
+      "backgroundColor": "rgb(252, 235, 190)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "32px",
+      "paddingTop": "48px",
+      "paddingRight": "56px",
+      "paddingBottom": "48px",
+      "paddingLeft": "56px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "minHeight": "0px",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(252, 235, 190)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -4, -4)",
+      "boxShadow": "rgb(58, 42, 34) 8px 8px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "48px 56px 48px 56px": 1
+     },
+     "companions": {},
+     "textLen": 209,
+     "w": 1240,
+     "h": 306
+    }
+   ]
+  },
+  "Help.dc.html": {
+   "buttons": [
+    {
+     "classKey": "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>div>main>section>div:nth-of-type(2)>button",
+     "rest": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "16px",
+      "paddingBottom": "0px",
+      "paddingLeft": "16px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "15px",
+      "fontWeight": "700",
+      "minHeight": "44px",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)"
+     },
+     "hover": {
+      "backgroundColor": "rgb(249, 207, 110)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 16px 0px 16px": 1
+     },
+     "companions": {
+      "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state": 5
+     },
+     "textLen": 3,
+     "w": 55,
+     "h": 44
+    },
+    {
+     "classKey": "sig:rgb(255, 250, 240)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>div>main>section>div:nth-of-type(2)>button:nth-of-type(2)",
+     "rest": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "999px",
+      "paddingTop": "0px",
+      "paddingRight": "16px",
+      "paddingBottom": "0px",
+      "paddingLeft": "16px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "15px",
+      "fontWeight": "700",
+      "minHeight": "44px",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(255, 250, 240)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -2, -2)",
+      "boxShadow": "rgb(58, 42, 34) 0px 0px 0px 0px"
+     },
+     "count": 5,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "0px 16px 0px 16px": 5
+     },
+     "companions": {
+      "sig:rgb(249, 207, 110)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|999px|none|700|state": 5
+     },
+     "textLen": 19,
+     "w": 176,
+     "h": 44
+    },
+    {
+     "classKey": "sig:rgba(0, 0, 0, 0)|rgb(58, 42, 34)|rgb(58, 42, 34)|0px|0px|none|400|state",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>main>section:nth-of-type(2)>div>div:nth-of-type(2)>button",
+     "rest": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "0px",
+      "borderTopStyle": "none",
+      "borderTopLeftRadius": "0px",
+      "paddingTop": "16px",
+      "paddingRight": "20px",
+      "paddingBottom": "16px",
+      "paddingLeft": "20px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "minHeight": "68px",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "0px",
+      "transform": "none",
+      "boxShadow": "none"
+     },
+     "count": 12,
+     "stateControl": true,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "16px 20px 16px 20px": 12
+     },
+     "companions": {},
+     "textLen": 46,
+     "w": 896,
+     "h": 77
+    },
+    {
+     "classKey": "sig:rgb(252, 235, 190)|rgb(58, 42, 34)|rgb(58, 42, 34)|2px|26px|none|400",
+     "classes": [],
+     "ancestorClasses": [],
+     "path": "div>div>div>main>section:nth-of-type(5)>a",
+     "rest": {
+      "backgroundColor": "rgb(252, 235, 190)",
+      "backgroundImage": "none",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "borderTopStyle": "solid",
+      "borderTopLeftRadius": "26px",
+      "paddingTop": "22px",
+      "paddingRight": "24px",
+      "paddingBottom": "22px",
+      "paddingLeft": "24px",
+      "fontFamily": "Karla, system-ui, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "minHeight": "0px",
+      "boxShadow": "none",
+      "transform": "none"
+     },
+     "hover": {
+      "backgroundColor": "rgb(252, 235, 190)",
+      "color": "rgb(58, 42, 34)",
+      "borderTopColor": "rgb(58, 42, 34)",
+      "borderTopWidth": "2px",
+      "transform": "matrix(1, 0, 0, 1, -4, -4)",
+      "boxShadow": "rgb(58, 42, 34) 8px 8px 0px 0px"
+     },
+     "count": 1,
+     "stateControl": false,
+     "external": false,
+     "inChrome": false,
+     "paddings": {
+      "22px 24px 22px 24px": 1
+     },
+     "companions": {},
+     "textLen": 32,
+     "w": 900,
+     "h": 108
+    }
+   ]
+  }
+ }
+}

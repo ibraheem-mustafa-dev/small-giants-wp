@@ -156,10 +156,45 @@ const CAPTURE_SRC = function (generatedClassSrc) {
     return borderVisible && parseFloat(cs.paddingTop) >= 8 && parseFloat(cs.paddingBottom) >= 8
       && parseFloat(cs.paddingLeft) >= 8 && parseFloat(cs.paddingRight) >= 8;
   };
+  // A control that holds a state (aria-pressed / aria-checked / aria-selected / aria-expanded, or a
+  // radio, tab, switch, checkbox or option role) is a choice or disclosure, not a call to action: its
+  // paint is a selected or unselected look, never the site's button style. Recorded so the Python slot
+  // inference can leave it out, and keyed apart so a selected chip never merges with a CTA signature.
+  const STATE_ATTRS = ['aria-pressed', 'aria-checked', 'aria-selected', 'aria-expanded'];
+  const STATE_ROLES = ['radio', 'tab', 'switch', 'checkbox', 'option', 'menuitemradio', 'menuitemcheckbox'];
+  const holdsState = (el) => STATE_ATTRS.some((a) => el.hasAttribute(a))
+    || STATE_ROLES.indexOf((el.getAttribute('role') || '').toLowerCase()) !== -1;
+  // A link that opens another site (a new tab, or an http(s) address on another origin) wears that
+  // site's look (a Google reviews button in Google's blue), never the draft's own call-to-action style.
+  const leavesSite = (el) => {
+    if (el.tagName !== 'A') return false;
+    if ((el.getAttribute('target') || '').toLowerCase() === '_blank') return true;
+    const href = el.getAttribute('href') || '';
+    if (!/^https?:/i.test(href)) return false;
+    try { return new URL(href, location.href).origin !== location.origin; } catch (e) { return false; }
+  };
   const SIG = ['backgroundColor', 'color', 'borderTopColor', 'borderTopWidth', 'borderTopLeftRadius',
     'textTransform', 'fontWeight'];
+  // The padding a bare element of the same tag (and input type) computes to is the browser's own, not
+  // the draft's: an instance padded like that says nothing about the button style. Each signature keeps
+  // a census of its instances' AUTHORED paddings, so the preset takes the padding most instances use.
+  const uaPadding = {};
+  const PAD = ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'];
+  const padOf = (cs) => PAD.map((k) => cs[k]).join(' ');
+  const browserPadding = (el) => {
+    const tagKey = el.tagName + ':' + (el.getAttribute('type') || '');
+    if (!(tagKey in uaPadding)) {
+      const bare = document.createElement(el.tagName);
+      if (el.getAttribute('type')) bare.setAttribute('type', el.getAttribute('type'));
+      document.body.appendChild(bare);
+      uaPadding[tagKey] = padOf(getComputedStyle(bare));
+      bare.remove();
+    }
+    return uaPadding[tagKey];
+  };
   const buttons = [];
   const byKey = {};
+  const keyOf = new Map();
   let btnIdx = 0;
   document.querySelectorAll('a, button, input, [role="button"]').forEach((el) => {
     if (!visible(el) || !paintsButton(el)) return;
@@ -174,23 +209,48 @@ const CAPTURE_SRC = function (generatedClassSrc) {
       anc.push.apply(anc, meaningful((p.getAttribute('class') || '').trim()));
       p = p.parentElement; depth++;
     }
-    const classless = own.length === 0 && anc.length === 0;
-    if (classless ? !(looksButton || anchorPaintsButton(getComputedStyle(el))) : !looksButton) return;
+    // No class of its own (a section class on a wrapper names the section, not the element): an <a>
+    // counts when it paints as a button.
+    const ownless = own.length === 0;
+    if (ownless ? !(looksButton || anchorPaintsButton(getComputedStyle(el))) : !looksButton) return;
     // Dedupe on own + ancestor context, so two <a>s sharing a class but sitting under different
     // variant wrappers (the UAGB case) are captured separately rather than collapsing to the first.
     // Classless buttons have no class to key on, so they key on their painted-style signature.
-    const key = classless
+    // An element with no class of its own keys on its painted-style signature even under a classed
+    // section: a section class (`sgs-hero`) names the section, not the variant, so two differently
+    // painted buttons in one hero stay two signatures.
+    const stateControl = holdsState(el);
+    const key = (ownless
       ? 'sig:' + SIG.map((k) => getComputedStyle(el)[k]).join('|')
-      : own.slice().sort().join(' ') + '||' + anc.slice().sort().join(' ');
-    if (byKey[key]) { byKey[key].count++; return; }
+      : own.slice().sort().join(' ') + '||' + anc.slice().sort().join(' ')) + (stateControl ? '|state' : '');
+    keyOf.set(el, key);
+    const pad = padOf(getComputedStyle(el));
+    const authoredPad = pad !== browserPadding(el) ? pad : null;
+    if (byKey[key]) {
+      byKey[key].count++;
+      if (authoredPad) byKey[key].paddings[authoredPad] = (byKey[key].paddings[authoredPad] || 0) + 1;
+      return;
+    }
     // Index the node so Node-side hover reads the SAME element (a compound class selector is
     // ambiguous across instances and silently resolved to the wrong node).
     el.setAttribute('data-sgs-btn-idx', String(btnIdx));
     byKey[key] = { classKey: key, classes: own, ancestorClasses: anc, idx: btnIdx,
-      path: nodePath(el), rest: pick(el, BOX), count: 1,
+      path: nodePath(el), rest: pick(el, BOX), count: 1, stateControl, external: leavesSite(el), inChrome: inChrome(el),
+      paddings: authoredPad ? { [authoredPad]: 1 } : {}, companions: {},
       textLen: (el.textContent || el.value || '').trim().length, w: rect(el).w, h: rect(el).h };
     buttons.push(byKey[key]);
     btnIdx++;
+  });
+  // Companions: how often a signature sits beside another captured signature in the same parent (an
+  // action group such as a hero's pair of calls to action). The slot inference reads it to find the
+  // secondary action that accompanies the primary one.
+  keyOf.forEach((key, el) => {
+    const parent = el.parentElement;
+    if (!parent) return;
+    Array.prototype.forEach.call(parent.children, (sib) => {
+      const other = sib !== el ? keyOf.get(sib) : undefined;
+      if (other && other !== key) byKey[key].companions[other] = (byKey[key].companions[other] || 0) + 1;
+    });
   });
 
   // Custom properties declared on an element's inline style (a runtime accent such as
