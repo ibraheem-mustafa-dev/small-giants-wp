@@ -131,8 +131,10 @@ const COLOUR_PROPS = {
 
 // lib/intake-palette.mjs's `usage` from rest-mode reading records (lib/intake-reading.mjs): per painted colour
 // property, the computed colour as hex, the element's draft ID (`<component>:<n>`), its tag (the last step of the
-// record's path) and how many records show it. A fully transparent colour paints nothing and is skipped.
-export function paletteUsage( records ) {
+// record's path) and how many records show it. A fully transparent colour paints nothing and is skipped. `grounds`
+// (lib/intake-palette-grounds.mjs, keyed `<surface>\u0000<path>`) gives each text colour the ground it sits on
+// (`ground`, a hex), and `texts` (a Set of the same keys) marks a text colour whose element holds text (`text: true`).
+export function paletteUsage( records, grounds = new Map(), texts = new Set() ) {
 	const counts = new Map();
 	for ( const r of records ) {
 		const c = r.computed || {};
@@ -143,8 +145,11 @@ export function paletteUsage( records ) {
 			if ( ! hex || /^#[0-9a-f]{6}00$/i.test( hex ) || ! paints( c ) ) {
 				continue;
 			}
-			const k = [ hex, property, draftId, tag ].join( '\u0000' );
-			const u = counts.get( k ) || { hex, property, draftId, count: 0, ...( tag ? { tag } : {} ) };
+			const at = `${ r.surface }\u0000${ r.path }`;
+			const ground = 'color' === property ? colourHex( grounds.get( at ) ) : null;
+			const text = 'color' === property && texts.has( at );
+			const k = [ hex, property, draftId, tag, ground, text ].join( '\u0000' );
+			const u = counts.get( k ) || { hex, property, draftId, count: 0, ...( tag ? { tag } : {} ), ...( ground ? { ground } : {} ), ...( text ? { text } : {} ) };
 			u.count++;
 			counts.set( k, u );
 		}

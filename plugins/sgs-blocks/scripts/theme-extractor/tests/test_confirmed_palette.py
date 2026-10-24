@@ -57,6 +57,13 @@ def test_one_mark_can_give_a_draft_colour_several_roles():
                          for slug in ("heading", "accent-text", "section-text")}
 
 
+def test_accept_takes_every_role_the_proposal_gave_one_value():
+    intake = _intake([("--ink", "#3A2A22", "text")], {"--ink": "accept"})
+    intake["palette"]["rows"][0]["roles"] = ["text", "heading", "border"]
+    confirmed, _ = cp.confirmed_map(intake, FRAMEWORK)
+    assert sorted(confirmed) == ["border", "heading", "text"]
+
+
 @pytest.mark.parametrize("mark", ["role:heading,brand-blue", "role:heading,", "role:,heading"])
 def test_a_bad_slug_anywhere_in_a_several_role_mark_is_refused(mark):
     intake = _intake([("--text-heading", "#2C3E50", "heading")], {"--text-heading": mark})

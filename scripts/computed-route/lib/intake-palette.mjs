@@ -1,6 +1,9 @@
 // The palette role proposal for Bean's intake review (Spec 48 FR-48-31, §11 FR-33-2, R-47-7). Declared colour tokens
 // (lib/tokens.mjs) are matched to the draft's colours by exact normalised value (alpha-aware) and given a proposed
-// palette slug from two signals: the token's name and where its value is used. Near-identical tokens dedupe at
+// palette slug from where its value paints (lib/intake-palette-usage.mjs: the page ground and text, the footer, headings,
+// links, divider lines, button grounds and the text on each ground), one value filling as many slugs as the facts give
+// it; the token's name is only a last-resort hint for a slug no rendered fact gives, and a row whose slug rests on the
+// name alone says so (`by: 'name'`). Near-identical tokens dedupe at
 // CIEDE2000 ΔE ≤ 1 with alpha as its own axis (FR-33-2) and every merge is recorded. A token nothing uses is listed in
 // `unused` and gets no role; a used colour no token declares stays a one-off hex (R-47-7), annotated with its nearest
 // token when within R-47-7's ΔE ≤ 2 snap tolerance. The slug vocabulary is read from theme.json at run time.
@@ -8,12 +11,12 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { colourHex } from './tokens.mjs';
+import { usageRoles, isBorder, SATURATED_C } from './intake-palette-usage.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const THEME_JSON = path.resolve( HERE, '../../../theme/sgs-theme/theme.json' );
 export const DEDUPE_DE = 1;
 export const NEAR_DE = 2;
-const SATURATED_C = 20;
 
 // The framework slug vocabulary: [{ slug, name }] from theme.json settings.color.palette (read only).
 export function loadPaletteSlugs( themeJsonPath = THEME_JSON ) {
@@ -96,10 +99,6 @@ export function dedupeColours( tokens ) {
 	return { groups, merges };
 }
 
-const HEADING_TAG = /^h[1-6]$/i;
-const BASE_TAG = /^(html|body|main|:root)$/i;
-const isBackground = ( p ) => /^background(-color)?$/.test( p );
-const isBorder = ( p ) => /^(border|outline)(-(top|right|bottom|left|block|inline)(-(start|end))?)?(-color)?$/.test( p );
 
 // Usage evidence for one set of hexes: { total, byProperty, byTag, uses: [{ property, count, draftIds }], draftIds }.
 export function summariseUsage( usage, hexes ) {
@@ -124,7 +123,6 @@ export function summariseUsage( usage, hexes ) {
 	return s;
 }
 
-const share = ( s, test ) => Object.entries( s.byTag ).filter( ( [ k ] ) => test( ...k.split( '@' ) ) ).reduce( ( n, [ , v ] ) => n + v, 0 );
 const chroma = ( hex ) => Math.hypot( hexToLab( hex ).a, hexToLab( hex ).b );
 
 // Name rules: each takes { words } (the token name split on "-") and returns { role, why } or null. Order matters.
@@ -180,47 +178,6 @@ export const ruleBrand = ( c ) => {
 export const NAME_RULES = [ ruleLinkHover, ruleLink, ruleHeading, ruleReserved, ruleOnGround, ruleSection, ruleFooter, ruleBorder,
 	ruleStatus, ruleWhatsapp, ruleTextMuted, ruleTextInverse, ruleText, ruleSurface, ruleBrand ];
 
-// Usage rule for a token with no name role: { role, why } from where its value paints, or null (FR-33-2's table).
-export function ruleFromUsage( s, hex ) {
-	if ( ! s.total ) {
-		return null;
-	}
-	const col = s.byProperty.color || 0;
-	const bg = ( s.byProperty.background || 0 ) + ( s.byProperty[ 'background-color' ] || 0 );
-	const border = Object.entries( s.byProperty ).filter( ( [ p ] ) => isBorder( p ) ).reduce( ( n, [ , v ] ) => n + v, 0 );
-	const lab = hexToLab( hex );
-	if ( col && share( s, ( p, t ) => 'color' === p && HEADING_TAG.test( t ) ) * 2 > col ) {
-		return { role: 'heading', why: 'used mostly as heading text colour' };
-	}
-	if ( col && share( s, ( p, t ) => 'color' === p && 'a' === t ) * 2 > col ) {
-		return { role: 'link', why: 'used mostly as link colour' };
-	}
-	if ( bg && share( s, ( p, t ) => isBackground( p ) && BASE_TAG.test( t ) ) > 0 ) {
-		return { role: 'surface', why: 'the page base background' };
-	}
-	if ( border > col && border > bg ) {
-		return chroma( hex ) > SATURATED_C ? null : { role: 'border', why: 'used mostly as a border colour' };
-	}
-	if ( col >= bg && lab.L < 50 && chroma( hex ) <= SATURATED_C ) {
-		return { role: 'text', why: 'used mostly as dark, low-chroma text colour' };
-	}
-	if ( bg > col && chroma( hex ) > SATURATED_C ) {
-		return { role: 'primary', why: 'a high-chroma ground' };
-	}
-	return null;
-}
-
-// The most used text colour on elements whose background is the section ground: { hex, count } or null.
-export function sectionTextFor( groundHexes, usage ) {
-	const ids = new Set( usage.filter( ( u ) => isBackground( u.property ) && groundHexes.has( u.hex ) ).map( ( u ) => u.draftId ) );
-	const n = new Map();
-	for ( const u of usage.filter( ( x ) => 'color' === x.property && ids.has( x.draftId ) ) ) {
-		n.set( u.hex, ( n.get( u.hex ) || 0 ) + ( u.count ?? 1 ) );
-	}
-	const best = [ ...n.entries() ].sort( ( a, b ) => b[ 1 ] - a[ 1 ] )[ 0 ];
-	return best ? { hex: best[ 0 ], count: best[ 1 ] } : null;
-}
-
 // When a slug is not in the vocabulary yet, the closest existing slug to propose instead (FR-32-14 lands them).
 const STAND_IN = { heading: 'text', link: 'primary', 'link-hover': 'primary-dark', section: 'surface-alt', 'section-text': 'text' };
 const MODIFIERS = /^(hover|dark|darker|deep|light|lighter|mid|pale|soft|active|focus)$/;
@@ -270,13 +227,15 @@ function evidence( s, role ) {
 	return s.byProperty.color || 0;
 }
 
-// The proposal: { rows, unused, oneOff, merges, sectionText, tokens, vocabulary, problems } (see the module comment).
-// `usage` is [{ hex (any colour form), property, draftId, count, tag? }]; `slugs` is [{ slug, name }] (theme.json's
+// The proposal: { rows, unused, oneOff, merges, tokens, vocabulary, problems } (see the module comment). Each row carries
+// `roles` (every slug its value fills, the shown `role` first), `by` ('usage', 'name' or 'none') and `basis` ([{ role,
+// by, why }]). `usage` is [{ hex (any colour form), property, draftId, count, tag?, ground?, text? }] (lib/intake-run-
+// collapse.mjs::paletteUsage plus lib/intake-palette-grounds.mjs::groundUsage); `slugs` is [{ slug, name }] (theme.json's
 // by default); `problems` carries lib/tokens.mjs's problems through.
 export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSlugs(), problems: carried = [] } = {} ) {
 	const vocab = new Set( slugs.map( ( s ) => s.slug ) );
 	const problems = [ ...carried ];
-	const uses = usage.map( ( u ) => ( { ...u, hex: colourHex( u.hex ) } ) ).filter( ( u, k ) => u.hex ||
+	const uses = usage.map( ( u ) => ( { ...u, hex: colourHex( u.hex ), ...( u.ground ? { ground: colourHex( u.ground ) } : {} ) } ) ).filter( ( u, k ) => u.hex ||
 		! problems.push( { kind: 'usage-colour', draftId: u.draftId, error: `${ usage[ k ].hex } (${ u.property } on ${ u.draftId }) is not a colour` } ) );
 	const seen = new Set();
 	const colours = tokens.filter( ( t ) => 'colour' === t.type && t.hex && ! seen.has( t.name ) && seen.add( t.name ) );
@@ -292,93 +251,93 @@ export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSl
 	const claimed = ( t ) => NAME_RULES.slice( 0, -1 ).some( ( r ) => r( { words: wordsOf( t.name ), hex: t.hex, sectionWords } ) );
 	const families = brandFamilies( colours.filter( ( t ) => ! claimed( t ) ), groupOf );
 
-	const prop = new Map();
-	for ( const t of colours ) {
-		const s = groupOf.get( t.name ).summary;
-		if ( ! s.total ) {
-			prop.set( t.name, { role: null, confidence: 0, why: 'unused: no element in the draft uses this value' } );
-			continue;
-		}
+	// A token's name is a last-resort hint: { role, why } (role null: the name says no slug) or undefined.
+	const hintOf = new Map();
+	for ( const t of colours.filter( ( x ) => groupOf.get( x.name ).summary.total ) ) {
 		const c = { words: wordsOf( t.name ), hex: t.hex, family: families.get( t.name ) || null, sectionWords };
-		let hit = null;
 		for ( const rule of NAME_RULES ) {
-			if ( ( hit = rule( c ) ) ) {
+			const hit = rule( c );
+			if ( hit ) {
+				hintOf.set( t.name, hit );
 				break;
 			}
 		}
-		if ( hit?.role ) {
-			const agrees = ruleFromUsage( s, t.hex )?.role === hit.role;
-			prop.set( t.name, { role: hit.role, confidence: agrees ? 0.95 : 0.9, why: hit.why + ( agrees ? '; usage agrees' : '' ), by: 'name' } );
-		} else if ( hit ) {
-			prop.set( t.name, { role: custom( t.name ), confidence: 0.8, why: hit.why, by: 'name' } );
-		}
 	}
-	for ( const t of colours.filter( ( x ) => ! prop.has( x.name ) ) ) {
-		const g = groupOf.get( t.name );
-		const peer = g.members.map( ( m ) => [ m, prop.get( m ) ] ).find( ( [ , p ] ) => p?.by === 'name' && ! p.role.startsWith( 'custom-' ) );
-		const u = ruleFromUsage( g.summary, t.hex );
-		if ( peer ) {
-			prop.set( t.name, { role: peer[ 1 ].role, confidence: 0.85, why: `same value as ${ peer[ 0 ] }`, by: 'alias' } );
-		} else if ( u ) {
-			prop.set( t.name, { role: u.role, confidence: 0.7, why: u.why, by: 'usage' } );
+	// Roles per value: usage first, then a name hint for a slug no usage rule gave; a hint never takes a slug usage gave
+	// another value (the loser tries SECOND, else keeps no slug).
+	const roles = new Map();
+	const weak = [];
+	const read = usageRoles( groups.filter( ( g ) => g.summary.total ), uses );
+	for ( const [ g, list ] of read.roles ) {
+		roles.set( g, list.filter( ( r ) => ! r.weak ).map( ( r ) => ( { ...r, by: 'usage', confidence: 0.85 } ) ) );
+		weak.push( ...list.filter( ( r ) => r.weak ).map( ( r ) => [ g, r ] ) );
+	}
+	const holderOf = ( slug ) => [ ...roles.entries() ].find( ( [ , list ] ) => list.some( ( r ) => r.role === slug ) )?.[ 0 ] ?? null;
+	const lost = new Map();
+	const hints = colours.filter( ( t ) => hintOf.get( t.name )?.role ).map( ( t ) => ( { t, g: groupOf.get( t.name ), ...hintOf.get( t.name ) } ) )
+		.sort( ( a, b ) => evidence( b.g.summary, b.role ) - evidence( a.g.summary, a.role ) || colours.indexOf( a.t ) - colours.indexOf( b.t ) );
+	for ( const h of hints ) {
+		const first = holderOf( h.role );
+		const slug = first && first !== h.g && SECOND[ h.role ] && vocab.has( SECOND[ h.role ] ) ? SECOND[ h.role ] : h.role;
+		const held = holderOf( slug );
+		const list = roles.get( h.g ) || [];
+		if ( read.blocked[ slug ] ) {
+			lost.set( h.t.name, `${ h.why }, but the draft paints the ${ slug } job most in ${ read.blocked[ slug ] }, a colour no token declares` );
+		} else if ( held === h.g ) {
+			const r = list.find( ( x ) => x.role === slug );
+			if ( 'usage' === r.by && ! r.agrees ) {
+				Object.assign( r, { why: `${ r.why }; the name ${ h.t.name } agrees`, confidence: 0.95, agrees: true } );
+			}
+		} else if ( held ) {
+			lost.set( h.t.name, `${ h.why }, but ${ slug } is read from usage on ${ held.members[ 0 ] } (${ held.hex })` );
 		} else {
-			prop.set( t.name, { role: custom( t.name ), confidence: 0.3, why: 'no confident match; stays a custom colour (FR-33-2)', by: 'none' } );
+			const why = slug === h.role ? h.why : `${ h.why }; ${ h.role } is read from usage on ${ first.members[ 0 ] }, so ${ slug }`;
+			roles.set( h.g, [ ...list, { role: slug, why: `${ why } (the name alone decides this)`, by: 'name', confidence: 0.6 } ] );
 		}
 	}
-	// A slug the vocabulary lacks: propose the stand-in and record the wanted slug (FR-32-14 adds them).
-	for ( const p of prop.values() ) {
-		if ( p.role && ! p.role.startsWith( 'custom-' ) && ! vocab.has( p.role ) ) {
-			p.wantedSlug = p.role;
-			p.role = vocab.has( STAND_IN[ p.role ] ) ? STAND_IN[ p.role ] : null;
-			p.notes = `${ p.wantedSlug } is not in theme.json's palette yet` + ( p.role ? `; proposing ${ p.role } until it lands` : '' );
-		}
+	// A role read only from a count takes its slug when no name hint did.
+	for ( const [ g, r ] of weak.filter( ( [ , x ] ) => ! holderOf( x.role ) ) ) {
+		roles.set( g, [ ...( roles.get( g ) || [] ), { role: r.role, why: r.why, by: 'usage', confidence: 0.6 } ] );
 	}
-	// Collisions: one value per slug. The best-evidenced group keeps it; the others try SECOND, else stay custom.
-	for ( let pass = 0; pass < 4; pass++ ) {
-		let moved = false;
-		const claims = new Map();
-		for ( const t of colours ) {
-			const p = prop.get( t.name );
-			if ( p.role && ! p.role.startsWith( 'custom-' ) ) {
-				claims.set( p.role, [ ...( claims.get( p.role ) || [] ), t ] );
+	// A slug the vocabulary lacks: propose the stand-in when no other value holds it, and record the wanted slug (FR-32-14
+	// adds them).
+	const wanted = new Map();
+	for ( const [ g, list ] of roles ) {
+		const kept = [];
+		for ( const r of list ) {
+			if ( ! vocab.has( r.role ) ) {
+				const holder = holderOf( STAND_IN[ r.role ] );
+				const stand = vocab.has( STAND_IN[ r.role ] ) && ( ! holder || holder === g ) ? STAND_IN[ r.role ] : null;
+				Object.assign( r, { wantedSlug: r.role, role: stand, notes: `${ r.role } is not in theme.json's palette yet` + ( stand ? `; proposing ${ stand } until it lands` : `; ${ STAND_IN[ r.role ] ?? 'no stand-in' } is not free` ) } );
+				wanted.set( g, [ ...( wanted.get( g ) || [] ), r ] );
 			}
+			r.role && ! kept.some( ( k ) => k.role === r.role ) && kept.push( r );
 		}
-		for ( const [ slug, ts ] of claims ) {
-			const gs = [ ...new Set( ts.map( ( t ) => groupOf.get( t.name ) ) ) ];
-			if ( gs.length < 2 ) {
-				continue;
-			}
-			const score = ( g ) => [ Math.max( ...ts.filter( ( t ) => groupOf.get( t.name ) === g ).map( ( t ) => prop.get( t.name ).confidence ) ), evidence( g.summary, slug ) ];
-			gs.sort( ( a, b ) => score( b )[ 0 ] - score( a )[ 0 ] || score( b )[ 1 ] - score( a )[ 1 ] || groups.indexOf( a ) - groups.indexOf( b ) );
-			for ( const t of ts.filter( ( x ) => groupOf.get( x.name ) !== gs[ 0 ] ) ) {
-				const p = prop.get( t.name );
-				const winner = ts.find( ( x ) => groupOf.get( x.name ) === gs[ 0 ] ).name;
-				const next = SECOND[ slug ] && vocab.has( SECOND[ slug ] ) ? SECOND[ slug ] : null;
-				Object.assign( p, { role: next || custom( t.name ), confidence: next ? 0.7 : 0.3, why: `${ p.why }; ${ slug } went to ${ winner }` + ( next ? `, so ${ next }` : '' ) } );
-				moved = true;
-			}
-		}
-		if ( ! moved ) {
-			break;
-		}
-	}
-	// The section ground's text colour from usage, when no token is named for it.
-	const groundGroup = colours.find( ( t ) => 'section' === prop.get( t.name ).role );
-	const paired = groundGroup ? sectionTextFor( groupOf.get( groundGroup.name ).hexes, uses ) : null;
-	const sectionText = paired ? { ...paired, token: groups.find( ( g ) => g.hexes.has( paired.hex ) )?.members[ 0 ] || null } : null;
-	if ( sectionText?.token && ! colours.some( ( t ) => 'section-text' === prop.get( t.name ).role ) && prop.get( sectionText.token ).role.startsWith( 'custom-' ) ) {
-		Object.assign( prop.get( sectionText.token ), { role: 'section-text', confidence: 0.7, why: 'the most used text colour on the section ground' } );
+		roles.set( g, kept );
 	}
 
 	const rows = colours.map( ( t ) => {
 		const g = groupOf.get( t.name );
-		const p = prop.get( t.name );
+		const list = roles.get( g ) || [];
 		const row = { rowId: `palette:${ t.name }`, token: t.name, hex: t.hex, resolved: t.resolved, chain: t.chain, used: g.summary.total > 0,
-			uses: g.summary.uses, sharedWith: g.members.filter( ( m ) => m !== t.name ), role: p.role, confidence: r3( p.confidence ), why: p.why };
-		if ( p.wantedSlug ) {
-			Object.assign( row, { wantedSlug: p.wantedSlug, notes: p.notes } );
+			uses: g.summary.uses, sharedWith: g.members.filter( ( m ) => m !== t.name ) };
+		if ( ! row.used ) {
+			return { ...row, role: null, roles: [], confidence: 0, why: 'unused: no element in the draft uses this value', by: 'none' };
 		}
-		return row;
+		if ( ! list.length && ! wanted.has( g ) ) {
+			const hit = hintOf.get( t.name );
+			const why = lost.get( t.name ) || ( hit && ! hit.role ? hit.why : 'no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)' );
+			return { ...row, role: custom( t.name ), roles: [ custom( t.name ) ], confidence: hit && ! hit.role ? 0.8 : 0.3, why, by: hit && ! hit.role ? 'name' : 'none' };
+		}
+		const own = hintOf.get( t.name )?.role;
+		const shown = list.find( ( r ) => r.role === own || r.wantedSlug === own ) || list[ 0 ];
+		const want = ( wanted.get( g ) || [] ).find( ( r ) => r.wantedSlug === own ) || ( shown?.wantedSlug ? shown : ( wanted.get( g ) || [] )[ 0 ] );
+		if ( want ) {
+			Object.assign( row, { wantedSlug: want.wantedSlug, notes: want.notes } );
+		}
+		const top = shown || want;
+		return Object.assign( row, { role: shown?.role ?? null, roles: list.length ? [ shown, ...list.filter( ( r ) => r !== shown ) ].map( ( r ) => r.role ) : [ ], confidence: r3( top.confidence ),
+			why: top.why, by: top.by, basis: [ ...list, ...( wanted.get( g ) || [] ).filter( ( r ) => ! r.role ) ].map( ( r ) => ( { role: r.role ?? r.wantedSlug, by: r.by, why: r.why } ) ) } );
 	} );
 	const known = new Set( groups.flatMap( ( g ) => [ ...g.hexes ] ) );
 	const oneOff = [ ...new Set( uses.map( ( u ) => u.hex ) ) ].filter( ( h ) => ! known.has( h ) ).map( ( hex ) => {
@@ -389,6 +348,5 @@ export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSl
 		}
 		return o;
 	} );
-	return { rows, unused: rows.filter( ( r ) => ! r.used ).map( ( r ) => r.token ), oneOff, merges, sectionText, tokens,
-		vocabulary: slugs.map( ( s ) => s.slug ), problems };
+	return { rows, unused: rows.filter( ( r ) => ! r.used ).map( ( r ) => r.token ), oneOff, merges, tokens, vocabulary: slugs.map( ( s ) => s.slug ), problems };
 }
