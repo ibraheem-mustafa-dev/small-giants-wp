@@ -209,7 +209,7 @@ function liftChildren( st, rowRec, copies, held, { fillElement, snapsOf } ) {
 					continue;
 				}
 				const { before, after } = setAttr( cnode, { attr, value, merge: 'replace' } );
-				st.out.writes.push( { node: cref, index: c.index, block: c.name, slot: slotOf, prop: reading.props[ attr ], attr, before, after, widths: [], how: 'row-child' } );
+				st.out.writes.push( { node: cref, index: c.index, block: c.name, slot: slotOf, prop: reading.props[ attr ], attr, before, after, widths: reading.widths[ attr ] || [], how: 'row-child' } );
 			}
 			// A value is row-held only where every copy's read wrote the row's setting from this property (or a shorthand of
 			// it): the copies agreed on that value, so the row's setting paints this icon's value. A setting written from other
