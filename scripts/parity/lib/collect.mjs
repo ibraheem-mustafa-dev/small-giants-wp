@@ -182,6 +182,64 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		}
 	};
 	countItems( layoutEl );
+	// What a box shows when it paints nothing (`passThrough`, GAP-CHECKLIST 31): `paints` when it paints a ground, image,
+	// border, shadow, outline, filter or ::before/::after layer, clips (overflow not visible) or is a media or control
+	// element; `items`, each visible interactive descendant (else each in-flow rendered child) and each positioned
+	// descendant placed against the box or outside it, as [ top, bottom, left, right ] on the page; `line`, per axis, the extent on that axis of the single-line
+	// flex container on whose cross axis the box sits, the first ancestor holding more than the box, past wrappers whose
+	// only rendered child is the box (or the wrapper below) and that paint nothing (null when that ancestor is no such
+	// container or a wrapper paints). On a cross axis a box's size moves no sibling, so a box that paints nothing, whose
+	// items and line keep their extent, shows nothing of its own size on that axis.
+	const passThrough = ( () => {
+		const clear = ( c ) => /^(transparent|rgba\(\d+, \d+, \d+, 0\))$/.test( c );
+		const layer = ( e, ps ) => {
+			const s = getComputedStyle( e, ps );
+			return ! [ 'none', 'normal', '' ].includes( s.content.trim() ) && 'none' !== s.display;
+		};
+		const paints = ( e ) => {
+			const s = getComputedStyle( e );
+			return /^(img|picture|video|canvas|svg|iframe|input|select|textarea)$/i.test( e.tagName ) || ! clear( s.backgroundColor ) || 'none' !== s.backgroundImage ||
+				[ 'Top', 'Right', 'Bottom', 'Left' ].some( ( side ) => parseFloat( s[ `border${ side }Width` ] ) > 0 ) || 'none' !== s.boxShadow ||
+				( 'none' !== s.outlineStyle && parseFloat( s.outlineWidth ) > 0 ) || 'none' !== s.filter || ( s.backdropFilter && 'none' !== s.backdropFilter ) ||
+				'visible' !== s.overflowX || 'visible' !== s.overflowY || layer( e, '::before' ) || layer( e, '::after' );
+		};
+		const rect = ( e ) => {
+			const b = e.getBoundingClientRect();
+			return [ Math.round( b.top + window.scrollY ), Math.round( b.bottom + window.scrollY ), Math.round( b.left + window.scrollX ), Math.round( b.right + window.scrollX ) ];
+		};
+		const shown = ( e ) => e.getClientRects().length && 'none' !== getComputedStyle( e ).display && ! /absolute|fixed/.test( getComputedStyle( e ).position );
+		const big = ( e ) => e.getBoundingClientRect().width > 2 && e.getBoundingClientRect().height > 2;
+		const interactive = [ ...el.querySelectorAll( 'a[href], button, input, select, textarea, summary, [role="button"], [role="link"]' ) ].filter( ( e ) => e.getClientRects().length && big( e ) && 'hidden' !== getComputedStyle( e ).visibility );
+		// A positioned descendant placed against the box or something outside it (an underline at the box's foot) can sit by
+		// the box's own size, so each is an item too; one placed against an element inside the box (a link's own underline)
+		// moves with that element.
+		const placed = [ ...el.querySelectorAll( '*' ) ].filter( ( e ) => e.getClientRects().length && /absolute|fixed/.test( getComputedStyle( e ).position ) && ( ! e.offsetParent || e.offsetParent === el || ! el.contains( e.offsetParent ) ) );
+		const items = [ ...new Set( [ ...( interactive.length ? interactive : [ ...el.children ].filter( ( e ) => shown( e ) && big( e ) ) ), ...placed ] ) ].map( rect );
+		// The box is its parent's only rendered child (a parent's ::before/::after layer is paint, `paints`).
+		const only = ( e ) => {
+			const p = e.parentElement;
+			return [ ...p.childNodes ].every( ( k ) => k === e || ( 3 === k.nodeType ? ! k.textContent.trim() : 1 !== k.nodeType || ! k.getClientRects().length ) );
+		};
+		const line = ( axis ) => {
+			let cur = el;
+			for ( let i = 0; i < 8 && cur.parentElement && cur.parentElement !== document.documentElement; i++ ) {
+				const p = cur.parentElement;
+				if ( only( cur ) && ! paints( p ) ) {
+					cur = p;
+					continue;
+				}
+				const s = getComputedStyle( p );
+				const row = /^row/.test( s.flexDirection );
+				if ( ! /flex$/.test( s.display ) || 'nowrap' !== s.flexWrap || ( 'h' === axis ) !== row ) {
+					return null;
+				}
+				const [ t, b, l, r ] = rect( p );
+				return 'h' === axis ? [ t, b ] : [ l, r ];
+			}
+			return null;
+		};
+		return { paints: paints( el ), items, line: { h: line( 'h' ), w: line( 'w' ) } };
+	} )();
 	// Paint properties come from the element painting the ground, shape and border (paint.mjs::PAINT_PROPS, paintElement).
 	const PAINT = [ 'background-color', 'background-image', 'border-radius', 'box-shadow', 'border-top-width', 'border-top-style', 'border-top-color', 'border-bottom-width', 'border-bottom-color', 'border-left-width', 'border-right-width', 'border-left-color', 'border-right-color' ];
 	const paintEl = opts?.paintPart && ! run ? paintElement( el, owned ) : el;
@@ -351,6 +409,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		pseudo,
 		layoutDisplay: lcs.display,
 		layoutChildren,
+		...( run ? {} : { passThrough } ),
 		// Where the text properties were read (paint.mjs::textCarrier): `own` text the pair holds or lays out itself,
 		// `nested` text in a nested block no pair measures inside a pair holding another pair, `none` no text.
 		...( run ? {} : { textFrom: textAt ? ( textAt.nested ? 'nested' : 'own' ) : 'none' } ),

@@ -221,6 +221,30 @@ export function tagClass( tag ) {
 // A text-run or group finder measures a set of text nodes or a union box: its recorded tag is the wrapper's, not the thing measured.
 const wrapperFinder = ( f ) => !! ( f && 'object' === typeof f && ( f.textRun || f.group ) );
 
+// A pass-through box (GAP-CHECKLIST 31): a draft box that paints nothing, laid on the cross axis of a single-line flex
+// container (a `height: 100%` nav in an 84px row whose 42px links the row centres), against a live box of another size on
+// that axis. The draft box is larger than its items' union there, neither side paints the box, the container keeps its length on that axis, and every item (interactive,
+// positioned or in-flow child, collect.mjs::collectPair `passThrough`) keeps its extent from the container's start,
+// each side's set of extents found in the other's: the box's own size shows nothing, so it is no `w` / `h` row. Items that move, a box
+// that paints on either side, a container of another length or no such container on either side keep the row.
+function passThroughHeld( k, d, l, tol ) {
+	const [ a, b ] = [ d.passThrough, l.passThrough ];
+	if ( ! a || ! b || a.paints || b.paints || ! a.items.length || ! a.line?.[ k ] || ! b.line?.[ k ] ) {
+		return false;
+	}
+	// Each extent is read from its own side's container start, so a container placed elsewhere on the page (a sticky
+	// header at another scroll) is its own pair's row; an extent matches when its start and its length do.
+	const span = ( it, s ) => ( 'h' === k ? [ it[ 0 ], it[ 1 ] ] : [ it[ 2 ], it[ 3 ] ] ).map( ( v ) => v - s.line[ k ][ 0 ] );
+	const same = ( x, y ) => Math.abs( x[ 0 ] - y[ 0 ] ) <= tol.box && Math.abs( x[ 1 ] - x[ 0 ] - ( y[ 1 ] - y[ 0 ] ) ) <= tol.box;
+	const within = ( from, fs, to, ts ) => from.every( ( it ) => to.some( ( o ) => same( span( it, fs ), span( o, ts ) ) ) );
+	const len = ( s ) => s.line[ k ][ 1 ] - s.line[ k ][ 0 ];
+	// The draft box passes space through: it is larger on that axis than its items' union, so its size is not theirs (a
+	// logo box hugging its link is the link's size, and that is a row).
+	const ends = a.items.map( ( it ) => ( 'h' === k ? [ it[ 0 ], it[ 1 ] ] : [ it[ 2 ], it[ 3 ] ] ) );
+	const union = Math.max( ...ends.map( ( e ) => e[ 1 ] ) ) - Math.min( ...ends.map( ( e ) => e[ 0 ] ) );
+	return d.box[ k ] - union > tol.box && Math.abs( len( a ) - len( b ) ) <= tol.box && within( a.items, a, b.items, b ) && within( b.items, b, a.items, a );
+}
+
 // Returns [{ kind, key, draft, live }] for one pair in one state at one width.
 export function comparePair( pair, d, l, tol ) {
 	const diffs = [];
@@ -242,7 +266,7 @@ export function comparePair( pair, d, l, tol ) {
 		add( 'text', 'text', d.text, l.text );
 	}
 	for ( const k of pair.box || [ 'w', 'h' ] ) {
-		if ( Math.abs( d.box[ k ] - l.box[ k ] ) > tol.box ) {
+		if ( Math.abs( d.box[ k ] - l.box[ k ] ) > tol.box && ! passThroughHeld( k, d, l, tol ) ) {
 			add( 'box', k, d.box[ k ], l.box[ k ] );
 		}
 		// The size of the element painting the ground and shape, where either side paints on another element than the pair's.
