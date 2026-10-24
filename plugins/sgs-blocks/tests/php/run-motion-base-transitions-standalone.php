@@ -141,6 +141,22 @@ $check( str_contains( $od, '300ms' ) && str_contains( $od, '--sgs-btn-transition
 $untimed = Emitter::emit( $hover, '.sgs-m-test', $ctx );
 $ut      = $entry_of( $untimed['css'], 'opacity' );
 $check( str_contains( $ut, '0.18s' ) && str_contains( $ut, '--sgs-btn-transition-easing' ), "negative control: a state that sets no movement timing keeps the stylesheet's timing (got: $ut)" );
+// An entry a filter adds (the burger's morph) keeps the timing its owner gave it; only the table's entries take the state's.
+add_filter(
+	'sgs_motion_base_transition',
+	static function ( $entries, $block = '', $target = '' ) {
+		$entries[] = 'transform var(--morph-duration, 200ms) var(--morph-easing, ease)';
+		return $entries;
+	},
+	10,
+	3
+);
+$filtered = Emitter::emit( array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.04, 'duration' => 400 ) ) ) ), '.sgs-m-test', array( 'block' => 'sgs/button', 'target' => 'root' ) );
+preg_match_all( '/transform var\(--morph-duration, 200ms\) var\(--morph-easing, ease\)/', $filtered['css'], $mm );
+$check( count( $mm[0] ) >= 1, "MUST FAIL ON A RETIME-EVERYTHING FIX: a filter-added entry keeps its own timing when the state sets a 400ms duration (css: " . substr( $filtered['css'], 0, 0 ) . 'found ' . count( $mm[0] ) . ')' );
+$check( str_contains( $entry_of( $filtered['css'], 'opacity' ), '400ms' ), 'the table entries still take the 400ms in the same list' );
+$GLOBALS['sgs_test_filters'] = array();
+
 $check( array( 'opacity 1s linear' ) === Base::retime( array( 'opacity 1s linear' ), array() ), 'negative control: retime() with nothing set returns the entries unchanged' );
 $check( array( 'opacity 2s var( --x )' ) === Base::retime( array( 'opacity var( --a ) var( --x )' ), array( 'duration' => '2s' ) ), 'retime() splits outside parentheses and replaces only what is set' );
 

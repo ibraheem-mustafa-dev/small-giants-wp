@@ -129,7 +129,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	// eslint-disable-next-line no-new-func
 	const resolve = new Function( `return (${ resolveSrc });` )();
 	// eslint-disable-next-line no-new-func
-	const { textCarrier, paintedDecoration, decoratedElement, layoutElement, textRun, groupBox, paintElement } = new Function( `${ paintSrc }; return { textCarrier, paintedDecoration, decoratedElement, layoutElement, textRun, groupBox, paintElement };` )();
+	const { textCarrier, paintedDecoration, decoratedElement, layoutElement, textRun, groupBox, paintElement, iconShape } = new Function( `${ paintSrc }; return { textCarrier, paintedDecoration, decoratedElement, layoutElement, textRun, groupBox, paintElement, iconShape };` )();
 	const el = resolve( finder );
 	if ( ! el ) {
 		return { missing: true };
@@ -200,21 +200,21 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	// only rendered child is the box (or the wrapper below) and that paint nothing (null when that ancestor is no such
 	// container or a wrapper paints). On a cross axis a box's size moves no sibling, so a box that paints nothing, whose
 	// items and line keep their extent, shows nothing of its own size on that axis.
+	const clear = ( c ) => /^(transparent|rgba\(\d+, \d+, \d+, 0\))$/.test( c );
+	const layer = ( e, ps ) => {
+		const s = getComputedStyle( e, ps );
+		return ! [ 'none', 'normal', '' ].includes( s.content.trim() ) && 'none' !== s.display;
+	};
+	const paints = ( e ) => {
+		const s = getComputedStyle( e );
+		return /^(img|picture|video|canvas|svg|iframe|input|select|textarea)$/i.test( e.tagName ) || ! clear( s.backgroundColor ) || 'none' !== s.backgroundImage ||
+			[ 'Top', 'Right', 'Bottom', 'Left' ].some( ( side ) => parseFloat( s[ `border${ side }Width` ] ) > 0 ) || 'none' !== s.boxShadow ||
+			( 'none' !== s.outlineStyle && parseFloat( s.outlineWidth ) > 0 ) || 'none' !== s.filter || ( s.backdropFilter && 'none' !== s.backdropFilter ) ||
+			'visible' !== s.overflowX || 'visible' !== s.overflowY || 'none' !== s.clipPath || /\b(paint|content|strict)\b/.test( s.contain ) ||
+			[ s.maskImage, s.webkitMaskBoxImageSource ].some( ( m ) => m && 'none' !== m ) || parseFloat( s.opacity ) < 1 ||
+			'normal' !== s.mixBlendMode || layer( e, '::before' ) || layer( e, '::after' );
+	};
 	const passThrough = ( () => {
-		const clear = ( c ) => /^(transparent|rgba\(\d+, \d+, \d+, 0\))$/.test( c );
-		const layer = ( e, ps ) => {
-			const s = getComputedStyle( e, ps );
-			return ! [ 'none', 'normal', '' ].includes( s.content.trim() ) && 'none' !== s.display;
-		};
-		const paints = ( e ) => {
-			const s = getComputedStyle( e );
-			return /^(img|picture|video|canvas|svg|iframe|input|select|textarea)$/i.test( e.tagName ) || ! clear( s.backgroundColor ) || 'none' !== s.backgroundImage ||
-				[ 'Top', 'Right', 'Bottom', 'Left' ].some( ( side ) => parseFloat( s[ `border${ side }Width` ] ) > 0 ) || 'none' !== s.boxShadow ||
-				( 'none' !== s.outlineStyle && parseFloat( s.outlineWidth ) > 0 ) || 'none' !== s.filter || ( s.backdropFilter && 'none' !== s.backdropFilter ) ||
-				'visible' !== s.overflowX || 'visible' !== s.overflowY || 'none' !== s.clipPath || /\b(paint|content|strict)\b/.test( s.contain ) ||
-				[ s.maskImage, s.webkitMaskBoxImageSource ].some( ( m ) => m && 'none' !== m ) || parseFloat( s.opacity ) < 1 ||
-				'normal' !== s.mixBlendMode || layer( e, '::before' ) || layer( e, '::after' );
-		};
 		const rect = ( e ) => {
 			const b = e.getBoundingClientRect();
 			return [ Math.round( b.top + window.scrollY ), Math.round( b.bottom + window.scrollY ), Math.round( b.left + window.scrollX ), Math.round( b.right + window.scrollX ) ];
@@ -344,12 +344,9 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	let iconEl = null;
 	let iconKind = null;
 	if ( ! run && props.includes( 'icon-fill' ) ) {
-		const paintedSvg = ( s ) => s.getClientRects().length > 0 && s.getBoundingClientRect().width > 0 && s.getBoundingClientRect().height > 0
-			&& 'none' !== getComputedStyle( s ).display && 'visible' === getComputedStyle( s ).visibility;
-		const inner = [ ...el.querySelectorAll( 'svg' ) ].filter( ( s ) => paintedSvg( s ) && ! s.parentElement.closest( 'svg' ) );
-		const svg = 'svg' === el.tagName.toLowerCase() ? el : ( 1 === inner.length ? inner[ 0 ] : null );
-		const shape = svg && [ ...svg.querySelectorAll( 'path, circle, rect, ellipse, line, polyline, polygon, use, text' ) ]
-			.find( ( s ) => s.getClientRects().length && 'none' !== getComputedStyle( s ).display );
+		const icon = iconShape( el );
+		const svg = icon ? icon.svg : null;
+		const shape = icon ? icon.shape : null;
 		if ( shape ) {
 			const ss = getComputedStyle( shape );
 			styles[ 'icon-fill' ] = 'none' === ss.fill ? 'none' : srgb( ss.fill );
@@ -434,6 +431,51 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		}
 	}
 	const hiddenText = hiddenEls.map( ( h ) => h.textContent || '' ).join( ' ' );
+	// What the element shows besides the state's other pairs inside it (`bare`, GAP-CHECKLIST 38): `nested`, the names
+	// (opts.names, beside opts.others) of the other pairs whose element lies inside this one, and `own`, whether anything
+	// else inside it shows: a painted text run, a shown element holding none of those pairs (not visually hidden, not
+	// visibility: hidden), or an element around one of them that paints (`paints`, the passThrough test). Null where no
+	// other pair lies inside, and for a text run or a group.
+	const bare = ( () => {
+		if ( run || ! opts?.names ) {
+			return null;
+		}
+		const mine = new Map();
+		( opts.others || [] ).forEach( ( f, i ) => {
+			const o = resolve( f );
+			if ( o && o !== el && el.contains( o ) ) {
+				mine.set( o, opts.names[ i ] );
+			}
+		} );
+		if ( ! mine.size ) {
+			return null;
+		}
+		const shows = ( e ) => e.getClientRects().length > 0 && 'none' !== getComputedStyle( e ).display && 'hidden' !== getComputedStyle( e ).visibility && ! srOnly( e );
+		let own = false;
+		const walk = ( n ) => {
+			for ( const k of n.childNodes ) {
+				if ( own ) {
+					return;
+				}
+				if ( 3 === k.nodeType && k.textContent.trim() ) {
+					const rg = document.createRange();
+					rg.selectNodeContents( k );
+					const b = rg.getBoundingClientRect();
+					own = b.width > 0 && b.height > 0;
+				} else if ( 1 === k.nodeType && ! mine.has( k ) ) {
+					if ( ! [ ...mine.keys() ].some( ( o ) => k.contains( o ) ) ) {
+						own = shows( k );
+					} else if ( paints( k ) ) {
+						own = true;
+					} else {
+						walk( k );
+					}
+				}
+			}
+		};
+		walk( el );
+		return { own, nested: [ ...new Set( mine.values() ) ] };
+	} )();
 	// The one image this element is or holds (its painted address, alt and natural size), for the image check.
 	const imgEl = el.matches( 'img' ) ? el : ( 1 === el.querySelectorAll( 'img' ).length ? el.querySelector( 'img' ) : null );
 	return {
@@ -456,6 +498,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		layoutDisplay: lcs.display,
 		layoutChildren,
 		...( run ? {} : { passThrough } ),
+		...( bare ? { bare } : {} ),
 		// Where the text properties were read (paint.mjs::textCarrier): `own` text the pair holds or lays out itself,
 		// `nested` text in a nested block no pair measures inside a pair holding another pair, `none` no text.
 		...( run ? {} : { textFrom: textAt ? ( textAt.nested ? 'nested' : 'own' ) : 'none' } ),
@@ -535,11 +578,14 @@ export function hoverPointOf( [ finder, resolveSrc ] ) {
 // are read where the text is painted, as collectPair reads them: a link whose label sits in a span is judged by the
 // span's colour, not by its root's unused one. in: [ finder, props, resolveSrc, paintSrc, opts ]; opts as collectPair's:
 // `others` keeps an inner pair's label out of the colour read, `paintPart` reads paint properties where they paint.
+// `icon` (the walker's state passes, state-passes.mjs): where the element paints no text, its colour in the state shows
+// only through its icon, so the icon's fill and stroke (paint.mjs::iconShape, as collectPair reads them at rest) are read
+// too, as `icon: { 'icon-fill', 'icon-stroke' }` (compare.mjs::comparePair judges them against the resting icon).
 export function hoverStyles( [ finder, props, resolveSrc, paintSrc, opts = null ] ) {
 	// eslint-disable-next-line no-new-func
 	const resolve = new Function( `return (${ resolveSrc });` )();
 	// eslint-disable-next-line no-new-func
-	const { textCarrier, paintedDecoration, paintElement } = new Function( `${ paintSrc }; return { textCarrier, paintedDecoration, paintElement };` )();
+	const { textCarrier, paintedDecoration, paintElement, iconShape } = new Function( `${ paintSrc }; return { textCarrier, paintedDecoration, paintElement, iconShape };` )();
 	const el = resolve( finder );
 	if ( ! el ) {
 		return null;
@@ -577,6 +623,11 @@ export function hoverStyles( [ finder, props, resolveSrc, paintSrc, opts = null 
 			v = ( PAINT.includes( p ) ? pcs : cs ).getPropertyValue( p ).trim();
 		}
 		out[ p ] = /color$/.test( p ) && 'none' !== v ? srgb( v ) : v;
+	}
+	const shape = opts?.icon && ! carrier && props.includes( 'color' ) ? iconShape( el )?.shape : null;
+	if ( shape ) {
+		const ss = getComputedStyle( shape );
+		out.icon = { 'icon-fill': 'none' === ss.fill ? 'none' : srgb( ss.fill ), 'icon-stroke': 'none' === ss.stroke ? 'none' : srgb( ss.stroke ) };
 	}
 	return out;
 }

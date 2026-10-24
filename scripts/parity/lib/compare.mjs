@@ -6,6 +6,7 @@ import { sameTransitions, isTimingLonghand } from './transitions.mjs';
 import { TRANSFORM_PARTS, comparePose } from './transform.mjs';
 import { compareParts } from './parts.mjs';
 import { CONTEXT_PROPS } from './collect.mjs';
+import { TEXT_CARRIED } from './ref-trace.mjs';
 
 const PX = /^-?\d+(\.\d+)?px$/;
 // The identity transform in both forms the computed style gives (2D and 3D), whitespace removed.
@@ -234,7 +235,7 @@ const wrapperFinder = ( f ) => !! ( f && 'object' === typeof f && ( f.textRun ||
 // carrying its caret: the live link and toggle fill exactly the draft item's span, no gap, nothing outside). Items that move, a box
 // that paints on either side, a draft box overflowing the container, a count of items that differs, a container of
 // another length or no such container on either side keep the row.
-function passThroughHeld( k, d, l, tol ) {
+export function passThroughHeld( k, d, l, tol ) {
 	const [ a, b ] = [ d.passThrough, l.passThrough ];
 	if ( ! a || ! b || a.paints || b.paints || ! a.self || ! b.self || ! a.items.length || ! a.line?.[ k ] || ! b.line?.[ k ] ) {
 		return false;
@@ -269,6 +270,18 @@ function passThroughHeld( k, d, l, tol ) {
 	const tiled = ia.length === ib.length || ( ib.every( ( x ) => ia.some( ( o ) => holds( o, x ) ) ) && ia.every( tiles ) );
 	return d.box[ k ] - union > tol.box && inside && counted && tiled && Math.abs( len( a ) - len( b ) ) <= tol.box && within( a.items, a, b.items, b ) && within( b.items, b, a.items, a );
 }
+
+// A declared aspect ratio paints only through the box it sizes (GAP-CHECKLIST 36): a draft `3741 / 848` on a logo element
+// against a live `auto` box sized by its image's own ratio is no row while both boxes agree on width and height within
+// tol.box. Where either length differs the ratio row stays beside the box rows.
+const ratioHeld = ( p, d, l, tol ) => 'aspect-ratio' === p && [ 'w', 'h' ].every( ( k ) => Math.abs( d.box[ k ] - l.box[ k ] ) <= tol.box );
+
+// A text property in a state (GAP-CHECKLIST 35): where neither side holds text the walk reads no text property at rest
+// (collect.mjs::collectPair takes them from the text carrier), and the state passes read the element's own unused
+// colour (a logo whose svg paints literal fills, against an image). Such a property paints nothing on either side, so it
+// is not compared. One side painting text keeps the row. An icon's colour in a state is read from the icon itself
+// (collect.mjs::hoverStyles `icon`), so an svg following currentColor is still judged.
+const stateTextUnread = ( p, d, l ) => TEXT_CARRIED.includes( p ) && undefined === d.styles?.[ p ] && undefined === l.styles?.[ p ];
 
 // Returns [{ kind, key, draft, live }] for one pair in one state at one width. `every` is the pair's change set across
 // every state walked at this width (lib/state-changes.mjs::everyStateChanges), or null where it is not known; the
@@ -322,7 +335,7 @@ export function comparePair( pair, d, l, tol, every = null ) {
 		if ( 'icon-colour' === p ? ! mixed : ( loops.has( p ) || ( ( mixed || textAlone ) && GLYPH_TEXT.has( p ) ) || ( mixed && /^icon-(fill|stroke)$/.test( p ) ) ) ) {
 			continue;
 		}
-		if ( borderColourIrrelevant( p, d.styles, l.styles ) || partIrrelevant( p, d.styles, l.styles ) || timingIrrelevant( p, d, l, everyState ? every : null ) || equivalent( p, d.styles[ p ], l.styles[ p ], [ d, l ].every( ( x ) => /(^|-)flex$/.test( x.layoutDisplay || '' ) ) ) || ! layoutComparable( p, d, l ) || controlPaddingIrrelevant( p, d, l ) ) {
+		if ( borderColourIrrelevant( p, d.styles, l.styles ) || partIrrelevant( p, d.styles, l.styles ) || ratioHeld( p, d, l, tol ) || timingIrrelevant( p, d, l, everyState ? every : null ) || equivalent( p, d.styles[ p ], l.styles[ p ], [ d, l ].every( ( x ) => /(^|-)flex$/.test( x.layoutDisplay || '' ) ) ) || ! layoutComparable( p, d, l ) || controlPaddingIrrelevant( p, d, l ) ) {
 			continue;
 		}
 		// A transition timing compares per animated property where both sides transition something (lib/transitions.mjs).
@@ -378,14 +391,23 @@ export function comparePair( pair, d, l, tol, every = null ) {
 			const still = ( s, p ) => undefined !== s.styles?.[ p ] && sameValue( p, s[ field ][ p ], s.styles[ p ], tol.px );
 			diffs.push( ...poseRows.filter( ( r ) => kind === r.kind ) );
 			for ( const p of Object.keys( d[ field ] ) ) {
-				if ( TRANSFORM_PARTS.includes( p ) ) {
+				if ( TRANSFORM_PARTS.includes( p ) || 'icon' === p ) {
 					continue;
 				}
-				if ( loops.has( p ) || ( ( mixed || textAlone ) && GLYPH_TEXT.has( p ) ) || borderColourIrrelevant( p, { ...d.styles, ...d[ field ] }, { ...l.styles, ...l[ field ] } ) || ( still( d, p ) && still( l, p ) ) ) {
+				if ( loops.has( p ) || stateTextUnread( p, d, l ) || ( ( mixed || textAlone ) && GLYPH_TEXT.has( p ) ) || borderColourIrrelevant( p, { ...d.styles, ...d[ field ] }, { ...l.styles, ...l[ field ] } ) || ( still( d, p ) && still( l, p ) ) ) {
 					continue;
 				}
 				if ( ! sameValue( p, d[ field ][ p ], l[ field ][ p ], tol.px ) ) {
 					add( kind, p, d[ field ][ p ], l[ field ][ p ] );
+				}
+			}
+			// The icon's fill and stroke in the state, where both sides read an icon at rest and in the state (an svg on each,
+			// not a glyph against an svg): a row where either side's icon changes and the two differ.
+			const [ di, li ] = [ d[ field ].icon, l[ field ].icon ];
+			for ( const p of di && li && ! mixed ? Object.keys( di ) : [] ) {
+				const iconStill = ( s, v ) => undefined !== s.styles?.[ p ] && sameValue( p, v, s.styles[ p ], tol.px );
+				if ( undefined !== d.styles?.[ p ] && undefined !== l.styles?.[ p ] && ! ( iconStill( d, di[ p ] ) && iconStill( l, li[ p ] ) ) && ! sameValue( p, di[ p ], li[ p ], tol.px ) ) {
+					add( kind, p, di[ p ], li[ p ] );
 				}
 			}
 		}

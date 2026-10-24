@@ -140,16 +140,25 @@ final class Sgs_Motion_Emitter {
 		}
 		// A block's own base transition on this part (the burger bars' morph pose) is a `transition` entry list the part's
 		// stylesheet rule holds; this scoped `transition` replaces that rule's list, so the entries ride on ours.
-		$base_entries = (array) apply_filters(
+		$table_entries = Sgs_Motion_Base_Transitions::entries( (string) ( $context['block'] ?? '' ), (string) ( $context['target'] ?? '' ), array_keys( $channels ) );
+		$base_entries  = (array) apply_filters(
 			'sgs_motion_base_transition',
-			Sgs_Motion_Base_Transitions::entries( (string) ( $context['block'] ?? '' ), (string) ( $context['target'] ?? '' ), array_keys( $channels ) ),
+			$table_entries,
 			(string) ( $context['block'] ?? '' ),
 			(string) ( $context['target'] ?? '' )
 		);
 		foreach ( self::TIERS as $tier ) {
 			if ( array() !== $trans[ $tier ] && array() !== $base_entries ) {
-				// The stylesheet's timing stays only where the hover state sets no movement duration or easing.
-				$trans[ $tier ] = array_merge( $trans[ $tier ], Sgs_Motion_Base_Transitions::retime( array_map( 'strval', $base_entries ), $explicit[ $tier ] ) );
+				// The stylesheet's timing stays only where the hover state sets no movement duration or easing; an entry a
+				// filter added (the burger's morph) keeps the timing its owner gave it.
+				$kept = array_map(
+					static function ( $entry ) use ( $table_entries, $explicit, $tier ): string {
+						$entry = (string) $entry;
+						return in_array( $entry, $table_entries, true ) ? Sgs_Motion_Base_Transitions::retime( array( $entry ), $explicit[ $tier ] )[0] : $entry;
+					},
+					$base_entries
+				);
+				$trans[ $tier ] = array_merge( $trans[ $tier ], $kept );
 			}
 		}
 		foreach ( self::TIERS as $tier ) {

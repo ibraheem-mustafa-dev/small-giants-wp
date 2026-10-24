@@ -13,6 +13,6 @@
 .sgs-child-sizing--fixed {
 	flex: 0 0 auto;
 	width: var(--sgs-child-width, auto);
-	max-width: 100%;
+	max-width: none;
 	box-sizing: border-box;
 }

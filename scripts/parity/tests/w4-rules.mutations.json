@@ -1,0 +1,116 @@
+[
+	{
+		"file": "lib/compare.mjs",
+		"find": "if ( loops.has( p ) || stateTextUnread( p, d, l ) ||",
+		"replace": "if ( loops.has( p ) ||",
+		"why": "a state text property no side read at rest is compared again"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "&& undefined === d.styles?.[ p ] && undefined === l.styles?.[ p ];",
+		"replace": "&& ( undefined === d.styles?.[ p ] || undefined === l.styles?.[ p ] );",
+		"why": "one side painting text is enough to drop the row"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "for ( const p of di && li && ! mixed ? Object.keys( di ) : [] ) {",
+		"replace": "for ( const p of [] ) {",
+		"why": "the state icon colour is never compared"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "! ( iconStill( d, di[ p ] ) && iconStill( l, li[ p ] ) ) && ! sameValue( p, di[ p ], li[ p ], tol.px )",
+		"replace": "! ( iconStill( d, di[ p ] ) || iconStill( l, li[ p ] ) ) && ! sameValue( p, di[ p ], li[ p ], tol.px )",
+		"why": "one side's still icon hides the other side's change"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "! ( iconStill( d, di[ p ] ) && iconStill( l, li[ p ] ) ) && ! sameValue( p, di[ p ], li[ p ], tol.px )",
+		"replace": "! ( iconStill( d, di[ p ] ) && iconStill( l, li[ p ] ) )",
+		"why": "two icons recolouring alike are a row"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "const shape = opts?.icon && ! carrier && props.includes( 'color' ) ? iconShape( el )?.shape : null;",
+		"replace": "const shape = null;",
+		"why": "the state passes read no icon colour"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "|| ratioHeld( p, d, l, tol ) ||",
+		"replace": "||",
+		"why": "a ratio whose box matches is a row again"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "[ 'w', 'h' ].every( ( k ) => Math.abs( d.box[ k ] - l.box[ k ] ) <= tol.box );",
+		"replace": "[ 'w' ].every( ( k ) => Math.abs( d.box[ k ] - l.box[ k ] ) <= tol.box );",
+		"why": "the height is not checked"
+	},
+	{
+		"file": "lib/compare-state.mjs",
+		"find": "const top = ( p, s ) => ( through( p ) ?",
+		"replace": "const top = ( p, s ) => ( false ?",
+		"why": "a pass-through pair is placed by its box top"
+	},
+	{
+		"file": "lib/compare-state.mjs",
+		"find": "const from = prev ? ( s ) => top( prev, s ) : null;",
+		"replace": "const from = prev ? ( s ) => s[ prev.name ].box.y : null;",
+		"why": "a pass-through anchor is read by its box top"
+	},
+	{
+		"file": "lib/compare-state.mjs",
+		"find": "return ( p.box || [ 'w', 'h' ] ).includes( 'h' ) && Math.abs( d.box.h - l.box.h ) > tol.box && passThroughHeld( 'h', d, l, tol );",
+		"replace": "return ( p.box || [ 'w', 'h' ] ).includes( 'h' ) && Math.abs( d.box.h - l.box.h ) > tol.box;",
+		"why": "any pair whose height differs is read through its items"
+	},
+	{
+		"file": "lib/compare-state.mjs",
+		"find": ".filter( ( x ) => ! ( 'presence' === x.kind && bareWrapper(",
+		"replace": ".filter( ( x ) => ! ( 'presence' === x.kind && false && bareWrapper(",
+		"why": "the bare wrapper rule is off"
+	},
+	{
+		"file": "lib/compare-state.mjs",
+		"find": "|| s.bare.own ||",
+		"replace": "||",
+		"why": "a wrapper's own content is ignored"
+	},
+	{
+		"file": "lib/compare-state.mjs",
+		"find": "|| ! s.passThrough || s.passThrough.paints ) {",
+		"replace": "|| ! s.passThrough ) {",
+		"why": "a wrapper that paints is ignored"
+	},
+	{
+		"file": "lib/compare-state.mjs",
+		"find": "if ( ! s.bare.nested.every( measured ) ) {",
+		"replace": "if ( ! s.bare.nested.some( measured ) ) {",
+		"why": "a nested pair the other side lacks is ignored"
+	},
+	{
+		"file": "lib/compare-state.mjs",
+		"find": "const measured = ( n ) => [ ds, ls ].every(",
+		"replace": "const measured = ( n ) => [ ds, ls ].some(",
+		"why": "a nested pair measured on one side only counts"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "own = shows( k );",
+		"replace": "own = false;",
+		"why": "a shown element beside the nested pairs is not own content"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "} else if ( paints( k ) ) {\n\t\t\t\t\t\town = true;",
+		"replace": "} else if ( false ) {\n\t\t\t\t\t\town = true;",
+		"why": "a painting wrapper around a nested pair is not own content"
+	},
+	{
+		"file": "lib/compare-state.mjs",
+		"find": "&& b.x + b.w <= x1 + tol.box &&",
+		"replace": "&&",
+		"why": "a wrapper wider than its nested pairs passes"
+	}
+]

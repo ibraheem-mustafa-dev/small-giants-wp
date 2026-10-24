@@ -38,12 +38,12 @@ export function stampDeclaredPath( d, l ) {
 }
 
 // The read options of one pair's reads (collect.mjs::collectPair, ::hoverStyles): the state's other pairs bound the paint
-// walk and the parts (`others`); those that read text properties (`propsOf`, the walk's property list for a pair; a group
+// walk and the parts (`others`, named in the same order in `names`); those that read text properties (`propsOf`, the walk's property list for a pair; a group
 // finder reads none) own their text (`textOthers`); paint properties are read where they paint.
 export const readOpts = ( pairs, p, side, propsOf = ( q ) => q.props || DEFAULT_PROPS ) => {
 	const others = pairs.filter( ( q ) => q !== p && q[ side ] );
 	const readsText = ( q ) => ! q[ side ].group && propsOf( q ).some( ( x ) => TEXT_CARRIED.includes( x ) );
-	return { others: others.map( ( q ) => q[ side ] ), textOthers: others.filter( readsText ).map( ( q ) => q[ side ] ), paintPart: true };
+	return { others: others.map( ( q ) => q[ side ] ), names: others.map( ( q ) => q.name ), textOthers: others.filter( readsText ).map( ( q ) => q[ side ] ), paintPart: true };
 };
 
 // Scroll-in pairs: the animations started ~60ms after each is scrolled to, and its pose once settled
@@ -82,7 +82,7 @@ export async function hoverPass( page, pairs, side, snap, { state, h, RESOLVE, f
 	}
 	for ( const p of cdp && ! phone ? pairs.filter( ( q ) => ! q.hover && ! snap[ q.name ].missing ) : [] ) {
 		snap[ p.name ].hover = await forcedHover( cdp, page, p[ side ], RESOLVE, async () => {
-			const styles = await page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC, readOpts( pairs, p, side, propsFor ) ] );
+			const styles = await page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC, { ...readOpts( pairs, p, side, propsFor ), icon: true } ] );
 			await declaredIn( cdp, snap[ p.name ], p[ side ], 'hover', RESOLVE, true );
 			return styles;
 		} );
@@ -111,7 +111,7 @@ export async function hoverPass( page, pairs, side, snap, { state, h, RESOLVE, f
 			await page.mouse.move( at.x, at.y );
 			await page.waitForTimeout( p.hoverWait ?? 800 );
 		}
-		snap[ p.name ].hover = await page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC, readOpts( pairs, p, side, propsFor ) ] );
+		snap[ p.name ].hover = await page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC, { ...readOpts( pairs, p, side, propsFor ), icon: true } ] );
 		// Under the real pointer the matched rules are the hovered ones.
 		await declaredIn( cdp, snap[ p.name ], p[ side ], 'hover', RESOLVE, false );
 		await page.mouse.move( 1, 1 );
@@ -140,7 +140,7 @@ export async function activePass( page, pairs, side, snap, RESOLVE, cdp, { all =
 	for ( const p of pairs.filter( ( q ) => ( all ? false !== q.active : true === q.active ) && ! snap[ q.name ].missing && ! q[ side ]?.textRun && ! q[ side ]?.group ) ) {
 		const props = p.activeProps || ACTIVE_PROPS;
 		snap[ p.name ].active = await forcedPseudo( cdp, page, p[ side ], RESOLVE, [ 'active' ], async () => {
-			const styles = await page.evaluate( hoverStyles, [ p[ side ], props, RESOLVE, PAINT_SRC, readOpts( pairs, p, side, propsFor ) ] );
+			const styles = await page.evaluate( hoverStyles, [ p[ side ], props, RESOLVE, PAINT_SRC, { ...readOpts( pairs, p, side, propsFor ), icon: true } ] );
 			await declaredIn( cdp, snap[ p.name ], p[ side ], 'active', RESOLVE, true );
 			return styles;
 		} );
