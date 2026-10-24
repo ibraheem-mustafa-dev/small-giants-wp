@@ -27,13 +27,11 @@ import { props, nameOf, words, blob, triggerOf, MINUS, TIMES, NUMBER, number, ro
 import { PINNED, headerScrollOf, dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf } from './motion-behaviour-settings.mjs';
 import { effectElementStyle, colourOf, largerSideFactor } from './motion-effect-element.mjs';
 import { templateKey } from './fact-key.mjs';
+import { fromPointer, tiltOf, tiltGlareHostOf, tiltResetOf } from './motion-tilt.mjs';
 
 // The attribute selector of the template element a record's script finds its target by (`[data-mag]`), or null.
 export const hostOf = ( r ) => /\[data-[a-z0-9-]+\]/i.exec( words( r.element?.selector, r.trigger?.detail ) )?.[ 0 ] ?? null;
 
-// Whether a pointer handler wrote the property from the pointer's position (an x and y in the element, or a client
-// coordinate), as against a fixed value.
-const fromPointer = ( p, r ) => /client[XY]|pointer|\bx\b[^.]*\by\b|\(x\b|\by\b/i.test( words( p.formula, p.to, r.source?.code ) );
 
 // A script-written translate of the element toward the pointer: a magnet. The pull model follows the formula: a
 // position in the element (0..1) times a size is the normalised model (the size is the full travel across the element),
@@ -76,29 +74,6 @@ function magnetCompanionOf( r ) {
 		return { reason: 'the handler clears the pointer-written position when the pointer leaves: the magnet effect returns the element to rest itself' };
 	}
 	return null;
-}
-
-// A script-written rotation from the pointer's position: a tilt (the hover state's followPointer), with a glare layer
-// when the same handler writes the pointer position into custom properties for a highlight.
-function tiltOf( r ) {
-	const list = props( r );
-	const rot = list.find( ( q ) => /^rotate$/.test( nameOf( q ) ) || ( 'transform' === nameOf( q ) && /rotate[xy]/i.test( words( q.formula, q.to ) ) ) );
-	if ( 'js-style-write' !== r.mechanism || 'pointer-move' !== triggerOf( r ) || ! rot || ! fromPointer( rot, r ) ) {
-		return null;
-	}
-	const f = words( rot.formula );
-	const angle = number( new RegExp( `max\\s*[\\u2248~=]\\s*${ NUMBER }\\s*deg`, 'i' ).exec( f )?.[ 1 ] ) ?? number( new RegExp( `${ TIMES }\\s*${ NUMBER }\\s*deg`, 'i' ).exec( f )?.[ 1 ] );
-	const glare = list.some( ( q ) => /^--/.test( nameOf( q ) ) && fromPointer( q, r ) );
-	return { hoverState: compact( { followPointer: true, maxAngle: angle } ), glare };
-}
-
-// The spring back of a tilt: a Web Animation on pointer leave that returns the rotation to zero.
-function tiltResetOf( r ) {
-	const p = props( r ).find( ( q ) => 'rotate' === nameOf( q ) );
-	if ( 'pointer-leave' !== triggerOf( r ) || ! p || 'waapi' !== r.mechanism || ! /^(?:0 0 1 )?0(?:deg)?$|^0 0 1 0deg$/.test( String( p.to ).trim() ) ) {
-		return null;
-	}
-	return { resetDuration: durationOf( r ), resetEasing: easingOf( r ) };
 }
 
 // The one colour of a band painted `linear-gradient( <direction>, transparent, <colour>, transparent )`, the shape the
@@ -348,9 +323,13 @@ export function recogniseBehaviour( record, ctx = {} ) {
 	if ( companion ) {
 		return done( r, { kind: 'covered', by: 'magnet', reason: companion.reason } );
 	}
-	const tilt = tiltOf( r );
+	const tilt = tiltOf( r, ctx );
 	if ( tilt ) {
 		return done( r, { kind: 'effect', effects: tilt.glare ? [ { effect: 'glare', panel: 'hover', trigger: 'hover', values: {} } ] : [], hoverState: tilt.hoverState } );
+	}
+	const tiltHost = tiltGlareHostOf( r, ctx );
+	if ( tiltHost ) {
+		return done( r, { kind: 'covered', by: 'glare', reason: `the pointer position on the element ${ tiltHost } tilts: the glare layer of that Follow pointer reads it` } );
 	}
 	const reset = tiltResetOf( r );
 	if ( reset ) {
@@ -375,16 +354,22 @@ export function recogniseBehaviour( record, ctx = {} ) {
 // reviewer confirms once, and one per behaviour no SGS effect expresses. `ctx` is recogniseBehaviour's.
 export function effectRows( records, ctx = {} ) {
 	const rows = [];
-	for ( const r of Array.isArray( records ) ? records : [] ) {
-		const b = recogniseBehaviour( r, ctx );
+	const list = Array.isArray( records ) ? records : [];
+	const c = { records: list, ...ctx };
+	for ( const r of list ) {
+		const b = recogniseBehaviour( r, c );
 		if ( ! b || [ 'native', 'covered' ].includes( b.kind ) ) {
 			continue;
 		}
+		const attrs = 'settings' === b.kind ? Object.entries( b.blocks || {} ).map( ( [ block, s ] ) => `${ block } ${ s.map( ( x ) => x.attr ).join( ', ' ) }` ).join( ' or ' ) : '';
 		const what = 'effect' === b.kind ? [ ...b.effects.map( ( e ) => e.effect ), ...( b.hoverState ? [ 'follow-pointer' ] : [] ) ].join(  ' + ' ) || 'hover state'
-			: 'control' === b.kind ? `${ b.effect } hover rate of ${ b.of }` : 'site' === b.kind ? b.option : 'no SGS effect';
+			: 'control' === b.kind ? `${ b.effect } hover rate of ${ b.of }` : 'site' === b.kind ? b.option : 'settings' === b.kind ? `settings: ${ attrs }` : 'close' === b.kind ? 'close' : 'no SGS effect';
+		const says = 'unmapped' === b.kind ? `not expressed by any SGS effect: ${ b.reason }`
+			: 'settings' === b.kind ? `written as the block settings ${ attrs }`
+			: 'close' === b.kind ? 'the close of the same element\'s open entrance (its entrance close values)' : `the ${ what } effect`;
 		rows.push( {
 			rowId: `effect:${ r.id }`, draftId: r.id, record: r.id, effect: what, kind: b.kind,
-			text: `${ r.id } ${ r.name ?? '' } (${ r.mechanism }, ${ triggerOf( r ) }) is ${ 'unmapped' === b.kind ? `not expressed by any SGS effect: ${ b.reason }` : `the ${ what } effect` }`.replace( /\s+/g, ' ' ),
+			text: `${ r.id } ${ r.name ?? '' } (${ r.mechanism }, ${ triggerOf( r ) }) is ${ says }`.replace( /\s+/g, ' ' ),
 			unmapped: 'unmapped' === b.kind ? b.reason : undefined,
 		} );
 	}

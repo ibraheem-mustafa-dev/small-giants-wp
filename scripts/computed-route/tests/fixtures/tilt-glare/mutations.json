@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": " || ( ctx.records || [] ).some( ( o ) => o !== r && pointerVarsOf( o ) && sameElement( o, r ) );",
+		"replace": ";",
+		"why": "the tilt would lose its glare when the glare position is written by its own records"
+	},
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": "return ( ctx.records || [] ).find( ( o ) => o !== r && sameElement( o, r ) && tiltOf( o ) )?.id ?? null;",
+		"replace": "return ( ctx.records || [] ).find( ( o ) => o !== r && tiltOf( o ) )?.id ?? null;",
+		"why": "a cursor field on an element no tilt rotates would be held by an unrelated tilt"
+	},
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": "list.every( ( q ) => /^--/.test( nameOf( q ) ) && fromPointer( q, r ) )",
+		"replace": "true",
+		"why": "any pointer write on a tilt host (the tilt itself included) would be read as its glare position"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "\tif ( tiltHost ) {",
+		"replace": "\tif ( false ) {",
+		"why": "the glare position records would fall through to the cursor field"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "\tconst c = { records: list, ...ctx };",
+		"replace": "\tconst c = ctx;",
+		"why": "the review rows would recognise each record without the inventory, so the glare reads as a cursor field"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": ": 'settings' === b.kind ? `written as the block settings ${ attrs }`",
+		"replace": "",
+		"why": "a settings row would say it is the settings effect"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": " : 'close' === b.kind ? 'close' : 'no SGS effect';",
+		"replace": " : 'no SGS effect';",
+		"why": "a close row would be named no SGS effect"
+	}
+]
