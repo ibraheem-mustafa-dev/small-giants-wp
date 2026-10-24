@@ -63,47 +63,47 @@ Accept all: [ ]
 
 ## Palette roles (palette-role)
 
-Accept all: [x]
+Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `palette:--mm-badge` | --mm-badge #EE8088 | role:accent | 0.85: the next most used strong ground (9 buttons) |  |
-| `palette:--mm-body` | --mm-body #4E3C31 | role:custom-mm-body | 0.3: name says body text, but text is read from usage on --mm-cocoa (#3A2A22) |  |
-| `palette:--mm-cocoa` | --mm-cocoa #3A2A22 | role:text,heading,border,primary-text,accent-text,section-text,link-hover | 0.95: the page text: the body colour on 11 page(s); the name --mm-text agrees |  |
-| `palette:--mm-cream` | --mm-cream #FBF3DC | role:surface,footer-bg | 0.95: the page ground: the body background on 11 page(s); the name --mm-surface-page agrees |  |
-| `palette:--mm-cta` | --mm-cta #F9CF6E | role:primary | 0.85: the most used strong ground (32 buttons) |  |
-| `palette:--mm-focus` | --mm-focus #3A2A22 | role:text,heading,border,primary-text,accent-text,section-text,link-hover | 0.95: the page text: the body colour on 11 page(s); the name --mm-text agrees |  |
-| `palette:--mm-image-bg` | --mm-image-bg #F3E6CC | role:custom-mm-image-bg | 0.3: name says surface, but surface-alt is read from usage on --mm-paper (#FFFAF0) |  |
-| `palette:--mm-line` | --mm-line #EADBC0 | role:border-light | 0.85: the next divider line colour, lighter than the border (33 lines) |  |
-| `palette:--mm-line-dashed` | --mm-line-dashed #E6D4B4 | role:custom-mm-line-dashed | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) |  |
-| `palette:--mm-link` | --mm-link #A8404F | role:link | 0.95: the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (88 of 479 links); the name --mm-link agrees |  |
-| `palette:--mm-link-hover` | --mm-link-hover #3A2A22 | role:link-hover,text,heading,border,primary-text,accent-text,section-text | 0.6: name says link hover (the name alone decides this) |  |
-| `palette:--mm-muted` | --mm-muted #5E4A3D | role:text-muted | 0.95: the most used text colour after the text and heading colours, lighter than the text (32 elements); the name --mm-muted agrees |  |
-| `palette:--mm-muted-2` | --mm-muted-2 #6B5646 | role:custom-mm-muted-2 | 0.3: name says muted text, but text-muted is read from usage on --mm-muted (#5E4A3D) |  |
-| `palette:--mm-outline` | --mm-outline #3A2A22 | role:border,text,heading,primary-text,accent-text,section-text,link-hover | 0.95: the most used divider line colour (1899 lines; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees |  |
-| `palette:--mm-paper` | --mm-paper #FFFAF0 | role:surface-alt,text-inverse | 0.95: the most used light ground after the page ground (305 elements); the name --mm-surface-card agrees |  |
-| `palette:--mm-pink` | --mm-pink #EE8088 | role:accent | 0.85: the next most used strong ground (9 buttons) |  |
-| `palette:--mm-pink-band` | --mm-pink-band #F5C2C8 | role:custom-mm-pink-band | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) |  |
-| `palette:--mm-pink-dark` | --mm-pink-dark #A8404F | role:link | 0.95: the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (88 of 479 links); the name --mm-link agrees |  |
-| `palette:--mm-pink-soft` | --mm-pink-soft #F9D5D3 | role:section | 0.85: the most used ground after the page, raised and primary grounds (111 elements) |  |
-| `palette:--mm-rule` | --mm-rule #3A2A224D | role:custom-mm-rule | 0.3: name says border, but border is read from usage on --mm-cocoa (#3A2A22) |  |
-| `palette:--mm-rule-soft` | --mm-rule-soft #3A2A2247 | role:custom-mm-rule-soft | 0.3: name says border, but border is read from usage on --mm-cocoa (#3A2A22) |  |
-| `palette:--mm-script` | --mm-script #8E3444 | role:custom-mm-script | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) |  |
-| `palette:--mm-script-gold` | --mm-script-gold #7A5A12 | role:custom-mm-script-gold | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) |  |
-| `palette:--mm-selected` | --mm-selected #F9CF6E | role:primary | 0.85: the most used strong ground (32 buttons) |  |
-| `palette:--mm-sparkle` | --mm-sparkle #E86A75 | role:custom-mm-sparkle | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) |  |
-| `palette:--mm-surface-band` | --mm-surface-band #F5C2C8 | role:custom-mm-surface-band | 0.3: name says surface, but surface-alt is read from usage on --mm-paper (#FFFAF0) |  |
-| `palette:--mm-surface-card` | --mm-surface-card #FFFAF0 | role:surface-alt,text-inverse | 0.95: the most used light ground after the page ground (305 elements); the name --mm-surface-card agrees |  |
-| `palette:--mm-surface-page` | --mm-surface-page #FBF3DC | role:surface,footer-bg | 0.95: the page ground: the body background on 11 page(s); the name --mm-surface-page agrees |  |
-| `palette:--mm-surface-panel` | --mm-surface-panel #F9D5D3 | role:section | 0.85: the most used ground after the page, raised and primary grounds (111 elements) |  |
-| `palette:--mm-surface-panel-alt` | --mm-surface-panel-alt #FCEBBE | role:custom-mm-surface-panel-alt | 0.3: name says surface, but surface-alt is read from usage on --mm-paper (#FFFAF0) |  |
-| `palette:--mm-tape` | --mm-tape #F9CF6ED9 | role:custom-mm-tape | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) |  |
-| `palette:--mm-text` | --mm-text #3A2A22 | role:text,heading,border,primary-text,accent-text,section-text,link-hover | 0.95: the page text: the body colour on 11 page(s); the name --mm-text agrees |  |
-| `palette:--mm-text-body` | --mm-text-body #4E3C31 | role:custom-mm-text-body | 0.3: name says body text, but text is read from usage on --mm-cocoa (#3A2A22) |  |
-| `palette:--mm-text-muted` | --mm-text-muted #5E4A3D | role:text-muted | 0.95: the most used text colour after the text and heading colours, lighter than the text (32 elements); the name --mm-muted agrees |  |
-| `palette:--mm-white` | --mm-white #FFFFFF | role:custom-mm-white | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) |  |
-| `palette:--mm-yellow` | --mm-yellow #F9CF6E | role:primary | 0.85: the most used strong ground (32 buttons) |  |
-| `palette:--mm-yellow-soft` | --mm-yellow-soft #FCEBBE | role:custom-mm-yellow-soft | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) |  |
+| `palette:--mm-badge` | --mm-badge #EE8088 | role:accent | 0.98: the draft declares --mm-badge: var(--mm-pink); usage agrees | accept |
+| `palette:--mm-body` | --mm-body #4E3C31 | role:custom-mm-body | 0.3: name says body text, but text is read from usage on --mm-cocoa (#3A2A22) | accept |
+| `palette:--mm-cocoa` | --mm-cocoa #3A2A22 | role:heading,primary-text,accent-text,section-text,border,text,link-hover | 0.85: the most used heading colour on light grounds (55 headings) | accept |
+| `palette:--mm-cream` | --mm-cream #FBF3DC | role:footer-bg,surface | 0.85: the footer's ground on 10 page(s) | accept |
+| `palette:--mm-cta` | --mm-cta #F9CF6E | role:primary | 0.98: the draft declares --mm-cta: var(--mm-yellow); usage agrees | accept |
+| `palette:--mm-focus` | --mm-focus #3A2A22 | role:heading,primary-text,accent-text,section-text,border,text,link-hover | 0.85: the most used heading colour on light grounds (55 headings) | accept |
+| `palette:--mm-image-bg` | --mm-image-bg #F3E6CC | role:custom-mm-image-bg | 0.3: name says surface, but surface-alt is read from usage on --mm-paper (#FFFAF0) | accept |
+| `palette:--mm-line` | --mm-line #EADBC0 | role:border-light | 0.85: the next divider line colour by length, lighter than the border (24040 px) | accept |
+| `palette:--mm-line-dashed` | --mm-line-dashed #E6D4B4 | role:custom-mm-line-dashed | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) | accept |
+| `palette:--mm-link` | --mm-link #A8404F | role:link | 0.98: the draft declares --mm-link: var(--mm-pink-dark) (the slug's own name); usage agrees | accept |
+| `palette:--mm-link-hover` | --mm-link-hover #3A2A22 | role:link-hover,heading,primary-text,accent-text,section-text,border,text | 0.95: the draft declares --mm-link-hover: var(--mm-cocoa) (the slug's own name) | accept |
+| `palette:--mm-muted` | --mm-muted #5E4A3D | role:text-muted | 0.98: the draft declares --mm-text-muted: var(--mm-muted) (the slug's own name); usage agrees | accept |
+| `palette:--mm-muted-2` | --mm-muted-2 #6B5646 | role:custom-mm-muted-2 | 0.3: name says muted text, but text-muted is read from usage on --mm-muted (#5E4A3D) | accept |
+| `palette:--mm-outline` | --mm-outline #3A2A22 | role:border,heading,primary-text,accent-text,section-text,text,link-hover | 0.98: the draft declares --mm-outline: var(--mm-cocoa); usage agrees | accept |
+| `palette:--mm-paper` | --mm-paper #FFFAF0 | role:text-inverse,surface-alt | 0.85: the most used text colour on the dark ground #3A2A22 (weight 9) | accept |
+| `palette:--mm-pink` | --mm-pink #EE8088 | role:accent | 0.98: the draft declares --mm-badge: var(--mm-pink); usage agrees | accept |
+| `palette:--mm-pink-band` | --mm-pink-band #F5C2C8 | role:custom-mm-pink-band | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) | accept |
+| `palette:--mm-pink-dark` | --mm-pink-dark #A8404F | role:link | 0.98: the draft declares --mm-link: var(--mm-pink-dark) (the slug's own name); usage agrees | accept |
+| `palette:--mm-pink-soft` | --mm-pink-soft #F9D5D3 | role:section | 0.85: the most used ground after the page, raised and primary grounds (111 elements) | accept |
+| `palette:--mm-rule` | --mm-rule #3A2A224D | role:custom-mm-rule | 0.3: name says border, but border is read from usage on --mm-cocoa (#3A2A22) | accept |
+| `palette:--mm-rule-soft` | --mm-rule-soft #3A2A2247 | role:custom-mm-rule-soft | 0.3: name says border, but border is read from usage on --mm-cocoa (#3A2A22) | accept |
+| `palette:--mm-script` | --mm-script #8E3444 | role:custom-mm-script | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) | accept |
+| `palette:--mm-script-gold` | --mm-script-gold #7A5A12 | role:custom-mm-script-gold | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) | accept |
+| `palette:--mm-selected` | --mm-selected #F9CF6E | role:primary | 0.98: the draft declares --mm-cta: var(--mm-yellow); usage agrees | accept |
+| `palette:--mm-sparkle` | --mm-sparkle #E86A75 | role:custom-mm-sparkle | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) | accept |
+| `palette:--mm-surface-band` | --mm-surface-band #F5C2C8 | role:custom-mm-surface-band | 0.3: name says surface, but surface-alt is read from usage on --mm-paper (#FFFAF0) | accept |
+| `palette:--mm-surface-card` | --mm-surface-card #FFFAF0 | role:text-inverse,surface-alt | 0.85: the most used text colour on the dark ground #3A2A22 (weight 9) | accept |
+| `palette:--mm-surface-page` | --mm-surface-page #FBF3DC | role:surface,footer-bg | 0.98: the draft declares --mm-surface-page: var(--mm-cream); usage agrees | accept |
+| `palette:--mm-surface-panel` | --mm-surface-panel #F9D5D3 | role:section | 0.85: the most used ground after the page, raised and primary grounds (111 elements) | accept |
+| `palette:--mm-surface-panel-alt` | --mm-surface-panel-alt #FCEBBE | role:custom-mm-surface-panel-alt | 0.3: name says surface, but surface-alt is read from usage on --mm-paper (#FFFAF0) | accept |
+| `palette:--mm-tape` | --mm-tape #F9CF6ED9 | role:custom-mm-tape | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) | accept |
+| `palette:--mm-text` | --mm-text #3A2A22 | role:text,heading,primary-text,accent-text,section-text,border,link-hover | 0.98: the draft declares --mm-text: var(--mm-cocoa) (the slug's own name); usage agrees | accept |
+| `palette:--mm-text-body` | --mm-text-body #4E3C31 | role:custom-mm-text-body | 0.3: name says body text, but text is read from usage on --mm-cocoa (#3A2A22) | accept |
+| `palette:--mm-text-muted` | --mm-text-muted #5E4A3D | role:text-muted | 0.98: the draft declares --mm-text-muted: var(--mm-muted) (the slug's own name); usage agrees | accept |
+| `palette:--mm-white` | --mm-white #FFFFFF | role:custom-mm-white | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) | accept |
+| `palette:--mm-yellow` | --mm-yellow #F9CF6E | role:primary | 0.98: the draft declares --mm-cta: var(--mm-yellow); usage agrees | accept |
+| `palette:--mm-yellow-soft` | --mm-yellow-soft #FCEBBE | role:custom-mm-yellow-soft | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) | accept |
 
 ## Site Info (site-info)
 

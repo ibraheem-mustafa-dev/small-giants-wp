@@ -1,0 +1,33 @@
+{
+	"_comment": "The one sanctioned role-synonym vocabulary for palette slugs (FP-1 exception, Bean 2026-10-24): how a draft author's own declarations name a framework palette role. aliasNames: a var() alias token's name (its shared namespace prefix removed) that is not itself a theme.json slug -> the slug it declares. commentPhrases: a phrase in the comment beside a token declaration, or in a README line naming a hex, -> the slug it states. A name equal to a theme.json slug needs no entry. Read by lib/intake-palette-declared.mjs; tests/intake-palette-declared.test.mjs checks every slug here exists in theme.json.",
+	"aliasNames": {
+		"surface-page": "surface",
+		"page": "surface",
+		"surface-card": "surface-alt",
+		"text-body": "text",
+		"body": "text",
+		"text-heading": "heading",
+		"text-link": "link",
+		"text-link-hover": "link-hover",
+		"text-muted": "text-muted",
+		"border-default": "border",
+		"outline": "border",
+		"button-primary-bg": "primary",
+		"button-primary-fg": "primary-text",
+		"cta": "primary",
+		"badge": "accent"
+	},
+	"commentPhrases": {
+		"page background": "surface",
+		"cards": "surface-alt",
+		"default link colour": "link",
+		"link hover": "link-hover",
+		"primary cta": "primary",
+		"badges": "accent",
+		"accent": "accent",
+		"captions": "text-muted",
+		"borders": "border",
+		"outline": "border",
+		"in stock": "success"
+	}
+}

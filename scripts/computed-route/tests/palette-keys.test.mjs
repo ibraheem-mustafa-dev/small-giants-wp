@@ -34,7 +34,7 @@ export function compareClient( client ) {
 	const tokens = readTokens( path.join( REPO, 'sites', client, 'handoff' ) );
 	const recorded = JSON.parse( fs.readFileSync( path.join( REPO, 'sites', client, 'build', 'intake', 'palette.json' ), 'utf8' ) );
 	const key = JSON.parse( fs.readFileSync( keyFile( client ), 'utf8' ) );
-	const p = proposePalette( { tokens: tokens.tokens, usage: recorded.usage, slugs: VOCAB, problems: tokens.problems } );
+	const p = proposePalette( { tokens: tokens.tokens, usage: recorded.usage, slugs: VOCAB, problems: tokens.problems, folder: path.join( REPO, 'sites', client, 'handoff' ) } );
 	// A token merged into another at ΔE ≤ 1 (FR-33-2) is that value: its slugs compare under the kept hex.
 	const kept = Object.fromEntries( p.merges.map( ( m ) => [ m.from, m.to ] ) );
 	const hexOf = Object.fromEntries( p.rows.map( ( r ) => [ r.token, kept[ r.hex ] ?? r.hex ] ) );
@@ -51,9 +51,9 @@ export const REVIEW = {
 	'indus-foods': {
 		'primary-text': { key: '#E3EFF4', proposal: '#FFFFFF', class: 'key-meaning-conflict', check: 'the key takes the pale tint the draft sets for paragraphs on blue bands; white is the text of the blue buttons and most elements on blue. The Eye Care key takes the primary button\'s text (#FAF8F5) instead, so one meaning of primary-text must be ruled for every client' },
 		'text-inverse': { key: null, proposal: '#FFFFFF', class: 'key-value-not-a-token', check: 'the key keeps the framework default (#F1F5F9), a value no draft token holds; the draft sets white on its dark (footer) ground' },
-		'text-muted': { key: '#68727C', proposal: null, class: 'key-names-an-unused-token', check: '--text-muted is declared in tokens/colors.css but no element paints it and no line of the draft\'s code references its value or name; the draft\'s muted copy is one-off hexes (#5E6873, #6F8193). No fact exists to read' },
 	},
 	'eye-care-ward-end': {
+		'link-hover': { key: null, proposal: '#6F6152', class: 'declared-by-the-draft', check: 'the draft\'s token file says --acc-ink is "kicker text, link hover", so the declaration proposes it; the key (the approved build) derived link-hover from primary-dark (#0F0F0F, no draft token). By Bean\'s 2026-10-24 ruling the declaration is the source, so the key is the one to revisit' },
 		section: { key: '#FFFFFF', proposal: '#F3F0EB', class: 'key-meaning-conflict', check: 'the key gives section the raised card ground (#FFFFFF, also surface-alt); the Mama\'s key gives section a ground distinct from its raised ground (#F9D5D3 beside #FFFAF0), and the rule that reproduces Mama\'s and Indus (the most painted ground after the page, raised and primary grounds) gives the image wells here. No band, card or control fact separates the three keys' },
 	},
 	'mamas-munches-redesign': {},
@@ -62,9 +62,9 @@ export const REVIEW = {
 // Slugs the proposal takes from a token name alone (row basis `by: 'name'`): matched or not, each is a review class.
 const HOVER = 'a hover or pressed shade the 1440 rest read never paints; the agent checks a hover rule in the draft uses this value';
 export const NAME_ONLY = {
-	'indus-foods': { 'primary-dark #075E80': HOVER, 'link-hover #075E80': HOVER },
+	'indus-foods': { 'primary-dark #075E80': HOVER },
 	'eye-care-ward-end': {},
-	'mamas-munches-redesign': { 'link-hover #3A2A22': HOVER },
+	'mamas-munches-redesign': {},
 };
 
 // The key's own slugs that are not in theme.json's palette: the proposer offers each token as a custom colour, and the

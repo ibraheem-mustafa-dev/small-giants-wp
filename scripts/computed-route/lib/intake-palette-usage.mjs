@@ -30,6 +30,10 @@ const hueGap = ( x, y ) => Math.min( Math.abs( hue( x ) - hue( y ) ), 360 - Math
 const isGreen = ( hex ) => chroma( hex ) > SATURATED_C && hue( hex ) >= 110 && hue( hex ) <= 170;
 const SAME_HUE = 15;
 const MUTED_STEP = 10;
+// A light ground: text on it reads as dark copy (CIELAB L* 70 or more and low chroma).
+const LIGHT_L = 70;
+// A saturated ground this pale (L* 88 or more) is a tint and still light.
+const PALE_L = 88;
 const opaque = ( hex ) => 1 === hexToLab( hex ).alpha;
 
 // WCAG 2 contrast ratio between two hexes (alpha ignored).
@@ -90,8 +94,8 @@ export function usageRoles( groups, uses ) {
 		: give( 'text', best( tally( ( u ) => isText( u ) && ( ! surface || ! u.ground || surface.hexes.has( u.ground ) ), chars ), ( g ) => opaque( g.hex ) && chroma( g.hex ) <= SATURATED_C && readable( g ) ),
 			( n ) => `the colour of the most text on the page ground (${ n } characters; the body colour is no token's)`, true );
 	give( 'footer-bg', best( tally( ( u ) => 'footer-ground' === u.property ) ), ( n ) => `the footer's ground on ${ n } page(s)` );
-	// Headings and links count on a light, opaque ground: on a strong ground they take that ground's text colour.
-	const light = ( hex ) => !! hex && 1 === hexToLab( hex ).alpha && ( ! page || contrast( hex, page ) < 3 ) && chroma( hex ) <= SATURATED_C;
+	// Headings, links and muted text count on a light, opaque ground: on a strong ground they take that ground's text colour.
+	const light = ( hex ) => !! hex && 1 === hexToLab( hex ).alpha && lightness( hex ) >= LIGHT_L && ( chroma( hex ) <= SATURATED_C || lightness( hex ) >= PALE_L );
 	const heading = give( 'heading', best( tally( ( u ) => 'color' === u.property && HEADING_TAG.test( tag( u ) ) && ( ! u.ground || light( u.ground ) ) ) ), ( n ) => `the most used heading colour on light grounds (${ n } headings)` );
 	const links = tally( ( u ) => 'color' === u.property && 'a' === tag( u ) && ( ! u.ground || light( u.ground ) ) );
 	const linkTotal = sum( links );
@@ -147,7 +151,7 @@ export function usageRoles( groups, uses ) {
 	const sectionCopy = copyOn( section );
 	give( 'section-text', sectionCopy || on( section ), ( n ) => ( sectionCopy ? `the colour of the most text on the section ground (${ n } characters)` : `the most used text colour on the section ground (weight ${ n })` ) );
 	give( 'text-inverse', on( dark ), ( n ) => `the most used text colour on the dark ground ${ dark.hex } (weight ${ n })` );
-	give( 'text-muted', best( tally( isText, chars, true ), ( g ) => ! [ text, heading, accentText ].includes( g ) && opaque( g.hex ) && chroma( g.hex ) <= SATURATED_C && readable( g )
+	give( 'text-muted', best( tally( ( u ) => isText( u ) && ( ! u.ground || light( u.ground ) ), chars, true ), ( g ) => ! [ text, heading, accentText ].includes( g ) && opaque( g.hex ) && chroma( g.hex ) <= SATURATED_C && readable( g )
 		&& ( ! text || lightness( g.hex ) >= lightness( text.hex ) + MUTED_STEP ) ),
 	( n ) => `the colour of the most text after the text, heading and accent text, at least ${ MUTED_STEP } L* lighter than the text (${ n } characters)` );
 	// A live status message the code colours green is the success colour, painted at rest or not.

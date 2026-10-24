@@ -43558,34 +43558,24 @@
      "--mm-outline",
      "--mm-focus"
     ],
-    "role": "text",
+    "role": "heading",
     "roles": [
-     "text",
      "heading",
-     "border",
      "primary-text",
      "accent-text",
      "section-text",
+     "border",
+     "text",
      "link-hover"
     ],
-    "confidence": 0.95,
-    "why": "the page text: the body colour on 11 page(s); the name --mm-text agrees",
+    "confidence": 0.85,
+    "why": "the most used heading colour on light grounds (55 headings)",
     "by": "usage",
     "basis": [
      {
-      "role": "text",
-      "by": "usage",
-      "why": "the page text: the body colour on 11 page(s); the name --mm-text agrees"
-     },
-     {
       "role": "heading",
       "by": "usage",
-      "why": "the most used heading colour on light grounds (52 headings)"
-     },
-     {
-      "role": "border",
-      "by": "usage",
-      "why": "the most used divider line colour (1899 lines; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees"
+      "why": "the most used heading colour on light grounds (55 headings)"
      },
      {
       "role": "primary-text",
@@ -43595,17 +43585,27 @@
      {
       "role": "accent-text",
       "by": "usage",
-      "why": "the most used text colour on the accent ground (weight 85)"
+      "why": "the colour of the most text on the accent ground (408 characters)"
      },
      {
       "role": "section-text",
       "by": "usage",
-      "why": "the most used text colour on the section ground (weight 293)"
+      "why": "the colour of the most text on the section ground (1293 characters)"
+     },
+     {
+      "role": "border",
+      "by": "declared",
+      "why": "the draft declares --mm-outline: var(--mm-cocoa); usage agrees"
+     },
+     {
+      "role": "text",
+      "by": "declared",
+      "why": "the draft declares --mm-text: var(--mm-cocoa) (the slug's own name); usage agrees"
      },
      {
       "role": "link-hover",
-      "by": "name",
-      "why": "name says link hover (the name alone decides this)"
+      "by": "declared",
+      "why": "the draft declares --mm-link-hover: var(--mm-cocoa) (the slug's own name)"
      }
     ]
    },
@@ -43640,24 +43640,24 @@
     "sharedWith": [
      "--mm-surface-card"
     ],
-    "role": "surface-alt",
+    "role": "text-inverse",
     "roles": [
-     "surface-alt",
-     "text-inverse"
+     "text-inverse",
+     "surface-alt"
     ],
-    "confidence": 0.95,
-    "why": "the most used light ground after the page ground (305 elements); the name --mm-surface-card agrees",
+    "confidence": 0.85,
+    "why": "the most used text colour on the dark ground #3A2A22 (weight 9)",
     "by": "usage",
     "basis": [
-     {
-      "role": "surface-alt",
-      "by": "usage",
-      "why": "the most used light ground after the page ground (305 elements); the name --mm-surface-card agrees"
-     },
      {
       "role": "text-inverse",
       "by": "usage",
       "why": "the most used text colour on the dark ground #3A2A22 (weight 9)"
+     },
+     {
+      "role": "surface-alt",
+      "by": "declared",
+      "why": "the draft declares --mm-surface-card: var(--mm-paper); usage agrees"
      }
     ]
    },
@@ -43695,24 +43695,24 @@
     "sharedWith": [
      "--mm-surface-page"
     ],
-    "role": "surface",
+    "role": "footer-bg",
     "roles": [
-     "surface",
-     "footer-bg"
+     "footer-bg",
+     "surface"
     ],
-    "confidence": 0.95,
-    "why": "the page ground: the body background on 11 page(s); the name --mm-surface-page agrees",
+    "confidence": 0.85,
+    "why": "the footer's ground on 10 page(s)",
     "by": "usage",
     "basis": [
-     {
-      "role": "surface",
-      "by": "usage",
-      "why": "the page ground: the body background on 11 page(s); the name --mm-surface-page agrees"
-     },
      {
       "role": "footer-bg",
       "by": "usage",
       "why": "the footer's ground on 10 page(s)"
+     },
+     {
+      "role": "surface",
+      "by": "declared",
+      "why": "the draft declares --mm-surface-page: var(--mm-cream); usage agrees"
      }
     ]
    },
@@ -43791,14 +43791,14 @@
     "roles": [
      "accent"
     ],
-    "confidence": 0.85,
-    "why": "the next most used strong ground (9 buttons)",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --mm-badge: var(--mm-pink); usage agrees",
+    "by": "declared",
     "basis": [
      {
       "role": "accent",
-      "by": "usage",
-      "why": "the next most used strong ground (9 buttons)"
+      "by": "declared",
+      "why": "the draft declares --mm-badge: var(--mm-pink); usage agrees"
      }
     ]
    },
@@ -43831,6 +43831,14 @@
        "SiteHeader:151",
        "Checkout:10"
       ]
+     },
+     {
+      "property": "status-color",
+      "count": 11,
+      "draftIds": [
+       "Account.dc.html:code",
+       "SignIn.dc.html:code"
+      ]
      }
     ],
     "sharedWith": [
@@ -43840,14 +43848,14 @@
     "roles": [
      "link"
     ],
-    "confidence": 0.95,
-    "why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (88 of 479 links); the name --mm-link agrees",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --mm-link: var(--mm-pink-dark) (the slug's own name); usage agrees",
+    "by": "declared",
     "basis": [
      {
       "role": "link",
-      "by": "usage",
-      "why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (88 of 479 links); the name --mm-link agrees"
+      "by": "declared",
+      "why": "the draft declares --mm-link: var(--mm-pink-dark) (the slug's own name); usage agrees"
      }
     ]
    },
@@ -43964,14 +43972,14 @@
     "roles": [
      "primary"
     ],
-    "confidence": 0.85,
-    "why": "the most used strong ground (32 buttons)",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --mm-cta: var(--mm-yellow); usage agrees",
+    "by": "declared",
     "basis": [
      {
       "role": "primary",
-      "by": "usage",
-      "why": "the most used strong ground (32 buttons)"
+      "by": "declared",
+      "why": "the draft declares --mm-cta: var(--mm-yellow); usage agrees"
      }
     ]
    },
@@ -44079,14 +44087,14 @@
     "roles": [
      "text-muted"
     ],
-    "confidence": 0.95,
-    "why": "the most used text colour after the text and heading colours, lighter than the text (32 elements); the name --mm-muted agrees",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --mm-text-muted: var(--mm-muted) (the slug's own name); usage agrees",
+    "by": "declared",
     "basis": [
      {
       "role": "text-muted",
-      "by": "usage",
-      "why": "the most used text colour after the text and heading colours, lighter than the text (32 elements); the name --mm-muted agrees"
+      "by": "declared",
+      "why": "the draft declares --mm-text-muted: var(--mm-muted) (the slug's own name); usage agrees"
      }
     ]
    },
@@ -44277,13 +44285,13 @@
      "border-light"
     ],
     "confidence": 0.85,
-    "why": "the next divider line colour, lighter than the border (33 lines)",
+    "why": "the next divider line colour by length, lighter than the border (24040 px)",
     "by": "usage",
     "basis": [
      {
       "role": "border-light",
       "by": "usage",
-      "why": "the next divider line colour, lighter than the border (33 lines)"
+      "why": "the next divider line colour by length, lighter than the border (24040 px)"
      }
     ]
    },
@@ -44511,30 +44519,20 @@
     "roles": [
      "text",
      "heading",
-     "border",
      "primary-text",
      "accent-text",
      "section-text",
+     "border",
      "link-hover"
     ],
-    "confidence": 0.95,
-    "why": "the page text: the body colour on 11 page(s); the name --mm-text agrees",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --mm-text: var(--mm-cocoa) (the slug's own name); usage agrees",
+    "by": "declared",
     "basis": [
-     {
-      "role": "text",
-      "by": "usage",
-      "why": "the page text: the body colour on 11 page(s); the name --mm-text agrees"
-     },
      {
       "role": "heading",
       "by": "usage",
-      "why": "the most used heading colour on light grounds (52 headings)"
-     },
-     {
-      "role": "border",
-      "by": "usage",
-      "why": "the most used divider line colour (1899 lines; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees"
+      "why": "the most used heading colour on light grounds (55 headings)"
      },
      {
       "role": "primary-text",
@@ -44544,17 +44542,27 @@
      {
       "role": "accent-text",
       "by": "usage",
-      "why": "the most used text colour on the accent ground (weight 85)"
+      "why": "the colour of the most text on the accent ground (408 characters)"
      },
      {
       "role": "section-text",
       "by": "usage",
-      "why": "the most used text colour on the section ground (weight 293)"
+      "why": "the colour of the most text on the section ground (1293 characters)"
+     },
+     {
+      "role": "border",
+      "by": "declared",
+      "why": "the draft declares --mm-outline: var(--mm-cocoa); usage agrees"
+     },
+     {
+      "role": "text",
+      "by": "declared",
+      "why": "the draft declares --mm-text: var(--mm-cocoa) (the slug's own name); usage agrees"
      },
      {
       "role": "link-hover",
-      "by": "name",
-      "why": "name says link hover (the name alone decides this)"
+      "by": "declared",
+      "why": "the draft declares --mm-link-hover: var(--mm-cocoa) (the slug's own name)"
      }
     ]
    },
@@ -44628,14 +44636,14 @@
     "roles": [
      "text-muted"
     ],
-    "confidence": 0.95,
-    "why": "the most used text colour after the text and heading colours, lighter than the text (32 elements); the name --mm-muted agrees",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --mm-text-muted: var(--mm-muted) (the slug's own name); usage agrees",
+    "by": "declared",
     "basis": [
      {
       "role": "text-muted",
-      "by": "usage",
-      "why": "the most used text colour after the text and heading colours, lighter than the text (32 elements); the name --mm-muted agrees"
+      "by": "declared",
+      "why": "the draft declares --mm-text-muted: var(--mm-muted) (the slug's own name); usage agrees"
      }
     ]
    },
@@ -44670,6 +44678,14 @@
        "SiteHeader:151",
        "Checkout:10"
       ]
+     },
+     {
+      "property": "status-color",
+      "count": 11,
+      "draftIds": [
+       "Account.dc.html:code",
+       "SignIn.dc.html:code"
+      ]
      }
     ],
     "sharedWith": [
@@ -44679,14 +44695,14 @@
     "roles": [
      "link"
     ],
-    "confidence": 0.95,
-    "why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (88 of 479 links); the name --mm-link agrees",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --mm-link: var(--mm-pink-dark) (the slug's own name); usage agrees",
+    "by": "declared",
     "basis": [
      {
       "role": "link",
-      "by": "usage",
-      "why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (88 of 479 links); the name --mm-link agrees"
+      "by": "declared",
+      "why": "the draft declares --mm-link: var(--mm-pink-dark) (the slug's own name); usage agrees"
      }
     ]
    },
@@ -44787,31 +44803,21 @@
     "role": "link-hover",
     "roles": [
      "link-hover",
-     "text",
      "heading",
-     "border",
      "primary-text",
      "accent-text",
-     "section-text"
+     "section-text",
+     "border",
+     "text"
     ],
-    "confidence": 0.6,
-    "why": "name says link hover (the name alone decides this)",
-    "by": "name",
+    "confidence": 0.95,
+    "why": "the draft declares --mm-link-hover: var(--mm-cocoa) (the slug's own name)",
+    "by": "declared",
     "basis": [
-     {
-      "role": "text",
-      "by": "usage",
-      "why": "the page text: the body colour on 11 page(s); the name --mm-text agrees"
-     },
      {
       "role": "heading",
       "by": "usage",
-      "why": "the most used heading colour on light grounds (52 headings)"
-     },
-     {
-      "role": "border",
-      "by": "usage",
-      "why": "the most used divider line colour (1899 lines; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees"
+      "why": "the most used heading colour on light grounds (55 headings)"
      },
      {
       "role": "primary-text",
@@ -44821,17 +44827,27 @@
      {
       "role": "accent-text",
       "by": "usage",
-      "why": "the most used text colour on the accent ground (weight 85)"
+      "why": "the colour of the most text on the accent ground (408 characters)"
      },
      {
       "role": "section-text",
       "by": "usage",
-      "why": "the most used text colour on the section ground (weight 293)"
+      "why": "the colour of the most text on the section ground (1293 characters)"
+     },
+     {
+      "role": "border",
+      "by": "declared",
+      "why": "the draft declares --mm-outline: var(--mm-cocoa); usage agrees"
+     },
+     {
+      "role": "text",
+      "by": "declared",
+      "why": "the draft declares --mm-text: var(--mm-cocoa) (the slug's own name); usage agrees"
      },
      {
       "role": "link-hover",
-      "by": "name",
-      "why": "name says link hover (the name alone decides this)"
+      "by": "declared",
+      "why": "the draft declares --mm-link-hover: var(--mm-cocoa) (the slug's own name)"
      }
     ]
    },
@@ -44876,19 +44892,19 @@
      "surface",
      "footer-bg"
     ],
-    "confidence": 0.95,
-    "why": "the page ground: the body background on 11 page(s); the name --mm-surface-page agrees",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --mm-surface-page: var(--mm-cream); usage agrees",
+    "by": "declared",
     "basis": [
-     {
-      "role": "surface",
-      "by": "usage",
-      "why": "the page ground: the body background on 11 page(s); the name --mm-surface-page agrees"
-     },
      {
       "role": "footer-bg",
       "by": "usage",
       "why": "the footer's ground on 10 page(s)"
+     },
+     {
+      "role": "surface",
+      "by": "declared",
+      "why": "the draft declares --mm-surface-page: var(--mm-cream); usage agrees"
      }
     ]
    },
@@ -44925,24 +44941,24 @@
     "sharedWith": [
      "--mm-paper"
     ],
-    "role": "surface-alt",
+    "role": "text-inverse",
     "roles": [
-     "surface-alt",
-     "text-inverse"
+     "text-inverse",
+     "surface-alt"
     ],
-    "confidence": 0.95,
-    "why": "the most used light ground after the page ground (305 elements); the name --mm-surface-card agrees",
+    "confidence": 0.85,
+    "why": "the most used text colour on the dark ground #3A2A22 (weight 9)",
     "by": "usage",
     "basis": [
-     {
-      "role": "surface-alt",
-      "by": "usage",
-      "why": "the most used light ground after the page ground (305 elements); the name --mm-surface-card agrees"
-     },
      {
       "role": "text-inverse",
       "by": "usage",
       "why": "the most used text colour on the dark ground #3A2A22 (weight 9)"
+     },
+     {
+      "role": "surface-alt",
+      "by": "declared",
+      "why": "the draft declares --mm-surface-card: var(--mm-paper); usage agrees"
      }
     ]
    },
@@ -45164,31 +45180,21 @@
     "role": "border",
     "roles": [
      "border",
-     "text",
      "heading",
      "primary-text",
      "accent-text",
      "section-text",
+     "text",
      "link-hover"
     ],
-    "confidence": 0.95,
-    "why": "the most used divider line colour (1899 lines; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --mm-outline: var(--mm-cocoa); usage agrees",
+    "by": "declared",
     "basis": [
-     {
-      "role": "text",
-      "by": "usage",
-      "why": "the page text: the body colour on 11 page(s); the name --mm-text agrees"
-     },
      {
       "role": "heading",
       "by": "usage",
-      "why": "the most used heading colour on light grounds (52 headings)"
-     },
-     {
-      "role": "border",
-      "by": "usage",
-      "why": "the most used divider line colour (1899 lines; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees"
+      "why": "the most used heading colour on light grounds (55 headings)"
      },
      {
       "role": "primary-text",
@@ -45198,17 +45204,27 @@
      {
       "role": "accent-text",
       "by": "usage",
-      "why": "the most used text colour on the accent ground (weight 85)"
+      "why": "the colour of the most text on the accent ground (408 characters)"
      },
      {
       "role": "section-text",
       "by": "usage",
-      "why": "the most used text colour on the section ground (weight 293)"
+      "why": "the colour of the most text on the section ground (1293 characters)"
+     },
+     {
+      "role": "border",
+      "by": "declared",
+      "why": "the draft declares --mm-outline: var(--mm-cocoa); usage agrees"
+     },
+     {
+      "role": "text",
+      "by": "declared",
+      "why": "the draft declares --mm-text: var(--mm-cocoa) (the slug's own name); usage agrees"
      },
      {
       "role": "link-hover",
-      "by": "name",
-      "why": "name says link hover (the name alone decides this)"
+      "by": "declared",
+      "why": "the draft declares --mm-link-hover: var(--mm-cocoa) (the slug's own name)"
      }
     ]
    },
@@ -45250,14 +45266,14 @@
     "roles": [
      "primary"
     ],
-    "confidence": 0.85,
-    "why": "the most used strong ground (32 buttons)",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --mm-cta: var(--mm-yellow); usage agrees",
+    "by": "declared",
     "basis": [
      {
       "role": "primary",
-      "by": "usage",
-      "why": "the most used strong ground (32 buttons)"
+      "by": "declared",
+      "why": "the draft declares --mm-cta: var(--mm-yellow); usage agrees"
      }
     ]
    },
@@ -45299,14 +45315,14 @@
     "roles": [
      "primary"
     ],
-    "confidence": 0.85,
-    "why": "the most used strong ground (32 buttons)",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --mm-cta: var(--mm-yellow); usage agrees",
+    "by": "declared",
     "basis": [
      {
       "role": "primary",
-      "by": "usage",
-      "why": "the most used strong ground (32 buttons)"
+      "by": "declared",
+      "why": "the draft declares --mm-cta: var(--mm-yellow); usage agrees"
      }
     ]
    },
@@ -45339,14 +45355,14 @@
     "roles": [
      "accent"
     ],
-    "confidence": 0.85,
-    "why": "the next most used strong ground (9 buttons)",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --mm-badge: var(--mm-pink); usage agrees",
+    "by": "declared",
     "basis": [
      {
       "role": "accent",
-      "by": "usage",
-      "why": "the next most used strong ground (9 buttons)"
+      "by": "declared",
+      "why": "the draft declares --mm-badge: var(--mm-pink); usage agrees"
      }
     ]
    },
@@ -45444,34 +45460,24 @@
      "--mm-link-hover",
      "--mm-outline"
     ],
-    "role": "text",
+    "role": "heading",
     "roles": [
-     "text",
      "heading",
-     "border",
      "primary-text",
      "accent-text",
      "section-text",
+     "border",
+     "text",
      "link-hover"
     ],
-    "confidence": 0.95,
-    "why": "the page text: the body colour on 11 page(s); the name --mm-text agrees",
+    "confidence": 0.85,
+    "why": "the most used heading colour on light grounds (55 headings)",
     "by": "usage",
     "basis": [
      {
-      "role": "text",
-      "by": "usage",
-      "why": "the page text: the body colour on 11 page(s); the name --mm-text agrees"
-     },
-     {
       "role": "heading",
       "by": "usage",
-      "why": "the most used heading colour on light grounds (52 headings)"
-     },
-     {
-      "role": "border",
-      "by": "usage",
-      "why": "the most used divider line colour (1899 lines; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees"
+      "why": "the most used heading colour on light grounds (55 headings)"
      },
      {
       "role": "primary-text",
@@ -45481,17 +45487,27 @@
      {
       "role": "accent-text",
       "by": "usage",
-      "why": "the most used text colour on the accent ground (weight 85)"
+      "why": "the colour of the most text on the accent ground (408 characters)"
      },
      {
       "role": "section-text",
       "by": "usage",
-      "why": "the most used text colour on the section ground (weight 293)"
+      "why": "the colour of the most text on the section ground (1293 characters)"
+     },
+     {
+      "role": "border",
+      "by": "declared",
+      "why": "the draft declares --mm-outline: var(--mm-cocoa); usage agrees"
+     },
+     {
+      "role": "text",
+      "by": "declared",
+      "why": "the draft declares --mm-text: var(--mm-cocoa) (the slug's own name); usage agrees"
      },
      {
       "role": "link-hover",
-      "by": "name",
-      "why": "name says link hover (the name alone decides this)"
+      "by": "declared",
+      "why": "the draft declares --mm-link-hover: var(--mm-cocoa) (the slug's own name)"
      }
     ]
    }
@@ -45844,6 +45860,7 @@
    }
   ],
   "merges": [],
+  "disagreements": [],
   "usageFrom": "computed colour properties of 3056 rest-mode reading records, one 1440 read per route"
  },
  "siteInfo": {
@@ -111807,302 +111824,6 @@
    "carriedFrom": null
   },
   {
-   "rowId": "palette:--mm-cocoa",
-   "rowType": "palette-role",
-   "contentHash": "23d3c655a5fa92acbcc834c7b187d0dcfcb97df723fef139aab79684221b87b5",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-paper",
-   "rowType": "palette-role",
-   "contentHash": "101079c22355ee93cdde0bdad92d4eb124467675832814dddccd85d544ad1acd",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-cream",
-   "rowType": "palette-role",
-   "contentHash": "a6121cfca4f620c92bfd3027355b58967965f9abd0661d2a4cb8f3f2e3bbaa09",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-white",
-   "rowType": "palette-role",
-   "contentHash": "a3e347a6cfadc2b1ccb52128a2398069200c2f9bfc47c2c1404850558c179d51",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-pink",
-   "rowType": "palette-role",
-   "contentHash": "fb1935752b4e2a990466f5d217aa49ed1757541b2c76922e0a76ddb337da4b24",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-pink-dark",
-   "rowType": "palette-role",
-   "contentHash": "02cb6ecfbb623b8cdf6df17046314d568e9ccc6fd7603cc55f262e08829adf43",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-pink-band",
-   "rowType": "palette-role",
-   "contentHash": "7d761c0993850ecbac273f65b51dc8705cace5c33dd021a094383342d8d73740",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-pink-soft",
-   "rowType": "palette-role",
-   "contentHash": "22fd4a347c12bc0f2561542595b1e0efff639d09eb363c70a9ffd8c48dae96e7",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-yellow",
-   "rowType": "palette-role",
-   "contentHash": "d718f5a582e6153f52cabd1240d2032bedf0c71c8050244a44232a9e678dd3ab",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-yellow-soft",
-   "rowType": "palette-role",
-   "contentHash": "2d82a9e54f9fcb6bb3eeb592d60e04a2b5baa621376459de7199e1ce26b79611",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-body",
-   "rowType": "palette-role",
-   "contentHash": "dcc7ad1f6e754d6e870ef69b2ed07ef83bb5e8909fdc6d547fc918f3891e3c5e",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-muted",
-   "rowType": "palette-role",
-   "contentHash": "f315471b939fe540a1d3fe26d748a9ed31afd92e3b5d1918dcca4b439a4af36b",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-muted-2",
-   "rowType": "palette-role",
-   "contentHash": "136d7178f57e7045ccf88b46332f202b30f3e61c414347c0ade613cb674b605d",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-script",
-   "rowType": "palette-role",
-   "contentHash": "3649e0bf128f65d0303db0751ee189aeb8c7ef2c17563af3095839b7e8fd6714",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-script-gold",
-   "rowType": "palette-role",
-   "contentHash": "47ba3e7d2d481c81819fa88a116401ca647908b0c91e2dbfdace2e9d957a5629",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-sparkle",
-   "rowType": "palette-role",
-   "contentHash": "fc368ab544334a42ea195741932b2af9068505a182e714ae1843bd0e870d79ec",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-image-bg",
-   "rowType": "palette-role",
-   "contentHash": "cdf222245531d4e2e8a02a3bed28659e178e7f2bc4fbc667359e8d543088e490",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-line",
-   "rowType": "palette-role",
-   "contentHash": "474965924e0a2dff291809532503a896d64f2eb9a8d4dda7462985a4d64d8e0d",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-line-dashed",
-   "rowType": "palette-role",
-   "contentHash": "41dd1bab835b1cd1b284efe17e3a266e89c80ab7e9ba03bb490f960e6eed2c87",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-rule",
-   "rowType": "palette-role",
-   "contentHash": "cc63197a85947f794ca2ed567c28060d679c46ad519d51f468ef5d8b19173ffb",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-rule-soft",
-   "rowType": "palette-role",
-   "contentHash": "5e5793303924b76c532c36568b3641445c224b2d51eb57fd9d46a33a2e179b15",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-tape",
-   "rowType": "palette-role",
-   "contentHash": "ed867a83c291070cdc743fe82c1101f161d0d77d9552de7378cf2bae6f88183c",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-text",
-   "rowType": "palette-role",
-   "contentHash": "b8efdd615b9706b0a80b360a8bccf7faf1b354c912681d0be780757e07e1b0fd",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-text-body",
-   "rowType": "palette-role",
-   "contentHash": "c8dfac868342c1f499e3d3997c1d8f0de43b6ef0f1c8cfa5daeb90af7e0faa04",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-text-muted",
-   "rowType": "palette-role",
-   "contentHash": "8b2c2ad11380c4ddab771a1bcd33270b58d8aef1cfac0d3e3dbbe1fc20199a6c",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-link",
-   "rowType": "palette-role",
-   "contentHash": "8e79afed533649f22e29d28728d8436d32d08b9cc27738abaea6e4300d0ee1b6",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-link-hover",
-   "rowType": "palette-role",
-   "contentHash": "de46759d526fa1c86b6bc23e59e19e51cd8c5e4df75949d3056a94827ad42b20",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-surface-page",
-   "rowType": "palette-role",
-   "contentHash": "af960a4ba93ba6bb81f55da43a732aaaf011bbbbb77317bb88cfd9ed44a5bc03",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-surface-card",
-   "rowType": "palette-role",
-   "contentHash": "995e1fc3f8b72d4f579dda74769c31cd2ec53d193d0673c62354064d8e408782",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-surface-band",
-   "rowType": "palette-role",
-   "contentHash": "4e32f9079dd9d5604f059597e52c4d17933bc06e05b758bc9aca876172d0c679",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-surface-panel",
-   "rowType": "palette-role",
-   "contentHash": "42677220ac976f0038dfd80e6d7d21c00f55c350135fad3dcd72beddae03e202",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-surface-panel-alt",
-   "rowType": "palette-role",
-   "contentHash": "72b7cff5fe7b97984158d2362e887527cea730b5a9352dbc6c49158d1313d61a",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-outline",
-   "rowType": "palette-role",
-   "contentHash": "4febbbf9ec52a49e2b99e1452d29c99bfb7758a3c3caf5b0338b087e342a262a",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-cta",
-   "rowType": "palette-role",
-   "contentHash": "94c779b891b5db1fa8747f6674dc9b9b1992f26b76cf79f508bf418a7bdaca7a",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-selected",
-   "rowType": "palette-role",
-   "contentHash": "f2b6668338d03e4d5008aae88698791ee439c9ac61a366656563f96944ebefbb",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-badge",
-   "rowType": "palette-role",
-   "contentHash": "19018e0497fd50279f00d49068e191096cede5002155c9ed6a16f49bc1d6d1e4",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
-   "rowId": "palette:--mm-focus",
-   "rowType": "palette-role",
-   "contentHash": "fb145f17deac51ffb104c903b3247b05f02a841ef58410fae6e01e8e053229dc",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": null
-  },
-  {
    "rowId": "siteinfo:socials.instagram",
    "rowType": "site-info",
    "contentHash": "c6a0aeee8fb3757574c6a0228d47399315e01a075468bdc76f26e5af7699803d",
@@ -124548,6 +124269,302 @@
    "contentHash": "7f85b12db6e80eec4560e2e3aa1602a5b2ab049098cc1f74ec1809e049857de0",
    "mark": null,
    "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-cocoa",
+   "rowType": "palette-role",
+   "contentHash": "826932e653c2daebe9b1c1629c11f373f410dd0ffeeaab289e3b6a45d9e1a648",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-paper",
+   "rowType": "palette-role",
+   "contentHash": "2ac30a71fe36a49e4bd9755e13409f5d13b30de01152497cf422c319463c4a37",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-cream",
+   "rowType": "palette-role",
+   "contentHash": "d179cb5b2692bea1452abe56ad2eff196e552a087f5c503a0d79076d9abc016e",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-white",
+   "rowType": "palette-role",
+   "contentHash": "a3e347a6cfadc2b1ccb52128a2398069200c2f9bfc47c2c1404850558c179d51",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-pink",
+   "rowType": "palette-role",
+   "contentHash": "fb1935752b4e2a990466f5d217aa49ed1757541b2c76922e0a76ddb337da4b24",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-pink-dark",
+   "rowType": "palette-role",
+   "contentHash": "02cb6ecfbb623b8cdf6df17046314d568e9ccc6fd7603cc55f262e08829adf43",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-pink-band",
+   "rowType": "palette-role",
+   "contentHash": "7d761c0993850ecbac273f65b51dc8705cace5c33dd021a094383342d8d73740",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-pink-soft",
+   "rowType": "palette-role",
+   "contentHash": "22fd4a347c12bc0f2561542595b1e0efff639d09eb363c70a9ffd8c48dae96e7",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-yellow",
+   "rowType": "palette-role",
+   "contentHash": "d718f5a582e6153f52cabd1240d2032bedf0c71c8050244a44232a9e678dd3ab",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-yellow-soft",
+   "rowType": "palette-role",
+   "contentHash": "2d82a9e54f9fcb6bb3eeb592d60e04a2b5baa621376459de7199e1ce26b79611",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-body",
+   "rowType": "palette-role",
+   "contentHash": "dcc7ad1f6e754d6e870ef69b2ed07ef83bb5e8909fdc6d547fc918f3891e3c5e",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-muted",
+   "rowType": "palette-role",
+   "contentHash": "f315471b939fe540a1d3fe26d748a9ed31afd92e3b5d1918dcca4b439a4af36b",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-muted-2",
+   "rowType": "palette-role",
+   "contentHash": "136d7178f57e7045ccf88b46332f202b30f3e61c414347c0ade613cb674b605d",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-script",
+   "rowType": "palette-role",
+   "contentHash": "3649e0bf128f65d0303db0751ee189aeb8c7ef2c17563af3095839b7e8fd6714",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-script-gold",
+   "rowType": "palette-role",
+   "contentHash": "47ba3e7d2d481c81819fa88a116401ca647908b0c91e2dbfdace2e9d957a5629",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-sparkle",
+   "rowType": "palette-role",
+   "contentHash": "fc368ab544334a42ea195741932b2af9068505a182e714ae1843bd0e870d79ec",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-image-bg",
+   "rowType": "palette-role",
+   "contentHash": "cdf222245531d4e2e8a02a3bed28659e178e7f2bc4fbc667359e8d543088e490",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-line",
+   "rowType": "palette-role",
+   "contentHash": "474965924e0a2dff291809532503a896d64f2eb9a8d4dda7462985a4d64d8e0d",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-line-dashed",
+   "rowType": "palette-role",
+   "contentHash": "41dd1bab835b1cd1b284efe17e3a266e89c80ab7e9ba03bb490f960e6eed2c87",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-rule",
+   "rowType": "palette-role",
+   "contentHash": "cc63197a85947f794ca2ed567c28060d679c46ad519d51f468ef5d8b19173ffb",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-rule-soft",
+   "rowType": "palette-role",
+   "contentHash": "5e5793303924b76c532c36568b3641445c224b2d51eb57fd9d46a33a2e179b15",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-tape",
+   "rowType": "palette-role",
+   "contentHash": "ed867a83c291070cdc743fe82c1101f161d0d77d9552de7378cf2bae6f88183c",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-text",
+   "rowType": "palette-role",
+   "contentHash": "c11eb41cf21fae2922dfdbcfc4ce1ecc15a671bdb762bed07f394e53bd08ac67",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-text-body",
+   "rowType": "palette-role",
+   "contentHash": "c8dfac868342c1f499e3d3997c1d8f0de43b6ef0f1c8cfa5daeb90af7e0faa04",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-text-muted",
+   "rowType": "palette-role",
+   "contentHash": "8b2c2ad11380c4ddab771a1bcd33270b58d8aef1cfac0d3e3dbbe1fc20199a6c",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-link",
+   "rowType": "palette-role",
+   "contentHash": "8e79afed533649f22e29d28728d8436d32d08b9cc27738abaea6e4300d0ee1b6",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-link-hover",
+   "rowType": "palette-role",
+   "contentHash": "3ef042697a737d53abdaf44083061039700702b85d61c00278d18c2cc6571ce3",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-surface-page",
+   "rowType": "palette-role",
+   "contentHash": "af960a4ba93ba6bb81f55da43a732aaaf011bbbbb77317bb88cfd9ed44a5bc03",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-surface-card",
+   "rowType": "palette-role",
+   "contentHash": "cac3fe857c180ff74f7921833f88953997620340aaa587fca38f95563262fb0a",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-surface-band",
+   "rowType": "palette-role",
+   "contentHash": "4e32f9079dd9d5604f059597e52c4d17933bc06e05b758bc9aca876172d0c679",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-surface-panel",
+   "rowType": "palette-role",
+   "contentHash": "42677220ac976f0038dfd80e6d7d21c00f55c350135fad3dcd72beddae03e202",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-surface-panel-alt",
+   "rowType": "palette-role",
+   "contentHash": "72b7cff5fe7b97984158d2362e887527cea730b5a9352dbc6c49158d1313d61a",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-outline",
+   "rowType": "palette-role",
+   "contentHash": "53bd984634c997cd5f8fd22e2b2e3693b42b66e00472e664d9a4891bc1526aaf",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-cta",
+   "rowType": "palette-role",
+   "contentHash": "94c779b891b5db1fa8747f6674dc9b9b1992f26b76cf79f508bf418a7bdaca7a",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-selected",
+   "rowType": "palette-role",
+   "contentHash": "f2b6668338d03e4d5008aae88698791ee439c9ac61a366656563f96944ebefbb",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-badge",
+   "rowType": "palette-role",
+   "contentHash": "19018e0497fd50279f00d49068e191096cede5002155c9ed6a16f49bc1d6d1e4",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "palette:--mm-focus",
+   "rowType": "palette-role",
+   "contentHash": "c20d67aee14a62a69d13b5a22500c15df5f9f454d51664e31f57a4172993b63a",
+   "mark": "accept",
+   "markedOn": "2026-10-24",
    "carriedFrom": null
   }
  ]

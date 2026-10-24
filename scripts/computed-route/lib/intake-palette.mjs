@@ -12,6 +12,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { colourHex } from './tokens.mjs';
 import { usageRoles, isBorder, SATURATED_C } from './intake-palette-usage.mjs';
+import { declarations, declaredRoles } from './intake-palette-declared.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const THEME_JSON = path.resolve( HERE, '../../../theme/sgs-theme/theme.json' );
@@ -227,12 +228,16 @@ function evidence( s, role ) {
 	return s.byProperty.color || 0;
 }
 
-// The proposal: { rows, unused, oneOff, merges, tokens, vocabulary, problems } (see the module comment). Each row carries
-// `roles` (every slug its value fills, the shown `role` first), `by` ('usage', 'name' or 'none') and `basis` ([{ role,
+// The proposal: { rows, unused, oneOff, merges, tokens, vocabulary, problems, disagreements } (see the module comment).
+// The draft's own declarations (lib/intake-palette-declared.mjs: its var() aliases, the comments beside its tokens and
+// its README; `folder` is the handoff folder) decide first; usage serves as their check and fills what they leave.
+// `disagreements` lists each slug a declaration and the painted usage give different values ([{ slug, declared:
+// { token, hex, why }, painted: { hex, why } }]): a reader defect to trace, never a choice. Each row carries
+// `roles` (every slug its value fills, the shown `role` first), `by` ('declared', 'usage', 'name' or 'none') and `basis` ([{ role,
 // by, why }]). `usage` is [{ hex (any colour form), property, draftId, count, tag?, ground?, text? }] (lib/intake-run-
 // collapse.mjs::paletteUsage plus lib/intake-palette-grounds.mjs::groundUsage); `slugs` is [{ slug, name }] (theme.json's
 // by default); `problems` carries lib/tokens.mjs's problems through.
-export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSlugs(), problems: carried = [] } = {} ) {
+export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSlugs(), problems: carried = [], folder = null } = {} ) {
 	const vocab = new Set( slugs.map( ( s ) => s.slug ) );
 	const problems = [ ...carried ];
 	const uses = usage.map( ( u ) => ( { ...u, hex: colourHex( u.hex ), ...( u.ground ? { ground: colourHex( u.ground ) } : {} ) } ) ).filter( ( u, k ) => u.hex ||
@@ -273,6 +278,28 @@ export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSl
 		weak.push( ...list.filter( ( r ) => r.weak ).map( ( r ) => [ g, r ] ) );
 	}
 	const holderOf = ( slug ) => [ ...roles.entries() ].find( ( [ , list ] ) => list.some( ( r ) => r.role === slug ) )?.[ 0 ] ?? null;
+	// The draft's declarations decide: each declared slug moves to its declared value; where usage gave it another value,
+	// that is recorded as a disagreement for the reader to answer for.
+	const disagreements = [];
+	for ( const [ slug, d ] of declaredRoles( declarations( { tokens: colours, folder, slugs: [ ...vocab ] } ) ).roles ) {
+		const g = groups.find( ( x ) => [ ...x.hexes ].some( ( h ) => h.toUpperCase() === d.hex.toUpperCase() ) );
+		if ( ! g ) {
+			continue;
+		}
+		const painted = holderOf( slug ) || weak.find( ( [ , r ] ) => r.role === slug )?.[ 0 ] || null;
+		const was = painted ? ( roles.get( painted ) || [] ).find( ( r ) => r.role === slug ) || weak.find( ( [ x, r ] ) => x === painted && r.role === slug )?.[ 1 ] : null;
+		if ( painted && painted !== g ) {
+			disagreements.push( { slug, declared: { token: d.token, hex: d.hex, why: d.why }, painted: { hex: painted.hex, why: was?.why ?? '' } } );
+		} else if ( ! painted && read.blocked[ slug ] && ! g.hexes.has( read.blocked[ slug ] ) ) {
+			disagreements.push( { slug, declared: { token: d.token, hex: d.hex, why: d.why }, painted: { hex: read.blocked[ slug ], why: 'a colour no token declares does this job most' } } );
+		}
+		for ( const [ x, list ] of roles ) {
+			roles.set( x, list.filter( ( r ) => r.role !== slug ) );
+		}
+		weak.splice( 0, weak.length, ...weak.filter( ( [ , r ] ) => r.role !== slug ) );
+		delete read.blocked[ slug ];
+		roles.set( g, [ ...( roles.get( g ) || [] ), { role: slug, why: d.why + ( painted === g ? '; usage agrees' : '' ), by: 'declared', confidence: painted === g ? 0.98 : 0.95 } ] );
+	}
 	const lost = new Map();
 	const hints = colours.filter( ( t ) => hintOf.get( t.name )?.role ).map( ( t ) => ( { t, g: groupOf.get( t.name ), ...hintOf.get( t.name ) } ) )
 		.sort( ( a, b ) => evidence( b.g.summary, b.role ) - evidence( a.g.summary, a.role ) || colours.indexOf( a.t ) - colours.indexOf( b.t ) );
@@ -334,7 +361,7 @@ export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSl
 		const list = roles.get( g ) || [];
 		const row = { rowId: `palette:${ t.name }`, token: t.name, hex: t.hex, resolved: t.resolved, chain: t.chain, used: g.summary.total > 0,
 			uses: g.summary.uses, sharedWith: g.members.filter( ( m ) => m !== t.name ), ...( g.hexes.size > 1 ? { value: painted( g ) } : {} ) };
-		if ( ! row.used ) {
+		if ( ! row.used && ! list.some( ( r ) => 'declared' === r.by ) ) {
 			return { ...row, role: null, roles: [], confidence: 0, why: 'unused: no element in the draft uses this value', by: 'none' };
 		}
 		if ( ! list.length && ! wanted.has( g ) ) {
@@ -361,5 +388,5 @@ export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSl
 		}
 		return o;
 	} );
-	return { rows, unused: rows.filter( ( r ) => ! r.used ).map( ( r ) => r.token ), oneOff, merges, tokens, vocabulary: slugs.map( ( s ) => s.slug ), problems };
+	return { rows, unused: rows.filter( ( r ) => ! r.used ).map( ( r ) => r.token ), oneOff, merges, tokens, vocabulary: slugs.map( ( s ) => s.slug ), problems, disagreements };
 }

@@ -1,0 +1,13 @@
+[
+	{ "file": "lib/intake-palette-declared.mjs", "find": "if ( vocab.has( own ) ) {", "replace": "if ( false ) {", "why": "an alias named for a slug declares it" },
+	{ "file": "lib/intake-palette-declared.mjs", "find": "} else if ( words.aliasNames[ own ] && vocab.has( words.aliasNames[ own ] ) ) {", "replace": "} else if ( false ) {", "why": "an alias the vocabulary names declares its slug" },
+	{ "file": "lib/intake-palette-declared.mjs", "find": "const own = wordsOf( t.name ).filter( ( w, i ) => ! ( 0 === i && w === ns ) ).join( '-' );", "replace": "const own = wordsOf( t.name ).join( '-' );", "why": "a shared namespace word is not part of the role name" },
+	{ "file": "lib/intake-palette-declared.mjs", "find": ".split( /\\s+/ ).slice( 0, 3 ).join( ' ' ) );", "replace": ".split( /\\s+/ ).join( ' ' ) );", "why": "a comment states a use near the start of a clause" },
+	{ "file": "lib/intake-palette-declared.mjs", "find": "c.replace( /^[^:]*:\\s*/, '' )", "replace": "c", "why": "a clause's leading label is not its use" },
+	{ "file": "lib/intake-palette-declared.mjs", "find": "gap.length <= 12 && ! /\\d/.test( gap ) && ! COLOUR_PROPERTY.test( gap )", "replace": "gap.length <= 12 && ! /\\d/.test( gap )", "why": "a README phrase does not reach past another colour property" },
+	{ "file": "lib/intake-palette-declared.mjs", "find": "const top = Math.max( ...ds.map( ( d ) => d.strength ) );", "replace": "const top = Math.min( ...ds.map( ( d ) => d.strength ) );", "why": "the strongest declaration wins" },
+	{ "file": "lib/intake-palette-declared.mjs", "find": "if ( 1 === hexes.length ) {", "replace": "if ( hexes.length ) {", "why": "a tie between colours cancels" },
+	{ "file": "lib/intake-palette.mjs", "find": "for ( const [ slug, d ] of declaredRoles( declarations( { tokens: colours, folder, slugs: [ ...vocab ] } ) ).roles ) {", "replace": "for ( const [ slug, d ] of new Map() ) {", "why": "declarations decide the proposal" },
+	{ "file": "lib/intake-palette.mjs", "find": "if ( painted && painted !== g ) {", "replace": "if ( false ) {", "why": "a painted disagreement is listed" },
+	{ "file": "lib/intake-palette.mjs", "find": "if ( ! row.used && ! list.some( ( r ) => 'declared' === r.by ) ) {", "replace": "if ( ! row.used ) {", "why": "a declared token nothing paints keeps its slug" }
+]
