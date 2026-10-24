@@ -52,6 +52,7 @@ import declared_sources
 import derive as derive_mod
 import font_weights
 import heading_weight
+import motion_tokens
 import palette as palette_mod
 import presets as presets_mod
 import palette_refs
@@ -892,6 +893,11 @@ def main(argv=None) -> int:
         existing_path = pathlib.Path(args.merge_onto)
         if existing_path.is_file():
             snap = merge_onto(snap, json.loads(existing_path.read_text(encoding="utf-8")), trace)
+    # FR-33-1: the draft's easings land in settings.custom.easing after the merge (the merge keeps the client's
+    # whole easing object), and its hover movement timing is proposed in the trace only.
+    draft_tokens = token_files.read_token_files(draft.parent)
+    motion_tokens.apply_easings(snap, draft_tokens, html, trace)
+    motion_tokens.propose_movement_timing(html, draft_tokens, trace)
     if confirmed is not None:
         # The merge may carry slugs Bean did not confirm; the confirmed map still decides.
         confirmed_palette.apply_confirmed(snap, confirmed, framework, trace, draft_slugs)
@@ -929,6 +935,10 @@ def main(argv=None) -> int:
     trace_path.write_text(json.dumps(trace, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"Wrote {out_path}")
     print(f"Wrote {trace_path}  ({len(trace)} rows)")
+    for row in trace:
+        if row.get("what") == "hover-movement-timing":
+            print(f"  hover-movement-timing proposal: {row['duration_ms']}ms {row['easing']} "
+                  f"({row['uses']} of {row['of']} movement transitions)")
     print(f"  _sgsExtractor.draft_css_sha256={snap['_sgsExtractor']['draft_css_sha256'][:12]}… "
           f"(FR-33-12 freshness key embedded in the snapshot)")
     return 0
