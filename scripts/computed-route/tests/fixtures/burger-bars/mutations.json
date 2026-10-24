@@ -1,0 +1,14 @@
+[
+	{"file": "lib/fill-motion-element.mjs", "find": "const ANCESTOR_HOVER = /^the parent", "replace": "const ANCESTOR_HOVER = /^never the parent", "why": "an ancestor-driven hover is never seen"},
+	{"file": "lib/fill-motion-element.mjs", "find": "const x = ( m ? m[ 1 ] : s ).trim();", "replace": "const x = s;", "why": "a var() fallback is not the resting length"},
+	{"file": "lib/fill-motion-element.mjs", "find": "const values = { restWidth: rest, width: to,", "replace": "const values = { width: to,", "why": "the resting width is dropped"},
+	{"file": "lib/fill-motion-element.mjs", "find": "'number' === typeof at( 'delay_ms' ) && at( 'delay_ms' ) > 0 && ( values.delay = at( 'delay_ms' ) );", "replace": "", "why": "the record's delay is dropped"},
+	{"file": "lib/fill-motion-element.mjs", "find": "&& ( values.easing = String( at( 'easing' ) ).trim() );", "replace": ";", "why": "the record's easing is dropped"},
+	{"file": "lib/fill-motion-element.mjs", "find": "if ( ! rest || ! to ) {", "replace": "if ( false ) {", "why": "a width that is not a px length is written as it is"},
+	{"file": "lib/fill-motion-element.mjs", "find": "const others = w ? records.map(", "replace": "const others = false ? records.map(", "why": "the width hover is still sent to the layer that routes it by hand"},
+	{"file": "lib/fill-motion-element.mjs", "find": "if ( w.values && ! h.layer ) {", "replace": "if ( false ) {", "why": "a width hover alone makes no layer"},
+	{"file": "lib/fill-motion-element.mjs", "find": "itemHost ? ( h.layer.source = 'item' ) : h.unmapped.push(", "replace": "itemHost ? null : h.unmapped.push(", "why": "the item host is never the source"},
+	{"file": "lib/fill-motion-element.mjs", "find": "itemHost ? ( h.layer.source = 'item' ) : h.unmapped.push( `", "replace": "itemHost ? ( h.layer.source = 'item' ) : [].push( `", "why": "a hover with no item host to play from leaves no row"},
+	{"file": "lib/fill-motion.mjs", "find": "items = String( JSON.parse( row?.support_value ?? '{}' )?.animationItems ?? '' );", "replace": "items = 'x';", "why": "every block is an item host"},
+	{"file": "lib/fill-motion.mjs", "find": "target, itemHost: itemHost( db, n.name ) } );", "replace": "target } );", "why": "the item host never reaches the hover layer"}
+]

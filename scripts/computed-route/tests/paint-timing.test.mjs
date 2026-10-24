@@ -45,6 +45,7 @@ test( 'MUST FAIL: paint properties timed two ways leave one row for the minority
 	assert.deepEqual( rows.map( ( u ) => [ u.property, JSON.parse( u.value ) ] ), [ [ DUR, [ { properties: [ 'box-shadow' ], value: '0.25s' } ] ] ], 'box-shadow sits in transform\'s group but runs on the paint timing' );
 	assert.match( rows[ 0 ].reason, /colour, background, border colour and shadow of this element with one transition-duration, 0\.2s \(background, color\)/ );
 	assert.deepEqual( W.map( ( w ) => paintTimings( reads( { [ PROP ]: 'transform, box-shadow, background, color', [ DUR ]: '0.25s, 0.25s, 0.2s, 0.2s' }, {} ), 't' )[ w ][ DUR ].value ), [ '0.2s', '0.2s', '0.2s' ] );
+	assert.equal( paintTimings( reads( { [ PROP ]: 'background, color, box-shadow', [ DUR ]: '0.2s, 0.2s, 0.25s' }, {} ), 't' )[ 1440 ][ DUR ].value, '0.2s', 'the timing most paint properties share, wherever it sits in the list' );
 } );
 
 test( 'MUST FAIL: the paint timing is written where it differs from transition.fast, and not where it equals it', () => {
@@ -66,6 +67,10 @@ test( 'MUST FAIL: a narrower width that times the paint differently is a device 
 	assert.deepEqual( p.devices, { mobile: { paintDuration: 100 } } );
 	assert.equal( p.unmapped.length, 1 );
 	assert.match( p.unmapped[ 0 ], /linear at 375px .* holds paintEasing for all devices at once$/ );
+	// The phone tier alone at transition.fast still writes the wider tiers' own timing, and the phone's beside it.
+	const phoneFast = paintLayer( paintTimings( reads( BURGER, LIFT, ( w ) => ( 375 === w ? BURGER : { ...BURGER, [ DUR ]: '0.2s, 0.2s, 0.4s, 0.2s' } ) ), 't' ), ctx );
+	assert.deepEqual( phoneFast.values, { paintDuration: 200, paintEasing: 'token:easing.ease' } );
+	assert.deepEqual( phoneFast.devices, { mobile: { paintDuration: 'token:duration.fast' } } );
 } );
 
 test( 'MUST FAIL: `all` stands for the paint properties the hover look changes; nothing transitioned as paint gives no paint timing', () => {

@@ -12,10 +12,11 @@ export const SCROLL_Y = 600;
 
 // In-page: every element of each instance (or only the instance `only`), its path and the read properties.
 // Self-contained; pathSrc is elementPath's source. On the instances listed in ownAt (the default instances), an
-// inherited property (ownProps) an element paints itself is recorded as `_own:<prop>`, with its font size as `_fs`, and
-// the context a value is judged in beside it: the parent's display as `_parentDisplay` and the element's position as
-// `_position` (lib/fill-prop.mjs::calibratedContext; its direction is a read property). A marked instance carries none of
-// these, so the slot finder never takes them for a setting's change.
+// inherited property (ownProps) an element paints itself is recorded as `_own:<prop>`, with its font size as `_fs`, as is
+// a minimum size the element declares (`_own:min-height`, `_own:min-width`), and the context a value is judged in beside
+// it: the parent's display as `_parentDisplay` and the element's position as `_position` (lib/fill-prop.mjs::
+// calibratedContext; its direction is a read property). A marked instance carries none of these, so the slot finder
+// never takes them for a setting's change.
 export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProps, textPseudoProps, only, ownProps = [], ownAt = [] ] ) {
 	// eslint-disable-next-line no-new-func
 	const pathOf = new Function( `return (${ pathSrc });` )();
@@ -41,6 +42,19 @@ export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProp
 		}
 		return Object.keys( out ).length ? { ...out, _fs: cs.fontSize } : out;
 	};
+	// A minimum the block declares (`min-height: 0` included) as `_own:<prop>`: the computed style reads 0px for an unstyled
+	// box off a flex or grid item and for a declared 0 alike, while the typed computed value keeps an undeclared minimum
+	// `auto` (lib/fill-prop.mjs::inOwnContext leaves a declared one as it is).
+	const declaredMinimum = ( el, cs ) => {
+		const out = {};
+		for ( const p of [ 'min-height', 'min-width' ] ) {
+			const typed = el.computedStyleMap?.().get( p );
+			if ( typed && 'auto' !== String( typed ).trim() ) {
+				out[ `_own:${ p }` ] = cs.getPropertyValue( p ).trim();
+			}
+		}
+		return out;
+	};
 	const contextOf = ( el, cs ) => ( { _parentDisplay: el.parentElement ? getComputedStyle( el.parentElement ).display : 'block', _position: cs.position } );
 	const hasText = ( el ) => [ ...el.childNodes ].some( ( n ) => 3 === n.nodeType && n.textContent.trim() );
 	const collect = ( els, top, keyPrefix, own ) => {
@@ -52,7 +66,7 @@ export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProp
 			}
 			// _tag: the element's tag, so a setting matched without :nth-of-type steps keeps an input apart from a textarea.
 			const style = getComputedStyle( el );
-			els[ key ] = { ...pick( style, props ), _tag: el.tagName.toLowerCase(), ...( own ? { ...ownOf( el, style ), ...contextOf( el, style ) } : {} ) };
+			els[ key ] = { ...pick( style, props ), _tag: el.tagName.toLowerCase(), ...( own ? { ...ownOf( el, style ), ...declaredMinimum( el, style ), ...contextOf( el, style ) } : {} ) };
 			for ( const ps of [ '::before', '::after' ] ) {
 				const cs = getComputedStyle( el, ps );
 				if ( ! [ 'none', 'normal', '' ].includes( cs.getPropertyValue( 'content' ) ) ) {

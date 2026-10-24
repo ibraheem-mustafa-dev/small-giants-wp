@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/calibrate-read.mjs", "find": "if ( typed && 'auto' !== String( typed ).trim() ) {", "replace": "if ( typed ) {", "why": "an undeclared minimum is recorded as declared" },
+	{ "file": "lib/calibrate-read.mjs", "find": "for ( const p of [ 'min-height', 'min-width' ] ) {", "replace": "for ( const p of [ 'min-width' ] ) {", "why": "a declared min-height is not recorded" },
+	{ "file": "lib/calibrate-read.mjs", "find": "...ownOf( el, style ), ...declaredMinimum( el, style ),", "replace": "...ownOf( el, style ),", "why": "the declared minimum is never recorded" },
+	{ "file": "lib/calibrate-read.mjs", "find": "out[ `_own:${ p }` ] = cs.getPropertyValue( p ).trim();\n\t\t\t}\n\t\t}\n\t\treturn out;\n\t};\n\tconst contextOf", "replace": "out[ `_own:x${ p }` ] = cs.getPropertyValue( p ).trim();\n\t\t\t}\n\t\t}\n\t\treturn out;\n\t};\n\tconst contextOf", "why": "the marker is not the key inOwnContext reads" },
+	{ "file": "lib/calibrate-read.mjs", "find": "els[ key ] = { ...pick( style, props ), _tag: el.tagName.toLowerCase(), ...( own ?", "replace": "els[ key ] = { ...pick( style, props ), _tag: el.tagName.toLowerCase(), ...declaredMinimum( el, style ), ...( own ?", "why": "a marked instance records the marker too" }
+]
