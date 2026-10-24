@@ -65,7 +65,7 @@ export function outcomesOf( { report, unmapped } ) {
 	}
 	for ( const u of unmapped || [] ) {
 		for ( const node of u.nodes?.length ? u.nodes : [ u.node ] ) {
-			out.push( { node, slot: u.slot, property: u.property, widths: null, outcome: 'unwritten', how: 'unmapped' } );
+			out.push( { node, slot: u.slot, property: u.property, value: u.value, widths: null, outcome: 'unwritten', how: 'unmapped' } );
 		}
 	}
 	return out;
@@ -87,9 +87,23 @@ function answers( o, read ) {
 // element did not already show the value.
 const PASS_HOW = [ 'logo-size', 'width-ladder', 'width-gate', 'dimension' ];
 
-// Why the outcomes answering one read contradict each other, or null: the run calls the read `equal` (the element already
-// shows it) and also leaves it unwritten or writes it in a later pass.
-function contradiction( by ) {
+// Why the outcomes answering one read contradict each other, or null: the run calls the read's own property `equal` (the
+// element already shows it) and also leaves that property unwritten or writes it in a later pass. Only outcomes naming the
+// read's property (or a shorthand of it) are compared: a transition row answers its element's other motion longhands too.
+// A write that names the element it was read on (readSlot, a scoped rule on the root for an inner part) speaks for that
+// element only, and an unwritten row speaks for this read only where its value there is the read's (an UNMAPPED row of
+// another look, a hover or an open state, carries another value).
+const LIST = ( v ) => [ ...new Set( String( v ?? '' ).split( ',' ).map( ( x ) => x.trim().toLowerCase() ) ) ].join( ',' );
+function valueAtWidth( value, width ) {
+	try {
+		const held = JSON.parse( value );
+		return held && 'object' === typeof held && ! Array.isArray( held ) ? held[ width ] : value;
+	} catch {
+		return value;
+	}
+}
+function contradiction( found, read ) {
+	const by = found.filter( ( o ) => !! o.property && longhandsOf( o.property ).includes( read.property ) && ( undefined === o.readSlot || ( o.readSlot ?? '' ) === ( read.slot ?? '' ) || 'settled:equal' === o.how ) && ( 'unwritten' !== o.outcome || ! o.value || LIST( valueAtWidth( o.value, read.width ) ) === LIST( read.value ) ) );
 	const equal = by.find( ( o ) => 'settled:equal' === o.how );
 	const other = equal && by.find( ( o ) => 'unwritten' === o.outcome || ( 'written' === o.outcome && PASS_HOW.includes( o.how ) ) );
 	return other ? `settled equal${ equal.slot !== other.slot ? ` (judged on ${ equal.slot || 'the root' })` : '' } and ${ 'unwritten' === other.outcome ? 'unwritten' : `written by ${ other.how }` }: the run says both that the element shows the value and that it does not` : null;
@@ -117,8 +131,8 @@ export function conservation( { reads, report, unmapped } ) {
 		const by = ( index.get( at( read.node, read.slot ) ) || [] ).filter( ( o ) => answers( o, read ) );
 		if ( CSS_WIDE.test( String( read.value ).trim() ) ) {
 			cssWide++;
-		} else if ( by.length && contradiction( by ) ) {
-			failures.push( { draft: read.draft, block: read.block, node: read.node, slot: read.slot ?? '', property: read.property, value: read.value, width: read.width, state: STATE, why: contradiction( by ) } );
+		} else if ( by.length && contradiction( by, read ) ) {
+			failures.push( { draft: read.draft, block: read.block, node: read.node, slot: read.slot ?? '', property: read.property, value: read.value, width: read.width, state: STATE, why: contradiction( by, read ) } );
 		} else if ( by.length ) {
 			conserved++;
 			by.every( ( o ) => 'held' === o.outcome && null === o.widths && 'ledger' !== o.how ) && widthlessHolds.push( { block: read.block, node: read.node, slot: read.slot ?? '', property: read.property, width: read.width, how: by[ 0 ].how } );
