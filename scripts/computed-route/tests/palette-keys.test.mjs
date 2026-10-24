@@ -1,7 +1,7 @@
 // Spec 48 FR-48-31 (§11 FR-33-2): the palette proposal reproduces three answer keys. Each client's proposal is run on
 // its committed draft tokens (sites/<client>/handoff/tokens) and the colour usage the real reader recorded
 // (sites/<client>/build/intake/palette.json, written by `intake.mjs --palette-only`), and compared with its key
-// (tests/fixtures/palette-keys/<client>.json, built by tools/palette-keys.mjs from Bean's marks, the built site's
+// (sites/<client>/build/intake/palette-key.json, built by tools/palette-keys.mjs from Bean's marks, the built site's
 // snapshot or Bean's ruling). A slug names one value, so the comparison is per slug: the value the key gives it against
 // the value the proposal gives it. Every slug where they differ is listed below as a named review class with what an
 // agent checks; a difference not listed, or a listed one that no longer differs, fails.
@@ -11,7 +11,10 @@ import fs from 'fs';
 import path from 'path';
 import { readTokens } from '../lib/tokens.mjs';
 import { proposePalette, loadPaletteSlugs } from '../lib/intake-palette.mjs';
-import { REPO, KEYS, KEYS_DIR, derive } from '../tools/palette-keys.mjs';
+import { REPO, keyFile, derive } from '../tools/palette-keys.mjs';
+
+// Each answer key and its source (tools/palette-keys.mjs).
+const KEYS = { 'indus-foods': 'from-marks', 'eye-care-ward-end': 'from-snapshot', 'mamas-munches-redesign': 'ruled' };
 
 const VOCAB = loadPaletteSlugs();
 const SLUGS = new Set( VOCAB.map( ( s ) => s.slug ) );
@@ -30,7 +33,7 @@ export function slugValues( roles, hexOf ) {
 export function compareClient( client ) {
 	const tokens = readTokens( path.join( REPO, 'sites', client, 'handoff' ) );
 	const recorded = JSON.parse( fs.readFileSync( path.join( REPO, 'sites', client, 'build', 'intake', 'palette.json' ), 'utf8' ) );
-	const key = JSON.parse( fs.readFileSync( path.join( KEYS_DIR, `${ client }.json` ), 'utf8' ) );
+	const key = JSON.parse( fs.readFileSync( keyFile( client ), 'utf8' ) );
 	const p = proposePalette( { tokens: tokens.tokens, usage: recorded.usage, slugs: VOCAB, problems: tokens.problems } );
 	const hexOf = Object.fromEntries( p.rows.map( ( r ) => [ r.token, r.hex ] ) );
 	const want = slugValues( key.roles, hexOf );
@@ -52,7 +55,7 @@ export const REVIEW = {
 	},
 	'eye-care-ward-end': {
 		accent: { key: '#9C8B78', proposal: '#25D366', ...ACCENT },
-		'accent-text': { key: '#6F6152', proposal: '#0B2B17', ...ACCENT },
+		'accent-text': { key: '#6F6152', proposal: '#0B2B17', class: 'accent-text-meaning', check: 'the key follows Spec 32 §12.2 (the accent hue\'s own text colour on light grounds, --acc-ink); the proposer reads the text on the accent fill, which follows the accent class above; the agent checks which meaning the client\'s build uses' },
 		'accent-light': { key: '#EFEAE2', proposal: null, ...ABBREVIATED },
 		whatsapp: { key: '#25D366', proposal: null, ...ABBREVIATED },
 		border: { key: '#E6E1DA', proposal: '#D8D2C8', ...DIVIDER },
@@ -100,7 +103,7 @@ for ( const client of Object.keys( KEYS ) ) {
 }
 
 test( 'the derived answer keys match their sources (no hand edit)', () => {
-	for ( const client of Object.keys( KEYS ).filter( ( c ) => 'ruled' !== KEYS[ c ].source ) ) {
-		assert.deepEqual( JSON.parse( fs.readFileSync( path.join( KEYS_DIR, `${ client }.json` ), 'utf8' ) ).roles, derive( client ), client );
+	for ( const client of Object.keys( KEYS ).filter( ( c ) => 'ruled' !== KEYS[ c ] ) ) {
+		assert.deepEqual( JSON.parse( fs.readFileSync( keyFile( client ), 'utf8' ) ).roles, derive( client, KEYS[ client ] ), client );
 	}
 } );

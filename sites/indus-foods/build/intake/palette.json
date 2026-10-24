@@ -1,6 +1,6 @@
 {
 	"client": "indus-foods",
-	"takenOn": "2026-10-24T03:18:20.843Z",
+	"takenOn": "2026-10-24T03:48:22.672Z",
 	"manifestHash": "50a00b4648eaa4217aa3fde6d4b99632515e00ab3ad06c015c3ed69505c4e3b6",
 	"palette": {
 		"tokens": [
@@ -1030,8 +1030,25 @@
 					"--surface-section-blue"
 				],
 				"role": "primary",
-				"confidence": 0.9,
-				"why": "the most used brand colour (800 uses)"
+				"roles": [
+					"primary",
+					"link"
+				],
+				"confidence": 0.95,
+				"why": "the most used strong ground (8 buttons); the name --brand-blue agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "link",
+						"by": "usage",
+						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (90 of 284 links); the name --text-link agrees"
+					},
+					{
+						"role": "primary",
+						"by": "usage",
+						"why": "the most used strong ground (8 buttons); the name --brand-blue agrees"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--brand-blue-hover",
@@ -1054,8 +1071,25 @@
 					"--text-link-hover"
 				],
 				"role": "primary-dark",
-				"confidence": 0.9,
-				"why": "hover shade of the primary family"
+				"roles": [
+					"primary-dark",
+					"link-hover"
+				],
+				"confidence": 0.6,
+				"why": "hover shade of the primary family (the name alone decides this)",
+				"by": "name",
+				"basis": [
+					{
+						"role": "primary-dark",
+						"by": "name",
+						"why": "hover shade of the primary family (the name alone decides this)"
+					},
+					{
+						"role": "link-hover",
+						"by": "name",
+						"why": "name says link hover (the name alone decides this)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--brand-blue-light",
@@ -1075,8 +1109,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-brand-blue-light",
+				"roles": [
+					"custom-brand-blue-light"
+				],
 				"confidence": 0.8,
-				"why": "light shade of the primary family has no slug"
+				"why": "light shade of the primary family has no slug",
+				"by": "name"
 			},
 			{
 				"rowId": "palette:--brand-gold",
@@ -1151,8 +1189,25 @@
 					"--selection-bg"
 				],
 				"role": "accent",
-				"confidence": 0.9,
-				"why": "the second most used brand colour (667 uses)"
+				"roles": [
+					"accent",
+					"section"
+				],
+				"confidence": 0.95,
+				"why": "the next most used strong ground (5 buttons); the name --brand-gold agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "accent",
+						"by": "usage",
+						"why": "the next most used strong ground (5 buttons); the name --brand-gold agrees"
+					},
+					{
+						"role": "section",
+						"by": "usage",
+						"why": "the most used ground after the page, raised and primary grounds (365 elements); the name --surface-section-gold agrees"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--brand-gold-light",
@@ -1172,8 +1227,19 @@
 				],
 				"sharedWith": [],
 				"role": "accent-light",
-				"confidence": 0.9,
-				"why": "light shade of the accent family"
+				"roles": [
+					"accent-light"
+				],
+				"confidence": 0.6,
+				"why": "light shade of the accent family (the name alone decides this)",
+				"by": "name",
+				"basis": [
+					{
+						"role": "accent-light",
+						"by": "name",
+						"why": "light shade of the accent family (the name alone decides this)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--brand-gold-mid",
@@ -1185,8 +1251,10 @@
 				"uses": [],
 				"sharedWith": [],
 				"role": null,
+				"roles": [],
 				"confidence": 0,
-				"why": "unused: no element in the draft uses this value"
+				"why": "unused: no element in the draft uses this value",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--brand-gold-pale",
@@ -1198,8 +1266,10 @@
 				"uses": [],
 				"sharedWith": [],
 				"role": null,
+				"roles": [],
 				"confidence": 0,
-				"why": "unused: no element in the draft uses this value"
+				"why": "unused: no element in the draft uses this value",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--ink",
@@ -1225,8 +1295,12 @@
 					"--selection-fg"
 				],
 				"role": "custom-ink",
+				"roles": [
+					"custom-ink"
+				],
 				"confidence": 0.3,
-				"why": "used mostly as dark, low-chroma text colour; text went to --grey-body"
+				"why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--slate",
@@ -1301,9 +1375,38 @@
 				"sharedWith": [
 					"--text-heading"
 				],
-				"role": "heading",
+				"role": "footer-bg",
+				"roles": [
+					"footer-bg",
+					"heading",
+					"accent-text",
+					"section-text"
+				],
 				"confidence": 0.85,
-				"why": "same value as --text-heading"
+				"why": "the footer's ground on 23 page(s)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "footer-bg",
+						"by": "usage",
+						"why": "the footer's ground on 23 page(s)"
+					},
+					{
+						"role": "heading",
+						"by": "usage",
+						"why": "the most used heading colour on light grounds (90 headings); the name --text-heading agrees"
+					},
+					{
+						"role": "accent-text",
+						"by": "usage",
+						"why": "the most used text colour on the accent ground (weight 103)"
+					},
+					{
+						"role": "section-text",
+						"by": "usage",
+						"why": "the most used text colour on the section ground (weight 103)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--grey-body",
@@ -1329,8 +1432,19 @@
 					"--text-body"
 				],
 				"role": "text",
-				"confidence": 0.95,
-				"why": "name says body text; usage agrees"
+				"roles": [
+					"text"
+				],
+				"confidence": 0.6,
+				"why": "name says body text (the name alone decides this)",
+				"by": "name",
+				"basis": [
+					{
+						"role": "text",
+						"by": "name",
+						"why": "name says body text (the name alone decides this)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--grey-muted",
@@ -1344,8 +1458,10 @@
 					"--text-muted"
 				],
 				"role": null,
+				"roles": [],
 				"confidence": 0,
-				"why": "unused: no element in the draft uses this value"
+				"why": "unused: no element in the draft uses this value",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--surface-white",
@@ -1426,8 +1542,31 @@
 					"--surface-header"
 				],
 				"role": "surface",
+				"roles": [
+					"surface",
+					"primary-text",
+					"text-inverse"
+				],
 				"confidence": 0.95,
-				"why": "name says surface; usage agrees"
+				"why": "the page ground: the body background on 23 page(s); the name --surface-white agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "surface",
+						"by": "usage",
+						"why": "the page ground: the body background on 23 page(s); the name --surface-white agrees"
+					},
+					{
+						"role": "primary-text",
+						"by": "usage",
+						"why": "the most used text colour on the primary ground (weight 317)"
+					},
+					{
+						"role": "text-inverse",
+						"by": "usage",
+						"why": "the most used text colour on the dark ground #2C3E50 (weight 647)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--surface-warm",
@@ -1439,8 +1578,10 @@
 				"uses": [],
 				"sharedWith": [],
 				"role": null,
+				"roles": [],
 				"confidence": 0,
-				"why": "unused: no element in the draft uses this value"
+				"why": "unused: no element in the draft uses this value",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--surface-cool",
@@ -1462,8 +1603,19 @@
 				],
 				"sharedWith": [],
 				"role": "surface-alt",
-				"confidence": 0.7,
-				"why": "name says surface; surface went to --surface-white, so surface-alt"
+				"roles": [
+					"surface-alt"
+				],
+				"confidence": 0.95,
+				"why": "the most used light ground after the page ground (14 elements); the name --surface-cool agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "surface-alt",
+						"by": "usage",
+						"why": "the most used light ground after the page ground (14 elements); the name --surface-cool agrees"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--tint-on-blue",
@@ -1483,8 +1635,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-tint-on-blue",
+				"roles": [
+					"custom-tint-on-blue"
+				],
 				"confidence": 0.3,
-				"why": "no confident match; stays a custom colour (FR-33-2)"
+				"why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--social-linkedin",
@@ -1505,8 +1661,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-social-linkedin",
+				"roles": [
+					"custom-social-linkedin"
+				],
 				"confidence": 0.8,
-				"why": "header, selection and social colours have no palette slug (FR-33-13, FR-33-16)"
+				"why": "header, selection and social colours have no palette slug (FR-33-13, FR-33-16)",
+				"by": "name"
 			},
 			{
 				"rowId": "palette:--social-facebook",
@@ -1527,8 +1687,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-social-facebook",
+				"roles": [
+					"custom-social-facebook"
+				],
 				"confidence": 0.8,
-				"why": "header, selection and social colours have no palette slug (FR-33-13, FR-33-16)"
+				"why": "header, selection and social colours have no palette slug (FR-33-13, FR-33-16)",
+				"by": "name"
 			},
 			{
 				"rowId": "palette:--social-google",
@@ -1540,8 +1704,10 @@
 				"uses": [],
 				"sharedWith": [],
 				"role": null,
+				"roles": [],
 				"confidence": 0,
-				"why": "unused: no element in the draft uses this value"
+				"why": "unused: no element in the draft uses this value",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--whatsapp-green",
@@ -1561,8 +1727,19 @@
 				],
 				"sharedWith": [],
 				"role": "whatsapp",
-				"confidence": 0.9,
-				"why": "name says WhatsApp"
+				"roles": [
+					"whatsapp"
+				],
+				"confidence": 0.6,
+				"why": "name says WhatsApp (the name alone decides this)",
+				"by": "name",
+				"basis": [
+					{
+						"role": "whatsapp",
+						"by": "name",
+						"why": "name says WhatsApp (the name alone decides this)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--text-heading",
@@ -1640,8 +1817,37 @@
 					"--slate"
 				],
 				"role": "heading",
-				"confidence": 0.9,
-				"why": "name says heading"
+				"roles": [
+					"heading",
+					"footer-bg",
+					"accent-text",
+					"section-text"
+				],
+				"confidence": 0.95,
+				"why": "the most used heading colour on light grounds (90 headings); the name --text-heading agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "footer-bg",
+						"by": "usage",
+						"why": "the footer's ground on 23 page(s)"
+					},
+					{
+						"role": "heading",
+						"by": "usage",
+						"why": "the most used heading colour on light grounds (90 headings); the name --text-heading agrees"
+					},
+					{
+						"role": "accent-text",
+						"by": "usage",
+						"why": "the most used text colour on the accent ground (weight 103)"
+					},
+					{
+						"role": "section-text",
+						"by": "usage",
+						"why": "the most used text colour on the section ground (weight 103)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--text-body",
@@ -1669,8 +1875,19 @@
 					"--grey-body"
 				],
 				"role": "text",
-				"confidence": 0.95,
-				"why": "name says body text; usage agrees"
+				"roles": [
+					"text"
+				],
+				"confidence": 0.6,
+				"why": "name says body text (the name alone decides this)",
+				"by": "name",
+				"basis": [
+					{
+						"role": "text",
+						"by": "name",
+						"why": "name says body text (the name alone decides this)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--text-muted",
@@ -1686,8 +1903,10 @@
 					"--grey-muted"
 				],
 				"role": null,
+				"roles": [],
 				"confidence": 0,
-				"why": "unused: no element in the draft uses this value"
+				"why": "unused: no element in the draft uses this value",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--text-link",
@@ -1772,8 +1991,25 @@
 					"--surface-section-blue"
 				],
 				"role": "link",
-				"confidence": 0.9,
-				"why": "name says link"
+				"roles": [
+					"link",
+					"primary"
+				],
+				"confidence": 0.95,
+				"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (90 of 284 links); the name --text-link agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "link",
+						"by": "usage",
+						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (90 of 284 links); the name --text-link agrees"
+					},
+					{
+						"role": "primary",
+						"by": "usage",
+						"why": "the most used strong ground (8 buttons); the name --brand-blue agrees"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--text-link-hover",
@@ -1798,8 +2034,25 @@
 					"--brand-blue-hover"
 				],
 				"role": "link-hover",
-				"confidence": 0.9,
-				"why": "name says link hover"
+				"roles": [
+					"link-hover",
+					"primary-dark"
+				],
+				"confidence": 0.6,
+				"why": "name says link hover (the name alone decides this)",
+				"by": "name",
+				"basis": [
+					{
+						"role": "primary-dark",
+						"by": "name",
+						"why": "hover shade of the primary family (the name alone decides this)"
+					},
+					{
+						"role": "link-hover",
+						"by": "name",
+						"why": "name says link hover (the name alone decides this)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--surface-header",
@@ -1881,9 +2134,32 @@
 				"sharedWith": [
 					"--surface-white"
 				],
-				"role": "custom-surface-header",
-				"confidence": 0.8,
-				"why": "header, selection and social colours have no palette slug (FR-33-13, FR-33-16)"
+				"role": "surface",
+				"roles": [
+					"surface",
+					"primary-text",
+					"text-inverse"
+				],
+				"confidence": 0.95,
+				"why": "the page ground: the body background on 23 page(s); the name --surface-white agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "surface",
+						"by": "usage",
+						"why": "the page ground: the body background on 23 page(s); the name --surface-white agrees"
+					},
+					{
+						"role": "primary-text",
+						"by": "usage",
+						"why": "the most used text colour on the primary ground (weight 317)"
+					},
+					{
+						"role": "text-inverse",
+						"by": "usage",
+						"why": "the most used text colour on the dark ground #2C3E50 (weight 647)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--surface-topbar",
@@ -1967,9 +2243,26 @@
 					"--text-link",
 					"--surface-section-blue"
 				],
-				"role": "custom-surface-topbar",
-				"confidence": 0.8,
-				"why": "header, selection and social colours have no palette slug (FR-33-13, FR-33-16)"
+				"role": "link",
+				"roles": [
+					"link",
+					"primary"
+				],
+				"confidence": 0.95,
+				"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (90 of 284 links); the name --text-link agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "link",
+						"by": "usage",
+						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (90 of 284 links); the name --text-link agrees"
+					},
+					{
+						"role": "primary",
+						"by": "usage",
+						"why": "the most used strong ground (8 buttons); the name --brand-blue agrees"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--surface-section-blue",
@@ -2053,9 +2346,26 @@
 					"--text-link",
 					"--surface-topbar"
 				],
-				"role": "custom-surface-section-blue",
-				"confidence": 0.3,
-				"why": "name says section ground; section went to --surface-section-gold"
+				"role": "link",
+				"roles": [
+					"link",
+					"primary"
+				],
+				"confidence": 0.95,
+				"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (90 of 284 links); the name --text-link agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "link",
+						"by": "usage",
+						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (90 of 284 links); the name --text-link agrees"
+					},
+					{
+						"role": "primary",
+						"by": "usage",
+						"why": "the most used strong ground (8 buttons); the name --brand-blue agrees"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--surface-section-gold",
@@ -2132,8 +2442,25 @@
 					"--selection-bg"
 				],
 				"role": "section",
-				"confidence": 0.9,
-				"why": "name says section ground"
+				"roles": [
+					"section",
+					"accent"
+				],
+				"confidence": 0.95,
+				"why": "the most used ground after the page, raised and primary grounds (365 elements); the name --surface-section-gold agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "accent",
+						"by": "usage",
+						"why": "the next most used strong ground (5 buttons); the name --brand-gold agrees"
+					},
+					{
+						"role": "section",
+						"by": "usage",
+						"why": "the most used ground after the page, raised and primary grounds (365 elements); the name --surface-section-gold agrees"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--border-accent",
@@ -2209,9 +2536,26 @@
 					"--surface-section-gold",
 					"--selection-bg"
 				],
-				"role": "custom-border-accent",
-				"confidence": 0.8,
-				"why": "a saturated border is not the divider slug (FR-33-2 border guard)"
+				"role": "accent",
+				"roles": [
+					"accent",
+					"section"
+				],
+				"confidence": 0.95,
+				"why": "the next most used strong ground (5 buttons); the name --brand-gold agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "accent",
+						"by": "usage",
+						"why": "the next most used strong ground (5 buttons); the name --brand-gold agrees"
+					},
+					{
+						"role": "section",
+						"by": "usage",
+						"why": "the most used ground after the page, raised and primary grounds (365 elements); the name --surface-section-gold agrees"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--selection-bg",
@@ -2287,9 +2631,26 @@
 					"--surface-section-gold",
 					"--border-accent"
 				],
-				"role": "custom-selection-bg",
-				"confidence": 0.8,
-				"why": "header, selection and social colours have no palette slug (FR-33-13, FR-33-16)"
+				"role": "accent",
+				"roles": [
+					"accent",
+					"section"
+				],
+				"confidence": 0.95,
+				"why": "the next most used strong ground (5 buttons); the name --brand-gold agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "accent",
+						"by": "usage",
+						"why": "the next most used strong ground (5 buttons); the name --brand-gold agrees"
+					},
+					{
+						"role": "section",
+						"by": "usage",
+						"why": "the most used ground after the page, raised and primary grounds (365 elements); the name --surface-section-gold agrees"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--selection-fg",
@@ -2317,8 +2678,12 @@
 					"--ink"
 				],
 				"role": "custom-selection-fg",
+				"roles": [
+					"custom-selection-fg"
+				],
 				"confidence": 0.8,
-				"why": "header, selection and social colours have no palette slug (FR-33-13, FR-33-16)"
+				"why": "header, selection and social colours have no palette slug (FR-33-13, FR-33-16)",
+				"by": "name"
 			}
 		],
 		"unused": [

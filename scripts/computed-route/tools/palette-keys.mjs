@@ -1,14 +1,13 @@
 #!/usr/bin/env node
-// The palette answer keys for tests/palette-keys.test.mjs (Spec 48 FR-48-31), each token → the slugs it holds, read
-// from its source and written to tests/fixtures/palette-keys/<client>.json:
-//   node scripts/computed-route/tools/palette-keys.mjs [--check]
-// - from-marks: Bean's marks in sites/<client>/build/intake/review.md's palette table (accept = the proposed role
+// A client's palette answer key for tests/palette-keys.test.mjs (Spec 48 FR-48-31): each colour token → the slugs it
+// holds, read from its source and written to sites/<client>/build/intake/palette-key.json:
+//   node scripts/computed-route/tools/palette-keys.mjs <client> --from-marks|--from-snapshot [--check]
+// - --from-marks: Bean's marks in sites/<client>/build/intake/review.md's palette table (accept = the proposed role
 //   column, role:a,b = those slugs, one-off = none).
-// - from-snapshot: sites/<client>/theme-snapshot.json settings.color.palette: a slug goes to every colour token of
+// - --from-snapshot: sites/<client>/theme-snapshot.json settings.color.palette: a slug goes to every colour token of
 //   sites/<client>/handoff/tokens whose value equals the entry's colour.
-// - ruled: a client with no written source (Bean's ruling in the session that built the key): the fixture is the source
-//   and is never rewritten.
-// --check writes nothing and exits 1 when a derived fixture differs from the one on disk.
+// A key with no written source (Bean's ruling) is written by hand with `source: 'ruled'` and never derived.
+// --check writes nothing and exits 1 when the derived key differs from the file.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -16,12 +15,7 @@ import { readTokens } from '../lib/tokens.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const REPO = path.resolve( HERE, '..', '..', '..' );
-export const KEYS_DIR = path.join( HERE, '..', 'tests', 'fixtures', 'palette-keys' );
-export const KEYS = {
-	'indus-foods': { source: 'from-marks' },
-	'eye-care-ward-end': { source: 'from-snapshot' },
-	'mamas-munches-redesign': { source: 'ruled' },
-};
+export const keyFile = ( client ) => path.join( REPO, 'sites', client, 'build', 'intake', 'palette-key.json' );
 
 const colourTokens = ( client ) => readTokens( path.join( REPO, 'sites', client, 'handoff' ) ).tokens.filter( ( t ) => 'colour' === t.type && t.hex );
 
@@ -29,6 +23,7 @@ const colourTokens = ( client ) => readTokens( path.join( REPO, 'sites', client,
 export function fromMarks( client ) {
 	const text = fs.readFileSync( path.join( REPO, 'sites', client, 'build', 'intake', 'review.md' ), 'utf8' );
 	const roles = {};
+	const slugs = ( s ) => ( /^role:/.test( s ) ? s.slice( 5 ).split( ',' ).map( ( x ) => x.trim() ) : [] );
 	for ( const line of text.split( '\n' ) ) {
 		const cells = line.split( '|' ).map( ( c ) => c.trim() );
 		const m = /^`palette:(--[\w-]+)`$/.exec( cells[ 1 ] || '' );
@@ -36,7 +31,6 @@ export function fromMarks( client ) {
 			continue;
 		}
 		const [ proposed, mark ] = [ cells[ 3 ], cells[ 5 ] ];
-		const slugs = ( s ) => ( /^role:/.test( s ) ? s.slice( 5 ).split( ',' ).map( ( x ) => x.trim() ) : [] );
 		if ( 'accept' === mark ) {
 			roles[ m[ 1 ] ] = slugs( proposed );
 		} else if ( 'one-off' === mark ) {
@@ -60,31 +54,23 @@ export function fromSnapshot( client ) {
 	return roles;
 }
 
-export function derive( client ) {
-	const how = KEYS[ client ].source;
-	return 'from-marks' === how ? fromMarks( client ) : 'from-snapshot' === how ? fromSnapshot( client ) : null;
-}
-
-const file = ( client ) => path.join( KEYS_DIR, `${ client }.json` );
+export const derive = ( client, source ) => ( 'from-marks' === source ? fromMarks( client ) : 'from-snapshot' === source ? fromSnapshot( client ) : null );
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {
-	const check = process.argv.includes( '--check' );
-	let bad = 0;
-	for ( const client of Object.keys( KEYS ) ) {
-		const roles = derive( client );
-		if ( ! roles ) {
-			continue;
-		}
-		const out = `${ JSON.stringify( { client, source: KEYS[ client ].source, roles }, null, '\t' ) }\n`;
-		if ( check ) {
-			const same = fs.existsSync( file( client ) ) && fs.readFileSync( file( client ), 'utf8' ) === out;
-			bad += same ? 0 : 1;
-			console.log( `${ client }: ${ same ? 'matches its source' : 'DIFFERS from its source' }` );
-		} else {
-			fs.mkdirSync( KEYS_DIR, { recursive: true } );
-			fs.writeFileSync( file( client ), out );
-			console.log( `${ client }: wrote ${ path.relative( REPO, file( client ) ) } (${ Object.keys( roles ).length } tokens)` );
-		}
+	const args = process.argv.slice( 2 );
+	const client = args.find( ( a ) => ! a.startsWith( '--' ) );
+	const source = [ 'from-marks', 'from-snapshot' ].find( ( s ) => args.includes( `--${ s }` ) );
+	if ( ! client || ! source ) {
+		console.error( 'usage: node scripts/computed-route/tools/palette-keys.mjs <client> --from-marks|--from-snapshot [--check]' );
+		process.exit( 2 );
 	}
-	process.exitCode = bad ? 1 : 0;
+	const out = `${ JSON.stringify( { client, source, roles: derive( client, source ) }, null, '\t' ) }\n`;
+	if ( args.includes( '--check' ) ) {
+		const same = fs.existsSync( keyFile( client ) ) && fs.readFileSync( keyFile( client ), 'utf8' ) === out;
+		console.log( `${ client }: ${ same ? 'matches its source' : 'DIFFERS from its source' }` );
+		process.exitCode = same ? 0 : 1;
+	} else {
+		fs.writeFileSync( keyFile( client ), out );
+		console.log( `${ client }: wrote ${ path.relative( REPO, keyFile( client ) ) }` );
+	}
 }

@@ -1,6 +1,6 @@
 {
 	"client": "eye-care-ward-end",
-	"takenOn": "2026-10-24T03:04:45.358Z",
+	"takenOn": "2026-10-24T03:41:26.754Z",
 	"manifestHash": "70559f18271e2ff37e7e9979f4918003424b29ec71d23ca3ac74eeeba1f1e2d1",
 	"palette": {
 		"tokens": [
@@ -2043,8 +2043,43 @@
 					"--button-primary-bg"
 				],
 				"role": "text",
-				"confidence": 0.85,
-				"why": "same value as --text-body"
+				"roles": [
+					"text",
+					"heading",
+					"link",
+					"primary",
+					"section-text"
+				],
+				"confidence": 0.95,
+				"why": "the page text: the body colour on 1 page(s); the name --text-body agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "text",
+						"by": "usage",
+						"why": "the page text: the body colour on 1 page(s); the name --text-body agrees"
+					},
+					{
+						"role": "heading",
+						"by": "usage",
+						"why": "the most used heading colour on light grounds (5 headings)"
+					},
+					{
+						"role": "link",
+						"by": "usage",
+						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (29 of 34 links)"
+					},
+					{
+						"role": "primary",
+						"by": "usage",
+						"why": "the most used strong ground (1 buttons)"
+					},
+					{
+						"role": "section-text",
+						"by": "usage",
+						"why": "the most used text colour on the section ground (weight 44)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--ink-hover",
@@ -2056,8 +2091,10 @@
 				"uses": [],
 				"sharedWith": [],
 				"role": null,
+				"roles": [],
 				"confidence": 0,
-				"why": "unused: no element in the draft uses this value"
+				"why": "unused: no element in the draft uses this value",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--paper",
@@ -2102,8 +2139,37 @@
 					"--button-primary-fg"
 				],
 				"role": "surface",
-				"confidence": 0.85,
-				"why": "same value as --surface-page"
+				"roles": [
+					"surface",
+					"footer-bg",
+					"primary-text",
+					"text-inverse"
+				],
+				"confidence": 0.95,
+				"why": "the page ground: the body background on 1 page(s); the name --surface-page agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "surface",
+						"by": "usage",
+						"why": "the page ground: the body background on 1 page(s); the name --surface-page agrees"
+					},
+					{
+						"role": "footer-bg",
+						"by": "usage",
+						"why": "the footer's ground on 1 page(s)"
+					},
+					{
+						"role": "primary-text",
+						"by": "usage",
+						"why": "the most used text colour on the primary ground (weight 44)"
+					},
+					{
+						"role": "text-inverse",
+						"by": "usage",
+						"why": "the most used text colour on the dark ground #141414 (weight 44)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--white",
@@ -2138,8 +2204,19 @@
 					"--surface-card"
 				],
 				"role": "surface-alt",
-				"confidence": 0.7,
-				"why": "same value as --surface-card; surface went to --paper, so surface-alt"
+				"roles": [
+					"surface-alt"
+				],
+				"confidence": 0.95,
+				"why": "the most used light ground after the page ground (29 elements); the name --surface-card agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "surface-alt",
+						"by": "usage",
+						"why": "the most used light ground after the page ground (29 elements); the name --surface-card agrees"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--surface-alt",
@@ -2159,9 +2236,20 @@
 					}
 				],
 				"sharedWith": [],
-				"role": "custom-surface-alt",
-				"confidence": 0.3,
-				"why": "name says surface; surface went to --paper, so surface-alt; surface-alt went to --white"
+				"role": "section",
+				"roles": [
+					"section"
+				],
+				"confidence": 0.85,
+				"why": "the most used ground after the page, raised and primary grounds (12 elements)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "section",
+						"by": "usage",
+						"why": "the most used ground after the page, raised and primary grounds (12 elements)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--surface-soft",
@@ -2199,8 +2287,12 @@
 					"--acc-soft"
 				],
 				"role": "custom-surface-soft",
+				"roles": [
+					"custom-surface-soft"
+				],
 				"confidence": 0.3,
-				"why": "name says surface; surface went to --paper, so surface-alt; surface-alt went to --white"
+				"why": "name says surface, but surface-alt is read from usage on --white (#FFFFFF)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--hairline",
@@ -2265,9 +2357,20 @@
 				"sharedWith": [
 					"--border-default"
 				],
-				"role": "custom-hairline",
-				"confidence": 0.3,
-				"why": "same value as --border-default; border went to --border-strong"
+				"role": "border-light",
+				"roles": [
+					"border-light"
+				],
+				"confidence": 0.85,
+				"why": "the next divider line colour, lighter than the border (66 lines)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "border-light",
+						"by": "usage",
+						"why": "the next divider line colour, lighter than the border (66 lines)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--border-strong",
@@ -2316,8 +2419,19 @@
 				],
 				"sharedWith": [],
 				"role": "border",
+				"roles": [
+					"border"
+				],
 				"confidence": 0.95,
-				"why": "name says border; usage agrees"
+				"why": "the most used divider line colour (108 lines; a link's underline and a line in the page ground's colour are not dividers); the name --border-strong agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "border",
+						"by": "usage",
+						"why": "the most used divider line colour (108 lines; a link's underline and a line in the page ground's colour are not dividers); the name --border-strong agrees"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--border-warm",
@@ -2329,8 +2443,10 @@
 				"uses": [],
 				"sharedWith": [],
 				"role": null,
+				"roles": [],
 				"confidence": 0,
-				"why": "unused: no element in the draft uses this value"
+				"why": "unused: no element in the draft uses this value",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--control-off",
@@ -2342,8 +2458,10 @@
 				"uses": [],
 				"sharedWith": [],
 				"role": null,
+				"roles": [],
 				"confidence": 0,
-				"why": "unused: no element in the draft uses this value"
+				"why": "unused: no element in the draft uses this value",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--text-strong",
@@ -2366,8 +2484,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-text-strong",
+				"roles": [
+					"custom-text-strong"
+				],
 				"confidence": 0.3,
-				"why": "name says body text; usage agrees; text went to --ink"
+				"why": "name says body text, but text is read from usage on --ink (#141414)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--text-2",
@@ -2391,8 +2513,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-text-2",
+				"roles": [
+					"custom-text-2"
+				],
 				"confidence": 0.3,
-				"why": "name says body text; usage agrees; text went to --ink"
+				"why": "name says body text, but text is read from usage on --ink (#141414)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--text-muted",
@@ -2414,9 +2540,13 @@
 					}
 				],
 				"sharedWith": [],
-				"role": "text-muted",
-				"confidence": 0.9,
-				"why": "name says muted text"
+				"role": "custom-text-muted",
+				"roles": [
+					"custom-text-muted"
+				],
+				"confidence": 0.3,
+				"why": "name says muted text, but text-muted is read from usage on --acc-ink (#6F6152)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--text-3",
@@ -2447,8 +2577,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-text-3",
+				"roles": [
+					"custom-text-3"
+				],
 				"confidence": 0.3,
-				"why": "name says body text; usage agrees; text went to --ink"
+				"why": "name says body text, but text is read from usage on --ink (#141414)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--text-4",
@@ -2470,8 +2604,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-text-4",
+				"roles": [
+					"custom-text-4"
+				],
 				"confidence": 0.3,
-				"why": "name says body text; text went to --ink"
+				"why": "name says body text, but text is read from usage on --ink (#141414)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--text-faint",
@@ -2492,8 +2630,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-text-faint",
+				"roles": [
+					"custom-text-faint"
+				],
 				"confidence": 0.3,
-				"why": "name says body text; text went to --ink"
+				"why": "name says body text, but text is read from usage on --ink (#141414)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--acc",
@@ -2523,8 +2665,12 @@
 					"--focus-ring"
 				],
 				"role": "custom-acc",
+				"roles": [
+					"custom-acc"
+				],
 				"confidence": 0.3,
-				"why": "no confident match; stays a custom colour (FR-33-2)"
+				"why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--acc-ink",
@@ -2547,9 +2693,20 @@
 					}
 				],
 				"sharedWith": [],
-				"role": "custom-acc-ink",
-				"confidence": 0.3,
-				"why": "used mostly as dark, low-chroma text colour; text went to --ink"
+				"role": "text-muted",
+				"roles": [
+					"text-muted"
+				],
+				"confidence": 0.85,
+				"why": "the most used text colour after the text and heading colours, lighter than the text (17 elements)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "text-muted",
+						"by": "usage",
+						"why": "the most used text colour after the text and heading colours, lighter than the text (17 elements)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--acc-soft",
@@ -2587,8 +2744,12 @@
 					"--surface-soft"
 				],
 				"role": "custom-acc-soft",
+				"roles": [
+					"custom-acc-soft"
+				],
 				"confidence": 0.3,
-				"why": "same value as --surface-soft; surface went to --paper, so surface-alt; surface-alt went to --white"
+				"why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--wa",
@@ -2616,9 +2777,20 @@
 					}
 				],
 				"sharedWith": [],
-				"role": "custom-wa",
-				"confidence": 0.3,
-				"why": "no confident match; stays a custom colour (FR-33-2)"
+				"role": "accent",
+				"roles": [
+					"accent"
+				],
+				"confidence": 0.85,
+				"why": "the next most used strong ground (2 links)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "accent",
+						"by": "usage",
+						"why": "the next most used strong ground (2 links)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--wa-hover",
@@ -2630,8 +2802,10 @@
 				"uses": [],
 				"sharedWith": [],
 				"role": null,
+				"roles": [],
 				"confidence": 0,
-				"why": "unused: no element in the draft uses this value"
+				"why": "unused: no element in the draft uses this value",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--wa-ink",
@@ -2654,9 +2828,20 @@
 					}
 				],
 				"sharedWith": [],
-				"role": "custom-wa-ink",
-				"confidence": 0.3,
-				"why": "used mostly as dark, low-chroma text colour; text went to --ink"
+				"role": "accent-text",
+				"roles": [
+					"accent-text"
+				],
+				"confidence": 0.85,
+				"why": "the most used text colour on the accent ground (weight 7)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "accent-text",
+						"by": "usage",
+						"why": "the most used text colour on the accent ground (weight 7)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--wa-ink-deep",
@@ -2668,8 +2853,10 @@
 				"uses": [],
 				"sharedWith": [],
 				"role": null,
+				"roles": [],
 				"confidence": 0,
-				"why": "unused: no element in the draft uses this value"
+				"why": "unused: no element in the draft uses this value",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--wa-soft",
@@ -2681,8 +2868,10 @@
 				"uses": [],
 				"sharedWith": [],
 				"role": null,
+				"roles": [],
 				"confidence": 0,
-				"why": "unused: no element in the draft uses this value"
+				"why": "unused: no element in the draft uses this value",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--wa-border",
@@ -2694,8 +2883,10 @@
 				"uses": [],
 				"sharedWith": [],
 				"role": null,
+				"roles": [],
 				"confidence": 0,
-				"why": "unused: no element in the draft uses this value"
+				"why": "unused: no element in the draft uses this value",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--success",
@@ -2707,8 +2898,10 @@
 				"uses": [],
 				"sharedWith": [],
 				"role": null,
+				"roles": [],
 				"confidence": 0,
-				"why": "unused: no element in the draft uses this value"
+				"why": "unused: no element in the draft uses this value",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--text-body",
@@ -2782,8 +2975,43 @@
 					"--button-primary-bg"
 				],
 				"role": "text",
+				"roles": [
+					"text",
+					"heading",
+					"link",
+					"primary",
+					"section-text"
+				],
 				"confidence": 0.95,
-				"why": "name says body text; usage agrees"
+				"why": "the page text: the body colour on 1 page(s); the name --text-body agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "text",
+						"by": "usage",
+						"why": "the page text: the body colour on 1 page(s); the name --text-body agrees"
+					},
+					{
+						"role": "heading",
+						"by": "usage",
+						"why": "the most used heading colour on light grounds (5 headings)"
+					},
+					{
+						"role": "link",
+						"by": "usage",
+						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (29 of 34 links)"
+					},
+					{
+						"role": "primary",
+						"by": "usage",
+						"why": "the most used strong ground (1 buttons)"
+					},
+					{
+						"role": "section-text",
+						"by": "usage",
+						"why": "the most used text colour on the section ground (weight 44)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--surface-page",
@@ -2830,8 +3058,37 @@
 					"--button-primary-fg"
 				],
 				"role": "surface",
+				"roles": [
+					"surface",
+					"footer-bg",
+					"primary-text",
+					"text-inverse"
+				],
 				"confidence": 0.95,
-				"why": "name says surface; usage agrees"
+				"why": "the page ground: the body background on 1 page(s); the name --surface-page agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "surface",
+						"by": "usage",
+						"why": "the page ground: the body background on 1 page(s); the name --surface-page agrees"
+					},
+					{
+						"role": "footer-bg",
+						"by": "usage",
+						"why": "the footer's ground on 1 page(s)"
+					},
+					{
+						"role": "primary-text",
+						"by": "usage",
+						"why": "the most used text colour on the primary ground (weight 44)"
+					},
+					{
+						"role": "text-inverse",
+						"by": "usage",
+						"why": "the most used text colour on the dark ground #141414 (weight 44)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--surface-card",
@@ -2868,8 +3125,19 @@
 					"--white"
 				],
 				"role": "surface-alt",
-				"confidence": 0.7,
-				"why": "name says surface; surface went to --paper, so surface-alt"
+				"roles": [
+					"surface-alt"
+				],
+				"confidence": 0.95,
+				"why": "the most used light ground after the page ground (29 elements); the name --surface-card agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "surface-alt",
+						"by": "usage",
+						"why": "the most used light ground after the page ground (29 elements); the name --surface-card agrees"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--border-default",
@@ -2936,9 +3204,20 @@
 				"sharedWith": [
 					"--hairline"
 				],
-				"role": "custom-border-default",
-				"confidence": 0.3,
-				"why": "name says border; usage agrees; border went to --border-strong"
+				"role": "border-light",
+				"roles": [
+					"border-light"
+				],
+				"confidence": 0.85,
+				"why": "the next divider line colour, lighter than the border (66 lines)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "border-light",
+						"by": "usage",
+						"why": "the next divider line colour, lighter than the border (66 lines)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--button-primary-bg",
@@ -3011,9 +3290,44 @@
 					"--ink",
 					"--text-body"
 				],
-				"role": "custom-button-primary-bg",
-				"confidence": 0.3,
-				"why": "name says surface; surface went to --paper, so surface-alt; surface-alt went to --white"
+				"role": "text",
+				"roles": [
+					"text",
+					"heading",
+					"link",
+					"primary",
+					"section-text"
+				],
+				"confidence": 0.95,
+				"why": "the page text: the body colour on 1 page(s); the name --text-body agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "text",
+						"by": "usage",
+						"why": "the page text: the body colour on 1 page(s); the name --text-body agrees"
+					},
+					{
+						"role": "heading",
+						"by": "usage",
+						"why": "the most used heading colour on light grounds (5 headings)"
+					},
+					{
+						"role": "link",
+						"by": "usage",
+						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (29 of 34 links)"
+					},
+					{
+						"role": "primary",
+						"by": "usage",
+						"why": "the most used strong ground (1 buttons)"
+					},
+					{
+						"role": "section-text",
+						"by": "usage",
+						"why": "the most used text colour on the section ground (weight 44)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--button-primary-fg",
@@ -3059,9 +3373,38 @@
 					"--paper",
 					"--surface-page"
 				],
-				"role": "custom-button-primary-fg",
-				"confidence": 0.3,
-				"why": "name says body text; text went to --ink"
+				"role": "surface",
+				"roles": [
+					"surface",
+					"footer-bg",
+					"primary-text",
+					"text-inverse"
+				],
+				"confidence": 0.95,
+				"why": "the page ground: the body background on 1 page(s); the name --surface-page agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "surface",
+						"by": "usage",
+						"why": "the page ground: the body background on 1 page(s); the name --surface-page agrees"
+					},
+					{
+						"role": "footer-bg",
+						"by": "usage",
+						"why": "the footer's ground on 1 page(s)"
+					},
+					{
+						"role": "primary-text",
+						"by": "usage",
+						"why": "the most used text colour on the primary ground (weight 44)"
+					},
+					{
+						"role": "text-inverse",
+						"by": "usage",
+						"why": "the most used text colour on the dark ground #141414 (weight 44)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--focus-ring",
@@ -3093,8 +3436,12 @@
 					"--acc"
 				],
 				"role": "custom-focus-ring",
+				"roles": [
+					"custom-focus-ring"
+				],
 				"confidence": 0.3,
-				"why": "no confident match; stays a custom colour (FR-33-2)"
+				"why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+				"by": "none"
 			}
 		],
 		"unused": [

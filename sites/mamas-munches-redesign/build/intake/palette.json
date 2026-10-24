@@ -1,6 +1,6 @@
 {
 	"client": "mamas-munches-redesign",
-	"takenOn": "2026-10-24T03:07:24.605Z",
+	"takenOn": "2026-10-24T03:41:09.610Z",
 	"manifestHash": "153bb09fe400dcae98c503ad44580b2cc0f6dcd5b9d775e770a90370b6d3e995",
 	"palette": {
 		"tokens": [
@@ -1997,9 +1997,56 @@
 					"--mm-outline",
 					"--mm-focus"
 				],
-				"role": "custom-mm-cocoa",
-				"confidence": 0.3,
-				"why": "same value as --mm-text; text went to --mm-body"
+				"role": "text",
+				"roles": [
+					"text",
+					"heading",
+					"border",
+					"primary-text",
+					"accent-text",
+					"section-text",
+					"link-hover"
+				],
+				"confidence": 0.95,
+				"why": "the page text: the body colour on 11 page(s); the name --mm-text agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "text",
+						"by": "usage",
+						"why": "the page text: the body colour on 11 page(s); the name --mm-text agrees"
+					},
+					{
+						"role": "heading",
+						"by": "usage",
+						"why": "the most used heading colour on light grounds (52 headings)"
+					},
+					{
+						"role": "border",
+						"by": "usage",
+						"why": "the most used divider line colour (1899 lines; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees"
+					},
+					{
+						"role": "primary-text",
+						"by": "usage",
+						"why": "the most used text colour on the primary ground (weight 302)"
+					},
+					{
+						"role": "accent-text",
+						"by": "usage",
+						"why": "the most used text colour on the accent ground (weight 85)"
+					},
+					{
+						"role": "section-text",
+						"by": "usage",
+						"why": "the most used text colour on the section ground (weight 293)"
+					},
+					{
+						"role": "link-hover",
+						"by": "name",
+						"why": "name says link hover (the name alone decides this)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-paper",
@@ -2033,8 +2080,25 @@
 					"--mm-surface-card"
 				],
 				"role": "surface-alt",
-				"confidence": 0.7,
-				"why": "same value as --mm-surface-card; surface went to --mm-cream, so surface-alt"
+				"roles": [
+					"surface-alt",
+					"text-inverse"
+				],
+				"confidence": 0.95,
+				"why": "the most used light ground after the page ground (305 elements); the name --mm-surface-card agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "surface-alt",
+						"by": "usage",
+						"why": "the most used light ground after the page ground (305 elements); the name --mm-surface-card agrees"
+					},
+					{
+						"role": "text-inverse",
+						"by": "usage",
+						"why": "the most used text colour on the dark ground #3A2A22 (weight 9)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-cream",
@@ -2071,8 +2135,25 @@
 					"--mm-surface-page"
 				],
 				"role": "surface",
-				"confidence": 0.85,
-				"why": "same value as --mm-surface-page"
+				"roles": [
+					"surface",
+					"footer-bg"
+				],
+				"confidence": 0.95,
+				"why": "the page ground: the body background on 11 page(s); the name --mm-surface-page agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "surface",
+						"by": "usage",
+						"why": "the page ground: the body background on 11 page(s); the name --mm-surface-page agrees"
+					},
+					{
+						"role": "footer-bg",
+						"by": "usage",
+						"why": "the footer's ground on 10 page(s)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-white",
@@ -2115,8 +2196,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-mm-white",
+				"roles": [
+					"custom-mm-white"
+				],
 				"confidence": 0.3,
-				"why": "no confident match; stays a custom colour (FR-33-2)"
+				"why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--mm-pink",
@@ -2142,8 +2227,19 @@
 					"--mm-badge"
 				],
 				"role": "accent",
-				"confidence": 0.7,
-				"why": "a high-chroma ground; primary went to --mm-yellow, so accent"
+				"roles": [
+					"accent"
+				],
+				"confidence": 0.85,
+				"why": "the next most used strong ground (9 buttons)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "accent",
+						"by": "usage",
+						"why": "the next most used strong ground (9 buttons)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-pink-dark",
@@ -2180,8 +2276,19 @@
 					"--mm-link"
 				],
 				"role": "link",
-				"confidence": 0.85,
-				"why": "same value as --mm-link"
+				"roles": [
+					"link"
+				],
+				"confidence": 0.95,
+				"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (88 of 479 links); the name --mm-link agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "link",
+						"by": "usage",
+						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (88 of 479 links); the name --mm-link agrees"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-pink-band",
@@ -2207,8 +2314,12 @@
 					"--mm-surface-band"
 				],
 				"role": "custom-mm-pink-band",
+				"roles": [
+					"custom-mm-pink-band"
+				],
 				"confidence": 0.3,
-				"why": "same value as --mm-surface-band; surface went to --mm-cream, so surface-alt; surface-alt went to --mm-paper"
+				"why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--mm-pink-soft",
@@ -2241,9 +2352,20 @@
 				"sharedWith": [
 					"--mm-surface-panel"
 				],
-				"role": "custom-mm-pink-soft",
-				"confidence": 0.3,
-				"why": "same value as --mm-surface-panel; surface went to --mm-cream, so surface-alt; surface-alt went to --mm-paper"
+				"role": "section",
+				"roles": [
+					"section"
+				],
+				"confidence": 0.85,
+				"why": "the most used ground after the page, raised and primary grounds (111 elements)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "section",
+						"by": "usage",
+						"why": "the most used ground after the page, raised and primary grounds (111 elements)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-yellow",
@@ -2278,8 +2400,19 @@
 					"--mm-selected"
 				],
 				"role": "primary",
-				"confidence": 0.7,
-				"why": "a high-chroma ground"
+				"roles": [
+					"primary"
+				],
+				"confidence": 0.85,
+				"why": "the most used strong ground (32 buttons)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "primary",
+						"by": "usage",
+						"why": "the most used strong ground (32 buttons)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-yellow-soft",
@@ -2312,8 +2445,12 @@
 					"--mm-surface-panel-alt"
 				],
 				"role": "custom-mm-yellow-soft",
+				"roles": [
+					"custom-mm-yellow-soft"
+				],
 				"confidence": 0.3,
-				"why": "same value as --mm-surface-panel-alt; surface went to --mm-cream, so surface-alt; surface-alt went to --mm-paper"
+				"why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--mm-body",
@@ -2338,9 +2475,13 @@
 				"sharedWith": [
 					"--mm-text-body"
 				],
-				"role": "text",
-				"confidence": 0.95,
-				"why": "name says body text; usage agrees"
+				"role": "custom-mm-body",
+				"roles": [
+					"custom-mm-body"
+				],
+				"confidence": 0.3,
+				"why": "name says body text, but text is read from usage on --mm-cocoa (#3A2A22)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--mm-muted",
@@ -2374,8 +2515,19 @@
 					"--mm-text-muted"
 				],
 				"role": "text-muted",
-				"confidence": 0.9,
-				"why": "name says muted text"
+				"roles": [
+					"text-muted"
+				],
+				"confidence": 0.95,
+				"why": "the most used text colour after the text and heading colours, lighter than the text (32 elements); the name --mm-muted agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "text-muted",
+						"by": "usage",
+						"why": "the most used text colour after the text and heading colours, lighter than the text (32 elements); the name --mm-muted agrees"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-muted-2",
@@ -2407,8 +2559,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-mm-muted-2",
+				"roles": [
+					"custom-mm-muted-2"
+				],
 				"confidence": 0.3,
-				"why": "name says muted text; text-muted went to --mm-muted"
+				"why": "name says muted text, but text-muted is read from usage on --mm-muted (#5E4A3D)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--mm-script",
@@ -2432,8 +2588,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-mm-script",
+				"roles": [
+					"custom-mm-script"
+				],
 				"confidence": 0.3,
-				"why": "no confident match; stays a custom colour (FR-33-2)"
+				"why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--mm-script-gold",
@@ -2457,8 +2617,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-mm-script-gold",
+				"roles": [
+					"custom-mm-script-gold"
+				],
 				"confidence": 0.3,
-				"why": "no confident match; stays a custom colour (FR-33-2)"
+				"why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--mm-sparkle",
@@ -2485,8 +2649,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-mm-sparkle",
+				"roles": [
+					"custom-mm-sparkle"
+				],
 				"confidence": 0.3,
-				"why": "no confident match; stays a custom colour (FR-33-2)"
+				"why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--mm-image-bg",
@@ -2509,8 +2677,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-mm-image-bg",
+				"roles": [
+					"custom-mm-image-bg"
+				],
 				"confidence": 0.3,
-				"why": "name says surface; surface went to --mm-cream, so surface-alt; surface-alt went to --mm-paper"
+				"why": "name says surface, but surface-alt is read from usage on --mm-paper (#FFFAF0)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--mm-line",
@@ -2539,9 +2711,20 @@
 					}
 				],
 				"sharedWith": [],
-				"role": "custom-mm-line",
-				"confidence": 0.3,
-				"why": "used mostly as a border colour; border went to --mm-outline"
+				"role": "border-light",
+				"roles": [
+					"border-light"
+				],
+				"confidence": 0.85,
+				"why": "the next divider line colour, lighter than the border (33 lines)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "border-light",
+						"by": "usage",
+						"why": "the next divider line colour, lighter than the border (33 lines)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-line-dashed",
@@ -2565,8 +2748,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-mm-line-dashed",
+				"roles": [
+					"custom-mm-line-dashed"
+				],
 				"confidence": 0.3,
-				"why": "used mostly as a border colour; border went to --mm-outline"
+				"why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--mm-rule",
@@ -2597,8 +2784,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-mm-rule",
+				"roles": [
+					"custom-mm-rule"
+				],
 				"confidence": 0.3,
-				"why": "name says border; usage agrees; border went to --mm-outline"
+				"why": "name says border, but border is read from usage on --mm-cocoa (#3A2A22)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--mm-rule-soft",
@@ -2626,8 +2817,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-mm-rule-soft",
+				"roles": [
+					"custom-mm-rule-soft"
+				],
 				"confidence": 0.3,
-				"why": "name says border; usage agrees; border went to --mm-outline"
+				"why": "name says border, but border is read from usage on --mm-cocoa (#3A2A22)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--mm-tape",
@@ -2650,8 +2845,12 @@
 				],
 				"sharedWith": [],
 				"role": "custom-mm-tape",
+				"roles": [
+					"custom-mm-tape"
+				],
 				"confidence": 0.3,
-				"why": "a high-chroma ground; primary went to --mm-yellow, so accent; accent went to --mm-pink"
+				"why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--mm-text",
@@ -2747,9 +2946,56 @@
 					"--mm-outline",
 					"--mm-focus"
 				],
-				"role": "custom-mm-text",
-				"confidence": 0.3,
-				"why": "name says body text; text went to --mm-body"
+				"role": "text",
+				"roles": [
+					"text",
+					"heading",
+					"border",
+					"primary-text",
+					"accent-text",
+					"section-text",
+					"link-hover"
+				],
+				"confidence": 0.95,
+				"why": "the page text: the body colour on 11 page(s); the name --mm-text agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "text",
+						"by": "usage",
+						"why": "the page text: the body colour on 11 page(s); the name --mm-text agrees"
+					},
+					{
+						"role": "heading",
+						"by": "usage",
+						"why": "the most used heading colour on light grounds (52 headings)"
+					},
+					{
+						"role": "border",
+						"by": "usage",
+						"why": "the most used divider line colour (1899 lines; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees"
+					},
+					{
+						"role": "primary-text",
+						"by": "usage",
+						"why": "the most used text colour on the primary ground (weight 302)"
+					},
+					{
+						"role": "accent-text",
+						"by": "usage",
+						"why": "the most used text colour on the accent ground (weight 85)"
+					},
+					{
+						"role": "section-text",
+						"by": "usage",
+						"why": "the most used text colour on the section ground (weight 293)"
+					},
+					{
+						"role": "link-hover",
+						"by": "name",
+						"why": "name says link hover (the name alone decides this)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-text-body",
@@ -2776,9 +3022,13 @@
 				"sharedWith": [
 					"--mm-body"
 				],
-				"role": "text",
-				"confidence": 0.95,
-				"why": "name says body text; usage agrees"
+				"role": "custom-mm-text-body",
+				"roles": [
+					"custom-mm-text-body"
+				],
+				"confidence": 0.3,
+				"why": "name says body text, but text is read from usage on --mm-cocoa (#3A2A22)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--mm-text-muted",
@@ -2814,8 +3064,19 @@
 					"--mm-muted"
 				],
 				"role": "text-muted",
-				"confidence": 0.9,
-				"why": "name says muted text"
+				"roles": [
+					"text-muted"
+				],
+				"confidence": 0.95,
+				"why": "the most used text colour after the text and heading colours, lighter than the text (32 elements); the name --mm-muted agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "text-muted",
+						"by": "usage",
+						"why": "the most used text colour after the text and heading colours, lighter than the text (32 elements); the name --mm-muted agrees"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-link",
@@ -2854,8 +3115,19 @@
 					"--mm-pink-dark"
 				],
 				"role": "link",
-				"confidence": 0.9,
-				"why": "name says link"
+				"roles": [
+					"link"
+				],
+				"confidence": 0.95,
+				"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (88 of 479 links); the name --mm-link agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "link",
+						"by": "usage",
+						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (88 of 479 links); the name --mm-link agrees"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-link-hover",
@@ -2952,8 +3224,55 @@
 					"--mm-focus"
 				],
 				"role": "link-hover",
-				"confidence": 0.9,
-				"why": "name says link hover"
+				"roles": [
+					"link-hover",
+					"text",
+					"heading",
+					"border",
+					"primary-text",
+					"accent-text",
+					"section-text"
+				],
+				"confidence": 0.6,
+				"why": "name says link hover (the name alone decides this)",
+				"by": "name",
+				"basis": [
+					{
+						"role": "text",
+						"by": "usage",
+						"why": "the page text: the body colour on 11 page(s); the name --mm-text agrees"
+					},
+					{
+						"role": "heading",
+						"by": "usage",
+						"why": "the most used heading colour on light grounds (52 headings)"
+					},
+					{
+						"role": "border",
+						"by": "usage",
+						"why": "the most used divider line colour (1899 lines; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees"
+					},
+					{
+						"role": "primary-text",
+						"by": "usage",
+						"why": "the most used text colour on the primary ground (weight 302)"
+					},
+					{
+						"role": "accent-text",
+						"by": "usage",
+						"why": "the most used text colour on the accent ground (weight 85)"
+					},
+					{
+						"role": "section-text",
+						"by": "usage",
+						"why": "the most used text colour on the section ground (weight 293)"
+					},
+					{
+						"role": "link-hover",
+						"by": "name",
+						"why": "name says link hover (the name alone decides this)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-surface-page",
@@ -2992,8 +3311,25 @@
 					"--mm-cream"
 				],
 				"role": "surface",
+				"roles": [
+					"surface",
+					"footer-bg"
+				],
 				"confidence": 0.95,
-				"why": "name says surface; usage agrees"
+				"why": "the page ground: the body background on 11 page(s); the name --mm-surface-page agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "surface",
+						"by": "usage",
+						"why": "the page ground: the body background on 11 page(s); the name --mm-surface-page agrees"
+					},
+					{
+						"role": "footer-bg",
+						"by": "usage",
+						"why": "the footer's ground on 10 page(s)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-surface-card",
@@ -3029,8 +3365,25 @@
 					"--mm-paper"
 				],
 				"role": "surface-alt",
-				"confidence": 0.7,
-				"why": "name says surface; surface went to --mm-cream, so surface-alt"
+				"roles": [
+					"surface-alt",
+					"text-inverse"
+				],
+				"confidence": 0.95,
+				"why": "the most used light ground after the page ground (305 elements); the name --mm-surface-card agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "surface-alt",
+						"by": "usage",
+						"why": "the most used light ground after the page ground (305 elements); the name --mm-surface-card agrees"
+					},
+					{
+						"role": "text-inverse",
+						"by": "usage",
+						"why": "the most used text colour on the dark ground #3A2A22 (weight 9)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-surface-band",
@@ -3058,8 +3411,12 @@
 					"--mm-pink-band"
 				],
 				"role": "custom-mm-surface-band",
+				"roles": [
+					"custom-mm-surface-band"
+				],
 				"confidence": 0.3,
-				"why": "name says surface; surface went to --mm-cream, so surface-alt; surface-alt went to --mm-paper"
+				"why": "name says surface, but surface-alt is read from usage on --mm-paper (#FFFAF0)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--mm-surface-panel",
@@ -3094,9 +3451,20 @@
 				"sharedWith": [
 					"--mm-pink-soft"
 				],
-				"role": "custom-mm-surface-panel",
-				"confidence": 0.3,
-				"why": "name says surface; surface went to --mm-cream, so surface-alt; surface-alt went to --mm-paper"
+				"role": "section",
+				"roles": [
+					"section"
+				],
+				"confidence": 0.85,
+				"why": "the most used ground after the page, raised and primary grounds (111 elements)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "section",
+						"by": "usage",
+						"why": "the most used ground after the page, raised and primary grounds (111 elements)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-surface-panel-alt",
@@ -3131,8 +3499,12 @@
 					"--mm-yellow-soft"
 				],
 				"role": "custom-mm-surface-panel-alt",
+				"roles": [
+					"custom-mm-surface-panel-alt"
+				],
 				"confidence": 0.3,
-				"why": "name says surface; surface went to --mm-cream, so surface-alt; surface-alt went to --mm-paper"
+				"why": "name says surface, but surface-alt is read from usage on --mm-paper (#FFFAF0)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--mm-outline",
@@ -3229,8 +3601,55 @@
 					"--mm-focus"
 				],
 				"role": "border",
+				"roles": [
+					"border",
+					"text",
+					"heading",
+					"primary-text",
+					"accent-text",
+					"section-text",
+					"link-hover"
+				],
 				"confidence": 0.95,
-				"why": "name says border; usage agrees"
+				"why": "the most used divider line colour (1899 lines; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "text",
+						"by": "usage",
+						"why": "the page text: the body colour on 11 page(s); the name --mm-text agrees"
+					},
+					{
+						"role": "heading",
+						"by": "usage",
+						"why": "the most used heading colour on light grounds (52 headings)"
+					},
+					{
+						"role": "border",
+						"by": "usage",
+						"why": "the most used divider line colour (1899 lines; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees"
+					},
+					{
+						"role": "primary-text",
+						"by": "usage",
+						"why": "the most used text colour on the primary ground (weight 302)"
+					},
+					{
+						"role": "accent-text",
+						"by": "usage",
+						"why": "the most used text colour on the accent ground (weight 85)"
+					},
+					{
+						"role": "section-text",
+						"by": "usage",
+						"why": "the most used text colour on the section ground (weight 293)"
+					},
+					{
+						"role": "link-hover",
+						"by": "name",
+						"why": "name says link hover (the name alone decides this)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-cta",
@@ -3267,8 +3686,19 @@
 					"--mm-selected"
 				],
 				"role": "primary",
-				"confidence": 0.7,
-				"why": "a high-chroma ground"
+				"roles": [
+					"primary"
+				],
+				"confidence": 0.85,
+				"why": "the most used strong ground (32 buttons)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "primary",
+						"by": "usage",
+						"why": "the most used strong ground (32 buttons)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-selected",
@@ -3305,8 +3735,19 @@
 					"--mm-cta"
 				],
 				"role": "primary",
-				"confidence": 0.7,
-				"why": "a high-chroma ground"
+				"roles": [
+					"primary"
+				],
+				"confidence": 0.85,
+				"why": "the most used strong ground (32 buttons)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "primary",
+						"by": "usage",
+						"why": "the most used strong ground (32 buttons)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-badge",
@@ -3334,8 +3775,19 @@
 					"--mm-pink"
 				],
 				"role": "accent",
-				"confidence": 0.7,
-				"why": "a high-chroma ground; primary went to --mm-yellow, so accent"
+				"roles": [
+					"accent"
+				],
+				"confidence": 0.85,
+				"why": "the next most used strong ground (9 buttons)",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "accent",
+						"by": "usage",
+						"why": "the next most used strong ground (9 buttons)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--mm-focus",
@@ -3431,9 +3883,56 @@
 					"--mm-link-hover",
 					"--mm-outline"
 				],
-				"role": "custom-mm-focus",
-				"confidence": 0.3,
-				"why": "same value as --mm-text; text went to --mm-body"
+				"role": "text",
+				"roles": [
+					"text",
+					"heading",
+					"border",
+					"primary-text",
+					"accent-text",
+					"section-text",
+					"link-hover"
+				],
+				"confidence": 0.95,
+				"why": "the page text: the body colour on 11 page(s); the name --mm-text agrees",
+				"by": "usage",
+				"basis": [
+					{
+						"role": "text",
+						"by": "usage",
+						"why": "the page text: the body colour on 11 page(s); the name --mm-text agrees"
+					},
+					{
+						"role": "heading",
+						"by": "usage",
+						"why": "the most used heading colour on light grounds (52 headings)"
+					},
+					{
+						"role": "border",
+						"by": "usage",
+						"why": "the most used divider line colour (1899 lines; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees"
+					},
+					{
+						"role": "primary-text",
+						"by": "usage",
+						"why": "the most used text colour on the primary ground (weight 302)"
+					},
+					{
+						"role": "accent-text",
+						"by": "usage",
+						"why": "the most used text colour on the accent ground (weight 85)"
+					},
+					{
+						"role": "section-text",
+						"by": "usage",
+						"why": "the most used text colour on the section ground (weight 293)"
+					},
+					{
+						"role": "link-hover",
+						"by": "name",
+						"why": "name says link hover (the name alone decides this)"
+					}
+				]
 			}
 		],
 		"unused": [],

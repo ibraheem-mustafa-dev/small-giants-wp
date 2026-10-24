@@ -42,10 +42,13 @@ def _norm_hex(value) -> str | None:
 
 
 def _mark_slugs(token: str, mark, row: dict) -> list[str]:
-    """The slugs one palette mark names: none for ``one-off`` or an accepted "no palette entry" proposal."""
+    """The slugs one palette mark names: none for ``one-off`` or an accepted "no palette entry" proposal; an accepted
+    proposal names every slug of the row's ``roles`` (one value can fill several), else its ``role``."""
     if mark == "one-off":
         return []
     if mark == "accept":
+        if row.get("roles"):
+            return list(row["roles"])
         return [row["role"]] if row.get("role") else []
     if isinstance(mark, str) and mark.startswith("role:"):
         return [part.strip() for part in mark[len("role:"):].split(",")]

@@ -199,7 +199,7 @@ export function reviewRows( intake ) {
 		`${ r.route ?? '(no route)' } → ${ r.title } (${ r.postType }, ${ r.collection }${ r.template ? `, ${ r.template }` : '' })`,
 		`${ r.parent ? `${ r.parent }/` : '' }${ r.slug }`,
 		[ ...( r.menus || [] ).map( ( m ) => `${ m.menu } #${ m.position }` ), ...( r.flags || [] ) ].join( ', ' ) ) );
-	( intake.palette?.rows || [] ).forEach( ( r ) => add( 'palette-role', r, r.token, `${ r.token } ${ r.hex }`, r.role ? `role:${ r.role }` : 'no slug (one-off)', [ r.confidence, r.why ].filter( Boolean ).join( ': ' ) ) );
+	( intake.palette?.rows || [] ).forEach( ( r ) => add( 'palette-role', r, r.token, `${ r.token } ${ r.hex }`, r.roles?.length > 1 ? `role:${ r.roles.join( ',' ) }` : r.role ? `role:${ r.role }` : 'no slug (one-off)', [ r.confidence, r.why ].filter( Boolean ).join( ': ' ) ) );
 	( intake.siteInfo?.rows || [] ).forEach( ( r ) => add( 'site-info', r, r.key, `${ r.key }: ${ text( r.value ) }`, text( r.normalised ), ( r.sources || [] ).map( ( s ) => s.draftId || s.location ).filter( Boolean ).join( ', ' ) ) );
 	( intake.flags || [] ).forEach( ( r ) => add( 'flag', r, r.draftId, `${ r.kind }: ${ r.text ?? r.url ?? '' }`, 'accept-flagged', r.why || '' ) );
 	( intake.draftDefects || [] ).forEach( ( r ) => add( 'draft-defect', r, r.draftId, describe( r ), text( r.proposed ?? r.intent ?? 'build the code\'s intent' ), text( r.why ?? r.reason ) ) );
