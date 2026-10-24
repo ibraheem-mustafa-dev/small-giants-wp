@@ -161,13 +161,15 @@ const moves = ( x ) => [ x.hover, x.focus, x.active ].some( ( st ) => st && 'obj
 const statesRead = ( x ) => undefined !== x.hover || true === x.noHover;
 // The properties that move in a state read on either side (what a transition can animate), or null while either side's
 // states are unread (lib/transitions.mjs::sameTransitions then compares an `all` as itself).
-const changed = ( d, l ) => ( statesRead( d ) && statesRead( l ) ? [ ...new Set( [ d, l ].flatMap( ( x ) => [ x.hover, x.focus, x.active ].flatMap( ( st ) => ( st && 'object' === typeof st ? Object.keys( st ).filter( ( k ) => String( st[ k ] ) !== String( x.styles?.[ k ] ?? st[ k ] ) ) : [] ) ) ) ) ] : null );
+export const changed = ( d, l ) => ( statesRead( d ) && statesRead( l ) ? [ ...new Set( [ d, l ].flatMap( ( x ) => [ x.hover, x.focus, x.active ].flatMap( ( st ) => ( st && 'object' === typeof st ? Object.keys( st ).filter( ( k ) => String( st[ k ] ) !== String( x.styles?.[ k ] ?? st[ k ] ) ) : [] ) ) ) ) ] : null );
 
 // Motion timings that run nothing: an animation's while neither side animates (no keyframes), a transition's delay and
 // easing while neither side's transition takes any time, and any transition timing while neither side's element changes
 // in any state read on both sides (a heading carrying the site's hover timing with no hover effect paints no motion).
-function timingIrrelevant( p, d, l ) {
-	if ( /^transition-/.test( p ) && statesRead( d ) && statesRead( l ) && ! moves( d ) && ! moves( l ) ) {
+// Where every state walked at this width is known (`every`, lib/state-changes.mjs::everyStateChanges), "changes" means
+// in any of them, so a row whose scrolled state collapses keeps its timing rows though its hover moves nothing.
+function timingIrrelevant( p, d, l, every = null ) {
+	if ( /^transition-/.test( p ) && ( every ? ! every.length : statesRead( d ) && statesRead( l ) && ! moves( d ) && ! moves( l ) ) ) {
 		return true;
 	}
 	// Animation timings compare only where both sides animate with CSS keyframes: a side animating from script (the
@@ -268,8 +270,10 @@ function passThroughHeld( k, d, l, tol ) {
 	return d.box[ k ] - union > tol.box && inside && counted && tiled && Math.abs( len( a ) - len( b ) ) <= tol.box && within( a.items, a, b.items, b ) && within( b.items, b, a.items, a );
 }
 
-// Returns [{ kind, key, draft, live }] for one pair in one state at one width.
-export function comparePair( pair, d, l, tol ) {
+// Returns [{ kind, key, draft, live }] for one pair in one state at one width. `every` is the pair's change set across
+// every state walked at this width (lib/state-changes.mjs::everyStateChanges), or null where it is not known; the
+// transition comparison then uses this state's hover, focus and pressed changes only.
+export function comparePair( pair, d, l, tol, every = null ) {
 	const diffs = [];
 	const add = ( kind, key, draft, live ) => diffs.push( { kind, key, draft, live } );
 	if ( d.missing || l.missing ) {
@@ -284,7 +288,8 @@ export function comparePair( pair, d, l, tol ) {
 	}
 	const mixed = iconMixed( d, l );
 	const loops = loopSet( d, l );
-	const changes = changed( d, l );
+	const everyState = Array.isArray( every );
+	const changes = everyState ? every : changed( d, l );
 	if ( pair.text !== false && ! mixed && ! sameWords( d.text, l.text ) ) {
 		add( 'text', 'text', d.text, l.text );
 	}
@@ -317,12 +322,12 @@ export function comparePair( pair, d, l, tol ) {
 		if ( 'icon-colour' === p ? ! mixed : ( loops.has( p ) || ( ( mixed || textAlone ) && GLYPH_TEXT.has( p ) ) || ( mixed && /^icon-(fill|stroke)$/.test( p ) ) ) ) {
 			continue;
 		}
-		if ( borderColourIrrelevant( p, d.styles, l.styles ) || partIrrelevant( p, d.styles, l.styles ) || timingIrrelevant( p, d, l ) || equivalent( p, d.styles[ p ], l.styles[ p ], [ d, l ].every( ( x ) => /(^|-)flex$/.test( x.layoutDisplay || '' ) ) ) || ! layoutComparable( p, d, l ) || controlPaddingIrrelevant( p, d, l ) ) {
+		if ( borderColourIrrelevant( p, d.styles, l.styles ) || partIrrelevant( p, d.styles, l.styles ) || timingIrrelevant( p, d, l, everyState ? every : null ) || equivalent( p, d.styles[ p ], l.styles[ p ], [ d, l ].every( ( x ) => /(^|-)flex$/.test( x.layoutDisplay || '' ) ) ) || ! layoutComparable( p, d, l ) || controlPaddingIrrelevant( p, d, l ) ) {
 			continue;
 		}
 		// A transition timing compares per animated property where both sides transition something (lib/transitions.mjs).
 		const shorthands = [ d.motion?.transition, l.motion?.transition ];
-		const byName = isTimingLonghand( p ) && shorthands.every( ( t ) => t && 'none' !== t ) ? sameTransitions( ...shorthands, p, changes ) : null;
+		const byName = isTimingLonghand( p ) && shorthands.every( ( t ) => t && 'none' !== t ) ? sameTransitions( ...shorthands, p, changes, everyState ) : null;
 		if ( ! ( byName ?? sameValue( p, d.styles[ p ], l.styles[ p ], tol.px ) ) ) {
 			add( 'style', p, d.styles[ p ], l.styles[ p ] );
 		}
@@ -352,7 +357,7 @@ export function comparePair( pair, d, l, tol ) {
 		}
 		for ( const k of [ 'animation', 'transition' ] ) {
 			// A transition compares per animated property; raw text only where either side cannot be parsed.
-			const byName = 'transition' === k ? sameTransitions( d.motion[ k ], l.motion[ k ], null, changes ) : null;
+			const byName = 'transition' === k ? sameTransitions( d.motion[ k ], l.motion[ k ], null, changes, everyState ) : null;
 			if ( ! ( byName ?? sameValue( k, d.motion[ k ], l.motion[ k ], 0 ) ) ) {
 				add( 'motion', k, d.motion[ k ], l.motion[ k ] );
 			}

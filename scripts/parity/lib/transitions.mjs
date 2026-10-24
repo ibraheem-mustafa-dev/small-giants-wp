@@ -53,7 +53,54 @@ export function parseTransitions( v ) {
 	return out;
 }
 
-const sameEntry = ( a, b, field ) => !! b && ( field ? [ field ] : [ 'duration', 'delay', 'timing' ] ).every( ( f ) => ( 'timing' === f ? a[ f ].replace( /\s+/g, '' ) === b[ f ].replace( /\s+/g, '' ) : Math.abs( a[ f ] - b[ f ] ) < 0.001 ) );
+// An easing as the curve it names (CSS Easing Level 2): the keywords are their cubic-bezier() values (`linear` is
+// cubic-bezier(0, 0, 1, 1)), and the step keywords and step positions their jump-* spelling (`step-start` is
+// steps(1, jump-start); `step-end`, steps(1), steps(1, end) are steps(1, jump-end)). A bezier is its four numbers; any
+// other easing (a linear() point list) is its text without spaces.
+const KEYWORD = { ease: [ 0.25, 0.1, 0.25, 1 ], 'ease-in': [ 0.42, 0, 1, 1 ], 'ease-out': [ 0, 0, 0.58, 1 ], 'ease-in-out': [ 0.42, 0, 0.58, 1 ], linear: [ 0, 0, 1, 1 ] };
+const STEP_KEYWORD = { 'step-start': 'steps(1,jump-start)', 'step-end': 'steps(1,jump-end)' };
+const STEP_POSITION = { start: 'jump-start', end: 'jump-end' };
+export function curve( t ) {
+	const text = String( t ).replace( /\s+/g, '' ).toLowerCase();
+	if ( KEYWORD[ text ] ) {
+		return KEYWORD[ text ];
+	}
+	const bezier = text.match( /^cubic-bezier\(([^)]*)\)$/ );
+	if ( bezier ) {
+		const n = bezier[ 1 ].split( ',' ).map( Number );
+		return 4 === n.length && n.every( Number.isFinite ) ? n : text;
+	}
+	const steps = text.match( /^steps\((\d+)(?:,([a-z-]+))?\)$/ );
+	if ( steps ) {
+		const at = steps[ 2 ] ?? 'jump-end';
+		return `steps(${ steps[ 1 ] },${ STEP_POSITION[ at ] ?? at })`;
+	}
+	return STEP_KEYWORD[ text ] ?? text;
+}
+// Two easings are one curve: equal bezier numbers (within 0.001), or equal canonical text.
+export function sameCurve( a, b ) {
+	const [ x, y ] = [ curve( a ), curve( b ) ];
+	if ( Array.isArray( x ) || Array.isArray( y ) ) {
+		return Array.isArray( x ) && Array.isArray( y ) && x.every( ( v, i ) => Math.abs( v - y[ i ] ) < 0.001 );
+	}
+	return x === y;
+}
+
+const sameEntry = ( a, b, field ) => !! b && ( field ? [ field ] : [ 'duration', 'delay', 'timing' ] ).every( ( f ) => ( 'timing' === f ? sameCurve( a[ f ], b[ f ] ) : Math.abs( a[ f ] - b[ f ] ) < 0.001 ) );
+
+// The longhand a logical size or box-side property sets in a horizontal writing mode (block-size is height,
+// padding-block-start is padding-top), so a transition naming one is matched with a change read as the other.
+const PHYSICAL = [ [ /block-size/, 'height' ], [ /inline-size/, 'width' ], [ /-block-start$/, '-top' ], [ /-block-end$/, '-bottom' ], [ /-inline-start$/, '-left' ], [ /-inline-end$/, '-right' ] ];
+const physical = ( k ) => PHYSICAL.reduce( ( v, [ re, to ] ) => v.replace( re, to ), k );
+// A box extent that differs between states (`box:h`, `box:w`, from lib/state-changes.mjs::everyStateChanges) moves
+// that axis's sizes and every padding and margin.
+const BOX_MOVES = { 'box:h': /^((min-|max-)?height|padding|margin)(-|$)/, 'box:w': /^((min-|max-)?width|padding|margin)(-|$)/ };
+// Whether property k moves in a state: a change on k itself, on a longhand of k (a `border` transition and a
+// border-top-color change) or on the shorthand k belongs to, or a box extent change that sizes k.
+const movesIn = ( k, changes ) => {
+	const p = physical( k );
+	return changes.some( ( c ) => ( BOX_MOVES[ c ] ? BOX_MOVES[ c ].test( p ) : [ c, physical( c ) ].some( ( x ) => x === p || x.startsWith( `${ p }-` ) || p.startsWith( `${ x }-` ) ) ) );
+};
 
 // One side's pose entries (its `all` where it names none), as a list of distinct timings.
 const poseSet = ( m ) => {
@@ -67,7 +114,14 @@ const poseSet = ( m ) => {
 // when known) are compared too, so a draft `all` that animates a moving transform is not matched by a live colour-only
 // transition; while they are unknown an `all` on one side only is itself compared. Null when either side cannot be
 // read (the caller compares raw text).
-export function sameTransitions( draft, live, longhand = null, changes = null ) {
+// `everyState` says `changes` holds every property that moves in any state walked on either side at this width (the
+// scrolled rest included, lib/state-changes.mjs::everyStateChanges), not only the hover, focus and pressed reads. Then
+// an entry only one side names (the other has neither it nor an `all`) on a property in no change set animates
+// nothing and is not compared (a live `color 0.25s` on an icon whose colour never changes). Only while both sides
+// transition something: a side with no transition at all against one that has some (a draft `transition: none`
+// against a live scroll-collapse transition) stays a difference whatever the walk saw move. The pose is compared as
+// before.
+export function sameTransitions( draft, live, longhand = null, changes = null, everyState = false ) {
 	const d = parseTransitions( draft );
 	const l = parseTransitions( live );
 	if ( ! d || ! l ) {
@@ -76,12 +130,13 @@ export function sameTransitions( draft, live, longhand = null, changes = null ) 
 	const field = longhand ? FIELD[ longhand ] : null;
 	const keyOf = ( k ) => ( POSE.test( k ) ? 'pose' : k );
 	const named = ( m ) => [ ...m ].filter( ( [ k, e ] ) => 'all' !== k && ! e.implied ).map( ( [ k ] ) => keyOf( k ) );
-	const keys = new Set( [ ...named( d ), ...named( l ), ...( changes || [] ).flatMap( ( k ) => SHORTHAND[ k ] || [ k ] ).map( keyOf ) ] );
+	const keys = new Set( [ ...named( d ), ...named( l ), ...( changes || [] ).filter( ( k ) => ! BOX_MOVES[ k ] ).flatMap( ( k ) => SHORTHAND[ k ] || [ k ] ).map( keyOf ) ] );
 	if ( null === changes && ( d.has( 'all' ) || l.has( 'all' ) ) ) {
 		keys.add( 'all' );
 	}
 	// A property one side does not transition differs in duration only (0s): its delay and easing are not rows too.
 	const absent = ! [ null, 'duration' ].includes( field );
+	const still = ( k ) => everyState && Array.isArray( changes ) && d.size > 0 && l.size > 0 && ! movesIn( k, changes );
 	return [ ...keys ].every( ( k ) => {
 		if ( 'pose' === k ) {
 			const [ a, b ] = [ poseSet( d ), poseSet( l ) ];
@@ -93,7 +148,7 @@ export function sameTransitions( draft, live, longhand = null, changes = null ) 
 		const a = d.get( k ) ?? d.get( 'all' );
 		const b = l.get( k ) ?? l.get( 'all' );
 		if ( ! a || ! b ) {
-			return ! a && ! b ? true : absent;
+			return ! a && ! b ? true : absent || still( k );
 		}
 		return sameEntry( a, b, field );
 	} );
