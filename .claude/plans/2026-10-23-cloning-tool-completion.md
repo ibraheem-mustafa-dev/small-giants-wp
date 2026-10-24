@@ -231,6 +231,18 @@ Per client, inside `S site-run-start <client>` / `S site-run-end`. The order is 
 Repeat Phase 2 (only the surfaces a fix touched, plus one full pass at the end) and Phase 3, until rulings D and E hold on every surface of the three clients. Then come the pairs for every surface and Bean's eye, which is the sign-off.
 
 ## Status
+### Track board
+Track R's session coordinates the four tracks: it keeps this board current from the queue and each track's handoff, and gives Bean one picture of what each track is doing and what is left. Each track counts its own waves; the board is the shared view.
+
+| Track | State | Done | Left before Phase 1 closes | Waits on | Updated |
+|---|---|---|---|---|---|
+| **R, Fill route** | handed off; next session ready | Bean's 6 decisions written by Fill; the intake keeps marks; sheen and ripple live; Indus header 406 to 392 open rows (375/768/1440) | No silent drops (403 declared values without an outcome), the 82 transition rows, the ~55 small rows classified, the nav block recalibrated, the final header run | Track F's `itemColourOpen`; Track S's snapshot push for the ~206 focus rows | 2026-10-24 |
+| **W, walker** | handed off; next session ready | Walker waves 1 to 3 | The walker issues Track R's and Track S's runs surfaced (logo `aspect-ratio` and scrolled-header rows, census classes for Fill's new reasons, the delivery map's inventory) | none | 2026-10-24 |
+| **F, framework** | session running | F1 tap areas; F2 (decisions 1, 3, 6, `sgsChildWidth: auto`) live on all four sites at `27d93336a`; burger bar radii fixed and reseeded | Its own list: the marquee probe control, commerce flex-wrap exclusions, editor round-trips, stale tests; `itemColourOpen` measuring dead | none | 2026-10-24 |
+| **S, sites and inputs** | session running | Phase 1 closed; Mama's Site Info; Eye Care calibration (42 of 50 blocks) | Before Phase 2: the palette proposer (decision 5), the three snapshots re-extracted and pushed after Bean sees the diffs (Indus carries Track R's focus ring), Fill's `site-options.json` in place, a per-part shop locator | Bean: the snapshot diffs | 2026-10-24 |
+
+Phase 2 starts when all four rows are closed.
+
 ### Done
 - [x] 2026-10-23: the Indus header walk and census, three diagnosis lanes, an adversarial council on the fix plan, the CSS-equivalence research, and the Spec 48 audit; this plan written.
 - [x] Spec 48 updated (FR-48-86 added; FR-48-76, -51, -81 and -8 Status lines corrected); handoff-readers rulings 11 and 14 and closing standard #5 updated; the project `CLAUDE.md` touch-target line reworded.
