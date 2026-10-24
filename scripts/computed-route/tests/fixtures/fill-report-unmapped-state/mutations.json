@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/fill-report.mjs", "find": "[ u.property, u.value, u.state ?? '', u.node, u.block, u.slot ?? '', u.reason ]", "replace": "[ u.property, u.value, '', u.node, u.block, u.slot ?? '', u.reason ]", "why": "the markdown cell is always empty" },
+	{ "file": "lib/fill-report.mjs", "find": "[ 'Property', 'Value', 'State', 'Node', 'Block', 'Element', 'Reason' ], r.unmapped", "replace": "[ 'Property', 'Value', 'Node', 'Block', 'Element', 'Reason' ], r.unmapped", "why": "the State column is dropped" },
+	{ "file": "lib/fill-report.mjs", "find": "u.state ?? '', u.node", "replace": "u.state ?? 'rest', u.node", "why": "a rest row is given a state" }
+]

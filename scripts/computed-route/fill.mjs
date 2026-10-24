@@ -45,6 +45,7 @@ import { draftDefectsFile, writeDraftDefects } from './lib/draft-defects-file.mj
 import { presetWrites, dropPresetMotion } from './lib/fill-preset.mjs';
 import { formWrites, formSources } from './lib/fill-form.mjs';
 import { loadShopParts, shopPartWrites } from './lib/fill-shop-parts.mjs';
+import { shopPartTargets } from './lib/fill-shop-targets.mjs';
 import { blockSchema } from './lib/resolve.mjs';
 import { motionDb } from './lib/motion-db.mjs';
 import { loadMotionSchema } from './lib/motion-schema.mjs';
@@ -169,11 +170,14 @@ export async function fillSurface( o ) {
 		// The entry draft's component and the draft defects intake lists (the served root host is named `Root`, the fact record names it after the component).
 		const intakeParts = animationInventory( buildDir, o.draftIndex, log );
 		const currentGroups = facts ? currentItemGroups( facts, intakeParts.rootComponent ) : [];
+		// FR-48-60 to FR-48-62: the draft elements of the shop parts (build/shop-parts.json locators) are measured at their parts' slots.
+		const calFor = calibrationLoader( entry.site, o.cache );
+		const shopRecord = loadShopParts( buildDir );
+		const shopTargets = shopPartTargets( { record: shopRecord, nodes, facts, rootComponent: intakeParts.rootComponent, db, calFor } );
 		const reads = await readDraft( { url, nodes, open: o.open || null, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, log } );
 		// FR-48-69: a state declaration the draft never paints (intake.json `draftDefects`) is built from the code value, as a code look.
 		maskHiddenVariants( reads, nodes, facts, intakeParts.rootComponent );
 		const defectLooks = addDefectLooks( { reads, jobs: nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) ), facts, draftDefects: intakeParts.draftDefects, rootComponent: intakeParts.rootComponent } );
-		const calFor = calibrationLoader( entry.site, o.cache );
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
 		const result = fillTree( {
 			tree, nodes, reads, db, calFor, origin: reads.origin,
@@ -235,10 +239,10 @@ export async function fillSurface( o ) {
 		result.unmapped.push( ...forms.unmapped );
 		result.notes.push( ...forms.notes );
 		// FR-48-60 to FR-48-62: the draft's own values of the shop parts (build/shop-parts.json) on the blocks that hold them.
-		const shop = shopPartWrites( { record: loadShopParts( buildDir ), nodes, flat, refOf, attrExists: ( b, a ) => Object.hasOwn( blockSchema( b ) || {}, a ), writes: result.writes } );
+		const shop = shopPartWrites( { record: shopRecord, nodes, flat, refOf, attrExists: ( b, a ) => Object.hasOwn( blockSchema( b ) || {}, a ), writes: result.writes } );
 		result.writes.push( ...shop.writes );
 		result.unmapped.push( ...shop.unmapped );
-		result.notes.push( ...shop.notes );
+		result.notes.push( ...shop.notes, ...shopTargets.notes );
 		// FR-48-8: the draft's scrollbar colours, written to the theme's scrollbar tokens (the same snapshot patch).
 		const bars = scrollbarPatch( { nodes, flat, refOf, reads, snapshot, site: rawSnapshot?.settings?.custom?.scrollbar } );
 		states.patch = mergePatch( states.patch, bars.patch );

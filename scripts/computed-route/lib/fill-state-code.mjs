@@ -1,6 +1,6 @@
 // The code read of a state look (Spec 48 FR-48-81, R-47-4): a state the browser cannot be put into for a test (:visited,
 // which scripts and DevTools never see, a state on a descendant inside :has(), a sibling host) is still declared in the
-// draft's stylesheet. lib/fill-state-read.mjs::stateCombos hands over, for such a combination, the declarations of every
+// draft's stylesheet. lib/fill-state-combos.mjs::stateCombos hands over, for such a combination, the declarations of every
 // stylesheet rule that produced its selector part; this reads the look from them. The render cannot confirm it, so the
 // look carries `read: 'code'`.
 

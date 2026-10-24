@@ -3,7 +3,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'fs';
-import { stateCombos, readableRows } from '../lib/fill-state-read.mjs';
+import { stateCombos, readableRows } from '../lib/fill-state-combos.mjs';
 
 const VOCAB = JSON.parse( readFileSync( new URL( '../../../plugins/sgs-blocks/scripts/data/states.json', import.meta.url ), 'utf8' ) ).states;
 const ROWS = readableRows( VOCAB ).map( ( r, i ) => ( { ...r, i } ) );
