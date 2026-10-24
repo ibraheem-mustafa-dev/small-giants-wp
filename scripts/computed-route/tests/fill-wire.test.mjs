@@ -185,6 +185,7 @@ test( 'MUST FAIL: a shop part never overwrites a different value another writer 
 	const same = shopTree( { emptyCartMessage: 'Nothing in here yet.' } );
 	const s = shopPartWrites( { record: RECORD, nodes: same.nodes, flat: same.flat, refOf, attrExists } );
 	assert.ok( ! s.writes.some( ( w ) => 'emptyCartMessage' === w.attr ) );
+	assert.ok( ! s.unmapped.some( ( u ) => /emptyCartMessage/.test( u.reason ) ), 'and no row' );
 } );
 
 test( 'MUST FAIL: the context reads stay among the properties the resolver judges with: a block box\'s justify-content is inert by its column count', () => {

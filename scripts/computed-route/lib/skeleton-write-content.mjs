@@ -7,12 +7,20 @@ import { LOGO_HANDOVER } from './skeleton-write-units.mjs';
 
 // The words a draft's copyright line prints before its © mark (sgs/business-info prints `{copyrightPrefix} © {year} {line}`):
 // "Copyright © 2026 Acme" gives "Copyright", "© 2026 Acme" gives "" (the block then omits the word). A line with no mark
-// ("(c)" counts as one) gives the words before its year, and a line with neither gives "".
-export function copyrightPrefixOf( text ) {
+// ("(c)" counts as one) reads its year as the mark, and a line with neither gives "". The words are a prefix only when
+// they are a short run of words (PREFIX_WORDS at most, letters only) that does not hold the site name, the name the Site
+// Info line prints after the year; anything else ("Acme Foods 1998 - 2026", "Acme Ltd, est. 2005. © 2026") gives "" and
+// the words as `leftover`, so the name is never printed twice. Returns { prefix, leftover }.
+export const PREFIX_WORDS = 3;
+export function copyrightPrefixParts( text, siteName = null ) {
 	const t = String( text ?? '' ).replace( /\s+/g, ' ' ).trim();
 	const mark = /©|&copy;|\(c\)/i.exec( t ) ?? /\b(?:19|20)\d{2}\b/.exec( t );
-	return mark ? t.slice( 0, mark.index ).trim() : '';
+	const words = mark ? t.slice( 0, mark.index ).trim() : '';
+	const name = String( siteName ?? '' ).replace( /\s+/g, ' ' ).trim().toLowerCase();
+	const short = /^\p{L}[\p{L}'’-]*(?: \p{L}[\p{L}'’-]*)*$/u.test( words ) && words.split( ' ' ).length <= PREFIX_WORDS;
+	return short && ! ( name && words.toLowerCase().includes( name ) ) ? { prefix: words, leftover: '' } : { prefix: '', leftover: words };
 }
+export const copyrightPrefixOf = ( text, siteName = null ) => copyrightPrefixParts( text, siteName ).prefix;
 
 export function makeContent( ctx ) {
 	const { m, facts, view, carried, surfaceKind } = ctx;
@@ -39,7 +47,9 @@ export function makeContent( ctx ) {
 		if ( top.siteInfoKind && facts.displayTypes.includes( top.siteInfoKind ) && enumOf( block, 'displayType' ) ) {
 			a.displayType = top.siteInfoKind;
 			if ( 'copyright' === top.siteInfoKind && attrExists( block, 'copyrightPrefix' ) ) {
-				a.copyrightPrefix = copyrightPrefixOf( t );
+				const { prefix, leftover } = copyrightPrefixParts( t, facts.siteName );
+				a.copyrightPrefix = prefix;
+				leftover && handover.push( { owner: 'site-info', kind: 'text', detail: `the copyright line's words before its mark, "${ leftover }", are no prefix (not a short run of words, or they hold the site name): the Site Info copyright line holds them` } );
 			}
 			handover.push( { owner: 'site-info', kind: 'text', detail: `Site Info "${ top.siteInfoKind }" must read: ${ m.textWithBreaks( e ) }` } );
 			return { a, handover };

@@ -38,8 +38,10 @@ export function valueParts( record ) {
 }
 
 // The writes for one Fill run. nodes: Fill's records ({ index, name }); flat: the tree's nodes by index; refOf( node ): its
-// ref; attrExists( block, attr ): whether the block's schema has the setting; writes: the writes made so far this run (a
-// value another writer put on the node is theirs). Returns { writes, unmapped, notes }.
+// ref; attrExists( block, attr ): whether the block's schema has the setting; writes: the writes made so far this run,
+// which name the writer of a value the node holds. A held value that differs from a part's is that writer's (an earlier
+// pass, another shop part, or the skeleton when no write names it) and stays, the part a conflict row. Returns
+// { writes, unmapped, notes }.
 export function shopPartWrites( { record, nodes, flat, refOf, attrExists, writes: prior = [] } ) {
 	const out = { writes: [], unmapped: [], notes: [] };
 	for ( const { surface, part, block, writes } of valueParts( record ) ) {
@@ -61,9 +63,10 @@ export function shopPartWrites( { record, nodes, flat, refOf, attrExists, writes
 				if ( json( held ) === json( value ) ) {
 					continue;
 				}
-				const other = prior.find( ( w ) => w.index === rec.index && w.attr === attr );
-				if ( other && undefined !== held ) {
-					out.unmapped.push( { ...row, reason: `conflict: ${ attr } already holds ${ json( held ) } (written by ${ other.how }); the draft's ${ part.label } is ${ json( value ) }` } );
+				if ( undefined !== held ) {
+					const other = prior.concat( out.writes ).findLast( ( w ) => w.index === rec.index && w.attr === attr );
+					const by = other ? ( 'shop-part' === other.how ? other.note.split( ':' )[ 0 ] : other.how ) : 'the skeleton';
+					out.unmapped.push( { ...row, reason: `conflict: ${ attr } already holds ${ json( held ) } (written by ${ by }); the draft's ${ part.label } is ${ json( value ) }` } );
 					continue;
 				}
 				const { before, after } = setAttr( node, { attr, value } );
