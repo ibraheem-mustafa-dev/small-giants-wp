@@ -21,6 +21,7 @@ import { setAttr } from './tree.mjs';
 import { templateKey, templateKeyOf } from './fact-key.mjs';
 import { staggerPlans, applyStagger } from './fill-motion-stagger.mjs';
 import { positionsByTemplate } from './motion-behaviour-settings.mjs';
+import { exactHome } from './fill-part-pairing.mjs';
 
 export { elementMotion, elementEffects, renderRefutes } from './fill-motion-element.mjs';
 
@@ -114,8 +115,11 @@ export function adoptDrawnBehaviours( byElement, { targetKeys, template, isBehav
 }
 
 // The declared part a slot finder's element is: the part whose class (its declared `css_element` selector, else
-// `sgs-<slug>__<part>`) is a class of the slot selector's last compound. Returns the target name or null.
-export function partForSlot( block, slotFinder, targets ) {
+// `sgs-<slug>__<part>`) is a class of the slot selector's last compound; else, for a slot that names its element by
+// position only (`__burger-bar:nth-of-type(2)`, an element whose own `__burger-bar-2` class the path does not carry), the
+// one part whose own resting settings calibration measured at exactly that slot (home: lib/fill-part-pairing.mjs::exactHome).
+// Returns the target name or null.
+export function partForSlot( block, slotFinder, targets, home = null ) {
 	const sel = 'string' === typeof slotFinder ? slotFinder : null;
 	if ( ! sel ) {
 		return null;
@@ -124,7 +128,11 @@ export function partForSlot( block, slotFinder, targets ) {
 	const classes = new Set( [ ...last.matchAll( /\.([A-Za-z0-9_-]+)/g ) ].map( ( m ) => m[ 1 ] ) );
 	const slug = block.replace( /^sgs\//, '' );
 	const hit = targets.find( ( t ) => 'part' === t.kind && classes.has( String( t.cssElement || '' ).startsWith( '.' ) ? t.cssElement.slice( 1 ) : `sgs-${ slug }__${ t.cssElement }` ) );
-	return hit ? hit.target : null;
+	if ( hit || ! home ) {
+		return hit ? hit.target : null;
+	}
+	const homed = targets.filter( ( t ) => 'part' === t.kind && home( t.cssElement ) === sel );
+	return 1 === homed.length ? homed[ 0 ].target : null;
 }
 
 
@@ -146,8 +154,9 @@ function finishedEffect( e, { block, target, mdb, schema, offers, ctx, id } ) {
 }
 
 // The motion target a skeleton target is: the block's root for the node's own element, the declared part a slot names.
-export function targetName( n, t, targets ) {
-	return t.slot ? partForSlot( n.name, t.slot, targets ) : targets.find( ( x ) => 'root' === x.target )?.target || null;
+// home: the part element's calibrated slot (partForSlot), null where the caller has no calibration.
+export function targetName( n, t, targets, home = null ) {
+	return t.slot ? partForSlot( n.name, t.slot, targets, home ) : targets.find( ( x ) => 'root' === x.target )?.target || null;
 }
 
 // Whether a block declares an item host for the hover layer's Card hovered source (supports.sgs.animationItems, read
@@ -230,7 +239,7 @@ export function sameTriggerResolved( records ) {
 // the entry draft's component (lib/fill-motion.mjs::elementKey); loops: sampleMotion()'s loops by target id; offers:
 // lib/motion-effects.mjs::loadEffectOffers; stateVocab: the `states` table rows that give the words meaning "open"
 // (default: the framework DB's). Returns { writes, unmapped, notes } in the shapes fill-resolve.mjs uses.
-export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null } ) {
+export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null, calFor = null } ) {
 	const out = { writes: [], unmapped: [], notes: [], site: [], handover: [] };
 	// Every settings write is checked against the framework DB's attributes: the handle given, else the framework DB itself.
 	const hasAttr = givenHasAttr ?? ( db ? hasAttrOf( db ) : undefined );
@@ -261,6 +270,8 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 		const stateOffers = { names: mdb.statesOf( n.name ), opens: mdb.opensOf( n.name ), openWords: () => ( words ??= openWords( stateVocab || stateRows() ) ) };
 		const ref = refOf( flat[ n.index ] );
 		const targets = mdb.targetsOf( n.name );
+		const cal = db && calFor ? calFor( n.name ) : null;
+		const home = cal ? ( element ) => exactHome( db, n.name, cal, element ) : null;
 		const doc = { v: 1, elements: {} };
 		const pending = [];
 		const boxes = [];
@@ -295,7 +306,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			}
 			own = own.filter( ( r ) => ! held.some( ( x ) => x.r === r ) );
 			// A hover transform only the state read finds (no inventory record reaches the element) is the same hover layer.
-			if ( reads && targetName( n, t, targets ) && ! own.some( ( r ) => 'hover' === r.trigger?.type && ( r.properties || [] ).some( ( p ) => MOTION_STATE_PROPS.includes( p.property ) ) ) ) {
+			if ( reads && targetName( n, t, targets, home ) && ! own.some( ( r ) => 'hover' === r.trigger?.type && ( r.properties || [] ).some( ( p ) => MOTION_STATE_PROPS.includes( p.property ) ) ) ) {
 				own = [ ...own, ...stateMotionRecords( reads, t ) ];
 			}
 			const lists = staggers.filter( ( p ) => p.at?.t === t && ! p.refused );
@@ -303,7 +314,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			if ( ! own.length && ! sampled[ t.id ]?.[ 1440 ] && ! loops[ t.id ] && ! lists.length ) {
 				continue;
 			}
-			const target = targetName( n, t, targets );
+			const target = targetName( n, t, targets, home );
 			if ( ! target ) {
 				const reason = targets.length ? `no declared part of ${ n.name } is this element (${ t.slot })` : `${ n.name } has no motion support`;
 				out.unmapped.push( ...own.map( ( r ) => ( { ...where, property: 'motion', value: r.id, reason: 'skip' === classify( r, cls ).kind ? `${ reason }; the record is also skipped: ${ classify( r, cls ).reason }` : reason } ) ) );

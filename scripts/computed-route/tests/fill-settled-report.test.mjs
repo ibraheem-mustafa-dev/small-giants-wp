@@ -8,7 +8,7 @@ test( 'the report counts and lists the settled rows by reason', () => {
 	const base = { client: 'c', surface: 's', draft: 'd', nodes: 1, targets: 1, writes: [], unmapped: [], notes: [], handover: [], spacing: [], fluid: [], held: [], snaps: [], steps: [], entrances: [] };
 	const settled = [ { node: 'n', block: 'sgs/text', slot: '', property: 'display', value: 'block', reason: 'equal' }, { node: 'n', block: 'sgs/text', slot: '', property: 'width', value: '13px', reason: 'used-size' } ];
 	const { json, markdown } = fillReport( { ...base, settled } );
-	assert.deepEqual( json.counts.settled, { total: 2, equal: 1, 'already-set': 0, 'used-size': 1, 'not-painted': 0, 'row-held': 0, 'logo-size': 0, 'width-ladder': 0, dimension: 0 } );
+	assert.deepEqual( json.counts.settled, { total: 2, equal: 1, 'already-set': 0, 'used-size': 1, 'not-painted': 0, 'row-held': 0, 'logo-size': 0, 'width-ladder': 0, dimension: 0, motion: 0 } );
 	assert.equal( json.settled.length, 2 );
-	assert.match( markdown, /Settled .*\| 2 \(equal 1, already-set 0, used-size 1, not-painted 0, row-held 0, logo-size 0, width-ladder 0, dimension 0\) \|/ );
+	assert.match( markdown, /Settled .*\| 2 \(equal 1, already-set 0, used-size 1, not-painted 0, row-held 0, logo-size 0, width-ladder 0, dimension 0, motion 0\) \|/ );
 } );
