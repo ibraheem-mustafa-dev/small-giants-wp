@@ -81,15 +81,20 @@ function blockPaint( { block, slot, prop, cal } ) {
 	return Object.keys( out ).length || '' !== slot ? out : stylesheetPaint( block, prop );
 }
 
-// The content extent inside an element along an axis at a width: the children's far edge from the element's near edge, plus
-// the element's padding and border on that far side. Null when nothing says how big the content is.
-function contentExtent( { nodes, reads }, rec, target, axis, w ) {
+// The content extent inside an element along an axis at a width: the box's own scroll size where the read has it (the
+// content's whole extent, overflow included), else the children's far edge from the element's near edge plus the element's
+// padding and border on that far side. Null when nothing says how big the content is.
+export function contentExtent( { nodes, reads }, rec, target, axis, w ) {
+	const scroll = reads.widths?.[ w ]?.[ target.id ]?.[ 'h' === axis ? 'scrollHeight' : 'scrollWidth' ];
+	if ( Number.isFinite( scroll ) ) {
+		return scroll;
+	}
 	const own = rectAt( reads, target, w );
 	const styles = reads.widths?.[ w ]?.[ target.id ]?.styles || {};
 	const far = 'h' === axis ? [ 'padding-bottom', 'border-bottom-width' ] : [ 'padding-right', 'border-right-width' ];
 	const tail = far.reduce( ( s, p ) => s + ( parseFloat( styles[ p ] ) || 0 ), 0 );
-	const kids = rec.children.map( ( i ) => {
-		const t = nodes[ i ].targets.find( ( x ) => '' === x.slot );
+	const kids = ( rec.children || [] ).map( ( i ) => {
+		const t = ( nodes[ i ]?.targets || [] ).find( ( x ) => '' === x.slot );
 		const r = t ? reads.widths?.[ w ]?.[ t.id ] : null;
 		return r && ! r.missing && false !== r.inFlow && r.rect ? r.rect : null;
 	} ).filter( Boolean );

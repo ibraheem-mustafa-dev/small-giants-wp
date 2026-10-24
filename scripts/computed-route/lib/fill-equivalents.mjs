@@ -8,6 +8,8 @@ import { resolveProperty } from './fill-prop.mjs';
 import { refOf } from './tree.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 import { equivalentRows } from './db.mjs';
+import { contentExtent } from './fill-dimensions.mjs';
+import { elementContext } from './fill-held.mjs';
 
 export { equivalentRows };
 
@@ -25,12 +27,16 @@ export function everyChildSame( kids, prop, draft, styleOf ) {
 	return kids.length > 0 && Object.entries( draft ).every( ( [ w, v ] ) => kids.every( ( c ) => styleOf( c, Number( w ) )?.[ prop ] === v ) );
 }
 
-// render-matches: the element renders at the declared length at every width, so its content fits and a minimum of that
-// length paints the same box. rectOf( width ): the element's measured box, or null.
-export function rendersAt( draft, rectOf ) {
+// render-matches: the element renders at the declared length at every width and its content fits inside it, so a minimum
+// of that length paints the same box. A fixed height renders at its length even when the content overflows it, where a
+// minimum would grow the box to the content: so a content extent taller than the box refuses the match. rectOf( width ):
+// the element's measured box, or null; contentOf( width ): the content's height in the box (lib/fill-dimensions.mjs::
+// contentExtent), or null where the read does not say, which leaves the box's own height to decide.
+export function rendersAt( draft, rectOf, contentOf = () => null ) {
 	return Object.keys( draft ).length > 0 && Object.entries( draft ).every( ( [ w, v ] ) => {
 		const r = rectOf( Number( w ) );
-		return /^-?[\d.]+px$/.test( String( v ) ) && !! r && Math.abs( r.h - parseFloat( v ) ) <= PX_TOL;
+		const content = contentOf( Number( w ) );
+		return /^-?[\d.]+px$/.test( String( v ) ) && !! r && Math.abs( r.h - parseFloat( v ) ) <= PX_TOL && ! ( Number.isFinite( content ) && content > r.h + PX_TOL );
 	} );
 }
 
@@ -91,7 +97,7 @@ export function fillEquivalent( st, rec, target, prop, draft, h ) {
 				return { status: 'held' };
 			}
 		} else if ( 'render-matches' === row.condition ) {
-			if ( ! rendersAt( draft, ( w ) => st.reads.widths[ w ]?.[ target.id ]?.rect ) ) {
+			if ( ! rendersAt( draft, ( w ) => st.reads.widths[ w ]?.[ target.id ]?.rect, ( w ) => contentExtent( { nodes: st.nodes, reads: st.reads }, rec, target, 'h', w ) ) ) {
 				continue;
 			}
 		} else if ( 'intrinsic-ratio' === row.condition ) {
@@ -107,7 +113,10 @@ export function fillEquivalent( st, rec, target, prop, draft, h ) {
 		// An element of intrinsic ratio is drawn by the block's image: the setting may paint that image inside the block.
 		const ownSlots = 'intrinsic-ratio' === row.condition ? [ target.slot, ...layoutSlots( cal, row.setting_property ) ] : [ target.slot ];
 		const slots = onParent ? [ ...new Set( [ ...layoutSlots( cal, row.setting_property ), '' ] ) ] : [ ...new Set( ownSlots ) ];
-		const res = resolve( { node: st.flat[ at.index ], block: at.name, prop: row.setting_property, draft: forRow, baseline: h.baselineFn( st, at, cal, row.setting_property ), slots, calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx: {}, siblings: {} } );
+		// Compared in the context of the element the setting paints: the element itself, or the parent's root.
+		const ctxTarget = onParent ? at.targets?.find( ( t ) => '' === t.slot ) : target;
+		const contextAt = ( w ) => ( ctxTarget ? elementContext( st, at, ctxTarget, w ) : {} );
+		const res = resolve( { node: st.flat[ at.index ], block: at.name, prop: row.setting_property, draft: forRow, baseline: h.baselineFn( st, at, cal, row.setting_property ), slots, calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx: {}, siblings: {}, contextAt } );
 		if ( 'gap' === res.status ) {
 			continue;
 		}
