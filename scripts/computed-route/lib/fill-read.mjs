@@ -11,7 +11,7 @@ import { makeHelpers } from '../../parity/lib/helpers.mjs';
 import { SCOPE_ATTR, scopeFinder, scopeSelector, finderKind } from './fill-skeleton.mjs';
 import { contentType } from './draft.mjs';
 import { FLUID_WIDTHS, SWEEP_WIDTHS, LENGTH_PROPS } from './fill-values.mjs';
-import { extraProps, readExtras, missingExtras } from './fill-declared.mjs';
+import { readExtras, missingExtras, unreadDeclared } from './fill-declared.mjs';
 import { readStates } from './fill-state-read.mjs';
 import { readLogicStates } from './fill-logic-state.mjs';
 import { readCurrentItems } from './fill-current-item.mjs';
@@ -158,8 +158,9 @@ async function openPage( browser, devices, { url, open, width, origin, external,
 // What every read of the draft returns:
 //   widths[w][targetId]   the collectPair snapshot (plus rect, position, inFlow, words, href); { missing: true } when the finder
 //                         found nothing visible. READ_WIDTHS carry every property, the other fluid widths only lengths.
-//   declared[w][targetId] every longhand the draft's matched rules declare (FR-48-8), at READ_WIDTHS; the ones beyond
-//                         PROPS (lib/fill-declared.mjs::extraProps) are read rendered into widths[w][targetId].styles too.
+//   declared[w][targetId] every longhand the draft's matched rules declare (FR-48-8), at READ_WIDTHS; the ones the snapshot
+//                         holds no value for (lib/fill-declared.mjs::unreadDeclared) are read rendered into
+//                         widths[w][targetId].styles too.
 //   sweep[targetId][prop] [{ width, value }] every 16px from 320 to 1920 (lengths and keywords as read).
 //   states[w]             each target's state looks at READ_WIDTHS (lib/fill-state-read.mjs::readStates), when `states`
 //                         (the state vocabulary, lib/db.mjs::statesVocabulary) is given; with `logicRows` (the state map's
@@ -224,7 +225,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 					}
 				}
 				// What the code declares beyond Fill's list, read rendered too (FR-48-8), into the same snapshot.
-				const extras = Object.fromEntries( found.map( ( j ) => [ j.id, extraProps( result.declared[ width ][ j.id ], PROPS ) ] ) );
+				const extras = Object.fromEntries( found.map( ( j ) => [ j.id, unreadDeclared( result.declared[ width ][ j.id ], result.widths[ width ][ j.id ]?.styles, PROPS ) ] ) );
 				for ( const [ id, styles ] of Object.entries( await readExtras( page, found, extras, RESOLVE ) ) ) {
 					result.widths[ width ][ id ].styles = { ...result.widths[ width ][ id ].styles, ...styles };
 				}

@@ -3,7 +3,9 @@
 // read as the shape element and the glyph inside it as the glyph element (the DB's css_element names both). A setting
 // of the row is written once, only when every copy agrees. Every value the row does not hold (a copy that differs, a
 // property the row has no setting for, a row setting that was not written) is read again against the icon's own
-// calibration and written on that icon's own setting; one the icon has no setting for is UNMAPPED, named by block.
+// calibration and written on that icon's own setting; one the icon has no setting for is UNMAPPED, named by block (one
+// row for every icon that raises it, naming them all in `nodes`). A value the row holds for the icon, and one the icon's
+// read settled (equal, not painted), is a settled row on the icon, so every read ends written, held or unwritten.
 // Nothing is averaged. A square box with a 50% radius on every corner is the shape setting's `circle`.
 import { attrsFor, enumSettings } from './db.mjs';
 import { setAttr, refOf } from './tree.mjs';
@@ -11,7 +13,7 @@ import { LOOSE } from './resolve.mjs';
 import { ROW_GLYPH_SLOT } from './fill-skeleton.mjs';
 
 const json = ( v ) => JSON.stringify( v );
-const freshOut = () => ( { writes: [], unmapped: [], notes: [], handover: [], spacing: [], fluid: [], held: [], unread: [] } );
+const freshOut = () => ( { writes: [], unmapped: [], notes: [], handover: [], spacing: [], fluid: [], held: [], unread: [], settled: [] } );
 const ELEMENTS = [ [ 'shape', '' ], [ 'glyph', ROW_GLYPH_SLOT ] ];
 const RADII = [ 'top-left', 'top-right', 'bottom-right', 'bottom-left' ].map( ( c ) => `border-${ c }-radius` );
 const RADIUS_PROPS = [ 'border-radius', ...RADII ];
@@ -40,7 +42,7 @@ function paints( held, prop ) {
 const keyOf = ( r ) => `${ r.css_element }|${ r.css_property }|${ r.css_state || '' }`;
 
 // One copy's reading of one element, written into a throwaway copy of the node: { values: { attr: final value },
-// props: { attr: prop }, unmapped: [rows] }.
+// props: { attr: prop }, widths: { attr: [read widths] }, unmapped: [rows], settled: [rows] }.
 function readCopy( st, rec, ref, cal, target, path, snaps, fillElement ) {
 	const node = structuredClone( st.flat[ rec.index ] );
 	const flat = st.flat.slice();
@@ -50,11 +52,13 @@ function readCopy( st, rec, ref, cal, target, path, snaps, fillElement ) {
 	fillElement( sub, rec, ref, cal, { id: target.id, slot: path, paired: true }, snaps );
 	const values = {};
 	const props = {};
+	const widths = {};
 	for ( const w of sub.out.writes ) {
 		values[ w.attr ] = node.attributes[ w.attr ];
 		props[ w.attr ] = w.prop;
+		widths[ w.attr ] = [ ...new Set( [ ...( w.widths || [] ), ...( w.answers || [] ) ] ) ].sort( ( a, b ) => a - b );
 	}
-	return { values, props, unmapped: sub.out.unmapped };
+	return { values, props, widths, unmapped: sub.out.unmapped, settled: sub.out.settled };
 }
 
 // The element a calibrated slot sits on: a pseudo-element layer (`::before`, `::after`) is painted on its host element,
@@ -69,7 +73,7 @@ function readElement( st, rec, ref, cal, element, target, snaps, fillElement ) {
 	const calibrated = ( elementSlots( st.db, rec.name, cal )[ element ] || [] ).map( hostOf ).filter( ( s, i, all ) => all.findIndex( ( x ) => LOOSE( x ) === LOOSE( s ) ) === i );
 	// An element none of the block's settings is calibrated on is still read where the draft element sits, so what it paints is raised.
 	const slots = calibrated.length ? calibrated : [ target.slot ];
-	const out = { values: {}, props: {}, unmapped: [] };
+	const out = { values: {}, props: {}, widths: {}, unmapped: [], settled: [] };
 	for ( const slot of slots ) {
 		const r = readCopy( st, rec, ref, cal, target, slot, snaps, fillElement );
 		const elsewhere = new Set( attrsFor( st.db, rec.name ).filter( ( a ) => a.css_element === element && ! a.css_state && undefined !== cal.settings?.[ a.attr_name ]?.slot && LOOSE( hostOf( cal.settings[ a.attr_name ].slot ) ) !== LOOSE( slot ) ).flatMap( ( a ) => String( a.css_property ).split( ',' ) ) );
@@ -78,9 +82,11 @@ function readElement( st, rec, ref, cal, element, target, snaps, fillElement ) {
 			if ( ( undefined === home || LOOSE( hostOf( home ) ) === LOOSE( slot ) ) && ! ( attr in out.values ) ) {
 				out.values[ attr ] = value;
 				out.props[ attr ] = r.props[ attr ];
+				out.widths[ attr ] = r.widths[ attr ];
 			}
 		}
 		out.unmapped.push( ...r.unmapped.filter( ( u ) => ! elsewhere.has( u.property ) ) );
+		out.settled.push( ...r.settled );
 	}
 	return out;
 }
@@ -102,7 +108,7 @@ function withCircle( reading, attr ) {
 		delete values[ a ];
 		delete props[ a ];
 	}
-	return { values: { ...values, [ attr ]: 'circle' }, props: { ...props, [ attr ]: 'border-radius' }, unmapped: reading.unmapped.filter( ( u ) => ! RADIUS_PROPS.includes( u.property ) ) };
+	return { ...reading, values: { ...values, [ attr ]: 'circle' }, props: { ...props, [ attr ]: 'border-radius' }, unmapped: reading.unmapped.filter( ( u ) => ! RADIUS_PROPS.includes( u.property ) ) };
 }
 
 // Lifts the generated icons' shared look onto the row node `rowRec`, and each icon's own values onto the icon.
@@ -144,6 +150,13 @@ export function liftRow( st, rowRec, ref, cal, { fillElement, snapsOf } ) {
 // Each icon's own look: what the row did not take, read against the icon's calibration and written on the icon.
 function liftChildren( st, rowRec, copies, held, { fillElement, snapsOf } ) {
 	const rows = new Map();
+	// One settled row per icon, element, property and reason: each calibrated slot an element is read at settles it again.
+	const settledRows = new Map();
+	const keep = ( r ) => {
+		const k = json( [ r.node, r.slot, r.property, r.reason ] );
+		const prior = settledRows.get( k );
+		settledRows.set( k, prior ? { ...prior, widths: [ ...new Set( [ ...( prior.widths || [] ), ...( r.widths || [] ) ] ) ].sort( ( a, b ) => a - b ) } : r );
+	};
 	const rowCircled = Boolean( st.flat[ rowRec.index ].attributes?.[ circleAttr( st.db, rowRec.name ) ] );
 	for ( const c of copies ) {
 		const childCal = st.calFor( c.name );
@@ -162,25 +175,39 @@ function liftChildren( st, rowRec, copies, held, { fillElement, snapsOf } ) {
 				continue;
 			}
 			let reading = readElement( st, c, cref, childCal, element, target, snaps, fillElement );
+			const readWidths = Object.keys( snaps ).map( Number );
+			const rowHeld = ( property, widths, value ) => keep( { node: cref, block: c.name, slot: slotOf, property, value, widths: widths?.length ? widths : readWidths, reason: 'row-held', detail: `${ rowRec.name } holds ${ property } for every icon of the row` } );
 			if ( 'shape' === element && childCircle && isCircle( snaps ) ) {
 				reading = withCircle( reading, childCircle );
-				rowCircled && delete reading.values[ childCircle ];
+				if ( rowCircled ) {
+					delete reading.values[ childCircle ];
+					rowHeld( 'border-radius', readWidths, 'circle' );
+				}
 			}
+			reading.settled.forEach( ( r ) => keep( { ...r, node: cref, block: c.name, slot: slotOf } ) );
 			const skipped = ( attr ) => childAttr.has( attr ) && held.has( keyOf( childAttr.get( attr ) ) );
 			// A switch (childIconShowBackground's twin) is written only with a value it turns on.
 			const carried = Object.keys( reading.values ).some( ( a ) => '(switch)' !== reading.props[ a ] && ! skipped( a ) );
 			for ( const [ attr, value ] of Object.entries( reading.values ) ) {
 				if ( skipped( attr ) || ( '(switch)' === reading.props[ attr ] && ! carried ) ) {
+					skipped( attr ) && '(switch)' !== reading.props[ attr ] && rowHeld( reading.props[ attr ], reading.widths[ attr ], json( value ) );
 					continue;
 				}
 				const { before, after } = setAttr( cnode, { attr, value, merge: 'replace' } );
 				st.out.writes.push( { node: cref, index: c.index, block: c.name, slot: slotOf, prop: reading.props[ attr ], attr, before, after, widths: [], how: 'row-child' } );
 			}
 			const heldProps = new Set( [ ...childAttr.values() ].filter( ( r ) => r.css_element === element && held.has( keyOf( r ) ) ).flatMap( ( r ) => String( r.css_property ).split( ',' ) ) );
-			for ( const u of reading.unmapped.filter( ( x ) => ! [ ...heldProps ].some( ( h ) => paints( h, x.property ) ) ) ) {
-				rows.set( json( [ u.property, u.value, u.reason ] ), { ...u, node: cref, block: c.name } );
+			for ( const u of reading.unmapped ) {
+				if ( [ ...heldProps ].some( ( h ) => paints( h, u.property ) ) ) {
+					rowHeld( u.property, null, u.value );
+					continue;
+				}
+				const k = json( [ u.property, u.value, u.reason ] );
+				const prior = rows.get( k );
+				rows.set( k, { ...u, node: cref, block: c.name, slot: slotOf, nodes: [ ...new Set( [ ...( prior?.nodes || [] ), cref ] ) ] } );
 			}
 		}
 	}
 	st.out.unmapped.push( ...rows.values() );
+	( st.out.settled ??= [] ).push( ...settledRows.values() );
 }

@@ -1,7 +1,11 @@
 // The conservation check of a Fill run (plan register R7): every property the draft's code declares on a paired part
 // (the run's read set, reads.json) must end written, held or unwritten (the run's outcome rows); one that ends in none of
-// the three was dropped silently. Written rows come from `writes` and the confirm records, held rows from `alreadyHeld`
-// and the divergence ledger, unwritten rows from unmapped.json. A read set is checked only while it is bound to its run.
+// the three was dropped silently. Written rows come from `writes` and the confirm records, held rows from `alreadyHeld`,
+// the divergence ledger and `settled` (a read Fill left with nothing to write, each with its reason and widths), unwritten
+// rows from unmapped.json. A row read on one element and written on another carries the read element as `readSlot` (and a
+// write whose `prop` is a label, a scoped rule, names the property it answers as `covers`; a write's `answers` are the
+// read widths it leaves showing the draft's value beyond the tiers it changes), and
+// one unmapped row the row lift raises once for several icons names them all in `nodes`. A read set is checked only while it is bound to its run.
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -38,12 +42,16 @@ export function longhandsOf( property ) {
 
 const at = ( node, slot ) => `${ node }|${ slot ?? '' }`;
 
-// The outcome rows of a run as { node, slot, property, widths (null = every width), outcome, how }. `report` is
+// The outcome rows of a run as { node, slot, readSlot, property, widths (null = every width), outcome, how }. `report` is
 // fill-report.json, `unmapped` is unmapped.json. State rows are left out: the read set is the rest look.
 export function outcomesOf( { report, unmapped } ) {
 	const out = [];
 	for ( const w of report.writes || [] ) {
-		w.state || out.push( { node: w.node, slot: w.slot, property: w.prop, widths: w.widths?.length ? w.widths : null, outcome: 'written', how: w.how } );
+		const widths = [ ...new Set( [ ...( w.widths || [] ), ...( w.answers || [] ) ] ) ];
+		w.state || out.push( { node: w.node, slot: w.slot, readSlot: w.readSlot, property: w.covers ?? w.prop, widths: widths.length ? widths : null, outcome: 'written', how: w.how } );
+	}
+	for ( const s of report.settled || [] ) {
+		out.push( { node: s.node, slot: s.slot, readSlot: s.readSlot, property: s.property, widths: s.widths?.length ? s.widths : null, outcome: 'held', how: `settled:${ s.reason }` } );
 	}
 	for ( const c of report.confirm || [] ) {
 		( ! c.state || 'default' === c.state ) && out.push( { node: c.node, slot: c.slot, property: c.property, widths: [ c.width ], outcome: 'written', how: 'confirm' } );
@@ -55,7 +63,9 @@ export function outcomesOf( { report, unmapped } ) {
 		out.push( { node: l.node, slot: l.slot, property: l.prop, widths: null === l.width || undefined === l.width ? null : [ l.width ], outcome: 'held', how: 'ledger' } );
 	}
 	for ( const u of unmapped || [] ) {
-		out.push( { node: u.node, slot: u.slot, property: u.property, widths: null, outcome: 'unwritten', how: 'unmapped' } );
+		for ( const node of u.nodes?.length ? u.nodes : [ u.node ] ) {
+			out.push( { node, slot: u.slot, property: u.property, widths: null, outcome: 'unwritten', how: 'unmapped' } );
+		}
 	}
 	return out;
 }
@@ -81,8 +91,9 @@ function answers( o, read ) {
 export function conservation( { reads, report, unmapped } ) {
 	const index = new Map();
 	for ( const o of outcomesOf( { report, unmapped } ) ) {
-		const k = at( o.node, o.slot );
-		index.has( k ) ? index.get( k ).push( o ) : index.set( k, [ o ] );
+		for ( const k of new Set( [ at( o.node, o.slot ), ...( undefined === o.readSlot ? [] : [ at( o.node, o.readSlot ) ] ) ] ) ) {
+			index.has( k ) ? index.get( k ).push( o ) : index.set( k, [ o ] );
+		}
 	}
 	const failures = [];
 	const widthlessHolds = [];
