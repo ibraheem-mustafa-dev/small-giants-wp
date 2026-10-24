@@ -1,0 +1,1 @@
+- 2026-10-24 F deploy-start sandybrown,indus-test,mamas-test,eye-care-clone-test (generated base-transition table, shadowDuration/shadowEasing, rowAnimate; full motion tier; about 20 minutes; calibrations hold until the F deployed line)
