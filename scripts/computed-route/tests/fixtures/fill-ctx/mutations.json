@@ -148,5 +148,17 @@
 		"find": "const item = j.root ? items?.[ j.id ] : null;",
 		"replace": "const item = items?.[ j.id ];",
 		"why": "an inner slot takes a flex item read"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "\tif ( fluid.length ) {\n\t\treturn { raise: NATURAL_SIZE };\n\t}",
+		"replace": "",
+		"why": "a natural size is pinned to the read widths' px"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "const fluid = fixedAt.filter( ( w ) => null === pxOf( reads.declared?.[ w ]?.[ target.id ]?.width ?? '' ) );",
+		"replace": "const fluid = fixedAt.filter( ( w ) => undefined === reads.declared?.[ w ]?.[ target.id ]?.width );",
+		"why": "a declared clamp() or auto counts as a px width"
 	}
 ]

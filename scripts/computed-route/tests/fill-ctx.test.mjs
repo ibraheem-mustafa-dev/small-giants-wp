@@ -15,7 +15,7 @@ import { READ_PROPS, PSEUDO_PROPS, TEXT_PSEUDO_PROPS, OWN_INHERITED } from '../l
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
 import { resolveFinder } from '../../parity/lib/collect.mjs';
 import { flexItemsInPage, applyFlexItems, jobsFor, PROPS } from '../lib/fill-read.mjs';
-import { dimensionWrites } from '../lib/fill-dimensions.mjs';
+import { dimensionWrites, NATURAL_SIZE } from '../lib/fill-dimensions.mjs';
 
 const db = openDb();
 const snapshot = { palette: [], spacing: [], fontSizes: [] };
@@ -127,21 +127,25 @@ test( 'MUST FAIL: flex-shrink is read on the flex item the root is, through a wr
 	assert.equal( widths[ '1:' ].styles[ 'flex-shrink' ], '0', 'a root that is no flex item keeps its own read' );
 } );
 
-// A logo in a flex row whose draft flex item does not shrink at `zeroAt`; calibration says the block's root shrinks.
-function logoRun( { block = 'sgs/responsive-logo', zeroAt = THREE, rootShrink = '1', plant = false } = {} ) {
+// A logo in a flex row whose draft flex item does not shrink at `zeroAt`; calibration says the block's root shrinks. width:
+// what the draft declares for the element's width ('px': its rendered size; a string: that value; null: nothing).
+const SIZE = { 375: 238.22, 768: 247.05, 1440: 279.5 };
+function logoRun( { block = 'sgs/responsive-logo', zeroAt = THREE, rootShrink = '1', plant = false, width = 'px' } = {} ) {
 	const cal = { [ block ]: { block, elements: { '': tiers( { ...BASE, 'flex-shrink': rootShrink } ) }, settings: {}, discovered: {} } };
 	const skeleton = [ { name: 'sgs/container', draftRef: '.p', attributes: {}, innerBlocks: [ { name: block, draftRef: '.c', attributes: {} } ] } ];
 	const reads = readsOf( { '0:': snap( { display: 'flex' } ) } );
 	for ( const w of FIVE ) {
-		reads.widths[ w ] = { ...reads.widths[ w ], '1:': snap( { 'flex-shrink': zeroAt.includes( w ) ? '0' : '1' }, { flexItem: { w: { 375: 238.22, 768: 247.05, 1440: 279.5 }[ w ] ?? 260, h: 54, depth: 1 } } ) };
+		reads.widths[ w ] = { ...reads.widths[ w ], '1:': snap( { 'flex-shrink': zeroAt.includes( w ) ? '0' : '1' }, { flexItem: { w: SIZE[ w ] ?? 260, h: 54, depth: 1 } } ) };
 	}
 	const r = fill( skeleton, reads, cal );
+	// The declared width is set after the generic pass, so only this pass judges it.
+	reads.declared = Object.fromEntries( THREE.map( ( w ) => [ w, { '1:': null === width ? {} : { width: 'px' === width ? `${ SIZE[ w ] }px` : width } } ] ) );
 	const flat = [ r.tree[ 0 ], r.tree[ 0 ].innerBlocks[ 0 ] ];
 	const dims = dimensionWrites( { nodes: skeletonNodes( skeleton ), flat, refOf, reads, db, unmapped: plant ? [ { node: refOf( flat[ 1 ] ), block, slot: '', property: 'flex-shrink', value: '0', reason: 'no-setting: planted', state: null } ] : r.unmapped.filter( ( u ) => 'flex-shrink' === u.property ), calFor: ( b ) => cal[ b ] ?? null } );
 	return { r, dims, attrs: flat[ 1 ].attributes };
 }
 
-test( 'MUST FAIL: a draft flex item that does not shrink, over a block root that would, is held by the fixed child sizing at its rendered width', () => {
+test( 'MUST FAIL: a draft flex item that does not shrink, over a block root that would, is held by the fixed child sizing at its declared px width', () => {
 	const { r, dims, attrs } = logoRun();
 	const row = r.unmapped.find( ( u ) => 'flex-shrink' === u.property );
 	assert.match( row?.reason ?? '', /^no-setting\b/, 'the generic pass leaves the row for this pass' );
@@ -157,6 +161,14 @@ test( 'MUST FAIL: a draft flex item that does not shrink, over a block root that
 	// Negative controls: a root that never shrinks needs nothing; a block without child sizing keeps the row with its reason.
 	assert.equal( logoRun( { rootShrink: '0' } ).attrs.sgsChildSizing, undefined );
 	assert.equal( logoRun( { rootShrink: '0', plant: true } ).attrs.sgsChildSizing, undefined, 'a row over a root that never shrinks writes nothing' );
+	// A natural size (a fluid height with its intrinsic ratio, or no width declared) is never pinned to the read widths' px.
+	for ( const width of [ null, 'clamp(200px, 20vw, 280px)', 'auto' ] ) {
+		const natural = logoRun( { width } );
+		assert.equal( natural.attrs.sgsChildSizing, undefined, `width ${ width }` );
+		assert.equal( natural.attrs.sgsChildWidth, undefined );
+		assert.match( natural.dims.unmapped[ 0 ]?.reason ?? '', /flex-shrink: 0 \(natural size\) - sgsChildWidth needs the 'auto' value \(Track F\)$/ );
+		assert.ok( natural.dims.unmapped[ 0 ].reason.endsWith( NATURAL_SIZE ) );
+	}
 	const none = logoRun( { block: 'sgs/site-header-row' } );
 	assert.equal( none.attrs.sgsChildSizing, undefined );
 	assert.match( none.dims.unmapped[ 0 ]?.reason ?? '', /no fixed child sizing/ );

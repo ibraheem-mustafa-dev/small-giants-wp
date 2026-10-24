@@ -245,10 +245,13 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 // The child-sizing extension's settings (includes/child-sizing.php): 'fixed' paints `flex: 0 0 auto` and the width.
 const SIZING = 'sgsChildSizing';
 const SIZING_WIDTH = 'sgsChildWidth';
+// The row a non-shrinking item of natural size leaves, for the framework's `auto` child width.
+export const NATURAL_SIZE = `flex-shrink: 0 (natural size) - ${ SIZING_WIDTH } needs the 'auto' value (Track F)`;
 
 // 4: a flex item the draft keeps from shrinking (flex-shrink 0, read on the root's flex item, lib/fill-read.mjs::
 // flexItemsInPage) where the block's root would shrink is held at its rendered width by the block's fixed child sizing,
-// at each width the draft does not shrink it; a read width where it does shrink, below a fixed one, sizes to its content
+// at each width the draft does not shrink it, when the draft declares that width as a plain px length (else the row stays
+// as NATURAL_SIZE); a read width where it does shrink, below a fixed one, sizes to its content
 // ('fit'), so the fixed tier is not carried down. Nothing is written where the block's root shrinks at none of those
 // widths. Returns true, { raise }, or null (not this pass's row).
 function fixedSizing( { row, nodes, flat, refOf, reads, db, calFor, out } ) {
@@ -275,6 +278,14 @@ function fixedSizing( { row, nodes, flat, refOf, reads, db, calFor, out } ) {
 	const shrinks = fixedAt.filter( ( w ) => parseFloat( paint[ w ] ) > 0 );
 	if ( ! shrinks.length ) {
 		return null;
+	}
+	// A width the draft declares as a plain px length is the item's size at every viewport between the read widths too, so
+	// it is written; any other size (a fluid height with an intrinsic ratio, a clamp(), none declared) is the item's natural
+	// size, which the fixed sizing can hold only as `auto`, a value sgsChildWidth does not take
+	// (helpers-css-safety.php::sgs_css_single_length_value).
+	const fluid = fixedAt.filter( ( w ) => null === pxOf( reads.declared?.[ w ]?.[ target.id ]?.width ?? '' ) );
+	if ( fluid.length ) {
+		return { raise: NATURAL_SIZE };
 	}
 	const sizeAt = ( w ) => reads.widths?.[ w ]?.[ target.id ]?.flexItem?.w ?? rectAt( reads, target, w )?.w;
 	const unsized = fixedAt.filter( ( w ) => ! Number.isFinite( sizeAt( w ) ) );
