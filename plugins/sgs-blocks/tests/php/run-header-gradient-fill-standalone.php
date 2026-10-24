@@ -172,12 +172,13 @@ ok(
 // `background-image:...  !important;` string appended to $sh_scrolled_decls)
 // — only the resolver function differs, so ONE harness runs both extracts.
 // ══════════════════════════════════════════════════════════════════════════
-$new_scrolled = cut_between(
-	$current,
-	"if ( isset( \$attributes['backgroundColourScrolledGradient'] )",
-	"\tif ( isset( \$attributes['textColourScrolled']"
-);
-ok( '' !== $new_scrolled, 'the scrolled-gradient section is found in the real (fixed) render.php' );
+require_once dirname( __DIR__, 2 ) . '/includes/sgs-header-scroll-trigger.php';
+// The scrolled colours moved out of render.php into sgs_header_scrolled_colour_css(), so the fixed side is the function
+// itself (Transparent off on every tier: only the colours the client set are written).
+function run_new_scrolled( array $attributes ): string {
+	return sgs_header_scrolled_colour_css( '.uid', $attributes, array( 'desktop' => 'off', 'tablet' => 'off', 'mobile' => 'off' ) )['css'];
+}
+ok( function_exists( 'sgs_header_scrolled_colour_css' ), 'the scrolled colours are built by sgs_header_scrolled_colour_css()' );
 
 $old_scrolled = cut_between(
 	$old,
@@ -192,16 +193,16 @@ function run_scrolled( string $code, array $attributes ): string {
 	return $sh_scrolled_decls;
 }
 
-$scrolled_fantasy = run_scrolled( $new_scrolled, array( 'backgroundColourScrolledGradient' => $fantasy ) );
+$scrolled_fantasy = run_new_scrolled( array( 'backgroundColourScrolledGradient' => $fantasy ) );
 ok(
 	false !== strpos( $scrolled_fantasy, 'background-image:linear-gradient(to bottom,rgba(0,0,0,0.5),rgba(0,0,0,0)) !important;' ),
 	'scrolled: the fantasy fade gradient emits background-image with !important on the fixed code'
 );
 
-$scrolled_hostile = run_scrolled( $new_scrolled, array( 'backgroundColourScrolledGradient' => $hostile ) );
+$scrolled_hostile = run_new_scrolled( array( 'backgroundColourScrolledGradient' => $hostile ) );
 ok( '' === $scrolled_hostile, 'scrolled: a hostile gradient value emits nothing on the fixed code' );
 
-ok( '' === run_scrolled( $new_scrolled, array() ), 'scrolled: no gradient attribute -> nothing emitted on the fixed code' );
+ok( '' === run_new_scrolled( array() ), 'scrolled: no gradient attribute -> nothing emitted on the fixed code' );
 
 // Negative control: the pre-change scrolled code resolves through
 // sgs_colour_value() too — same bug, same broken var() form.

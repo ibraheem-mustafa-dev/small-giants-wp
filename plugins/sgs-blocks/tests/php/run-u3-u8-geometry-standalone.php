@@ -112,8 +112,8 @@ ok( false !== strpos( $trig, 'top:calc(var(--sgs-drawer-trigger-top, 8px) + 12.8
 ok( false !== strpos( $geo( 'trigger', '', 'modal', '' ), 'top:calc(var(--sgs-drawer-trigger-top, 8px) + 8px);' ), 'trigger: the default gap stays 8px, so an untouched drawer is unchanged (16px before JS)' );
 ok( false !== strpos( $old_geo( 'trigger', '', 'modal' ), 'top:var(--sgs-drawer-trigger-top, 16px);' ), 'NEGATIVE CONTROL: the pre-change trigger panel had no operator gap' );
 
-ok( false !== strpos( $render, "\$sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'side-start', 'side-end', 'container', 'trigger', 'centred' );" ), 'the anchor allow-list carries all seven values' );
-ok( false !== strpos( $render, "\$anchor_offset_raw    = \$attributes['anchorOffset'] ?? array();" ) && false !== strpos( $render, '$sgs_nd_offset_is_set ||' ), 'render.php reads anchorOffset per tier and emits geometry when only the offset is set' );
+ok( false !== strpos( $render, "\$sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'side-start', 'side-end', 'container', 'trigger', 'centred', 'header-box' );" ), 'the anchor allow-list carries all eight values' );
+ok( false !== strpos( $render, "\$anchor_offset_raw    = \$attributes['anchorOffset'] ?? array();" ) && false !== strpos( $render, "sgs_resolve_tier( \$anchor_offset_raw, 'mobile', '' )" ) && false !== strpos( $render, '$sgs_nd_geom_mobile  = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_mobile, $sgs_nd_panel_mobile, $modality, $sgs_nd_offset_mobile );' ), 'render.php reads anchorOffset per tier and always emits the geometry of every tier' );
 
 // ── 2. Default edge for the new anchors ───────────────────────────────────
 require_once $plugin . '/includes/class-sgs-breakpoints.php';
@@ -153,9 +153,9 @@ ok( false !== strpos( $old_store, 'tRect.bottom + 8' ), 'NEGATIVE CONTROL: the p
 
 // ── 5. Item gap per tier ──────────────────────────────────────────────────
 $link_css = (string) file_get_contents( $plugin . '/includes/nav-menu-submenu-link-css.php' );
-$sep_css  = (string) file_get_contents( $plugin . '/includes/nav-menu-item-border-featured-css.php' );
+$sep_css  = (string) file_get_contents( $plugin . '/includes/nav-menu-separators.php' );
 ok( false !== strpos( $link_css, "'css'       => '--sgs-nm-gap'," ) && false !== strpos( $link_css, "__bar{gap:var(--sgs-nm-gap, 8px);}" ), 'the gap is written per tier as --sgs-nm-gap and the bar reads it' );
-ok( false !== strpos( $sep_css, "\$item_separator_gap       = 'var(--sgs-nm-gap, 8px)';" ), 'the item separator centres on the same per-tier gap' );
+ok( false !== strpos( $sep_css, "\$gap    = 'var(--sgs-nm-gap, 8px)';" ), 'the item separator centres on the same per-tier gap' );
 $string_casts = 0;
 foreach ( glob( $plugin . '/includes/nav-menu-*.php' ) as $f ) {
 	$string_casts += preg_match_all( "/\\(string\\)\\s*\\(?\\s*\\\$attributes\\['gap'\\]/", (string) file_get_contents( $f ) );

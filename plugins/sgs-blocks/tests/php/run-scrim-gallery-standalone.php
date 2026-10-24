@@ -45,6 +45,7 @@ $block_dir  = dirname( __DIR__, 2 ) . '/src/blocks/gallery';
 $block_json = (string) file_get_contents( $block_dir . '/block.json' );
 $render_php = (string) file_get_contents( $block_dir . '/render.php' );
 $edit_js    = (string) file_get_contents( $block_dir . '/edit.js' );
+$panel_js   = (string) file_get_contents( $block_dir . '/components/GalleryContentPanel.js' );
 $style_css  = (string) file_get_contents( $block_dir . '/style.css' );
 $decoded    = json_decode( $block_json, true );
 
@@ -98,12 +99,12 @@ ok( $bypass_call !== $render_php, 'negative control: the compounded-selector byp
 ok( ! $has( $bypass_call, $expected_call ), 'negative control: the bypassed call text no longer matches the required call' );
 
 // ── render.php: the uid class is on the lightbox <dialog> ───────────────────
-$dialog_uid_pattern = '/<dialog\s+class="sgs-gallery__lightbox <\?php echo esc_attr\( \$uid \); \?>"/';
+$dialog_uid_pattern = '/<dialog\s+class="sgs-gallery__lightbox sgs-on-dark <\?php echo esc_attr\( \$uid \); \?>"/';
 ok( preg_match( $dialog_uid_pattern, $render_php ) === 1, 'render.php prints $uid inside the lightbox <dialog>\'s own class attribute' );
 
 $no_uid_dialog = str_replace(
-	'class="sgs-gallery__lightbox <?php echo esc_attr( $uid ); ?>"',
-	'class="sgs-gallery__lightbox"',
+	'class="sgs-gallery__lightbox sgs-on-dark <?php echo esc_attr( $uid ); ?>"',
+	'class="sgs-gallery__lightbox sgs-on-dark"',
 	$render_php
 );
 ok( $no_uid_dialog !== $render_php, 'negative control: the uid-on-dialog mutation was applied' );
@@ -139,13 +140,13 @@ ok(
 
 // ── edit.js: the scrim controls are wired and gated on enableLightbox ───────
 ok( $has( $edit_js, 'scrimColourRow' ), 'edit.js imports/uses scrimColourRow' );
-ok( $has( $edit_js, 'ScrimControls' ), 'edit.js imports/uses <ScrimControls>' );
+ok( $has( $panel_js, '<ScrimControls' ), 'GalleryContentPanel.js renders <ScrimControls>' );
 ok(
 	(bool) preg_match( '/enableLightbox &&\s*scrimColourRow\(/', $edit_js ),
 	'the colour row is gated on enableLightbox'
 );
 ok(
-	(bool) preg_match( '/\{ enableLightbox && \(\s*<ToolsPanel/', $edit_js ),
+	(bool) preg_match( '/\{ enableLightbox && \(\s*<ToolsPanel/', $panel_js ),
 	'the strength/blur ToolsPanel is gated on enableLightbox'
 );
 

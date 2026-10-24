@@ -42,7 +42,10 @@ if ( ! function_exists( 'sanitize_text_field' ) ) {
 }
 $GLOBALS['sgs_test_hover_map'] = array( 'whisper' => 'soft' );
 if ( ! function_exists( 'wp_get_global_settings' ) ) {
-	function wp_get_global_settings( array $path ) {
+	function wp_get_global_settings( array $path = array() ) {
+		if ( array() === $path ) {
+			return array( 'custom' => array( 'shadowHover' => $GLOBALS['sgs_test_hover_map'] ) );
+		}
 		if ( 'custom' === $path[0] && 'shadowHover' === ( $path[1] ?? null ) ) {
 			return $GLOBALS['sgs_test_hover_map'];
 		}
