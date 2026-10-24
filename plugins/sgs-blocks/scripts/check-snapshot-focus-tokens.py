@@ -125,11 +125,17 @@ def cmd_check(only: list[str] | None) -> int:
     for name, path in targets(only):
         snap = json.loads(read(path))
         problems = ft.check_snapshot(snap, framework=name == FRAMEWORK)
-        if problems:
+        # Contrast never blocks (Bean's standing ruling: a cloned draft's colours win; contrast warns only). A ratio
+        # finding prints as WARN; only a structural problem (a missing or malformed token) fails.
+        hard = [p for p in problems if ":1" not in p]
+        soft = [p for p in problems if ":1" in p]
+        if hard:
             failed += 1
-            print(f"FAIL {name}: " + "; ".join(problems))
+            print(f"FAIL {name}: " + "; ".join(hard))
         else:
             print(f"ok   {name}")
+        if soft:
+            print(f"WARN {name}: " + "; ".join(soft))
         for note in ft.draft_ring_notes(snap):
             print(f"     {name}: {note}")
     print(f"{failed} of {len(targets(only))} target(s) failing")

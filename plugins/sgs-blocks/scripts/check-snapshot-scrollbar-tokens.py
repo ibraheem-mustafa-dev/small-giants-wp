@@ -69,11 +69,17 @@ def cmd_check(only: list[str] | None) -> int:
     chosen = targets(only)
     for name, path in chosen:
         problems = st.check_snapshot(read_json(path))
-        if problems:
+        # Contrast never blocks (Bean's standing ruling: a cloned draft's colours win; contrast warns only). A ratio
+        # finding prints as WARN; only a structural problem (a missing or malformed token) fails.
+        hard = [p for p in problems if ":1" not in p]
+        soft = [p for p in problems if ":1" in p]
+        if hard:
             failed += 1
-            print(f"FAIL {name}: " + "; ".join(problems))
+            print(f"FAIL {name}: " + "; ".join(hard))
         else:
             print(f"ok   {name}")
+        if soft:
+            print(f"WARN {name}: " + "; ".join(soft))
     print(f"{failed} of {len(chosen)} target(s) failing")
     return 1 if failed else 0
 
