@@ -7,6 +7,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
+import { FlexWrapControl } from '../../../components';
 
 /**
  * @param {Object}   props
@@ -15,7 +16,7 @@ import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
  * @return {JSX.Element} The panel.
  */
 export default function AlertsSharingPanel( { attributes, setAttributes } ) {
-	const { layout, showGuestPrompt } = attributes;
+	const { layout, showGuestPrompt, shareControlsFlexWrap } = attributes;
 
 	const set = ( key ) => ( value ) => setAttributes( { [ key ]: value } );
 	const field = ( key, label, help ) => (
@@ -48,6 +49,11 @@ export default function AlertsSharingPanel( { attributes, setAttributes } ) {
 					{ field( 'shareCopyLabel', __( 'Copy-link button label', 'sgs-blocks' ) ) }
 					{ field( 'shareCopiedText', __( '"Link copied" confirmation', 'sgs-blocks' ) ) }
 					{ field( 'shareNewLinkLabel', __( '"Make a new link" label', 'sgs-blocks' ) ) }
+					<FlexWrapControl
+						label={ __( 'Wrap share controls', 'sgs-blocks' ) }
+						value={ shareControlsFlexWrap }
+						onChange={ set( 'shareControlsFlexWrap' ) }
+					/>
 				</>
 			) }
 			{ field( 'sharedHeading', __( 'Shared-list heading', 'sgs-blocks' ) ) }

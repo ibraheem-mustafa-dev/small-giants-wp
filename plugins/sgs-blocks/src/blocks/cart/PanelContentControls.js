@@ -6,6 +6,7 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
+import { FlexWrapControl } from '../../components';
 
 /**
  * SGS Cart — what the mini-cart panel shows: the heading count, the item
@@ -39,6 +40,7 @@ export default function PanelContentControls( { attributes, setAttributes, hasPa
 			__next40pxDefaultSize
 		/>
 	);
+	const { itemActionsFlexWrap, panelActionsFlexWrap } = attributes;
 	const isTextRemove = 'text' === ( attributes.itemRemoveStyle || 'icon' );
 	const showsAddOptions = true === attributes.itemShowAddOptions;
 
@@ -125,6 +127,16 @@ export default function PanelContentControls( { attributes, setAttributes, hasPa
 				__next40pxDefaultSize
 			/>
 			{ toggle( 'freeDeliveryHideWhenEmpty', __( 'Hide the free-delivery bar while the cart is empty', 'sgs-blocks' ), undefined, false ) }
+			<FlexWrapControl
+				label={ __( 'Wrap item actions', 'sgs-blocks' ) }
+				value={ itemActionsFlexWrap }
+				onChange={ ( val ) => setAttributes( { itemActionsFlexWrap: val } ) }
+			/>
+			<FlexWrapControl
+				label={ __( 'Wrap panel buttons', 'sgs-blocks' ) }
+				value={ panelActionsFlexWrap }
+				onChange={ ( val ) => setAttributes( { panelActionsFlexWrap: val } ) }
+			/>
 		</PanelBody>
 	);
 }

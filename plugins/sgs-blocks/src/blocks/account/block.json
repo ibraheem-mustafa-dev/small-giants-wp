@@ -29,6 +29,32 @@
 			"motion": true,
 			"specRef": "30",
 			"elements": {
+				"order-thumbs": {
+					"selector": ".sgs-account__order-thumbs",
+					"motion": false,
+					"label": "Latest-order thumbnails row",
+					"order": 11,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "orderThumbsFlexWrap"
+					},
+					"_note": "The latest-order thumbnails row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"order-actions": {
+					"selector": ".sgs-account__order-actions",
+					"motion": false,
+					"label": "Latest-order links row",
+					"order": 12,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "orderActionsFlexWrap"
+					},
+					"_note": "The latest-order links row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
 				"menuLink": {
 					"motion": false,
 					"label": "Menu links",
@@ -180,6 +206,26 @@
 		}
 	},
 	"attributes": {
+		"orderThumbsFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the product thumbnails on the latest-order card wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"orderActionsFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the View order and Track parcel links on the latest-order card wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
 		"navLayout": {
 			"type": "object",
 			"default": {}

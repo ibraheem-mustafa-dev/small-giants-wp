@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, TextControl, RangeControl, SelectControl } from '@wordpress/components';
-import { fillRow, textRow, SgsLengthControl, ResponsiveControl, ResponsiveOverride, SgsBorderControl } from '../../components';
+import { fillRow, textRow, SgsLengthControl, ResponsiveControl, ResponsiveOverride, SgsBorderControl, FlexWrapControl } from '../../components';
 import { patchTier } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
@@ -43,6 +43,8 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 		thumbsPerRow,
 		thumbGap,
 		thumbStripOffset,
+		thumbsFlexWrap,
+		priceRowFlexWrap,
 		thumbSelectedScale,
 		galleryThumbBorderWidth,
 		galleryThumbBorderStyle,
@@ -241,6 +243,17 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 						'Space between the main image and the thumbnail strip. Empty keeps the default 0.75rem.',
 						'sgs-blocks'
 					) }
+				/>
+				<FlexWrapControl
+					label={ __( 'Wrap thumbnails', 'sgs-blocks' ) }
+					help={ __( 'Default keeps one scrolling row. One row keeps it; Wrap lays the thumbnails on further rows.', 'sgs-blocks' ) }
+					value={ thumbsFlexWrap }
+					onChange={ ( val ) => setAttributes( { thumbsFlexWrap: val } ) }
+				/>
+				<FlexWrapControl
+					label={ __( 'Wrap price row', 'sgs-blocks' ) }
+					value={ priceRowFlexWrap }
+					onChange={ ( val ) => setAttributes( { priceRowFlexWrap: val } ) }
 				/>
 				<SgsBorderControl
 					label={ __( 'Thumbnail border width', 'sgs-blocks' ) }

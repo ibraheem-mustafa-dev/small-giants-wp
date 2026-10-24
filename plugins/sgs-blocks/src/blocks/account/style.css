@@ -273,10 +273,13 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	border-radius: 6px;
 }
 
+:where(.sgs-account__order-actions) {
+	flex-wrap: wrap;
+}
+
 .sgs-account__order-actions {
 	display: flex;
 	gap: 1rem;
-	flex-wrap: wrap;
 }
 
 .sgs-account__order-link {

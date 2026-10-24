@@ -235,6 +235,16 @@ if ( ! function_exists( 'sgs_account_scoped_css' ) ) {
 		$css[] = sgs_account_tier_custom_property_css( $attributes, 'gap', '--sgs-account-gap', $root_sel, true );
 		$css[] = sgs_account_tier_custom_property_css( $attributes, 'contentMaxWidth', '--sgs-account-content-max-width', $root_sel );
 
+		// Latest-order card rows: thumbnails and the View order / Track parcel links.
+		$css[] = sgs_flex_wrap_css(
+			$attributes,
+			$root_sel,
+			array(
+				'orderThumbsFlexWrap'  => '.sgs-account__order-thumbs',
+				'orderActionsFlexWrap' => '.sgs-account__order-actions',
+			)
+		);
+
 		return implode( '', array_filter( $css ) );
 	}
 }

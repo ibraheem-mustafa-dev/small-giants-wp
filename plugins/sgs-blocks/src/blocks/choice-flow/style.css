@@ -88,12 +88,15 @@
 	flex-wrap: wrap;
 }
 
+:where(.sgs-choice-flow__footer-actions) {
+	flex-wrap: wrap;
+}
+
 .sgs-choice-flow__footer-actions {
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
 	gap: 12px;
-	flex-wrap: wrap;
 	margin-left: auto;
 }
 

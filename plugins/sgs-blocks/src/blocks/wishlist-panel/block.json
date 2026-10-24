@@ -31,6 +31,32 @@
 		"sgs": {
 			"motion": true,
 			"elements": {
+				"row-actions": {
+					"selector": ".sgs-wishlist-panel__row-actions",
+					"motion": false,
+					"label": "Row actions",
+					"order": 10,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "rowActionsFlexWrap"
+					},
+					"_note": "The row actions: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"share-controls": {
+					"selector": ".sgs-wishlist-panel__share-controls",
+					"motion": false,
+					"label": "Share controls row",
+					"order": 11,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "shareControlsFlexWrap"
+					},
+					"_note": "The share controls row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
 				"heading": {
 					"text": true,
 					"label": "Heading",
@@ -152,6 +178,26 @@
 		}
 	},
 	"attributes": {
+		"rowActionsFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the buttons on each saved item wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"shareControlsFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the share field and buttons wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
 		"heading": {
 			"type": "string",
 			"default": "Saved for later"

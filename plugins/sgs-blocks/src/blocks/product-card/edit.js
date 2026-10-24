@@ -21,7 +21,7 @@ import {
 	SsrPreviewGuard, SgsBoxControl, LinkUnderlineControl } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import { LINK_SOURCES_NO_TOP } from '../../shared/link-source-options';
-import { ListingContentPanel, ListingShapePanel, ListingDotsPanel, ListingOverlaysPanel } from './listing-panels';
+import { ListingContentPanel, ListingShapePanel, ListingDotsPanel, ListingRowsPanel, ListingOverlaysPanel } from './listing-panels';
 import { cardPartColourRows } from './card-part-rows';
 import {
 	PanelBody,
@@ -1978,6 +1978,10 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					setAttributes={ setAttributes }
 				/>
 				<ListingDotsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<ListingRowsPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>

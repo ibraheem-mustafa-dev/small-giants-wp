@@ -85,6 +85,58 @@
 				]
 			},
 			"elements": {
+				"thumbs": {
+					"selector": ".product-card__thumbs",
+					"motion": false,
+					"label": "Thumbnail strip",
+					"order": 25,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "thumbsFlexWrap"
+					},
+					"_note": "The thumbnail strip: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"swatches": {
+					"selector": ".sgs-product-card__swatches",
+					"motion": false,
+					"label": "Colour swatch dots",
+					"order": 26,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "swatchesFlexWrap"
+					},
+					"_note": "The colour swatch dots: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"cta-row": {
+					"selector": ".sgs-product-card__cta-row",
+					"motion": false,
+					"label": "Buttons row",
+					"order": 27,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "ctaRowFlexWrap"
+					},
+					"_note": "The buttons row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"price-row": {
+					"selector": ".sgs-product-card__price-row",
+					"motion": false,
+					"label": "Price row",
+					"order": 28,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "priceRowFlexWrap"
+					},
+					"_note": "The price row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
 				"box": {
 					"restingShadow": true,
 					"label": "Card",
@@ -744,6 +796,46 @@
 		}
 	},
 	"attributes": {
+		"thumbsFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the thumbnails under the card photo wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"swatchesFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the colour swatch dots wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"ctaRowFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the card buttons wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"priceRowFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the price, RRP and swatches wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
 		"descLinkUnderline": {
 			"type": "string",
 			"enum": [ "", "none", "always", "hover", "sweep" ],

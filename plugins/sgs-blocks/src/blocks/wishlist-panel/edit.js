@@ -24,7 +24,7 @@ import SiteFeaturesPanel from './components/SiteFeaturesPanel';
  * @return {JSX.Element} Editor markup.
  */
 export default function Edit( { attributes, setAttributes } ) {
-	const { heading, layout, maxItems, viewAllLabel, viewAllUrl, showCount, moveLabel, removeLabel } =
+	const { heading, layout, maxItems, viewAllLabel, viewAllUrl, showCount, moveLabel, removeLabel, rowActionsFlexWrap } =
 		attributes;
 	const previewLayout = [ 'grid', 'list', 'strip' ].includes( layout ) ? layout : 'grid';
 	const sampleCount = 6;
@@ -191,7 +191,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									</>
 								) }
 							</div>
-							<div className="sgs-wishlist-panel__row-actions">
+							<div className="sgs-wishlist-panel__row-actions" style={ rowActionsFlexWrap ? { flexWrap: rowActionsFlexWrap } : undefined }>
 								<span className="sgs-wishlist-panel__move-to-basket wp-element-button" style={ colourStyles.button }>
 									{ moveLabel }
 								</span>

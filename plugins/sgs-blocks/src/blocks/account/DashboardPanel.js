@@ -6,6 +6,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
+import { FlexWrapControl } from '../../components';
 
 const DEFAULT_CARD_DESCRIPTIONS = {
 	orders: __( 'See and reorder past orders', 'sgs-blocks' ),
@@ -50,6 +51,8 @@ export default function DashboardPanel( { attributes, setAttributes } ) {
 		statusStepLabels,
 		showQuickCards,
 		cardDescriptions,
+		orderThumbsFlexWrap,
+		orderActionsFlexWrap,
 	} = attributes;
 
 	const steps = { ...DEFAULT_STEP_LABELS, ...( statusStepLabels || {} ) };
@@ -123,6 +126,17 @@ export default function DashboardPanel( { attributes, setAttributes } ) {
 					/>
 				</>
 			) }
+
+			<FlexWrapControl
+				label={ __( 'Wrap order thumbnails', 'sgs-blocks' ) }
+				value={ orderThumbsFlexWrap }
+				onChange={ ( value ) => setAttributes( { orderThumbsFlexWrap: value } ) }
+			/>
+			<FlexWrapControl
+				label={ __( 'Wrap order links', 'sgs-blocks' ) }
+				value={ orderActionsFlexWrap }
+				onChange={ ( value ) => setAttributes( { orderActionsFlexWrap: value } ) }
+			/>
 
 			<ToggleControl
 				__nextHasNoMarginBottom

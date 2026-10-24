@@ -907,9 +907,12 @@ select.sgs-form-field__input {
    11. Buttons
    ---------------------------------------------------------------- */
 
+:where(.sgs-form__actions) {
+	flex-wrap: wrap;
+}
+
 .sgs-form__actions {
 	display: flex;
-	flex-wrap: wrap;
 	gap: var(--wp--preset--spacing--20, 0.75rem);
 	justify-content: flex-end;
 	padding-top: var(--wp--preset--spacing--30, 1rem);

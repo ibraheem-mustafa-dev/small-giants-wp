@@ -64,6 +64,58 @@
 				]
 			},
 			"elements": {
+				"thumbs": {
+					"selector": ".sgs-buybox .product-card__thumbs",
+					"motion": false,
+					"label": "Gallery thumbnail strip",
+					"order": 21,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "thumbsFlexWrap"
+					},
+					"_note": "The gallery thumbnail strip: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"price-row": {
+					"selector": ".sgs-buybox .buybox__price-row",
+					"motion": false,
+					"label": "Price row",
+					"order": 22,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "priceRowFlexWrap"
+					},
+					"_note": "The price row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"meter": {
+					"selector": ".sgs-buybox-guided__meter",
+					"motion": false,
+					"label": "Guided step meter",
+					"order": 23,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "meterFlexWrap"
+					},
+					"_note": "The guided step meter: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"nav": {
+					"selector": ".sgs-buybox-guided__nav",
+					"motion": false,
+					"label": "Guided Back and Next row",
+					"order": 24,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "navFlexWrap"
+					},
+					"_note": "The guided back and next row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
 				"wrapper": {
 					"label": "Buybox wrapper",
 					"order": 1,
@@ -582,6 +634,46 @@
 		"postId"
 	],
 	"attributes": {
+		"thumbsFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the gallery thumbnails wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"priceRowFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the price, RRP and saving badge wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"meterFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the step meter buttons of the guided flow wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"navFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the Back and Next buttons of the guided flow wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
 		"margin": {
 			"type": "object",
 			"default": {

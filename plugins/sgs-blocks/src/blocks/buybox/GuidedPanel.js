@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
-import { fillRow } from '../../components';
+import { FlexWrapControl, fillRow } from '../../components';
 
 /**
  * "Guided layout" panel for sgs/buybox (Spec 43 FR-43-23, FR-43-25 peripherals).
@@ -24,6 +24,8 @@ export default function GuidedPanel( { attributes, setAttributes } ) {
 		guidedNextLabel,
 		guidedBackLabel,
 		guidedMeterStyle,
+		meterFlexWrap,
+		navFlexWrap,
 	} = attributes;
 	const isGuided = 'guided' === ( buyboxLayout || 'standard' );
 
@@ -96,6 +98,16 @@ export default function GuidedPanel( { attributes, setAttributes } ) {
 							onChange={ ( val ) => setAttributes( { guidedMeterStyle: val } ) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
+						/>
+						<FlexWrapControl
+							label={ __( 'Wrap step meter', 'sgs-blocks' ) }
+							value={ meterFlexWrap }
+							onChange={ ( val ) => setAttributes( { meterFlexWrap: val } ) }
+						/>
+						<FlexWrapControl
+							label={ __( 'Wrap Back and Next', 'sgs-blocks' ) }
+							value={ navFlexWrap }
+							onChange={ ( val ) => setAttributes( { navFlexWrap: val } ) }
 						/>
 					</>
 				) }

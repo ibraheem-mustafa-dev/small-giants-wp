@@ -514,9 +514,12 @@
 	overflow-wrap: break-word;
 }
 
+:where(.sgs-cart__panel .sgs-cart__item-actions) {
+	flex-wrap: wrap;
+}
+
 :where(.sgs-cart__panel) .sgs-cart__item-actions {
 	display: flex;
-	flex-wrap: wrap;
 	align-items: center;
 	gap: 16px;
 	margin-top: 10px;

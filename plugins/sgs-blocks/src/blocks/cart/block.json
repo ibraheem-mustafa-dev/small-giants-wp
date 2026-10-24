@@ -90,6 +90,32 @@
 				"freeDeliveryBarMargin": [ "freeDeliveryBarMargin" ]
 			},
 			"elements": {
+				"item-actions": {
+					"selector": ".sgs-cart__item-actions",
+					"motion": false,
+					"label": "Basket line actions row",
+					"order": 33,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "itemActionsFlexWrap"
+					},
+					"_note": "The basket line actions row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
+				"panel-actions": {
+					"selector": ".sgs-cart__panel-actions",
+					"motion": false,
+					"label": "Basket panel buttons row",
+					"order": 34,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "panelActionsFlexWrap"
+					},
+					"_note": "The basket panel buttons row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
 				"scrim": {
 					"motion": false,
 					"label": "Backdrop / scrim",
@@ -598,6 +624,26 @@
 		"root": ".wp-block-sgs-cart"
 	},
 	"attributes": {
+		"itemActionsFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the actions under each basket line wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"panelActionsFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the View basket and Checkout buttons wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
 		"margin": {
 			"type": "object",
 			"default": {

@@ -57,9 +57,12 @@
 
 /* ── Options row ───────────────────────────────────────────────────── */
 
+:where(.sgs-option-picker__options) {
+	flex-wrap: wrap;
+}
+
 .sgs-option-picker__options {
 	display: flex;
-	flex-wrap: wrap;
 	gap: var(--wp--preset--spacing--30, 0.75rem);
 	align-items: center;
 }

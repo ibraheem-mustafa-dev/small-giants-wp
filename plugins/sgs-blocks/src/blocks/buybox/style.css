@@ -15,10 +15,13 @@
 
 /* ── Price row (mirrors the product-card price scale) ──────────────────── */
 
+:where(.sgs-buybox .buybox__price-row) {
+	flex-wrap: wrap;
+}
+
 .sgs-buybox .buybox__price-row {
 	display: flex;
 	align-items: baseline;
-	flex-wrap: wrap;
 	gap: 8px;
 }
 
@@ -441,9 +444,12 @@
    the buybox, product-card rules stay isolated to cards — no collision either
    way, and no future-drift specificity trap. */
 
+:where(.sgs-buybox .value-ladder__row) {
+	flex-wrap: wrap;
+}
+
 .sgs-buybox .value-ladder__row {
 	display: flex;
-	flex-wrap: wrap;
 	align-items: center;
 	gap: 4px 8px;
 	padding: 10px 18px;
@@ -811,10 +817,13 @@
  * is 10% of the thumbnail size per side, plus the 4px ring); the equal negative
  * margin gives the room back, so the thumbnails sit where they always did.
  */
+:where(.sgs-buybox .product-card__thumbs) {
+	flex-wrap: nowrap;
+}
+
 .sgs-buybox .product-card__thumbs {
 	--sgs-buybox-thumb-gutter: calc(4px + var(--sgs-buybox-thumb-size, 64px) * 0.1);
 	display: flex;
-	flex-wrap: nowrap;
 	gap: 0.5rem;
 	margin: calc(var(--sgs-buybox-thumb-offset, 0.75rem) - var(--sgs-buybox-thumb-gutter)) calc(-1 * var(--sgs-buybox-thumb-gutter)) calc(-1 * var(--sgs-buybox-thumb-gutter));
 	padding: var(--sgs-buybox-thumb-gutter);

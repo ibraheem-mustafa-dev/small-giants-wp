@@ -128,6 +128,14 @@ $scoped_css[] = sgs_text_states_css(
 	)
 );
 $scoped_css   = array_merge( $scoped_css, sgs_wishlist_panel_new_element_css( $root_sel, $attributes ) );
+$scoped_css[] = sgs_flex_wrap_css(
+	$attributes,
+	$root_sel,
+	array(
+		'rowActionsFlexWrap'    => '.sgs-wishlist-panel__row-actions',
+		'shareControlsFlexWrap' => '.sgs-wishlist-panel__share-controls',
+	)
+);
 
 // Columns / gap — tier objects, custom properties consumed by style.css
 // (`.sgs-wishlist-panel__items{ grid-template-columns:repeat(var(--sgs-wishlist-panel-columns,3),1fr); gap:var(--sgs-wishlist-panel-gap,1rem); }`).

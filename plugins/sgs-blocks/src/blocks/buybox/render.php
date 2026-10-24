@@ -714,6 +714,18 @@ $scoped_css = array_merge(
 	sgs_buybox_extras_scoped_css( $attributes, $root_sel, $buybox_rrp, $buybox_sticky )
 );
 
+// Wrap settings of the rows: gallery thumbnails, price row, guided meter and Back/Next.
+$scoped_css[] = sgs_flex_wrap_css(
+	$attributes,
+	$root_sel,
+	array(
+		'thumbsFlexWrap'   => '.product-card__thumbs',
+		'priceRowFlexWrap' => '.buybox__price-row',
+		'meterFlexWrap'    => '.sgs-buybox-guided__meter',
+		'navFlexWrap'      => '.sgs-buybox-guided__nav',
+	)
+);
+
 // Add-to-basket bar colours (only while the bar prints).
 if ( $buybox_bar_on ) {
 	$scoped_css[] = sgs_buybox_sticky_bar_colour_css( $attributes, $root_sel );

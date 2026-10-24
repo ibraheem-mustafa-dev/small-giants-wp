@@ -66,6 +66,19 @@
 				]
 			},
 			"elements": {
+				"actions": {
+					"selector": ".sgs-form__actions",
+					"motion": false,
+					"label": "Form buttons row",
+					"order": 31,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "actionsFlexWrap"
+					},
+					"_note": "The form buttons row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
 				"formField": {
 					"label": "Each field",
 					"layer": "CONTENT",
@@ -838,6 +851,16 @@
 		}
 	},
 	"attributes": {
+		"actionsFlexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the Back, Next and Submit buttons wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
 		"padding": {
 			"type": "object",
 			"default": {

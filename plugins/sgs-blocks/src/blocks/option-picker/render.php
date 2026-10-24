@@ -527,6 +527,9 @@ if ( $mobile_root_decls ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_root_decls ) . ';}}';
 }
 
+// Wrap setting of the option pills (tile mode lays the options on a grid, where it has no effect).
+$scoped_css[] = sgs_flex_wrap_css( $attributes, $root_sel, array( 'flexWrap' => '.sgs-option-picker__options' ) );
+
 // --- Pill custom padding object — base + tiers, scoped on the pill selector
 // (SGS custom family; falls back to the per-size default in style.css when
 // unset — byte-identical default behaviour). ---

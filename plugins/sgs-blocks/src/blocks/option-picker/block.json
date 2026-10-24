@@ -46,6 +46,19 @@
 				}
 			],
 			"elements": {
+				"options": {
+					"selector": ".sgs-option-picker__options",
+					"motion": false,
+					"label": "Options row",
+					"order": 5,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "The options row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
 				"root": {
 					"label": "Picker (fieldset)",
 					"order": 1,
@@ -166,6 +179,16 @@
 		"typography": ".sgs-option-picker__pill"
 	},
 	"attributes": {
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the option pills (tile mode lays the options on a grid, so this applies to the pill layout only) wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
 		"padding": {
 			"type": "object",
 			"default": {

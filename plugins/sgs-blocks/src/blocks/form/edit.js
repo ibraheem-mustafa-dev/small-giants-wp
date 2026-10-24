@@ -14,7 +14,7 @@ import {
 } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, FlexWrapControl } from '../../components';
 import { NumberControl } from '../../components/primitives';
 import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
@@ -100,6 +100,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		submitPadding,
 		submitMinHeight,
 		submitAlign,
+		actionsFlexWrap,
 		fieldBackground,
 		fieldTextColour,
 		fieldPlaceholderColour,
@@ -350,6 +351,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		fieldHeightRule( 'mobile', fieldTextareaSel, fieldTextareaMinHeight ) !== fieldHeightRule( 'desktop', fieldTextareaSel, fieldTextareaMinHeight ) &&
 			`@media(max-width:767px){${ fieldHeightRule( 'mobile', fieldTextareaSel, fieldTextareaMinHeight ) }}`,
 		submitAlignValue && `.${ formPreviewScope } .sgs-form__actions{justify-content:${ submitAlignValue };}`,
+		actionsFlexWrap && `.${ formPreviewScope } .sgs-form__actions{flex-wrap:${ actionsFlexWrap };}`,
 	]
 		.filter( Boolean )
 		.join( '' );
@@ -865,6 +867,11 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						help={ __( 'A narrow form still stacks the button full width.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+					<FlexWrapControl
+						label={ __( 'Wrap buttons', 'sgs-blocks' ) }
+						value={ actionsFlexWrap }
+						onChange={ ( value ) => setAttributes( { actionsFlexWrap: value } ) }
 					/>
 					<SubmitMotionControls attributes={ attributes } setAttributes={ setAttributes } />
 				</PanelBody>

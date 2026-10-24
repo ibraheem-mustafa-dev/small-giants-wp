@@ -104,9 +104,12 @@
 	text-decoration: none;
 }
 
+:where(.sgs-wishlist-panel__row-actions) {
+	flex-wrap: wrap;
+}
+
 .sgs-wishlist-panel__row-actions {
 	display: flex;
-	flex-wrap: wrap;
 	align-items: center;
 	gap: 0.75rem;
 }
@@ -343,16 +346,22 @@
 	font-size: 0.85em;
 }
 
+:where(.sgs-wishlist-panel__share) {
+	flex-wrap: wrap;
+}
+
 .sgs-wishlist-panel__share {
 	display: flex;
-	flex-wrap: wrap;
 	align-items: center;
 	gap: 0.5rem;
 }
 
+:where(.sgs-wishlist-panel__share-controls) {
+	flex-wrap: wrap;
+}
+
 .sgs-wishlist-panel__share-controls {
 	display: flex;
-	flex-wrap: wrap;
 	align-items: center;
 	gap: 0.5rem;
 }

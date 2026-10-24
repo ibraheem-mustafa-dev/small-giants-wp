@@ -535,6 +535,7 @@ $sgs_submit_align     = $sgs_submit_align_map[ (string) ( $attributes['submitAli
 if ( '' !== $sgs_submit_align ) {
 	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__actions{justify-content:' . $sgs_submit_align . ';}';
 }
+$sgs_field_css .= sgs_flex_wrap_css( $attributes, '.' . $sgs_form_uid, array( 'actionsFlexWrap' => '.sgs-form__actions' ) );
 
 if ( '' !== $sgs_field_css ) {
 	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {

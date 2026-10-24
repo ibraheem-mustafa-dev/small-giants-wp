@@ -29,6 +29,19 @@
 				]
 			},
 			"elements": {
+				"footer-actions": {
+					"selector": ".sgs-choice-flow__footer-actions",
+					"motion": false,
+					"label": "Footer buttons row",
+					"order": 5,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "The footer buttons row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+				},
 				"wrapper": {
 					"label": "Wrapper",
 					"layer": "OUTER",
@@ -101,6 +114,16 @@
 		}
 	},
 	"attributes": {
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the footer buttons (Continue, Add to basket, Buy now) wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
 		"title": {
 			"type": "string",
 			"default": ""

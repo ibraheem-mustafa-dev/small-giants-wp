@@ -286,6 +286,17 @@ if ( preg_match( '/^\d+(\.\d+)?(px|em|rem)$/', $sgs_price_row_space ) ) {
 	// Padding, so a shop layout's margin-top:auto (prices level at the card's foot) still applies.
 	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .price-row,.' . $sgs_card_uid . ' .sgs-product-card__price-row{padding-top:' . $sgs_price_row_space . ';}';
 }
+// Wrap settings of the rows (thumbnails, swatch dots, buttons, price row); the bound price row carries both price-row classes.
+$sgs_card_typo_css .= sgs_flex_wrap_css(
+	$attributes,
+	'.' . $sgs_card_uid,
+	array(
+		'thumbsFlexWrap'   => '.product-card__thumbs',
+		'swatchesFlexWrap' => '.sgs-product-card__swatches',
+		'ctaRowFlexWrap'   => '.sgs-product-card__cta-row',
+		'priceRowFlexWrap' => '.sgs-product-card__price-row',
+	)
+);
 
 // ── Frame Card component colours: rating stars/text, brand overlay ───────
 // Both attrs resolve css:color via the default {prefix}Colour convention

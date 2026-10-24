@@ -422,6 +422,18 @@ if ( $has_panel && 'drawer' === $effective_mode ) {
 	}
 }
 
+// Wrap settings of the panel's rows. The panel carries the uid class itself (the nav store re-parents the drawer).
+if ( $has_panel ) {
+	$scoped_css[] = sgs_flex_wrap_css(
+		$attributes,
+		'.' . $uid . '.sgs-cart__panel',
+		array(
+			'itemActionsFlexWrap'  => '.sgs-cart__item-actions',
+			'panelActionsFlexWrap' => '.sgs-cart__panel-actions',
+		)
+	);
+}
+
 // ── Emit the scoped <style> then the trigger + (optional) panel. ────────────
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $scoped_css entries are all pre-sanitised (sgs_colour_value/sgs_css_length/wp_style_engine_get_styles); $wrapper_attributes from get_block_wrapper_attributes(); $trigger_html/$panel_html built entirely from esc_url/esc_attr/esc_html above plus trusted Lucide SVG + wp_interactivity_data_wp_context() (self-escaping).
 if ( $scoped_css ) :

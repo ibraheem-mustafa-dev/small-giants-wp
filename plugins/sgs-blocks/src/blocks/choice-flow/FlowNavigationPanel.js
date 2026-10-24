@@ -14,6 +14,7 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
+import { FlexWrapControl } from '../../components';
 
 /**
  * @param {Object}   o
@@ -22,7 +23,7 @@ import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
  * @return {JSX.Element} The panel, mounted inside its own InspectorControls.
  */
 export default function FlowNavigationPanel( { attributes, setAttributes } ) {
-	const { advanceMode, continueLabel, openerLabel } = attributes;
+	const { advanceMode, continueLabel, openerLabel, flexWrap } = attributes;
 
 	return (
 		<InspectorControls>
@@ -59,6 +60,11 @@ export default function FlowNavigationPanel( { attributes, setAttributes } ) {
 					help={ __( 'Shown on the product page button when a product links this flow, e.g. "Choose your flavours". Empty uses the buybox label.', 'sgs-blocks' ) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
+				/>
+				<FlexWrapControl
+					label={ __( 'Wrap footer buttons', 'sgs-blocks' ) }
+					value={ flexWrap }
+					onChange={ ( val ) => setAttributes( { flexWrap: val } ) }
 				/>
 			</PanelBody>
 		</InspectorControls>

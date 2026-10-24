@@ -203,6 +203,7 @@ if ( '' !== $back_css ) {
 $scoped_css[] = sgs_choice_flow_chrome_progress_colour_css( $attributes, $root_sel );
 $scoped_css[] = sgs_choice_flow_showcase_css( $attributes, $root_sel );
 $scoped_css[] = sgs_choice_flow_colour_rules_css( $attributes, $root_sel );
+$scoped_css[] = sgs_flex_wrap_css( $attributes, $root_sel, array( 'flexWrap' => '.sgs-choice-flow__footer-actions' ) );
 
 $inner_parsed = isset( $block->parsed_block['innerBlocks'] ) && is_array( $block->parsed_block['innerBlocks'] ) ? $block->parsed_block['innerBlocks'] : array();
 

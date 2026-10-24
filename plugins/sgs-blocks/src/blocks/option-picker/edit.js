@@ -42,6 +42,7 @@ import {
 	BOX_UNITS,
 	normaliseResponsiveBox,
 	SgsBoxControl,
+	FlexWrapControl,
 } from '../../components';
 import {
 	colourVar,
@@ -188,6 +189,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		pillStyle,
 		pillSize,
 		tileGap,
+		flexWrap,
 		colourPreset,
 		showSelectedTick,
 		showTermDetails,
@@ -882,6 +884,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ 'tile' !== pillStyle && (
+						<FlexWrapControl
+							label={ __( 'Wrap options', 'sgs-blocks' ) }
+							help={ __( 'Applies to the pill layouts only; tiles sit on a grid that fits as many columns as the width allows. Default keeps the pills wrapping.', 'sgs-blocks' ) }
+							value={ flexWrap }
+							onChange={ ( val ) => setAttributes( { flexWrap: val } ) }
+						/>
+					) }
 					{ 'tile' === pillStyle && (
 						<SgsLengthControl
 							label={ __( 'Tile gap', 'sgs-blocks' ) }
@@ -1266,7 +1276,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ label || __( 'Choose an option', 'sgs-blocks' ) }
 					</legend>
 				) }
-				<div className="sgs-option-picker__options" role="group">
+				<div className="sgs-option-picker__options" role="group" style={ flexWrap && 'tile' !== pillStyle ? { flexWrap } : undefined }>
 					{ renderPills() }
 				</div>
 			</fieldset>

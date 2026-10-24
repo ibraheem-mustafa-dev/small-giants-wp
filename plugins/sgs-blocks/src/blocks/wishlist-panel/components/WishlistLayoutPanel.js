@@ -11,7 +11,7 @@ import {
 	RangeControl,
 	SelectControl,
 } from '@wordpress/components';
-import { ResponsiveControl, SgsLengthControl } from '../../../components';
+import { FlexWrapControl, ResponsiveControl, SgsLengthControl } from '../../../components';
 
 /**
  * @param {Object}   props
@@ -34,6 +34,7 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 		maxItems,
 		viewAllLabel,
 		viewAllUrl,
+		rowActionsFlexWrap,
 	} = attributes;
 
 	return (
@@ -193,6 +194,11 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 					</ResponsiveControl>
 				</>
 			) }
+			<FlexWrapControl
+				label={ __( 'Wrap item buttons', 'sgs-blocks' ) }
+				value={ rowActionsFlexWrap }
+				onChange={ ( value ) => setAttributes( { rowActionsFlexWrap: value } ) }
+			/>
 		</PanelBody>
 	);
 }

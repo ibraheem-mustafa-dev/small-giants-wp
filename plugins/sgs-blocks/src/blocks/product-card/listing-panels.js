@@ -11,7 +11,7 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { MEDIA_SIZING_RATIO_OPTIONS, SgsBoxControl, SgsLengthControl } from '../../components';
+import { FlexWrapControl, MEDIA_SIZING_RATIO_OPTIONS, SgsBoxControl, SgsLengthControl } from '../../components';
 import { SGS_LENGTH_UNITS, sgsNormaliseLength } from '../../utils';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
@@ -217,6 +217,44 @@ export function ListingDotsPanel( { attributes, setAttributes } ) {
 				resetFallbackValue={ 0 }
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
+			/>
+		</PanelBody>
+	);
+}
+
+/**
+ * Row wrapping panel: whether the card's rows of items (thumbnails, price row, colour dots, buttons) wrap onto
+ * further rows or stay on one line (`css:flex-wrap` on each element, rendered by render.php).
+ *
+ * @param {Object}   props               Component props.
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Attribute setter.
+ * @return {Element} The panel.
+ */
+export function ListingRowsPanel( { attributes, setAttributes } ) {
+	const { thumbsFlexWrap, priceRowFlexWrap, swatchesFlexWrap, ctaRowFlexWrap } = attributes;
+
+	return (
+		<PanelBody title={ __( 'Row wrapping', 'sgs-blocks' ) } initialOpen={ false }>
+			<FlexWrapControl
+				label={ __( 'Wrap thumbnails', 'sgs-blocks' ) }
+				value={ thumbsFlexWrap }
+				onChange={ ( v ) => setAttributes( { thumbsFlexWrap: v } ) }
+			/>
+			<FlexWrapControl
+				label={ __( 'Wrap price row', 'sgs-blocks' ) }
+				value={ priceRowFlexWrap }
+				onChange={ ( v ) => setAttributes( { priceRowFlexWrap: v } ) }
+			/>
+			<FlexWrapControl
+				label={ __( 'Wrap colour dots', 'sgs-blocks' ) }
+				value={ swatchesFlexWrap }
+				onChange={ ( v ) => setAttributes( { swatchesFlexWrap: v } ) }
+			/>
+			<FlexWrapControl
+				label={ __( 'Wrap buttons', 'sgs-blocks' ) }
+				value={ ctaRowFlexWrap }
+				onChange={ ( v ) => setAttributes( { ctaRowFlexWrap: v } ) }
 			/>
 		</PanelBody>
 	);

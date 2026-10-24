@@ -154,6 +154,10 @@
  *                                     sgs/google-reviews renders them through
  *                                     every variant unchanged)
  *
+ *   helpers-flex-wrap.php           — sgs_flex_wrap_css (the per-instance `flex-wrap`
+ *                                     rule of a block's row of items, for the
+ *                                     `css:flex-wrap` wrap settings)
+ *
  * A single `require_once render-helpers.php` continues to resolve every
  * function that this file has always provided. All callers are unchanged.
  *
@@ -210,6 +214,7 @@ require_once __DIR__ . '/helpers-site-info-items.php';
 require_once __DIR__ . '/helpers-icon.php';
 require_once __DIR__ . '/helpers-icon-shadow.php';
 require_once __DIR__ . '/helpers-end-shape.php';
+require_once __DIR__ . '/helpers-flex-wrap.php';
 require_once __DIR__ . '/helpers-inline-formats.php';
 require_once __DIR__ . '/media/atoms/media-type.php';
 require_once __DIR__ . '/media/atoms/video-behaviour.php';

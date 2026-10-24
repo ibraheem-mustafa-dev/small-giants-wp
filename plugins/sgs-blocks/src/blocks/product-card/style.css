@@ -145,9 +145,12 @@
  */
 
 /* Price row */
+:where(.product-card .price-row) {
+	flex-wrap: wrap;
+}
+
 .product-card .price-row {
 	display: flex;
-	flex-wrap: wrap;
 	align-items: baseline;
 	gap: 6px 10px;
 	/* A5 (QC): margin removed — flex gap on .product-card-body handles rhythm. */
@@ -841,10 +844,13 @@
 }
 
 /* Thumbnail strip — flex row below the main image. */
+:where(.product-card--live .product-card__thumbs) {
+	flex-wrap: wrap;
+}
+
 .product-card--live .product-card__thumbs {
 	display: flex;
 	gap: 8px;
-	flex-wrap: wrap;
 	padding: 8px 12px;
 	background: var( --wp--preset--color--surface-alt, #f5f7f7 );
 	border-top: 1px solid var( --wp--preset--color--border, #D4DBE5 );
@@ -958,9 +964,12 @@
  * combined with the line-height of the inner spans (≈ 20px). If a future
  * iteration makes rows interactive (radio-style), add min-height: 44px then.
  */
+:where(.value-ladder__row) {
+	flex-wrap: wrap;
+}
+
 .value-ladder__row {
 	display: flex;
-	flex-wrap: wrap;
 	align-items: center;
 	gap: 4px 8px;
 	padding: 10px 12px;
@@ -1240,9 +1249,12 @@
  * CTA row — flex row so primary + secondary sit side by side on wider cards,
  * wrapping on narrow viewports. gap matches the card's body gap token.
  */
+:where(.product-card .sgs-product-card__cta-row) {
+	flex-wrap: wrap;
+}
+
 .product-card .sgs-product-card__cta-row {
 	display: flex;
-	flex-wrap: wrap;
 	gap: var( --wp--preset--spacing--20, 0.75rem );
 	margin-top: auto;
 }
@@ -1577,6 +1589,9 @@
 	gap: 5px;
 	margin-left: auto;
 	flex-shrink: 0;
+	/* Never wider than the row, so the row's wrap setting (swatchesFlexWrap) can fold dots that overrun it
+	   onto further lines; flex-shrink:0 alone let a nowrap-or-wrap row grow to its full single-line width. */
+	max-width: 100%;
 }
 
 /*
@@ -1586,9 +1601,12 @@
  * narrower than its widest part, so the dots move to their own line only when
  * even the price alone cannot sit beside them, and never cover it.
  */
+:where(.sgs-product-card__price-group) {
+	flex-wrap: wrap;
+}
+
 .sgs-product-card__price-group {
 	display: flex;
-	flex-wrap: wrap;
 	align-items: baseline;
 	gap: inherit;
 	flex: 1 1 0;
@@ -1605,6 +1623,8 @@
 	/* swatchSize → --sgs-pc-swatch-size (includes/product-card-card-parts.php). */
 	width: var( --sgs-pc-swatch-size, 16px );
 	height: var( --sgs-pc-swatch-size, 16px );
+	/* A dot keeps its size when the row is narrower than the dots: it folds (wrap) or overruns (one row), never squashes. */
+	flex-shrink: 0;
 	/* A dot is the same size whether it renders as a decorative <span> or as a
 	   real <button>: a button's UA box-sizing is border-box, so the span is
 	   pinned to it rather than measuring a border wider. */
