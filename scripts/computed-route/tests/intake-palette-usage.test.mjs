@@ -124,7 +124,7 @@ test( 'MUST FAIL: a divider or muted text colour no token declares wins its job,
 test( 'paletteUsage gives each text colour its ground and marks text-holding elements', () => {
 	const rec = { surface: 'Home', draftId: 'Home/3#0', path: '#dc-root > div:nth-child(1) > p:nth-child(2)', computed: { color: 'rgb(58, 42, 34)', 'background-color': 'rgba(0, 0, 0, 0)' } };
 	const key = 'Home\u0000#dc-root > div:nth-child(1) > p:nth-child(2)';
-	assert.deepEqual( paletteUsage( [ rec ], new Map( [ [ key, 'rgb(249, 207, 110)' ] ] ), new Set( [ key ] ) ),
-		[ { hex: '#3A2A22', property: 'color', draftId: 'Home:3', count: 1, tag: 'p', ground: '#F9CF6E', text: true } ] );
+	assert.deepEqual( paletteUsage( [ rec ], new Map( [ [ key, 'rgb(249, 207, 110)' ] ] ), new Map( [ [ key, 12 ] ] ) ),
+		[ { hex: '#3A2A22', property: 'color', draftId: 'Home:3', count: 1, tag: 'p', ground: '#F9CF6E', text: true, chars: 12 } ] );
 	assert.deepEqual( paletteUsage( [ rec ] ), [ { hex: '#3A2A22', property: 'color', draftId: 'Home:3', count: 1, tag: 'p' } ] );
 } );
