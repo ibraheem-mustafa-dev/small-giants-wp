@@ -1,0 +1,230 @@
+[
+	{
+		"file": "lib/compare.mjs",
+		"find": "if ( Math.abs( d.box[ k ] - l.box[ k ] ) > tol.box && ! passThroughHeld( k, d, l, tol ) ) {",
+		"replace": "if ( Math.abs( d.box[ k ] - l.box[ k ] ) > tol.box ) {",
+		"why": "the box row ignores the pass-through check"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "if ( Math.abs( d.box[ k ] - l.box[ k ] ) > tol.box && ! passThroughHeld( k, d, l, tol ) ) {",
+		"replace": "if ( Math.abs( d.box[ k ] - l.box[ k ] ) > tol.box && ! passThroughHeld( 'h', d, l, tol ) ) {",
+		"why": "every axis judged as height"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "if ( ! a || ! b || a.paints || b.paints || ! a.items.length",
+		"replace": "if ( ! a || ! b || a.paints || ! a.items.length",
+		"why": "a live box that paints is ignored"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "if ( ! a || ! b || a.paints || b.paints || ! a.items.length",
+		"replace": "if ( ! a || ! b || b.paints || ! a.items.length",
+		"why": "a draft box that paints is ignored"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "|| ! a.items.length ||",
+		"replace": "||",
+		"why": "a box with no items passes"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "|| ! a.line?.[ k ] || ! b.line?.[ k ] ) {",
+		"replace": "|| ! a.line?.[ k ] ) {",
+		"why": "no live line passes"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "|| ! a.line?.[ k ] || ! b.line?.[ k ] ) {",
+		"replace": "|| ! b.line?.[ k ] ) {",
+		"why": "no draft line passes"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "return /^(img|picture|video|canvas|svg|iframe|input|select|textarea)$/i.test( e.tagName ) || ! clear( s.backgroundColor ) ||",
+		"replace": "return /^(img|picture|video|canvas|svg|iframe|input|select|textarea)$/i.test( e.tagName ) ||",
+		"why": "a ground is no paint"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "|| 'none' !== s.backgroundImage ||",
+		"replace": "||",
+		"why": "an image is no paint"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "[ 'Top', 'Right', 'Bottom', 'Left' ].some(",
+		"replace": "[ 'Top' ].some(",
+		"why": "only the top border paints"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "|| 'none' !== s.boxShadow ||",
+		"replace": "||",
+		"why": "a shadow is no paint"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "( 'none' !== s.outlineStyle && parseFloat( s.outlineWidth ) > 0 ) ||",
+		"replace": "",
+		"why": "an outline is no paint"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "|| 'none' !== s.filter ||",
+		"replace": "||",
+		"why": "a filter is no paint"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "'visible' !== s.overflowX || 'visible' !== s.overflowY ||",
+		"replace": "",
+		"why": "clipping is no paint"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "|| layer( e, '::before' ) || layer( e, '::after' );",
+		"replace": "|| layer( e, '::before' );",
+		"why": "an ::after layer is no paint"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "const clear = ( c ) => /^(transparent|rgba\\(\\d+, \\d+, \\d+, 0\\))$/.test( c );",
+		"replace": "const clear = ( c ) => true;",
+		"why": "every colour clear"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "const items = [ ...new Set( [ ...( interactive.length ? interactive : [ ...el.children ].filter( ( e ) => shown( e ) && big( e ) ) ), ...placed ] ) ].map( rect );",
+		"replace": "const items = [ ...new Set( [ ...interactive, ...placed ] ) ].map( rect );",
+		"why": "no in-flow child items without interactive ones"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "if ( only( cur ) && ! paints( p ) ) {",
+		"replace": "if ( only( cur ) ) {",
+		"why": "a painting wrapper is passed"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "if ( only( cur ) && ! paints( p ) ) {",
+		"replace": "if ( ! paints( p ) ) {",
+		"why": "a wrapper with other children is passed"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "if ( only( cur ) && ! paints( p ) ) {",
+		"replace": "if ( false ) {",
+		"why": "no wrapper is passed"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "if ( ! /flex$/.test( s.display ) || 'nowrap' !== s.flexWrap || ( 'h' === axis ) !== row ) {",
+		"replace": "if ( ! /flex$/.test( s.display ) || ( 'h' === axis ) !== row ) {",
+		"why": "a wrapping row is a line"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "if ( ! /flex$/.test( s.display ) || 'nowrap' !== s.flexWrap || ( 'h' === axis ) !== row ) {",
+		"replace": "if ( 'nowrap' !== s.flexWrap || ( 'h' === axis ) !== row ) {",
+		"why": "a block parent is a line"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "if ( ! /flex$/.test( s.display ) || 'nowrap' !== s.flexWrap || ( 'h' === axis ) !== row ) {",
+		"replace": "if ( ! /flex$/.test( s.display ) || 'nowrap' !== s.flexWrap ) {",
+		"why": "the main axis is a line"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "return 'h' === axis ? [ t, b ] : [ l, r ];",
+		"replace": "return [ t, b ];",
+		"why": "the line always read on height"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "return [ ...p.childNodes ].every( ( k ) => k === e || ( 3 === k.nodeType ? ! k.textContent.trim() : 1 !== k.nodeType || ! k.getClientRects().length ) );",
+		"replace": "return [ ...p.childNodes ].every( ( k ) => k === e || 3 === k.nodeType || 1 !== k.nodeType || ! k.getClientRects().length );",
+		"why": "text beside the box is ignored"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "const interactive = [ ...el.querySelectorAll( 'a[href], button, input, select, textarea, summary, [role=\"button\"], [role=\"link\"]' ) ].filter( ( e ) => e.getClientRects().length && big( e ) && 'hidden' !== getComputedStyle( e ).visibility );",
+		"replace": "const interactive = [];",
+		"why": "interactive descendants are no items"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "\t\t...( run ? {} : { passThrough } ),\n",
+		"replace": "",
+		"why": "no pass-through record"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "const span = ( it, s ) => ( 'h' === k ? [ it[ 0 ], it[ 1 ] ] : [ it[ 2 ], it[ 3 ] ] ).map( ( v ) => v - s.line[ k ][ 0 ] );",
+		"replace": "const span = ( it, s ) => [ it[ 0 ], it[ 1 ] ].map( ( v ) => v - s.line[ k ][ 0 ] );",
+		"why": "items always compared on height"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "const span = ( it, s ) => ( 'h' === k ? [ it[ 0 ], it[ 1 ] ] : [ it[ 2 ], it[ 3 ] ] ).map( ( v ) => v - s.line[ k ][ 0 ] );",
+		"replace": "const span = ( it, s ) => [ it[ 2 ], it[ 3 ] ].map( ( v ) => v - s.line[ k ][ 0 ] );",
+		"why": "items always compared on width"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "const span = ( it, s ) => ( 'h' === k ? [ it[ 0 ], it[ 1 ] ] : [ it[ 2 ], it[ 3 ] ] ).map( ( v ) => v - s.line[ k ][ 0 ] );",
+		"replace": "const span = ( it, s ) => ( 'h' === k ? [ it[ 0 ], it[ 1 ] ] : [ it[ 2 ], it[ 3 ] ] );",
+		"why": "extents read on the page, not from the container"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "&& Math.abs( len( a ) - len( b ) ) <= tol.box && within( a.items, a, b.items, b ) && within( b.items, b, a.items, a );",
+		"replace": "&& within( a.items, a, b.items, b ) && within( b.items, b, a.items, a );",
+		"why": "the container's length is not compared"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "&& Math.abs( len( a ) - len( b ) ) <= tol.box && within( a.items, a, b.items, b ) && within( b.items, b, a.items, a );",
+		"replace": "&& Math.abs( len( a ) - len( b ) ) <= tol.box && within( b.items, b, a.items, a );",
+		"why": "draft items unchecked"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "&& Math.abs( len( a ) - len( b ) ) <= tol.box && within( a.items, a, b.items, b ) && within( b.items, b, a.items, a );",
+		"replace": "&& Math.abs( len( a ) - len( b ) ) <= tol.box && within( a.items, a, b.items, b );",
+		"why": "live items unchecked"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "const placed = [ ...el.querySelectorAll( '*' ) ].filter( ( e ) => e.getClientRects().length && /absolute|fixed/.test( getComputedStyle( e ).position ) && ( ! e.offsetParent || e.offsetParent === el || ! el.contains( e.offsetParent ) ) );",
+		"replace": "const placed = [].filter( ( e ) => e );",
+		"why": "positioned descendants are no items"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "const placed = [ ...el.querySelectorAll( '*' ) ].filter( ( e ) => e.getClientRects().length && /absolute|fixed/.test( getComputedStyle( e ).position ) && ( ! e.offsetParent || e.offsetParent === el || ! el.contains( e.offsetParent ) ) );",
+		"replace": "const placed = [ ...el.querySelectorAll( '*' ) ].filter( ( e ) => e.getClientRects().length && /absolute|fixed/.test( getComputedStyle( e ).position ) );",
+		"why": "a descendant placed against an inner element is an item"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "const same = ( x, y ) => Math.abs( x[ 0 ] - y[ 0 ] ) <= tol.box && Math.abs( x[ 1 ] - x[ 0 ] - ( y[ 1 ] - y[ 0 ] ) ) <= tol.box;",
+		"replace": "const same = ( x, y ) => Math.abs( x[ 0 ] - y[ 0 ] ) <= tol.box;",
+		"why": "an item's length is not compared"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "const same = ( x, y ) => Math.abs( x[ 0 ] - y[ 0 ] ) <= tol.box && Math.abs( x[ 1 ] - x[ 0 ] - ( y[ 1 ] - y[ 0 ] ) ) <= tol.box;",
+		"replace": "const same = ( x, y ) => Math.abs( x[ 1 ] - x[ 0 ] - ( y[ 1 ] - y[ 0 ] ) ) <= tol.box;",
+		"why": "an item's start is not compared"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "return d.box[ k ] - union > tol.box && ",
+		"replace": "return ",
+		"why": "a box hugging its items passes"
+	}
+]
