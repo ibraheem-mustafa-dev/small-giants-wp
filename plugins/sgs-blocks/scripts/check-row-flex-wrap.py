@@ -7,7 +7,8 @@ so a client (and the cloning tool) can choose between wrapping onto further rows
 is the dominant one: a string `flexWrap`, enum `["", "nowrap", "wrap"]`, default `""` (the stylesheet's own value stands).
 
 A ROW CANDIDATE is a style.css rule with `display:flex|inline-flex`, no `flex-direction:column`, whose element is
-  - named like a list of items (ROW_NAME_RE: list, links (plural; a single link is one item), social(s), items, options, buttons, steps), or
+  - named like a list of items (ROW_NAME_RE: list, links (plural; a single link is one item), social(s), items, options, buttons, steps,
+    thumbs, swatches, actions, controls, meter, nav, stepper, price-row, cta-row), or
   - the block root, on a block that holds repeated items (an `allowedBlocks` list or an array attribute).
 THE ELEMENT is the last class of the rule's last selector: `__<name>` on a `sgs-<slug>` class, `root` for the block
 root class, otherwise the trailing word of the class. It is SATISFIED when `supports.sgs.elements.<name>` (or, for the
@@ -37,17 +38,10 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 BLOCKS = Path(__file__).resolve().parent.parent / "src" / "blocks"
 
-ROW_NAME_RE = re.compile(r"(?:^|-)(?:list|links|socials?|items|options|buttons|steps)$")
+ROW_NAME_RE = re.compile(r"(?:^|-)(?:list|links|socials?|items|options|buttons|steps|thumbs|swatches|actions|controls|meter|nav|stepper|price-row|cta-row)$")
 
 # A whole block, with the reason its rows are not authored rows.
 EXCLUDE_BLOCKS = {
-    "account": "WooCommerce My Account markup: rows come from the store's templates, not authored items",
-    "buybox": "commerce block: its rows (price, ladder, thumbnails) are drawn from product data",
-    "cart": "commerce block: panel rows are drawn from the basket",
-    "product-card": "commerce block: its rows (price, ladder, swatches, thumbnails) are drawn from product data",
-    "wishlist-panel": "commerce block: panel rows are drawn from the wishlist",
-    "option-picker": "configurator control: the option pills are drawn from product attributes",
-    "choice-flow": "configurator flow: its footer and nav rows are fixed controls, not authored items",
     "testimonial-slider": "a slider track: scroll-snap lane that must never wrap by design",
     "brand-strip": "a marquee lane: the track and its sets must never wrap by design",
 }
@@ -56,6 +50,10 @@ EXCLUDE_NAMES = {
     ("business-info", "hours-row"): "a day-and-times pair, not a list of items",
     ("nav-bar-menu", "root"): "pairs the link bar with the burger; the bar element carries flexWrap",
     ("form", "progress-steps"): "a fixed step indicator whose count is the form's step count, laid on one line by design",
+    ("choice-flow", "stepper"): "a fixed step indicator whose count is the flow's step count, laid on one line by design (the same reason as form's progress-steps)",
+    ("cart", "item-add-options"): "one link, centred with inline-flex: a single control, not a row of items",
+    ("wishlist-panel", "choose-options"): "one link, centred with inline-flex: a single control, not a row of items",
+    ("tabs", "nav"): "the tab list: its direction and wrapping follow the orientation and mobileLayout settings (a column, a wrapping row or a scrolling lane), so a wrap toggle would contradict them",
 }
 # Any rule whose selector names a lane that must stay on one line.
 EXCLUDE_SELECTOR_RE = re.compile(r"__(?:track|set|stars|dots|carousel|slider|marquee)\b|--(?:slider|carousel)\b|\[data-sgs-marquee")
@@ -165,8 +163,13 @@ def self_test() -> int:
         make("col", ".sgs-col__links{display:flex;flex-direction:column}", {})
         make("single", ".sgs-single{display:flex}", {})
         make("multi", ".sgs-multi{display:flex}", {"allowedBlocks": ["sgs/icon"]})
-        got = {(r["block"], r["status"]) for r in survey(tmp)}
-        want = {("miss", "MISSING"), ("have", "SATISFIED"), ("brand-strip", "EXCLUDED"), ("multi", "MISSING")}
+        make("wide", ".sgs-wide__swatches{display:flex}.sgs-wide__price-row{display:flex}.sgs-wide__stepper{display:flex}", {})
+        got = {(r["block"], r["element"], r["status"]) for r in survey(tmp)}
+        want = {
+            ("miss", "links", "MISSING"), ("have", "links", "SATISFIED"), ("brand-strip", "list", "EXCLUDED"),
+            ("multi", "root", "MISSING"),
+            ("wide", "swatches", "MISSING"), ("wide", "price-row", "MISSING"), ("wide", "stepper", "MISSING"),
+        }
         print("self-test:", "ok" if got == want else f"FAILED got={sorted(got)} want={sorted(want)}")
         return 0 if got == want else 1
     finally:
