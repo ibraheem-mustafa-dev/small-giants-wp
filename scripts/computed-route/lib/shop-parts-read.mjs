@@ -32,14 +32,21 @@ function attrsOf( rest ) {
 	return out;
 }
 
-// The element tree of a template: `{ tag, attrs, children, parent, n }` elements (`n` numbers them in source order) and
-// `{ text, parent }` runs. Comments, styles and scripts are dropped first, so their content is never read as markup.
+// The element tree of a template: `{ tag, attrs, children, parent, n, tpl }` elements (`n` numbers them in source order)
+// and `{ text, parent }` runs. Comments are dropped and each style and script is kept as an empty element, so their
+// content is never read as markup. `tpl` is the number the draft runtime stamps on the element as `data-dc-tpl`: its
+// pre-order index among the elements of the template between `<x-dc>` and the last `</x-dc>` (support.js::compileTemplate
+// stamps every element of the parsed template in document order, so the k-th start tag there is element k), null for an
+// element outside it; a source with no `<x-dc>` is all template.
 export function parseTemplate( source ) {
-	const clean = source.replace( /<!--[\s\S]*?-->/g, '' ).replace( /<(style|script)\b[\s\S]*?<\/\1>/gi, '' );
-	const root = { tag: '#root', attrs: {}, children: [], parent: null, n: 0 };
+	const clean = source.replace( /<!--[\s\S]*?-->/g, '' ).replace( /<(style|script)\b((?:[^>"']|"[^"]*"|'[^']*')*)>[\s\S]*?<\/\1\s*>/gi, '<$1$2></$1>' );
+	const root = { tag: '#root', attrs: {}, children: [], parent: null, n: 0, tpl: null };
+	const open = clean.search( /<x-dc[\s>]/i );
+	const end = clean.toLowerCase().lastIndexOf( '</x-dc' );
 	let at = root;
 	let last = 0;
 	let count = 0;
+	let stamp = 0;
 	for ( const m of clean.matchAll( TAG ) ) {
 		const text = clean.slice( last, m.index );
 		if ( text.trim() ) {
@@ -58,7 +65,8 @@ export function parseTemplate( source ) {
 			}
 			continue;
 		}
-		const el = { tag, attrs: attrsOf( rest ), children: [], parent: at, n: ++count };
+		const inTemplate = open < 0 || ( m.index > open && m.index < end );
+		const el = { tag, attrs: attrsOf( rest ), children: [], parent: at, n: ++count, tpl: inTemplate ? stamp++ : null };
 		at.children.push( el );
 		if ( ! VOID.has( tag ) && ! /\/\s*$/.test( rest ) ) {
 			at = el;
@@ -200,6 +208,18 @@ const rowOf = ( node ) => {
 	return n;
 };
 
+// The `data-dc-tpl` of the rendered element a unit was found on: the element itself, or for a text run the element
+// holding it. The runtime's control-flow elements (`sc-if`, `sc-else`, `sc-for`) render no element of their own, so a
+// run directly inside one is located by the nearest ancestor that does render.
+const FLOW = new Set( [ 'sc-if', 'sc-else', 'sc-for' ] );
+const stampOf = ( el ) => {
+	let n = el;
+	while ( n && FLOW.has( n.tag ) ) {
+		n = n.parent;
+	}
+	return n?.tpl ?? null;
+};
+
 const GLYPH = /^[^\p{L}\p{N}]+$/u;
 // Whether an element is a stepper: a glyph-only button, a value, and a glyph-only button side by side.
 const isStepper = ( el ) => {
@@ -230,13 +250,13 @@ function routeOf( href, sources ) {
 // whether a condition above it tests a collection is empty or discloses a control's expanded content, the route a link
 // opens, whether the handler narrows the product listing (`listingKeys`) and whether it edits the basket without adding
 // to it (it writes an outside store or a key in `addKeys`).
-export function unitsOf( region, { file, L = null, sources = {}, listingKeys = new Set(), addKeys = new Set() } ) {
+export function unitsOf( region, { file, dc = null, L = null, sources = {}, listingKeys = new Set(), addKeys = new Set() } ) {
 	const out = [];
 	const expanded = new Set( elements( region ).filter( ( e ) => e.attrs[ 'aria-expanded' ] ).map( ( e ) => stripExpr( e.attrs[ 'aria-expanded' ] ) ) );
 	const visit = ( node, ctx ) => {
 		const stepper = ctx.stepper || isStepper( node );
 		for ( const c of node.children ) {
-			const base = { conds: ctx.conds, file, rowN: rowOf( node ).n };
+			const base = { conds: ctx.conds, file, dc, tpl: stampOf( c.tag ? c : node ), rowN: rowOf( node ).n };
 			const facts = { loop: ctx.loop, heading: ctx.heading, stepper, bar: !! region.bar, empty: ctx.empty, disclosed: ctx.disclosed };
 			if ( ! c.tag ) {
 				const text = squash( c.text );
@@ -323,6 +343,6 @@ export function readShopSurfaces( { records, sources } ) {
 		}
 		const listingKeys = 'filter' === kind ? listing( root, L )?.keys || new Set() : new Set();
 		const addKeys = basketKeys( root, L );
-		return { kind, record: rec.name, file, units: regions.flatMap( ( r ) => unitsOf( r, { file, L, sources, listingKeys, addKeys } ) ), problem: null };
+		return { kind, record: rec.name, file, units: regions.flatMap( ( r ) => unitsOf( r, { file, dc: rec.dc, L, sources, listingKeys, addKeys } ) ), problem: null };
 	} );
 }
