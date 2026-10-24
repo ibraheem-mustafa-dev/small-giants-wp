@@ -5,8 +5,11 @@ export default {
 	name: "header",
 	widths: [ 375, 768, 1440, 1920 ],
 	refPrefix: "cr-ref-",
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:58561/" },
-	live: { url: "https://lavender-dinosaur-183533.hostingersite.com" },
+	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
+	auto: { root: {"draft":":has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"39\"]:not(.sc-host .sc-host *))):has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"9\"]:not(.sc-host .sc-host *)))","live":".cr-ref-header-0"}, exclude: {"draft":[".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"38\"]:not(.sc-host .sc-host *)",".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"106\"]:not(.sc-host .sc-host *)",".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"201\"]:not(.sc-host .sc-host *)",".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"653\"]:not(.sc-host .sc-host *)",".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"728\"]:not(.sc-host .sc-host *)"]} },
+	linkRoot: {"draft":":has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"39\"]:not(.sc-host .sc-host *))):has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"9\"]:not(.sc-host .sc-host *)))","live":".cr-ref-header-0"},
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:57078/" },
+	live: { url: "https://lavender-dinosaur-183533.hostingersite.com/" },
 	states: [ { name: "desktop-nav", fullPage: true } ],
 	pairs: [],
 };

@@ -851,6 +851,10 @@
                   "burgerBar1BorderRadius": {
                     "tablet": "2px"
                   },
+                  "burgerIconWidth": {
+                    "mobile": "18px",
+                    "tablet": "18px"
+                  },
                   "burgerBar2BorderRadius": {
                     "tablet": "2px"
                   },
@@ -887,6 +891,33 @@
                               "duration": 400,
                               "easing": "token:easing.spring"
                             }
+                          }
+                        }
+                      },
+                      "burger-bar-2": {
+                        "hover": {
+                          "state": {
+                            "values": {
+                              "restWidth": "13px",
+                              "width": "18px",
+                              "duration": "token:duration.medium",
+                              "easing": "token:easing.emphasised"
+                            },
+                            "source": "item"
+                          }
+                        }
+                      },
+                      "burger-bar-3": {
+                        "hover": {
+                          "state": {
+                            "values": {
+                              "restWidth": "8px",
+                              "width": "18px",
+                              "duration": 350,
+                              "delay": 40,
+                              "easing": "token:easing.emphasised"
+                            },
+                            "source": "item"
                           }
                         }
                       }
