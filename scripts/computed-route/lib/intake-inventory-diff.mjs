@@ -7,8 +7,10 @@
 // is built from the pairing key, never from either side's record IDs (both renumber when a record is inserted), so a
 // re-export that adds one record leaves every other row's ID and content hash, and Bean's mark on it, unchanged.
 
-// Values compared alike: times in ms, lower-case, whitespace removed, `auto` fill as `none`, and every number in a
-// value in one spelling (`.01ms` and `0.01ms`, `1.50` and `1.5`), never a digit inside a word or a hex colour.
+// Values compared alike: times in ms, lower-case, whitespace collapsed to one space and removed wherever a neighbour is
+// not part of a word or number (`rgba(0, 0, 0)` is `rgba(0,0,0)`, `1 0px` stays two numbers), `auto` fill as `none`,
+// and every number in a value in one spelling (`.01ms` and `0.01ms`, `1.50` and `1.5`), never a digit inside a word or
+// a hex colour.
 export function norm( v ) {
 	if ( null == v || '' === v ) {
 		return null;
@@ -16,7 +18,7 @@ export function norm( v ) {
 	if ( 'number' === typeof v ) {
 		return Math.round( v * 1000 ) / 1000;
 	}
-	const s = String( v ).replace( /\s+/g, '' ).toLowerCase().replace( /(?<![\w#.])(-?)(\d*\.?\d+)(?![\d.])/g, ( m, sign, n ) => String( Number( sign + n ) ) );
+	const s = String( v ).trim().replace( /\s+/g, ' ' ).replace( / (?![\w.%#-])|(?<![\w.%#-]) /g, '' ).toLowerCase().replace( /(?<![\w#.])(-?)(\d*\.?\d+)(?![\d.])/g, ( m, sign, n ) => String( Number( sign + n ) ) );
 	const t = /^(-?\d*\.?\d+)(ms|s)$/.exec( s );
 	if ( t ) {
 		return Number( t[ 1 ] ) * ( 's' === t[ 2 ] ? 1000 : 1 );
@@ -82,6 +84,8 @@ function pairUp( ours, theirs, keyOf, cost = null ) {
 	return { pairs, ours: [ ...left.values() ].flat(), theirs: onlyTheirs };
 }
 
+// How many distinct records of `list` share each key.
+const groupCount = ( list, keyOf ) => [ ...new Set( list ) ].reduce( ( m, r ) => m.set( keyOf( r ), ( m.get( keyOf( r ) ) || 0 ) + 1 ), new Map() );
 const draftOf = ( r ) => ( null != r.source?.line && 'template' !== r.source.function ? `${ r.source.file }:${ r.source.line }` : `${ r.element?.dc }:${ tplList( r.element?.template_tpl_id ) || r.element?.selector }` );
 const show = ( v ) => ( null == v ? null : 'object' === typeof v ? JSON.stringify( v ) : String( v ) );
 
@@ -105,12 +109,15 @@ export function diffAnimations( ours, theirs ) {
 		return t ? ( pairs.push( [ o, t ] ), false ) : true;
 	} );
 	const listed = new Set();
+	const atKey = groupCount( pairs.map( ( p ) => p[ 1 ] ), pairKey );
 	for ( const [ o, t ] of pairs ) {
+		// Several effects of theirs at one call site: each row names its own record by what it animates and on what trigger.
+		const which = atKey.get( pairKey( t ) ) > 1 ? `#${ norm( o.trigger?.type ) }|${ fields( o ).properties }` : '';
 		for ( const [ f, av, bv ] of differing( o, t ) ) {
 			const once = JSON.stringify( [ pairKey( o ), f, show( av ), show( bv ) ] );
 			if ( ! listed.has( once ) ) {
 				listed.add( once );
-				rows.push( { rowId: `inventory:anim:${ pairKey( o ) }:${ f }`, draftId: draftOf( o ), text: `${ o.id } (theirs ${ t.id }) ${ f }: ours ${ show( av ) }, theirs ${ show( bv ) }`, field: f, ours: show( av ), theirs: show( bv ), why: 'the re-derived record and Claude Design\'s disagree on this field' } );
+				rows.push( { rowId: `inventory:anim:${ pairKey( o ) }${ which }:${ f }`, draftId: draftOf( o ), text: `${ o.id } (theirs ${ t.id }) ${ f }: ours ${ show( av ) }, theirs ${ show( bv ) }`, field: f, ours: show( av ), theirs: show( bv ), why: 'the re-derived record and Claude Design\'s disagree on this field' } );
 			}
 		}
 	}

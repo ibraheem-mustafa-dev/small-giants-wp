@@ -6,5 +6,9 @@
 	{"file": "lib/intake-inventory-diff.mjs", "find": "( cost( o, t ) < cost( list[ best ], t ) ? i : best )", "replace": "( cost( o, t ) > cost( list[ best ], t ) ? i : best )", "why": "the least alike record is paired"},
 	{"file": "lib/intake-inventory-diff.mjs", "find": "return t ? ( pairs.push( [ o, t ] ), false ) : true;", "replace": "return true;", "why": "a record covered by a several-element record of theirs is only ours again"},
 	{"file": "lib/intake-inventory-diff.mjs", "find": "names( x ).length > 1 && names( x ).includes( String( o.element?.template_tpl_id ) )", "replace": "names( x ).length > 1", "why": "an element the record does not name is covered too"},
-	{"file": "lib/intake-inventory-diff.mjs", "find": "if ( ! listed.has( once ) ) {", "replace": "if ( true ) {", "why": "a difference two covered records share is listed twice"}
+	{"file": "lib/intake-inventory-diff.mjs", "find": "if ( ! listed.has( once ) ) {", "replace": "if ( true ) {", "why": "a difference two covered records share is listed twice"},
+	{"file": "lib/intake-inventory-diff.mjs", "find": "atKey.get( pairKey( t ) ) > 1 ?", "replace": "false ?", "why": "two effects at one call site share one row ID, so the suffix and the mark follow record order"},
+	{"file": "lib/intake-inventory-diff.mjs", "find": "atKey.get( pairKey( t ) ) > 1 ?", "replace": "atKey.get( pairKey( t ) ) > 0 ?", "why": "a call site with one effect would change its row ID"},
+	{"file": "lib/intake-inventory-diff.mjs", "find": ".replace( / (?![\\w.%#-])|(?<![\\w.%#-]) /g, '' )", "replace": ".replace( / /g, '' )", "why": "1 0px equals 10px again"},
+	{"file": "lib/intake-inventory-diff.mjs", "find": ".replace( / (?![\\w.%#-])|(?<![\\w.%#-]) /g, '' )", "replace": "", "why": "a space after a comma is a difference"}
 ]
