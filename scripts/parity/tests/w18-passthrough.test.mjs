@@ -214,7 +214,7 @@ test( 'control: a draft nav holding three identical links against a live nav hol
 test( 'control: draft text or a non-interactive child beside the links, absent from the live nav, keeps the row', async () => {
 	const l = await read( LIVE() );
 	assert.deepEqual( boxRows( await read( DRAFT( '', 'Menu text' ) ), l ), [ [ 'h', 84, 42 ] ], 'bare text' );
-	assert.deepEqual( boxRows( await read( DRAFT( '', '<span style="display:block;width:20px;height:42px"></span>' ).replace( 'width:90px', 'width:70px' ) ), l ), [ [ 'h', 84, 42 ] ], 'empty span at the links\' extent' );
+	assert.deepEqual( boxRows( await read( DRAFT( '', '<span style="display:block;width:20px;height:42px"></span>' ) ), l ), [ [ 'h', 84, 42 ] ], 'empty span at the links\' extent' );
 	// Control: the same text on both sides is an item of each, so the row still drops.
 	assert.deepEqual( boxRows( await read( DRAFT( '', '<span>Menu text</span>' ) ), await read( LIVE().replace( '</nav>', '<span>Menu text</span></nav>' ) ) ), [] );
 } );
@@ -239,4 +239,28 @@ test( 'control: draft text inside a wrapper holding the links, or a draft contro
 	const button = `<button style="${ LINK };width:32px;border:0;padding:0;background:none">v</button>`;
 	const two = await read( DRAFT( '', `${ button }${ button }` ).replace( 'width:90px', 'width:58px' ) );
 	assert.deepEqual( boxRows( two, l ), [ [ 'h', 84, 42 ] ], 'two draft controls against one live' );
+} );
+
+// The Indus draft's nav items are buttons (it navigates by script) and the clone's are links with a submenu toggle beside
+// each one that opens a panel: a link and a button show alike, so they are one kind of item, and the live link and toggle
+// together fill the draft button's span along the row exactly (the draft draws the caret inside the button).
+const BTN = ( html ) => html.replace( /<a href="\/(about)?" style="([^"]*)">(Home|About)<\/a>(?=.*<\/nav>)/g, '<button style="$2;border:0;padding:0;background:none">$3</button>' );
+
+test( 'MUST FAIL: a draft nav of buttons against a live nav of links split by submenu toggles that tile each button is no h row', async () => {
+	const d = await read( BTN( DRAFT() ) );
+	assert.deepEqual( d.passThrough.items.map( ( it ) => it[ 4 ] ), [ 'interactive', 'interactive' ] );
+	assert.deepEqual( boxRows( d, await read( LIVE() ) ), [] );
+} );
+
+test( 'control: a live split that does not tile the draft item (a toggle past it, a gap, a late start, an early end) keeps the row', async () => {
+	const d = await read( BTN( DRAFT() ) );
+	const cases = {
+		'toggle past the draft item': LIVE().replace( 'width:58px', 'width:90px' ),
+		'gap inside the split': LIVE().replace( 'width:58px', 'width:50px' ).replace( 'width:32px;border:0', 'width:32px;margin-left:8px;border:0' ),
+		'split starts late': LIVE().replace( 'width:58px', 'width:50px;margin-left:8px' ),
+		'split ends early': LIVE().replace( 'width:58px', 'width:50px' ),
+	};
+	for ( const [ why, html ] of Object.entries( cases ) ) {
+		assert.deepEqual( boxRows( d, await read( html ) ), [ [ 'h', 84, 42 ] ], why );
+	}
 } );

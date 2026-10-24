@@ -228,12 +228,13 @@ const wrapperFinder = ( f ) => !! ( f && 'object' === typeof f && ( f.textRun ||
 // text run, other in-flow element or positioned layer, collect.mjs::collectPair `passThrough`) keeps its extent from the container's start,
 // each side's set of extents found in the other's: the box's own size shows nothing, so it is no `w` / `h` row. The draft box
 // lies within the container on that axis, and each kind of item is as many on both sides, except that the live side may
-// hold more controls (a submenu toggle split from the draft link carrying its caret). Items that move, a box
+// hold more interactive items when they tile the draft's along the other axis (a submenu toggle split from the draft item
+// carrying its caret: the live link and toggle fill exactly the draft item's span, no gap, nothing outside). Items that move, a box
 // that paints on either side, a draft box overflowing the container, a count of items that differs, a container of
 // another length or no such container on either side keep the row.
 function passThroughHeld( k, d, l, tol ) {
 	const [ a, b ] = [ d.passThrough, l.passThrough ];
-	if ( ! a || ! b || a.paints || b.paints || ! a.self || ! a.items.length || ! a.line?.[ k ] || ! b.line?.[ k ] ) {
+	if ( ! a || ! b || a.paints || b.paints || ! a.self || ! b.self || ! a.items.length || ! a.line?.[ k ] || ! b.line?.[ k ] ) {
 		return false;
 	}
 	// Each extent is read from its own side's container start, so a container placed elsewhere on the page (a sticky
@@ -251,8 +252,20 @@ function passThroughHeld( k, d, l, tol ) {
 	const inside = own[ 0 ] >= -tol.box && own[ 1 ] <= len( a ) + tol.box;
 	const count = ( s ) => s.items.reduce( ( m, it ) => m.set( it[ 4 ], ( m.get( it[ 4 ] ) ?? 0 ) + 1 ), new Map() );
 	const [ ca, cb ] = [ count( a ), count( b ) ];
-	const counted = [ ...new Set( [ ...ca.keys(), ...cb.keys() ] ) ].every( ( t ) => ( 'control' === t ? ( ca.get( t ) ?? 0 ) <= ( cb.get( t ) ?? 0 ) : ca.get( t ) === cb.get( t ) ) );
-	return d.box[ k ] - union > tol.box && inside && counted && Math.abs( len( a ) - len( b ) ) <= tol.box && within( a.items, a, b.items, b ) && within( b.items, b, a.items, a );
+	const counted = [ ...new Set( [ ...ca.keys(), ...cb.keys() ] ) ].every( ( t ) => 'interactive' === t || ca.get( t ) === cb.get( t ) );
+	// More live interactive items tile the draft's along the other axis, read from each side's own box start: every live
+	// item lies inside one draft item, and the live items inside each draft item start at its start, end at its end and
+	// leave no gap between them (three draft links against one live link leave two draft items empty).
+	const across = ( it, s ) => ( 'h' === k ? [ it[ 2 ], it[ 3 ] ] : [ it[ 0 ], it[ 1 ] ] ).map( ( v ) => v - ( 'h' === k ? s.self[ 2 ] : s.self[ 0 ] ) );
+	const [ ia, ib ] = [ a, b ].map( ( s ) => s.items.filter( ( it ) => 'interactive' === it[ 4 ] ).map( ( it ) => across( it, s ) ) );
+	const holds = ( o, x ) => x[ 0 ] >= o[ 0 ] - tol.box && x[ 1 ] <= o[ 1 ] + tol.box;
+	const tiles = ( o ) => {
+		const parts = ib.filter( ( x ) => holds( o, x ) ).sort( ( x, y ) => x[ 0 ] - y[ 0 ] );
+		return parts.length > 0 && Math.abs( parts[ 0 ][ 0 ] - o[ 0 ] ) <= tol.box && Math.abs( parts[ parts.length - 1 ][ 1 ] - o[ 1 ] ) <= tol.box &&
+			parts.every( ( x, i ) => 0 === i || x[ 0 ] - parts[ i - 1 ][ 1 ] <= tol.box );
+	};
+	const tiled = ia.length === ib.length || ( ib.every( ( x ) => ia.some( ( o ) => holds( o, x ) ) ) && ia.every( tiles ) );
+	return d.box[ k ] - union > tol.box && inside && counted && tiled && Math.abs( len( a ) - len( b ) ) <= tol.box && within( a.items, a, b.items, b ) && within( b.items, b, a.items, a );
 }
 
 // Returns [{ kind, key, draft, live }] for one pair in one state at one width.
