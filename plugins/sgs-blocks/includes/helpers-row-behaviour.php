@@ -200,7 +200,7 @@ if ( ! function_exists( 'sgs_row_shrink_settings_css' ) ) {
 		if ( false === ( $attributes['rowAnimate'] ?? true ) ) {
 			// Off: the row jumps to its scrolled look, and the logo and headings that read the row's timing jump with it.
 			$css .= $root_sel . '{--sgs-row-shrink-duration:0ms;}';
-			$css .= $root_sel . '.is-row-shrink-active,' . $root_sel . '.is-row-collapse-mode,' . $inner . '{transition:none;}';
+			$css .= $root_sel . '.sgs-row-behaviour,' . $root_sel . '.is-row-shrink-active,' . $root_sel . '.is-row-collapse-mode,' . $inner . '{transition:none;}';
 			return $css;
 		}
 		if ( $duration > 0 || '' !== $easing ) {
@@ -216,7 +216,8 @@ if ( ! function_exists( 'sgs_row_shrink_settings_css' ) ) {
 			// The scroll-hide collapse runs on the same timing as the shrink, so the row moves as one.
 			$css .= $root_sel . '.is-row-collapse-mode{transition:background-color ' . $t . ',transform ' . $t . ',block-size ' . $t
 				. ',padding-top ' . $t . ',padding-bottom ' . $t . ';}';
-			$css .= '@media (prefers-reduced-motion: reduce){' . $root_sel . '.is-row-shrink-active,' . $root_sel . '.is-row-collapse-mode,' . $inner . '{transition:none;}}';
+			// Each selector repeats the specificity of the timed rule it resets, or that rule wins for a visitor who asked for no motion.
+			$css .= '@media (prefers-reduced-motion: reduce){' . $root_sel . '.is-row-shrink-active,' . $root_sel . '.is-row-collapse-mode,' . $root_sel . '.is-row-shrink-active>.sgs-container__inner{transition:none;}}';
 		}
 		return $css;
 	}

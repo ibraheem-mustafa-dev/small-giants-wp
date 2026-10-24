@@ -46,6 +46,8 @@ $off = sgs_row_shrink_settings_css( $sel, array( 'rowAnimate' => false, 'rowShri
 $check( str_contains( $off, '.uid.is-row-collapse-mode' ) && str_contains( $off, '{transition:none;}' ), 'rowAnimate off removes the collapse and shrink transitions (got: ' . $off . ')' );
 $check( str_contains( $off, '--sgs-row-shrink-duration:0ms' ), 'and zeroes the timing the logo and headings read' );
 $check( ! str_contains( $off, '400ms' ), 'off wins over a stored duration' );
+$check( str_contains( $off, '.uid.sgs-row-behaviour' ), 'off also reaches the base row transition (the hide-on-scroll slide and the transparent fill) at higher specificity than the shared stylesheet' );
+$check( str_contains( $timed, '.uid.is-row-shrink-active>.sgs-container__inner{transition:none;}}' ) && ! str_contains( $timed, '.uid>.sgs-container__inner{transition:none' ), 'the reduced-motion reset repeats the (0,4,0) selector of the timed inner rule it resets' );
 
 echo "RESULT {$pass} passed, {$fail} failed\n";
 exit( $fail > 0 ? 1 : 0 );

@@ -37,6 +37,9 @@ def top_level_rules(css):
     css = strip_comments(css)
     rules, buf, j = [], "", 0
     while j < len(css):
+        if css[j] == ";" and buf.strip().startswith("@"):
+            buf, j = "", j + 1  # a statement at-rule (@import, @layer a;, @charset) has no block
+            continue
         if css[j] == "{":
             selector, depth, k = buf.strip(), 1, j + 1
             while k < len(css) and depth:
@@ -49,6 +52,20 @@ def top_level_rules(css):
         buf += css[j]
         j += 1
     return rules
+
+
+def own_declarations(body):
+    """The rule's own declarations: nested rules (`&:hover{...}`) removed, so they are never read as its resting look."""
+    out, depth = "", 0
+    for ch in body:
+        if ch == "{":
+            depth += 1
+            out = out.rsplit(";", 1)[0] + ";" if ";" in out else ""  # drop the nested selector text
+        elif ch == "}":
+            depth = max(0, depth - 1)
+        elif depth == 0:
+            out += ch
+    return out
 
 
 def split_top_level(text):
@@ -75,9 +92,9 @@ def entries_for(rules, part_selector):
         names = [s.strip() for s in selector.split(",")]
         if part_selector not in names and f":where({part_selector})" not in names:
             continue
-        m = re.search(r"(?<![-\w])transition\s*:\s*([^;]+);", body)
-        if m:
-            found = [e for e in split_top_level(m.group(1)) if e.split(" ", 1)[0] in PROPERTIES]
+        declared = re.findall(r"(?<![-\w])transition\s*:\s*([^;]+)(?:;|$)", own_declarations(body))
+        if declared:  # the last declaration wins, as in the browser
+            found = [e for e in split_top_level(declared[-1]) if e.split(" ", 1)[0] in PROPERTIES]
     return found
 
 
@@ -120,6 +137,11 @@ def self_test():
     assert entries_for(rules, ".a:hover") == [], "a state rule is not a part's resting rule"
     assert entries_for(top_level_rules("@media (x){.a{transition:translate 9s}}"), ".a") == [], "an at-rule is conditional"
     assert split_top_level("a var(x, y), b") == ["a var(x, y)", "b"]
+    assert entries_for(top_level_rules("@layer a;.a{transition:transform 1s}"), ".a") == ["transform 1s"], "a statement at-rule must not swallow the next rule"
+    assert entries_for(top_level_rules('@import "x.css";.a{transition:transform 1s}'), ".a") == ["transform 1s"]
+    assert entries_for(top_level_rules(".a{transition:transform 1s}"), ".a") == ["transform 1s"], "the last declaration needs no semicolon"
+    assert entries_for(top_level_rules(".a{transition:color 1s;transition:transform 2s;}"), ".a") == ["transform 2s"], "the last declaration wins"
+    assert entries_for(top_level_rules(".a{color:red;&:hover{transition:transform 1s;}}"), ".a") == [], "a nested rule is not the resting transition"
     built = build()
     assert built.get("sgs/button", {}).get("root"), "sgs/button root must carry entries"
     print("generate-motion-base-transitions: self-test OK")
