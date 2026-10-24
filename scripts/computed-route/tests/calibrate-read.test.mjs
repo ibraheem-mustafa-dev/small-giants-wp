@@ -250,3 +250,95 @@ test( 'MUST FAIL (itemColourOpen dead): an open-state instance is read with its 
 		await browser.close();
 	}
 } );
+
+// sgs/nav-drawer-menu rows (includes/nav-drawer-menu-items.php): <details><summary> with no aria-controls or
+// aria-expanded; the open look keys on details[open].
+const DRAWER_ROW = ( openAttr ) => `<li class="sgs-x__row"><details class="sgs-x__accordion"${ openAttr }><summary class="sgs-x__summary">Shop</summary><ul><li>Sunglasses</li></ul></details></li>`;
+const OPEN_COLOUR = 'rgb(19, 87, 155)';
+const openFixture = ( inner1 ) => `<style>.cr-ref-cal-1 details[open] > summary,.cr-ref-cal-1 [aria-expanded="true"]{color:${ OPEN_COLOUR }}</style>
+	<div class="cr-ref-cal-0">${ DRAWER_ROW( '' ) }</div><div class="cr-ref-cal-1">${ inner1 }</div>`;
+
+async function readOpen( body ) {
+	const { chromium } = await import( 'playwright' );
+	const { triggerFor } = await import( '../lib/calibrate.mjs' );
+	const { markOpenToggleInPage, openOwnToggle } = await import( '../lib/calibrate-open.mjs' );
+	const browser = await chromium.launch();
+	try {
+		const page = await ( await browser.newContext() ).newPage();
+		await page.context().route( 'http://cal.test/**', ( route ) => route.fulfill( { contentType: 'text/html', body } ) );
+		const open = { trigger: triggerFor( 'open' ), target: null, row: { css_state: 'open' } };
+		const reads = await readAll( page, 'http://cal.test/calibration', [ { isDefault: true }, open ] );
+		// The same open and close the reader runs, on a fresh page, to see what it leaves behind.
+		await page.goto( 'http://cal.test/calibration' );
+		const mark = await page.evaluate( markOpenToggleInPage, [ 'cr-ref-cal-', 1 ] );
+		const close = mark.toggle ? await openOwnToggle( page, openToggle ) : null;
+		close && await close();
+		const after = await page.evaluate( () => ( { details: [ ...document.querySelectorAll( 'details' ) ].map( ( d ) => d.open ), aria: [ ...document.querySelectorAll( '[aria-expanded]' ) ].map( ( b ) => b.getAttribute( 'aria-expanded' ) ), panelHidden: document.getElementById( 'p1' )?.hidden } ) );
+		return { reads, after };
+	} finally {
+		await browser.close();
+	}
+}
+const summaryColour = ( r ) => Object.entries( r ).find( ( [ k ] ) => k.endsWith( '.sgs-x__summary' ) )?.[ 1 ].color;
+
+test( 'MUST FAIL (drawer itemColourOpen read at rest): a details-only instance is opened by its summary and closed again afterwards', async () => {
+	const { reads, after } = await readOpen( openFixture( DRAWER_ROW( '' ) ) );
+	for ( const w of WIDTHS ) {
+		assert.equal( summaryColour( reads[ w ][ 1 ] ), OPEN_COLOUR, `the open read at ${ w }px` );
+	}
+	assert.deepEqual( after.details, [ false, false ], 'the details is shut again after the read' );
+} );
+
+test( 'MUST FAIL (details[open] invisible): an instance saved open is read as it is, with no closed toggle opened beside it', async () => {
+	const inner = DRAWER_ROW( ' open' ) + '<button class="sgs-x__other" aria-controls="p1" aria-expanded="false">More</button><div id="p1" hidden>panel</div>';
+	const { reads } = await readOpen( openFixture( inner ) );
+	for ( const w of WIDTHS ) {
+		assert.equal( summaryColour( reads[ w ][ 1 ] ), OPEN_COLOUR, `the expanded read at ${ w }px` );
+	}
+	const { chromium } = await import( 'playwright' );
+	const { markOpenToggleInPage } = await import( '../lib/calibrate-open.mjs' );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage();
+		await page.setContent( openFixture( inner ) );
+		assert.deepEqual( await page.evaluate( markOpenToggleInPage, [ 'cr-ref-cal-', 1 ] ), { expanded: true } );
+		assert.equal( await page.locator( '[data-cr-toggle]' ).count(), 0, 'nothing is marked for opening' );
+	} finally {
+		await browser.close();
+	}
+} );
+
+test( 'MUST FAIL (a rest read counted as measured): an instance with no disclosure is a reported miss', async () => {
+	const { reads } = await readOpen( openFixture( '<a class="sgs-x__summary" href="#">Shop</a>' ) );
+	assert.deepEqual( reads.hoverMissed, [ 1 ] );
+	assert.match( missedReason( reads.hoverWhy[ 1 ] ), /no disclosure to open/ );
+} );
+
+test( 'MUST FAIL (forced aria-expanded left behind): a toggle whose handler never opens is forced open for the read, then set back', async () => {
+	const dead = '<button class="sgs-x__summary" aria-controls="p1" aria-expanded="false">Shop</button><div id="p1" hidden>panel</div>';
+	const { reads, after } = await readOpen( openFixture( dead ) );
+	for ( const w of WIDTHS ) {
+		assert.equal( summaryColour( reads[ w ][ 1 ] ), OPEN_COLOUR, `the forced read at ${ w }px` );
+	}
+	assert.deepEqual( after.aria, [ 'false' ], 'aria-expanded is false again' );
+} );
+
+test( 'MUST FAIL (Escape does not close a details): a toggle whose handler opens it and ignores Escape is clicked shut', async () => {
+	const sticky = `<button class="sgs-x__summary" id="t1" aria-controls="p1" aria-expanded="false">Shop</button><div id="p1" hidden>panel</div>
+		<script>t1.addEventListener( 'click', () => { const o = 'true' === t1.getAttribute( 'aria-expanded' ); t1.setAttribute( 'aria-expanded', String( ! o ) ); p1.hidden = o; } );</script>`;
+	const { reads, after } = await readOpen( openFixture( sticky ) );
+	for ( const w of WIDTHS ) {
+		assert.equal( summaryColour( reads[ w ][ 1 ] ), OPEN_COLOUR, `the open read at ${ w }px` );
+	}
+	assert.deepEqual( after.aria, [ 'false' ] );
+	assert.equal( after.panelHidden, true, 'the panel is shut, not just its attribute' );
+} );
+
+test( 'MUST FAIL (forced details left open): a summary whose click is cancelled is forced open for the read, then shut', async () => {
+	const stuck = '<details class="sgs-x__accordion"><summary class="sgs-x__summary" onclick="event.preventDefault()">Shop</summary><ul><li>Sunglasses</li></ul></details>';
+	const { reads, after } = await readOpen( openFixture( stuck ) );
+	for ( const w of WIDTHS ) {
+		assert.equal( summaryColour( reads[ w ][ 1 ] ), OPEN_COLOUR, `the forced read at ${ w }px` );
+	}
+	assert.deepEqual( after.details, [ false, false ] );
+} );

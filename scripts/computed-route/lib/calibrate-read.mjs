@@ -244,6 +244,9 @@ async function readUnderTrigger( page, instances, n, inst ) {
 		if ( ! mark ) {
 			return { read: null, why: 'no instance' };
 		}
+		if ( ! mark.toggle && ! mark.expanded ) {
+			return { read: null, why: 'no disclosure to open' };
+		}
 		const close = mark.toggle ? await openOwnToggle( page, openToggle ) : null;
 		const read = await one();
 		close && await close();
