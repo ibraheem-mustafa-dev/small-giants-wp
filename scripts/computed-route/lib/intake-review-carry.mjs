@@ -35,11 +35,16 @@ export function withUnappliedMarks( previous, markdown, { day = isoDay() } = {} 
 	return out;
 }
 
+// Every row ID a row's element had before re-runs moved it, earliest first: its `realignedFrom` (a list, or the single ID
+// an intake written before rows kept the whole chain holds) and then `movedFrom`, the ID it had in the previous run.
+export const earlierIds = ( row, movedFrom = null ) => [ ...new Set( [ ...[ row?.realignedFrom ?? [] ].flat(), ...( movedFrom ? [ movedFrom ] : [] ) ] ) ];
+
 // The new intake's review rows after a re-run. A mark follows its element, never its number: a skeleton row is paired
 // with the previous row that is the same element (skeletonMoves), and any other row with the previous row of the same row
 // ID. A paired row whose content hash (for a moved skeleton row: its tag, words and proposal) is unchanged keeps the mark,
-// markedOn and carriedFrom (the previous takenOn, or the date it was first carried from); a moved row records the ID it
-// had as `realignedFrom`, kept while the row holds. A paired row whose content changed gets `changed: true` and no mark.
+// markedOn and carriedFrom (the previous takenOn, or the date it was first carried from); a moved row adds the ID it
+// had to `realignedFrom`, the list of every earlier ID it was given (earlierIds), kept while the row holds. A paired row
+// whose content changed gets `changed: true` and no mark.
 // Every previous mark that reaches no row is listed with why. Returns { review, changed: [rowId], realigned: [ 'old ->
 // new' ], refused: [ 'rowId: why' ] }: a mark is carried or listed, never dropped.
 export function carryOver( previousIntake, intake ) {
@@ -68,8 +73,8 @@ export function carryOver( previousIntake, intake ) {
 			return base;
 		}
 		moved && realigned.push( `${ fromId } -> ${ r.rowId }` );
-		const alias = moved ? fromId : old.realignedFrom;
-		return { ...base, mark: old.mark, markedOn: old.markedOn, carriedFrom: old.carriedFrom ?? previousIntake.takenOn, ...( alias ? { realignedFrom: alias } : {} ) };
+		const alias = earlierIds( old, moved ? fromId : null ).filter( ( id ) => id !== r.rowId );
+		return { ...base, mark: old.mark, markedOn: old.markedOn, carriedFrom: old.carriedFrom ?? previousIntake.takenOn, ...( alias.length ? { realignedFrom: alias } : {} ) };
 	} );
 	( previousIntake?.review || [] ).filter( ( o ) => null !== o.mark && ! reached.has( o.rowId ) ).forEach( ( o ) => refused.push( `${ o.rowId }: mark "${ o.mark }" not carried (${ moves.why.get( o.rowId ) || 'the row is not in the new export' })` ) );
 	return { review, changed, realigned, refused };
@@ -84,9 +89,34 @@ const contentOf = ( r ) => JSON.stringify( [ r.tag ?? null, r.words ?? '', Strin
 const proposalOf = ( r ) => `${ r.block ?? null }|${ r.action && 'unresolved' !== r.action ? r.action : '' }`;
 const groupBy = ( list, by ) => list.reduce( ( m, r ) => m.set( by( r ), [ ...( m.get( by( r ) ) || [] ), r ] ), new Map() );
 
+// Pairs a group of previous rows of equal content (`ps`, no fingerprint) with the new rows of that content (`ns`): a row
+// whose ID both runs hold keeps it, then the rest pair in document order only when both runs hold the same number of
+// them and every pair of the group, kept ones included, keeps document order (`rows` and `pool` give each run's order).
+// Any other rest is ambiguous: its rows are refused with the reason, never carried to an element that may be another.
+// Returns { pairs: [ [ previous id, new id ] ], refused: [ previous id ], why }.
+function pairEqualContent( ps, ns, rows, pool ) {
+	const kept = new Set( ps.map( ( p ) => p.id ).filter( ( id ) => ns.some( ( n ) => n.id === id ) ) );
+	const restP = ps.filter( ( p ) => ! kept.has( p.id ) );
+	const restN = ns.filter( ( n ) => ! kept.has( n.id ) );
+	const pairs = [ ...kept ].map( ( id ) => [ id, id ] );
+	if ( ! restP.length ) {
+		return { pairs, refused: [], why: null };
+	}
+	if ( restN.length !== restP.length ) {
+		const why = ns.length ? `${ ns.length } elements of the new export hold its content where the previous export held ${ ps.length }` : 'no element of the new export holds its content';
+		return { pairs, refused: restP.map( ( p ) => p.id ), why };
+	}
+	const all = [ ...pairs, ...restP.map( ( p, i ) => [ p.id, restN[ i ].id ] ) ];
+	const at = ( list, id ) => list.findIndex( ( r ) => r.id === id );
+	const order = all.map( ( [ p, n ] ) => [ at( rows, p ), at( pool, n ) ] ).sort( ( a, b ) => a[ 0 ] - b[ 0 ] );
+	if ( order.every( ( o, i ) => 0 === i || order[ i - 1 ][ 1 ] < o[ 1 ] ) ) {
+		return { pairs: all, refused: [], why: null };
+	}
+	return { pairs, refused: restP.map( ( p ) => p.id ), why: `${ ps.length } elements of equal content cannot be told apart: pairing the ones that changed ID in document order would cross one that kept its ID` };
+}
+
 // Which new skeleton row each previous skeleton row is (Spec 48 FR-48-17). A previous row with a fingerprint is paired by
-// lib/identity.mjs::realign; one without is paired by contentOf, in document order within a group of equal content when
-// both runs hold the same number of them. The new rows searched are the same surface's or, when the new run has no row
+// lib/identity.mjs::realign; one without is paired by contentOf, within a group of equal content by pairEqualContent. The new rows searched are the same surface's or, when the new run has no row
 // on that surface (a header or footer now reads it as one of its strips), every surface's rows whose ID the previous run
 // did not hold (an element of another surface that both runs hold stays that surface's). A row ID both runs hold whose
 // fingerprints name another element (a field other than the source line and the words disagrees) is `drifted`. Returns
@@ -109,11 +139,9 @@ function skeletonMoves( previousIntake, intake ) {
 		const next = groupBy( pool, contentOf );
 		for ( const [ content, ps ] of groupBy( rows.filter( ( r ) => ! r.fingerprint ), contentOf ) ) {
 			const ns = next.get( content ) || [];
-			if ( ns.length === ps.length ) {
-				ps.forEach( ( p, i ) => pairs.set( p.id, ns[ i ].id ) );
-			} else {
-				ps.forEach( ( p ) => why.set( p.id, ns.length ? `${ ns.length } elements of the new export hold its content where the previous export held ${ ps.length }` : 'no element of the new export holds its content' ) );
-			}
+			const res = pairEqualContent( ps, ns, rows, pool );
+			res.pairs.forEach( ( [ p, n ] ) => pairs.set( p, n ) );
+			res.refused.forEach( ( p ) => why.set( p, res.why ) );
 		}
 	}
 	const to = new Map();

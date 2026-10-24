@@ -8,7 +8,7 @@
 // checked against every copy of it (lib/approved-check.mjs) and each copy that disagrees is listed. A row a client-built
 // post settles is counted apart; a row whose approved outcome is a block setting rather than a block is listed apart.
 // An approval names the row ID its element had when Bean approved it; when a later re-run moved the element to another
-// row ID (the intake carry pairs rows by content, lib/intake-review-carry.mjs::carryOver, and records the old ID as the
+// row ID (the intake carry pairs rows by content, lib/intake-review-carry.mjs::carryOver, and adds the old ID to the
 // row's `realignedFrom`), the approval is checked against the row its element is now. --no-built proposes even the
 // surfaces the client built, to measure the rules alone. Exit 0 when nothing mismatches,
 // 1 otherwise, 2 on usage.
@@ -19,14 +19,15 @@ import { rerunSkeletons, loopingKeys } from './lib/skeleton-rerun.mjs';
 import { openDb } from './lib/db.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
 import { checkApproval, aliasAbsorbed } from './lib/approved-check.mjs';
+import { earlierIds } from './lib/intake-review-carry.mjs';
 
 // Every approval of approved-decisions.json's category3 measured against `rows` and `fingerprints` (the rows proposed now).
-// `review`: the intake's review rows; an approval whose row ID one of them names as its `realignedFrom` (the row ID the
-// element had before a re-run moved it, a row keeping the first earlier ID it was given) is measured at that row. Returns
+// `review`: the intake's review rows; an approval whose row ID one of them names in its `realignedFrom` (every row ID the
+// element had before re-runs moved it, lib/intake-review-carry.mjs::earlierIds) is measured at that row. Returns
 // { match, mismatch: [line], builtSettled, settings, noRow: [line], refused: [line], realigned: [line], moved: [line],
 // unverified }.
 export function tallyApprovals( approved, { rows, fingerprints, review = [] } ) {
-	const movedTo = new Map( ( review || [] ).filter( ( r ) => r.realignedFrom ).map( ( r ) => [ r.realignedFrom, r.rowId ] ) );
+	const movedTo = new Map( ( review || [] ).flatMap( ( r ) => earlierIds( r ).map( ( id ) => [ id, r.rowId ] ) ) );
 	const out = { match: 0, mismatch: [], builtSettled: 0, settings: 0, noRow: [], refused: [], realigned: [], moved: [], unverified: 0 };
 	for ( const [ batch, list ] of Object.entries( approved.category3 || {} ) ) {
 		for ( const a of list ) {

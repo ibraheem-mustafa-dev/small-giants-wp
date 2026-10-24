@@ -96,3 +96,21 @@ test( 'MUST FAIL: a record of Claude Design\'s naming several template elements 
 	assert.deepEqual( rows.map( ( r ) => r.rowId ), [ 'inventory:anim:Home.dc.html|70|waapi:trigger.type', 'inventory:anim:Home.dc.html|70|waapi:only-ours' ] );
 	assert.match( rows[ 1 ].text, /^A-29 / );
 } );
+
+test( 'MUST FAIL: two effects at one call site that differ in the same field each get their own row ID, whatever order either side lists them in', () => {
+	const at = { file: 'Home.dc.html', function: 'fx', ref: null, line: 90 };
+	const sheen = ( id, d ) => waapi( id, { source: at, trigger: { type: 'pointer-move' }, duration_ms: d, properties: [ { property: 'transform', from: 'a', to: 'b' } ] } );
+	const ripple = ( id, d ) => waapi( id, { source: at, trigger: { type: 'press' }, duration_ms: d, properties: [ { property: 'transform', from: 'c', to: 'd' }, { property: 'opacity', from: 1, to: 0 } ] } );
+	const byId = ( rows ) => Object.fromEntries( rows.map( ( r ) => [ r.rowId, r.theirs ] ) );
+	const one = byId( diffInventory( { ...ours, animations: anims( [ sheen( 'A-1', 750 ), ripple( 'A-2', 650 ) ] ) }, { ...ours, animations: anims( [ sheen( 'A-8', 800 ), ripple( 'A-9', 700 ) ] ) } ) );
+	const two = byId( diffInventory( { ...ours, animations: anims( [ ripple( 'A-1', 650 ), sheen( 'A-2', 750 ) ] ) }, { ...ours, animations: anims( [ ripple( 'A-8', 700 ), sheen( 'A-9', 800 ) ] ) } ) );
+	assert.deepEqual( one, two );
+	assert.equal( Object.keys( one ).length, 2 );
+	assert.ok( Object.keys( one ).every( ( id ) => ! id.includes( '~' ) ) );
+} );
+
+test( 'MUST FAIL: whitespace between two numbers or words is kept, so 1 0px is not 10px; around punctuation it is removed', () => {
+	assert.notEqual( norm( '1 0px' ), norm( '10px' ) );
+	assert.equal( norm( 'rgba(0, 0, 0, .5)' ), norm( 'rgba(0,0,0,0.5)' ) );
+	assert.equal( norm( 'ease  in' ), 'ease in' );
+} );

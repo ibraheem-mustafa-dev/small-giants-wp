@@ -47,3 +47,12 @@ test( 'MUST FAIL an approval whose element a re-run moved to another row ID is m
 	assert.deepEqual( out.moved, [ 'batch1 skeleton:strip:Root/9#0 -> skeleton:s:Root/9#0' ] );
 	assert.deepEqual( tallyApprovals( approved, { rows, fingerprints: {} } ).noRow, [ 'batch1 skeleton:strip:Root/9#0' ], 'control: with no carried row the approval names no row' );
 } );
+
+test( 'MUST FAIL an approval made under the first of several earlier row IDs is measured at the row its element is now', () => {
+	const rows = rowsOf( [ row( 'Root/5#0', 'sgs/text' ) ] );
+	const approved = { category3: { batch1: [ { rowId: 'skeleton:s:Root/1#0', approvedBlock: 'sgs/text' } ] } };
+	const review = [ { rowId: 'skeleton:s:Root/5#0', realignedFrom: [ 'skeleton:s:Root/1#0', 'skeleton:s:Root/9#0' ] } ];
+	const out = tallyApprovals( approved, { rows, fingerprints: {}, review } );
+	assert.equal( out.match, 1 );
+	assert.deepEqual( out.moved, [ 'batch1 skeleton:s:Root/1#0 -> skeleton:s:Root/5#0' ] );
+} );
