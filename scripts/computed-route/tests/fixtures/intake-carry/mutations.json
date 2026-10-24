@@ -1,0 +1,12 @@
+[
+	{ "file": "lib/intake-review-carry.mjs", "find": "const fromId = moves.to.get( r.rowId ) ?? (", "replace": "const fromId = undefined ?? (", "why": "a moved element's mark would stay at its old number" },
+	{ "file": "lib/intake-review-carry.mjs", "find": "fingerprintDiff( r.fingerprint, nowById.get( r.id ).fingerprint, [ 'line', 'textHash' ] )", "replace": "fingerprintDiff( r.fingerprint, nowById.get( r.id ).fingerprint, [ 'line' ] )", "why": "a reworded element would read as another element, never as its own row changed" },
+	{ "file": "lib/intake-review-carry.mjs", "find": "const pool = now[ slug ]?.length ? now[ slug ] : everyNow.filter( ( r ) => ! wasById.has( r.id ) );", "replace": "const pool = now[ slug ] || [];", "why": "a strip surface the header absorbed would lose every mark" },
+	{ "file": "lib/intake-review-carry.mjs", "find": ": everyNow.filter( ( r ) => ! wasById.has( r.id ) );", "replace": ": everyNow;", "why": "an element another surface also holds would make the absorbed row ambiguous" },
+	{ "file": "lib/intake-review-carry.mjs", "find": "if ( ns.length === ps.length ) {", "replace": "if ( ns.length >= ps.length ) {", "why": "rows of equal content would pair by position when the counts differ" },
+	{ "file": "lib/intake-review-carry.mjs", "find": "String( r.snippet ?? '' ).replace(", "replace": "String( r.snippet ?? '' ) + ( r.key ?? '' ).replace(", "why": "the template numbers would stay in the content, so a renumbered element never matches itself" },
+	{ "file": "lib/intake-review-carry.mjs", "find": "proposalOf( a ) === proposalOf( b ) ? null", "replace": "true ? null", "why": "a moved row whose proposal changed would be re-marked silently" },
+	{ "file": "lib/intake-review-carry.mjs", "find": "changed.push( r.rowId );", "replace": "", "why": "a changed row would not be listed first for Bean" },
+	{ "file": "lib/intake-review-carry.mjs", "find": "const alias = moved ? fromId : old.realignedFrom;", "replace": "const alias = moved ? fromId : null;", "why": "the earlier row ID would be lost on the next run, so an approval naming it finds no row" },
+	{ "file": "lib/intake-review.mjs", "find": "...( old?.realignedFrom && old.contentHash === r.contentHash ? { realignedFrom: old.realignedFrom } : {} ) } );", "replace": "} );", "why": "--apply-review would drop the earlier row ID" }
+]
