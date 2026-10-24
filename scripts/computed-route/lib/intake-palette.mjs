@@ -281,8 +281,12 @@ export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSl
 		const slug = first && first !== h.g && SECOND[ h.role ] && vocab.has( SECOND[ h.role ] ) ? SECOND[ h.role ] : h.role;
 		const held = holderOf( slug );
 		const list = roles.get( h.g ) || [];
+		const count = held ? null : weak.find( ( [ g, r ] ) => g === h.g && r.role === slug );
 		if ( read.blocked[ slug ] ) {
 			lost.set( h.t.name, `${ h.why }, but the draft paints the ${ slug } job most in ${ read.blocked[ slug ] }, a colour no token declares` );
+		} else if ( count ) {
+			// The count read on this same value and the name agree: a usage role.
+			roles.set( h.g, [ ...list, { role: slug, why: `${ count[ 1 ].why }; the name ${ h.t.name } agrees`, by: 'usage', confidence: 0.85, agrees: true } ] );
 		} else if ( held === h.g ) {
 			const r = list.find( ( x ) => x.role === slug );
 			if ( 'usage' === r.by && ! r.agrees ) {
@@ -298,6 +302,12 @@ export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSl
 	// A role read only from a count takes its slug when no name hint did.
 	for ( const [ g, r ] of weak.filter( ( [ , x ] ) => ! holderOf( x.role ) ) ) {
 		roles.set( g, [ ...( roles.get( g ) || [] ), { role: r.role, why: r.why, by: 'usage', confidence: 0.6 } ] );
+	}
+	// Muted text is never the text value: a value a name made the text drops a muted role read beside a weaker text.
+	for ( const [ g, list ] of roles ) {
+		if ( list.some( ( r ) => 'text' === r.role ) && list.some( ( r ) => 'text-muted' === r.role ) ) {
+			roles.set( g, list.filter( ( r ) => 'text-muted' !== r.role ) );
+		}
 	}
 	// A slug the vocabulary lacks: propose the stand-in when no other value holds it, and record the wanted slug (FR-32-14
 	// adds them).

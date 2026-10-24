@@ -204,3 +204,21 @@ def test_live_runtime_generated_classes_are_not_meaningful_and_hover_is_settled(
     real = by_key["btn-real||"]                                      # a real class: key + fields unchanged
     assert real["classes"] == ["btn-real"] and real["ancestorClasses"] == []
     assert real["count"] == 1 and len(facts["buttons"]) == 2
+
+
+def test_live_measure_reads_state_controls_companions_authored_padding_and_outbound_links():
+    """measure.js on a hero pair under a section class, two aria-pressed chips, a browser-padded Add button
+    and an outbound reviews link: the chips are state controls keyed apart from the CTAs, the hero pair are
+    companions, the Add button's browser padding is no authored padding, and the reviews link leaves the site."""
+    facts = _run_measure(FIXTURES / "cta-roles.html")
+    buttons = facts["buttons"]
+    yellow = [b for b in buttons if b["rest"]["backgroundColor"] == "rgb(249, 207, 110)"]
+    cta = next(b for b in yellow if not b["stateControl"])
+    assert cta["count"] == 2 and cta["paddings"] == {"0px 30px 0px 30px": 1}   # the Add button is browser-padded
+    assert any(b["stateControl"] for b in yellow)
+    paper = next(b for b in buttons if b["rest"]["backgroundColor"] == "rgb(255, 250, 240)" and not b["stateControl"])
+    assert cta["companions"].get(paper["classKey"]) == 1
+    assert next(b for b in buttons if b["rest"]["backgroundColor"] == "rgb(26, 115, 232)")["external"] is True
+    got = presets.build_button_presets(facts, [])
+    assert got["primary"]["background"] == "#f9cf6e" and got["primary"]["padding"] == "0px 30px 0px 30px"
+    assert got["secondary"]["background"] == "#fffaf0"

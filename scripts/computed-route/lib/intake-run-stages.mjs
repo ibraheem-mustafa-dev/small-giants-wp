@@ -12,7 +12,7 @@ import { proposePageMap } from './intake-pagemap.mjs';
 import { readTokens } from './tokens.mjs';
 import { proposePalette, loadPaletteSlugs } from './intake-palette.mjs';
 import { readSurface } from './intake-reading.mjs';
-import { readGrounds, groundUsage } from './intake-palette-grounds.mjs';
+import { readGrounds, groundUsage, statusUsage } from './intake-palette-grounds.mjs';
 import { mapPool, poolSize } from './intake-pool.mjs';
 import { proposeSiteInfo } from './intake-siteinfo.mjs';
 import { proposeFlags } from './intake-flags.mjs';
@@ -137,7 +137,8 @@ export const STAGES = [
 		const t = readTokens( job.folder );
 		const records = [];
 		const grounds = new Map();
-		const texts = new Set();
+		const texts = new Map();
+		const channels = new Map();
 		const probeRows = [];
 		const gaps = [];
 		const blocked = [];
@@ -155,13 +156,14 @@ export const STAGES = [
 				records.push( ...read.records );
 				blocked.push( ...read.blocked );
 				Object.entries( read.probed?.grounds ?? {} ).forEach( ( [ p, g ] ) => grounds.set( `${ v.key }\u0000${ p }`, g ) );
-				( read.probed?.texts ?? [] ).forEach( ( p ) => texts.add( `${ v.key }\u0000${ p }` ) );
+				Object.entries( read.probed?.texts ?? {} ).forEach( ( [ p, n ] ) => texts.set( `${ v.key }\u0000${ p }`, n ) );
+				Object.entries( read.probed?.channels ?? {} ).forEach( ( [ p, c ] ) => channels.set( `${ v.key }\u0000${ p }`, c ) );
 				probeRows.push( ...groundUsage( read.probed, v.key ) );
 			} else {
 				gaps.push( gap( 'palette-usage', `${ v.file }${ v.hash ? `#${ v.hash }` : '' }`, `the 1440 rest reading failed: ${ error.message.split( '\n' )[ 0 ] }` ) );
 			}
 		} );
-		const usage = [ ...paletteUsage( records, grounds, texts ), ...probeRows ];
+		const usage = [ ...paletteUsage( records, grounds, texts, channels ), ...probeRows, ...statusUsage( job.folder ) ];
 		const p = proposePalette( { tokens: t.tokens, usage, slugs: loadPaletteSlugs(), problems: t.problems } );
 		gaps.push( ...p.problems.map( ( x ) => gap( `palette:${ x.kind ?? 'token' }`, x.draftId ?? x.name ?? x.token ?? 'tokens', x.error ?? x.message ?? JSON.stringify( x ) ) ) );
 		return {

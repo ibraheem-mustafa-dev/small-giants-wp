@@ -20,6 +20,16 @@ export const chroma = ( hex ) => {
 	return Math.hypot( l.a, l.b );
 };
 const lightness = ( hex ) => hexToLab( hex ).L;
+// The CIELAB hue angle in degrees, and the distance between two hues.
+const hue = ( hex ) => {
+	const l = hexToLab( hex );
+	return ( ( Math.atan2( l.b, l.a ) * 180 ) / Math.PI + 360 ) % 360;
+};
+const hueGap = ( x, y ) => Math.min( Math.abs( hue( x ) - hue( y ) ), 360 - Math.abs( hue( x ) - hue( y ) ) );
+// A status colour of the success family: a saturated green (CIELAB hue 110 to 170 degrees).
+const isGreen = ( hex ) => chroma( hex ) > SATURATED_C && hue( hex ) >= 110 && hue( hex ) <= 170;
+const SAME_HUE = 15;
+const MUTED_STEP = 10;
 const opaque = ( hex ) => 1 === hexToLab( hex ).alpha;
 
 // WCAG 2 contrast ratio between two hexes (alpha ignored).
@@ -74,9 +84,11 @@ export function usageRoles( groups, uses ) {
 	const page = surface?.hex.slice( 0, 7 );
 	const readable = ( g ) => ! page || contrast( g.hex, page ) >= 3;
 	const pageText = best( tally( ( u ) => 'color' === u.property && BASE_TAG.test( tag( u ) ) ) );
+	// Text weighs by the characters an element holds (its count when the row does not say).
+	const chars = ( u ) => u.chars ?? u.count ?? 1;
 	const text = pageText ? give( 'text', pageText, ( n ) => `the page text: the body colour on ${ n } page(s)` )
-		: give( 'text', best( tally( ( u ) => isText( u ) && ( ! surface || ! u.ground || surface.hexes.has( u.ground ) ) ), ( g ) => opaque( g.hex ) && chroma( g.hex ) <= SATURATED_C && readable( g ) ),
-			( n ) => `the most used text colour on the page ground (${ n } elements; the body colour is no token's)`, true );
+		: give( 'text', best( tally( ( u ) => isText( u ) && ( ! surface || ! u.ground || surface.hexes.has( u.ground ) ), chars ), ( g ) => opaque( g.hex ) && chroma( g.hex ) <= SATURATED_C && readable( g ) ),
+			( n ) => `the colour of the most text on the page ground (${ n } characters; the body colour is no token's)`, true );
 	give( 'footer-bg', best( tally( ( u ) => 'footer-ground' === u.property ) ), ( n ) => `the footer's ground on ${ n } page(s)` );
 	// Headings and links count on a light, opaque ground: on a strong ground they take that ground's text colour.
 	const light = ( hex ) => !! hex && 1 === hexToLab( hex ).alpha && ( ! page || contrast( hex, page ) < 3 ) && chroma( hex ) <= SATURATED_C;
@@ -85,17 +97,21 @@ export function usageRoles( groups, uses ) {
 	const linkTotal = sum( links );
 	give( 'link', best( links, ( g ) => g !== text && links.get( g ) * 10 >= linkTotal ) || best( links ),
 		( n ) => `the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (${ n } of ${ linkTotal } links)` );
-	const lines = tally( ( u ) => isBorder( u.property ) && 'a' !== tag( u ), undefined, true );
+	// Lines weigh by the pixels they draw (their count when no row says).
+	const lines = tally( ( u ) => isBorder( u.property ) && 'a' !== tag( u ), ( u ) => u.length ?? u.count ?? 1, true );
 	const divider = ( g ) => g !== surface && opaque( g.hex ) && chroma( g.hex ) <= SATURATED_C;
-	const border = give( 'border', best( lines, divider ), ( n ) => `the most used divider line colour (${ n } lines; a link's underline and a line in the page ground's colour are not dividers)` );
-	border && give( 'border-light', best( lines, ( g ) => g !== border && divider( g ) && lightness( g.hex ) > lightness( border.hex ) ), ( n ) => `the next divider line colour, lighter than the border (${ n } lines)` );
+	const border = give( 'border', best( lines, divider ), ( n ) => `the divider line colour that draws the most (${ n } px; a link's underline and a line in the page ground's colour are not dividers)` );
+	border && give( 'border-light', best( lines, ( g ) => g !== border && divider( g ) && lightness( g.hex ) > lightness( border.hex ) ), ( n ) => `the next divider line colour by length, lighter than the border (${ n } px)` );
+	// A colour painted as the ground of a link that opens WhatsApp is that channel's colour, never a brand ground.
+	const channel = give( 'whatsapp', best( tally( ( u ) => 'whatsapp' === u.channel && isBackground( u.property ) ), ( g ) => opaque( g.hex ) && chroma( g.hex ) > SATURATED_C ),
+		( n ) => `the ground of the links that open WhatsApp (${ n } elements)` );
 	const grounds = tally( ( u ) => isBackground( u.property ) && ! BASE_TAG.test( tag( u ) ) );
 	const buttons = tally( ( u ) => isBackground( u.property ) && BUTTON_TAG.test( tag( u ) ) );
 	const linkGrounds = tally( ( u ) => isBackground( u.property ) && 'a' === tag( u ) );
 	const strong = ( g ) => opaque( g.hex ) && g !== surface && ( chroma( g.hex ) > SATURATED_C || ( !! page && contrast( g.hex, page ) >= 3 ) );
 	// A strong ground by where it paints: buttons first, then links styled as buttons, then any element.
 	const strongest = ( ok ) => ( [ [ buttons, 'buttons' ], [ linkGrounds, 'links' ], [ grounds, 'elements' ] ].map( ( [ m, what ] ) => {
-		const hit = best( m, ( g ) => strong( g ) && ok( g ) );
+		const hit = best( m, ( g ) => strong( g ) && g !== channel && ok( g ) );
 		return hit ? [ hit[ 0 ], `${ hit[ 1 ] } ${ what }` ] : null;
 	} ).find( Boolean ) ) ?? null;
 	const primary = give( 'primary', strongest( () => true ), ( n ) => `the most used strong ground (${ n })` );
@@ -107,10 +123,35 @@ export function usageRoles( groups, uses ) {
 	const on = ( g ) => ( g ? best( tally( ( u ) => 'color' === u.property && g.hexes.has( u.ground ), ( u ) => ( u.count ?? 1 ) * ( u.text ? 2 : 1 ) ),
 		( x ) => x !== g && opaque( x.hex ) && contrast( x.hex, g.hex ) >= 3 ) : null );
 	give( 'primary-text', on( primary ), ( n ) => `the most used text colour on the primary ground (weight ${ n })` );
-	give( 'accent-text', on( accent ), ( n ) => `the most used text colour on the accent ground (weight ${ n })` );
-	give( 'section-text', on( section ), ( n ) => `the most used text colour on the section ground (weight ${ n })` );
+	// Accent text: the text that sits on the accent fill; when the fill holds none, the accent's own ink (a text colour
+	// of its hue, at least six tenths of its chroma, readable on the page ground) by the characters it sets.
+	// On a content ground (the accent and section fills) the text colour is the colour of the most text set on it.
+	const copyOn = ( g ) => ( g && flagged ? best( tally( ( u ) => isText( u ) && g.hexes.has( u.ground ), chars ), ( x ) => x !== g && opaque( x.hex ) && contrast( x.hex, g.hex ) >= 3 ) : null );
+	const onFill = copyOn( accent );
+	const inkOf = ( g ) => best( tally( isText, chars ), ( x ) => x !== g && ! [ text, heading ].includes( x ) && opaque( x.hex ) && hueGap( x.hex, g.hex ) <= SAME_HUE
+		&& chroma( x.hex ) >= 0.6 * chroma( g.hex ) && ( ! page || contrast( x.hex, page ) >= 4.5 ) );
+	const ink = accent ? inkOf( accent ) : null;
+	const accentText = onFill ? give( 'accent-text', onFill, ( n ) => `the colour of the most text on the accent ground (${ n } characters)` )
+		: give( 'accent-text', ink, ( n ) => `the accent's own ink: the text colour of its hue (${ n } characters; the accent ground holds no text)` );
+	// Accent light: a light ground of the accent's hue (L* 85 or more) that no other ground role holds, ranked by the
+	// accent ink it carries, then by the grounds and lines it paints.
+	const tints = accent ? tally( ( u ) => ( isBackground( u.property ) || isBorder( u.property ) ) && ! BASE_TAG.test( tag( u ) ) ) : new Map();
+	const carried = new Map();
+	for ( const u of uses.filter( ( x ) => 'color' === x.property && accentText?.hexes.has( x.hex ) && x.ground ) ) {
+		const g = of.get( u.ground );
+		g && carried.set( g, ( carried.get( g ) || 0 ) + ( u.chars || 0 ) + 1 );
+	}
+	const tintOk = ( g ) => opaque( g.hex ) && lightness( g.hex ) >= 85 && chroma( g.hex ) >= 2 && hueGap( g.hex, accent.hex ) <= SAME_HUE && ! [ surface, alt, section, primary, accent ].includes( g );
+	const tint = [ ...tints.keys() ].filter( ( g ) => ! g.oneOff && tintOk( g ) ).sort( ( a, b ) => ( carried.get( b ) || 0 ) - ( carried.get( a ) || 0 ) || tints.get( b ) - tints.get( a ) || groups.indexOf( a ) - groups.indexOf( b ) )[ 0 ];
+	tint && give( 'accent-light', [ tint, tints.get( tint ) ], ( n ) => `the light ground of the accent's hue (${ n } grounds and lines${ carried.get( tint ) ? ', carrying the accent ink' : '' })` );
+	const sectionCopy = copyOn( section );
+	give( 'section-text', sectionCopy || on( section ), ( n ) => ( sectionCopy ? `the colour of the most text on the section ground (${ n } characters)` : `the most used text colour on the section ground (weight ${ n })` ) );
 	give( 'text-inverse', on( dark ), ( n ) => `the most used text colour on the dark ground ${ dark.hex } (weight ${ n })` );
-	give( 'text-muted', best( tally( isText, undefined, true ), ( g ) => g !== text && g !== heading && opaque( g.hex ) && chroma( g.hex ) <= SATURATED_C && readable( g ) && ( ! text || lightness( g.hex ) > lightness( text.hex ) ) ),
-		( n ) => `the most used text colour after the text and heading colours, lighter than the text (${ n } elements)` );
+	give( 'text-muted', best( tally( isText, chars, true ), ( g ) => ! [ text, heading, accentText ].includes( g ) && opaque( g.hex ) && chroma( g.hex ) <= SATURATED_C && readable( g )
+		&& ( ! text || lightness( g.hex ) >= lightness( text.hex ) + MUTED_STEP ) ),
+	( n ) => `the colour of the most text after the text, heading and accent text, at least ${ MUTED_STEP } L* lighter than the text (${ n } characters)` );
+	// A live status message the code colours green is the success colour, painted at rest or not.
+	give( 'success', best( tally( ( u ) => 'status-color' === u.property && 'status' === tag( u ) ), ( g ) => opaque( g.hex ) && isGreen( g.hex ) ),
+		( n ) => `the green the draft's code gives its status messages (${ n } in the code)` );
 	return { roles: out, blocked };
 }

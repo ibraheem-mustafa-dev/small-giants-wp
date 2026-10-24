@@ -25,6 +25,7 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 
 # Exact hostnames this module is allowed to fetch from — Google Fonts' CSS endpoint and its
 # font-file CDN. A DRAFT MOCKUP is external input (client-supplied, or scraped from a live site
@@ -50,6 +51,7 @@ def _is_allowed_https_url(url: str, allowed_hosts: set[str]) -> bool:
 import confirmed_palette
 import declared_sources
 import derive as derive_mod
+import entry_buttons
 import font_weights
 import heading_weight
 import motion_tokens
@@ -438,9 +440,6 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     # A framework slug the draft left unset follows the client's related colour, never the framework hex.
     role_defaults.apply_role_defaults(snap, baseline, trace)
     pal = ((snap.get("settings", {}).get("color", {}) or {}).get("palette", [])) or pal
-    slug_by_hex = palette_refs.slug_by_hex(pal) if design else {
-        e["color"].lower(): e["slug"] for e in pal
-        if isinstance(e.get("color"), str) and e["color"].startswith("#")}
 
     # BASE TYPOGRAPHY (FR-33-3 — the drift-killer)
     styles["typography"] = typo_mod.base_typography(facts, trace)
@@ -452,9 +451,11 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     body = facts.get("body", {})
     bg_hex = _hex(_theme_background(facts, trace))
     txt_hex = _hex(body.get("color", ""))
+    # Several slugs can hold one hex: each page role references the slug whose job it is (page ground = surface,
+    # body text = text), never whichever slug a lookup by value meets first or last.
     styles["color"] = {
-        "background": _var_or_hex(bg_hex, slug_by_hex, "color"),
-        "text": _var_or_hex(txt_hex, slug_by_hex, "color"),
+        "background": _var_or_hex(bg_hex, palette_refs.slug_for_role(pal, bg_hex, palette_refs.PAGE_BACKGROUND_SLUGS)),
+        "text": _var_or_hex(txt_hex, palette_refs.slug_for_role(pal, txt_hex, palette_refs.PAGE_TEXT_SLUGS)),
     }
 
     # HEADING base (regenerated from computed — no fabricated 1.15). MERGE onto the framework
@@ -690,6 +691,36 @@ def drop_inherited_heading_colour(snap: dict, trace: list) -> dict:
 EXTRACTOR_OWNED_CUSTOM = frozenset({"buttonPresets", "borderRadius", "accentSets"})
 
 
+def _merge_button_presets(gen_custom: dict, existing: dict | None, trace: list) -> None:
+    """Per key, the client's button preset wins for every key this run did not measure.
+
+    The keys a run measured are the ``kind: preset`` trace rows' ``keys`` (presets.build_button_presets);
+    those take the draft's value (with no such row, every generated key does). Every other key of an existing slot (press shadow and transform, hover
+    easings and timing, hover colours the hover reading left unchanged) is carried, so a re-run never drops
+    what the extractor cannot read, and the framework baseline never overwrites the client's value."""
+    if not isinstance(existing, dict) or not existing:
+        return
+    measured = {}
+    for row in trace:
+        if row.get("kind") == "preset" and str(row.get("slot", "")).startswith("buttonPresets."):
+            measured[row["slot"].split(".", 1)[1]] = set(filter(None, str(row.get("keys", "")).split(",")))
+    gen = gen_custom.setdefault("buttonPresets", {})
+    for slot, ex_slot in existing.items():
+        if not isinstance(ex_slot, dict):
+            continue
+        gen_slot = gen.get(slot) if isinstance(gen.get(slot), dict) else {}
+        own = measured.get(slot, set()) if measured else set(gen_slot)
+        merged = copy.deepcopy(ex_slot)
+        for key, value in gen_slot.items():
+            if key in own or key not in merged:
+                merged[key] = value
+        gen[slot] = merged
+        trace.append({"kind": "merge", "what": f"buttonPresets.{slot}",
+                      "reason": "measured keys take the draft's value; every other key keeps the client's",
+                      "measured": ",".join(sorted(own)) or "(none)",
+                      "carried": ",".join(sorted(k for k in ex_slot if k not in own)) or "(none)"})
+
+
 def merge_onto(snap: dict, existing: dict, trace: list) -> dict:
     """ADDITIVELY merge the generated ``snap`` onto an EXISTING client snapshot (FR-33-11 non-destruct).
 
@@ -722,6 +753,7 @@ def merge_onto(snap: dict, existing: dict, trace: list) -> dict:
     trace.append({"kind": "merge", "what": "settings.custom",
                   "reason": "client keys the extractor does not derive are carried from the existing snapshot",
                   "keys_carried": ",".join(sorted(carried)) or "(none)"})
+    _merge_button_presets(gen_custom, ex_custom.get("buttonPresets"), trace)
 
     # styles.elements — preserve the client's hand-authored element keys the extractor never derives
     # (e.g. `button.typography.textDecoration`, which exists only in the client snapshot and was
@@ -815,10 +847,8 @@ def _hex(v: str):
     return c.hex if c else None
 
 
-def _var_or_hex(hexv, slug_by_hex, kind):
-    if hexv and hexv in slug_by_hex:
-        return f"var:preset|color|{slug_by_hex[hexv]}"
-    return hexv or ""
+def _var_or_hex(hexv, slug):
+    return f"var:preset|color|{slug}" if hexv and slug else (hexv or "")
 
 
 def main(argv=None) -> int:
@@ -863,6 +893,12 @@ def main(argv=None) -> int:
 
     facts = json.loads(pathlib.Path(args.facts).read_text(encoding="utf-8")) if args.facts \
         else run_measure(draft)
+    entry_trace: list = []
+    others = [] if args.facts else entry_buttons.other_entry_drafts(draft.parent, draft.name)
+    if others:
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            measured = list(pool.map(run_measure, others))
+        entry_buttons.fold_entry_buttons(facts, [(p.name, f) for p, f in zip(others, measured)], entry_trace)
 
     baseline = json.loads((repo / "theme" / "sgs-theme" / "theme.json").read_text(encoding="utf-8"))
 
@@ -881,7 +917,7 @@ def main(argv=None) -> int:
             print(f"NOTE: {len(unmarked)} intake palette row(s) carry no review mark and get no palette "
                   f"entry: {', '.join(unmarked)}", file=sys.stderr)
 
-    trace: list = []
+    trace: list = entry_trace
     try:
         snap = build_snapshot(args.client, css, facts, html, baseline, trace, repo, draft_dir=draft.parent,
                               draft_name=draft.name, confirmed=confirmed, draft_slugs=draft_slugs)

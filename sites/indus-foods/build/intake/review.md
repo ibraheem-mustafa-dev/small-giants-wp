@@ -4,7 +4,7 @@ Taken on 2026-10-23T23:58:47.556Z; manifest 1.0, files hash dd9e9aec7ae9a787.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review indus-foods`.
 
-Rows: 1191; 638 need reading, 553 are confident proposals that Accept all covers (skeleton block choices 547, missing features 6).
+Rows: 1189; 636 need reading, 553 are confident proposals that Accept all covers (skeleton block choices 547, missing features 6).
 
 Not defects counted, not listed: breakpoint 91, dead-code (constant guard) 5, dead-code (data-gated) 7, prop-variant 1, prototype-only 21, reached-when-forced 144, render-wins 552.
 
@@ -240,21 +240,19 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `effect:A-24` | A-24 Web Animation in closeMobile on ref setDrawerEl (waapi, press) is the no SGS effect effect | accept |  |  |
+| `effect:A-24` | A-24 Web Animation in closeMobile on ref setDrawerEl (waapi, press) is the close of the same element's open entrance (its entrance close values) | accept |  | accept |
 | `effect:A-30` | A-30 Web Animation in fx from bindMotion on sp inserted into e.target.closest && e.target.closest('[data-mag]') (waapi, press) is the ripple effect | accept |  | accept |
 | `effect:A-31` | A-31 Web Animation in fx from bindMotion on sp inserted into e.target.closest && e.target.closest('[data-mag]') (waapi, pointer-move) is the sheen effect | accept |  | accept |
 | `effect:A-32` | A-32 Web Animation in resetTilt from bindMotion on this._tiltEl = t (waapi, pointer-leave) is the follow-pointer effect | accept |  | accept |
-| `effect:J-05` | J-05 js-style-write in updatePins on [data-pin-track] (js-style-write, scroll-position) is the no SGS effect effect | accept |  | accept |
-| `effect:J-09` | J-09 js-style-write in updatePins on [data-pin-year] (js-style-write, scroll-position) is the no SGS effect effect | accept |  | accept |
-| `effect:J-11` | J-11 js-text-write in updatePins on [data-pin-count] (js-text-write, scroll-position) is the no SGS effect effect | accept |  | accept |
-| `effect:J-12` | J-12 js-style-write in updateHeader on ref setHeaderEl (js-style-write, scroll-position) is the no SGS effect effect | accept |  | accept |
+| `effect:J-05` | J-05 js-style-write in updatePins on [data-pin-track] (js-style-write, scroll-position) is written as the block settings sgs/timeline scrollEffect | accept |  | accept |
+| `effect:J-09` | J-09 js-style-write in updatePins on [data-pin-year] (js-style-write, scroll-position) is written as the block settings sgs/timeline dateActiveColour | accept |  | accept |
+| `effect:J-11` | J-11 js-text-write in updatePins on [data-pin-count] (js-text-write, scroll-position) is written as the block settings sgs/timeline panelCounter, panelCounterFormat | accept |  | accept |
+| `effect:J-12` | J-12 js-style-write in updateHeader on ref setHeaderEl (js-style-write, scroll-position) is written as the block settings sgs/site-header scrolledOffset, shadowScrolled, shadowScrolledColour | accept |  | accept |
 | `effect:J-13` | J-13 js-style-write in updateHeader on ref setProgEl (js-style-write, scroll-position) is not expressed by any SGS effect: a scroll handler moves the element, but the factor in "'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')'" is not a number the parallax effect holds | difference | a Spec 38 gap: a scroll handler moves the element, but the factor in "'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')'" is not a number the parallax effect holds | difference |
 | `effect:J-14` | J-14 js-style-write in updateHeader on this._mainEl && this._mainEl.querySelector('[data-hero-img]') (js-style-write, scroll-position) is the parallax effect | accept |  | accept |
 | `effect:J-43` | J-43 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-peek]') (js-style-write, pointer-move) is the cursor-field effect | accept |  | accept |
 | `effect:J-44` | J-44 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-peek]') (js-style-write, pointer-move) is the cursor-field effect | accept |  | accept |
-| `effect:J-45` | J-45 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-tilt]') (js-style-write, pointer-move) is the follow-pointer effect | accept |  | accept |
-| `effect:J-46` | J-46 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-tilt]') (js-style-write, pointer-move) is the cursor-field effect | accept |  |  |
-| `effect:J-47` | J-47 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-tilt]') (js-style-write, pointer-move) is the cursor-field effect | accept |  |  |
+| `effect:J-45` | J-45 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-tilt]') (js-style-write, pointer-move) is the glare + follow-pointer effect | accept |  | accept |
 | `effect:J-50` | J-50 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-mag]') (js-style-write, pointer-move) is the magnet effect | accept |  | accept |
 | `effect:J-66` | J-66 js-style-write in magnet on [data-label] (js-style-write, pointer-move) is the magnet effect | accept |  | accept |
 
@@ -289,7 +287,7 @@ Accept all: [ ]
 | `skeleton:brands-mega-menu:Indus Foods Website v2/98#0` | **changed** brands-mega-menu Indus Foods Website v2/98#0 <div> | block:sgs/gallery | 1: a group of three or more links that each hold only an image (a logo wall) is sgs/gallery with a link per image; the links are its items | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/116#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/116#0 <a> | block:sgs/social-icons | 1: a run of icon-only phone, email and social links in a drawer's top row is one social icons group in the drawer's icons top-row slot, each icon linking its Site Info key (Bean's decision 1, 2026-10-21) | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/117#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/117#0 <a> | absorbed | 1: part of the drawer's top-row icon group: sgs/social-icons draws it from Site Info | accept |
-| `skeleton:page-contact:Indus Foods Website v2/536=sgs/business-info` | **changed** page-contact Indus Foods Website v2/536=sgs/business-info <span> "Sparkbrook, Birmingham B11 1BU" | block:sgs/business-info | 0.8: 1 copies of one template element |  |
+| `skeleton:page-contact:Indus Foods Website v2/536=sgs/business-info` | **changed** page-contact Indus Foods Website v2/536=sgs/business-info <span> "Sparkbrook, Birmingham B11 1BU" | block:sgs/business-info | 0.8: 1 copies of one template element | block:sgs/text |
 | `skeleton:page-contact:Indus Foods Website v2/536=sgs/text` | **changed** page-contact Indus Foods Website v2/536=sgs/text <span> "Sales, orders and accounts" | block:sgs/text | 0.25: 2 copies of one template element | accept |
 | `skeleton:page-home:Indus Foods Website v2/215#0` | **changed** page-home Indus Foods Website v2/215#0 <div> | block:sgs/brand-strip | 1: a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7 | remove |
 | `skeleton:page-home:Indus Foods Website v2/216#0` | **changed** page-home Indus Foods Website v2/216#0 <div> | absorbed | 1: drawn by sgs/brand-strip: rule marquee | remove |
@@ -310,9 +308,9 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:page-about:Indus Foods Website v2/362=sgs/text` | page-about Indus Foods Website v2/362=sgs/text <div> "5,000+" | block:sgs/text | 0.25: 7 copies of one template element on 2 surfaces | accept |
 | `skeleton:page-about:Indus Foods Website v2/363=sgs/text` | page-about Indus Foods Website v2/363=sgs/text <div> "Trade customers" | block:sgs/text | 0.25: 7 copies of one template element on 2 surfaces | accept |
-| `skeleton:page-about:Indus Foods Website v2/462=sgs/text` | page-about Indus Foods Website v2/462=sgs/text <div> "1962" | block:sgs/text | 0.25: 8 copies of one template element on 2 surfaces |  |
+| `skeleton:page-about:Indus Foods Website v2/462=sgs/text` | page-about Indus Foods Website v2/462=sgs/text <div> "1962" | block:sgs/text | 0.25: 8 copies of one template element on 2 surfaces | remove |
 | `skeleton:page-about:Indus Foods Website v2/490=sgs/text` | page-about Indus Foods Website v2/490=sgs/text <div> "Certifications" | block:sgs/text | 0.25: 11 copies of one template element on 2 surfaces | accept |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/104#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/104#0 <span> "Prefer to apply over the phone?" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/104#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/104#0 <span> "Prefer to apply over the phone?" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces | accept |
 | `skeleton:page-our-story:Indus Foods Website v2/328#0` | page-our-story Indus Foods Website v2/328#0 <span> "Our Story" | block:sgs/text | 0.25: 27 copies of one template element on 27 surfaces | accept |
 | `skeleton:page-terms:Indus Foods Website v2/651=sgs/text` | page-terms Indus Foods Website v2/651=sgs/text <span> "02" | block:sgs/text | 0.25: 6 copies of one template element | accept |
 
@@ -417,7 +415,7 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:page-about:Indus Foods Website v2/461` | page-about Indus Foods Website v2/461 <div> | unwrap | 1: 10 copies of one template element on 2 surfaces; a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
+| `skeleton:page-about:Indus Foods Website v2/461` | page-about Indus Foods Website v2/461 <div> | unwrap | 1: 10 copies of one template element on 2 surfaces; a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) | remove |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/22#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/22#0 <div> | unwrap | 1: 2 copies of one template element on 2 surfaces; a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) | accept |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/8#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/8#0 <div> | unwrap | 1: 2 copies of one template element on 2 surfaces; a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) | accept |
 | `skeleton:page-brands:Indus Foods Website v2/504` | page-brands Indus Foods Website v2/504 <div> | unwrap | 1: 10 copies of one template element; a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) | accept |
@@ -442,7 +440,7 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:page-about:Indus Foods Website v2/462=sgs/heading` | page-about Indus Foods Website v2/462=sgs/heading <div> "Today" | block:sgs/heading | 1: 2 copies of one template element on 2 surfaces; the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19) |  |
+| `skeleton:page-about:Indus Foods Website v2/462=sgs/heading` | page-about Indus Foods Website v2/462=sgs/heading <div> "Today" | block:sgs/heading | 1: 2 copies of one template element on 2 surfaces; the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19) | remove |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/99#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/99#0 <span> "Need a hand?" | block:sgs/heading | 1: 2 copies of one template element on 2 surfaces; the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19) | accept |
 | `skeleton:page-certifications:Indus Foods Website v2/414` | page-certifications Indus Foods Website v2/414 <div> "Supplier approval" | block:sgs/heading | 1: 28 copies of one template element on 8 surfaces; the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19) | accept |
 | `skeleton:page-food-service:Indus Foods Website v2/375` | page-food-service Indus Foods Website v2/375 <div> "Manufacturing" | block:sgs/heading | 1: 12 copies of one template element on 4 surfaces; the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19) | accept |
@@ -659,7 +657,7 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:page-about:Indus Foods Website v2/460` | page-about Indus Foods Website v2/460 <image-slot> | block:sgs/media | 1: 10 copies of one template element on 2 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media |  |
+| `skeleton:page-about:Indus Foods Website v2/460` | page-about Indus Foods Website v2/460 <image-slot> | block:sgs/media | 1: 10 copies of one template element on 2 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media | remove |
 | `skeleton:page-brand-sanam:Indus Foods Website v2/496` | page-brand-sanam Indus Foods Website v2/496 <image-slot> | block:sgs/media | 1: 14 copies of one template element on 4 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media | accept |
 | `skeleton:page-brands:Indus Foods Website v2/503` | page-brands Indus Foods Website v2/503 <image-slot> | block:sgs/media | 1: 10 copies of one template element; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media | accept |
 | `skeleton:page-certifications:Indus Foods Website v2/484` | page-certifications Indus Foods Website v2/484 <image-slot> | block:sgs/media | 1: 8 copies of one template element on 2 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media | accept |
@@ -706,7 +704,7 @@ Accept all: [ ]
 | `skeleton:footer:Indus Foods Website v2/659#0` | footer Indus Foods Website v2/659#0 <span> | block:sgs/icon | 1: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text | accept |
 | `skeleton:footer:Indus Foods Website v2/665#0` | footer Indus Foods Website v2/665#0 <span> | block:sgs/icon | 1: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text | accept |
 | `skeleton:footer:Indus Foods Website v2/727#0` | footer Indus Foods Website v2/727#0 <span> | block:sgs/icon | 1: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text | accept |
-| `skeleton:page-about:Indus Foods Website v2/455#0` | page-about Indus Foods Website v2/455#0 <span> | block:sgs/icon | 1: 2 copies of one template element on 2 surfaces; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
+| `skeleton:page-about:Indus Foods Website v2/455#0` | page-about Indus Foods Website v2/455#0 <span> | block:sgs/icon | 1: 2 copies of one template element on 2 surfaces; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text | remove |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/91#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/91#0 <span> | block:sgs/icon | 1: 2 copies of one template element on 2 surfaces; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text | accept |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/96` | page-apply Indus Foods Website v2>TradeApplication@466/96 <span> | block:sgs/icon | 1: 10 copies of one template element on 2 surfaces; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text | accept |
 | `skeleton:page-careers:Indus Foods Website v2/419` | page-careers Indus Foods Website v2/419 <span> | block:sgs/icon | 1: 4 copies of one template element; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text | accept |
@@ -801,12 +799,12 @@ Accept all: [ ]
 | `skeleton:page-about:Indus Foods Website v2/450` | page-about Indus Foods Website v2/450 <p> "Our founders open one of the UK’s first halal butchers and greengrocers on Ladypool Road, Sparkbrook." | remove | 1: 10 copies of one template element on 2 surfaces; inside a removed element (Indus Foods Website v2/446#0) | accept |
 | `skeleton:page-about:Indus Foods Website v2/451` | page-about Indus Foods Website v2/451 <div> | remove | 1: 10 copies of one template element on 2 surfaces; inside a removed element (Indus Foods Website v2/446#0) | accept |
 | `skeleton:page-about:Indus Foods Website v2/452` | page-about Indus Foods Website v2/452 <image-slot> | remove | 1: 10 copies of one template element on 2 surfaces; inside a removed element (Indus Foods Website v2/446#0) | accept |
-| `skeleton:page-about:Indus Foods Website v2/454#0` | page-about Indus Foods Website v2/454#0 <div> "Swipe through our story" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/456#0` | page-about Indus Foods Website v2/456#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/458` | page-about Indus Foods Website v2/458 <article> | block:sgs/container | 0.75: 10 copies of one template element on 2 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/459` | page-about Indus Foods Website v2/459 <div> | block:sgs/container | 0.75: 10 copies of one template element on 2 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/463` | page-about Indus Foods Website v2/463 <h3> "A shop in the Balti Triangle" | block:sgs/heading | 0.75: 10 copies of one template element on 2 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/464` | page-about Indus Foods Website v2/464 <p> "Our founders open one of the UK’s first halal butchers and greengrocers on Ladypool Road, Sparkbrook." | block:sgs/text | 0.75: 10 copies of one template element on 2 surfaces |  |
+| `skeleton:page-about:Indus Foods Website v2/454#0` | page-about Indus Foods Website v2/454#0 <div> "Swipe through our story" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces | remove |
+| `skeleton:page-about:Indus Foods Website v2/456#0` | page-about Indus Foods Website v2/456#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces | remove |
+| `skeleton:page-about:Indus Foods Website v2/458` | page-about Indus Foods Website v2/458 <article> | block:sgs/container | 0.75: 10 copies of one template element on 2 surfaces | remove |
+| `skeleton:page-about:Indus Foods Website v2/459` | page-about Indus Foods Website v2/459 <div> | block:sgs/container | 0.75: 10 copies of one template element on 2 surfaces | remove |
+| `skeleton:page-about:Indus Foods Website v2/463` | page-about Indus Foods Website v2/463 <h3> "A shop in the Balti Triangle" | block:sgs/heading | 0.75: 10 copies of one template element on 2 surfaces | remove |
+| `skeleton:page-about:Indus Foods Website v2/464` | page-about Indus Foods Website v2/464 <p> "Our founders open one of the UK’s first halal butchers and greengrocers on Ladypool Road, Sparkbrook." | block:sgs/text | 0.75: 10 copies of one template element on 2 surfaces | remove |
 | `skeleton:page-about:Indus Foods Website v2/479#0` | page-about Indus Foods Website v2/479#0 <div> | block:sgs/container | 1: 11 copies of one template element on 11 surfaces | accept |
 | `skeleton:page-about:Indus Foods Website v2/485` | page-about Indus Foods Website v2/485 <div> | block:sgs/container | 1: 55 copies of one template element on 11 surfaces | accept |
 | `skeleton:page-about:Indus Foods Website v2/486` | page-about Indus Foods Website v2/486 <div> | block:sgs/container | 1: 55 copies of one template element on 11 surfaces | accept |
@@ -820,7 +818,7 @@ Accept all: [ ]
 | `skeleton:page-about:Indus Foods Website v2/525#0` | page-about Indus Foods Website v2/525#0 <a> "Become a Trade Customer" | block:sgs/button | 0.75: 23 copies of one template element on 23 surfaces | accept |
 | `skeleton:page-apply:Indus Foods Website v2/466#0` | page-apply Indus Foods Website v2/466#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/100#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/100#0 <p> "Our trade team can complete the application with you over the phone." | block:sgs/text | 0.75: 2 copies of one template element on 2 surfaces | accept |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/103#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/103#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/103#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/103#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces | accept |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/12#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/12#0 <span> "Saves as you go" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces | accept |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/14#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/14#0 <div> | remove | 1: 2 copies of one template element on 2 surfaces; Bean accepted the finaliser's pick in the intake review on 2026-10-19: A 6px track with a fill bar showing form step progress; sgs/form has progress bar settings (progressBarColour in block_attributes), so its multi-step mode draws this bar. | accept |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/16#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/16#0 <div> | remove | 1: 2 copies of one template element on 2 surfaces; Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block | accept |
@@ -1488,5 +1486,5 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `notice:host:images.unsplash.com` | request to images.unsplash.com blocked (4 URLs, first https://images.unsplash.com/photo-1532336414038-cf19250c5757?w=1388&q=70&auto=format&fit=crop) | noted | replay-miss |  |
+| `notice:host:images.unsplash.com` | request to images.unsplash.com blocked (4 URLs, first https://images.unsplash.com/photo-1532336414038-cf19250c5757?w=1388&q=70&auto=format&fit=crop) | noted | replay-miss | noted |
 | `notice:host:maps.google.com` | request to maps.google.com blocked (2 URLs, first https://maps.google.com/maps?q=55-58%20Stratford%20Street%20North%2C%20Birmingham%20B11%201BU&z=14&output=embed) | noted | unlisted-host | noted |

@@ -129,12 +129,22 @@ const COLOUR_PROPS = {
 	'text-decoration-color': ( c ) => 'none' !== c[ 'text-decoration-line' ],
 };
 
+// The pixels one painted line colour draws on a box.
+const LINE_LENGTH = {
+	'border-top-color': ( b ) => b.w, 'border-bottom-color': ( b ) => b.w, 'border-left-color': ( b ) => b.h, 'border-right-color': ( b ) => b.h,
+	'outline-color': ( b ) => 2 * ( ( b.w || 0 ) + ( b.h || 0 ) ),
+};
+
 // lib/intake-palette.mjs's `usage` from rest-mode reading records (lib/intake-reading.mjs): per painted colour
 // property, the computed colour as hex, the element's draft ID (`<component>:<n>`), its tag (the last step of the
 // record's path) and how many records show it. A fully transparent colour paints nothing and is skipped. `grounds`
 // (lib/intake-palette-grounds.mjs, keyed `<surface>\u0000<path>`) gives each text colour the ground it sits on
-// (`ground`, a hex), and `texts` (a Set of the same keys) marks a text colour whose element holds text (`text: true`).
-export function paletteUsage( records, grounds = new Map(), texts = new Set() ) {
+// (`ground`, a hex); `texts` (a Map of the same keys to a character count) marks a text colour whose element holds
+// text (`text: true`, `chars` summed); `channels` (a Map of the same keys) marks a colour painted on a WhatsApp link
+// (`channel: 'whatsapp'`). A background on an element at least nine tenths of the reading's width is a band (`band:
+// true`), and a painted line sums the pixels it draws (`length`: the box width for a top or bottom border, its height
+// for a side, its perimeter for an outline).
+export function paletteUsage( records, grounds = new Map(), texts = new Map(), channels = new Map() ) {
 	const counts = new Map();
 	for ( const r of records ) {
 		const c = r.computed || {};
@@ -148,9 +158,19 @@ export function paletteUsage( records, grounds = new Map(), texts = new Set() ) 
 			const at = `${ r.surface }\u0000${ r.path }`;
 			const ground = 'color' === property ? colourHex( grounds.get( at ) ) : null;
 			const text = 'color' === property && texts.has( at );
-			const k = [ hex, property, draftId, tag, ground, text ].join( '\u0000' );
-			const u = counts.get( k ) || { hex, property, draftId, count: 0, ...( tag ? { tag } : {} ), ...( ground ? { ground } : {} ), ...( text ? { text } : {} ) };
+			const channel = channels.get( at ) ?? null;
+			const band = 'background-color' === property && ( r.box?.w ?? 0 ) >= 0.9 * ( r.width || 1440 );
+			const k = [ hex, property, draftId, tag, ground, text, channel, band ].join( '\u0000' );
+			const u = counts.get( k ) || { hex, property, draftId, count: 0, ...( tag ? { tag } : {} ), ...( ground ? { ground } : {} ), ...( text ? { text } : {} ),
+				...( channel ? { channel } : {} ), ...( band ? { band } : {} ) };
 			u.count++;
+			if ( text ) {
+				u.chars = ( u.chars || 0 ) + ( texts.get( at ) || 0 );
+			}
+			const line = LINE_LENGTH[ property ]?.( r.box || {} );
+			if ( line ) {
+				u.length = ( u.length || 0 ) + Math.round( line );
+			}
 			counts.set( k, u );
 		}
 	}

@@ -6,6 +6,7 @@ import { samePaint, paintCanon, PX_TOL } from './css-equivalence/tolerance.mjs';
 import { fitFluid, acceptsClamp, applyClamp, LENGTH_PROPS } from './fill-values.mjs';
 import { INHERITED } from './calibrate-props.mjs';
 import { paintedAt, TIER_OF } from './fill-held.mjs';
+import { initialOf } from './css-families.mjs';
 
 // The clone-coverage IDs this module writes (lib/clone-coverage.mjs::declaredWrites holds each entry's write to it):
 // the CSS groups whose declared values a draft header's Fill run wrote and confirmed.
@@ -219,6 +220,31 @@ export function defaultPaint( cal, slot, width, prop ) {
 	return /gap$/.test( prop ) && 'normal' === v ? '0px' : v;
 }
 
+// The context calibration read an element's default paint in at a width (lib/calibrate-read.mjs::readInstancesInPage:
+// `_parentDisplay`, `_position`, and the read direction), or null where its paint carries none (a paint read before
+// the context was recorded).
+export function calibratedContext( cal, slot, width ) {
+	const key = Object.keys( cal?.elements || {} ).find( ( k ) => LOOSE( k ) === LOOSE( slot ) );
+	const paint = undefined !== key ? cal.elements[ key ]?.[ String( 1920 === width ? 1440 : width ) ] : undefined;
+	if ( ! paint || undefined === paint._parentDisplay ) {
+		return null;
+	}
+	return { parentDisplay: paint._parentDisplay, ...( paint._position ? { position: paint._position } : {} ), ...( paint.direction ? { direction: paint.direction } : {} ) };
+}
+
+// A baseline value in the context it was read in, as the value an unstyled element holds: where it is what the
+// property's initial value computes to there and not that value itself (a `min-height` of 0px read off a flex or grid
+// item, the computed form of `auto` there), it is the initial value, which the comparison then canons in the draft's
+// context. Any other value, or a baseline with no context of its own, is returned as it is.
+export function inOwnContext( prop, v, ctx ) {
+	const initial = ctx && undefined !== v ? initialOf( prop ) : null;
+	if ( ! initial || String( v ).trim() === initial ) {
+		return v;
+	}
+	const there = paintCanon( prop, initial, ctx );
+	return there !== initial && String( there ).trim() === String( v ).trim() ? initial : v;
+}
+
 // The tiers whose draft value differs from what the node shows there: its baseline, or what the tiers already chosen paint
 // there, judged as the held side judges a write (lib/fill-held.mjs::paintedAt): an empty tier shows the nearest wider
 // chosen tier only where the block's default paint of the property is the same at both widths, and otherwise the block's
@@ -226,9 +252,10 @@ export function defaultPaint( cal, slot, width, prop ) {
 // A property calibration did not measure at every tier width gives no evidence of a fallback, so there the wider value
 // carries down. baseline( width ) is the node's value with nothing written; defaultAt( width ) the block's calibrated
 // default paint of the property (the baseline when not given); contextAt( width ) the element's context there for canon()
-// ({ parentDisplay, position, direction }). Values compare by the shared rule (lib/css-equivalence/tolerance.mjs::samePaint).
-// Returns { width: value }.
-export function tiersDiffering( prop, draft, baseline, defaultAt = baseline, contextAt = () => ( {} ) ) {
+// ({ parentDisplay, position, direction }); baselineContextAt( width ) the context the baseline was read in, or null where
+// it is the draft's. Each side is canoned in its own context (inOwnContext), then compared in the draft's by the shared
+// rule (lib/css-equivalence/tolerance.mjs::samePaint). Returns { width: value }.
+export function tiersDiffering( prop, draft, baseline, defaultAt = baseline, contextAt = () => ( {} ), baselineContextAt = () => null ) {
 	const out = {};
 	const fallbackAt = TIER_WIDTHS.every( ( w ) => undefined !== defaultAt( w ) ) ? defaultAt : () => '0px';
 	for ( const w of TIER_WIDTHS ) {
@@ -236,7 +263,7 @@ export function tiersDiffering( prop, draft, baseline, defaultAt = baseline, con
 			continue;
 		}
 		const painted = paintedAt( { after: Object.fromEntries( Object.entries( out ).map( ( [ x, v ] ) => [ TIER_OF[ x ], v ] ) ) }, w, prop, fallbackAt );
-		const shown = painted ? painted.value : baseline( w );
+		const shown = painted ? painted.value : inOwnContext( prop, baseline( w ), baselineContextAt( w ) );
 		if ( ! samePaint( prop, draft[ w ], shown, contextAt( w ) ) ) {
 			out[ w ] = draft[ w ];
 		}
@@ -263,7 +290,9 @@ export function resolveProperty( ctx ) {
 	const known = knownPaths( calibration ).map( LOOSE );
 	let firstGap = null;
 	for ( const slot of slots ) {
-		const included = tiersDiffering( prop, draft, ( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ), contextOf );
+		// The baseline's own context is calibration's where the baseline is the calibrated default paint.
+		const baselineContext = ( w ) => ( undefined !== baseline( slot, w ) && baseline( slot, w ) === defaultPaint( calibration, slot, w, prop ) ? calibratedContext( calibration, slot, w ) : null );
+		const included = tiersDiffering( prop, draft, ( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ), contextOf, baselineContext );
 		if ( ! Object.keys( included ).length ) {
 			return { status: 'equal', slot };
 		}

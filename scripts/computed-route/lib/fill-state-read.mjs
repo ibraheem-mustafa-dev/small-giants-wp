@@ -11,6 +11,7 @@ import { applyToken, renderedOf } from './fill-state-apply.mjs';
 import { codeLooks } from './fill-state-code.mjs';
 import { pseudoDeclared, pseudoRenderedOf } from './fill-state-pseudo.mjs';
 import { reasonOf } from './fill-state-reason.mjs';
+import { readScriptLooks } from './fill-state-script.mjs';
 
 // The reaches the reader can enter in a page; environment states (media emulation) belong to the media-feature
 // entries, and an unreachable one (:visited) is read from its stylesheet rules, never entered.
@@ -298,7 +299,8 @@ export function declaredDiff( rest, state ) {
 
 // Every state look of every target at the page's current width: { [targetId]: [{ states, family, selector, tokens,
 // declared, rendered, read }] } for each combination whose declared values differ from rest, and `unreached`: the
-// combinations the page cannot enter whose rules declare nothing to read. A state the browser never exposes (:visited)
+// combinations the page cannot enter whose rules declare nothing to read; a look the draft's script sets on pointer or
+// focus has `read: 'script'` (lib/fill-state-script.mjs). A state the browser never exposes (:visited)
 // or whose host was not found is read from its stylesheet rules (lib/fill-state-code.mjs, `read: 'code'`, rendered
 // null: the render cannot confirm it); an entered state has `read: 'entered'`. page/cdp: the open
 // draft page and its DevTools session (lib/fill-read.mjs::readDraft); jobs: lib/fill-read.mjs::jobsFor; rows: the
@@ -353,6 +355,8 @@ export async function readStates( { page, cdp, jobs, rows, rest, resolveSrc, log
 			}
 			out.unreached.push( ...code.unreached );
 		}
+		// The looks the draft's script sets on pointer or focus (lib/fill-state-script.mjs), beside the stylesheet's.
+		Object.entries( await readScriptLooks( { page, cdp, jobs, resolveSrc, log } ) ).forEach( ( [ id, list ] ) => ( out.looks[ id ] ??= [] ).push( ...list ) );
 	} finally {
 		await page.evaluate( ( a ) => document.querySelectorAll( `[${ a }]` ).forEach( ( e ) => e.removeAttribute( a ) ), HOST_ATTR );
 	}

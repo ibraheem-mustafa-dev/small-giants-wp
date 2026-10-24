@@ -19,10 +19,17 @@ to the trace. The step is idempotent, so it can run once on the generated palett
 A token's colour may carry alpha (``#rrggbbaa``, a translucent draft colour): its slug keeps that alpha in the
 snapshot's palette. A translucent colour fills a framework slug only when that slug's framework colour has the same
 alpha; otherwise Bean marks it as a ``custom-<name>`` colour.
+
+Two tokens whose colours are near-identical (CIEDE2000 ΔE ≤ 1 at the same alpha, the dedupe intake's proposal
+applies, FR-33-2) are one colour: when both carry a slug, the slug keeps the hex of the token declared first
+(intake's palette rows are in the token files' order, and intake keeps that member's value for the merged group).
+Only genuinely different colours on one slug are refused.
 """
 from __future__ import annotations
 
 import re
+
+from colour import DEDUP_DELTA_E, delta_e
 
 _CUSTOM_SLUG = re.compile(r"^custom-[a-z0-9]+(?:-[a-z0-9]+)*$")
 # Keys that mark a palette entry as an unconfirmed proposal (FR-33-5); a confirmed entry sheds them.
@@ -51,6 +58,11 @@ def _norm_hex(value) -> str | None:
         return None
     v = value.strip().lower()
     return v[:7] if v.endswith("ff") and len(v) == 9 else v
+
+
+def _same_colour(a: str, b: str) -> bool:
+    """Near-identical colours: the same alpha and CIEDE2000 ΔE ≤ 1 (FR-33-2's dedupe)."""
+    return _alpha(a) == _alpha(b) and delta_e(a[:7], b[:7]) <= DEDUP_DELTA_E
 
 
 def _alpha(value) -> str:
@@ -95,6 +107,7 @@ def confirmed_map(intake: dict, known_slugs, colours: dict | None = None) -> tup
         marks[row_id[len("palette:"):]] = entry.get("mark")
 
     known = set(known_slugs)
+    order = {t: i for i, t in enumerate(rows)}
     confirmed: dict[str, dict] = {}
     for token, mark in marks.items():
         row = rows.get(token)
@@ -115,6 +128,12 @@ def confirmed_map(intake: dict, known_slugs, colours: dict | None = None) -> tup
                                    f"{_alpha((colours or {}).get(slug))}; a translucent colour fills a framework slug only at the "
                                    "same alpha, so mark it role:custom-<name>")
             held = confirmed.get(slug)
+            if held and held["hex"] != hexv and _same_colour(held["hex"], hexv):
+                if order[token] < order[held["tokens"][0]]:
+                    held["hex"] = hexv
+                held.setdefault("merged", []).append(token)
+                held["tokens"].append(token)
+                continue
             if held and held["hex"] != hexv:
                 raise ConfirmError(f"slug {slug!r} is claimed by {', '.join(held['tokens'])} ({held['hex']}) "
                                    f"and by {token} ({hexv}); one slug cannot hold two colours")

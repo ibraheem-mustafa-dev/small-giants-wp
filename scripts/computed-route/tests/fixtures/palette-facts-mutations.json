@@ -1,0 +1,22 @@
+[
+	{ "file": "lib/intake-palette-usage.mjs", "find": "'whatsapp' === u.channel && isBackground( u.property )", "replace": "false", "why": "a WhatsApp link's ground is the whatsapp colour" },
+	{ "file": "lib/intake-palette-usage.mjs", "find": "strong( g ) && g !== channel && ok( g )", "replace": "strong( g ) && ok( g )", "why": "the whatsapp colour is never a brand ground" },
+	{ "file": "lib/intake-palette-usage.mjs", "find": "( u ) => u.length ?? u.count ?? 1, true );", "replace": "undefined, true );", "why": "lines weigh by the pixels they draw" },
+	{ "file": "lib/intake-palette-usage.mjs", "find": "const chars = ( u ) => u.chars ?? u.count ?? 1;", "replace": "const chars = ( u ) => u.count ?? 1;", "why": "text weighs by its characters" },
+	{ "file": "lib/intake-palette-usage.mjs", "find": "lightness( g.hex ) >= lightness( text.hex ) + MUTED_STEP", "replace": "lightness( g.hex ) > lightness( text.hex )", "why": "muted text is a clear step lighter than the text" },
+	{ "file": "lib/intake-palette-usage.mjs", "find": "const accentText = onFill ?", "replace": "const accentText = true ?", "why": "with no text on the accent fill, accent-text is the accent's ink" },
+	{ "file": "lib/intake-palette-usage.mjs", "find": "&& chroma( x.hex ) >= 0.6 * chroma( g.hex )", "replace": "", "why": "the accent's ink carries its hue's chroma" },
+	{ "file": "lib/intake-palette-usage.mjs", "find": "( carried.get( b ) || 0 ) - ( carried.get( a ) || 0 ) || ", "replace": "", "why": "accent-light is the tint that carries the accent ink" },
+	{ "file": "lib/intake-palette-usage.mjs", "find": "hueGap( g.hex, accent.hex ) <= SAME_HUE && ! [", "replace": "! [", "why": "accent-light is of the accent's hue" },
+	{ "file": "lib/intake-palette-usage.mjs", "find": "'status-color' === u.property && 'status' === tag( u )", "replace": "'status-color' === u.property", "why": "success comes from a status message, not an alert" },
+	{ "file": "lib/intake-palette-usage.mjs", "find": "( g ) => opaque( g.hex ) && isGreen( g.hex ) ),", "replace": "( g ) => opaque( g.hex ) ),", "why": "success is green" },
+	{ "file": "lib/intake-palette-grounds.mjs", "find": "/\\brole\\s*=\\s*[\"']alert[\"']|\\baria-live\\s*=\\s*[\"']assertive[\"']/i.test( tagText ) ? 'alert' : null;", "replace": "false ? 'alert' : null;", "why": "an assertive message is an alert" },
+	{ "file": "lib/intake-palette-grounds.mjs", "find": "(?:[^\"']*[;\\s])?color", "replace": "[^\"']*[;\\s]color", "why": "a style that starts with color is read" },
+	{ "file": "lib/intake-run-collapse.mjs", "find": "const band = 'background-color' === property && ( r.box?.w ?? 0 ) >= 0.9 * ( r.width || 1440 );", "replace": "const band = false;", "why": "a full-width ground is a band" },
+	{ "file": "lib/intake-run-collapse.mjs", "find": "u.chars = ( u.chars || 0 ) + ( texts.get( at ) || 0 );", "replace": "u.chars = 1;", "why": "characters sum per row" },
+	{ "file": "lib/intake-run-collapse.mjs", "find": "const channel = channels.get( at ) ?? null;", "replace": "const channel = null;", "why": "a WhatsApp link is marked" },
+	{ "file": "lib/intake-run-collapse.mjs", "find": "'border-top-color': ( b ) => b.w,", "replace": "'border-top-color': ( b ) => b.h,", "why": "a top border draws the box width" },
+	{ "file": "lib/intake-palette-usage.mjs", "find": "give( 'section-text', sectionCopy || on( section ),", "replace": "give( 'section-text', on( section ),", "why": "section text is the colour of the most text set on the section" },
+	{ "file": "lib/intake-palette-usage.mjs", "find": "const copyOn = ( g ) => ( g && flagged ? best( tally( ( u ) => isText( u ) && g.hexes.has( u.ground ), chars )", "replace": "const copyOn = ( g ) => ( g && flagged ? best( tally( ( u ) => 'color' === u.property && g.hexes.has( u.ground ) )", "why": "text on a content ground weighs by its characters" },
+	{ "file": "lib/intake-palette.mjs", "find": "const count = held ? null : weak.find( ( [ g, r ] ) => g === h.g && r.role === slug );", "replace": "const count = null;", "why": "a name agreeing with the count on the same value keeps it a usage role" }
+]
