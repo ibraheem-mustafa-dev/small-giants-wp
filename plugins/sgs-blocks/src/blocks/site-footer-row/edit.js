@@ -288,9 +288,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		}
 	} );
 	let bandTransition = '';
+	let rowTimingVars = {};
 	if ( false === rowAnimate ) {
-		// Animate off: the shrunk preview jumps, like the front end.
+		// Animate off: the shrunk preview jumps, like the front end, and the logo and headings that read the row's timing jump too.
 		bandTransition = 'none';
+		rowTimingVars = { '--sgs-row-shrink-duration': '0ms' };
 	} else if ( rowShrinkDuration > 0 || rowShrinkEasing ) {
 		const ms =
 			rowShrinkDuration > 0 ? Math.min( 3000, rowShrinkDuration ) : 200;
@@ -299,6 +301,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			rowShrinkEasingCustom || '',
 			'ease'
 		) }`;
+		rowTimingVars = {
+			'--sgs-row-shrink-duration': `${ ms }ms`,
+			'--sgs-row-shrink-easing': motionEasingCss(
+				rowShrinkEasing || 'ease',
+				rowShrinkEasingCustom || '',
+				'ease'
+			),
+		};
 	}
 
 	// Empty-row detection drives the promoted quick-insert placeholder — once
@@ -391,7 +401,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		...footerRowPaint( attributes, previewTier, colourPalette ),
 		...sep.style,
 	};
-	Object.assign( style, marginPreview );
+	Object.assign( style, marginPreview, rowTimingVars );
 	if ( maxWidthPreview ) {
 		style.maxWidth = maxWidthPreview;
 	}
