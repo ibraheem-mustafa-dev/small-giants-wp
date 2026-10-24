@@ -15,6 +15,10 @@ Bean marked one-off). Any other slug, such as a client slug ``merge_onto`` carri
 snapshot, is kept and logged, because the client's styles may reference it. Every change is logged
 to the trace. The step is idempotent, so it can run once on the generated palette and again after
 ``merge_onto``.
+
+A token's colour may carry alpha (``#rrggbbaa``, a translucent draft colour): its slug keeps that alpha in the
+snapshot's palette. A translucent colour fills a framework slug only when that slug's framework colour has the same
+alpha; otherwise Bean marks it as a ``custom-<name>`` colour.
 """
 from __future__ import annotations
 
@@ -35,10 +39,24 @@ def framework_slugs(baseline: dict) -> dict[str, str]:
     return {e["slug"]: e.get("name") or e["slug"] for e in pal if isinstance(e, dict) and e.get("slug")}
 
 
+def framework_colours(baseline: dict) -> dict[str, str]:
+    """``{slug: colour}`` of the framework palette (``theme/sgs-theme/theme.json``)."""
+    pal = ((baseline.get("settings") or {}).get("color") or {}).get("palette") or []
+    return {e["slug"]: e["color"] for e in pal if isinstance(e, dict) and e.get("slug") and isinstance(e.get("color"), str)}
+
+
 def _norm_hex(value) -> str | None:
-    if not isinstance(value, str) or not re.fullmatch(r"#[0-9a-fA-F]{6}", value.strip()):
+    """``#rrggbb`` or ``#rrggbbaa`` lowercase (a fully opaque ``aa`` of ``ff`` is dropped); None if not a hex."""
+    if not isinstance(value, str) or not re.fullmatch(r"#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{8})", value.strip()):
         return None
-    return value.strip().lower()
+    v = value.strip().lower()
+    return v[:7] if v.endswith("ff") and len(v) == 9 else v
+
+
+def _alpha(value) -> str:
+    """The alpha byte of a hex colour (``ff`` when it has none or is not a hex)."""
+    v = _norm_hex(value)
+    return v[7:] if v and len(v) == 9 else "ff"
 
 
 def _mark_slugs(token: str, mark, row: dict) -> list[str]:
@@ -55,11 +73,14 @@ def _mark_slugs(token: str, mark, row: dict) -> list[str]:
     raise ConfirmError(f"{token}: unrecognised palette mark {mark!r} (accept, role:<slug>[,<slug>...] or one-off)")
 
 
-def confirmed_map(intake: dict, known_slugs) -> tuple[dict[str, dict], list[str]]:
-    """Return ``({slug: {"hex": "#rrggbb", "tokens": [...]}}, [unmarked tokens])`` from intake.
+def confirmed_map(intake: dict, known_slugs, colours: dict | None = None) -> tuple[dict[str, dict], list[str]]:
+    """Return ``({slug: {"hex": "#rrggbb[aa]", "tokens": [...]}}, [unmarked tokens])`` from intake. ``colours`` is
+    ``framework_colours(baseline)``: a translucent row fills a framework slug only when that slug's colour has the same
+    alpha (a slug with no known colour counts as opaque).
 
     Raises ``ConfirmError`` for a mark on a token intake has no row for, an unrecognised mark, a
-    slug that is neither a framework slug nor ``custom-<name>``, a row without a usable hex, or two
+    slug that is neither a framework slug nor ``custom-<name>``, a row without a usable hex, a translucent colour on a
+    framework slug whose colour has another alpha, or two
     tokens that claim one slug with different hex values.
     """
     rows = {r.get("token"): r for r in ((intake.get("palette") or {}).get("rows") or [])
@@ -84,11 +105,15 @@ def confirmed_map(intake: dict, known_slugs) -> tuple[dict[str, dict], list[str]
             continue
         hexv = _norm_hex(row.get("hex"))
         if hexv is None:
-            raise ConfirmError(f"{token}: intake row hex {row.get('hex')!r} is not a #rrggbb colour")
+            raise ConfirmError(f"{token}: intake row hex {row.get('hex')!r} is not a #rrggbb or #rrggbbaa colour")
         for slug in slugs:
             if slug not in known and not _CUSTOM_SLUG.match(slug):
                 raise ConfirmError(f"{token}: confirmed slug {slug!r} is neither a framework palette slug "
                                    "(theme/sgs-theme/theme.json) nor a custom-<name> slug")
+            if slug in known and _alpha(hexv) != _alpha((colours or {}).get(slug)):
+                raise ConfirmError(f"{token}: {hexv} has alpha {_alpha(hexv)} but the framework slug {slug!r} has alpha "
+                                   f"{_alpha((colours or {}).get(slug))}; a translucent colour fills a framework slug only at the "
+                                   "same alpha, so mark it role:custom-<name>")
             held = confirmed.get(slug)
             if held and held["hex"] != hexv:
                 raise ConfirmError(f"slug {slug!r} is claimed by {', '.join(held['tokens'])} ({held['hex']}) "

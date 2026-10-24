@@ -873,7 +873,7 @@ def main(argv=None) -> int:
         intake = json.loads(pathlib.Path(args.intake).read_text(encoding="utf-8"))
         draft_slugs = confirmed_palette.draft_custom_slugs(intake)
         try:
-            confirmed, unmarked = confirmed_palette.confirmed_map(intake, framework)
+            confirmed, unmarked = confirmed_palette.confirmed_map(intake, framework, confirmed_palette.framework_colours(baseline))
         except confirmed_palette.ConfirmError as exc:
             print(f"HALT (FR-33-2 confirm step): {exc}", file=sys.stderr)
             return 7

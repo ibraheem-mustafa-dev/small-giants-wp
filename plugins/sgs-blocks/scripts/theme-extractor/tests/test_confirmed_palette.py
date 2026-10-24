@@ -64,6 +64,40 @@ def test_accept_takes_every_role_the_proposal_gave_one_value():
     assert sorted(confirmed) == ["border", "heading", "text"]
 
 
+COLOURS = cp.framework_colours(BASELINE)
+REDESIGN = REPO / "sites/mamas-munches-redesign/build/intake/intake.json"
+
+
+def _translucent_rows():
+    """The redesign client's real intake rows whose colour carries alpha (--mm-rule, --mm-rule-soft, --mm-tape)."""
+    rows = json.loads(REDESIGN.read_text(encoding="utf-8"))["palette"]["rows"]
+    picked = [(r["token"], r["hex"], r["role"]) for r in rows if len(r["hex"]) == 9]
+    assert {t for t, _, _ in picked} == {"--mm-rule", "--mm-rule-soft", "--mm-tape"}
+    return picked
+
+
+def test_must_fail_a_translucent_custom_colour_is_confirmed_with_its_alpha():
+    rows = _translucent_rows()
+    intake = _intake(rows, {t: "accept" for t, _, _ in rows})
+    confirmed, _ = cp.confirmed_map(intake, FRAMEWORK, COLOURS)
+    assert confirmed == {r: {"hex": h.lower(), "tokens": [t]} for t, h, r in rows}
+    snap = {"settings": {"color": {"palette": []}}}
+    cp.apply_confirmed(snap, confirmed, FRAMEWORK, [], frozenset())
+    assert {e["slug"]: e["color"] for e in snap["settings"]["color"]["palette"]} == {r: h.lower() for t, h, r in rows}
+
+
+def test_must_fail_a_translucent_colour_fills_a_framework_slug_only_at_the_framework_alpha():
+    token, hexv, _ = _translucent_rows()[0]
+    assert set(COLOURS) == set(FRAMEWORK) and re.fullmatch(r"#[0-9a-fA-F]{6}", COLOURS["border"]), "framework colours are read"
+    with pytest.raises(cp.ConfirmError, match=r"alpha 4d but the framework slug 'border' has alpha ff"):
+        cp.confirmed_map(_intake([(token, hexv, "border")], {token: "accept"}), FRAMEWORK, COLOURS)
+    same = {**COLOURS, "border": "#00000033"}
+    confirmed, _ = cp.confirmed_map(_intake([("--line", "#11223333", "border")], {"--line": "accept"}), FRAMEWORK, same)
+    assert confirmed["border"]["hex"] == "#11223333"
+    opaque, _ = cp.confirmed_map(_intake([("--ink", "#3A2A22FF", "text")], {"--ink": "accept"}), FRAMEWORK, COLOURS)
+    assert opaque["text"]["hex"] == "#3a2a22", "a fully opaque alpha byte is dropped"
+
+
 @pytest.mark.parametrize("mark", ["role:heading,brand-blue", "role:heading,", "role:,heading"])
 def test_a_bad_slug_anywhere_in_a_several_role_mark_is_refused(mark):
     intake = _intake([("--text-heading", "#2C3E50", "heading")], {"--text-heading": mark})
