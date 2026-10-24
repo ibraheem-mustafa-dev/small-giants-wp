@@ -6,7 +6,8 @@
 // not state is not written (the block's own default stands).
 //
 // recogniseBehaviour(record, ctx) returns null for a record that is not a script-driven behaviour, else one of
-//   { kind: 'effect', effects: [{ effect, panel, trigger, values }], hoverState?, alt?, host, notes, coverage }
+//   { kind: 'effect', effects: [{ effect, panel, trigger, values }], hoverState?, alt?, unread?, host, notes, coverage }
+//                                                 (unread: [ { field, reason } ], values not read, each a named row)
 //   { kind: 'control', of, effect, values }       a control of another record's layer (the marquee's hover rate)
 //   { kind: 'site', option, value }               a site-wide option (the route fade), not a block layer
 //   { kind: 'settings', blocks: { '<block>': [ { attr, value, colour? } ] }, accepted?, sticky?, notes }
@@ -31,7 +32,6 @@ import { fromPointer, tiltOf, tiltGlareHostOf, tiltResetOf } from './motion-tilt
 
 // The attribute selector of the template element a record's script finds its target by (`[data-mag]`), or null.
 export const hostOf = ( r ) => /\[data-[a-z0-9-]+\]/i.exec( words( r.element?.selector, r.trigger?.detail ) )?.[ 0 ] ?? null;
-
 
 // A script-written translate of the element toward the pointer: a magnet. The pull model follows the formula: a
 // position in the element (0..1) times a size is the normalised model (the size is the full travel across the element),
@@ -207,16 +207,26 @@ function controlOf( r ) {
 	return 'waapi-control' === r.mechanism && p && of && Number.isFinite( Number( p.to ) ) && Number( p.to ) >= 0 && Number( p.to ) <= 1 ? { of, rate: Number( p.to ) } : null;
 }
 
+// The page component's single content root: the one element with no parent, outside and not the helmet, of a component
+// no `<dc-import>` imports (an imported component's root is that component's). Its component: `component`, else the key's.
+function isPageRoot( key, e, elements ) {
+	const compOf = ( k, x ) => x.component ?? k.slice( 0, k.lastIndexOf( '/' ) );
+	const isRoot = ( x ) => ! x.parent && ! x.inHelmet && ! /^(?:sc-helmet|helmet)$/i.test( String( x.realTag ?? x.tag ?? '' ) );
+	const comp = compOf( key, e );
+	const imported = Object.values( elements ).some( ( x ) => /^dc-import$/i.test( String( x.realTag ?? x.tag ?? '' ) ) && comp === x.attrs?.name );
+	return isRoot( e ) && ! imported && 1 === Object.entries( elements ).filter( ( [ k, x ] ) => compOf( k, x ) === comp && isRoot( x ) ).length;
+}
+
 // Whether the element a record animates is the page: the template element it names is the document's `<main>` or
-// `<body>`, or the root element of its component (no parent, outside the helmet), whatever the ref or selector that
-// reaches it is called. A record that names no element of the given template is read by its selector alone: the
-// element it selects is `main` or `body`.
+// `<body>`, or the page component's single content root (isPageRoot), whatever the ref or selector that reaches it is
+// called. A record that names no element of the given template is read by its selector alone: the element it selects
+// is `main` or `body`.
 function isPageElement( r, ctx ) {
 	const tpls = [ r.element?.template_tpl_id ].flat().filter( ( v ) => null !== v && undefined !== v );
 	const elements = ctx.template?.elements;
-	const named = elements && r.element?.dc ? tpls.map( ( tpl ) => elements[ templateKey( { dc: r.element.dc, tpl } ) ] ).filter( Boolean ) : [];
-	if ( named.length ) {
-		return named.every( ( e ) => /^(?:main|body)$/i.test( String( e.realTag ?? e.tag ?? '' ) ) || ( ! e.parent && ! e.inHelmet ) );
+	const keys = elements && r.element?.dc ? tpls.map( ( tpl ) => templateKey( { dc: r.element.dc, tpl } ) ).filter( ( k ) => elements[ k ] ) : [];
+	if ( keys.length ) {
+		return keys.every( ( k ) => /^(?:main|body)$/i.test( String( elements[ k ].realTag ?? elements[ k ].tag ?? '' ) ) || isPageRoot( k, elements[ k ], elements ) );
 	}
 	return /(?:^|[^\w-])(?:main|body)(?![\w-])/i.test( String( r.element?.selector ?? '' ) );
 }
@@ -229,7 +239,6 @@ function routeFadeOf( r, ctx ) {
 	}
 	return { style: 'fade', durationMs: durationOf( r ), easing: easingOf( r ) };
 }
-
 
 // The exit of an element's open entrance: a Web Animation on close, from the resting pose to another, held at the end.
 const CLOSE_WORDS = new Set( [ 'close', 'closes', 'closed', 'closing', 'dismiss', 'dismisses', 'dismissed', 'exit', 'exits', 'exiting' ] );
@@ -325,7 +334,7 @@ export function recogniseBehaviour( record, ctx = {} ) {
 	}
 	const tilt = tiltOf( r, ctx );
 	if ( tilt ) {
-		return done( r, { kind: 'effect', effects: tilt.glare ? [ { effect: 'glare', panel: 'hover', trigger: 'hover', values: {} } ] : [], hoverState: tilt.hoverState } );
+		return done( r, { kind: 'effect', effects: tilt.glare ? [ { effect: 'glare', panel: 'hover', trigger: 'hover', values: tilt.glareValues } ] : [], hoverState: tilt.hoverState, unread: tilt.rows } );
 	}
 	const tiltHost = tiltGlareHostOf( r, ctx );
 	if ( tiltHost ) {
@@ -372,6 +381,7 @@ export function effectRows( records, ctx = {} ) {
 			text: `${ r.id } ${ r.name ?? '' } (${ r.mechanism }, ${ triggerOf( r ) }) is ${ says }`.replace( /\s+/g, ' ' ),
 			unmapped: 'unmapped' === b.kind ? b.reason : undefined,
 		} );
+		( b.unread || [] ).forEach( ( u ) => rows.push( { rowId: `effect:${ r.id }:${ u.field }`, draftId: r.id, record: r.id, effect: what, kind: b.kind, text: `${ r.id } ${ what } ${ u.field }: ${ u.reason }`, unmapped: u.reason } ) );
 	}
 	return rows;
 }

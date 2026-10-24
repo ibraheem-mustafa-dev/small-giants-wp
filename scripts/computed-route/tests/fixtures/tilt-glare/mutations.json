@@ -1,8 +1,8 @@
 [
 	{
 		"file": "lib/motion-tilt.mjs",
-		"find": " || ( ctx.records || [] ).some( ( o ) => o !== r && pointerVarsOf( o ) && sameElement( o, r ) );",
-		"replace": ";",
+		"find": "const glare = own.length > 0 || companions.length > 0;",
+		"replace": "const glare = own.length > 0;",
 		"why": "the tilt would lose its glare when the glare position is written by its own records"
 	},
 	{
@@ -13,7 +13,7 @@
 	},
 	{
 		"file": "lib/motion-tilt.mjs",
-		"find": "list.every( ( q ) => /^--/.test( nameOf( q ) ) && fromPointer( q, r ) )",
+		"find": "list.every( ( q ) => /^--/.test( nameOf( q ) ) && fromPointer( q ) )",
 		"replace": "true",
 		"why": "any pointer write on a tilt host (the tilt itself included) would be read as its glare position"
 	},
@@ -46,5 +46,101 @@
 		"find": "\t&& null != a.source?.function && a.source.function === b.source?.function && ( a.source?.file ?? null ) === ( b.source?.file ?? null );",
 		"replace": ";",
 		"why": "a pointer write on the tilting element from another handler would be read as its glare"
+	},
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": "return stated ?? ( null === k ? null : Math.round( k * Math.SQRT1_2 * 10 ) / 10 );",
+		"replace": "return stated;",
+		"why": "a tilt written as the distance from the centre times a factor would lose its angle"
+	},
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": "Math.round( k * Math.SQRT1_2 * 10 )",
+		"replace": "Math.round( k * 10 )",
+		"why": "the factor would be taken for the corner angle"
+	},
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": "const rows = null === angle ? [",
+		"replace": "const rows = false ? [",
+		"why": "a tilt with no readable angle would fall back to the default silently"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "values: tilt.glareValues }",
+		"replace": "values: {} }",
+		"why": "the glare layer's values would be lost"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": ", unread: tilt.rows } );",
+		"replace": " } );",
+		"why": "the tilt's unread values would raise no row"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "( b.unread || [] ).forEach(",
+		"replace": "[].forEach(",
+		"why": "the review rows would not name the unread values"
+	},
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": "if ( 1 === seen.length ) {",
+		"replace": "if ( seen.length >= 1 ) {",
+		"why": "glare layers that differ would write the first one's value"
+	},
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": "} else if ( seen.length > 1 ) {",
+		"replace": "} else if ( false ) {",
+		"why": "glare layers that differ would raise no row"
+	},
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": "const rows = read.filter( ( h ) => ! h.values ).map(",
+		"replace": "const rows = read.filter( ( h ) => false ).map(",
+		"why": "a host with no readable glare layer would raise no row"
+	},
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": " || ! names.some( ( n ) => args[ 0 ].includes( `var(${ n }` ) ) ) {",
+		"replace": " ) {",
+		"why": "a highlight not placed at the pointer position would be read as the glare"
+	},
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": " && 0 === fade.alpha ?",
+		"replace": " ?",
+		"why": "a highlight that does not fade to nothing would be read as the glare"
+	},
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": "glareOpacity: round( paint.alpha )",
+		"replace": "glareOpacity: 1",
+		"why": "the glare's strength would be lost"
+	},
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": "glareSize: Number( last[ 2 ] )",
+		"replace": "glareSize: 50",
+		"why": "the glare's size would be lost"
+	},
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": "export const fromPointer = ( p ) => /client[XY]|pointer|\\bx\\b[^.]*\\by\\b|\\(x\\b|\\by\\b/i.test( words( p.formula, p.to ) );",
+		"replace": "export const fromPointer = ( p, r ) => /client[XY]|pointer|\\bx\\b[^.]*\\by\\b|\\(x\\b|\\by\\b/i.test( words( p.formula, p.to, r?.source?.code ) );",
+		"why": "the words of the statement around a property would make it pointer-written"
+	},
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": " && ( a.source?.file ?? null ) === ( b.source?.file ?? null );",
+		"replace": ";",
+		"why": "the same function in another file would be the same handler"
+	},
+	{
+		"file": "lib/motion-tilt.mjs",
+		"find": "&& null != a.source?.function && a.source.function",
+		"replace": "&& a.source?.function",
+		"why": "two records naming no function would be the same handler"
 	}
 ]

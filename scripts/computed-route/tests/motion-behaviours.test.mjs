@@ -149,6 +149,25 @@ test( "MUST FAIL: a fade on a route change of the page's <main> or its component
 	assert.deepEqual( out.site.map( ( s ) => [ s.record, s.option, s.settings.page_transition_duration ] ), [ [ 'P-30', 'page-transition', 380 ] ] );
 } );
 
+test( 'MUST FAIL: a route fade on the root of an imported component, or on one of several roots, is not the page transition', () => {
+	const template = { elements: {
+		'Site/0': { tag: 'sc-helmet', realTag: 'helmet', parent: null, inHelmet: false },
+		'Site/8': { tag: 'div', realTag: 'div', parent: null, inHelmet: false },
+		'Site/201': { tag: 'main', realTag: 'main', parent: 'Site/8' },
+		'Site/466': { tag: 'dc-import', realTag: 'dc-import', parent: 'Site/201', attrs: { name: 'Card' } },
+		'Card/0': { tag: 'sc-helmet', realTag: 'helmet', parent: null, inHelmet: false },
+		'Card/3': { tag: 'div', realTag: 'div', parent: null, inHelmet: false },
+		'Pair/1': { tag: 'div', realTag: 'div', parent: null, inHelmet: false },
+		'Pair/2': { tag: 'div', realTag: 'div', parent: null, inHelmet: false },
+	} };
+	const fade = ( dc, tpl ) => rec( 'P-31', { ...FADE, id: 'P-31', element: { dc, template_tpl_id: tpl, selector: 'ref setRootEl', description: 'animated element: ref setRootEl' } } );
+	const kind = ( r ) => recogniseBehaviour( r, { template } )?.kind ?? null;
+	assert.equal( kind( fade( 'Site', '8' ) ), 'site', "the page component's one content root (its helmet is no content root)" );
+	assert.equal( kind( fade( 'Site', '201' ) ), 'site', "the page's <main>" );
+	assert.equal( kind( fade( 'Card', '3' ) ), null, 'the root of a component the page imports is that component, not the page' );
+	assert.equal( kind( fade( 'Pair', '1' ) ), null, "one of two roots is not the page's single content root" );
+} );
+
 test( 'MUST FAIL: a label magnet (one axis, an offset from the centre times a factor) on a block that declares the item magnet settings writes the settings; on a block that does not it is a magnet layer', () => {
 	const settings = run( [ node( 0, 'sgs/nav-bar-menu', '30' ) ], [ LABEL_MAGNET ], { hasAttr: ( block, attr ) => 'sgs/nav-bar-menu' === block && /^itemMagnet/.test( attr ) } );
 	assert.deepEqual( settings.out.writes.map( ( w ) => [ w.attr, w.after ] ), [ [ 'itemMagnetEnabled', true ], [ 'itemMagnetStrength', 0.14 ] ] );
