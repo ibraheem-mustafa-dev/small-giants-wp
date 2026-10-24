@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/fill-state-read.mjs",
+		"find": "\t\tObject.entries( await readScriptLooks( { page, cdp, jobs, resolveSrc, log } ) ).forEach( ( [ id, list ] ) => ( out.looks[ id ] ??= [] ).push( ...list ) );\n",
+		"replace": "",
+		"why": "the old code: readStates reads stylesheet looks only"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "\t\t\t\tlook.script && ( e.script = look.script );\n",
+		"replace": "",
+		"why": "the script facts never reach the writer, so the raised row loses its script-look reason"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "reason: scriptGapReason( script, state, res.detail ? `${ res.gap }: ${ res.detail }` : res.gap ) } );",
+		"replace": "reason: res.detail ? `${ res.gap }: ${ res.detail }` : res.gap } );",
+		"why": "the old gap reason for an open look on a block without an open setting"
+	},
+	{
+		"file": "lib/fill-state-script.mjs",
+		"find": "const kind = mine.opened ? 'open-panel' : state;",
+		"replace": "const kind = state;",
+		"why": "every script look read as hover or focus, never open-panel"
+	},
+	{
+		"file": "lib/fill-state-script.mjs",
+		"find": "return [ ...document.body.querySelectorAll( '*' ) ].filter( ( e ) => ! owner.contains( e ) && shown( e ) ).length;",
+		"replace": "return [ ...document.body.querySelectorAll( '*' ) ].filter( ( e ) => shown( e ) ).length;",
+		"why": "an element shown inside the handler's own element counts as a panel"
+	},
+	{
+		"file": "lib/fill-state-script.mjs",
+		"find": "\t\t\tif ( ! mine || ! Object.keys( mine.changed ).length ) {",
+		"replace": "\t\t\tif ( ! reads.some( ( r ) => r.got && Object.keys( r.got.changed ).length ) ) {",
+		"why": "an item whose own copy never changes (Contact) takes another copy's look"
+	},
+	{
+		"file": "lib/fill-state-script.mjs",
+		"find": "\t\tconst changed = Object.fromEntries( Object.entries( during || {} ).filter( ( [ p, v ] ) => before[ p ] !== v ) );",
+		"replace": "\t\tconst changed = Object.fromEntries( Object.entries( during || {} ) );",
+		"why": "every declared value counts as a change, so the control gets a look"
+	},
+	{
+		"file": "lib/fill-state-script.mjs",
+		"find": "\t\tawait page.evaluate( fireScript, [ copy.finder, resolveSrc, trigger.leave, trigger.props ] ).catch( () => null );\n",
+		"replace": "",
+		"why": "the page is never put back after a read"
+	},
+	{
+		"file": "lib/fill-state-script.mjs",
+		"find": "\t\t\tif ( same ) {\n\t\t\t\tsame.script.events.push( state );\n\t\t\t\tcontinue;\n\t\t\t}",
+		"replace": "",
+		"why": "pointer and focus giving one look are recorded twice"
+	},
+	{
+		"file": "lib/fill-state-script.mjs",
+		"find": "\tfocus: { props: [ 'onFocus', 'onFocusCapture' ], enter: [ 'focusin' ], leave: [ 'focusout' ] },",
+		"replace": "\tfocus: { props: [ 'onFocus', 'onFocusCapture' ], enter: [ 'focus' ], leave: [ 'focusout' ] },",
+		"why": "a non-bubbling focus event never reaches the runtime's delegated listener"
+	},
+	{
+		"file": "lib/fill-state-script.mjs",
+		"find": "\tfor ( let k = 0; k < 200; k++ ) {",
+		"replace": "\tfor ( let k = 0; k < 1; k++ ) {",
+		"why": "only the first copy is read, so the per-item list misses the other items"
+	}
+]

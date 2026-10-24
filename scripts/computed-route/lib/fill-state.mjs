@@ -3,7 +3,8 @@
 // resting pass. Solve keeps correcting the residue the walker measures, through the same resolver with the same state.
 // A look is written only through a setting state the framework DB holds (block_attributes.css_state). Keyboard focus
 // that paints like hover is already written by the hover setting (SGS paints hover on :hover and :focus-visible
-// together); any other look no setting holds is reported as a gap, never dropped.
+// together); any other look no setting holds is reported as a gap, never dropped. A look the draft's script sets on pointer
+// or focus (lib/fill-state-script.mjs) goes the same way; its gap row is named `script-look`.
 //
 // Three looks go to the client's theme snapshot instead (lib/fill-state-tokens.mjs): a focus look unlike hover, a press look
 // on a button, and a :link, :any-link or :visited look on a plain content link; Fill returns them as `patch` and never
@@ -32,6 +33,7 @@ import { TIMING_PROPS, timingWrites } from './fill-timing.mjs';
 import { motionDb } from './motion-db.mjs';
 import { targetName } from './fill-motion.mjs';
 import { MOTION_STATE_PROPS, stateHover } from './fill-state-motion.mjs';
+import { scriptGapReason } from './fill-state-script.mjs';
 import { createPatch, tokenRoute, pickValue, pressVariant, ownedBySetting, applyTokenLooks, conflictRow, ringLook, takesRing } from './fill-state-tokens.mjs';
 
 export const COVERAGE_WRITES = [
@@ -83,6 +85,7 @@ export function stateDrafts( reads, id ) {
 				const key = `${ state }|${ pseudo }|${ prop }`;
 				const e = out.get( key ) || { state, prop, pseudo, perWidth: {}, byCode: {}, read: 'entered' };
 				look.draftDefect && ( e.draftDefect = look.draftDefect );
+				look.script && ( e.script = look.script );
 				if ( code && undefined !== e.perWidth[ w ] ) {
 					continue;
 				}
@@ -335,7 +338,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 			const ctx = stateContext( reads, target.id );
 			const hidden = SURFACE_BLOCKS.includes( rec.name ) && hiddenAtRest( reads, target.id );
 			const tokenLooks = {};
-			for ( const { state, prop, pseudo, perWidth, read, draftDefect } of drafts.values() ) {
+			for ( const { state, prop, pseudo, perWidth, read, draftDefect, script } of drafts.values() ) {
 				// A pseudo-element look goes to that layer's calibrated path, as the resting writer sends it
 				// (lib/fill-resolve.mjs), and never to a theme token: the site ring and press tokens paint the element.
 				const slot = `${ target.slot }${ pseudo }`;
@@ -367,12 +370,12 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 					for ( const w of res.writes ) {
 						const { before, after } = setAttr( node, w );
 						atRest || taken.set( w.attr, w.value );
-						out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop, state, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: 'fill-state', ...( 'code' === read ? { read } : {} ), ...( draftDefect ? { draftDefect } : {} ), ...( atRest ? { surface: 'open look written as the resting look' } : {} ) } );
+						out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop, state, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: 'fill-state', ...( 'code' === read ? { read } : {} ), ...( draftDefect ? { draftDefect } : {} ), ...( script ? { script: script.kind } : {} ), ...( atRest ? { surface: 'open look written as the resting look' } : {} ) } );
 					}
 					const shared = 'hover' === state ? focusSharesHover( { drafts, pseudo, prop, snap: snapOf( target ), attrs: res.writes.map( ( w ) => w.attr ) } ) : null;
 					shared && out.unmapped.push( { node: ref, block: rec.name, slot, property: prop, state: 'focus', value: JSON.stringify( perWidth ), reason: shared } );
 				} else if ( 'gap' === res.status ) {
-					out.unmapped.push( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( perWidth ), reason: res.detail ? `${ res.gap }: ${ res.detail }` : res.gap } );
+					out.unmapped.push( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( perWidth ), reason: scriptGapReason( script, state, res.detail ? `${ res.gap }: ${ res.detail }` : res.gap ) } );
 				}
 			}
 			if ( ! hidden ) {
