@@ -37,7 +37,7 @@ import {
 	patchTier,
 	isCssGradient,
 } from '../../utils';
-import FlexWrapSelect from '../../components/FlexWrapSelect';
+import FlexWrapControl from '../../components/FlexWrapControl';
 import { svgStrokeGradientPreview, parseSvgGradient, SvgGradientDefs } from '../../utils/svg-gradient-preview';
 import { iconLengthValue } from '../icon/icon-state';
 import IconSizeControl, { ICON_SIZE_HELP } from '../icon/icon-size-control';
@@ -421,7 +421,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						value={ rowAlign }
 						onChange={ ( value ) => setAttributes( { rowAlign: value || 'start' } ) }
 					/>
-					<FlexWrapSelect label={ __( 'Wrap icons', 'sgs-blocks' ) } value={ flexWrap } onChange={ ( value ) => setAttributes( { flexWrap: value } ) } />
+					<FlexWrapControl label={ __( 'Wrap icons', 'sgs-blocks' ) } value={ flexWrap } onChange={ ( value ) => setAttributes( { flexWrap: value } ) } />
 				</PanelBody>
 				<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
 					<TextControl

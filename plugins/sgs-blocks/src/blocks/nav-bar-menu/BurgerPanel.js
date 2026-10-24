@@ -404,6 +404,8 @@ export default function BurgerPanel( {
 					value={ burgerBarAlign || '' }
 					onChange={ ( val ) => setAttributes( { burgerBarAlign: val || '' } ) }
 					isBlock
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 					help={ __( 'Matters when a bar is set shorter than the icon in its Hover panel: which side the bars line up on, and so which edge a growing bar grows from.', 'sgs-blocks' ) }
 				>
 					<ToggleGroupControlOption value="" label={ __( 'Start', 'sgs-blocks' ) } />

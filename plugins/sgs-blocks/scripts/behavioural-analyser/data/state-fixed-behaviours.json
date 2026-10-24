@@ -258,22 +258,22 @@
   },
   {
    "file": "plugins/sgs-blocks/assets/css/motion.css",
-   "selector": "[data-sgs-hover-group]:focus-within",
+   "selector": "[data-sgs-hover-group]:focus-within:not([data-sgs-focus-rests])",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/assets/css/motion.css",
-   "selector": "[data-sgs-mh=\"self\"]:focus-visible",
+   "selector": "[data-sgs-mh=\"self\"]:focus-visible:not([data-sgs-focus-rests])",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/assets/css/motion.css",
-   "selector": "[data-sgs-mitem]:focus-within",
+   "selector": "[data-sgs-mitem]:focus-within:not([data-sgs-focus-rests])",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/assets/css/motion.css",
-   "selector": "[data-sgs-mroot]:focus-within",
+   "selector": "[data-sgs-mroot]:focus-within:not([data-sgs-focus-rests])",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -413,7 +413,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/account/style.css",
-   "selector": "a.sgs-account__quick-card:focus-visible .sgs-account__card-title",
+   "selector": "a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-account__card-title",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -503,12 +503,12 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
-   "selector": ".sgs-business-attribution .sgs-business-info__link:focus-visible",
+   "selector": ".sgs-business-attribution .sgs-business-info__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
-   "selector": ".sgs-business-attribution .sgs-business-info__link:focus-visible::after",
+   "selector": ".sgs-business-attribution .sgs-business-info__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))::after",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -553,7 +553,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
-   "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link:focus-visible",
+   "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -693,7 +693,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/card-grid/style.css",
-   "selector": ".sgs-card-grid__page-btn:focus-visible",
+   "selector": ".sgs-card-grid__page-btn:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -743,7 +743,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css",
-   "selector": ".sgs-choice-flow--layout-showcase .sgs-info-toggle:focus-visible",
+   "selector": ".sgs-choice-flow--layout-showcase .sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1093,7 +1093,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
-   "selector": ".sgs-gallery--caption-reveal .sgs-gallery__item:focus-within .sgs-gallery__caption",
+   "selector": ".sgs-gallery--caption-reveal .sgs-gallery__item:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-gallery__caption",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1103,7 +1103,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
-   "selector": ".sgs-gallery--caption-reveal.sgs-gallery--masonry .sgs-gallery__item:focus-within .sgs-gallery__caption",
+   "selector": ".sgs-gallery--caption-reveal.sgs-gallery--masonry .sgs-gallery__item:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-gallery__caption",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1113,7 +1113,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
-   "selector": ".sgs-gallery.sgs-has-grayscale .sgs-gallery__item:focus-within .sgs-gallery__img",
+   "selector": ".sgs-gallery.sgs-has-grayscale .sgs-gallery__item:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-gallery__img",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1238,7 +1238,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
-   "selector": ":where( .sgs-google-reviews__review-link:hover, .sgs-google-reviews__review-link:focus-visible )",
+   "selector": ":where( .sgs-google-reviews__review-link:hover, .sgs-google-reviews__review-link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) )",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1248,7 +1248,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/icon-list/style.css",
-   "selector": ".sgs-icon-list__item:focus-within .sgs-icon-list__icon",
+   "selector": ".sgs-icon-list__item:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-icon-list__icon",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1258,7 +1258,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/icon-list/style.css",
-   "selector": ":where(.sgs-icon-list__item:focus-within .sgs-icon-list__text)",
+   "selector": ":where(.sgs-icon-list__item:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-icon-list__text)",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1268,7 +1268,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/icon/style.css",
-   "selector": ".sgs-icon.sgs-icon--outline .sgs-icon__link:focus-visible .sgs-icon__shape",
+   "selector": ".sgs-icon.sgs-icon--outline .sgs-icon__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-icon__shape",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1293,7 +1293,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/media/style.css",
-   "selector": ".sgs-video:focus-within .sgs-video__bar",
+   "selector": ".sgs-video:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-video__bar",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1313,7 +1313,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/mega-panel/style.css",
-   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-icon-list__item:focus-within",
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-icon-list__item:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1333,7 +1333,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/mega-panel/style.css",
-   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-icon-list__item:focus-within",
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-icon-list__item:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1343,7 +1343,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/mega-panel/style.css",
-   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-icon-list__item:focus-within",
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-icon-list__item:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1403,7 +1403,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
-   "selector": ".sgs-nav-bar-menu__burger:focus-visible",
+   "selector": ".sgs-nav-bar-menu__burger:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1558,7 +1558,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
-   "selector": ".sgs-post-grid__carousel-next:focus-visible",
+   "selector": ".sgs-post-grid__carousel-next:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1573,7 +1573,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
-   "selector": ".sgs-post-grid__carousel-prev:focus-visible",
+   "selector": ".sgs-post-grid__carousel-prev:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1593,7 +1593,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
-   "selector": ".sgs-post-grid__filter:focus-visible",
+   "selector": ".sgs-post-grid__filter:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1613,7 +1613,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
-   "selector": ".sgs-post-grid__load-more:focus-visible",
+   "selector": ".sgs-post-grid__load-more:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1628,7 +1628,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
-   "selector": ".sgs-post-grid__page-btn:focus-visible",
+   "selector": ".sgs-post-grid__page-btn:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1643,7 +1643,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
-   "selector": ".sgs-post-grid__pause:focus-visible",
+   "selector": ".sgs-post-grid__pause:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1653,7 +1653,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
-   "selector": ".sgs-post-grid__readmore:focus-visible",
+   "selector": ".sgs-post-grid__readmore:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1663,7 +1663,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
-   "selector": ".sgs-post-grid__title a:focus-visible",
+   "selector": ".sgs-post-grid__title a:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1888,7 +1888,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/table-of-contents/style.css",
-   "selector": ".sgs-toc__link--active:focus-visible",
+   "selector": ".sgs-toc__link--active:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1898,7 +1898,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/table-of-contents/style.css",
-   "selector": ".sgs-toc__link:focus-visible",
+   "selector": ".sgs-toc__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1958,12 +1958,12 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
-   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay",
+   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-team-member__overlay",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
-   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay-bio",
+   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-team-member__overlay-bio",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -2058,7 +2058,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
-   "selector": ".sgs-trustpilot-reviews__arrow:focus-visible",
+   "selector": ".sgs-trustpilot-reviews__arrow:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -2073,7 +2073,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
-   "selector": ".sgs-trustpilot-reviews__count-link:focus-visible",
+   "selector": ".sgs-trustpilot-reviews__count-link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -2098,7 +2098,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
-   "selector": ".sgs-trustpilot-reviews__pause:focus-visible",
+   "selector": ".sgs-trustpilot-reviews__pause:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -2770,6 +2770,21 @@
    "file": "plugins/sgs-blocks/src/blocks/form/saved-progress/style.css",
    "selector": ".sgs-form-review__edit:hover",
    "reason": "the review card Edit button's hover fill: fixed surface tint, no setting"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/table-of-contents/style.css",
+   "selector": ".sgs-toc__link:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
+   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
+   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay-bio",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
   }
  ]
 }

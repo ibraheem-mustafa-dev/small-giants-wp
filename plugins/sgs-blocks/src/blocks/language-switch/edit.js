@@ -28,7 +28,7 @@ import {
 	textRow,
 	SgsLengthControl,
 	LinkPopoverField,
-	FlexWrapSelect,
+	FlexWrapControl,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { usePreviewTier } from '../../utils';
@@ -371,7 +371,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveControl>
-					<FlexWrapSelect label={ __( 'Wrap languages', 'sgs-blocks' ) } value={ attributes.flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
+					<FlexWrapControl label={ __( 'Wrap languages', 'sgs-blocks' ) } value={ attributes.flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
 					{ 'disclosure' === display && (
 						<ResponsiveBoxControl
 							label={ __( 'Panel padding', 'sgs-blocks' ) }

@@ -6,7 +6,7 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
-import { FlexWrapSelect, SgsColourPanel, textRow, ResponsiveBoxControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl } from '../../components';
+import { FlexWrapControl, SgsColourPanel, textRow, ResponsiveBoxControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier, tierBoxLonghands, sgsLengthPreview, sgsBorderPreview } from '../../utils';
 
 const SEPARATOR_OPTIONS = [
@@ -51,6 +51,7 @@ function buildRootStyle( attributes, tier ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		flexWrap,
 		separator,
 		showHome,
 		homeLabel,
@@ -144,7 +145,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Breadcrumbs Settings', 'sgs-blocks' ) }>
-					<FlexWrapSelect label={ __( 'Wrap crumbs', 'sgs-blocks' ) } value={ attributes.flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
+					<FlexWrapControl label={ __( 'Wrap crumbs', 'sgs-blocks' ) } value={ flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
 					<ToggleControl
 						label={ __( 'Show home link', 'sgs-blocks' ) }
 						checked={ showHome }
