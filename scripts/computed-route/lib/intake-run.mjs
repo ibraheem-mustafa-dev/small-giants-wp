@@ -30,7 +30,7 @@ const WORKER = path.join( HERE, 'intake-run-worker.mjs' );
 const WIDTHS = [ 375, 768, 1440 ];
 export const USAGE = [
 	'usage: node scripts/computed-route/intake.mjs <client> [--record] [--widths 375,768,1440] [--surfaces a,b] [--repo <path>]',
-	'       node scripts/computed-route/intake.mjs --apply-review <client> [--repo <path>]',
+	'       node scripts/computed-route/intake.mjs --apply-review <client> [--section <row type>[,<row type>...]] [--repo <path>]',
 	'       node scripts/computed-route/intake.mjs --finalise <client> | --apply-picks <client> | --render <client> | --rerun-skeletons <client> | --facts <client> | --page-map <client> [--repo <path>]',
 	'       node scripts/computed-route/intake.mjs --palette-only <client> [--record] [--into-intake] [--repo <path>]',
 ].join( '\n' );
@@ -40,7 +40,7 @@ const MODES = { '--apply-review': 'apply', '--finalise': 'finalise', '--apply-pi
 // argv (after the script) to { mode: 'run'|'apply'|'finalise'|'apply-picks'|'render'|'rerun-skeletons'|'facts'|'page-map'|'palette-only', client, record, widths, surfaces,
 // repo } or { error }.
 export function parseArgs( argv ) {
-	const o = { mode: 'run', client: null, record: false, intoIntake: false, widths: WIDTHS, surfaces: null, repo: REPO };
+	const o = { mode: 'run', client: null, record: false, intoIntake: false, sections: null, widths: WIDTHS, surfaces: null, repo: REPO };
 	for ( let i = 0; i < argv.length; i++ ) {
 		const a = argv[ i ];
 		const value = () => ( i + 1 < argv.length && ! argv[ i + 1 ].startsWith( '--' ) ? argv[ ++i ] : null );
@@ -48,6 +48,13 @@ export function parseArgs( argv ) {
 			o.record = true;
 		} else if ( '--into-intake' === a ) {
 			o.intoIntake = true;
+		} else if ( '--section' === a ) {
+			const v = value();
+			o.sections = v ? v.split( ',' ).map( ( s ) => s.trim() ).filter( Boolean ) : [];
+			const bad = o.sections.find( ( s ) => ! ROW_TYPES.includes( s ) );
+			if ( ! o.sections.length || bad ) {
+				return { error: `--section needs a comma list of review sections (${ ROW_TYPES.join( ', ' ) }), not ${ JSON.stringify( bad ?? v ) }` };
+			}
 		} else if ( a in MODES ) {
 			if ( 'run' !== o.mode ) {
 				return { error: `one mode only (got ${ a } after another)` };
@@ -81,6 +88,9 @@ export function parseArgs( argv ) {
 	}
 	if ( ! o.client || ! /^[a-z0-9-]+$/.test( o.client ) ) {
 		return { error: o.client ? `client "${ o.client }" is not a slug` : 'no client given' };
+	}
+	if ( o.sections && 'apply' !== o.mode ) {
+		return { error: '--section goes with --apply-review only' };
 	}
 	if ( o.intoIntake && 'palette-only' !== o.mode ) {
 		return { error: '--into-intake goes with --palette-only only' };
@@ -295,12 +305,29 @@ export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${
 			return 1;
 		}
 	}
-	const res = applyReview( readJson( at.intake ), fs.readFileSync( at.review, 'utf8' ), { today } );
+	const res = applyReview( readJson( at.intake ), fs.readFileSync( at.review, 'utf8' ), { today, sections: o.sections } );
 	if ( res.problems.length || res.missing.length ) {
 		say( `review.md is not complete, nothing written:\n${ [ ...res.problems, ...res.missing.map( ( r ) => `row ${ r.rowId } (${ r.rowType }) needs a mark: ${ r.why }` ) ].map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
 		return 1;
 	}
 	// A palette-only record (lib/intake-palette-into.mjs) holds no page map or skeleton rows: its marks are written as they are.
+	// A sectioned apply (--section) writes the marks of its sections only: the confirmed page map is written only when the
+	// page-map section is named and Bean's skeleton choices only when the skeleton-block section is.
+	if ( o.sections && ! res.intake.paletteOnly ) {
+		const problems = recordProblems( res.intake );
+		if ( problems.length ) {
+			say( `the marked record does not validate, nothing written:\n${ problems.map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
+			return 1;
+		}
+		if ( o.sections.includes( 'page-map' ) || o.sections.includes( 'skeleton-block' ) ) {
+			say( '--section with page-map or skeleton-block: run --apply-review without --section to confirm the page map and skeleton choices' );
+			return 1;
+		}
+		fs.writeFileSync( at.intake, `${ JSON.stringify( res.intake, null, 1 ) }\n` );
+		const n = res.intake.review.filter( ( r ) => o.sections.includes( r.rowType ) ).length;
+		say( `${ o.client }: ${ n } rows of ${ o.sections.join( ', ' ) } marked (dated ${ today }); every other row and its mark is as it was` );
+		return 0;
+	}
 	if ( res.intake.paletteOnly ) {
 		fs.writeFileSync( at.intake, `${ JSON.stringify( res.intake, null, 1 ) }\n` );
 		say( `${ o.client }: ${ res.intake.review.length } palette rows marked (dated ${ today }); the record is palette-only, so no page map or skeleton choices are written` );
