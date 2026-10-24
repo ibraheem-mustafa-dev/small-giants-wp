@@ -185,6 +185,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/calibrate-markers.mjs` | Marker values per setting shape (Spec 48 §3.2 marker table). |
 | `lib/calibrate-instances.mjs` | Which instances a block's calibration page holds: markers, their preconditions (variant, gating toggle, border partners, overlay image, layout mode) and state targets. |
 | `lib/calibrate-read.mjs` | The in-page reader and the per-width read under each state trigger. |
+| `lib/calibrate-open.mjs` | The Open state of a calibration instance: an already-open toggle or `details[open]` is read as it is; otherwise the instance's first closed toggle whose panel sits inside it, or its first closed `<details>`, is opened, forced open when its handler cannot, and closed again after the read. |
 | `lib/calibrate-chunk.mjs` | How calibration builds a block's page in pieces: the child process's heap, the fixture's own chunk size, and halving a chunk whose build timed out. |
 | `lib/calibration-lock.mjs` | One calibration per calibration page: a per-site lock in the machine's temp folder that `calibrate.mjs` takes before building. |
 | `lib/stage0.mjs` | Stage 0 library: the fixed block set, per-block slot-map state against the deployed hash and the current `READ_KEY`, the baseline and its validation, the orchestrator `runStage0` with injected effects. |
@@ -313,6 +314,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/entrance.mjs` | Entrance start: writes no motion between Spec 38A M6.6 and M7 (the only motion attribute is `sgsMotion`, written by the M7 route), so `entranceStart` always returns null and `groupRects` reads the live element's rect per width. |
 | `lib/fill-diagram.mjs` | A rendered draft's dimension diagram measured into `sgs/diagram-dimension` settings (line ends, guide reach and overshoot, tick length, label anchor), from the SVG geometry API and the label's box, never the source text (R-47-4). |
 | `lib/pairs.mjs` | Block pairing: words per block, their draft twins (repeated words planned apart), the partner choice (element, padded wrapper or text run), the keep-or-leave-out judgement (PAIRING_LIMITS) and the generated config's text. |
+| `lib/origin-pairs.mjs` | The skeleton's origin pairs: each node's draft element against its block (`skeletonPairs`), a width variant scoped by its finder (`variantScope`), and a part the block renders whose draft element sits outside the block's own (`outsideSlotPairs`), with the slots it cannot pair (the node's own element, a key missing from the inventory, a width-variant node) in `left`.; `tplSelector(key, { inner })`, the document-wide selector for the element a tpl key names inside its own import host, or null when no selector names it alone. |
 | `lib/pairs-page.mjs` | Block pairing's in-page collectors: tagged words, live block boxes and text runs, draft chains (repeated words placed nearest the sure ones), form controls by identity, hand pair elements, and the draft opened through its navigation. |
 | `lib/pairs-recheck.mjs` | The width re-check of a pairing run: each kept draft finder is read again at the re-check widths, and a block whose finder fails at one is paired again there and keeps one joined finder or is left out. |
 | `lib/identity.mjs` | Exact draft identity for pairing: structural alignment of a skeleton with a committed tree (never word pairs), the agree-or-mispaired judgement of the word matcher's element against the identity element, the in-page relation reader, and the element fingerprint (tag, class, style hash, ancestor tags, own-words hash, template line) with `realign`, which maps a previous export's keys to the next export's. |
@@ -653,6 +655,8 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/framework-backlog.test.mjs` | FR-48-68 merger: one backlog row per block, attribute and property listing every client with its surface, widths, state and evidence; a re-merge keeps `firstSeen` and never duplicates; a closed row stays closed; a non-F-class row is refused and counted. |
 | `tests/census-conservation.test.mjs` | The conservation check: a declared property must end written, held or unwritten; a planted silent drop is reported; a read set not bound to its run (stamp, input hashes, nodes) is `unbound` and fails `--check`; a read only a widthless hold conserves is listed. |
 | `tests/fill-conservation-classes.test.mjs`, `tests/fixtures/fill-conservation-classes/mutations.json` | No silent drops (register R7): each class of declared read the Indus header run dropped ends written, held or unwritten. A settled row (`fill-report.json` `settled`, with its `widths`) conserves its read at those widths; a value read on the root and written on an inner element keeps `readSlot`; a write's `answers` are every read width it leaves showing the draft value; a scoped rule's write names the property it answers (`covers`); a row lift's icon keeps its settled rows, a `row-held` row for each value the row holds, and its UNMAPPED row names the element it was read on and every icon that raised it (`nodes`); a row a later pass takes out of UNMAPPED is a settled row naming the pass (`lib/fill-report.mjs::passSettled`); a declared sticky `top` is read (`lib/fill-declared.mjs::unreadDeclared`); a draft's `direction` is not reported as read and carried (`lib/intake-missing.mjs::FILL_READS`). 18 of 18 mutations killed with `tools/mutate.mjs`. |
+| `tests/fill-conservation-honest.test.mjs`, `tests/fixtures/fill-conservation-honest/mutations.json` | The conservation check can fail (council of Track R wave 3): a pass that takes out a row it never wrote, a several-icon row written on one node, a write claiming a width its tiers cannot reproduce, and an equal row contradicted by an unwritten one each leave the read dropped; mutations in both directions. |
+| `tests/origin-pairs.test.mjs` | Outside-slot part pairs: a slot on the node's own element, a key missing from the inventory, two slots sharing a draft key, a width-variant node and colliding part names. |
 | `tests/census-drops-report.test.mjs` | The drops report: run status (`incomplete`, `no-read-set`, `unbound`), the newest checked run per client and surface, and the dropped values grouped by block and property. |
 | `tests/census-class-total.test.mjs` | Every census row carries exactly one FR-48-65 class, the class counts sum to the row total and the table header states it; each I-class row carries structured evidence (the census JSON names it) and a row with free text is refused. |
 | `tests/delivery-bind.test.mjs` | Tree evidence for an animation record counts only on the block that renders the record's own draft element. |
@@ -830,6 +834,11 @@ Measures a rendered design draft and writes block settings through the framework
 - `instanceCtx(variant, image, fixture)` → the one planning context for a block's style and content instances: variant data, the site's media object and the fixture's `preconditions` (`settingPreconditions`).
 - `STATE_LOOK_PROPS`: the properties a state's look is recorded for, what the walker compares in a hover or keyboard-focus state. `stateLook(stateReads, slots, own)` → what a state instance shows in its state as values, on the setting's slots at each width except the setting's own properties, so a default hover equal to the fixture's resting colour is still held.
 
+### `lib/calibrate-open.mjs`
+
+- `markOpenToggleInPage([prefix, n])`: in-page; marks the toggle to open with `data-cr-toggle`; null when the instance is absent, else `{ expanded }` (an open toggle or `details[open]` already) or `{ toggle }` (whether a closed one was marked).
+- `openOwnToggle(page, openToggle)`: opens the marked toggle with the block's own handler, forcing it open when it stays shut, and returns the function that closes it again.
+
 ### `lib/calibrate-read.mjs` (imports `ref-trace.mjs`; Playwright pages)
 - Keys: an element's `elementPath` from the instance root; a layer is its element's key plus `::before`, `::after`, `::placeholder` or `::first-letter`; a panel the instance controls through `aria-controls` outside it (a cart dialog moved to `<body>`) is `@controls > <path>` (`@controls:2` for a second); a companion carrying the root's uid class (the detached burger chip) is `@companion`; the viewport scrim printed at `wp_footer` with class `<uid>-scrim` (`includes/helpers-scrim.php::sgs_scrim_render`) is `@scrim`, its tint layer `@scrim::before`.
 - `readInstancesInPage([count, prefix, props, pathSrc, pseudoProps, textPseudoProps, only?])`: in-page; every element, layer and controlled panel of each instance (or only instance `only`).
@@ -837,6 +846,7 @@ Measures a rendered design draft and writes block settings through the framework
 - `openToggle(page)`: clicks the marked panel toggle; one hidden at the read width is clicked in the page (`el.click()`), so its handler runs.
 - `readAll(page, url, instances)` → per width reads, plus `scrolled`, `scrollMissed`, `hoverMissed` (state instances read at no width; an element that shows at one width only, such as the detached burger chip, is read there) and `hoverWhy` (`{ n: [ '<width>px: <why>' ] }`: hidden, no instance, or the browser's own error).
 - `missedReason(whys)` → the untested-state reason for a missed state instance: "stays hidden" only when every width was hidden, else each width's failure. `SCROLL_Y`: the scroll for scrolled markers (read twice when the header misses the first jump).
+- The `open` trigger (`lib/calibrate-open.mjs`): `readUnderTrigger` reads an open-state instance with its own disclosure open, and reports `no disclosure to open` when it has none.
 
 ### `lib/calibrate.mjs`
 
@@ -1409,6 +1419,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `declaredFluid`: The fluid value the code declares for a property when it declares the same clamp(), min() or max() at every read width ({ width: value }), else null: a value that changes with the width is a per-tier one.
 - `settled(st, rec, ref, row)` → a value read that ends with nothing to write and nothing unwritten, with its `SETTLED` reason. `recordOwner(st, rec, target, prop, attr, direct)` → records the element that wrote a setting. `clashes(a, b, at)` → the places where two values of one setting both say something and differ. `ownerKeeps(st, rec, ref, target, prop, w, settingSlot)` → whether a write goes ahead over what another element of the node wrote to the same setting; the element the setting sits on wins over a value carried from another.
 - `notPaintedWhy(prop, styles, snap)` → why `lib/fill-prop.mjs::notPainted` judged a property inert on this element at this width.
+- `answeredWidths(prop, draft, res)`: the read widths a written result leaves showing the draft's value (`answers`): a width whose shown tier the result writes with a value that paints the same, or that no written tier reaches; a fluid value answers every width it was fitted to.
 
 ### `lib/fill-spacing.mjs`
 - `EQUAL_PX`: 0.5, the tolerance at which two rendered gaps are equal.
@@ -1567,6 +1578,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `fillReport(r)` → `{ markdown, json }`; `r.alreadyHeld` rows are listed under `## Already held` by reason with counts (`counts.alreadyHeld` in the JSON) and are not in UNMAPPED.
 - `SETTLED`: why a value Fill read ends with nothing written and nothing unwritten (`equal`, `already-set`, `used-size`). `READ_FAILED`: the property an UNMAPPED row names for a failed draft read; `readFailureRows({ reads, nodes, flat, refOf })` → each failed read as an UNMAPPED row with its reason.
 - `supersededWrites(writes)` → `Map( index -> index of the write that replaced it )`: a write whose every place is changed again by a later write on the same node and setting stays in `writes` marked `supersededBy` and is not counted.
+- `passSettled(before, after, reason, answered)`: the UNMAPPED rows a later pass (`fill-logo-size.mjs`, `fill-width-ladder.mjs`, `fill-dimensions.mjs`) answered, as settled rows naming the pass, one per entry of its `answered` list with the read widths it answers; a row taken out without an answer stays a dropped read.
 
 ### `lib/css-families.mjs`
 - `familyOf(prop, { dir })` → `{ short, kind: 'side' | 'corner' | 'axis' | 'mixed', part, members }` or null, from mdn-data; `settingKey(prop)` → the shorthand a setting stores the longhand under (edge and corner families and the row/column gap pair), else the property; `reachedBy(prop)` → every name a stored `css_property` can match it by; `storedKeys(stored)` → a stored name and its physical spelling; `isCssProperty(name)`.
@@ -2339,6 +2351,8 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `rectAt`: the draft's rendered box of a target at a width, or null.
 - `reresolve`: runs the generic resolver (lib/fill-prop.mjs::resolveProperty) on a changed per-width draft for a gap row's element, with no baseline.
 - `commit`: writes a resolver result into the node and records each write.
+- `perNode(rows)`: a row UNMAPPED raises once for several nodes (`nodes`, `lib/fill-row-lift.mjs::liftChildren`) as one row per node, so a pass reads and writes each node it names.
+- `regroup(rows)`: joins the rows a pass leaves back into one row per look and reason.
 
 ### `lib/fill-map.mjs`
 - `zoomOf`: The zoom a Google Maps embed address asks for (`z=15`, or `zoom=15`), a whole number from 1 to 20; null when it names none.
@@ -2409,6 +2423,8 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `isLadderRow`: whether an unmapped row is a one-value-every-width gap, a value the setting's enum does not hold, a keyword a per-device setting cannot take, or a property whose setting paints another element of the block (never a size property).
 - `effectOf`: what a value does in its element's context, as one canonical word (`normal` justify-content in a flex container is the start value; `space-between` with one visible child is too).
 - `widthLadderWrites({ nodes, flat, refOf, reads, db, unmapped, calFor, snapshot, scope, entries, date })` → `{ writes, unmapped, notes, ledger }`: a per-width difference no single setting holds is written as an equal-in-effect value, a tier-shaped sibling, the block's own breakpoint setting, or a scoped `@media` rule, in that order.
+- `writtenTarget(rec, target, slot, notes)`: the skeleton target of the element the ladder writes: the row's own, or the node's target at that slot; with no target at that slot, the row's own and a note.
+- `valuesAt(row, reads, target, home)`: the per-width values for the written element: the row's values when the row is on it or is a state row; otherwise that element's rendered values at the widths it is read at, never mixed with the row element's, keeping a row value declared in a form the computed read loses (`DECLARED_FORM`).
 
 ### `lib/fill-step-rungs.mjs`
 - `stepStretches(prop, series, tierValue)` → `[ { range: [lo, hi), value } ]`: the runs of the 16px sweep where the draft's value differs from the tier read that stands for that width (`tierValue('mobile' | 'tablet' | 'desktop')`) and touches a real step (a fluid ramp is not one).
