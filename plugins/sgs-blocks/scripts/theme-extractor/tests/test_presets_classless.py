@@ -61,11 +61,13 @@ def test_classless_buttons_fill_primary_and_outline_with_hover_keys():
     assert primary["border-radius"] == "2px" and primary["font-weight"] == "600"
     assert primary["padding"] == "14px 28px 14px 28px"
     assert "min-height" not in primary                      # "auto" is unset, never emitted
-    assert primary["hover-background"] == "#6f6152" and "hover-text" not in primary
+    assert primary["hover-background"] == "#6f6152"
+    assert primary["hover-text"] == "#faf8f5"                # a hover that keeps the text colour says so
     outline = got["outline"]
     assert outline["background"] == "transparent" and outline["border"] == "#141414"
     assert outline["border-width"] == "1px"
-    assert not any(k.startswith("hover-") for k in outline)  # hover identical to rest: no diff keys
+    for key, rest_key in (("hover-background", "background"), ("hover-text", "text"), ("hover-border", "border")):
+        assert outline.get(key, outline[rest_key]) == outline[rest_key]  # hover identical to rest
     reasons = [t["reason"] for t in trace]
     assert len(trace) == 2 and all("inferred from an unclassed style signature" in r for r in reasons)
 
@@ -152,9 +154,13 @@ def test_mamas_class_bearing_presets_unchanged():
     got = presets.build_button_presets(facts, [])
     assert got == pinned                                    # pinned BEFORE the classless change
     assert list(got) == ["primary", "secondary", "outline"]
+    golden_colours = {e["slug"]: e["color"].lower() for e in golden["settings"]["color"]["palette"]}
     for slot, entry in got.items():                         # ...and still agrees with the golden
         for key, value in entry.items():
-            assert golden_presets[slot][key] == value
+            want = golden_presets[slot][key]
+            if want.startswith("var(--wp--preset--color--"):  # the golden references the slug of that colour
+                want = golden_colours[want[len("var(--wp--preset--color--"):-1]]
+            assert want == value
 
 
 def _run_measure(draft: pathlib.Path) -> dict:

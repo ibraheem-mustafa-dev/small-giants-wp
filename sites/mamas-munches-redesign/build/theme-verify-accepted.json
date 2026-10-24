@@ -1,0 +1,17 @@
+{
+  "_about": "Snapshot values verify_against_draft.py may report as differing from this export's declared tokens, each with its reason.",
+  "accepted": [
+    {
+      "path": "settings.custom.section.padding.mobile",
+      "reason": "Undecided (Bean): the draft declares this section padding, but the framework keeps settings.custom.section.padding at 0 because the build route writes each section's own top and bottom padding; writing the declared value would add the framework padding to every sgs/container section that sets none of its own. Accepted until Bean rules whether the framework token should carry the draft value."
+    },
+    {
+      "path": "settings.custom.section.padding.tablet",
+      "reason": "Undecided (Bean): the draft declares this section padding, but the framework keeps settings.custom.section.padding at 0 because the build route writes each section's own top and bottom padding; writing the declared value would add the framework padding to every sgs/container section that sets none of its own. Accepted until Bean rules whether the framework token should carry the draft value."
+    },
+    {
+      "path": "settings.custom.section.padding.desktop",
+      "reason": "Undecided (Bean): the draft declares this section padding, but the framework keeps settings.custom.section.padding at 0 because the build route writes each section's own top and bottom padding; writing the declared value would add the framework padding to every sgs/container section that sets none of its own. Accepted until Bean rules whether the framework token should carry the draft value."
+    }
+  ]
+}

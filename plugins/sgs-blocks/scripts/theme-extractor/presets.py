@@ -112,12 +112,16 @@ def _rest_entry(rest: dict, paddings: dict | None = None) -> dict:
 
 
 def _hover_diff(entry: dict, rest: dict, hover: dict) -> None:
-    """Append the hover-state DIFF (open bag) to ``entry`` (only fields that actually change)."""
+    """Append the hover-state colours and transform to ``entry``.
+
+    A hover colour the reading measured is written even when it equals the rest colour: the preset is
+    laid over the framework baseline, whose own hover colours (a white hover text) would otherwise paint
+    a hover the draft never has."""
     for css_key, hkey, base_key in (("hover-background", "backgroundColor", "background"),
                                     ("hover-text", "color", "text"),
                                     ("hover-border", "borderTopColor", "border")):
         val = _HEXME(hover.get(hkey, ""))
-        if val and val != entry.get(base_key):
+        if val:
             entry[css_key] = val
     tform = hover.get("transform")
     if tform and tform not in ("none", rest.get("transform")):

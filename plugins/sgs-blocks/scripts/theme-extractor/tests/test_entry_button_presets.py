@@ -92,3 +92,17 @@ def test_a_merge_keeps_every_committed_preset_key_the_run_did_not_measure():
         assert merged[slot]["background"] == derived[slot]["background"]  # measured keys take the draft's value
     assert merged["secondary"]["hover-transform"] == "matrix(1, 0, 0, 1, -3, -3)"
     assert merged["outline"] == committed["outline"]
+
+
+def test_a_hover_that_keeps_the_text_colour_writes_that_colour_over_the_framework_white():
+    # Home.dc.html's primary hovers to paper #FFFAF0 and keeps its cocoa text and border; the framework
+    # baseline's primary hover text is #ffffff, which a merge kept when the hover reading wrote only the
+    # colours that changed (white text on a paper hover).
+    trace: list = []
+    derived = presets.build_button_presets(_facts(), trace, PALETTE_PRIMARY)
+    for slot in ("primary", "secondary"):
+        assert derived[slot]["hover-text"] == "#3a2a22", slot
+        assert derived[slot]["hover-border"] == "#3a2a22", slot
+    snap = {"settings": {"custom": {"buttonPresets": copy.deepcopy(derived)}}, "styles": {}}
+    merged = merge_onto(snap, copy.deepcopy(COMMITTED), trace)["settings"]["custom"]["buttonPresets"]
+    assert merged["primary"]["hover-text"] == "#3a2a22"
