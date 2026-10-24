@@ -237,8 +237,8 @@ Repeat Phase 2 (only the surfaces a fix touched, plus one full pass at the end) 
     - FR-48-60 to -62: shop parts matched by structure into `build/shop-parts.json`, and fixture products on mamas-test (107, 108) and eye-care-clone-test (82, 83).
   - **Sites:** the `local-eye-care` mirror copies `eye-care-clone-test` (`cr-calibration` 23). mamas-test went through Appendix A: WooCommerce pages 100 to 103, noindex and mail.
   - **Before Phase 2 (Track S unless named):**
-    1. Bean marks Mama's palette roles and Eye Care's role map (Eye Care has no intake record). Then re-extract and commit the three snapshots, show Bean the diffs, push them, and wire `assertSnapshotFresh` into `loadSnapshot`.
-    2. Bean marks Mama's three Site Info rows.
+    1. Palette proposer to its three answer keys (decision 5; lane running 2026-10-24). Then Bean marks Mama's palette roles and Eye Care's role map (Eye Care has no intake record); re-extract and commit the three snapshots, show Bean the diffs (they now carry every draft easing: `motion_tokens.py`, merged `c67548cfe`; the hover movement timing token stays a trace proposal until Track F names it), push them, and wire `assertSnapshotFresh` into `loadSnapshot`.
+    2. Mama's Site Info: done 2026-10-24 (Instagram, email, copyright written to mamas-test; its mail already redirects to Bean's inbox; the go-live checklist's IF-6 switches recipients back at handover).
     3. Calibrate Eye Care's block set on `local-eye-care` (its paint folder is now `eye-care-clone-test`'s, empty).
     4. Track R: `lib/motion-behaviours.mjs::routeFadeOf` misses Indus's record A-12, and Fill does not yet read `build/shop-parts.json`.
   - **Still classified by words:** the `single-product` and `post` rows, and `lib/shop-parts-read.mjs`'s `NAMES` file pick.
