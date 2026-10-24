@@ -131,6 +131,30 @@ export function judgeCornerButton( button, root, tol = 2 ) {
 	return Math.abs( root.bottom - button.bottom ) <= tol && Math.abs( root.right - button.right ) <= tol;
 }
 
+/**
+ * The wrong places a corner judge must refuse: the button moved to the root's left edge (always possible when the root is
+ * wider than the button) and to its vertical middle (only when the root is taller than the button by more than `tol` on
+ * each side, else the middle is the bottom and the plant is the real position).
+ *
+ * @param {{left: number, top: number, right: number, bottom: number}} button The button's rect.
+ * @param {{left: number, top: number, right: number, bottom: number}} root The block root's rect.
+ * @param {number} tol Allowed gap in px.
+ * @return {{name: string, rect: {left: number, top: number, right: number, bottom: number}}[]} The plants.
+ */
+export function plantWrongCorners( button, root, tol = 2 ) {
+	const bw = button.right - button.left;
+	const bh = button.bottom - button.top;
+	const rw = root.right - root.left;
+	const rh = root.bottom - root.top;
+	const plants = [];
+	if ( rw - bw > tol ) plants.push( { name: 'the left edge of the root', rect: { ...button, left: root.left, right: root.left + bw } } );
+	if ( ( rh - bh ) / 2 > tol ) {
+		const midTop = root.top + ( rh - bh ) / 2;
+		plants.push( { name: 'the vertical middle of the root', rect: { ...button, top: midTop, bottom: midTop + bh } } );
+	}
+	return plants;
+}
+
 /** True when the hovered speed is the draft's hover rate times the free speed. */
 export function judgeHover( draft, free, hovered ) {
 	if ( ! ( free > 0 ) ) return false;
@@ -419,11 +443,11 @@ async function liveChecks( ctx ) {
 			}, sel );
 			const roundRect = ( r ) => Object.fromEntries( Object.entries( r ).map( ( [ k, v ] ) => [ k, Math.round( v * 10 ) / 10 ] ) );
 			rep.check( 'marquee-pause-corner', { selector: sel, property: 'the pause button against the block root: bottom and right edges', measured: { button: roundRect( rects.button ), root: roundRect( rects.root ) }, expected: 'bottom-right corner, both edges within 2px', pass: judgeCornerButton( rects.button, rects.root ) } );
-			const bh = rects.button.bottom - rects.button.top;
-			const rh = rects.root.bottom - rects.root.top;
-			const midTop = rects.root.top + ( rh - bh ) / 2;
-			const planted = { ...rects.button, top: midTop, bottom: midTop + bh };
-			rep.control( 'marquee-pause-corner', { selector: sel, property: 'the same button planted at the vertical middle of the root', measured: roundRect( planted ), expected: 'rejected', red: ! judgeCornerButton( planted, rects.root ) } );
+			const plants = plantWrongCorners( rects.button, rects.root );
+			for ( const plant of plants ) {
+				rep.control( 'marquee-pause-corner', { selector: sel, property: `the same button planted at ${ plant.name }`, measured: roundRect( plant.rect ), expected: 'rejected', red: ! judgeCornerButton( plant.rect, rects.root ) } );
+			}
+			rep.check( 'marquee-pause-corner-plants', { selector: sel, property: 'at least one wrong place could be planted', measured: plants.map( ( p ) => p.name ), expected: 'one or more', pass: plants.length > 0 } );
 		}
 		if ( present ) {
 			await button.click();
@@ -636,6 +660,10 @@ function selfTest() {
 	const corner = { left: 950, top: 80, right: 998.5, bottom: 119 };
 	need( 'corner button passes', judgeCornerButton( corner, rootBox ) );
 	need( 'corner button rejects the vertical middle', ! judgeCornerButton( { ...corner, top: 40.5, bottom: 79.5 }, rootBox ) );
+	const fillsRoot = { left: 0, top: 0, right: 1232, bottom: 44 };
+	const fillsButton = { left: 1188, top: 0, right: 1232, bottom: 44 };
+	need( 'plants skip the middle when the button fills the root height', plantWrongCorners( fillsButton, fillsRoot ).map( ( p ) => p.name ).join() === 'the left edge of the root' );
+	need( 'every plant is refused by the judge', plantWrongCorners( fillsButton, fillsRoot ).every( ( p ) => ! judgeCornerButton( p.rect, fillsRoot ) ) && plantWrongCorners( corner, rootBox ).length === 2 && plantWrongCorners( corner, rootBox ).every( ( p ) => ! judgeCornerButton( p.rect, rootBox ) ) );
 	need( 'corner button rejects the wrong side and a missing rect', ! judgeCornerButton( { ...corner, left: 0, right: 48.5 }, rootBox ) && ! judgeCornerButton( null, rootBox ) );
 	need( 'hover slow', judgeHover( { hoverRate: 0.15 }, 45, 6.75 ) && ! judgeHover( { hoverRate: 0.15 }, 45, 45 ) );
 	need( 'hover stop', judgeHover( { hoverRate: 0 }, 45, 0 ) && ! judgeHover( { hoverRate: 0 }, 45, 40 ) );
