@@ -11,7 +11,7 @@ import { classify } from './motion-layers.mjs';
 import { effectPresetFor, tokenTypes, clientTokens, clientPalette } from './motion-tokens.mjs';
 import { writeEffect, loadEffectOffers, PANEL_LISTS } from './motion-effects.mjs';
 import { applyBehaviours, applyControls, applyGlobals, applySettings, applyStrip, behaviourIndex, hasAttrOf } from './fill-behaviour.mjs';
-import { accountedIds, silentRows, makeHomeOf, readingProgressHandover } from './fill-motion-account.mjs';
+import { accountedIds, silentRows, makeHomeOf, readingProgressHandover, motionWidths } from './fill-motion-account.mjs';
 import { elementMotion, elementEffects, snapLayer, paintLayer } from './fill-motion-element.mjs';
 import { paintTimings } from './fill-timing.mjs';
 import { openWords } from './motion-states.mjs';
@@ -182,14 +182,14 @@ function itemHost( db, block ) {
 }
 
 // Validates one node's document and writes it, or reports it refused.
-function writeNode( n, doc, pending, { flat, ref, schema, out } ) {
+function writeNode( n, doc, pending, { flat, ref, schema, out, reads } ) {
 	const verdict = validateMotionWrite( doc, schema );
 	if ( ! verdict.valid ) {
 		out.unmapped.push( { node: ref, block: n.name, slot: '', property: 'motion', value: pending.join( ', ' ), reason: `sgsMotion refused: ${ [ ...verdict.errors, ...verdict.refusals ].join( '; ' ) }` } );
 		return;
 	}
 	const { before, after } = setAttr( flat[ n.index ], { attr: 'sgsMotion', value: doc } );
-	out.writes.push( { node: ref, block: n.name, slot: '', prop: `motion ${ pending.join( ', ' ) }`, attr: 'sgsMotion', before, after, widths: [], how: 'motion' } );
+	out.writes.push( { node: ref, block: n.name, slot: '', prop: `motion ${ pending.join( ', ' ) }`, attr: 'sgsMotion', before, after, widths: motionWidths( n, doc, reads ), how: 'motion' } );
 }
 
 // Writes a node's endless-loop CSS into its Additional CSS box (`sgsCustomCss`, scoped to the block instance by
@@ -375,7 +375,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			writeLoopCss( n, boxes, { flat, ref, out } );
 		}
 		if ( pending.length ) {
-			deferred.push( () => writeNode( n, doc, [ ...new Set( pending ) ], { flat, ref, schema, out } ) );
+			deferred.push( () => writeNode( n, doc, [ ...new Set( pending ) ], { flat, ref, schema, out, reads } ) );
 		}
 	}
 	applyControls( { controls, written, out, schema } );
