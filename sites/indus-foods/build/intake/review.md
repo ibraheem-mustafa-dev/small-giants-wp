@@ -4,7 +4,7 @@ Taken on 2026-10-23T23:58:47.556Z; manifest 1.0, files hash dd9e9aec7ae9a787.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review indus-foods`.
 
-Rows: 1191; 638 need reading, 553 are confident proposals that Accept all covers (skeleton block choices 547, missing features 6).
+Rows: 1189; 636 need reading, 553 are confident proposals that Accept all covers (skeleton block choices 547, missing features 6).
 
 Not defects counted, not listed: breakpoint 91, dead-code (constant guard) 5, dead-code (data-gated) 7, prop-variant 1, prototype-only 21, reached-when-forced 144, render-wins 552.
 
@@ -240,21 +240,19 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `effect:A-24` | A-24 Web Animation in closeMobile on ref setDrawerEl (waapi, press) is the no SGS effect effect | accept |  | accept |
+| `effect:A-24` | A-24 Web Animation in closeMobile on ref setDrawerEl (waapi, press) is the close of the same element's open entrance (its entrance close values) | accept |  | accept |
 | `effect:A-30` | A-30 Web Animation in fx from bindMotion on sp inserted into e.target.closest && e.target.closest('[data-mag]') (waapi, press) is the ripple effect | accept |  | accept |
 | `effect:A-31` | A-31 Web Animation in fx from bindMotion on sp inserted into e.target.closest && e.target.closest('[data-mag]') (waapi, pointer-move) is the sheen effect | accept |  | accept |
 | `effect:A-32` | A-32 Web Animation in resetTilt from bindMotion on this._tiltEl = t (waapi, pointer-leave) is the follow-pointer effect | accept |  | accept |
-| `effect:J-05` | J-05 js-style-write in updatePins on [data-pin-track] (js-style-write, scroll-position) is the no SGS effect effect | accept |  | accept |
-| `effect:J-09` | J-09 js-style-write in updatePins on [data-pin-year] (js-style-write, scroll-position) is the no SGS effect effect | accept |  | accept |
-| `effect:J-11` | J-11 js-text-write in updatePins on [data-pin-count] (js-text-write, scroll-position) is the no SGS effect effect | accept |  | accept |
-| `effect:J-12` | J-12 js-style-write in updateHeader on ref setHeaderEl (js-style-write, scroll-position) is the no SGS effect effect | accept |  | accept |
+| `effect:J-05` | J-05 js-style-write in updatePins on [data-pin-track] (js-style-write, scroll-position) is written as the block settings sgs/timeline scrollEffect | accept |  | accept |
+| `effect:J-09` | J-09 js-style-write in updatePins on [data-pin-year] (js-style-write, scroll-position) is written as the block settings sgs/timeline dateActiveColour | accept |  | accept |
+| `effect:J-11` | J-11 js-text-write in updatePins on [data-pin-count] (js-text-write, scroll-position) is written as the block settings sgs/timeline panelCounter, panelCounterFormat | accept |  | accept |
+| `effect:J-12` | J-12 js-style-write in updateHeader on ref setHeaderEl (js-style-write, scroll-position) is written as the block settings sgs/site-header scrolledOffset, shadowScrolled, shadowScrolledColour | accept |  | accept |
 | `effect:J-13` | J-13 js-style-write in updateHeader on ref setProgEl (js-style-write, scroll-position) is not expressed by any SGS effect: a scroll handler moves the element, but the factor in "'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')'" is not a number the parallax effect holds | difference | a Spec 38 gap: a scroll handler moves the element, but the factor in "'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')'" is not a number the parallax effect holds | difference |
 | `effect:J-14` | J-14 js-style-write in updateHeader on this._mainEl && this._mainEl.querySelector('[data-hero-img]') (js-style-write, scroll-position) is the parallax effect | accept |  | accept |
 | `effect:J-43` | J-43 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-peek]') (js-style-write, pointer-move) is the cursor-field effect | accept |  | accept |
 | `effect:J-44` | J-44 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-peek]') (js-style-write, pointer-move) is the cursor-field effect | accept |  | accept |
-| `effect:J-45` | J-45 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-tilt]') (js-style-write, pointer-move) is the follow-pointer effect | accept |  | accept |
-| `effect:J-46` | J-46 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-tilt]') (js-style-write, pointer-move) is the cursor-field effect | accept |  |  |
-| `effect:J-47` | J-47 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-tilt]') (js-style-write, pointer-move) is the cursor-field effect | accept |  |  |
+| `effect:J-45` | J-45 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-tilt]') (js-style-write, pointer-move) is the glare + follow-pointer effect | accept |  | accept |
 | `effect:J-50` | J-50 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-mag]') (js-style-write, pointer-move) is the magnet effect | accept |  | accept |
 | `effect:J-66` | J-66 js-style-write in magnet on [data-label] (js-style-write, pointer-move) is the magnet effect | accept |  | accept |
 
