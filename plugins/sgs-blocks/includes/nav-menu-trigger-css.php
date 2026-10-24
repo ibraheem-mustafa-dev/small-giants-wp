@@ -299,17 +299,34 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 		);
 		// Corner rounding per bar (burgerBar1BorderRadius .. burgerBar3BorderRadius) on each bar's own class; a
 		// two-bar glyph prints no Bar 3, so none is written for it. The scoped rule (0,2,0) beats style.css's `:where()` 1px.
-		$sgs_nm_bar_radius = array(
-			1 => $attributes['burgerBar1BorderRadius'] ?? array(),
-			2 => $attributes['burgerBar2BorderRadius'] ?? array(),
-			3 => $attributes['burgerBar3BorderRadius'] ?? array(),
+		// Three plain calls, each reading its attribute directly, so the attribute-shape classifier
+		// (scripts/lib/object_attr_shape.py) reads each as a per-device tier object.
+		$css .= sgs_emit_responsive_css(
+			$uid_sel . ' .sgs-nav-bar-menu__burger-bar-1',
+			array(
+				array(
+					'value'        => $attributes['burgerBar1BorderRadius'] ?? array(),
+					'css'          => 'border-radius',
+					'unit_default' => 'px',
+				),
+			)
 		);
-		for ( $sgs_nm_bar_n = 1; $sgs_nm_bar_n <= $sgs_nm_bar_count; $sgs_nm_bar_n++ ) {
+		$css .= sgs_emit_responsive_css(
+			$uid_sel . ' .sgs-nav-bar-menu__burger-bar-2',
+			array(
+				array(
+					'value'        => $attributes['burgerBar2BorderRadius'] ?? array(),
+					'css'          => 'border-radius',
+					'unit_default' => 'px',
+				),
+			)
+		);
+		if ( $sgs_nm_bar_count >= 3 ) {
 			$css .= sgs_emit_responsive_css(
-				$uid_sel . ' .sgs-nav-bar-menu__burger-bar-' . $sgs_nm_bar_n,
+				$uid_sel . ' .sgs-nav-bar-menu__burger-bar-3',
 				array(
 					array(
-						'value'        => $sgs_nm_bar_radius[ $sgs_nm_bar_n ],
+						'value'        => $attributes['burgerBar3BorderRadius'] ?? array(),
 						'css'          => 'border-radius',
 						'unit_default' => 'px',
 					),
