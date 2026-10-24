@@ -375,6 +375,16 @@
                   "iconColourHover": "surface",
                   "backgroundColourHover": "#0A66C2",
                   "boxShadowHover": "rgba(0, 0, 0, 0.45) 0px 10px 20px -6px",
+                  "sgsChildSizing": {
+                    "desktop": "fixed",
+                    "tablet": "fixed",
+                    "mobile": "fixed"
+                  },
+                  "sgsChildWidth": {
+                    "desktop": "34px",
+                    "tablet": "34px",
+                    "mobile": "auto"
+                  },
                   "sgsMotion": {
                     "v": 1,
                     "elements": {
@@ -424,6 +434,16 @@
                   "iconColourHover": "surface",
                   "backgroundColourHover": "#1877F2",
                   "boxShadowHover": "rgba(0, 0, 0, 0.45) 0px 10px 20px -6px",
+                  "sgsChildSizing": {
+                    "desktop": "fixed",
+                    "tablet": "fixed",
+                    "mobile": "fixed"
+                  },
+                  "sgsChildWidth": {
+                    "desktop": "34px",
+                    "tablet": "34px",
+                    "mobile": "auto"
+                  },
                   "sgsMotion": {
                     "v": 1,
                     "elements": {
@@ -474,6 +494,16 @@
                   "iconColourHover": "surface",
                   "backgroundColourHover": "surface",
                   "boxShadowHover": "rgba(0, 0, 0, 0.45) 0px 10px 20px -6px",
+                  "sgsChildSizing": {
+                    "desktop": "fixed",
+                    "tablet": "fixed",
+                    "mobile": "fixed"
+                  },
+                  "sgsChildWidth": {
+                    "desktop": "34px",
+                    "tablet": "34px",
+                    "mobile": "auto"
+                  },
                   "sgsMotion": {
                     "v": 1,
                     "elements": {
