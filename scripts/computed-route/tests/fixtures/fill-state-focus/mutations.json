@@ -1,0 +1,13 @@
+[
+	{ "file": "lib/fill-state.mjs", "find": "ring?.looks && Object.assign( tokenLooks, ring.looks );", "replace": "void ring;", "why": "the browser ring's tokens would never reach the patch" },
+	{ "file": "lib/fill-state.mjs", "find": "ring?.gap && out.unmapped.push(", "replace": "false && out.unmapped.push(", "why": "a draft with no focus indicator at all would be dropped silently" },
+	{ "file": "lib/fill-state-tokens.mjs", "find": "( gap.startsWith( 'outline-style:auto' ) ? AUTO_STYLE_PENDING : gap )", "replace": "( gap )", "why": "the auto style row would not name the pending focus.css token" },
+	{ "file": "lib/fill-state.mjs", "find": "const shared = 'hover' === state ?", "replace": "const shared = 'never' === state ?", "why": "a hover setting that also paints focus would go unreported" },
+	{ "file": "lib/fill-state.mjs", "find": "if ( focusLook || ! takesRing( snap.tag, snap.role ) ) {", "replace": "if ( focusLook ) {", "why": "an element that never takes focus would be reported" },
+	{ "file": "lib/fill-state.mjs", "find": "( d ) => d.pseudo === pseudo && ( d.prop === prop || longhands( d.prop ).includes( prop ) ) && String( d.state )", "replace": "( d ) => d.pseudo === pseudo && String( d.state )", "why": "a focus look of another property would hide this one" },
+	{ "file": "lib/fill-state.mjs", "find": ".some( ( s ) => 'focus' === s || 'focus-visible' === s ) );\n\tif ( focusLook", "replace": ".some( ( s ) => 'focus' === s ) );\n\tif ( focusLook", "why": "a draft focus-visible look would not count as the draft's focus look" },
+	{ "file": "lib/fill-state.mjs", "find": "canon( prop, v, ctxAt( w ) ), canon( prop, rest[ prop ][ w ], ctxAt( w ) )", "replace": "canon( prop, v ), canon( prop, rest[ prop ][ w ] )", "why": "context-decided keywords would stay undecided in the state pass" },
+	{ "file": "lib/fill-state.mjs", "find": "const look = defaultStateLook( cal, state, rest, ctx.at );", "replace": "const look = defaultStateLook( cal, state, rest );", "why": "holdDefaults would compare without the element's context" },
+	{ "file": "lib/fill-state.mjs", "find": "const position = snap?.position ?? snap?.styles?.position;", "replace": "const position = undefined;", "why": "an out-of-flow element's min-height auto would stay undecided" },
+	{ "file": "lib/fill-state.mjs", "find": "snap?.styles?.direction && ( siblings.direction[ w ] = snap.styles.direction );", "replace": "void snap;", "why": "text-align start would never be read as a physical side" }
+]
