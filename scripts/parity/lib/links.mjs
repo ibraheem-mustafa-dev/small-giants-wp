@@ -11,14 +11,24 @@
 import { AUTO_EXCLUDE } from './auto-walk.mjs';
 
 // In the page: every visible link under the root (or the page minus the header and footer), with its
-// text (its words, else its aria-label, title or image alt), raw href and resolved URL.
-function collectLinksIn( [ rootSel, exclude ] ) {
+// text (its words, else its aria-label, title or image alt), raw href and resolved URL. The exclusions apply as they
+// do to the automatic word check (auto-collect.mjs::collectAuto): each is a selector or a { js: '(root) => element' }
+// finder, and one that holds the chosen root never applies (a header config rooted inside the excluded <header>).
+export function collectLinksIn( [ rootSel, exclude ] ) {
 	const shown = ( e ) => e.getClientRects().length && 'hidden' !== getComputedStyle( e ).visibility;
 	const root = rootSel ? [ ...document.querySelectorAll( rootSel ) ].find( shown ) : document;
 	if ( ! root ) {
 		return [];
 	}
-	const ex = rootSel ? [] : exclude.flatMap( ( s ) => [ ...document.querySelectorAll( s ) ] );
+	const found = ( e ) => {
+		try {
+			// eslint-disable-next-line no-new-func
+			return e && e.js ? [ new Function( 'root', `return (${ e.js })(root);` )( document ) ] : [ ...document.querySelectorAll( e ) ];
+		} catch {
+			return [];
+		}
+	};
+	const ex = exclude.flatMap( found ).filter( ( x ) => x && x.contains && ! x.contains( root ) );
 	return [ ...root.querySelectorAll( 'a[href]' ) ].filter( ( a ) => shown( a ) && ! ex.some( ( x ) => x.contains( a ) ) ).map( ( a ) => ( {
 		text: ( a.innerText.trim() || a.getAttribute( 'aria-label' ) || a.getAttribute( 'title' ) || a.querySelector( 'img' )?.alt || '' ).replace( /\s+/g, ' ' ).trim().toLowerCase(),
 		href: a.getAttribute( 'href' ).trim(),
@@ -34,7 +44,7 @@ function collectLinksIn( [ rootSel, exclude ] ) {
 // `lifted`: the exclusions a ref-traced surface lives in on this side (auto-walk.mjs::liftedExclusions), whose links are collected.
 export function collectLinks( page, side, cfg, lifted = [] ) {
 	const root = cfg.linkRoot?.[ side ] || cfg.auto?.root?.[ side ] || null;
-	return page.evaluate( collectLinksIn, [ root, [ ...AUTO_EXCLUDE.filter( ( sel ) => ! lifted.includes( sel ) ), ...( cfg.auto?.exclude?.[ side ] || [] ).filter( ( e ) => 'string' === typeof e ) ] ] ).catch( () => [] );
+	return page.evaluate( collectLinksIn, [ root, [ ...AUTO_EXCLUDE.filter( ( sel ) => ! lifted.includes( sel ) ), ...( cfg.auto?.exclude?.[ side ] || [] ).filter( ( e ) => 'string' === typeof e || ( e && 'string' === typeof e.js ) ) ] ] ).catch( () => [] );
 }
 
 const statusCache = new Map();

@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/links.mjs",
+		"find": "const ex = exclude.flatMap( found ).filter( ( x ) => x && x.contains && ! x.contains( root ) );",
+		"replace": "const ex = rootSel ? [] : exclude.flatMap( found );",
+		"why": "exclusions dropped under a root (the old code)"
+	},
+	{
+		"file": "lib/links.mjs",
+		"find": "const ex = exclude.flatMap( found ).filter( ( x ) => x && x.contains && ! x.contains( root ) );",
+		"replace": "const ex = exclude.flatMap( found ).filter( ( x ) => x && x.contains );",
+		"why": "an exclusion holding the root applies"
+	},
+	{
+		"file": "lib/links.mjs",
+		"find": "return e && e.js ? [ new Function( 'root', `return (${ e.js })(root);` )( document ) ] : [ ...document.querySelectorAll( e ) ];",
+		"replace": "return e && e.js ? [] : [ ...document.querySelectorAll( e ) ];",
+		"why": "js finders ignored"
+	},
+	{
+		"file": "lib/links.mjs",
+		"find": "} catch {\n\t\t\treturn [];\n\t\t}\n\t};\n\tconst ex",
+		"replace": "} catch {\n\t\t\treturn [ ...document.querySelectorAll( 'a' ) ];\n\t\t}\n\t};\n\tconst ex",
+		"why": "a throwing finder excludes every link"
+	}
+]
