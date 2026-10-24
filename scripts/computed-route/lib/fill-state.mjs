@@ -29,9 +29,12 @@ import { settingStates, statesVocabulary } from './db.mjs';
 import { longhands } from './calibrate-props.mjs';
 import { alternateSlots } from './fill-resolve-state.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
-import { TIMING_PROPS, timingWrites } from './fill-timing.mjs';
+import { timingWrites } from './fill-timing.mjs';
 import { motionDb } from './motion-db.mjs';
-import { targetName } from './fill-motion.mjs';
+import { exactHome } from './fill-part-pairing.mjs';
+import { stateDrafts, ancestorLook, motionHolds } from './fill-state-reach.mjs';
+
+export { stateDrafts, ancestorLook, motionHolds };
 import { MOTION_STATE_PROPS, stateHover } from './fill-state-motion.mjs';
 import { scriptGapReason, openSlots } from './fill-state-script.mjs';
 import { createPatch, tokenRoute, pickValue, pressVariant, ownedBySetting, applyTokenLooks, conflictRow, ringLook, restShadow } from './fill-state-tokens.mjs';
@@ -62,45 +65,6 @@ export const SURFACE_BLOCKS = [ 'sgs/modal', 'sgs/nav-drawer', 'sgs/mega-panel' 
 export const hiddenAtRest = ( reads, id ) => READ_WIDTHS.every( ( w ) => true === reads.widths?.[ w ]?.[ id ]?.missing );
 
 const same = ( a, b ) => JSON.stringify( a ) === JSON.stringify( b );
-
-// One target's state looks grouped by state, pseudo-element and property across the read widths: Map
-// `${state}|${pseudo-element or ''}|${prop}` →
-// { state, prop, pseudo, perWidth, read ('code' when any width's value was read from the stylesheet), draftDefect (the draft ID of a
-// declaration the draft never paints, built from the code: lib/fill-state-defect.mjs) }. A combination of states (hover on the current item) keeps every word, joined by `+`.
-// reads: readDraft's result; id: the target id.
-export function stateDrafts( reads, id ) {
-	const out = new Map();
-	for ( const w of READ_WIDTHS ) {
-		for ( const look of reads.states?.[ w ]?.looks?.[ id ] || [] ) {
-			const state = [ ...look.states ].sort().join( '+' );
-			// The rendered value is what Fill writes (code first, the render confirms): a property with no render read
-			// (an unresolved var() or currentcolor in its declared text) is not written from its declaration.
-			for ( const prop of Object.keys( look.declared ).filter( ( p ) => ! TIMING_PROPS.includes( p ) ) ) {
-				// A look read from the stylesheet (read 'code': a state no browser can enter) has no rendered value; its declared
-				// value is the value. An entered look's rendered value wins over a code look of the same state and property.
-				const code = 'code' === look.read;
-				const value = look.rendered?.[ prop ] ?? ( code ? look.declared[ prop ] : undefined );
-				if ( ! value ) {
-					continue;
-				}
-				// A look on a pseudo-element (`::after` under :hover) is that layer's own look, kept apart from the element's.
-				const pseudo = look.pseudo || '';
-				const key = `${ state }|${ pseudo }|${ prop }`;
-				const e = out.get( key ) || { state, prop, pseudo, perWidth: {}, byCode: {}, read: 'entered' };
-				look.draftDefect && ( e.draftDefect = look.draftDefect );
-				look.script && ( e.script = look.script );
-				if ( code && undefined !== e.perWidth[ w ] ) {
-					continue;
-				}
-				e.perWidth[ w ] = value;
-				e.byCode[ w ] = code;
-				e.read = Object.values( e.byCode ).some( Boolean ) ? 'code' : 'entered';
-				out.set( key, e );
-			}
-		}
-	}
-	return out;
-}
 
 // The target's resting snapshot (tag, link, role, class): the narrowest read width whose snapshot identifies the element
 // (has a tag), since a target hidden at a narrow width has no tag there; with none identified, the narrowest one.
@@ -236,6 +200,7 @@ function holdSlots( cal, node, slot, prop, rest ) {
 export function holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads, drafts, held, interaction, taken = new Map() } ) {
 	const out = { writes: [], unmapped: [], held: [] };
 	const rest = restingOf( reads, target.id );
+	const follows = ( state, prop ) => ancestorLook( reads, rec, target, state, prop ) || ( 'color' !== prop && rest[ prop ] && READ_WIDTHS.every( ( w ) => undefined === rest[ prop ][ w ] || rest[ prop ][ w ] === rest.color?.[ w ] ) && ancestorLook( reads, rec, target, state, 'color' ) );
 	const ctx = stateContext( reads, target.id );
 	const read = ( prop ) => READ_WIDTHS.some( ( w ) => reads.widths?.[ w ]?.[ target.id ]?.styles?.[ prop ] );
 	const declared = ( state, prop ) => [ ...drafts.values() ].some( ( d ) => d.state === state && ! d.pseudo && ( d.prop === prop || longhands( d.prop ).includes( prop ) ) );
@@ -246,6 +211,11 @@ export function holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads
 		for ( const prop of [ ...new Set( Object.values( look ).flatMap( ( s ) => [ ...s ] ) ) ] ) {
 			const slots = holdSlots( cal, node, target.slot, prop, rest[ prop ] || {} );
 			if ( declared( state, prop ) || ! slots.some( ( p ) => look[ LOOSE( p ) ]?.has( prop ) ) || ( ! rest[ prop ] && read( prop ) ) ) {
+				continue;
+			}
+			const from = follows( state, prop );
+			if ( from ) {
+				out.held.push( { node: ref, slot: target.slot, prop, state, reason: `default-state: ${ prop } follows ${ from.slot || 'the root' }, whose ${ state } look the draft declares, so the element changes with it` } );
 				continue;
 			}
 			const gap = ! rest[ prop ] ? `the draft's resting ${ prop } was not read on this element` : stateGap( state, held );
@@ -274,16 +244,6 @@ export function holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads
 		}
 	}
 	return out;
-}
-
-// Whether the block's motion support holds this target's hover transform (its sgsMotion hover layer, written by
-// lib/fill-motion.mjs::motionWrites), so the state pass leaves it there. A DB without motion tables holds none.
-function motionHolds( mdb, rec, target ) {
-	try {
-		return Boolean( targetName( rec, target, mdb.targetsOf( rec.name ) ) );
-	} catch {
-		return false;
-	}
 }
 
 // Writes every state look of every node into the tree in place. opts: { tree, nodes (skeletonNodes), reads, calFor,
@@ -339,7 +299,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 					out.unmapped.push( { node: ref, block: rec.name, slot, property: prop, state, value: JSON.stringify( perWidth ), reason: `unmapped-element: the draft paints ${ pseudo } under ${ state } on "${ target.slot }" and ${ rec.name } has no calibrated ${ pseudo } there` } );
 					continue;
 				}
-				if ( mdb && 'hover' === state && ! pseudo && MOTION_STATE_PROPS.includes( prop ) && motionHolds( mdb, rec, target ) ) {
+				if ( mdb && 'hover' === state && ! pseudo && MOTION_STATE_PROPS.includes( prop ) && motionHolds( mdb, rec, target, ( el ) => exactHome( db, rec.name, cal, el ) ) ) {
 					// Only what the motion writer writes (lib/fill-motion.mjs reads the same lib/fill-state-motion.mjs::stateHover) is left to it;
 					// a hover transform it cannot hold (a var() or calc(), a width with none) is raised below with its reason.
 					const held = stateHover( reads, target );

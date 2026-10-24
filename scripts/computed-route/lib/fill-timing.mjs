@@ -149,7 +149,7 @@ const pick = ( o ) => Object.fromEntries( [ 'transition-property', ...LIST_PROPS
 // skipped: [{ prop, why }], split: [{ prop, state, width, value, groups }] }. A list that times its properties
 // differently gives the timing most of them share as the value, and the whole split in `split`. The resting rule's
 // timing is the cascade winner of the resting read (reads.declared), its property list the rendered one where the code
-// states none; a state rule's is the look's rendered value (lib/fill-state.mjs::stateDrafts' rule: the render confirms
+// states none; a state rule's is the look's rendered value (lib/fill-state-reach.mjs::stateDrafts' rule: the render confirms
 // the code), its property list the look's own, else the resting one.
 export function timingFacts( reads, id ) {
 	const out = { rest: {}, enter: {}, skipped: [], split: [] };

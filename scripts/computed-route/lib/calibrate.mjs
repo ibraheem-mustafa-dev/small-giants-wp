@@ -92,7 +92,7 @@ function formAccepted( marker, changes ) {
 // tiers follow its container's width (an @container rule), so a tier reached at fewer page widths is expected, not oneWidth.
 // slots: every element the marker reaches (a non-inherited property can land on the root and an inner element alike;
 // an inherited one only counts where it is set, the shallowest). effects: other properties the marker changed on those
-// elements ("path|prop"), the side effects Solve's regression guard matches regressions against. look: for a state
+// elements, and for an inherited one on every element it reaches ("path|prop"), the side effects Solve's regression guard matches regressions against. look: for a state
 // setting (row.css_state), what its slots show in that state as values (lib/calibrate-instances.mjs::stateLook), read from
 // the marked instance in its state, the setting's own properties left out.
 export function slotFor( row, marker, defReads, markReads, { containerQuery = false, own = null } = {} ) {
@@ -130,10 +130,11 @@ export function slotFor( row, marker, defReads, markReads, { containerQuery = fa
 	const at = changes.filter( ( c ) => c.path === best.path && ( ! marker.expect || c.hit || transforming ) );
 	const reachedAt = [ ...new Set( at.map( ( c ) => c.w ) ) ].sort( ( a, b ) => a - b );
 	const transform = transforming ? Object.fromEntries( changes.filter( ( c ) => c.path === best.path ).map( ( c ) => [ c.w, c.value ] ) ) : null;
-	const effects = [ ...side ].filter( ( e ) => slots.includes( e.split( '|' )[ 0 ] ) );
 	// An inherited property also records every element the marker reached (a link's label inheriting the root's
 	// colour); a descendant whose own rule overrides the value never changes, so it is never among them.
 	const reaches = inherited ? [ ...new Set( pool.map( ( c ) => c.path ) ) ].sort( ( a, b ) => depth( a ) - depth( b ) ) : null;
+	// Side effects on every element the setting reaches: a bar painted `background: currentColor` under the colour's slot.
+	const effects = [ ...side ].filter( ( e ) => ( reaches || slots ).includes( e.slice( 0, e.lastIndexOf( '|' ) ) ) );
 	const overriddenBy = reaches ? overridingChildren( props, marker, defReads, best.path, reaches ) : [];
 	// misses: elements that changed without ever carrying the marker value in this reading. One that carries it in
 	// another variant only follows a size there (a root hugging its glyph), so mergeSetting drops it from the slots.
