@@ -91,8 +91,14 @@ $fp   = $properties( $fade['css'] );
 $check( ! in_array( 'opacity', $fp, true ) && in_array( 'translate', $fp, true ), 'a hover opacity leaves opacity to the owner property and keeps translate (list: ' . implode( ', ', $fp ) . ')' );
 $check( array( 'transform', 'opacity' ) === array_map( static fn( $e ) => strtok( $e, ' ' ), Base::entries( 'sgs/button', 'root', array( 'translate' ) ) ), 'entries() drops exactly the channels it is given' );
 
+// Every block the generator finds is covered, not only the button.
+$modal = Emitter::emit( $hover, '.sgs-m-test', array( 'block' => 'sgs/modal', 'target' => 'dialog' ) );
+$check( in_array( 'opacity', $properties( $modal['css'] ), true ) && in_array( 'transform', $properties( $modal['css'] ), true ), 'sgs/modal dialog keeps the stylesheet opacity and transform entries' );
+$card = Emitter::emit( $hover, '.sgs-m-test', array( 'block' => 'sgs/post-grid', 'target' => 'card' ) );
+$check( in_array( 'transform', $properties( $card['css'] ), true ), 'sgs/post-grid card keeps its stylesheet transform entry' );
+
 // The table is held to the stylesheet it describes.
-$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/button/style.css' );
+$css = (string) preg_replace( '/\s+/', ' ', (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/button/style.css' ) );
 foreach ( Base::entries( 'sgs/button', 'root' ) as $entry ) {
 	$check( str_contains( $css, $entry ), 'style.css holds the table entry word for word: ' . substr( $entry, 0, 40 ) );
 }

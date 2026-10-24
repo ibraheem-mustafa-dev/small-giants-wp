@@ -9,9 +9,9 @@
  * emitter appends these entries to its list (`Sgs_Motion_Emitter::emit`), so the stylesheet's timing keeps applying to
  * them while the emitter's paint entries keep the hover timing the client chose.
  *
- * A block joins by adding a row to ENTRIES with the properties its stylesheet transitions on that part and the timing
- * expression the stylesheet uses for them; `run-motion-base-transitions-standalone.php` holds each row to the
- * stylesheet.
+ * The table is generated from the stylesheets (`scripts/generate-motion-base-transitions.py --write` writes
+ * `includes/motion/data/base-transitions.json`; the `--check` gate fails while the file differs), so a block's part is
+ * covered the moment its style.css transitions `transform`, `translate` or `opacity` on it.
  *
  * @package SGS\Blocks
  */
@@ -25,18 +25,22 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Sgs_Motion_Base_Transitions {
 
+	/** The generated data file. */
+	const DATA_FILE = __DIR__ . '/data/base-transitions.json';
+
 	/**
-	 * Block name => motion part key => the stylesheet properties the emitter's list does not carry and the timing
-	 * (`duration easing`) the stylesheet gives them.
+	 * Block name => motion part key => the `property duration easing` entries the stylesheet holds on that part.
+	 *
+	 * @return array<string,array<string,array<int,string>>>
 	 */
-	const ENTRIES = array(
-		'sgs/button' => array(
-			'root' => array(
-				'properties' => array( 'transform', 'translate', 'opacity' ),
-				'timing'     => 'var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)))',
-			),
-		),
-	);
+	private static function table(): array {
+		static $table = null;
+		if ( null === $table ) {
+			$decoded = json_decode( (string) file_get_contents( self::DATA_FILE ), true );
+			$table   = is_array( $decoded ) ? $decoded : array();
+		}
+		return $table;
+	}
 
 	/**
 	 * The entries the stylesheet holds on one part of a block.
@@ -51,15 +55,14 @@ final class Sgs_Motion_Base_Transitions {
 	 * @return array<int,string> `property duration easing` entries, empty when the block has no row for the part.
 	 */
 	public static function entries( string $block, string $target, array $channels = array() ): array {
-		$row = self::ENTRIES[ $block ][ $target ] ?? null;
-		if ( null === $row ) {
-			return array();
-		}
-		return array_map(
-			static function ( string $property ) use ( $row ): string {
-				return $property . ' ' . $row['timing'];
-			},
-			array_values( array_diff( $row['properties'], $channels ) )
+		$entries = self::table()[ $block ][ $target ] ?? array();
+		return array_values(
+			array_filter(
+				array_map( 'strval', $entries ),
+				static function ( string $entry ) use ( $channels ): bool {
+					return ! in_array( strtok( $entry, ' ' ), $channels, true );
+				}
+			)
 		);
 	}
 }

@@ -1951,5 +1951,23 @@
     "added_commit": null,
     "budget_ms": 1500,
     "order": 223
+  },
+  {
+    "id": "check-motion-base-transitions-selftest",
+    "cmd": "python scripts/generate-motion-base-transitions.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 500,
+    "order": 224
+  },
+  {
+    "id": "check-motion-base-transitions",
+    "cmd": "python scripts/generate-motion-base-transitions.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 225
   }
 ]

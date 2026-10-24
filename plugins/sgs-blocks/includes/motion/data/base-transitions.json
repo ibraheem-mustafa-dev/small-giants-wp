@@ -1,0 +1,55 @@
+{
+	"sgs/button": {
+		"root": [
+			"transform var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)))",
+			"translate var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)))",
+			"opacity var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)))"
+		]
+	},
+	"sgs/buybox": {
+		"add-to-cart": [
+			"transform var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 200ms)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)))"
+		]
+	},
+	"sgs/gallery": {
+		"item": [
+			"transform var( --sgs-transition-duration ) var( --sgs-transition-easing )"
+		]
+	},
+	"sgs/google-reviews": {
+		"review": [
+			"transform 200ms var(--wp--custom--easing--ease, ease)"
+		]
+	},
+	"sgs/image-sequence": {
+		"canvas": [
+			"opacity var( --wp--custom--duration--medium, 300ms ) var(--wp--custom--easing--ease, ease)"
+		]
+	},
+	"sgs/modal": {
+		"dialog": [
+			"opacity var(--sgs-modal-transition)",
+			"transform var(--sgs-modal-transition)"
+		]
+	},
+	"sgs/nav-drawer": {
+		"close": [
+			"opacity var(--wp--custom--duration--quick, 0.15s) var(--wp--custom--easing--ease, ease)"
+		]
+	},
+	"sgs/post-grid": {
+		"card": [
+			"transform var( --sgs-transition-duration ) var( --sgs-transition-easing )"
+		]
+	},
+	"sgs/product-card": {
+		"wishlist": [
+			"transform 0.2s var(--wp--custom--easing--ease, ease)"
+		]
+	},
+	"sgs/testimonial-slider": {
+		"arrow": [
+			"transform var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1))"
+		]
+	}
+}
