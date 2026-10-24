@@ -86,7 +86,7 @@ function clearsOutline( rest ) {
 // The focus look an element shows when the draft declares no focus outline for it: the browser's ring
 // (BROWSER_RING, with a link's 1px offset) and no focus shadow unless the draft declares one, merged under the
 // draft's own focus look (`focus`, the token look built so far). drafts: the target's state drafts
-// (lib/fill-state.mjs::stateDrafts); reads/id: Fill's reads and the target's id (the resting declared values sit at
+// (lib/fill-state-reach.mjs::stateDrafts); reads/id: Fill's reads and the target's id (the resting declared values sit at
 // reads.declared[width][id]); snap: the target's resting snapshot (tag, href, role). Returns null when the element does
 // not take the site ring or the draft declares a focus outline for it (that look is the draft's own); { gap } when the
 // draft's resting code clears the outline and it declares no focus shadow either, so the draft shows no focus
@@ -126,7 +126,8 @@ export const pickValue = ( perWidth ) => perWidth[ ROOT_FIRST.find( ( w ) => und
 // The snapshot patch under construction: { patch, entries, conflicts, set( path, value, from ) }. `set` writes one leaf by
 // its key path; a key already set to another value keeps the first and records the conflict, except that a browser
 // value (`from.browser`: the browser's own ring, which the draft never declares) yields to a value the draft declares,
-// whichever comes first, and the browser value is recorded as the dropped one.
+// whichever comes first, and the browser value is recorded as the dropped one. A conflict is only ever between two
+// declared values or a declared and a browser one: of two browser values that differ, the first is kept unreported.
 export function createPatch() {
 	const patch = {};
 	const entries = [];
@@ -155,7 +156,8 @@ export function createPatch() {
 				entries[ prior ] = { path: name, value, ...from };
 				return;
 			}
-			if ( JSON.stringify( at[ key ] ) !== JSON.stringify( value ) ) {
+			// Two browser values that differ (a link's 1px offset, a button's 0px) are no draft values: no conflict.
+			if ( JSON.stringify( at[ key ] ) !== JSON.stringify( value ) && ! ( from?.browser && entries[ prior ]?.browser ) ) {
 				const keptFrom = entries[ prior ];
 				conflicts.push( { path: name, kept: at[ key ], dropped: value, from, keptFrom, ...( from?.browser && ! keptFrom?.browser ? { replaced: true } : {} ) } );
 			}

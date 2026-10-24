@@ -22,5 +22,7 @@
 	{ "file": "lib/fill-state-tokens.mjs", "find": ".every( ( p ) => browser.includes( p ) ) );", "replace": ".some( ( p ) => browser.includes( p ) ) );", "why": "a key the draft declares would be marked a browser value" },
 	{ "file": "lib/fill-state-tokens.mjs", "find": "'ring' === k && ground.browser && sink.set(", "replace": "false && sink.set(", "why": "the dark-ground ring would keep the client's colour" },
 	{ "file": "lib/fill-state-tokens.mjs", "find": "reason: c.replaced ? `conflict:", "replace": "reason: false ? `conflict:", "why": "a replaced browser value would be reported as the kept first value" },
-	{ "file": "lib/fill-state-tokens.mjs", "find": "...( from?.browser && ! keptFrom?.browser ? { replaced: true } : {} )", "replace": "", "why": "a browser value dropped after a declared ring would be reported as a first-come conflict" }
+	{ "file": "lib/fill-state-tokens.mjs", "find": "...( from?.browser && ! keptFrom?.browser ? { replaced: true } : {} )", "replace": "", "why": "a browser value dropped after a declared ring would be reported as a first-come conflict" },
+	{ "file": "lib/fill-state-tokens.mjs", "find": " && ! ( from?.browser && entries[ prior ]?.browser ) ) {", "replace": " ) {", "why": "two browser values that differ would be reported as a draft conflict" },
+	{ "file": "lib/fill-state-tokens.mjs", "find": "! ( from?.browser && entries[ prior ]?.browser )", "replace": "! ( from?.browser || entries[ prior ]?.browser )", "why": "a declared value after a browser one, or a browser one after a declared one, would lose its conflict" }
 ]

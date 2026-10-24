@@ -121,9 +121,16 @@ function reaches( c, row, slot ) {
 	} );
 }
 
+// A written palette slug as the colour it paints (`primary` → `rgb(10, 126, 168)`), from the site's tokens
+// (lib/normalise.mjs's snapshot shape: palette [{ slug, colour: { r, g, b, a } }]); any other value unchanged.
+export function slugColour( value, palette = [] ) {
+	const c = 'string' === typeof value ? palette.find( ( t ) => t.slug === value )?.colour : null;
+	return c ? ( c.a < 1 ? `rgba(${ c.r }, ${ c.g }, ${ c.b }, ${ c.a })` : `rgb(${ c.r }, ${ c.g }, ${ c.b })` ) : value;
+}
+
 // covered, by a written setting: at every width the row states, what the write paints there (paintedAt) equals the draft's,
-// compared in the element's context there (contextAt( width ), elementContext).
-function coveredBySetting( row, values, writes, cal, contextAt = () => ( {} ) ) {
+// compared in the element's context there (contextAt( width ), elementContext); a palette slug is compared as its colour.
+export function coveredBySetting( row, values, writes, cal, contextAt = () => ( {} ), palette = [] ) {
 	const fam = familyOf( row.property );
 	const defaultAt = ( x ) => defaultPaint( cal, row.slot, x, row.property );
 	for ( const w of writes ) {
@@ -138,7 +145,7 @@ function coveredBySetting( row, values, writes, cal, contextAt = () => ( {} ) ) 
 			}
 			// A shape setting by the corner or side the row states, any other by its value. A value that cannot be compared
 			// (a padding box against a height a side effect moves) covers nothing.
-			const written = painted.value;
+			const written = slugColour( painted.value, palette );
 			const part = written && 'object' === typeof written ? ( fam && 'mixed' !== fam.kind ? written[ 'corner' === fam.kind ? partKey( fam.part ) : fam.part ] : undefined ) : written;
 			return undefined !== part && null !== part && same( row.property, String( part ), values[ x ], contextAt( x ) );
 		} );
@@ -207,7 +214,7 @@ export function makeSettle( st ) {
 			const cal = st.calFor( rec.name );
 			const mine = writes.filter( ( w ) => w.node === row.node );
 			const contextAt = ( w ) => elementContext( st, rec, target, w );
-			const covered = coveredBySetting( row, values, mine, cal, contextAt ) ?? coveredByMotion( row, values, mine, tokens );
+			const covered = coveredBySetting( row, values, mine, cal, contextAt, st.snapshot?.palette ) ?? coveredByMotion( row, values, mine, tokens );
 			if ( covered ) {
 				return { reason: 'covered', detail: covered };
 			}
