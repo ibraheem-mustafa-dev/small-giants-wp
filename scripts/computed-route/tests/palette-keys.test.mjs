@@ -14,7 +14,7 @@ import { proposePalette, loadPaletteSlugs } from '../lib/intake-palette.mjs';
 import { REPO, keyFile, derive } from '../tools/palette-keys.mjs';
 
 // Each answer key and its source (tools/palette-keys.mjs).
-const KEYS = { 'indus-foods': 'from-marks', 'eye-care-ward-end': 'from-snapshot', 'mamas-munches-redesign': 'ruled' };
+const KEYS = { 'indus-foods': 'from-marks', 'eye-care-ward-end': 'ruled', 'mamas-munches-redesign': 'ruled' };
 
 const VOCAB = loadPaletteSlugs();
 const SLUGS = new Set( VOCAB.map( ( s ) => s.slug ) );
@@ -53,8 +53,7 @@ export const REVIEW = {
 		'text-inverse': { key: null, proposal: '#FFFFFF', class: 'key-value-not-a-token', check: 'the key keeps the framework default (#F1F5F9), a value no draft token holds; the draft sets white on its dark (footer) ground' },
 	},
 	'eye-care-ward-end': {
-		'link-hover': { key: null, proposal: '#6F6152', class: 'declared-by-the-draft', check: 'the draft\'s token file says --acc-ink is "kicker text, link hover", so the declaration proposes it; the key (the approved build) derived link-hover from primary-dark (#0F0F0F, no draft token). By Bean\'s 2026-10-24 ruling the declaration is the source, so the key is the one to revisit' },
-		section: { key: '#FFFFFF', proposal: '#F3F0EB', class: 'key-meaning-conflict', check: 'the key gives section the raised card ground (#FFFFFF, also surface-alt); the Mama\'s key gives section a ground distinct from its raised ground (#F9D5D3 beside #FFFAF0), and the rule that reproduces Mama\'s and Indus (the most painted ground after the page, raised and primary grounds) gives the image wells here. No band, card or control fact separates the three keys' },
+		section: { key: '#FFFFFF', proposal: '#F3F0EB', class: 'ruled-override', check: 'Bean\'s ruling (2026-10-24): section is the band colour, and Eye Care keeps its white card ground as a recorded override mark (--white and --surface-card role:surface-alt,section); the proposer reads the band rule, the mark carries the override' },
 	},
 	'mamas-munches-redesign': {},
 };
