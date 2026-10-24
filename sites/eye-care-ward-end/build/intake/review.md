@@ -27,29 +27,29 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `palette:--acc` | --acc #9C8B78 | role:accent | 0.85: the next most used strong ground (1 elements) | accept |
-| `palette:--acc-ink` | --acc-ink #6F6152 | role:accent-text | 0.85: the accent's own ink: the text colour of its hue (161 characters; the accent ground holds no text) | accept |
+| `palette:--acc` | --acc #9C8B78 | role:accent | 0.98: the draft's comment on --acc says "badges" ("badges, focus ring, ticker icons, selection"); usage agrees | accept |
+| `palette:--acc-ink` | --acc-ink #6F6152 | role:accent-text,link-hover | 0.85: the accent's own ink: the text colour of its hue (161 characters; the accent ground holds no text) | role:accent-text,link-hover |
 | `palette:--acc-soft` | --acc-soft #EFEAE2 | role:accent-light | 0.85: the light ground of the accent's hue (34 grounds and lines, carrying the accent ink) | accept |
-| `palette:--border-default` | --border-default #E6E1DA | role:border | 0.95: the divider line colour that draws the most (30346 px; a link's underline and a line in the page ground's colour are not dividers); the name --border-default agrees | accept |
+| `palette:--border-default` | --border-default #E6E1DA | role:border | 0.98: the draft declares --border-default: var(--hairline); usage agrees | accept |
 | `palette:--border-strong` | --border-strong #D8D2C8 | role:custom-border-strong | 0.3: name says border, but border is read from usage on --hairline (#E6E1DA) | accept |
 | `palette:--border-warm` | --border-warm #D5CCBD | no slug (one-off) | unused: no element in the draft uses this value | accept |
-| `palette:--button-primary-bg` | --button-primary-bg #141414 | role:text,heading,link,primary,section-text | 0.95: the page text: the body colour on 1 page(s); the name --text-body agrees | accept |
-| `palette:--button-primary-fg` | --button-primary-fg #FAF8F5 | role:surface,footer-bg,primary-text,text-inverse | 0.95: the page ground: the body background on 1 page(s); the name --surface-page agrees | accept |
+| `palette:--button-primary-bg` | --button-primary-bg #141414 | role:heading,link,section-text,text,primary | 0.85: the most used heading colour on light grounds (5 headings) | accept |
+| `palette:--button-primary-fg` | --button-primary-fg #FAF8F5 | role:footer-bg,text-inverse,surface,primary-text | 0.85: the footer's ground on 1 page(s) | accept |
 | `palette:--control-off` | --control-off #C9C2B8 | no slug (one-off) | unused: no element in the draft uses this value | accept |
-| `palette:--focus-ring` | --focus-ring #9C8B78 | role:accent | 0.85: the next most used strong ground (1 elements) | accept |
-| `palette:--hairline` | --hairline #E6E1DA | role:border | 0.95: the divider line colour that draws the most (30346 px; a link's underline and a line in the page ground's colour are not dividers); the name --border-default agrees | accept |
-| `palette:--ink` | --ink #141414 | role:text,heading,link,primary,section-text | 0.95: the page text: the body colour on 1 page(s); the name --text-body agrees | accept |
+| `palette:--focus-ring` | --focus-ring #9C8B78 | role:accent | 0.98: the draft's comment on --acc says "badges" ("badges, focus ring, ticker icons, selection"); usage agrees | accept |
+| `palette:--hairline` | --hairline #E6E1DA | role:border | 0.98: the draft declares --border-default: var(--hairline); usage agrees | accept |
+| `palette:--ink` | --ink #141414 | role:heading,link,section-text,text,primary | 0.85: the most used heading colour on light grounds (5 headings) | accept |
 | `palette:--ink-hover` | --ink-hover #2A2A2A | no slug (one-off) | unused: no element in the draft uses this value | accept |
-| `palette:--paper` | --paper #FAF8F5 | role:surface,footer-bg,primary-text,text-inverse | 0.95: the page ground: the body background on 1 page(s); the name --surface-page agrees | accept |
-| `palette:--success` | --success #1B7F43 | role:success | 0.95: the green the draft's code gives its status messages (1 in the code); the name --success agrees | accept |
+| `palette:--paper` | --paper #FAF8F5 | role:footer-bg,text-inverse,surface,primary-text | 0.85: the footer's ground on 1 page(s) | accept |
+| `palette:--success` | --success #1B7F43 | role:success | 0.98: the draft's comment on --success says "in stock" ("in stock"); usage agrees | accept |
 | `palette:--surface-alt` | --surface-alt #F3F0EB | role:section | 0.85: the most used ground after the page, raised and primary grounds (12 elements) | role:custom-surface-alt |
-| `palette:--surface-card` | --surface-card #FFFFFF | role:surface-alt | 0.95: the most used light ground after the page ground (29 elements); the name --surface-card agrees | role:surface-alt,section |
-| `palette:--surface-page` | --surface-page #FAF8F5 | role:surface,footer-bg,primary-text,text-inverse | 0.95: the page ground: the body background on 1 page(s); the name --surface-page agrees | accept |
+| `palette:--surface-card` | --surface-card #FFFFFF | role:surface-alt | 0.98: the draft declares --surface-card: var(--white); usage agrees | role:surface-alt,section |
+| `palette:--surface-page` | --surface-page #FAF8F5 | role:surface,footer-bg,text-inverse,primary-text | 0.98: the draft declares --surface-page: var(--paper); usage agrees | accept |
 | `palette:--surface-soft` | --surface-soft #F0EBE3 | role:accent-light | 0.85: the light ground of the accent's hue (34 grounds and lines, carrying the accent ink) | accept |
 | `palette:--text-2` | --text-2 #5E584F | role:text-muted | 0.85: the colour of the most text after the text, heading and accent text, at least 10 L* lighter than the text (438 characters) | accept |
 | `palette:--text-3` | --text-3 #77716A | role:custom-text-3 | 0.3: name says body text, but text is read from usage on --ink (#141414) | accept |
 | `palette:--text-4` | --text-4 #8B8478 | role:custom-text-4 | 0.3: name says body text, but text is read from usage on --ink (#141414) | accept |
-| `palette:--text-body` | --text-body #141414 | role:text,heading,link,primary,section-text | 0.95: the page text: the body colour on 1 page(s); the name --text-body agrees | accept |
+| `palette:--text-body` | --text-body #141414 | role:text,heading,link,section-text,primary | 0.98: the draft declares --text-body: var(--ink); usage agrees | accept |
 | `palette:--text-faint` | --text-faint #A39C90 | role:custom-text-faint | 0.3: name says body text, but text is read from usage on --ink (#141414) | accept |
 | `palette:--text-muted` | --text-muted #6B655E | role:custom-text-muted | 0.3: name says muted text, but text-muted is read from usage on --text-2 (#5E584F) | accept |
 | `palette:--text-strong` | --text-strong #4A453E | role:custom-text-strong | 0.3: name says body text, but text is read from usage on --ink (#141414) | accept |
@@ -59,4 +59,4 @@ Accept all: [ ]
 | `palette:--wa-ink` | --wa-ink #0B2B17 | role:custom-wa-ink | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) | accept |
 | `palette:--wa-ink-deep` | --wa-ink-deep #12301E | no slug (one-off) | unused: no element in the draft uses this value | accept |
 | `palette:--wa-soft` | --wa-soft #E9F9EF | no slug (one-off) | unused: no element in the draft uses this value | accept |
-| `palette:--white` | --white #FFFFFF | role:surface-alt | 0.95: the most used light ground after the page ground (29 elements); the name --surface-card agrees | role:surface-alt,section |
+| `palette:--white` | --white #FFFFFF | role:surface-alt | 0.98: the draft declares --surface-card: var(--white); usage agrees | role:surface-alt,section |

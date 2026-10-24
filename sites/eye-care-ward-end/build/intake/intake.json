@@ -2052,23 +2052,18 @@
      "--text-body",
      "--button-primary-bg"
     ],
-    "role": "text",
+    "role": "heading",
     "roles": [
-     "text",
      "heading",
      "link",
-     "primary",
-     "section-text"
+     "section-text",
+     "text",
+     "primary"
     ],
-    "confidence": 0.95,
-    "why": "the page text: the body colour on 1 page(s); the name --text-body agrees",
+    "confidence": 0.85,
+    "why": "the most used heading colour on light grounds (5 headings)",
     "by": "usage",
     "basis": [
-     {
-      "role": "text",
-      "by": "usage",
-      "why": "the page text: the body colour on 1 page(s); the name --text-body agrees"
-     },
      {
       "role": "heading",
       "by": "usage",
@@ -2080,14 +2075,19 @@
       "why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (29 of 34 links)"
      },
      {
-      "role": "primary",
-      "by": "usage",
-      "why": "the most used strong ground (1 buttons)"
-     },
-     {
       "role": "section-text",
       "by": "usage",
       "why": "the most used text colour on the section ground (weight 24)"
+     },
+     {
+      "role": "text",
+      "by": "declared",
+      "why": "the draft declares --text-body: var(--ink); usage agrees"
+     },
+     {
+      "role": "primary",
+      "by": "declared",
+      "why": "the draft declares --button-primary-bg: var(--ink); usage agrees"
      }
     ]
    },
@@ -2155,36 +2155,36 @@
      "--surface-page",
      "--button-primary-fg"
     ],
-    "role": "surface",
+    "role": "footer-bg",
     "roles": [
-     "surface",
      "footer-bg",
-     "primary-text",
-     "text-inverse"
+     "text-inverse",
+     "surface",
+     "primary-text"
     ],
-    "confidence": 0.95,
-    "why": "the page ground: the body background on 1 page(s); the name --surface-page agrees",
+    "confidence": 0.85,
+    "why": "the footer's ground on 1 page(s)",
     "by": "usage",
     "basis": [
-     {
-      "role": "surface",
-      "by": "usage",
-      "why": "the page ground: the body background on 1 page(s); the name --surface-page agrees"
-     },
      {
       "role": "footer-bg",
       "by": "usage",
       "why": "the footer's ground on 1 page(s)"
      },
      {
-      "role": "primary-text",
-      "by": "usage",
-      "why": "the most used text colour on the primary ground (weight 44)"
-     },
-     {
       "role": "text-inverse",
       "by": "usage",
       "why": "the most used text colour on the dark ground #141414 (weight 44)"
+     },
+     {
+      "role": "surface",
+      "by": "declared",
+      "why": "the draft declares --surface-page: var(--paper); usage agrees"
+     },
+     {
+      "role": "primary-text",
+      "by": "declared",
+      "why": "the draft declares --button-primary-fg: var(--paper); usage agrees"
      }
     ]
    },
@@ -2224,14 +2224,14 @@
     "roles": [
      "surface-alt"
     ],
-    "confidence": 0.95,
-    "why": "the most used light ground after the page ground (29 elements); the name --surface-card agrees",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --surface-card: var(--white); usage agrees",
+    "by": "declared",
     "basis": [
      {
       "role": "surface-alt",
-      "by": "usage",
-      "why": "the most used light ground after the page ground (29 elements); the name --surface-card agrees"
+      "by": "declared",
+      "why": "the draft declares --surface-card: var(--white); usage agrees"
      }
     ]
    },
@@ -2386,14 +2386,14 @@
     "roles": [
      "border"
     ],
-    "confidence": 0.95,
-    "why": "the divider line colour that draws the most (30346 px; a link's underline and a line in the page ground's colour are not dividers); the name --border-default agrees",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --border-default: var(--hairline); usage agrees",
+    "by": "declared",
     "basis": [
      {
       "role": "border",
-      "by": "usage",
-      "why": "the divider line colour that draws the most (30346 px; a link's underline and a line in the page ground's colour are not dividers); the name --border-default agrees"
+      "by": "declared",
+      "why": "the draft declares --border-default: var(--hairline); usage agrees"
      }
     ]
    },
@@ -2693,14 +2693,14 @@
     "roles": [
      "accent"
     ],
-    "confidence": 0.85,
-    "why": "the next most used strong ground (1 elements)",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft's comment on --acc says \"badges\" (\"badges, focus ring, ticker icons, selection\"); usage agrees",
+    "by": "declared",
     "basis": [
      {
       "role": "accent",
-      "by": "usage",
-      "why": "the next most used strong ground (1 elements)"
+      "by": "declared",
+      "why": "the draft's comment on --acc says \"badges\" (\"badges, focus ring, ticker icons, selection\"); usage agrees"
      }
     ]
    },
@@ -2727,7 +2727,8 @@
     "sharedWith": [],
     "role": "accent-text",
     "roles": [
-     "accent-text"
+     "accent-text",
+     "link-hover"
     ],
     "confidence": 0.85,
     "why": "the accent's own ink: the text colour of its hue (161 characters; the accent ground holds no text)",
@@ -2737,6 +2738,11 @@
       "role": "accent-text",
       "by": "usage",
       "why": "the accent's own ink: the text colour of its hue (161 characters; the accent ground holds no text)"
+     },
+     {
+      "role": "link-hover",
+      "by": "declared",
+      "why": "the draft's comment on --acc-ink says \"link hover\" (\"kicker text, link hover\")"
      }
     ]
    },
@@ -2942,14 +2948,14 @@
     "roles": [
      "success"
     ],
-    "confidence": 0.95,
-    "why": "the green the draft's code gives its status messages (1 in the code); the name --success agrees",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft's comment on --success says \"in stock\" (\"in stock\"); usage agrees",
+    "by": "declared",
     "basis": [
      {
       "role": "success",
-      "by": "usage",
-      "why": "the green the draft's code gives its status messages (1 in the code); the name --success agrees"
+      "by": "declared",
+      "why": "the draft's comment on --success says \"in stock\" (\"in stock\"); usage agrees"
      }
     ]
    },
@@ -3036,18 +3042,13 @@
      "text",
      "heading",
      "link",
-     "primary",
-     "section-text"
+     "section-text",
+     "primary"
     ],
-    "confidence": 0.95,
-    "why": "the page text: the body colour on 1 page(s); the name --text-body agrees",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --text-body: var(--ink); usage agrees",
+    "by": "declared",
     "basis": [
-     {
-      "role": "text",
-      "by": "usage",
-      "why": "the page text: the body colour on 1 page(s); the name --text-body agrees"
-     },
      {
       "role": "heading",
       "by": "usage",
@@ -3059,14 +3060,19 @@
       "why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (29 of 34 links)"
      },
      {
-      "role": "primary",
-      "by": "usage",
-      "why": "the most used strong ground (1 buttons)"
-     },
-     {
       "role": "section-text",
       "by": "usage",
       "why": "the most used text colour on the section ground (weight 24)"
+     },
+     {
+      "role": "text",
+      "by": "declared",
+      "why": "the draft declares --text-body: var(--ink); usage agrees"
+     },
+     {
+      "role": "primary",
+      "by": "declared",
+      "why": "the draft declares --button-primary-bg: var(--ink); usage agrees"
      }
     ]
    },
@@ -3125,32 +3131,32 @@
     "roles": [
      "surface",
      "footer-bg",
-     "primary-text",
-     "text-inverse"
+     "text-inverse",
+     "primary-text"
     ],
-    "confidence": 0.95,
-    "why": "the page ground: the body background on 1 page(s); the name --surface-page agrees",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --surface-page: var(--paper); usage agrees",
+    "by": "declared",
     "basis": [
-     {
-      "role": "surface",
-      "by": "usage",
-      "why": "the page ground: the body background on 1 page(s); the name --surface-page agrees"
-     },
      {
       "role": "footer-bg",
       "by": "usage",
       "why": "the footer's ground on 1 page(s)"
      },
      {
-      "role": "primary-text",
-      "by": "usage",
-      "why": "the most used text colour on the primary ground (weight 44)"
-     },
-     {
       "role": "text-inverse",
       "by": "usage",
       "why": "the most used text colour on the dark ground #141414 (weight 44)"
+     },
+     {
+      "role": "surface",
+      "by": "declared",
+      "why": "the draft declares --surface-page: var(--paper); usage agrees"
+     },
+     {
+      "role": "primary-text",
+      "by": "declared",
+      "why": "the draft declares --button-primary-fg: var(--paper); usage agrees"
      }
     ]
    },
@@ -3192,14 +3198,14 @@
     "roles": [
      "surface-alt"
     ],
-    "confidence": 0.95,
-    "why": "the most used light ground after the page ground (29 elements); the name --surface-card agrees",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --surface-card: var(--white); usage agrees",
+    "by": "declared",
     "basis": [
      {
       "role": "surface-alt",
-      "by": "usage",
-      "why": "the most used light ground after the page ground (29 elements); the name --surface-card agrees"
+      "by": "declared",
+      "why": "the draft declares --surface-card: var(--white); usage agrees"
      }
     ]
    },
@@ -3272,14 +3278,14 @@
     "roles": [
      "border"
     ],
-    "confidence": 0.95,
-    "why": "the divider line colour that draws the most (30346 px; a link's underline and a line in the page ground's colour are not dividers); the name --border-default agrees",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft declares --border-default: var(--hairline); usage agrees",
+    "by": "declared",
     "basis": [
      {
       "role": "border",
-      "by": "usage",
-      "why": "the divider line colour that draws the most (30346 px; a link's underline and a line in the page ground's colour are not dividers); the name --border-default agrees"
+      "by": "declared",
+      "why": "the draft declares --border-default: var(--hairline); usage agrees"
      }
     ]
    },
@@ -3361,23 +3367,18 @@
      "--ink",
      "--text-body"
     ],
-    "role": "text",
+    "role": "heading",
     "roles": [
-     "text",
      "heading",
      "link",
-     "primary",
-     "section-text"
+     "section-text",
+     "text",
+     "primary"
     ],
-    "confidence": 0.95,
-    "why": "the page text: the body colour on 1 page(s); the name --text-body agrees",
+    "confidence": 0.85,
+    "why": "the most used heading colour on light grounds (5 headings)",
     "by": "usage",
     "basis": [
-     {
-      "role": "text",
-      "by": "usage",
-      "why": "the page text: the body colour on 1 page(s); the name --text-body agrees"
-     },
      {
       "role": "heading",
       "by": "usage",
@@ -3389,14 +3390,19 @@
       "why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (29 of 34 links)"
      },
      {
-      "role": "primary",
-      "by": "usage",
-      "why": "the most used strong ground (1 buttons)"
-     },
-     {
       "role": "section-text",
       "by": "usage",
       "why": "the most used text colour on the section ground (weight 24)"
+     },
+     {
+      "role": "text",
+      "by": "declared",
+      "why": "the draft declares --text-body: var(--ink); usage agrees"
+     },
+     {
+      "role": "primary",
+      "by": "declared",
+      "why": "the draft declares --button-primary-bg: var(--ink); usage agrees"
      }
     ]
    },
@@ -3451,36 +3457,36 @@
      "--paper",
      "--surface-page"
     ],
-    "role": "surface",
+    "role": "footer-bg",
     "roles": [
-     "surface",
      "footer-bg",
-     "primary-text",
-     "text-inverse"
+     "text-inverse",
+     "surface",
+     "primary-text"
     ],
-    "confidence": 0.95,
-    "why": "the page ground: the body background on 1 page(s); the name --surface-page agrees",
+    "confidence": 0.85,
+    "why": "the footer's ground on 1 page(s)",
     "by": "usage",
     "basis": [
-     {
-      "role": "surface",
-      "by": "usage",
-      "why": "the page ground: the body background on 1 page(s); the name --surface-page agrees"
-     },
      {
       "role": "footer-bg",
       "by": "usage",
       "why": "the footer's ground on 1 page(s)"
      },
      {
-      "role": "primary-text",
-      "by": "usage",
-      "why": "the most used text colour on the primary ground (weight 44)"
-     },
-     {
       "role": "text-inverse",
       "by": "usage",
       "why": "the most used text colour on the dark ground #141414 (weight 44)"
+     },
+     {
+      "role": "surface",
+      "by": "declared",
+      "why": "the draft declares --surface-page: var(--paper); usage agrees"
+     },
+     {
+      "role": "primary-text",
+      "by": "declared",
+      "why": "the draft declares --button-primary-fg: var(--paper); usage agrees"
      }
     ]
    },
@@ -3517,14 +3523,14 @@
     "roles": [
      "accent"
     ],
-    "confidence": 0.85,
-    "why": "the next most used strong ground (1 elements)",
-    "by": "usage",
+    "confidence": 0.98,
+    "why": "the draft's comment on --acc says \"badges\" (\"badges, focus ring, ticker icons, selection\"); usage agrees",
+    "by": "declared",
     "basis": [
      {
       "role": "accent",
-      "by": "usage",
-      "why": "the next most used strong ground (1 elements)"
+      "by": "declared",
+      "why": "the draft's comment on --acc says \"badges\" (\"badges, focus ring, ticker icons, selection\"); usage agrees"
      }
     ]
    }
@@ -4211,13 +4217,14 @@
     "deltaE": 0.213
    }
   ],
+  "disagreements": [],
   "usageFrom": "computed colour properties of 630 rest-mode reading records, one 1440 read per route"
  },
  "review": [
   {
    "rowId": "palette:--ink",
    "rowType": "palette-role",
-   "contentHash": "660b2d32c780fdd28afb22be7013e3ddd314541c270712e77bc52c95e54eadea",
+   "contentHash": "6dbbdcf0081a667953c232e928af65307dda94f9e48032e6b7a0029d9015e3a1",
    "mark": "accept",
    "markedOn": "2026-10-24",
    "carriedFrom": null
@@ -4233,7 +4240,7 @@
   {
    "rowId": "palette:--paper",
    "rowType": "palette-role",
-   "contentHash": "3b856e913e4941388044c83fccdc8cbe933d68dfc02ae2a599b93b6ab28783ec",
+   "contentHash": "e5eb82edc2e4167831957982e1ac70ea5ea38e4ac500bbfad7349bb50144faa4",
    "mark": "accept",
    "markedOn": "2026-10-24",
    "carriedFrom": null
@@ -4353,8 +4360,8 @@
   {
    "rowId": "palette:--acc-ink",
    "rowType": "palette-role",
-   "contentHash": "5fa3894ae4f0a9225f5c9338dc0f5dde740804fb354959334b8d19db71611c93",
-   "mark": "accept",
+   "contentHash": "e9e832c61a7211ef9e3ed1cc0854258d5928bcb6d16820afa31059691543ecf9",
+   "mark": "role:accent-text,link-hover",
    "markedOn": "2026-10-24",
    "carriedFrom": null
   },
@@ -4425,7 +4432,7 @@
   {
    "rowId": "palette:--text-body",
    "rowType": "palette-role",
-   "contentHash": "b92208d4d915cb339eec7f335d90a0929176b40442cbac9162654717615c6620",
+   "contentHash": "f56feb85c2c547014a5cea4354f152005446660f340403afd76f6f2fd38a5fe8",
    "mark": "accept",
    "markedOn": "2026-10-24",
    "carriedFrom": null
@@ -4433,7 +4440,7 @@
   {
    "rowId": "palette:--surface-page",
    "rowType": "palette-role",
-   "contentHash": "a93956c28db1d2ccb53d5ea6383c1e1e3e66ff7218b062cd4f3a571e79c5a0b6",
+   "contentHash": "234e14b7f2abad44584b1c0afda3c1e7d6b1613e88d59768ed5170faa9e901cc",
    "mark": "accept",
    "markedOn": "2026-10-24",
    "carriedFrom": null
@@ -4457,7 +4464,7 @@
   {
    "rowId": "palette:--button-primary-bg",
    "rowType": "palette-role",
-   "contentHash": "5c52aad337690ccbf7dadc62c4ff14d7918d33c8f0000fecda870019213f9c04",
+   "contentHash": "5daf533afd5333138f29ded67794d4d4a82b38f2c19efb3dc59b3126c79f72c5",
    "mark": "accept",
    "markedOn": "2026-10-24",
    "carriedFrom": null
@@ -4465,7 +4472,7 @@
   {
    "rowId": "palette:--button-primary-fg",
    "rowType": "palette-role",
-   "contentHash": "495767551458a488708a729bebf25e6a311a5ce55e31f211f97b53e9bfcbf7d1",
+   "contentHash": "0cc4fb0e8dac588f800cadd06e2ce216c02cfc32c3e9a8888df40d217de14419",
    "mark": "accept",
    "markedOn": "2026-10-24",
    "carriedFrom": null

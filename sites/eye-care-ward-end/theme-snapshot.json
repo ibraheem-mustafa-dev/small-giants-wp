@@ -8,56 +8,43 @@
           "slug": "primary",
           "color": "#141414",
           "name": "Primary",
-          "_source": "declared",
-          "_baseline_color": "#1F7A7A"
+          "_source": "confirmed"
         },
         {
           "slug": "primary-text",
-          "color": "#FAF8F5",
           "name": "Text on Primary",
-          "_source": "declared",
-          "_baseline_color": "#F1F5F9"
+          "color": "#FAF8F5",
+          "_source": "confirmed"
         },
         {
           "slug": "primary-dark",
           "color": "#0F0F0F",
           "name": "Primary Dark",
-          "_source": "derived",
-          "_baseline_color": "#0F4C4C"
-        },
-        {
-          "slug": "primary-hover",
-          "color": "#2A2A2A",
-          "name": "Primary Hover",
-          "_source": "declared"
+          "_source": "derived"
         },
         {
           "slug": "accent",
           "color": "#9C8B78",
           "name": "Accent",
-          "_source": "declared",
-          "_baseline_color": "#F59E0B"
+          "_source": "confirmed"
         },
         {
           "slug": "accent-text",
           "color": "#6F6152",
           "name": "Text on Accent",
-          "_source": "declared",
-          "_baseline_color": "#92400E"
+          "_source": "confirmed"
         },
         {
           "slug": "accent-light",
           "color": "#EFEAE2",
           "name": "Accent Light",
-          "_source": "declared",
-          "_baseline_color": "#FEF3C7"
+          "_source": "confirmed"
         },
         {
           "slug": "success",
           "color": "#1B7F43",
           "name": "Success",
-          "_source": "declared",
-          "_baseline_color": "#2E7D4F"
+          "_source": "confirmed"
         },
         {
           "slug": "success-light",
@@ -88,8 +75,132 @@
           "slug": "whatsapp",
           "color": "#25D366",
           "name": "WhatsApp",
-          "_source": "declared",
-          "_baseline_color": "#25D366"
+          "_source": "confirmed"
+        },
+        {
+          "slug": "surface",
+          "color": "#FAF8F5",
+          "name": "Surface",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "surface-alt",
+          "color": "#FFFFFF",
+          "name": "Raised Background",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "text",
+          "color": "#141414",
+          "name": "Text",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "text-muted",
+          "color": "#5E584F",
+          "name": "Text Muted",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "text-inverse",
+          "color": "#FAF8F5",
+          "name": "Text on Dark",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "border",
+          "color": "#E6E1DA",
+          "name": "Border",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "border-light",
+          "color": "#E5E7EB",
+          "name": "Border Light"
+        },
+        {
+          "slug": "footer-bg",
+          "color": "#FAF8F5",
+          "name": "Footer Background",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "heading",
+          "color": "#141414",
+          "name": "Heading Text",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "link",
+          "color": "#141414",
+          "name": "Link",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "link-hover",
+          "color": "#6F6152",
+          "name": "Link Hover",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "section",
+          "color": "#FFFFFF",
+          "name": "Section Background",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "section-text",
+          "color": "#141414",
+          "name": "Section Text",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "custom-surface-alt",
+          "color": "#F3F0EB",
+          "name": "Surface Alt",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "custom-text-3",
+          "color": "#77716A",
+          "name": "Text 3",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "custom-text-4",
+          "color": "#8B8478",
+          "name": "Text 4",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "custom-text-faint",
+          "color": "#A39C90",
+          "name": "Text Faint",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "custom-text-muted",
+          "color": "#6B655E",
+          "name": "Text Muted",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "custom-text-strong",
+          "color": "#4A453E",
+          "name": "Text Strong",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "custom-wa-ink",
+          "color": "#0B2B17",
+          "name": "Wa Ink",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "primary-hover",
+          "color": "#2A2A2A",
+          "name": "Primary Hover",
+          "_source": "declared"
         },
         {
           "slug": "whatsapp-hover",
@@ -106,60 +217,6 @@
           "slug": "whatsapp-line",
           "name": "WhatsApp line",
           "color": "#B7E5C7"
-        },
-        {
-          "slug": "surface",
-          "color": "#FAF8F5",
-          "name": "Surface",
-          "_source": "declared",
-          "_baseline_color": "#FAF9F6"
-        },
-        {
-          "slug": "surface-alt",
-          "color": "#FFFFFF",
-          "name": "Raised Background",
-          "_source": "declared",
-          "_baseline_color": "#F1F0EC"
-        },
-        {
-          "slug": "text",
-          "color": "#141414",
-          "name": "Text",
-          "_source": "declared",
-          "_baseline_color": "#1A202C"
-        },
-        {
-          "slug": "text-muted",
-          "color": "#5E584F",
-          "name": "Text Muted",
-          "_source": "declared",
-          "_baseline_color": "#606D80"
-        },
-        {
-          "slug": "text-inverse",
-          "color": "#FAF8F5",
-          "name": "Text on Dark",
-          "_source": "declared",
-          "_baseline_color": "#F1F5F9"
-        },
-        {
-          "slug": "border",
-          "color": "#E6E1DA",
-          "name": "Border",
-          "_source": "declared",
-          "_baseline_color": "#D4DBE5"
-        },
-        {
-          "slug": "border-light",
-          "color": "#E5E7EB",
-          "name": "Border Light"
-        },
-        {
-          "slug": "footer-bg",
-          "color": "#FAF8F5",
-          "name": "Footer Background",
-          "_source": "declared",
-          "_baseline_color": "#0F172A"
         },
         {
           "slug": "text-label",
@@ -183,7 +240,7 @@
           "slug": "border-strong",
           "color": "#D8D2C8",
           "name": "Border Strong",
-          "_source": "declared"
+          "_source": "confirmed"
         },
         {
           "slug": "surface-stage",
@@ -196,31 +253,6 @@
           "color": "#CFC7BB",
           "name": "Border Hover",
           "_source": "declared"
-        },
-        {
-          "slug": "heading",
-          "color": "#141414",
-          "name": "Heading Text"
-        },
-        {
-          "slug": "link",
-          "color": "#141414",
-          "name": "Link"
-        },
-        {
-          "slug": "link-hover",
-          "color": "#0F0F0F",
-          "name": "Link Hover"
-        },
-        {
-          "slug": "section",
-          "color": "#FFFFFF",
-          "name": "Section Background"
-        },
-        {
-          "slug": "section-text",
-          "color": "#141414",
-          "name": "Section Text"
         }
       ],
       "gradients": [],
@@ -552,7 +584,7 @@
         "width": "2px",
         "inner": "var(--wp--preset--color--surface)",
         "ink": "var(--wp--preset--color--text)",
-        "ring": "var(--wp--preset--color--text)",
+        "ring": "var(--wp--preset--color--accent)",
         "near": "var(--wp--preset--color--accent)",
         "far": "var(--wp--preset--color--accent)",
         "ringOnDark": "var(--wp--preset--color--accent)",
@@ -562,9 +594,27 @@
         "signatureB": "var(--wp--preset--color--accent)",
         "signatureC": "var(--wp--preset--color--accent-light)"
       },
-      "linkSweep": {
-        "thickness": "1px"
+      "scrollbar": {
+        "thumb": "var(--wp--preset--color--primary)",
+        "thumbOnDark": "var(--wp--preset--color--accent)",
+        "track": "transparent"
       },
+      "highlight": {
+        "colour": "var(--wp--preset--color--accent)",
+        "thickness": "0.2em",
+        "lift": "0.02em",
+        "overhang": "4%",
+        "tilt": "0deg"
+      },
+      "inlinePhoto": {
+        "width": "1.55em",
+        "height": "0.78em",
+        "borderWidth": "0",
+        "borderColour": "currentColor",
+        "radius": "999px",
+        "tilt": "0deg"
+      },
+      "shadowColour": "var(--wp--preset--color--text)",
       "shadowHover": {
         "whisper": "soft",
         "soft": "lifted",
@@ -578,7 +628,6 @@
         "hard": "6px 6px 0px 0px var(--wp--custom--shadow-colour)",
         "pressed": "pressed"
       },
-      "shadowColour": "var(--wp--preset--color--text)",
       "buttonPresets": {
         "primary": {
           "background": "var(--wp--preset--color--primary)",
@@ -591,8 +640,9 @@
           "font-weight": "400",
           "min-height": "52px",
           "hover-background": "#2a2a2a",
-          "hover-text": "#ffffff",
-          "hover-border": "var(--wp--preset--color--text)"
+          "hover-text": "var(--wp--preset--color--primary-text)",
+          "hover-border": "var(--wp--preset--color--primary-text)",
+          "hover-transform": "matrix(1, 0, 0, 1, 0, -3)"
         },
         "secondary": {
           "background": "var(--wp--preset--color--surface)",
@@ -604,23 +654,25 @@
           "font-size": "13px",
           "font-weight": "400",
           "min-height": "52px",
-          "hover-background": "var(--wp--preset--color--surface)",
+          "hover-background": "var(--wp--preset--color--surface-alt)",
           "hover-text": "var(--wp--preset--color--text)",
-          "hover-border": "var(--wp--preset--color--primary)"
+          "hover-border": "var(--wp--preset--color--primary)",
+          "hover-transform": "matrix(1, 0, 0, 1, 0, -3)"
         },
         "outline": {
           "background": "transparent",
-          "text": "currentColor",
-          "border": "color-mix(in srgb, currentColor 75%, transparent)",
+          "text": "var(--wp--preset--color--primary-text)",
+          "border": "rgba(250, 248, 245, 0.75)",
           "border-width": "1px",
           "border-radius": "0px",
           "padding": "0px 28px 0px 28px",
           "font-size": "13px",
           "font-weight": "400",
           "min-height": "52px",
-          "hover-background": "transparent",
-          "hover-text": "currentColor",
-          "hover-border": "currentColor"
+          "hover-background": "rgba(250, 248, 245, 0.14)",
+          "hover-text": "var(--wp--preset--color--primary-text)",
+          "hover-border": "var(--wp--preset--color--primary-text)",
+          "hover-transform": "matrix(1, 0, 0, 1, 0, -3)"
         },
         "default": {
           "hover-transform": "matrix(1, 0, 0, 1, 0, -3)",
@@ -636,6 +688,10 @@
       "transition": {
         "fast": "250ms cubic-bezier(0.25, 0.1, 0.25, 1)",
         "medium": "300ms cubic-bezier(0.25, 0.1, 0.25, 1)"
+      },
+      "hover": {
+        "duration": "var(--wp--custom--duration--fast)",
+        "easing": "var(--wp--custom--easing--emphasised)"
       },
       "duration": {
         "instant": "60ms",
@@ -662,35 +718,6 @@
         "duration": "500ms",
         "easing": "cubic-bezier(0.2, 0.7, 0.2, 1)"
       },
-      "accentSets": {
-        "navy": {
-          "accent": "#3A4A6B",
-          "accent-light": "#E4E7EE",
-          "accent-text": "#2B3A55"
-        },
-        "sage": {
-          "accent": "#8A9A86",
-          "accent-light": "#E8ECE6",
-          "accent-text": "#55654F"
-        },
-        "taupe": {
-          "accent": "#9C8B78",
-          "accent-light": "#EFEAE2",
-          "accent-text": "#6F6152"
-        }
-      },
-      "header": {},
-      "footer": {},
-      "measuredDiagramPresets": {
-        "default": {
-          "line": "var(--wp--preset--color--accent)",
-          "extension": "var(--wp--preset--color--border-strong)",
-          "value": "var(--wp--preset--color--text)",
-          "caption": "var(--wp--preset--color--text-muted)",
-          "line-width": "1.4px",
-          "extension-width": "1px"
-        }
-      },
       "section": {
         "padding": {
           "mobile": "0",
@@ -711,25 +738,37 @@
         "xl": "26px",
         "2xl": "48px"
       },
-      "scrollbar": {
-        "thumb": "var(--wp--preset--color--primary)",
-        "thumbOnDark": "var(--wp--preset--color--accent)",
-        "track": "transparent"
+      "header": {},
+      "footer": {},
+      "linkSweep": {
+        "thickness": "1px"
       },
-      "highlight": {
-        "colour": "var(--wp--preset--color--accent)",
-        "thickness": "0.2em",
-        "lift": "0.02em",
-        "overhang": "4%",
-        "tilt": "0deg"
+      "accentSets": {
+        "navy": {
+          "accent": "#3A4A6B",
+          "accent-light": "#E4E7EE",
+          "accent-text": "#2B3A55"
+        },
+        "sage": {
+          "accent": "#8A9A86",
+          "accent-light": "#E8ECE6",
+          "accent-text": "#55654F"
+        },
+        "taupe": {
+          "accent": "#9C8B78",
+          "accent-light": "#EFEAE2",
+          "accent-text": "#6F6152"
+        }
       },
-      "inlinePhoto": {
-        "width": "1.55em",
-        "height": "0.78em",
-        "borderWidth": "0",
-        "borderColour": "currentColor",
-        "radius": "999px",
-        "tilt": "0deg"
+      "measuredDiagramPresets": {
+        "default": {
+          "line": "var(--wp--preset--color--accent)",
+          "extension": "var(--wp--preset--color--border-strong)",
+          "value": "var(--wp--preset--color--text)",
+          "caption": "var(--wp--preset--color--text-muted)",
+          "line-width": "1.4px",
+          "extension-width": "1px"
+        }
       }
     },
     "appearanceTools": true,
@@ -740,7 +779,6 @@
     }
   },
   "styles": {
-    "css": "@media (max-width: 1159px) { .sgs-site-header .sgs-business-info-wrap--phone { display: none; } }",
     "color": {
       "background": "var:preset|color|surface",
       "text": "var:preset|color|text"
@@ -781,7 +819,7 @@
         "typography": {
           "fontFamily": "var:preset|font-family|heading",
           "fontWeight": "500",
-          "lineHeight": "1.0"
+          "lineHeight": "1.05"
         },
         "color": {
           "text": "var:preset|color|heading"
@@ -789,23 +827,23 @@
       },
       "h1": {
         "typography": {
-          "fontSize": "63.36px",
+          "fontSize": "clamp(34px, 29.0704px + 1.3146vw, 48px)",
           "fontFamily": "var:preset|font-family|heading",
-          "lineHeight": "1.0"
+          "lineHeight": "1.05"
         }
       },
       "h2": {
         "typography": {
-          "fontSize": "46px",
+          "fontSize": "clamp(32px, 27.0704px + 1.3146vw, 46px)",
           "fontFamily": "var:preset|font-family|heading",
-          "lineHeight": "1.0"
+          "lineHeight": "1.05"
         }
       },
       "h3": {
         "typography": {
           "fontSize": "20px",
           "fontFamily": "var:preset|font-family|heading",
-          "lineHeight": "1.0"
+          "lineHeight": "1.05"
         }
       },
       "h4": {
@@ -911,7 +949,8 @@
           "style": "solid"
         }
       }
-    }
+    },
+    "css": "@media (max-width: 1159px) { .sgs-site-header .sgs-business-info-wrap--phone { display: none; } }"
   },
   "templateParts": [
     {
@@ -981,9 +1020,16 @@
   "title": "eye-care-ward-end (generated by Spec 33 extractor)",
   "description": "Draft-generated global styles — DO NOT hand-edit; regenerate via extract.py.",
   "_sgsExtractor": {
-    "draft_css_sha256": "b76b357a40661824cf285e249f5f63fe3a8a39d4b69848e7203cd98d92d72529",
+    "draft_css_sha256": "b7d093ba6a9d32f74c05c7007a9cc785761edb203314c57bc80eaf44cceb447c",
     "extractor_version": "1.0",
-    "draft_source_sha256": "79fe7e0c43faadceaf95bf2847ebb3f5cd9f6647c9a8e4b7c00df2f5844e18be",
+    "draft_source_sha256": "52aeda8416ee994b941c5562c93f1b6a8203db876b3e7789b4cbc29ad490099e",
+    "manifest_sha256": {
+      "Eye Care Birmingham.dc.html": "2f2096a8c7a8c9ff8d40824b14d32f0374f84eda07a3c51c64d9a43a9315da3a",
+      "Frame Card.dc.html": "4c139189317abfd2d49c4851624fd8e1e3043fc002bfaddb474a0a645b8b8db4",
+      "tokens/colors.css": "9473a276fdb556d59fc1850805e80210dbc4dac9d1264eff03fb8f2b4b487977",
+      "tokens/spacing.css": "d2ec7bbe305cce06d1124d4d03b1f507694bd6c0812210d67e879540b126a4fa",
+      "tokens/typography.css": "10afddb7990718dee4942ef9abbd139dc2b38d26ae4416415cab54901cba3eff"
+    },
     "source_draft": "Eye Care Birmingham.dc.html"
   }
 }
