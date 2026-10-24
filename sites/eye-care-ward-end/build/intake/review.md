@@ -23,7 +23,7 @@ Marks per section (first value = Accept all):
 
 ## Palette roles (palette-role)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -42,8 +42,8 @@ Accept all: [ ]
 | `palette:--ink-hover` | --ink-hover #2A2A2A | no slug (one-off) | unused: no element in the draft uses this value |  |
 | `palette:--paper` | --paper #FAF8F5 | role:surface,footer-bg,primary-text,text-inverse | 0.95: the page ground: the body background on 1 page(s); the name --surface-page agrees |  |
 | `palette:--success` | --success #1B7F43 | role:success | 0.95: the green the draft's code gives its status messages (1 in the code); the name --success agrees |  |
-| `palette:--surface-alt` | --surface-alt #F3F0EB | role:section | 0.85: the most used ground after the page, raised and primary grounds (12 elements) |  |
-| `palette:--surface-card` | --surface-card #FFFFFF | role:surface-alt | 0.95: the most used light ground after the page ground (29 elements); the name --surface-card agrees |  |
+| `palette:--surface-alt` | --surface-alt #F3F0EB | role:section | 0.85: the most used ground after the page, raised and primary grounds (12 elements) | role:custom-surface-alt |
+| `palette:--surface-card` | --surface-card #FFFFFF | role:surface-alt | 0.95: the most used light ground after the page ground (29 elements); the name --surface-card agrees | role:surface-alt,section |
 | `palette:--surface-page` | --surface-page #FAF8F5 | role:surface,footer-bg,primary-text,text-inverse | 0.95: the page ground: the body background on 1 page(s); the name --surface-page agrees |  |
 | `palette:--surface-soft` | --surface-soft #F0EBE3 | role:accent-light | 0.85: the light ground of the accent's hue (34 grounds and lines, carrying the accent ink) |  |
 | `palette:--text-2` | --text-2 #5E584F | role:text-muted | 0.85: the colour of the most text after the text, heading and accent text, at least 10 L* lighter than the text (438 characters) |  |
@@ -59,4 +59,4 @@ Accept all: [ ]
 | `palette:--wa-ink` | --wa-ink #0B2B17 | role:custom-wa-ink | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) |  |
 | `palette:--wa-ink-deep` | --wa-ink-deep #12301E | no slug (one-off) | unused: no element in the draft uses this value |  |
 | `palette:--wa-soft` | --wa-soft #E9F9EF | no slug (one-off) | unused: no element in the draft uses this value |  |
-| `palette:--white` | --white #FFFFFF | role:surface-alt | 0.95: the most used light ground after the page ground (29 elements); the name --surface-card agrees |  |
+| `palette:--white` | --white #FFFFFF | role:surface-alt | 0.95: the most used light ground after the page ground (29 elements); the name --surface-card agrees | role:surface-alt,section |
