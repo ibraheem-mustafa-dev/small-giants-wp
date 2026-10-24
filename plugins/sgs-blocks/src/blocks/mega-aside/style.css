@@ -55,7 +55,7 @@
 /* Aside background hover/focus — fallback chain:
    hover var → resting var → panel-derived default → CSS default. */
 .sgs-mega-aside:hover,
-.sgs-mega-aside:focus-within {
+.sgs-mega-aside:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	background-color: var( --sgs-mega-aside-bg-hover, var( --sgs-mega-aside-bg, var( --sgs-mm-card, transparent ) ) );
 	background-image: var( --sgs-mega-aside-bg-hover-gradient, var( --sgs-mega-aside-bg-gradient, none ) );
 }

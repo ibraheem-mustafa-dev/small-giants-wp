@@ -31,7 +31,7 @@
 
 import { init as playerInit } from './lottie-adapter.js';
 import { bootGated } from './off-switch.js';
-import { prefersReducedMotion, rafThrottle } from '../effects/motion-utils.js';
+import { prefersReducedMotion, rafThrottle, focusRests } from '../effects/motion-utils.js';
 import {
 	readConfig,
 	readSpeed,
@@ -233,7 +233,7 @@ function bindInstance( el ) {
  * @param {LottieBinding} binding
  * @return {void}
  */
-function wireTrigger( binding ) {
+export function wireTrigger( binding ) {
 	const { el, controller } = binding;
 	const { trigger } = binding.config;
 	const signal = { signal: controller.signal };
@@ -257,7 +257,8 @@ function wireTrigger( binding ) {
 		const enter = () => activate( binding, true );
 		const leave = () => activate( binding, false );
 		el.addEventListener( 'pointerenter', enter, signal );
-		el.addEventListener( 'focusin', enter, signal );
+		// A block with `sgsFocusRests` on keeps its resting look on keyboard focus: focus never starts the animation.
+		el.addEventListener( 'focusin', () => ! focusRests( el ) && enter(), signal );
 		el.addEventListener( 'pointerleave', leave, signal );
 		el.addEventListener( 'focusout', leave, signal );
 		return;

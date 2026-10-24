@@ -462,12 +462,12 @@
 	}
 
 	.sgs-testimonial.sgs-has-hover-scale:hover,
-	.sgs-testimonial.sgs-has-hover-scale:focus-within {
+	.sgs-testimonial.sgs-has-hover-scale:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 		transform: scale(var(--sgs-hover-scale, 1.05));
 	}
 
 	.sgs-testimonial.sgs-has-hover:hover,
-	.sgs-testimonial.sgs-has-hover:focus-within {
+	.sgs-testimonial.sgs-has-hover:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 		box-shadow: var(--sgs-hover-shadow, none);
 	}
 }
@@ -480,7 +480,7 @@
 	}
 
 	.sgs-testimonial.sgs-has-hover-scale:hover,
-	.sgs-testimonial.sgs-has-hover-scale:focus-within {
+	.sgs-testimonial.sgs-has-hover-scale:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 		transform: none;
 	}
 }

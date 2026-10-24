@@ -202,7 +202,7 @@
    the chain (--sgs-op-bg/text, then the hardcoded default),
    so an instance with nothing configured renders the default look. */
 .sgs-option-picker--outlined .sgs-option-picker__option:hover  .sgs-option-picker__pill,
-.sgs-option-picker--outlined .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
+.sgs-option-picker--outlined .sgs-option-picker__option:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-option-picker__pill {
 	background-color: var(--sgs-op-bg-hover, var(--sgs-op-bg, var(--wp--preset--color--secondary, #f3f4f6)));
 	background-image: var(--sgs-op-bg-hover-gradient, var(--sgs-op-bg-gradient, none));
 	border-color:     var(--sgs-op-border, var(--wp--preset--color--primary, currentColor));
@@ -274,7 +274,7 @@
 }
 
 .sgs-option-picker--filled .sgs-option-picker__option:hover  .sgs-option-picker__pill,
-.sgs-option-picker--filled .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
+.sgs-option-picker--filled .sgs-option-picker__option:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-option-picker__pill {
 	background-color: var(--sgs-op-bg-hover, var(--sgs-op-bg, var(--wp--preset--color--surface-alt, #d1d5db)));
 	background-image: var(--sgs-op-bg-hover-gradient, var(--sgs-op-bg-gradient, none));
 }
@@ -309,7 +309,7 @@
 }
 
 .sgs-option-picker--ghost .sgs-option-picker__option:hover  .sgs-option-picker__pill,
-.sgs-option-picker--ghost .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
+.sgs-option-picker--ghost .sgs-option-picker__option:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-option-picker__pill {
 	background-color: var(--sgs-op-bg-hover, var(--wp--preset--color--secondary, rgba(0, 0, 0, 0.05)));
 	background-image: var(--sgs-op-bg-hover-gradient, none);
 }
@@ -738,7 +738,7 @@
 }
 
 .sgs-option-picker--tile .sgs-option-picker__option:hover .sgs-option-picker__pill,
-.sgs-option-picker--tile .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
+.sgs-option-picker--tile .sgs-option-picker__option:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-option-picker__pill {
 	border-color: var(--sgs-op-border, var(--wp--preset--color--primary, currentColor));
 	transform: var(--wp--custom--button-presets--default--hover-transform, translateY(-2px));
 }

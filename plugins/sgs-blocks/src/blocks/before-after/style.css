@@ -251,7 +251,7 @@
  * CSS default, so a divider with nothing configured stays byte-identical.
  */
 .wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line,
-.wp-block-sgs-before-after__range:focus-visible ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line,
+.wp-block-sgs-before-after__range:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line,
 .wp-block-sgs-before-after__range:focus ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line {
 	background-color: var( --sgs-before-after-divider-colour-hover, var( --sgs-before-after-divider-colour, #fff ) );
 	background-image: var( --sgs-before-after-divider-colour-hover-gradient, var( --sgs-before-after-divider-colour-gradient, none ) );
@@ -298,7 +298,7 @@
 }
 
 .wp-block-sgs-before-after__handle:hover svg,
-.wp-block-sgs-before-after__handle:focus-visible svg {
+.wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) svg {
 	/* Fallback chains to the resting colour, then the CSS default — render.php
 	 * only sets --sgs-before-after-handle-icon-colour-hover when
 	 * handleIconColourHover is actually configured. */
@@ -329,15 +329,15 @@
 }
 
 .wp-block-sgs-before-after__handle:hover .wp-block-sgs-before-after__handle-dashicon,
-.wp-block-sgs-before-after__handle:focus-visible .wp-block-sgs-before-after__handle-dashicon,
+.wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .wp-block-sgs-before-after__handle-dashicon,
 .wp-block-sgs-before-after__handle:hover .wp-block-sgs-before-after__handle-emoji,
-.wp-block-sgs-before-after__handle:focus-visible .wp-block-sgs-before-after__handle-emoji {
+.wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .wp-block-sgs-before-after__handle-emoji {
 	/* Same fallback chain as the svg hover rule above. */
 	color: var( --sgs-before-after-handle-icon-colour-hover, var( --sgs-before-after-handle-icon-colour, #1e1e1e ) );
 }
 
 .wp-block-sgs-before-after__handle:hover,
-.wp-block-sgs-before-after__handle:focus-visible {
+.wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	/* Handle background hover/focus (colour-conformance FILL closeout,
 	 * 2026-09-06) — same fallback-chain shape as the icon stroke rule above:
 	 * unset falls through to the resting colour, then the CSS default, so a

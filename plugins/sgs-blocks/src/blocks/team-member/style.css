@@ -199,14 +199,14 @@
 @media (prefers-reduced-motion: no-preference) {
 	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:hover .sgs-team-member__overlay,
 	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus .sgs-team-member__overlay,
-	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay {
+	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-team-member__overlay {
 		opacity: 1;
 		transform: translateY(0);
 	}
 
 	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:hover .sgs-team-member__overlay-bio,
 	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus .sgs-team-member__overlay-bio,
-	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay-bio {
+	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-team-member__overlay-bio {
 		transform: translateY(0);
 	}
 }

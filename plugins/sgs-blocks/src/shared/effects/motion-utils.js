@@ -10,6 +10,18 @@
  */
 
 /**
+ * Whether the element sits in a block with `sgsFocusRests` on ("Keyboard focus keeps the resting look"): the block root
+ * wears `.sgs-focus-rests` and the motion renderer stamps `data-sgs-focus-rests` on its marked elements. Keyboard focus
+ * must not engage a hover effect there.
+ *
+ * @param {Element} el The element a focus listener is bound to.
+ * @return {boolean} True when focus keeps the resting look.
+ */
+export function focusRests( el ) {
+	return null !== el.closest( '.sgs-focus-rests, [data-sgs-focus-rests]' );
+}
+
+/**
  * Whether the user has asked for reduced motion — checked LIVE every call
  * (never cached at module load), so a mid-session OS preference change is
  * honoured on the next effect init rather than requiring a page reload.

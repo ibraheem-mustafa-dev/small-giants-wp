@@ -349,7 +349,7 @@
 }
 
 .sgs-post-grid__badge:hover,
-.sgs-post-grid__badge:focus-visible {
+.sgs-post-grid__badge:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	background-color: var( --sgs-pg-badge-bg-hover, var( --sgs-pg-badge-bg, var( --wp--preset--color--primary, #1a3a5c ) ) );
 	background-image: var( --sgs-pg-badge-bg-hover-gradient, var( --sgs-pg-badge-bg-gradient, none ) );
 }
@@ -387,7 +387,7 @@
 }
 
 .sgs-post-grid__title a:hover,
-.sgs-post-grid__title a:focus-visible {
+.sgs-post-grid__title a:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	text-decoration: none;
 }
 
@@ -413,7 +413,7 @@
 }
 
 .sgs-post-grid__readmore:hover,
-.sgs-post-grid__readmore:focus-visible {
+.sgs-post-grid__readmore:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	text-decoration: none;
 }
 
@@ -515,7 +515,7 @@
 }
 
 .sgs-post-grid__filter:hover,
-.sgs-post-grid__filter:focus-visible {
+.sgs-post-grid__filter:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	background-color: var( --wp--preset--color--primary, #1a3a5c );
 	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff ));
 }
@@ -570,7 +570,7 @@
 }
 
 .sgs-post-grid__page-btn:hover,
-.sgs-post-grid__page-btn:focus-visible {
+.sgs-post-grid__page-btn:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	background-color: var( --wp--preset--color--primary, #1a3a5c );
 	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff ));
 }
@@ -620,7 +620,7 @@
 }
 
 .sgs-post-grid__load-more:hover,
-.sgs-post-grid__load-more:focus-visible {
+.sgs-post-grid__load-more:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	background-color: var( --wp--preset--color--primary, #1a3a5c );
 	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff ));
 }
@@ -682,9 +682,9 @@
 .sgs-post-grid__carousel-prev:hover,
 .sgs-post-grid__carousel-next:hover,
 .sgs-post-grid__pause:hover,
-.sgs-post-grid__carousel-prev:focus-visible,
-.sgs-post-grid__carousel-next:focus-visible,
-.sgs-post-grid__pause:focus-visible {
+.sgs-post-grid__carousel-prev:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)),
+.sgs-post-grid__carousel-next:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)),
+.sgs-post-grid__pause:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	background-color: var( --wp--preset--color--primary, #1a3a5c );
 	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff ));
 	box-shadow: 0 4px 16px color-mix(in srgb, var(--wp--custom--shadow-colour) 18%, transparent);

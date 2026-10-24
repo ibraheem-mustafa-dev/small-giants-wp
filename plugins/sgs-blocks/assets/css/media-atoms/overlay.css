@@ -48,7 +48,7 @@
 }
 
 .sgs-media-box:hover::after,
-.sgs-media-box:focus-within::after {
+.sgs-media-box:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *))::after {
 	background-color: var( --sgs-media-overlay-colour-hover, var( --sgs-media-overlay-colour, transparent ) );
 	background-image: var( --sgs-media-overlay-gradient-hover, var( --sgs-media-overlay-gradient, none ) );
 }

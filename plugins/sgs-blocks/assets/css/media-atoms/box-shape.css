@@ -92,7 +92,7 @@
  * introduced here — flagged for a future follow-up, not fixed in this pass.
  */
 .sgs-media-el:hover,
-.sgs-media-el:focus-visible {
+.sgs-media-el:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	border-color: var( --sgs-media-border-color-hover, var( --sgs-media-border-color, currentcolor ) );
 	border-image-source: var( --sgs-media-border-image-hover, var( --sgs-media-border-image, none ) );
 }

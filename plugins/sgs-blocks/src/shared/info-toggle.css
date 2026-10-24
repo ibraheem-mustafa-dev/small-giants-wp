@@ -61,7 +61,7 @@
 	color: var( --wp--preset--color--text-inverse, #f1f5f9 );
 }
 
-.sgs-info-toggle:focus-visible {
+.sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	background-color: var( --wp--preset--color--text, #1a202c );
 	color: var( --wp--preset--color--text-inverse, #f1f5f9 );
 }

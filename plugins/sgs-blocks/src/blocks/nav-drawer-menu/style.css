@@ -430,7 +430,7 @@
 }
 
 .sgs-nav-drawer-menu__link:hover .sgs-nav-drawer-menu__ornament,
-.sgs-nav-drawer-menu__link:focus-visible .sgs-nav-drawer-menu__ornament {
+.sgs-nav-drawer-menu__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-nav-drawer-menu__ornament {
 	max-width: calc(var(--sgs-ndm-orn-size, 0.75em) + var(--sgs-ndm-orn-gap, 0.5em));
 }
 

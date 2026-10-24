@@ -1969,5 +1969,23 @@
     "added_commit": null,
     "budget_ms": 500,
     "order": 221
+  },
+  {
+    "id": "check-focus-rests-static-selftest",
+    "cmd": "python scripts/check-focus-rests-static.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 500,
+    "order": 222
+  },
+  {
+    "id": "check-focus-rests-static",
+    "cmd": "python scripts/check-focus-rests-static.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 223
   }
 ]

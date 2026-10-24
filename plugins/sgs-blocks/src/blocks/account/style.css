@@ -205,7 +205,7 @@ a.sgs-account__quick-card {
 }
 
 a.sgs-account__quick-card:hover .sgs-account__card-title,
-a.sgs-account__quick-card:focus-visible .sgs-account__card-title {
+a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-account__card-title {
 	filter: brightness(1.15);
 }
 

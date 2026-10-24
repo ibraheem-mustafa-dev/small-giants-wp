@@ -122,9 +122,9 @@
 	border-style: var(--sgs-mb-btn-border-style-default);
 }
 
-/* `:where(:not(.sgs-focus-rests))` adds no specificity: a button with `sgsFocusRests` (render_block class, includes/class-sgs-focus-rests.php) keeps its resting look on keyboard focus. */
+/* `:where(:not(.sgs-focus-rests, .sgs-focus-rests *))` adds no specificity: a button with `sgsFocusRests` (render_block class, includes/class-sgs-focus-rests.php) keeps its resting look on keyboard focus. */
 .sgs-button:hover,
-.sgs-button:focus-visible:where(:not(.sgs-focus-rests)) {
+.sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	text-decoration: none;
 	color: var(--sgs-btn-color-hover, var(--sgs-btn-color, var(--sgs-mb-btn-color-default, var(--wp--preset--color--text))));
 	background-color: var(--sgs-btn-bg-hover, var(--sgs-btn-bg, var(--sgs-mb-btn-bg-hover-default, var(--sgs-mb-btn-bg-default, transparent))));

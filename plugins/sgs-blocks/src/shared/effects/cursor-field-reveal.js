@@ -9,6 +9,7 @@
  *
  * @package
  */
+import { focusRests } from './motion-utils.js';
 
 const OPEN_ATTR = 'data-sgs-reveal-open';
 
@@ -47,7 +48,7 @@ export function initRevealOpen( el ) {
 	const sync = () => setOpen( focused || tapped );
 
 	const onFocusIn = () => {
-		if ( lastInputWasPointer ) {
+		if ( lastInputWasPointer || focusRests( el ) ) {
 			return;
 		}
 		focused = true;

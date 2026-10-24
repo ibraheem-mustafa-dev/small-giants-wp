@@ -299,12 +299,17 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 		);
 		// Corner rounding per bar (burgerBar1BorderRadius .. burgerBar3BorderRadius) on each bar's own class; a
 		// two-bar glyph prints no Bar 3, so none is written for it. The scoped rule (0,2,0) beats style.css's `:where()` 1px.
+		$sgs_nm_bar_radius = array(
+			1 => $attributes['burgerBar1BorderRadius'] ?? array(),
+			2 => $attributes['burgerBar2BorderRadius'] ?? array(),
+			3 => $attributes['burgerBar3BorderRadius'] ?? array(),
+		);
 		for ( $sgs_nm_bar_n = 1; $sgs_nm_bar_n <= $sgs_nm_bar_count; $sgs_nm_bar_n++ ) {
 			$css .= sgs_emit_responsive_css(
 				$uid_sel . ' .sgs-nav-bar-menu__burger-bar-' . $sgs_nm_bar_n,
 				array(
 					array(
-						'value'        => $attributes[ 'burgerBar' . $sgs_nm_bar_n . 'BorderRadius' ] ?? array(),
+						'value'        => $sgs_nm_bar_radius[ $sgs_nm_bar_n ],
 						'css'          => 'border-radius',
 						'unit_default' => 'px',
 					),

@@ -126,7 +126,7 @@
 	pointer-events: none;
 }
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover,
-.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within {
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	/* panelCardLift (M-21). In the editor `--sgs-mm-card-lift` is set by
 	   edit.js from the live attribute value (already the negated calc()). On
 	   the frontend nothing sets it: render.php's own uid-scoped rule paints a
@@ -145,7 +145,7 @@
 		transition: none;
 	}
 	.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover,
-	.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within {
+	.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 		transform: none;
 	}
 }
@@ -158,7 +158,7 @@
    this is a no-op until an operator sets iconBackgroundHover /
    iconBackgroundGradientHover. --------------------------------------------- */
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover .sgs-icon-list__icon,
-.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within .sgs-icon-list__icon {
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-icon-list__icon {
 	background-color: var( --sgs-mm-icon-hover-bg, var( --sgs-mm-soft ) );
 	background-image: var( --sgs-mm-icon-hover-bg-gradient, var( --sgs-mm-soft-gradient, none ) );
 }
@@ -255,7 +255,7 @@
    attribute value. Unset -> the `calc(12px + 0px)` fallback is a no-op,
    identical to the resting padding above. */
 .wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-icon-list__item:hover,
-.wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-icon-list__item:focus-within {
+.wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-icon-list__item:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	padding-inline-start: calc( 12px + var( --sgs-mm-item-padding-shift, 0px ) );
 }
 .wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-icon-list__icon {
@@ -329,7 +329,7 @@
 }
 /* itemPaddingShiftHover (M-21) — see the `columns` style's own comment above. */
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-icon-list__item:hover,
-.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-icon-list__item:focus-within {
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-icon-list__item:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	padding-inline-start: calc( 0px + var( --sgs-mm-item-padding-shift, 0px ) );
 }
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-icon-list__icon {
@@ -356,7 +356,7 @@
 }
 /* itemPaddingShiftHover (M-21) — see the `columns` style's own comment above. */
 .wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-icon-list__item:hover,
-.wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-icon-list__item:focus-within {
+.wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-icon-list__item:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	padding-inline-start: calc( 14px + var( --sgs-mm-item-padding-shift, 0px ) );
 }
 .wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-icon-list__icon {

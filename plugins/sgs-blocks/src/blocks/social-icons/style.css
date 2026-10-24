@@ -5,9 +5,12 @@
  * --sgs-si-* group defaults that icon/style.css reads after each icon's own value.
  */
 
+:where(.sgs-social-icons) {
+	flex-wrap: wrap;
+}
+
 .sgs-social-icons {
 	display: flex;
-	flex-wrap: wrap;
 	align-items: center;
 	gap: var(--wp--preset--spacing--20, 0.5rem);
 }

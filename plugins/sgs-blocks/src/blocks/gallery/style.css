@@ -258,7 +258,7 @@
 }
 
 .sgs-gallery.sgs-has-grayscale .sgs-gallery__item:hover .sgs-gallery__img,
-.sgs-gallery.sgs-has-grayscale .sgs-gallery__item:focus-within .sgs-gallery__img {
+.sgs-gallery.sgs-has-grayscale .sgs-gallery__item:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-gallery__img {
 	filter: grayscale(0%);
 }
 
@@ -387,7 +387,7 @@
 }
 
 .sgs-gallery--caption-reveal .sgs-gallery__item:hover .sgs-gallery__caption,
-.sgs-gallery--caption-reveal .sgs-gallery__item:focus-within .sgs-gallery__caption {
+.sgs-gallery--caption-reveal .sgs-gallery__item:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-gallery__caption {
 	opacity:   1;
 	transform: translateY( 0 );
 }
@@ -398,7 +398,7 @@
 }
 
 .sgs-gallery--caption-reveal.sgs-gallery--masonry .sgs-gallery__item:hover .sgs-gallery__caption,
-.sgs-gallery--caption-reveal.sgs-gallery--masonry .sgs-gallery__item:focus-within .sgs-gallery__caption {
+.sgs-gallery--caption-reveal.sgs-gallery--masonry .sgs-gallery__item:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-gallery__caption {
 	transform: none;
 }
 

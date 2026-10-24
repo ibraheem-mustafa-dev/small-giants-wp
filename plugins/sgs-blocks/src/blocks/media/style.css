@@ -156,7 +156,7 @@
     transition: opacity 0.2s, transform 0.2s; /* sgs-motion: exact */
 }
 .sgs-video:hover .sgs-video__bar,
-.sgs-video:focus-within .sgs-video__bar,
+.sgs-video:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-video__bar,
 .sgs-video.is-fullscreen .sgs-video__bar,
 .sgs-video:not(.is-playing) .sgs-video__bar {
     opacity: 1;

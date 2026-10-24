@@ -21,6 +21,13 @@ import { resolveTier } from '../../utils';
  * ('x' | 'x-rotate' | 'line' | 'none'); this array still doubles as the
  * options list for the ToggleGroupControlOption render below.
  */
+// Each bar's corner-rounding attribute, spelled out so a reader (and the dead-control gate) finds every name.
+const BAR_RADIUS_ATTRS = {
+	1: 'burgerBar1BorderRadius',
+	2: 'burgerBar2BorderRadius',
+	3: 'burgerBar3BorderRadius',
+};
+
 const BURGER_BAR_OPTIONS = [
 	{ value: 3, label: __( 'Three', 'sgs-blocks' ) },
 	{ value: 2, label: __( 'Two', 'sgs-blocks' ) },
@@ -360,7 +367,7 @@ export default function BurgerPanel( {
 				if ( 3 === n && 2 === burgerBarCount ) {
 					return null;
 				}
-				const attr = `burgerBar${ n }BorderRadius`;
+				const attr = BAR_RADIUS_ATTRS[ n ];
 				return (
 					<ResponsiveOverride
 						key={ attr }

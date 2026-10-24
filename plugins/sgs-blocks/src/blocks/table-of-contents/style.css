@@ -159,7 +159,7 @@
 }
 
 .sgs-toc__link:hover,
-.sgs-toc__link:focus-visible {
+.sgs-toc__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	text-decoration: none;
 }
 
@@ -189,7 +189,7 @@
  * (0,2,0) (two classes, no IDs) but wins on source order (declared after),
  * so an active link keeps its underline while hovered/focused. */
 .sgs-toc__link--active:hover,
-.sgs-toc__link--active:focus-visible {
+.sgs-toc__link--active:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	text-decoration: underline;
 }
 

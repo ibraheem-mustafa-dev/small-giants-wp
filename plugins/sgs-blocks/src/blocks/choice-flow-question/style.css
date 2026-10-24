@@ -545,7 +545,7 @@
 /* The shared partial's dark fill on hover and focus, restated at this
    rule's specificity so the resting fill above does not mask it. */
 .sgs-choice-flow--layout-showcase .sgs-info-toggle:hover,
-.sgs-choice-flow--layout-showcase .sgs-info-toggle:focus-visible {
+.sgs-choice-flow--layout-showcase .sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	background-color: var( --wp--preset--color--text, #1a202c );
 	color: var( --wp--preset--color--text-inverse, #f1f5f9 );
 }

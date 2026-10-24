@@ -184,12 +184,12 @@
  * so a touch device cannot strand the sweep half-finished while the keyboard
  * path stays reachable. */
 .sgs-business-attribution .sgs-business-info__link:hover,
-.sgs-business-attribution .sgs-business-info__link:focus-visible {
+.sgs-business-attribution .sgs-business-info__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	background-position: 0 0;
 }
 
 .sgs-business-attribution .sgs-business-info__link:hover::after,
-.sgs-business-attribution .sgs-business-info__link:focus-visible::after {
+.sgs-business-attribution .sgs-business-info__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))::after {
 	transform: scaleX(1);
 }
 
@@ -365,12 +365,12 @@
 /* ── Social Links ────────────────────────────────────────────────────────── */
 
 :where(.sgs-business-socials) {
+	flex-wrap: wrap;
 	gap: 0.75em;
 }
 
 .sgs-business-socials {
 	display: flex;
-	flex-wrap: wrap;
 	list-style: none;
 	margin: 0;
 	padding: 0;
@@ -534,7 +534,7 @@
 	white-space: nowrap;
 }
 .wp-block-sgs-business-info.is-style-button .sgs-business-info__link:hover,
-.wp-block-sgs-business-info.is-style-button .sgs-business-info__link:focus-visible {
+.wp-block-sgs-business-info.is-style-button .sgs-business-info__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	/* Hover brightens: the button colour mixed 12% toward white (the plain colour
 	   first, for a browser without color-mix). */
 	background: var(--wp--preset--color--primary);

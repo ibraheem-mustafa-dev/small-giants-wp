@@ -91,7 +91,7 @@
 }
 
 .sgs-trust-bar__circle:hover,
-.sgs-trust-bar__circle:focus-visible {
+.sgs-trust-bar__circle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	background-color: var(--sgs-trust-badge-circle-bg-hover, var(--sgs-trust-badge-circle-bg, var(--wp--preset--color--surface-alt, #F1F0EC)));
 	background-image: var(--sgs-trust-badge-circle-bg-gradient-hover, var(--sgs-trust-badge-circle-bg-gradient, none));
 }

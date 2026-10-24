@@ -88,7 +88,7 @@
 }
 
 .sgs-trustpilot-reviews__count-link:hover,
-.sgs-trustpilot-reviews__count-link:focus-visible {
+.sgs-trustpilot-reviews__count-link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	color: var(--sgs-tp-green);
 }
 
@@ -350,7 +350,7 @@
 }
 
 .sgs-trustpilot-reviews__arrow:hover,
-.sgs-trustpilot-reviews__arrow:focus-visible {
+.sgs-trustpilot-reviews__arrow:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	background: var(--sgs-tp-green);
 	color: #fff;
 	border-color: var(--sgs-tp-green);
@@ -416,7 +416,7 @@
 }
 
 .sgs-trustpilot-reviews__pause:hover,
-.sgs-trustpilot-reviews__pause:focus-visible {
+.sgs-trustpilot-reviews__pause:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	background: var(--sgs-tp-green);
 	color: #fff;
 	border-color: var(--sgs-tp-green);

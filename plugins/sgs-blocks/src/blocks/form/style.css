@@ -809,7 +809,7 @@ select.sgs-form-field__input {
    every other hover rule in the framework and to cover a wrapping-element
    focus/hover class a future feature might add. */
 .sgs-form__progress-bar:hover,
-.sgs-form__progress-bar:focus-visible {
+.sgs-form__progress-bar:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	background-color: var(--sgs-progress-colour-hover, var(--sgs-progress-colour, var(--wp--preset--color--primary, #0f7e80)));
 	background-image: var(--sgs-progress-colour-hover-gradient, var(--sgs-progress-colour-gradient, none));
 }
