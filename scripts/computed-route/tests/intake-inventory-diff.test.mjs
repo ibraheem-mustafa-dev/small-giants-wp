@@ -64,3 +64,35 @@ test( 'pairing keys and normalisation', () => {
 	assert.deepEqual( [ norm( '.2s' ), norm( '200ms' ), norm( 'rnd() * 3000' ), norm( 'auto' ) ], [ 200, 200, 'rnd()*3000', 'none' ] );
 	assert.deepEqual( [ routeKey( '#/about' ), routeKey( '/' ), routeKey( 'Home.dc.html' ), scIfKey( 'Home:115 isSub' ), scIfKey( 'Indus#63' ) ], [ 'about', 'home', 'home', 'Home:115', 'Indus:63' ] );
 } );
+
+test( 'MUST FAIL: a number spelt two ways inside a value is one value; a different number or a hex colour digit is not', () => {
+	const media = ( to ) => record( 'RM-01', { mechanism: 'css-media', element: { dc: 'Home', template_tpl_id: null, selector: '@media (prefers-reduced-motion: reduce)', description: 'd' }, properties: [ { property: 'animation-duration', from: null, to } ] } );
+	assert.deepEqual( diffAnimations( anims( [ media( '0.01ms !important' ) ] ), anims( [ media( '.01ms !important' ) ] ) ), [] );
+	assert.deepEqual( diffAnimations( anims( [ media( 'cubic-bezier(0.16,0.84,0.32,1.0)' ) ] ), anims( [ media( 'cubic-bezier(.16,.84,.32,1)' ) ] ) ), [] );
+	assert.equal( diffAnimations( anims( [ media( '0.01ms !important' ) ] ), anims( [ media( '.02ms !important' ) ] ) ).length, 1 );
+	assert.equal( diffAnimations( anims( [ media( 'translateX(-120%)' ) ] ), anims( [ media( 'translateX(120%)' ) ] ) ).length, 1 );
+	assert.equal( diffAnimations( anims( [ media( '#00aa00' ) ] ), anims( [ media( '#0aa00' ) ] ) ).length, 1 );
+	assert.deepEqual( [ norm( '.01ms !important' ), norm( '#0A7EA8' ), norm( 'rgba(0,0,0,.50)' ) ], [ '0.01ms!important', '#0a7ea8', 'rgba(0,0,0,0.5)' ] );
+} );
+
+test( 'MUST FAIL: two effects at one call site pair with their own counterparts whatever order each side lists them in', () => {
+	const at = { file: 'Home.dc.html', function: 'fx', ref: null, line: 90 };
+	const sheen = ( id ) => waapi( id, { source: at, trigger: { type: 'pointer-move' }, duration_ms: 750, properties: [ { property: 'transform', from: 'translateX(-120%)', to: 'translateX(260%)' } ] } );
+	const ripple = ( id ) => waapi( id, { source: at, trigger: { type: 'press' }, duration_ms: 650, properties: [ { property: 'transform', from: 'scale(0)', to: 'scale(1)' }, { property: 'opacity', from: 1, to: 0 } ] } );
+	assert.deepEqual( diffAnimations( anims( [ ripple( 'A-30' ), sheen( 'A-31' ) ] ), anims( [ sheen( 'A-18' ), ripple( 'A-19' ) ] ) ), [] );
+	// A real difference still shows, against the counterpart it belongs to.
+	const rows = diffAnimations( anims( [ ripple( 'A-30' ), sheen( 'A-31' ) ] ), anims( [ { ...sheen( 'A-18' ), duration_ms: 800 }, ripple( 'A-19' ) ] ) );
+	assert.deepEqual( rows.map( ( r ) => [ r.field, r.ours, r.theirs, r.text.slice( 0, 15 ) ] ), [ [ 'duration_ms', '750', '800', 'A-31 (theirs A-' ] ] );
+} );
+
+test( 'MUST FAIL: a record of Claude Design\'s naming several template elements covers each re-derived record at its call site', () => {
+	const at = { file: 'Home.dc.html', function: 'floatIt', ref: 'setFloatEl', line: 70 };
+	const float = ( id, tpl, over = {} ) => waapi( id, { source: at, element: { dc: 'Home', template_tpl_id: tpl, selector: 'ref', description: 'd' }, trigger: { type: 'mount' }, ...over } );
+	// The call count differs by design (one theirs record, two of ours); only the record rows are asserted.
+	const records = ( rows ) => rows.filter( ( r ) => ! r.rowId.startsWith( 'inventory:count:' ) );
+	assert.deepEqual( records( diffAnimations( anims( [ float( 'A-27', '215' ), float( 'A-28', '287' ) ] ), anims( [ float( 'A-16', [ '215', '287' ] ) ] ) ) ), [] );
+	// One difference both share is listed once; an element the record does not name is still only ours.
+	const rows = records( diffAnimations( anims( [ float( 'A-27', '215' ), float( 'A-28', '287' ), float( 'A-29', '300' ) ] ), anims( [ float( 'A-16', [ '215', '287' ], { trigger: { type: 'loop' } } ) ] ) ) );
+	assert.deepEqual( rows.map( ( r ) => r.rowId ), [ 'inventory:anim:Home.dc.html|70|waapi:trigger.type', 'inventory:anim:Home.dc.html|70|waapi:only-ours' ] );
+	assert.match( rows[ 1 ].text, /^A-29 / );
+} );
