@@ -89,7 +89,7 @@ export function markProblem( rowType, mark ) {
 
 export const HASH_FIELDS = {
 	'page-map': [ 'route', 'slug', 'title', 'parent', 'template', 'postType', 'collection', 'menus', 'flags' ],
-	'palette-role': [ 'token', 'hex', 'role' ],
+	'palette-role': [ 'token', 'hex', 'role', 'roles' ],
 	'site-info': [ 'key', 'value', 'normalised' ],
 	flag: [ 'kind', 'text', 'url' ],
 	'not-a-defect': [ 'censusId', 'why', 'note' ],

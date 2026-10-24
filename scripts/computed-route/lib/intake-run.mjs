@@ -32,7 +32,7 @@ export const USAGE = [
 	'usage: node scripts/computed-route/intake.mjs <client> [--record] [--widths 375,768,1440] [--surfaces a,b] [--repo <path>]',
 	'       node scripts/computed-route/intake.mjs --apply-review <client> [--repo <path>]',
 	'       node scripts/computed-route/intake.mjs --finalise <client> | --apply-picks <client> | --render <client> | --rerun-skeletons <client> | --facts <client> | --page-map <client> [--repo <path>]',
-	'       node scripts/computed-route/intake.mjs --palette-only <client> [--record] [--repo <path>]',
+	'       node scripts/computed-route/intake.mjs --palette-only <client> [--record] [--into-intake] [--repo <path>]',
 ].join( '\n' );
 
 const MODES = { '--apply-review': 'apply', '--finalise': 'finalise', '--apply-picks': 'apply-picks', '--render': 'render', '--rerun-skeletons': 'rerun-skeletons', '--facts': 'facts', '--page-map': 'page-map', '--palette-only': 'palette-only' };
@@ -40,12 +40,14 @@ const MODES = { '--apply-review': 'apply', '--finalise': 'finalise', '--apply-pi
 // argv (after the script) to { mode: 'run'|'apply'|'finalise'|'apply-picks'|'render'|'rerun-skeletons'|'facts'|'page-map'|'palette-only', client, record, widths, surfaces,
 // repo } or { error }.
 export function parseArgs( argv ) {
-	const o = { mode: 'run', client: null, record: false, widths: WIDTHS, surfaces: null, repo: REPO };
+	const o = { mode: 'run', client: null, record: false, intoIntake: false, widths: WIDTHS, surfaces: null, repo: REPO };
 	for ( let i = 0; i < argv.length; i++ ) {
 		const a = argv[ i ];
 		const value = () => ( i + 1 < argv.length && ! argv[ i + 1 ].startsWith( '--' ) ? argv[ ++i ] : null );
 		if ( '--record' === a ) {
 			o.record = true;
+		} else if ( '--into-intake' === a ) {
+			o.intoIntake = true;
 		} else if ( a in MODES ) {
 			if ( 'run' !== o.mode ) {
 				return { error: `one mode only (got ${ a } after another)` };
@@ -79,6 +81,9 @@ export function parseArgs( argv ) {
 	}
 	if ( ! o.client || ! /^[a-z0-9-]+$/.test( o.client ) ) {
 		return { error: o.client ? `client "${ o.client }" is not a slug` : 'no client given' };
+	}
+	if ( o.intoIntake && 'palette-only' !== o.mode ) {
+		return { error: '--into-intake goes with --palette-only only' };
 	}
 	if ( 'run' !== o.mode && ( ( o.record && 'palette-only' !== o.mode ) || o.surfaces || o.widths !== WIDTHS ) ) {
 		return { error: `${ Object.keys( MODES ).find( ( k ) => MODES[ k ] === o.mode ) } takes only the client (and --repo)` };
@@ -294,6 +299,12 @@ export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${
 	if ( res.problems.length || res.missing.length ) {
 		say( `review.md is not complete, nothing written:\n${ [ ...res.problems, ...res.missing.map( ( r ) => `row ${ r.rowId } (${ r.rowType }) needs a mark: ${ r.why }` ) ].map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
 		return 1;
+	}
+	// A palette-only record (lib/intake-palette-into.mjs) holds no page map or skeleton rows: its marks are written as they are.
+	if ( res.intake.paletteOnly ) {
+		fs.writeFileSync( at.intake, `${ JSON.stringify( res.intake, null, 1 ) }\n` );
+		say( `${ o.client }: ${ res.intake.review.length } palette rows marked (dated ${ today }); the record is palette-only, so no page map or skeleton choices are written` );
+		return 0;
 	}
 	const pageMap = confirmedPageMap( res.intake );
 	const ajv = loadAjv();
