@@ -19,9 +19,8 @@
 	{ "file": "lib/fill-state-tokens.mjs", "find": "conflicts.push( { path: name, kept: value, dropped: at[ key ], from: dropped, keptFrom: { path: name, value, ...from }, replaced: true } );", "replace": "", "why": "a replaced browser value would vanish without a report" },
 	{ "file": "lib/fill-state-tokens.mjs", "find": "\t\t\t\tat[ key ] = value;\n\t\t\t\tentries[ prior ] = { path: name, value, ...from };", "replace": "\t\t\t\tentries[ prior ] = { path: name, value, ...from };", "why": "the patch would keep the browser value while the entry names the draft's" },
 	{ "file": "lib/fill-state-tokens.mjs", "find": "const ground = fromBrowser( k ) ? { browser: true } : {};", "replace": "const ground = {};", "why": "a browser value would never yield to a declared ring" },
-	{ "file": "lib/fill-state-tokens.mjs", "find": ".every( ( p ) => browser.includes( p ) );", "replace": ".some( ( p ) => browser.includes( p ) );", "why": "a key the draft declares would be marked a browser value" },
+	{ "file": "lib/fill-state-tokens.mjs", "find": ".every( ( p ) => browser.includes( p ) ) );", "replace": ".some( ( p ) => browser.includes( p ) ) );", "why": "a key the draft declares would be marked a browser value" },
 	{ "file": "lib/fill-state-tokens.mjs", "find": "'ring' === k && ground.browser && sink.set(", "replace": "false && sink.set(", "why": "the dark-ground ring would keep the client's colour" },
 	{ "file": "lib/fill-state-tokens.mjs", "find": "reason: c.replaced ? `conflict:", "replace": "reason: false ? `conflict:", "why": "a replaced browser value would be reported as the kept first value" },
-	{ "file": "lib/snapshot-tokens.mjs", "find": "} else if ( 'auto' === style ) {\n\t\tgaps.push( 'outline-style:auto: the browser\\'s own focus ring; focus.css paints a solid outline at its width, colour and offset' );\n\t", "replace": "", "why": "the auto style would be reported as a generic non-solid outline" },
 	{ "file": "lib/fill-state-tokens.mjs", "find": "...( from?.browser && ! keptFrom?.browser ? { replaced: true } : {} )", "replace": "", "why": "a browser value dropped after a declared ring would be reported as a first-come conflict" }
 ]

@@ -19,6 +19,8 @@
 import { declaredValues, settleAnimations } from '../../parity/lib/devtools.mjs';
 import { renderedOf } from './fill-state-apply.mjs';
 import { snapshotDraftState, restoreDraftState } from './intake-state.mjs';
+import { LOOSE } from './resolve.mjs';
+import { longhands } from './calibrate-props.mjs';
 
 // The React handler props that follow the pointer or focus, by the state they enter, with the DOM events the runtime
 // listens for to call them (enter) and to end them (leave).
@@ -160,15 +162,29 @@ export async function readScriptLooks( { page, cdp, jobs, resolveSrc, log = () =
 	return out;
 }
 
-// The unmapped reason of a script look no setting holds: an open-panel look waits on the item's open-look setting (Track F);
-// any other kind keeps the state writer's own reason. Returns the reason, or the gap unchanged when the look is not a
-// script look.
+// The unmapped reason of a script look no setting holds: the state writer's own reason, named as a script look (an
+// open-panel look is the item's open look). Returns the reason, or the gap unchanged when the look is not a script look.
 export function scriptGapReason( script, state, gap ) {
 	if ( ! script ) {
 		return gap;
 	}
 	const items = script.items?.length > 1 ? `; items with it: ${ script.items.filter( ( i ) => i.look ).map( ( i ) => i.label || `copy ${ i.copy }` ).join( ', ' ) || 'none' }; without it: ${ script.items.filter( ( i ) => ! i.look ).map( ( i ) => i.label || `copy ${ i.copy }` ).join( ', ' ) || 'none' }` : '';
-	return 'open-panel' === script.kind
-		? `script-look: ${ state } on ${ script.element } (open-panel look, Track F's setting pending)${ items }`
-		: `script-look: ${ state } on ${ script.element }: ${ gap }${ items }`;
+	return `script-look: ${ state } on ${ script.element }${ 'open-panel' === script.kind ? ' (open-panel look)' : '' }: ${ gap }${ items }`;
+}
+
+// The element a path ends on, without its position or pseudo-element (`.x__item:nth-of-type(3) > .x__link::before` →
+// `.x__link`).
+const lastStep = ( path ) => LOOSE( String( path ?? '' ).split( /\s*>\s*/ ).pop() ).replace( /::?(?:before|after)$/, '' ).trim();
+
+// The other elements an open look of `prop` on `slot` can be written to: an item's open part exists only on an item that
+// has a panel (a dropdown or mega root), which a plain item's path never names, so the calibrated paths of the block's open
+// settings of that property that end on the same element as the target (the item link, or its ::before layer) are
+// tried after the target's own path. Any other state keeps the target's path alone.
+export function openSlots( cal, prop, slot, state ) {
+	if ( 'open' !== state ) {
+		return [];
+	}
+	const own = lastStep( slot );
+	const paths = Object.values( cal?.settings || {} ).filter( ( s ) => 'open' === s.state && ( s.property === prop || longhands( s.property ).includes( prop ) ) ).flatMap( ( s ) => s.slots || [ s.slot ] );
+	return [ ...new Set( paths ) ].filter( ( p ) => LOOSE( p ) !== LOOSE( slot ) && lastStep( p ) === own );
 }

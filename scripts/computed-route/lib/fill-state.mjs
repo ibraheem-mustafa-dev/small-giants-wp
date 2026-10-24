@@ -33,8 +33,11 @@ import { TIMING_PROPS, timingWrites } from './fill-timing.mjs';
 import { motionDb } from './motion-db.mjs';
 import { targetName } from './fill-motion.mjs';
 import { MOTION_STATE_PROPS, stateHover } from './fill-state-motion.mjs';
-import { scriptGapReason } from './fill-state-script.mjs';
-import { createPatch, tokenRoute, pickValue, pressVariant, ownedBySetting, applyTokenLooks, conflictRow, ringLook, takesRing } from './fill-state-tokens.mjs';
+import { scriptGapReason, openSlots } from './fill-state-script.mjs';
+import { createPatch, tokenRoute, pickValue, pressVariant, ownedBySetting, applyTokenLooks, conflictRow, ringLook, restShadow } from './fill-state-tokens.mjs';
+import { focusSharesHover, settleFocusRests } from './fill-state-focus.mjs';
+
+export { focusSharesHover };
 
 export const COVERAGE_WRITES = [
 	'aria-attr:aria-checked',
@@ -273,19 +276,6 @@ export function holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads
 	return out;
 }
 
-// A hover look written to a setting also paints keyboard focus (every SGS hover setting renders through
-// includes/helpers-hover-state.php::sgs_hover_state_rules, on :hover and :focus-visible together). Where the draft has no
-// focus look of that property on an element that takes focus, the draft keeps its resting look on focus and the block
-// shows the hover look; no setting separates the two, so the row is named (the block's hover render is Track F's), never
-// dropped. Returns the reason, or null. attrs: the settings the hover look was written to.
-export function focusSharesHover( { drafts, pseudo = '', prop, snap = {}, attrs = [] } ) {
-	const focusLook = [ ...drafts.values() ].some( ( d ) => d.pseudo === pseudo && ( d.prop === prop || longhands( d.prop ).includes( prop ) ) && String( d.state ).split( '+' ).some( ( s ) => 'focus' === s || 'focus-visible' === s ) );
-	if ( focusLook || ! takesRing( snap.tag, snap.role ) ) {
-		return null;
-	}
-	return `focus-shares-hover: ${ attrs.join( ', ' ) } paints the draft's hover ${ prop } on :focus-visible too, and the draft keeps its resting ${ prop } on focus; no setting separates focus from hover (the block's hover render, Track F)`;
-}
-
 // Whether the block's motion support holds this target's hover transform (its sgsMotion hover layer, written by
 // lib/fill-motion.mjs::motionWrites), so the state pass leaves it there. A DB without motion tables holds none.
 function motionHolds( mdb, rec, target ) {
@@ -308,6 +298,9 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 	const sink = createPatch();
 	const snapOf = ( target ) => targetSnap( reads, target );
 	const out = { writes: [], unmapped: [], held: [] };
+	// The focus-shares-hover rows and the focus looks painted as hover, per node (lib/fill-state-focus.mjs::settleFocusRests).
+	const shares = [];
+	const painted = new Map();
 	const interaction = interactionStates( db );
 	let mdb = null;
 	try {
@@ -357,6 +350,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 				}
 				if ( 'focus' === state && same( drafts.get( `hover|${ pseudo }|${ prop }` )?.perWidth, perWidth ) ) {
 					out.held.push( { node: ref, slot: target.slot, prop, state, reason: 'focus paints with hover: the hover setting writes it' } );
+					( painted.get( ref ) || painted.set( ref, [] ).get( ref ) ).push( prop );
 					continue;
 				}
 				if ( ! pseudo && tokenRoute( { state, prop, held, block: rec.name, node, slot: target.slot, tag: snapOf( target ).tag, role: snapOf( target ).role } ) ) {
@@ -365,7 +359,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 				}
 				const atRest = 'open' === state && hidden && ! held.has( state );
 				const gap = atRest ? null : stateGap( state, held );
-				const res = gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot ], calibration: cal, db, snapshot, log: [], state: atRest ? null : state, siblings: ctx.siblings } );
+				const res = gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot, ...( atRest ? [] : openSlots( cal, prop, slot, state ) ) ], calibration: cal, db, snapshot, log: [], state: atRest ? null : state, siblings: ctx.siblings } );
 				if ( 'written' === res.status ) {
 					for ( const w of res.writes ) {
 						const { before, after } = setAttr( node, w );
@@ -373,7 +367,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 						out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop, state, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: 'fill-state', ...( 'code' === read ? { read } : {} ), ...( draftDefect ? { draftDefect } : {} ), ...( script ? { script: script.kind } : {} ), ...( atRest ? { surface: 'open look written as the resting look' } : {} ) } );
 					}
 					const shared = 'hover' === state ? focusSharesHover( { drafts, pseudo, prop, snap: snapOf( target ), attrs: res.writes.map( ( w ) => w.attr ) } ) : null;
-					shared && out.unmapped.push( { node: ref, block: rec.name, slot, property: prop, state: 'focus', value: JSON.stringify( perWidth ), reason: shared } );
+					shared && shares.push( { node, ref, rec, row: { node: ref, block: rec.name, slot, property: prop, state: 'focus', value: JSON.stringify( perWidth ), reason: shared } } );
 				} else if ( 'gap' === res.status ) {
 					out.unmapped.push( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( perWidth ), reason: scriptGapReason( script, state, res.detail ? `${ res.gap }: ${ res.detail }` : res.gap ) } );
 				}
@@ -386,6 +380,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 			}
 			const ring = ringLook( { drafts, reads, id: target.id, snap: snapOf( target ), focus: tokenLooks.focus } );
 			ring?.looks && Object.assign( tokenLooks, ring.looks );
+			tokenLooks.focus && ( tokenLooks.focusRest = restShadow( reads, target.id ) );
 			ring?.gap && out.unmapped.push( { node: ref, block: rec.name, slot: target.slot, ...ring.gap } );
 			if ( Object.keys( tokenLooks ).length ) {
 				const snap = snapOf( target );
@@ -394,6 +389,8 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 			}
 		}
 	}
-	out.unmapped.push( ...sink.conflicts.map( conflictRow ) );
+	const rests = settleFocusRests( { rows: shares, painted, db } );
+	out.writes.push( ...rests.writes );
+	out.unmapped.push( ...rests.unmapped, ...sink.conflicts.map( conflictRow ) );
 	return { ...out, patch: sink.patch, patchEntries: sink.entries };
 }

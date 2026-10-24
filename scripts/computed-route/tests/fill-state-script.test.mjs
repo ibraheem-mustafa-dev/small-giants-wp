@@ -114,13 +114,13 @@ const fillOne = ( block, names, looks ) => fillStates( {
 	calFor: () => calOf( block, names ), db, snapshot: { palette: [], spacing: [], fontSizes: [] },
 } );
 
-test( 'MUST FAIL: fillStates raises an open-panel look no setting holds as script-look, and writes it where the block holds open', async () => {
+test( 'MUST FAIL: fillStates raises an open-panel look no calibrated setting holds as script-look, and writes it where the block holds open', async () => {
 	const { out } = await readPlanted();
 	const nav = fillOne( 'sgs/nav-bar-menu', [ 'itemBgHover', 'itemColourHover' ], out.looks.about );
 	assert.equal( nav.writes.length, 0, 'the hover settings never take the open look' );
 	const rows = nav.unmapped.filter( ( u ) => 'open' === u.state );
 	assert.deepEqual( rows.map( ( u ) => u.property ).sort(), [ 'background-color', 'color' ] );
-	rows.forEach( ( u ) => assert.match( u.reason, /^script-look: open on Page\/47#0 \(open-panel look, Track F's setting pending\); items with it: About, Sectors; without it: Contact$/ ) );
+	rows.forEach( ( u ) => assert.match( u.reason, /^script-look: open on Page\/47#0 \(open-panel look\): uncalibrated: sgs\/nav-bar-menu item(Bg|Colour)Open \(open\) not calibrated; items with it: About, Sectors; without it: Contact$/ ) );
 	const acc = fillOne( 'sgs/accordion', [ 'headerBackgroundOpen', 'headerColourOpen' ], out.looks.about );
 	assert.deepEqual( acc.writes.map( ( w ) => [ w.attr, w.state, w.script ] ).sort(), [ [ 'headerBackgroundOpen', 'open', 'open-panel' ], [ 'headerColourOpen', 'open', 'open-panel' ] ] );
 	const hover = fillOne( 'sgs/nav-bar-menu', [ 'itemColourHover' ], out.looks.tint );
