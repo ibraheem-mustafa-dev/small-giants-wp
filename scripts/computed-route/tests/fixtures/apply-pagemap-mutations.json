@@ -1,0 +1,4 @@
+[
+	{ "file": "lib/intake-run.mjs", "find": "const pageMap = carryIds( confirmedPageMap( res.intake ), Array.isArray( current ) ? current : [] );", "replace": "const pageMap = confirmedPageMap( res.intake );", "why": "the confirmed map keeps each row's WordPress id" },
+	{ "file": "lib/intake-run.mjs", "find": "...lostIds( Array.isArray( current ) ? current : [], pageMap, marks ).map( ( g ) => `confirmed page map loses the WordPress id of ${ g }; mark that row drop to remove it` ) ];", "replace": "];", "why": "a confirmed map that loses an id is refused" }
+]

@@ -42,21 +42,21 @@ test( 'MUST FAIL: with no intake.json and no review.md, a palette-only intake.js
 	assert.match( r.reviewMd, /\| `palette:--b` \| --b #222222 \| role:heading,border \|/ );
 } );
 
-test( 'MUST FAIL: a mark is kept only when its slugs equal the new proposal\'s; the palette block and section are replaced, the rest kept', () => {
+test( 'MUST FAIL: a mark is kept when its slugs equal the new proposal\'s or the token\'s proposal is unchanged; the palette block and section are replaced, the rest kept', () => {
 	const md = oldMd();
 	assert.equal( parseReview( md ).rowMarks[ 'palette:--e' ], 'role:surface', 'fixture: --e is marked in review.md only' );
 	const r = intoIntake( { intake: OLD, reviewMd: md, palette: NEW, client: 'fx', takenOn: 'now' } );
 	assert.equal( r.created, false );
-	assert.deepEqual( r.kept, [ 'palette:--a', 'palette:--c', 'palette:--e' ] );
-	assert.deepEqual( r.dropped.map( ( d ) => [ d.rowId, d.mark ] ), [ [ 'palette:--b', 'accept' ], [ 'palette:--d', 'one-off' ] ] );
+	assert.deepEqual( r.kept, [ 'palette:--a', 'palette:--c', 'palette:--d', 'palette:--e' ], 'the proposal for --d is unchanged, so the one-off mark stands' );
+	assert.deepEqual( r.dropped.map( ( d ) => [ d.rowId, d.mark ] ), [ [ 'palette:--b', 'accept' ] ] );
 	assert.deepEqual( r.intake.palette, NEW );
 	assert.deepEqual( r.intake.siteInfo, OLD.siteInfo );
 	const pal = r.intake.review.filter( ( x ) => 'palette-role' === x.rowType );
-	assert.deepEqual( pal.map( ( x ) => [ x.rowId, x.mark, x.markedOn ] ), [ [ 'palette:--a', 'accept', '2026-10-19' ], [ 'palette:--c', 'role:link', '2026-10-19' ] ], 'only applied marks stay in intake.json' );
+	assert.deepEqual( pal.map( ( x ) => [ x.rowId, x.mark, x.markedOn ] ), [ [ 'palette:--a', 'accept', '2026-10-19' ], [ 'palette:--c', 'role:link', '2026-10-19' ], [ 'palette:--d', 'one-off', '2026-10-19' ] ], 'only applied marks stay in intake.json' );
 	assert.equal( pal[ 0 ].contentHash, contentHash( 'palette-role', NEW.rows[ 0 ], '--a' ), 'a kept mark carries the new row hash' );
 	assert.ok( r.intake.review.some( ( x ) => 'site:name' === x.rowId ), 'other review entries are kept' );
 	const marks = parseReview( r.reviewMd ).rowMarks;
-	assert.deepEqual( marks, { 'palette:--a': 'accept', 'palette:--c': 'role:link', 'palette:--e': 'role:surface' } );
+	assert.deepEqual( marks, { 'palette:--a': 'accept', 'palette:--c': 'role:link', 'palette:--d': 'one-off', 'palette:--e': 'role:surface' } );
 	const old = md.split( '\n' );
 	const now = r.reviewMd.split( '\n' );
 	const siteAt = ( lines ) => lines.slice( lines.findIndex( ( l ) => l.startsWith( '## Site Info' ) ) );

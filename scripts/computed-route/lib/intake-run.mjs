@@ -17,6 +17,7 @@ import { loadAjv, schemaProblems } from './handoff.mjs';
 import { pageMapProblems } from './intake-pagemap.mjs';
 import { renderReview, applyReview, carryOver, reviewRows, isoDay, ROW_TYPES } from './intake-review.mjs';
 import { withUnappliedMarks, writeProposedPageMap, writeConfirmedPageMap } from './intake-review-carry.mjs';
+import { carryIds, lostIds } from './intake-pagemap-regen.mjs';
 import { mergeBlocked } from './intake-run-collapse.mjs';
 import { reviewDecisions, recordReviewDecisions, decisionsFile, dbKnownBlock } from './intake-run-finalise.mjs';
 import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
@@ -333,9 +334,14 @@ export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${
 		say( `${ o.client }: ${ res.intake.review.length } palette rows marked (dated ${ today }); the record is palette-only, so no page map or skeleton choices are written` );
 		return 0;
 	}
-	const pageMap = confirmedPageMap( res.intake );
+	// The confirmed map keeps each row's WordPress id the site build wrote into the current page-map.json (by row key,
+	// as `--page-map` does); a row holding an id that the confirmed map would lose stops the write unless Bean dropped it.
+	const current = fs.existsSync( at.pageMap ) ? readJson( at.pageMap ) : [];
+	const pageMap = carryIds( confirmedPageMap( res.intake ), Array.isArray( current ) ? current : [] );
+	const marks = new Map( ( res.intake.review || [] ).filter( ( r ) => 'page-map' === r.rowType ).map( ( r ) => [ r.rowId, r.mark ] ) );
 	const ajv = loadAjv();
-	const problems = [ ...recordProblems( res.intake, ajv ), ...pageMapProblems( pageMap, ajv ).map( ( p ) => `confirmed page map ${ p }` ) ];
+	const problems = [ ...recordProblems( res.intake, ajv ), ...pageMapProblems( pageMap, ajv ).map( ( p ) => `confirmed page map ${ p }` ),
+		...lostIds( Array.isArray( current ) ? current : [], pageMap, marks ).map( ( g ) => `confirmed page map loses the WordPress id of ${ g }; mark that row drop to remove it` ) ];
 	const decisions = reviewDecisions( res.intake, today );
 	if ( decisions.length ) {
 		const db = knownBlock ? null : dbKnownBlock();

@@ -88,6 +88,15 @@ test( 'MUST FAIL: success is the green the code gives a status message, painted 
 	assert.deepEqual( holder( run( USAGE.map( ( u ) => ( 'status-color' === u.property ? { ...u, hex: '#9C8B78' } : u ) ) ), 'success' ), [], 'a status message that is not green is not success' );
 } );
 
+test( 'MUST FAIL: the rows of a merged group carry its painted value, the member the draft paints most', () => {
+	const tokens = [ { name: '--first', type: 'colour', hex: '#F0EBE3' }, { name: '--painted', type: 'colour', hex: '#EFEAE2' } ];
+	const usage = [ use( '#EFEAE2', 'background-color', 'div', 9 ), use( '#F0EBE3', 'color', 'span', 1 ) ];
+	const p = proposePalette( { tokens, usage, slugs: SLUGS } );
+	assert.deepEqual( p.rows.map( ( r ) => [ r.token, r.value ] ), [ [ '--first', '#EFEAE2' ], [ '--painted', '#EFEAE2' ] ] );
+	const single = proposePalette( { tokens: tokens.slice( 1 ), usage, slugs: SLUGS } );
+	assert.equal( single.rows[ 0 ].value, undefined, 'a token alone in its value needs none' );
+} );
+
 test( 'statusUsage reads status and alert colours from the draft code', () => {
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'palette-status-' ) );
 	try {

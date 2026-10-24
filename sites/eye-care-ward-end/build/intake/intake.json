@@ -2303,6 +2303,7 @@
     "sharedWith": [
      "--acc-soft"
     ],
+    "value": "#EFEAE2",
     "role": "accent-light",
     "roles": [
      "accent-light"
@@ -2774,6 +2775,7 @@
     "sharedWith": [
      "--surface-soft"
     ],
+    "value": "#EFEAE2",
     "role": "accent-light",
     "roles": [
      "accent-light"

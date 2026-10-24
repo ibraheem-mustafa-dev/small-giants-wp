@@ -44,8 +44,9 @@ def test_marks_resolve_to_slugs():
         {"--blue": "accept", "--topbar": "role:primary", "--slate": "role:footer-bg", "--fb": "one-off",
          "--spare": "accept"})
     confirmed, unmarked = cp.confirmed_map(intake, FRAMEWORK)
-    assert confirmed == {"primary": {"hex": "#0a7ea8", "tokens": ["--blue", "--topbar"]},
-                         "footer-bg": {"hex": "#2c3e50", "tokens": ["--slate"]}}
+    # A confirmed colour keeps the case its first token writes it in.
+    assert confirmed == {"primary": {"hex": "#0A7EA8", "tokens": ["--blue", "--topbar"]},
+                         "footer-bg": {"hex": "#2C3E50", "tokens": ["--slate"]}}
     assert unmarked == []
 
 
@@ -53,7 +54,7 @@ def test_one_mark_can_give_a_draft_colour_several_roles():
     intake = _intake([("--text-heading", "#2C3E50", "heading")],
                      {"--text-heading": "role:heading, accent-text,section-text"})
     confirmed, _ = cp.confirmed_map(intake, FRAMEWORK)
-    assert confirmed == {slug: {"hex": "#2c3e50", "tokens": ["--text-heading"]}
+    assert confirmed == {slug: {"hex": "#2C3E50", "tokens": ["--text-heading"]}
                          for slug in ("heading", "accent-text", "section-text")}
 
 
@@ -80,10 +81,10 @@ def test_must_fail_a_translucent_custom_colour_is_confirmed_with_its_alpha():
     rows = _translucent_rows()
     intake = _intake(rows, {t: "accept" for t, _, _ in rows})
     confirmed, _ = cp.confirmed_map(intake, FRAMEWORK, COLOURS)
-    assert confirmed == {r: {"hex": h.lower(), "tokens": [t]} for t, h, r in rows}
+    assert confirmed == {r: {"hex": h, "tokens": [t]} for t, h, r in rows}
     snap = {"settings": {"color": {"palette": []}}}
     cp.apply_confirmed(snap, confirmed, FRAMEWORK, [], frozenset())
-    assert {e["slug"]: e["color"] for e in snap["settings"]["color"]["palette"]} == {r: h.lower() for t, h, r in rows}
+    assert {e["slug"]: e["color"] for e in snap["settings"]["color"]["palette"]} == {r: h for t, h, r in rows}
 
 
 def test_must_fail_a_translucent_colour_fills_a_framework_slug_only_at_the_framework_alpha():
@@ -95,22 +96,31 @@ def test_must_fail_a_translucent_colour_fills_a_framework_slug_only_at_the_frame
     confirmed, _ = cp.confirmed_map(_intake([("--line", "#11223333", "border")], {"--line": "accept"}), FRAMEWORK, same)
     assert confirmed["border"]["hex"] == "#11223333"
     opaque, _ = cp.confirmed_map(_intake([("--ink", "#3A2A22FF", "text")], {"--ink": "accept"}), FRAMEWORK, COLOURS)
-    assert opaque["text"]["hex"] == "#3a2a22", "a fully opaque alpha byte is dropped"
+    assert opaque["text"]["hex"] == "#3A2A22", "a fully opaque alpha byte is dropped"
 
 
 EYE_CARE = REPO / "sites/eye-care-ward-end/build/intake/intake.json"
 
 
-def test_must_fail_near_identical_tokens_on_one_slug_are_one_colour_the_first_declared():
+def test_must_fail_near_identical_tokens_on_one_slug_keep_the_colour_that_earned_the_role():
     # Eye Care's real rows: --acc-soft (#EFEAE2) and --surface-soft (#F0EBE3) differ by under ΔE 1, so intake merges
-    # them and Accept all gives both accent-light.
-    rows = {r["token"]: r for r in json.loads(EYE_CARE.read_text(encoding="utf-8"))["palette"]["rows"]}
-    pair = [(t, rows[t]["hex"], "accent-light") for t in ("--surface-soft", "--acc-soft")]
-    confirmed, _ = cp.confirmed_map(_intake(pair, {t: "accept" for t, _, _ in pair}), FRAMEWORK, COLOURS)
-    assert confirmed["accent-light"]["hex"] == "#f0ebe3", "--surface-soft is declared first in these rows"
-    assert confirmed["accent-light"]["tokens"] == ["--surface-soft", "--acc-soft"]
-    flipped, _ = cp.confirmed_map(_intake(list(reversed(pair)), {t: "accept" for t, _, _ in pair}), FRAMEWORK, COLOURS)
-    assert flipped["accent-light"]["hex"] == "#efeae2", "the first row's hex wins whatever order the marks are in"
+    # them and Accept all gives both accent-light. The draft paints #EFEAE2 (the group's `value`), so that colour
+    # earned the role, whichever is declared first and whatever order the marks come in.
+    real = {r["token"]: r for r in json.loads(EYE_CARE.read_text(encoding="utf-8"))["palette"]["rows"]}
+    assert real["--surface-soft"]["value"] == real["--acc-soft"]["value"] == "#EFEAE2"
+
+    def intake(order):
+        rows = [dict(real[t], role="accent-light") for t in order]
+        return {"palette": {"rows": rows}, "review": [{"rowId": f"palette:{t}", "rowType": "palette-role", "mark": "accept"} for t in order]}
+
+    for order in (("--surface-soft", "--acc-soft"), ("--acc-soft", "--surface-soft")):
+        confirmed, _ = cp.confirmed_map(intake(order), FRAMEWORK, COLOURS)
+        assert confirmed["accent-light"]["hex"] == "#EFEAE2", order
+        assert sorted(confirmed["accent-light"]["tokens"]) == ["--acc-soft", "--surface-soft"]
+    # With no painted value recorded (an older intake record), the token declared first keeps its colour.
+    pair = [(t, real[t]["hex"], "accent-light") for t in ("--surface-soft", "--acc-soft")]
+    old, _ = cp.confirmed_map(_intake(pair, {t: "accept" for t, _, _ in pair}), FRAMEWORK, COLOURS)
+    assert old["accent-light"]["hex"] == "#F0EBE3"
     with pytest.raises(cp.ConfirmError, match="one slug cannot hold two colours"):
         cp.confirmed_map(_intake([("--a", "#EFEAE2", "accent-light"), ("--b", "#E6E1DA", "accent-light")], {"--a": "accept", "--b": "accept"}), FRAMEWORK, COLOURS)
     with pytest.raises(cp.ConfirmError, match="one slug cannot hold two colours"):

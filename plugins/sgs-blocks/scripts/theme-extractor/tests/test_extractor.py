@@ -210,7 +210,8 @@ def test_transparent_button_bg_not_opaque_black():
     presets = snap["settings"]["custom"]["buttonPresets"]
     assert presets["secondary"]["background"] == "transparent"
     assert presets["outline"]["background"] == "transparent"
-    assert presets["primary"]["background"] == "#e68a95"   # opaque still emits hex
+    # Opaque still emits the colour: here the palette's primary, so its slug reference.
+    assert presets["primary"]["background"] == "var(--wp--preset--color--primary)"
 
 
 # ── FR-33-4 — clamp verbatim / value coverage ───────────────────────────────────────────────────

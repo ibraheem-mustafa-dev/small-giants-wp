@@ -563,7 +563,8 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
                                     "whole (a wholesale replace would delete them from the live site)",
                           "preserved_slots": ",".join(sorted(untouched))})
 
-    if design:
+    # A measured button colour that equals a palette colour references its slug, for every draft.
+    if bp:
         palette_refs.tokenise_button_presets(snap, trace, bp)
 
     # LAYOUT contentSize (scan beyond :root); a width the README declares already won above
@@ -689,6 +690,8 @@ def drop_inherited_heading_colour(snap: dict, trace: list) -> dict:
 # settings.custom keys build_snapshot derives from the draft (button presets, declared radius, accent
 # sets); every other custom key belongs to the client snapshot and survives a merge.
 EXTRACTOR_OWNED_CUSTOM = frozenset({"buttonPresets", "borderRadius", "accentSets"})
+# The top-level styles keys build_snapshot writes (styles.css and styles.blocks merge on their own).
+EXTRACTOR_OWNED_STYLES = frozenset({"typography", "color", "elements"})
 
 
 def _merge_button_presets(gen_custom: dict, existing: dict | None, trace: list) -> None:
@@ -721,13 +724,18 @@ def _merge_button_presets(gen_custom: dict, existing: dict | None, trace: list) 
                       "carried": ",".join(sorted(k for k in ex_slot if k not in own)) or "(none)"})
 
 
-def merge_onto(snap: dict, existing: dict, trace: list) -> dict:
+def merge_onto(snap: dict, existing: dict, trace: list, baseline: dict | None = None) -> dict:
     """ADDITIVELY merge the generated ``snap`` onto an EXISTING client snapshot (FR-33-11 non-destruct).
 
     The generated globals/base/palette WIN (they carry the drift fix); but every EXISTING slug the
     generated palette does NOT cover is PRESERVED (warm-axis / aliases / colours the draft can't
     provide), as is the client's hand-authored component CSS + pattern refs. This is what makes a
     deploy to an already-cloned site non-breaking (the D318 pink regression = a destructive replace).
+
+    A key the extractor owns (``EXTRACTOR_OWNED_CUSTOM``) wins only when this run derived it: a generated value
+    that is the framework ``baseline``'s own copy (or absent) means the draft gave nothing for it, so the client's
+    value stands. A top-level ``styles`` key the extractor never writes (``EXTRACTOR_OWNED_STYLES`` lists the ones
+    it does) keeps the client's value over the framework copy.
     """
     gen_slugs = {e.get("slug") for e in snap.get("settings", {}).get("color", {}).get("palette", [])}
     ex_pal = existing.get("settings", {}).get("color", {}).get("palette", []) or []
@@ -737,6 +745,19 @@ def merge_onto(snap: dict, existing: dict, trace: list) -> dict:
             snap.setdefault("settings", {}).setdefault("color", {}).setdefault("palette", []).append(e)
             added += 1
     ex_styles, ex_custom = existing.get("styles", {}), existing.get("settings", {}).get("custom", {})
+    base_styles = (baseline or {}).get("styles") or {}
+    kept_styles = []
+    for key, value in ex_styles.items():
+        gen_styles = snap.setdefault("styles", {})
+        if key in EXTRACTOR_OWNED_STYLES or key in ("css", "blocks"):
+            continue
+        if key not in gen_styles or (baseline is not None and gen_styles.get(key) == base_styles.get(key)):
+            if gen_styles.get(key) != value:
+                gen_styles[key] = copy.deepcopy(value)
+                kept_styles.append(key)
+    trace.append({"kind": "merge", "what": "styles",
+                  "reason": "client styles keys the extractor does not write keep the client's value",
+                  "keys_carried": ",".join(sorted(kept_styles)) or "(none)"})
     for key in ("css", "blocks"):
         if ex_styles.get(key) and not snap.get("styles", {}).get(key):
             snap.setdefault("styles", {})[key] = ex_styles[key]
@@ -745,8 +766,10 @@ def merge_onto(snap: dict, existing: dict, trace: list) -> dict:
     # the generated value wins for the keys the extractor measures.
     gen_custom = snap.setdefault("settings", {}).setdefault("custom", {})
     carried = []
+    base_custom = ((baseline or {}).get("settings") or {}).get("custom") or {}
     for key, value in ex_custom.items():
-        if key in EXTRACTOR_OWNED_CUSTOM or gen_custom.get(key) == value:
+        derived = key in gen_custom and (baseline is None or gen_custom.get(key) != base_custom.get(key))
+        if (key in EXTRACTOR_OWNED_CUSTOM and (key == "buttonPresets" or derived)) or gen_custom.get(key) == value:
             continue
         gen_custom[key] = copy.deepcopy(value)
         carried.append(key)
@@ -928,7 +951,7 @@ def main(argv=None) -> int:
     if args.merge_onto:
         existing_path = pathlib.Path(args.merge_onto)
         if existing_path.is_file():
-            snap = merge_onto(snap, json.loads(existing_path.read_text(encoding="utf-8")), trace)
+            snap = merge_onto(snap, json.loads(existing_path.read_text(encoding="utf-8")), trace, baseline)
     # FR-33-1: the draft's easings land in settings.custom.easing after the merge (the merge keeps the client's
     # whole easing object), and its hover movement timing is proposed in the trace only.
     draft_tokens = token_files.read_token_files(draft.parent)
@@ -936,7 +959,12 @@ def main(argv=None) -> int:
     motion_tokens.propose_movement_timing(html, draft_tokens, trace)
     if confirmed is not None:
         # The merge may carry slugs Bean did not confirm; the confirmed map still decides.
-        confirmed_palette.apply_confirmed(snap, confirmed, framework, trace, draft_slugs)
+        client_slugs = frozenset()
+        if args.merge_onto and pathlib.Path(args.merge_onto).is_file():
+            existing_pal = ((json.loads(pathlib.Path(args.merge_onto).read_text(encoding="utf-8")).get("settings") or {})
+                            .get("color") or {}).get("palette") or []
+            client_slugs = frozenset(e.get("slug") for e in existing_pal if isinstance(e, dict) and e.get("slug"))
+        confirmed_palette.apply_confirmed(snap, confirmed, framework, trace, draft_slugs, client_slugs)
 
     drop_inherited_heading_colour(snap, trace)
 

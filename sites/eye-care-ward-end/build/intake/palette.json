@@ -1,6 +1,6 @@
 {
 	"client": "eye-care-ward-end",
-	"takenOn": "2026-10-24T04:57:12.390Z",
+	"takenOn": "2026-10-24T05:20:28.457Z",
 	"manifestHash": "70559f18271e2ff37e7e9979f4918003424b29ec71d23ca3ac74eeeba1f1e2d1",
 	"palette": {
 		"tokens": [
@@ -2300,6 +2300,7 @@
 				"sharedWith": [
 					"--acc-soft"
 				],
+				"value": "#EFEAE2",
 				"role": "accent-light",
 				"roles": [
 					"accent-light"
@@ -2771,6 +2772,7 @@
 				"sharedWith": [
 					"--surface-soft"
 				],
+				"value": "#EFEAE2",
 				"role": "accent-light",
 				"roles": [
 					"accent-light"
