@@ -1,6 +1,6 @@
 {
 	"client": "mamas-munches-redesign",
-	"takenOn": "2026-10-24T04:58:29.165Z",
+	"takenOn": "2026-10-24T09:26:51.235Z",
 	"manifestHash": "153bb09fe400dcae98c503ad44580b2cc0f6dcd5b9d775e770a90370b6d3e995",
 	"palette": {
 		"tokens": [
@@ -1997,34 +1997,24 @@
 					"--mm-outline",
 					"--mm-focus"
 				],
-				"role": "text",
+				"role": "heading",
 				"roles": [
-					"text",
 					"heading",
-					"border",
 					"primary-text",
 					"accent-text",
 					"section-text",
+					"border",
+					"text",
 					"link-hover"
 				],
-				"confidence": 0.95,
-				"why": "the page text: the body colour on 11 page(s); the name --mm-text agrees",
+				"confidence": 0.85,
+				"why": "the most used heading colour on light grounds (55 headings)",
 				"by": "usage",
 				"basis": [
 					{
-						"role": "text",
-						"by": "usage",
-						"why": "the page text: the body colour on 11 page(s); the name --mm-text agrees"
-					},
-					{
 						"role": "heading",
 						"by": "usage",
-						"why": "the most used heading colour on light grounds (52 headings)"
-					},
-					{
-						"role": "border",
-						"by": "usage",
-						"why": "the divider line colour that draws the most (328730 px; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees"
+						"why": "the most used heading colour on light grounds (55 headings)"
 					},
 					{
 						"role": "primary-text",
@@ -2042,9 +2032,19 @@
 						"why": "the colour of the most text on the section ground (1293 characters)"
 					},
 					{
+						"role": "border",
+						"by": "declared",
+						"why": "the draft declares --mm-outline: var(--mm-cocoa); usage agrees"
+					},
+					{
+						"role": "text",
+						"by": "declared",
+						"why": "the draft declares --mm-text: var(--mm-cocoa) (the slug's own name); usage agrees"
+					},
+					{
 						"role": "link-hover",
-						"by": "name",
-						"why": "name says link hover (the name alone decides this)"
+						"by": "declared",
+						"why": "the draft declares --mm-link-hover: var(--mm-cocoa) (the slug's own name)"
 					}
 				]
 			},
@@ -2079,24 +2079,24 @@
 				"sharedWith": [
 					"--mm-surface-card"
 				],
-				"role": "surface-alt",
+				"role": "text-inverse",
 				"roles": [
-					"surface-alt",
-					"text-inverse"
+					"text-inverse",
+					"surface-alt"
 				],
-				"confidence": 0.95,
-				"why": "the most used light ground after the page ground (305 elements); the name --mm-surface-card agrees",
+				"confidence": 0.85,
+				"why": "the most used text colour on the dark ground #3A2A22 (weight 9)",
 				"by": "usage",
 				"basis": [
-					{
-						"role": "surface-alt",
-						"by": "usage",
-						"why": "the most used light ground after the page ground (305 elements); the name --mm-surface-card agrees"
-					},
 					{
 						"role": "text-inverse",
 						"by": "usage",
 						"why": "the most used text colour on the dark ground #3A2A22 (weight 9)"
+					},
+					{
+						"role": "surface-alt",
+						"by": "declared",
+						"why": "the draft declares --mm-surface-card: var(--mm-paper); usage agrees"
 					}
 				]
 			},
@@ -2134,24 +2134,24 @@
 				"sharedWith": [
 					"--mm-surface-page"
 				],
-				"role": "surface",
+				"role": "footer-bg",
 				"roles": [
-					"surface",
-					"footer-bg"
+					"footer-bg",
+					"surface"
 				],
-				"confidence": 0.95,
-				"why": "the page ground: the body background on 11 page(s); the name --mm-surface-page agrees",
+				"confidence": 0.85,
+				"why": "the footer's ground on 10 page(s)",
 				"by": "usage",
 				"basis": [
-					{
-						"role": "surface",
-						"by": "usage",
-						"why": "the page ground: the body background on 11 page(s); the name --mm-surface-page agrees"
-					},
 					{
 						"role": "footer-bg",
 						"by": "usage",
 						"why": "the footer's ground on 10 page(s)"
+					},
+					{
+						"role": "surface",
+						"by": "declared",
+						"why": "the draft declares --mm-surface-page: var(--mm-cream); usage agrees"
 					}
 				]
 			},
@@ -2230,14 +2230,14 @@
 				"roles": [
 					"accent"
 				],
-				"confidence": 0.85,
-				"why": "the next most used strong ground (9 buttons)",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --mm-badge: var(--mm-pink); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "accent",
-						"by": "usage",
-						"why": "the next most used strong ground (9 buttons)"
+						"by": "declared",
+						"why": "the draft declares --mm-badge: var(--mm-pink); usage agrees"
 					}
 				]
 			},
@@ -2287,14 +2287,14 @@
 				"roles": [
 					"link"
 				],
-				"confidence": 0.95,
-				"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (88 of 469 links); the name --mm-link agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --mm-link: var(--mm-pink-dark) (the slug's own name); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "link",
-						"by": "usage",
-						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (88 of 469 links); the name --mm-link agrees"
+						"by": "declared",
+						"why": "the draft declares --mm-link: var(--mm-pink-dark) (the slug's own name); usage agrees"
 					}
 				]
 			},
@@ -2411,14 +2411,14 @@
 				"roles": [
 					"primary"
 				],
-				"confidence": 0.85,
-				"why": "the most used strong ground (32 buttons)",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --mm-cta: var(--mm-yellow); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "primary",
-						"by": "usage",
-						"why": "the most used strong ground (32 buttons)"
+						"by": "declared",
+						"why": "the draft declares --mm-cta: var(--mm-yellow); usage agrees"
 					}
 				]
 			},
@@ -2526,14 +2526,14 @@
 				"roles": [
 					"text-muted"
 				],
-				"confidence": 0.95,
-				"why": "the colour of the most text after the text, heading and accent text, at least 10 L* lighter than the text (807 characters); the name --mm-muted agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --mm-text-muted: var(--mm-muted) (the slug's own name); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "text-muted",
-						"by": "usage",
-						"why": "the colour of the most text after the text, heading and accent text, at least 10 L* lighter than the text (807 characters); the name --mm-muted agrees"
+						"by": "declared",
+						"why": "the draft declares --mm-text-muted: var(--mm-muted) (the slug's own name); usage agrees"
 					}
 				]
 			},
@@ -2958,30 +2958,20 @@
 				"roles": [
 					"text",
 					"heading",
-					"border",
 					"primary-text",
 					"accent-text",
 					"section-text",
+					"border",
 					"link-hover"
 				],
-				"confidence": 0.95,
-				"why": "the page text: the body colour on 11 page(s); the name --mm-text agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --mm-text: var(--mm-cocoa) (the slug's own name); usage agrees",
+				"by": "declared",
 				"basis": [
-					{
-						"role": "text",
-						"by": "usage",
-						"why": "the page text: the body colour on 11 page(s); the name --mm-text agrees"
-					},
 					{
 						"role": "heading",
 						"by": "usage",
-						"why": "the most used heading colour on light grounds (52 headings)"
-					},
-					{
-						"role": "border",
-						"by": "usage",
-						"why": "the divider line colour that draws the most (328730 px; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees"
+						"why": "the most used heading colour on light grounds (55 headings)"
 					},
 					{
 						"role": "primary-text",
@@ -2999,9 +2989,19 @@
 						"why": "the colour of the most text on the section ground (1293 characters)"
 					},
 					{
+						"role": "border",
+						"by": "declared",
+						"why": "the draft declares --mm-outline: var(--mm-cocoa); usage agrees"
+					},
+					{
+						"role": "text",
+						"by": "declared",
+						"why": "the draft declares --mm-text: var(--mm-cocoa) (the slug's own name); usage agrees"
+					},
+					{
 						"role": "link-hover",
-						"by": "name",
-						"why": "name says link hover (the name alone decides this)"
+						"by": "declared",
+						"why": "the draft declares --mm-link-hover: var(--mm-cocoa) (the slug's own name)"
 					}
 				]
 			},
@@ -3075,14 +3075,14 @@
 				"roles": [
 					"text-muted"
 				],
-				"confidence": 0.95,
-				"why": "the colour of the most text after the text, heading and accent text, at least 10 L* lighter than the text (807 characters); the name --mm-muted agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --mm-text-muted: var(--mm-muted) (the slug's own name); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "text-muted",
-						"by": "usage",
-						"why": "the colour of the most text after the text, heading and accent text, at least 10 L* lighter than the text (807 characters); the name --mm-muted agrees"
+						"by": "declared",
+						"why": "the draft declares --mm-text-muted: var(--mm-muted) (the slug's own name); usage agrees"
 					}
 				]
 			},
@@ -3134,14 +3134,14 @@
 				"roles": [
 					"link"
 				],
-				"confidence": 0.95,
-				"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (88 of 469 links); the name --mm-link agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --mm-link: var(--mm-pink-dark) (the slug's own name); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "link",
-						"by": "usage",
-						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (88 of 469 links); the name --mm-link agrees"
+						"by": "declared",
+						"why": "the draft declares --mm-link: var(--mm-pink-dark) (the slug's own name); usage agrees"
 					}
 				]
 			},
@@ -3242,31 +3242,21 @@
 				"role": "link-hover",
 				"roles": [
 					"link-hover",
-					"text",
 					"heading",
-					"border",
 					"primary-text",
 					"accent-text",
-					"section-text"
+					"section-text",
+					"border",
+					"text"
 				],
-				"confidence": 0.6,
-				"why": "name says link hover (the name alone decides this)",
-				"by": "name",
+				"confidence": 0.95,
+				"why": "the draft declares --mm-link-hover: var(--mm-cocoa) (the slug's own name)",
+				"by": "declared",
 				"basis": [
-					{
-						"role": "text",
-						"by": "usage",
-						"why": "the page text: the body colour on 11 page(s); the name --mm-text agrees"
-					},
 					{
 						"role": "heading",
 						"by": "usage",
-						"why": "the most used heading colour on light grounds (52 headings)"
-					},
-					{
-						"role": "border",
-						"by": "usage",
-						"why": "the divider line colour that draws the most (328730 px; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees"
+						"why": "the most used heading colour on light grounds (55 headings)"
 					},
 					{
 						"role": "primary-text",
@@ -3284,9 +3274,19 @@
 						"why": "the colour of the most text on the section ground (1293 characters)"
 					},
 					{
+						"role": "border",
+						"by": "declared",
+						"why": "the draft declares --mm-outline: var(--mm-cocoa); usage agrees"
+					},
+					{
+						"role": "text",
+						"by": "declared",
+						"why": "the draft declares --mm-text: var(--mm-cocoa) (the slug's own name); usage agrees"
+					},
+					{
 						"role": "link-hover",
-						"by": "name",
-						"why": "name says link hover (the name alone decides this)"
+						"by": "declared",
+						"why": "the draft declares --mm-link-hover: var(--mm-cocoa) (the slug's own name)"
 					}
 				]
 			},
@@ -3331,19 +3331,19 @@
 					"surface",
 					"footer-bg"
 				],
-				"confidence": 0.95,
-				"why": "the page ground: the body background on 11 page(s); the name --mm-surface-page agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --mm-surface-page: var(--mm-cream); usage agrees",
+				"by": "declared",
 				"basis": [
-					{
-						"role": "surface",
-						"by": "usage",
-						"why": "the page ground: the body background on 11 page(s); the name --mm-surface-page agrees"
-					},
 					{
 						"role": "footer-bg",
 						"by": "usage",
 						"why": "the footer's ground on 10 page(s)"
+					},
+					{
+						"role": "surface",
+						"by": "declared",
+						"why": "the draft declares --mm-surface-page: var(--mm-cream); usage agrees"
 					}
 				]
 			},
@@ -3380,24 +3380,24 @@
 				"sharedWith": [
 					"--mm-paper"
 				],
-				"role": "surface-alt",
+				"role": "text-inverse",
 				"roles": [
-					"surface-alt",
-					"text-inverse"
+					"text-inverse",
+					"surface-alt"
 				],
-				"confidence": 0.95,
-				"why": "the most used light ground after the page ground (305 elements); the name --mm-surface-card agrees",
+				"confidence": 0.85,
+				"why": "the most used text colour on the dark ground #3A2A22 (weight 9)",
 				"by": "usage",
 				"basis": [
-					{
-						"role": "surface-alt",
-						"by": "usage",
-						"why": "the most used light ground after the page ground (305 elements); the name --mm-surface-card agrees"
-					},
 					{
 						"role": "text-inverse",
 						"by": "usage",
 						"why": "the most used text colour on the dark ground #3A2A22 (weight 9)"
+					},
+					{
+						"role": "surface-alt",
+						"by": "declared",
+						"why": "the draft declares --mm-surface-card: var(--mm-paper); usage agrees"
 					}
 				]
 			},
@@ -3619,31 +3619,21 @@
 				"role": "border",
 				"roles": [
 					"border",
-					"text",
 					"heading",
 					"primary-text",
 					"accent-text",
 					"section-text",
+					"text",
 					"link-hover"
 				],
-				"confidence": 0.95,
-				"why": "the divider line colour that draws the most (328730 px; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --mm-outline: var(--mm-cocoa); usage agrees",
+				"by": "declared",
 				"basis": [
-					{
-						"role": "text",
-						"by": "usage",
-						"why": "the page text: the body colour on 11 page(s); the name --mm-text agrees"
-					},
 					{
 						"role": "heading",
 						"by": "usage",
-						"why": "the most used heading colour on light grounds (52 headings)"
-					},
-					{
-						"role": "border",
-						"by": "usage",
-						"why": "the divider line colour that draws the most (328730 px; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees"
+						"why": "the most used heading colour on light grounds (55 headings)"
 					},
 					{
 						"role": "primary-text",
@@ -3661,9 +3651,19 @@
 						"why": "the colour of the most text on the section ground (1293 characters)"
 					},
 					{
+						"role": "border",
+						"by": "declared",
+						"why": "the draft declares --mm-outline: var(--mm-cocoa); usage agrees"
+					},
+					{
+						"role": "text",
+						"by": "declared",
+						"why": "the draft declares --mm-text: var(--mm-cocoa) (the slug's own name); usage agrees"
+					},
+					{
 						"role": "link-hover",
-						"by": "name",
-						"why": "name says link hover (the name alone decides this)"
+						"by": "declared",
+						"why": "the draft declares --mm-link-hover: var(--mm-cocoa) (the slug's own name)"
 					}
 				]
 			},
@@ -3705,14 +3705,14 @@
 				"roles": [
 					"primary"
 				],
-				"confidence": 0.85,
-				"why": "the most used strong ground (32 buttons)",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --mm-cta: var(--mm-yellow); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "primary",
-						"by": "usage",
-						"why": "the most used strong ground (32 buttons)"
+						"by": "declared",
+						"why": "the draft declares --mm-cta: var(--mm-yellow); usage agrees"
 					}
 				]
 			},
@@ -3754,14 +3754,14 @@
 				"roles": [
 					"primary"
 				],
-				"confidence": 0.85,
-				"why": "the most used strong ground (32 buttons)",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --mm-cta: var(--mm-yellow); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "primary",
-						"by": "usage",
-						"why": "the most used strong ground (32 buttons)"
+						"by": "declared",
+						"why": "the draft declares --mm-cta: var(--mm-yellow); usage agrees"
 					}
 				]
 			},
@@ -3794,14 +3794,14 @@
 				"roles": [
 					"accent"
 				],
-				"confidence": 0.85,
-				"why": "the next most used strong ground (9 buttons)",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --mm-badge: var(--mm-pink); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "accent",
-						"by": "usage",
-						"why": "the next most used strong ground (9 buttons)"
+						"by": "declared",
+						"why": "the draft declares --mm-badge: var(--mm-pink); usage agrees"
 					}
 				]
 			},
@@ -3899,34 +3899,24 @@
 					"--mm-link-hover",
 					"--mm-outline"
 				],
-				"role": "text",
+				"role": "heading",
 				"roles": [
-					"text",
 					"heading",
-					"border",
 					"primary-text",
 					"accent-text",
 					"section-text",
+					"border",
+					"text",
 					"link-hover"
 				],
-				"confidence": 0.95,
-				"why": "the page text: the body colour on 11 page(s); the name --mm-text agrees",
+				"confidence": 0.85,
+				"why": "the most used heading colour on light grounds (55 headings)",
 				"by": "usage",
 				"basis": [
 					{
-						"role": "text",
-						"by": "usage",
-						"why": "the page text: the body colour on 11 page(s); the name --mm-text agrees"
-					},
-					{
 						"role": "heading",
 						"by": "usage",
-						"why": "the most used heading colour on light grounds (52 headings)"
-					},
-					{
-						"role": "border",
-						"by": "usage",
-						"why": "the divider line colour that draws the most (328730 px; a link's underline and a line in the page ground's colour are not dividers); the name --mm-outline agrees"
+						"why": "the most used heading colour on light grounds (55 headings)"
 					},
 					{
 						"role": "primary-text",
@@ -3944,9 +3934,19 @@
 						"why": "the colour of the most text on the section ground (1293 characters)"
 					},
 					{
+						"role": "border",
+						"by": "declared",
+						"why": "the draft declares --mm-outline: var(--mm-cocoa); usage agrees"
+					},
+					{
+						"role": "text",
+						"by": "declared",
+						"why": "the draft declares --mm-text: var(--mm-cocoa) (the slug's own name); usage agrees"
+					},
+					{
 						"role": "link-hover",
-						"by": "name",
-						"why": "name says link hover (the name alone decides this)"
+						"by": "declared",
+						"why": "the draft declares --mm-link-hover: var(--mm-cocoa) (the slug's own name)"
 					}
 				]
 			}
@@ -4299,6 +4299,7 @@
 			}
 		],
 		"merges": [],
+		"disagreements": [],
 		"usageFrom": "computed colour properties of 3056 rest-mode reading records, one 1440 read per route"
 	},
 	"usage": [

@@ -97,6 +97,14 @@ test( 'MUST FAIL: the rows of a merged group carry its painted value, the member
 	assert.equal( single.rows[ 0 ].value, undefined, 'a token alone in its value needs none' );
 } );
 
+test( 'MUST FAIL: muted text counts on light grounds, a pale tint included, never on a dark or saturated ground', () => {
+	const tokens = [ ...TOKENS, { name: '--sep', type: 'colour', hex: '#6F8193' }, { name: '--tint', type: 'colour', hex: '#FCEBBE' } ];
+	const usage = [ ...USAGE, use( '#6F8193', 'color', 'span', 40, { ground: '#141414', text: true, chars: 2000 } ),
+		use( '#FCEBBE', 'background-color', 'div', 1 ), use( '#77716A', 'color', 'p', 2, { ground: '#FCEBBE', text: true, chars: 600 } ) ];
+	assert.deepEqual( holder( proposePalette( { tokens, usage, slugs: SLUGS } ), 'text-muted' ), [ '#77716A' ],
+		'2000 characters on the dark ground are not muted copy; 600 on the pale yellow tint (L* 93, chroma 24) are' );
+} );
+
 test( 'statusUsage reads status and alert colours from the draft code', () => {
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'palette-status-' ) );
 	try {

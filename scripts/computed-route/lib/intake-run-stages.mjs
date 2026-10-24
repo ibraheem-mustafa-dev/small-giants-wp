@@ -164,10 +164,10 @@ export const STAGES = [
 			}
 		} );
 		const usage = [ ...paletteUsage( records, grounds, texts, channels ), ...probeRows, ...statusUsage( job.folder ) ];
-		const p = proposePalette( { tokens: t.tokens, usage, slugs: loadPaletteSlugs(), problems: t.problems } );
+		const p = proposePalette( { tokens: t.tokens, usage, slugs: loadPaletteSlugs(), problems: t.problems, folder: job.folder } );
 		gaps.push( ...p.problems.map( ( x ) => gap( `palette:${ x.kind ?? 'token' }`, x.draftId ?? x.name ?? x.token ?? 'tokens', x.error ?? x.message ?? JSON.stringify( x ) ) ) );
 		return {
-			palette: { tokens: p.tokens, rows: p.rows, unused: p.unused, oneOff: p.oneOff, merges: p.merges, usageFrom: `computed colour properties of ${ records.length } rest-mode reading records, one 1440 read per route` },
+			palette: { tokens: p.tokens, rows: p.rows, unused: p.unused, oneOff: p.oneOff, merges: p.merges, disagreements: p.disagreements, usageFrom: `computed colour properties of ${ records.length } rest-mode reading records, one 1440 read per route` },
 			usage,
 			blocked, gaps, note: `${ t.tokens.length } tokens, ${ p.rows.length } roles, ${ p.unused.length } unused, ${ p.oneOff.length } one-off; usage from ${ records.length } records (${ usage.length } colour uses)`,
 		};

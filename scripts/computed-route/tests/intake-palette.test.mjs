@@ -37,15 +37,16 @@ test( 'FR-48-31 MUST FAIL: every used colour token gets a proposed role', () => 
 	assert.deepEqual( roles, {
 		'--brand-teal': 'primary', '--brand-teal-hover': 'primary-dark', '--brand-orange': 'accent', '--ink': 'heading', '--near-ink': 'heading',
 		'--grey-body': 'text', '--surface-page': 'surface', '--surface-card': 'surface-alt', '--text-heading': 'heading', '--text-body': 'text',
-		'--text-link': 'link', '--text-link-hover': 'link-hover', '--surface-section-teal': 'link', '--text-on-teal': 'section-text',
+		'--text-link': 'link', '--text-link-hover': 'link-hover', '--surface-section-teal': 'primary', '--text-on-teal': 'section-text',
 		'--card-ground': 'surface-alt',
 	} );
 	// Section is read from usage (the next most painted ground, #F59E0B), so the name hint of --surface-section-teal
 	// loses and its row shows the first usage role of its value; every token of one value carries the same roles.
-	assert.deepEqual( rowOf( p, '--surface-section-teal' ).roles, [ 'link', 'primary' ] );
+	// (--text-link: var(--brand-teal) declares link, so link follows the usage role primary in its value's list.)
+	assert.deepEqual( rowOf( p, '--surface-section-teal' ).roles, [ 'primary', 'link' ] );
 	assert.deepEqual( rowOf( p, '--brand-orange' ).roles, [ 'accent', 'section' ] );
 	assert.deepEqual( rowOf( p, '--ink' ).roles, rowOf( p, '--text-heading' ).roles );
-	assert.match( rowOf( p, '--ink' ).why, /^the most used heading colour on light grounds/ );
+	assert.match( rowOf( p, '--ink' ).why, /^the draft declares --text-heading: var\(--ink\); usage agrees$/, 'the declaration decides and usage confirms it' );
 } );
 
 test( 'FR-48-31 MUST FAIL: the planted unused token is listed as unused and not proposed', () => {

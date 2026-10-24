@@ -1,7 +1,7 @@
 {
 	"client": "eye-care-ward-end",
-	"takenOn": "2026-10-24T05:20:28.457Z",
-	"manifestHash": "70559f18271e2ff37e7e9979f4918003424b29ec71d23ca3ac74eeeba1f1e2d1",
+	"takenOn": "2026-10-24T09:27:28.394Z",
+	"manifestHash": "2aef755e961de5403ece32853231c57b02aa35b9443d09948a2223cbca276f04",
 	"palette": {
 		"tokens": [
 			{
@@ -2049,23 +2049,18 @@
 					"--text-body",
 					"--button-primary-bg"
 				],
-				"role": "text",
+				"role": "heading",
 				"roles": [
-					"text",
 					"heading",
 					"link",
-					"primary",
-					"section-text"
+					"section-text",
+					"text",
+					"primary"
 				],
-				"confidence": 0.95,
-				"why": "the page text: the body colour on 1 page(s); the name --text-body agrees",
+				"confidence": 0.85,
+				"why": "the most used heading colour on light grounds (5 headings)",
 				"by": "usage",
 				"basis": [
-					{
-						"role": "text",
-						"by": "usage",
-						"why": "the page text: the body colour on 1 page(s); the name --text-body agrees"
-					},
 					{
 						"role": "heading",
 						"by": "usage",
@@ -2077,14 +2072,19 @@
 						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (29 of 34 links)"
 					},
 					{
-						"role": "primary",
-						"by": "usage",
-						"why": "the most used strong ground (1 buttons)"
-					},
-					{
 						"role": "section-text",
 						"by": "usage",
 						"why": "the most used text colour on the section ground (weight 24)"
+					},
+					{
+						"role": "text",
+						"by": "declared",
+						"why": "the draft declares --text-body: var(--ink); usage agrees"
+					},
+					{
+						"role": "primary",
+						"by": "declared",
+						"why": "the draft declares --button-primary-bg: var(--ink); usage agrees"
 					}
 				]
 			},
@@ -2152,36 +2152,36 @@
 					"--surface-page",
 					"--button-primary-fg"
 				],
-				"role": "surface",
+				"role": "footer-bg",
 				"roles": [
-					"surface",
 					"footer-bg",
-					"primary-text",
-					"text-inverse"
+					"text-inverse",
+					"surface",
+					"primary-text"
 				],
-				"confidence": 0.95,
-				"why": "the page ground: the body background on 1 page(s); the name --surface-page agrees",
+				"confidence": 0.85,
+				"why": "the footer's ground on 1 page(s)",
 				"by": "usage",
 				"basis": [
-					{
-						"role": "surface",
-						"by": "usage",
-						"why": "the page ground: the body background on 1 page(s); the name --surface-page agrees"
-					},
 					{
 						"role": "footer-bg",
 						"by": "usage",
 						"why": "the footer's ground on 1 page(s)"
 					},
 					{
-						"role": "primary-text",
-						"by": "usage",
-						"why": "the most used text colour on the primary ground (weight 44)"
-					},
-					{
 						"role": "text-inverse",
 						"by": "usage",
 						"why": "the most used text colour on the dark ground #141414 (weight 44)"
+					},
+					{
+						"role": "surface",
+						"by": "declared",
+						"why": "the draft declares --surface-page: var(--paper); usage agrees"
+					},
+					{
+						"role": "primary-text",
+						"by": "declared",
+						"why": "the draft declares --button-primary-fg: var(--paper); usage agrees"
 					}
 				]
 			},
@@ -2221,14 +2221,14 @@
 				"roles": [
 					"surface-alt"
 				],
-				"confidence": 0.95,
-				"why": "the most used light ground after the page ground (29 elements); the name --surface-card agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --surface-card: var(--white); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "surface-alt",
-						"by": "usage",
-						"why": "the most used light ground after the page ground (29 elements); the name --surface-card agrees"
+						"by": "declared",
+						"why": "the draft declares --surface-card: var(--white); usage agrees"
 					}
 				]
 			},
@@ -2383,14 +2383,14 @@
 				"roles": [
 					"border"
 				],
-				"confidence": 0.95,
-				"why": "the divider line colour that draws the most (30346 px; a link's underline and a line in the page ground's colour are not dividers); the name --border-default agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --border-default: var(--hairline); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "border",
-						"by": "usage",
-						"why": "the divider line colour that draws the most (30346 px; a link's underline and a line in the page ground's colour are not dividers); the name --border-default agrees"
+						"by": "declared",
+						"why": "the draft declares --border-default: var(--hairline); usage agrees"
 					}
 				]
 			},
@@ -2690,14 +2690,14 @@
 				"roles": [
 					"accent"
 				],
-				"confidence": 0.85,
-				"why": "the next most used strong ground (1 elements)",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft's comment on --acc says \"badges\" (\"badges, focus ring, ticker icons, selection\"); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "accent",
-						"by": "usage",
-						"why": "the next most used strong ground (1 elements)"
+						"by": "declared",
+						"why": "the draft's comment on --acc says \"badges\" (\"badges, focus ring, ticker icons, selection\"); usage agrees"
 					}
 				]
 			},
@@ -2724,7 +2724,8 @@
 				"sharedWith": [],
 				"role": "accent-text",
 				"roles": [
-					"accent-text"
+					"accent-text",
+					"link-hover"
 				],
 				"confidence": 0.85,
 				"why": "the accent's own ink: the text colour of its hue (161 characters; the accent ground holds no text)",
@@ -2734,6 +2735,11 @@
 						"role": "accent-text",
 						"by": "usage",
 						"why": "the accent's own ink: the text colour of its hue (161 characters; the accent ground holds no text)"
+					},
+					{
+						"role": "link-hover",
+						"by": "declared",
+						"why": "the draft's comment on --acc-ink says \"link hover\" (\"kicker text, link hover\")"
 					}
 				]
 			},
@@ -2939,14 +2945,14 @@
 				"roles": [
 					"success"
 				],
-				"confidence": 0.95,
-				"why": "the green the draft's code gives its status messages (1 in the code); the name --success agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft's comment on --success says \"in stock\" (\"in stock\"); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "success",
-						"by": "usage",
-						"why": "the green the draft's code gives its status messages (1 in the code); the name --success agrees"
+						"by": "declared",
+						"why": "the draft's comment on --success says \"in stock\" (\"in stock\"); usage agrees"
 					}
 				]
 			},
@@ -3033,18 +3039,13 @@
 					"text",
 					"heading",
 					"link",
-					"primary",
-					"section-text"
+					"section-text",
+					"primary"
 				],
-				"confidence": 0.95,
-				"why": "the page text: the body colour on 1 page(s); the name --text-body agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --text-body: var(--ink); usage agrees",
+				"by": "declared",
 				"basis": [
-					{
-						"role": "text",
-						"by": "usage",
-						"why": "the page text: the body colour on 1 page(s); the name --text-body agrees"
-					},
 					{
 						"role": "heading",
 						"by": "usage",
@@ -3056,14 +3057,19 @@
 						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (29 of 34 links)"
 					},
 					{
-						"role": "primary",
-						"by": "usage",
-						"why": "the most used strong ground (1 buttons)"
-					},
-					{
 						"role": "section-text",
 						"by": "usage",
 						"why": "the most used text colour on the section ground (weight 24)"
+					},
+					{
+						"role": "text",
+						"by": "declared",
+						"why": "the draft declares --text-body: var(--ink); usage agrees"
+					},
+					{
+						"role": "primary",
+						"by": "declared",
+						"why": "the draft declares --button-primary-bg: var(--ink); usage agrees"
 					}
 				]
 			},
@@ -3122,32 +3128,32 @@
 				"roles": [
 					"surface",
 					"footer-bg",
-					"primary-text",
-					"text-inverse"
+					"text-inverse",
+					"primary-text"
 				],
-				"confidence": 0.95,
-				"why": "the page ground: the body background on 1 page(s); the name --surface-page agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --surface-page: var(--paper); usage agrees",
+				"by": "declared",
 				"basis": [
-					{
-						"role": "surface",
-						"by": "usage",
-						"why": "the page ground: the body background on 1 page(s); the name --surface-page agrees"
-					},
 					{
 						"role": "footer-bg",
 						"by": "usage",
 						"why": "the footer's ground on 1 page(s)"
 					},
 					{
-						"role": "primary-text",
-						"by": "usage",
-						"why": "the most used text colour on the primary ground (weight 44)"
-					},
-					{
 						"role": "text-inverse",
 						"by": "usage",
 						"why": "the most used text colour on the dark ground #141414 (weight 44)"
+					},
+					{
+						"role": "surface",
+						"by": "declared",
+						"why": "the draft declares --surface-page: var(--paper); usage agrees"
+					},
+					{
+						"role": "primary-text",
+						"by": "declared",
+						"why": "the draft declares --button-primary-fg: var(--paper); usage agrees"
 					}
 				]
 			},
@@ -3189,14 +3195,14 @@
 				"roles": [
 					"surface-alt"
 				],
-				"confidence": 0.95,
-				"why": "the most used light ground after the page ground (29 elements); the name --surface-card agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --surface-card: var(--white); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "surface-alt",
-						"by": "usage",
-						"why": "the most used light ground after the page ground (29 elements); the name --surface-card agrees"
+						"by": "declared",
+						"why": "the draft declares --surface-card: var(--white); usage agrees"
 					}
 				]
 			},
@@ -3269,14 +3275,14 @@
 				"roles": [
 					"border"
 				],
-				"confidence": 0.95,
-				"why": "the divider line colour that draws the most (30346 px; a link's underline and a line in the page ground's colour are not dividers); the name --border-default agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --border-default: var(--hairline); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "border",
-						"by": "usage",
-						"why": "the divider line colour that draws the most (30346 px; a link's underline and a line in the page ground's colour are not dividers); the name --border-default agrees"
+						"by": "declared",
+						"why": "the draft declares --border-default: var(--hairline); usage agrees"
 					}
 				]
 			},
@@ -3358,23 +3364,18 @@
 					"--ink",
 					"--text-body"
 				],
-				"role": "text",
+				"role": "heading",
 				"roles": [
-					"text",
 					"heading",
 					"link",
-					"primary",
-					"section-text"
+					"section-text",
+					"text",
+					"primary"
 				],
-				"confidence": 0.95,
-				"why": "the page text: the body colour on 1 page(s); the name --text-body agrees",
+				"confidence": 0.85,
+				"why": "the most used heading colour on light grounds (5 headings)",
 				"by": "usage",
 				"basis": [
-					{
-						"role": "text",
-						"by": "usage",
-						"why": "the page text: the body colour on 1 page(s); the name --text-body agrees"
-					},
 					{
 						"role": "heading",
 						"by": "usage",
@@ -3386,14 +3387,19 @@
 						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (29 of 34 links)"
 					},
 					{
-						"role": "primary",
-						"by": "usage",
-						"why": "the most used strong ground (1 buttons)"
-					},
-					{
 						"role": "section-text",
 						"by": "usage",
 						"why": "the most used text colour on the section ground (weight 24)"
+					},
+					{
+						"role": "text",
+						"by": "declared",
+						"why": "the draft declares --text-body: var(--ink); usage agrees"
+					},
+					{
+						"role": "primary",
+						"by": "declared",
+						"why": "the draft declares --button-primary-bg: var(--ink); usage agrees"
 					}
 				]
 			},
@@ -3448,36 +3454,36 @@
 					"--paper",
 					"--surface-page"
 				],
-				"role": "surface",
+				"role": "footer-bg",
 				"roles": [
-					"surface",
 					"footer-bg",
-					"primary-text",
-					"text-inverse"
+					"text-inverse",
+					"surface",
+					"primary-text"
 				],
-				"confidence": 0.95,
-				"why": "the page ground: the body background on 1 page(s); the name --surface-page agrees",
+				"confidence": 0.85,
+				"why": "the footer's ground on 1 page(s)",
 				"by": "usage",
 				"basis": [
-					{
-						"role": "surface",
-						"by": "usage",
-						"why": "the page ground: the body background on 1 page(s); the name --surface-page agrees"
-					},
 					{
 						"role": "footer-bg",
 						"by": "usage",
 						"why": "the footer's ground on 1 page(s)"
 					},
 					{
-						"role": "primary-text",
-						"by": "usage",
-						"why": "the most used text colour on the primary ground (weight 44)"
-					},
-					{
 						"role": "text-inverse",
 						"by": "usage",
 						"why": "the most used text colour on the dark ground #141414 (weight 44)"
+					},
+					{
+						"role": "surface",
+						"by": "declared",
+						"why": "the draft declares --surface-page: var(--paper); usage agrees"
+					},
+					{
+						"role": "primary-text",
+						"by": "declared",
+						"why": "the draft declares --button-primary-fg: var(--paper); usage agrees"
 					}
 				]
 			},
@@ -3514,14 +3520,14 @@
 				"roles": [
 					"accent"
 				],
-				"confidence": 0.85,
-				"why": "the next most used strong ground (1 elements)",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft's comment on --acc says \"badges\" (\"badges, focus ring, ticker icons, selection\"); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "accent",
-						"by": "usage",
-						"why": "the next most used strong ground (1 elements)"
+						"by": "declared",
+						"why": "the draft's comment on --acc says \"badges\" (\"badges, focus ring, ticker icons, selection\"); usage agrees"
 					}
 				]
 			}
@@ -4208,6 +4214,7 @@
 				"deltaE": 0.213
 			}
 		],
+		"disagreements": [],
 		"usageFrom": "computed colour properties of 630 rest-mode reading records, one 1440 read per route"
 	},
 	"usage": [

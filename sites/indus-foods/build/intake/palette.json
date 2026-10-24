@@ -1,6 +1,6 @@
 {
 	"client": "indus-foods",
-	"takenOn": "2026-10-24T04:52:04.754Z",
+	"takenOn": "2026-10-24T09:25:14.989Z",
 	"manifestHash": "50a00b4648eaa4217aa3fde6d4b99632515e00ab3ad06c015c3ed69505c4e3b6",
 	"palette": {
 		"tokens": [
@@ -1039,14 +1039,14 @@
 				"by": "usage",
 				"basis": [
 					{
-						"role": "link",
-						"by": "usage",
-						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (90 of 210 links); the name --text-link agrees"
-					},
-					{
 						"role": "primary",
 						"by": "usage",
 						"why": "the most used strong ground (8 buttons); the name --brand-blue agrees"
+					},
+					{
+						"role": "link",
+						"by": "declared",
+						"why": "the draft declares --text-link: var(--brand-blue); usage agrees"
 					}
 				]
 			},
@@ -1080,14 +1080,14 @@
 				"by": "name",
 				"basis": [
 					{
+						"role": "link-hover",
+						"by": "declared",
+						"why": "the draft declares --text-link-hover: var(--brand-blue-hover)"
+					},
+					{
 						"role": "primary-dark",
 						"by": "name",
 						"why": "hover shade of the primary family (the name alone decides this)"
-					},
-					{
-						"role": "link-hover",
-						"by": "name",
-						"why": "name says link hover (the name alone decides this)"
 					}
 				]
 			},
@@ -1231,13 +1231,13 @@
 					"accent-light"
 				],
 				"confidence": 0.95,
-				"why": "the light ground of the accent's hue (1 grounds and lines); the name --brand-gold-light agrees",
+				"why": "the light ground of the accent's hue (1 grounds and lines, carrying the accent ink); the name --brand-gold-light agrees",
 				"by": "usage",
 				"basis": [
 					{
 						"role": "accent-light",
 						"by": "usage",
-						"why": "the light ground of the accent's hue (1 grounds and lines); the name --brand-gold-light agrees"
+						"why": "the light ground of the accent's hue (1 grounds and lines, carrying the accent ink); the name --brand-gold-light agrees"
 					}
 				]
 			},
@@ -1294,26 +1294,13 @@
 				"sharedWith": [
 					"--selection-fg"
 				],
-				"role": "accent-text",
+				"role": "custom-ink",
 				"roles": [
-					"accent-text",
-					"section-text"
+					"custom-ink"
 				],
-				"confidence": 0.85,
-				"why": "the most used text colour on the accent ground (weight 109)",
-				"by": "usage",
-				"basis": [
-					{
-						"role": "accent-text",
-						"by": "usage",
-						"why": "the most used text colour on the accent ground (weight 109)"
-					},
-					{
-						"role": "section-text",
-						"by": "usage",
-						"why": "the most used text colour on the section ground (weight 109)"
-					}
-				]
+				"confidence": 0.3,
+				"why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+				"by": "none"
 			},
 			{
 				"rowId": "palette:--slate",
@@ -1391,6 +1378,8 @@
 				"role": "footer-bg",
 				"roles": [
 					"footer-bg",
+					"accent-text",
+					"section-text",
 					"heading"
 				],
 				"confidence": 0.85,
@@ -1403,9 +1392,19 @@
 						"why": "the footer's ground on 23 page(s)"
 					},
 					{
-						"role": "heading",
+						"role": "accent-text",
 						"by": "usage",
-						"why": "the most used heading colour on light grounds (44 headings); the name --text-heading agrees"
+						"why": "the colour of the most text on the accent ground (575 characters)"
+					},
+					{
+						"role": "section-text",
+						"by": "usage",
+						"why": "the colour of the most text on the section ground (575 characters)"
+					},
+					{
+						"role": "heading",
+						"by": "declared",
+						"why": "the draft declares --text-heading: var(--slate); usage agrees"
 					}
 				]
 			},
@@ -1436,14 +1435,14 @@
 				"roles": [
 					"text"
 				],
-				"confidence": 0.6,
-				"why": "name says body text (the name alone decides this)",
-				"by": "name",
+				"confidence": 0.98,
+				"why": "the draft declares --text-body: var(--grey-body); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "text",
-						"by": "name",
-						"why": "name says body text (the name alone decides this)"
+						"by": "declared",
+						"why": "the draft declares --text-body: var(--grey-body); usage agrees"
 					}
 				]
 			},
@@ -1458,11 +1457,20 @@
 				"sharedWith": [
 					"--text-muted"
 				],
-				"role": null,
-				"roles": [],
-				"confidence": 0,
-				"why": "unused: no element in the draft uses this value",
-				"by": "none"
+				"role": "text-muted",
+				"roles": [
+					"text-muted"
+				],
+				"confidence": 0.95,
+				"why": "the draft declares --text-muted: var(--grey-muted) (the slug's own name)",
+				"by": "declared",
+				"basis": [
+					{
+						"role": "text-muted",
+						"by": "declared",
+						"why": "the draft declares --text-muted: var(--grey-muted) (the slug's own name)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--surface-white",
@@ -1820,11 +1828,13 @@
 				"role": "heading",
 				"roles": [
 					"heading",
-					"footer-bg"
+					"footer-bg",
+					"accent-text",
+					"section-text"
 				],
-				"confidence": 0.95,
-				"why": "the most used heading colour on light grounds (44 headings); the name --text-heading agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --text-heading: var(--slate); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "footer-bg",
@@ -1832,9 +1842,19 @@
 						"why": "the footer's ground on 23 page(s)"
 					},
 					{
-						"role": "heading",
+						"role": "accent-text",
 						"by": "usage",
-						"why": "the most used heading colour on light grounds (44 headings); the name --text-heading agrees"
+						"why": "the colour of the most text on the accent ground (575 characters)"
+					},
+					{
+						"role": "section-text",
+						"by": "usage",
+						"why": "the colour of the most text on the section ground (575 characters)"
+					},
+					{
+						"role": "heading",
+						"by": "declared",
+						"why": "the draft declares --text-heading: var(--slate); usage agrees"
 					}
 				]
 			},
@@ -1867,14 +1887,14 @@
 				"roles": [
 					"text"
 				],
-				"confidence": 0.6,
-				"why": "name says body text (the name alone decides this)",
-				"by": "name",
+				"confidence": 0.98,
+				"why": "the draft declares --text-body: var(--grey-body); usage agrees",
+				"by": "declared",
 				"basis": [
 					{
 						"role": "text",
-						"by": "name",
-						"why": "name says body text (the name alone decides this)"
+						"by": "declared",
+						"why": "the draft declares --text-body: var(--grey-body); usage agrees"
 					}
 				]
 			},
@@ -1891,11 +1911,20 @@
 				"sharedWith": [
 					"--grey-muted"
 				],
-				"role": null,
-				"roles": [],
-				"confidence": 0,
-				"why": "unused: no element in the draft uses this value",
-				"by": "none"
+				"role": "text-muted",
+				"roles": [
+					"text-muted"
+				],
+				"confidence": 0.95,
+				"why": "the draft declares --text-muted: var(--grey-muted) (the slug's own name)",
+				"by": "declared",
+				"basis": [
+					{
+						"role": "text-muted",
+						"by": "declared",
+						"why": "the draft declares --text-muted: var(--grey-muted) (the slug's own name)"
+					}
+				]
 			},
 			{
 				"rowId": "palette:--text-link",
@@ -1984,19 +2013,19 @@
 					"link",
 					"primary"
 				],
-				"confidence": 0.95,
-				"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (90 of 210 links); the name --text-link agrees",
-				"by": "usage",
+				"confidence": 0.98,
+				"why": "the draft declares --text-link: var(--brand-blue); usage agrees",
+				"by": "declared",
 				"basis": [
-					{
-						"role": "link",
-						"by": "usage",
-						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (90 of 210 links); the name --text-link agrees"
-					},
 					{
 						"role": "primary",
 						"by": "usage",
 						"why": "the most used strong ground (8 buttons); the name --brand-blue agrees"
+					},
+					{
+						"role": "link",
+						"by": "declared",
+						"why": "the draft declares --text-link: var(--brand-blue); usage agrees"
 					}
 				]
 			},
@@ -2027,19 +2056,19 @@
 					"link-hover",
 					"primary-dark"
 				],
-				"confidence": 0.6,
-				"why": "name says link hover (the name alone decides this)",
-				"by": "name",
+				"confidence": 0.95,
+				"why": "the draft declares --text-link-hover: var(--brand-blue-hover)",
+				"by": "declared",
 				"basis": [
+					{
+						"role": "link-hover",
+						"by": "declared",
+						"why": "the draft declares --text-link-hover: var(--brand-blue-hover)"
+					},
 					{
 						"role": "primary-dark",
 						"by": "name",
 						"why": "hover shade of the primary family (the name alone decides this)"
-					},
-					{
-						"role": "link-hover",
-						"by": "name",
-						"why": "name says link hover (the name alone decides this)"
 					}
 				]
 			},
@@ -2232,24 +2261,24 @@
 					"--text-link",
 					"--surface-section-blue"
 				],
-				"role": "link",
+				"role": "primary",
 				"roles": [
-					"link",
-					"primary"
+					"primary",
+					"link"
 				],
 				"confidence": 0.95,
-				"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (90 of 210 links); the name --text-link agrees",
+				"why": "the most used strong ground (8 buttons); the name --brand-blue agrees",
 				"by": "usage",
 				"basis": [
-					{
-						"role": "link",
-						"by": "usage",
-						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (90 of 210 links); the name --text-link agrees"
-					},
 					{
 						"role": "primary",
 						"by": "usage",
 						"why": "the most used strong ground (8 buttons); the name --brand-blue agrees"
+					},
+					{
+						"role": "link",
+						"by": "declared",
+						"why": "the draft declares --text-link: var(--brand-blue); usage agrees"
 					}
 				]
 			},
@@ -2335,24 +2364,24 @@
 					"--text-link",
 					"--surface-topbar"
 				],
-				"role": "link",
+				"role": "primary",
 				"roles": [
-					"link",
-					"primary"
+					"primary",
+					"link"
 				],
 				"confidence": 0.95,
-				"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (90 of 210 links); the name --text-link agrees",
+				"why": "the most used strong ground (8 buttons); the name --brand-blue agrees",
 				"by": "usage",
 				"basis": [
-					{
-						"role": "link",
-						"by": "usage",
-						"why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (90 of 210 links); the name --text-link agrees"
-					},
 					{
 						"role": "primary",
 						"by": "usage",
 						"why": "the most used strong ground (8 buttons); the name --brand-blue agrees"
+					},
+					{
+						"role": "link",
+						"by": "declared",
+						"why": "the draft declares --text-link: var(--brand-blue); usage agrees"
 					}
 				]
 			},
@@ -2666,26 +2695,13 @@
 				"sharedWith": [
 					"--ink"
 				],
-				"role": "accent-text",
+				"role": "custom-selection-fg",
 				"roles": [
-					"accent-text",
-					"section-text"
+					"custom-selection-fg"
 				],
-				"confidence": 0.85,
-				"why": "the most used text colour on the accent ground (weight 109)",
-				"by": "usage",
-				"basis": [
-					{
-						"role": "accent-text",
-						"by": "usage",
-						"why": "the most used text colour on the accent ground (weight 109)"
-					},
-					{
-						"role": "section-text",
-						"by": "usage",
-						"why": "the most used text colour on the section ground (weight 109)"
-					}
-				]
+				"confidence": 0.8,
+				"why": "header, selection and social colours have no palette slug (FR-33-13, FR-33-16)",
+				"by": "name"
 			}
 		],
 		"unused": [
@@ -4068,6 +4084,20 @@
 			}
 		],
 		"merges": [],
+		"disagreements": [
+			{
+				"slug": "text-muted",
+				"declared": {
+					"token": "--text-muted",
+					"hex": "#68727C",
+					"why": "the draft declares --text-muted: var(--grey-muted) (the slug's own name)"
+				},
+				"painted": {
+					"hex": "#6B7784",
+					"why": "a colour no token declares does this job most"
+				}
+			}
+		],
 		"usageFrom": "computed colour properties of 6122 rest-mode reading records, one 1440 read per route"
 	},
 	"usage": [
