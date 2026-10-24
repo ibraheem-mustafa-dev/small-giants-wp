@@ -81,6 +81,16 @@ $check( ! in_array( 'translate', $properties( $part['css'] ), true ), 'negative 
 $none = Emitter::emit( array(), '.sgs-m-test', array( 'block' => 'sgs/button', 'target' => 'root' ) );
 $check( ! str_contains( $none['css'], 'transition' ), 'negative control: no hover state, no scoped transition to replace the stylesheet' );
 
+// A property the hover state already writes through a motion channel is not eased a second time.
+$lift = Emitter::emit( array( 'hover' => array( 'state' => array( 'values' => array( 'translateY' => -4 ) ) ) ), '.sgs-m-test', array( 'block' => 'sgs/button', 'target' => 'root' ) );
+$lp   = $properties( $lift['css'] );
+$check( ! in_array( 'translate', $lp, true ), 'a hover lift (translateY) leaves translate to the owner properties (list: ' . implode( ', ', $lp ) . ')' );
+$check( in_array( 'transform', $lp, true ) && in_array( 'opacity', $lp, true ), 'the lift still keeps the stylesheet transform and opacity entries' );
+$fade = Emitter::emit( array( 'hover' => array( 'state' => array( 'values' => array( 'opacity' => 0.8 ) ) ) ), '.sgs-m-test', array( 'block' => 'sgs/button', 'target' => 'root' ) );
+$fp   = $properties( $fade['css'] );
+$check( ! in_array( 'opacity', $fp, true ) && in_array( 'translate', $fp, true ), 'a hover opacity leaves opacity to the owner property and keeps translate (list: ' . implode( ', ', $fp ) . ')' );
+$check( array( 'transform', 'opacity' ) === array_map( static fn( $e ) => strtok( $e, ' ' ), Base::entries( 'sgs/button', 'root', array( 'translate' ) ) ), 'entries() drops exactly the channels it is given' );
+
 // The table is held to the stylesheet it describes.
 $css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/button/style.css' );
 foreach ( Base::entries( 'sgs/button', 'root' ) as $entry ) {

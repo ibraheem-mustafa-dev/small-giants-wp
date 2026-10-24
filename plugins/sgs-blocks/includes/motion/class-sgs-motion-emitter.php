@@ -20,7 +20,8 @@
  *   The trigger passes through the `sgs_motion_entrance_trigger` filter (an empty string drops the entrance), and the
  *   `sgs_motion_entrance_css` filter appends a trigger's own rules (`Sgs_Motion_Trigger_Open_State`).
  * - `transition`: only the owners present on the element, each with its own duration, easing and delay (the hover
- *   state's list also carries `color`, `background-color`, `border-color` and `box-shadow`), never `all`.
+ *   state's list also carries `color`, `background-color`, `border-color` and `box-shadow`, and the entries the block's
+ *   stylesheet holds on the part for properties no channel writes, `Sgs_Motion_Base_Transitions`), never `all`.
  * - The hover ring (`ringSpread`, `ringColour`) and the Border accent line (`accentWidth`, `accentColour`): a
  *   `box-shadow` painted by the stylesheet's `box-shadow` channel from their owner properties; dropped on an element
  *   whose block sets a shadow (`Sgs_Motion_Ring_Guard`).
@@ -138,7 +139,7 @@ final class Sgs_Motion_Emitter {
 		// stylesheet rule holds; this scoped `transition` replaces that rule's list, so the entries ride on ours.
 		$base_entries = (array) apply_filters(
 			'sgs_motion_base_transition',
-			Sgs_Motion_Base_Transitions::entries( (string) ( $context['block'] ?? '' ), (string) ( $context['target'] ?? '' ) ),
+			Sgs_Motion_Base_Transitions::entries( (string) ( $context['block'] ?? '' ), (string) ( $context['target'] ?? '' ), array_keys( $channels ) ),
 			(string) ( $context['block'] ?? '' ),
 			(string) ( $context['target'] ?? '' )
 		);

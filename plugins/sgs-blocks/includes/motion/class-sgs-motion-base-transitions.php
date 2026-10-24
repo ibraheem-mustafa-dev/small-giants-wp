@@ -41,11 +41,16 @@ final class Sgs_Motion_Base_Transitions {
 	/**
 	 * The entries the stylesheet holds on one part of a block.
 	 *
-	 * @param string $block  Block name.
-	 * @param string $target Motion part key.
+	 * A property the element already writes through a motion channel (`translate`, `opacity`: composed from owner custom
+	 * properties the emitter transitions) is left out, since a second transition on the composed property would ease
+	 * the same movement twice.
+	 *
+	 * @param string            $block    Block name.
+	 * @param string            $target   Motion part key.
+	 * @param array<int,string> $channels The channels the element's motion writes.
 	 * @return array<int,string> `property duration easing` entries, empty when the block has no row for the part.
 	 */
-	public static function entries( string $block, string $target ): array {
+	public static function entries( string $block, string $target, array $channels = array() ): array {
 		$row = self::ENTRIES[ $block ][ $target ] ?? null;
 		if ( null === $row ) {
 			return array();
@@ -54,7 +59,7 @@ final class Sgs_Motion_Base_Transitions {
 			static function ( string $property ) use ( $row ): string {
 				return $property . ' ' . $row['timing'];
 			},
-			$row['properties']
+			array_values( array_diff( $row['properties'], $channels ) )
 		);
 	}
 }
