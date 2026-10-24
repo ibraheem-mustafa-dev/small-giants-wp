@@ -97,7 +97,7 @@ $check(
 	in_array( '--sgs-mag-x var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, cubic-bezier(.16,.84,.32,1)) 0ms', $entries, true ),
 	'stacked with a hover state, --sgs-mag-x stays in the one transition list on the runtime timing (got: ' . implode( ' | ', $entries ) . ')'
 );
-$check( str_contains( $stack['css'], '--sgs-mh-s var(--wp--custom--duration--fast)' ), 'negative control: the hover state scale entry keeps its own fixed duration' );
+$check( str_contains( $stack['css'], '--sgs-mh-s var(--wp--custom--hover--duration, var(--wp--custom--duration--fast))' ), 'negative control: the hover state scale entry keeps its own duration (the hover movement token)' );
 $check( ! str_contains( $alone['css'], '@media' ), 'a per-device return duration writes no per-device transition list (the runtime reads it from the data attribute)' );
 
 echo "RESULT {$pass} passed, {$fail} failed\n";

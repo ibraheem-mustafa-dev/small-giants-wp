@@ -86,6 +86,12 @@ function ok( bool $cond, string $label ): void {
 }
 
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-item-effects.php';
+if ( ! function_exists( 'add_filter' ) ) {
+	/** The markup file registers its burger transition filter at load; this runner reads the function directly. */
+	function add_filter( ...$args ) {
+		return true;
+	}
+}
 require_once dirname( __DIR__, 2 ) . '/includes/nav-menu-markup.php';
 
 // The pre-change function, renamed so both can be called side by side.
