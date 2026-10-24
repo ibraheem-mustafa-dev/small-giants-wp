@@ -1,0 +1,163 @@
+{
+	"client": "mamas-munches-redesign",
+	"source": "ruled",
+	"ruling": {
+		"#3A2A22": [
+			"text",
+			"heading",
+			"border",
+			"link-hover",
+			"primary-text",
+			"accent-text",
+			"section-text"
+		],
+		"#FBF3DC": [
+			"surface",
+			"footer-bg"
+		],
+		"#FFFAF0": [
+			"surface-alt",
+			"text-inverse"
+		],
+		"#F9D5D3": [
+			"section"
+		],
+		"#F9CF6E": [
+			"primary"
+		],
+		"#EE8088": [
+			"accent"
+		],
+		"#A8404F": [
+			"link"
+		],
+		"#5E4A3D": [
+			"text-muted"
+		],
+		"#EADBC0": [
+			"border-light"
+		],
+		"#4E3C31": [
+			"custom-body-copy"
+		]
+	},
+	"roles": {
+		"--mm-cocoa": [
+			"text",
+			"heading",
+			"border",
+			"link-hover",
+			"primary-text",
+			"accent-text",
+			"section-text"
+		],
+		"--mm-paper": [
+			"surface-alt",
+			"text-inverse"
+		],
+		"--mm-cream": [
+			"surface",
+			"footer-bg"
+		],
+		"--mm-white": [],
+		"--mm-pink": [
+			"accent"
+		],
+		"--mm-pink-dark": [
+			"link"
+		],
+		"--mm-pink-band": [],
+		"--mm-pink-soft": [
+			"section"
+		],
+		"--mm-yellow": [
+			"primary"
+		],
+		"--mm-yellow-soft": [],
+		"--mm-body": [
+			"custom-body-copy"
+		],
+		"--mm-muted": [
+			"text-muted"
+		],
+		"--mm-muted-2": [],
+		"--mm-script": [],
+		"--mm-script-gold": [],
+		"--mm-sparkle": [],
+		"--mm-image-bg": [],
+		"--mm-line": [
+			"border-light"
+		],
+		"--mm-line-dashed": [],
+		"--mm-rule": [],
+		"--mm-rule-soft": [],
+		"--mm-tape": [],
+		"--mm-text": [
+			"text",
+			"heading",
+			"border",
+			"link-hover",
+			"primary-text",
+			"accent-text",
+			"section-text"
+		],
+		"--mm-text-body": [
+			"custom-body-copy"
+		],
+		"--mm-text-muted": [
+			"text-muted"
+		],
+		"--mm-link": [
+			"link"
+		],
+		"--mm-link-hover": [
+			"text",
+			"heading",
+			"border",
+			"link-hover",
+			"primary-text",
+			"accent-text",
+			"section-text"
+		],
+		"--mm-surface-page": [
+			"surface",
+			"footer-bg"
+		],
+		"--mm-surface-card": [
+			"surface-alt",
+			"text-inverse"
+		],
+		"--mm-surface-band": [],
+		"--mm-surface-panel": [
+			"section"
+		],
+		"--mm-surface-panel-alt": [],
+		"--mm-outline": [
+			"text",
+			"heading",
+			"border",
+			"link-hover",
+			"primary-text",
+			"accent-text",
+			"section-text"
+		],
+		"--mm-cta": [
+			"primary"
+		],
+		"--mm-selected": [
+			"primary"
+		],
+		"--mm-badge": [
+			"accent"
+		],
+		"--mm-focus": [
+			"text",
+			"heading",
+			"border",
+			"link-hover",
+			"primary-text",
+			"accent-text",
+			"section-text"
+		]
+	}
+}

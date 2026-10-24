@@ -32,11 +32,12 @@ export const USAGE = [
 	'usage: node scripts/computed-route/intake.mjs <client> [--record] [--widths 375,768,1440] [--surfaces a,b] [--repo <path>]',
 	'       node scripts/computed-route/intake.mjs --apply-review <client> [--repo <path>]',
 	'       node scripts/computed-route/intake.mjs --finalise <client> | --apply-picks <client> | --render <client> | --rerun-skeletons <client> | --facts <client> | --page-map <client> [--repo <path>]',
+	'       node scripts/computed-route/intake.mjs --palette-only <client> [--record] [--repo <path>]',
 ].join( '\n' );
 
-const MODES = { '--apply-review': 'apply', '--finalise': 'finalise', '--apply-picks': 'apply-picks', '--render': 'render', '--rerun-skeletons': 'rerun-skeletons', '--facts': 'facts', '--page-map': 'page-map' };
+const MODES = { '--apply-review': 'apply', '--finalise': 'finalise', '--apply-picks': 'apply-picks', '--render': 'render', '--rerun-skeletons': 'rerun-skeletons', '--facts': 'facts', '--page-map': 'page-map', '--palette-only': 'palette-only' };
 
-// argv (after the script) to { mode: 'run'|'apply'|'finalise'|'apply-picks'|'render'|'rerun-skeletons'|'facts'|'page-map', client, record, widths, surfaces,
+// argv (after the script) to { mode: 'run'|'apply'|'finalise'|'apply-picks'|'render'|'rerun-skeletons'|'facts'|'page-map'|'palette-only', client, record, widths, surfaces,
 // repo } or { error }.
 export function parseArgs( argv ) {
 	const o = { mode: 'run', client: null, record: false, widths: WIDTHS, surfaces: null, repo: REPO };
@@ -79,7 +80,7 @@ export function parseArgs( argv ) {
 	if ( ! o.client || ! /^[a-z0-9-]+$/.test( o.client ) ) {
 		return { error: o.client ? `client "${ o.client }" is not a slug` : 'no client given' };
 	}
-	if ( 'run' !== o.mode && ( o.record || o.surfaces || o.widths !== WIDTHS ) ) {
+	if ( 'run' !== o.mode && ( ( o.record && 'palette-only' !== o.mode ) || o.surfaces || o.widths !== WIDTHS ) ) {
 		return { error: `${ Object.keys( MODES ).find( ( k ) => MODES[ k ] === o.mode ) } takes only the client (and --repo)` };
 	}
 	return o;
