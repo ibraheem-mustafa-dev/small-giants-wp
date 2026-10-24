@@ -88,8 +88,11 @@ export function measuredHomes( calibration, { slot, prop, state = null, anyIndex
 	return out.sort( ( a, b ) => rank[ a.via ] - rank[ b.via ] || a.attr.localeCompare( b.attr ) );
 }
 
-// A discovered setting value whose measured paint of `prop` on `slot` equals the draft (layer 2's comparison) at every
-// width both state, read under each spelling the discovery recorded (a shorthand's values projected onto the longhand).
+// A discovered setting value whose paint of `prop` on `slot` equals the draft (layer 2's comparison) at every width the
+// draft states, read under each spelling the discovery recorded (a shorthand's values projected onto the longhand).
+// Discovery records a width only where the value changed the paint (lib/calibrate.mjs::discoverEffects), so at a draft
+// width it did not record the value paints the block's default, which must equal the draft there too (paintAt); a width
+// with neither is unproven, and the value is not written. At least one draft width must be a recorded one.
 // Returns { attr, value, name } for one match, { ambiguous: [ 'attr=value' ] } for several, or null.
 export function discoveredWrite( calibration, { slot, prop, perWidth, state = null, anyIndex = false } ) {
 	const key = pathKey( anyIndex );
@@ -103,9 +106,9 @@ export function discoveredWrite( calibration, { slot, prop, perWidth, state = nu
 				continue;
 			}
 			for ( const [ value, values ] of Object.entries( d.values || {} ) ) {
-				const ws = WIDTHS.filter( ( w ) => undefined !== perWidth[ w ] && undefined !== values[ w ] );
-				const read = ( w ) => ( name === prop || name === canon ? values[ w ] : projectLonghand( name, values[ w ], canon ) );
-				if ( ws.length && ws.every( ( w ) => sameCanonical( canon, perWidth[ w ], read( w ) ) ) ) {
+				const ws = WIDTHS.filter( ( w ) => undefined !== perWidth[ w ] );
+				const read = ( w ) => ( undefined === values[ w ] ? paintAt( calibration, slot, canon, w, anyIndex )?.value : ( name === prop || name === canon ? values[ w ] : projectLonghand( name, values[ w ], canon ) ) );
+				if ( ws.some( ( w ) => undefined !== values[ w ] ) && ws.every( ( w ) => sameCanonical( canon, perWidth[ w ], read( w ) ) ) ) {
 					hits.push( { attr, value, name } );
 				}
 			}

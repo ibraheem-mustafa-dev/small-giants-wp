@@ -2,7 +2,7 @@
 // comes from lib/resolve.mjs::resolve (R-47-3); this module decides only which tiers differ from what the node already
 // shows (R-47-5), tries the slots a setting could paint, and turns a fluid size into a clamp() where the setting takes one.
 import { resolve, splitProperty, LOOSE } from './resolve.mjs';
-import { sameValue } from '../../parity/lib/compare.mjs';
+import { samePaint, paintCanon, PX_TOL } from './css-equivalence/tolerance.mjs';
 import { fitFluid, acceptsClamp, applyClamp, LENGTH_PROPS } from './fill-values.mjs';
 import { INHERITED } from './calibrate-props.mjs';
 import { paintedAt, TIER_OF } from './fill-held.mjs';
@@ -144,7 +144,8 @@ export { INHERITED };
 // Read from the element that paints the text and from the element that lays out the children (walker rows put them at
 // textPath and layoutPath), so a setting on an inner element can hold them.
 export const CARRIED = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow', 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'justify-content', 'align-items' ];
-export const PX_TOL = 0.5;
+// The shared comparison rule (lib/css-equivalence/tolerance.mjs), exported here for the modules that read it from Fill.
+export { PX_TOL };
 
 const isObj = ( v ) => v && 'object' === typeof v && ! Array.isArray( v );
 const TIER_KEYS = [ 'desktop', 'tablet', 'mobile' ];
@@ -152,15 +153,10 @@ const TIER_KEYS = [ 'desktop', 'tablet', 'mobile' ];
 // Every path calibration knows for a block (its elements, and the slots and reaches of its settings), as Solve reads them.
 export const knownPaths = ( cal ) => [ ...Object.keys( cal?.elements || {} ), ...Object.values( cal?.settings || {} ).flatMap( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ] ) ];
 
-// A value as the browser paints it, for comparing: a normal letter or gap spacing is 0, text-align start is left, and an
-// auto minimum height is 0 where nothing makes it content-sized.
-export function canon( prop, v ) {
-	const s = String( v ?? '' ).trim();
-	if ( undefined === v || ( 'normal' === s && /^(letter-spacing|word-spacing|.*gap)$/.test( prop ) ) || ( 'auto' === s && 'min-height' === prop ) ) {
-		return undefined === v ? v : '0px';
-	}
-	return 'text-align' === prop && 'start' === s ? 'left' : v;
-}
+// A value as the browser paints it, for comparing (lib/css-equivalence/tolerance.mjs::paintCanon): a normal spacing or gap
+// is 0px; an auto minimum height is 0px only where ctx shows no flex or grid item; text-align start and end are physical
+// only where ctx reads the direction. ctx: { parentDisplay, position, direction }.
+export const canon = ( prop, v, ctx = {} ) => paintCanon( prop, v, ctx );
 
 // Whether a property paints nothing on this element at this width: an outline with no style or width, a border side with
 // no width, a text decoration with no line, a transition that lasts 0s, a gap (gapPaintsNothing). Such a value is a
@@ -223,19 +219,16 @@ export function defaultPaint( cal, slot, width, prop ) {
 	return /gap$/.test( prop ) && 'normal' === v ? '0px' : v;
 }
 
-// The px tolerance two values compare within: none when exactly one of them is a keyword canon() paints as 0px (a normal
-// letter spacing, an auto minimum height). The walker (parity/lib/compare.mjs::sameValue) compares such a keyword as text,
-// so -0.17px against normal is a difference there; only an exact 0px matches it here.
-const toleranceFor = ( prop, a, b ) => ( ( canon( prop, a ) !== a ) === ( canon( prop, b ) !== b ) ? PX_TOL : 0 );
-
 // The tiers whose draft value differs from what the node shows there: its baseline, or what the tiers already chosen paint
 // there, judged as the held side judges a write (lib/fill-held.mjs::paintedAt): an empty tier shows the nearest wider
 // chosen tier only where the block's default paint of the property is the same at both widths, and otherwise the block's
 // own fallback (its baseline), so a 10px desktop gap over a block whose mobile default is 8px writes the mobile tier too.
 // A property calibration did not measure at every tier width gives no evidence of a fallback, so there the wider value
 // carries down. baseline( width ) is the node's value with nothing written; defaultAt( width ) the block's calibrated
-// default paint of the property (the baseline when not given). Returns { width: value }.
-export function tiersDiffering( prop, draft, baseline, defaultAt = baseline ) {
+// default paint of the property (the baseline when not given); contextAt( width ) the element's context there for canon()
+// ({ parentDisplay, position, direction }). Values compare by the shared rule (lib/css-equivalence/tolerance.mjs::samePaint).
+// Returns { width: value }.
+export function tiersDiffering( prop, draft, baseline, defaultAt = baseline, contextAt = () => ( {} ) ) {
 	const out = {};
 	const fallbackAt = TIER_WIDTHS.every( ( w ) => undefined !== defaultAt( w ) ) ? defaultAt : () => '0px';
 	for ( const w of TIER_WIDTHS ) {
@@ -244,7 +237,7 @@ export function tiersDiffering( prop, draft, baseline, defaultAt = baseline ) {
 		}
 		const painted = paintedAt( { after: Object.fromEntries( Object.entries( out ).map( ( [ x, v ] ) => [ TIER_OF[ x ], v ] ) ) }, w, prop, fallbackAt );
 		const shown = painted ? painted.value : baseline( w );
-		if ( ! sameValue( prop, canon( prop, draft[ w ] ), canon( prop, shown ), toleranceFor( prop, draft[ w ], shown ) ) ) {
+		if ( ! samePaint( prop, draft[ w ], shown, contextAt( w ) ) ) {
 			out[ w ] = draft[ w ];
 		}
 	}
@@ -259,15 +252,18 @@ const clampOk = ( cal, writes ) => writes.length > 0 && writes.every( ( w ) => a
 // ctx: { node, block, prop, draft ({ width: value }), baseline( slot, width ), slots (the slot first, then other slots a
 // setting for a carried property could paint), calibration, db, snapshot, log, fontPx, siblings, fluid ({ width: value }
 // at the five fluid widths, or null), state (a setting state, block_attributes.css_state; null for the resting look),
-// declared ({ width: value }: the code's value where it agrees with the draft value, written in its place, FR-48-36) }.
+// declared ({ width: value }: the code's value where it agrees with the draft value, written in its place, FR-48-36),
+// contextAt ( width => { parentDisplay }: the element's parent's display, where the caller reads it; the element's own
+// position and direction come from `siblings`) }.
 // Returns { status: 'equal' | 'written' | 'gap', slot, writes?, included?, how?: 'tiers' | 'single' | 'clamp', fluid?, gap?, detail? }.
 // 'equal': the draft matches what the node shows at every tier, nothing to write.
 export function resolveProperty( ctx ) {
-	const { node, block, prop, draft, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null, declared = {}, declaredFluid = null } = ctx;
+	const { node, block, prop, draft, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null, declared = {}, declaredFluid = null, contextAt = () => ( {} ) } = ctx;
+	const contextOf = ( w ) => ( { position: siblings.position?.[ w ], direction: siblings.direction?.[ w ], ...contextAt( w ) } );
 	const known = knownPaths( calibration ).map( LOOSE );
 	let firstGap = null;
 	for ( const slot of slots ) {
-		const included = tiersDiffering( prop, draft, ( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ) );
+		const included = tiersDiffering( prop, draft, ( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ), contextOf );
 		if ( ! Object.keys( included ).length ) {
 			return { status: 'equal', slot };
 		}

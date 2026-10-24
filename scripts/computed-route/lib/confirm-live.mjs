@@ -9,7 +9,7 @@ import path from 'path';
 import { compareDR, TOLERANCE } from './fill-confirm.mjs';
 import { paintedImageCheck } from './fill-media.mjs';
 import { RESOLVER_GAP } from './fill-held.mjs';
-import { canon } from './fill-prop.mjs';
+import { samePaint } from './css-equivalence/tolerance.mjs';
 import { isCssProperty } from './css-families.mjs';
 
 // The rendered tolerance (FR-48-36): ±1px for lengths in place of the declared ±0.5px.
@@ -144,7 +144,10 @@ function rowValues( row, widths ) {
 // read where the walker paired that element in a rest state (livePair). The page being built is the judge, so a value a
 // parent changes there (a grid cell's padding) is never held from the block's calibration page. A row with a state, a row
 // whose state is not recorded, a conflict or other non-resolver reason, an element not read live at a width, or a value
-// one unit apart stays raised with its reason. rows: the Fill report's `unmapped`; report: the final walk.
+// Fill would still write stays raised with its reason: the page's value is compared by the rule Fill compares a tier by
+// (lib/css-equivalence/tolerance.mjs::samePaint: half a pixel, a letter or word spacing exactly, a keyword read as 0px
+// only against an exact 0px), never the rendered ±1px of a confirm record. rows: the Fill report's `unmapped`; report:
+// the final walk.
 // Returns { held: [ row + { heldReason: 'default', heldDetail } ], raised: [ row + { liveWhy } ] }.
 export function judgeUnmapped( rows, report, { stateMap = null } = {} ) {
 	const rest = restStates( stateMap );
@@ -177,8 +180,8 @@ export function judgeUnmapped( rows, report, { stateMap = null } = {} ) {
 			if ( undefined === live ) {
 				return `not read live at ${ w }: ${ hit.why ?? 'no value' }`;
 			}
-			const { rl } = compareRL( row.property, canon( row.property, value ), canon( row.property, live ), parseFloat( hit.live.styles[ 'font-size' ] ) || 16 );
-			if ( 'agree' !== rl ) {
+			const styles = hit.live.styles;
+			if ( ! samePaint( row.property, value, live, { position: styles.position, direction: styles.direction } ) ) {
 				return `the built page paints ${ live } at ${ w }`;
 			}
 		}

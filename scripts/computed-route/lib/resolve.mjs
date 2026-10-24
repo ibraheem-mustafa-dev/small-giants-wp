@@ -286,7 +286,9 @@ export function defaultPaint( calibration, slot, prop, same = ( a, b ) => a === 
 }
 
 // A setting with no css_property that calibration showed paints `prop` on `slot` (calibration.discovered): the enum
-// value whose recorded effect equals the draft at every calibrated width. Ties go to the value whose measured effect
+// value whose paint equals the draft at every width the row states. Discovery records a width only where the value changed
+// the paint (lib/calibrate.mjs::discoverEffects), so at an unrecorded width the value paints the element's default, which
+// is compared instead (a width with neither does not fit), and at least one row width must be a recorded one. Ties go to the value whose measured effect
 // matches more of the element's other draft properties (`siblings`: { prop: { width: value } }), compared at the row's own
 // widths only (a sibling's value at a width the row does not cover says nothing about this write). Every property the
 // setting's discovery records (for any of its values) takes part: a value recording no change to it leaves it at the
@@ -303,10 +305,12 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 	// The desktop tier is read at 1440 alone (FR-48-74): 1920 never stands in for it.
 	const at = ( pw, w ) => pw[ w ];
 	const same = ( a, b ) => String( a ).replace( /\s+/g, '' ) === String( b ).replace( /\s+/g, '' );
-	const fits = ( values, pw ) => {
-		const ws = [ 375, 768, 1440 ].filter( ( w ) => undefined !== at( pw, w ) && undefined !== values[ w ] );
-		return ws.length > 0 && ws.every( ( w ) => same( values[ w ], at( pw, w ) ) );
+	// base: the element's default paint of the property, what the value paints where it recorded nothing.
+	const fits = ( values, pw, base = {} ) => {
+		const ws = [ 375, 768, 1440 ].filter( ( w ) => undefined !== at( pw, w ) );
+		return ws.length > 0 && ws.every( ( w ) => undefined !== ( values[ w ] ?? base[ w ] ) && same( values[ w ] ?? base[ w ], at( pw, w ) ) );
 	};
+	const baseOf = ( p ) => defaultPaint( calibration, slot, p, ( a, b ) => lp( a ) === lp( b ) );
 	const rowWidths = [ 375, 768, 1440 ].filter( ( w ) => undefined !== at( perWidth, w ) );
 	const atRow = ( pw ) => Object.fromEntries( rowWidths.filter( ( w ) => undefined !== pw[ w ] ).map( ( w ) => [ w, pw[ w ] ] ) );
 	const options = [];
@@ -323,8 +327,8 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 			continue;
 		}
 		for ( const [ value, values ] of Object.entries( d.values ) ) {
-			if ( fits( values, perWidth ) ) {
-				const matched = Object.entries( siblings ).filter( ( [ p2, pw ] ) => p2 !== prop && props[ p2 ] && fits( props[ p2 ].values[ value ] || defaultPaint( calibration, slot, p2, ( a, b ) => lp( a ) === lp( b ) ), atRow( pw ) ) ).map( ( [ p2 ] ) => p2 );
+			if ( rowWidths.some( ( w ) => undefined !== values[ w ] ) && fits( values, perWidth, baseOf( prop ) ) ) {
+				const matched = Object.entries( siblings ).filter( ( [ p2, pw ] ) => p2 !== prop && props[ p2 ] && fits( props[ p2 ].values[ value ] || {}, atRow( pw ), baseOf( p2 ) ) ).map( ( [ p2 ] ) => p2 );
 				const own = matched.filter( ( p2 ) => ( props[ p2 ].slots || [] ).map( lp ).includes( lp( slot ) ) ).length;
 				const score = [ own, matched.length - own ];
 				options.push( { attr, value, score } );
