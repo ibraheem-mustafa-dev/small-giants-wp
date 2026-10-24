@@ -77,7 +77,6 @@ function cvar( el, name, fallback ) {
 function resolveColour( root, name, fallback ) {
 	const probe = document.createElement( 'span' );
 	probe.style.position = 'absolute';
-	probe.style.width = '0';
 	probe.style.height = '0';
 	probe.style.setProperty( 'color', 'var(' + name + ', ' + fallback + ')' );
 	root.appendChild( probe );

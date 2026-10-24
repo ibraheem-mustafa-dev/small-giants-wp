@@ -115,9 +115,12 @@ $calls = array(
 );
 foreach ( $calls as $label => $args ) {
 	$old     = sgs_old_nav_bar_menu_burger_toggle_markup( ...$args );
-	$default = sgs_nav_bar_menu_burger_toggle_markup( ...$args );
+	// Each bar now also carries its own `__burger-bar-N` class (the motion model's Bar 1 to 3 parts); the rest of the
+	// markup is unchanged, so removing that class must give the pre-change bytes back.
+	$strip   = static fn( string $html ): string => preg_replace( '/ sgs-nav-bar-menu__burger-bar-[123]"/', '"', $html );
+	$default = $strip( sgs_nav_bar_menu_burger_toggle_markup( ...$args ) );
 	$full    = $args + array( 10 => 'after', 11 => array() );
-	$three   = sgs_nav_bar_menu_burger_toggle_markup( ...array_merge( $full, array( 3 ) ) );
+	$three   = $strip( sgs_nav_bar_menu_burger_toggle_markup( ...array_merge( $full, array( 3 ) ) ) );
 	ok( $old === $default, "three bars byte-identical, count omitted: $label" );
 	ok( $old === $three, "three bars byte-identical, count 3 passed: $label" );
 }
@@ -125,12 +128,13 @@ foreach ( $calls as $label => $args ) {
 // ── Two bars ────────────────────────────────────────────────────────────────
 $two_args = array( '', 'sgs-nav-drawer', '<svg></svg>', 'icon', '', '', '', true, 768, 'x', 'after', array(), 2 );
 $two      = sgs_nav_bar_menu_burger_toggle_markup( ...$two_args );
-ok( 2 === substr_count( $two, '<span class="sgs-nav-bar-menu__burger-bar"></span>' ), 'two bars: exactly two bar spans' );
+ok( 2 === substr_count( $two, '<span class="sgs-nav-bar-menu__burger-bar sgs-nav-bar-menu__burger-bar-' ), 'two bars: exactly two bar spans' );
+ok( false !== strpos( $two, 'burger-bar-2"' ) && false === strpos( $two, 'burger-bar-3' ), 'two bars: Bars 1 and 2 print, no Bar 3' );
 ok( false !== strpos( $two, 'class="sgs-nav-bar-menu__burger-icon sgs-nav-bar-menu__burger-icon--two-bar"' ), 'two bars: the icon carries the --two-bar modifier' );
 ok( false !== strpos( $two, 'data-sgs-nav-burger-morph="x"' ), 'two bars: the morph attribute still rides on the button' );
 
 $off_list = sgs_nav_bar_menu_burger_toggle_markup( '', 'sgs-nav-drawer', '<svg></svg>', 'icon', '', '', '', true, 768, 'x', 'after', array(), 5 );
-ok( 3 === substr_count( $off_list, 'sgs-nav-bar-menu__burger-bar' ) && false === strpos( $off_list, '--two-bar' ), 'an off-list count (5) falls back to three bars' );
+ok( 3 === substr_count( $off_list, '<span class="sgs-nav-bar-menu__burger-bar ' ) && false === strpos( $off_list, '--two-bar' ), 'an off-list count (5) falls back to three bars' );
 
 $custom_two = sgs_nav_bar_menu_burger_toggle_markup( '', 'sgs-nav-drawer', '<svg class="custom"></svg>', 'icon', '', '', '', false, 768, 'x', 'after', array(), 2 );
 ok( false === strpos( $custom_two, 'burger-bar' ) && false !== strpos( $custom_two, '<svg class="custom"></svg>' ), 'a custom icon ignores the count and keeps its own glyph' );

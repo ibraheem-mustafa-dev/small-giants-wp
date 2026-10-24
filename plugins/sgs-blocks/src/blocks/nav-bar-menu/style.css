@@ -363,7 +363,6 @@
 
 .sgs-nav-bar-menu__burger-bar {
 	display: block;
-	width: 100%;
 	/*
 	 * The burger part's layer writes `--sgs-nbm-burger-morph-*` on `.{uid}`
 	 * (render.php); without a layer the fallbacks apply (200ms/ease).
@@ -379,6 +378,9 @@
    anywhere, same structural-default category as `height` above.
    Zero-specificity so neither ever masks a future attr-driven rule. */
 :where(.sgs-nav-bar-menu__burger-bar) {
+	/* The full icon-box width by default; the motion model's rest and hover width (Bars 1 to 3) writes `width` on the
+	   bar's own scoped rule, so this stays at zero specificity. */
+	width: 100%;
 	background: currentColor;
 	border-radius: 1px;
 	/* burgerBarThickness sets --sgs-nbm-bar-h per device (nav-menu-trigger-css.php). */

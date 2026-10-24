@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import {
 	PanelBody,
 	RangeControl,
@@ -7,7 +7,7 @@ import {
 } from '@wordpress/components';
 import { useBlockEditContext, store as blockEditorStore } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
-import { SgsLengthControl, IconPicker, ResponsiveOverride, ResponsiveBoxControl, SgsBorderControl } from '../../components';
+import { SgsLengthControl, IconPicker, ResponsiveOverride, ResponsiveBoxControl, SgsBorderControl, ShadowControl, shadowAttrKeys } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { resolveTier } from '../../utils';
 
@@ -115,11 +115,17 @@ export default function BurgerPanel( {
 				burgerBarGap: stored.burgerBarGap,
 				burgerBarThickness: stored.burgerBarThickness,
 				burgerTextGap: stored.burgerTextGap,
+				burgerBar1BorderRadius: stored.burgerBar1BorderRadius,
+				burgerBar2BorderRadius: stored.burgerBar2BorderRadius,
+				burgerBar3BorderRadius: stored.burgerBar3BorderRadius,
+				burgerBarAlign: stored.burgerBarAlign,
+				burgerShadow: stored.burgerShadow,
+				burgerShadowColour: stored.burgerShadowColour,
 			};
 		},
 		[ clientId ]
 	);
-	const { burgerPadding, burgerBorderRadius, burgerBorderWidth, burgerBorderStyle, burgerBorderColour, burgerBarGap, burgerBarThickness, burgerTextGap } = burgerBox;
+	const { burgerPadding, burgerBorderRadius, burgerBorderWidth, burgerBorderStyle, burgerBorderColour, burgerBarGap, burgerBarThickness, burgerTextGap, burgerBarAlign } = burgerBox;
 
 	// `triggerMode` is a TIER OBJECT. The icon picker, the
 	// Label field and the morph controls apply to EVERY tier at once (one
@@ -347,6 +353,64 @@ export default function BurgerPanel( {
 					) }
 				</ResponsiveOverride>
 			) }
+
+			{ /* Each bar's corner rounding, per device (nav-menu-trigger-css.php). Bar lengths, at rest and on hover, are
+			   each bar's Hover panel values (Rest width, Width), so there is one home for a length. */ }
+			{ showsIcon && [ 1, 2, 3 ].map( ( n ) => {
+				if ( 3 === n && 2 === burgerBarCount ) {
+					return null;
+				}
+				const attr = `burgerBar${ n }BorderRadius`;
+				return (
+					<ResponsiveOverride
+						key={ attr }
+						label={ sprintf(
+							/* translators: %d: bar number, 1 to 3 */
+							__( 'Bar %d corner radius', 'sgs-blocks' ),
+							n
+						) }
+						value={ burgerBox[ attr ] }
+						onChange={ ( obj ) => setAttributes( { [ attr ]: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SgsLengthControl
+								hideLabelFromVision
+								label={ sprintf(
+									/* translators: %d: bar number, 1 to 3 */
+									__( 'Bar %d corner radius', 'sgs-blocks' ),
+									n
+								) }
+								value={ ownValue || '' }
+								placeholder={ inherited ? effectiveValue || '1px' : '1px' }
+								units={ [ { value: 'px', label: 'px' } ] }
+								onChange={ ( val ) => setOwnValue( val || undefined ) }
+								presets={ false }
+							/>
+						) }
+					</ResponsiveOverride>
+				);
+			} ) }
+
+			{ showsIcon && (
+				<ToggleGroupControl
+					label={ __( 'Bars line up on', 'sgs-blocks' ) }
+					value={ burgerBarAlign || '' }
+					onChange={ ( val ) => setAttributes( { burgerBarAlign: val || '' } ) }
+					isBlock
+					help={ __( 'Matters when a bar is set shorter than the icon in its Hover panel: which side the bars line up on, and so which edge a growing bar grows from.', 'sgs-blocks' ) }
+				>
+					<ToggleGroupControlOption value="" label={ __( 'Start', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption value="center" label={ __( 'Centre', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption value="end" label={ __( 'End', 'sgs-blocks' ) } />
+				</ToggleGroupControl>
+			) }
+
+			<ShadowControl
+				label={ __( 'Button shadow', 'sgs-blocks' ) }
+				attributes={ burgerBox }
+				setAttributes={ setAttributes }
+				attrNames={ shadowAttrKeys( 'burgerShadow' ) }
+			/>
 
 			{ /* Space between the default glyph's bars, per device. Writes the
 			   bar-stack height (bars x 2px + gaps) — see nav-menu-trigger-css.php. */ }

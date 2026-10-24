@@ -786,6 +786,7 @@
 				"opacity",
 				"filter",
 				"padding-inline-start",
+				"width",
 				"box-shadow"
 			]
 		},
@@ -1375,6 +1376,23 @@
 							"name": "--sgs-mh-indent",
 							"syntax": "<length>",
 							"initial": "0px"
+						}
+					]
+				}
+			]
+		},
+		{
+			"channel": "width",
+			"composition": "single-owner",
+			"formula": "width: calc(var(--sgs-w-rest, 100%) + (var(--sgs-mh-to-w, var(--sgs-w-rest, 100%)) - var(--sgs-w-rest, 100%)) * var(--sgs-mh-w))",
+			"owners": [
+				{
+					"owner": "hoverState",
+					"properties": [
+						{
+							"name": "--sgs-mh-w",
+							"syntax": "<number>",
+							"initial": "0"
 						}
 					]
 				}
@@ -2776,6 +2794,26 @@
 						"perDevice": true
 					}
 				},
+				"width": {
+					"$ref": "#/$defs/distance",
+					"description": "The width the element grows or shrinks to on hover, a real width change (not a scale); the resting width is restWidth. Both are lengths of the same kind, so they interpolate.",
+					"x-sgs-field": {
+						"fieldType": "distance",
+						"cssProperty": "--sgs-mh-w",
+						"state": "hover",
+						"perDevice": true
+					}
+				},
+				"restWidth": {
+					"$ref": "#/$defs/distance",
+					"description": "The resting width, a styling value written to --sgs-w-rest, which the width channel interpolates from to the hover width. Unset keeps the element's own width (100% of its box).",
+					"x-sgs-field": {
+						"fieldType": "distance",
+						"cssProperty": "--sgs-w-rest",
+						"state": "rest",
+						"perDevice": true
+					}
+				},
 				"ringSpread": {
 					"$ref": "#/$defs/distance",
 					"minimum": 0,
@@ -2954,6 +2992,12 @@
 					"maximum": 3
 				},
 				"indent": {
+					"$ref": "#/$defs/distance"
+				},
+				"width": {
+					"$ref": "#/$defs/distance"
+				},
+				"restWidth": {
 					"$ref": "#/$defs/distance"
 				},
 				"ringSpread": {

@@ -5,10 +5,11 @@
  * (includes/motion/), never a `style` attribute. The contract with the renderer:
  *
  *   data-sgs-mh="self|root|group|item"    the target holds a hover state; the value is its source (§6.2)
- *   --sgs-mh-to-<tx|ty|rot|rx|ry|s|op|blur|gray|bright|indent|ring|ring-c|accent|accent-c>
+ *   --sgs-mh-to-<tx|ty|rot|rx|ry|s|op|blur|gray|bright|indent|w|ring|ring-c|accent|accent-c>
  *                                     the hover state's to-values (per device; registered non-inheriting). Each rotate
  *                                     to-value (Z, X, Y) is the hover angle minus its rest angle, and the grayscale
  *                                     to-value the hover amount minus the rest grayscale (§10)
+ *   --sgs-w-rest                      the resting width a width hover grows or shrinks from (default 100% of the element's box)
  *   --sgs-pad-start-rest              the resting inline-start padding an indent hover adds to (default 0px)
  *   --sgs-rot-rest, --sgs-rx-rest, --sgs-ry-rest
  *                                     the rest Z, X and Y angles, resting styling values (FR-38A-42)
@@ -82,6 +83,7 @@
 @property --sgs-mh-gray { syntax: '<number>'; inherits: false; initial-value: 0; }
 @property --sgs-mh-bright { syntax: '<number>'; inherits: false; initial-value: 1; }
 @property --sgs-mh-indent { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-mh-w { syntax: '<number>'; inherits: false; initial-value: 0; }
 @property --sgs-mh-ring { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-mh-ring-c { syntax: '<color>'; inherits: false; initial-value: transparent; }
 @property --sgs-mh-accent { syntax: '<length>'; inherits: false; initial-value: 0px; }
@@ -154,6 +156,8 @@
 @property --sgs-mh-to-gray { syntax: '*'; inherits: false; }
 @property --sgs-mh-to-bright { syntax: '*'; inherits: false; }
 @property --sgs-mh-to-indent { syntax: '*'; inherits: false; }
+@property --sgs-mh-to-w { syntax: '*'; inherits: false; }
+@property --sgs-w-rest { syntax: '*'; inherits: false; }
 @property --sgs-mh-to-ring { syntax: '*'; inherits: false; }
 @property --sgs-mh-to-ring-c { syntax: '*'; inherits: false; }
 @property --sgs-mh-to-accent { syntax: '*'; inherits: false; }
@@ -198,6 +202,9 @@
 [data-sgs-mc~="padding-inline-start"] {
 	padding-inline-start: calc(var(--sgs-pad-start-rest, 0px) + var(--sgs-mh-indent));
 }
+[data-sgs-mc~="width"] {
+	width: calc(var(--sgs-w-rest, 100%) + (var(--sgs-mh-to-w, var(--sgs-w-rest, 100%)) - var(--sgs-w-rest, 100%)) * var(--sgs-mh-w));
+}
 [data-sgs-mc~="box-shadow"] {
 	box-shadow: 0 0 0 var(--sgs-mh-ring) var(--sgs-mh-ring-c), inset 0 calc(-1 * var(--sgs-mh-accent)) 0 0 var(--sgs-mh-accent-c);
 }
@@ -241,6 +248,7 @@
 	--sgs-mh-gray: calc(var(--sgs-mh-to-gray, 0) * var(--sgs-mh-on));
 	--sgs-mh-bright: calc(1 + (var(--sgs-mh-to-bright, 1) - 1) * var(--sgs-mh-on));
 	--sgs-mh-indent: calc(var(--sgs-mh-to-indent, 0px) * var(--sgs-mh-on));
+	--sgs-mh-w: var(--sgs-mh-on);
 	--sgs-mh-ring: calc(var(--sgs-mh-to-ring, 0px) * var(--sgs-mh-on));
 	--sgs-mh-ring-c: var(--sgs-mh-to-ring-c, transparent);
 	--sgs-mh-accent: calc(var(--sgs-mh-to-accent, 0px) * var(--sgs-mh-on));
@@ -462,6 +470,7 @@
 @media (prefers-reduced-motion: reduce) {
 	[data-sgs-mh] {
 		--sgs-mh-indent: 0px;
+		--sgs-mh-w: 0;
 		--sgs-mh-tx: 0px;
 		--sgs-mh-ty: 0px;
 		--sgs-mh-rot: 0deg;

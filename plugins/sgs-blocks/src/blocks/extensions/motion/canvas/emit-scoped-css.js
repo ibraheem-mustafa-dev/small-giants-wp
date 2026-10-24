@@ -144,6 +144,12 @@ function hoverState( state, decls, trans, channels ) {
 			channels[ map[ prop ] ] = true;
 		}
 	} );
+	TIERS.forEach( ( tier ) => {
+		// A resting width alone still sets the width, so the part rests at its own length without a hover width.
+		if ( has( decls[ tier ], '--sgs-w-rest' ) ) {
+			channels.width = true;
+		}
+	} );
 	angleChannels( angles, channels );
 	if ( isFollow ) {
 		followChannels( channels );

@@ -314,6 +314,12 @@ final class Sgs_Motion_Emitter {
 				$channels[ $map[ $prop ] ] = true;
 			}
 		}
+		foreach ( self::TIERS as $tier ) {
+			// A resting width alone still sets the width, so the part rests at its own length without a hover width.
+			if ( isset( $decls[ $tier ]['--sgs-w-rest'] ) ) {
+				$channels['width'] = true;
+			}
+		}
 		Sgs_Motion_Rotation::angle_channels( $angles, $channels );
 		if ( $follows ) {
 			Sgs_Motion_Rotation::follow_channels( $channels );

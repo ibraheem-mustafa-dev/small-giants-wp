@@ -26,7 +26,6 @@ export function resolveOffset( accordion, gap ) {
 	probe.style.position = 'absolute';
 	probe.style.visibility = 'hidden';
 	probe.style.pointerEvents = 'none';
-	probe.style.width = '0';
 	probe.style.height = gap || '0px';
 	accordion.appendChild( probe );
 	const gapPx = probe.getBoundingClientRect().height;

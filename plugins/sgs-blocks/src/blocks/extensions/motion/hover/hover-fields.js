@@ -57,6 +57,8 @@ export const FIELD_LABELS = Object.freeze( {
 	accentWidth: { label: __( 'Accent line thickness', 'sgs-blocks' ) },
 	accentColour: { label: __( 'Accent line colour', 'sgs-blocks' ) },
 	indent: { label: __( 'Indent on hover', 'sgs-blocks' ) },
+	restWidth: { label: __( 'Width at rest', 'sgs-blocks' ) },
+	width: { label: __( 'Width on hover', 'sgs-blocks' ) },
 	duration: { label: __( 'Duration', 'sgs-blocks' ) },
 	delay: { label: __( 'Delay', 'sgs-blocks' ) },
 	easing: { label: __( 'Easing', 'sgs-blocks' ) },
@@ -132,6 +134,11 @@ export const HOVER_GROUPS = Object.freeze( [
 		id: 'indent',
 		label: __( 'Indent', 'sgs-blocks' ),
 		keys: [ 'indent' ],
+	},
+	{
+		id: 'width',
+		label: __( 'Width', 'sgs-blocks' ),
+		keys: [ 'restWidth', 'width' ],
 	},
 	{
 		id: 'timing',

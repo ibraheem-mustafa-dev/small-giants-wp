@@ -657,8 +657,19 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 				// animatable structure to work with. Always wrapped (both `icon`
 				// and `icon-and-text`), unlike the custom-icon branch below.
 				$bar_count = 2 === $bar_count ? 2 : 3;
+				// Each bar carries the shared `__burger-bar` class and its own `__burger-bar-N`: the motion model's
+				// Bar 1, 2 and 3 parts are one class each (Spec 38A §6.2), and a two-bar glyph prints no Bar 3.
+				$bar_classes = array(
+					'sgs-nav-bar-menu__burger-bar-1',
+					'sgs-nav-bar-menu__burger-bar-2',
+					'sgs-nav-bar-menu__burger-bar-3',
+				);
+				$bars_html   = '';
+				foreach ( array_slice( $bar_classes, 0, $bar_count ) as $bar_class ) {
+					$bars_html .= '<span class="sgs-nav-bar-menu__burger-bar ' . $bar_class . '"></span>';
+				}
 				$icon_html = '<span class="sgs-nav-bar-menu__burger-icon' . ( 2 === $bar_count ? ' sgs-nav-bar-menu__burger-icon--two-bar' : '' ) . '" aria-hidden="true">'
-					. str_repeat( '<span class="sgs-nav-bar-menu__burger-bar"></span>', $bar_count )
+					. $bars_html
 					. '</span>';
 			} else {
 				// ⚠ Under `icon-and-text` a real visible word names the button, so the
