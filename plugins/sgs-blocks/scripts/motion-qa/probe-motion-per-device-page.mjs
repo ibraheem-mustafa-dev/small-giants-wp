@@ -9,7 +9,7 @@ export const READ_MOTION = ( sel ) => {
 	const el = document.querySelector( sel );
 	if ( ! el ) return null;
 	const cs = getComputedStyle( el );
-	return { translate: cs.translate, scale: cs.scale, rotate: cs.rotate, transform: cs.transform, ease: cs.transitionTimingFunction, fromTy: cs.getPropertyValue( '--sgs-me-from-ty' ).trim(), classes: [ ...el.classList ].filter( ( c ) => /^sgs-m-/.test( c ) ), stamped: el.hasAttribute( 'data-sgs-mh' ) || el.hasAttribute( 'data-sgs-me' ) };
+	return { translate: cs.translate, scale: cs.scale, rotate: cs.rotate, transform: cs.transform, ease: cs.transitionTimingFunction, props: cs.transitionProperty, fromTy: cs.getPropertyValue( '--sgs-me-from-ty' ).trim(), classes: [ ...el.classList ].filter( ( c ) => /^sgs-m-/.test( c ) ), stamped: el.hasAttribute( 'data-sgs-mh' ) || el.hasAttribute( 'data-sgs-me' ) };
 };
 
 /** Scroll an element to the viewport centre and wait until smooth scrolling (Lenis) has stopped. */

@@ -94,6 +94,34 @@ export function linearStops( text ) {
 	return stops;
 }
 
+/** The hover paint properties, which run on their own timing (the client's transition.fast or the Colour and shadow
+ * timing fields, Sgs_Motion_Emitter::PAINT_TIMING), never the hover state's easing. */
+const PAINT = [ 'color', 'background-color', 'border-color', 'box-shadow' ];
+
+/** The timing functions of the movement entries only: a computed transition-property list and its
+ * transition-timing-function list, top-level commas, the paint entries left out. */
+export function movementEase( props, ease ) {
+	const split = ( s ) => {
+		const out = [];
+		let depth = 0;
+		let cur = '';
+		for ( const ch of String( s ) ) {
+			depth += '(' === ch ? 1 : ')' === ch ? -1 : 0;
+			if ( ',' === ch && 0 === depth ) {
+				out.push( cur.trim() );
+				cur = '';
+			} else {
+				cur += ch;
+			}
+		}
+		out.push( cur.trim() );
+		return out;
+	};
+	const p = split( props );
+	const e = split( ease );
+	return p.map( ( name, i ) => ( PAINT.includes( name ) ? null : e[ i % e.length ] ) ).filter( Boolean ).join( ', ' );
+}
+
 /** True when every `cubic-bezier()` / `linear()` in a computed transition-timing-function list carries the expected curve, and at least one is present. */
 export function judgeEase( computed, expected ) {
 	const kind = /^\s*(cubic-bezier|linear)\(/.exec( expected );
@@ -190,6 +218,8 @@ export function selfTest() {
 	t( 'distance good', judgeDistance( '24px', 24 ) );
 	f( 'distance wrong', judgeDistance( '16px', 24 ) );
 	t( 'ease normalised', judgeEase( 'cubic-bezier(0.3, 1.4, 0.5, 1), cubic-bezier(0.3, 1.4, 0.5, 1)', 'cubic-bezier(.3,1.4,.5,1)' ) );
+	t( 'movement entries only', judgeEase( movementEase( '--sgs-mh-ty, color, box-shadow', 'cubic-bezier(0.3, 1.4, 0.5, 1), ease, cubic-bezier(0.4, 0, 0.2, 1)' ), 'cubic-bezier(.3,1.4,.5,1)' ) );
+	f( 'a movement entry on the wrong curve', judgeEase( movementEase( '--sgs-mh-ty, --sgs-mh-s, color', 'cubic-bezier(0.3, 1.4, 0.5, 1), cubic-bezier(0.4, 0, 0.2, 1), ease' ), 'cubic-bezier(.3,1.4,.5,1)' ) );
 	f( 'ease wrong curve', judgeEase( 'cubic-bezier(0.2, 0.9, 0.3, 1.2)', 'cubic-bezier(.3,1.4,.5,1)' ) );
 	f( 'ease keyword', judgeEase( 'ease', 'cubic-bezier(.3,1.4,.5,1)' ) );
 	t( 'linear()', judgeEase( 'linear(0, 0.25 40%, 1)', 'linear(0, 0.25 40%, 1)' ) );

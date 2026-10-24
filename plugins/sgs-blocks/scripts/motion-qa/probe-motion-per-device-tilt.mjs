@@ -7,7 +7,7 @@
  */
 
 import { isRest } from './probe-motion-model-lib.mjs';
-import { judgeEase, judgeRotate, judgeTranslate } from './probe-motion-per-device-lib.mjs';
+import { judgeEase, judgeRotate, judgeTranslate, movementEase } from './probe-motion-per-device-lib.mjs';
 import { READ_MOTION, hoverRead, settleInView } from './probe-motion-per-device-page.mjs';
 
 /** The tilt state of one reading: rotate, translate, and whether the element is stamped for hover motion. */
@@ -53,7 +53,7 @@ export async function tiltChecks( ctx, ex ) {
 			property: 'rotate / translate / transition-timing-function',
 			measured: { rest: view( b ), hover: view( a ), focus: focus ? view( focus ) : 'no focusable child', ease: b.ease },
 			expected: `rest ${ t.rest }deg; hover ${ t.hover }deg with translate (${ t.x }px, ${ t.y }px)${ focus === null ? '' : ' and the same on focus' }; easing ${ t.easing }`,
-			pass: judgeRotate( b.rotate, t.rest ) && isRest( b.translate ) && straightened( a, t ) && focusOk && judgeEase( b.ease, t.easing ),
+			pass: judgeRotate( b.rotate, t.rest ) && isRest( b.translate ) && straightened( a, t ) && focusOk && judgeEase( movementEase( b.props, b.ease ), t.easing ),
 		} );
 		const other = targets.filter( ( o ) => o !== t ).sort( ( x, y ) => Math.abs( y.rest - t.rest ) - Math.abs( x.rest - t.rest ) )[ 0 ];
 		rep.control( `tilt-rest-and-hover:${ name }`, { selector: t.sel, property: 'rotate', measured: b.rotate, expected: `another card's stored angle (${ other.rest }deg) is judged red`, red: ! judgeRotate( b.rotate, other.rest ) } );

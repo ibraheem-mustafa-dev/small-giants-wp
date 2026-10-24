@@ -29,6 +29,7 @@ import {
 	expectedDistance,
 	judgeDistance,
 	judgeEase,
+	movementEase,
 	judgeRotate,
 	judgeTranslate,
 	judgeMediaOnly,
@@ -101,9 +102,9 @@ async function easingChecks( ctx, ex ) {
 		const { before, after } = await hoverRead( page, sel, [ sel ] );
 		const b = before[ sel ];
 		const lifted = judgeTranslate( after[ sel ].translate, 0, -6 );
-		rep.check( `hover-easing:${ key }`, { selector: sel, property: 'transition-timing-function', measured: { ease: b.ease, hoverTranslate: after[ sel ].translate }, expected: `${ ex[ key ] } on every transition entry, and the hover lifts -6px`, pass: judgeEase( b.ease, ex[ key ] ) && lifted } );
+		rep.check( `hover-easing:${ key }`, { selector: sel, property: 'transition-timing-function', measured: { ease: b.ease, hoverTranslate: after[ sel ].translate }, expected: `${ ex[ key ] } on every movement transition entry (colour and shadow run on their own timing), and the hover lifts -6px`, pass: judgeEase( movementEase( b.props, b.ease ), ex[ key ] ) && lifted } );
 		const wrong = key === 'bezier' ? ex.linear : ex.bezier;
-		rep.control( `hover-easing:${ key }`, { selector: sel, property: 'transition-timing-function', measured: b.ease, expected: `the other element's curve (${ wrong }) is judged red`, red: ! judgeEase( b.ease, wrong ) } );
+		rep.control( `hover-easing:${ key }`, { selector: sel, property: 'transition-timing-function', measured: b.ease, expected: `the other element's curve (${ wrong }) is judged red`, red: ! judgeEase( movementEase( b.props, b.ease ), wrong ) } );
 	}
 }
 
