@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/fill-dimensions.mjs", "find": "fluid( w ) ? NATURAL_SIZE : ", "replace": "", "why": "a fluid size is pinned to its read px" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "export const NATURAL_SIZE = 'auto';", "replace": "export const NATURAL_SIZE = 'fit-content';", "why": "the natural size is written as a value the child sizing does not take" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "const unsized = fixedAt.filter( ( w ) => ! fluid( w ) && ! Number.isFinite( sizeAt( w ) ) );", "replace": "const unsized = fixedAt.filter( ( w ) => ! Number.isFinite( sizeAt( w ) ) || fluid( w ) );", "why": "a fluid size is still refused as unsized" }
+]

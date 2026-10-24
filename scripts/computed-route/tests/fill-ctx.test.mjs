@@ -162,13 +162,14 @@ test( 'MUST FAIL: a draft flex item that does not shrink, over a block root that
 	// Negative controls: a root that never shrinks needs nothing; a block without child sizing keeps the row with its reason.
 	assert.equal( logoRun( { rootShrink: '0' } ).attrs.sgsChildSizing, undefined );
 	assert.equal( logoRun( { rootShrink: '0', plant: true } ).attrs.sgsChildSizing, undefined, 'a row over a root that never shrinks writes nothing' );
-	// A natural size (a fluid height with its intrinsic ratio, or no width declared) is never pinned to the read widths' px.
+	// A natural size (a fluid height with its intrinsic ratio, or no width declared) is never pinned to the read widths' px:
+	// the fixed sizing holds it at `auto`.
 	for ( const width of [ null, 'clamp(200px, 20vw, 280px)', 'auto' ] ) {
 		const natural = logoRun( { width } );
-		assert.equal( natural.attrs.sgsChildSizing, undefined, `width ${ width }` );
-		assert.equal( natural.attrs.sgsChildWidth, undefined );
-		assert.match( natural.dims.unmapped[ 0 ]?.reason ?? '', /flex-shrink: 0 \(natural size\) - sgsChildWidth needs the 'auto' value \(Track F\)$/ );
-		assert.ok( natural.dims.unmapped[ 0 ].reason.endsWith( NATURAL_SIZE ) );
+		assert.deepEqual( natural.attrs.sgsChildSizing, { desktop: 'fixed', tablet: 'fixed', mobile: 'fixed' }, `width ${ width }` );
+		assert.deepEqual( natural.attrs.sgsChildWidth, { desktop: NATURAL_SIZE, tablet: NATURAL_SIZE, mobile: NATURAL_SIZE } );
+		assert.equal( NATURAL_SIZE, 'auto' );
+		assert.deepEqual( natural.dims.unmapped, [] );
 	}
 	const none = logoRun( { block: 'sgs/site-header-row' } );
 	assert.equal( none.attrs.sgsChildSizing, undefined );

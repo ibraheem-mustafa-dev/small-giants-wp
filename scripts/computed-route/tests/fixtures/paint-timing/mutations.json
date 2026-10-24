@@ -1,0 +1,18 @@
+[
+	{ "file": "lib/fill-timing.mjs", "find": "const PAINT = /^(?:color|background(?:-color)?|", "replace": "const PAINT = /^(?:color|", "why": "a background is not paint" },
+	{ "file": "lib/fill-timing.mjs", "find": "|box-shadow)$/;", "replace": ")$/;", "why": "a shadow is not paint" },
+	{ "file": "lib/fill-timing.mjs", "find": "...( all ? [ ...new Set( hovered ) ]", "replace": "...( false ? [ ...new Set( hovered ) ]", "why": "all never stands for the hovered paint properties" },
+	{ "file": "lib/fill-timing.mjs", "find": "return [ prop, { value: groups.reduce( ( a, b ) => ( b.properties.length > a.properties.length ? b : a ) ).value, groups } ];", "replace": "return [ prop, { value: groups[ groups.length - 1 ].value, groups } ];", "why": "the paint timing is the last group, not the one most share" },
+	{ "file": "lib/fill-timing.mjs", "find": "paint: null === state ? paint[ width ]?.[ prop ] : undefined", "replace": "paint: undefined", "why": "the paint timing never holds a paint property" },
+	{ "file": "lib/fill-timing.mjs", "find": "const movement = off( ( p, g ) => ! ( paint && isPaint( p ) ) && g !== ref );", "replace": "const movement = off( ( p, g ) => g !== ref );", "why": "a paint property is judged against the movement timing" },
+	{ "file": "lib/fill-timing.mjs", "find": "isPaint( p ) && ! same( g.value, paint.value )", "replace": "false", "why": "a paint property off the paint timing leaves no row" },
+	{ "file": "lib/fill-motion-element.mjs", "find": "const asFast = widths.every(", "replace": "const asFast = widths.some(", "why": "one width equal to transition.fast settles every width" },
+	{ "file": "lib/fill-motion-element.mjs", "find": "const KEYWORD = { ease: 'cubic-bezier(.25,.1,.25,1)',", "replace": "const KEYWORD = {", "why": "ease is not the spelled-out curve" },
+	{ "file": "lib/fill-motion-element.mjs", "find": "paintEasing: snap( oneTiming( ease( widths[ 0 ] ) ) ?? ease( widths[ 0 ] ), 'easing' ) };", "replace": "};", "why": "only the duration half is written" },
+	{ "file": "lib/fill-motion-element.mjs", "find": "out.devices[ TIER[ w ] ] = { paintDuration: snap( ms( w ), 'duration' ) };", "replace": "", "why": "a narrower width's paint duration is dropped" },
+	{ "file": "lib/fill-motion-element.mjs", "find": "if ( ! sameEase( ease( w ), ease( widths[ 0 ] ) ) ) {", "replace": "if ( false ) {", "why": "an easing that differs by width leaves no row" },
+	{ "file": "lib/fill-motion-element.mjs", "find": "const snap = ( v, type ) => snapToken( v, type, { ...ctx, prefer: [ type ] } );", "replace": "const snap = ( v ) => v;", "why": "the paint timing is never a token" },
+	{ "file": "lib/fill-motion.mjs", "find": "paint.values && Object.assign( hover.values, paint.values );", "replace": "", "why": "the paint timing never reaches the written layer" },
+	{ "file": "lib/fill-motion.mjs", "find": "( hover.devices ??= {} )[ tier ] = { ...( hover.devices[ tier ] || {} ), ...v }", "replace": "0", "why": "the device paint timing never reaches the layer" },
+	{ "file": "lib/fill-timing.mjs", "find": "if ( undefined === decl[ 'transition-duration' ] ) {", "replace": "if ( true === reads.widths?.[ w ]?.[ id ]?.missing || undefined === decl[ 'transition-duration' ] ) {", "why": "a width the element is hidden at is left out of the paint timing but not the timing pass" }
+]

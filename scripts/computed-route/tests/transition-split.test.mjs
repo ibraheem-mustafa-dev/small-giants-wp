@@ -73,9 +73,9 @@ test( 'MUST FAIL: a property whose timing has no home is a named row; the motion
 	] );
 	assert.equal( rows( none, 'timing-conflict' ).length + rows( none, 'timing-split' ).length, 0 );
 	const hover = look( 'hover', { transform: 'translateY(-2px)' } );
-	const layer = run( 'sgs/button', NONE, reads( { [ PROP ]: 'box-shadow, transform', [ DUR ]: '0.25s, 0.2s' }, [ hover ] ) );
+	const layer = run( 'sgs/button', NONE, reads( { [ PROP ]: 'box-shadow, opacity, transform', [ DUR ]: '0.25s, 0.3s, 0.2s' }, [ hover ] ) );
 	assert.equal( rows( layer, 'timing-no-home' ).length, 0, 'the motion hover layer times the element' );
 	const conflict = rows( layer, 'timing-conflict' );
-	assert.equal( conflict.length, 1 );
-	assert.match( conflict[ 0 ].reason, /motion hover layer \(sgsMotion\).*transform's transition-duration 0\.2s; the draft times box-shadow at 0\.25s$/ );
+	assert.equal( conflict.length, 1, 'box-shadow is the paint timing of the layer (lib/fill-motion-element.mjs::paintLayer)' );
+	assert.match( conflict[ 0 ].reason, /motion hover layer \(sgsMotion\) times the movement of this element with transform's transition-duration 0\.2s; the draft times opacity at 0\.3s$/ );
 } );
