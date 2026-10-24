@@ -7,6 +7,7 @@ import { elementPath } from '../../parity/lib/ref-trace.mjs';
 import { EDITOR_TIMEOUT_MS } from './calibrate-chunk.mjs';
 import { probeState, probeMechanisms } from './calibrate-probe.mjs';
 import { listedProperties } from './db.mjs';
+import { markOpenToggleInPage, openOwnToggle } from './calibrate-open.mjs';
 
 export const SCROLL_Y = 600;
 
@@ -220,7 +221,7 @@ export async function openToggle( page ) {
 const args = ( instances, only ) => [ instances.length, CAL_PREFIX, READ_PROPS, elementPath.toString(), CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, only, OWN_INHERITED, instances.flatMap( ( inst, n ) => ( inst.isDefault ? [ n ] : [] ) ) ];
 
 // One state instance under its trigger: hover or keyboard focus on the styled element (its panel opened first when
-// it is hidden), or the state's ancestor class added. A 'probe' state is entered by the first state-vocabulary
+// it is hidden), the state's ancestor class added, or (open) the instance's own disclosure opened (lib/calibrate-open.mjs). A 'probe' state is entered by the first state-vocabulary
 // mechanism that changes the setting's property (lib/calibrate-probe.mjs). Returns { read }, or { read: null, why } when it could not be read:
 // why is 'hidden', 'no instance' or the error the browser raised.
 async function readUnderTrigger( page, instances, n, inst ) {
@@ -237,6 +238,16 @@ async function readUnderTrigger( page, instances, n, inst ) {
 		} finally {
 			await cdp.detach();
 		}
+	}
+	if ( 'open' === inst.trigger ) {
+		const mark = await page.evaluate( markOpenToggleInPage, [ CAL_PREFIX, n ] );
+		if ( ! mark ) {
+			return { read: null, why: 'no instance' };
+		}
+		const close = mark.toggle ? await openOwnToggle( page, openToggle ) : null;
+		const read = await one();
+		close && await close();
+		return read ? { read } : { read: null, why: 'no instance' };
 	}
 	if ( 'class' === inst.trigger ) {
 		await page.evaluate( ( [ sel, cls ] ) => document.querySelector( sel )?.parentElement?.classList.add( cls ), [ `.${ CAL_PREFIX }${ n }`, inst.stateClass ] );
@@ -319,7 +330,7 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 	out[ w ] = await page.evaluate( readInstancesInPage, args( instances ) );
 	const calibrationUrl = page.url();
 	for ( const [ n, inst ] of instances.entries() ) {
-		if ( ! [ 'hover', 'focus', 'class', 'probe' ].includes( inst.trigger ) ) {
+		if ( ! [ 'hover', 'focus', 'class', 'probe', 'open' ].includes( inst.trigger ) ) {
 			continue;
 		}
 		// Every state instance is read on this one loaded page, so a trigger that followed a link leaves each later

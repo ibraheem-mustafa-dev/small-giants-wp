@@ -66,7 +66,7 @@ test( 'calibration gives the probe to states with no dedicated trigger, keeps th
 	assert.equal( triggerFor( 'disabled' ), 'probe' );
 	assert.equal( triggerFor( 'closed' ), 'probe' );
 	assert.equal( triggerFor( 'hover' ), 'hover' );
-	assert.equal( triggerFor( 'open' ), 'fixture' );
+	assert.equal( triggerFor( 'open' ), 'open' );
 	assert.equal( triggerFor( 'no-such-state' ), undefined );
 	assert.equal( triggerFor( null ), null );
 	assert.ok( changed( { a: { color: 'x' } }, { a: { color: 'y' } }, [ 'color' ] ) );
