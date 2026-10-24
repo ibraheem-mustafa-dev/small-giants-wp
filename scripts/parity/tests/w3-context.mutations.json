@@ -1,0 +1,11 @@
+[
+	{ "file": "lib/collect.mjs", "find": "\t'direction', 'column-count', 'column-width',\n];", "replace": "];", "why": "the walker stops reading the context properties" },
+	{ "file": "lib/collect.mjs", "find": "'direction', 'column-count', 'column-width',\n];", "replace": "'column-count', 'column-width',\n];", "why": "direction is not read" },
+	{ "file": "lib/collect.mjs", "find": "'direction', 'column-count', 'column-width',\n];", "replace": "'direction', 'column-width',\n];", "why": "column-count is not read" },
+	{ "file": "lib/collect.mjs", "find": "'direction', 'column-count', 'column-width',\n];", "replace": "'direction', 'column-count',\n];", "why": "column-width is not read" },
+	{ "file": "lib/collect.mjs", "find": "new Set( [ 'direction', 'column-count', 'column-width' ] )", "replace": "new Set( [ 'column-count', 'column-width' ] )", "why": "direction is compared" },
+	{ "file": "lib/collect.mjs", "find": "new Set( [ 'direction', 'column-count', 'column-width' ] )", "replace": "new Set( [ 'direction', 'column-width' ] )", "why": "column-count is compared" },
+	{ "file": "lib/collect.mjs", "find": "new Set( [ 'direction', 'column-count', 'column-width' ] )", "replace": "new Set( [ 'direction', 'column-count' ] )", "why": "column-width is compared" },
+	{ "file": "lib/compare.mjs", "find": "TRANSFORM_PARTS.includes( p ) || CONTEXT_PROPS.has( p )", "replace": "TRANSFORM_PARTS.includes( p )", "why": "the compare loop raises rows on context reads" },
+	{ "file": "lib/compare.mjs", "find": "TRANSFORM_PARTS.includes( p ) || CONTEXT_PROPS.has( p )", "replace": "TRANSFORM_PARTS.includes( p ) || true", "why": "every property is skipped, the real-difference control row vanishes" }
+]
