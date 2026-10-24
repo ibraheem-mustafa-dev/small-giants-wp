@@ -13,14 +13,14 @@
 	},
 	{
 		"file": "lib/compare.mjs",
-		"find": "if ( ! a || ! b || a.paints || b.paints || ! a.items.length",
-		"replace": "if ( ! a || ! b || a.paints || ! a.items.length",
+		"find": "if ( ! a || ! b || a.paints || b.paints || ! a.self || ! a.items.length",
+		"replace": "if ( ! a || ! b || a.paints || ! a.self || ! a.items.length",
 		"why": "a live box that paints is ignored"
 	},
 	{
 		"file": "lib/compare.mjs",
-		"find": "if ( ! a || ! b || a.paints || b.paints || ! a.items.length",
-		"replace": "if ( ! a || ! b || b.paints || ! a.items.length",
+		"find": "if ( ! a || ! b || a.paints || b.paints || ! a.self || ! a.items.length",
+		"replace": "if ( ! a || ! b || b.paints || ! a.self || ! a.items.length",
 		"why": "a draft box that paints is ignored"
 	},
 	{
@@ -97,9 +97,9 @@
 	},
 	{
 		"file": "lib/collect.mjs",
-		"find": "const items = [ ...new Set( [ ...( interactive.length ? interactive : [ ...el.children ].filter( ( e ) => shown( e ) && big( e ) ) ), ...placed ] ) ].map( rect );",
-		"replace": "const items = [ ...new Set( [ ...interactive, ...placed ] ) ].map( rect );",
-		"why": "no in-flow child items without interactive ones"
+		"find": "\t\twalk( el );\n",
+		"replace": "",
+		"why": "no text run or non-interactive element is an item"
 	},
 	{
 		"file": "lib/collect.mjs",
@@ -226,5 +226,113 @@
 		"find": "return d.box[ k ] - union > tol.box && ",
 		"replace": "return ",
 		"why": "a box hugging its items passes"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "|| 'none' !== s.clipPath ||",
+		"replace": "||",
+		"why": "a clip-path is no paint"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "|| /\\b(paint|content|strict)\\b/.test( s.contain ) ||",
+		"replace": "||",
+		"why": "paint containment is no paint"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "/\\b(paint|content|strict)\\b/",
+		"replace": "/\\b(paint|strict)\\b/",
+		"why": "contain: content is no paint"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "[ s.maskImage, s.webkitMaskBoxImageSource ].some( ( m ) => m && 'none' !== m ) ||",
+		"replace": "",
+		"why": "a mask is no paint"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "|| parseFloat( s.opacity ) < 1 ||",
+		"replace": "||",
+		"why": "translucency is no paint"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "'normal' !== s.mixBlendMode || layer( e, '::before' )",
+		"replace": "layer( e, '::before' )",
+		"why": "a blend mode is no paint"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "if ( 3 === k.nodeType && k.textContent.trim() ) {",
+		"replace": "if ( false ) {",
+		"why": "text runs are no items"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "\t\t\t\t\t\tkinds.set( k, 'other' );\n",
+		"replace": "",
+		"why": "non-interactive elements are no items"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "\t\t\t\t\t\twalk( k );\n",
+		"replace": "",
+		"why": "wrappers holding links are not walked"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "e.matches( 'a[href], [role=\"link\"]' ) ? 'link' : 'control'",
+		"replace": "'link'",
+		"why": "controls counted as links"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "\t\t\t\tkinds.set( e, 'placed' );\n",
+		"replace": "",
+		"why": "positioned layers are no items"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "const inside = own[ 0 ] >= -tol.box && own[ 1 ] <= len( a ) + tol.box;",
+		"replace": "const inside = true;",
+		"why": "a draft box overflowing its container passes"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "const inside = own[ 0 ] >= -tol.box && own[ 1 ] <= len( a ) + tol.box;",
+		"replace": "const inside = own[ 0 ] >= -tol.box;",
+		"why": "the far edge's overflow passes"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "const inside = own[ 0 ] >= -tol.box && own[ 1 ] <= len( a ) + tol.box;",
+		"replace": "const inside = own[ 1 ] <= len( a ) + tol.box;",
+		"why": "the near edge's overflow passes"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "( 'control' === t ? ( ca.get( t ) ?? 0 ) <= ( cb.get( t ) ?? 0 ) : ca.get( t ) === cb.get( t ) )",
+		"replace": "( 'control' === t || ca.get( t ) === cb.get( t ) )",
+		"why": "draft controls uncounted"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "( 'control' === t ? ( ca.get( t ) ?? 0 ) <= ( cb.get( t ) ?? 0 ) : ca.get( t ) === cb.get( t ) )",
+		"replace": "( 'control' === t ? ( ca.get( t ) ?? 0 ) <= ( cb.get( t ) ?? 0 ) : true )",
+		"why": "item counts uncompared"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "&& inside && counted &&",
+		"replace": "&&",
+		"why": "count and containment ignored"
+	},
+	{
+		"file": "lib/collect.mjs",
+		"find": "[ s.maskImage, s.webkitMaskBoxImageSource ]",
+		"replace": "[ s.maskImage ]",
+		"why": "a mask box image is no paint"
 	}
 ]
