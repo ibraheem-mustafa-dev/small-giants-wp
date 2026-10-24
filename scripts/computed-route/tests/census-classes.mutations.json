@@ -1,0 +1,15 @@
+[
+	{ "file": "data/census-classes.json", "find": "\"^a reduced-motion rule: the motion model removes motion\"", "replace": "\"^zzz\"", "why": "a reduced-motion skip is unclassified" },
+	{ "file": "data/census-classes.json", "find": "\"^timing-no-home\"", "replace": "\"^zzz\"", "why": "a timing with no home is unclassified" },
+	{ "file": "data/census-classes.json", "find": "\"^timing-conflict\"", "replace": "\"^zzz\"", "why": "a timing conflict is unclassified" },
+	{ "file": "data/census-classes.json", "find": "|already holds )\"", "replace": ")\"", "why": "the already-holds default-state shape is unclassified" },
+	{ "file": "data/census-classes.json", "find": "\"^default-state: .*(by itself", "replace": "\"^default-state: .*(zzz", "why": "the nothing-holds-it default-state shape is unclassified" },
+	{ "file": "data/census-classes.json", "find": "\"^used-value\"", "replace": "\"^zzz\"", "why": "a used-value row is unclassified" },
+	{ "file": "data/census-classes.json", "find": "\"^script-look\"", "replace": "\"^zzz\"", "why": "a script-look row is unclassified" },
+	{ "file": "data/census-classes.json", "find": "\"^inert$\"", "replace": "\"^zzz$\"", "why": "a held inert row is unclassified" },
+	{ "file": "data/census-classes.json", "find": "\"frClass\": \"W-walker\" },\n\t\t{ \"class\": \"script-look\"", "replace": "\"frClass\": \"W-route\" },\n\t\t{ \"class\": \"script-look\"", "why": "used-value is no longer a walker artefact" },
+	{ "file": "data/census-classes.json", "find": "\"frClass\": \"held\" },\n\t\t{ \"class\": \"timing-no-home\"", "replace": "\"frClass\": \"W-route\" },\n\t\t{ \"class\": \"timing-no-home\"", "why": "reduced motion is counted as route debt" },
+	{ "file": "data/census-classes.json", "find": "\"frClass\": \"F-setting\", \"candidate\": true },\n\t\t{ \"class\": \"timing-conflict\"", "replace": "\"frClass\": \"F-setting\" },\n\t\t{ \"class\": \"timing-conflict\"", "why": "timing-no-home loses its candidacy" },
+	{ "file": "data/census-classes.json", "find": "\"frClass\": \"F-setting\", \"candidate\": true },\n\t\t{ \"class\": \"default-state\"", "replace": "\"frClass\": \"F-hardcode\", \"candidate\": true },\n\t\t{ \"class\": \"default-state\"", "why": "timing-conflict changes FR-48-65 class" },
+	{ "file": "data/census-classes.json", "find": "\"^default-state: .*", "replace": "\"default-state: .*", "why": "default-state loses its anchor" }
+]

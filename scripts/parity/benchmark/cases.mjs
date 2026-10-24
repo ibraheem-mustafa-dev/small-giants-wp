@@ -13,8 +13,10 @@ const OPTICIAN_DRAFT = { from: 'https://mintcream-lyrebird-224487.hostingersite.
 export const CONFIGS = {
 	// Shop declared done (fd9115ba2), before Bean's review found cases a-d.
 	shop: { ref: 'fd9115ba2', path: 'sites/eye-care-ward-end/build/qa/parity/shop.mjs', draft: OPTICIAN_DRAFT },
-	// Lens config before the last question's gaps (e, f) were found.
-	lens: { ref: '3495ae7e0', path: 'sites/eye-care-ward-end/build/qa/parity/lens.mjs', draft: OPTICIAN_DRAFT },
+	// The lens config at 3adb6ee9a, the earliest version whose q2-thickness, q3-finish and q4-prescription states chain with
+	// `from: 'previous'`: the walker's reload-to-rest otherwise sends q3-finish back to question 1. Gaps e and f are planted on
+	// the live side by CSS or an init script, so the config only has to drive the states and hold the pairs they show in.
+	lens: { ref: '3adb6ee9a', path: 'sites/eye-care-ward-end/build/qa/parity/lens.mjs', draft: OPTICIAN_DRAFT },
 };
 
 // Card prices set by the Interactivity API (data-wp-text) can be rewritten after load, so the

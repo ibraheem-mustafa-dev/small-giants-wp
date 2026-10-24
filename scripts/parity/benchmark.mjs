@@ -58,6 +58,17 @@ async function blindConfig( name ) {
 		text = text.replaceAll( draft.from, served.url );
 	}
 	fs.writeFileSync( raw, text );
+	// A config that names a divergence ledger (`divergences: '../divergences.json'`) reads it beside itself: the ledger as it
+	// stood at the config's ref goes to that path under the configs folder.
+	const ledger = /\bdivergences:\s*'([^']+)'/.exec( text )?.[ 1 ];
+	if ( ledger ) {
+		const show = spawnSync( 'git', [ 'show', `${ ref }:${ path.posix.join( path.posix.dirname( file ), ledger ) }` ], { cwd: ROOT, encoding: 'utf8' } );
+		if ( show.status ) {
+			throw new Error( `git show ${ ref }:${ path.posix.join( path.posix.dirname( file ), ledger ) } failed: ${ show.stderr }` );
+		}
+		fs.mkdirSync( path.dirname( path.resolve( path.dirname( raw ), ledger ) ), { recursive: true } );
+		fs.writeFileSync( path.resolve( path.dirname( raw ), ledger ), show.stdout );
+	}
 	// An old config can predate today's lint (a state with no pair scoped to it): such a state gets
 	// a pair that finds nothing on either side, so it passes lint and measures nothing.
 	const dest = path.join( outDir, 'configs', `${ name }-${ ref }-linted.mjs` );
