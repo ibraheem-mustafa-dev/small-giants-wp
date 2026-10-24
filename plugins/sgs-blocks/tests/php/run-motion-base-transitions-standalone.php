@@ -104,5 +104,45 @@ foreach ( Base::entries( 'sgs/button', 'root' ) as $entry ) {
 }
 $check( array() === Base::entries( 'sgs/button', 'nowhere' ), 'entries() is empty for an unlisted part' );
 
+// A state that sets the movement duration and easing times the kept entries too (Indus header buttons: `transform 0.2s`).
+$entry_of = static function ( string $css, string $prop ): string {
+	preg_match( '/transition:\s*([^;}]*)/', $css, $m );
+	$depth = 0;
+	$cur   = '';
+	$list  = array();
+	foreach ( str_split( $m[1] ?? '' ) as $ch ) {
+		$depth += '(' === $ch ? 1 : ( ')' === $ch ? -1 : 0 );
+		if ( ',' === $ch && 0 === $depth ) {
+			$list[] = trim( $cur );
+			$cur    = '';
+			continue;
+		}
+		$cur .= $ch;
+	}
+	$list[] = trim( $cur );
+	foreach ( $list as $e ) {
+		if ( 0 === strpos( $e, $prop . ' ' ) ) {
+			return $e;
+		}
+	}
+	return '';
+};
+$ctx     = array( 'block' => 'sgs/button', 'target' => 'root' );
+$timed   = Emitter::emit( array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.04, 'duration' => 200, 'easing' => 'ease' ) ) ) ), '.sgs-m-test', $ctx );
+$opacity = $entry_of( $timed['css'], 'opacity' );
+$check( str_contains( $opacity, '200ms' ) && ! str_contains( $opacity, '0.18s' ), "MUST FAIL ON OLD CODE: the kept opacity entry takes the state's 200ms, not the stylesheet's 0.18s (got: $opacity)" );
+$check( 1 === preg_match( '/ ease$/', $opacity ) && ! str_contains( $opacity, '--sgs-btn-transition-easing' ), "MUST FAIL ON OLD CODE: the kept opacity entry takes the state's ease (got: $opacity)" );
+$bezier    = Emitter::emit( array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.04, 'duration' => 250, 'easing' => 'cubic-bezier(0.2, 0.8, 0.2, 1)' ) ) ) ), '.sgs-m-test', $ctx );
+$b_opacity = $entry_of( $bezier['css'], 'opacity' );
+$check( str_contains( $b_opacity, '250ms' ) && str_contains( $b_opacity, 'cubic-bezier(0.2, 0.8, 0.2, 1)' ), "MUST FAIL ON OLD CODE: a cubic-bezier easing stays one token on the kept entry (got: $b_opacity)" );
+$only_duration = Emitter::emit( array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.04, 'duration' => 300 ) ) ) ), '.sgs-m-test', $ctx );
+$od            = $entry_of( $only_duration['css'], 'opacity' );
+$check( str_contains( $od, '300ms' ) && str_contains( $od, '--sgs-btn-transition-easing' ), "a state with a duration only keeps the stylesheet's easing (got: $od)" );
+$untimed = Emitter::emit( $hover, '.sgs-m-test', $ctx );
+$ut      = $entry_of( $untimed['css'], 'opacity' );
+$check( str_contains( $ut, '0.18s' ) && str_contains( $ut, '--sgs-btn-transition-easing' ), "negative control: a state that sets no movement timing keeps the stylesheet's timing (got: $ut)" );
+$check( array( 'opacity 1s linear' ) === Base::retime( array( 'opacity 1s linear' ), array() ), 'negative control: retime() with nothing set returns the entries unchanged' );
+$check( array( 'opacity 2s var( --x )' ) === Base::retime( array( 'opacity var( --a ) var( --x )' ), array( 'duration' => '2s' ) ), 'retime() splits outside parentheses and replaces only what is set' );
+
 echo "RESULT {$pass} passed, {$fail} failed\n";
 exit( $fail > 0 ? 1 : 0 );

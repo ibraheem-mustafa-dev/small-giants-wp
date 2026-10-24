@@ -81,6 +81,7 @@ final class Sgs_Motion_Emitter {
 		$attrs    = array();
 		$channels = array();
 		$trans    = array_fill_keys( self::TIERS, array() );
+		$explicit = array_fill_keys( self::TIERS, array() );
 		$state    = $element['hover']['state'] ?? null;
 		if ( is_array( $state ) && Sgs_Motion_Ring_Guard::has_ring( $state ) ) {
 			// The ring and the accent line are a `box-shadow`: they would replace the element's own shadow on hover
@@ -106,7 +107,7 @@ final class Sgs_Motion_Emitter {
 		}
 		if ( is_array( $state ) ) {
 			$attrs['data-sgs-mh'] = (string) ( $state['source'] ?? 'self' );
-			self::hover_state( $state, $decls, $trans, $channels );
+			self::hover_state( $state, $decls, $trans, $channels, $explicit );
 		}
 		foreach ( $element['hover']['effects'] ?? array() as $layer ) {
 			self::effect_channels( $layer, $channels );
@@ -147,7 +148,8 @@ final class Sgs_Motion_Emitter {
 		);
 		foreach ( self::TIERS as $tier ) {
 			if ( array() !== $trans[ $tier ] && array() !== $base_entries ) {
-				$trans[ $tier ] = array_merge( $trans[ $tier ], array_map( 'strval', $base_entries ) );
+				// The stylesheet's timing stays only where the hover state sets no movement duration or easing.
+				$trans[ $tier ] = array_merge( $trans[ $tier ], Sgs_Motion_Base_Transitions::retime( array_map( 'strval', $base_entries ), $explicit[ $tier ] ) );
 			}
 		}
 		foreach ( self::TIERS as $tier ) {
@@ -295,9 +297,10 @@ final class Sgs_Motion_Emitter {
 	 * @param array<string,array<string,string>> $decls    Per-tier declarations (by reference).
 	 * @param array<string,array<int,string>>    $trans    Per-tier transition entries (by reference).
 	 * @param array<string,bool>                 $channels Channel set (by reference).
+	 * @param array<string,array<string,string>> $explicit Per-tier movement `duration` and `easing` the state itself sets (by reference).
 	 * @return void
 	 */
-	private static function hover_state( array $state, array &$decls, array &$trans, array &$channels ): void {
+	private static function hover_state( array $state, array &$decls, array &$trans, array &$channels, array &$explicit ): void {
 		$def         = 'HoverStateValues';
 		$fields      = self::fields( $def );
 		$tiers       = self::tier_values( $state );
@@ -316,6 +319,7 @@ final class Sgs_Motion_Emitter {
 		$angles      = Sgs_Motion_Rotation::empty_angles();
 		$raw         = $angles;
 		$owner_count = 0;
+		$set_timing  = array();
 		foreach ( self::TIERS as $tier ) {
 			$timing_changed = 'desktop' === $tier;
 			$angle_changed  = array();
@@ -336,6 +340,11 @@ final class Sgs_Motion_Emitter {
 				if ( isset( $timing[ $prop ] ) ) {
 					$timing[ $prop ] = $css;
 					$timing_changed  = true;
+					if ( 'transition-duration' === $prop ) {
+						$set_timing['duration'] = $css;
+					} elseif ( 'transition-timing-function' === $prop ) {
+						$set_timing['easing'] = $css;
+					}
 				} elseif ( Sgs_Motion_Rotation::is_angle( (string) $key ) ) {
 					$angles[ $key ]        = $css;
 					$raw[ $key ]           = $value;
@@ -368,7 +377,8 @@ final class Sgs_Motion_Emitter {
 					$trans[ $tier ] = array_merge( $trans[ $tier ], Sgs_Motion_Rotation::follow_entries( $follow ) );
 				}
 			}
-			$owner_count = count( $owners );
+			$owner_count      = count( $owners );
+			$explicit[ $tier ] = $set_timing;
 		}
 		foreach ( array_keys( $owners ) as $prop ) {
 			if ( isset( $map[ $prop ] ) ) {

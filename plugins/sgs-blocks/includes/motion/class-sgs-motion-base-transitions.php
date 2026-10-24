@@ -65,4 +65,64 @@ final class Sgs_Motion_Base_Transitions {
 			)
 		);
 	}
+
+	/**
+	 * Put the hover state's own movement timing on the kept entries.
+	 *
+	 * An entry is `property duration easing`; the emitter's movement owners take the state's duration and easing, so the
+	 * stylesheet's entries on the same element take them too, or one lift would run at two speeds. A timing the state
+	 * does not set stays the stylesheet's own.
+	 *
+	 * @param array<int,string>     $entries `property duration easing` entries from `entries()`.
+	 * @param array<string,string> $set     The state's own `duration` and/or `easing` CSS values.
+	 * @return array<int,string>
+	 */
+	public static function retime( array $entries, array $set ): array {
+		if ( array() === $set ) {
+			return $entries;
+		}
+		return array_map(
+			static function ( string $entry ) use ( $set ): string {
+				$parts = self::split( $entry );
+				if ( count( $parts ) < 3 ) {
+					return $entry;
+				}
+				$parts[1] = $set['duration'] ?? $parts[1];
+				$parts[2] = $set['easing'] ?? $parts[2];
+				return implode( ' ', $parts );
+			},
+			$entries
+		);
+	}
+
+	/**
+	 * Split an entry on whitespace outside parentheses, so a `var( --x )` or `cubic-bezier()` stays one token.
+	 *
+	 * @param string $entry A transition entry.
+	 * @return array<int,string>
+	 */
+	private static function split( string $entry ): array {
+		$parts = array();
+		$depth = 0;
+		$token = '';
+		foreach ( str_split( trim( $entry ) ) as $char ) {
+			if ( '(' === $char ) {
+				++$depth;
+			} elseif ( ')' === $char ) {
+				--$depth;
+			}
+			if ( 0 === $depth && ( ' ' === $char || "	" === $char ) ) {
+				if ( '' !== $token ) {
+					$parts[] = $token;
+					$token   = '';
+				}
+				continue;
+			}
+			$token .= $char;
+		}
+		if ( '' !== $token ) {
+			$parts[] = $token;
+		}
+		return $parts;
+	}
 }

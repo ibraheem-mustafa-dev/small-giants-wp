@@ -75,12 +75,12 @@ function child_sizing_declarations( string $mode, string $width, bool $any_fixed
 			return 'flex:0 1 auto;' . $reset_width;
 		case 'fixed':
 			// `width`, not `flex-basis`: in a column-direction parent the basis
-			// would size the height. max-width keeps it inside a narrow row.
+			// would size the height. No max-width cap: the item is `flex:0 0 auto`, so a fixed width is the author's choice.
 			if ( 'auto' === $width ) {
 				// The natural size, never shrunk or capped: a fluid item (a clamp() logo height) keeps its own width.
 				return 'flex:0 0 auto;width:auto;max-width:none;';
 			}
-			return '' === $width ? '' : 'flex:0 0 auto;width:' . $width . ';max-width:100%;box-sizing:border-box;';
+			return '' === $width ? '' : 'flex:0 0 auto;width:' . $width . ';max-width:none;box-sizing:border-box;';
 		default:
 			return '';
 	}
