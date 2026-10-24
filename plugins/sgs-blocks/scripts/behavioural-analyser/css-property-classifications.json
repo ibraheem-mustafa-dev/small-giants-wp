@@ -31034,6 +31034,24 @@
       }
     },
     {
+      "slug": "sgs/account",
+      "attr": "orderActionsFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "order-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "orderThumbsFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "order-thumbs"
+      }
+    },
+    {
       "slug": "sgs/audio",
       "attr": "borderColour",
       "fields": {
@@ -31826,6 +31844,33 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "meterFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "meter"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "navFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "nav"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "priceRowFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "price-row"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "stickyBarBackground",
       "fields": {
         "css_property": "background-color",
@@ -31929,6 +31974,15 @@
       "fields": {
         "css_property": "margin-top",
         "css_element": "gallery-thumb"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "thumbsFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "thumbs"
       }
     },
     {
@@ -32190,6 +32244,15 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "itemActionsFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "item-actions"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "itemGap",
       "fields": {
         "css_property": "gap",
@@ -32211,6 +32274,15 @@
       "fields": {
         "css_property": "width",
         "css_element": "itemThumb"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelActionsFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "panel-actions"
       }
     },
     {
@@ -32388,6 +32460,15 @@
       "fields": {
         "css_property": "opacity",
         "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "footer-actions"
       }
     },
     {
@@ -32929,6 +33010,15 @@
         "css_property": "border-color-gradient",
         "css_element": "input",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "actionsFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "actions"
       }
     },
     {
@@ -38328,6 +38418,15 @@
     },
     {
       "slug": "sgs/option-picker",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "options"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
       "attr": "labelColourGradient",
       "fields": {
         "css_property": "color-gradient",
@@ -38952,6 +39051,15 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "ctaRowFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "cta-row"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "ctaTextAlign",
       "fields": {
         "css_property": "text-align",
@@ -38985,6 +39093,15 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "priceRowFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "price-row"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "savingBadgeBackgroundColour",
       "fields": {
         "css_property": "background-color",
@@ -38998,6 +39115,15 @@
       "fields": {
         "css_property": "padding",
         "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchesFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "swatches"
       }
     },
     {
@@ -39086,6 +39212,15 @@
         "css_property": "color-gradient",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "thumbsFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "thumbs"
       }
     },
     {
@@ -41570,6 +41705,24 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "price"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "rowActionsFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "row-actions"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "shareControlsFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "share-controls"
       }
     },
     {
