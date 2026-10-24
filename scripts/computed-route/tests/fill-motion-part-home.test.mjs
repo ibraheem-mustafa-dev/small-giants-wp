@@ -30,3 +30,36 @@ test( 'negative control: the class match still wins, no calibration finds nothin
 	const twice = { settings: { burgerBar1BorderRadius: { slot: bar( 2 ) }, burgerBar2BorderRadius: { slot: bar( 2 ) } } };
 	assert.equal( partForSlot( 'sgs/nav-bar-menu', bar( 2 ), targets, ( el ) => exactHome( db, 'sgs/nav-bar-menu', twice, el ) ), null, 'two parts homed at one slot are no answer' );
 } );
+
+// Real calibration (cache/nav-bar-menu.json) and the framework DB's motion targets: the item part's settings are
+// calibrated at link 3 (`.sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link`), a slot whose last compound
+// carries no `__item` class, so no link is the item part by its home.
+test( 'MUST FAIL: a nav link is not the item part because calibration measured the item settings at link 3', async () => {
+	const { readFileSync } = await import( 'node:fs' );
+	const { motionDb } = await import( '../lib/motion-db.mjs' );
+	const real = JSON.parse( readFileSync( new URL( '../cache/nav-bar-menu.json', import.meta.url ), 'utf8' ) );
+	const realTargets = motionDb( db ).targetsOf( 'sgs/nav-bar-menu' );
+	const realHome = ( element ) => exactHome( db, 'sgs/nav-bar-menu', real, element );
+	const link = ( n ) => `.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(${ n }) > .sgs-nav-bar-menu__link`;
+	assert.ok( realTargets.some( ( t ) => 'item' === t.cssElement ), 'the DB declares an item motion part' );
+	assert.equal( realHome( 'item' ), link( 3 ), 'calibration homes the item part at link 3' );
+	for ( const n of [ 1, 2, 3 ] ) {
+		assert.equal( partForSlot( 'sgs/nav-bar-menu', link( n ), realTargets, realHome ), null, `link ${ n }` );
+	}
+	// Negative control: the real bars still map to their own parts.
+	const realBar = ( n ) => `.sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(${ n })`;
+	for ( const n of [ 1, 2, 3 ] ) {
+		assert.equal( partForSlot( 'sgs/nav-bar-menu', realBar( n ), realTargets, realHome ), `burger-bar-${ n }`, `bar ${ n }` );
+	}
+} );
+
+test( 'negative control: a home with no position step is the part, on the real site-header-row calibration (content band)', async () => {
+	const { readFileSync } = await import( 'node:fs' );
+	const { motionDb } = await import( '../lib/motion-db.mjs' );
+	const real = JSON.parse( readFileSync( new URL( '../cache/site-header-row.json', import.meta.url ), 'utf8' ) );
+	const rowHome = ( element ) => exactHome( db, 'sgs/site-header-row', real, element );
+	assert.equal( rowHome( 'content-band' ), '.sgs-container__inner' );
+	assert.equal( partForSlot( 'sgs/site-header-row', '.sgs-container__inner', motionDb( db ).targetsOf( 'sgs/site-header-row' ), rowHome ), 'content-band' );
+	// A positional copy of that element is not it.
+	assert.equal( partForSlot( 'sgs/site-header-row', '.sgs-container__inner:nth-of-type(2)', [ { target: 'content-band', cssElement: 'content-band', kind: 'part' } ], () => '.sgs-container__inner:nth-of-type(2)' ), null );
+} );

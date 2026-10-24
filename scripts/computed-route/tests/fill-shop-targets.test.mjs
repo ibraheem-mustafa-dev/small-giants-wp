@@ -10,7 +10,7 @@ import { fillTree } from '../lib/fill-resolve.mjs';
 import { skeletonNodes, cleanTree } from '../lib/fill-skeleton.mjs';
 import { addRefs } from '../lib/tree.mjs';
 import { openDb } from '../lib/db.mjs';
-import { shopPartTargets, partElement, instanceOf } from '../lib/fill-shop-targets.mjs';
+import { shopPartTargets, partElement, instanceOf, locatedElement } from '../lib/fill-shop-targets.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const record = JSON.parse( fs.readFileSync( path.join( HERE, '../../../sites/mamas-munches-redesign/build/shop-parts.json' ), 'utf8' ) );
@@ -81,14 +81,47 @@ test( 'a node that already measures the slot keeps its own target, and a block a
 	assert.deepEqual( none.added, [] );
 } );
 
-test( 'the block\'s wrapper settings do not make a part ambiguous, and the part\'s first locator is the one measured', () => {
+test( 'the block\'s wrapper settings do not make a part ambiguous, and locators with no recorded ancestry are a note, not the first one', () => {
 	const base = part( 'drawer-line-image' );
 	const extra = { ...base, id: 'synthetic', home: { ...base.home, settings: [ 'itemThumbBg', 'margin' ] }, locators: [ 'SiteHeader/141', 'SiteHeader/142' ] };
 	assert.deepEqual( partElement( db, extra ), { element: 'itemThumb' } );
 	const { nodes } = surface();
 	const more = { elements: { ...facts.elements, 'SiteHeader/142': { instances: [ { key: 'SiteHeader/142#0' } ] } } };
 	const out = shopPartTargets( { record: { surfaces: [ { kind: 'drawer', parts: [ extra ] } ] }, nodes, facts: more, rootComponent: ROOT, db, calFor } );
-	assert.deepEqual( out.added.map( ( a ) => a.finder.tpl ), [ 'SiteHeader/141#0' ] );
+	assert.deepEqual( out.added, [] );
+	assert.ok( out.notes.some( ( n ) => /synthetic .*no template ancestry for SiteHeader\/141, SiteHeader\/142/.test( n ) ), out.notes.join( '\n' ) );
+} );
+
+// Mama's real buybox-sticky-bar part (build/shop-parts.json): locators Product/143 (the price text), 144 (the sub line) and
+// 145 (the button); the fact record's template ancestry (fixture copied from its facts.json) puts 143 and 144 under 142,
+// and 142 and 145 under the bar, Product/141. The record's instances are empty (the bar renders behind an sc-if); the
+// measuring case gives each element its copy 0, as the drawer cases above do.
+const STICKY = JSON.parse( fs.readFileSync( path.join( HERE, 'fixtures/fill-shop-targets/mamas-sticky-bar-facts.json' ), 'utf8' ) );
+const BAR = '.sgs-buybox__sticky-bar';
+const buyCal = { block: 'sgs/buybox', elements: { '': tiers( BASE ), [ BAR ]: tiers( BASE ) }, settings: { stickyBarBackground: { slot: BAR, slots: [ BAR ], reaches: [ BAR ], property: 'background-color', state: null, forms: [], transform: null, reachedAt: THREE, effects: [], variants: [ 0 ] } }, discovered: {} };
+const buySurface = () => skeletonNodes( [ { name: 'sgs/buybox', draftRef: { tpl: 'Root/1#0' }, attributes: {}, innerBlocks: [] } ] );
+const withCopies = { elements: Object.fromEntries( Object.entries( STICKY.elements ).map( ( [ k, e ] ) => [ k, { ...e, instances: [ { key: `${ k }#0` } ] } ] ) ) };
+
+test( 'MUST FAIL: a part located by several units is measured at the element they share, not at its first unit (Mama\'s sticky bar)', () => {
+	const sticky = part( 'buybox-sticky-bar' );
+	assert.deepEqual( sticky.locators, [ 'Product/143', 'Product/144', 'Product/145' ] );
+	const nodes = buySurface();
+	const out = shopPartTargets( { record: { surfaces: [ { kind: 'buybox', parts: [ sticky ] } ] }, nodes, facts: withCopies, rootComponent: ROOT, db, calFor: () => buyCal } );
+	assert.deepEqual( out.added.map( ( a ) => [ a.slot, a.finder.tpl ] ), [ [ BAR, 'Root/141#0' ] ] );
+} );
+
+test( 'negative control: one locator is measured as itself; the record\'s empty instances of the bar are a note; a wrapper is never the shared element', () => {
+	assert.deepEqual( locatedElement( STICKY, [ 'Product/143' ] ), { key: 'Product/143' } );
+	assert.deepEqual( locatedElement( STICKY, [ 'Product/143', 'Product/144' ] ), { key: 'Product/142' } );
+	assert.deepEqual( locatedElement( STICKY, [ 'Product/142', 'Product/143' ] ), { key: 'Product/142' }, 'a locator that holds the others is the shared element' );
+	assert.deepEqual( locatedElement( STICKY, [ 'Product/143', 'Product/144', 'Product/145' ] ), { key: 'Product/141' } );
+	// With the bar a loop wrapper, the shared element passes it and the sc-if (Product/140) to the page root.
+	const looped = { elements: { ...STICKY.elements, 'Product/141': { template: { ...STICKY.elements[ 'Product/141' ].template, tag: 'sc-for' } } } };
+	assert.deepEqual( locatedElement( looped, [ 'Product/143', 'Product/145' ] ), { key: 'Product/5' } );
+	const nodes = buySurface();
+	const out = shopPartTargets( { record: { surfaces: [ { kind: 'buybox', parts: [ part( 'buybox-sticky-bar' ) ] } ] }, nodes, facts: STICKY, rootComponent: ROOT, db, calFor: () => buyCal } );
+	assert.deepEqual( out.added, [] );
+	assert.ok( out.notes.some( ( n ) => /buybox-sticky-bar .*no instance of Product\/141/.test( n ) ), out.notes.join( '\n' ) );
 } );
 
 test( 'a part whose home is a built-in or a template block is not measured', () => {

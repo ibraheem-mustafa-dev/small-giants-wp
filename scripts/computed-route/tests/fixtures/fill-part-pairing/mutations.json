@@ -1,26 +1,11 @@
 [
-	{
-		"file": "lib/fill-resolve-element.mjs",
-		"find": "const unpaired = target.paired ? [] : res.writes.map(",
-		"replace": "const unpaired = [] || res.writes.map(",
-		"why": "a decoy value from the root would be written"
-	},
-	{
-		"file": "lib/fill-part-pairing.mjs",
-		"find": "if ( null === home || LOOSE( readSlot ) === home ) {",
-		"replace": "if ( true ) {",
-		"why": "every part write would count as paired"
-	},
-	{
-		"file": "lib/fill-part-pairing.mjs",
-		"find": "WIDTHS.every( ( w ) => undefined !== here[ w ] && here[ w ] === part[ w ] )",
-		"replace": "false",
-		"why": "a part measured as the same box would be refused"
-	},
-	{
-		"file": "lib/fill-part-pairing.mjs",
-		"find": "if ( ! element || 'wrapper' === element ) {",
-		"replace": "if ( ! element ) {",
-		"why": "a wrapper setting would be checked as a part"
-	}
+	{"file":"lib/fill-resolve-element.mjs","find":"const unpaired = target.paired ? [] : res.writes.map(","replace":"const unpaired = [] || res.writes.map(","why":"a decoy value from the root would be written"},
+	{"file":"lib/fill-part-pairing.mjs","find":"if ( null === home || LOOSE( readSlot ) === home ) {","replace":"if ( true ) {","why":"every part write would count as paired"},
+	{"file":"lib/fill-part-pairing.mjs","find":"shown.every( ( w ) => undefined !== here[ w ] && here[ w ] === part[ w ] )","replace":"false","why":"a part measured as the same box would be refused"},
+	{"file":"lib/fill-part-pairing.mjs","find":"if ( ! element || 'wrapper' === element ) {","replace":"if ( ! element ) {","why":"a wrapper setting would be checked as a part"},
+	{"file":"lib/fill-part-pairing.mjs","find":"if ( INHERITED.includes( prop ) && ( cal?.settings?.[ attr ]?.reaches || [] ).includes( readSlot ) ) {","replace":"if ( false ) {","why":"reached inherited colour refused"},
+	{"file":"lib/fill-part-pairing.mjs","find":"if ( INHERITED.includes( prop ) && ","replace":"if ( ","why":"non-inherited reach accepted"},
+	{"file":"lib/fill-part-pairing.mjs","find":"rendered( cal, readSlot, w ) && rendered( cal, home, w )","replace":"true","why":"hidden widths compared"},
+	{"file":"lib/fill-part-pairing.mjs","find":"if ( shown.length && shown.every(","replace":"if ( shown.every(","why":"no shown width pairs"},
+	{"file":"lib/fill-part-pairing.mjs","find":"return paths.every( ( p ) => 'none' !== defaultPaint( cal, p, w, 'display' ) );","replace":"return 'none' !== defaultPaint( cal, slot, w, 'display' );","why":"ancestor display none ignored"}
 ]

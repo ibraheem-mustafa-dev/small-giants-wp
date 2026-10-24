@@ -9,6 +9,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { openDb } from '../lib/db.mjs';
 import { motionHolds, ancestorLook, holdDefaults } from '../lib/fill-state.mjs';
+import { ancestorHolds } from '../lib/fill-state-reach.mjs';
 import { exactHome } from '../lib/fill-part-pairing.mjs';
 import { slotFor, WIDTHS, MARKER_RGB } from '../lib/calibrate.mjs';
 import { coveredBySetting, slugColour, makeSettle } from '../lib/fill-held.mjs';
@@ -113,4 +114,37 @@ test( 'MUST FAIL: the classifier compares the bar background with the run palett
 	const out = makeSettle( st )( { unmapped: [ row ], writes: [ { node: 'cr-ref-x-0', attr: 'burgerColour', after: 'primary', how: 'single', widths: [ 768 ] } ] } );
 	assert.deepEqual( out.alreadyHeld.map( ( h ) => h.heldReason ), [ 'covered' ] );
 	assert.equal( out.unmapped.length, 0 );
+} );
+
+// holdDefaults follows the ancestor only where its written state look holds the element (lib/fill-state-reach.mjs::ancestorHolds).
+const follow = ( { cal, taken } ) => holdDefaults( { node: { attributes: {} }, ref: 'cr-ref-x-0', rec, target: bar1, cal, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, reads: readsOf(), drafts: new Map(), held: new Set( [ 'hover' ] ), interaction: new Set( [ 'hover' ] ), taken } );
+const followed = ( out ) => out.held.filter( ( h ) => /whose hover look the draft declares/.test( h.reason ) ).map( ( h ) => h.prop ).sort();
+const setting = ( property, extra = {} ) => ( { slot: BURGER, slots: [ BURGER ], reaches: [ BURGER, bar( 1 ) ], property, state: null, forms: [ 'hex' ], transform: null, reachedAt: R3, effects: [], variants: [ 0 ], ...extra } );
+const followCal = ( more = {} ) => ( { elements: { [ BURGER ]: {}, [ bar( 1 ) ]: {} }, settings: { burgerColour: setting( 'color' ), burgerColourHover: setting( 'color', { state: 'hover', slots: [ BURGER, bar( 1 ) ], effects: [ `${ bar( 1 ) }|background-color` ], look: { [ BURGER ]: { color: at( 'rgb(0, 0, 0)' ) } } } ), ...more } } );
+
+test( 'MUST FAIL: a bar is not held by its button\'s hover when the button\'s hover write did not land', () => {
+	assert.deepEqual( followed( follow( { cal: followCal(), taken: new Map() } ) ), [] );
+	assert.deepEqual( followed( follow( { cal: followCal(), taken: new Map( [ [ 'burgerColour', 'surface' ] ] ) } ) ), [], 'a resting write is not the hover look' );
+} );
+
+test( 'MUST FAIL: a bar that paints its own hover rule is not held by its button\'s hover', () => {
+	const own = { barColourHover: setting( 'color', { state: 'hover', slot: bar( 1 ), slots: [ bar( 1 ) ], look: { [ bar( 1 ) ]: { color: at( 'rgb(0, 0, 0)' ) } } } ) };
+	assert.deepEqual( followed( follow( { cal: followCal( own ), taken: new Map( [ [ 'burgerColourHover', 'surface' ] ] ) } ) ), [] );
+	const effect = { burgerBgHover: setting( 'background-color', { state: 'hover', slot: '.sgs-nav-bar-menu__panel', slots: [ '.sgs-nav-bar-menu__panel' ], effects: [ `${ bar( 1 ) }|color` ] } ) };
+	assert.deepEqual( followed( follow( { cal: followCal( effect ), taken: new Map( [ [ 'burgerColourHover', 'surface' ] ] ) } ) ), [], 'a side effect of another element\'s rule is the bar\'s own change' );
+	// Negative control: the nav root's hover colour reaching the bar (calibrated with no burger colour) comes through the button.
+	const rootRule = { navColourHover: setting( 'color', { state: 'hover', slot: '', slots: [ '' ], effects: [ `${ bar( 1 ) }|background-color`, `${ bar( 1 ) }|color` ] } ) };
+	assert.deepEqual( followed( follow( { cal: followCal( rootRule ), taken: new Map( [ [ 'burgerColourHover', 'surface' ] ] ) } ) ), [ 'background-color', 'color' ] );
+} );
+
+test( 'negative control: the Indus burger bars\' hover colour is held by the button\'s written hover, on the real calibration', async () => {
+	assert.deepEqual( followed( follow( { cal: followCal(), taken: new Map( [ [ 'burgerColourHover', 'surface' ] ] ) } ) ), [ 'background-color', 'color' ] );
+	const focusRule = { barColourFocus: setting( 'color', { state: 'focus', slot: bar( 1 ), slots: [ bar( 1 ) ] } ) };
+	assert.deepEqual( followed( follow( { cal: followCal( focusRule ), taken: new Map( [ [ 'burgerColourHover', 'surface' ] ] ) } ) ), [ 'background-color', 'color' ], 'a focus rule of the bar is not a hover rule' );
+	const { readFileSync } = await import( 'node:fs' );
+	const real = JSON.parse( readFileSync( new URL( '../cache/nav-bar-menu.json', import.meta.url ), 'utf8' ) );
+	const holds = ( taken ) => ancestorHolds( { cal: real, state: 'hover', slot: bar( 1 ), prop: 'color', ancestor: burger, aprop: 'color', taken } );
+	assert.equal( holds( new Map( [ [ 'burgerColourHover', 'surface' ] ] ) ), true );
+	assert.equal( holds( new Map( [ [ 'burgerHoverColour', 'primary' ] ] ) ), false, 'the ground\'s hover write does not hold the colour' );
+	assert.equal( ancestorHolds( { cal: real, state: 'hover', slot: bar( 1 ), prop: 'background-color', ancestor: burger, aprop: 'color', taken: new Map( [ [ 'burgerColourHover', 'surface' ] ] ) } ), true );
 } );
