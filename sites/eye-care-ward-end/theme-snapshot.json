@@ -626,7 +626,8 @@
         "grounded": "0px 26px 24px -14px color-mix(in srgb, var(--wp--custom--shadow-colour) 30%, transparent), 0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent)",
         "glow": "0px 0px 20px 0px color-mix(in srgb, var(--wp--preset--color--primary) 70%, transparent), 0px 0px 52px 0px color-mix(in srgb, var(--wp--preset--color--primary) 40%, transparent)",
         "hard": "6px 6px 0px 0px var(--wp--custom--shadow-colour)",
-        "pressed": "pressed"
+        "pressed": "pressed",
+        "diffuse": "floating"
       },
       "buttonPresets": {
         "primary": {
