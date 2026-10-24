@@ -13,14 +13,14 @@
 	},
 	{
 		"file": "lib/compare.mjs",
-		"find": "if ( ! a || ! b || a.paints || b.paints || ! a.self || ! a.items.length",
-		"replace": "if ( ! a || ! b || a.paints || ! a.self || ! a.items.length",
+		"find": "if ( ! a || ! b || a.paints || b.paints || ! a.self || ! b.self || ! a.items.length",
+		"replace": "if ( ! a || ! b || a.paints || ! a.self || ! b.self || ! a.items.length",
 		"why": "a live box that paints is ignored"
 	},
 	{
 		"file": "lib/compare.mjs",
-		"find": "if ( ! a || ! b || a.paints || b.paints || ! a.self || ! a.items.length",
-		"replace": "if ( ! a || ! b || b.paints || ! a.self || ! a.items.length",
+		"find": "if ( ! a || ! b || a.paints || b.paints || ! a.self || ! b.self || ! a.items.length",
+		"replace": "if ( ! a || ! b || b.paints || ! a.self || ! b.self || ! a.items.length",
 		"why": "a draft box that paints is ignored"
 	},
 	{
@@ -283,12 +283,6 @@
 	},
 	{
 		"file": "lib/collect.mjs",
-		"find": "e.matches( 'a[href], [role=\"link\"]' ) ? 'link' : 'control'",
-		"replace": "'link'",
-		"why": "controls counted as links"
-	},
-	{
-		"file": "lib/collect.mjs",
 		"find": "\t\t\t\tkinds.set( e, 'placed' );\n",
 		"replace": "",
 		"why": "positioned layers are no items"
@@ -313,19 +307,13 @@
 	},
 	{
 		"file": "lib/compare.mjs",
-		"find": "( 'control' === t ? ( ca.get( t ) ?? 0 ) <= ( cb.get( t ) ?? 0 ) : ca.get( t ) === cb.get( t ) )",
-		"replace": "( 'control' === t || ca.get( t ) === cb.get( t ) )",
-		"why": "draft controls uncounted"
-	},
-	{
-		"file": "lib/compare.mjs",
-		"find": "( 'control' === t ? ( ca.get( t ) ?? 0 ) <= ( cb.get( t ) ?? 0 ) : ca.get( t ) === cb.get( t ) )",
-		"replace": "( 'control' === t ? ( ca.get( t ) ?? 0 ) <= ( cb.get( t ) ?? 0 ) : true )",
+		"find": "'interactive' === t || ca.get( t ) === cb.get( t )",
+		"replace": "true",
 		"why": "item counts uncompared"
 	},
 	{
 		"file": "lib/compare.mjs",
-		"find": "&& inside && counted &&",
+		"find": "&& inside && counted && tiled &&",
 		"replace": "&&",
 		"why": "count and containment ignored"
 	},
@@ -334,5 +322,53 @@
 		"find": "[ s.maskImage, s.webkitMaskBoxImageSource ]",
 		"replace": "[ s.maskImage ]",
 		"why": "a mask box image is no paint"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "const tiled = ia.length === ib.length || ( ib.every( ( x ) => ia.some( ( o ) => holds( o, x ) ) ) && ia.every( tiles ) );",
+		"replace": "const tiled = true;",
+		"why": "the live split is not tiled"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "const tiled = ia.length === ib.length || ( ib.every( ( x ) => ia.some( ( o ) => holds( o, x ) ) ) && ia.every( tiles ) );",
+		"replace": "const tiled = ia.length === ib.length || ia.every( tiles );",
+		"why": "a live item outside every draft item passes"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "const tiled = ia.length === ib.length || ( ib.every( ( x ) => ia.some( ( o ) => holds( o, x ) ) ) && ia.every( tiles ) );",
+		"replace": "const tiled = ia.length === ib.length || ib.every( ( x ) => ia.some( ( o ) => holds( o, x ) ) );",
+		"why": "a draft item the live items do not fill passes"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "return parts.length > 0 && Math.abs( parts[ 0 ][ 0 ] - o[ 0 ] ) <= tol.box && ",
+		"replace": "return parts.length > 0 && ",
+		"why": "the split starting late passes"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "&& Math.abs( parts[ parts.length - 1 ][ 1 ] - o[ 1 ] ) <= tol.box &&",
+		"replace": "&&",
+		"why": "the split ending early passes"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "parts.every( ( x, i ) => 0 === i || x[ 0 ] - parts[ i - 1 ][ 1 ] <= tol.box );",
+		"replace": "true;",
+		"why": "a gap inside the split passes"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "return parts.length > 0 && ",
+		"replace": "return ",
+		"why": "an empty draft item passes"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "&& inside && counted && tiled &&",
+		"replace": "&& inside && counted &&",
+		"why": "tiling ignored"
 	}
 ]

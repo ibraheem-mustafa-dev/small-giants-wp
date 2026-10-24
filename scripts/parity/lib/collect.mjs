@@ -193,7 +193,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	// border, shadow, outline, filter, mask, clip-path or ::before/::after layer, clips (overflow not visible, paint
 	// containment), is translucent (opacity below 1) or blends (mix-blend-mode not normal), or is a media or control
 	// element; `self`, the box's own [ top, bottom, left, right ] on the page; `items`, each visible interactive descendant
-	// (`link` or `control`), each in-flow text run (`text`) or rendered element holding no interactive descendant
+	// (`interactive`: a link and a button show alike, so the draft's button nav and the clone's link nav are the same items), each in-flow text run (`text`) or rendered element holding no interactive descendant
 	// (`other`) outside those, and each positioned descendant placed against the box or outside it (`placed`), as
 	// [ top, bottom, left, right, kind ] on the page; `line`, per axis, the extent on that axis of the single-line
 	// flex container on whose cross axis the box sits, the first ancestor holding more than the box, past wrappers whose
@@ -234,7 +234,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 				held.add( p );
 			}
 		}
-		const kinds = new Map( interactive.map( ( e ) => [ e, e.matches( 'a[href], [role="link"]' ) ? 'link' : 'control' ] ) );
+		const kinds = new Map( interactive.map( ( e ) => [ e, 'interactive' ] ) );
 		const runs = [];
 		const walk = ( n ) => {
 			for ( const k of n.childNodes ) {
