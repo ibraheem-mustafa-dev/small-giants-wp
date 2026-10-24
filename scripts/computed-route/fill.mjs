@@ -52,6 +52,7 @@ import { sweepSteps } from './lib/fill-values.mjs';
 import { walkerConfigs } from './lib/fill-config.mjs';
 import { fillReport, unmappedList, readFailureRows, passSettled } from './lib/fill-report.mjs';
 import { calibrationFor } from './solve.mjs';
+import { motionSettled } from './lib/fill-motion-settle.mjs';
 import { stateMap } from './lib/state-map.mjs';
 import { readMediaMap } from './lib/fill-media.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
@@ -253,9 +254,13 @@ export async function fillSurface( o ) {
 		const jobs = nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) );
 		const { entrances: sampled, loops } = await sampleMotion( { url, jobs, open: o.open || null, headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {} } );
 		const entrances = nodes.filter( ( x ) => x.targets.length ).map( ( n ) => ( { node: refOf( flat[ n.index ] ), block: n.name, measured: sampled[ n.targets[ 0 ].id ]?.[ 1440 ] ?? null } ) );
-		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads } );
+		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads, calFor } );
 		result.writes.push( ...motion.writes );
 		result.unmapped.push( ...motion.unmapped );
+		// The resting timing and rest-length rows a motion part's written hover state holds (lib/fill-motion-settle.mjs).
+		const moved = motionSettled( { unmapped: result.unmapped, writes: motion.writes, nodes, flat, refOf, mdb: motionDb( db ), db, calFor, reads, rawSnapshot } );
+		result.settled.push( ...passSettled( result.unmapped, moved.unmapped, 'motion', moved.answered ) );
+		result.unmapped = moved.unmapped;
 		result.handover.push( ...motion.handover );
 		// R2: where a button's painted preset holds the draft's hover transform, the instance motion leaves its transform channels.
 		const lift = dropPresetMotion( { lifted: presets.lifted, flat, writes: result.writes } );

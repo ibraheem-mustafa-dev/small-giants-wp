@@ -2,6 +2,7 @@
 // sits on, a CSS property, a state and the measured draft value at each width, it returns the setting writes in the
 // block's storage shape, or a gap with its reason. Candidates come from the framework database (source 'sgs' only);
 // calibration decides which candidate paints that slot (R-47-6); values snap to the site's tokens (R-47-7).
+import { nearestHome } from './resolve-nearest.mjs';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -492,7 +493,10 @@ export function resolve( input, ctx ) {
 		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && canGive( r, c ) && holdsDisplay( r );
 	} );
 	const direct = tiedBy( ( c ) => c.slots || [ c.slot ] );
-	const tied = direct.length ? direct : tiedBy( ( c ) => c.reaches || [] );
+	const reached = direct.length ? direct : tiedBy( ( c ) => c.reaches || [] );
+	// A tie between settings on the element and on its ancestors goes to the nearest (lib/resolve-nearest.mjs).
+	const near = nearestHome( reached, ( r ) => ( 'string' === typeof ctx.calibration.settings[ r.attr_name ]?.slot ? loose( ctx.calibration.settings[ r.attr_name ].slot ) : undefined ), slot );
+	const tied = near ?? reached;
 	// A state setting calibration never measured (no trigger for that state yet) is unproven, not missing.
 	if ( ! tied.length && state && ! rows.some( ( r ) => ctx.calibration.settings?.[ r.attr_name ] ) ) {
 		return { gap: 'uncalibrated', detail: `${ block } ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) } (${ state }) not calibrated` };
