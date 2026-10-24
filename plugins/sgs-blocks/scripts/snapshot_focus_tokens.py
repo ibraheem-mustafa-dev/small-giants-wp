@@ -16,7 +16,8 @@ guard (`push-theme-snapshot.py::roster_guard`):
   * `settings.custom.focus.source = "draft"` marks the whole object as the client's own draft look (owner decision,
     2026-10-20: a draft's focus styling wins over the contrast rule). Such an object is never recalibrated, and its
     ring and ringOnDark are recorded (`draft_ring_notes`) instead of failed on 3:1; inner/ink and the key set are
-    still checked. `offset` and `bloom` are optional shape tokens (`OPTIONAL_KEYS`, read by focus.css) kept as written;
+    still checked. `offset`, `bloom`, `style` and `ringOnly` are optional shape tokens (`OPTIONAL_KEYS`, read by focus.css)
+    kept as written;
   * the framework file (`theme/sgs-theme/theme.json`) is the generic base, not a client: it keeps the palette-reference
     defaults of plan section 2.3 (`ring` and `ringOnDark` are `var(--wp--preset--color--accent)`), is never shifted, and is
     exempt from the 3:1 ring test (its keys and `inner`/`ink` ratio are still checked). Only client snapshots are derived.
@@ -37,8 +38,9 @@ SCRIPTS = Path(__file__).resolve().parent
 FOCUS_KEYS = ("width", "inner", "ink", "ring", "near", "far", "ringOnDark", "nearOnDark", "farOnDark",
               "signatureA", "signatureB", "signatureC")
 # Optional keys: not required of a snapshot, kept as written. `offset` is the ring gap (a CSS length), `bloom` the glow
-# strength (0 to 1). `source` marks a draft-sourced look.
-OPTIONAL_KEYS = ("offset", "bloom", "source")
+# strength (0 to 1), `style` the ring's outline-style (`auto` is the browser's own ring), `ringOnly` 1 or 0 (1 drops the
+# hairline and the glow and keeps the element's resting shadow). `source` marks a draft-sourced look.
+OPTIONAL_KEYS = ("offset", "bloom", "style", "ringOnly", "source")
 DRAFT_SOURCE = "draft"
 TEXT_SLUGS = frozenset(("text", "heading", "link", "link-hover", "section-text"))
 # Signal colours are icon, text and badge fills; their `-light` tints are the grounds (alert and notice bands).

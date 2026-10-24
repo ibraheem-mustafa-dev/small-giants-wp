@@ -72,18 +72,101 @@ function atRuleChain( node ) {
 
 const inSupports = ( node ) => atRuleChain( node ).some( ( a ) => a.startsWith( '@supports' ) );
 const inForced = ( node ) => atRuleChain( node ).some( ( a ) => a === `@media ${ FORCED }` );
+const RING_ONLY = '@container style(--wp--custom--focus--ring-only: 1)';
+const inRingOnly = ( node ) => atRuleChain( node ).some( ( a ) => a === RING_ONLY );
 const isThumb = ( rule ) => /::-(?:webkit-slider|moz-range)-thumb/.test( rule.selector );
 const isArmSelector = ( sel ) => /:focus-visible|sgs-focus-proxy|sgs-focus-preview/.test( sel );
 
+/** A comma-separated value's top-level items (commas inside brackets do not split). */
+function topLevelList( value ) {
+	const out = [];
+	let depth = 0;
+	let item = '';
+	for ( const ch of value ) {
+		depth += '(' === ch ? 1 : ')' === ch ? -1 : 0;
+		if ( ',' === ch && 0 === depth ) {
+			out.push( item.trim() );
+			item = '';
+		} else {
+			item += ch;
+		}
+	}
+	out.push( item.trim() );
+	return out;
+}
+
+/** The index of the bracket that closes one already open at the start of `text` (its length when none does). */
+function closingAt( text ) {
+	let depth = 1;
+	for ( let i = 0; i < text.length; i++ ) {
+		depth += '(' === text[ i ] ? 1 : ')' === text[ i ] ? -1 : 0;
+		if ( 0 === depth ) {
+			return i;
+		}
+	}
+	return text.length;
+}
+
 /** The focus.css checks, each returning a list of problems (empty when it holds). */
 const CHECKS = {
+	// The site's ring style (settings.custom.focus.style, `auto` for the browser's own ring) reaches every arm's outline
+	// outside forced colours, and the ringOnly switch (--sgs-focus-keep) scales every hairline and glow layer, so a
+	// cloned browser ring keeps the element's resting shadow and nothing else.
+	ringStyleAndSwitchReachEveryArm( root ) {
+		const problems = [];
+		root.walkDecls( ( d ) => {
+			if ( 'rule' !== d.parent.type || isThumb( d.parent ) || inForced( d ) ) {
+				return;
+			}
+			if ( 'outline' === d.prop && ! d.value.includes( 'var(--wp--custom--focus--style, solid)' ) ) {
+				problems.push( `outline without the style token: ${ d.value }` );
+			}
+			if ( 'box-shadow' === d.prop && d.value.includes( '--sgs-focus-hairline' ) ) {
+				// The layers sit inside the --sgs-focus-halo fallback: one hairline, one near and one far glow, each scaled once.
+				const open = 'var(--sgs-focus-halo,';
+				const halo = d.value.slice( d.value.indexOf( open ) + open.length );
+				const painted = topLevelList( halo.slice( 0, closingAt( halo ) ) ).filter( ( l ) => /--sgs-focus-(?:hairline|near|far)\)/.test( l ) );
+				painted.filter( ( l ) => ! l.includes( '--sgs-focus-keep' ) ).forEach( ( l ) => problems.push( `hairline or glow layer not scaled by --sgs-focus-keep: ${ l }` ) );
+				if ( 3 !== painted.length ) {
+					problems.push( `box-shadow arm paints ${ painted.length } hairline and glow layers, want 3` );
+				}
+			}
+			if ( '--sgs-focus-halo' === d.prop && ! d.value.includes( '--sgs-focus-keep' ) ) {
+				problems.push( `inset halo not scaled by --sgs-focus-keep: ${ d.value }` );
+			}
+		} );
+		// The exact switch: one rule under the ringOnly style query, on the same arms as the indicator, painting only the
+		// element's resting shadow.
+		const main = [];
+		const exact = [];
+		root.walkRules( ( rule ) => {
+			const decls = ( rule.nodes || [] ).filter( ( n ) => 'decl' === n.type );
+			if ( decls.some( ( n ) => 'outline' === n.prop ) && ! inSupports( rule ) && ! inForced( rule ) && ! isThumb( rule ) ) {
+				main.push( rule.selectors.map( norm ).join( ' | ' ) );
+			}
+			if ( inRingOnly( rule ) ) {
+				exact.push( { sels: rule.selectors.map( norm ).join( ' | ' ), shadow: decls.filter( ( n ) => 'box-shadow' === n.prop ).map( ( n ) => n.value.trim() ) } );
+			}
+		} );
+		if ( 1 !== exact.length || main[ 0 ] !== exact[ 0 ].sels || 'var(--sgs-focus-under, none)' !== exact[ 0 ].shadow.join() ) {
+			problems.push( `the ringOnly style query must hold one rule on the indicator's arms painting var(--sgs-focus-under, none); found ${ JSON.stringify( exact ) }` );
+		}
+		let keep = false;
+		root.walkDecls( '--sgs-focus-keep', ( d ) => {
+			keep = keep || d.value.includes( 'var(--wp--custom--focus--ring-only, 0)' );
+		} );
+		if ( ! keep ) {
+			problems.push( '--sgs-focus-keep is not driven by --wp--custom--focus--ring-only' );
+		}
+		return problems;
+	},
 	indicatorOnce( root ) {
 		const counts = { outline: 0, 'outline-offset': 0, 'box-shadow': 0 };
 		root.walkDecls( ( d ) => {
 			if ( ! INDICATOR.has( d.prop ) || 'rule' !== d.parent.type ) {
 				return;
 			}
-			if ( isThumb( d.parent ) || inSupports( d ) || inForced( d ) ) {
+			if ( isThumb( d.parent ) || inSupports( d ) || inForced( d ) || inRingOnly( d ) ) {
 				return;
 			}
 			counts[ d.prop ]++;
@@ -183,7 +266,7 @@ const CHECKS = {
 			const has = ( prop ) => ( rule.nodes || [] ).some( ( n ) => 'decl' === n.type && prop === n.prop );
 			if ( inForced( rule ) ) {
 				forced = has( 'outline' ) && has( 'box-shadow' );
-			} else {
+			} else if ( ! inRingOnly( rule ) ) {
 				base = has( 'outline' ) && has( 'box-shadow' );
 			}
 		} );
@@ -425,6 +508,7 @@ describe( 'focus.css, the one focus system', () => {
 
 	// Negative controls: each check must fail on a planted fault in a copy of focus.css.
 	const PLANTS = {
+		ringStyleAndSwitchReachEveryArm: ( text ) => text.replace( 'box-shadow: var(--sgs-focus-under, none);', 'box-shadow: none;' ).replace( 'var(--wp--custom--focus--style, solid)', 'solid' ).replace( 'calc(55% * var(--wp--custom--focus--bloom, 1) * var(--sgs-focus-keep, 1))', 'calc(55% * var(--wp--custom--focus--bloom, 1))' ),
 		indicatorOnce: ( text ) => `${ text }\n.x:focus-visible:not(#wpadminbar *){outline:1px solid red}\n`,
 		everyArmExcludesAdminBar: ( text ) => `${ text }\n.x:focus-visible{color:red}\n`,
 		noImportantTransitionRadius: ( text ) => `${ text }\n.x:not(#wpadminbar *){transition:none;border-radius:4px;color:red !important}\n`,
