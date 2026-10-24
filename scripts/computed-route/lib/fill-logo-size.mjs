@@ -4,8 +4,10 @@
 // one-value-every-width gap (lib/resolve.mjs::ONE_VALUE_EVERY_WIDTH); this pass turns that gap into the per-device ceiling, read from the width the
 // draft paints at 1440, 768 and 375. Which blocks have the pair comes from the framework DB (a block with an unresponsive
 // `width` setting and a tier-object `max-width` setting), never from a list of blocks.
-// Returns { writes, unmapped (the rows left), notes }.
+// A row naming several nodes (`nodes`) is written on each. Returns { writes, unmapped (the rows left), answered
+// (lib/fill-regap.mjs::answer: each row written, with the read widths it answers), notes }.
 import { setAttr } from './tree.mjs';
+import { perNode, regroup, answer } from './fill-regap.mjs';
 import { ONE_VALUE_EVERY_WIDTH } from './resolve.mjs';
 
 const TIERS = [ [ 1440, 'desktop' ], [ 768, 'tablet' ], [ 375, 'mobile' ] ];
@@ -23,12 +25,13 @@ export function logoSizeSettings( db, block ) {
 }
 
 export function logoSizeWrites( { nodes, flat, refOf, reads, db, unmapped } ) {
-	const out = { writes: [], unmapped: [], notes: [] };
-	for ( const row of unmapped ) {
+	const out = { writes: [], unmapped: [], answered: [], notes: [] };
+	for ( const row of perNode( unmapped ) ) {
 		const rec = 'width' === row.property && ONE_VALUE_EVERY_WIDTH === row.code && '' === ( row.slot ?? '' ) ? nodes.find( ( n ) => refOf( flat[ n.index ] ) === row.node ) : null;
 		const settings = rec ? logoSizeSettings( db, rec.name ) : null;
 		const target = rec?.targets.find( ( t ) => '' === t.slot );
-		const widths = target ? TIERS.map( ( [ w, tier ] ) => [ tier, reads.widths?.[ w ]?.[ target.id ]?.rect?.w ] ).filter( ( [ , v ] ) => Number.isFinite( v ) && v > 0 ) : [];
+		const read = target ? TIERS.filter( ( [ w ] ) => Number.isFinite( reads.widths?.[ w ]?.[ target.id ]?.rect?.w ) && reads.widths[ w ][ target.id ].rect.w > 0 ) : [];
+		const widths = read.map( ( [ w, tier ] ) => [ tier, reads.widths[ w ][ target.id ].rect.w ] );
 		if ( ! settings || ! widths.length ) {
 			out.unmapped.push( row );
 			continue;
@@ -48,8 +51,10 @@ export function logoSizeWrites( { nodes, flat, refOf, reads, db, unmapped } ) {
 			out.writes.push( { node: row.node, index: rec.index, block: rec.name, slot: '', prop: 'width', attr, before, after, widths: TIERS.map( ( [ w ] ) => w ), how: 'logo-size' } );
 		};
 		put( settings.max, tiers, 'deep' );
+		out.answered.push( answer( row, read.map( ( [ w ] ) => w ) ) );
 		settings.unit && 'px' !== ( node.attributes[ settings.unit ] ?? 'px' ) && out.notes.push( `${ row.node } ${ rec.name }: ${ settings.unit } is "${ node.attributes[ settings.unit ] }", so the written ${ settings.max } px values are read in that unit; set it to px` );
 		out.notes.push( `${ row.node } ${ rec.name }: the draft logo is ${ widths.map( ( [ tier, w ] ) => `${ Math.round( w ) }px at ${ tier }` ).join( ', ' ) }; written as ${ settings.max } (the per-device size) because ${ settings.width } holds one value for every width` );
 	}
+	out.unmapped = regroup( out.unmapped );
 	return out;
 }

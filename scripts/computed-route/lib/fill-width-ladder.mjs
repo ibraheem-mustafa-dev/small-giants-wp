@@ -14,12 +14,13 @@
 //      range, labelled in `sgsCustomCssNote`. Where the draft's width threshold (read by the sweep) lies within 5% of a tier
 //      (768, 1024) it snaps to the tier, with a `breakpoint-snap` divergence-ledger entry.
 // Which blocks and settings take part comes from the framework DB and the block's calibration, never from a list.
-// Returns { writes, unmapped (the rows left), notes, ledger }.
+// A row naming several nodes (`nodes`) is judged and written on each. Returns { writes, unmapped (the rows left), answered
+// (lib/fill-regap.mjs::answer: each row written or settled, with the read widths it answers), notes, ledger }.
 import { ONE_VALUE_EVERY_WIDTH, LOOSE } from './resolve.mjs';
 import { siblings, candidates } from './db.mjs';
 import { setAttr } from './tree.mjs';
 import { mediaRule, scopedCssPuts, snapThreshold, snapEntry, ownBreakpoint, collapseAttributes } from './fill-width-gate.mjs';
-import { WIDTHS, TIER_OF, rowTarget, rowValues, reresolve, commit } from './fill-regap.mjs';
+import { WIDTHS, TIER_OF, rowTarget, rowValues, reresolve, commit, perNode, regroup, answer } from './fill-regap.mjs';
 import { layoutHome } from './fill-same-box.mjs';
 import { defaultPaint } from './fill-prop.mjs';
 import { sizeOf } from './fill-dimensions.mjs';
@@ -127,38 +128,58 @@ const rangeText = ( [ lo, hi ] ) => ( Infinity === hi ? `${ lo }px and up` : `${
 
 // The skeleton target of the element the ladder writes (`slot`): the row's own target, or the node's target at that slot when
 // the row's element is another one (the block paints the property on a part that is the same box as the row's element).
-export function writtenTarget( rec, target, slot ) {
-	return ( slot !== ( target.slot ?? '' ) && rec.targets.find( ( t ) => ( t.slot ?? '' ) === slot ) ) || target;
+// When no target of the node sits at that slot, the row's own target is used and a note says so (`notes`, when given).
+export function writtenTarget( rec, target, slot, notes = null ) {
+	if ( slot === ( target.slot ?? '' ) ) {
+		return target;
+	}
+	const at = rec.targets.find( ( t ) => ( t.slot ?? '' ) === slot );
+	at || notes?.push( `node ${ rec.index } ${ rec.name }: the setting paints ${ slot || 'the root' }, where the skeleton pairs no draft element; the values are read on ${ target.slot || 'the root' }` );
+	return at || target;
 }
 
+// A value the draft's code declares in a form the computed read loses (a custom property, a percentage, a font-relative
+// length, a function of the viewport): kept over the written element's computed value.
+const DECLARED_FORM = /var\(|calc\(|clamp\(|min\(|max\(|%|\d(?:r?em|v[wh]|vmin|vmax|ch|ex)\b/;
+
 // The draft's per-width values for the element being written: the row's values (lib/fill-regap.mjs::rowValues) when the
-// row is on that element; otherwise, where the draft draws the written element as an element of its own, that element's
-// rendered value at each width, and the row's value only at a width it has no read.
+// row is on that element or is a state row (a hover, focus or active row carries its own state value, never the rest
+// read). Otherwise, where the draft draws the written element as an element of its own and it is read at some width, that
+// element's rendered value at each width it is read at, never mixed with the row's element's at the others (a width it has
+// no read at is left out); a row value declared in a form the computed read loses (DECLARED_FORM) is kept at its width.
 export function valuesAt( row, reads, target, home ) {
 	const own = rowValues( row, reads, target );
-	if ( home === target ) {
+	if ( home === target || row.state ) {
+		return own;
+	}
+	const homeAt = ( w ) => {
+		const read = reads.widths?.[ w ]?.[ home.id ];
+		const v = read && ! read.missing ? read.styles?.[ row.property ] : undefined;
+		return undefined === v || '' === v ? undefined : v;
+	};
+	if ( ! WIDTHS.some( ( w ) => undefined !== homeAt( w ) ) ) {
 		return own;
 	}
 	const out = {};
-	for ( const w of WIDTHS ) {
-		const read = reads.widths?.[ w ]?.[ home.id ];
-		const v = read && ! read.missing ? read.styles?.[ row.property ] : undefined;
-		const pick = undefined !== v && '' !== v ? v : own[ w ];
-		undefined !== pick && ( out[ w ] = pick );
+	for ( const w of WIDTHS.filter( ( x ) => undefined !== homeAt( x ) ) ) {
+		out[ w ] = undefined !== own[ w ] && DECLARED_FORM.test( String( own[ w ] ) ) ? own[ w ] : homeAt( w );
 	}
 	return out;
 }
 
 export function widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped, calFor = () => null, snapshot = null, scope = '', entries = [], date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes(), resolver } ) {
-	const out = { writes: [], unmapped: [], notes: [], ledger: [] };
+	const out = { writes: [], unmapped: [], answered: [], notes: [], ledger: [] };
 	const ctx = { reads, db, calFor, snapshot };
-	for ( const row of unmapped ) {
+	for ( const row of perNode( unmapped ) ) {
 		const hit = isLadderRow( row ) ? rowTarget( { nodes, flat, refOf }, row ) : null;
 		const done = hit ? ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collapse, resolver } ) : false;
-		done || out.unmapped.push( row );
+		done ? out.answered.push( answer( row, done ) ) : out.unmapped.push( row );
 	}
+	out.unmapped = regroup( out.unmapped );
 	return out;
 }
+
+// The read widths a row is settled at when it is written or its effect is the block's own (truthy), or false.
 
 function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collapse, resolver } ) {
 	const { rec, target } = hit;
@@ -170,7 +191,7 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 	// The element a setting of the block paints for this property: the row's own element, or the block's content band when
 	// calibration measured it as the same box (the draft's one element is both).
 	const slot = layoutHome( { db, block: rec.name, cal, prop, state, slot: row.slot ?? '' } );
-	const home = writtenTarget( rec, target, slot );
+	const home = writtenTarget( rec, target, slot, out.notes );
 	const raw = valuesAt( row, reads, target, home );
 	const widths = WIDTHS.filter( ( w ) => undefined !== raw[ w ] );
 	if ( ! widths.length ) {
@@ -179,11 +200,11 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 	const env = ( w ) => ( { display: reads.widths?.[ w ]?.[ home.id ]?.layoutDisplay || reads.widths?.[ w ]?.[ home.id ]?.styles?.display || '', children: visibleChildren( { nodes, reads }, rec, w ) } );
 	const effs = Object.fromEntries( widths.map( ( w ) => [ w, effectOf( prop, raw[ w ], env( w ) ) ] ) );
 	const varies = new Set( Object.values( effs ) ).size > 1;
-	const ask = ( draft, p = prop ) => reresolve( { rec, node, target: home, slot, prop: p, draft, ctx, state, resolver } );
+	const ask = ( draft, p = prop ) => reresolve( { rec, node, target: home, fallback: target, slot, prop: p, draft, ctx, state, resolver } );
 	const took = ( res, how, note ) => {
 		commit( out, { rec, node, row, prop, res, how, note } );
 		out.notes.push( `${ row.node } ${ rec.name }${ slot ? ` (${ slot })` : '' } ${ prop }${ state ? ` ${ state }` : '' }: ${ note }` );
-		return true;
+		return widths;
 	};
 	// Rung 1: one value that does at every width what the draft does.
 	const pool = [ ...new Set( [ ...[ ...widths ].reverse().map( ( w ) => raw[ w ] ), ...widths.flatMap( ( w ) => STANDS_FOR[ effs[ w ] ] ?? [] ), ...Object.values( effs ) ] ) ];
@@ -207,7 +228,7 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 	// The block's own default already does at every width what the draft does: nothing to write, and the row is settled.
 	if ( ! varies && ! hasOwn && widths.every( ( w ) => null !== base[ w ] && ! differs( w ) ) ) {
 		out.notes.push( `${ row.node } ${ rec.name }${ slot ? ` (${ slot })` : '' } ${ prop }: the block's own default paint (${ widths.map( ( w ) => `${ base[ w ] } at ${ w }` ).join( ', ' ) }) does what the draft's ${ [ ...new Set( widths.map( ( w ) => raw[ w ] ) ) ].join( ' / ' ) } does; nothing to write` );
-		return true;
+		return widths;
 	}
 	// Rung 2: a tier-shaped setting painting the same element.
 	const tiered = candidates( db, rec.name, prop, state )
@@ -269,5 +290,5 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 		out.writes.push( { node: row.node, index: rec.index, block: rec.name, slot: '', ...( row.slot ? { readSlot: row.slot } : {} ), prop: x.prop, covers: prop, attr: x.attr, before, after, widths: [], how: 'width-gate' } );
 	}
 	out.notes.push( `${ row.node } ${ rec.name }${ slot ? ` (${ slot })` : '' } ${ prop }: no setting holds ${ widths.map( ( w ) => `${ raw[ w ] } at ${ w }` ).join( ', ' ) }; written as a scoped @media rule in Additional CSS (${ css.ranges.map( ( s ) => `${ rangeText( s.range ) } ${ s.value }` ).join( ', ' ) })` );
-	return true;
+	return widths;
 }

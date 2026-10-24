@@ -51,7 +51,8 @@ export function outcomesOf( { report, unmapped } ) {
 		w.state || out.push( { node: w.node, slot: w.slot, readSlot: w.readSlot, property: w.covers ?? w.prop, widths: widths.length ? widths : null, outcome: 'written', how: w.how } );
 	}
 	for ( const s of report.settled || [] ) {
-		out.push( { node: s.node, slot: s.slot, readSlot: s.readSlot, property: s.property, widths: s.widths?.length ? s.widths : null, outcome: 'held', how: `settled:${ s.reason }` } );
+		// A settled row answers the widths it records, and none when it records none.
+		out.push( { node: s.node, slot: s.slot, readSlot: s.readSlot, property: s.property, widths: s.widths?.length ? s.widths : [], outcome: 'held', how: `settled:${ s.reason }` } );
 	}
 	for ( const c of report.confirm || [] ) {
 		( ! c.state || 'default' === c.state ) && out.push( { node: c.node, slot: c.slot, property: c.property, widths: [ c.width ], outcome: 'written', how: 'confirm' } );
@@ -82,10 +83,23 @@ function answers( o, read ) {
 	return !! o.property && longhandsOf( o.property ).includes( read.property );
 }
 
+// The writers that act on a row the generic pass left UNMAPPED (fill.mjs's later passes): a write of theirs says the
+// element did not already show the value.
+const PASS_HOW = [ 'logo-size', 'width-ladder', 'width-gate', 'dimension' ];
+
+// Why the outcomes answering one read contradict each other, or null: the run calls the read `equal` (the element already
+// shows it) and also leaves it unwritten or writes it in a later pass.
+function contradiction( by ) {
+	const equal = by.find( ( o ) => 'settled:equal' === o.how );
+	const other = equal && by.find( ( o ) => 'unwritten' === o.outcome || ( 'written' === o.outcome && PASS_HOW.includes( o.how ) ) );
+	return other ? `settled equal${ equal.slot !== other.slot ? ` (judged on ${ equal.slot || 'the root' })` : '' } and ${ 'unwritten' === other.outcome ? 'unwritten' : `written by ${ other.how }` }: the run says both that the element shows the value and that it does not` : null;
+}
+
 // The conservation verdict of a read set against a run's outcomes.
 // reads: [ { draft, node, block, slot, property, width, value } ]. Returns { reads, excluded, conserved, failures,
 // widthlessHolds }: `excluded` counts the reads that are not declared values (a CSS-wide keyword is how Chrome lists the
-// longhands a shorthand leaves implied), `failures` is every other read that no outcome answers, and `widthlessHolds`
+// longhands a shorthand leaves implied), `failures` is every other read that no outcome answers or whose outcomes
+// contradict each other (contradiction(), named in `why`), and `widthlessHolds`
 // every conserved read only an `alreadyHeld` row answers: Fill records no width for a hold, so such a row answers every
 // width and the hold may not cover this one.
 export function conservation( { reads, report, unmapped } ) {
@@ -103,6 +117,8 @@ export function conservation( { reads, report, unmapped } ) {
 		const by = ( index.get( at( read.node, read.slot ) ) || [] ).filter( ( o ) => answers( o, read ) );
 		if ( CSS_WIDE.test( String( read.value ).trim() ) ) {
 			cssWide++;
+		} else if ( by.length && contradiction( by ) ) {
+			failures.push( { draft: read.draft, block: read.block, node: read.node, slot: read.slot ?? '', property: read.property, value: read.value, width: read.width, state: STATE, why: contradiction( by ) } );
 		} else if ( by.length ) {
 			conserved++;
 			by.every( ( o ) => 'held' === o.outcome && null === o.widths && 'ledger' !== o.how ) && widthlessHolds.push( { block: read.block, node: read.node, slot: read.slot ?? '', property: read.property, width: read.width, how: by[ 0 ].how } );

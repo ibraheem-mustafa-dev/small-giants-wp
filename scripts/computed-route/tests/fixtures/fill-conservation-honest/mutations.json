@@ -1,0 +1,68 @@
+[
+ {
+  "file": "lib/fill-report.mjs",
+  "find": "return answered.filter( ( a ) => ! after.some( ( u ) => sameRead( u, a ) ) ).map( ( a ) => {",
+  "replace": "return before.filter( ( u ) => ! after.includes( u ) ).map( ( a ) => ( { ...a, widths: a.widths ?? [ 375, 768, 1440 ] } ) ).map( ( a ) => {",
+  "why": "opposite direction: passSettled settles every row the pass took out of before, answered or not"
+ },
+ {
+  "file": "lib/fill-report.mjs",
+  "find": "widths: a.widths, reason, detail:",
+  "replace": "reason, detail:",
+  "why": "a pass's settled row carries no widths"
+ },
+ {
+  "file": "lib/census-conservation.mjs",
+  "find": "widths: s.widths?.length ? s.widths : [], outcome: 'held'",
+  "replace": "widths: s.widths?.length ? s.widths : null, outcome: 'held'",
+  "why": "a settled row with no widths answers every width"
+ },
+ {
+  "file": "lib/census-conservation.mjs",
+  "find": "} else if ( by.length && contradiction( by ) ) {",
+  "replace": "} else if ( false ) {",
+  "why": "a contradicted read counts as conserved"
+ },
+ {
+  "file": "lib/census-conservation.mjs",
+  "find": "const other = equal && by.find( ( o ) => 'unwritten' === o.outcome || ( 'written' === o.outcome && PASS_HOW.includes( o.how ) ) );",
+  "replace": "const other = equal && by.find( ( o ) => 'unwritten' === o.outcome );",
+  "why": "an equal row beside a later pass's write is not a contradiction"
+ },
+ {
+  "file": "lib/fill-dimensions.mjs",
+  "find": "for ( const row of perNode( unmapped ) ) {\n\t\tlet result = null;",
+  "replace": "for ( const row of unmapped ) {\n\t\tlet result = null;",
+  "why": "the dimension pass writes only row.node of a row naming several nodes"
+ },
+ {
+  "file": "lib/fill-regap.mjs",
+  "find": "return nodes.map( ( node ) => ( { ...one, node, [ GROUP ]: i } ) );",
+  "replace": "return [ { ...r } ];",
+  "why": "perNode keeps a several-node row whole"
+ },
+ {
+  "file": "lib/fill-regap.mjs",
+  "find": "widths: [ ...new Set( widths.map( Number ) ) ].sort( ( a, b ) => a - b ) } );",
+  "replace": "widths: [] } );",
+  "why": "an answer records no widths"
+ },
+ {
+  "file": "lib/fill-dimensions.mjs",
+  "find": "return { answered: fixedAt };",
+  "replace": "return { answered: [] };",
+  "why": "the fixed sizing answers no width"
+ },
+ {
+  "file": "lib/fill-resolve-element.mjs",
+  "find": "return undefined === source || from === w || samePaint( prop, draft[ w ], source );",
+  "replace": "return true;",
+  "why": "a write answers every draft width (main's Object.keys( draft ))"
+ },
+ {
+  "file": "lib/fill-resolve-element.mjs",
+  "find": "held.add( /Tablet$/.test( w.attr ) ? 'tablet' : /Mobile$/.test( w.attr ) ? 'mobile' : 'desktop' );",
+  "replace": "held.add( 'desktop' );",
+  "why": "a Tablet sibling is read as the desktop tier"
+ }
+]

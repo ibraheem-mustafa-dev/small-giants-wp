@@ -21,11 +21,13 @@
 //   3. An interactive element's written height or width is never below 24px (WCAG 2.2 AA target size, 2.5.8): a smaller draft
 //      value is written as 24px with a `touch-target` divergence-ledger entry.
 // Every size is formatted and checked by the generic resolver (lib/fill-prop.mjs::resolveProperty), so a value is written
-// as the setting's own shape. Returns { writes, unmapped (the rows left), notes, ledger }.
+// as the setting's own shape. A row naming several nodes (`nodes`) is judged and written on each. Returns { writes, unmapped
+// (the rows left), answered (lib/fill-regap.mjs::answer: each row written or settled, with the read widths it answers),
+// notes, ledger }.
 import fs from 'node:fs';
 import path from 'node:path';
 import { BLOCKS_DIR, defaultPaint, LOOSE } from './resolve.mjs';
-import { WIDTHS, TIER_OF, rowTarget, rowValues, rectAt, reresolve, commit } from './fill-regap.mjs';
+import { WIDTHS, TIER_OF, rowTarget, rowValues, rectAt, reresolve, commit, perNode, regroup, answer } from './fill-regap.mjs';
 import { innerToRoot } from './fill-same-box.mjs';
 import { attrRow } from './db.mjs';
 
@@ -114,27 +116,31 @@ const interactive = ( reads, target, w ) => {
 const nextId = ( entries ) => `D-${ 1 + Math.max( 0, ...entries.map( ( e ) => Number( String( e.id ).replace( /^D-/, '' ) ) || 0 ) ) }`;
 
 export function dimensionWrites( { nodes, flat, refOf, reads, db, unmapped, calFor = () => null, snapshot = null, scope = '', entries = [], date = new Date().toISOString().slice( 0, 10 ), resolver } ) {
-	const out = { writes: [], unmapped: [], notes: [], ledger: [] };
+	const out = { writes: [], unmapped: [], answered: [], notes: [], ledger: [] };
 	const ctx = { reads, db, calFor, snapshot };
-	for ( const row of unmapped ) {
+	for ( const row of perNode( unmapped ) ) {
+		let result = null;
 		if ( 'flex-shrink' === row.property ) {
-			const result = /^no-setting\b/.test( row.reason ?? '' ) && ! row.state && '' === ( row.slot ?? '' ) ? fixedSizing( { row, nodes, flat, refOf, reads, db, calFor, out } ) : null;
-			null === result ? out.unmapped.push( row ) : result.raise && out.unmapped.push( { ...row, reason: `${ row.reason }; dimension: ${ result.raise }` } );
-			continue;
+			result = /^no-setting\b/.test( row.reason ?? '' ) && ! row.state && '' === ( row.slot ?? '' ) ? fixedSizing( { row, nodes, flat, refOf, reads, db, calFor, out } ) : null;
+		} else {
+			const size = sizeOf( row.property ?? '' );
+			const hit = size && ONLY_GAPS.test( row.reason ?? '' ) && ! row.state ? rowTarget( { nodes, flat, refOf }, row ) : null;
+			result = hit ? handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, resolver } ) : null;
 		}
-		const size = sizeOf( row.property ?? '' );
-		const hit = size && ONLY_GAPS.test( row.reason ?? '' ) && ! row.state ? rowTarget( { nodes, flat, refOf }, row ) : null;
-		const result = hit ? handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, resolver } ) : null;
 		if ( null === result ) {
 			out.unmapped.push( row );
 		} else if ( result.raise ) {
 			out.unmapped.push( { ...row, reason: `${ row.reason }; dimension: ${ result.raise }` } );
+		} else {
+			out.answered.push( answer( row, result.answered ) );
 		}
 	}
+	out.unmapped = regroup( out.unmapped );
 	return out;
 }
 
-// Returns true (the row is settled), { raise: reason } (the row stays with a reason), or null (not this pass's row).
+// Returns { answered: the read widths the row is settled at }, { raise: reason } (the row stays with a reason), or null
+// (not this pass's row).
 function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, resolver } ) {
 	const { rec, target } = hit;
 	const { reads } = ctx;
@@ -178,7 +184,7 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 		'written' === res.status && commit( out, { rec, node, row, prop: p, res, how: 'dimension', note: why } );
 		touched.length && ledger( p );
 		out.notes.push( `${ row.node } ${ rec.name }${ slot ? ` (${ slot })` : '' } ${ p }: ${ why }${ touched.length ? `; ${ touched.map( ( t ) => `${ t.from }px at ${ t.w } raised to ${ MIN_TARGET }px (touch target)` ).join( ', ' ) }` : '' }` );
-		return true;
+		return { answered: widths };
 	};
 	const ledger = ( p ) => {
 		const e = { id: nextId( [ ...entries, ...out.ledger ] ), scope, node: row.node, state: '*', property: p, widths: touched.map( ( t ) => t.w ), expected: { rule: 'touch-target' },
@@ -193,7 +199,7 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 		const relative = 'max' === kind ? widths.filter( ( w ) => undefined === paint[ w ] && relativeCeiling( raw[ w ] ) ) : [];
 		if ( ! clash.length && ! relative.length ) {
 			out.notes.push( `${ row.node } ${ rec.name }${ slot ? ` (${ slot })` : '' } ${ row.property }: ${ Object.keys( paint ).length ? `the block's ${ p } (${ Object.values( paint ).join( ' / ' ) }px) does not contradict the draft's rendered size` : `the block paints no ${ p } that is known` }; nothing to write` );
-			return Object.keys( paint ).length ? true : { raise: `the block's own ${ p } is unknown (no calibrated paint), so whether it contradicts the draft's rendered ${ Object.values( rendered ).join( ' / ' ) }px is unproven` };
+			return Object.keys( paint ).length ? { answered: widths } : { raise: `the block's own ${ p } is unknown (no calibrated paint), so whether it contradicts the draft's rendered ${ Object.values( rendered ).join( ' / ' ) }px is unproven` };
 		}
 		const why = `the block paints ${ p } ${ [ ...clash.map( ( w ) => `${ paint[ w ] }px` ), ...relative.map( ( w ) => raw[ w ] ) ].join( ' / ' ) } where the draft renders ${ [ ...clash, ...relative ].map( ( w ) => `${ Math.round( rendered[ w ] ) }px` ).join( ' / ' ) } (${ row.property } ${ [ ...new Set( widths.map( ( w ) => given[ w ] ?? 'auto' ) ) ].join( ' / ' ) }); the draft's rendered size is written`;
 		return 'min' === kind ? settle( p, rendered, why ) : ceiling( p, why );
@@ -254,8 +260,8 @@ export const NATURAL_SIZE = 'auto';
 // does not shrink it: at its rendered width where the draft declares that width as a plain px length, else at its natural
 // size (NATURAL_SIZE, `auto`: a fluid height with an intrinsic ratio, a clamp(), none declared, which px per tier would pin
 // between the read widths). A read width where it does shrink, below a fixed one, sizes to its content ('fit'), so the fixed
-// tier is not carried down. Nothing is written where the block's root shrinks at none of those widths. Returns true,
-// { raise }, or null (not this pass's row).
+// tier is not carried down. Nothing is written where the block's root shrinks at none of those widths. Returns
+// { answered: the widths held }, { raise }, or null (not this pass's row).
 function fixedSizing( { row, nodes, flat, refOf, reads, db, calFor, out } ) {
 	const hit = rowTarget( { nodes, flat, refOf }, row );
 	if ( ! hit ) {
@@ -307,5 +313,5 @@ function fixedSizing( { row, nodes, flat, refOf, reads, db, calFor, out } ) {
 	const included = Object.fromEntries( fixedAt.map( ( w ) => [ w, given[ w ] ] ) );
 	commit( out, { rec, node, row, prop: 'flex-shrink', res: { writes: [ { attr: SIZING, value: modes }, { attr: SIZING_WIDTH, value: widths } ], included }, how: 'dimension', note: `the draft keeps the flex item from shrinking (flex-shrink 0 at ${ fixedAt.join( ', ' ) }) where the block's root shrinks (flex-shrink ${ fixedAt.map( ( w ) => paint[ w ] ).join( ' / ' ) }), so the fixed child sizing holds its ${ fixedAt.some( fluid ) ? 'natural size' : 'rendered width' } ${ Object.values( widths ).join( ' / ' ) }` } );
 	out.notes.push( `${ row.node } ${ rec.name } flex-shrink: fixed child sizing at ${ Object.entries( widths ).map( ( [ t, v ] ) => `${ t } ${ v }` ).join( ', ' ) }` );
-	return true;
+	return { answered: fixedAt };
 }

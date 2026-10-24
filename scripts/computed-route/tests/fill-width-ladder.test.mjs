@@ -3,7 +3,8 @@
 // only when no rung holds it. The generic resolver is stood in for by a fixture that holds the keywords its enum lists.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { widthLadderWrites, effectOf, isLadderRow } from '../lib/fill-width-ladder.mjs';
+import { widthLadderWrites, effectOf, isLadderRow, valuesAt, writtenTarget } from '../lib/fill-width-ladder.mjs';
+import { reresolve } from '../lib/fill-regap.mjs';
 import { ONE_VALUE_EVERY_WIDTH } from '../lib/resolve.mjs';
 import { openDb } from '../lib/db.mjs';
 import { fixtureDb } from './fixtures/framework-db.mjs';
@@ -181,4 +182,52 @@ test( 'MUST FAIL WITHOUT THE WRITTEN ELEMENT\'S READS: a root row written on the
 	assert.deepEqual( r.unmapped, [] );
 	assert.equal( attrs( w ).justifyContent, 'space-between' );
 	assert.equal( attrs( w ).sgsCustomCss, undefined, 'no 375 rule: the written element does the same at every width' );
+} );
+
+// valuesAt and writtenTarget (council, Rater C): the element the ladder writes gives the values, without mixing elements.
+const ROOT = { id: '0:', slot: '' };
+const INNER = { id: '0:.in', slot: '.in' };
+const readsOf = ( by ) => ( { widths: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, Object.fromEntries( Object.entries( by ).map( ( [ id, at ] ) => [ id, undefined === at[ w ] ? { missing: true } : { styles: at[ w ] } ] ) ) ] ) ) } );
+
+test( 'MUST FAIL: a state row keeps its own state value; the written element\'s rest read never replaces it', () => {
+	const reads = readsOf( { '0:': { 375: { 'align-items': 'normal' }, 768: { 'align-items': 'normal' }, 1440: { 'align-items': 'normal' } }, '0:.in': { 375: { 'align-items': 'center' }, 768: { 'align-items': 'center' }, 1440: { 'align-items': 'center' } } } );
+	const row = { node: 'n0', slot: '', property: 'align-items', value: 'flex-end', state: 'hover' };
+	assert.deepEqual( valuesAt( row, reads, ROOT, INNER ), { 375: 'flex-end', 768: 'flex-end', 1440: 'flex-end' } );
+	assert.deepEqual( valuesAt( { ...row, state: null }, reads, ROOT, INNER ), { 375: 'center', 768: 'center', 1440: 'center' }, 'a rest row reads the written element' );
+} );
+
+test( 'MUST FAIL: a written element read at some widths gives only its own values; a width it has no read at is left out', () => {
+	const reads = readsOf( { '0:': { 375: { 'justify-content': 'normal' }, 768: { 'justify-content': 'normal' }, 1440: { 'justify-content': 'normal' } }, '0:.in': { 768: { 'justify-content': 'center' }, 1440: { 'justify-content': 'center' } } } );
+	const row = { node: 'n0', slot: '', property: 'justify-content', value: JSON.stringify( { 375: 'normal', 768: 'normal', 1440: 'normal' } ) };
+	assert.deepEqual( valuesAt( row, reads, ROOT, INNER ), { 768: 'center', 1440: 'center' }, 'the root\'s normal at 375 is not mixed in' );
+	// A written element with no read at all keeps the row's own values.
+	assert.deepEqual( valuesAt( row, readsOf( { '0:': {}, '0:.in': {} } ), ROOT, INNER ), { 375: 'normal', 768: 'normal', 1440: 'normal' } );
+} );
+
+test( 'MUST FAIL: a row value declared in a form the computed read loses (var(), %, rem) is kept over the written element\'s computed value', () => {
+	const reads = readsOf( { '0:': {}, '0:.in': { 375: { 'border-radius': '20px' }, 768: { 'border-radius': '20px' }, 1440: { 'border-radius': '20px' } } } );
+	const row = { node: 'n0', slot: '', property: 'border-radius', value: JSON.stringify( { 375: '50%', 768: 'var(--r)', 1440: '1.25rem' } ) };
+	assert.deepEqual( valuesAt( row, reads, ROOT, INNER ), { 375: '50%', 768: 'var(--r)', 1440: '1.25rem' } );
+	assert.deepEqual( valuesAt( { ...row, value: '12px' }, reads, ROOT, INNER ), { 375: '20px', 768: '20px', 1440: '20px' }, 'a plain computed value takes the written element\'s' );
+} );
+
+test( 'MUST FAIL: a setting slot no target of the node sits at keeps the row\'s target and says so', () => {
+	const rec = { index: 0, name: 'sgs/box', targets: [ ROOT, INNER ] };
+	const notes = [];
+	assert.equal( writtenTarget( rec, ROOT, '.in', notes ), INNER );
+	assert.deepEqual( notes, [] );
+	assert.equal( writtenTarget( rec, ROOT, '.other', notes ), ROOT );
+	assert.equal( notes.length, 1 );
+	assert.match( notes[ 0 ], /\.other/ );
+} );
+
+test( 'MUST FAIL: the written element with no font-size read takes the row element\'s font size for em values', () => {
+	let seen = null;
+	const reads = readsOf( { '0:': { 375: { 'font-size': '20px' }, 768: { 'font-size': '20px' }, 1440: { 'font-size': '20px' } }, '0:.in': { 375: {}, 768: {}, 1440: {} } } );
+	const resolver = ( a ) => {
+		seen = a.fontPx;
+		return { status: 'gap' };
+	};
+	reresolve( { rec: { name: 'sgs/box' }, node: { attributes: {} }, target: INNER, fallback: ROOT, slot: '.in', prop: 'gap', draft: { 768: '1em' }, ctx: { reads }, resolver } );
+	assert.deepEqual( seen, { 375: 20, 768: 20, 1440: 20 } );
 } );
