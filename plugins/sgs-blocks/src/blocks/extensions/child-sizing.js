@@ -11,7 +11,7 @@
  * Attributes (per tier, `{desktop,tablet,mobile}`; a blank tablet/mobile tier
  * inherits the tier above):
  *   - sgsChildSizing: '' (the block's natural size) | 'fit' | 'fill' | 'fixed'
- *   - sgsChildWidth:  a CSS length, read when the tier's sizing is 'fixed'
+ *   - sgsChildWidth:  a CSS length, or 'auto' (natural size that never shrinks), read when the tier's sizing is 'fixed'
  *
  * The frontend rules come from includes/child-sizing.php (render_block, a
  * scoped <style>, never an inline style). The editor preview below adds a
@@ -25,7 +25,7 @@ import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { useSelect } from '@wordpress/data';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, SelectControl } from '@wordpress/components';
+import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 import { isExtensionEnabled } from './hide-extensions';
 import ResponsiveOverride from '../../components/ResponsiveOverride';
 import SgsLengthControl from '../../components/SgsLengthControl';
@@ -107,6 +107,23 @@ function ChildSizingPanel( { attributes, setAttributes } ) {
 								__next40pxDefaultSize
 							/>
 							{ 'fixed' === effectiveValue && (
+								<ToggleControl
+									label={ __( 'Natural size, never shrinks', 'sgs-blocks' ) }
+									help={ __( 'Keeps the block at its own size (for example a logo with a fluid height) and stops the row from squeezing it.', 'sgs-blocks' ) }
+									checked={ 'auto' === ownWidth }
+									onChange={ ( on ) => {
+										const next = { ...widths };
+										if ( on ) {
+											next[ tier ] = 'auto';
+										} else {
+											delete next[ tier ];
+										}
+										setAttributes( { sgsChildWidth: next } );
+									} }
+									__nextHasNoMarginBottom
+								/>
+							) }
+							{ 'fixed' === effectiveValue && 'auto' !== ownWidth && (
 								<SgsLengthControl
 									label={ __( 'Width', 'sgs-blocks' ) }
 									value={ ownWidth }

@@ -8,7 +8,8 @@
  *   - `sgsChildSizing` {desktop,tablet,mobile}: 'fit' | 'fill' | 'fixed'
  *     ('' or missing on desktop = the block's own natural sizing; a blank
  *     tablet/mobile tier inherits the tier above);
- *   - `sgsChildWidth`  {desktop,tablet,mobile}: a CSS length, read by 'fixed'.
+ *   - `sgsChildWidth`  {desktop,tablet,mobile}: a CSS length, or 'auto' (the block's natural size, which never
+ *     shrinks), read by 'fixed'.
  *
  * 'fill' takes the space left over in the row (`flex:1 1 0%`), so the
  * siblings keep their natural size and this block gets the rest; 'fit' sizes
@@ -42,6 +43,21 @@ function child_sizing_enabled( string $block_name ): bool {
 }
 
 /**
+ * The width a tier's sizing reads: a sanitised CSS length, or 'auto' (the block's natural size, which never shrinks),
+ * for 'fixed' only; '' for every other mode or an unusable value.
+ *
+ * @param string $mode The tier's resolved mode.
+ * @param string $raw  The tier's stored `sgsChildWidth` value.
+ * @return string
+ */
+function child_sizing_tier_width( string $mode, string $raw ): string {
+	if ( 'fixed' !== $mode ) {
+		return '';
+	}
+	return 'auto' === trim( $raw ) ? 'auto' : sgs_css_single_length_value( $raw );
+}
+
+/**
  * The CSS declarations for one resolved sizing state.
  *
  * @param string $mode      'fit' | 'fill' | 'fixed' | '' (natural).
@@ -60,6 +76,10 @@ function child_sizing_declarations( string $mode, string $width, bool $any_fixed
 		case 'fixed':
 			// `width`, not `flex-basis`: in a column-direction parent the basis
 			// would size the height. max-width keeps it inside a narrow row.
+			if ( 'auto' === $width ) {
+				// The natural size, never shrunk or capped: a fluid item (a clamp() logo height) keeps its own width.
+				return 'flex:0 0 auto;width:auto;max-width:none;';
+			}
 			return '' === $width ? '' : 'flex:0 0 auto;width:' . $width . ';max-width:100%;box-sizing:border-box;';
 		default:
 			return '';
@@ -106,7 +126,7 @@ function inject_child_sizing( $block_content, $block ) {
 	foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
 		$mode              = (string) sgs_resolve_tier( $modes, $tier, '' )['value'];
 		$mode              = in_array( $mode, array( 'fit', 'fill', 'fixed' ), true ) ? $mode : '';
-		$width             = 'fixed' === $mode ? sgs_css_single_length_value( (string) sgs_resolve_tier( $widths, $tier, '' )['value'] ) : '';
+		$width             = child_sizing_tier_width( $mode, (string) sgs_resolve_tier( $widths, $tier, '' )['value'] );
 		$resolved[ $tier ] = array( $mode, $width );
 		$any_fixed         = $any_fixed || ( 'fixed' === $mode && '' !== $width );
 	}
