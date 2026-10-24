@@ -1,6 +1,5 @@
 // Proves the FR-33-12 route gate: a snapshot whose recorded MANIFEST hashes differ from the export's current MANIFEST.json,
-// or that records none, fails closed with a clear message; a fresh one loads. The gate is tested directly until
-// lib/normalise.mjs::loadSnapshot calls it (FR-33-12 Status: at the start of Phase 2).
+// or that records none, fails closed with a clear message; a fresh one loads. lib/normalise.mjs::loadSnapshot calls the gate.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
@@ -63,7 +62,7 @@ test( 'a site folder with no MANIFEST.json is not gated', () => {
 	assert.doesNotThrow( () => loadSnapshot( file ) );
 } );
 
-// FR-33-12: loadSnapshot calls the gate once the three committed snapshots are re-extracted (Phase 2's start).
-test( 'loadSnapshot refuses a stale snapshot', { todo: 'wired in lib/normalise.mjs::loadSnapshot at the start of Phase 2 (FR-33-12 Status)' }, () => {
+// FR-33-12: loadSnapshot calls the gate.
+test( 'loadSnapshot refuses a stale snapshot', () => {
 	assert.throws( () => loadSnapshot( site( undefined ) ), /records no _sgsExtractor\.manifest_sha256/ );
 } );
