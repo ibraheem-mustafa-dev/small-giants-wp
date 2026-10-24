@@ -36,7 +36,7 @@ export const pressVariant = ( block, node ) => PRESS_BLOCKS[ block ]?.( node?.at
 // its own focus look.
 const RING_TAGS = [ 'a', 'button', 'summary' ];
 const RING_ROLES = [ 'button', 'tab', 'link', 'menuitem' ];
-const takesRing = ( tag, role ) => RING_TAGS.includes( String( tag || '' ).toLowerCase() ) || RING_ROLES.includes( String( role || '' ).toLowerCase() );
+export const takesRing = ( tag, role ) => RING_TAGS.includes( String( tag || '' ).toLowerCase() ) || RING_ROLES.includes( String( role || '' ).toLowerCase() );
 
 // Whether a focus look on this element feeds the ring: never a form control, always an element that takes the ring or whose
 // look is outline-only. An element the read did not identify (no tag and no role at any read width) feeds nothing: the
@@ -167,6 +167,12 @@ export function createPatch() {
 	return { patch, entries, conflicts, set };
 }
 
+// The browser's own ring style has no token yet: focus.css's outline-style token (which takes `auto`) and the switch that
+// drops its hairline and glow are pending (Track F, plan decision 1 of 2026-10-24). The ring's width, colour and offset are
+// written now; the style is raised under this reason and nothing is written for it.
+export const AUTO_STYLE_PENDING = "outline-style:auto: the browser's own focus ring style waits on focus.css's pending outline-style token (accepting auto) and its switch that drops the hairline and glow (Track F); the ring's width, colour and offset are written, its style is not";
+const pendingStyle = ( gap ) => ( gap.startsWith( 'outline-style:auto' ) ? AUTO_STYLE_PENDING : gap );
+
 const gapRow = ( from, gap, state, value ) => ( { node: from.node, block: from.block, slot: from.slot, property: gap.split( ':' )[ 0 ], state, value, reason: gap } );
 
 // Flattens { group: { prop: value } } under `base` into leaf sets.
@@ -203,7 +209,7 @@ export function applyTokenLooks( { looks, sink, from, target, variant, owned } )
 			sink.set( [ 'settings', 'custom', 'focus', k ], v, { ...from, state: 'focus', ...ground } );
 			'ring' === k && ground.browser && sink.set( [ 'settings', 'custom', 'focus', 'ringOnDark' ], v, { ...from, state: 'focus', ...ground } );
 		}
-		unmapped.push( ...gaps.map( ( g ) => gapRow( from, g, 'focus', asJson( looks.focus ) ) ) );
+		unmapped.push( ...gaps.map( ( g ) => gapRow( from, pendingStyle( g ), 'focus', asJson( looks.focus ) ) ) );
 	}
 	if ( looks.active ) {
 		const { tokens, gaps } = pressTokens( { declared: looks.active }, variant );

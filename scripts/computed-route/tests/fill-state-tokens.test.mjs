@@ -78,10 +78,10 @@ test( 'MUST FAIL WITHOUT THE LINK WRITER: a :visited look on a content link land
 	const r = run( 'sgs/text', plainCal, [ code ], { snap } );
 	assert.deepEqual( r.patch.styles.elements.link[ ':visited' ], { color: { text: '#551a8b' } } );
 	const owned = run( 'sgs/text', buttonCal, [ code ], { snap } );
-	assert.deepEqual( owned.patch, {} );
-	assert.match( owned.unmapped[ 0 ].reason, /a block setting owns this link look/ );
+	assert.equal( owned.patch.styles, undefined );
+	assert.match( owned.unmapped.find( ( u ) => 'visited' === u.state ).reason, /a block setting owns this link look/ );
 	const noHref = run( 'sgs/text', plainCal, [ code ], { snap: { tag: 'a', href: null } } );
-	assert.deepEqual( noHref.patch, {} );
+	assert.equal( noHref.patch.styles, undefined );
 } );
 
 test( 'MUST FAIL WITHOUT THE SURFACE RULE: an open look on a surface hidden at rest writes the surface\'s resting setting', () => {
@@ -133,8 +133,9 @@ test( 'MUST FAIL: a :visited look on a button-styled link, or on the root link o
 	assert.equal( plain.patch.styles.elements.link[ ':visited' ].color.text, '#010203', 'a plain content link is the theme link' );
 	const btn = run( 'sgs/text', plainCal, visited, { snap: { tag: 'a', href: '/x', className: 'btn btn-primary' } } );
 	assert.equal( btn.patch.styles, undefined );
-	assert.equal( btn.unmapped.length, 1 );
-	assert.match( btn.unmapped[ 0 ].reason, /^element/ );
+	const visitedRows = btn.unmapped.filter( ( u ) => 'visited' === u.state );
+	assert.equal( visitedRows.length, 1 );
+	assert.match( visitedRows[ 0 ].reason, /^element/ );
 	const role = run( 'sgs/text', plainCal, visited, { snap: { tag: 'a', href: '/x', role: 'button', className: '' } } );
 	assert.equal( role.patch.styles, undefined );
 	const root = run( 'sgs/button', plainCal, visited, { snap: { tag: 'a', href: '/x', className: 'sgs-cta' } } );
