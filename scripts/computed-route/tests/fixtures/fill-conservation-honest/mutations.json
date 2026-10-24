@@ -19,7 +19,7 @@
  },
  {
   "file": "lib/census-conservation.mjs",
-  "find": "} else if ( by.length && contradiction( by ) ) {",
+  "find": "} else if ( by.length && contradiction( by, read ) ) {",
   "replace": "} else if ( false ) {",
   "why": "a contradicted read counts as conserved"
  },
