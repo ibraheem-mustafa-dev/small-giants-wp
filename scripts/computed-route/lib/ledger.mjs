@@ -2,6 +2,7 @@
 // walker accepts, and building a new entry from a report row. Entries live in sites/<client>/build/qa/divergences.json.
 import fs from 'fs';
 import path from 'path';
+import { CONTEXT_PROPS } from '../../parity/lib/collect.mjs';
 
 // Rule names an entry may use instead of a value, each with its meaning. An unknown rule name fails the run.
 export const RULES = {
@@ -95,6 +96,9 @@ export function measurements( report ) {
 				continue;
 			}
 			for ( const [ property, live ] of Object.entries( p.live.styles || {} ) ) {
+				if ( CONTEXT_PROPS.has( property ) ) {
+					continue;
+				}
 				out.push( { ref: trace.ref, block: trace.block, property, state: run.state, width: run.width, draft: p.draft.styles[ property ], live, paths: tracePaths( trace ) } );
 			}
 		}

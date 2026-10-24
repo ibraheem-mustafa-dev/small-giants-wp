@@ -19,7 +19,14 @@ export const DEFAULT_PROPS = [
 	'left', 'top',
 	// Motion timings as ordinary rows (a setting can hold each), beside the motion rows' shorthand comparison.
 	'transition-duration', 'transition-delay', 'transition-timing-function', 'animation-duration', 'animation-delay', 'animation-timing-function',
+	// Context reads (CONTEXT_PROPS): read so an equivalence rule can judge `text-align: start|end` and a block container's
+	// `justify-content`, never compared themselves.
+	'direction', 'column-count', 'column-width',
 ];
+
+// The DEFAULT_PROPS that are read for context only: the compare loops (compare.mjs::comparePair, ledger.mjs) never raise a
+// row on them, and they stay in calibration's read key (computed-route lib/calibrate-props.mjs::READ_KEY).
+export const CONTEXT_PROPS = new Set( [ 'direction', 'column-count', 'column-width' ] );
 
 // Properties read on an element's ::before and ::after layers (a painted ring, an overlay ground), only where the layer
 // paints (its content is not none). Rows carry `pseudo` and the layer's path is the element's path plus the pseudo,

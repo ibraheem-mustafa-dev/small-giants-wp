@@ -389,12 +389,13 @@ The walker compares the built surface with the draft and is the closing comparis
     - A gap is a row only where a side lays out two or more flex or grid items (a snapshot with no recorded count still compares), counting a painting `::before`/`::after` and stepping into `display: contents` children (`collect.mjs::collectPair` `layoutChildren`, `paint.mjs::layoutComparable`).
     - A pair reads text it lays out itself and nested text no other pair owns; where only one side paints text there, the pair has one `text presence` row instead of a row per text property (`paint.mjs::textCarrier`).
     - Inner parts pair in rounds: unnamed parts by destination, then by name, then by destination, then by kind, place and size, never across two differing destinations; a part named differently on the two sides is one `label` row (`parts.mjs::pairParts`). The automatic word check compares `line-height`.
+24. **Context reads (built 2026-10-24, GAP-CHECKLIST §33).** `direction`, `column-count` and `column-width` are in `collect.mjs::DEFAULT_PROPS` so an equivalence rule can judge `text-align: start|end` and a block container's `justify-content` from them. They are read, never compared: `collect.mjs::CONTEXT_PROPS` is skipped by the compare loop (`compare.mjs::comparePair`) and by the divergence ledger (`ledger.mjs::measurements`), so no row or ledger entry appears for them. Calibration reads them through `READ_PROPS`, and `calibrate-props.mjs::READ_KEY` (a hash of the read lists) changes with the list, so every cached block calibration is stale and re-measures on the next run (recalibrate before relying on a cache).
 
 Items 10 to 13 and the built parts of 1 and 3 are proven in headless Chromium on local pages (`tests/walker-devtools.test.mjs`) and on About (measure-only on the local mirror: no false rows after the animation-timing rule; 1 real open issue).
 
 **Done when:** each built item has a GAP-CHECKLIST section with its planted fault turning red and each not-built item (15 to 18) meets its own done line. `node scripts/parity/benchmark.mjs --noise` still catches 5 of 5 with no new noise rows.
 
-Status: partly built: items 1 to 10, 12 to 14 and 19 to 21 built; item 11 partly built; items 15 to 18 not built (no eager load, `property_suffixes` test, font record or WebGL probe in `scripts/parity/lib/`). The benchmark's lens cases cannot run (the live lens configurator no longer offers the option the case clicks), so `--noise` runs the shop cases only.
+Status: partly built: items 1 to 10, 12 to 14, 19 to 21 and 24 built; item 11 partly built; items 15 to 18 not built (no eager load, `property_suffixes` test, font record or WebGL probe in `scripts/parity/lib/`). The benchmark's lens cases cannot run (the live lens configurator no longer offers the option the case clicks), so `--noise` runs the shop cases only.
 
 ### FR-48-10 -- Identity pairing fixes
 

@@ -5,6 +5,7 @@ import { layoutComparable } from './paint.mjs';
 import { sameTransitions, isTimingLonghand } from './transitions.mjs';
 import { TRANSFORM_PARTS, comparePose } from './transform.mjs';
 import { compareParts } from './parts.mjs';
+import { CONTEXT_PROPS } from './collect.mjs';
 
 const PX = /^-?\d+(\.\d+)?px$/;
 // The identity transform in both forms the computed style gives (2D and 3D), whitespace removed.
@@ -263,7 +264,7 @@ export function comparePair( pair, d, l, tol ) {
 	const poseRows = comparePose( d, l, tol, loops );
 	diffs.push( ...poseRows.filter( ( r ) => 'style' === r.kind ) );
 	for ( const p of new Set( [ ...Object.keys( d.styles ), ...Object.keys( l.styles ) ] ) ) {
-		if ( TRANSFORM_PARTS.includes( p ) ) {
+		if ( TRANSFORM_PARTS.includes( p ) || CONTEXT_PROPS.has( p ) ) {
 			continue;
 		}
 		// icon-colour is its own row only across a glyph and an svg; elsewhere icon-fill and icon-stroke carry the icon's colour.
