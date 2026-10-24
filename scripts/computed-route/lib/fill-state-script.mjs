@@ -167,7 +167,7 @@ export function scriptGapReason( script, state, gap ) {
 	if ( ! script ) {
 		return gap;
 	}
-	const items = script.items?.length > 1 ? `; items with it: ${ script.items.filter( ( i ) => i.look ).map( ( i ) => i.label || `#${ i.copy }` ).join( ', ' ) || 'none' }; without it: ${ script.items.filter( ( i ) => ! i.look ).map( ( i ) => i.label || `#${ i.copy }` ).join( ', ' ) || 'none' }` : '';
+	const items = script.items?.length > 1 ? `; items with it: ${ script.items.filter( ( i ) => i.look ).map( ( i ) => i.label || `copy ${ i.copy }` ).join( ', ' ) || 'none' }; without it: ${ script.items.filter( ( i ) => ! i.look ).map( ( i ) => i.label || `copy ${ i.copy }` ).join( ', ' ) || 'none' }` : '';
 	return 'open-panel' === script.kind
 		? `script-look: ${ state } on ${ script.element } (open-panel look, Track F's setting pending)${ items }`
 		: `script-look: ${ state } on ${ script.element }: ${ gap }${ items }`;
