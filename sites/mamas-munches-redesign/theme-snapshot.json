@@ -779,14 +779,6 @@
           "color": {
             "text": "var:preset|color|link-hover"
           }
-        },
-        ":focus-visible": {
-          "color": {
-            "text": "var:preset|color|link-hover"
-          },
-          "typography": {
-            "textDecoration": "underline"
-          }
         }
       },
       "heading": {
