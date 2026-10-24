@@ -118,7 +118,7 @@ export function fillReport( r ) {
 		`| Confirm records (declared against rendered, FR-48-8) | ${ ( r.confirm || [] ).length } (${ VERDICTS.map( ( v ) => `${ v } ${ ( r.confirm || [] ).filter( ( c ) => c.verdict === v ).length }` ).join( ', ' ) }) |`, '',
 		'## UNMAPPED', '',
 		'Each row is a draft value no block setting can hold (or that the draft paints and the block cannot), with the reason the resolver gave.', '',
-		...table( [ 'Property', 'Value', 'Node', 'Block', 'Element', 'Reason' ], r.unmapped.map( ( u ) => [ u.property, u.value, u.node, u.block, u.slot ?? '', u.reason ] ) ),
+		...table( [ 'Property', 'Value', 'State', 'Node', 'Block', 'Element', 'Reason' ], r.unmapped.map( ( u ) => [ u.property, u.value, u.state ?? '', u.node, u.block, u.slot ?? '', u.reason ] ) ),
 		'## Already held', '',
 		'Rows the resolver could not place by name that the element already renders at every width they state, so nothing needs writing. `covered`: a written setting (or an sgsMotion state) paints this value on this element. `inherited`: an inherited property on an element with no text of its own, equal to its parent. `default`: the value is the calibrated default paint of this element. A value that differs by one unit, or holds at some widths only, stays in UNMAPPED.', '',
 		...HELD_REASONS.flatMap( ( k ) => [ `### ${ k } (${ heldBy[ k ] })`, '', ...table( [ 'Property', 'Value', 'State', 'Node', 'Block', 'Element', 'Held because' ], held.filter( ( h ) => h.heldReason === k ).map( ( h ) => [ h.property, h.value, h.state ?? '', h.node, h.block, h.slot ?? '', h.heldDetail ] ) ) ] ),
