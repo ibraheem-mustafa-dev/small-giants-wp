@@ -13,5 +13,6 @@
 	{ "file": "lib/fill-motion-element.mjs", "find": "if ( ! sameEase( ease( w ), ease( widths[ 0 ] ) ) ) {", "replace": "if ( false ) {", "why": "an easing that differs by width leaves no row" },
 	{ "file": "lib/fill-motion-element.mjs", "find": "const snap = ( v, type ) => snapToken( v, type, { ...ctx, prefer: [ type ] } );", "replace": "const snap = ( v ) => v;", "why": "the paint timing is never a token" },
 	{ "file": "lib/fill-motion.mjs", "find": "paint.values && Object.assign( hover.values, paint.values );", "replace": "", "why": "the paint timing never reaches the written layer" },
-	{ "file": "lib/fill-motion.mjs", "find": "( hover.devices ??= {} )[ tier ] = { ...( hover.devices[ tier ] || {} ), ...v }", "replace": "0", "why": "the device paint timing never reaches the layer" }
+	{ "file": "lib/fill-motion.mjs", "find": "( hover.devices ??= {} )[ tier ] = { ...( hover.devices[ tier ] || {} ), ...v }", "replace": "0", "why": "the device paint timing never reaches the layer" },
+	{ "file": "lib/fill-timing.mjs", "find": "if ( undefined === decl[ 'transition-duration' ] ) {", "replace": "if ( true === reads.widths?.[ w ]?.[ id ]?.missing || undefined === decl[ 'transition-duration' ] ) {", "why": "a width the element is hidden at is left out of the paint timing but not the timing pass" }
 ]

@@ -105,12 +105,13 @@ export const isPaint = ( property ) => PAINT.test( property );
 // The paint timing one target's resting rule gives at each width, per longhand: { [width]: { [longhand]: { value, groups } } }
 // over the paint properties the transition list names (a property `all` covers stands for the paint properties the
 // element's hover look declares there), value being the timing most of them share (a tie keeps the draft's order).
-// A width with no paint property timed is left out.
+// A width whose resting rule declares no transition-duration, or times no paint property, is left out (timingFacts reads
+// the same widths).
 export function paintTimings( reads, id ) {
 	const out = {};
 	for ( const w of READ_WIDTHS ) {
 		const decl = restDeclOf( reads, id, w );
-		if ( true === reads.widths?.[ w ]?.[ id ]?.missing || undefined === decl[ 'transition-duration' ] ) {
+		if ( undefined === decl[ 'transition-duration' ] ) {
 			continue;
 		}
 		const entries = transitionEntries( decl );

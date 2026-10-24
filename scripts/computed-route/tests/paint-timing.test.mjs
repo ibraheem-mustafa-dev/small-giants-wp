@@ -33,6 +33,9 @@ const LIFT = { transform: 'scale(1.07)', 'box-shadow': 'rgba(10, 126, 168, 0.85)
 test( 'MUST FAIL: a paint timing apart from the movement timing leaves no row; the movement row stays only for a non-paint property', () => {
 	const burger = run( reads( BURGER, LIFT ) );
 	assert.deepEqual( conflicts( burger ), [], 'the paint is the layer\'s own timing, not a conflict with transform\'s' );
+	const hidden = reads( BURGER, LIFT );
+	hidden.widths = { 375: { t: { missing: true } } };
+	assert.deepEqual( conflicts( run( hidden ) ), [], 'a width the element is not drawn at is read as the timing pass reads it' );
 	// A property that is neither paint nor transform still conflicts with the movement timing.
 	const fade = run( reads( { [ PROP ]: 'opacity, transform, box-shadow', [ DUR ]: '0.3s, 0.4s, 0.25s' }, LIFT ) );
 	assert.deepEqual( conflicts( fade ).map( ( u ) => JSON.parse( u.value ) ), [ [ { properties: [ 'opacity' ], value: '0.3s' } ] ] );
