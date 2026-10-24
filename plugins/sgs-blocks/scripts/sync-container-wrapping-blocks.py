@@ -193,9 +193,25 @@ def has_innerblocks_slot(slug: str) -> bool:
     return bool(re.search(r"useInnerBlocksProps|InnerBlocks\.Content|<InnerBlocks", js))
 
 
-def layout_attrs_for(attrs: Dict[str, Any]) -> List[str]:
-    """Return attr names that qualify as layout-orchestration attrs."""
-    return [k for k in attrs if LAYOUT_ATTR_RE.match(k)]
+def inner_element_attrs(bj: Dict[str, Any]) -> set:
+    """Attr names the block's `supports.sgs.elements` map explicitly sends to an inner element (one that is not the
+    wrapper): a `flexWrap` on a card's social-links row arranges that row, not the block's children, so it is not
+    criterion (b) evidence. An attr no element maps, or one mapped to the wrapper, still counts."""
+    elements = ((bj.get("supports", {}) or {}).get("sgs", {}) or {}).get("elements", {}) or {}
+    inner: set = set()
+    wrapper: set = set()
+    for spec in elements.values():
+        if not isinstance(spec, dict):
+            continue
+        mapped = {str(v) for v in (spec.get("attrMap") or {}).values() if isinstance(v, str)}
+        (wrapper if spec.get("isWrapper") else inner).update(mapped)
+    return inner - wrapper
+
+
+def layout_attrs_for(attrs: Dict[str, Any], bj: Optional[Dict[str, Any]] = None) -> List[str]:
+    """Return attr names that qualify as layout-orchestration attrs (leaving out those mapped to an inner element)."""
+    inner = inner_element_attrs(bj) if bj else set()
+    return [k for k in attrs if LAYOUT_ATTR_RE.match(k) and k not in inner]
 
 
 def section_attrs_for(attrs: Dict[str, Any]) -> List[str]:
@@ -257,7 +273,7 @@ def derive_kind(
     attrs = bj.get("attributes", {}) or {}
     if section_attrs_for(attrs):
         return "section"
-    if layout_attrs_for(attrs) or slug in structural_parents:
+    if layout_attrs_for(attrs, bj) or slug in structural_parents:
         return "layout"
     return "content"
 
@@ -356,7 +372,7 @@ def main() -> int:
 
         attrs = bj.get("attributes", {}) or {}
         ib = has_innerblocks_slot(slug)
-        layout = layout_attrs_for(attrs)
+        layout = layout_attrs_for(attrs, bj)
         has_layout = bool(layout)
         supports = bj.get("supports", {}) or {}
         has_override = (supports.get("sgs", {}) or {}).get("containerKind") in (
@@ -465,6 +481,11 @@ def main() -> int:
             "sgs/choice-flow", "sgs/choice-flow-question", "sgs/form-step",
             "sgs/nav-drawer-menu", "sgs/notice-banner", "sgs/process-steps",
             "sgs/wishlist-panel",
+            # sgs/social-icons (2026-10-24, F2 decision 3): its root is the row of sgs/icon children
+            # (InnerBlocks) and now carries `flexWrap` mapped to that wrapper element, so it arranges its
+            # children (criterion (b)). A `flexWrap` mapped to an inner element (team-member's and
+            # business-info's social rows, breadcrumbs' and language-switch's lists) does not count.
+            "sgs/social-icons",
             # sgs/measured-diagram added 2026-10-08: it hosts sgs/diagram-dimension children through
             # InnerBlocks (block.json `allowedBlocks`) and is their structural parent, so the detector
             # reports it for the right reasons (InnerBlocks | structural-parent); the roster had not
@@ -494,11 +515,6 @@ def main() -> int:
             # signal. Listing them keeps the validator honest about what detection sees — it
             # does NOT assert wrapper delegation (same caveat as sgs/nav-drawer above).
             "sgs/mega-aside", "sgs/mega-group",
-            # sgs/social-icons added 2026-10-09: it is now a wrapper of Site Info-bound sgs/icon
-            # children (`allowedBlocks: ["sgs/icon"]`, InnerBlocks), so detection reads it on
-            # `InnerBlocks` alone, like sgs/mega-group above. The roster had not been refreshed
-            # since the rebuild; it does not assert wrapper delegation.
-            "sgs/social-icons",
             # sgs/decorative-image added 2026-10-22: the floating layer hosts text, labels and
             # badges through InnerBlocks, so detection reads it on `InnerBlocks` alone. The roster
             # had not been refreshed since it gained that slot; it does not assert wrapper delegation.
