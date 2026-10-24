@@ -225,12 +225,15 @@ const wrapperFinder = ( f ) => !! ( f && 'object' === typeof f && ( f.textRun ||
 // A pass-through box (GAP-CHECKLIST 31): a draft box that paints nothing, laid on the cross axis of a single-line flex
 // container (a `height: 100%` nav in an 84px row whose 42px links the row centres), against a live box of another size on
 // that axis. The draft box is larger than its items' union there, neither side paints the box, the container keeps its length on that axis, and every item (interactive,
-// positioned or in-flow child, collect.mjs::collectPair `passThrough`) keeps its extent from the container's start,
-// each side's set of extents found in the other's: the box's own size shows nothing, so it is no `w` / `h` row. Items that move, a box
-// that paints on either side, a container of another length or no such container on either side keep the row.
+// text run, other in-flow element or positioned layer, collect.mjs::collectPair `passThrough`) keeps its extent from the container's start,
+// each side's set of extents found in the other's: the box's own size shows nothing, so it is no `w` / `h` row. The draft box
+// lies within the container on that axis, and each kind of item is as many on both sides, except that the live side may
+// hold more controls (a submenu toggle split from the draft link carrying its caret). Items that move, a box
+// that paints on either side, a draft box overflowing the container, a count of items that differs, a container of
+// another length or no such container on either side keep the row.
 function passThroughHeld( k, d, l, tol ) {
 	const [ a, b ] = [ d.passThrough, l.passThrough ];
-	if ( ! a || ! b || a.paints || b.paints || ! a.items.length || ! a.line?.[ k ] || ! b.line?.[ k ] ) {
+	if ( ! a || ! b || a.paints || b.paints || ! a.self || ! a.items.length || ! a.line?.[ k ] || ! b.line?.[ k ] ) {
 		return false;
 	}
 	// Each extent is read from its own side's container start, so a container placed elsewhere on the page (a sticky
@@ -243,7 +246,13 @@ function passThroughHeld( k, d, l, tol ) {
 	// logo box hugging its link is the link's size, and that is a row).
 	const ends = a.items.map( ( it ) => ( 'h' === k ? [ it[ 0 ], it[ 1 ] ] : [ it[ 2 ], it[ 3 ] ] ) );
 	const union = Math.max( ...ends.map( ( e ) => e[ 1 ] ) ) - Math.min( ...ends.map( ( e ) => e[ 0 ] ) );
-	return d.box[ k ] - union > tol.box && Math.abs( len( a ) - len( b ) ) <= tol.box && within( a.items, a, b.items, b ) && within( b.items, b, a.items, a );
+	// The draft box lies within its container on that axis: one overflowing it shows its own size past the container's edge.
+	const own = span( a.self, a );
+	const inside = own[ 0 ] >= -tol.box && own[ 1 ] <= len( a ) + tol.box;
+	const count = ( s ) => s.items.reduce( ( m, it ) => m.set( it[ 4 ], ( m.get( it[ 4 ] ) ?? 0 ) + 1 ), new Map() );
+	const [ ca, cb ] = [ count( a ), count( b ) ];
+	const counted = [ ...new Set( [ ...ca.keys(), ...cb.keys() ] ) ].every( ( t ) => ( 'control' === t ? ( ca.get( t ) ?? 0 ) <= ( cb.get( t ) ?? 0 ) : ca.get( t ) === cb.get( t ) ) );
+	return d.box[ k ] - union > tol.box && inside && counted && Math.abs( len( a ) - len( b ) ) <= tol.box && within( a.items, a, b.items, b ) && within( b.items, b, a.items, a );
 }
 
 // Returns [{ kind, key, draft, live }] for one pair in one state at one width.

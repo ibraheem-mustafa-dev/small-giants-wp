@@ -190,9 +190,12 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	};
 	countItems( layoutEl );
 	// What a box shows when it paints nothing (`passThrough`, GAP-CHECKLIST 31): `paints` when it paints a ground, image,
-	// border, shadow, outline, filter or ::before/::after layer, clips (overflow not visible) or is a media or control
-	// element; `items`, each visible interactive descendant (else each in-flow rendered child) and each positioned
-	// descendant placed against the box or outside it, as [ top, bottom, left, right ] on the page; `line`, per axis, the extent on that axis of the single-line
+	// border, shadow, outline, filter, mask, clip-path or ::before/::after layer, clips (overflow not visible, paint
+	// containment), is translucent (opacity below 1) or blends (mix-blend-mode not normal), or is a media or control
+	// element; `self`, the box's own [ top, bottom, left, right ] on the page; `items`, each visible interactive descendant
+	// (`link` or `control`), each in-flow text run (`text`) or rendered element holding no interactive descendant
+	// (`other`) outside those, and each positioned descendant placed against the box or outside it (`placed`), as
+	// [ top, bottom, left, right, kind ] on the page; `line`, per axis, the extent on that axis of the single-line
 	// flex container on whose cross axis the box sits, the first ancestor holding more than the box, past wrappers whose
 	// only rendered child is the box (or the wrapper below) and that paint nothing (null when that ancestor is no such
 	// container or a wrapper paints). On a cross axis a box's size moves no sibling, so a box that paints nothing, whose
@@ -208,7 +211,9 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 			return /^(img|picture|video|canvas|svg|iframe|input|select|textarea)$/i.test( e.tagName ) || ! clear( s.backgroundColor ) || 'none' !== s.backgroundImage ||
 				[ 'Top', 'Right', 'Bottom', 'Left' ].some( ( side ) => parseFloat( s[ `border${ side }Width` ] ) > 0 ) || 'none' !== s.boxShadow ||
 				( 'none' !== s.outlineStyle && parseFloat( s.outlineWidth ) > 0 ) || 'none' !== s.filter || ( s.backdropFilter && 'none' !== s.backdropFilter ) ||
-				'visible' !== s.overflowX || 'visible' !== s.overflowY || layer( e, '::before' ) || layer( e, '::after' );
+				'visible' !== s.overflowX || 'visible' !== s.overflowY || 'none' !== s.clipPath || /\b(paint|content|strict)\b/.test( s.contain ) ||
+				[ s.maskImage, s.webkitMaskBoxImageSource ].some( ( m ) => m && 'none' !== m ) || parseFloat( s.opacity ) < 1 ||
+				'normal' !== s.mixBlendMode || layer( e, '::before' ) || layer( e, '::after' );
 		};
 		const rect = ( e ) => {
 			const b = e.getBoundingClientRect();
@@ -221,7 +226,41 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		// the box's own size, so each is an item too; one placed against an element inside the box (a link's own underline)
 		// moves with that element.
 		const placed = [ ...el.querySelectorAll( '*' ) ].filter( ( e ) => e.getClientRects().length && /absolute|fixed/.test( getComputedStyle( e ).position ) && ( ! e.offsetParent || e.offsetParent === el || ! el.contains( e.offsetParent ) ) );
-		const items = [ ...new Set( [ ...( interactive.length ? interactive : [ ...el.children ].filter( ( e ) => shown( e ) && big( e ) ) ), ...placed ] ) ].map( rect );
+		// Outside the interactive items, each text run and each in-flow element holding none of them is an item too (a
+		// line of text beside the links, a spacer), walked down only through elements that hold an interactive item.
+		const held = new Set();
+		for ( const e of interactive ) {
+			for ( let p = e.parentElement; p && p !== el && ! held.has( p ); p = p.parentElement ) {
+				held.add( p );
+			}
+		}
+		const kinds = new Map( interactive.map( ( e ) => [ e, e.matches( 'a[href], [role="link"]' ) ? 'link' : 'control' ] ) );
+		const runs = [];
+		const walk = ( n ) => {
+			for ( const k of n.childNodes ) {
+				if ( 3 === k.nodeType && k.textContent.trim() ) {
+					const r = document.createRange();
+					r.selectNodeContents( k );
+					const b = r.getBoundingClientRect();
+					if ( b.width > 0 && b.height > 0 ) {
+						runs.push( [ Math.round( b.top + window.scrollY ), Math.round( b.bottom + window.scrollY ), Math.round( b.left + window.scrollX ), Math.round( b.right + window.scrollX ), 'text' ] );
+					}
+				} else if ( 1 === k.nodeType && ! kinds.has( k ) && shown( k ) && 'hidden' !== getComputedStyle( k ).visibility ) {
+					if ( held.has( k ) ) {
+						walk( k );
+					} else if ( big( k ) ) {
+						kinds.set( k, 'other' );
+					}
+				}
+			}
+		};
+		walk( el );
+		for ( const e of placed ) {
+			if ( ! kinds.has( e ) ) {
+				kinds.set( e, 'placed' );
+			}
+		}
+		const items = [ ...[ ...kinds ].map( ( [ e, kind ] ) => [ ...rect( e ), kind ] ), ...runs ];
 		// The box is its parent's only rendered child (a parent's ::before/::after layer is paint, `paints`).
 		const only = ( e ) => {
 			const p = e.parentElement;
@@ -245,7 +284,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 			}
 			return null;
 		};
-		return { paints: paints( el ), items, line: { h: line( 'h' ), w: line( 'w' ) } };
+		return { paints: paints( el ), self: rect( el ), items, line: { h: line( 'h' ), w: line( 'w' ) } };
 	} )();
 	// Paint properties come from the element painting the ground, shape and border (paint.mjs::PAINT_PROPS, paintElement).
 	const PAINT = [ 'background-color', 'background-image', 'border-radius', 'box-shadow', 'border-top-width', 'border-top-style', 'border-top-color', 'border-bottom-width', 'border-bottom-color', 'border-left-width', 'border-right-width', 'border-left-color', 'border-right-color' ];

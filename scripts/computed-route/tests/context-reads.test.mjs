@@ -14,6 +14,8 @@ test( 'MUST FAIL: calibration reads the three context properties and its read ke
 	}
 	assert.equal( READ_KEY, keyOf( READ_PROPS ) );
 	assert.notEqual( READ_KEY, keyOf( READ_PROPS.filter( ( p ) => 'direction' !== p ) ), 'dropping a context read changes the key (control)' );
+	const CONTEXT = [ 'direction', 'column-count', 'column-width' ];
+	assert.notEqual( READ_KEY, keyOf( READ_PROPS.filter( ( p ) => ! CONTEXT.includes( p ) ) ), 'the key differs from the one read without the three context properties (every older calibration is stale)' );
 } );
 
 test( 'MUST FAIL: the divergence ledger records no measurement for a context property, and still does for a compared one', () => {
