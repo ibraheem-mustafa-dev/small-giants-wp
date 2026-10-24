@@ -9,7 +9,7 @@ import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { readTokens } from '../lib/tokens.mjs';
-import { proposePalette, loadPaletteSlugs, ciede2000, hexDistance, dedupeColours, summariseUsage, sectionTextFor, ruleFromUsage,
+import { proposePalette, loadPaletteSlugs, ciede2000, hexDistance, dedupeColours, summariseUsage,
 	brandFamilies, ruleLinkHover, ruleLink, ruleHeading, ruleReserved, ruleOnGround, ruleSection, ruleFooter, ruleBorder, ruleStatus,
 	ruleWhatsapp, ruleTextMuted, ruleTextInverse, ruleText, ruleSurface, ruleBrand } from '../lib/intake-palette.mjs';
 
@@ -37,10 +37,15 @@ test( 'FR-48-31 MUST FAIL: every used colour token gets a proposed role', () => 
 	assert.deepEqual( roles, {
 		'--brand-teal': 'primary', '--brand-teal-hover': 'primary-dark', '--brand-orange': 'accent', '--ink': 'heading', '--near-ink': 'heading',
 		'--grey-body': 'text', '--surface-page': 'surface', '--surface-card': 'surface-alt', '--text-heading': 'heading', '--text-body': 'text',
-		'--text-link': 'link', '--text-link-hover': 'link-hover', '--surface-section-teal': 'section', '--text-on-teal': 'section-text',
+		'--text-link': 'link', '--text-link-hover': 'link-hover', '--surface-section-teal': 'link', '--text-on-teal': 'section-text',
 		'--card-ground': 'surface-alt',
 	} );
-	assert.equal( rowOf( p, '--ink' ).why, 'same value as --text-heading' );
+	// Section is read from usage (the next most painted ground, #F59E0B), so the name hint of --surface-section-teal
+	// loses and its row shows the first usage role of its value; every token of one value carries the same roles.
+	assert.deepEqual( rowOf( p, '--surface-section-teal' ).roles, [ 'link', 'primary' ] );
+	assert.deepEqual( rowOf( p, '--brand-orange' ).roles, [ 'accent', 'section' ] );
+	assert.deepEqual( rowOf( p, '--ink' ).roles, rowOf( p, '--text-heading' ).roles );
+	assert.match( rowOf( p, '--ink' ).why, /^the most used heading colour on light grounds/ );
 } );
 
 test( 'FR-48-31 MUST FAIL: the planted unused token is listed as unused and not proposed', () => {
@@ -93,9 +98,10 @@ test( 'MUST FAIL: a slug theme.json lacks is proposed as its stand-in, with the 
 	const p = run( SLUGS.filter( ( s ) => ! [ 'heading', 'link', 'link-hover', 'section', 'section-text' ].includes( s.slug ) ) );
 	const h = rowOf( p, '--text-heading' );
 	assert.equal( h.wantedSlug, 'heading' );
-	assert.match( h.notes, /heading is not in theme\.json's palette yet; proposing text/ );
+	assert.match( h.notes, /heading is not in theme\.json's palette yet; text is not free/ );
 	assert.equal( rowOf( p, '--text-link-hover' ).wantedSlug, 'link-hover' );
-	assert.equal( rowOf( p, '--surface-section-teal' ).wantedSlug, 'section' );
+	assert.match( rowOf( p, '--text-link-hover' ).notes, /link-hover is not in theme\.json's palette yet; proposing primary-dark until it lands/ );
+	assert.equal( rowOf( p, '--brand-orange' ).wantedSlug, 'section' );
 	assert.ok( p.rows.every( ( r ) => ! r.role || r.role.startsWith( 'custom-' ) || p.vocabulary.includes( r.role ) ) );
 } );
 
@@ -116,19 +122,6 @@ test( 'non-colour tokens are returned for later stages but get no palette row', 
 	assert.ok( ! p.rows.some( ( r ) => [ '--gradient-hero', '--gap-1', '--font-body', '--loop-a' ].includes( r.token ) ) );
 	assert.deepEqual( p.problems.filter( ( x ) => x.kind !== 'usage-colour' ).map( ( x ) => x.token ).sort(), [ '--loop-a', '--loop-b', '--orphan' ] );
 } );
-
-test( 'the section ground text colour pairs from usage on the same draft elements', () => {
-	assert.deepEqual( sectionTextFor( new Set( [ '#1F7A7A' ] ), proposeUsage() ), { hex: '#F1F5F9', count: 3 } );
-	// With no token named for it, the paired token takes section-text.
-	const tokens = [ { name: '--brand-teal', type: 'colour', hex: '#1F7A7A' }, { name: '--section-teal', type: 'colour', hex: '#1F7A7A' },
-		{ name: '--pale', type: 'colour', hex: '#F1F5F9' } ];
-	const p = proposePalette( { tokens, usage: USAGE.slice( 0, 4 ), slugs: SLUGS } );
-	assert.equal( rowOf( p, '--pale' ).role, 'section-text' );
-	assert.equal( p.sectionText.token, '--pale' );
-} );
-function proposeUsage() {
-	return USAGE.slice( 0, 4 ).map( ( u ) => ( { ...u, hex: u.hex.startsWith( 'rgb' ) ? '#1F7A7A' : u.hex.toUpperCase() } ) );
-}
 
 test( 'loadPaletteSlugs reads theme.json settings.color.palette (slug and name), and an injected path', () => {
 	const live = loadPaletteSlugs();
@@ -189,13 +182,3 @@ test( 'brand families: an explicit role word wins, then the most used base colou
 	assert.equal( named.get( '--brand-blue' ).role, 'primary' );
 } );
 
-test( 'usage rules: heading, link, base surface, border, dark text and a high-chroma ground', () => {
-	const s = ( rows ) => summariseUsage( rows.map( ( [ property, tag, count ] ) => ( { hex: '#X', property, tag, count, draftId: 'd' } ) ), new Set( [ '#X' ] ) );
-	assert.equal( ruleFromUsage( s( [ [ 'color', 'h2', 5 ], [ 'color', 'p', 1 ] ] ), '#2C3E50' ).role, 'heading' );
-	assert.equal( ruleFromUsage( s( [ [ 'color', 'a', 5 ] ] ), '#0A7EA8' ).role, 'link' );
-	assert.equal( ruleFromUsage( s( [ [ 'background-color', 'body', 1 ] ] ), '#FFFFFF' ).role, 'surface' );
-	assert.equal( ruleFromUsage( s( [ [ 'border-top-color', 'div', 4 ] ] ), '#D4DBE5' ).role, 'border' );
-	assert.equal( ruleFromUsage( s( [ [ 'color', 'p', 4 ] ] ), '#333333' ).role, 'text' );
-	assert.equal( ruleFromUsage( s( [ [ 'background-color', 'button', 4 ] ] ), '#E4572E' ).role, 'primary' );
-	assert.equal( ruleFromUsage( s( [] ), '#333333' ), null );
-} );

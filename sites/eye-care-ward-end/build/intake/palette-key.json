@@ -1,0 +1,114 @@
+{
+	"client": "eye-care-ward-end",
+	"source": "from-snapshot",
+	"roles": {
+		"--ink": [
+			"primary",
+			"text",
+			"heading",
+			"link",
+			"section-text"
+		],
+		"--ink-hover": [
+			"primary-hover"
+		],
+		"--paper": [
+			"primary-text",
+			"surface",
+			"text-inverse",
+			"footer-bg"
+		],
+		"--white": [
+			"surface-alt",
+			"section"
+		],
+		"--surface-alt": [
+			"surface-stage"
+		],
+		"--surface-soft": [],
+		"--hairline": [
+			"border"
+		],
+		"--border-strong": [
+			"border-strong"
+		],
+		"--border-warm": [],
+		"--control-off": [],
+		"--text-strong": [
+			"text-soft"
+		],
+		"--text-2": [
+			"text-muted"
+		],
+		"--text-muted": [
+			"text-subtle"
+		],
+		"--text-3": [
+			"text-label"
+		],
+		"--text-4": [],
+		"--text-faint": [],
+		"--acc": [
+			"accent"
+		],
+		"--acc-ink": [
+			"accent-text"
+		],
+		"--acc-soft": [
+			"accent-light"
+		],
+		"--wa": [
+			"whatsapp"
+		],
+		"--wa-hover": [
+			"whatsapp-hover"
+		],
+		"--wa-ink": [],
+		"--wa-ink-deep": [],
+		"--wa-soft": [
+			"whatsapp-soft"
+		],
+		"--wa-border": [
+			"whatsapp-line"
+		],
+		"--success": [
+			"success"
+		],
+		"--text-body": [
+			"primary",
+			"text",
+			"heading",
+			"link",
+			"section-text"
+		],
+		"--surface-page": [
+			"primary-text",
+			"surface",
+			"text-inverse",
+			"footer-bg"
+		],
+		"--surface-card": [
+			"surface-alt",
+			"section"
+		],
+		"--border-default": [
+			"border"
+		],
+		"--button-primary-bg": [
+			"primary",
+			"text",
+			"heading",
+			"link",
+			"section-text"
+		],
+		"--button-primary-fg": [
+			"primary-text",
+			"surface",
+			"text-inverse",
+			"footer-bg"
+		],
+		"--focus-ring": [
+			"accent"
+		]
+	}
+}

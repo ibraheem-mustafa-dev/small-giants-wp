@@ -12,6 +12,7 @@ import { proposePageMap } from './intake-pagemap.mjs';
 import { readTokens } from './tokens.mjs';
 import { proposePalette, loadPaletteSlugs } from './intake-palette.mjs';
 import { readSurface } from './intake-reading.mjs';
+import { readGrounds, groundUsage } from './intake-palette-grounds.mjs';
 import { mapPool, poolSize } from './intake-pool.mjs';
 import { proposeSiteInfo } from './intake-siteinfo.mjs';
 import { proposeFlags } from './intake-flags.mjs';
@@ -135,12 +136,15 @@ export const STAGES = [
 	[ 'tokens and palette', async ( job, ctx ) => {
 		const t = readTokens( job.folder );
 		const records = [];
+		const grounds = new Map();
+		const texts = new Set();
+		const probeRows = [];
 		const gaps = [];
 		const blocked = [];
 		// One read per route, side by side in the pool (each its own sandbox and harness run), kept in route order.
 		const reads = await mapPool( ctx.visits.list, poolSize(), async ( v ) => {
 			try {
-				return { read: await readSurface( { folder: job.folder, index: job.entry, harPath: job.harPath, file: v.file, hash: v.hash, width: 1440, mode: 'rest', surface: v.key } ) };
+				return { read: await readSurface( { folder: job.folder, index: job.entry, harPath: job.harPath, file: v.file, hash: v.hash, width: 1440, mode: 'rest', surface: v.key, probe: readGrounds } ) };
 			} catch ( e ) {
 				return { error: e };
 			}
@@ -150,15 +154,19 @@ export const STAGES = [
 			if ( read ) {
 				records.push( ...read.records );
 				blocked.push( ...read.blocked );
+				Object.entries( read.probed?.grounds ?? {} ).forEach( ( [ p, g ] ) => grounds.set( `${ v.key }\u0000${ p }`, g ) );
+				( read.probed?.texts ?? [] ).forEach( ( p ) => texts.add( `${ v.key }\u0000${ p }` ) );
+				probeRows.push( ...groundUsage( read.probed, v.key ) );
 			} else {
 				gaps.push( gap( 'palette-usage', `${ v.file }${ v.hash ? `#${ v.hash }` : '' }`, `the 1440 rest reading failed: ${ error.message.split( '\n' )[ 0 ] }` ) );
 			}
 		} );
-		const usage = paletteUsage( records );
+		const usage = [ ...paletteUsage( records, grounds, texts ), ...probeRows ];
 		const p = proposePalette( { tokens: t.tokens, usage, slugs: loadPaletteSlugs(), problems: t.problems } );
 		gaps.push( ...p.problems.map( ( x ) => gap( `palette:${ x.kind ?? 'token' }`, x.draftId ?? x.name ?? x.token ?? 'tokens', x.error ?? x.message ?? JSON.stringify( x ) ) ) );
 		return {
 			palette: { tokens: p.tokens, rows: p.rows, unused: p.unused, oneOff: p.oneOff, merges: p.merges, usageFrom: `computed colour properties of ${ records.length } rest-mode reading records, one 1440 read per route` },
+			usage,
 			blocked, gaps, note: `${ t.tokens.length } tokens, ${ p.rows.length } roles, ${ p.unused.length } unused, ${ p.oneOff.length } one-off; usage from ${ records.length } records (${ usage.length } colour uses)`,
 		};
 	} ],

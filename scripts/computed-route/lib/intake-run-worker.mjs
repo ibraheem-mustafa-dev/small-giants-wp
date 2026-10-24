@@ -10,6 +10,7 @@
 // timing are still applied strictly in STAGES order, each once it and every stage before it have ended, so the result is
 // the one-at-a-time run's. A stage that opens a browser outside the pool (SLOT_STAGES) holds one pool slot meanwhile.
 // INTAKE_POOL=1 runs the stages one after another.
+// A job with `stages` (a list of stage names) runs only those stages, in STAGES order.
 // Usage (internal): node lib/intake-run-worker.mjs <job.json>
 import fs from 'fs';
 import { createRequire } from 'module';
@@ -27,6 +28,7 @@ async function main( jobFile ) {
 	const job = JSON.parse( fs.readFileSync( jobFile, 'utf8' ) );
 	const log = ( line ) => fs.appendFileSync( job.progressFile, `${ line }\n` );
 	const ctx = { gaps: [], blocked: [] };
+	const stages = Array.isArray( job.stages ) ? STAGES.filter( ( [ name ] ) => job.stages.includes( name ) ) : STAGES;
 	const parts = {};
 	const timings = [];
 	const side = poolSize() > 1;
@@ -70,9 +72,9 @@ async function main( jobFile ) {
 		const ended = new Map();
 		const applied = new Map();
 		let cursor = Promise.resolve();
-		for ( const [ i, [ name, run ] ] of STAGES.entries() ) {
+		for ( const [ i, [ name, run ] ] of stages.entries() ) {
 			const needs = STAGE_NEEDS[ name ] ?? [ '*' ];
-			const before = STAGES.slice( 0, i ).map( ( [ n ] ) => n );
+			const before = stages.slice( 0, i ).map( ( [ n ] ) => n );
 			const ready = needs.includes( '*' ) ? Promise.all( before.map( ( n ) => applied.get( n ) ) ) : Promise.all( needs.map( ( n ) => ended.get( n ) ) );
 			const result = ready.then( () => attempt( name, run ) );
 			ended.set( name, result );
@@ -81,7 +83,7 @@ async function main( jobFile ) {
 		}
 		await cursor;
 	} else {
-		for ( const [ name, run ] of STAGES ) {
+		for ( const [ name, run ] of stages ) {
 			apply( name, await attempt( name, run ) );
 		}
 	}
