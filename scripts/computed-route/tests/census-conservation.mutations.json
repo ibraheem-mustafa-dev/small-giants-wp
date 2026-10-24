@@ -11,7 +11,7 @@
 	{ "file": "lib/census-conservation.mjs", "find": "\t\tif ( ! SETTLED.includes( s.reason ) ) {", "replace": "\t\tif ( false ) {", "why": "a settled row with no reason is held" },
 	{ "file": "census.mjs", "find": " || conserved.unreasoned.length )", "replace": " )", "why": "a settled row with no reason passes --check" },
 	{ "file": "lib/census-conservation.mjs", "find": "\t\tif ( ! atRest( w.state ) ) {", "replace": "\t\tif ( false ) {", "why": "a state write conserves a rest read" },
-	{ "file": "lib/census-conservation.mjs", "find": "for ( const layer of Object.values( doc?.elements?.root || {} ) ) {", "replace": "for ( const layer of Object.values( doc?.elements || {} ).flatMap( ( el ) => Object.values( el || {} ) ) ) {", "why": "a part's layer times the root (council A1)" },
+	{ "file": "lib/census-conservation.mjs", "find": "layerTimings( doc?.elements?.root )", "replace": "Object.assign( {}, ...Object.values( doc?.elements || {} ).map( layerTimings ) )", "why": "a part's layer times the root (council A1)" },
 	{ "file": "lib/census-conservation.mjs", "find": "&& ( ! o.timings || layerGives( read.property, read.value, o.timings[ read.property ], tokens ) );", "replace": ";", "why": "a motion write answers a timing read whatever its value" },
 	{ "file": "lib/census-conservation.mjs", "find": "entries.every( ( x ) => have.includes( read( x ) ) )", "replace": "entries.some( ( x ) => have.includes( read( x ) ) )", "why": "one list entry the layer gives answers the list" },
 	{ "file": "lib/census-conservation.mjs", "find": "undefined === values.delay && undefined === values.paintDelay && ( out[ 'transition-delay' ] ??= [] ).push( 0 );", "replace": "", "why": "an unset delay is not the emitter's 0ms" },

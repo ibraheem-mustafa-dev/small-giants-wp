@@ -53,13 +53,12 @@ export function longhandsOf( property ) {
 
 const at = ( node, slot ) => `${ node }|${ slot ?? '' }`;
 
-// The timing values the sgsMotion root layer gives each longhand: { longhand: [ value ] } from its state values (duration
-// and paintDuration both time transition-duration entries; a layer that sets no delay runs at 0ms,
-// class-sgs-motion-emitter.php::hover_state). Only the root element's layers time the write's element: a part's layer
-// times the part.
-export function rootLayerTimings( doc ) {
+// The timing values one sgsMotion element's layers give each longhand: { longhand: [ value ] } from their state values
+// (duration and paintDuration both time transition-duration entries; a layer that sets no delay runs at 0ms,
+// class-sgs-motion-emitter.php::hover_state). A layer with no values gives nothing.
+export function layerTimings( element ) {
 	const out = {};
-	for ( const layer of Object.values( doc?.elements?.root || {} ) ) {
+	for ( const layer of Object.values( element || {} ) ) {
 		const values = layer?.state?.values || {};
 		if ( ! Object.keys( values ).length ) {
 			continue;
@@ -71,6 +70,8 @@ export function rootLayerTimings( doc ) {
 	}
 	return out;
 }
+// The root element's (only the root's layers time the write's element: a part's layer times the part).
+export const rootLayerTimings = ( doc ) => layerTimings( doc?.elements?.root );
 
 // The longhands one motion-pass write sets: the timing longhands its sgsMotion root layer's values write (on the write's
 // element, rootLayerTimings), the write's own property when it names one (fill-timing writes name it), else none (a
