@@ -49,9 +49,7 @@
           },
           "textColourHover": "surface",
           "backgroundColourHover": "primary",
-          "sgsCustomCss": "@media (max-width: 767px) { & .sgs-container__inner { justify-content: normal; } } @media (min-width: 768px) { & .sgs-container__inner { justify-content: space-between; } } @media (max-width: 767px) { & .sgs-container__inner { align-items: normal; } } @media (min-width: 768px) { & .sgs-container__inner { align-items: center; } }",
-          "sgsCustomCssId": "wgate1",
-          "sgsCustomCssNote": "Width ladder justify-content: 0-767px normal, 768px and up space-between; Width ladder align-items: 0-767px normal, 768px and up center",
+          "alignItems": "center",
           "minHeight": {
             "desktop": "46px"
           },
@@ -524,6 +522,16 @@
                   "iconFill": true,
                   "iconColourHover": "surface",
                   "boxShadowHover": "rgba(0, 0, 0, 0.45) 0px 10px 20px -6px",
+                  "sgsChildSizing": {
+                    "desktop": "fixed",
+                    "tablet": "fixed",
+                    "mobile": "fixed"
+                  },
+                  "sgsChildWidth": {
+                    "desktop": "34px",
+                    "tablet": "34px",
+                    "mobile": "auto"
+                  },
                   "sgsMotion": {
                     "v": 1,
                     "elements": {
@@ -627,12 +635,6 @@
               "tagName": "div",
               "layout": "flex",
               "className": "cr-ref-header-14",
-              "fontSize": {
-                "tablet": 19
-              },
-              "lineHeight": {
-                "tablet": 1.55
-              },
               "gap": {
                 "tablet": "10px"
               },
@@ -816,9 +818,19 @@
                     "tablet": "48px"
                   },
                   "burgerSize": "48px",
+                  "burgerBar1BorderRadius": {
+                    "tablet": "2px"
+                  },
+                  "burgerBar2BorderRadius": {
+                    "tablet": "2px"
+                  },
+                  "burgerBar3BorderRadius": {
+                    "tablet": "2px"
+                  },
                   "navColourHover": "primary",
                   "itemMotionEasing": "ease",
                   "itemBgOpen": "#0A7EA81F",
+                  "itemColourOpen": "primary",
                   "itemColourCurrent": "primary",
                   "burgerHoverColour": "primary",
                   "burgerColourHover": "surface",

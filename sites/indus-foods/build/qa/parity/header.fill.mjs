@@ -17,6 +17,7 @@ const generated = [
 	{ name: "gen-header-12", text: false, structure: false, draft: {"tpl":"Root/40#0"}, live: ".cr-ref-header-12" },
 	{ name: "gen-header-13", text: false, structure: false, draft: {"tpl":"Root/43#0"}, live: ".cr-ref-header-13" },
 	{ name: "gen-header-15", text: false, structure: false, draft: {"tpl":"Root/58#0"}, live: ".cr-ref-header-15" },
+	{ name: "gen-header-16__burger", text: false, structure: false, draft: {"tpl":"Root/59#0"}, live: ".cr-ref-header-16 .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger" },
 	{ name: "gen-header-16", text: false, structure: false, draft: {"tpl":"Root/45#0"}, live: ".cr-ref-header-16" },
 	{ name: "gen-header-17", text: false, structure: false, draft: {"tpl":"Root/54#0"}, live: ".cr-ref-header-17" },
 ];
