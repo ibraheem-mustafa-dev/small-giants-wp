@@ -69,15 +69,32 @@ function inside( key, outer, parentOf ) {
 // The parts a block renders inside itself whose draft elements the draft draws outside the block's own element (a
 // navigation's burger the draft places in another row): the block's pair cannot reach them on the draft, and the draft
 // element's nearest paired ancestor would count it as its own part. Each pairs on its own: the skeleton's draft element
-// for that slot against the slot inside the block. A part inside another such part goes with it. Returns [ { ref, slot,
-// draft } ].
+// for that slot against the slot inside the block. A part inside another such part goes with it; a slot on the block's
+// own draft element is the block's pair, and slots sharing one draft element pair once. Returns { pairs: [ { ref, slot,
+// draft } ], left: [ { ref, why } ] } (left: a slot whose draft element is not in the inventory, so its place is unknown).
 export function outsideSlotPairs( node, ref, parentOf ) {
 	const base = keyOf( node.draftRef );
 	if ( ! base || ! parentOf?.size ) {
-		return [];
+		return { pairs: [], left: [] };
 	}
-	const out = Object.entries( node.draftSlots || {} ).filter( ( [ , f ] ) => keyOf( f ) && false === inside( keyOf( f ), base, parentOf ) );
-	return out.filter( ( [ , f ] ) => ! out.some( ( [ , g ] ) => g !== f && inside( keyOf( f ), keyOf( g ), parentOf ) ) ).map( ( [ slot, f ] ) => ( { ref, slot, draft: f } ) );
+	const left = [];
+	const seen = new Set( [ base ] );
+	const found = [];
+	for ( const [ slot, f ] of Object.entries( node.draftSlots || {} ) ) {
+		const key = keyOf( f );
+		if ( ! key || seen.has( key ) ) {
+			continue;
+		}
+		seen.add( key );
+		const place = inside( key, base, parentOf );
+		if ( null === place ) {
+			left.push( { ref, why: `slot ${ slot } draft element not in the inventory` } );
+		} else if ( ! place ) {
+			found.push( [ slot, f, key ] );
+		}
+	}
+	const pairs = found.filter( ( [ , , k ] ) => ! found.some( ( [ , , g ] ) => g !== k && inside( k, g, parentOf ) ) ).map( ( [ slot, f ] ) => ( { ref, slot, draft: f } ) );
+	return { pairs, left };
 }
 
 // nodes: lib/fill-skeleton.mjs::skeletonNodes( skeleton ); refs: the ref of each node by index; inventory: the surface's
@@ -98,7 +115,15 @@ export function skeletonPairs( nodes, refs, { inventory = null } = {} ) {
 		}
 		const variant = n.node.variantKey || null;
 		const others = ( n.node.widthVariants || [] ).map( ( v ) => v.key );
-		pairs.push( ...outsideSlotPairs( n.node, ref, parentOf ) );
+		if ( variant || others.length ) {
+			// A slot's draft element is not scoped to a width variant's words, so a variant node's parts stay unpaired.
+			const slots = Object.keys( n.node.draftSlots || {} );
+			slots.length && left.push( { ref, why: `its width variants share one draft element, so its ${ slots.length } part slot${ 1 === slots.length ? '' : 's' } stay unpaired` } );
+		} else {
+			const parts = outsideSlotPairs( n.node, ref, parentOf );
+			pairs.push( ...parts.pairs );
+			left.push( ...parts.left );
+		}
 		if ( ! variant && ! others.length ) {
 			pairs.push( { ref, draft: n.node.draftRef } );
 			continue;
