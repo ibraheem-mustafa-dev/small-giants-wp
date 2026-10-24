@@ -16,7 +16,7 @@ BUTTON_KEY_GROUP = {"background": "fill", "hover-background": "fill", "text": "t
                     "hover-text": "text", "border": "edge", "hover-border": "edge"}
 BUTTON_SLUG_PREFERENCE = {"fill": ("primary", "accent", "surface", "surface-alt"),
                           "text": ("primary-text", "text", "text-inverse"),
-                          "edge": ("primary", "border", "accent")}
+                          "edge": ("primary", "border", "accent", "primary-text", "text")}
 
 
 def slug_for_role(palette: list, hexv: str | None, preference: tuple) -> str | None:
@@ -31,7 +31,8 @@ def slug_for_role(palette: list, hexv: str | None, preference: tuple) -> str | N
 
 
 def tokenise_button_presets(snap: dict, trace: list, derived: dict) -> None:
-    """Rewrite MEASURED button preset hex values that equal a palette colour into palette variable refs.
+    """Rewrite MEASURED button preset hex values that equal the colour of a slug fit for the key (its group's
+    ``BUTTON_SLUG_PREFERENCE``) into that slug's variable reference; any other hex stays as measured.
 
     ``derived`` is the button-preset dict measured in this run (slot -> key -> value). Only those slots
     and keys are rewritten: a value that came from the framework baseline for a slot or key the draft
@@ -52,8 +53,8 @@ def tokenise_button_presets(snap: dict, trace: list, derived: dict) -> None:
             if group is None or not isinstance(value, str) or not HEX_RE.fullmatch(value):
                 continue
             wanted = normalise_hex(value).lower()
-            slug = (next((s for s in BUTTON_SLUG_PREFERENCE[group] if by_slug.get(s) == wanted), None)
-                    or next((e["slug"] for e in palette if by_slug[e["slug"]] == wanted), None))
+            # Only a slug whose job fits the key: a fill never references a text slug that merely shares its hex.
+            slug = next((s for s in BUTTON_SLUG_PREFERENCE[group] if by_slug.get(s) == wanted), None)
             if slug:
                 preset[key] = f"var(--wp--preset--color--{slug})"
                 changed.append(f"{key}={slug}")

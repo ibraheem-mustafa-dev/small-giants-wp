@@ -326,11 +326,14 @@ export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSl
 		roles.set( g, kept );
 	}
 
+	// A merged group's painted value: the member hex the draft paints most (the first member on a tie). Its rows carry
+	// it as `value`, so a confirm step keeps the colour that earned the group's roles.
+	const painted = ( g ) => [ ...g.hexes ].map( ( h ) => [ h, summariseUsage( uses, new Set( [ h ] ) ).total ] ).sort( ( a, b ) => b[ 1 ] - a[ 1 ] || ( a[ 0 ] === g.hex ? -1 : b[ 0 ] === g.hex ? 1 : 0 ) )[ 0 ][ 0 ];
 	const rows = colours.map( ( t ) => {
 		const g = groupOf.get( t.name );
 		const list = roles.get( g ) || [];
 		const row = { rowId: `palette:${ t.name }`, token: t.name, hex: t.hex, resolved: t.resolved, chain: t.chain, used: g.summary.total > 0,
-			uses: g.summary.uses, sharedWith: g.members.filter( ( m ) => m !== t.name ) };
+			uses: g.summary.uses, sharedWith: g.members.filter( ( m ) => m !== t.name ), ...( g.hexes.size > 1 ? { value: painted( g ) } : {} ) };
 		if ( ! row.used ) {
 			return { ...row, role: null, roles: [], confidence: 0, why: 'unused: no element in the draft uses this value', by: 'none' };
 		}

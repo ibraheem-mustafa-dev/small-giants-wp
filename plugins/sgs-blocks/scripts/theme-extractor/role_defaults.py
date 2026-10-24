@@ -9,14 +9,17 @@ palette lacks (a token palette replaces the framework one) is added the same way
 an advisory (guessed) colour is advisory too, carrying the framework hex as ``_baseline_color``, so the
 push step restores it with its source. Each change is
 traced with the WCAG ratio on the ground the slug is read on; a ratio under 4.5:1 is traced as such for
-the snapshot gates and Bean's review to catch. Nothing here names a client.
+the snapshot gates and Bean's review to catch. ``primary-dark`` with no colour of its own (framework-held, missing or
+derived) is first derived from the client's final ``primary`` (mixed toward black), so ``link-hover`` and every
+other follower read this client's shade, never another site's. Nothing here names a client.
 """
 from __future__ import annotations
 
 import pathlib
 import sys
 
-from palette_vocab import MIN_TEXT_CONTRAST, ROLE_DEFAULT_GROUND, ROLE_DEFAULT_TABLE, trace_row
+from palette import mix_hex
+from palette_vocab import MIN_TEXT_CONTRAST, PRIMARY_DARK_MIX, ROLE_DEFAULT_GROUND, ROLE_DEFAULT_TABLE, trace_row
 
 _SCRIPTS = pathlib.Path(__file__).resolve().parent.parent
 if str(_SCRIPTS) not in sys.path:
@@ -37,6 +40,31 @@ def _framework_held(entry: dict | None, framework_hex: dict[str, str]) -> bool:
     return isinstance(held, str) and str(entry.get("color", "")).lower() == held.lower()
 
 
+def _derive_primary_dark(palette: list, by_slug: dict, framework_hex: dict, framework_name: dict, trace: list) -> None:
+    """``primary-dark`` the draft and Bean gave no colour (framework-held, missing, or derived earlier) becomes the
+    client's final ``primary`` mixed ``PRIMARY_DARK_MIX`` toward black; a declared or confirmed one is kept."""
+    primary, entry = by_slug.get("primary"), by_slug.get("primary-dark")
+    if not _from_draft(primary) or not str(primary["color"]).startswith("#") or len(primary["color"]) < 7:
+        return
+    if entry is not None and entry.get("_source") not in (None, "derived"):
+        return
+    if entry is None:
+        if "primary-dark" not in framework_hex:
+            return
+        entry = {"slug": "primary-dark", "color": framework_hex["primary-dark"], "name": framework_name["primary-dark"]}
+        palette.append(entry)
+        by_slug["primary-dark"] = entry
+    old, value = entry.get("color"), mix_hex(primary["color"][:7], "#000000", PRIMARY_DARK_MIX).upper()
+    entry["color"] = value
+    entry["_source"] = "derived"
+    if primary.get("advisory"):
+        entry["advisory"] = True
+        entry["_baseline_color"] = framework_hex.get("primary-dark", old)
+    trace_row(trace, "derive", "palette.primary-dark",
+              f"the client's primary {primary['color']} mixed {int(PRIMARY_DARK_MIX * 100)}% toward black (was {old})",
+              value, _source="derived")
+
+
 def apply_role_defaults(snap: dict, baseline: dict, trace: list) -> dict:
     """Point every framework-held or missing role slug at the client's related colour. Mutates and returns
     ``snap``; a missing slug is added, because every snapshot carries the framework roster."""
@@ -46,6 +74,7 @@ def apply_role_defaults(snap: dict, baseline: dict, trace: list) -> dict:
                  if isinstance(e, dict) and e.get("slug") and isinstance(e.get("color"), str)]
     framework_hex = {e["slug"]: e["color"] for e in framework}
     framework_name = {e["slug"]: e.get("name") or e["slug"] for e in framework}
+    _derive_primary_dark(palette, by_slug, framework_hex, framework_name, trace)
     for slug, follows in ROLE_DEFAULT_TABLE:
         entry, source = by_slug.get(slug), by_slug.get(follows)
         missing = entry is None and slug in framework_hex

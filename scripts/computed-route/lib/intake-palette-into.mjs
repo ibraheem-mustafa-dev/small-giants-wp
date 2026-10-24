@@ -2,7 +2,8 @@
 // path reads it. intake.json's palette block is replaced (a client with no intake.json gets a minimal one holding only
 // the palette block, its `paletteOnly` header saying so), and review.md's palette-role section is regenerated (a client
 // with no review.md gets one holding only that section). An existing mark is kept only when the slugs it names equal
-// the new proposal's for that token: `accept` names the old proposal's roles, `role:a,b` those slugs, `one-off` none.
+// the new proposal's for that token (`accept` names the old proposal's roles, `role:a,b` those slugs, `one-off` none),
+// or when that token's proposal is unchanged (the same slugs as before), so an override Bean made stands.
 // A mark is read from review.md's Mark cell, else its ticked palette Accept all, else intake.json's applied review
 // entry. Only an applied mark stays in intake.json's review; a mark written in review.md but not yet applied stays in
 // review.md's Mark cell. No mark is ever added.
@@ -65,7 +66,8 @@ export function intoIntake( { intake = null, reviewMd = null, palette, client, t
 		}
 		const row = palette.rows[ i ];
 		const named = markRoles( mark, oldRows.get( row.token ) );
-		if ( ! sameSet( named, rowRoles( row ) ) ) {
+		const unchanged = oldRows.has( row.token ) && sameSet( rowRoles( oldRows.get( row.token ) ), rowRoles( row ) );
+		if ( ! unchanged && ! sameSet( named, rowRoles( row ) ) ) {
 			dropped.push( { rowId: rr.rowId, mark, named, proposed: rowRoles( row ) } );
 			return;
 		}

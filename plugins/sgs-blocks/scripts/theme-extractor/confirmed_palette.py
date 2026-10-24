@@ -17,12 +17,14 @@ to the trace. The step is idempotent, so it can run once on the generated palett
 ``merge_onto``.
 
 A token's colour may carry alpha (``#rrggbbaa``, a translucent draft colour): its slug keeps that alpha in the
-snapshot's palette. A translucent colour fills a framework slug only when that slug's framework colour has the same
+snapshot's palette. A confirmed colour keeps the case the draft's token writes it in (colours compare case-blind). A translucent colour fills a framework slug only when that slug's framework colour has the same
 alpha; otherwise Bean marks it as a ``custom-<name>`` colour.
 
 Two tokens whose colours are near-identical (CIEDE2000 ΔE ≤ 1 at the same alpha, the dedupe intake's proposal
-applies, FR-33-2) are one colour: when both carry a slug, the slug keeps the hex of the token declared first
-(intake's palette rows are in the token files' order, and intake keeps that member's value for the merged group).
+applies, FR-33-2) are one colour: when both carry a slug, the slug keeps the hex of the token whose own colour is
+the group's painted value (an intake row's ``value``: the member the draft paints most, so the one whose usage
+earned the role); with no ``value`` (an older intake record), the token declared first (intake's palette rows follow
+the token files).
 Only genuinely different colours on one slug are refused.
 """
 from __future__ import annotations
@@ -60,9 +62,26 @@ def _norm_hex(value) -> str | None:
     return v[:7] if v.endswith("ff") and len(v) == 9 else v
 
 
+def _earned(row: dict, held_row: dict | None, declared_first: bool) -> bool:
+    """Whether ``row``'s colour, rather than the held row's, is the colour a merged slug keeps: the row whose own hex
+    is its group's painted ``value`` wins; else the token declared first."""
+    own = lambda r: bool(r) and bool(r.get("value")) and _norm_hex(r.get("hex")) == _norm_hex(r.get("value"))  # noqa: E731
+    if own(row) != own(held_row):
+        return own(row)
+    return declared_first
+
+
 def _same_colour(a: str, b: str) -> bool:
     """Near-identical colours: the same alpha and CIEDE2000 ΔE ≤ 1 (FR-33-2's dedupe)."""
     return _alpha(a) == _alpha(b) and delta_e(a[:7], b[:7]) <= DEDUP_DELTA_E
+
+
+def _written_hex(value) -> str | None:
+    """The hex as the draft's token writes it (its case kept; a fully opaque ``ff`` alpha dropped); None if not a hex."""
+    if _norm_hex(value) is None:
+        return None
+    v = value.strip()
+    return v[:7] if len(v) == 9 and v[7:].lower() == "ff" else v
 
 
 def _alpha(value) -> str:
@@ -116,7 +135,7 @@ def confirmed_map(intake: dict, known_slugs, colours: dict | None = None) -> tup
         slugs = _mark_slugs(token, mark, row)
         if not slugs:
             continue
-        hexv = _norm_hex(row.get("hex"))
+        hexv = _written_hex(row.get("hex"))
         if hexv is None:
             raise ConfirmError(f"{token}: intake row hex {row.get('hex')!r} is not a #rrggbb or #rrggbbaa colour")
         for slug in slugs:
@@ -128,13 +147,13 @@ def confirmed_map(intake: dict, known_slugs, colours: dict | None = None) -> tup
                                    f"{_alpha((colours or {}).get(slug))}; a translucent colour fills a framework slug only at the "
                                    "same alpha, so mark it role:custom-<name>")
             held = confirmed.get(slug)
-            if held and held["hex"] != hexv and _same_colour(held["hex"], hexv):
-                if order[token] < order[held["tokens"][0]]:
+            if held and _norm_hex(held["hex"]) != _norm_hex(hexv) and _same_colour(held["hex"], hexv):
+                if _earned(row, rows.get(held["tokens"][0]), order[token] < order[held["tokens"][0]]):
                     held["hex"] = hexv
                 held.setdefault("merged", []).append(token)
                 held["tokens"].append(token)
                 continue
-            if held and held["hex"] != hexv:
+            if held and _norm_hex(held["hex"]) != _norm_hex(hexv):
                 raise ConfirmError(f"slug {slug!r} is claimed by {', '.join(held['tokens'])} ({held['hex']}) "
                                    f"and by {token} ({hexv}); one slug cannot hold two colours")
             confirmed.setdefault(slug, {"hex": hexv, "tokens": []})["tokens"].append(token)
@@ -157,10 +176,19 @@ def _title(slug: str) -> str:
 
 
 def apply_confirmed(snap: dict, confirmed: dict[str, dict], framework: dict[str, str], trace: list,
-                    draft_slugs: frozenset[str] = frozenset()) -> dict:
+                    draft_slugs: frozenset[str] = frozenset(), client_slugs: frozenset[str] = frozenset()) -> dict:
     """Make ``snap``'s palette follow ``confirmed`` (see the module docstring). Mutates and returns it."""
     color = snap.setdefault("settings", {}).setdefault("color", {})
     palette = color.get("palette") or []
+    # A confirmed ``custom-<name>`` whose ``<name>`` the client's existing snapshot already holds (``client_slugs``:
+    # the token's own name, which earlier builds use and the framework's styles read as
+    # ``--wp--preset--color--<name>``) keeps that client slug, so it is never duplicated under a second name.
+    for slug in [s for s in confirmed if s.startswith("custom-")]:
+        name = slug[len("custom-"):]
+        if name in client_slugs and name not in framework and name not in confirmed:
+            confirmed = {**{k: v for k, v in confirmed.items() if k != slug}, name: confirmed[slug]}
+            trace.append({"kind": "confirm", "slug": name, "action": "named",
+                          "reason": f"{slug} is the client slug {name} the palette already holds"})
     kept = []
     for entry in palette:
         slug = entry.get("slug") if isinstance(entry, dict) else None
@@ -185,7 +213,7 @@ def apply_confirmed(snap: dict, confirmed: dict[str, dict], framework: dict[str,
         else:
             old = entry.get("color")
         was_proposal = any(k in entry for k in _PROPOSAL_KEYS) or entry.get("_source") != "confirmed"
-        if old is not None and _norm_hex(old) == info["hex"] and not was_proposal:
+        if old is not None and old == info["hex"] and not was_proposal:
             continue  # already confirmed with this colour (second, post-merge pass)
         entry["color"] = info["hex"]
         for key in _PROPOSAL_KEYS:
