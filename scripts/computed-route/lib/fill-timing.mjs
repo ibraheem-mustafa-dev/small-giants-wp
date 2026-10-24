@@ -102,10 +102,13 @@ export function propertyTimings( decl, prop ) {
 // colours are the same paint.
 const PAINT = /^(?:color|background(?:-color)?|border(?:-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?)?-color|box-shadow)$/;
 export const isPaint = ( property ) => PAINT.test( property );
+// The paint property the hover layer can time on its own (hover.state.values.shadowDuration and shadowEasing).
+export const SHADOW = 'box-shadow';
 
 // The paint timing one target's resting rule gives at each width, per longhand: { [width]: { [longhand]: { value, groups } } }
 // over the paint properties the transition list names (a property `all` covers stands for the paint properties the
-// element's hover look declares there), value being the timing most of them share (a tie keeps the draft's order).
+// element's hover look declares there), value being the timing most of them other than the shadow share (a tie keeps the
+// draft's order; a shadow alone is the value).
 // A width whose resting rule declares no transition-duration, or times no paint property, is left out (timingFacts reads
 // the same widths).
 export function paintTimings( reads, id ) {
@@ -122,13 +125,15 @@ export function paintTimings( reads, id ) {
 		if ( ! paint.length ) {
 			continue;
 		}
+		// The shadow has its own timing (shadowDuration, shadowEasing), so it does not vote; a shadow alone is the paint timing.
+		const share = ( g ) => g.properties.filter( ( p ) => SHADOW !== p ).length;
 		out[ w ] = Object.fromEntries( LIST_PROPS.map( ( prop ) => {
 			const groups = [];
 			for ( const e of paint ) {
 				const g = groups.find( ( x ) => sameTiming( prop, x.value, e[ prop ] ) ?? x.value === e[ prop ] );
 				g ? g.properties.push( e.property ) : groups.push( { value: String( e[ prop ] ).toLowerCase(), properties: [ e.property ] } );
 			}
-			return [ prop, { value: groups.reduce( ( a, b ) => ( b.properties.length > a.properties.length ? b : a ) ).value, groups } ];
+			return [ prop, { value: groups.reduce( ( a, b ) => ( share( b ) > share( a ) ? b : a ) ).value, groups } ];
 		} ) );
 	}
 	return out;
@@ -285,7 +290,8 @@ const named = ( groups ) => groups.map( ( g ) => `${ g.properties.join( ', ' ) }
 // the motion hover layer times the element (lib/fill-state-motion.mjs::stateHover found a hover transform), the layer
 // holds two timings: transform's for the movement, and one for colour, background, border colour and shadow (paint,
 // paintTimings: the timing most paint properties share, written by lib/fill-motion.mjs::motionWrites as paintDuration and
-// paintEasing). A property either timing holds leaves no row; each other is a `timing-conflict` row. Where the block has
+// paintEasing; the shadow's own duration and easing as shadowDuration and shadowEasing). A property these timings hold
+// leaves no row; each other is a `timing-conflict` row. Where the block has
 // no setting for the longhand on this element, each property is a `timing-no-home` row, and none where the element's
 // calibrated default paint already shows the resting list at that width (shown); any other gap leaves a
 // `timing-split` row for the properties its reported value does not cover.
@@ -314,14 +320,15 @@ function splitRows( { facts, homes, tried, where, rec, target, shown, motion, pa
 	return [ ...rows.values() ];
 }
 
-// The rows the motion hover layer's two timings leave for one longhand at one width: a paint property timed other than the
-// paint timing, and any other property timed other than transform's (ref). paint: paintTimings' entry for the resting
+// The rows the motion hover layer's timings leave for one longhand at one width: a paint property timed other than the
+// paint timing, and any other property timed other than transform's (ref). The shadow's duration and easing are its own
+// fields (lib/fill-motion-element.mjs::paintLayer writes them and names what they cannot hold); its delay is the movement's. paint: paintTimings' entry for the resting
 // rule, or undefined (a state rule's timing, which the paint timing is not read from: every property is then movement).
 function layerLines( { prop, part, groups, ref, paint } ) {
 	const same = ( a, b ) => sameTiming( prop, a, b ) ?? a === b;
 	const off = ( keep ) => groups.map( ( g ) => ( { value: g.value, properties: g.properties.filter( ( p ) => keep( p, g ) ) } ) ).filter( ( g ) => g.properties.length );
 	const movement = off( ( p, g ) => ! ( paint && isPaint( p ) ) && g !== ref );
-	const painted = paint ? off( ( p, g ) => isPaint( p ) && ! same( g.value, paint.value ) ) : [];
+	const painted = paint ? off( ( p, g ) => isPaint( p ) && ! ( SHADOW === p && 'transition-delay' !== prop ) && ! same( g.value, paint.value ) ) : [];
 	return [
 		...( movement.length ? [ { draft: movement, reason: `timing-conflict: the motion hover layer (sgsMotion) times the movement of ${ part } with transform's ${ prop } ${ ref.value }; the draft times ${ named( movement ) }` } ] : [] ),
 		...( painted.length ? [ { draft: painted, reason: `timing-conflict: the motion hover layer (sgsMotion) times colour, background, border colour and shadow of ${ part } with one ${ prop }, ${ paint.value } (${ paint.groups.find( ( g ) => same( g.value, paint.value ) ).properties.join( ', ' ) }); the draft times ${ named( painted ) }` } ] : [] ),

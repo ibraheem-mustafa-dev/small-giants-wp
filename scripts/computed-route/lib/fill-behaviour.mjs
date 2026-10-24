@@ -10,6 +10,8 @@ import { openDb } from './db.mjs';
 import { setAttr } from './tree.mjs';
 import { recogniseBehaviour, hostsFromTemplate } from './motion-behaviours.mjs';
 import { validateMotionWrite } from './motion-validate.mjs';
+import { READ_WIDTHS } from './fill-read.mjs';
+import { timeToMs } from './resolve.mjs';
 
 export const COVERAGE_WRITES = [
 	'css-function:circle',
@@ -103,14 +105,29 @@ export function applySettings( { items, n, out, where, flat, hasAttr = declaredA
 }
 
 // The header row that scrolls away above the pinned header bar: `rowHideOnScroll` on a `sgs/site-header-row` whose
-// element is one of the strip keys.
-export function applyStrip( { n, target, key, idx, out, where, flat, hasAttr = declaredAttr } ) {
+// element is one of the strip keys. The row's collapse animates unless `rowAnimate` is off: where the block declares it
+// and the draft's row times nothing at rest at every width it is read at (stillAtRest), it is written off.
+export function applyStrip( { n, target, key, idx, out, where, flat, hasAttr = declaredAttr, reads = null } ) {
 	if ( 'sgs/site-header-row' !== n.name || ! idx.stripKeys.has( key ) || flat[ n.index ].attributes?.rowHideOnScroll?.desktop || ! hasAttr( n.name, 'rowHideOnScroll' ) ) {
 		return;
 	}
 	const { before, after } = setAttr( flat[ n.index ], { attr: 'rowHideOnScroll', value: { desktop: 'on' } } );
 	out.writes.push( { node: where.node, block: n.name, slot: where.slot, prop: 'rowHideOnScroll', attr: 'rowHideOnScroll', before, after, widths: [], how: 'motion' } );
 	out.notes.push( { ...where, text: 'the draft pins its header bar and lets this strip scroll away: the row hides on scroll' } );
+	const still = stillAtRest( reads, target.id );
+	if ( still && hasAttr( n.name, 'rowAnimate' ) ) {
+		const w = setAttr( flat[ n.index ], { attr: 'rowAnimate', value: false } );
+		out.writes.push( { node: where.node, block: n.name, slot: where.slot, prop: 'rowAnimate', attr: 'rowAnimate', before: w.before, after: w.after, widths: [], how: 'motion' } );
+		out.notes.push( { ...where, text: `the draft's row times nothing at rest (transition-duration ${ still.join( ', ' ) } at 375, 768 and 1440 where read), so its collapse jumps: rowAnimate off` } );
+	}
+}
+
+// The resting transition-duration of a target at each width it is read at (the code's declaration, else the rendered
+// value), when every entry of every one is 0; else null (a width timed, an unreadable value, or nothing read).
+function stillAtRest( reads, id ) {
+	const values = READ_WIDTHS.map( ( w ) => reads?.declared?.[ w ]?.[ id ]?.[ 'transition-duration' ] ?? reads?.widths?.[ w ]?.[ id ]?.styles?.[ 'transition-duration' ] ).filter( ( v ) => undefined !== v );
+	const zero = ( v ) => String( v ).split( ',' ).every( ( x ) => 0 === timeToMs( x.trim() ) );
+	return values.length && values.every( zero ) ? values : null;
 }
 
 const layerCount = ( el, effect, hover ) => ( ( hover ? el?.hover?.effects : el?.effects ) || [] ).filter( ( l ) => l.effect === effect ).length;

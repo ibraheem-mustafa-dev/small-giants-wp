@@ -1,0 +1,12 @@
+[
+	{ "file": "lib/fill-behaviour.mjs", "find": "if ( still && hasAttr( n.name, 'rowAnimate' ) ) {", "replace": "if ( false ) {", "why": "rowAnimate is never written" },
+	{ "file": "lib/fill-behaviour.mjs", "find": "still && hasAttr( n.name, 'rowAnimate' )", "replace": "still", "why": "rowAnimate is written where the block does not declare it" },
+	{ "file": "lib/fill-behaviour.mjs", "find": "{ attr: 'rowAnimate', value: false }", "replace": "{ attr: 'rowAnimate', value: true }", "why": "the row is written to animate" },
+	{ "file": "lib/fill-behaviour.mjs", "find": "values.length && values.every( zero )", "replace": "values.every( zero )", "why": "a row with no width read is judged still" },
+	{ "file": "lib/fill-behaviour.mjs", "find": "values.every( zero ) ? values : null", "replace": "values.some( zero ) ? values : null", "why": "one still width judges the row still" },
+	{ "file": "lib/fill-behaviour.mjs", "find": "String( v ).split( ',' ).every(", "replace": "String( v ).split( ',' ).some(", "why": "one untimed entry judges the list still" },
+	{ "file": "lib/fill-behaviour.mjs", "find": "0 === timeToMs( x.trim() )", "replace": "! timeToMs( x.trim() )", "why": "an unreadable timing is taken as 0" },
+	{ "file": "lib/fill-behaviour.mjs", "find": "reads?.declared?.[ w ]?.[ id ]?.[ 'transition-duration' ] ?? reads?.widths", "replace": "reads?.widths", "why": "the rendered value beats the code's declaration" },
+	{ "file": "lib/fill-behaviour.mjs", "find": "?? reads?.widths?.[ w ]?.[ id ]?.styles?.[ 'transition-duration' ] )", "replace": ")", "why": "the rendered resting timing is never read" },
+	{ "file": "lib/fill-motion.mjs", "find": "applyStrip( { n, target: t, key, idx, out, where, flat, hasAttr, reads } );", "replace": "applyStrip( { n, target: t, key, idx, out, where, flat, hasAttr } );", "why": "the motion writer passes no reads" }
+]

@@ -6,6 +6,7 @@
 	{ "block": "sgs/site-header", "attr": "shadowScrolled", "effect": "behaviour:scrolled-header" },
 	{ "block": "sgs/site-header", "attr": "shadowScrolledColour", "effect": "behaviour:scrolled-header" },
 	{ "block": "sgs/site-header-row", "attr": "rowHideOnScroll", "effect": "behaviour:hide-on-scroll" },
+	{ "block": "sgs/site-header-row", "attr": "rowAnimate", "effect": "behaviour:hide-on-scroll" },
 	{ "block": "sgs/business-info", "attr": "openStatusDotPulse", "effect": "behaviour:dot-pulse" },
 	{ "block": "sgs/business-info", "attr": "openStatusDotPulseDuration", "effect": "behaviour:dot-pulse" },
 	{ "block": "sgs/nav-drawer-menu", "attr": "accordionScrollIntoView", "effect": "behaviour:scroll-to-opened" },
