@@ -1,19 +1,60 @@
 {
   "env": {
-    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "4"
+    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "8"
   },
   "permissions": {
     "allow": [
+      "Bash(*)",
       "Read(//c/Users/Bean/Projects/**)",
       "Read(//c/Users/Bean/.claude/**)",
       "Read(//c/Users/Bean/.agents/**)",
-      "Read(//c/Users/Bean/AppData/Local/Temp/claude/**)"
-    ],
-    "defaultMode": "plan",
-    "additionalDirectories": [
-      "C:\\Users\\Bean\\AppData\\Local\\Temp\\claude",
-      "C:\\Users\\Bean\\AppData\\Local\\Temp\\claude\\c--Users-Bean-Projects-small-giants-wp\\01ba43c8-9933-4132-8050-0f52ad1ea141\\scratchpad",
-      "C:\\Users\\Bean\\AppData\\Local\\Temp\\claude\\scratch"
+      "Read(//c/Users/Bean/AppData/Local/Temp/claude/**)",
+      "Read(//c/Users/Bean/Projects/small-giants-wp/sites/indus-foods/**)",
+      "Read(//c/Users/Bean/Projects/small-giants-wp/scripts/computed-route/**)",
+      "Read(//c/Users/Bean/Projects/small-giants-wp/**)",
+      "Read(//c/Users/Bean/Projects/small-giants-wp/sites/eye-care-ward-end/**)",
+      "Read(//c/Users/Bean/Projects/small-giants-wp/sites/indus-foods/handoff/**)",
+      "Read(//c/Users/Bean/Projects/small-giants-wp/sites/mamas-munches-redesign/handoff/**)",
+      "Read(//c/Users/Bean/Projects/small-giants-wp/sites/eye-care-ward-end/handoff/**)",
+      "Read(//c/Users/Bean/Projects/small-giants-wp/sites/eye-care-ward-end/handoff/tokens/**)",
+      "Read(//c/Users/Bean/Projects/small-giants-wp/scripts/**)",
+      "Read(//c/Users/Bean/Projects/small-giants-wp/.claude/specs/**)",
+      "Read(//c/Users/Bean/Projects/small-giants-wp/sites/**)",
+      "Bash(cd *)",
+      "Bash(ls *)",
+      "Bash(ls)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(grep *)",
+      "Bash(diff *)",
+      "Bash(cut *)",
+      "Bash(uniq *)",
+      "Bash(echo *)",
+      "Bash(sed -n '178,193p' lib/intake-inventory.mjs)",
+      "Bash(wc -l design_handoff_ward_end_eye_care_v2/README.md \"Ward End Eye Care - SGS Gap Handoff/README.md\" \"Ward End Eye Care - SGS Gap Handoff/WP Build Gap Map.dc.html\" design_handoff_ward_end_eye_care_v2/*.dc.html \"Ward End Eye Care - SGS Gap Handoff\"/*.dc.html \"Ward End Eye Care - SGS Gap Handoff/image-slot.js\" design_handoff_ward_end_eye_care_v2/image-slot.js)",
+      "Bash(grep -n '^#' design_handoff_ward_end_eye_care_v2/README.md)",
+      "Bash(sha256sum design_handoff_ward_end_eye_care_v2/support.js handoff/support.js \"Ward End Eye Care - SGS Gap Handoff/support.js\")",
+      "Bash(grep -c 'data-sgs-manifest' design_handoff_ward_end_eye_care_v2/\"Eye Care Birmingham.dc.html\" \"Ward End Eye Care - SGS Gap Handoff/\"*.dc.html)",
+      "Bash(sed -n '1,52p' design_handoff_ward_end_eye_care_v2/README.md)",
+      "Bash(grep -rnF \".animate\\(\" computed-route/lib/*.mjs computed-route/*.mjs parity/lib/*.mjs)",
+      "Read(//c/Users/Bean/Projects/small-giants-wp/sites/eye-care-ward-end/Ward End Eye Care - SGS Gap Handoff/**)",
+      "Bash(grep -n -o -E 'data-props=\"[^\"]*\"' \"WP Build Gap Map.dc.html\")",
+      "Bash(sed -n *)",
+      "Bash(awk *)",
+      "Bash(sort *)",
+      "Bash(sed -n '174,190p' \"WP Build Gap Map.dc.html\")",
+      "Bash(grep -o \"<script[^>]*src=[^>]*>\" *.dc.html)",
+      "Bash(grep -c \"^  R\\('\" \"WP Build Gap Map.dc.html\")",
+      "Bash(sed -n '300,350p' \"WP Build Gap Map.dc.html\")",
+      "Bash(grep -n \"src\\\\b\" lib/intake-census-template.mjs lib/intake-census-runtime.mjs lib/intake-census.mjs)",
+      "Bash(grep -n \"store.js\\\\|<helmet>\\\\|</helmet>\\\\|support.js\" mamas-munches-redesign/handoff/Basket.dc.html)",
+      "Grep",
+      "WebFetch",
+      "Bash(grep -o -i -E '.{0,80}sage.{0,80}' design_handoff_ward_end_eye_care_v2/\"Eye Care Birmingham.dc.html\")",
+      "WebSearch",
+      "Cd"
     ],
     "deny": [
       "Bash(git stash *)",
@@ -26,8 +67,15 @@
       "Bash(*--allow-dirty*)",
       "Bash(*--skip-verify*)",
       "Bash(rg *--pre*)",
-      "Bash(sed *--in-place*)",
-      "Bash(sed -i*)"
+      "Bash(sed *--in-place*)"
+    ],
+    "defaultMode": "plan",
+    "additionalDirectories": [
+      "C:\\Users\\Bean\\AppData\\Local\\Temp\\claude",
+      "C:\\Users\\Bean\\AppData\\Local\\Temp\\claude\\c--Users-Bean-Projects-small-giants-wp\\01ba43c8-9933-4132-8050-0f52ad1ea141\\scratchpad",
+      "C:\\Users\\Bean\\Projects\\small-giants-wp",
+      "c:\\Users\\Bean\\Projects\\small-giants-wp",
+      "/c/Users/Bean/Projects/small-giants-wp"
     ]
   },
   "hooks": {
