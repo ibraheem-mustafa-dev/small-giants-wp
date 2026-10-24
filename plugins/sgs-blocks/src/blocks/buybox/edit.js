@@ -7,6 +7,7 @@ import { ResponsiveBoxControl, SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
 	MediaElementPanel,
+	RowWrapPanel,
 } from '../../components';
 import { BuyboxExtraPanels, getBuyboxExtraColourRows } from './inspector-extra';
 import { BuyboxExtraSettingsPanels2 } from './inspector-extra-2';
@@ -106,6 +107,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<SgsColourPanel rows={ colourRows } />
 			<ButtonActionPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<GuidedPanel attributes={ attributes } setAttributes={ setAttributes } />
+			<InspectorControls>
+				<RowWrapPanel
+					rows={ [
+						{ label: __( 'Wrap thumbnails (default: one scrolling row)', 'sgs-blocks' ), value: attributes.thumbsFlexWrap, onChange: ( val ) => setAttributes( { thumbsFlexWrap: val } ) },
+						{ label: __( 'Wrap price row', 'sgs-blocks' ), value: attributes.priceRowFlexWrap, onChange: ( val ) => setAttributes( { priceRowFlexWrap: val } ) },
+						{ label: __( 'Wrap guided step meter', 'sgs-blocks' ), value: attributes.meterFlexWrap, onChange: ( val ) => setAttributes( { meterFlexWrap: val } ) },
+						{ label: __( 'Wrap guided Back and Next', 'sgs-blocks' ), value: attributes.navFlexWrap, onChange: ( val ) => setAttributes( { navFlexWrap: val } ) },
+					] }
+				/>
+			</InspectorControls>
 
 			<InspectorControls>
 				<PanelBody title={ __( 'Buybox labels', 'sgs-blocks' ) }>

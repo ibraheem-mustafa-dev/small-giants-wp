@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
-import { useDrawerPreviewToggle, IconPreview, ResponsiveBoxControl, SgsColourPanel, ScrimControls, TypographyControls, ResponsiveOverride, SgsLengthControl } from '../../components';
+import { useDrawerPreviewToggle, IconPreview, ResponsiveBoxControl, SgsColourPanel, ScrimControls, TypographyControls, ResponsiveOverride, SgsLengthControl, RowWrapPanel } from '../../components';
 import { ToolsPanel } from '../../components/primitives';
 import { colourVar, usePreviewTier, tierBoxLonghands } from '../../utils';
 import MediaElementPanel from '../../components/MediaElementPanel';
@@ -150,6 +150,15 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					setAttributes={ setAttributes }
 					hasPanel={ hasPanel }
 				/>
+
+				{ hasPanel && (
+					<RowWrapPanel
+						rows={ [
+							{ label: __( 'Wrap item actions', 'sgs-blocks' ), value: attributes.itemActionsFlexWrap, onChange: ( val ) => setAttributes( { itemActionsFlexWrap: val } ) },
+							{ label: __( 'Wrap panel buttons', 'sgs-blocks' ), value: attributes.panelActionsFlexWrap, onChange: ( val ) => setAttributes( { panelActionsFlexWrap: val } ) },
+						] }
+					/>
+				) }
 
 				<TriggerSettingsControls
 					iconName={ iconName }
