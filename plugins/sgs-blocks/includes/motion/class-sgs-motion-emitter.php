@@ -124,6 +124,14 @@ final class Sgs_Motion_Emitter {
 				}
 			}
 		}
+		// A block's own base transition on this part (the burger bars' morph pose) is a `transition` entry list the part's
+		// stylesheet rule holds; this scoped `transition` replaces that rule's list, so the entries ride on ours.
+		$base_entries = (array) apply_filters( 'sgs_motion_base_transition', array(), (string) ( $context['block'] ?? '' ), (string) ( $context['target'] ?? '' ) );
+		foreach ( self::TIERS as $tier ) {
+			if ( array() !== $trans[ $tier ] && array() !== $base_entries ) {
+				$trans[ $tier ] = array_merge( $trans[ $tier ], array_map( 'strval', $base_entries ) );
+			}
+		}
 		foreach ( self::TIERS as $tier ) {
 			if ( array() !== $trans[ $tier ] && empty( $context['no_transition'] ) ) {
 				$decls[ $tier ]['transition'] = implode( ', ', $trans[ $tier ] );

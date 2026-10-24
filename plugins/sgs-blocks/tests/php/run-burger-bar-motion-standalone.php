@@ -51,18 +51,21 @@ function ok( bool $cond, string $label ): void {
 }
 
 /** One bar's hover state: rest and hover width, its own duration and delay. */
-function bar_motion( string $rest, string $hover, int $duration, int $delay ): array {
+function bar_motion( string $rest, ?string $hover, int $duration, int $delay ): array {
+	$values = array( 'restWidth' => $rest );
+	if ( null !== $hover ) {
+		$values += array(
+			'width'    => $hover,
+			'duration' => $duration,
+			'delay'    => $delay,
+			'easing'   => 'token:easing.ease-out',
+		);
+	}
 	return array(
 		'hover' => array(
 			'state' => array(
 				'source' => 'item',
-				'values' => array(
-					'restWidth' => $rest,
-					'width'     => $hover,
-					'duration'  => $duration,
-					'delay'     => $delay,
-					'easing'    => 'token:easing.ease-out',
-				),
+				'values' => $values,
 			),
 		),
 	);
@@ -100,10 +103,11 @@ $cases = array(
 		array( 300, 300, 350 ),
 	),
 	'Mama 22/22/16' => array(
-		array( 'burger-bar-1' => bar_motion( '22px', '22px', 250, 0 ), 'burger-bar-2' => bar_motion( '22px', '22px', 250, 0 ), 'burger-bar-3' => bar_motion( '16px', '22px', 250, 40 ) ),
+		// Mama's mockups carry no hover rule on the burger (static 22px bars): rest widths only, no hover width.
+		array( 'burger-bar-1' => bar_motion( '22px', null, 0, 0 ), 'burger-bar-2' => bar_motion( '22px', null, 0, 0 ), 'burger-bar-3' => bar_motion( '16px', null, 0, 0 ) ),
 		array( 22, 22, 16 ),
-		array( 22, 22, 22 ),
-		array( 250, 250, 250 ),
+		array( null, null, null ),
+		array( null, null, null ),
 	),
 );
 foreach ( $cases as $label => $case ) {
@@ -115,12 +119,17 @@ foreach ( $cases as $label => $case ) {
 		$delay = 3 === $n ? '40ms' : '0ms';
 		ok( '' !== $rule, "$label: bar $n has its own scoped rule on .sgs-nav-bar-menu__burger-bar-$n" );
 		ok( false !== strpos( $rule, '--sgs-w-rest:' . $rest[ $i ] . 'px;' ), "$label: bar $n rests at {$rest[$i]}px (--sgs-w-rest)" );
-		ok( false !== strpos( $rule, '--sgs-mh-to-w:' . $hover[ $i ] . 'px;' ), "$label: bar $n grows to {$hover[$i]}px (--sgs-mh-to-w)" );
-		ok( 1 === preg_match( '/transition:[^;]*--sgs-mh-w ' . $durations[ $i ] . 'ms [^,;]* ' . $delay . '[,;]/', $rule ), "$label: bar $n transitions the width over {$durations[$i]}ms with a $delay delay" );
+		if ( null === $hover[ $i ] ) {
+			ok( false === strpos( $rule, '--sgs-mh-to-w' ) && false === strpos( $rule, '--sgs-mh-w ' ), "$label: bar $n has no hover width" );
+		} else {
+			ok( false !== strpos( $rule, '--sgs-mh-to-w:' . $hover[ $i ] . 'px;' ), "$label: bar $n grows to {$hover[$i]}px (--sgs-mh-to-w)" );
+			ok( 1 === preg_match( '/transition:[^;]*--sgs-mh-w ' . $durations[ $i ] . 'ms [^,;]* ' . $delay . '[,;]/', $rule ), "$label: bar $n transitions the width over {$durations[$i]}ms with a $delay delay" );
+		}
+		ok( 1 === preg_match( '/transition:[^;]*transform var\(--sgs-nbm-burger-morph-duration, 200ms\) var\(--sgs-nbm-burger-morph-easing, ease\), opacity var\(--sgs-nbm-burger-morph-duration/', $rule ), "$label: bar $n's motion transition keeps the open/close morph (transform and opacity) beside the width" );
 		ok( 1 === preg_match( '/<span[^>]*data-sgs-mc="width"[^>]*burger-bar-' . $n . '"|<span[^>]*burger-bar-' . $n . '"[^>]*data-sgs-mc="width"/', $html ), "$label: bar $n is stamped with the width channel" );
 	}
 	ok( 1 === preg_match( '/<button[^>]*data-sgs-mitem/', $html ), "$label: the burger button drives the bars (data-sgs-mitem)" );
-	ok( false === strpos( bar_rule( $css, 1 ) . bar_rule( $css, 2 ), '40ms' ) && false !== strpos( bar_rule( $css, 3 ), '40ms' ), "$label: only Bar 3 carries the 40ms delay" );
+	null !== $durations[2] && ok( false === strpos( bar_rule( $css, 1 ) . bar_rule( $css, 2 ), '40ms' ) && false !== strpos( bar_rule( $css, 3 ), '40ms' ), "$label: only Bar 3 carries the 40ms delay" );
 }
 
 list( $html2 ) = render_burger( array( 'burger-bar-3' => bar_motion( '8px', '18px', 350, 40 ) ), 2 );
