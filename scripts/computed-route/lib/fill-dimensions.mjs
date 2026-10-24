@@ -25,8 +25,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { BLOCKS_DIR, defaultPaint, LOOSE } from './resolve.mjs';
-import { WIDTHS, rowTarget, rowValues, rectAt, reresolve, commit } from './fill-regap.mjs';
+import { WIDTHS, TIER_OF, rowTarget, rowValues, rectAt, reresolve, commit } from './fill-regap.mjs';
 import { innerToRoot } from './fill-same-box.mjs';
+import { attrRow } from './db.mjs';
 
 const LOGICAL = { 'block-size': 'height', 'inline-size': 'width', 'min-block-size': 'min-height', 'min-inline-size': 'min-width', 'max-block-size': 'max-height', 'max-inline-size': 'max-width' };
 // The size family: physical name -> { kind: exact | min | max, axis: h | w }.
@@ -116,6 +117,11 @@ export function dimensionWrites( { nodes, flat, refOf, reads, db, unmapped, calF
 	const out = { writes: [], unmapped: [], notes: [], ledger: [] };
 	const ctx = { reads, db, calFor, snapshot };
 	for ( const row of unmapped ) {
+		if ( 'flex-shrink' === row.property ) {
+			const result = /^no-setting\b/.test( row.reason ?? '' ) && ! row.state && '' === ( row.slot ?? '' ) ? fixedSizing( { row, nodes, flat, refOf, reads, db, calFor, out } ) : null;
+			null === result ? out.unmapped.push( row ) : result.raise && out.unmapped.push( { ...row, reason: `${ row.reason }; dimension: ${ result.raise }` } );
+			continue;
+		}
 		const size = sizeOf( row.property ?? '' );
 		const hit = size && ONLY_GAPS.test( row.reason ?? '' ) && ! row.state ? rowTarget( { nodes, flat, refOf }, row ) : null;
 		const result = hit ? handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, resolver } ) : null;
@@ -234,4 +240,64 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 			: null;
 	}
 	return null;
+}
+
+// The child-sizing extension's settings (includes/child-sizing.php): 'fixed' paints `flex: 0 0 auto` and the width.
+const SIZING = 'sgsChildSizing';
+const SIZING_WIDTH = 'sgsChildWidth';
+
+// 4: a flex item the draft keeps from shrinking (flex-shrink 0, read on the root's flex item, lib/fill-read.mjs::
+// flexItemsInPage) where the block's root would shrink is held at its rendered width by the block's fixed child sizing,
+// at each width the draft does not shrink it; a read width where it does shrink, below a fixed one, sizes to its content
+// ('fit'), so the fixed tier is not carried down. Nothing is written where the block's root shrinks at none of those
+// widths. Returns true, { raise }, or null (not this pass's row).
+function fixedSizing( { row, nodes, flat, refOf, reads, db, calFor, out } ) {
+	const hit = rowTarget( { nodes, flat, refOf }, row );
+	if ( ! hit ) {
+		return null;
+	}
+	const { rec, target } = hit;
+	const node = flat[ rec.index ];
+	const given = rowValues( row, reads, target );
+	const fixedAt = WIDTHS.filter( ( w ) => undefined !== given[ w ] && 0 === parseFloat( given[ w ] ) );
+	if ( ! fixedAt.length ) {
+		return null;
+	}
+	const sizing = attrRow( db, rec.name, SIZING );
+	if ( ! sizing || ! attrRow( db, rec.name, SIZING_WIDTH ) || ! String( sizing.enum_values ?? '' ).includes( '"fixed"' ) ) {
+		return { raise: `${ rec.name } has no fixed child sizing (${ SIZING } with ${ SIZING_WIDTH }) to keep it from shrinking; a framework setting is needed` };
+	}
+	const paint = defaultPaint( calFor( rec.name ), '', 'flex-shrink' );
+	const unknown = fixedAt.filter( ( w ) => undefined === paint[ w ] );
+	if ( unknown.length ) {
+		return { raise: `whether ${ rec.name }'s root shrinks is unknown at ${ unknown.join( ', ' ) } (no calibrated flex-shrink)` };
+	}
+	const shrinks = fixedAt.filter( ( w ) => parseFloat( paint[ w ] ) > 0 );
+	if ( ! shrinks.length ) {
+		return null;
+	}
+	const sizeAt = ( w ) => reads.widths?.[ w ]?.[ target.id ]?.flexItem?.w ?? rectAt( reads, target, w )?.w;
+	const unsized = fixedAt.filter( ( w ) => ! Number.isFinite( sizeAt( w ) ) );
+	if ( unsized.length ) {
+		return { raise: `the draft's rendered width of the flex item is unknown at ${ unsized.join( ', ' ) }` };
+	}
+	const held = node.attributes?.[ SIZING ];
+	if ( held && 'object' === typeof held && Object.values( held ).some( ( v ) => '' !== v && undefined !== v && null !== v ) ) {
+		return { raise: `${ SIZING } already holds ${ JSON.stringify( held ) }, so the draft's fixed size is not written over it` };
+	}
+	const modes = {};
+	const widths = {};
+	// Widest first: a narrower read width that shrinks, under a fixed wider one, sizes to its content.
+	for ( const w of [ ...WIDTHS ].reverse() ) {
+		if ( fixedAt.includes( w ) ) {
+			modes[ TIER_OF[ w ] ] = 'fixed';
+			widths[ TIER_OF[ w ] ] = `${ Math.round( sizeAt( w ) * 100 ) / 100 }px`;
+		} else if ( Object.keys( modes ).length && undefined !== given[ w ] ) {
+			modes[ TIER_OF[ w ] ] = 'fit';
+		}
+	}
+	const included = Object.fromEntries( fixedAt.map( ( w ) => [ w, given[ w ] ] ) );
+	commit( out, { rec, node, row, prop: 'flex-shrink', res: { writes: [ { attr: SIZING, value: modes }, { attr: SIZING_WIDTH, value: widths } ], included }, how: 'dimension', note: `the draft keeps the flex item from shrinking (flex-shrink 0 at ${ fixedAt.join( ', ' ) }) where the block's root shrinks (flex-shrink ${ fixedAt.map( ( w ) => paint[ w ] ).join( ' / ' ) }), so the fixed child sizing holds its rendered width ${ Object.values( widths ).join( ' / ' ) }` } );
+	out.notes.push( `${ row.node } ${ rec.name } flex-shrink: fixed child sizing at ${ Object.entries( widths ).map( ( [ t, v ] ) => `${ t } ${ v }` ).join( ', ' ) }` );
+	return true;
 }
