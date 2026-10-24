@@ -39,7 +39,7 @@ const SHOWN = [ 'confirmed' ];
 // The motion writers: their writes name settings, not properties (motionLonghands).
 const MOTION_HOW = [ 'motion', 'fill-timing' ];
 // What a motion layer's timing values write on its element (the sgsMotion layer, fill-motion-element.mjs).
-const LAYER_LONGHANDS = { duration: 'transition-duration', paintDuration: 'transition-duration', easing: 'transition-timing-function', paintEasing: 'transition-timing-function', delay: 'transition-delay', paintDelay: 'transition-delay' };
+const LAYER_LONGHANDS = { duration: 'transition-duration', paintDuration: 'transition-duration', shadowDuration: 'transition-duration', easing: 'transition-timing-function', paintEasing: 'transition-timing-function', shadowEasing: 'transition-timing-function', delay: 'transition-delay', paintDelay: 'transition-delay' };
 
 const longhandCache = new Map();
 // A property and every longhand it sets, through nested shorthands (`border` reaches `border-top-width`).
@@ -54,7 +54,7 @@ export function longhandsOf( property ) {
 const at = ( node, slot ) => `${ node }|${ slot ?? '' }`;
 
 // The timing values one sgsMotion element's layers give each longhand: { longhand: [ value ] } from their state values
-// (duration and paintDuration both time transition-duration entries; a layer that sets no delay runs at 0ms,
+// (duration, paintDuration and shadowDuration all time transition-duration entries; a layer that sets no delay runs at 0ms,
 // class-sgs-motion-emitter.php::hover_state). A layer with no values gives nothing.
 export function layerTimings( element ) {
 	const out = {};

@@ -1,0 +1,16 @@
+[
+	{ "file": "lib/fill-timing.mjs", "find": "const share = ( g ) => g.properties.filter( ( p ) => SHADOW !== p ).length;", "replace": "const share = ( g ) => g.properties.length;", "why": "the shadow outvotes the colours for the paint timing" },
+	{ "file": "lib/fill-timing.mjs", "find": "! ( SHADOW === p && 'transition-delay' !== prop ) && ", "replace": "", "why": "a shadow off the paint timing is still a timing-conflict row" },
+	{ "file": "lib/fill-timing.mjs", "find": "SHADOW === p && 'transition-delay' !== prop", "replace": "SHADOW === p", "why": "a shadow delay is taken as held" },
+	{ "file": "lib/fill-motion-element.mjs", "find": "shadowLayer( { paint, widths, out, snap, held: { duration: () => fast.duration, easing: () => fast.easing } } );", "replace": "", "why": "over transition.fast the shadow is never written" },
+	{ "file": "lib/fill-motion-element.mjs", "find": "shadowLayer( { paint, widths, out, snap, held: { duration: dur, easing: ease } } );", "replace": "", "why": "beside the paint fields the shadow is never written" },
+	{ "file": "lib/fill-motion-element.mjs", "find": "sameEase( ease( w ), held.easing( w ) )", "replace": "true", "why": "an easing alone differing writes nothing" },
+	{ "file": "lib/fill-motion-element.mjs", "find": "timed.every( ( w ) => sameTiming( 'transition-duration', dur( w ), held.duration( w ) )", "replace": "timed.every( ( w ) => true", "why": "a duration alone differing writes nothing" },
+	{ "file": "lib/fill-motion-element.mjs", "find": ", shadowEasing: snap( oneTiming( ease( timed[ 0 ] ) ) ?? ease( timed[ 0 ] ), 'easing' ) };", "replace": " };", "why": "only the duration half is written" },
+	{ "file": "lib/fill-motion-element.mjs", "find": "out.devices[ TIER[ w ] ] = { ...( out.devices[ TIER[ w ] ] || {} ), shadowDuration: snap( ms( w ), 'duration' ) };", "replace": "", "why": "a narrower width's shadow duration is dropped" },
+	{ "file": "lib/fill-motion-element.mjs", "find": "if ( ! sameEase( ease( w ), ease( timed[ 0 ] ) ) ) {", "replace": "if ( false ) {", "why": "a shadow easing that differs by width leaves no row" },
+	{ "file": "lib/fill-motion-element.mjs", "find": "g.properties.includes( SHADOW ) )?.value;", "replace": "g.properties.includes( 'color' ) )?.value;", "why": "the shadow's timing is read from another property" },
+	{ "file": "lib/fill-motion.mjs", "find": "value: u.field, reason: `timing-conflict: ${ u.reason }`", "replace": "value: 'paintEasing', reason: `timing-conflict: ${ u.reason }`", "why": "a shadow easing row names the paint field" },
+	{ "file": "lib/census-conservation.mjs", "find": "shadowDuration: 'transition-duration', ", "replace": "", "why": "the census does not read shadowDuration as a duration" },
+	{ "file": "lib/census-conservation.mjs", "find": "shadowEasing: 'transition-timing-function', ", "replace": "", "why": "the census does not read shadowEasing as an easing" }
+]

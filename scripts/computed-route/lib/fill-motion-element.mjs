@@ -9,7 +9,7 @@ import { loopEffect, loopCheck, chooseEffect, runtimeLoopsFor, smilLoop, marquee
 import { loopKeyframesCss, loopName, isLoopRecord } from './motion-loop-css.mjs';
 import { entranceCheck } from './motion-check.mjs';
 import { stateTrigger } from './motion-states.mjs';
-import { oneTiming, sameTiming } from './fill-timing.mjs';
+import { oneTiming, sameTiming, SHADOW } from './fill-timing.mjs';
 import { timeToMs } from './resolve.mjs';
 
 // Every duration, easing and distance of a layer's values (and its device overrides) to a token reference where one
@@ -258,13 +258,15 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [],
 
 const TIER = { 1440: 'desktop', 768: 'tablet', 375: 'mobile' };
 
-// The motion hover layer's paint timing from lib/fill-timing.mjs::paintTimings' result: { values: { paintDuration, paintEasing }, devices:
-// { tablet|mobile: { paintDuration } }, notes, unmapped } (values null when nothing is written). Unset, the layer's paint
-// runs on the client's transition.fast (its duration and easing; the framework's duration.fast and ease without it), so
-// a draft paint timing equal to it at every width is not written. Otherwise both fields are written from the widest
-// width (set alone, either field's other half falls back to duration.fast or easing.default, not to transition.fast),
-// a narrower width's duration where it differs from the wider tier's, and an easing that differs between widths, which
-// the layer holds for all devices at once, is a row. ctx: { types, tokens } (lib/motion-tokens.mjs).
+// The motion hover layer's paint timing from lib/fill-timing.mjs::paintTimings' result: { values: { paintDuration,
+// paintEasing, shadowDuration, shadowEasing }, devices: { tablet|mobile: { paintDuration, shadowDuration } }, notes,
+// unmapped: [{ field, reason }] } (values null when nothing is written). Unset, the layer's paint runs on the client's
+// transition.fast (its duration and easing; the framework's duration.fast and ease without it), so a draft paint timing
+// equal to it at every width is not written. Otherwise both fields are written from the widest width (set alone, either
+// field's other half falls back to duration.fast or easing.default, not to transition.fast), a narrower width's duration
+// where it differs from the wider tier's, and an easing that differs between widths, which the layer holds for all
+// devices at once, is a row. The shadow's own timing is judged against the paint timing it would otherwise run on
+// (shadowLayer). ctx: { types, tokens } (lib/motion-tokens.mjs).
 export function paintLayer( paint, ctx ) {
 	const out = { values: null, devices: {}, notes: [], unmapped: [] };
 	const widths = Object.keys( paint ).map( Number ).sort( ( a, b ) => b - a );
@@ -274,13 +276,13 @@ export function paintLayer( paint, ctx ) {
 	const fast = splitTiming( ctx.tokens?.[ 'transition.fast' ] ) ?? { duration: String( ctx.tokens?.[ 'duration.fast' ] ?? '200ms' ), easing: 'ease' };
 	const dur = ( w ) => paint[ w ][ 'transition-duration' ].value;
 	const ease = ( w ) => paint[ w ][ 'transition-timing-function' ].value;
-	const sameEase = ( a, b ) => null !== curve( a ) && curve( a ) === curve( b );
+	const snap = ( v, type ) => snapToken( v, type, { ...ctx, prefer: [ type ] } );
 	const asFast = widths.every( ( w ) => sameTiming( 'transition-duration', dur( w ), fast.duration ) && sameEase( ease( w ), fast.easing ) );
 	if ( asFast ) {
-		out.notes.push( `the draft times colour, background, border colour and shadow at ${ dur( widths[ 0 ] ) } ${ ease( widths[ 0 ] ) }, the client's transition.fast, which the hover layer's paint runs on unset; nothing is written` );
+		out.notes.push( `the draft times colour, background, border colour and shadow at ${ dur( widths[ 0 ] ) } ${ ease( widths[ 0 ] ) }, the client's transition.fast, which the hover layer's paint runs on unset; no paint field is written` );
+		shadowLayer( { paint, widths, out, snap, held: { duration: () => fast.duration, easing: () => fast.easing } } );
 		return out;
 	}
-	const snap = ( v, type ) => snapToken( v, type, { ...ctx, prefer: [ type ] } );
 	const ms = ( w ) => timeToMs( oneTiming( dur( w ) ) );
 	out.values = { paintDuration: snap( ms( widths[ 0 ] ), 'duration' ), paintEasing: snap( oneTiming( ease( widths[ 0 ] ) ) ?? ease( widths[ 0 ] ), 'easing' ) };
 	let wider = widths[ 0 ];
@@ -289,12 +291,47 @@ export function paintLayer( paint, ctx ) {
 			out.devices[ TIER[ w ] ] = { paintDuration: snap( ms( w ), 'duration' ) };
 		}
 		if ( ! sameEase( ease( w ), ease( widths[ 0 ] ) ) ) {
-			out.unmapped.push( `the draft eases colour, background, border colour and shadow with ${ ease( w ) } at ${ w }px and ${ ease( widths[ 0 ] ) } at ${ widths[ 0 ] }px, and the hover layer holds paintEasing for all devices at once` );
+			out.unmapped.push( { field: 'paintEasing', reason: `the draft eases colour, background, border colour and shadow with ${ ease( w ) } at ${ w }px and ${ ease( widths[ 0 ] ) } at ${ widths[ 0 ] }px, and the hover layer holds paintEasing for all devices at once` } );
 		}
 		wider = w;
 	}
+	shadowLayer( { paint, widths, out, snap, held: { duration: dur, easing: ease } } );
 	return out;
 }
+
+// The shadow's own timing (hover.state.values.shadowDuration and shadowEasing; each unset, the shadow runs on the paint
+// timing). Where the draft's shadow is timed other than its paint at any width (`held`: { duration( width ),
+// easing( width ) }, the draft's paint timing, or transition.fast where that is what the paint runs on), both fields are
+// written from the widest width the shadow is timed at (set alone over transition.fast, the other half would fall back to
+// easing.default), with a narrower width's duration where it differs from the wider tier's, and a width whose shadow
+// easing differs from the widest width's is a row, the layer holding shadowEasing for all devices at once. A shadow timed
+// as its paint at every width writes nothing; the paint's own rows name what the paint fields cannot hold.
+function shadowLayer( { paint, widths, out, snap, held } ) {
+	const at = ( w, prop ) => paint[ w ][ prop ].groups.find( ( g ) => g.properties.includes( SHADOW ) )?.value;
+	const dur = ( w ) => at( w, 'transition-duration' );
+	const ease = ( w ) => at( w, 'transition-timing-function' );
+	const timed = widths.filter( ( w ) => undefined !== dur( w ) && undefined !== ease( w ) );
+	if ( ! timed.length ) {
+		return;
+	}
+	const ms = ( w ) => timeToMs( oneTiming( dur( w ) ) );
+	if ( timed.every( ( w ) => sameTiming( 'transition-duration', dur( w ), held.duration( w ) ) && sameEase( ease( w ), held.easing( w ) ) ) ) {
+		return;
+	}
+	out.values = { ...( out.values || {} ), shadowDuration: snap( ms( timed[ 0 ] ), 'duration' ), shadowEasing: snap( oneTiming( ease( timed[ 0 ] ) ) ?? ease( timed[ 0 ] ), 'easing' ) };
+	let wider = timed[ 0 ];
+	for ( const w of timed.slice( 1 ) ) {
+		if ( ! sameTiming( 'transition-duration', dur( w ), dur( wider ) ) && TIER[ w ] ) {
+			out.devices[ TIER[ w ] ] = { ...( out.devices[ TIER[ w ] ] || {} ), shadowDuration: snap( ms( w ), 'duration' ) };
+		}
+		if ( ! sameEase( ease( w ), ease( timed[ 0 ] ) ) ) {
+			out.unmapped.push( { field: 'shadowEasing', reason: `the draft eases the shadow with ${ ease( w ) } at ${ w }px and ${ ease( timed[ 0 ] ) } at ${ timed[ 0 ] }px, and the hover layer holds shadowEasing for all devices at once` } );
+		}
+		wider = w;
+	}
+}
+
+const sameEase = ( a, b ) => null !== curve( a ) && curve( a ) === curve( b );
 
 // An easing as one canonical curve: a keyword is its cubic-bezier (CSS Easing 1 §2.2), so `ease` is the
 // cubic-bezier(0.25, 0.1, 0.25, 1) a token may spell out. null when it cannot be read.

@@ -289,7 +289,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			const key = elementKey( t.finder, rootComponent );
 			let own = [ ...( byElement.get( key ) || [] ), ...idx.hostedFor( key ).map( ( x ) => x.r ), ...sets.flatMap( ( s ) => ( s.record ? [ s.record ] : [] ) ) ];
 			const where = { node: ref, block: n.name, slot: t.slot };
-			applyStrip( { n, target: t, key, idx, out, where, flat, hasAttr } );
+			applyStrip( { n, target: t, key, idx, out, where, flat, hasAttr, reads } );
 			// Settings behaviours (the header's scrolled shadow, the timeline's pinned track, ...) write block settings, not motion layers.
 			const settings = own.map( ( r ) => idx.found.find( ( x ) => x.r === r ) ).filter( ( x ) => x && 'settings' === x.b.kind );
 			if ( settings.length ) {
@@ -338,14 +338,14 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			used.push( ...m.used );
 			out.notes.push( ...m.notes.map( ( text ) => ( { ...where, text } ) ) );
 			out.unmapped.push( ...m.unmapped.map( ( u ) => ( { ...where, property: 'motion', value: u.record, reason: u.reason } ) ) );
-			// The hover layer times colour, background, border colour and shadow apart from the movement (paintDuration, paintEasing).
+			// The hover layer times colour, background, border colour and shadow apart from the movement (paint*, and shadow* for a shadow apart).
 			const hover = m.element.hover?.state;
 			if ( hover && reads ) {
 				const paint = paintLayer( paintTimings( reads, t.id ), ctx );
 				paint.values && Object.assign( hover.values, paint.values );
 				Object.entries( paint.devices ).forEach( ( [ tier, v ] ) => ( ( hover.devices ??= {} )[ tier ] = { ...( hover.devices[ tier ] || {} ), ...v } ) );
 				out.notes.push( ...paint.notes.map( ( text ) => ( { ...where, text } ) ) );
-				out.unmapped.push( ...paint.unmapped.map( ( reason ) => ( { ...where, property: 'transition-timing-function', value: 'paintEasing', reason: `timing-conflict: ${ reason }` } ) ) );
+				out.unmapped.push( ...paint.unmapped.map( ( u ) => ( { ...where, property: 'transition-timing-function', value: u.field, reason: `timing-conflict: ${ u.reason }` } ) ) );
 			}
 			if ( Object.keys( m.element ).length ) {
 				doc.elements[ target ] = { ...( doc.elements[ target ] || {} ), ...m.element };
