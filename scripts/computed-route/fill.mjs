@@ -53,7 +53,7 @@ import { sweepSteps } from './lib/fill-values.mjs';
 import { walkerConfigs } from './lib/fill-config.mjs';
 import { fillReport, unmappedList, readFailureRows, passSettled } from './lib/fill-report.mjs';
 import { calibrationFor } from './solve.mjs';
-import { motionSettled } from './lib/fill-motion-settle.mjs';
+import { motionSettled, transitionListOutcomes } from './lib/fill-motion-settle.mjs';
 import { stateMap } from './lib/state-map.mjs';
 import { readMediaMap } from './lib/fill-media.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
@@ -270,6 +270,10 @@ export async function fillSurface( o ) {
 		const lift = dropPresetMotion( { lifted: presets.lifted, flat, writes: result.writes } );
 		result.writes = lift.writes;
 		result.notes.push( ...lift.notes );
+		// The resting transition-property and transition-behavior reads: settled where live transitions the draft's properties, else raised.
+		const lists = transitionListOutcomes( { nodes, flat, refOf, reads, writes: result.writes, mdb: motionDb( db ), db, calFor } );
+		result.settled.push( ...lists.settled );
+		result.unmapped.push( ...lists.unmapped );
 		result.notes.push( ...motion.notes.map( ( x ) => `${ x.node } ${ x.block }${ x.slot ? ` (${ x.slot })` : '' }: ${ x.text }` ) );
 		// The site-wide options the draft's behaviours set (the route fade): `sgs_motion_settings` keys, merged over what the site holds when site-build applies them.
 		const siteOptions = motion.site.length ? { option: 'sgs_motion_settings', records: motion.site.map( ( s ) => s.record ), value: Object.assign( {}, ...motion.site.map( ( s ) => s.settings ) ) } : null;

@@ -8,6 +8,7 @@
 // of that shape is what this judges.
 import { templateKey } from './fact-key.mjs';
 import { handoverEntry } from './fill-handover.mjs';
+import { READ_WIDTHS } from './fill-read.mjs';
 
 const scriptFile = ( r ) => ( /\.m?js$/i.test( String( r.source?.file ?? '' ) ) ? String( r.source.file ) : null );
 const tplIds = ( r ) => [ r.element?.template_tpl_id, r.element?.nearest_tpl_id ].flat().filter( ( v ) => null !== v && undefined !== v );
@@ -85,4 +86,13 @@ export function readingProgressHandover( { found, homeOf } ) {
 			evidence: { key: 'reading-progress', draft: `${ r.id } ${ r.element?.selector ?? '' }`.trim(), width: 1440, record: r.id },
 			reason: `${ r.id } is the draft's page reading progress bar (a fixed bar scaled by the scroll position); the skeleton removes it because the Floating UI reading progress setting draws it: switch on ${ READING_PROGRESS_SETTING } and give it the bar's height and its colour or gradient`,
 		} ) );
+}
+
+// The read widths a node's sgsMotion write answers: the widths its root element was read at, where the document gives the
+// root a layer state of its own (the write's element is the root; a part's layer times the part, not the root's reads),
+// else none.
+export function motionWidths( n, doc, reads ) {
+	const root = n.targets.find( ( t ) => ! t.slot );
+	const own = Object.values( doc.elements?.root || {} ).some( ( layer ) => layer?.state?.values && Object.keys( layer.state.values ).length );
+	return root && own ? READ_WIDTHS.filter( ( w ) => reads?.widths?.[ w ]?.[ root.id ] && ! reads.widths[ w ][ root.id ].missing ) : [];
 }
