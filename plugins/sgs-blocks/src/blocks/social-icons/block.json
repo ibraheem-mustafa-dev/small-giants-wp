@@ -70,6 +70,7 @@
 					"attrMap": {
 						"css:gap": "gap",
 						"css:justify-content": "rowAlign",
+						"css:flex-wrap": "flexWrap",
 						"css:padding": "padding",
 						"css:margin": "margin"
 					},
@@ -429,6 +430,16 @@
 			"type": "object",
 			"default": {},
 			"description": "Space between icons per device {desktop,tablet,mobile}: a CSS length or a theme spacing preset. Unset = spacing-20."
+		},
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"nowrap",
+				"wrap"
+			],
+			"description": "Whether the icons wrap onto further rows when they overrun the row. Empty keeps the stylesheet's wrapping row."
 		},
 		"rowAlign": {
 			"type": "string",

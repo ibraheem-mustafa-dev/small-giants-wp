@@ -89,6 +89,7 @@ export {
 export { default as SgsBorderControl } from './SgsBorderControl';
 export { default as SgsGapControl } from './SgsGapControl';
 export { default as SgsLengthControl } from './SgsLengthControl';
+export { default as FlexWrapSelect } from './FlexWrapSelect';
 // Shared media size & crop panel (C19, 2026-08-27) — piloted on sgs/media only.
 // See the component's own docblock for the mode picker + grey-out contract.
 export {

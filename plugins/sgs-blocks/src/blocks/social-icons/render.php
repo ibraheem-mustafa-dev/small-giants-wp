@@ -140,6 +140,12 @@ if ( 'center' === $align ) {
 	$root_decls[] = 'justify-content:flex-end';
 }
 
+// ── Wrap (empty keeps the stylesheet's wrapping row) ─────────────────────────
+$flex_wrap = (string) ( $attributes['flexWrap'] ?? '' );
+if ( in_array( $flex_wrap, array( 'nowrap', 'wrap' ), true ) ) {
+	$root_decls[] = 'flex-wrap:' . $flex_wrap;
+}
+
 $scoped_css = array();
 if ( $root_decls ) {
 	$scoped_css[] = $root_sel . '{' . implode( ';', $root_decls ) . ';}';

@@ -37,6 +37,7 @@ import {
 	patchTier,
 	isCssGradient,
 } from '../../utils';
+import FlexWrapSelect from '../../components/FlexWrapSelect';
 import { svgStrokeGradientPreview, parseSvgGradient, SvgGradientDefs } from '../../utils/svg-gradient-preview';
 import { iconLengthValue } from '../icon/icon-state';
 import IconSizeControl, { ICON_SIZE_HELP } from '../icon/icon-size-control';
@@ -88,6 +89,7 @@ export function rowCanvasStyle( attributes, tier, palette, presetSlugs ) {
 		childIconLabelColourHover,
 		gap,
 		rowAlign,
+		flexWrap,
 	} = attributes;
 	const style = {};
 	const size = iconLengthValue( resolveTier( childIconSize, tier ).value, 512, presetSlugs );
@@ -139,6 +141,9 @@ export function rowCanvasStyle( attributes, tier, palette, presetSlugs ) {
 	if ( border.borderWidth ) {
 		style[ '--sgs-si-border-width' ] = border.borderWidth;
 		style[ '--sgs-si-border-style' ] = border.borderStyle;
+	}
+	if ( 'nowrap' === flexWrap || 'wrap' === flexWrap ) {
+		style.flexWrap = flexWrap;
 	}
 	if ( 'center' === rowAlign ) {
 		style.justifyContent = 'center';
@@ -199,6 +204,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		childIconShowLabel,
 		gap,
 		rowAlign,
+		flexWrap,
 	} = attributes;
 
 	const children = useSelect( ( select ) => select( blockEditorStore ).getBlocks( clientId ), [ clientId ] );
@@ -415,6 +421,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						value={ rowAlign }
 						onChange={ ( value ) => setAttributes( { rowAlign: value || 'start' } ) }
 					/>
+					<FlexWrapSelect label={ __( 'Wrap icons', 'sgs-blocks' ) } value={ flexWrap } onChange={ ( value ) => setAttributes( { flexWrap: value } ) } />
 				</PanelBody>
 				<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
 					<TextControl

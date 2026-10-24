@@ -1951,5 +1951,23 @@
     "added_commit": null,
     "budget_ms": 1500,
     "order": 219
+  },
+  {
+    "id": "check-row-flex-wrap-selftest",
+    "cmd": "python scripts/check-row-flex-wrap.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 500,
+    "order": 220
+  },
+  {
+    "id": "check-row-flex-wrap",
+    "cmd": "python scripts/check-row-flex-wrap.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 500,
+    "order": 221
   }
 ]
