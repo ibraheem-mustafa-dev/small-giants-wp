@@ -1,10 +1,10 @@
 # Intake review: indus-foods
 
-Taken on 2026-10-20T04:58:10.084Z; manifest 1.0, files hash dd9e9aec7ae9a787.
+Taken on 2026-10-23T23:58:47.556Z; manifest 1.0, files hash dd9e9aec7ae9a787.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review indus-foods`.
 
-Rows: 1274; 578 need reading, 696 are confident proposals that Accept all covers (skeleton block choices 557, missing features 139).
+Rows: 1215; 662 need reading, 553 are confident proposals that Accept all covers (skeleton block choices 547, missing features 6).
 
 Not defects counted, not listed: breakpoint 91, dead-code (constant guard) 5, dead-code (data-gated) 7, prop-variant 1, prototype-only 21, reached-when-forced 144, render-wins 552.
 
@@ -16,39 +16,40 @@ Marks per section (first value = Accept all):
 - Draft defects: `accept`, `render-wins`
 - Not defects: unwired code: `not-a-defect`, `defect`
 - Missing features: `map:<block>`, `difference`, `build`, `gap:<wave>`
+- Script effects: `accept`, `block:<slug>`, `difference`
 - Skeleton block choices: `accept`, `block:<slug>`, `remove`
 - Inventory diffs: `ours`, `theirs`
 - Notices: `noted`
 
 ## Page map (page-map)
 
-Accept all: [x]
+Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `page:page:apply` | **changed** apply → Apply for Trade Account (page, static) | apply | header #5, footer #2 |  |
+| `page:page:blog` | **changed** blog → Blog (page, live) | about/blog | footer #6 |  |
+| `page:page:brand-green-leaf` | **changed** brand-green-leaf → Green Leaf (page, static) | brands/brand-green-leaf |  |  |
+| `page:page:brand-lemon-tree` | **changed** brand-lemon-tree → The Lemon Tree (page, static) | brands/brand-lemon-tree |  |  |
+| `page:page:brand-sanam` | **changed** brand-sanam → Sanam (page, static) | brands/brand-sanam |  |  |
+| `page:page:brand-shan` | **changed** brand-shan → Shan (page, static) | brands/brand-shan |  |  |
+| `page:page:brands` | **changed** brands → All Brands (page, static) | brands | header #4, footer #3 |  |
+| `page:page:careers` | **changed** careers → Careers (page, static) | about/careers |  |  |
+| `page:page:catalogue` | **changed** catalogue → Request Catalogue (page, static) | catalogue |  |  |
+| `page:page:certifications` | **changed** certifications → Certifications (page, static) | about/certifications | footer #1 |  |
+| `page:page:community` | **changed** community → Community & Charity (page, static) | about/community |  |  |
+| `page:page:delivery` | **changed** delivery → Delivery & Logistics (page, static) | delivery | footer #4 |  |
+| `page:page:faqs` | **changed** faqs → FAQs (page, static) | faqs |  |  |
+| `page:page:food-service` | **changed** food-service → Food service supply for kitchens that never stop. (page, static) | food-service | header #3 |  |
+| `page:page:manufacturing` | **changed** manufacturing → Bulk ingredients for food manufacturers. (page, static) | manufacturing |  |  |
+| `page:page:our-story` | **changed** our-story → Our Story (page, static) | about/our-story |  |  |
+| `page:page:retail` | **changed** retail → Retail-ready ranges your customers look for. (page, static) | retail |  |  |
+| `page:page:sustainability` | **changed** sustainability → Sustainability (page, static) | about/sustainability |  |  |
+| `page:page:terms` | **changed** terms → Terms & Conditions (page, static) | terms | footer #5 |  |
+| `page:page:wholesale` | **changed** wholesale → Pallet volumes for wholesalers and cash & carries. (page, static) | wholesale |  |  |
 | `page:page:about` | about → About Us (page, static) | about | header #2 | accept |
-| `page:page:apply` | apply → Apply for Trade Account (page, static) | apply | header #5, drawer #1, footer #2 | accept |
-| `page:page:blog` | blog → Blog (page, live) | about/blog | drawer #6, footer #6 | edit:parent= |
-| `page:page:brand-green-leaf` | brand-green-leaf → Green Leaf (page, static) | brands/brand-green-leaf | drawer #3 | edit:slug=green-leaf |
-| `page:page:brand-lemon-tree` | brand-lemon-tree → The Lemon Tree (page, static) | brands/brand-lemon-tree | drawer #4 | edit:slug=lemon-tree |
-| `page:page:brand-sanam` | brand-sanam → Sanam (page, static) | brands/brand-sanam | drawer #1 | edit:slug=sanam |
-| `page:page:brand-shan` | brand-shan → Shan (page, static) | brands/brand-shan | drawer #2 | edit:slug=shan |
-| `page:page:brands` | brands → All Brands (page, static) | brands | header #4, drawer #5, footer #3 | accept |
-| `page:page:careers` | careers → Careers (page, static) | about/careers | drawer #5 | accept |
-| `page:page:catalogue` | catalogue → Request Catalogue (page, static) | catalogue | drawer #2 | accept |
-| `page:page:certifications` | certifications → Certifications (page, static) | about/certifications | drawer #2, footer #1 | accept |
-| `page:page:community` | community → Community & Charity (page, static) | about/community | drawer #3 | accept |
 | `page:page:contact` | contact → Contact Us (page, static) | contact | header #6 | accept |
-| `page:page:delivery` | delivery → Delivery & Logistics (page, static) | delivery | drawer #3, footer #4 | accept |
-| `page:page:faqs` | faqs → FAQs (page, static) | faqs | drawer #4 | accept |
-| `page:page:food-service` | food-service → Food service supply for kitchens that never stop. (page, static) | food-service | header #3, drawer #1 | edit:title=Food Service |
 | `page:page:home` | home → Home (page, static) | home | header #1 | accept |
-| `page:page:manufacturing` | manufacturing → Bulk ingredients for food manufacturers. (page, static) | manufacturing | drawer #2 | edit:title=Manufacturing |
-| `page:page:our-story` | our-story → Our Story (page, static) | about/our-story | drawer #1 | accept |
-| `page:page:retail` | retail → Retail-ready ranges your customers look for. (page, static) | retail | drawer #3 | edit:title=Retail |
-| `page:page:sustainability` | sustainability → Sustainability (page, static) | about/sustainability | drawer #4 | accept |
-| `page:page:terms` | terms → Terms & Conditions (page, static) | terms | drawer #5, footer #5 | accept |
-| `page:page:wholesale` | wholesale → Pallet volumes for wholesalers and cash & carries. (page, static) | wholesale | drawer #4 | edit:title=Wholesale |
 | `page:post:falak-rice-exclusive-uk-distribution` | post-post-2 → Falak rice: exclusive UK distribution (post, live) | falak-rice-exclusive-uk-distribution |  | accept |
 | `page:post:inside-our-birmingham-packing-line` | post-post-3 → Inside our Birmingham packing line (post, live) | inside-our-birmingham-packing-line |  | accept |
 | `page:post:ordering-ahead-for-eid` | post-post-5 → Ordering ahead for Eid (post, live) | ordering-ahead-for-eid |  | accept |
@@ -69,7 +70,7 @@ Accept all: [x]
 
 ## Palette roles (palette-role)
 
-Accept all: [x]
+Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -107,7 +108,7 @@ Accept all: [x]
 
 ## Site Info (site-info)
 
-Accept all: [x]
+Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -128,7 +129,7 @@ Accept all: [x]
 
 ## Flags (flag)
 
-Accept all: [x]
+Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -164,15 +165,15 @@ Accept all: [x]
 
 ## Draft defects (draft-defect)
 
-Accept all: [x]
+Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `defect-group:Indus Foods Website v2:template` | **changed** Indus Foods Website v2 template: 8 defects (style-hover, transition) at Indus Foods Website v2:87, Indus Foods Website v2:151, Indus Foods Website v2:160, Indus Foods Website v2:324 and 4 more | build the code's intent |  |  |
+| `defect-group:Indus Foods Website v2:template` | Indus Foods Website v2 template: 8 defects (style-hover, transition) at Indus Foods Website v2:87, Indus Foods Website v2:151, Indus Foods Website v2:160, Indus Foods Website v2:324 and 4 more | build the code's intent |  | accept |
 
 ## Not defects: unwired code (not-a-defect)
 
-Accept all: [x]
+Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -185,10 +186,41 @@ Accept all: [x]
 
 ## Missing features (missing-feature)
 
-Accept all: [x]
+Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `missing:coverage:aria-role:dialog` | **changed** aria-role:dialog seen 1 time in the draft: seen but unsupported | difference | aria-role:dialog is excluded from cloning (Bean, 2026-10-21: the drawer block renders its own dialog role; the drawer itself is cloned as its surface) |  |
+| `missing:coverage:construct:ref` | **changed** construct:ref seen 15 times in the draft: seen but unsupported | difference | construct:ref is excluded from cloning (Bean, 2026-10-21: a DOM handle in the draft's script: wiring only, the effect each one drives is cloned through its target) |  |
+| `missing:coverage:css-at:media` | **changed** css-at:media seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | css-at:media has no clone path yet (has nothing; wave modes and values with no CSS property); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:css-function:contrast` | **changed** css-function:contrast seen 1 time in the draft: seen but unsupported | difference | css-function:contrast is excluded from cloning (Bean, 2026-10-21: one use, contrast(1.05) on the footer map, below what the eye can see) |  |
+| `missing:coverage:css-group:basic-user-interface` | **changed** css-group:basic-user-interface seen 77 times in the draft: partly supported | gap:draft reading | css-group:basic-user-interface: Fill does not read accent-color, appearance, cursor, pointer-events, resize (it reads the group's other 1 the draft uses); wave draft reading |  |
+| `missing:coverage:css-group:compositing-and-blending` | **changed** css-group:compositing-and-blending seen 2 times in the draft: seen but unsupported | difference | css-group:compositing-and-blending is excluded from cloning (Bean, 2026-10-21: the drafts use only isolation, the internal plumbing of the highlight stripe, which is built (Spec 02 FR-2-4); no mix-blend-mode in either draft) |  |
+| `missing:coverage:css-group:generated-content` | **changed** css-group:generated-content seen 1 time in the draft: seen but unsupported | difference | css-group:generated-content is excluded from cloning (Bean, 2026-10-21: the drafts use content only on empty decorative pseudo-elements, whose paint is read already; no generated text) |  |
+| `missing:coverage:css-group:logical-properties-and-values` | **changed** css-group:logical-properties-and-values seen 11 times in the draft: seen but unsupported | gap:draft reading | css-group:logical-properties-and-values: Fill does not read inset; wave draft reading |  |
+| `missing:coverage:css-group:masking` | **changed** css-group:masking seen 19 times in the draft: seen but unsupported | gap:draft reading | css-group:masking: Fill does not read clip-path, clip-rule, mask-image; wave draft reading |  |
+| `missing:coverage:css-group:overflow` | **changed** css-group:overflow seen 69 times in the draft: seen but unsupported | gap:draft reading | css-group:overflow: Fill does not read overflow, overflow-clip-margin, overflow-x, overflow-y, scroll-behavior, text-overflow; wave draft reading |  |
+| `missing:coverage:css-group:pointer-events` | **changed** css-group:pointer-events seen 1 time in the draft: seen but unsupported | difference | css-group:pointer-events is excluded from cloning (Bean, 2026-10-21: touch-action appears only in the draft prototype's drag-to-reframe image component, which is not part of the design); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:css-group:transforms` | **changed** css-group:transforms seen 123 times in the draft: partly supported | gap:draft reading | css-group:transforms: Fill does not read perspective, transform-box, transform-origin (it reads the group's other 4 the draft uses); wave draft reading |  |
+| `missing:coverage:css-group:will-change` | **changed** css-group:will-change seen 1 time in the draft: seen but unsupported | difference | css-group:will-change is excluded from cloning (Bean, 2026-10-21: a rendering hint with no visible effect; the motion model sets its own) |  |
+| `missing:coverage:css-group:writing-modes` | **changed** css-group:writing-modes seen 6 times in the draft: seen but unsupported | difference | css-group:writing-modes is excluded from cloning (Bean, 2026-10-21: false hits: the direction keys are animate() options, not CSS; neither draft sets a writing direction) |  |
+| `missing:coverage:css-property:-webkit-user-drag` | **changed** css-property:-webkit-user-drag seen 1 time in the draft: seen but unsupported | difference | css-property:-webkit-user-drag is excluded from cloning (Bean, 2026-10-21: only in the draft prototype's drag-to-reframe image component); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:css-pseudo-class:host` | **changed** css-pseudo-class:host seen 1 time in the draft: seen but unsupported | difference | css-pseudo-class:host is excluded from cloning (Bean, 2026-10-19: the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:css-pseudo-class:host-context` | **changed** css-pseudo-class:host-context seen 1 time in the draft: seen but unsupported | difference | css-pseudo-class:host-context is excluded from cloning (Bean, 2026-10-19: the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:css-pseudo-element:after` | **changed** css-pseudo-element:after seen 1 time in the draft: seen but unsupported | gap:content, media and icons | css-pseudo-element:after has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:html-attr:button.disabled` | **changed** html-attr:button.disabled seen 1 time in the draft: seen but unsupported | difference | html-attr:button.disabled is excluded from cloning (Bean, 2026-10-21: a run-time state, not a resting look: a disabled button's look arrives through css-pseudo-class:disabled, and the form decides when a button is disabled) |  |
+| `missing:coverage:html-attr:form.novalidate` | **changed** html-attr:form.novalidate seen 1 time in the draft: seen but unsupported | difference | html-attr:form.novalidate is excluded from cloning (Bean, 2026-10-21: sgs/form always renders novalidate and validates in its own script, so there is nothing to write) |  |
+| `missing:coverage:html-attr:global.class` | **changed** html-attr:global.class seen 1 time in the draft: seen but unsupported | difference | html-attr:global.class is excluded from cloning (Bean, 2026-10-18: class names carry no value of their own: their styles reach the clone through the computed values Fill reads, and the behaviour they drive through the census); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:html-attr:global.draggable` | **changed** html-attr:global.draggable seen 1 time in the draft: seen but unsupported | difference | html-attr:global.draggable is excluded from cloning (Bean, 2026-10-21: only in the draft prototype's drag-to-reframe image component); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:html-attr:global.part` | **changed** html-attr:global.part seen 1 time in the draft: seen but unsupported | difference | html-attr:global.part is excluded from cloning (Bean, 2026-10-19: the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:html-attr:global.popover` | **changed** html-attr:global.popover seen 1 time in the draft: seen but unsupported | difference | html-attr:global.popover is excluded from cloning (Bean, 2026-10-21: only in the draft prototype's reframe controls); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:html-attr:global.title` | **changed** html-attr:global.title seen 2 times in the draft: seen but unsupported | difference | html-attr:global.title is excluded from cloning (Bean, 2026-10-21: a hover tooltip, not a look; the clone matches the draft's rendered page without it) |  |
+| `missing:coverage:html-attr:iframe.loading` | **changed** html-attr:iframe.loading seen 2 times in the draft: seen but unsupported | difference | html-attr:iframe.loading is excluded from cloning (Bean, 2026-10-21: SGS blocks set their own loading attribute on an embed, so the draft's value has nothing to write) |  |
+| `missing:coverage:html-attr:label.for` | **changed** html-attr:label.for seen 4 times in the draft: seen but unsupported | difference | html-attr:label.for is excluded from cloning (Bean, 2026-10-21: every SGS form-field block renders its own label bound to its own input, so the association exists by construction) |  |
+| `missing:coverage:svg:metadata` | **changed** svg:metadata seen 3 times in the draft: seen but unsupported | difference | svg:metadata is excluded from cloning (Bean, 2026-10-21: editor metadata inside an SVG paints nothing, and the media upload strips it (FR-48-58)) |  |
+| `missing:Indus Foods Website v2:60` | <span>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
+| `missing:Indus Foods Website v2:61` | <span>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
+| `missing:Indus Foods Website v2:62` | <span>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:handler@Indus Foods Website v2:571/template:onMouseEnter` | Indus Foods Website v2: an element that animates from code on hover (onMouseEnter → btnEnter) | no block proposed | hover-motion: no block capability or fx effect named for it in the framework database | build |
 | `missing:handler@Indus Foods Website v2:571/template:onMouseLeave` | Indus Foods Website v2: an element that animates from code on hover (onMouseLeave → btnLeave) | no block proposed | hover-motion: no block capability or fx effect named for it in the framework database | build |
 | `missing:handler@Indus Foods Website v2:js:1179:6/addEventListener:mouseenter` | Indus Foods Website v2: an element that animates from code on hover (mouseenter) | no block proposed | hover-motion: no block capability or fx effect named for it in the framework database | difference |
@@ -198,168 +230,96 @@ Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `missing:coverage:aria-attr:aria-checked` | aria-attr:aria-checked seen 1 time in the draft: seen but unsupported | gap:states | aria-attr:aria-checked has no clone path yet (has nothing; wave states) | gap:states |
-| `missing:coverage:aria-attr:aria-expanded` | aria-attr:aria-expanded seen 2 times in the draft: seen but unsupported | gap:states | aria-attr:aria-expanded has no clone path yet (has nothing; wave states) | gap:states |
-| `missing:coverage:aria-attr:aria-hidden` | aria-attr:aria-hidden seen 30 times in the draft: seen but unsupported | gap:states | aria-attr:aria-hidden has no clone path yet (has nothing; wave states) | gap:states |
-| `missing:coverage:aria-attr:aria-label` | aria-attr:aria-label seen 30 times in the draft: seen but unsupported | gap:content, media and icons | aria-attr:aria-label has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:aria-attr:aria-pressed` | aria-attr:aria-pressed seen 2 times in the draft: seen but unsupported | gap:states | aria-attr:aria-pressed has no clone path yet (has nothing; wave states) | gap:states |
-| `missing:coverage:aria-role:checkbox` | aria-role:checkbox seen 1 time in the draft: seen but unsupported | gap:behaviour recognisers | aria-role:checkbox has no clone path yet (has nothing; wave behaviour recognisers) | gap:behaviour recognisers |
-| `missing:coverage:aria-role:dialog` | aria-role:dialog seen 1 time in the draft: seen but unsupported | gap:behaviour recognisers | aria-role:dialog has no clone path yet (has nothing; wave behaviour recognisers) | gap:behaviour recognisers |
-| `missing:coverage:construct:data-hook` | construct:data-hook seen 57 times in the draft: seen but unsupported | gap:behaviour recognisers | construct:data-hook has no clone path yet (has recognise; wave behaviour recognisers) | gap:behaviour recognisers |
-| `missing:coverage:construct:handler` | construct:handler seen 86 times in the draft: seen but unsupported | gap:behaviour recognisers | construct:handler has no clone path yet (has recognise; wave behaviour recognisers) | gap:behaviour recognisers |
-| `missing:coverage:construct:helmet-font` | construct:helmet-font seen 3 times in the draft: seen but unsupported | gap:site and surfaces | construct:helmet-font has no clone path yet (has nothing; wave site and surfaces) | gap:site and surfaces |
-| `missing:coverage:construct:observer` | construct:observer seen 5 times in the draft: seen but unsupported | gap:behaviour recognisers | construct:observer has no clone path yet (has recognise; wave behaviour recognisers) | gap:behaviour recognisers |
-| `missing:coverage:construct:ref` | construct:ref seen 15 times in the draft: seen but unsupported | gap:behaviour recognisers | construct:ref has no clone path yet (has recognise; wave behaviour recognisers) | gap:behaviour recognisers |
-| `missing:coverage:construct:sc-if` | construct:sc-if seen 115 times in the draft: seen but unsupported | gap:states | construct:sc-if has no clone path yet (has recognise; wave states) | gap:states |
-| `missing:coverage:construct:style-hover` | construct:style-hover seen 103 times in the draft: seen but unsupported | gap:states | construct:style-hover has no clone path yet (has recognise; wave states) | gap:states |
-| `missing:coverage:construct:timer` | construct:timer seen 29 times in the draft: seen but unsupported | gap:behaviour recognisers | construct:timer has no clone path yet (has recognise; wave behaviour recognisers) | gap:behaviour recognisers |
-| `missing:coverage:css-at:media` | css-at:media seen 5 times in the draft: seen but unsupported | gap:modes and values with no CSS property | css-at:media has no clone path yet (has nothing; wave modes and values with no CSS property) | gap:modes and values with no CSS property |
-| `missing:coverage:css-function:calc` | css-function:calc seen 8 times in the draft: seen but unsupported | gap:modes and values with no CSS property | css-function:calc has no clone path yet (has nothing; wave modes and values with no CSS property) | gap:modes and values with no CSS property |
-| `missing:coverage:css-function:circle` | css-function:circle seen 1 time in the draft: seen but unsupported | gap:behaviour recognisers | css-function:circle has no clone path yet (has nothing; wave behaviour recognisers) | gap:behaviour recognisers |
-| `missing:coverage:css-function:clamp` | css-function:clamp seen 34 times in the draft: seen but unsupported | gap:modes and values with no CSS property | css-function:clamp has no clone path yet (has nothing; wave modes and values with no CSS property) | gap:modes and values with no CSS property |
-| `missing:coverage:css-function:contrast` | css-function:contrast seen 1 time in the draft: seen but unsupported | gap:draft reading | css-function:contrast has no clone path yet (has nothing; wave draft reading) | gap:draft reading |
-| `missing:coverage:css-function:env` | css-function:env seen 1 time in the draft: seen but unsupported | gap:draft reading | css-function:env has no clone path yet (has nothing; wave draft reading) | gap:draft reading |
-| `missing:coverage:css-function:max` | css-function:max seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | css-function:max has no clone path yet (has nothing; wave modes and values with no CSS property); seen only when the page ran: the file read missed it | gap:modes and values with no CSS property |
-| `missing:coverage:css-function:min` | css-function:min seen 3 times in the draft: seen but unsupported | gap:modes and values with no CSS property | css-function:min has no clone path yet (has nothing; wave modes and values with no CSS property) | gap:modes and values with no CSS property |
-| `missing:coverage:css-function:skewx` | css-function:skewx seen 2 times in the draft: seen but unsupported | gap:motion model additions | css-function:skewx has no clone path yet (has recognise; wave motion model additions) | gap:motion model additions |
-| `missing:coverage:css-group:backgrounds-and-borders` | css-group:backgrounds-and-borders seen 773 times in the draft: partly supported | gap:draft reading | css-group:backgrounds-and-borders: Fill does not read background, background-clip, background-size, border-radius (it reads the group's other 8 the draft uses); wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:basic-user-interface` | css-group:basic-user-interface seen 99 times in the draft: partly supported | gap:draft reading | css-group:basic-user-interface: Fill does not read accent-color, appearance, cursor, pointer-events, resize, user-select (it reads the group's other 2 the draft uses); wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:box-alignment` | css-group:box-alignment seen 444 times in the draft: partly supported | gap:draft reading | css-group:box-alignment: Fill does not read justify-self (it reads the group's other 3 the draft uses); wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:box-sizing` | css-group:box-sizing seen 374 times in the draft: partly supported | gap:draft reading | css-group:box-sizing: Fill does not read box-sizing, height, min-width (it reads the group's other 4 the draft uses); wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:compositing-and-blending` | css-group:compositing-and-blending seen 2 times in the draft: seen but unsupported | gap:draft reading | css-group:compositing-and-blending: Fill does not read isolation, mix-blend-mode; wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:display` | css-group:display seen 375 times in the draft: partly supported | gap:draft reading | css-group:display: Fill does not read order, visibility (it reads the group's other 1 the draft uses); wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:filter-effects` | css-group:filter-effects seen 6 times in the draft: partly supported | gap:draft reading | css-group:filter-effects: Fill does not read filter (it reads the group's other 1 the draft uses); wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:flexible-box-layout` | css-group:flexible-box-layout seen 385 times in the draft: partly supported | gap:draft reading | css-group:flexible-box-layout: Fill does not read flex, flex-basis, flex-shrink (it reads the group's other 4 the draft uses); wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:fonts` | css-group:fonts seen 566 times in the draft: partly supported | gap:draft reading | css-group:fonts: Fill does not read font, font-smooth, font-variant-numeric (it reads the group's other 3 the draft uses); wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:generated-content` | css-group:generated-content seen 2 times in the draft: seen but unsupported | gap:draft reading | css-group:generated-content: Fill does not read content; wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:grid-layout` | css-group:grid-layout seen 47 times in the draft: partly supported | gap:draft reading | css-group:grid-layout: Fill does not read grid-column, grid-template-rows (it reads the group's other 1 the draft uses); wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:inline` | css-group:inline seen 80 times in the draft: partly supported | gap:draft reading | css-group:inline: Fill does not read baseline-shift (it reads the group's other 1 the draft uses); wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:logical-properties-and-values` | css-group:logical-properties-and-values seen 20 times in the draft: seen but unsupported | gap:draft reading | css-group:logical-properties-and-values: Fill does not read inset; wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:masking` | css-group:masking seen 20 times in the draft: seen but unsupported | gap:draft reading | css-group:masking: Fill does not read clip-path, clip-rule, mask-image; wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:overflow` | css-group:overflow seen 75 times in the draft: seen but unsupported | gap:draft reading | css-group:overflow: Fill does not read overflow, overflow-clip-margin, overflow-x, overflow-y, scroll-behavior, text-overflow; wave draft reading | gap:draft reading |
 | `missing:coverage:css-group:overscroll-behavior` | css-group:overscroll-behavior seen 1 time in the draft: seen but unsupported | gap:draft reading | css-group:overscroll-behavior: Fill does not read overscroll-behavior; wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:pointer-events` | css-group:pointer-events seen 2 times in the draft: seen but unsupported | gap:draft reading | css-group:pointer-events: Fill does not read touch-action; wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:positioned-layout` | css-group:positioned-layout seen 294 times in the draft: partly supported | gap:draft reading | css-group:positioned-layout: Fill does not read bottom, inset, position, right, z-index (it reads the group's other 2 the draft uses); wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:scalable-vector-graphics` | css-group:scalable-vector-graphics seen 315 times in the draft: seen but unsupported | gap:draft reading | css-group:scalable-vector-graphics: Fill does not read fill, fill-opacity, fill-rule, paint-order, stop-color, stop-opacity, stroke, stroke-dasharray, stroke-dashoffset, stroke-linejoin, stroke-miterlimit, stroke-opacity, stroke-width, vector-effect, visibility; wave draft reading | gap:draft reading |
 | `missing:coverage:css-group:scroll-snap` | css-group:scroll-snap seen 3 times in the draft: seen but unsupported | gap:draft reading | css-group:scroll-snap: Fill does not read scroll-padding-inline, scroll-snap-align, scroll-snap-type; wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:scrollbars-styling` | css-group:scrollbars-styling seen 3 times in the draft: seen but unsupported | gap:draft reading | css-group:scrollbars-styling: Fill does not read scrollbar-color, scrollbar-width; wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:text` | css-group:text seen 183 times in the draft: partly supported | gap:draft reading | css-group:text: Fill does not read overflow-wrap, text-wrap, white-space (it reads the group's other 3 the draft uses); wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:text-decoration` | css-group:text-decoration seen 9 times in the draft: partly supported | gap:draft reading | css-group:text-decoration: Fill does not read text-decoration (it reads the group's other 2 the draft uses); wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:transforms` | css-group:transforms seen 128 times in the draft: partly supported | gap:draft reading | css-group:transforms: Fill does not read perspective, transform-box, transform-origin (it reads the group's other 4 the draft uses); wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:webkit-extensions` | css-group:webkit-extensions seen 4 times in the draft: seen but unsupported | gap:draft reading | css-group:webkit-extensions: Fill does not read -webkit-mask-image, -webkit-overflow-scrolling, -webkit-text-stroke; wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:will-change` | css-group:will-change seen 1 time in the draft: seen but unsupported | gap:draft reading | css-group:will-change: Fill does not read will-change; wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:writing-modes` | css-group:writing-modes seen 7 times in the draft: seen but unsupported | gap:draft reading | css-group:writing-modes: Fill does not read direction; wave draft reading | gap:draft reading |
-| `missing:coverage:css-property:-webkit-user-drag` | css-property:-webkit-user-drag seen 2 times in the draft: seen but unsupported | gap:draft reading | css-property:-webkit-user-drag has no clone path yet (has nothing; wave draft reading) | gap:draft reading |
 | `missing:coverage:css-property:unlisted` | css-property:unlisted seen 2 times in the draft: seen but unsupported | difference | css-property:unlisted is excluded from cloning (Bean, 2026-10-18: a CSS property no browser applies (enable-background, an SVG 1.1 editor property, seen in an exported logo); nothing to clone) | difference |
-| `missing:coverage:css-pseudo-class:focus` | css-pseudo-class:focus seen 8 times in the draft: seen but unsupported | gap:states | css-pseudo-class:focus has no clone path yet (has nothing; wave states) | gap:states |
-| `missing:coverage:css-pseudo-class:focus-visible` | css-pseudo-class:focus-visible seen 1 time in the draft: seen but unsupported | gap:states | css-pseudo-class:focus-visible has no clone path yet (has nothing; wave states) | gap:states |
-| `missing:coverage:css-pseudo-class:host` | css-pseudo-class:host seen 14 times in the draft: seen but unsupported | difference | css-pseudo-class:host is excluded from cloning (Bean, 2026-10-19: the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block) | difference |
-| `missing:coverage:css-pseudo-class:host-context` | css-pseudo-class:host-context seen 2 times in the draft: seen but unsupported | difference | css-pseudo-class:host-context is excluded from cloning (Bean, 2026-10-19: the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block) | difference |
-| `missing:coverage:css-pseudo-class:hover` | css-pseudo-class:hover seen 101 times in the draft: seen but unsupported | gap:states | css-pseudo-class:hover has no clone path yet (has nothing; wave states) | gap:states |
-| `missing:coverage:css-pseudo-class:popover-open` | css-pseudo-class:popover-open seen 1 time in the draft: seen but unsupported | gap:states | css-pseudo-class:popover-open has no clone path yet (has nothing; wave states) | gap:states |
-| `missing:coverage:css-pseudo-element:-webkit-scrollbar` | css-pseudo-element:-webkit-scrollbar seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | css-pseudo-element:-webkit-scrollbar has no clone path yet (has nothing; wave modes and values with no CSS property) | gap:modes and values with no CSS property |
-| `missing:coverage:css-pseudo-element:-webkit-scrollbar-thumb` | css-pseudo-element:-webkit-scrollbar-thumb seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | css-pseudo-element:-webkit-scrollbar-thumb has no clone path yet (has nothing; wave modes and values with no CSS property) | gap:modes and values with no CSS property |
-| `missing:coverage:css-pseudo-element:-webkit-scrollbar-track` | css-pseudo-element:-webkit-scrollbar-track seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | css-pseudo-element:-webkit-scrollbar-track has no clone path yet (has nothing; wave modes and values with no CSS property) | gap:modes and values with no CSS property |
-| `missing:coverage:css-pseudo-element:after` | css-pseudo-element:after seen 6 times in the draft: seen but unsupported | gap:content, media and icons | css-pseudo-element:after has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:css-pseudo-element:before` | css-pseudo-element:before seen 3 times in the draft: seen but unsupported | gap:content, media and icons | css-pseudo-element:before has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
 | `missing:coverage:css-pseudo-element:selection` | css-pseudo-element:selection seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | css-pseudo-element:selection has no clone path yet (has nothing; wave modes and values with no CSS property) | gap:modes and values with no CSS property |
-| `missing:coverage:css-unit:vh` | css-unit:vh seen 3 times in the draft: seen but unsupported | gap:modes and values with no CSS property | css-unit:vh has no clone path yet (has nothing; wave modes and values with no CSS property) | gap:modes and values with no CSS property |
-| `missing:coverage:css-unit:vw` | css-unit:vw seen 40 times in the draft: seen but unsupported | gap:modes and values with no CSS property | css-unit:vw has no clone path yet (has nothing; wave modes and values with no CSS property) | gap:modes and values with no CSS property |
-| `missing:coverage:embed:other` | embed:other seen 2 times in the draft: seen but unsupported | gap:content, media and icons | embed:other has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:html-attr:a.rel` | html-attr:a.rel seen 3 times in the draft: seen but unsupported | gap:content, media and icons | html-attr:a.rel has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:html-attr:a.target` | html-attr:a.target seen 3 times in the draft: seen but unsupported | gap:content, media and icons | html-attr:a.target has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:html-attr:button.disabled` | html-attr:button.disabled seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | html-attr:button.disabled has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html-attr:button.type` | html-attr:button.type seen 15 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:button.type has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html-attr:form.novalidate` | html-attr:form.novalidate seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | html-attr:form.novalidate has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html-attr:global.class` | html-attr:global.class seen 16 times in the draft: seen but unsupported | difference | html-attr:global.class is excluded from cloning (Bean, 2026-10-18: class names carry no value of their own: their styles reach the clone through the computed values Fill reads, and the behaviour they drive through the census) | difference |
-| `missing:coverage:html-attr:global.data` | html-attr:global.data seen 63 times in the draft: seen but unsupported | gap:behaviour recognisers | html-attr:global.data has no clone path yet (has nothing; wave behaviour recognisers) | gap:behaviour recognisers |
-| `missing:coverage:html-attr:global.draggable` | html-attr:global.draggable seen 2 times in the draft: seen but unsupported | gap:behaviour recognisers | html-attr:global.draggable has no clone path yet (has nothing; wave behaviour recognisers) | gap:behaviour recognisers |
-| `missing:coverage:html-attr:global.id` | html-attr:global.id seen 6 times in the draft: seen but unsupported | gap:content, media and icons | html-attr:global.id has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:html-attr:global.part` | html-attr:global.part seen 7 times in the draft: seen but unsupported | difference | html-attr:global.part is excluded from cloning (Bean, 2026-10-19: the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block) | difference |
-| `missing:coverage:html-attr:global.popover` | html-attr:global.popover seen 2 times in the draft: seen but unsupported | gap:behaviour recognisers | html-attr:global.popover has no clone path yet (has nothing; wave behaviour recognisers) | gap:behaviour recognisers |
-| `missing:coverage:html-attr:global.title` | html-attr:global.title seen 4 times in the draft: seen but unsupported | gap:content, media and icons | html-attr:global.title has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:html-attr:iframe.loading` | html-attr:iframe.loading seen 2 times in the draft: seen but unsupported | gap:content, media and icons | html-attr:iframe.loading has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:html-attr:iframe.src` | html-attr:iframe.src seen 2 times in the draft: seen but unsupported | gap:content, media and icons | html-attr:iframe.src has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:html-attr:img.alt` | html-attr:img.alt seen 4 times in the draft: seen but unsupported | gap:content, media and icons | html-attr:img.alt has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:html-attr:img.height` | html-attr:img.height seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | html-attr:img.height has no clone path yet (has nothing; wave modes and values with no CSS property) | gap:modes and values with no CSS property |
-| `missing:coverage:html-attr:img.src` | html-attr:img.src seen 2 times in the draft: seen but unsupported | gap:content, media and icons | html-attr:img.src has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:html-attr:input.accept` | html-attr:input.accept seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:input.accept has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html-attr:input.autocomplete` | html-attr:input.autocomplete seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:input.autocomplete has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html-attr:input.placeholder` | html-attr:input.placeholder seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:input.placeholder has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html-attr:input.required` | html-attr:input.required seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:input.required has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html-attr:input.value` | html-attr:input.value seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:input.value has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html-attr:label.for` | html-attr:label.for seen 4 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:label.for has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
 | `missing:coverage:html-attr:link.crossorigin` | html-attr:link.crossorigin seen 1 time in the draft: seen but unsupported | difference | html-attr:link.crossorigin is excluded from cloning (Bean, 2026-10-19: document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)) | difference |
-| `missing:coverage:html-attr:link.href` | html-attr:link.href seen 6 times in the draft: seen but unsupported | gap:site and surfaces | html-attr:link.href has no clone path yet (has recognise; wave site and surfaces) | gap:site and surfaces |
-| `missing:coverage:html-attr:link.rel` | html-attr:link.rel seen 6 times in the draft: seen but unsupported | gap:site and surfaces | html-attr:link.rel has no clone path yet (has recognise; wave site and surfaces) | gap:site and surfaces |
-| `missing:coverage:html-attr:meta.content` | html-attr:meta.content seen 1 time in the draft: seen but unsupported | gap:site and surfaces | html-attr:meta.content has no clone path yet (has nothing; wave site and surfaces) | gap:site and surfaces |
-| `missing:coverage:html-attr:meta.name` | html-attr:meta.name seen 1 time in the draft: seen but unsupported | gap:site and surfaces | html-attr:meta.name has no clone path yet (has nothing; wave site and surfaces) | gap:site and surfaces |
-| `missing:coverage:html-attr:option.value` | html-attr:option.value seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:option.value has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html-attr:select.name` | html-attr:select.name seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | html-attr:select.name has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html-attr:select.required` | html-attr:select.required seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | html-attr:select.required has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html-attr:textarea.maxlength` | html-attr:textarea.maxlength seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | html-attr:textarea.maxlength has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html-attr:textarea.placeholder` | html-attr:textarea.placeholder seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:textarea.placeholder has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html-attr:textarea.required` | html-attr:textarea.required seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | html-attr:textarea.required has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html-attr:textarea.rows` | html-attr:textarea.rows seen 3 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:textarea.rows has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html:button` | html:button seen 10 times in the draft: seen but unsupported | gap:shop, forms and data | html:button has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html:canvas` | html:canvas seen 1 time in the draft: seen but unsupported | gap:content, media and icons | html:canvas has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:html:figcaption` | html:figcaption seen 1 time in the draft: seen but unsupported | gap:content, media and icons | html:figcaption has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:html:figure` | html:figure seen 1 time in the draft: seen but unsupported | gap:content, media and icons | html:figure has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:html:form` | html:form seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html:form has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html:iframe` | html:iframe seen 2 times in the draft: seen but unsupported | gap:content, media and icons | html:iframe has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:html:img` | html:img seen 5 times in the draft: seen but unsupported | gap:content, media and icons | html:img has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:html:input` | html:input seen 9 times in the draft: seen but unsupported | gap:shop, forms and data | html:input has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html:label` | html:label seen 3 times in the draft: seen but unsupported | gap:shop, forms and data | html:label has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html:link` | html:link seen 6 times in the draft: seen but unsupported | gap:site and surfaces | html:link has no clone path yet (has recognise; wave site and surfaces) | gap:site and surfaces |
-| `missing:coverage:html:meta` | html:meta seen 1 time in the draft: seen but unsupported | gap:site and surfaces | html:meta has no clone path yet (has nothing; wave site and surfaces) | gap:site and surfaces |
-| `missing:coverage:html:option` | html:option seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html:option has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html:select` | html:select seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html:select has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:html:textarea` | html:textarea seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html:textarea has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:input-type:checkbox` | input-type:checkbox seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | input-type:checkbox has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:input-type:email` | input-type:email seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | input-type:email has no clone path yet (has nothing; wave shop, forms and data); seen only when the page ran: the file read missed it | gap:shop, forms and data |
-| `missing:coverage:input-type:file` | input-type:file seen 3 times in the draft: seen but unsupported | gap:shop, forms and data | input-type:file has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
-| `missing:coverage:input-type:tel` | input-type:tel seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | input-type:tel has no clone path yet (has nothing; wave shop, forms and data); seen only when the page ran: the file read missed it | gap:shop, forms and data |
-| `missing:coverage:input-type:text` | input-type:text seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | input-type:text has no clone path yet (has nothing; wave shop, forms and data); seen only when the page ran: the file read missed it | gap:shop, forms and data |
-| `missing:coverage:svg:circle` | svg:circle seen 8 times in the draft: seen but unsupported | gap:content, media and icons | svg:circle has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:svg:defs` | svg:defs seen 2 times in the draft: seen but unsupported | gap:content, media and icons | svg:defs has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:svg:ellipse` | svg:ellipse seen 1 time in the draft: seen but unsupported | gap:content, media and icons | svg:ellipse has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:svg:feGaussianBlur` | svg:feGaussianBlur seen 1 time in the draft: seen but unsupported | gap:content, media and icons | svg:feGaussianBlur has no clone path yet (has nothing; wave content, media and icons); seen only when the page ran: the file read missed it | gap:content, media and icons |
-| `missing:coverage:svg:feMerge` | svg:feMerge seen 1 time in the draft: seen but unsupported | gap:content, media and icons | svg:feMerge has no clone path yet (has nothing; wave content, media and icons); seen only when the page ran: the file read missed it | gap:content, media and icons |
-| `missing:coverage:svg:feMergeNode` | svg:feMergeNode seen 1 time in the draft: seen but unsupported | gap:content, media and icons | svg:feMergeNode has no clone path yet (has nothing; wave content, media and icons); seen only when the page ran: the file read missed it | gap:content, media and icons |
-| `missing:coverage:svg:filter` | svg:filter seen 1 time in the draft: seen but unsupported | gap:content, media and icons | svg:filter has no clone path yet (has nothing; wave content, media and icons); seen only when the page ran: the file read missed it | gap:content, media and icons |
-| `missing:coverage:svg:g` | svg:g seen 14 times in the draft: seen but unsupported | gap:content, media and icons | svg:g has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:svg:line` | svg:line seen 3 times in the draft: seen but unsupported | gap:content, media and icons | svg:line has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:svg:linearGradient` | svg:linearGradient seen 4 times in the draft: seen but unsupported | gap:content, media and icons | svg:linearGradient has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:svg:metadata` | svg:metadata seen 3 times in the draft: seen but unsupported | gap:content, media and icons | svg:metadata has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:svg:path` | svg:path seen 106 times in the draft: seen but unsupported | gap:content, media and icons | svg:path has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:svg:polyline` | svg:polyline seen 4 times in the draft: seen but unsupported | gap:content, media and icons | svg:polyline has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:svg:rect` | svg:rect seen 2 times in the draft: seen but unsupported | gap:content, media and icons | svg:rect has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:svg:stop` | svg:stop seen 16 times in the draft: seen but unsupported | gap:content, media and icons | svg:stop has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:svg:svg` | svg:svg seen 24 times in the draft: seen but unsupported | gap:content, media and icons | svg:svg has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
 | `missing:coverage:svg:unlisted` | svg:unlisted seen 10 times in the draft: seen but unsupported | difference | svg:unlisted is excluded from cloning (Bean, 2026-10-18: an SVG element no browser renders (meshgradient, meshrow and meshpatch from an SVG editor's draft spec, seen in an exported logo); the SVG file uploads whole, so the clone loses nothing) | difference |
+
+## Script effects (effect)
+
+Accept all: [ ]
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `effect:A-24` | A-24 Web Animation in closeMobile on ref setDrawerEl (waapi, press) is the no SGS effect effect | accept |  |  |
+| `effect:A-30` | A-30 Web Animation in fx from bindMotion on sp inserted into e.target.closest && e.target.closest('[data-mag]') (waapi, press) is the ripple effect | accept |  |  |
+| `effect:A-31` | A-31 Web Animation in fx from bindMotion on sp inserted into e.target.closest && e.target.closest('[data-mag]') (waapi, pointer-move) is the sheen effect | accept |  |  |
+| `effect:A-32` | A-32 Web Animation in resetTilt from bindMotion on this._tiltEl = t (waapi, pointer-leave) is the follow-pointer effect | accept |  |  |
+| `effect:J-05` | J-05 js-style-write in updatePins on [data-pin-track] (js-style-write, scroll-position) is the no SGS effect effect | accept |  |  |
+| `effect:J-09` | J-09 js-style-write in updatePins on [data-pin-year] (js-style-write, scroll-position) is the no SGS effect effect | accept |  |  |
+| `effect:J-11` | J-11 js-text-write in updatePins on [data-pin-count] (js-text-write, scroll-position) is the no SGS effect effect | accept |  |  |
+| `effect:J-12` | J-12 js-style-write in updateHeader on ref setHeaderEl (js-style-write, scroll-position) is the no SGS effect effect | accept |  |  |
+| `effect:J-13` | J-13 js-style-write in updateHeader on ref setProgEl (js-style-write, scroll-position) is not expressed by any SGS effect: a scroll handler moves the element, but the factor in "'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')'" is not a number the parallax effect holds | difference | a Spec 38 gap: a scroll handler moves the element, but the factor in "'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')'" is not a number the parallax effect holds |  |
+| `effect:J-14` | J-14 js-style-write in updateHeader on this._mainEl && this._mainEl.querySelector('[data-hero-img]') (js-style-write, scroll-position) is the parallax effect | accept |  |  |
+| `effect:J-43` | J-43 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-peek]') (js-style-write, pointer-move) is the cursor-field effect | accept |  |  |
+| `effect:J-44` | J-44 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-peek]') (js-style-write, pointer-move) is the cursor-field effect | accept |  |  |
+| `effect:J-45` | J-45 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-tilt]') (js-style-write, pointer-move) is the follow-pointer effect | accept |  |  |
+| `effect:J-46` | J-46 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-tilt]') (js-style-write, pointer-move) is the cursor-field effect | accept |  |  |
+| `effect:J-47` | J-47 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-tilt]') (js-style-write, pointer-move) is the cursor-field effect | accept |  |  |
+| `effect:J-50` | J-50 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-mag]') (js-style-write, pointer-move) is the magnet effect | accept |  |  |
+| `effect:J-66` | J-66 js-style-write in magnet on [data-label] (js-style-write, pointer-move) is the magnet effect | accept |  |  |
 
 ## Skeleton block choices (skeleton-block)
 
-Accept all: [x]
+Accept all: [ ]
 
-### Needs a decision (low): block:sgs/multi-button (2)
+### Changed since the last export (31)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:about-mega-menu:Indus Foods Website v2/68#0` | **changed** about-mega-menu Indus Foods Website v2/68#0 <div> | block:sgs/mega-group | 1: 2 copies of one template element on 2 surfaces; a growing child of a header's disclosure panel that holds a run of sibling links is a mega group: the panel's column of links (Bean's approved header mega menus, 2026-10-21) |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/70` | **changed** about-mega-menu Indus Foods Website v2/70 <a> | block:sgs/container | 1: 11 copies of one template element on 2 surfaces; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/71` | **changed** about-mega-menu Indus Foods Website v2/71 <span> "01" | block:sgs/text | 0.25: 11 copies of one template element on 2 surfaces |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/72` | **changed** about-mega-menu Indus Foods Website v2/72 <span> | block:sgs/container | 0.75: 11 copies of one template element on 2 surfaces |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/73` | **changed** about-mega-menu Indus Foods Website v2/73 <span> "Our Story" | block:sgs/heading | 1: 11 copies of one template element on 2 surfaces; the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19) |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/74` | **changed** about-mega-menu Indus Foods Website v2/74 <span> "Six decades of family heritage" | block:sgs/text | 0.25: 11 copies of one template element on 2 surfaces |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/76#0` | **changed** about-mega-menu Indus Foods Website v2/76#0 <div> | block:sgs/mega-aside | 1: 2 copies of one template element on 2 surfaces; a fixed or ratio-sized painted box beside a header disclosure panel's links, holding no link run, is the panel's aside: its feature or call-to-action card (Bean's approved header mega menus, 2026-10-21) |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/77#0` | **changed** about-mega-menu Indus Foods Website v2/77#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/78#0` | **changed** about-mega-menu Indus Foods Website v2/78#0 <image-slot> | block:sgs/media | 1: 2 copies of one template element on 2 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/79#0` | **changed** about-mega-menu Indus Foods Website v2/79#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/80#0` | **changed** about-mega-menu Indus Foods Website v2/80#0 <span> "Since 1962" | block:sgs/label | 1: 2 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/81#0` | **changed** about-mega-menu Indus Foods Website v2/81#0 <div> "Six decades of heritage" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/82#0` | **changed** about-mega-menu Indus Foods Website v2/82#0 <div> "From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers." | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/83#0` | **changed** about-mega-menu Indus Foods Website v2/83#0 <a> "Read our story" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/102#0` | **changed** brands-mega-menu Indus Foods Website v2/102#0 <div> | block:sgs/mega-aside | 1: a fixed or ratio-sized painted box beside a header disclosure panel's links, holding no link run, is the panel's aside: its feature or call-to-action card (Bean's approved header mega menus, 2026-10-21) |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/103#0` | **changed** brands-mega-menu Indus Foods Website v2/103#0 <span> "Own Brands" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/104#0` | **changed** brands-mega-menu Indus Foods Website v2/104#0 <div> "We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree." | block:sgs/text | 0.25 |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/105#0` | **changed** brands-mega-menu Indus Foods Website v2/105#0 <a> "View All Brands" | block:sgs/button | 0.75 |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/96#0` | **changed** brands-mega-menu Indus Foods Website v2/96#0 <div> | block:sgs/container | 1: a growing child of a header disclosure panel with no run of links of its own is a plain container, not a mega group (Bean approved the brands panel's heading and logo grid as sgs/container, 2026-10-21) |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/97#0` | **changed** brands-mega-menu Indus Foods Website v2/97#0 <div> "Our Brands" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/98#0` | **changed** brands-mega-menu Indus Foods Website v2/98#0 <div> | block:sgs/gallery | 1: a group of three or more links that each hold only an image (a logo wall) is sgs/gallery with a link per image; the links are its items |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/116#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/116#0 <a> | block:sgs/social-icons | 1: a run of icon-only phone, email and social links in a drawer's top row is one social icons group in the drawer's icons top-row slot, each icon linking its Site Info key (Bean's decision 1, 2026-10-21) |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/117#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/117#0 <a> | absorbed | 1: part of the drawer's top-row icon group: sgs/social-icons draws it from Site Info |  |
+| `skeleton:page-contact:Indus Foods Website v2/536=sgs/business-info` | **changed** page-contact Indus Foods Website v2/536=sgs/business-info <span> "Sparkbrook, Birmingham B11 1BU" | block:sgs/business-info | 0.8: 1 copies of one template element |  |
+| `skeleton:page-contact:Indus Foods Website v2/536=sgs/text` | **changed** page-contact Indus Foods Website v2/536=sgs/text <span> "Sales, orders and accounts" | block:sgs/text | 0.25: 2 copies of one template element |  |
+| `skeleton:page-home:Indus Foods Website v2/215#0` | **changed** page-home Indus Foods Website v2/215#0 <div> | block:sgs/brand-strip | 1: a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7 |  |
+| `skeleton:page-home:Indus Foods Website v2/216#0` | **changed** page-home Indus Foods Website v2/216#0 <div> | absorbed | 1: drawn by sgs/brand-strip: rule marquee |  |
+| `skeleton:page-home:Indus Foods Website v2/287#0` | **changed** page-home Indus Foods Website v2/287#0 <div> | block:sgs/brand-strip | 1: a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7 |  |
+| `skeleton:page-home:Indus Foods Website v2/288#0` | **changed** page-home Indus Foods Website v2/288#0 <div> | absorbed | 1: drawn by sgs/brand-strip: rule marquee |  |
+| `skeleton:page-home:Indus Foods Website v2/289#0` | **changed** page-home Indus Foods Website v2/289#0 <image-slot> | absorbed | 1: drawn by sgs/brand-strip: rule marquee |  |
+| `skeleton:sectors-mega-menu:Indus Foods Website v2/85#0` | **changed** sectors-mega-menu Indus Foods Website v2/85#0 <div> | block:sgs/container | 1: a header disclosure panel's root that lays its own grid out and carries its own padding or paint is the container that holds the cards, not the panel shell (Bean approved the sectors panel's gradient card grid as sgs/container, 2026-10-21) |  |
+
+### Needs a decision (low): block:sgs/multi-button (1)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:page-about:Indus Foods Website v2/524#0` | page-about Indus Foods Website v2/524#0 <div> | block:sgs/multi-button | 0.51: 23 copies of one template element on 23 surfaces | accept |
-| `skeleton:top-bar:Indus Foods Website v2/11#0` | top-bar Indus Foods Website v2/11#0 <div> | block:sgs/multi-button | 0.51 | accept |
 
-### Needs a decision (low): block:sgs/text (5)
+### Needs a decision (low): block:sgs/text (7)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:page-about:Indus Foods Website v2/362=sgs/text` | page-about Indus Foods Website v2/362=sgs/text <div> "5,000+" | block:sgs/text | 0.25: 7 copies of one template element on 2 surfaces | accept |
 | `skeleton:page-about:Indus Foods Website v2/363=sgs/text` | page-about Indus Foods Website v2/363=sgs/text <div> "Trade customers" | block:sgs/text | 0.25: 7 copies of one template element on 2 surfaces | accept |
+| `skeleton:page-about:Indus Foods Website v2/462=sgs/text` | page-about Indus Foods Website v2/462=sgs/text <div> "1962" | block:sgs/text | 0.25: 8 copies of one template element on 2 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/490=sgs/text` | page-about Indus Foods Website v2/490=sgs/text <div> "Certifications" | block:sgs/text | 0.25: 11 copies of one template element on 2 surfaces | accept |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/104#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/104#0 <span> "Prefer to apply over the phone?" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-our-story:Indus Foods Website v2/328#0` | page-our-story Indus Foods Website v2/328#0 <span> "Our Story" | block:sgs/text | 0.25: 27 copies of one template element on 27 surfaces | accept |
 | `skeleton:page-terms:Indus Foods Website v2/651=sgs/text` | page-terms Indus Foods Website v2/651=sgs/text <span> "02" | block:sgs/text | 0.25: 6 copies of one template element | accept |
 
-### Settled by built post sgs_drawer 4456: the client already built this surface ([QA] Indus mobile drawer on sandybrown) (33)
+### Settled by built post sgs_drawer 4456: the client already built this surface ([QA] Indus mobile drawer on sandybrown) (31)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -371,8 +331,6 @@ Accept all: [x]
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/113#0` | mobile-tablet-drawer Indus Foods Website v2/113#0 <a> | unwrap | 1: the link around one or more logos (a mark and a wordmark) goes: the logo block links home itself | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/114#0` | mobile-tablet-drawer Indus Foods Website v2/114#0 <indus-logo> | block:sgs/responsive-logo | 1: a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/115#0` | mobile-tablet-drawer Indus Foods Website v2/115#0 <div> | block:sgs/container | 1 | accept |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/116#0` | mobile-tablet-drawer Indus Foods Website v2/116#0 <a> | block:sgs/business-info | 0.67 | accept |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/117#0` | mobile-tablet-drawer Indus Foods Website v2/117#0 <a> | block:sgs/business-info | 0.67 | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/118#0` | mobile-tablet-drawer Indus Foods Website v2/118#0 <button> | block:sgs/container | 1 | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/119#0` | mobile-tablet-drawer Indus Foods Website v2/119#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/120#0` | mobile-tablet-drawer Indus Foods Website v2/120#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
@@ -397,13 +355,25 @@ Accept all: [x]
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/199#0` | mobile-tablet-drawer Indus Foods Website v2/199#0 <span> | absorbed | 1: drawn by sgs/button: rule pillButton | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/200#0` | mobile-tablet-drawer Indus Foods Website v2/200#0 <span> | absorbed | 1: drawn by sgs/button: rule pillButton | accept |
 
-### Settled by built post sgs_header 4461: the client already built this surface (QA copy Indus mega menu on sandybrown) (11)
+### Settled by built post sgs_header 4461: the client already built this surface (QA copy Indus mega menu on sandybrown) (30)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:sticky-header:Indus Foods Website v2/10#0` | sticky-header Indus Foods Website v2/10#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there | accept |
+| `skeleton:sticky-header:Indus Foods Website v2/11#0` | sticky-header Indus Foods Website v2/11#0 <div> | block:sgs/multi-button | 0.51 | accept |
+| `skeleton:sticky-header:Indus Foods Website v2/13#0` | sticky-header Indus Foods Website v2/13#0 <a> "Register For A Trade Account" | block:sgs/button | 0.75 |  |
+| `skeleton:sticky-header:Indus Foods Website v2/14#0` | sticky-header Indus Foods Website v2/14#0 <a> | block:sgs/button | 1: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link | accept |
+| `skeleton:sticky-header:Indus Foods Website v2/16#0` | sticky-header Indus Foods Website v2/16#0 <span> "0121 771 4330" | absorbed | 1: drawn by sgs/button: rule pillButton | accept |
+| `skeleton:sticky-header:Indus Foods Website v2/18#0` | sticky-header Indus Foods Website v2/18#0 <span> "Call" | block:sgs/button | 1: Indus Foods Website v2/18#0 renders only at 375px: its words are one more sgs/button beside Indus Foods Website v2/14#0, each hidden on the other's widths |  |
+| `skeleton:sticky-header:Indus Foods Website v2/20#0` | sticky-header Indus Foods Website v2/20#0 <a> "amir@indusfoodsltd.com" | block:sgs/button | 1: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself | accept |
+| `skeleton:sticky-header:Indus Foods Website v2/22#0` | sticky-header Indus Foods Website v2/22#0 <div> | block:sgs/social-icons | 0.74 | accept |
+| `skeleton:sticky-header:Indus Foods Website v2/23#0` | sticky-header Indus Foods Website v2/23#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row | accept |
+| `skeleton:sticky-header:Indus Foods Website v2/26#0` | sticky-header Indus Foods Website v2/26#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row | accept |
+| `skeleton:sticky-header:Indus Foods Website v2/29#0` | sticky-header Indus Foods Website v2/29#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row | accept |
+| `skeleton:sticky-header:Indus Foods Website v2/35#0` | sticky-header Indus Foods Website v2/35#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row | accept |
 | `skeleton:sticky-header:Indus Foods Website v2/39#0` | sticky-header Indus Foods Website v2/39#0 <header> | block:sgs/site-header | 0.58 | accept |
 | `skeleton:sticky-header:Indus Foods Website v2/40#0` | sticky-header Indus Foods Website v2/40#0 <div> | block:sgs/site-header-row | 1 | accept |
-| `skeleton:sticky-header:Indus Foods Website v2/41#0` | sticky-header Indus Foods Website v2/41#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place | accept |
+| `skeleton:sticky-header:Indus Foods Website v2/41#0` | sticky-header Indus Foods Website v2/41#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there | accept |
 | `skeleton:sticky-header:Indus Foods Website v2/42#0` | sticky-header Indus Foods Website v2/42#0 <a> | unwrap | 1: the link around one or more logos (a mark and a wordmark) goes: the logo block links home itself | accept |
 | `skeleton:sticky-header:Indus Foods Website v2/43#0` | sticky-header Indus Foods Website v2/43#0 <indus-logo> | block:sgs/responsive-logo | 1: a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo | accept |
 | `skeleton:sticky-header:Indus Foods Website v2/45#0` | sticky-header Indus Foods Website v2/45#0 <nav> | block:sgs/nav-bar-menu | 1: the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu | accept |
@@ -412,47 +382,32 @@ Accept all: [x]
 | `skeleton:sticky-header:Indus Foods Website v2/50` | sticky-header Indus Foods Website v2/50 <span> | absorbed | 1: 4 copies of one template element; drawn by sgs/nav-bar-menu: rule navigation | accept |
 | `skeleton:sticky-header:Indus Foods Website v2/52#0` | sticky-header Indus Foods Website v2/52#0 <span> | absorbed | 1: drawn by sgs/nav-bar-menu: rule navigation | accept |
 | `skeleton:sticky-header:Indus Foods Website v2/54#0` | sticky-header Indus Foods Website v2/54#0 <a> "Register For A Trade Account" | block:sgs/button | 0.75 | accept |
+| `skeleton:sticky-header:Indus Foods Website v2/56#0` | sticky-header Indus Foods Website v2/56#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:sticky-header:Indus Foods Website v2/58#0` | sticky-header Indus Foods Website v2/58#0 <a> "Register For A Trade Account" | block:sgs/button | 0.75 |  |
+| `skeleton:sticky-header:Indus Foods Website v2/59#0` | sticky-header Indus Foods Website v2/59#0 <button> | absorbed | 1: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it |  |
+| `skeleton:sticky-header:Indus Foods Website v2/60#0` | sticky-header Indus Foods Website v2/60#0 <span> | absorbed | 1: drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it |  |
+| `skeleton:sticky-header:Indus Foods Website v2/61#0` | sticky-header Indus Foods Website v2/61#0 <span> | absorbed | 1: drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it |  |
+| `skeleton:sticky-header:Indus Foods Website v2/62#0` | sticky-header Indus Foods Website v2/62#0 <span> | absorbed | 1: drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it |  |
+| `skeleton:sticky-header:Indus Foods Website v2/9#0` | sticky-header Indus Foods Website v2/9#0 <div> | block:sgs/site-header-row | 1: a strip above the header's main bar is its top row | accept |
 
-### Settled by built post sgs_mega_menu 4426: the client already built this surface ([QA] Indus mega: About on sandybrown) (15)
+### Settled by built post sgs_mega_menu 4426: the client already built this surface ([QA] Indus mega: About on sandybrown) (1)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:about-mega-menu:Indus Foods Website v2/67#0` | about-mega-menu Indus Foods Website v2/67#0 <div> | block:sgs/mega-panel | 1: 2 copies of one template element on 2 surfaces; a menu surface (the panel a navigation item opens) is sgs/mega-panel | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/68#0` | about-mega-menu Indus Foods Website v2/68#0 <div> | block:sgs/card-grid | 0.5: 2 copies of one template element on 2 surfaces | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/70` | about-mega-menu Indus Foods Website v2/70 <a> | absorbed | 1: 11 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/71` | about-mega-menu Indus Foods Website v2/71 <span> "01" | absorbed | 1: 11 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/72` | about-mega-menu Indus Foods Website v2/72 <span> | absorbed | 1: 11 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/73` | about-mega-menu Indus Foods Website v2/73 <span> "Our Story" | absorbed | 1: 11 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/74` | about-mega-menu Indus Foods Website v2/74 <span> "Six decades of family heritage" | absorbed | 1: 11 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/76#0` | about-mega-menu Indus Foods Website v2/76#0 <div> | block:sgs/card-grid | 0.5: 2 copies of one template element on 2 surfaces | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/77#0` | about-mega-menu Indus Foods Website v2/77#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/78#0` | about-mega-menu Indus Foods Website v2/78#0 <image-slot> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/79#0` | about-mega-menu Indus Foods Website v2/79#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/80#0` | about-mega-menu Indus Foods Website v2/80#0 <span> "Since 1962" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/81#0` | about-mega-menu Indus Foods Website v2/81#0 <div> "Six decades of heritage" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/82#0` | about-mega-menu Indus Foods Website v2/82#0 <div> "From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers." | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/83#0` | about-mega-menu Indus Foods Website v2/83#0 <a> "Read our story" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
 
-### Settled by built post sgs_mega_menu 4440: the client already built this surface ([QA] Indus mega: Brands on sandybrown) (10)
+### Settled by built post sgs_mega_menu 4440: the client already built this surface ([QA] Indus mega: Brands on sandybrown) (3)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:brands-mega-menu:Indus Foods Website v2/100` | brands-mega-menu Indus Foods Website v2/100 <a> | absorbed | 1: 10 copies of one template element; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/101` | brands-mega-menu Indus Foods Website v2/101 <image-slot> | absorbed | 1: 10 copies of one template element; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/102#0` | brands-mega-menu Indus Foods Website v2/102#0 <div> | block:sgs/card-grid | 0.5 | accept |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/103#0` | brands-mega-menu Indus Foods Website v2/103#0 <span> "Own Brands" | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/104#0` | brands-mega-menu Indus Foods Website v2/104#0 <div> "We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree." | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/105#0` | brands-mega-menu Indus Foods Website v2/105#0 <a> "View All Brands" | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/100` | brands-mega-menu Indus Foods Website v2/100 <a> | absorbed | 1: 10 copies of one template element; drawn by sgs/gallery: rule logoGrid | accept |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/101` | brands-mega-menu Indus Foods Website v2/101 <image-slot> | absorbed | 1: 10 copies of one template element; drawn by sgs/gallery: rule logoGrid | accept |
 | `skeleton:brands-mega-menu:Indus Foods Website v2/95#0` | brands-mega-menu Indus Foods Website v2/95#0 <div> | block:sgs/mega-panel | 1: a menu surface (the panel a navigation item opens) is sgs/mega-panel | accept |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/96#0` | brands-mega-menu Indus Foods Website v2/96#0 <div> | block:sgs/card-grid | 0.5 | accept |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/97#0` | brands-mega-menu Indus Foods Website v2/97#0 <div> "Our Brands" | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/98#0` | brands-mega-menu Indus Foods Website v2/98#0 <div> | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute | accept |
 
-### Settled by built post sgs_mega_menu 4443: the client already built this surface ([QA] Indus mega: Sectors on sandybrown) (8)
+### Settled by built post sgs_mega_menu 4443: the client already built this surface ([QA] Indus mega: Sectors on sandybrown) (7)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:sectors-mega-menu:Indus Foods Website v2/85#0` | sectors-mega-menu Indus Foods Website v2/85#0 <div> | block:sgs/mega-panel | 1: a menu surface (the panel a navigation item opens) is sgs/mega-panel | accept |
 | `skeleton:sectors-mega-menu:Indus Foods Website v2/87` | sectors-mega-menu Indus Foods Website v2/87 <a> | block:sgs/container | 1: 4 copies of one template element; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) | accept |
 | `skeleton:sectors-mega-menu:Indus Foods Website v2/88` | sectors-mega-menu Indus Foods Website v2/88 <div> | block:sgs/container | 0.75: 4 copies of one template element | accept |
 | `skeleton:sectors-mega-menu:Indus Foods Website v2/89` | sectors-mega-menu Indus Foods Website v2/89 <image-slot> | block:sgs/media | 1: 4 copies of one template element; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media | accept |
@@ -461,10 +416,11 @@ Accept all: [x]
 | `skeleton:sectors-mega-menu:Indus Foods Website v2/92` | sectors-mega-menu Indus Foods Website v2/92 <div> "Quality ingredients for venues, caterers & events across the UK." | block:sgs/text | 0.25: 4 copies of one template element | accept |
 | `skeleton:sectors-mega-menu:Indus Foods Website v2/93` | sectors-mega-menu Indus Foods Website v2/93 <div> "Explore Food Service" | block:sgs/button | 1: 4 copies of one template element; a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link) | accept |
 
-### Settled by rule alignWrapper: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) (6)
+### Settled by rule alignWrapper: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) (7)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:page-about:Indus Foods Website v2/461` | page-about Indus Foods Website v2/461 <div> | unwrap | 1: 10 copies of one template element on 2 surfaces; a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/22#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/22#0 <div> | unwrap | 1: 2 copies of one template element on 2 surfaces; a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) | accept |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/8#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/8#0 <div> | unwrap | 1: 2 copies of one template element on 2 surfaces; a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) | accept |
 | `skeleton:page-brands:Indus Foods Website v2/504` | page-brands Indus Foods Website v2/504 <div> | unwrap | 1: 10 copies of one template element; a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) | accept |
@@ -478,19 +434,18 @@ Accept all: [x]
 |---|---|---|---|---|
 | `skeleton:footer:Indus Foods Website v2/726#0` | footer Indus Foods Website v2/726#0 <button> "Back to top" | block:sgs/container | 1: a back-to-top control is a link whose source is 'top' (the shared link source): a container whose whole box is the link when it holds a label and an icon, a button when it is words alone | accept |
 
-### Settled by rule cardAction: a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link) (4)
+### Settled by rule cardAction: a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link) (2)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:page-about:Indus Foods Website v2/493` | page-about Indus Foods Website v2/493 <span> "Learn more" | block:sgs/button | 1: 8 copies of one template element; a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link) | accept |
-| `skeleton:page-brand-sanam:Indus Foods Website v2/491=sgs/button` | page-brand-sanam Indus Foods Website v2/491=sgs/button <div> "Dals, beans and chickpeas." | block:sgs/button | 1: 12 copies of one template element on 4 surfaces; a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link) | accept |
-| `skeleton:page-contact:Indus Foods Website v2/536=sgs/button` | page-contact Indus Foods Website v2/536=sgs/button <span> "Sparkbrook, Birmingham B11 1BU" | block:sgs/button | 1: 2 copies of one template element; a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link) | accept |
 | `skeleton:page-food-service:Indus Foods Website v2/377` | page-food-service Indus Foods Website v2/377 <span> "Explore Manufacturing" | block:sgs/button | 1: 12 copies of one template element on 4 surfaces; a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link) | accept |
 
-### Settled by rule cardHeading: the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19) (3)
+### Settled by rule cardHeading: the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19) (4)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:page-about:Indus Foods Website v2/462=sgs/heading` | page-about Indus Foods Website v2/462=sgs/heading <div> "Today" | block:sgs/heading | 1: 2 copies of one template element on 2 surfaces; the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19) |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/99#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/99#0 <span> "Need a hand?" | block:sgs/heading | 1: 2 copies of one template element on 2 surfaces; the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19) | accept |
 | `skeleton:page-certifications:Indus Foods Website v2/414` | page-certifications Indus Foods Website v2/414 <div> "Supplier approval" | block:sgs/heading | 1: 28 copies of one template element on 8 surfaces; the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19) | accept |
 | `skeleton:page-food-service:Indus Foods Website v2/375` | page-food-service Indus Foods Website v2/375 <div> "Manufacturing" | block:sgs/heading | 1: 12 copies of one template element on 4 surfaces; the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19) | accept |
@@ -546,7 +501,7 @@ Accept all: [x]
 | `skeleton:page-post-post-1:Indus Foods Website v2/623#0` | page-post-post-1 Indus Foods Website v2/623#0 <span> | remove | 1: 6 copies of one template element on 6 surfaces; a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19) | accept |
 | `skeleton:page-wholesale:Indus Foods Website v2/402#0` | page-wholesale Indus Foods Website v2/402#0 <span> | remove | 1: a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19) | accept |
 
-### Settled by rule drawsChildren: the block each sits in draws it (each row's reason names that block) (19)
+### Settled by rule drawsChildren: the block each sits in draws it (each row's reason names that block) (15)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -565,10 +520,14 @@ Accept all: [x]
 | `skeleton:page-home:Indus Foods Website v2/303` | page-home Indus Foods Website v2/303 <h3> "Apply online" | absorbed | 1: 3 copies of one template element; drawn by sgs/process-steps: array_item_schema: sgs/process-steps holds its items in an attribute | accept |
 | `skeleton:page-home:Indus Foods Website v2/304` | page-home Indus Foods Website v2/304 <p> "Tell us about your business in a short form. It takes about five minutes." | absorbed | 1: 3 copies of one template element; drawn by sgs/process-steps: array_item_schema: sgs/process-steps holds its items in an attribute | accept |
 | `skeleton:page-terms:Indus Foods Website v2/651=absorbed` | page-terms Indus Foods Website v2/651=absorbed <span> "01" | absorbed | 1: 1 copies of one template element; drawn by sgs/heading: block_composition: sgs/heading is a leaf (no inner blocks) | accept |
-| `skeleton:top-bar:Indus Foods Website v2/23#0` | top-bar Indus Foods Website v2/23#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row | accept |
-| `skeleton:top-bar:Indus Foods Website v2/26#0` | top-bar Indus Foods Website v2/26#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row | accept |
-| `skeleton:top-bar:Indus Foods Website v2/29#0` | top-bar Indus Foods Website v2/29#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row | accept |
-| `skeleton:top-bar:Indus Foods Website v2/35#0` | top-bar Indus Foods Website v2/35#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row | accept |
+
+### Settled by rule footerSlots: the top row of the footer (3)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:footer:Indus Foods Website v2/657#0` | footer Indus Foods Website v2/657#0 <div> | block:sgs/site-footer-row | 1: the top row of the footer | accept |
+| `skeleton:footer:Indus Foods Website v2/681#0` | footer Indus Foods Website v2/681#0 <div> | block:sgs/site-footer-row | 1: the columns row of the footer | accept |
+| `skeleton:footer:Indus Foods Website v2/718#0` | footer Indus Foods Website v2/718#0 <div> | block:sgs/site-footer-row | 1: the bottom row of the footer | accept |
 
 ### Settled by rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) (21)
 
@@ -603,7 +562,7 @@ Accept all: [x]
 | `skeleton:page-about:Indus Foods Website v2/316#0` | page-about Indus Foods Website v2/316#0 <section> | block:sgs/hero | 1: 28 copies of one template element on 28 surfaces; the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) | accept |
 | `skeleton:page-home:Indus Foods Website v2/203#0` | page-home Indus Foods Website v2/203#0 <section> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) | accept |
 
-### Settled by rule heroInner: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays (11)
+### Settled by rule heroInner: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays (8)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -612,9 +571,6 @@ Accept all: [x]
 | `skeleton:page-about:Indus Foods Website v2/330#0` | page-about Indus Foods Website v2/330#0 <div> | unwrap | 1: 28 copies of one template element on 28 surfaces; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-home:Indus Foods Website v2/204#0` | page-home Indus Foods Website v2/204#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-home:Indus Foods Website v2/205#0` | page-home Indus Foods Website v2/205#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
-| `skeleton:page-home:Indus Foods Website v2/215#0` | page-home Indus Foods Website v2/215#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
-| `skeleton:page-home:Indus Foods Website v2/216#0` | page-home Indus Foods Website v2/216#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
-| `skeleton:page-home:Indus Foods Website v2/217#0` | page-home Indus Foods Website v2/217#0 <image-slot> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-our-story:Indus Foods Website v2/340#0` | page-our-story Indus Foods Website v2/340#0 <div> | unwrap | 1: 20 copies of one template element on 20 surfaces; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-our-story:Indus Foods Website v2/341#0` | page-our-story Indus Foods Website v2/341#0 <div> | unwrap | 1: 20 copies of one template element on 20 surfaces; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-our-story:Indus Foods Website v2/342#0` | page-our-story Indus Foods Website v2/342#0 <image-slot> | absorbed | 1: 20 copies of one template element on 20 surfaces; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
@@ -687,10 +643,11 @@ Accept all: [x]
 | `skeleton:footer:Indus Foods Website v2/712#0` | footer Indus Foods Website v2/712#0 <iframe> | block:sgs/business-info | 1: an embedded map is sgs/business-info's map display | accept |
 | `skeleton:page-contact:Indus Foods Website v2/538#0` | page-contact Indus Foods Website v2/538#0 <iframe> | block:sgs/business-info | 1: an embedded map is sgs/business-info's map display | accept |
 
-### Settled by rule marquee: a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7 (3)
+### Settled by rule marquee: a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7 (4)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:page-home:Indus Foods Website v2/217#0` | page-home Indus Foods Website v2/217#0 <image-slot> | absorbed | 1: drawn by sgs/brand-strip: rule marquee | accept |
 | `skeleton:page-home:Indus Foods Website v2/222#0` | page-home Indus Foods Website v2/222#0 <div> | block:sgs/brand-strip | 1: a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7 | accept |
 | `skeleton:page-home:Indus Foods Website v2/224` | page-home Indus Foods Website v2/224 <a> | absorbed | 1: 20 copies of one template element; drawn by sgs/brand-strip: rule marquee | accept |
 | `skeleton:page-home:Indus Foods Website v2/225` | page-home Indus Foods Website v2/225 <image-slot> | absorbed | 1: 20 copies of one template element; drawn by sgs/brand-strip: rule marquee | accept |
@@ -705,12 +662,12 @@ Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:page-about:Indus Foods Website v2/460` | page-about Indus Foods Website v2/460 <image-slot> | block:sgs/media | 1: 10 copies of one template element on 2 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media |  |
 | `skeleton:page-brand-sanam:Indus Foods Website v2/496` | page-brand-sanam Indus Foods Website v2/496 <image-slot> | block:sgs/media | 1: 14 copies of one template element on 4 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media | accept |
 | `skeleton:page-brands:Indus Foods Website v2/503` | page-brands Indus Foods Website v2/503 <image-slot> | block:sgs/media | 1: 10 copies of one template element; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media | accept |
 | `skeleton:page-certifications:Indus Foods Website v2/484` | page-certifications Indus Foods Website v2/484 <image-slot> | block:sgs/media | 1: 8 copies of one template element on 2 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media | accept |
 | `skeleton:page-food-service:Indus Foods Website v2/372` | page-food-service Indus Foods Website v2/372 <image-slot> | block:sgs/media | 1: 12 copies of one template element on 4 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media | accept |
 | `skeleton:page-home:Indus Foods Website v2/234` | page-home Indus Foods Website v2/234 <image-slot> | block:sgs/media | 1: 4 copies of one template element; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media | accept |
-| `skeleton:page-home:Indus Foods Website v2/289#0` | page-home Indus Foods Website v2/289#0 <image-slot> | block:sgs/media | 1: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media | accept |
 | `skeleton:page-our-story:Indus Foods Website v2/396` | page-our-story Indus Foods Website v2/396 <image-slot> | block:sgs/media | 1: 15 copies of one template element on 13 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media | accept |
 
 ### Settled by rule openStatus: a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours (3)
@@ -721,15 +678,13 @@ Accept all: [x]
 | `skeleton:footer:Indus Foods Website v2/674#0` | footer Indus Foods Website v2/674#0 <span> | absorbed | 1: drawn by sgs/business-info: rule openStatus | accept |
 | `skeleton:footer:Indus Foods Website v2/680#0` | footer Indus Foods Website v2/680#0 <span> "Closes at 5pm today" | absorbed | 1: a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours | accept |
 
-### Settled by rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link (5)
+### Settled by rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link (3)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:top-bar:Indus Foods Website v2/14#0` | top-bar Indus Foods Website v2/14#0 <a> | block:sgs/button | 1: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link | accept |
-| `skeleton:top-bar:Indus Foods Website v2/16#0` | top-bar Indus Foods Website v2/16#0 <span> "0121 771 4330" | absorbed | 1: drawn by sgs/button: rule pillButton | accept |
-| `skeleton:whatsapp-button:Indus Foods Website v2/728#0` | whatsapp-button Indus Foods Website v2/728#0 <a> | block:sgs/button | 1: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link | accept |
-| `skeleton:whatsapp-button:Indus Foods Website v2/729#0` | whatsapp-button Indus Foods Website v2/729#0 <img> | absorbed | 1: drawn by sgs/button: rule pillButton | accept |
-| `skeleton:whatsapp-button:Indus Foods Website v2/731#0` | whatsapp-button Indus Foods Website v2/731#0 <span> "Chat with our team" | absorbed | 1: drawn by sgs/button: rule pillButton | accept |
+| `skeleton:footer:Indus Foods Website v2/728#0` | footer Indus Foods Website v2/728#0 <a> | block:sgs/button | 1: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link | accept |
+| `skeleton:footer:Indus Foods Website v2/729#0` | footer Indus Foods Website v2/729#0 <img> | absorbed | 1: drawn by sgs/button: rule pillButton | accept |
+| `skeleton:footer:Indus Foods Website v2/731#0` | footer Indus Foods Website v2/731#0 <span> "Chat with our team" | absorbed | 1: drawn by sgs/button: rule pillButton | accept |
 
 ### Settled by rule readingProgress: a full-width bar a few pixels tall, fixed to the viewport, is the Floating UI reading progress setting, not a block (1)
 
@@ -744,28 +699,24 @@ Accept all: [x]
 | `skeleton:footer:Indus Foods Website v2/717#0` | footer Indus Foods Website v2/717#0 <a> "Get Directions" | block:sgs/button | 1: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself | accept |
 | `skeleton:page-about:Indus Foods Website v2/526#0` | page-about Indus Foods Website v2/526#0 <a> "Call 0121 771 4330" | block:sgs/button | 1: 23 copies of one template element on 23 surfaces; a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself | accept |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/101#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/101#0 <a> "0121 771 4330" | block:sgs/button | 1: 2 copies of one template element on 2 surfaces; a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself | accept |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/105#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/105#0 <a> "Call 0121 771 4330" | block:sgs/button | 1: 2 copies of one template element on 2 surfaces; a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself |  |
 | `skeleton:page-contact:Indus Foods Website v2/539#0` | page-contact Indus Foods Website v2/539#0 <a> "Get Directions" | block:sgs/button | 1: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself | accept |
-| `skeleton:top-bar:Indus Foods Website v2/20#0` | top-bar Indus Foods Website v2/20#0 <a> "amir@indusfoodsltd.com" | block:sgs/button | 1: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself | accept |
 
-### Settled by rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text (9)
+### Settled by rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text (11)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:footer:Indus Foods Website v2/659#0` | footer Indus Foods Website v2/659#0 <span> | block:sgs/icon | 1: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text | accept |
 | `skeleton:footer:Indus Foods Website v2/665#0` | footer Indus Foods Website v2/665#0 <span> | block:sgs/icon | 1: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text | accept |
 | `skeleton:footer:Indus Foods Website v2/727#0` | footer Indus Foods Website v2/727#0 <span> | block:sgs/icon | 1: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text | accept |
+| `skeleton:page-about:Indus Foods Website v2/455#0` | page-about Indus Foods Website v2/455#0 <span> | block:sgs/icon | 1: 2 copies of one template element on 2 surfaces; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/91#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/91#0 <span> | block:sgs/icon | 1: 2 copies of one template element on 2 surfaces; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/96` | page-apply Indus Foods Website v2>TradeApplication@466/96 <span> | block:sgs/icon | 1: 10 copies of one template element on 2 surfaces; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text | accept |
 | `skeleton:page-careers:Indus Foods Website v2/419` | page-careers Indus Foods Website v2/419 <span> | block:sgs/icon | 1: 4 copies of one template element; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text | accept |
 | `skeleton:page-contact:Indus Foods Website v2/532` | page-contact Indus Foods Website v2/532 <span> | block:sgs/icon | 1: 3 copies of one template element; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text | accept |
 | `skeleton:page-delivery:Indus Foods Website v2/596` | page-delivery Indus Foods Website v2/596 <span> | block:sgs/icon | 1: 12 copies of one template element on 2 surfaces; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text | accept |
 | `skeleton:page-home:Indus Foods Website v2/244` | page-home Indus Foods Website v2/244 <span> | block:sgs/icon | 1: 4 copies of one template element; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text | accept |
 | `skeleton:page-post-post-1:Indus Foods Website v2/638#0` | page-post-post-1 Indus Foods Website v2/638#0 <span> | block:sgs/icon | 1: 6 copies of one template element on 6 surfaces; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text | accept |
-
-### Settled by rule surfaceRoot: a top bar above the header is the header's top row (sgs/site-header-row with its own hide-on-scroll setting), not a separate surface (1)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:top-bar:Indus Foods Website v2/9#0` | top-bar Indus Foods Website v2/9#0 <div> | block:sgs/site-header-row | 1: a top bar above the header is the header's top row (sgs/site-header-row with its own hide-on-scroll setting), not a separate surface | accept |
 
 ### Settled by rule typedDivider: a typed divider between items is the row's separators setting, not a block (2)
 
@@ -785,20 +736,18 @@ Accept all: [x]
 | `skeleton:page-contact:Indus Foods Website v2/531` | page-contact Indus Foods Website v2/531 <a> | block:sgs/container | 1: 3 copies of one template element; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) | accept |
 | `skeleton:page-food-service:Indus Foods Website v2/367` | page-food-service Indus Foods Website v2/367 <a> | block:sgs/container | 1: 12 copies of one template element on 4 surfaces; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) | accept |
 
-### Settled by rule widthWrapper: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place (3)
+### Settled by rule widthWrapper: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there (2)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:footer:Indus Foods Website v2/656#0` | footer Indus Foods Website v2/656#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place | accept |
-| `skeleton:footer:Indus Foods Website v2/719#0` | footer Indus Foods Website v2/719#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place | accept |
-| `skeleton:top-bar:Indus Foods Website v2/10#0` | top-bar Indus Foods Website v2/10#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place | accept |
+| `skeleton:footer:Indus Foods Website v2/656#0` | footer Indus Foods Website v2/656#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there | accept |
+| `skeleton:footer:Indus Foods Website v2/719#0` | footer Indus Foods Website v2/719#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there | accept |
 
 ### Confident proposals (Accept all covers these) (303)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:footer:Indus Foods Website v2/653#0` | footer Indus Foods Website v2/653#0 <footer> | block:sgs/site-footer | 1 | accept |
-| `skeleton:footer:Indus Foods Website v2/657#0` | footer Indus Foods Website v2/657#0 <div> | block:sgs/site-footer-row | 1 | accept |
 | `skeleton:footer:Indus Foods Website v2/660#0` | footer Indus Foods Website v2/660#0 <span> | block:sgs/container | 0.75 | accept |
 | `skeleton:footer:Indus Foods Website v2/662#0` | footer Indus Foods Website v2/662#0 <span> "0121 771 4330" | block:sgs/business-info | 0.8 | accept |
 | `skeleton:footer:Indus Foods Website v2/663#0` | footer Indus Foods Website v2/663#0 <span> "Speak to our sales team" | block:sgs/text | 1 | accept |
@@ -808,7 +757,6 @@ Accept all: [x]
 | `skeleton:footer:Indus Foods Website v2/670#0` | footer Indus Foods Website v2/670#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:footer:Indus Foods Website v2/671#0` | footer Indus Foods Website v2/671#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:footer:Indus Foods Website v2/675#0` | footer Indus Foods Website v2/675#0 <div> | block:sgs/container | 1 | accept |
-| `skeleton:footer:Indus Foods Website v2/681#0` | footer Indus Foods Website v2/681#0 <div> | block:sgs/site-footer-row | 1 | accept |
 | `skeleton:footer:Indus Foods Website v2/682#0` | footer Indus Foods Website v2/682#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:footer:Indus Foods Website v2/685#0` | footer Indus Foods Website v2/685#0 <p> "As an industry leading food & drink distributor, based in the heart of the UK, the company specialises in Ethnic Foods & has a strong export operation. Part of the Unitas Wholesale Group, with an annual turnover of £8bn, the company is at the forefront of driving positive growth within the Independent Wholesale sector." | block:sgs/text | 0.75 | accept |
 | `skeleton:footer:Indus Foods Website v2/686#0` | footer Indus Foods Website v2/686#0 <div> | block:sgs/social-icons | 0.74 | accept |
@@ -819,7 +767,6 @@ Accept all: [x]
 | `skeleton:footer:Indus Foods Website v2/711#0` | footer Indus Foods Website v2/711#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:footer:Indus Foods Website v2/713#0` | footer Indus Foods Website v2/713#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:footer:Indus Foods Website v2/714#0` | footer Indus Foods Website v2/714#0 <div> "55-58 Stratford St N, Birmingham B11 1BU, United Kingdom" | block:sgs/business-info | 0.8 | accept |
-| `skeleton:footer:Indus Foods Website v2/718#0` | footer Indus Foods Website v2/718#0 <div> | block:sgs/site-footer-row | 1 | accept |
 | `skeleton:footer:Indus Foods Website v2/720#0` | footer Indus Foods Website v2/720#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:footer:Indus Foods Website v2/721#0` | footer Indus Foods Website v2/721#0 <span> "Copyright © 2026 Indus Foods Ltd" | block:sgs/business-info | 0.8 | accept |
 | `skeleton:footer:Indus Foods Website v2/723#0` | footer Indus Foods Website v2/723#0 <a> "Website by Ibraheem Mustafa" | block:sgs/business-info | 1 | accept |
@@ -857,12 +804,18 @@ Accept all: [x]
 | `skeleton:page-about:Indus Foods Website v2/450` | page-about Indus Foods Website v2/450 <p> "Our founders open one of the UK’s first halal butchers and greengrocers on Ladypool Road, Sparkbrook." | remove | 1: 10 copies of one template element on 2 surfaces; inside a removed element (Indus Foods Website v2/446#0) | accept |
 | `skeleton:page-about:Indus Foods Website v2/451` | page-about Indus Foods Website v2/451 <div> | remove | 1: 10 copies of one template element on 2 surfaces; inside a removed element (Indus Foods Website v2/446#0) | accept |
 | `skeleton:page-about:Indus Foods Website v2/452` | page-about Indus Foods Website v2/452 <image-slot> | remove | 1: 10 copies of one template element on 2 surfaces; inside a removed element (Indus Foods Website v2/446#0) | accept |
+| `skeleton:page-about:Indus Foods Website v2/454#0` | page-about Indus Foods Website v2/454#0 <div> "Swipe through our story" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-about:Indus Foods Website v2/456#0` | page-about Indus Foods Website v2/456#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-about:Indus Foods Website v2/458` | page-about Indus Foods Website v2/458 <article> | block:sgs/container | 0.75: 10 copies of one template element on 2 surfaces |  |
+| `skeleton:page-about:Indus Foods Website v2/459` | page-about Indus Foods Website v2/459 <div> | block:sgs/container | 0.75: 10 copies of one template element on 2 surfaces |  |
+| `skeleton:page-about:Indus Foods Website v2/463` | page-about Indus Foods Website v2/463 <h3> "A shop in the Balti Triangle" | block:sgs/heading | 0.75: 10 copies of one template element on 2 surfaces |  |
+| `skeleton:page-about:Indus Foods Website v2/464` | page-about Indus Foods Website v2/464 <p> "Our founders open one of the UK’s first halal butchers and greengrocers on Ladypool Road, Sparkbrook." | block:sgs/text | 0.75: 10 copies of one template element on 2 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/479#0` | page-about Indus Foods Website v2/479#0 <div> | block:sgs/container | 1: 11 copies of one template element on 11 surfaces | accept |
 | `skeleton:page-about:Indus Foods Website v2/485` | page-about Indus Foods Website v2/485 <div> | block:sgs/container | 1: 55 copies of one template element on 11 surfaces | accept |
 | `skeleton:page-about:Indus Foods Website v2/486` | page-about Indus Foods Website v2/486 <div> | block:sgs/container | 1: 55 copies of one template element on 11 surfaces | accept |
 | `skeleton:page-about:Indus Foods Website v2/487` | page-about Indus Foods Website v2/487 <span> "01" | block:sgs/text | 1: 55 copies of one template element on 11 surfaces | accept |
 | `skeleton:page-about:Indus Foods Website v2/490=sgs/heading` | page-about Indus Foods Website v2/490=sgs/heading <div> "Our Story" | block:sgs/heading | 1: 44 copies of one template element on 10 surfaces | accept |
-| `skeleton:page-about:Indus Foods Website v2/491` | page-about Indus Foods Website v2/491 <div> "Three generations and six decades of family heritage." | block:sgs/text | 1: 43 copies of one template element on 11 surfaces | accept |
+| `skeleton:page-about:Indus Foods Website v2/491` | page-about Indus Foods Website v2/491 <div> "Three generations and six decades of family heritage." | block:sgs/text | 1: 55 copies of one template element on 11 surfaces | accept |
 | `skeleton:page-about:Indus Foods Website v2/515#0` | page-about Indus Foods Website v2/515#0 <div> | block:sgs/container | 1: 23 copies of one template element on 23 surfaces | accept |
 | `skeleton:page-about:Indus Foods Website v2/519#0` | page-about Indus Foods Website v2/519#0 <div> | block:sgs/container | 0.75: 23 copies of one template element on 23 surfaces | accept |
 | `skeleton:page-about:Indus Foods Website v2/522#0` | page-about Indus Foods Website v2/522#0 <h2> "Ready to trade with Indus Foods?" | block:sgs/heading | 0.75: 23 copies of one template element on 23 surfaces | accept |
@@ -870,6 +823,7 @@ Accept all: [x]
 | `skeleton:page-about:Indus Foods Website v2/525#0` | page-about Indus Foods Website v2/525#0 <a> "Become a Trade Customer" | block:sgs/button | 0.75: 23 copies of one template element on 23 surfaces | accept |
 | `skeleton:page-apply:Indus Foods Website v2/466#0` | page-apply Indus Foods Website v2/466#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/100#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/100#0 <p> "Our trade team can complete the application with you over the phone." | block:sgs/text | 0.75: 2 copies of one template element on 2 surfaces | accept |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/103#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/103#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/12#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/12#0 <span> "Saves as you go" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces | accept |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/14#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/14#0 <div> | remove | 1: 2 copies of one template element on 2 surfaces; Bean accepted the finaliser's pick in the intake review on 2026-10-19: A 6px track with a fill bar showing form step progress; sgs/form has progress bar settings (progressBarColour in block_attributes), so its multi-step mode draws this bar. | accept |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/16#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/16#0 <div> | remove | 1: 2 copies of one template element on 2 surfaces; Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block | accept |
@@ -954,7 +908,6 @@ Accept all: [x]
 | `skeleton:page-contact:Indus Foods Website v2/529#0` | page-contact Indus Foods Website v2/529#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-contact:Indus Foods Website v2/533` | page-contact Indus Foods Website v2/533 <span> | block:sgs/container | 0.75: 3 copies of one template element | accept |
 | `skeleton:page-contact:Indus Foods Website v2/535` | page-contact Indus Foods Website v2/535 <span> "55–58 Stratford Street North" | block:sgs/business-info | 1: 3 copies of one template element | accept |
-| `skeleton:page-contact:Indus Foods Website v2/536=sgs/text` | page-contact Indus Foods Website v2/536=sgs/text <span> "We’ll route your message to the right team" | block:sgs/text | 1: 1 copies of one template element | accept |
 | `skeleton:page-contact:Indus Foods Website v2/537#0` | page-contact Indus Foods Website v2/537#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/10#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/10#0 <span> "Choose all that apply" | remove | 1: 2 copies of one template element on 2 surfaces; Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block | accept |
 | `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/11#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/11#0 <div> | block:sgs/form-field-tiles | 1: 2 copies of one template element on 2 surfaces | accept |
@@ -1048,8 +1001,6 @@ Accept all: [x]
 | `skeleton:page-home:Indus Foods Website v2/283#0` | page-home Indus Foods Website v2/283#0 <button> | remove | 1: inside a removed element (Indus Foods Website v2/271#0) | accept |
 | `skeleton:page-home:Indus Foods Website v2/284#0` | page-home Indus Foods Website v2/284#0 <div> | remove | 1: Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block | accept |
 | `skeleton:page-home:Indus Foods Website v2/286` | page-home Indus Foods Website v2/286 <button> | remove | 1: 4 copies of one template element; inside a removed element (Indus Foods Website v2/284#0) | accept |
-| `skeleton:page-home:Indus Foods Website v2/287#0` | page-home Indus Foods Website v2/287#0 <div> | block:sgs/container | 0.75 | accept |
-| `skeleton:page-home:Indus Foods Website v2/288#0` | page-home Indus Foods Website v2/288#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-home:Indus Foods Website v2/290#0` | page-home Indus Foods Website v2/290#0 <section> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-home:Indus Foods Website v2/291#0` | page-home Indus Foods Website v2/291#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-home:Indus Foods Website v2/294#0` | page-home Indus Foods Website v2/294#0 <h2> "How to open a trade account" | block:sgs/heading | 0.75 | accept |
@@ -1099,16 +1050,30 @@ Accept all: [x]
 | `skeleton:page-terms:Indus Foods Website v2/650=sgs/heading` | page-terms Indus Foods Website v2/650=sgs/heading <h3> "Trade accounts" | block:sgs/heading | 1: 1 copies of one template element | accept |
 | `skeleton:page-terms:Indus Foods Website v2/652` | page-terms Indus Foods Website v2/652 <p> "Trade accounts are available to registered businesses. We may request company details or references before an account is opened." | block:sgs/text | 0.75: 7 copies of one template element | accept |
 | `skeleton:page-wholesale:Indus Foods Website v2/401#0` | page-wholesale Indus Foods Website v2/401#0 <div> "Why wholesalers work with us" | block:sgs/container | 1 | accept |
-| `skeleton:top-bar:Indus Foods Website v2/22#0` | top-bar Indus Foods Website v2/22#0 <div> | block:sgs/social-icons | 0.74 | accept |
 
 ## Inventory diffs (inventory-diff)
 
-Accept all: [x]
+Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `inventory:anim:EnquiryForm%7Ccss-media:animation-duration.to` | RM-03 (theirs RM-03) animation-duration.to: ours 0.01ms !important, theirs .01ms !important | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:EnquiryForm%7Ccss-media:transition-duration.to` | RM-03 (theirs RM-03) transition-duration.to: ours 0.01ms !important, theirs .01ms !important | ours | the re-derived record and Claude Design's disagree on this field | ours |
+| `inventory:anim:EnquiryForm%7Ccss-media:animation-duration.to` | **changed** RM-03 (theirs RM-03) animation-duration.to: ours 0.01ms !important, theirs .01ms !important | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:EnquiryForm%7Ccss-media:transition-duration.to` | **changed** RM-03 (theirs RM-03) transition-duration.to: ours 0.01ms !important, theirs .01ms !important | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:Indus Foods Website v2%7Ccss-media:animation-duration.to` | **changed** RM-01 (theirs RM-01) animation-duration.to: ours 0.01ms !important, theirs .01ms !important | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:Indus Foods Website v2%7Ccss-media:transition-duration.to` | **changed** RM-01 (theirs RM-01) transition-duration.to: ours 0.01ms !important, theirs .01ms !important | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:duration_ms` | **changed** A-30 (theirs A-18) duration_ms: ours 650, theirs 750 | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:duration_ms~2` | **changed** A-31 (theirs A-19) duration_ms: ours 750, theirs 650 | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:opacity.from` | **changed** A-30 (theirs A-18) opacity.from: ours 1, theirs null | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:opacity.to` | **changed** A-30 (theirs A-18) opacity.to: ours 0, theirs null | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:properties` | **changed** A-30 (theirs A-18) properties: ours opacity,transform, theirs transform | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:properties~2` | **changed** A-31 (theirs A-19) properties: ours transform, theirs opacity,transform | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:transform.from` | **changed** A-30 (theirs A-18) transform.from: ours scale(0), theirs translateX(-120%) skewX(-18deg) | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:transform.from~2` | **changed** A-31 (theirs A-19) transform.from: ours translateX(-120%) skewX(-18deg), theirs scale(0) | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:transform.to` | **changed** A-30 (theirs A-18) transform.to: ours scale(1), theirs translateX(260%) skewX(-18deg) | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:transform.to~2` | **changed** A-31 (theirs A-19) transform.to: ours translateX(260%) skewX(-18deg), theirs scale(1) | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:trigger.type~2` | **changed** A-31 (theirs A-19) trigger.type: ours pointer-move, theirs press | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:TradeApplication%7Ccss-media:animation-duration.to` | **changed** RM-02 (theirs RM-02) animation-duration.to: ours 0.01ms !important, theirs .01ms !important | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:TradeApplication%7Ccss-media:transition-duration.to` | **changed** RM-02 (theirs RM-02) transition-duration.to: ours 0.01ms !important, theirs .01ms !important | ours | the re-derived record and Claude Design's disagree on this field |  |
 | `inventory:anim:EnquiryForm%7Ctpl%7C13%7Ccss:border-color.from` | TR-120 (theirs TR-120) border-color.from: ours null, theirs 2px solid {{ tp.ring }} | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:EnquiryForm%7Ctpl%7C13%7Ccss:delay_ms` | TR-120 (theirs TR-120) delay_ms: ours per property, theirs 0 | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:EnquiryForm%7Ctpl%7C26%7Ccss:border-color.from` | TR-121 (theirs TR-121) border-color.from: ours null, theirs 1.5px solid {{ f.border }} | ours | the re-derived record and Claude Design's disagree on this field | ours |
@@ -1118,8 +1083,6 @@ Accept all: [x]
 | `inventory:anim:EnquiryForm%7Ctpl%7C39%7Ccss:border-color.from` | TR-124 (theirs TR-124) border-color.from: ours null, theirs 1.5px solid {{ p.ring }} | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:EnquiryForm%7Ctpl%7C39%7Ccss:duration_ms` | TR-124 (theirs TR-124) duration_ms: ours 200, theirs per property | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:EnquiryForm%7Ctpl%7C42%7Ccss:delay_ms` | TR-125 (theirs TR-125) delay_ms: ours per property, theirs 0 | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2%7Ccss-media:animation-duration.to` | RM-01 (theirs RM-01) animation-duration.to: ours 0.01ms !important, theirs .01ms !important | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2%7Ccss-media:transition-duration.to` | RM-01 (theirs RM-01) transition-duration.to: ours 0.01ms !important, theirs .01ms !important | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:Indus Foods Website v2%7Ctpl%7C128%7Ccss:delay_ms` | TR-026 (theirs TR-026) delay_ms: ours 0, theirs per property | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:Indus Foods Website v2%7Ctpl%7C128%7Ccss:duration_ms` | TR-026 (theirs TR-026) duration_ms: ours 300, theirs per property | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:Indus Foods Website v2%7Ctpl%7C128%7Ccss:easing` | TR-026 (theirs TR-026) easing: ours ease, theirs per property | ours | the re-derived record and Claude Design's disagree on this field | ours |
@@ -1246,10 +1209,10 @@ Accept all: [x]
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1179%7Cjs:scale.from` | J-21 (theirs J-19) scale.from: ours null, theirs 1 | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1180%7Cjs:only-ours` | J-23 js-style-write js-style-write in buildScatter on document.createElement('img') is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1180%7Cjs:only-ours~2` | J-24 js-style-write js-style-write in buildScatter on document.createElement('img') is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1184%7Cwaapi:only-ours` | A-04 waapi Web Animation in buildScatter on document.createElement('img') is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1184%7Cwaapi:only-ours` | A-04 waapi Web Animation in buildScatter on im inserted into document.createElement('span') is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1184%7Cwaapi:translate.to` | A-03 (theirs A-03) translate.to: ours (rnd() * 10 - 5).toFixed(1) + 'px -' + (6 + rnd() * 12).toFixed(1) + 'px', theirs rnd(-5..5)px -rnd(6..18)px | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1184%7Cwaapi:trigger.type` | A-03 (theirs A-03) trigger.type: ours route, theirs loop | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1185%7Cwaapi:only-ours` | A-06 waapi Web Animation in buildScatter on document.createElement('span') is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1185%7Cwaapi:only-ours` | A-06 waapi Web Animation in buildScatter on w inserted into this._scEl = el is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1185%7Cwaapi:trigger.type` | A-05 (theirs A-04) trigger.type: ours route, theirs mount | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1199%7Cjs:duration_ms` | J-25 (theirs J-18) duration_ms: ours 0, theirs null | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1199%7Cjs:easing` | J-25 (theirs J-18) easing: ours null, theirs linear | ours | the re-derived record and Claude Design's disagree on this field | ours |
@@ -1292,10 +1255,11 @@ Accept all: [x]
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1336%7Cjs:properties` | J-38 (theirs J-14) properties: ours playback-rate, theirs playbackRate (of A-15) | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1337%7Cjs:only-ours` | J-39 waapi-control waapi-control in playMarquee on this._mq._anim is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1338%7Cwaapi:delay_ms` | A-27 (theirs A-16) delay_ms: ours delay \|\| 0, theirs 0 (184) / 900 (256) | ours | the re-derived record and Claude Design's disagree on this field | ours |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1338%7Cwaapi:only-ours` | A-28 waapi Web Animation in floatIt from setFloatEl2 on ref setFloatEl2 is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1338%7Cwaapi:trigger.type` | A-27 (theirs A-16) trigger.type: ours mount, theirs loop | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1344%7Cwaapi:delay_ms` | A-28 (theirs A-17) delay_ms: ours -Math.random() * 3000, theirs -random*3000 | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1344%7Cwaapi:duration_ms` | A-28 (theirs A-17) duration_ms: ours 2800 + Math.random() * 2200, theirs 2800 + random*2200 | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1344%7Cwaapi:trigger.type` | A-28 (theirs A-17) trigger.type: ours mount, theirs loop | ours | the re-derived record and Claude Design's disagree on this field | ours |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1344%7Cwaapi:delay_ms` | A-29 (theirs A-17) delay_ms: ours -Math.random() * 3000, theirs -random*3000 | ours | the re-derived record and Claude Design's disagree on this field | ours |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1344%7Cwaapi:duration_ms` | A-29 (theirs A-17) duration_ms: ours 2800 + Math.random() * 2200, theirs 2800 + random*2200 | ours | the re-derived record and Claude Design's disagree on this field | ours |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1344%7Cwaapi:trigger.type` | A-29 (theirs A-17) trigger.type: ours mount, theirs loop | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1352%7Cjs:--pr.from` | J-40 (theirs J-23) --pr.from: ours null, theirs 0px | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1352%7Cjs:duration_ms` | J-40 (theirs J-23) duration_ms: ours 0, theirs 400 | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1352%7Cjs:easing` | J-40 (theirs J-23) easing: ours null, theirs cubic-bezier(.16,.84,.32,1) | ours | the re-derived record and Claude Design's disagree on this field | ours |
@@ -1324,29 +1288,20 @@ Accept all: [x]
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1387%7Cjs:only-ours~2` | J-55 js-style-write js-style-write in fx on host is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1387%7Cjs:only-ours~3` | J-56 js-style-write js-style-write in fx on host is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1387%7Cjs:only-ours~4` | J-57 js-style-write js-style-write in fx on host is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:duration_ms` | A-29 (theirs A-18) duration_ms: ours dur, theirs 750 | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:duration_ms~2` | A-30 (theirs A-19) duration_ms: ours dur, theirs 650 | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:opacity.from` | A-30 (theirs A-19) opacity.from: ours null, theirs 1 | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:opacity.to` | A-30 (theirs A-19) opacity.to: ours null, theirs 0 | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:properties` | A-29 (theirs A-18) properties: ours keyframes, theirs transform | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:properties~2` | A-30 (theirs A-19) properties: ours keyframes, theirs opacity,transform | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:transform.from` | A-29 (theirs A-18) transform.from: ours null, theirs translateX(-120%) skewX(-18deg) | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:transform.from~2` | A-30 (theirs A-19) transform.from: ours null, theirs scale(0) | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:transform.to` | A-29 (theirs A-18) transform.to: ours null, theirs translateX(260%) skewX(-18deg) | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:transform.to~2` | A-30 (theirs A-19) transform.to: ours null, theirs scale(1) | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:trigger.type` | A-29 (theirs A-18) trigger.type: ours press, theirs pointer-move | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:trigger.type~2` | A-30 (theirs A-19) trigger.type: ours pointer-leave, theirs press | ours | the re-derived record and Claude Design's disagree on this field | ours |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:opacity.from~2` | A-31 (theirs A-19) opacity.from: ours null, theirs 1 | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:opacity.to~2` | A-31 (theirs A-19) opacity.to: ours null, theirs 0 | ours | the re-derived record and Claude Design's disagree on this field |  |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:trigger.type` | A-30 (theirs A-18) trigger.type: ours press, theirs pointer-move | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1394%7Cjs:only-ours` | J-58 js-style-write js-style-write in shine on document.createElement('span') is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1397%7Cjs:only-ours` | J-59 js-style-write js-style-write in resetTilt on t is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1397%7Cjs:only-ours~2` | J-60 js-style-write js-style-write in resetTilt on t is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1397%7Cjs:only-ours~3` | J-61 js-style-write js-style-write in resetTilt on t is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1397%7Cwaapi:rotate.from` | A-31 (theirs A-20) rotate.from: ours t.style.rotate \|\| 'none', theirs current inline rotate | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1403%7Cwaapi:only-ours` | A-33 waapi Web Animation in animateEntrance on [...h1.parentElement.children] is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1403%7Cwaapi:trigger.type` | A-32 (theirs A-21) trigger.type: ours mount, theirs load | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1407%7Cwaapi:only-ours` | A-35 waapi Web Animation in animateEntrance on img && img.parentElement is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1407%7Cwaapi:trigger.type` | A-34 (theirs A-22) trigger.type: ours mount, theirs load | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1408%7Cwaapi:only-ours` | A-37 waapi Web Animation in animateEntrance on image-slot is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:Indus Foods Website v2.dc.html%7C1408%7Cwaapi:trigger.type` | A-36 (theirs A-23) trigger.type: ours mount, theirs load | ours | the re-derived record and Claude Design's disagree on this field | ours |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1397%7Cwaapi:rotate.from` | A-32 (theirs A-20) rotate.from: ours t.style.rotate \|\| 'none', theirs current inline rotate | ours | the re-derived record and Claude Design's disagree on this field | ours |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1403%7Cwaapi:only-ours` | A-34 waapi Web Animation in animateEntrance on [...h1.parentElement.children] is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1403%7Cwaapi:trigger.type` | A-33 (theirs A-21) trigger.type: ours mount, theirs load | ours | the re-derived record and Claude Design's disagree on this field | ours |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1407%7Cwaapi:only-ours` | A-36 waapi Web Animation in animateEntrance on img && img.parentElement is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1407%7Cwaapi:trigger.type` | A-35 (theirs A-22) trigger.type: ours mount, theirs load | ours | the re-derived record and Claude Design's disagree on this field | ours |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1408%7Cwaapi:only-ours` | A-38 waapi Web Animation in animateEntrance on image-slot is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
+| `inventory:anim:Indus Foods Website v2.dc.html%7C1408%7Cwaapi:trigger.type` | A-37 (theirs A-23) trigger.type: ours mount, theirs load | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1441%7Cjs:only-ours` | J-62 js-style-write js-style-write in setHeroSvgEl on svg is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1447%7Cjs:only-ours` | J-63 js-style-write js-style-write in setHeroSvgEl on [gold, glow, hi] is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1447%7Cjs:only-ours~2` | J-64 js-style-write js-style-write in setHeroSvgEl on q('sunrays_expand') is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
@@ -1363,8 +1318,6 @@ Accept all: [x]
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1481%7Cjs:only-ours~2` | J-71 js-style-write js-style-write in btnLeave on e.currentTarget of onMouseLeave is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1979%7Cjs:only-ours` | J-72 js-style-write js-style-write in scatter on e.currentTarget is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:Indus Foods Website v2.dc.html%7C1980%7Cjs:only-ours` | J-73 js-style-write js-style-write in scatter on e.currentTarget is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:TradeApplication%7Ccss-media:animation-duration.to` | RM-02 (theirs RM-02) animation-duration.to: ours 0.01ms !important, theirs .01ms !important | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:TradeApplication%7Ccss-media:transition-duration.to` | RM-02 (theirs RM-02) transition-duration.to: ours 0.01ms !important, theirs .01ms !important | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:TradeApplication%7Ctpl%7C101%7Ccss:delay_ms` | TR-118 (theirs TR-118) delay_ms: ours per property, theirs 0 | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:TradeApplication%7Ctpl%7C105%7Ccss:delay_ms` | TR-119 (theirs TR-119) delay_ms: ours per property, theirs 0 | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:TradeApplication%7Ctpl%7C19%7Ccss:border-color.from` | TR-109 (theirs TR-109) border-color.from: ours null, theirs 2px solid {{ st.ring }} | ours | the re-derived record and Claude Design's disagree on this field | ours |
@@ -1383,7 +1336,7 @@ Accept all: [x]
 | `inventory:anim:TradeApplication%7Ctpl%7C81%7Ccss:delay_ms` | TR-115 (theirs TR-115) delay_ms: ours per property, theirs 0 | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:TradeApplication%7Ctpl%7C81%7Ccss:easing` | TR-115 (theirs TR-115) easing: ours per property, theirs ease | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:TradeApplication%7Ctpl%7C85%7Ccss:delay_ms` | TR-116 (theirs TR-116) delay_ms: ours per property, theirs 0 | ours | the re-derived record and Claude Design's disagree on this field | ours |
-| `inventory:anim:TradeApplication.dc.html%7C170%7Cwaapi:transform.from` | A-45 (theirs A-31) transform.from: ours 'translateX(' + 36 * dir + 'px)', theirs translateX(36px × dir) | ours | the re-derived record and Claude Design's disagree on this field | ours |
+| `inventory:anim:TradeApplication.dc.html%7C170%7Cwaapi:transform.from` | A-46 (theirs A-31) transform.from: ours 'translateX(' + 36 * dir + 'px)', theirs translateX(36px × dir) | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:TradeApplication.dc.html%7C172%7Cjs:duration_ms` | J-220 (theirs J-17) duration_ms: ours 0, theirs browser smooth scroll | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:TradeApplication.dc.html%7C172%7Cjs:easing` | J-220 (theirs J-17) easing: ours null, theirs linear | ours | the re-derived record and Claude Design's disagree on this field | ours |
 | `inventory:anim:TradeApplication.dc.html%7C172%7Cjs:properties` | J-220 (theirs J-17) properties: ours scroll-position, theirs scrollY | ours | the re-derived record and Claude Design's disagree on this field | ours |
@@ -1393,29 +1346,29 @@ Accept all: [x]
 | `inventory:anim:image-slot.js%7C1006%7Cjs:only-ours~2` | J-93 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1006%7Cjs:only-ours~3` | J-94 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1006%7Cjs:only-ours~4` | J-95 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1006%7Cjs:only-ours~5` | J-96 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1006%7Cjs:only-ours~5` | J-96 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1007%7Cjs:only-ours` | J-97 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1007%7Cjs:only-ours~2` | J-98 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1007%7Cjs:only-ours~3` | J-99 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1007%7Cjs:only-ours~4` | J-100 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1007%7Cjs:only-ours~5` | J-101 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1007%7Cjs:only-ours~5` | J-101 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1008%7Cjs:only-ours` | J-102 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1008%7Cjs:only-ours~2` | J-103 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1008%7Cjs:only-ours~3` | J-104 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1008%7Cjs:only-ours~4` | J-105 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1008%7Cjs:only-ours~5` | J-106 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1008%7Cjs:only-ours~5` | J-106 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1009%7Cjs:only-ours` | J-107 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1009%7Cjs:only-ours~2` | J-108 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1009%7Cjs:only-ours~3` | J-109 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1009%7Cjs:only-ours~4` | J-110 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1009%7Cjs:only-ours~5` | J-111 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1009%7Cjs:only-ours~5` | J-111 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1010%7Cjs:only-ours` | J-112 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1010%7Cjs:only-ours~2` | J-113 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1010%7Cjs:only-ours~3` | J-114 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1010%7Cjs:only-ours~4` | J-115 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1010%7Cjs:only-ours~5` | J-116 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1010%7Cjs:only-ours~5` | J-116 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1022%7Cjs:only-ours` | J-117 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1022%7Cjs:only-ours~10` | J-126 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1022%7Cjs:only-ours~10` | J-126 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1022%7Cjs:only-ours~2` | J-118 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1022%7Cjs:only-ours~3` | J-119 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1022%7Cjs:only-ours~4` | J-120 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
@@ -1423,9 +1376,9 @@ Accept all: [x]
 | `inventory:anim:image-slot.js%7C1022%7Cjs:only-ours~6` | J-122 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1022%7Cjs:only-ours~7` | J-123 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1022%7Cjs:only-ours~8` | J-124 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1022%7Cjs:only-ours~9` | J-125 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1022%7Cjs:only-ours~9` | J-125 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1023%7Cjs:only-ours` | J-127 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1023%7Cjs:only-ours~10` | J-136 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1023%7Cjs:only-ours~10` | J-136 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1023%7Cjs:only-ours~2` | J-128 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1023%7Cjs:only-ours~3` | J-129 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1023%7Cjs:only-ours~4` | J-130 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
@@ -1433,84 +1386,84 @@ Accept all: [x]
 | `inventory:anim:image-slot.js%7C1023%7Cjs:only-ours~6` | J-132 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1023%7Cjs:only-ours~7` | J-133 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1023%7Cjs:only-ours~8` | J-134 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1023%7Cjs:only-ours~9` | J-135 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1023%7Cjs:only-ours~9` | J-135 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1024%7Cjs:only-ours` | J-137 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1024%7Cjs:only-ours~2` | J-138 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1024%7Cjs:only-ours~3` | J-139 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1024%7Cjs:only-ours~4` | J-140 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1024%7Cjs:only-ours~5` | J-141 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1024%7Cjs:only-ours~5` | J-141 js-style-write js-style-write in ImageSlot._applyView on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1035%7Cjs:only-ours` | J-142 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1035%7Cjs:only-ours~2` | J-143 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1035%7Cjs:only-ours~3` | J-144 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1035%7Cjs:only-ours~4` | J-145 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1035%7Cjs:only-ours~5` | J-146 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1035%7Cjs:only-ours~5` | J-146 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1036%7Cjs:only-ours` | J-147 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1036%7Cjs:only-ours~2` | J-148 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1036%7Cjs:only-ours~3` | J-149 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1036%7Cjs:only-ours~4` | J-150 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1036%7Cjs:only-ours~5` | J-151 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1036%7Cjs:only-ours~5` | J-151 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1037%7Cjs:only-ours` | J-152 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1037%7Cjs:only-ours~2` | J-153 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1037%7Cjs:only-ours~3` | J-154 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1037%7Cjs:only-ours~4` | J-155 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1037%7Cjs:only-ours~5` | J-156 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1037%7Cjs:only-ours~5` | J-156 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1038%7Cjs:only-ours` | J-157 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1038%7Cjs:only-ours~2` | J-158 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1038%7Cjs:only-ours~3` | J-159 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1038%7Cjs:only-ours~4` | J-160 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1038%7Cjs:only-ours~5` | J-161 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1038%7Cjs:only-ours~5` | J-161 js-style-write js-style-write in ImageSlot._applyView on this._spill is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1065%7Cjs:only-ours` | J-162 js-style-write js-style-write in ImageSlot._render on this._frame is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1065%7Cjs:only-ours~2` | J-163 js-style-write js-style-write in ImageSlot._render on this._frame is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1065%7Cjs:only-ours~3` | J-164 js-style-write js-style-write in ImageSlot._render on this._frame is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1065%7Cjs:only-ours~4` | J-165 js-style-write js-style-write in ImageSlot._render on this._frame is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1065%7Cjs:only-ours~4` | J-165 js-style-write js-style-write in ImageSlot._render on this._frame is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1066%7Cjs:only-ours` | J-166 js-style-write js-style-write in ImageSlot._render on this._frame is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1066%7Cjs:only-ours~2` | J-167 js-style-write js-style-write in ImageSlot._render on this._frame is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1066%7Cjs:only-ours~3` | J-168 js-style-write js-style-write in ImageSlot._render on this._frame is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1066%7Cjs:only-ours~4` | J-169 js-style-write js-style-write in ImageSlot._render on this._frame is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1066%7Cjs:only-ours~4` | J-169 js-style-write js-style-write in ImageSlot._render on this._frame is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1067%7Cjs:only-ours` | J-170 js-style-write js-style-write in ImageSlot._render on this._ring is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1067%7Cjs:only-ours~2` | J-171 js-style-write js-style-write in ImageSlot._render on this._ring is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1067%7Cjs:only-ours~3` | J-172 js-style-write js-style-write in ImageSlot._render on this._ring is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1067%7Cjs:only-ours~4` | J-173 js-style-write js-style-write in ImageSlot._render on this._ring is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1067%7Cjs:only-ours~4` | J-173 js-style-write js-style-write in ImageSlot._render on this._ring is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1068%7Cjs:only-ours` | J-174 js-style-write js-style-write in ImageSlot._render on this._ring is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1068%7Cjs:only-ours~2` | J-175 js-style-write js-style-write in ImageSlot._render on this._ring is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1068%7Cjs:only-ours~3` | J-176 js-style-write js-style-write in ImageSlot._render on this._ring is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1068%7Cjs:only-ours~4` | J-177 js-style-write js-style-write in ImageSlot._render on this._ring is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1068%7Cjs:only-ours~4` | J-177 js-style-write js-style-write in ImageSlot._render on this._ring is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1073%7Cjs:only-ours` | J-178 js-style-write js-style-write in ImageSlot._render on this._sub is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1073%7Cjs:only-ours~2` | J-179 js-style-write js-style-write in ImageSlot._render on this._sub is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1073%7Cjs:only-ours~3` | J-180 js-style-write js-style-write in ImageSlot._render on this._sub is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1073%7Cjs:only-ours~4` | J-181 js-style-write js-style-write in ImageSlot._render on this._sub is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1073%7Cjs:only-ours~4` | J-181 js-style-write js-style-write in ImageSlot._render on this._sub is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1092%7Cjs:only-ours` | J-182 js-text-write js-text-write in ImageSlot._render on this._cap is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1092%7Cjs:only-ours~2` | J-183 js-text-write js-text-write in ImageSlot._render on this._cap is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1092%7Cjs:only-ours~3` | J-184 js-text-write js-text-write in ImageSlot._render on this._cap is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1092%7Cjs:only-ours~4` | J-185 js-text-write js-text-write in ImageSlot._render on this._cap is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1092%7Cjs:only-ours~4` | J-185 js-text-write js-text-write in ImageSlot._render on this._cap is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1133%7Cjs:only-ours` | J-186 js-style-write js-style-write in ImageSlot._render on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1133%7Cjs:only-ours~2` | J-187 js-style-write js-style-write in ImageSlot._render on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1133%7Cjs:only-ours~3` | J-188 js-style-write js-style-write in ImageSlot._render on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1133%7Cjs:only-ours~4` | J-189 js-style-write js-style-write in ImageSlot._render on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1133%7Cjs:only-ours~4` | J-189 js-style-write js-style-write in ImageSlot._render on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1134%7Cjs:only-ours` | J-190 js-style-write js-style-write in ImageSlot._render on this._empty is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1134%7Cjs:only-ours~2` | J-191 js-style-write js-style-write in ImageSlot._render on this._empty is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1134%7Cjs:only-ours~3` | J-192 js-style-write js-style-write in ImageSlot._render on this._empty is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1134%7Cjs:only-ours~4` | J-193 js-style-write js-style-write in ImageSlot._render on this._empty is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1134%7Cjs:only-ours~4` | J-193 js-style-write js-style-write in ImageSlot._render on this._empty is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1148%7Cjs:only-ours` | J-194 js-style-write js-style-write in ImageSlot._render on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1148%7Cjs:only-ours~2` | J-195 js-style-write js-style-write in ImageSlot._render on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1148%7Cjs:only-ours~3` | J-196 js-style-write js-style-write in ImageSlot._render on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1148%7Cjs:only-ours~4` | J-197 js-style-write js-style-write in ImageSlot._render on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1148%7Cjs:only-ours~4` | J-197 js-style-write js-style-write in ImageSlot._render on this._img is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1153%7Cjs:only-ours` | J-198 js-style-write js-style-write in ImageSlot._render on this._empty is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1153%7Cjs:only-ours~2` | J-199 js-style-write js-style-write in ImageSlot._render on this._empty is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1153%7Cjs:only-ours~3` | J-200 js-style-write js-style-write in ImageSlot._render on this._empty is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1153%7Cjs:only-ours~4` | J-201 js-style-write js-style-write in ImageSlot._render on this._empty is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1153%7Cjs:only-ours~4` | J-201 js-style-write js-style-write in ImageSlot._render on this._empty is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1160%7Cjs:only-ours` | J-202 js-text-write js-text-write in ImageSlot._render on this._credit is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1160%7Cjs:only-ours~2` | J-203 js-text-write js-text-write in ImageSlot._render on this._credit is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1160%7Cjs:only-ours~3` | J-204 js-text-write js-text-write in ImageSlot._render on this._credit is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1160%7Cjs:only-ours~4` | J-205 js-text-write js-text-write in ImageSlot._render on this._credit is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1160%7Cjs:only-ours~4` | J-205 js-text-write js-text-write in ImageSlot._render on this._credit is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1180%7Cjs:only-ours` | J-206 js-text-write js-text-write in mkLink on a is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1180%7Cjs:only-ours~2` | J-207 js-text-write js-text-write in mkLink on a is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1180%7Cjs:only-ours~3` | J-208 js-text-write js-text-write in mkLink on a is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1180%7Cjs:only-ours~4` | J-209 js-text-write js-text-write in mkLink on a is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1180%7Cjs:only-ours~4` | J-209 js-text-write js-text-write in mkLink on a is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1198%7Cjs:only-ours` | J-210 js-text-write js-text-write in ImageSlot._render on this._credit is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1198%7Cjs:only-ours~2` | J-211 js-text-write js-text-write in ImageSlot._render on this._credit is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C1198%7Cjs:only-ours~3` | J-212 js-text-write js-text-write in ImageSlot._render on this._credit is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C1198%7Cjs:only-ours~4` | J-213 js-text-write js-text-write in ImageSlot._render on this._credit is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C1198%7Cjs:only-ours~4` | J-213 js-text-write js-text-write in ImageSlot._render on this._credit is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C335%7Ccss:only-ours` | TR-126 css-transition Code-built transition in top-level is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C350%7Ccss:only-ours` | TR-127 css-transition Code-built transition in top-level is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C379%7Ccss:only-ours` | K-02 css-animation CSS animation om-slot-spin on code-built animation string is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
@@ -1526,12 +1479,12 @@ Accept all: [x]
 | `inventory:anim:image-slot.js%7C998%7Cjs:only-ours~2` | J-83 js-style-write js-style-write in ImageSlot._applyView on this._ctl is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C998%7Cjs:only-ours~3` | J-84 js-style-write js-style-write in ImageSlot._applyView on this._ctl is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C998%7Cjs:only-ours~4` | J-85 js-style-write js-style-write in ImageSlot._applyView on this._ctl is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C998%7Cjs:only-ours~5` | J-86 js-style-write js-style-write in ImageSlot._applyView on this._ctl is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C998%7Cjs:only-ours~5` | J-86 js-style-write js-style-write in ImageSlot._applyView on this._ctl is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C999%7Cjs:only-ours` | J-87 js-style-write js-style-write in ImageSlot._applyView on this._ctl is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C999%7Cjs:only-ours~2` | J-88 js-style-write js-style-write in ImageSlot._applyView on this._ctl is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C999%7Cjs:only-ours~3` | J-89 js-style-write js-style-write in ImageSlot._applyView on this._ctl is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:image-slot.js%7C999%7Cjs:only-ours~4` | J-90 js-style-write js-style-write in ImageSlot._applyView on this._ctl is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
-| `inventory:anim:image-slot.js%7C999%7Cjs:only-ours~5` | J-91 js-style-write js-style-write in ImageSlot._applyView on this._ctl is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect |  |
+| `inventory:anim:image-slot.js%7C999%7Cjs:only-ours~5` | J-91 js-style-write js-style-write in ImageSlot._applyView on this._ctl is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:indus-logo.js%7C11%7Cjs:only-ours` | J-214 js-style-write js-style-write in IndusLogo.connectedCallback on this is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:indus-logo.js%7C40%7Cjs:only-ours` | J-215 js-style-write js-style-write in IndusLogo.load on svg is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
 | `inventory:anim:indus-logo.js%7C43%7Cjs:only-ours` | J-216 js-style-write js-style-write in IndusLogo.load on g is not in Claude Design's animations.json | ours | only the re-derived inventory has this effect | ours |
@@ -1555,8 +1508,9 @@ Accept all: [x]
 
 ## Notices (notice)
 
-Accept all: [x]
+Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `notice:host:images.unsplash.com` | request to images.unsplash.com blocked (4 URLs, first https://images.unsplash.com/photo-1532336414038-cf19250c5757?w=1388&q=70&auto=format&fit=crop) | noted | replay-miss |  |
 | `notice:host:maps.google.com` | request to maps.google.com blocked (2 URLs, first https://maps.google.com/maps?q=55-58%20Stratford%20Street%20North%2C%20Birmingham%20B11%201BU&z=14&output=embed) | noted | unlisted-host | noted |
