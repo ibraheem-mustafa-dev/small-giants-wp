@@ -427,20 +427,24 @@ export const isoDay = () => new Date().toISOString().slice( 0, 10 );
 // value), else the first value for a DEFAULTED row type (flag, not-a-defect), else no mark. A mark kept unchanged on a row with an unchanged hash
 // keeps its markedOn and carriedFrom; any other new mark is dated `today`. Returns { intake (review rebuilt from the
 // record's rows), problems, missing: [{ rowId, rowType, why }] }; non-empty problems or missing means the review fails.
-export function applyReview( intake, markdown, { today = isoDay() } = {} ) {
-	const rows = reviewRows( intake );
-	const known = new Map( rows.map( ( r ) => [ r.rowId, r ] ) );
+// `sections` (row types) limits the check and the marks to those sections: every other row keeps its intake.json
+// review entry as it was, and review.md's other sections are not read for marks.
+export function applyReview( intake, markdown, { today = isoDay(), sections = null } = {} ) {
+	const inScope = ( t ) => ! sections || sections.includes( t );
+	const all = reviewRows( intake );
+	const rows = all.filter( ( r ) => inScope( r.rowType ) );
+	const known = new Map( all.map( ( r ) => [ r.rowId, r ] ) );
 	const prior = new Map( ( intake.review || [] ).map( ( r ) => [ r.rowId, r ] ) );
 	const parsed = parseReview( markdown );
 	const problems = [ ...parsed.problems ];
-	for ( const [ id, t ] of Object.entries( parsed.rowSection ) ) {
+	for ( const [ id, t ] of Object.entries( parsed.rowSection ).filter( ( [ , s ] ) => inScope( s ) ) ) {
 		if ( ! known.has( id ) ) {
 			problems.push( `row ${ id } (${ t } section) is not a row of this intake` );
 		} else if ( known.get( id ).rowType !== t ) {
 			problems.push( `row ${ id } sits in the ${ t } section but is a ${ known.get( id ).rowType } row` );
 		}
 	}
-	const review = [];
+	const review = ( intake.review || [] ).filter( ( r ) => ! inScope( r.rowType ) );
 	const missing = [];
 	for ( const r of rows ) {
 		if ( ! ( r.rowId in parsed.rowSection ) ) {
@@ -471,7 +475,9 @@ export function applyReview( intake, markdown, { today = isoDay() } = {} ) {
 			missing.push( { rowId: r.rowId, rowType: r.rowType, why } );
 		}
 	}
-	return { intake: { ...intake, review }, problems, missing };
+	const order = new Map( all.map( ( r, i ) => [ r.rowId, i ] ) );
+	const at = ( r ) => order.get( r.rowId ) ?? all.length;
+	return { intake: { ...intake, review: sections ? review.sort( ( a, b ) => at( a ) - at( b ) ) : review }, problems, missing };
 }
 
 // Carrying marks across a re-run lives in lib/intake-review-carry.mjs (by row ID and content, then by the element's content).

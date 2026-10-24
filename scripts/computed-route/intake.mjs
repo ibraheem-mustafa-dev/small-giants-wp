@@ -5,9 +5,11 @@
 //     sites/<client>/build/page-map.json. --record (re)records the replay file; without it a missing one is an error.
 //     --widths sets the replay check, runtime census, recording and draft-defect widths (the skeleton inventory always
 //     reads 375, 768 and 1440); --surfaces limits the skeleton step to those surface slugs or surfaces.json ids.
-//   node scripts/computed-route/intake.mjs --apply-review <client> [--repo <path>]
+//   node scripts/computed-route/intake.mjs --apply-review <client> [--section <row type>[,...]] [--repo <path>]
 //     reads review.md back, writes the dated marks into intake.json and the confirmed page-map.json, and saves Bean's
-//     block:<slug> marks and accepted finaliser picks to sites/<client>/build/skeleton/decisions.json.
+//     block:<slug> marks and accepted finaliser picks to sites/<client>/build/skeleton/decisions.json. --section
+//     checks and writes the marks of the named review sections only (not page-map or skeleton-block), leaving every
+//     other row and its mark as it was.
 //   node scripts/computed-route/intake.mjs --finalise <client>      writes build/intake/finalise-request.json (the
 //     low-confidence and unresolved skeleton rows) for an agent run with prompts/skeleton-finaliser.md.
 //   node scripts/computed-route/intake.mjs --apply-picks <client>   applies that agent's finalise-picks.json to
