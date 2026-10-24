@@ -97,7 +97,10 @@ test( 'MUST FAIL: each planted script effect is written as a validated layer, an
 		const effect = id.replace( 'fx:', '' );
 		const written = writeAll( record, loadEffectOffers() );
 		const wrote = JSON.stringify( written.writes.filter( ( w ) => 'sgsMotion' === w.attr ).map( ( w ) => w.after ) );
-		assert.deepEqual( written.unmapped, [], `${ id } raises nothing while it is written` );
+		// A glare whose planted template draws no glare layer names its unread colour, strength and size; nothing else is raised.
+		const unread = /glare: .*glare's colour, strength and size are not read/;
+		assert.deepEqual( written.unmapped.filter( ( u ) => ! unread.test( u.reason ) ), [], `${ id } raises nothing while it is written` );
+		assert.equal( written.unmapped.some( ( u ) => unread.test( u.reason ) ), 'fx:glare' === id, `${ id }: only a glare names its unread values` );
 		// follow-pointer is the hover state's values, not a layer of its own.
 		assert.ok( wrote.includes( 'follow-pointer' === effect ? 'followPointer' : `"effect":"${ effect }"` ), `${ id } is written: ${ wrote }` );
 		if ( 'follow-pointer' === effect ) {
