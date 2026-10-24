@@ -111,6 +111,12 @@ function readEnv( file, key ) {
 	return { url: o[ `WP_URL_${ key }` ].replace( /\/+$/, '' ), user: o[ `WP_USER_${ key }` ], pwd: o[ `WP_PWD_${ key }` ] };
 }
 
+// Every attribute name the block declares today (its own and the shared extensions'), from the framework DB: the slot
+// map refusal ignores a setting the block no longer has.
+function declaredAttrs( db, block ) {
+	return new Set( db.prepare( 'SELECT attr_name FROM block_attributes WHERE block_slug = ?' ).all( block ).map( ( r ) => r.attr_name ) );
+}
+
 async function calibrateBlock( block, { site, target, env, shared, fixtures, snapshot, rawSnapshot, db, slotKey, paintKey, due, rejectedOut, image, allowLoss = {} } ) {
 	const short = block.replace( /^sgs\//, '' );
 	const fixture = fixtures[ block ];
@@ -286,7 +292,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	const file = { block, site, slotKey, paintKey, readKey: READ_KEY, playwrightVersion, browserVersion, measured: new Date().toISOString(), settings, discovered, elements, ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: [ ...new Set( untested ) ], rejected };
 	// The whole block is measured either way; only the output that is due is written.
 	const { slotMap, paint } = splitCalibration( file );
-	const decision = due.slotMap ? slotMapWriteDecision( readSlotMap( CACHE, block ), slotMap, allowLoss[ block ] || [] ) : { write: false, lost: [] };
+	const decision = due.slotMap ? slotMapWriteDecision( readSlotMap( CACHE, block ), slotMap, allowLoss[ block ] || [], declaredAttrs( db, block ) ) : { write: false, lost: [] };
 	decision.write && writeSlotMap( CACHE, block, slotMap );
 	decision.write && fs.rmSync( refusedFile( CACHE, block ), { force: true } );
 	due.paint && writePaint( CACHE, site, block, paint );

@@ -145,8 +145,10 @@ export function paintStale( dir, block, site, paintKey ) {
 
 // The settings a new slot map drops that the existing one reaches: every key of `prev.settings` missing from
 // `next.settings`, and every key of `prev.discovered` missing from `next.discovered` (named `discovered:<attr>`), minus the
-// names in `allowed`. Sorted. No existing slot map means nothing to lose.
-export function slotMapLosses( prev, next, allowed = [] ) {
+// names in `allowed`. Sorted. No existing slot map means nothing to lose. `declared` (a Set of the block's current
+// attribute names, from the framework DB) drops every name the block no longer declares: a removed attribute has nothing
+// left to reach, so it is never a loss. Without `declared` every missing name counts.
+export function slotMapLosses( prev, next, allowed = [], declared = null ) {
 	if ( ! prev ) {
 		return [];
 	}
@@ -154,7 +156,8 @@ export function slotMapLosses( prev, next, allowed = [] ) {
 		...Object.keys( prev.settings || {} ).filter( ( k ) => ! ( k in ( next?.settings || {} ) ) ),
 		...Object.keys( prev.discovered || {} ).filter( ( k ) => ! ( k in ( next?.discovered || {} ) ) ).map( ( k ) => `discovered:${ k }` ),
 	];
-	return lost.filter( ( n ) => ! allowed.includes( n ) ).sort();
+	const stillDeclared = ( n ) => ! declared || declared.has( n.replace( /^discovered:/, '' ) );
+	return lost.filter( ( n ) => ! allowed.includes( n ) && stillDeclared( n ) ).sort();
 }
 
 // Where a lost setting went in the new slot map: 'dead', 'oneWidth', 'noMarker', 'rejected', 'untestedStates', or 'absent'
@@ -182,9 +185,10 @@ export function lossDestination( name, next ) {
 }
 
 // Whether a run may write the block's slot map: { write, lost: [ { setting, wentTo } ] }. It may not when the new map drops
-// a setting the existing one reaches and the loss is not named in `allowed` (calibrate.mjs --allow-loss).
-export function slotMapWriteDecision( prev, next, allowed = [] ) {
-	const lost = slotMapLosses( prev, next, allowed ).map( ( setting ) => ( { setting, wentTo: lossDestination( setting, next ) } ) );
+// a setting the existing one reaches and the loss is not named in `allowed` (calibrate.mjs --allow-loss). `declared`: as
+// slotMapLosses.
+export function slotMapWriteDecision( prev, next, allowed = [], declared = null ) {
+	const lost = slotMapLosses( prev, next, allowed, declared ).map( ( setting ) => ( { setting, wentTo: lossDestination( setting, next ) } ) );
 	return { write: ! lost.length, lost };
 }
 

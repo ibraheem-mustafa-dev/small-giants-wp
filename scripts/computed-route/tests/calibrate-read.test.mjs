@@ -187,6 +187,25 @@ test( 'MUST FAIL (a navigating trigger hides as "no instance"): once a trigger l
 	}
 } );
 
+test( 'MUST FAIL (iconColourHover dead on one site only): a hover target under a fixed banner is moved clear of it before the mouse hovers', async () => {
+	const { chromium } = await import( 'playwright' );
+	const browser = await chromium.launch();
+	try {
+		const page = await ( await browser.newContext() ).newPage();
+		// Instance 1 sits fully inside the viewport, under a fixed footer banner, so scrollIntoViewIfNeeded leaves it there.
+		const cal = `<style>body{margin:0}.cr-ref-cal-1:hover{color:rgb(19, 87, 155)}#banner{position:fixed;left:0;right:0;bottom:0;height:120px;background:#fff}</style>
+			<div class="cr-ref-cal-0">default</div><div style="height:calc(100vh - 80px)"></div><div class="cr-ref-cal-1" style="height:30px">marked</div><div style="height:2000px"></div><div id="banner">banner</div>`;
+		await page.context().route( 'http://cal.test/**', ( route ) => route.fulfill( { contentType: 'text/html', body: cal } ) );
+		const hover = { trigger: 'hover', target: null, row: { css_state: 'hover' } };
+		const reads = await readAll( page, 'http://cal.test/calibration', [ { isDefault: true }, hover ] );
+		for ( const w of WIDTHS ) {
+			assert.equal( reads[ w ][ 1 ][ '' ].color, 'rgb(19, 87, 155)', `the hover read at ${ w }px` );
+		}
+	} finally {
+		await browser.close();
+	}
+} );
+
 test( 'MUST FAIL (a link trigger that focus does not open): ArrowDown opens it, still without leaving the page', async () => {
 	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch();

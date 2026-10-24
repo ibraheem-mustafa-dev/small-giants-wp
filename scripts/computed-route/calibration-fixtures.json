@@ -1249,6 +1249,24 @@
       }
     }
   },
+  "sgs/google-rating-badge": {
+    "attributes": {
+      "dataSource": "manual",
+      "rating": 4.7,
+      "reviewCount": 15,
+      "listingUrl": "https://example.com/",
+      "showSource": true
+    },
+    "variants": [
+      {},
+      {
+        "badgeStyle": "card"
+      },
+      {
+        "badgeStyle": "stacked"
+      }
+    ]
+  },
   "sgs/hero": {
     "attributes": {
       "bgVideo": {

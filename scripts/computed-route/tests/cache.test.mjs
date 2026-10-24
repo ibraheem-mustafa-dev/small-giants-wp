@@ -129,6 +129,13 @@ test( 'named losses are removed from the list; a setting new in the next map is 
 	assert.deepEqual( slotMapLosses( undefined, nextMap ), [] );
 } );
 
+test( 'MUST FAIL: a setting or discovered attribute the block no longer declares is not a loss; a declared one still is', () => {
+	const declared = new Set( [ 'a', 'b', 'layout' ] );
+	assert.deepEqual( slotMapLosses( prevMap, nextMap, [], declared ), [ 'b' ] );
+	assert.deepEqual( slotMapWriteDecision( { settings: { gone: {} }, discovered: { goneToo: {} } }, { settings: {}, discovered: {} }, [], new Set() ), { write: true, lost: [] } );
+	assert.deepEqual( slotMapLosses( prevMap, nextMap, [], null ), [ 'b', 'c', 'discovered:gap' ] );
+} );
+
 test( 'lossDestination says where a lost setting went', () => {
 	assert.equal( lossDestination( 'b', nextMap ), 'dead' );
 	assert.equal( lossDestination( 'c', nextMap ), 'untestedStates' );
