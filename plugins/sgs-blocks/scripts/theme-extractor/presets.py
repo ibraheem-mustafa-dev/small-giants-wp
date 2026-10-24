@@ -66,8 +66,21 @@ _REST_PASSTHROUGH = [("borderTopWidth", "border-width"), ("borderTopLeftRadius",
                      ("fontSize", "font-size"), ("fontWeight", "font-weight")]
 
 
-def _rest_entry(rest: dict) -> dict:
-    """The resting-state preset fields (colours alpha-preserved, geometry verbatim)."""
+def _authored_padding(paddings: dict) -> str | None:
+    """The authored padding most of a signature's instances use (the first one met wins a tie)."""
+    best = None
+    for value, count in paddings.items():
+        if best is None or int(count or 0) > int(paddings[best] or 0):
+            best = value
+    return best
+
+
+def _rest_entry(rest: dict, paddings: dict | None = None) -> dict:
+    """The resting-state preset fields (colours alpha-preserved, geometry verbatim).
+
+    ``paddings`` is measure.js's census of the signature's AUTHORED paddings (instances padded like a bare
+    element of their tag are left out of it). When the census is present its most used padding is the
+    preset padding, and an empty census means no instance authors one, so none is emitted."""
     entry = {}
     for css_key, rest_key in (("background", "backgroundColor"), ("text", "color"),
                               ("border", "borderTopColor")):
@@ -89,8 +102,11 @@ def _rest_entry(rest: dict) -> dict:
     # the baseline's format). Only when a side is actually non-zero — an all-zero box is the
     # signature of a wrapper/unpadded node, and emitting "0px 0px 0px 0px" would assert a padding
     # reset the draft never expressed.
-    sides = [rest.get(k) for k in ("paddingTop", "paddingRight", "paddingBottom", "paddingLeft")]
-    if all(s for s in sides) and any(s != "0px" for s in sides):
+    if paddings is not None:
+        sides = (_authored_padding(paddings) or "").split()
+    else:
+        sides = [rest.get(k) for k in ("paddingTop", "paddingRight", "paddingBottom", "paddingLeft")]
+    if len(sides) == 4 and all(s for s in sides) and any(s != "0px" for s in sides):
         entry["padding"] = " ".join(sides)
     return entry
 
@@ -119,7 +135,7 @@ def build_button_presets(facts: dict, trace: list, palette: list | None = None) 
         if not slot or slot in presets:
             continue
         rest, hover = b.get("rest", {}) or {}, b.get("hover", {}) or {}
-        entry = _rest_entry(rest)
+        entry = _rest_entry(rest, b.get("paddings"))
         _hover_diff(entry, rest, hover)
         presets[slot] = entry
         trace.append({"kind": "preset", "slot": f"buttonPresets.{slot}", "_source": "declared",
@@ -164,14 +180,18 @@ def _num(value) -> float:
 
 
 def _is_real_button(b: dict) -> bool:
-    """A classless candidate must be a labelled, non-icon control.
+    """A classless candidate must be a labelled, non-icon call to action.
+
+    A control that holds a state (measure.js ``stateControl``: aria-pressed, aria-checked, aria-selected,
+    aria-expanded, or a radio/tab/switch/checkbox/option role) is a choice or disclosure whose paint is a
+    selected or unselected look, so it never stands for a button style.
 
     Colour swatches, close buttons and other icon-only controls paint like buttons but say nothing
     about the site's CTA style: they need at least 2 visible characters, must not be a circle
     (radius 50%, or at least half the height on a roughly square box) and must not be a small
     square/pill up to 48x48. A control taller than ``MAX_BUTTON_HEIGHT`` is a card link.
     """
-    if int(b.get("textLen", 0) or 0) < 2:
+    if b.get("stateControl") or int(b.get("textLen", 0) or 0) < 2:
         return False
     w, h = _num(b.get("w")), _num(b.get("h"))
     if 0 < w <= 48 and 0 < h <= 48:
@@ -189,11 +209,16 @@ def _add_classless_presets(facts: dict, presets: dict, trace: list, primary_hint
                            exclude: set | None = None) -> None:
     """Fill ``primary`` / ``secondary`` / ``outline`` from CLASSLESS buttons (Claude Design drafts).
 
-    A classless button carries no variant word, so the slot is INFERRED from its painted style
-    signature (measure.js dedupes classless buttons on that signature and records ``count``). Among
-    the opaque-background signatures the most frequent is ``primary`` and the next distinct one
-    ``secondary``; a transparent-background signature with a visible border is ``outline``. Icon-only
-    and swatch controls are ignored (``_is_real_button``). Ranking is by descending count, then
+    A classless button has no class of its own and no variant word on its section wrappers (a section
+    class such as ``sgs-hero`` names the section, not the variant). A link that leaves the site
+    (measure.js ``external``) wears the other site's look, and a control in the page's own header,
+    footer or nav (``inChrome``) is site chrome, so neither is a candidate. The slot is INFERRED from
+    its painted style signature (measure.js dedupes classless buttons on that signature and records
+    ``count``). Among the opaque-background signatures the most frequent is ``primary`` and
+    ``secondary`` is the one on a different ground that sits beside it in an action group
+    (``_secondary_for``); a
+    transparent-background signature with a visible border is ``outline``. Icon-only, swatch and
+    state-holding controls are ignored (``_is_real_button``). Ranking is by descending count, then
     descending text length, then signature ascending, so the result is deterministic. A slot a
     class-bearing button already defined is never overwritten, so class-bearing drafts are untouched.
 
@@ -201,8 +226,8 @@ def _add_classless_presets(facts: dict, presets: dict, trace: list, primary_hint
     ``primary`` slot ahead of the ranking (two equally frequent signatures cannot otherwise be told
     apart), and a signature painted in a brand/status colour (``NON_VARIANT_SLUGS``) is skipped.
     """
-    cands = [b for b in facts.get("buttons", []) if not b.get("classes")
-             and not b.get("ancestorClasses") and _is_real_button(b)]
+    cands = [b for b in facts.get("buttons", []) if not b.get("classes") and _slot_for_button(b) is None
+             and not b.get("external") and not b.get("inChrome") and _is_real_button(b)]
     cands.sort(key=lambda b: (-int(b.get("count", 1) or 1), -int(b.get("textLen", 0) or 0),
                               str(b.get("classKey", ""))))
     opaque, outline = [], []
@@ -214,12 +239,14 @@ def _add_classless_presets(facts: dict, presets: dict, trace: list, primary_hint
         elif bg == "transparent" and _is_visible_border(rest):
             outline.append(b)
     opaque.sort(key=lambda b: _HEXME(b["rest"].get("backgroundColor", "")) != primary_hint)  # stable
-    chosen = list(zip(("primary", "secondary"), opaque)) + list(zip(("outline",), outline))
+    chosen = ([("primary", opaque[0])] if opaque else []) + (
+        [("secondary", _secondary_for(opaque[0], opaque[1:]))] if len(opaque) > 1 else [])
+    chosen = [(slot, b) for slot, b in chosen if b is not None] + list(zip(("outline",), outline))
     for slot, b in chosen:
         if slot in presets:
             continue
         rest, hover = b.get("rest", {}) or {}, b.get("hover", {}) or {}
-        entry = _rest_entry(rest)
+        entry = _rest_entry(rest, b.get("paddings"))
         _hover_diff(entry, rest, hover)
         presets[slot] = entry
         trace.append({"kind": "preset", "slot": f"buttonPresets.{slot}", "_source": "derived",
@@ -229,6 +256,22 @@ def _add_classless_presets(facts: dict, presets: dict, trace: list, primary_hint
                                 f"<{b.get('path', '?').split('>')[-1]}>",
                       "variant_from": "unclassed style signature",
                       "keys": ",".join(entry.keys())})
+
+
+def _secondary_for(primary: dict, rest_opaque: list) -> dict | None:
+    """The secondary call to action: an opaque signature on a DIFFERENT ground from the primary's (a second
+    shade of the same fill is the primary again, in another state or size). The one that most often sits
+    beside the primary in the same action group (measure.js ``companions``) wins; without a companion the
+    ranking order decides."""
+    ground = _HEXME((primary.get("rest", {}) or {}).get("backgroundColor", ""))
+    others = [b for b in rest_opaque if _HEXME((b.get("rest", {}) or {}).get("backgroundColor", "")) != ground]
+    if not others:
+        return None
+    beside = primary.get("companions", {}) or {}
+    paired = [b for b in others if int(beside.get(b.get("classKey", ""), 0) or 0) > 0]
+    if paired:
+        return max(paired, key=lambda b: int(beside.get(b.get("classKey", ""), 0) or 0))  # first wins a tie
+    return others[0]
 
 
 def content_size(base_rules: list, trace: list) -> str | None:
