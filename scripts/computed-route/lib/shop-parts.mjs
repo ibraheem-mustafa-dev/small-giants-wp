@@ -8,6 +8,7 @@
 // position beside such a unit; an entry's word `hints` are a last resort whose part is reported as a gap row, never
 // mapped.
 import { readFileSync } from 'node:fs';
+import { templateKey } from './fact-key.mjs';
 
 export class ShopPartsError extends Error {}
 
@@ -139,6 +140,10 @@ function classify( u, entries, placed ) {
 	return byHint ? { entry: byHint, by: 'hint' } : null;
 }
 
+// A part's draft locator: the template key (`<dc>/<data-dc-tpl>`, lib/fact-key.mjs) of each element its units were found
+// on, in stamp order; a unit the reader could not stamp (no draft component, or outside the template) adds none.
+export const locatorsOf = ( units ) => [ ...new Set( units.filter( ( u ) => u.dc && Number.isInteger( u.tpl ) ).sort( ( a, b ) => a.tpl - b.tpl ).map( ( u ) => templateKey( { dc: u.dc, tpl: u.tpl } ) ) ) ];
+
 // One surface's units into parts. A part is one vocabulary id reached by structure, or by position (a literal text run in
 // the same row as a unit an entry with `labels` took structurally: the label beside a value); a unit only a word hint
 // names goes to that id's gap part (`<id>:hint`, a missing part saying so); units matching nothing become one
@@ -174,7 +179,7 @@ export function matchSurface( kind, units, vocab ) {
 		if ( ! parts.has( id ) ) {
 			parts.set( id, { id, surface: kind, ...make(), units: [], by: new Set() } );
 		}
-		parts.get( id ).units.push( { kind: u.kind, tag: u.tag, label: labelOf( u ), conds: u.conds, file: u.file } );
+		parts.get( id ).units.push( { kind: u.kind, tag: u.tag, label: labelOf( u ), conds: u.conds, file: u.file, dc: u.dc, tpl: u.tpl } );
 		if ( hit ) {
 			parts.get( id ).by.add( hit.by );
 		}
@@ -189,6 +194,7 @@ export function matchSurface( kind, units, vocab ) {
 			write: value ? { [ h.resolved[ 0 ] ]: value } : null,
 			by: [ ...p.by ].sort(),
 			units: p.units.length,
+			locators: locatorsOf( p.units ),
 			sample: [ ...new Set( p.units.map( ( u ) => u.label ) ) ].slice( 0, 4 ),
 		};
 	} );

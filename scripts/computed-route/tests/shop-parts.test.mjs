@@ -11,8 +11,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readShopSurfaces } from '../lib/shop-parts-read.mjs';
-import { ShopPartsError, buildRecord, loadVocab, resolveVocab } from '../lib/shop-parts.mjs';
+import { parseTemplate, readShopSurfaces, unitsOf } from '../lib/shop-parts-read.mjs';
+import { ShopPartsError, buildRecord, loadVocab, locatorsOf, resolveVocab } from '../lib/shop-parts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..', '..' );
 const vocabFile = loadVocab();
@@ -147,6 +147,34 @@ test( 'MUST FAIL: each known part of a planted draft maps to its framework home 
 	}
 } );
 
+test( 'MUST FAIL: the template numbers each element as the runtime stamps data-dc-tpl: pre-order inside <x-dc> only, styles and scripts counted, their content never', () => {
+	const root = parseTemplate( '<head><script src="s.js"><b></script></head><x-dc><helmet><style>p<i>{}</style></helmet><!-- <em> --><div><sc-if value="{{ a }}">hi<span>x</span></sc-if><img src="a.png"></div><p>y</p></x-dc><script data-dc-script>class C {}</script>' );
+	const tags = [];
+	const walk = ( n ) => n.children.forEach( ( c ) => c.tag && ( tags.push( `${ c.tag }:${ c.tpl }` ), walk( c ) ) );
+	walk( root );
+	assert.deepEqual( tags, [ 'head:null', 'script:null', 'x-dc:null', 'helmet:0', 'style:1', 'div:2', 'sc-if:3', 'span:4', 'img:5', 'p:6', 'script:null' ] );
+	const div = root.children.find( ( c ) => 'x-dc' === c.tag ).children.find( ( c ) => 'div' === c.tag );
+	assert.deepEqual( unitsOf( div, { file: 'T.dc.html', dc: 'T' } ).map( ( u ) => [ u.kind, u.text, u.dc, u.tpl ] ), [
+		[ 'text', 'hi', 'T', 2 ],
+		[ 'text', 'x', 'T', 4 ],
+		[ 'image', '', 'T', 5 ],
+	], 'a run directly inside sc-if is located by the element that renders around it' );
+} );
+
+test( 'MUST FAIL: each part carries the template key of every element its units were found on', () => {
+	const rec = record();
+	assert.deepEqual( part( rec, 'buybox', 'buybox-add-to-basket' ).locators, [ 'Page/22' ], 'the button whose handler appends, not the looped one' );
+	assert.deepEqual( part( rec, 'buybox', 'buybox-title' ).locators, [ 'Page/2' ] );
+	assert.deepEqual( part( rec, 'buybox', 'buybox-quantity' ).locators, [ 'Page/17', 'Page/18', 'Page/19' ] );
+	assert.deepEqual( [ part( rec, 'buybox', 'buybox-price' ).sample, part( rec, 'buybox', 'buybox-price' ).locators ], [ [ 'Details', '{{ priceText }}' ], [ 'Page/3', 'Page/21' ] ], 'a text run is located by the element holding it: the price span and the label the price took by position (the h2)' );
+	for ( const s of rec.surfaces ) {
+		for ( const p of s.parts ) {
+			assert.ok( p.locators.length >= 1 && p.locators.length <= p.units, `${ p.id }: one locator per element, at least one` );
+		}
+	}
+	assert.deepEqual( locatorsOf( [ { dc: 'T', tpl: 3 }, { dc: 'T', tpl: 3 }, { dc: 'T', tpl: 1 }, { dc: null, tpl: 2 }, { dc: 'T', tpl: null } ] ), [ 'T/1', 'T/3' ], 'one key per element, in stamp order; an unstamped unit adds none' );
+} );
+
 test( 'MUST FAIL: a control named only by words is a reported gap row, never a mapped part', () => {
 	const rec = record();
 	const gap = part( rec, 'buybox', 'buybox-add-to-basket:hint' );
@@ -234,7 +262,7 @@ const clientSurfaces = ( client ) => {
 	const sources = Object.fromEntries( fs.readdirSync( dir ).filter( ( f ) => f.endsWith( '.dc.html' ) ).map( ( f ) => [ f, fs.readFileSync( path.join( dir, f ), 'utf8' ) ] ) );
 	return readShopSurfaces( { records, sources } );
 };
-const shape = ( rec ) => ( { counts: rec.counts, parts: rec.surfaces.flatMap( ( s ) => s.parts.map( ( p ) => [ s.kind, p.id, p.home.type, p.units, p.by.join( '+' ), JSON.stringify( p.write ) ] ) ) } );
+const shape = ( rec ) => ( { counts: rec.counts, parts: rec.surfaces.flatMap( ( s ) => s.parts.map( ( p ) => [ s.kind, p.id, p.home.type, p.units, p.by.join( '+' ), JSON.stringify( p.write ), p.locators.join( ' ' ) ] ) ) } );
 
 test( 'MUST FAIL: the committed client records are what the structural reader and matcher produce from the committed drafts', () => {
 	const clients = [ 'eye-care-ward-end', 'mamas-munches-redesign' ];

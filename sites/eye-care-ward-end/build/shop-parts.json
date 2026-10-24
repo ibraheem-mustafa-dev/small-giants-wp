@@ -18,6 +18,9 @@
 					"write": null,
 					"by": [],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/361"
+					],
 					"sample": [
 						"{{ cur.brand }}"
 					]
@@ -35,6 +38,9 @@
 						"structure"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/362"
+					],
 					"sample": [
 						"{{ cur.name }}"
 					]
@@ -49,6 +55,9 @@
 					"write": null,
 					"by": [],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/363"
+					],
 					"sample": [
 						"{{ cur.code }}"
 					]
@@ -66,6 +75,9 @@
 						"hint"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/366"
+					],
 					"sample": [
 						"{{ cur.ratingLabel }} · {{ cur.reviewsLabel }}"
 					]
@@ -83,6 +95,9 @@
 						"structure"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/368"
+					],
 					"sample": [
 						"{{ cur.priceLabel }}"
 					]
@@ -100,6 +115,11 @@
 						"hint"
 					],
 					"units": 3,
+					"locators": [
+						"Eye Care Birmingham/370",
+						"Eye Care Birmingham/371",
+						"Eye Care Birmingham/372"
+					],
 					"sample": [
 						"RRP",
 						"{{ cur.rrp }}",
@@ -119,6 +139,9 @@
 						"hint"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/373"
+					],
 					"sample": [
 						"{{ stockLabel }}"
 					]
@@ -133,6 +156,9 @@
 					"write": null,
 					"by": [],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/377"
+					],
 					"sample": [
 						"Colour"
 					]
@@ -147,6 +173,9 @@
 					"write": null,
 					"by": [],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/378"
+					],
 					"sample": [
 						"{{ cur.colourName }}"
 					]
@@ -168,6 +197,10 @@
 						"structure"
 					],
 					"units": 2,
+					"locators": [
+						"Eye Care Birmingham/381",
+						"Eye Care Birmingham/391"
+					],
 					"sample": [
 						"{{ c.name }}",
 						"{{ s.name }} {{ s.mm }}"
@@ -183,6 +216,9 @@
 					"write": null,
 					"by": [],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/384"
+					],
 					"sample": [
 						"Colourway shots are stand-ins until the real ones land."
 					]
@@ -197,6 +233,9 @@
 					"write": null,
 					"by": [],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/387"
+					],
 					"sample": [
 						"Size"
 					]
@@ -214,6 +253,9 @@
 						"hint"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/388"
+					],
 					"sample": [
 						"Which size am I?"
 					]
@@ -228,6 +270,9 @@
 					"write": null,
 					"by": [],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/395"
+					],
 					"sample": [
 						"Add my prescription from +£59"
 					]
@@ -249,6 +294,9 @@
 						"structure"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/398"
+					],
 					"sample": [
 						"Add to bag as they are {{ cur.priceLabel }}"
 					]
@@ -263,6 +311,9 @@
 					"write": null,
 					"by": [],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/402"
+					],
 					"sample": [
 						"Or 3 payments of {{ cur.klarna }} with"
 					]
@@ -277,6 +328,9 @@
 					"write": null,
 					"by": [],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/403"
+					],
 					"sample": [
 						"Klarna"
 					]
@@ -291,6 +345,9 @@
 					"write": null,
 					"by": [],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/405"
+					],
 					"sample": [
 						"Apple Pay · Google Pay · PayPal"
 					]
@@ -305,6 +362,9 @@
 					"write": null,
 					"by": [],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/406"
+					],
 					"sample": [
 						"Need advice? Message me on WhatsApp — I'm an optician, and I'm happy to help."
 					]
@@ -322,6 +382,9 @@
 						"hint"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/415"
+					],
 					"sample": [
 						"{{ a.text }}"
 					]
@@ -510,6 +573,9 @@
 						"structure"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/254"
+					],
 					"sample": [
 						"{{ resultCount }}"
 					]
@@ -526,6 +592,11 @@
 						"structure"
 					],
 					"units": 3,
+					"locators": [
+						"Eye Care Birmingham/256",
+						"Eye Care Birmingham/275",
+						"Eye Care Birmingham/322"
+					],
 					"sample": [
 						"Filter {{ activeCountLabel }}",
 						"×",
@@ -545,6 +616,9 @@
 						"structure"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/257"
+					],
 					"sample": [
 						"Sort"
 					]
@@ -563,6 +637,12 @@
 						"structure"
 					],
 					"units": 4,
+					"locators": [
+						"Eye Care Birmingham/266",
+						"Eye Care Birmingham/290",
+						"Eye Care Birmingham/294",
+						"Eye Care Birmingham/300"
+					],
 					"sample": [
 						"{{ c.label }} ×",
 						"{{ i.name }}"
@@ -581,6 +661,11 @@
 						"structure"
 					],
 					"units": 3,
+					"locators": [
+						"Eye Care Birmingham/268",
+						"Eye Care Birmingham/321",
+						"Eye Care Birmingham/332"
+					],
 					"sample": [
 						"Clear all",
 						"Clear",
@@ -599,6 +684,9 @@
 						"structure"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/279"
+					],
 					"sample": [
 						"{{ g.label }} {{ g.count }}"
 					]
@@ -616,6 +704,9 @@
 						"structure"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/302"
+					],
 					"sample": [
 						"Maximum price"
 					]
@@ -633,6 +724,9 @@
 						"structure"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/307"
+					],
 					"sample": [
 						"Search brands"
 					]
@@ -650,6 +744,9 @@
 						"structure"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/312"
+					],
 					"sample": [
 						"checkbox"
 					]
@@ -666,6 +763,9 @@
 						"structure"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/317"
+					],
 					"sample": [
 						"switch"
 					]
@@ -683,6 +783,9 @@
 						"structure"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/327"
+					],
 					"sample": [
 						"Frame Card"
 					]
@@ -700,6 +803,10 @@
 						"structure"
 					],
 					"units": 2,
+					"locators": [
+						"Eye Care Birmingham/330",
+						"Eye Care Birmingham/331"
+					],
 					"sample": [
 						"Nothing matches all of that.",
 						"Loosen a filter, or message me and I'll see what I can find."
@@ -759,6 +866,9 @@
 						"hint"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/1200"
+					],
 					"sample": [
 						"Bag"
 					]
@@ -778,6 +888,9 @@
 						"structure"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/1201"
+					],
 					"sample": [
 						"({{ bagCount }})"
 					]
@@ -795,6 +908,9 @@
 						"structure"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/1202"
+					],
 					"sample": [
 						"×"
 					]
@@ -816,6 +932,9 @@
 						"structure"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/1206"
+					],
 					"sample": [
 						"Nothing in here yet."
 					]
@@ -837,6 +956,9 @@
 						"structure"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/1207"
+					],
 					"sample": [
 						"Shop sunglasses"
 					]
@@ -854,6 +976,13 @@
 						"structure"
 					],
 					"units": 5,
+					"locators": [
+						"Eye Care Birmingham/1210",
+						"Eye Care Birmingham/1216",
+						"Eye Care Birmingham/1217",
+						"Eye Care Birmingham/1218",
+						"Eye Care Birmingham/1219"
+					],
 					"sample": [
 						"{{ it.brand }}",
 						"{{ it.lineLabel }}",
@@ -874,6 +1003,9 @@
 						"hint"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/1222"
+					],
 					"sample": [
 						"Add my prescription"
 					]
@@ -895,6 +1027,9 @@
 						"structure"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/1223"
+					],
 					"sample": [
 						"Remove"
 					]
@@ -913,6 +1048,10 @@
 						"structure"
 					],
 					"units": 2,
+					"locators": [
+						"Eye Care Birmingham/1227",
+						"Eye Care Birmingham/1228"
+					],
 					"sample": [
 						"Subtotal",
 						"{{ subtotalLabel }}"
@@ -931,6 +1070,9 @@
 						"hint"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/1229"
+					],
 					"sample": [
 						"{{ freeShipNote }}"
 					]
@@ -948,6 +1090,9 @@
 						"hint"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/1232"
+					],
 					"sample": [
 						"Checkout"
 					]
@@ -965,6 +1110,9 @@
 						"hint"
 					],
 					"units": 1,
+					"locators": [
+						"Eye Care Birmingham/1233"
+					],
 					"sample": [
 						"Or 3 payments of {{ klarnaLabel }} with Klarna"
 					]

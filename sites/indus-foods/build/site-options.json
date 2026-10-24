@@ -8,6 +8,9 @@
 			"page_transition_style": "fade",
 			"page_transition_duration": 380,
 			"page_transition_easing": "ease-out"
-		}
+		},
+		"sources": [
+			"sites/indus-foods/build/qa/fill/header/2026-10-24T14-06-30/site-options.json"
+		]
 	}
 }

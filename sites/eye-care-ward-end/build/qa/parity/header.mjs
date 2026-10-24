@@ -11,9 +11,9 @@
 //  - Phone menu: the "Menu" button (aria-label="Menu" on both sides). Draft: a fixed full-screen div
 //    (no role); live: a native `<dialog class="sgs-nav-drawer">` labelled "Navigation menu".
 //
-// The walker runs every state at every width (no per-state widths): below desktop the nav items are
-// not shown, so the hover states find nothing (the hover helper is a no-op then) and their pairs read
-// missing on both sides; at desktop the Menu button is not shown, so `drawer-open` is a no-op there.
+// Each state names the widths it means something at (`widths`, GAP-CHECKLIST 32): the mega states run at desktop
+// widths only (below desktop the nav drawer replaces the mega menu on both sides, Bean confirmed 2026-10-24, so a
+// hover there finds nothing to trigger) and `drawer-open` below desktop only (the Menu button is not shown at desktop).
 // Three runs: the mega states at 1440, `drawer-open` at 375, and the resting header (with the ticker and the
 // scrolled state) at 1440. Each run's links table lists only the labels its states show (see LINK_GROUPS):
 //   node scripts/parity/draft-live-walk.mjs sites/eye-care-ward-end/build/qa/parity/header.mjs --widths 1440 --states mega-shop,mega-brands,mega-lenses,mega-help
@@ -95,12 +95,18 @@ const scrollPast = async ( h ) => {
 // The links table (GAP-CHECKLIST 14): each visible label and where it must go on live. The draft is a
 // one-page prototype (its links are "#", its pages change by script), so the table is the live side's.
 // The walker reports a table label no state of the run shows, and a run covers only some states, so each group
-// names the states that show its labels and a run's table holds the groups its --states include.
+// names the states that show its labels, and the widths they show them at when not every width, and a run's table
+// holds the groups its --states and --widths include (a mega group is desktop only: the drawer hides the mega menu at
+// tablet and phone widths, so a 375 or 768 run never promises its labels).
 const flag = ( name ) => {
 	const i = process.argv.indexOf( name );
 	return -1 === i ? null : process.argv[ i + 1 ];
 };
 const RUN_STATES = flag( '--states' )?.split( ',' ) || null;
+const RUN_WIDTHS = flag( '--widths' )?.split( ',' ).map( Number ) || null;
+// The desktop widths: the mega menu shows at these; below them the nav drawer replaces it.
+const DESKTOP = [ 1440, 1920 ];
+const BELOW_DESKTOP = [ 375, 768 ];
 const BRAND = ( slug ) => `/shop/?brands=${ slug }`;
 const FILTER = ( key, value ) => `/shop/?filter_${ key }=${ value }&query_type_${ key }=or`;
 const LINK_GROUPS = [
@@ -112,7 +118,7 @@ const LINK_GROUPS = [
 		'About Eye Care': '/about/',
 		'0121 729 8233': 'tel:01217298233',
 	} },
-	{ states: [ 'mega-shop' ], links: {
+	{ states: [ 'mega-shop' ], widths: DESKTOP, links: {
 		Pilot: FILTER( 'shape', 'pilot' ), Wayfarer: FILTER( 'shape', 'wayfarer' ), Square: FILTER( 'shape', 'square' ),
 		Rectangle: FILTER( 'shape', 'rectangle' ), Round: FILTER( 'shape', 'round' ), Oval: FILTER( 'shape', 'oval' ),
 		'Cat-eye': FILTER( 'shape', 'cat-eye' ), Butterfly: FILTER( 'shape', 'butterfly' ), Browline: FILTER( 'shape', 'browline' ),
@@ -120,20 +126,21 @@ const LINK_GROUPS = [
 		'Best sellers': '/shop/', 'Biggest savings': '/shop/?orderby=sgs_biggest_saving', Polarised: '/shop/?tags=polarised',
 		'Under £100': '/shop/?max_price=100', 'Women\u2019s': FILTER( 'gender', 'women' ), 'Men\u2019s': FILTER( 'gender', 'men' ),
 	} },
-	{ states: [ 'mega-brands' ], links: {
+	{ states: [ 'mega-brands' ], widths: DESKTOP, links: {
 		'Ray-Ban': BRAND( 'ray-ban' ), Gucci: BRAND( 'gucci' ), Oakley: BRAND( 'oakley' ), Prada: BRAND( 'prada' ),
 		Versace: BRAND( 'versace' ), 'Dolce & Gabbana': BRAND( 'dolce-gabbana' ), Balenciaga: BRAND( 'balenciaga' ),
 		'Michael Kors': BRAND( 'michael-kors' ), Polaroid: BRAND( 'polaroid' ), Police: BRAND( 'police' ), Carrera: BRAND( 'carrera' ),
 		'Ferrari Scuderia': BRAND( 'ferrari-scuderia' ), 'Emporio Armani': BRAND( 'emporio-armani' ), Nike: BRAND( 'nike' ),
 	} },
-	{ states: [ 'mega-help' ], links: {
+	{ states: [ 'mega-help' ], widths: DESKTOP, links: {
 		'Delivery & returns': '/help/', 'Frequently asked questions': '/help/', 'How lenses work': '/prescription-lenses/',
 		'Reading your prescription': '/help/', 'Measuring your PD': '/help/', 'Contact & visit us': '/contact/',
 		'WhatsApp me': 'https://wa.me/4479605978',
 	} },
 ];
 const LINKS = Object.assign( {}, ...LINK_GROUPS
-	.filter( ( g ) => ! RUN_STATES || g.states.some( ( st ) => RUN_STATES.includes( st ) ) ).map( ( g ) => g.links ) );
+	.filter( ( g ) => ! RUN_STATES || g.states.some( ( st ) => RUN_STATES.includes( st ) ) )
+	.filter( ( g ) => ! RUN_WIDTHS || ! g.widths || g.widths.some( ( w ) => RUN_WIDTHS.includes( w ) ) ).map( ( g ) => g.links ) );
 
 export default {
 	name: 'header',
@@ -160,12 +167,12 @@ export default {
 	live: { url: LIVE },
 	states: [
 		{ name: 'closed', draft: ( h ) => h.wait( 200 ), live: ( h ) => h.wait( 200 ) },
-		{ name: 'mega-shop', draft: openMega( 'sunglasses' ), live: openMega( 'sunglasses' ) },
-		{ name: 'mega-brands', draft: openMega( 'brands' ), live: openMega( 'brands' ) },
-		{ name: 'mega-lenses', draft: openMega( 'lenses' ), live: openMega( 'lenses' ) },
-		{ name: 'mega-help', draft: openMega( 'help' ), live: openMega( 'help' ) },
+		{ name: 'mega-shop', widths: DESKTOP, draft: openMega( 'sunglasses' ), live: openMega( 'sunglasses' ) },
+		{ name: 'mega-brands', widths: DESKTOP, draft: openMega( 'brands' ), live: openMega( 'brands' ) },
+		{ name: 'mega-lenses', widths: DESKTOP, draft: openMega( 'lenses' ), live: openMega( 'lenses' ) },
+		{ name: 'mega-help', widths: DESKTOP, draft: openMega( 'help' ), live: openMega( 'help' ) },
 		// Below desktop only (375 and 768 both show the Menu button when the nav collapses).
-		{ name: 'drawer-open', draft: async ( h ) => { await h.page.mouse.move( 700, 880 ); await openMenu( h ); }, live: async ( h ) => { await h.page.mouse.move( 700, 880 ); await openMenu( h ); } },
+		{ name: 'drawer-open', widths: BELOW_DESKTOP, draft: async ( h ) => { await h.page.mouse.move( 700, 880 ); await openMenu( h ); }, live: async ( h ) => { await h.page.mouse.move( 700, 880 ); await openMenu( h ); } },
 		// Last, so no earlier state runs on a scrolled page. Desktop only in practice: the run is `--widths 1440`.
 		{ name: 'scrolled', draft: scrollPast, live: scrollPast },
 	],

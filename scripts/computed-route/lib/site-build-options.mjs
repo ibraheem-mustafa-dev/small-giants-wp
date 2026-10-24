@@ -2,8 +2,10 @@
 // route fade is `sgs_motion_settings` keys, `page_transitions`, `page_transition_style`, `page_transition_duration`,
 // `page_transition_easing`) rather than to a block. Fill finds them and writes `site-options.json` into its run folder
 // (`{ option, records, value }`); `promoteSiteOptions` merges that file into the client's committed
-// `sites/<client>/build/site-options.json` (`{ "<option>": { records, value } }`), the one input the site build reads, so
-// a build never depends on which Fill run is newest. `planSiteOptions` compares each option with the site's stored value
+// `sites/<client>/build/site-options.json` (`{ "<option>": { records, value, sources } }`), the one input the site build
+// reads, so a build never depends on which Fill run is newest. `sources` names each Fill run file the option's value came
+// from (repo-relative, `sites/<client>/build/qa/fill/.../site-options.json`); the reader refuses an entry without one, so
+// the committed file only ever holds what a Fill run wrote and is never a second, hand-written source. `planSiteOptions` compares each option with the site's stored value
 // and plans one `site-option` action (applied by lib/site-build-apply.mjs) with a before-and-after row per changed key;
 // a stored value that already holds every desired key plans nothing.
 import fs from 'fs';
@@ -33,7 +35,19 @@ function checked( name, entry ) {
 	return { records: Array.isArray( entry.records ) ? entry.records.map( String ) : [], value: entry.value };
 }
 
-// The client's committed site options: { <option>: { records, value } }, {} when the file does not exist.
+// A Fill run file path for this client, repo-relative with forward slashes.
+const fillRun = ( client ) => new RegExp( `^sites/${ client.replace( /[^a-z0-9-]/g, '' ) }/build/qa/fill/[^\s]+/site-options\.json$` );
+
+// Throws on a committed entry that names no Fill run of this client as its source.
+function sourced( client, name, entry ) {
+	const sources = Array.isArray( entry?.sources ) ? entry.sources : [];
+	if ( ! sources.length || sources.some( ( s ) => 'string' !== typeof s || ! fillRun( client ).test( s ) ) ) {
+		throw new Error( `site option ${ name } names no Fill run of ${ client } as its source (sources: ${ JSON.stringify( entry?.sources ?? null ) }); promote one with --promote-options` );
+	}
+	return { ...checked( name, entry ), sources: [ ...sources ] };
+}
+
+// The client's committed site options: { <option>: { records, value, sources } }, {} when the file does not exist.
 export function readSiteOptions( repo, client ) {
 	const file = siteOptionsFile( repo, client );
 	if ( ! fs.existsSync( file ) ) {
@@ -43,21 +57,30 @@ export function readSiteOptions( repo, client ) {
 	if ( ! isObject( raw ) ) {
 		throw new Error( `${ path.relative( repo, file ) } is not an object of options` );
 	}
-	return Object.fromEntries( Object.entries( raw ).map( ( [ name, entry ] ) => [ name, checked( name, entry ) ] ) );
+	return Object.fromEntries( Object.entries( raw ).map( ( [ name, entry ] ) => [ name, sourced( client, name, entry ) ] ) );
 }
 
 // Merges a Fill run's `site-options.json` (a folder holding it, or the file) into the client's committed file: the
-// run's keys replace the same keys, other keys and records stay. Returns { file, changed, options }.
+// run's keys replace the same keys, other keys and records stay, and the run's file joins the option's sources. The run
+// must sit in this client's Fill output (`sites/<client>/build/qa/fill/`). Returns { file, changed, options }.
 export function promoteSiteOptions( { repo, client, from } ) {
 	const source = fs.existsSync( from ) && fs.statSync( from ).isDirectory() ? path.join( from, 'site-options.json' ) : from;
 	if ( ! fs.existsSync( source ) ) {
 		throw new Error( `${ source } does not exist: Fill writes site-options.json only when the draft sets a site option` );
 	}
+	const where = path.relative( repo, path.resolve( source ) ).split( path.sep ).join( '/' );
+	if ( ! fillRun( client ).test( where ) ) {
+		throw new Error( `${ where } is not a Fill run of ${ client }: promote a run folder under sites/${ client }/build/qa/fill/` );
+	}
 	const run = JSON.parse( fs.readFileSync( source, 'utf8' ) );
 	const incoming = checked( run.option, { records: run.records, value: run.value } );
 	const held = readSiteOptions( repo, client );
-	const was = held[ run.option ] || { records: [], value: {} };
-	const next = { records: [ ...new Set( [ ...was.records, ...incoming.records ] ) ].sort(), value: { ...was.value, ...incoming.value } };
+	const was = held[ run.option ] || { records: [], value: {}, sources: [] };
+	const next = {
+		records: [ ...new Set( [ ...was.records, ...incoming.records ] ) ].sort(),
+		value: { ...was.value, ...incoming.value },
+		sources: [ ...new Set( [ ...was.sources, where ] ) ].sort(),
+	};
 	const options = { ...held, [ run.option ]: next };
 	const file = siteOptionsFile( repo, client );
 	const changed = ! same( was, next );

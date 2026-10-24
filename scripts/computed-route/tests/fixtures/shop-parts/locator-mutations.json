@@ -1,0 +1,14 @@
+[
+	{ "file": "lib/shop-parts-read.mjs", "find": "const inTemplate = open < 0 || ( m.index > open && m.index < end );", "replace": "const inTemplate = true;", "why": "elements outside <x-dc> are numbered, so every stamp is shifted" },
+	{ "file": "lib/shop-parts-read.mjs", "find": "const inTemplate = open < 0 || ( m.index > open && m.index < end );", "replace": "const inTemplate = open < 0 || m.index > open;", "why": "the logic script after the last </x-dc> is numbered" },
+	{ "file": "lib/shop-parts-read.mjs", "find": "tpl: inTemplate ? stamp++ : null };", "replace": "tpl: inTemplate ? ++stamp : null };", "why": "the stamps start at 1, not the runtime's 0" },
+	{ "file": "lib/shop-parts-read.mjs", "find": ">[\\s\\S]*?<\\/\\1\\s*>/gi, '<$1$2></$1>' );", "replace": ">[\\s\\S]*?<\\/\\1\\s*>/gi, '' );", "why": "styles and scripts are dropped, so the elements after them lose their runtime number" },
+	{ "file": "lib/shop-parts-read.mjs", "find": ">[\\s\\S]*?<\\/\\1\\s*>/gi, '<$1$2></$1>' );", "replace": ">/gi, '<$1$2>' );", "why": "markup inside a style or script is numbered" },
+	{ "file": "lib/shop-parts-read.mjs", "find": "while ( n && FLOW.has( n.tag ) ) {", "replace": "while ( false ) {", "why": "a text run inside sc-if is located by the sc-if, which renders no element" },
+	{ "file": "lib/shop-parts-read.mjs", "find": "tpl: stampOf( c.tag ? c : node ),", "replace": "tpl: stampOf( node ),", "why": "a control is located by the element around it, not itself" },
+	{ "file": "lib/shop-parts-read.mjs", "find": "unitsOf( r, { file, dc: rec.dc, L,", "replace": "unitsOf( r, { file, L,", "why": "the units carry no draft component, so no part has a locator" },
+	{ "file": "lib/shop-parts.mjs", "find": "file: u.file, dc: u.dc, tpl: u.tpl } );", "replace": "file: u.file } );", "why": "the part drops its units' stamps" },
+	{ "file": "lib/shop-parts.mjs", "find": "locators: locatorsOf( p.units ),", "replace": "", "why": "the record carries no locator" },
+	{ "file": "lib/shop-parts.mjs", "find": ".sort( ( a, b ) => a.tpl - b.tpl )", "replace": "", "why": "the locators are not in stamp order" },
+	{ "file": "lib/shop-parts.mjs", "find": "const locatorsOf = ( units ) => [ ...new Set(", "replace": "const locatorsOf = ( units ) => [ ...(", "why": "an element two units were found on is listed twice" }
+]

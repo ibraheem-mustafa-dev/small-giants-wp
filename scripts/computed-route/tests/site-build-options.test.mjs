@@ -9,11 +9,12 @@ import path from 'path';
 import { applyPhase } from '../lib/site-build-apply.mjs';
 import { optionsPhp, planSiteOptions, promoteSiteOptions, readSiteOptions, readStoredOptions, siteOptionsFile, withSiteOptions } from '../lib/site-build-options.mjs';
 
+const RUN = 'sites/acme/build/qa/fill/header/run-1/site-options.json';
 const FADE = { option: 'sgs_motion_settings', records: [ 'route-fade-1' ], value: { page_transitions: true, page_transition_style: 'fade', page_transition_duration: 350, page_transition_easing: 'ease-out' } };
 
 function fixture( { fill = FADE, committed = null } = {} ) {
 	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'site-options-' ) );
-	const run = path.join( repo, 'fill-run' );
+	const run = path.join( repo, 'sites', 'acme', 'build', 'qa', 'fill', 'header', 'run-1' );
 	fs.mkdirSync( run, { recursive: true } );
 	if ( fill ) {
 		fs.writeFileSync( path.join( run, 'site-options.json' ), JSON.stringify( fill ) );
@@ -48,7 +49,7 @@ test( 'MUST FAIL: promoting a Fill run writes the client file, merges later runs
 	const { repo, run } = fixture();
 	const first = promoteSiteOptions( { repo, client: 'acme', from: run } );
 	assert.equal( first.changed, true );
-	assert.deepEqual( readSiteOptions( repo, 'acme' ), { sgs_motion_settings: { records: [ 'route-fade-1' ], value: FADE.value } } );
+	assert.deepEqual( readSiteOptions( repo, 'acme' ), { sgs_motion_settings: { records: [ 'route-fade-1' ], value: FADE.value, sources: [ RUN ] } } );
 	assert.equal( promoteSiteOptions( { repo, client: 'acme', from: path.join( run, 'site-options.json' ) } ).changed, false, 'the file form promotes too, and a repeat is a no-op' );
 	fs.writeFileSync( path.join( run, 'site-options.json' ), JSON.stringify( { option: 'sgs_motion_settings', records: [ 'route-fade-2' ], value: { page_transition_duration: 500, smooth_scroll: true } } ) );
 	const merged = readSiteOptions( repo, 'acme' ).sgs_motion_settings;
@@ -56,6 +57,34 @@ test( 'MUST FAIL: promoting a Fill run writes the client file, merges later runs
 	assert.deepEqual( merged.records, [ 'route-fade-1' ] );
 	assert.deepEqual( next.records, [ 'route-fade-1', 'route-fade-2' ] );
 	assert.deepEqual( next.value, { ...FADE.value, page_transition_duration: 500, smooth_scroll: true }, 'the new keys win, the others stay' );
+	const later = path.join( repo, 'sites', 'acme', 'build', 'qa', 'fill', 'header', 'run-2' );
+	fs.mkdirSync( later, { recursive: true } );
+	fs.writeFileSync( path.join( later, 'site-options.json' ), JSON.stringify( FADE ) );
+	assert.deepEqual( promoteSiteOptions( { repo, client: 'acme', from: later } ).options.sgs_motion_settings.sources, [ RUN, 'sites/acme/build/qa/fill/header/run-2/site-options.json' ], 'each promoted run is named as a source' );
+} );
+
+test( 'MUST FAIL: a committed option that names no Fill run of the client as its source (a hand-written file) is refused', () => {
+	for ( const [ entry, why ] of [
+		[ { records: [ 'A-12' ], value: FADE.value }, 'no sources' ],
+		[ { records: [ 'A-12' ], value: FADE.value, sources: [] }, 'empty sources' ],
+		[ { records: [ 'A-12' ], value: FADE.value, sources: [ 'by hand' ] }, 'a source that is not a Fill run' ],
+		[ { records: [ 'A-12' ], value: FADE.value, sources: [ 'sites/other/build/qa/fill/header/run-1/site-options.json' ] }, "another client's run" ],
+		[ { records: [ 'A-12' ], value: FADE.value, sources: [ 'sites/acme/build/qa/parity/run-1/site-options.json' ] }, 'a qa file that is not a Fill run' ],
+	] ) {
+		const { repo } = fixture( { committed: { sgs_motion_settings: entry } } );
+		assert.throws( () => readSiteOptions( repo, 'acme' ), /names no Fill run of acme as its source/, why );
+	}
+	const { repo } = fixture( { committed: { sgs_motion_settings: { records: [ 'A-12' ], value: FADE.value, sources: [ RUN ] } } } );
+	assert.deepEqual( readSiteOptions( repo, 'acme' ).sgs_motion_settings.sources, [ RUN ] );
+} );
+
+test( 'MUST FAIL: a site-options.json outside the client\'s Fill output is not promoted', () => {
+	const { repo } = fixture();
+	const stray = path.join( repo, 'elsewhere' );
+	fs.mkdirSync( stray, { recursive: true } );
+	fs.writeFileSync( path.join( stray, 'site-options.json' ), JSON.stringify( FADE ) );
+	assert.throws( () => promoteSiteOptions( { repo, client: 'acme', from: stray } ), /is not a Fill run of acme/ );
+	assert.equal( fs.existsSync( siteOptionsFile( repo, 'acme' ) ), false );
 } );
 
 test( 'MUST FAIL: a Fill file that is missing, valueless, or carries a bad option name, key or nested value is refused', () => {
