@@ -258,10 +258,15 @@
 			"default": {},
 			"description": "The row's padding while shrunk on scroll, per device ({desktop,tablet,mobile} of {top,right,bottom,left}). Set, it replaces the default (half the resting top and bottom padding) and may also change the sides. Shared with the other header/footer row via includes/helpers-row-behaviour.php."
 		},
+		"rowAnimate": {
+			"type": "boolean",
+			"default": true,
+			"description": "Whether the row animates when it shrinks or collapses on scroll. Off, it jumps straight to its scrolled look, and the logo and headings that shrink with it jump too."
+		},
 		"rowShrinkDuration": {
 			"type": "number",
 			"default": 0,
-			"description": "How long the row takes to shrink and grow back, in ms. 0 keeps the default 200ms. The row publishes it as --sgs-row-shrink-duration, which the logo and headings inside read, so everything moves together."
+			"description": "How long the row takes to shrink, collapse and come back, in ms. 0 keeps the default 200ms. The row publishes it as --sgs-row-shrink-duration, which the logo and headings inside read, so everything moves together."
 		},
 		"rowShrinkEasing": {
 			"type": "string",

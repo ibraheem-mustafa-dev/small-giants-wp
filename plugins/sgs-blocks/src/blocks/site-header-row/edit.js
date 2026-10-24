@@ -237,6 +237,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		contentWidth,
 		hidePromotedPlaceholder,
 		rowShrinkPadding,
+		rowAnimate,
 		rowShrinkDuration,
 		rowShrinkEasing,
 		rowShrinkEasingCustom,
@@ -282,7 +283,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		}
 	} );
 	let bandTransition = '';
-	if ( rowShrinkDuration > 0 || rowShrinkEasing ) {
+	if ( false === rowAnimate ) {
+		// Animate off: the shrunk preview jumps, like the front end.
+		bandTransition = 'none';
+	} else if ( rowShrinkDuration > 0 || rowShrinkEasing ) {
 		const ms =
 			rowShrinkDuration > 0 ? Math.min( 3000, rowShrinkDuration ) : 200;
 		bandTransition = `padding ${ ms }ms ${ motionEasingCss(

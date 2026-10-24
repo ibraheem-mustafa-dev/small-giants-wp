@@ -76,6 +76,7 @@ export default function RowScrollBehaviourControls( {
 		rowShrink,
 		rowShrinkHideTarget,
 		rowShrinkPadding,
+		rowAnimate,
 		rowShrinkDuration,
 		rowShrinkEasing,
 		rowShrinkEasingCustom,
@@ -232,6 +233,7 @@ export default function RowScrollBehaviourControls( {
 						rowShrink: {},
 						rowShrinkHideTarget: '',
 						rowShrinkPadding: {},
+						rowAnimate: true,
 						rowShrinkDuration: 0,
 						rowShrinkEasing: '',
 						rowShrinkEasingCustom: '',
@@ -276,7 +278,10 @@ export default function RowScrollBehaviourControls( {
 					isShownByDefault
 				>
 					<ResponsiveTriStateControl
-						label={ __( 'Collapse this row on scroll', 'sgs-blocks' ) }
+						label={ __(
+							'Collapse this row on scroll',
+							'sgs-blocks'
+						) }
 						help={ __(
 							'This row slides away once the visitor scrolls down, and slides back in on scroll up. While the header is pinned the row collapses to nothing, closing the gap it leaves. Independent of every other row.',
 							'sgs-blocks'
@@ -290,7 +295,10 @@ export default function RowScrollBehaviourControls( {
 				</ToolsPanelItem>
 
 				<ToolsPanelItem
-					label={ __( 'Reduce this row’s padding on scroll', 'sgs-blocks' ) }
+					label={ __(
+						'Reduce this row’s padding on scroll',
+						'sgs-blocks'
+					) }
 					hasValue={ () =>
 						( !! rowShrink &&
 							Object.keys( rowShrink ).length > 0 ) ||
@@ -301,15 +309,15 @@ export default function RowScrollBehaviourControls( {
 							rowShrink: {},
 							rowShrinkHideTarget: '',
 							rowShrinkPadding: {},
-							rowShrinkDuration: 0,
-							rowShrinkEasing: '',
-							rowShrinkEasingCustom: '',
 						} )
 					}
 					isShownByDefault
 				>
 					<ResponsiveTriStateControl
-						label={ __( 'Reduce this row’s padding on scroll', 'sgs-blocks' ) }
+						label={ __(
+							'Reduce this row’s padding on scroll',
+							'sgs-blocks'
+						) }
 						help={ __(
 							'Reduces the empty space above and below this row once the visitor scrolls, freeing up screen height. Independent of every other row.',
 							'sgs-blocks'
@@ -343,41 +351,38 @@ export default function RowScrollBehaviourControls( {
 						<>
 							<ResponsiveOverride
 								value={ rowShrinkPadding }
-								onChange={ ( obj ) => setAttributes( { rowShrinkPadding: obj } ) }
+								onChange={ ( obj ) =>
+									setAttributes( { rowShrinkPadding: obj } )
+								}
 							>
 								{ ( { ownValue, setOwnValue } ) => (
 									<SgsBoxControl
-										label={ __( 'Padding when shrunk', 'sgs-blocks' ) }
-										values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+										label={ __(
+											'Padding when shrunk',
+											'sgs-blocks'
+										) }
+										values={
+											ownValue &&
+											typeof ownValue === 'object'
+												? ownValue
+												: {}
+										}
 										units={ BOX_UNITS }
 										presets
-										onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+										onChange={ ( next ) =>
+											setOwnValue(
+												normaliseResponsiveBox( next )
+											)
+										}
 									/>
 								) }
 							</ResponsiveOverride>
 							<p className="components-base-control__help">
-								{ __( 'Empty halves the space above and below. Set it to choose the shrunk padding yourself, sides included.', 'sgs-blocks' ) }
+								{ __(
+									'Empty halves the space above and below. Set it to choose the shrunk padding yourself, sides included.',
+									'sgs-blocks'
+								) }
 							</p>
-							<RangeControl
-								label={ __( 'Shrink speed (ms)', 'sgs-blocks' ) }
-								help={ __( 'How long the row takes to shrink and grow back. The logo and any heading set to shrink move at the same speed. 0 keeps 200ms.', 'sgs-blocks' ) }
-								value={ rowShrinkDuration ?? 0 }
-								onChange={ ( val ) => setAttributes( { rowShrinkDuration: val ?? 0 } ) }
-								min={ 0 }
-								max={ 3000 }
-								step={ 50 }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<EasingAtom
-								vocab="nav"
-								label={ __( 'Shrink motion curve', 'sgs-blocks' ) }
-								value={ rowShrinkEasing }
-								custom={ rowShrinkEasingCustom }
-								fallback="ease"
-								onChange={ ( val ) => setAttributes( { rowShrinkEasing: val } ) }
-								onCustomChange={ ( val ) => setAttributes( { rowShrinkEasingCustom: val } ) }
-							/>
 						</>
 					) }
 
@@ -431,6 +436,77 @@ export default function RowScrollBehaviourControls( {
 					>
 						{ __( 'Reset shrink target', 'sgs-blocks' ) }
 					</Button>
+				</ToolsPanelItem>
+
+				<ToolsPanelItem
+					label={ __( 'Row animation', 'sgs-blocks' ) }
+					hasValue={ () =>
+						false === rowAnimate ||
+						rowShrinkDuration > 0 ||
+						!! rowShrinkEasing
+					}
+					onDeselect={ () =>
+						setAttributes( {
+							rowAnimate: true,
+							rowShrinkDuration: 0,
+							rowShrinkEasing: '',
+							rowShrinkEasingCustom: '',
+						} )
+					}
+					isShownByDefault
+				>
+					<ToggleControl
+						label={ __(
+							'Animate this row on scroll',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'On, the row eases when it shrinks or collapses. Off, it jumps straight to its scrolled look, and the logo and headings that shrink with it jump too.',
+							'sgs-blocks'
+						) }
+						checked={ false !== rowAnimate }
+						onChange={ ( val ) =>
+							setAttributes( { rowAnimate: !! val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ false !== rowAnimate && (
+						<>
+							<RangeControl
+								label={ __( 'Row speed (ms)', 'sgs-blocks' ) }
+								help={ __(
+									'How long the row takes to shrink, collapse and come back. The logo and any heading set to shrink move at the same speed. 0 keeps 200ms.',
+									'sgs-blocks'
+								) }
+								value={ rowShrinkDuration ?? 0 }
+								onChange={ ( val ) =>
+									setAttributes( {
+										rowShrinkDuration: val ?? 0,
+									} )
+								}
+								min={ 0 }
+								max={ 3000 }
+								step={ 50 }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							<EasingAtom
+								vocab="nav"
+								label={ __( 'Row motion curve', 'sgs-blocks' ) }
+								value={ rowShrinkEasing }
+								custom={ rowShrinkEasingCustom }
+								fallback="ease"
+								onChange={ ( val ) =>
+									setAttributes( { rowShrinkEasing: val } )
+								}
+								onCustomChange={ ( val ) =>
+									setAttributes( {
+										rowShrinkEasingCustom: val,
+									} )
+								}
+							/>
+						</>
+					) }
 				</ToolsPanelItem>
 			</ToolsPanel>
 		</PanelBody>
