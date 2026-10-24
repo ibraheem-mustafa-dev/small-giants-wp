@@ -2726,6 +2726,35 @@
 				}
 			},
 			"root": ".sgs-m-0123456789"
+		},
+		{
+			"name": "hover shadow timing apart from the colour timing",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"content": {
+						"hover": {
+							"state": {
+								"values": {
+									"translateY": -6,
+									"paintDuration": 200,
+									"paintEasing": "linear",
+									"shadowDuration": 250,
+									"shadowEasing": "ease-in"
+								},
+								"devices": {
+									"mobile": {
+										"shadowDuration": 100
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
 		}
 	]
 }

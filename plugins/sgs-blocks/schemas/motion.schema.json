@@ -2912,6 +2912,26 @@
 						"state": "active",
 						"perDevice": false
 					}
+				},
+				"shadowDuration": {
+					"$ref": "#/$defs/duration",
+					"description": "Shadow timing on hover when it differs from the colour timing; unset, the colour and shadow timing above.",
+					"x-sgs-field": {
+						"fieldType": "duration",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": true
+					}
+				},
+				"shadowEasing": {
+					"$ref": "#/$defs/easing",
+					"description": "Shadow easing on hover when it differs from the colour easing; unset, the colour and shadow easing above.",
+					"x-sgs-field": {
+						"fieldType": "easing",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": false
+					}
 				}
 			},
 			"additionalProperties": false
@@ -3048,6 +3068,9 @@
 					"$ref": "#/$defs/duration"
 				},
 				"paintDuration": {
+					"$ref": "#/$defs/duration"
+				},
+				"shadowDuration": {
 					"$ref": "#/$defs/duration"
 				}
 			},

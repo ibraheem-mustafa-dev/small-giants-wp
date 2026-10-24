@@ -57,8 +57,10 @@ final class Sgs_Motion_Emitter {
 	 * taking `duration.fast` or `easing.default`.
 	 */
 	const PAINT_TIMING = array(
-		'paintDuration' => 'duration',
-		'paintEasing'   => 'easing',
+		'paintDuration'  => 'duration',
+		'paintEasing'    => 'easing',
+		'shadowDuration' => 'shadow-duration',
+		'shadowEasing'   => 'shadow-easing',
 	);
 
 	const MH_PREFIX = '--sgs-mh-';
@@ -265,6 +267,28 @@ final class Sgs_Motion_Emitter {
 	}
 
 	/**
+	 * The timing of the hover state's colour and shadow properties: the state's own `paintDuration` and `paintEasing`, else
+	 * the client's `transition.fast`. The shadow takes `shadowDuration` and `shadowEasing` when the state sets them, each
+	 * falling back to the colour half it replaces.
+	 *
+	 * @param array<string,string> $paint  The state's paint timing slots by name.
+	 * @param bool                 $shadow Whether the shadow's timing is wanted.
+	 * @return string `duration easing`, or the transition.fast pair when nothing is set.
+	 */
+	private static function paint_timing( array $paint, bool $shadow ): string {
+		$duration = $paint['duration'] ?? null;
+		$easing   = $paint['easing'] ?? null;
+		if ( $shadow ) {
+			$duration = $paint['shadow-duration'] ?? $duration;
+			$easing   = $paint['shadow-easing'] ?? $easing;
+		}
+		if ( null === $duration && null === $easing ) {
+			return 'var(--wp--custom--transition--fast, ' . self::token_or( 'token:duration.fast', '200ms' ) . ' ease)';
+		}
+		return ( $duration ?? self::token_or( 'token:duration.fast', '200ms' ) ) . ' ' . ( $easing ?? self::token_or( 'token:easing.default', 'ease' ) );
+	}
+
+	/**
 	 * The hover state's to-values, resting values, channels and transition list.
 	 *
 	 * @param array<string,mixed>                $state    Hover state layer.
@@ -335,10 +359,10 @@ final class Sgs_Motion_Emitter {
 				foreach ( array_keys( $owners ) as $prop ) {
 					$trans[ $tier ][] = $prop . ' ' . $timing['transition-duration'] . ' ' . $timing['transition-timing-function'] . ' ' . $timing['transition-delay'];
 				}
-				$paint_timing = array() === $paint ? 'var(--wp--custom--transition--fast, ' . self::token_or( 'token:duration.fast', '200ms' ) . ' ease)'
-					: ( $paint['duration'] ?? self::token_or( 'token:duration.fast', '200ms' ) ) . ' ' . ( $paint['easing'] ?? self::token_or( 'token:easing.default', 'ease' ) );
+				$paint_timing = self::paint_timing( $paint, false );
 				foreach ( self::HOVER_PAINT as $prop ) {
-					$trans[ $tier ][] = $prop . ' ' . $paint_timing . ' ' . $timing['transition-delay'];
+					$prop_timing      = 'box-shadow' === $prop ? self::paint_timing( $paint, true ) : $paint_timing;
+					$trans[ $tier ][] = $prop . ' ' . $prop_timing . ' ' . $timing['transition-delay'];
 				}
 				if ( $follows ) {
 					$trans[ $tier ] = array_merge( $trans[ $tier ], Sgs_Motion_Rotation::follow_entries( $follow ) );

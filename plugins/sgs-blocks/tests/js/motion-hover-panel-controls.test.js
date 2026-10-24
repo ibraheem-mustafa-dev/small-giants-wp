@@ -355,6 +355,21 @@ describe( 'the movement and the colour-and-shadow timings', () => {
 		);
 	} );
 
+	it( 'MUST FAIL WITHOUT THE SHADOW FIELDS: the shadow runs on its own duration and easing while the colours keep the paint timing', () => {
+		const css = cssOf(
+			withState( { ...SCALE, values: { ...SCALE.values, paintDuration: 200, paintEasing: 'linear', shadowDuration: 250, shadowEasing: 'ease-in' } } )
+		);
+		expect( css ).toContain( 'box-shadow 250ms ease-in 0ms' );
+		PAINT.filter( ( property ) => property !== 'box-shadow' ).forEach( ( property ) =>
+			expect( css ).toContain( `${ property } 200ms linear 0ms` )
+		);
+	} );
+
+	it( 'leaves the shadow on the paint timing when no shadow field is set', () => {
+		const css = cssOf( withState( { ...SCALE, values: { ...SCALE.values, paintDuration: 300 } } ) );
+		expect( css ).toContain( 'box-shadow 300ms' );
+	} );
+
 	it( 'draws the colour and shadow timing fields in their own group', () => {
 		mount( withState( { ...SCALE } ) );
 		expect( document.body.textContent ).toContain( 'Colour and shadow timing' );

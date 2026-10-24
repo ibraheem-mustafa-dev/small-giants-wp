@@ -57,7 +57,12 @@ import { delegatedMove, inheritedItem, movedEntranceTarget } from './stagger-app
 /** Hover colour and shadow properties whose timing the hover state owns (FR-38A-7). */
 const HOVER_PAINT = [ 'color', 'background-color', 'border-color', 'box-shadow' ];
 // The hover state's colour-and-shadow timing override (Sgs_Motion_Emitter::PAINT_TIMING): field key => its slot.
-const PAINT_TIMING = { paintDuration: 'duration', paintEasing: 'easing' };
+const PAINT_TIMING = {
+	paintDuration: 'duration',
+	paintEasing: 'easing',
+	shadowDuration: 'shadow-duration',
+	shadowEasing: 'shadow-easing',
+};
 
 const has = ( obj, key ) => Object.prototype.hasOwnProperty.call( obj, key );
 
@@ -142,18 +147,17 @@ function hoverState( state, decls, trans, channels ) {
 		}
 		// A tier repeats the whole list when its timing or its owner set differs from the wider tier's.
 		if ( timingChanged || Object.keys( owners ).length !== ownerCount ) {
-			const paintTiming =
-				Object.keys( paint ).length === 0
-					? `var(--wp--custom--transition--fast, ${ tokenOr(
-							'token:duration.fast',
-							'200ms'
-					  ) } ease)`
-					: `${
-							paint.duration ??
-							tokenOr( 'token:duration.fast', '200ms' )
-					  } ${
-							paint.easing ?? tokenOr( 'token:easing.default', 'ease' )
-					  }`;
+			const paintTiming = ( shadow ) => {
+				const duration = ( shadow ? paint[ 'shadow-duration' ] : undefined ) ?? paint.duration;
+				const easing = ( shadow ? paint[ 'shadow-easing' ] : undefined ) ?? paint.easing;
+				if ( duration === undefined && easing === undefined ) {
+					return `var(--wp--custom--transition--fast, ${ tokenOr(
+						'token:duration.fast',
+						'200ms'
+					) } ease)`;
+				}
+				return `${ duration ?? tokenOr( 'token:duration.fast', '200ms' ) } ${ easing ?? tokenOr( 'token:easing.default', 'ease' ) }`;
+			};
 			trans[ tier ] = [
 				...Object.keys( owners ).map(
 					( prop ) =>
@@ -161,7 +165,7 @@ function hoverState( state, decls, trans, channels ) {
 				),
 				...HOVER_PAINT.map(
 					( prop ) =>
-						`${ prop } ${ paintTiming } ${ timing[ 'transition-delay' ] }`
+						`${ prop } ${ paintTiming( prop === 'box-shadow' ) } ${ timing[ 'transition-delay' ] }`
 				),
 			];
 			if ( isFollow ) {

@@ -1784,5 +1784,23 @@
 		],
 		"rootAttrs": {},
 		"losers": {}
+	},
+	{
+		"name": "hover shadow timing apart from the colour timing",
+		"css": ".sgs-m-0123456789 .sgs-hero__content{--sgs-mh-to-ty:-6px;transition:--sgs-mh-ty var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color 200ms linear 0ms, background-color 200ms linear 0ms, border-color 200ms linear 0ms, box-shadow 250ms ease-in 0ms;}@media (max-width:767px){.sgs-m-0123456789 .sgs-hero__content{transition:--sgs-mh-ty var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color 200ms linear 0ms, background-color 200ms linear 0ms, border-color 200ms linear 0ms, box-shadow 100ms ease-in 0ms;}}",
+		"plans": [
+			{
+				"target": "content",
+				"selector": ".sgs-m-0123456789 .sgs-hero__content",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
 	}
 ]

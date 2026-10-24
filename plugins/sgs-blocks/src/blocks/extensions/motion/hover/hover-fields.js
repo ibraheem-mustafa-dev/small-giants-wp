@@ -64,6 +64,8 @@ export const FIELD_LABELS = Object.freeze( {
 	easing: { label: __( 'Easing', 'sgs-blocks' ) },
 	paintDuration: { label: __( 'Colour and shadow duration', 'sgs-blocks' ) },
 	paintEasing: { label: __( 'Colour and shadow easing', 'sgs-blocks' ) },
+	shadowDuration: { label: __( 'Shadow duration', 'sgs-blocks' ) },
+	shadowEasing: { label: __( 'Shadow easing', 'sgs-blocks' ) },
 	borderColour: { label: __( 'Border colour', 'sgs-blocks' ) },
 	backgroundColour: { label: __( 'Background colour', 'sgs-blocks' ) },
 } );
@@ -151,7 +153,7 @@ export const HOVER_GROUPS = Object.freeze( [
 		// Colour, background, border and shadow changes on hover; unset, they run on the site's fast transition.
 		id: 'paint-timing',
 		label: __( 'Colour and shadow timing', 'sgs-blocks' ),
-		keys: [ 'paintDuration', 'paintEasing' ],
+		keys: [ 'paintDuration', 'paintEasing', 'shadowDuration', 'shadowEasing' ],
 	},
 ] );
 
