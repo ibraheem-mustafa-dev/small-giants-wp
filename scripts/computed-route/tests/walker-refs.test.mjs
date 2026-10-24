@@ -182,14 +182,18 @@ test( 'MUST FAIL: aspect-ratio is in the walker list and in calibration READ_PRO
 } );
 
 test( 'MUST FAIL: a different ratio is a row; the same ratio in another spelling, and auto against auto, are not', () => {
-	const rows = ( d, l ) => comparePair( { text: false, motion: false }, { box: { w: 1, h: 1 }, styles: { 'aspect-ratio': d } }, { box: { w: 1, h: 1 }, styles: { 'aspect-ratio': l } }, { box: 1, px: 0.5 } );
-	assert.equal( rows( '16 / 9', '1 / 1' ).length, 1 );
-	assert.equal( rows( '16 / 9', '1 / 1' )[ 0 ].key, 'aspect-ratio' );
-	assert.equal( rows( '16 / 9', '1.77778 / 1' ).length, 0 );
-	assert.equal( rows( '1.5', '3 / 2' ).length, 0 );
-	assert.equal( rows( 'auto', 'auto' ).length, 0 );
-	assert.equal( rows( 'auto', '16 / 9' ).length, 1 );
-	assert.equal( rows( 'auto 16 / 9', '16 / 9' ).length, 1 );
+	// Each side's box follows its own ratio (a 16 / 9 box is 160x90, a square one 90x90): a ratio paints only through the
+	// box it sizes, so differing ratios on boxes that agree are no row (GAP-CHECKLIST 36, compare.mjs::ratioHeld).
+	const BOX = { '16 / 9': { w: 160, h: 90 }, '1.77778 / 1': { w: 160, h: 90 }, '1 / 1': { w: 90, h: 90 }, '1.5': { w: 150, h: 100 }, '3 / 2': { w: 150, h: 100 }, auto: { w: 90, h: 90 }, 'auto 16 / 9': { w: 90, h: 90 } };
+	const ratio = ( d, l, boxes = [ BOX[ d ], BOX[ l ] ] ) => comparePair( { text: false, motion: false }, { box: boxes[ 0 ], styles: { 'aspect-ratio': d } }, { box: boxes[ 1 ], styles: { 'aspect-ratio': l } }, { box: 1, px: 0.5 } ).filter( ( r ) => 'aspect-ratio' === r.key );
+	assert.equal( ratio( '16 / 9', '1 / 1' ).length, 1 );
+	assert.equal( ratio( '16 / 9', '1.77778 / 1' ).length, 0 );
+	assert.equal( ratio( '1.5', '3 / 2' ).length, 0 );
+	assert.equal( ratio( 'auto', 'auto' ).length, 0 );
+	assert.equal( ratio( 'auto', '16 / 9' ).length, 1 );
+	assert.equal( ratio( 'auto 16 / 9', '16 / 9' ).length, 1 );
+	// The ratios differ, the boxes agree (a declared ratio against a box its image sizes the same): no row.
+	assert.equal( ratio( '16 / 9', 'auto', [ { w: 160, h: 90 }, { w: 160, h: 90 } ] ).length, 0 );
 } );
 
 test( 'Solve holds a measured ratio in the setting form: enum value, free "w / h", auto as the empty setting', () => {

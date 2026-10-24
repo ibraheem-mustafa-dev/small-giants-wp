@@ -98,8 +98,12 @@ export function compareState( run, d, l, { state, width, cfg, accept, divergence
 	run.pairs[ '(state)' ] = { draft: d.log, live: l.log, diffs: judge( '(state)', driveDiffs( d.log, l.log ) ) };
 	const flow = cfg.refPrefix ? flowOffsets( pairsFor( state ), d.snap, l.snap, { draft: d.mainY, live: l.mainY }, tol ) : {};
 	for ( const p of pairsFor( state ) ) {
-		const own = comparePair( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) }, everyState[ p.name ] ?? null )
-			.filter( ( x ) => ! ( 'presence' === x.kind && bareWrapper( p, d.snap, l.snap, { ...tol, ...( p.tolerance || {} ) } ) ) );
+		// A presence row bareWrapper drops is recorded on the pair as `dropped` (rule `bare-wrapper`, with the nested pairs
+		// it rests on), so a wrong drop shows in report.json.
+		const raw = comparePair( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) }, everyState[ p.name ] ?? null );
+		const bareDrops = raw.filter( ( x ) => 'presence' === x.kind && bareWrapper( p, d.snap, l.snap, { ...tol, ...( p.tolerance || {} ) } ) );
+		const own = raw.filter( ( x ) => ! bareDrops.includes( x ) );
+		const dropRows = bareDrops.map( ( x ) => ( { ...x, rule: 'bare-wrapper', nested: ( d.snap[ p.name ].missing ? l.snap[ p.name ] : d.snap[ p.name ] ).bare.nested } ) );
 		// Two elements of different kinds (a draft <div> against a live <img>, GAP-CHECKLIST.md section 20) are one `tag` row
 		// and nothing else: no structure, scroll, flow, painted-ground or timeline row between them either.
 		const mismatch = own.some( ( x ) => 'tag' === x.kind );
@@ -120,7 +124,7 @@ export function compareState( run, d, l, { state, width, cfg, accept, divergence
 		// Every effect layer each side's parts showed on hover and press, matched or not (GAP-CHECKLIST.md section 29).
 		const effects = { draft: partEffects( d.snap[ p.name ].parts ), live: partEffects( l.snap[ p.name ].parts ) };
 		stampDeclaredPath( d.snap[ p.name ], l.snap[ p.name ] );
-		run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, markMispaired( kept, mispaired, l.snap[ p.name ].trace?.ref ) ), ...( dropped.length ? { unmatched: dropped } : {} ), ...( effects.draft || effects.live ? { effects } : {} ) };
+		run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, markMispaired( kept, mispaired, l.snap[ p.name ].trace?.ref ) ), ...( dropped.length ? { unmatched: dropped } : {} ), ...( dropRows.length ? { dropped: dropRows } : {} ), ...( effects.draft || effects.live ? { effects } : {} ) };
 	}
 	// A layout row reached another way holds only while every pair inside it is settled (compare.mjs::holdEquivalent);
 	// box-held rows that move nothing on the pair or inside it (compare.mjs::acceptHeld).

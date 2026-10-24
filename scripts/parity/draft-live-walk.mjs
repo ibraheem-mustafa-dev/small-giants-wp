@@ -39,6 +39,7 @@ import { sampleEntrances, sampleRegion } from './lib/entrances.mjs';
 import { isAccepted } from './lib/compare.mjs';
 import { compareState } from './lib/compare-state.mjs';
 import { everyStateMap } from './lib/state-changes.mjs';
+import { draftCacheKey, currentEntries } from './lib/draft-cache.mjs';
 import { writeReport, sideBySide } from './lib/report.mjs';
 import { lintRun } from './lib/lint.mjs';
 import { collectStructure } from './lib/structure.mjs';
@@ -347,8 +348,8 @@ const results = { config: cfg.name, when: new Date().toISOString(), injectCss, i
 const linksSeen = new Set();
 const allLiveLinks = [];
 const origins = { draft: new URL( cb( cfg.draft.url ) ).origin, live: new URL( cb( cfg.live.url ) ).origin };
-const cached = draftCache && fs.existsSync( draftCache ) ? JSON.parse( fs.readFileSync( draftCache, 'utf8' ) ) : {};
-const cacheKey = ( width ) => JSON.stringify( { config: cfg.name, width, states: onlyStates || null, lean, self } );
+const cached = currentEntries( draftCache && fs.existsSync( draftCache ) ? JSON.parse( fs.readFileSync( draftCache, 'utf8' ) ) : {} );
+const cacheKey = ( width ) => draftCacheKey( { config: cfg.name, width, states: onlyStates || null, lean, self } );
 for ( const width of widths ) {
 	const draft = cached[ cacheKey( width ) ] || await walkSide( browser, 'draft', width );
 	if ( draftCache ) {
@@ -357,8 +358,9 @@ for ( const width of widths ) {
 	}
 	const live = await walkSide( browser, 'live', width, draft.states );
 	results.errors[ width ] = { draft: draft.errors, live: live.errors };
-	// What each pair moves in any state at this width, on either side (lib/state-changes.mjs), for the transition rows.
-	const everyState = everyStateMap( cfg.states, draft.states, live.states, pairsFor );
+	// What each pair moves in any state at this width, on either side (lib/state-changes.mjs), for the transition rows. A
+	// partial run (`--states`) walks only some states, so what the others move is unknown: no map.
+	const everyState = everyStateMap( cfg.states, draft.states, live.states, pairsFor, { partial: !! onlyStates } );
 	for ( const state of cfg.states.filter( ( s ) => draft.states[ s.name ] ) ) {
 		const d = draft.states[ state.name ];
 		const l = live.states[ state.name ];

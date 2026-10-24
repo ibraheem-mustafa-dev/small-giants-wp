@@ -190,7 +190,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	};
 	countItems( layoutEl );
 	// What a box shows when it paints nothing (`passThrough`, GAP-CHECKLIST 31): `paints` when it paints a ground, image,
-	// border, shadow, outline, filter, mask, clip-path or ::before/::after layer, clips (overflow not visible, paint
+	// border, shadow, outline, filter, mask, clip-path, legacy `clip` (other than auto) or ::before/::after layer, clips (overflow not visible, paint
 	// containment), is translucent (opacity below 1) or blends (mix-blend-mode not normal), or is a media or control
 	// element; `self`, the box's own [ top, bottom, left, right ] on the page; `items`, each visible interactive descendant
 	// (`interactive`: a link and a button show alike, so the draft's button nav and the clone's link nav are the same items), each in-flow text run (`text`) or rendered element holding no interactive descendant
@@ -210,7 +210,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		return /^(img|picture|video|canvas|svg|iframe|input|select|textarea)$/i.test( e.tagName ) || ! clear( s.backgroundColor ) || 'none' !== s.backgroundImage ||
 			[ 'Top', 'Right', 'Bottom', 'Left' ].some( ( side ) => parseFloat( s[ `border${ side }Width` ] ) > 0 ) || 'none' !== s.boxShadow ||
 			( 'none' !== s.outlineStyle && parseFloat( s.outlineWidth ) > 0 ) || 'none' !== s.filter || ( s.backdropFilter && 'none' !== s.backdropFilter ) ||
-			'visible' !== s.overflowX || 'visible' !== s.overflowY || 'none' !== s.clipPath || /\b(paint|content|strict)\b/.test( s.contain ) ||
+			'visible' !== s.overflowX || 'visible' !== s.overflowY || 'none' !== s.clipPath || ( !! s.clip && 'auto' !== s.clip ) || /\b(paint|content|strict)\b/.test( s.contain ) ||
 			[ s.maskImage, s.webkitMaskBoxImageSource ].some( ( m ) => m && 'none' !== m ) || parseFloat( s.opacity ) < 1 ||
 			'normal' !== s.mixBlendMode || layer( e, '::before' ) || layer( e, '::after' );
 	};
@@ -433,9 +433,11 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	const hiddenText = hiddenEls.map( ( h ) => h.textContent || '' ).join( ' ' );
 	// What the element shows besides the state's other pairs inside it (`bare`, GAP-CHECKLIST 38): `nested`, the names
 	// (opts.names, beside opts.others) of the other pairs whose element lies inside this one, and `own`, whether anything
-	// else inside it shows: a painted text run, a shown element holding none of those pairs (not visually hidden, not
-	// visibility: hidden), or an element around one of them that paints (`paints`, the passThrough test). Null where no
-	// other pair lies inside, and for a text run or a group.
+	// else inside it shows: a painted text run (not under visibility: hidden), a shown element holding none of those pairs
+	// (not visually hidden), or an element around one of them that paints (`paints`, the passThrough test). A box that
+	// generates nothing itself but can hold what shows, `display: contents` (no client rects) or `visibility: hidden` (a
+	// descendant can be `visibility: visible`), is walked into; only `display: none` ends the walk. Null where no other
+	// pair lies inside, and for a text run or a group.
 	const bare = ( () => {
 		if ( run || ! opts?.names ) {
 			return null;
@@ -457,15 +459,20 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 				if ( own ) {
 					return;
 				}
-				if ( 3 === k.nodeType && k.textContent.trim() ) {
+				if ( 3 === k.nodeType && k.textContent.trim() && 'visible' === getComputedStyle( n ).visibility ) {
 					const rg = document.createRange();
 					rg.selectNodeContents( k );
 					const b = rg.getBoundingClientRect();
 					own = b.width > 0 && b.height > 0;
 				} else if ( 1 === k.nodeType && ! mine.has( k ) ) {
-					if ( ! [ ...mine.keys() ].some( ( o ) => k.contains( o ) ) ) {
+					const ks = getComputedStyle( k );
+					if ( 'none' === ks.display ) {
+						continue;
+					}
+					const holds = [ ...mine.keys() ].some( ( o ) => k.contains( o ) );
+					if ( ! holds && 'contents' !== ks.display && 'visible' === ks.visibility ) {
 						own = shows( k );
-					} else if ( paints( k ) ) {
+					} else if ( holds ? paints( k ) : layer( k, '::before' ) || layer( k, '::after' ) ) {
 						own = true;
 					} else {
 						walk( k );
@@ -475,6 +482,59 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		};
 		walk( el );
 		return { own, nested: [ ...new Set( mine.values() ) ] };
+	} )();
+	// What an element holding no text shows (`textless`, GAP-CHECKLIST 35): the evidence that a text property read on it
+	// in a state (its own colour, the state passes' fallback where there is no text carrier) paints nothing. `svg`: its
+	// one painted svg (paint.mjs::iconShape, the svg the state passes' icon read judges) and nothing else; `replaced`: one
+	// or more replaced elements (img, picture, video, canvas) and nothing else; `other`: anything else (nothing at all
+	// included), which a colour or a font size can reach (a rendered element that paints, such as burger bars drawn with `background: currentColor`, a
+	// painted ::before or ::after on the element or inside it, two svgs, an svg beside an image). A wrapper that paints
+	// nothing (`paints`), a `display: contents` or `visibility: hidden` box and a visually hidden element are passed
+	// through (their descendants still count); a `display: none` one shows nothing. Null for a text run, a group, or an
+	// element holding text (`textFrom` not `none`).
+	const textless = ( () => {
+		if ( run || textAt ) {
+			return null;
+		}
+		const tag = ( e ) => e.tagName.toLowerCase();
+		const REPLACED = /^(img|picture|video|canvas)$/;
+		const svgShown = ( e ) => e.getClientRects().length > 0 && e.getBoundingClientRect().width > 0 && e.getBoundingClientRect().height > 0 && 'visible' === getComputedStyle( e ).visibility;
+		const iconSvg = iconShape( el )?.svg || null;
+		if ( 'svg' === tag( el ) ) {
+			return iconSvg === el ? 'svg' : 'other';
+		}
+		if ( REPLACED.test( tag( el ) ) ) {
+			return 'replaced';
+		}
+		if ( layer( el, '::before' ) || layer( el, '::after' ) ) {
+			return 'other';
+		}
+		let [ svgs, replaced, other ] = [ 0, 0, false ];
+		const walk = ( n ) => {
+			for ( const k of n.children ) {
+				const ks = getComputedStyle( k );
+				if ( other || 'none' === ks.display ) {
+					continue;
+				}
+				if ( 'svg' === tag( k ) ) {
+					svgs += svgShown( k ) ? 1 : 0;
+				} else if ( REPLACED.test( tag( k ) ) ) {
+					replaced += k.getClientRects().length > 0 && 'visible' === ks.visibility ? 1 : 0;
+				} else if ( layer( k, '::before' ) || layer( k, '::after' ) || ( 'contents' !== ks.display && 'visible' === ks.visibility && ! srOnly( k ) && paints( k ) ) ) {
+					other = true;
+				} else {
+					walk( k );
+				}
+			}
+		};
+		walk( el );
+		if ( other || ( svgs && replaced ) ) {
+			return 'other';
+		}
+		if ( 1 === svgs ) {
+			return iconSvg ? 'svg' : 'other';
+		}
+		return ! svgs && replaced ? 'replaced' : 'other';
 	} )();
 	// The one image this element is or holds (its painted address, alt and natural size), for the image check.
 	const imgEl = el.matches( 'img' ) ? el : ( 1 === el.querySelectorAll( 'img' ).length ? el.querySelector( 'img' ) : null );
@@ -502,6 +562,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		// Where the text properties were read (paint.mjs::textCarrier): `own` text the pair holds or lays out itself,
 		// `nested` text in a nested block no pair measures inside a pair holding another pair, `none` no text.
 		...( run ? {} : { textFrom: textAt ? ( textAt.nested ? 'nested' : 'own' ) : 'none' } ),
+		...( textless ? { textless } : {} ),
 		tag: el.tagName.toLowerCase(),
 		motion: {
 			animation: cs.animationName.split( ',' ).every( ( n ) => 'none' === n.trim() ) ? 'none' : `${ cs.animationDuration } ${ cs.animationTimingFunction } ${ cs.animationDelay } ${ cs.animationIterationCount } ${ cs.animationFillMode }`,
