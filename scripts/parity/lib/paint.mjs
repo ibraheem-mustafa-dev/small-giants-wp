@@ -289,5 +289,21 @@ export function lineRows( el ) {
 	return tops.length;
 }
 
+// Self-contained. A pair's icon: the svg `el` is, or the one painted svg it holds (a container holding several reads no
+// icon: the first in document order would be a different icon on each side), and that svg's first painted shape, whose
+// fill and stroke are the icon's colour. Returns { svg, shape } (shape null when the svg paints no shape) or null.
+export function iconShape( el ) {
+	const paintedSvg = ( s ) => s.getClientRects().length > 0 && s.getBoundingClientRect().width > 0 && s.getBoundingClientRect().height > 0
+		&& 'none' !== getComputedStyle( s ).display && 'visible' === getComputedStyle( s ).visibility;
+	const inner = [ ...el.querySelectorAll( 'svg' ) ].filter( ( s ) => paintedSvg( s ) && ! s.parentElement.closest( 'svg' ) );
+	const svg = 'svg' === el.tagName.toLowerCase() ? el : ( 1 === inner.length ? inner[ 0 ] : null );
+	if ( ! svg ) {
+		return null;
+	}
+	const shape = [ ...svg.querySelectorAll( 'path, circle, rect, ellipse, line, polyline, polygon, use, text' ) ]
+		.find( ( s ) => s.getClientRects().length && 'none' !== getComputedStyle( s ).display ) || null;
+	return { svg, shape };
+}
+
 // The source collectPair and hoverStyles rebuild their paint helpers from.
-export const PAINT_SRC = [ paintElement, textCarrier, paintedDecoration, decoratedElement, layoutElement, textRun, groupBox, lineRows ].map( ( f ) => f.toString() ).join( ';\n' );
+export const PAINT_SRC = [ paintElement, textCarrier, paintedDecoration, decoratedElement, layoutElement, textRun, groupBox, lineRows, iconShape ].map( ( f ) => f.toString() ).join( ';\n' );
