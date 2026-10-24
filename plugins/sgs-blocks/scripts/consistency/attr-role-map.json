@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9444,
+    "row_count": 9446,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -7842,6 +7842,7 @@
     "sgs/site-footer-row::maxWidth": "layout",
     "sgs/site-footer-row::minHeight": "layout",
     "sgs/site-footer-row::padding": "layout",
+    "sgs/site-footer-row::rowAnimate": "boolean-visibility",
     "sgs/site-footer-row::rowHideOnScroll": "behaviour",
     "sgs/site-footer-row::rowShrink": "behaviour",
     "sgs/site-footer-row::rowShrinkDuration": "motion",
@@ -7979,6 +7980,7 @@
     "sgs/site-header-row::maxWidth": "layout",
     "sgs/site-header-row::minHeight": "layout",
     "sgs/site-header-row::padding": "layout",
+    "sgs/site-header-row::rowAnimate": "boolean-visibility",
     "sgs/site-header-row::rowHideOnScroll": "behaviour",
     "sgs/site-header-row::rowShrink": "behaviour",
     "sgs/site-header-row::rowShrinkDuration": "motion",

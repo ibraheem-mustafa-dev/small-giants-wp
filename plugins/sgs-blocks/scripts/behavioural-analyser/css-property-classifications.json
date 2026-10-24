@@ -31038,7 +31038,7 @@
       "attr": "orderActionsFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
-        "css_layer": "GRID",
+        "css_layer": "OUTER",
         "css_element": "order-actions"
       }
     },
@@ -31047,7 +31047,7 @@
       "attr": "orderThumbsFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
-        "css_layer": "GRID",
+        "css_layer": "OUTER",
         "css_element": "order-thumbs"
       }
     },
@@ -31847,7 +31847,7 @@
       "attr": "meterFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
-        "css_layer": "GRID",
+        "css_layer": "OUTER",
         "css_element": "meter"
       }
     },
@@ -31856,7 +31856,7 @@
       "attr": "navFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
-        "css_layer": "GRID",
+        "css_layer": "OUTER",
         "css_element": "nav"
       }
     },
@@ -31865,7 +31865,7 @@
       "attr": "priceRowFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
-        "css_layer": "GRID",
+        "css_layer": "OUTER",
         "css_element": "price-row"
       }
     },
@@ -31981,7 +31981,7 @@
       "attr": "thumbsFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
-        "css_layer": "GRID",
+        "css_layer": "OUTER",
         "css_element": "thumbs"
       }
     },
@@ -32247,7 +32247,7 @@
       "attr": "itemActionsFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
-        "css_layer": "GRID",
+        "css_layer": "OUTER",
         "css_element": "item-actions"
       }
     },
@@ -32281,7 +32281,7 @@
       "attr": "panelActionsFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
-        "css_layer": "GRID",
+        "css_layer": "OUTER",
         "css_element": "panel-actions"
       }
     },
@@ -33017,7 +33017,7 @@
       "attr": "actionsFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
-        "css_layer": "GRID",
+        "css_layer": "OUTER",
         "css_element": "actions"
       }
     },
@@ -39054,7 +39054,7 @@
       "attr": "ctaRowFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
-        "css_layer": "GRID",
+        "css_layer": "OUTER",
         "css_element": "cta-row"
       }
     },
@@ -39096,7 +39096,7 @@
       "attr": "priceRowFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
-        "css_layer": "GRID",
+        "css_layer": "OUTER",
         "css_element": "price-row"
       }
     },
@@ -39122,7 +39122,7 @@
       "attr": "swatchesFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
-        "css_layer": "GRID",
+        "css_layer": "OUTER",
         "css_element": "swatches"
       }
     },
@@ -39219,7 +39219,7 @@
       "attr": "thumbsFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
-        "css_layer": "GRID",
+        "css_layer": "OUTER",
         "css_element": "thumbs"
       }
     },
@@ -41712,7 +41712,7 @@
       "attr": "rowActionsFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
-        "css_layer": "GRID",
+        "css_layer": "OUTER",
         "css_element": "row-actions"
       }
     },
@@ -41721,7 +41721,7 @@
       "attr": "shareControlsFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
-        "css_layer": "GRID",
+        "css_layer": "OUTER",
         "css_element": "share-controls"
       }
     },
