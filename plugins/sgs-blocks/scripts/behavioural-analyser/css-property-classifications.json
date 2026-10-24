@@ -1911,6 +1911,15 @@
     },
     {
       "slug": "sgs/breadcrumbs",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "list"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
       "attr": "fontFamily",
       "fields": {
         "css_property": "font-family"
@@ -2115,6 +2124,15 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "socials"
       }
     },
     {
@@ -15802,6 +15820,15 @@
     },
     {
       "slug": "sgs/language-switch",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "list"
+      }
+    },
+    {
+      "slug": "sgs/language-switch",
       "attr": "fontFamily",
       "fields": {
         "css_property": "font-family",
@@ -17413,6 +17440,15 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "burgerBarAlign",
+      "fields": {
+        "css_property": "align-items",
+        "css_layer": "GRID",
+        "css_element": "burger-icon"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "burgerBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -17515,6 +17551,14 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "burgerShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "burgerSize",
       "fields": {
         "css_property": "height",
@@ -17579,6 +17623,16 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemColourOpen",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "item-open",
+        "css_state": "open"
       }
     },
     {
@@ -18250,6 +18304,16 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "itemColourOpen",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "item-open",
+        "css_state": "open"
       }
     },
     {
@@ -21518,6 +21582,15 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "wrapper"
       }
     },
     {
@@ -26100,6 +26173,15 @@
     },
     {
       "slug": "sgs/social-icons",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
       "attr": "gap",
       "fields": {
         "css_property": "gap",
@@ -27012,6 +27094,15 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "social"
       }
     },
     {
@@ -35775,6 +35866,30 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "burgerBar1BorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "burger-bar-1"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerBar2BorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "burger-bar-2"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerBar3BorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "burger-bar-3"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "burgerBarGap",
       "fields": {
         "css_property": "gap",
@@ -35844,6 +35959,14 @@
       "attr": "burgerPadding",
       "fields": {
         "css_property": "padding",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
         "css_element": "burger"
       }
     },
@@ -36032,6 +36155,16 @@
         "css_property": "background-image",
         "css_element": "item",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemBgOpen",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "item-open",
+        "css_state": "open"
       }
     },
     {
@@ -37376,16 +37509,6 @@
         "css_property": "color-gradient",
         "css_element": "item",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer-menu",
-      "attr": "itemColourOpen",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "item-open",
-        "css_state": "open"
       }
     },
     {
