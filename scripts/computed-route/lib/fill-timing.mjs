@@ -7,7 +7,8 @@
 // one timing to write, into the setting that times both ways, unless the draft declares a different resting timing,
 // which the resting setting takes and the enter timing is then reported when the block has no setting for the state.
 
-import { resolveProperty } from './fill-prop.mjs';
+import { resolveProperty, defaultPaint } from './fill-prop.mjs';
+import { samePaint } from './css-equivalence/tolerance.mjs';
 import { setAttr } from './tree.mjs';
 import { timeToMs } from './resolve.mjs';
 import { candidates } from './db.mjs';
@@ -209,6 +210,9 @@ export function timingWrites( { node, ref, rec, target, cal, db, snapshot, reads
 	};
 	const gap = ( prop, state, draft, reason ) => out.unmapped.push( { ...where, property: prop, state, value: JSON.stringify( draft ), reason } );
 	const part = target.slot || 'this element';
+	// Whether the element's calibrated default paint shows the draft's declared resting `prop` at width `w` (a property
+	// the calibration did not measure there shows nothing): such a timing needs no setting, and the element pass settles it.
+	const shown = ( prop, w ) => samePaint( prop, reads.declared?.[ w ]?.[ target.id ]?.[ prop ], defaultPaint( cal, target.slot || '', Number( w ), prop ) );
 	// A computed timing is a `timing-computed` gap where the block has a setting for it, and a `timing-no-home` row where none holds it.
 	out.unmapped.push( ...facts.skipped.map( ( s ) => ( { ...where, property: s.prop, state: null, value: '', reason: candidates( db, rec.name, s.prop ).length ? `timing-computed: ${ s.why }` : `timing-no-home: ${ rec.name } has no setting that holds the ${ s.prop } of ${ part }, and ${ s.why }` } ) ) );
 	for ( const prop of LIST_PROPS ) {
@@ -219,8 +223,9 @@ export function timingWrites( { node, ref, rec, target, cal, db, snapshot, reads
 			apply( prop, null, res, 'fill-timing' );
 		} else if ( res && ! [ 'no-setting', 'unmapped-element' ].includes( res.gap ) ) {
 			gap( prop, null, rest, `${ res.gap }: ${ res.detail || 'the resting timing has no single value this setting holds' }` );
-		} else if ( res && ! facts.split.some( ( s ) => s.prop === prop && null === s.state ) && ! inertTiming( prop, rest, facts.rest[ 'transition-duration' ] ) ) {
-			// A resting timing no setting of the block holds is a `timing-no-home` row (a split list leaves one per property, splitRows).
+		} else if ( res && ! facts.split.some( ( s ) => s.prop === prop && null === s.state ) && ! inertTiming( prop, rest, facts.rest[ 'transition-duration' ] ) && ! Object.keys( rest ).every( ( w ) => shown( prop, w ) ) ) {
+			// A resting timing no setting of the block holds is a `timing-no-home` row (a split list leaves one per property,
+			// splitRows), unless the element's calibrated default paint already shows it at every width it is read at.
 			gap( prop, null, rest, `timing-no-home: ${ rec.name } has no setting that holds the resting ${ prop } of ${ part } (${ res.gap })` );
 		}
 		const pending = [];
@@ -260,7 +265,7 @@ export function timingWrites( { node, ref, rec, target, cal, db, snapshot, reads
 			}
 		}
 	}
-	out.unmapped.push( ...splitRows( { facts, homes, tried, where, rec, target, motion: stateHover( reads, target ).base, paint: paintTimings( reads, target.id ) } ) );
+	out.unmapped.push( ...splitRows( { facts, homes, tried, where, rec, target, shown, motion: stateHover( reads, target ).base, paint: paintTimings( reads, target.id ) } ) );
 	return out;
 }
 
@@ -281,9 +286,10 @@ const named = ( groups ) => groups.map( ( g ) => `${ g.properties.join( ', ' ) }
 // holds two timings: transform's for the movement, and one for colour, background, border colour and shadow (paint,
 // paintTimings: the timing most paint properties share, written by lib/fill-motion.mjs::motionWrites as paintDuration and
 // paintEasing). A property either timing holds leaves no row; each other is a `timing-conflict` row. Where the block has
-// no setting for the longhand on this element, each property is a `timing-no-home` row; any other gap leaves a
+// no setting for the longhand on this element, each property is a `timing-no-home` row, and none where the element's
+// calibrated default paint already shows the resting list at that width (shown); any other gap leaves a
 // `timing-split` row for the properties its reported value does not cover.
-function splitRows( { facts, homes, tried, where, rec, target, motion, paint = {} } ) {
+function splitRows( { facts, homes, tried, where, rec, target, shown, motion, paint = {} } ) {
 	const rows = new Map();
 	const part = target.slot || 'this element';
 	for ( const { prop, state, width, value, groups } of facts.split ) {
@@ -297,7 +303,7 @@ function splitRows( { facts, homes, tried, where, rec, target, motion, paint = {
 			? [ { draft: others, reason: attr
 				? `timing-conflict: ${ attr } holds one ${ prop } for every property ${ part } transitions; ${ ref.value } is written (${ ref.properties.join( ', ' ) }), and the draft times ${ named( others ) }`
 				: `timing-split: the ${ prop } reported for ${ part } is ${ ref.value } (${ ref.properties.join( ', ' ) }); the draft also times ${ named( others ) }` } ]
-			: groups.flatMap( ( g ) => g.properties.map( ( p ) => ( { draft: [ { value: g.value, properties: [ p ] } ], reason: `timing-no-home: ${ rec.name } has no setting that holds the ${ prop } of ${ p } on ${ part } (the draft's ${ g.value })` } ) ) );
+			: shown( prop, width ) ? [] : groups.flatMap( ( g ) => g.properties.map( ( p ) => ( { draft: [ { value: g.value, properties: [ p ] } ], reason: `timing-no-home: ${ rec.name } has no setting that holds the ${ prop } of ${ p } on ${ part } (the draft's ${ g.value })` } ) ) );
 		for ( const { draft, reason } of lines ) {
 			const key = `${ prop }|${ state }|${ reason }`;
 			const row = rows.get( key ) || { ...where, property: prop, state, value: JSON.stringify( draft.map( ( g ) => ( { properties: g.properties, value: g.value } ) ) ), reason, widths: [] };
