@@ -41,7 +41,7 @@ export function flowOffsets( pairs, ds, ls, mainY, t ) {
 	return out;
 }
 
-export function compareState( run, d, l, { state, width, cfg, accept, divergences = [], tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks, unmatched, mispaired } ) {
+export function compareState( run, d, l, { state, width, cfg, accept, divergences = [], tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks, unmatched, mispaired, everyState = {} } ) {
 	// Box differences are judged first: a notPainted accept holds only while every
 	// box difference on the pair is itself accepted (a 44px touch target, say).
 	// The config's accepts first, then the divergence ledger.
@@ -61,7 +61,7 @@ export function compareState( run, d, l, { state, width, cfg, accept, divergence
 	run.pairs[ '(state)' ] = { draft: d.log, live: l.log, diffs: judge( '(state)', driveDiffs( d.log, l.log ) ) };
 	const flow = cfg.refPrefix ? flowOffsets( pairsFor( state ), d.snap, l.snap, { draft: d.mainY, live: l.mainY }, tol ) : {};
 	for ( const p of pairsFor( state ) ) {
-		const own = comparePair( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) } );
+		const own = comparePair( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) }, everyState[ p.name ] ?? null );
 		// Two elements of different kinds (a draft <div> against a live <img>, GAP-CHECKLIST.md section 20) are one `tag` row
 		// and nothing else: no structure, scroll, flow, painted-ground or timeline row between them either.
 		const mismatch = own.some( ( x ) => 'tag' === x.kind );

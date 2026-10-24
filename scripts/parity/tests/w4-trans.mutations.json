@@ -1,0 +1,158 @@
+[
+	{
+		"file": "lib/transitions.mjs",
+		"find": "( 'timing' === f ? sameCurve( a[ f ], b[ f ] ) :",
+		"replace": "( 'timing' === f ? a[ f ] === b[ f ] :",
+		"why": "easing compared as text"
+	},
+	{
+		"file": "lib/transitions.mjs",
+		"find": "ease: [ 0.25, 0.1, 0.25, 1 ],",
+		"replace": "ease: [ 0.42, 0, 1, 1 ],",
+		"why": "ease is ease-in's curve"
+	},
+	{
+		"file": "lib/transitions.mjs",
+		"find": ", linear: [ 0, 0, 1, 1 ] };",
+		"replace": " };",
+		"why": "linear has no curve"
+	},
+	{
+		"file": "lib/transitions.mjs",
+		"find": "'step-end': 'steps(1,jump-end)'",
+		"replace": "'step-end': 'steps(1,jump-start)'",
+		"why": "step-end read as step-start"
+	},
+	{
+		"file": "lib/transitions.mjs",
+		"find": "end: 'jump-end' };",
+		"replace": "end: 'end' };",
+		"why": "the end position kept as end"
+	},
+	{
+		"file": "lib/transitions.mjs",
+		"find": "start: 'jump-start', end",
+		"replace": "start: 'start', end",
+		"why": "the start position kept as start"
+	},
+	{
+		"file": "lib/transitions.mjs",
+		"find": "const at = steps[ 2 ] ?? 'jump-end';",
+		"replace": "const at = steps[ 2 ] ?? 'jump-start';",
+		"why": "steps() with no position is jump-start"
+	},
+	{
+		"file": "lib/transitions.mjs",
+		"find": "x.every( ( v, i ) => Math.abs( v - y[ i ] ) < 0.001 )",
+		"replace": "x.every( ( v, i ) => Math.abs( v - y[ i ] ) < 1 )",
+		"why": "any two beziers within 1 are one curve"
+	},
+	{
+		"file": "lib/transitions.mjs",
+		"find": "return 4 === n.length && n.every( Number.isFinite ) ? n : text;",
+		"replace": "return text;",
+		"why": "a bezier compared as text"
+	},
+	{
+		"file": "lib/transitions.mjs",
+		"find": "everyState && Array.isArray( changes ) && d.size > 0 && l.size > 0 && ! movesIn( k, changes )",
+		"replace": "everyState && Array.isArray( changes ) && ! movesIn( k, changes )",
+		"why": "the drop no longer needs both sides to transition"
+	},
+	{
+		"file": "lib/transitions.mjs",
+		"find": "everyState && Array.isArray( changes ) && d.size > 0 && l.size > 0 && ! movesIn( k, changes )",
+		"replace": "everyState && Array.isArray( changes ) && d.size > 0 && l.size > 0",
+		"why": "the drop ignores the change set"
+	},
+	{
+		"file": "lib/transitions.mjs",
+		"find": "everyState && Array.isArray( changes ) && d.size > 0",
+		"replace": "Array.isArray( changes ) && d.size > 0",
+		"why": "the drop applies to hover-only change sets"
+	},
+	{
+		"file": "lib/transitions.mjs",
+		"find": "return ! a && ! b ? true : absent || still( k );",
+		"replace": "return ! a && ! b ? true : absent;",
+		"why": "no one-sided entry is ever dropped"
+	},
+	{
+		"file": "lib/transitions.mjs",
+		"find": "'box:h': /^((min-|max-)?height|padding|margin)(-|$)/",
+		"replace": "'box:h': /^(padding|margin)(-|$)/",
+		"why": "a box height change no longer moves block-size"
+	},
+	{
+		"file": "lib/transitions.mjs",
+		"find": "[ /block-size/, 'height' ]",
+		"replace": "[ /block-size/, 'block-size' ]",
+		"why": "block-size not read as height"
+	},
+	{
+		"file": "lib/transitions.mjs",
+		"find": "x === p || x.startsWith( `${ p }-` ) || p.startsWith( `${ x }-` )",
+		"replace": "x === p",
+		"why": "a shorthand transition no longer matched by its longhand change"
+	},
+	{
+		"file": "lib/state-changes.mjs",
+		"find": "if ( 1 === snaps.length && ( snaps[ 0 ].d.noHover || snaps[ 0 ].l.noHover ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a phone run with one state is treated as known"
+	},
+	{
+		"file": "lib/state-changes.mjs",
+		"find": " || s.d.missing || s.l.missing ) ) {",
+		"replace": " ) ) {",
+		"why": "a state missing the element is treated as known"
+	},
+	{
+		"file": "lib/state-changes.mjs",
+		"find": "if ( null === own ) {\n\t\t\treturn null;\n\t\t}",
+		"replace": "if ( null === own ) {\n\t\t\tcontinue;\n\t\t}",
+		"why": "a state whose hover was not read is skipped"
+	},
+	{
+		"file": "lib/state-changes.mjs",
+		"find": "String( rest.styles[ k ] ) !== String( x.styles[ k ] )",
+		"replace": "false",
+		"why": "resting style changes between states are ignored"
+	},
+	{
+		"file": "lib/state-changes.mjs",
+		"find": "( rest.box?.[ a ] ?? 0 ) ) > tol",
+		"replace": "( rest.box?.[ a ] ?? 0 ) ) > 100",
+		"why": "box changes between states are ignored"
+	},
+	{
+		"file": "lib/state-changes.mjs",
+		"find": "walked.filter( ( s ) => pairsFor( s ).includes( p ) )",
+		"replace": "walked",
+		"why": "a state that does not walk the pair still feeds its set"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "( every ? ! every.length : statesRead( d )",
+		"replace": "( statesRead( d )",
+		"why": "timingIrrelevant ignores the cross-state set"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "const changes = everyState ? every : changed( d, l );",
+		"replace": "const changes = changed( d, l );",
+		"why": "comparePair ignores the cross-state set"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "sameTransitions( d.motion[ k ], l.motion[ k ], null, changes, everyState )",
+		"replace": "sameTransitions( d.motion[ k ], l.motion[ k ], null, changes )",
+		"why": "the shorthand row never drops"
+	},
+	{
+		"file": "lib/compare.mjs",
+		"find": "sameTransitions( ...shorthands, p, changes, everyState )",
+		"replace": "sameTransitions( ...shorthands, p, changes )",
+		"why": "the longhand rows never drop"
+	}
+]

@@ -38,6 +38,7 @@ import { partsPass } from './lib/parts.mjs';
 import { sampleEntrances, sampleRegion } from './lib/entrances.mjs';
 import { isAccepted } from './lib/compare.mjs';
 import { compareState } from './lib/compare-state.mjs';
+import { everyStateMap } from './lib/state-changes.mjs';
 import { writeReport, sideBySide } from './lib/report.mjs';
 import { lintRun } from './lib/lint.mjs';
 import { collectStructure } from './lib/structure.mjs';
@@ -356,6 +357,8 @@ for ( const width of widths ) {
 	}
 	const live = await walkSide( browser, 'live', width, draft.states );
 	results.errors[ width ] = { draft: draft.errors, live: live.errors };
+	// What each pair moves in any state at this width, on either side (lib/state-changes.mjs), for the transition rows.
+	const everyState = everyStateMap( cfg.states, draft.states, live.states, pairsFor );
 	for ( const state of cfg.states.filter( ( s ) => draft.states[ s.name ] ) ) {
 		const d = draft.states[ state.name ];
 		const l = live.states[ state.name ];
@@ -369,7 +372,7 @@ for ( const width of widths ) {
 			await sideBySide( browser, d.shot, l.shot, shot, width );
 		}
 		const run = { ...bare, shot: shot ? path.basename( shot ) : null };
-		compareState( run, d, l, { state, width, cfg, accept, divergences, tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks, unmatched, mispaired } );
+		compareState( run, d, l, { state, width, cfg, accept, divergences, tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks, unmatched, mispaired, everyState } );
 		results.runs.push( run );
 	}
 }
