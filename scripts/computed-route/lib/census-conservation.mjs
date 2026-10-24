@@ -26,9 +26,16 @@ const INPUTS = [ 'skeleton', 'draft' ];
 export const fileSha = ( file ) => createHash( 'sha256' ).update( fs.readFileSync( file ) ).digest( 'hex' );
 // The read set holds the draft's rest look; a state look is judged by the state check, not here.
 export const STATE = 'rest';
-const MOTION = /^(?:transition|animation)(?:-|$)/;
-// Writes of the motion writers carry no per-property row; they answer every transition and animation longhand of their element.
+// The state names an outcome row carries for the rest look: none, `default` (the confirm records') and `*` (a ledger entry
+// for every state).
+const REST = [ undefined, null, '', 'default', 'rest', '*' ];
+const atRest = ( state ) => REST.includes( state );
+// The confirm verdicts that say the element shows the value (lib/fill-confirm.mjs::verdictOf).
+const SHOWN = [ 'confirmed' ];
+// The motion writers: their writes name settings, not properties (motionLonghands).
 const MOTION_HOW = [ 'motion', 'fill-timing' ];
+// What a motion layer's timing values write on its element (the sgsMotion layer, fill-motion-element.mjs).
+const LAYER_LONGHANDS = { duration: 'transition-duration', paintDuration: 'transition-duration', easing: 'transition-timing-function', paintEasing: 'transition-timing-function', delay: 'transition-delay', paintDelay: 'transition-delay' };
 
 const longhandCache = new Map();
 // A property and every longhand it sets, through nested shorthands (`border` reaches `border-top-width`).
@@ -42,43 +49,93 @@ export function longhandsOf( property ) {
 
 const at = ( node, slot ) => `${ node }|${ slot ?? '' }`;
 
-// The outcome rows of a run as { node, slot, readSlot, property, widths (null = every width), outcome, how }. `report` is
-// fill-report.json, `unmapped` is unmapped.json. State rows are left out: the read set is the rest look.
+// The longhands one motion-pass write sets: the timing longhands each value of its sgsMotion layer writes (on the layer's
+// element, the write's slot), the write's own property when it names one (fill-timing writes name it), else none (a
+// scroll or magnet setting writes no CSS longhand the read set holds).
+export function motionLonghands( w ) {
+	if ( 'sgsMotion' === w.attr && w.after && 'object' === typeof w.after ) {
+		const out = new Set();
+		for ( const el of Object.values( w.after.elements || {} ) ) {
+			for ( const layer of Object.values( el || {} ) ) {
+				for ( const k of Object.keys( layer?.state?.values || {} ) ) {
+					LAYER_LONGHANDS[ k ] && out.add( LAYER_LONGHANDS[ k ] );
+				}
+			}
+		}
+		return [ ...out ];
+	}
+	return MDN[ w.covers ?? w.prop ] ? [ w.covers ?? w.prop ] : [];
+}
+
+// A width-keyed UNMAPPED value ({ "768": "700" }) names the widths the row stands for; a plain value stands for every
+// width the draft declared it at (lib/fill-resolve-state.mjs::valueText collapses agreeing widths).
+function unmappedWidths( value ) {
+	try {
+		const v = JSON.parse( value );
+		if ( v && 'object' === typeof v && ! Array.isArray( v ) ) {
+			const ws = Object.keys( v ).map( Number );
+			return ws.length && ws.every( Number.isFinite ) ? ws : null;
+		}
+	} catch {}
+	return null;
+}
+
+// The outcome rows of a run as { node, slot (the element the row answers for: a write's or settled row's readSlot where it
+// has one), property, properties (a motion write's longhands), widths (null = every width), outcome, how }. `report` is
+// fill-report.json, `unmapped` is unmapped.json. Rows of another look (a state) are left out: the read set is the rest look.
+// A write that names no widths answers none. A confirm record counts as written only when its verdict says the element
+// shows the value. `unreasoned` lists the settled rows that record no reason.
 export function outcomesOf( { report, unmapped } ) {
 	const out = [];
+	const unreasoned = [];
 	for ( const w of report.writes || [] ) {
+		if ( ! atRest( w.state ) ) {
+			continue;
+		}
 		const widths = [ ...new Set( [ ...( w.widths || [] ), ...( w.answers || [] ) ] ) ];
-		w.state || out.push( { node: w.node, slot: w.slot, readSlot: w.readSlot, property: w.covers ?? w.prop, widths: widths.length ? widths : null, outcome: 'written', how: w.how } );
+		out.push( { node: w.node, slot: w.readSlot ?? w.slot, writtenOn: w.slot, property: w.covers ?? w.prop, ...( MOTION_HOW.includes( w.how ) ? { properties: motionLonghands( w ) } : {} ), widths, outcome: 'written', how: w.how } );
 	}
 	for ( const s of report.settled || [] ) {
+		if ( ! atRest( s.state ) ) {
+			continue;
+		}
+		if ( ! s.reason ) {
+			unreasoned.push( { node: s.node, block: s.block, slot: s.slot ?? '', property: s.property } );
+			continue;
+		}
 		// A settled row answers the widths it records, and none when it records none.
-		out.push( { node: s.node, slot: s.slot, readSlot: s.readSlot, property: s.property, widths: s.widths?.length ? s.widths : [], outcome: 'held', how: `settled:${ s.reason }` } );
+		out.push( { node: s.node, slot: s.readSlot ?? s.slot, writtenOn: s.slot, property: s.property, widths: s.widths?.length ? s.widths : [], outcome: 'held', how: `settled:${ s.reason }` } );
 	}
 	for ( const c of report.confirm || [] ) {
-		( ! c.state || 'default' === c.state ) && out.push( { node: c.node, slot: c.slot, property: c.property, widths: [ c.width ], outcome: 'written', how: 'confirm' } );
+		atRest( c.state ) && SHOWN.includes( c.verdict ) && out.push( { node: c.node, slot: c.slot, property: c.property, widths: [ c.width ], outcome: 'written', how: 'confirm' } );
 	}
 	for ( const h of report.alreadyHeld || [] ) {
-		h.state || out.push( { node: h.node, slot: h.slot, property: h.property, widths: null, outcome: 'held', how: h.reason } );
+		atRest( h.state ) && out.push( { node: h.node, slot: h.slot, property: h.property, widths: null, outcome: 'held', how: h.reason } );
 	}
 	for ( const l of report.ledger || [] ) {
-		out.push( { node: l.node, slot: l.slot, property: l.prop, widths: null === l.width || undefined === l.width ? null : [ l.width ], outcome: 'held', how: 'ledger' } );
+		// An entry Fill did not apply to the rest look (a decided hover value, lib/fill-resolve-state.mjs::ledgerView) holds no rest read.
+		atRest( l.state ) && false !== l.applied && out.push( { node: l.node, slot: l.slot, property: l.prop, widths: null === l.width || undefined === l.width ? null : [ l.width ], outcome: 'held', how: 'ledger' } );
 	}
 	for ( const u of unmapped || [] ) {
+		if ( ! atRest( u.state ) ) {
+			continue;
+		}
 		for ( const node of u.nodes?.length ? u.nodes : [ u.node ] ) {
-			out.push( { node, slot: u.slot, property: u.property, value: u.value, widths: null, outcome: 'unwritten', how: 'unmapped' } );
+			out.push( { node, slot: u.slot, property: u.property, value: u.value, widths: unmappedWidths( u.value ), outcome: 'unwritten', how: 'unmapped' } );
 		}
 	}
+	Object.defineProperty( out, 'unreasoned', { value: unreasoned } );
 	return out;
 }
 
-// Whether one outcome row answers one read: same element, a property that is the read's or a shorthand setting it, and a
-// width it states (an outcome with no width answers every width: unmapped and held rows carry none).
+// Whether one outcome row answers one read: (the index has matched node and element) a property that is the read's or a
+// shorthand setting it (a motion write: one of the longhands it writes), and a width it states (null: every width).
 function answers( o, read ) {
 	if ( o.widths && ! o.widths.includes( read.width ) ) {
 		return false;
 	}
-	if ( MOTION.test( read.property ) && ( MOTION_HOW.includes( o.how ) || MOTION.test( o.property || '' ) ) ) {
-		return true;
+	if ( o.properties ) {
+		return o.properties.includes( read.property );
 	}
 	return !! o.property && longhandsOf( o.property ).includes( read.property );
 }
@@ -89,10 +146,8 @@ const PASS_HOW = [ 'logo-size', 'width-ladder', 'width-gate', 'dimension' ];
 
 // Why the outcomes answering one read contradict each other, or null: the run calls the read's own property `equal` (the
 // element already shows it) and also leaves that property unwritten or writes it in a later pass. Only outcomes naming the
-// read's property (or a shorthand of it) are compared: a transition row answers its element's other motion longhands too.
-// A write that names the element it was read on (readSlot, a scoped rule on the root for an inner part) speaks for that
-// element only, and an unwritten row speaks for this read only where its value there is the read's (an UNMAPPED row of
-// another look, a hover or an open state, carries another value).
+// read's property (or a shorthand of it) are compared, and an unwritten row speaks for this read only where its value there
+// is the read's.
 const LIST = ( v ) => [ ...new Set( String( v ?? '' ).split( ',' ).map( ( x ) => x.trim().toLowerCase() ) ) ].join( ',' );
 function valueAtWidth( value, width ) {
 	try {
@@ -103,10 +158,10 @@ function valueAtWidth( value, width ) {
 	}
 }
 function contradiction( found, read ) {
-	const by = found.filter( ( o ) => !! o.property && longhandsOf( o.property ).includes( read.property ) && ( undefined === o.readSlot || ( o.readSlot ?? '' ) === ( read.slot ?? '' ) || 'settled:equal' === o.how ) && ( 'unwritten' !== o.outcome || ! o.value || LIST( valueAtWidth( o.value, read.width ) ) === LIST( read.value ) ) );
+	const by = found.filter( ( o ) => !! o.property && longhandsOf( o.property ).includes( read.property ) && ( 'unwritten' !== o.outcome || ! o.value || LIST( valueAtWidth( o.value, read.width ) ) === LIST( read.value ) ) );
 	const equal = by.find( ( o ) => 'settled:equal' === o.how );
 	const other = equal && by.find( ( o ) => 'unwritten' === o.outcome || ( 'written' === o.outcome && PASS_HOW.includes( o.how ) ) );
-	return other ? `settled equal${ equal.slot !== other.slot ? ` (judged on ${ equal.slot || 'the root' })` : '' } and ${ 'unwritten' === other.outcome ? 'unwritten' : `written by ${ other.how }` }: the run says both that the element shows the value and that it does not` : null;
+	return other ? `settled equal${ ( equal.writtenOn ?? equal.slot ) !== ( other.writtenOn ?? other.slot ) ? ` (judged on ${ equal.writtenOn || 'the root' })` : '' } and ${ 'unwritten' === other.outcome ? 'unwritten' : `written by ${ other.how }` }: the run says both that the element shows the value and that it does not` : null;
 }
 
 // The conservation verdict of a read set against a run's outcomes.
@@ -115,13 +170,14 @@ function contradiction( found, read ) {
 // longhands a shorthand leaves implied), `failures` is every other read that no outcome answers or whose outcomes
 // contradict each other (contradiction(), named in `why`), and `widthlessHolds`
 // every conserved read only an `alreadyHeld` row answers: Fill records no width for a hold, so such a row answers every
-// width and the hold may not cover this one.
+// width and the hold may not cover this one; `unreasoned` every settled row that records no reason (it conserves nothing
+// and fails the check).
 export function conservation( { reads, report, unmapped } ) {
 	const index = new Map();
-	for ( const o of outcomesOf( { report, unmapped } ) ) {
-		for ( const k of new Set( [ at( o.node, o.slot ), ...( undefined === o.readSlot ? [] : [ at( o.node, o.readSlot ) ] ) ] ) ) {
-			index.has( k ) ? index.get( k ).push( o ) : index.set( k, [ o ] );
-		}
+	const outcomes = outcomesOf( { report, unmapped } );
+	for ( const o of outcomes ) {
+		const k = at( o.node, o.slot );
+		index.has( k ) ? index.get( k ).push( o ) : index.set( k, [ o ] );
 	}
 	const failures = [];
 	const widthlessHolds = [];
@@ -140,7 +196,7 @@ export function conservation( { reads, report, unmapped } ) {
 			failures.push( { draft: read.draft, block: read.block, node: read.node, slot: read.slot ?? '', property: read.property, value: read.value, width: read.width, state: STATE } );
 		}
 	}
-	return { reads: reads.length, excluded: { cssWide }, conserved, failures, widthlessHolds };
+	return { reads: reads.length, excluded: { cssWide }, conserved, failures, widthlessHolds, unreasoned: outcomes.unreasoned };
 }
 
 // The failures grouped by block then property: [ { block, property, count, rows } ], largest first within a block.
@@ -211,7 +267,7 @@ export function bindingProblem( raw, dir, report, root ) {
 // to the run (bindingProblem; root: the repository the inputs are read under). Neither is counted clean.
 export function conservationRun( dir, { root = process.env.SGS_REPO_ROOT ? path.resolve( process.env.SGS_REPO_ROOT ) : REPO } = {} ) {
 	const file = path.join( dir, READ_FILE );
-	const none = { reads: 0, excluded: { cssWide: 0 }, conserved: 0, failures: [], widthlessHolds: [] };
+	const none = { reads: 0, excluded: { cssWide: 0 }, conserved: 0, failures: [], widthlessHolds: [], unreasoned: [] };
 	if ( ! fs.existsSync( file ) ) {
 		return { status: 'no-read-set', reason: `${ READ_FILE } is not in the run folder, so what the draft declared is unknown`, ...none };
 	}

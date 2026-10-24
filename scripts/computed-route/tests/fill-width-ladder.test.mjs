@@ -86,6 +86,7 @@ test( 'MUST FAIL WITHOUT RUNG 4: all three widths differ and nothing holds it, s
 	assert.match( a.sgsCustomCssNote, /Width ladder justify-content: 0-767px center, 768-1023px flex-end, 1024px and up space-between/ );
 	assert.equal( a.justifyContent, undefined );
 	assert.ok( r.writes.length && r.writes.every( ( w ) => 'justify-content' === w.covers ), 'each write of the rule names the property it answers (the census conservation check reads it)' );
+	assert.ok( r.writes.every( ( w ) => [ 375, 768, 1440 ].every( ( x ) => w.widths.includes( x ) ) && undefined === w.state ), 'each write of the rule names the read widths it holds (a write naming none answers none)' );
 	assert.deepEqual( r.ledger, [] );
 } );
 

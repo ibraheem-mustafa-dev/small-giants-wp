@@ -95,7 +95,7 @@ test( 'MUST FAIL: a value read on the root and written on the inner element that
 
 test( 'MUST FAIL: a scoped rule\'s write names the property and element it answers (covers, readSlot)', () => {
 	const read = { draft: 'x', node: 'n', block: 'b', slot: '.burger', property: 'align-items', width: 375, value: 'flex-end' };
-	const label = { node: 'n', slot: '', prop: 'width ladder (align-items): scoped @media rule', attr: 'sgsCustomCss', widths: [], how: 'width-gate' };
+	const label = { node: 'n', slot: '', prop: 'width ladder (align-items): scoped @media rule', attr: 'sgsCustomCss', widths: [ 375 ], how: 'width-gate' };
 	const without = conservation( { reads: [ read ], report: { writes: [ label ] }, unmapped: [] } );
 	assert.equal( without.failures.length, 1, 'a label prop answers nothing' );
 	const withIt = conservation( { reads: [ read ], report: { writes: [ { ...label, covers: 'align-items', readSlot: '.burger' } ] }, unmapped: [] } );

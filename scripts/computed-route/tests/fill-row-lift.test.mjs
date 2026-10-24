@@ -86,6 +86,8 @@ test( 'MUST FAIL: copies that disagree keep their own value on each icon, never 
 	assert.deepEqual( tree[ 0 ].innerBlocks.map( ( c ) => c.attributes.backgroundColour ), [ '#0A66C2', '#1877F2', '#FFFFFF' ] );
 	assert.ok( undefined !== tree[ 0 ].attributes.childIconBorderColour, 'the settings every copy agrees on are still written on the row' );
 	assert.equal( out.unmapped.filter( ( u ) => 'background-color' === u.property ).length, 0 );
+	const own = out.writes.filter( ( w ) => 'row-child' === w.how && 'backgroundColour' === w.attr );
+	assert.ok( own.length && own.every( ( w ) => w.widths.length ), 'each own icon write names the read widths it holds (a write naming none answers none)' );
 } );
 
 test( "MUST FAIL: one icon that differs takes its own value and the other two take the agreed value of the row", () => {
