@@ -1,0 +1,1233 @@
+[
+ {
+  "property": "display",
+  "value": "block",
+  "node": "cr-ref-header-0",
+  "reason": "no-setting: no layout setting holds display:block on sgs/site-header \"\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet); equivalence: 1 spelling: no shorthand | 2 values: draft block; default paint flex | 3 inert: no (display applies at 1440 (allElements)) | 4 effect: sgsHideOnDesktop (property), sgsHideOnMobile (property), sgsHideOnTablet (property) change display here but no measured value equals the draft (the emitted value is not predicted, FR-48-76) | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/site-header",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.3s",
+  "node": "cr-ref-header-0",
+  "reason": "no-setting: sgs/site-header has no setting for transition-duration; equivalence: 1 spelling: shorthands transition | 2 values: draft 0.3s (canonical 300); default paint 0s | 3 inert: no (transition-duration applies at 1440 (allElementsAndPseudos)) | 4 effect: no setting's measured effect reaches transition-duration on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/site-header",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "position",
+  "value": "sticky",
+  "node": "cr-ref-header-0",
+  "reason": "no-setting: sgs/site-header has no setting for position; equivalence: 1 spelling: no shorthand | 2 values: draft sticky; the default paint is unmeasured | 3 inert: no (position applies at 1440 (allElements)) | 4 effect: no setting's measured effect reaches position on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/site-header",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "z-index",
+  "value": "200",
+  "node": "cr-ref-header-0",
+  "reason": "no-setting: sgs/site-header has no setting for z-index; equivalence: 1 spelling: no shorthand | 2 values: draft 200; the default paint is unmeasured | 3 inert: no (z-index applies at 1440 (positionedElements: display block, position sticky, parent display unknown)) | 4 effect: no setting's measured effect reaches z-index on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/site-header",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "display",
+  "value": "{\"375\":\"block\",\"768\":\"flex\",\"1440\":\"flex\"}",
+  "node": "cr-ref-header-1",
+  "reason": "no-setting: no layout setting holds display:block, flex on sgs/site-header-row \"\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet); equivalence: 1 spelling: no shorthand | 2 values: draft block at 375, flex at 1440; default paint block | 3 inert: no (display applies at 375 (allElements); display applies at 1440 (allElements)) | 4 effect: sgsHideOnDesktop (property), sgsHideOnMobile (property), sgsHideOnTablet (property), minHeight (effect) change display here but no measured value equals the draft (the emitted value is not predicted, FR-48-76) | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/site-header-row",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "position",
+  "value": "relative",
+  "node": "cr-ref-header-1",
+  "reason": "no-setting: sgs/site-header-row has no setting for position; equivalence: 1 spelling: no shorthand | 2 values: draft relative; the default paint is unmeasured | 3 inert: no (position applies at 1440 (allElements)) | 4 effect: no setting's measured effect reaches position on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/site-header-row",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "z-index",
+  "value": "201",
+  "node": "cr-ref-header-1",
+  "reason": "no-setting: sgs/site-header-row has no setting for z-index; equivalence: 1 spelling: no shorthand | 2 values: draft 201; the default paint is unmeasured | 3 inert: no (z-index applies at 1440 (positionedElements: display flex, position relative, parent display unknown)) | 4 effect: no setting's measured effect reaches z-index on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/site-header-row",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "display",
+  "value": "flex",
+  "node": "cr-ref-header-3",
+  "reason": "no-setting: no layout setting holds display:flex on sgs/button \"\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet); equivalence: 1 spelling: no shorthand | 2 values: draft flex; default paint inline-flex | 3 inert: no (display applies at 375 (allElements)) | 4 effect: sgsHideOnDesktop (property), sgsHideOnMobile (property), sgsHideOnTablet (property) change display here but no measured value equals the draft (the emitted value is not predicted, FR-48-76) | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "text-align",
+  "value": "start",
+  "node": "cr-ref-header-3",
+  "reason": "shape: start is not one of , left, center, right, justify",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.2s, 0.25s, 0.2s, 0.2s",
+  "node": "cr-ref-header-3",
+  "reason": "no-setting: sgs/button has no setting for transition-duration; equivalence: 1 spelling: shorthands transition | 2 values: draft 0.2s, 0.25s, 0.2s, 0.2s (canonical 200, 250, 200, 200); default paint 0.18s, 0.18s, 0.18s, 0.18s, 0.18s, 0.18s, 0.18s | 3 inert: no (transition-duration applies at 375 (allElementsAndPseudos)) | 4 effect: no setting's measured effect reaches transition-duration on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "white-space-collapse",
+  "value": "collapse",
+  "node": "cr-ref-header-3",
+  "reason": "no-setting: sgs/button has no setting for white-space-collapse; held (default): the block's calibrated default paint of this element is already white-space-collapse collapse (read from white-space)",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "svg",
+  "value": "iconSource",
+  "node": "cr-ref-header-4",
+  "reason": "the block declares no iconSource, so the draft icon's iconSource is not written",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "display",
+  "value": "flex",
+  "node": "cr-ref-header-4",
+  "reason": "no-setting: no layout setting holds display:flex on sgs/button \"\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet); equivalence: 1 spelling: no shorthand | 2 values: draft flex; default paint inline-flex | 3 inert: no (display applies at 1440 (allElements)) | 4 effect: sgsHideOnDesktop (property), sgsHideOnMobile (property), sgsHideOnTablet (property) change display here but no measured value equals the draft (the emitted value is not predicted, FR-48-76) | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "text-align",
+  "value": "start",
+  "node": "cr-ref-header-4",
+  "reason": "shape: start is not one of , left, center, right, justify",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.2s, 0.25s, 0.2s, 0.2s",
+  "node": "cr-ref-header-4",
+  "reason": "no-setting: sgs/button has no setting for transition-duration; equivalence: 1 spelling: shorthands transition | 2 values: draft 0.2s, 0.25s, 0.2s, 0.2s (canonical 200, 250, 200, 200); default paint 0.18s, 0.18s, 0.18s, 0.18s, 0.18s, 0.18s, 0.18s | 3 inert: no (transition-duration applies at 1440 (allElementsAndPseudos)) | 4 effect: no setting's measured effect reaches transition-duration on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "white-space-collapse",
+  "value": "collapse",
+  "node": "cr-ref-header-4",
+  "reason": "no-setting: sgs/button has no setting for white-space-collapse; held (default): the block's calibrated default paint of this element is already white-space-collapse collapse (read from white-space)",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "svg",
+  "value": "iconSource",
+  "node": "cr-ref-header-5",
+  "reason": "the block declares no iconSource, so the draft icon's iconSource is not written",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "display",
+  "value": "flex",
+  "node": "cr-ref-header-5",
+  "reason": "no-setting: no layout setting holds display:flex on sgs/button \"\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet); equivalence: 1 spelling: no shorthand | 2 values: draft flex; default paint inline-flex | 3 inert: no (display applies at 375 (allElements)) | 4 effect: sgsHideOnDesktop (property), sgsHideOnMobile (property), sgsHideOnTablet (property) change display here but no measured value equals the draft (the emitted value is not predicted, FR-48-76) | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "text-align",
+  "value": "start",
+  "node": "cr-ref-header-5",
+  "reason": "shape: start is not one of , left, center, right, justify",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.2s, 0.25s, 0.2s, 0.2s",
+  "node": "cr-ref-header-5",
+  "reason": "no-setting: sgs/button has no setting for transition-duration; equivalence: 1 spelling: shorthands transition | 2 values: draft 0.2s, 0.25s, 0.2s, 0.2s (canonical 200, 250, 200, 200); default paint 0.18s, 0.18s, 0.18s, 0.18s, 0.18s, 0.18s, 0.18s | 3 inert: no (transition-duration applies at 375 (allElementsAndPseudos)) | 4 effect: no setting's measured effect reaches transition-duration on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "white-space-collapse",
+  "value": "collapse",
+  "node": "cr-ref-header-5",
+  "reason": "no-setting: sgs/button has no setting for white-space-collapse; held (default): the block's calibrated default paint of this element is already white-space-collapse collapse (read from white-space)",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "svg",
+  "value": "iconSource",
+  "node": "cr-ref-header-6",
+  "reason": "the block declares no iconSource, so the draft icon's iconSource is not written",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "display",
+  "value": "flex",
+  "node": "cr-ref-header-6",
+  "reason": "no-setting: no layout setting holds display:flex on sgs/button \"\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet); equivalence: 1 spelling: no shorthand | 2 values: draft flex; default paint inline-flex | 3 inert: no (display applies at 1440 (allElements)) | 4 effect: sgsHideOnDesktop (property), sgsHideOnMobile (property), sgsHideOnTablet (property) change display here but no measured value equals the draft (the emitted value is not predicted, FR-48-76) | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "text-align",
+  "value": "start",
+  "node": "cr-ref-header-6",
+  "reason": "shape: start is not one of , left, center, right, justify",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.2s, 0.25s, 0.2s, 0.2s",
+  "node": "cr-ref-header-6",
+  "reason": "no-setting: sgs/button has no setting for transition-duration; equivalence: 1 spelling: shorthands transition | 2 values: draft 0.2s, 0.25s, 0.2s, 0.2s (canonical 200, 250, 200, 200); default paint 0.18s, 0.18s, 0.18s, 0.18s, 0.18s, 0.18s, 0.18s | 3 inert: no (transition-duration applies at 1440 (allElementsAndPseudos)) | 4 effect: no setting's measured effect reaches transition-duration on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "white-space-collapse",
+  "value": "collapse",
+  "node": "cr-ref-header-6",
+  "reason": "no-setting: sgs/button has no setting for white-space-collapse; held (default): the block's calibrated default paint of this element is already white-space-collapse collapse (read from white-space)",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.35s, 0.25s",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for transition-duration; equivalence: 1 spelling: shorthands transition | 2 values: draft 0.35s, 0.25s (canonical 350, 250); default paint 0.25s, 0.25s, 0.25s, 0.25s | 3 inert: no (transition-duration applies at 1440 (allElementsAndPseudos)) | 4 effect: no setting's measured effect reaches transition-duration on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/icon",
+  "slot": "",
+  "state": null,
+  "nodes": [
+   "cr-ref-header-8",
+   "cr-ref-header-9",
+   "cr-ref-header-10",
+   "cr-ref-header-11"
+  ]
+ },
+ {
+  "property": "transition-timing-function",
+  "value": "cubic-bezier(0.34, 1.56, 0.64, 1), ease",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for transition-timing-function; equivalence: 1 spelling: shorthands transition | 2 values: draft cubic-bezier(0.34, 1.56, 0.64, 1), ease (canonical 0.34,1.56,0.64,1 | 0.25,0.1,0.25,1); default paint ease, ease, ease, ease | 3 inert: no (transition-timing-function applies at 1440 (allElementsAndPseudos)) | 4 effect: no setting's measured effect reaches transition-timing-function on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/icon",
+  "slot": "",
+  "state": null,
+  "nodes": [
+   "cr-ref-header-8",
+   "cr-ref-header-9",
+   "cr-ref-header-10",
+   "cr-ref-header-11"
+  ]
+ },
+ {
+  "property": "height",
+  "value": "34px",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for height; equivalence: 1 spelling: no shorthand | 2 values: draft 34px; default paint 32px | 3 inert: no (height applies at 1440 (allElementsButNonReplacedAndTableColumns)) | 4 effect: borderStyle (effect), borderWidth (effect), shapeSize (effect) change height here but no measured value equals the draft (the emitted value is not predicted, FR-48-76); property_equivalents holds max-height on the self (intrinsic-ratio), min-height on the self (render-matches), tried by lib/fill-equivalents.mjs | 5 judges: nothing written, so the walker judges the row; dimension: the content is of unknown height at 768, of unknown height at 1440 against a declared height of 34px / 34px, so a minimum would grow the box the draft overflows; not written",
+  "block": "sgs/icon",
+  "slot": "",
+  "state": null,
+  "nodes": [
+   "cr-ref-header-8",
+   "cr-ref-header-9",
+   "cr-ref-header-10",
+   "cr-ref-header-11"
+  ]
+ },
+ {
+  "property": "justify-content",
+  "value": "center",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for justify-content; equivalence: 1 spelling: shorthands place-content | 2 values: draft center; default paint normal | 3 inert: no (justify-content applies at 1440 (spec: multicol containers, flex containers, and grid containers: display flex, parent display unknown)) | 4 effect: no setting's measured effect reaches justify-content on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/icon",
+  "slot": "",
+  "state": null,
+  "nodes": [
+   "cr-ref-header-8",
+   "cr-ref-header-9",
+   "cr-ref-header-10",
+   "cr-ref-header-11"
+  ]
+ },
+ {
+  "property": "align-items",
+  "value": "center",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for align-items; equivalence: 1 spelling: shorthands place-items | 2 values: draft center; default paint normal | 3 inert: no (align-items applies at 1440 (allElements)) | 4 effect: no setting's measured effect reaches align-items on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/icon",
+  "slot": "",
+  "state": null,
+  "nodes": [
+   "cr-ref-header-8",
+   "cr-ref-header-9",
+   "cr-ref-header-10",
+   "cr-ref-header-11"
+  ]
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.35s, 0.25s",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for transition-duration; equivalence: 1 spelling: shorthands transition | 2 values: draft 0.35s, 0.25s (canonical 350, 250); default paint 0s | 3 inert: no (transition-duration applies at 1440 (allElementsAndPseudos)) | 4 effect: no setting's measured effect reaches transition-duration on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/icon",
+  "slot": "",
+  "state": null,
+  "nodes": [
+   "cr-ref-header-8",
+   "cr-ref-header-9",
+   "cr-ref-header-10",
+   "cr-ref-header-11"
+  ]
+ },
+ {
+  "property": "transition-timing-function",
+  "value": "cubic-bezier(0.34, 1.56, 0.64, 1), ease",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for transition-timing-function; equivalence: 1 spelling: shorthands transition | 2 values: draft cubic-bezier(0.34, 1.56, 0.64, 1), ease (canonical 0.34,1.56,0.64,1 | 0.25,0.1,0.25,1); default paint ease | 3 inert: no (transition-timing-function applies at 1440 (allElementsAndPseudos)) | 4 effect: no setting's measured effect reaches transition-timing-function on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/icon",
+  "slot": "",
+  "state": null,
+  "nodes": [
+   "cr-ref-header-8",
+   "cr-ref-header-9",
+   "cr-ref-header-10",
+   "cr-ref-header-11"
+  ]
+ },
+ {
+  "property": "height",
+  "value": "34px",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for height; equivalence: 1 spelling: no shorthand | 2 values: draft 34px; default paint 32px | 3 inert: no (height applies at 1440 (allElementsButNonReplacedAndTableColumns)) | 4 effect: iconSize (effect) changes height here but no measured value equals the draft (the emitted value is not predicted, FR-48-76); property_equivalents holds max-height on the self (intrinsic-ratio), min-height on the self (render-matches), tried by lib/fill-equivalents.mjs | 5 judges: nothing written, so the walker judges the row; dimension: the content is of unknown height at 768, of unknown height at 1440 against a declared height of 34px / 34px, so a minimum would grow the box the draft overflows; not written",
+  "block": "sgs/icon",
+  "slot": "",
+  "state": null,
+  "nodes": [
+   "cr-ref-header-8",
+   "cr-ref-header-9",
+   "cr-ref-header-10",
+   "cr-ref-header-11"
+  ]
+ },
+ {
+  "property": "justify-content",
+  "value": "normal",
+  "node": "cr-ref-header-11",
+  "reason": "ambiguous: iconSource=wp-icon, iconSource=emoji all give justify-content on \".sgs-icon__shape > .sgs-icon__glyph\"",
+  "block": "sgs/icon",
+  "slot": ".sgs-icon__shape > .sgs-icon__svg",
+  "state": null,
+  "nodes": [
+   "cr-ref-header-8",
+   "cr-ref-header-9",
+   "cr-ref-header-10",
+   "cr-ref-header-11"
+  ]
+ },
+ {
+  "property": "align-items",
+  "value": "normal",
+  "node": "cr-ref-header-11",
+  "reason": "ambiguous: iconSource=wp-icon, iconSource=emoji all give align-items on \".sgs-icon__shape > .sgs-icon__glyph\"",
+  "block": "sgs/icon",
+  "slot": ".sgs-icon__shape > .sgs-icon__svg",
+  "state": null,
+  "nodes": [
+   "cr-ref-header-8",
+   "cr-ref-header-9",
+   "cr-ref-header-10",
+   "cr-ref-header-11"
+  ]
+ },
+ {
+  "property": "fill",
+  "value": "rgb(255, 255, 255)",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for fill; equivalence: 1 spelling: no shorthand | 2 values: draft rgb(255, 255, 255); default paint rgb(0, 0, 0) | 3 inert: no (fill applies at 1440 (limitedSVGElementsShapeText)) | 4 effect: no setting's measured effect reaches fill on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/icon",
+  "slot": ".sgs-icon__shape > .sgs-icon__svg",
+  "state": null,
+  "nodes": [
+   "cr-ref-header-8",
+   "cr-ref-header-9",
+   "cr-ref-header-11"
+  ]
+ },
+ {
+  "property": "height",
+  "value": "17px",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for height; equivalence: 1 spelling: no shorthand | 2 values: draft 17px; default paint 32px | 3 inert: no (height applies at 1440 (allElementsButNonReplacedAndTableColumns)) | 4 effect: iconSize (effect) changes height here but no measured value equals the draft (the emitted value is not predicted, FR-48-76); property_equivalents holds max-height on the self (intrinsic-ratio), min-height on the self (render-matches), tried by lib/fill-equivalents.mjs | 5 judges: nothing written, so the walker judges the row; dimension: the content is of unknown height at 768, of unknown height at 1440 against a declared height of 17px / 17px, so a minimum would grow the box the draft overflows; not written",
+  "block": "sgs/icon",
+  "slot": ".sgs-icon__shape > .sgs-icon__svg",
+  "state": null,
+  "nodes": [
+   "cr-ref-header-8",
+   "cr-ref-header-9",
+   "cr-ref-header-11"
+  ]
+ },
+ {
+  "property": "height",
+  "value": "15px",
+  "node": "cr-ref-header-10",
+  "reason": "no-setting: sgs/icon has no setting for height; equivalence: 1 spelling: no shorthand | 2 values: draft 15px; default paint 32px | 3 inert: no (height applies at 1440 (allElementsButNonReplacedAndTableColumns)) | 4 effect: iconSize (effect) changes height here but no measured value equals the draft (the emitted value is not predicted, FR-48-76); property_equivalents holds max-height on the self (intrinsic-ratio), min-height on the self (render-matches), tried by lib/fill-equivalents.mjs | 5 judges: nothing written, so the walker judges the row; dimension: the content is of unknown height at 768, of unknown height at 1440 against a declared height of 15px / 15px, so a minimum would grow the box the draft overflows; not written",
+  "block": "sgs/icon",
+  "slot": ".sgs-icon__shape > .sgs-icon__svg",
+  "state": null
+ },
+ {
+  "property": "border-bottom-style",
+  "value": "solid",
+  "node": "cr-ref-header-12",
+  "reason": "shape: borderStyle holds one value for every side; draft has border-top-style none, border-right-style none, border-bottom-style solid, border-left-style none at 1440",
+  "block": "sgs/site-header-row",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "position",
+  "value": "relative",
+  "node": "cr-ref-header-12",
+  "reason": "no-setting: sgs/site-header-row has no setting for position; equivalence: 1 spelling: no shorthand | 2 values: draft relative; the default paint is unmeasured | 3 inert: no (position applies at 1440 (allElements)) | 4 effect: no setting's measured effect reaches position on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/site-header-row",
+  "slot": ".sgs-container__inner",
+  "state": null
+ },
+ {
+  "property": "aria-label",
+  "value": "Indus Foods Ltd",
+  "node": "cr-ref-header-13",
+  "reason": "no setting of the block holds the aria-label of \"\" (the block has no such setting)",
+  "block": "sgs/responsive-logo",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "display",
+  "value": "block",
+  "node": "cr-ref-header-13",
+  "reason": "no-setting: no layout setting holds display:block on sgs/responsive-logo \"\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet); equivalence: 1 spelling: no shorthand | 2 values: draft block; default paint inline-block | 3 inert: no (display applies at 1440 (allElements)) | 4 effect: sgsHideOnDesktop (property), sgsHideOnMobile (property), sgsHideOnTablet (property) change display here but no measured value equals the draft (the emitted value is not predicted, FR-48-76) | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/responsive-logo",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "color",
+  "value": "rgb(10, 126, 168)",
+  "node": "cr-ref-header-13",
+  "reason": "no-setting: sgs/responsive-logo has no setting for color; equivalence: 1 spelling: no shorthand | 2 values: draft rgb(10, 126, 168); the default paint is unmeasured | 3 inert: no (color applies at 1440 (allElementsAndText)) | 4 effect: no setting's measured effect reaches color on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/responsive-logo",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "aspect-ratio",
+  "value": "3741 / 848",
+  "node": "cr-ref-header-13",
+  "reason": "no-setting: sgs/responsive-logo has no setting for aspect-ratio; equivalence: 1 spelling: no shorthand | 2 values: draft 3741 / 848; default paint auto | 3 inert: no (aspect-ratio applies at 1440 (allElementsExceptInlineBoxesAndInternalRubyOrTableBoxes)) | 4 effect: no setting's measured effect reaches aspect-ratio on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/responsive-logo",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "display",
+  "value": "flex",
+  "node": "cr-ref-header-15",
+  "reason": "no-setting: no layout setting holds display:flex on sgs/button \"\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet); equivalence: 1 spelling: no shorthand | 2 values: draft flex; default paint inline-flex | 3 inert: no (display applies at 768 (allElements)) | 4 effect: sgsHideOnDesktop (property), sgsHideOnMobile (property), sgsHideOnTablet (property) change display here but no measured value equals the draft (the emitted value is not predicted, FR-48-76) | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "text-align",
+  "value": "start",
+  "node": "cr-ref-header-15",
+  "reason": "shape: start is not one of , left, center, right, justify",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.25s, 0.25s, 0.2s, 0.2s",
+  "node": "cr-ref-header-15",
+  "reason": "no-setting: sgs/button has no setting for transition-duration; equivalence: 1 spelling: shorthands transition | 2 values: draft 0.25s, 0.25s, 0.2s, 0.2s (canonical 250, 250, 200, 200); default paint 0.18s, 0.18s, 0.18s, 0.18s, 0.18s, 0.18s, 0.18s | 3 inert: no (transition-duration applies at 768 (allElementsAndPseudos)) | 4 effect: no setting's measured effect reaches transition-duration on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-timing-function",
+  "value": "cubic-bezier(0.2, 0.8, 0.2, 1), ease, ease, ease",
+  "node": "cr-ref-header-15",
+  "reason": "no-setting: sgs/button has no setting for transition-timing-function; equivalence: 1 spelling: shorthands transition | 2 values: draft cubic-bezier(0.2, 0.8, 0.2, 1), ease, ease, ease (canonical 0.2,0.8,0.2,1 | 0.25,0.1,0.25,1 | 0.25,0.1,0.25,1 | 0.25,0.1,0.25,1); default paint ease, ease, ease, ease, ease, ease, ease | 3 inert: no (transition-timing-function applies at 768 (allElementsAndPseudos)) | 4 effect: no setting's measured effect reaches transition-timing-function on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "white-space-collapse",
+  "value": "collapse",
+  "node": "cr-ref-header-15",
+  "reason": "no-setting: sgs/button has no setting for white-space-collapse; held (default): the block's calibrated default paint of this element is already white-space-collapse collapse (read from white-space)",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "font-size",
+  "value": "17px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no font-size setting on sgs/nav-bar-menu paints \"\" (candidates: itemFontSize, burgerFontSize, submenuFontSize, itemBadgeFontSize); equivalence: 1 spelling: shorthands font | 2 values: draft 17px; the default paint is unmeasured | 3 inert: no (font-size applies at 1440 (allElementsAndText)) | 4 effect: no setting's measured effect reaches font-size on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/nav-bar-menu",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "font-weight",
+  "value": "600",
+  "node": "cr-ref-header-16",
+  "reason": "unpaired-part: itemFontWeight paints the item part (calibrated at \".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item > .sgs-nav-bar-menu__link\"), but font-weight 600 was read from \"\", an element the draft does not pair to that part (calibration measured a different font-weight on each); a value from another box, a percentage included, is never written",
+  "block": "sgs/nav-bar-menu",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "line-height",
+  "value": "24px",
+  "node": "cr-ref-header-16",
+  "reason": "unpaired-part: itemLineHeight paints the item part (calibrated at \".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item > .sgs-nav-bar-menu__link\"), but line-height 24px was read from \"\", an element the draft does not pair to that part (calibration measured a different line-height on each); a value from another box, a percentage included, is never written",
+  "block": "sgs/nav-bar-menu",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "letter-spacing",
+  "value": "-0.17px",
+  "node": "cr-ref-header-16",
+  "reason": "unpaired-part: burgerLetterSpacing paints the burger part (calibrated at \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger\"), but letter-spacing -0.17px was read from \"\", an element the draft does not pair to that part (calibration measured a different letter-spacing on each); a value from another box, a percentage included, is never written",
+  "block": "sgs/nav-bar-menu",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "height",
+  "value": "100%",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no height setting on sgs/nav-bar-menu paints \"\" (candidates: burgerSize, triggerDetachSize, burgerIconHeight, submenuCaretSize, burgerBarThickness); equivalence: 1 spelling: no shorthand | 2 values: draft 100%; default paint 46.3906px | 3 inert: no (height applies at 1440 (allElementsButNonReplacedAndTableColumns)) | 4 effect: itemWritingMode (discovered), padding (effect), sgsHideOnDesktop (effect), sgsHideOnMobile (effect), sgsHideOnTablet (effect) change height here but no measured value equals the draft (the emitted value is not predicted, FR-48-76); property_equivalents holds max-height on the self (intrinsic-ratio), min-height on the self (render-matches), tried by lib/fill-equivalents.mjs | 5 judges: nothing written, so the walker judges the row; dimension: the code declares height as 100%, which is not a plain length",
+  "block": "sgs/nav-bar-menu",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "position",
+  "value": "relative",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: sgs/nav-bar-menu has no setting for position; equivalence: 1 spelling: no shorthand | 2 values: draft relative; the default paint is unmeasured | 3 inert: no (position applies at 1440 (allElements)) | 4 effect: no setting's measured effect reaches position on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+  "state": null
+ },
+ {
+  "property": "position",
+  "value": "relative",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: sgs/nav-bar-menu has no setting for position; equivalence: 1 spelling: no shorthand | 2 values: draft relative; the default paint is unmeasured | 3 inert: no (position applies at 1440 (allElements)) | 4 effect: no setting's measured effect reaches position on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+  "state": null
+ },
+ {
+  "property": "display",
+  "value": "block",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no layout setting holds display:block on sgs/nav-bar-menu \".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet); equivalence: 1 spelling: no shorthand | 2 values: draft block; default paint flex | 3 inert: no (display applies at 1440 (allElements)) | 4 effect: no setting's measured effect reaches display on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret",
+  "state": null
+ },
+ {
+  "property": "text-align",
+  "value": "center",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no text-align setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret\" (candidates: submenuTextAlign); equivalence: 1 spelling: no shorthand | 2 values: draft center; the default paint is unmeasured | 3 inert: no (text-align applies at 1440 (blockContainers)) | 4 effect: no setting's measured effect reaches text-align on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret",
+  "state": null
+ },
+ {
+  "property": "color",
+  "value": "\"custom-ink\"",
+  "node": "cr-ref-header-16",
+  "reason": "conflict: navColour (one setting, two elements): color \"custom-ink\" read on .sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret differs from color \"primary\" read on the root at every tier; the setting keeps the first value",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret",
+  "state": null
+ },
+ {
+  "property": "opacity",
+  "value": "0.6",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no opacity setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret\" (candidates: itemOpacity, submenuOpacity, scrimOpacity); equivalence: 1 spelling: no shorthand | 2 values: draft 0.6; default paint 1 | 3 inert: no (opacity applies at 1440 (allElements)) | 4 effect: no setting's measured effect reaches opacity on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret",
+  "state": null
+ },
+ {
+  "property": "height",
+  "value": "11px",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no height setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret\" (candidates: burgerSize, triggerDetachSize, burgerIconHeight, submenuCaretSize, burgerBarThickness); equivalence: 1 spelling: no shorthand | 2 values: draft 11px; default paint 19px | 3 inert: no (height applies at 1440 (allElementsButNonReplacedAndTableColumns)) | 4 effect: itemFontSize (effect) changes height here but no measured value equals the draft (the emitted value is not predicted, FR-48-76); property_equivalents holds max-height on the self (intrinsic-ratio), min-height on the self (render-matches), tried by lib/fill-equivalents.mjs | 5 judges: nothing written, so the walker judges the row; dimension: the content is of unknown height at 1440 against a declared height of 11px, so a minimum would grow the box the draft overflows; not written",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret",
+  "state": null
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.25s, 0.25s, 0.4s, 0.25s",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no transition-duration setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger\" (candidates: itemMotionDuration, submenuCaretTurnDuration, scrimFadeDuration); equivalence: 1 spelling: shorthands transition | 2 values: draft 0.25s, 0.25s, 0.4s, 0.25s (canonical 250, 250, 400, 250); default paint 0.25s | 3 inert: no (transition-duration applies at 768 (allElementsAndPseudos)) | 4 effect: no setting's measured effect reaches transition-duration on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger",
+  "state": null
+ },
+ {
+  "property": "transition-timing-function",
+  "value": "ease, ease, cubic-bezier(0.34, 1.56, 0.64, 1), ease",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no transition-timing-function setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger\" (candidates: itemMotionEasing, submenuCaretTurnEasingCustom, scrimFadeEasing); equivalence: 1 spelling: shorthands transition | 2 values: draft ease, ease, cubic-bezier(0.34, 1.56, 0.64, 1), ease (canonical 0.25,0.1,0.25,1 | 0.25,0.1,0.25,1 | 0.34,1.56,0.64,1 | 0.25,0.1,0.25,1); default paint cubic-bezier(0.25, 0.1, 0.25, 1) | 3 inert: no (transition-timing-function applies at 768 (allElementsAndPseudos)) | 4 effect: no setting's measured effect reaches transition-timing-function on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger",
+  "state": null
+ },
+ {
+  "property": "flex-direction",
+  "value": "column",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: sgs/nav-bar-menu has no setting for flex-direction; equivalence: 1 spelling: shorthands flex-flow | 2 values: draft column; default paint row | 3 inert: no (flex-direction applies at 768 (spec: flex containers: display flex, parent display unknown)) | 4 effect: no setting's measured effect reaches flex-direction on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger",
+  "state": null
+ },
+ {
+  "property": "flex-shrink",
+  "value": "0",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: sgs/nav-bar-menu has no setting for flex-shrink; equivalence: 1 spelling: shorthands flex | 2 values: draft 0; default paint 1 | 3 inert: no (whether flex-shrink (flexItemsAndInFlowPseudos) applies is undecided at 768: display flex, parent display unknown) | 4 effect: no setting's measured effect reaches flex-shrink on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger",
+  "state": null
+ },
+ {
+  "property": "text-align",
+  "value": "center",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no text-align setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)\" (candidates: submenuTextAlign); equivalence: 1 spelling: no shorthand | 2 values: draft center; the default paint is unmeasured | 3 inert: no (text-align applies at 768 (blockContainers)) | 4 effect: no setting's measured effect reaches text-align on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)",
+  "state": null
+ },
+ {
+  "property": "transition-duration",
+  "value": "0s",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no transition-duration setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)\" (candidates: itemMotionDuration, submenuCaretTurnDuration, scrimFadeDuration); equivalence: 1 spelling: shorthands transition | 2 values: draft 0s (canonical 0); default paint 0.2s, 0.2s | 3 inert: no (transition-duration applies at 768 (allElementsAndPseudos)) | 4 effect: no setting's measured effect reaches transition-duration on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)",
+  "state": null
+ },
+ {
+  "property": "text-align",
+  "value": "center",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no text-align setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)\" (candidates: submenuTextAlign); equivalence: 1 spelling: no shorthand | 2 values: draft center; the default paint is unmeasured | 3 inert: no (text-align applies at 768 (blockContainers)) | 4 effect: no setting's measured effect reaches text-align on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)",
+  "state": null
+ },
+ {
+  "property": "text-align",
+  "value": "center",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: no text-align setting on sgs/nav-bar-menu paints \".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)\" (candidates: submenuTextAlign); equivalence: 1 spelling: no shorthand | 2 values: draft center; the default paint is unmeasured | 3 inert: no (text-align applies at 768 (blockContainers)) | 4 effect: no setting's measured effect reaches text-align on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)",
+  "state": null
+ },
+ {
+  "property": "display",
+  "value": "flex",
+  "node": "cr-ref-header-17",
+  "reason": "no-setting: no layout setting holds display:flex on sgs/button \"\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet); equivalence: 1 spelling: no shorthand | 2 values: draft flex; default paint inline-flex | 3 inert: no (display applies at 1440 (allElements)) | 4 effect: sgsHideOnDesktop (property), sgsHideOnMobile (property), sgsHideOnTablet (property) change display here but no measured value equals the draft (the emitted value is not predicted, FR-48-76) | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "text-align",
+  "value": "start",
+  "node": "cr-ref-header-17",
+  "reason": "shape: start is not one of , left, center, right, justify",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.25s, 0.25s, 0.2s, 0.2s",
+  "node": "cr-ref-header-17",
+  "reason": "no-setting: sgs/button has no setting for transition-duration; equivalence: 1 spelling: shorthands transition | 2 values: draft 0.25s, 0.25s, 0.2s, 0.2s (canonical 250, 250, 200, 200); default paint 0.18s, 0.18s, 0.18s, 0.18s, 0.18s, 0.18s, 0.18s | 3 inert: no (transition-duration applies at 1440 (allElementsAndPseudos)) | 4 effect: no setting's measured effect reaches transition-duration on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-timing-function",
+  "value": "cubic-bezier(0.2, 0.8, 0.2, 1), ease, ease, ease",
+  "node": "cr-ref-header-17",
+  "reason": "no-setting: sgs/button has no setting for transition-timing-function; equivalence: 1 spelling: shorthands transition | 2 values: draft cubic-bezier(0.2, 0.8, 0.2, 1), ease, ease, ease (canonical 0.2,0.8,0.2,1 | 0.25,0.1,0.25,1 | 0.25,0.1,0.25,1 | 0.25,0.1,0.25,1); default paint ease, ease, ease, ease, ease, ease, ease | 3 inert: no (transition-timing-function applies at 1440 (allElementsAndPseudos)) | 4 effect: no setting's measured effect reaches transition-timing-function on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "white-space-collapse",
+  "value": "collapse",
+  "node": "cr-ref-header-17",
+  "reason": "no-setting: sgs/button has no setting for white-space-collapse; held (default): the block's calibrated default paint of this element is already white-space-collapse collapse (read from white-space)",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-duration",
+  "value": "{\"375\":\"0.3s\",\"768\":\"0.3s\",\"1440\":\"0.3s\"}",
+  "node": "cr-ref-header-0",
+  "reason": "timing-no-home: sgs/site-header has no setting that holds the resting transition-duration of this element (no-setting)",
+  "block": "sgs/site-header",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "font-weight",
+  "value": "{\"768\":\"700\"}",
+  "node": "cr-ref-header-15",
+  "reason": "no-setting: sgs/button has no setting for font-weight (hover); equivalence: 1 spelling: shorthands font | 2 values: draft 700; the default paint is unmeasured (a hover value is not compared with the resting paint) | 3 inert: no (font-weight applies at 768 (allElementsAndText)) | 4 effect: no setting's measured effect reaches font-weight on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/button",
+  "slot": "",
+  "state": "hover"
+ },
+ {
+  "property": "color",
+  "value": "{\"1440\":\"rgb(30, 42, 60)\"}",
+  "node": "cr-ref-header-16",
+  "reason": "default-state: navColourHover already holds \"primary\" on this block, and this element's resting color is \"custom-ink\"",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+  "state": "hover"
+ },
+ {
+  "property": "transform",
+  "value": "{\"1440\":\"matrix(-1, 0, 0, -1, 0, 0)\"}",
+  "node": "cr-ref-header-16",
+  "reason": "script-look: open on Root/50#0 (open-panel look): no-setting: sgs/nav-bar-menu has no setting for transform (open); equivalence: 1 spelling: no shorthand | 2 values: draft matrix(-1, 0, 0, -1, 0, 0); default paint none (a open value is not compared with the resting paint) | 3 inert: no (transform applies at 1440 (transformableElements)) | 4 effect: no setting's measured effect reaches transform on this element | 5 judges: nothing written, so the walker judges the row; items with it: copy 0, copy 1, copy 2, copy 3; without it: none",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret",
+  "state": "open"
+ },
+ {
+  "property": "color",
+  "value": "{\"1440\":\"rgb(30, 42, 60)\"}",
+  "node": "cr-ref-header-16",
+  "reason": "default-state: navColourHover already holds \"primary\" on this block, and this element's resting color is \"custom-ink\"",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret",
+  "state": "hover"
+ },
+ {
+  "property": "font-weight",
+  "value": "{\"1440\":\"700\"}",
+  "node": "cr-ref-header-17",
+  "reason": "no-setting: sgs/button has no setting for font-weight (hover); equivalence: 1 spelling: shorthands font | 2 values: draft 700; the default paint is unmeasured (a hover value is not compared with the resting paint) | 3 inert: no (font-weight applies at 1440 (allElementsAndText)) | 4 effect: no setting's measured effect reaches font-weight on this element | 5 judges: nothing written, so the walker judges the row",
+  "block": "sgs/button",
+  "slot": "",
+  "state": "hover"
+ },
+ {
+  "property": "settings.custom.focus.offset",
+  "value": "\"0px\"",
+  "node": "cr-ref-header-16",
+  "reason": "conflict: the browser's own focus ring differs between elements and the site focus token settings.custom.focus.offset holds one value: cr-ref-header-3 root shows \"1px\" (kept), cr-ref-header-16 .sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link shows \"0px\", which the site ring gives \"1px\" instead",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+  "state": "focus"
+ },
+ {
+  "property": "motion",
+  "value": "TR-008",
+  "node": "cr-ref-header-0",
+  "reason": "a state state transition: the states wave (FR-48-81) or the owning block's setting",
+  "block": "sgs/site-header",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-0",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/site-header",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-1",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/site-header-row",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-1",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/site-header-row",
+  "slot": ".sgs-container__inner",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-2",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/multi-button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-3",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-4",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-5",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-6",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-12",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/site-header-row",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-12",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/site-header-row",
+  "slot": ".sgs-container__inner",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-13",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/responsive-logo",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-14",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/container",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-15",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-16",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/nav-bar-menu",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "TR-009",
+  "node": "cr-ref-header-16",
+  "reason": "no declared part of sgs/nav-bar-menu is this element (.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link); the record is also skipped: a state state transition: the states wave (FR-48-81) or the owning block's setting",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-16",
+  "reason": "no declared part of sgs/nav-bar-menu is this element (.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link); the record is also skipped: a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "TR-009",
+  "node": "cr-ref-header-16",
+  "reason": "no declared part of sgs/nav-bar-menu is this element (.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link); the record is also skipped: a state state transition: the states wave (FR-48-81) or the owning block's setting",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-16",
+  "reason": "no declared part of sgs/nav-bar-menu is this element (.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link); the record is also skipped: a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "TR-011",
+  "node": "cr-ref-header-16",
+  "reason": "no declared part of sgs/nav-bar-menu is this element (.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret); the record is also skipped: a state state transition: the states wave (FR-48-81) or the owning block's setting",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-16",
+  "reason": "no declared part of sgs/nav-bar-menu is this element (.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret); the record is also skipped: a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-16",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-16",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-16",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-16",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)",
+  "state": null
+ },
+ {
+  "property": "motion",
+  "value": "RM-01",
+  "node": "cr-ref-header-17",
+  "reason": "a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"375\":\"box-shadow\",\"768\":\"box-shadow\",\"1440\":\"box-shadow\"}",
+  "node": "cr-ref-header-0",
+  "reason": "calibration has no reading of transition-property for the block root of sgs/site-header (lib/calibrate-props.mjs::READ_PROPS does not read it), so whether live transitions the draft's box-shadow is unknown",
+  "block": "sgs/site-header",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-behavior",
+  "value": "{\"375\":\"normal\",\"768\":\"normal\",\"1440\":\"normal\"}",
+  "node": "cr-ref-header-0",
+  "reason": "calibration has no reading of transition-behavior for the block root of sgs/site-header (lib/calibrate-props.mjs::READ_PROPS does not read it), so whether live transitions the draft's box-shadow with behaviour normal is unknown",
+  "block": "sgs/site-header",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"375\":\"transform, box-shadow, background, color\"}",
+  "node": "cr-ref-header-3",
+  "reason": "no-setting: sgs/button has no setting for which properties the block root transitions; its sgsMotion hover state transitions color, background-color, border-color, box-shadow, transform, translate, opacity (Sgs_Motion_Emitter::HOVER_PAINT and the part's base transitions), the draft transform, box-shadow, background, color: live also transitions border-color, translate, opacity; the draft also transitions background",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"375\":\"transform, box-shadow, background, color\",\"768\":\"transform, box-shadow, background, color\",\"1440\":\"transform, box-shadow, background, color\"}",
+  "node": "cr-ref-header-4",
+  "reason": "no-setting: sgs/button has no setting for which properties the block root transitions; its sgsMotion hover state transitions color, background-color, border-color, box-shadow, transform, translate, opacity (Sgs_Motion_Emitter::HOVER_PAINT and the part's base transitions), the draft transform, box-shadow, background, color: live also transitions border-color, translate, opacity; the draft also transitions background",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"375\":\"transform, box-shadow, background, color\",\"768\":\"transform, box-shadow, background, color\",\"1440\":\"transform, box-shadow, background, color\"}",
+  "node": "cr-ref-header-5",
+  "reason": "no-setting: sgs/button has no setting for which properties the block root transitions; its sgsMotion hover state transitions color, background-color, border-color, box-shadow, transform, translate, opacity (Sgs_Motion_Emitter::HOVER_PAINT and the part's base transitions), the draft transform, box-shadow, background, color: live also transitions border-color, translate, opacity; the draft also transitions background",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"768\":\"transform, box-shadow, background, color\",\"1440\":\"transform, box-shadow, background, color\"}",
+  "node": "cr-ref-header-6",
+  "reason": "no-setting: sgs/button has no setting for which properties the block root transitions; its sgsMotion hover state transitions color, background-color, border-color, box-shadow, transform, translate, opacity (Sgs_Motion_Emitter::HOVER_PAINT and the part's base transitions), the draft transform, box-shadow, background, color: live also transitions border-color, translate, opacity; the draft also transitions background",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"768\":\"transform, box-shadow\",\"1440\":\"transform, box-shadow\"}",
+  "node": "cr-ref-header-8",
+  "reason": "no-setting: sgs/icon has no setting for which properties the block root transitions; its sgsMotion hover state transitions color, background-color, border-color, box-shadow and the entries its movement, effects or entrance add (Sgs_Motion_Emitter::HOVER_PAINT), the draft transform, box-shadow: live also transitions color, background-color, border-color",
+  "block": "sgs/icon",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"768\":\"transform, box-shadow\",\"1440\":\"transform, box-shadow\"}",
+  "node": "cr-ref-header-9",
+  "reason": "no-setting: sgs/icon has no setting for which properties the block root transitions; its sgsMotion hover state transitions color, background-color, border-color, box-shadow and the entries its movement, effects or entrance add (Sgs_Motion_Emitter::HOVER_PAINT), the draft transform, box-shadow: live also transitions color, background-color, border-color",
+  "block": "sgs/icon",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"768\":\"transform, box-shadow\",\"1440\":\"transform, box-shadow\"}",
+  "node": "cr-ref-header-10",
+  "reason": "no-setting: sgs/icon has no setting for which properties the block root transitions; its sgsMotion hover state transitions color, background-color, border-color, box-shadow and the entries its movement, effects or entrance add (Sgs_Motion_Emitter::HOVER_PAINT), the draft transform, box-shadow: live also transitions color, background-color, border-color",
+  "block": "sgs/icon",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"768\":\"transform, box-shadow\",\"1440\":\"transform, box-shadow\"}",
+  "node": "cr-ref-header-11",
+  "reason": "no-setting: sgs/icon has no setting for which properties the block root transitions; its sgsMotion hover state transitions color, background-color, border-color, box-shadow and the entries its movement, effects or entrance add (Sgs_Motion_Emitter::HOVER_PAINT), the draft transform, box-shadow: live also transitions color, background-color, border-color",
+  "block": "sgs/icon",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"768\":\"transform, box-shadow, background, color\"}",
+  "node": "cr-ref-header-15",
+  "reason": "no-setting: sgs/button has no setting for which properties the block root transitions; its sgsMotion hover state transitions color, background-color, border-color, box-shadow, transform, translate, opacity and the entries its movement, effects or entrance add (Sgs_Motion_Emitter::HOVER_PAINT), the draft transform, box-shadow, background, color: live also transitions border-color, translate, opacity",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"1440\":\"background, color\"}",
+  "node": "cr-ref-header-16",
+  "reason": "calibration has no reading of transition-property for .sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link of sgs/nav-bar-menu (lib/calibrate-props.mjs::READ_PROPS does not read it), so whether live transitions the draft's background, color is unknown",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+  "state": null
+ },
+ {
+  "property": "transition-behavior",
+  "value": "{\"1440\":\"normal, normal\"}",
+  "node": "cr-ref-header-16",
+  "reason": "calibration has no reading of transition-behavior for .sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link of sgs/nav-bar-menu (lib/calibrate-props.mjs::READ_PROPS does not read it), so whether live transitions the draft's background, color with behaviour normal, normal is unknown",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"1440\":\"background, color\"}",
+  "node": "cr-ref-header-16",
+  "reason": "calibration has no reading of transition-property for .sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link of sgs/nav-bar-menu (lib/calibrate-props.mjs::READ_PROPS does not read it), so whether live transitions the draft's background, color is unknown",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+  "state": null
+ },
+ {
+  "property": "transition-behavior",
+  "value": "{\"1440\":\"normal, normal\"}",
+  "node": "cr-ref-header-16",
+  "reason": "calibration has no reading of transition-behavior for .sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link of sgs/nav-bar-menu (lib/calibrate-props.mjs::READ_PROPS does not read it), so whether live transitions the draft's background, color with behaviour normal, normal is unknown",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"1440\":\"transform\"}",
+  "node": "cr-ref-header-16",
+  "reason": "calibration has no reading of transition-property for .sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret of sgs/nav-bar-menu (lib/calibrate-props.mjs::READ_PROPS does not read it), so whether live transitions the draft's transform is unknown",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret",
+  "state": null
+ },
+ {
+  "property": "transition-behavior",
+  "value": "{\"1440\":\"normal\"}",
+  "node": "cr-ref-header-16",
+  "reason": "calibration has no reading of transition-behavior for .sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret of sgs/nav-bar-menu (lib/calibrate-props.mjs::READ_PROPS does not read it), so whether live transitions the draft's transform with behaviour normal is unknown",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"375\":\"background, color, transform, box-shadow\",\"768\":\"background, color, transform, box-shadow\"}",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: sgs/nav-bar-menu has no setting for which properties .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger transitions; its sgsMotion hover state transitions color, background-color, border-color, box-shadow and the entries its movement, effects or entrance add (Sgs_Motion_Emitter::HOVER_PAINT), the draft background, color, transform, box-shadow: live also transitions border-color",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"375\":\"width\",\"768\":\"width\"}",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: sgs/nav-bar-menu has no setting for which properties .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2) transitions; its sgsMotion hover state transitions color, background-color, border-color, box-shadow and the entries its movement, effects or entrance add (Sgs_Motion_Emitter::HOVER_PAINT), the draft width: live also transitions color, background-color, border-color, box-shadow",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"375\":\"width\",\"768\":\"width\"}",
+  "node": "cr-ref-header-16",
+  "reason": "no-setting: sgs/nav-bar-menu has no setting for which properties .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3) transitions; its sgsMotion hover state transitions color, background-color, border-color, box-shadow and the entries its movement, effects or entrance add (Sgs_Motion_Emitter::HOVER_PAINT), the draft width: live also transitions color, background-color, border-color, box-shadow",
+  "block": "sgs/nav-bar-menu",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "{\"1440\":\"transform, box-shadow, background, color\"}",
+  "node": "cr-ref-header-17",
+  "reason": "no-setting: sgs/button has no setting for which properties the block root transitions; its sgsMotion hover state transitions color, background-color, border-color, box-shadow, transform, translate, opacity and the entries its movement, effects or entrance add (Sgs_Motion_Emitter::HOVER_PAINT), the draft transform, box-shadow, background, color: live also transitions border-color, translate, opacity",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ }
+]

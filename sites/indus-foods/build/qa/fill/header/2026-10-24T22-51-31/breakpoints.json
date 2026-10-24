@@ -1,0 +1,752 @@
+[
+ {
+  "node": "cr-ref-header-1",
+  "slot": "",
+  "prop": "align-items",
+  "from": "normal",
+  "to": "center",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-1",
+  "slot": "",
+  "prop": "column-gap",
+  "from": "0px",
+  "to": "12px",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-1",
+  "slot": "",
+  "prop": "justify-content",
+  "from": "normal",
+  "to": "space-between",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-1",
+  "slot": "",
+  "prop": "row-gap",
+  "from": "0px",
+  "to": "12px",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-1",
+  "slot": ".sgs-container__inner",
+  "prop": "padding-left",
+  "from": "20px",
+  "to": "32px",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-1",
+  "slot": ".sgs-container__inner",
+  "prop": "padding-right",
+  "from": "20px",
+  "to": "32px",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-1",
+  "slot": ".sgs-container__inner",
+  "prop": "padding-left",
+  "from": "32px",
+  "to": "40px",
+  "between": [
+   1008,
+   1024
+  ],
+  "at": 1024,
+  "boundary": 1024,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-1",
+  "slot": ".sgs-container__inner",
+  "prop": "padding-right",
+  "from": "32px",
+  "to": "40px",
+  "between": [
+   1008,
+   1024
+  ],
+  "at": 1024,
+  "boundary": 1024,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-2",
+  "slot": "",
+  "prop": "width",
+  "from": "280px",
+  "to": "296px",
+  "between": [
+   320,
+   336
+  ],
+  "at": 336,
+  "boundary": 768,
+  "offset": -432,
+  "onBoundary": false
+ },
+ {
+  "node": "cr-ref-header-2",
+  "slot": "",
+  "prop": "width",
+  "from": "296px",
+  "to": "300.594px",
+  "between": [
+   336,
+   352
+  ],
+  "at": 352,
+  "boundary": 768,
+  "offset": -416,
+  "onBoundary": false
+ },
+ {
+  "node": "cr-ref-header-2",
+  "slot": "",
+  "prop": "width",
+  "from": "300.594px",
+  "to": "371.391px",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-3",
+  "slot": "",
+  "prop": "(rendered)",
+  "from": "present",
+  "to": "absent",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-4",
+  "slot": "",
+  "prop": "width",
+  "from": "75.2188px",
+  "to": "143.125px",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-5",
+  "slot": "",
+  "prop": "width",
+  "from": "75.2188px",
+  "to": "143.125px",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-6",
+  "slot": "",
+  "prop": "(rendered)",
+  "from": "absent",
+  "to": "present",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-7",
+  "slot": "",
+  "prop": "(rendered)",
+  "from": "absent",
+  "to": "present",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-8",
+  "slot": "",
+  "prop": "(rendered)",
+  "from": "absent",
+  "to": "present",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-8",
+  "slot": ".sgs-icon__shape > .sgs-icon__svg",
+  "prop": "(rendered)",
+  "from": "absent",
+  "to": "present",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-9",
+  "slot": "",
+  "prop": "(rendered)",
+  "from": "absent",
+  "to": "present",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-9",
+  "slot": ".sgs-icon__shape > .sgs-icon__svg",
+  "prop": "(rendered)",
+  "from": "absent",
+  "to": "present",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-10",
+  "slot": "",
+  "prop": "(rendered)",
+  "from": "absent",
+  "to": "present",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-10",
+  "slot": ".sgs-icon__shape > .sgs-icon__svg",
+  "prop": "(rendered)",
+  "from": "absent",
+  "to": "present",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-11",
+  "slot": "",
+  "prop": "(rendered)",
+  "from": "absent",
+  "to": "present",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-11",
+  "slot": ".sgs-icon__shape > .sgs-icon__svg",
+  "prop": "(rendered)",
+  "from": "absent",
+  "to": "present",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-12",
+  "slot": ".sgs-container__inner",
+  "prop": "padding-left",
+  "from": "20px",
+  "to": "32px",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-12",
+  "slot": ".sgs-container__inner",
+  "prop": "padding-right",
+  "from": "20px",
+  "to": "32px",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-12",
+  "slot": ".sgs-container__inner",
+  "prop": "padding-left",
+  "from": "32px",
+  "to": "40px",
+  "between": [
+   1008,
+   1024
+  ],
+  "at": 1024,
+  "boundary": 1024,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-12",
+  "slot": ".sgs-container__inner",
+  "prop": "padding-right",
+  "from": "32px",
+  "to": "40px",
+  "between": [
+   1008,
+   1024
+  ],
+  "at": 1024,
+  "boundary": 1024,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-13",
+  "slot": "",
+  "prop": "width",
+  "from": "238.219px",
+  "to": "247.047px",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-13",
+  "slot": "",
+  "prop": "width",
+  "from": "247.047px",
+  "to": "238.219px",
+  "between": [
+   1008,
+   1024
+  ],
+  "at": 1024,
+  "boundary": 1024,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-14",
+  "slot": "",
+  "prop": "width",
+  "from": "48px",
+  "to": "304.828px",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-14",
+  "slot": "",
+  "prop": "(rendered)",
+  "from": "present",
+  "to": "absent",
+  "between": [
+   1008,
+   1024
+  ],
+  "at": 1024,
+  "boundary": 1024,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-15",
+  "slot": "",
+  "prop": "(rendered)",
+  "from": "absent",
+  "to": "present",
+  "between": [
+   752,
+   768
+  ],
+  "at": 768,
+  "boundary": 768,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-15",
+  "slot": "",
+  "prop": "(rendered)",
+  "from": "present",
+  "to": "absent",
+  "between": [
+   1008,
+   1024
+  ],
+  "at": 1024,
+  "boundary": 1024,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-16",
+  "slot": "",
+  "prop": "(rendered)",
+  "from": "absent",
+  "to": "present",
+  "between": [
+   1008,
+   1024
+  ],
+  "at": 1024,
+  "boundary": 1024,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-16",
+  "slot": "",
+  "prop": "width",
+  "from": "483.828px",
+  "to": "543.828px",
+  "between": [
+   1184,
+   1200
+  ],
+  "at": 1200,
+  "boundary": 1024,
+  "offset": 176,
+  "onBoundary": false
+ },
+ {
+  "node": "cr-ref-header-16",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret",
+  "prop": "(rendered)",
+  "from": "absent",
+  "to": "present",
+  "between": [
+   1008,
+   1024
+  ],
+  "at": 1024,
+  "boundary": 1024,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-16",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+  "prop": "(rendered)",
+  "from": "absent",
+  "to": "present",
+  "between": [
+   1008,
+   1024
+  ],
+  "at": 1024,
+  "boundary": 1024,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-16",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+  "prop": "padding-left",
+  "from": "10px",
+  "to": "15px",
+  "between": [
+   1184,
+   1200
+  ],
+  "at": 1200,
+  "boundary": 1024,
+  "offset": 176,
+  "onBoundary": false
+ },
+ {
+  "node": "cr-ref-header-16",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+  "prop": "padding-right",
+  "from": "10px",
+  "to": "15px",
+  "between": [
+   1184,
+   1200
+  ],
+  "at": 1200,
+  "boundary": 1024,
+  "offset": 176,
+  "onBoundary": false
+ },
+ {
+  "node": "cr-ref-header-16",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+  "prop": "width",
+  "from": "80.1406px",
+  "to": "90.1406px",
+  "between": [
+   1184,
+   1200
+  ],
+  "at": 1200,
+  "boundary": 1024,
+  "offset": 176,
+  "onBoundary": false
+ },
+ {
+  "node": "cr-ref-header-16",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+  "prop": "(rendered)",
+  "from": "absent",
+  "to": "present",
+  "between": [
+   1008,
+   1024
+  ],
+  "at": 1024,
+  "boundary": 1024,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-16",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+  "prop": "padding-left",
+  "from": "10px",
+  "to": "15px",
+  "between": [
+   1184,
+   1200
+  ],
+  "at": 1200,
+  "boundary": 1024,
+  "offset": 176,
+  "onBoundary": false
+ },
+ {
+  "node": "cr-ref-header-16",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+  "prop": "padding-right",
+  "from": "10px",
+  "to": "15px",
+  "between": [
+   1184,
+   1200
+  ],
+  "at": 1200,
+  "boundary": 1024,
+  "offset": 176,
+  "onBoundary": false
+ },
+ {
+  "node": "cr-ref-header-16",
+  "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+  "prop": "width",
+  "from": "62.875px",
+  "to": "72.875px",
+  "between": [
+   1184,
+   1200
+  ],
+  "at": 1200,
+  "boundary": 1024,
+  "offset": 176,
+  "onBoundary": false
+ },
+ {
+  "node": "cr-ref-header-16",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger",
+  "prop": "(rendered)",
+  "from": "present",
+  "to": "absent",
+  "between": [
+   1008,
+   1024
+  ],
+  "at": 1024,
+  "boundary": 1024,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-16",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)",
+  "prop": "(rendered)",
+  "from": "present",
+  "to": "absent",
+  "between": [
+   1008,
+   1024
+  ],
+  "at": 1024,
+  "boundary": 1024,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-16",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)",
+  "prop": "(rendered)",
+  "from": "present",
+  "to": "absent",
+  "between": [
+   1008,
+   1024
+  ],
+  "at": 1024,
+  "boundary": 1024,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-16",
+  "slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)",
+  "prop": "(rendered)",
+  "from": "present",
+  "to": "absent",
+  "between": [
+   1008,
+   1024
+  ],
+  "at": 1024,
+  "boundary": 1024,
+  "offset": 0,
+  "onBoundary": true
+ },
+ {
+  "node": "cr-ref-header-17",
+  "slot": "",
+  "prop": "(rendered)",
+  "from": "absent",
+  "to": "present",
+  "between": [
+   1248,
+   1264
+  ],
+  "at": 1264,
+  "boundary": 1024,
+  "offset": 240,
+  "onBoundary": false
+ }
+]

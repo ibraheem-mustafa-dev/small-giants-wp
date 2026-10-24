@@ -1,0 +1,16 @@
+{
+  "settings": {
+    "custom": {
+      "focus": {
+        "width": "1px",
+        "ring": "#101010",
+        "ringOnDark": "#101010",
+        "offset": "1px",
+        "bloom": "0",
+        "source": "draft",
+        "style": "auto",
+        "ringOnly": "1"
+      }
+    }
+  }
+}

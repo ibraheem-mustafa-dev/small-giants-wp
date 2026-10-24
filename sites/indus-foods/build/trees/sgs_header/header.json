@@ -55,7 +55,8 @@
           },
           "rowHideOnScroll": {
             "desktop": "on"
-          }
+          },
+          "rowAnimate": false
         },
         "innerBlocks": [
           {
@@ -122,7 +123,9 @@
                               "duration": 200,
                               "easing": "token:easing.ease",
                               "paintDuration": 200,
-                              "paintEasing": "token:easing.ease"
+                              "paintEasing": "token:easing.ease",
+                              "shadowDuration": "token:duration.fast",
+                              "shadowEasing": "token:easing.ease"
                             }
                           }
                         }
@@ -183,7 +186,9 @@
                               "duration": 200,
                               "easing": "token:easing.ease",
                               "paintDuration": 200,
-                              "paintEasing": "token:easing.ease"
+                              "paintEasing": "token:easing.ease",
+                              "shadowDuration": "token:duration.fast",
+                              "shadowEasing": "token:easing.ease"
                             }
                           }
                         }
@@ -252,7 +257,9 @@
                               "duration": 200,
                               "easing": "token:easing.ease",
                               "paintDuration": 200,
-                              "paintEasing": "token:easing.ease"
+                              "paintEasing": "token:easing.ease",
+                              "shadowDuration": "token:duration.fast",
+                              "shadowEasing": "token:easing.ease"
                             }
                           }
                         }
@@ -317,7 +324,9 @@
                               "duration": 200,
                               "easing": "token:easing.ease",
                               "paintDuration": 200,
-                              "paintEasing": "token:easing.ease"
+                              "paintEasing": "token:easing.ease",
+                              "shadowDuration": "token:duration.fast",
+                              "shadowEasing": "token:easing.ease"
                             }
                           }
                         }
@@ -729,7 +738,9 @@
                               "duration": "token:duration.fast",
                               "easing": "cubic-bezier(.2,.8,.2,1)",
                               "paintDuration": 200,
-                              "paintEasing": "token:easing.ease"
+                              "paintEasing": "token:easing.ease",
+                              "shadowDuration": "token:duration.fast",
+                              "shadowEasing": "token:easing.ease"
                             }
                           },
                           "effects": [
@@ -843,6 +854,7 @@
                   "burgerTextGap": {
                     "tablet": "4px"
                   },
+                  "burgerBarAlign": "end",
                   "burgerWidth": {
                     "mobile": "48px",
                     "tablet": "48px"
@@ -867,6 +879,7 @@
                   "itemColourOpen": "primary",
                   "itemColourCurrent": "primary",
                   "burgerHoverColour": "primary",
+                  "burgerShadowHover": "rgba(10, 126, 168, 0.85) 0px 10px 22px -10px",
                   "burgerColourHover": "surface",
                   "sgsFocusRests": true,
                   "justifyContent": "flex-start",
@@ -875,9 +888,9 @@
                     "tablet": "50%",
                     "mobile": "50%"
                   },
-                  "sgsCustomCss": "@media  { & .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger { align-items: flex-end; } } @media (min-width: 1024px) and (max-width: 1199px) { & .sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item > .sgs-nav-bar-menu__link { padding-right: 10px; padding-left: 10px; } }",
+                  "sgsCustomCss": "@media (min-width: 1024px) and (max-width: 1199px) { & .sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item > .sgs-nav-bar-menu__link { padding-right: 10px; padding-left: 10px; } }",
                   "sgsCustomCssId": "wgate16",
-                  "sgsCustomCssNote": "Width ladder align-items: 0px and up flex-end; Step ladder: .sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item > .sgs-nav-bar-menu__link 1024-1199px padding-right: 10px; padding-left: 10px;",
+                  "sgsCustomCssNote": "Step ladder: .sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item > .sgs-nav-bar-menu__link 1024-1199px padding-right: 10px; padding-left: 10px;",
                   "itemMagnetEnabled": true,
                   "itemMagnetStrength": 0.14,
                   "sgsMotion": {
@@ -983,7 +996,9 @@
                           "duration": "token:duration.fast",
                           "easing": "cubic-bezier(.2,.8,.2,1)",
                           "paintDuration": 200,
-                          "paintEasing": "token:easing.ease"
+                          "paintEasing": "token:easing.ease",
+                          "shadowDuration": "token:duration.fast",
+                          "shadowEasing": "token:easing.ease"
                         }
                       },
                       "effects": [

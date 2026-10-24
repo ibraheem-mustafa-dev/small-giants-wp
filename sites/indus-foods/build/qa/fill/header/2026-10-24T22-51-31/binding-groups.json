@@ -1,0 +1,682 @@
+{
+ "groups": [
+  {
+   "id": "R.px|justifyContent",
+   "binding": "R.px",
+   "attr": "justifyContent",
+   "value": "space-between",
+   "members": [
+    {
+     "node": "cr-ref-header-1",
+     "slot": ".sgs-container__inner",
+     "prop": "justify-content"
+    },
+    {
+     "node": "cr-ref-header-12",
+     "slot": ".sgs-container__inner",
+     "prop": "justify-content"
+    }
+   ],
+   "sections": 1
+  },
+  {
+   "id": "R.px|contentWidth",
+   "binding": "R.px",
+   "attr": "contentWidth",
+   "value": {
+    "desktop": "1320px"
+   },
+   "members": [
+    {
+     "node": "cr-ref-header-1",
+     "slot": ".sgs-container__inner",
+     "prop": "max-width"
+    },
+    {
+     "node": "cr-ref-header-12",
+     "slot": ".sgs-container__inner",
+     "prop": "max-width"
+    }
+   ],
+   "sections": 1
+  },
+  {
+   "id": "item.activeBg|itemMotionDuration",
+   "binding": "item.activeBg",
+   "attr": "itemMotionDuration",
+   "value": 220,
+   "members": [
+    {
+     "node": "cr-ref-header-16",
+     "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+     "prop": "transition-duration"
+    },
+    {
+     "node": "cr-ref-header-16",
+     "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+     "prop": "transition-duration"
+    },
+    {
+     "node": "cr-ref-header-16",
+     "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+     "prop": "transition-duration"
+    }
+   ],
+   "sections": 1
+  },
+  {
+   "id": "R.navPad|itemMotionDuration",
+   "binding": "R.navPad",
+   "attr": "itemMotionDuration",
+   "value": 220,
+   "members": [
+    {
+     "node": "cr-ref-header-16",
+     "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+     "prop": "transition-duration"
+    },
+    {
+     "node": "cr-ref-header-16",
+     "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+     "prop": "transition-duration"
+    },
+    {
+     "node": "cr-ref-header-16",
+     "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+     "prop": "transition-duration"
+    }
+   ],
+   "sections": 1
+  },
+  {
+   "id": "item.activeColor|itemMotionDuration",
+   "binding": "item.activeColor",
+   "attr": "itemMotionDuration",
+   "value": 220,
+   "members": [
+    {
+     "node": "cr-ref-header-16",
+     "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+     "prop": "transition-duration"
+    },
+    {
+     "node": "cr-ref-header-16",
+     "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+     "prop": "transition-duration"
+    },
+    {
+     "node": "cr-ref-header-16",
+     "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+     "prop": "transition-duration"
+    }
+   ],
+   "sections": 1
+  },
+  {
+   "id": "item.activeBg|itemMotionEasing",
+   "binding": "item.activeBg",
+   "attr": "itemMotionEasing",
+   "value": "ease",
+   "members": [
+    {
+     "node": "cr-ref-header-16",
+     "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+     "prop": "transition-timing-function"
+    },
+    {
+     "node": "cr-ref-header-16",
+     "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+     "prop": "transition-timing-function"
+    }
+   ],
+   "sections": 1
+  },
+  {
+   "id": "R.navPad|itemMotionEasing",
+   "binding": "R.navPad",
+   "attr": "itemMotionEasing",
+   "value": "ease",
+   "members": [
+    {
+     "node": "cr-ref-header-16",
+     "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+     "prop": "transition-timing-function"
+    },
+    {
+     "node": "cr-ref-header-16",
+     "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+     "prop": "transition-timing-function"
+    }
+   ],
+   "sections": 1
+  },
+  {
+   "id": "item.activeColor|itemMotionEasing",
+   "binding": "item.activeColor",
+   "attr": "itemMotionEasing",
+   "value": "ease",
+   "members": [
+    {
+     "node": "cr-ref-header-16",
+     "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+     "prop": "transition-timing-function"
+    },
+    {
+     "node": "cr-ref-header-16",
+     "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+     "prop": "transition-timing-function"
+    }
+   ],
+   "sections": 1
+  }
+ ],
+ "split": [
+  {
+   "binding": "R.px",
+   "attr": "gap",
+   "values": [
+    {
+     "value": {
+      "tablet": "12px",
+      "desktop": "12px"
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-1",
+       "slot": ".sgs-container__inner",
+       "prop": "column-gap"
+      }
+     ]
+    },
+    {
+     "value": {
+      "mobile": "20px",
+      "tablet": "20px",
+      "desktop": "20px"
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-12",
+       "slot": ".sgs-container__inner",
+       "prop": "column-gap"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "binding": "R.px",
+   "attr": "padding",
+   "values": [
+    {
+     "value": {
+      "mobile": {
+       "right": "20px"
+      },
+      "tablet": {
+       "right": "32px"
+      },
+      "desktop": {
+       "right": "40px"
+      }
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-1",
+       "slot": ".sgs-container__inner",
+       "prop": "padding-right"
+      },
+      {
+       "node": "cr-ref-header-12",
+       "slot": ".sgs-container__inner",
+       "prop": "padding-right"
+      }
+     ]
+    },
+    {
+     "value": {
+      "mobile": {
+       "right": "20px",
+       "left": "20px"
+      },
+      "tablet": {
+       "right": "32px",
+       "left": "32px"
+      },
+      "desktop": {
+       "right": "40px",
+       "left": "40px"
+      }
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-1",
+       "slot": ".sgs-container__inner",
+       "prop": "padding-left"
+      },
+      {
+       "node": "cr-ref-header-12",
+       "slot": ".sgs-container__inner",
+       "prop": "padding-left"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "binding": "item.activeBg",
+   "attr": "itemPadding",
+   "values": [
+    {
+     "value": {
+      "desktop": {
+       "top": "0px"
+      }
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "padding-top"
+      }
+     ]
+    },
+    {
+     "value": {
+      "desktop": {
+       "top": "0px",
+       "right": "15px"
+      }
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "padding-right"
+      }
+     ]
+    },
+    {
+     "value": {
+      "desktop": {
+       "top": "0px",
+       "right": "15px",
+       "bottom": "0px"
+      }
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "padding-bottom"
+      }
+     ]
+    },
+    {
+     "value": {
+      "desktop": {
+       "top": "0px",
+       "right": "15px",
+       "bottom": "0px",
+       "left": "15px"
+      }
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "padding-left"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "padding-top"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "padding-right"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "padding-bottom"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "padding-left"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "binding": "R.navPad",
+   "attr": "itemPadding",
+   "values": [
+    {
+     "value": {
+      "desktop": {
+       "top": "0px"
+      }
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "padding-top"
+      }
+     ]
+    },
+    {
+     "value": {
+      "desktop": {
+       "top": "0px",
+       "right": "15px"
+      }
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "padding-right"
+      }
+     ]
+    },
+    {
+     "value": {
+      "desktop": {
+       "top": "0px",
+       "right": "15px",
+       "bottom": "0px"
+      }
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "padding-bottom"
+      }
+     ]
+    },
+    {
+     "value": {
+      "desktop": {
+       "top": "0px",
+       "right": "15px",
+       "bottom": "0px",
+       "left": "15px"
+      }
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "padding-left"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "padding-top"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "padding-right"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "padding-bottom"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "padding-left"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "binding": "item.activeColor",
+   "attr": "itemPadding",
+   "values": [
+    {
+     "value": {
+      "desktop": {
+       "top": "0px"
+      }
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "padding-top"
+      }
+     ]
+    },
+    {
+     "value": {
+      "desktop": {
+       "top": "0px",
+       "right": "15px"
+      }
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "padding-right"
+      }
+     ]
+    },
+    {
+     "value": {
+      "desktop": {
+       "top": "0px",
+       "right": "15px",
+       "bottom": "0px"
+      }
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "padding-bottom"
+      }
+     ]
+    },
+    {
+     "value": {
+      "desktop": {
+       "top": "0px",
+       "right": "15px",
+       "bottom": "0px",
+       "left": "15px"
+      }
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "padding-left"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "padding-top"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "padding-right"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "padding-bottom"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "padding-left"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "binding": "item.activeBg",
+   "attr": "itemMinHeight",
+   "values": [
+    {
+     "value": {
+      "desktop": "auto"
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "min-height"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "min-height"
+      }
+     ]
+    },
+    {
+     "value": {
+      "desktop": "42px"
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "height"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "height"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "binding": "R.navPad",
+   "attr": "itemMinHeight",
+   "values": [
+    {
+     "value": {
+      "desktop": "auto"
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "min-height"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "min-height"
+      }
+     ]
+    },
+    {
+     "value": {
+      "desktop": "42px"
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "height"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "height"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "binding": "item.activeColor",
+   "attr": "itemMinHeight",
+   "values": [
+    {
+     "value": {
+      "desktop": "auto"
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "min-height"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "min-height"
+      }
+     ]
+    },
+    {
+     "value": {
+      "desktop": "42px"
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link",
+       "prop": "height"
+      },
+      {
+       "node": "cr-ref-header-16",
+       "slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
+       "prop": "height"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "binding": "R.px",
+   "attr": "minHeight",
+   "values": [
+    {
+     "value": {
+      "desktop": "46px"
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-1",
+       "slot": ".sgs-container__inner",
+       "prop": "min-height"
+      }
+     ]
+    },
+    {
+     "value": {
+      "tablet": "75px",
+      "desktop": "87px"
+     },
+     "members": [
+      {
+       "node": "cr-ref-header-12",
+       "slot": ".sgs-container__inner",
+       "prop": "min-height"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
