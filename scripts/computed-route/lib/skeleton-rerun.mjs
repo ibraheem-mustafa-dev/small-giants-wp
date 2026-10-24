@@ -20,9 +20,11 @@ import { fingerprintsOf } from './identity.mjs';
 // from a name. A record names its element by `template_tpl_id`; only a record with no `template_tpl_id` (a strip built in
 // code and bound into the template through a hole) is named by the `nearest_tpl_id` of the element holding that hole, and
 // a template record's own `nearest_tpl_id` never adds a key. A record counts only when it is a translate transform with an
-// infinite iteration, so an element merely near an animation is never a track.
+// infinite iteration that runs one way, so an element merely near an animation is never a track: a track never turns
+// back, so an alternating direction or a translate that ends where it starts (a float or bob) is not one.
 const tplIds = ( v ) => ( null == v ? [] : [].concat( v ) );
-const translatesForEver = ( a ) => 'infinite' === String( a.iterations ) && ( a.properties || [] ).some( ( p ) => 'transform' === p.property && /translate/.test( `${ p.from ?? '' } ${ p.to ?? '' } ${ p.formula ?? '' }` ) );
+const oneWay = ( a, p ) => ! /^alternate/.test( String( a.direction ?? '' ) ) && ( null != p.formula || String( p.from ?? '' ).replace( /\s+/g, '' ) !== String( p.to ?? '' ).replace( /\s+/g, '' ) );
+const translatesForEver = ( a ) => 'infinite' === String( a.iterations ) && ( a.properties || [] ).some( ( p ) => 'transform' === p.property && /translate/.test( `${ p.from ?? '' } ${ p.to ?? '' } ${ p.formula ?? '' }` ) && oneWay( a, p ) );
 export const loopingKeys = ( animations ) => new Set( ( animations?.records || [] ).filter( translatesForEver ).flatMap( ( a ) => ( null == a.element?.template_tpl_id ? tplIds( a.element?.nearest_tpl_id ) : tplIds( a.element.template_tpl_id ) ).map( ( tpl ) => templateKey( { dc: a.element.dc, tpl } ) ) ) );
 
 // The breakpoints in the client's saved intake.json: the width thresholds the proposals collapse at when the caller does not pass its own.
