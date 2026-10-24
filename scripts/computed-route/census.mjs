@@ -3,7 +3,7 @@
 // --check exits 1 when any row matches no class in data/census-classes.json (a new gap kind), when a property the draft
 // declares ends neither written, held nor unwritten (lib/census-conservation.mjs), or when the run holds no reads.json
 // or one not bound to the run (its stamp, its skeleton and draft hashes, its nodes; SGS_REPO_ROOT names the repository the
-// inputs are hashed under). Conserved reads only a widthless held row answers are listed.
+// inputs are hashed under), or when a settled row records no reason. Conserved reads only a widthless held row answers are listed.
 import { censusRun } from './lib/fill-census.mjs';
 import { conservationRun, groupFailures } from './lib/census-conservation.mjs';
 
@@ -25,6 +25,7 @@ if ( args.includes( '--json' ) ) {
 		console.log( `CONSERVATION: not checked: ${ conserved.reason } (node census-reads.mjs <run dir> saves a read set bound to the run)` );
 	} else {
 		console.log( `CONSERVATION: ${ conserved.failures.length ? `${ conserved.failures.length } of ${ conserved.reads } declared reads dropped` : `${ conserved.reads } declared reads, ${ conserved.conserved } conserved, 0 dropped` } (${ conserved.excluded.cssWide } CSS-wide keyword reads excluded)` );
+		for ( const s of conserved.unreasoned ) console.log( `  SETTLED WITH NO REASON: ${ s.block } ${ s.node } ${ s.slot || '(root)' } ${ s.property }` );
 		const w = conserved.widthlessHolds;
 		w.length && console.log( `  ${ w.length } conserved read${ 1 === w.length ? ' rests' : 's rest' } on a held row that records no width, so the hold answers every width (${ [ ...new Set( w.map( ( r ) => r.how ) ) ].join( ', ' ) }): ${ w.slice( 0, 5 ).map( ( r ) => `${ r.node } ${ r.slot || '(root)' } ${ r.property } @${ r.width } (${ r.how })` ).join( '; ' ) }${ w.length > 5 ? '; ...' : '' }` );
 		for ( const g of groupFailures( conserved.failures ) ) {
@@ -33,4 +34,4 @@ if ( args.includes( '--json' ) ) {
 		}
 	}
 }
-if ( args.includes( '--check' ) && ( result.unclassified.length || 'checked' !== conserved.status || conserved.failures.length ) ) process.exit( 1 );
+if ( args.includes( '--check' ) && ( result.unclassified.length || 'checked' !== conserved.status || conserved.failures.length || conserved.unreasoned.length ) ) process.exit( 1 );

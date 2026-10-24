@@ -1,0 +1,15 @@
+[
+	{ "file": "lib/census-conservation.mjs", "find": "\t\tif ( ! atRest( u.state ) ) {\n\t\t\tcontinue;\n\t\t}", "replace": "", "why": "an UNMAPPED row of another state conserves a rest read" },
+	{ "file": "lib/census-conservation.mjs", "find": "widths: unmappedWidths( u.value )", "replace": "widths: null", "why": "an UNMAPPED row answers every width" },
+	{ "file": "lib/census-conservation.mjs", "find": "atRest( c.state ) && SHOWN.includes( c.verdict ) &&", "replace": "atRest( c.state ) &&", "why": "a confirm record of any verdict counts as written" },
+	{ "file": "lib/census-conservation.mjs", "find": "atRest( l.state ) && false !== l.applied &&", "replace": "false !== l.applied &&", "why": "a ledger row of another state conserves a rest read" },
+	{ "file": "lib/census-conservation.mjs", "find": "atRest( l.state ) && false !== l.applied &&", "replace": "atRest( l.state ) &&", "why": "a ledger entry Fill did not apply conserves a rest read" },
+	{ "file": "lib/census-conservation.mjs", "find": "out.push( { node: w.node, slot: w.readSlot ?? w.slot,", "replace": "out.push( { node: w.node, slot: w.slot,", "why": "a write answers the element it is written on, not the one it was read on" },
+	{ "file": "lib/census-conservation.mjs", "find": "out.push( { node: s.node, slot: s.readSlot ?? s.slot,", "replace": "out.push( { node: s.node, slot: s.slot,", "why": "a settled row answers the element it was judged on, not the one it was read on" },
+	{ "file": "lib/census-conservation.mjs", "find": "how: w.how } );\n\t}", "replace": "how: w.how } );\n\t\twidths.length || ( out[ out.length - 1 ].widths = null );\n\t}", "why": "a write with no widths answers every width" },
+	{ "file": "lib/census-conservation.mjs", "find": "\tif ( o.properties ) {\n\t\treturn o.properties.includes( read.property );\n\t}", "replace": "\tif ( o.properties && /^(?:transition|animation)(?:-|$)/.test( read.property ) ) {\n\t\treturn true;\n\t}", "why": "a motion write answers every transition and animation longhand" },
+	{ "file": "lib/census-conservation.mjs", "find": "LAYER_LONGHANDS[ k ] && out.add( LAYER_LONGHANDS[ k ] );", "replace": "out.add( 'transition-duration' );", "why": "a motion layer writes only duration whatever its values" },
+	{ "file": "lib/census-conservation.mjs", "find": "\t\tif ( ! s.reason ) {", "replace": "\t\tif ( false ) {", "why": "a settled row with no reason is held" },
+	{ "file": "census.mjs", "find": " || conserved.unreasoned.length )", "replace": " )", "why": "a settled row with no reason passes --check" },
+	{ "file": "lib/census-conservation.mjs", "find": "\t\tif ( ! atRest( w.state ) ) {", "replace": "\t\tif ( false ) {", "why": "a state write conserves a rest read" }
+]

@@ -33,7 +33,7 @@ test( 'MUST FAIL: two widths are not merged (a write at 1440 does not answer the
 } );
 
 test( 'MUST FAIL: a confirm record answers its own width only', () => {
-	const out = verdict( [ read( 'color', 'red', { width: 375 } ), read( 'color', 'red', { width: 768 } ) ], { confirm: [ { node: 'cr-ref-header-15', slot: '.link', property: 'color', width: 768, state: 'default' } ] } );
+	const out = verdict( [ read( 'color', 'red', { width: 375 } ), read( 'color', 'red', { width: 768 } ) ], { confirm: [ { node: 'cr-ref-header-15', slot: '.link', property: 'color', width: 768, state: 'default', verdict: 'confirmed' } ] } );
 	assert.deepEqual( out.failures.map( ( f ) => f.width ), [ 375 ] );
 } );
 
@@ -67,7 +67,7 @@ test( 'MUST FAIL: a CSS-wide keyword is excluded and counted, a real value besid
 } );
 
 test( 'MUST FAIL: a motion write answers the transition longhands of its own element and nothing else', () => {
-	const out = verdict( [ read( 'transition-duration', '0.2s' ), read( 'transition-duration', '0.2s', { slot: '.other' } ), read( 'color', 'red' ) ], { writes: [ write( '', { how: 'fill-timing' } ) ] } );
+	const out = verdict( [ read( 'transition-duration', '0.2s' ), read( 'transition-duration', '0.2s', { slot: '.other' } ), read( 'color', 'red' ) ], { writes: [ write( 'transition-duration', { how: 'fill-timing' } ) ] } );
 	assert.deepEqual( out.failures.map( ( f ) => `${ f.slot } ${ f.property }` ).sort(), [ '.link color', '.other transition-duration' ] );
 } );
 
@@ -188,4 +188,73 @@ test( 'MUST FAIL: --json carries the conservation result', () => {
 	const p = plant( [ read( 'letter-spacing', '-0.01em' ) ] );
 	const r = spawnSync( process.execPath, [ path.join( ROOT, 'census.mjs' ), p.dir, '--json' ], { encoding: 'utf8', env: { ...process.env, SGS_REPO_ROOT: p.root } } );
 	assert.equal( JSON.parse( r.stdout ).conservation.failures[ 0 ].property, 'letter-spacing' );
+} );
+
+// Track W's review: each shape below counted a read as conserved by an outcome of another state, element, width or property.
+test( 'MUST FAIL: an UNMAPPED row of another state or another width does not conserve a rest read', () => {
+	const hover = { node: 'cr-ref-header-15', slot: '.link', property: 'color', value: 'red', state: 'hover', reason: 'no-setting: x' };
+	assert.equal( verdict( [ read( 'color', 'red' ) ], {}, [ hover ] ).failures.length, 1 );
+	const at768 = { node: 'cr-ref-header-15', slot: '.link', property: 'color', value: '{"768":"red"}', state: null, reason: 'no-setting: x' };
+	assert.deepEqual( verdict( [ read( 'color', 'red' ), read( 'color', 'red', { width: 768 } ) ], {}, [ at768 ] ).failures.map( ( f ) => f.width ), [ 1440 ] );
+	// negative control: the rest row with a plain value conserves the read at every width
+	assert.equal( verdict( [ read( 'color', 'red' ), read( 'color', 'red', { width: 375 } ) ], {}, [ { ...hover, state: null } ] ).conserved, 2 );
+} );
+
+test( 'MUST FAIL: a confirm record counts as written only when its verdict says the element shows the value', () => {
+	const c = ( v ) => ( { node: 'cr-ref-header-15', slot: '.link', property: 'color', width: 1440, state: 'default', verdict: v, renderedLive: null } );
+	for ( const v of [ 'open', 'render-wins', 'draft-defect', 'effect-differs', undefined ] ) {
+		assert.equal( verdict( [ read( 'color', 'red' ) ], { confirm: [ c( v ) ] } ).failures.length, 1, String( v ) );
+	}
+	assert.equal( verdict( [ read( 'color', 'red' ) ], { confirm: [ c( 'confirmed' ) ] } ).conserved, 1 );
+} );
+
+test( 'MUST FAIL: a ledger row of another state, or one Fill did not apply to the rest look, does not conserve a rest read', () => {
+	const l = { node: 'cr-ref-header-15', slot: '.link', prop: 'color', width: 1440, id: 'D-1' };
+	assert.equal( verdict( [ read( 'color', 'red' ) ], { ledger: [ { ...l, state: 'hover' } ] } ).failures.length, 1 );
+	assert.equal( verdict( [ read( 'color', 'red' ) ], { ledger: [ { ...l, applied: false } ] } ).failures.length, 1 );
+	assert.equal( verdict( [ read( 'color', 'red' ) ], { ledger: [ { ...l, applied: true } ] } ).conserved, 1 );
+	assert.equal( verdict( [ read( 'color', 'red' ) ], { ledger: [ { ...l, state: '*' } ] } ).conserved, 1 );
+} );
+
+test( 'MUST FAIL: a write read on another element answers that element only, never the element it is written on', () => {
+	const scoped = write( 'color', { slot: '', readSlot: '.link' } );
+	assert.equal( verdict( [ read( 'color', 'red', { slot: '' } ) ], { writes: [ scoped ] } ).failures.length, 1 );
+	assert.equal( verdict( [ read( 'color', 'red', { slot: '' } ) ], { writes: [ write( 'color', { slot: '', readSlot: '.icon' } ) ] } ).failures.length, 1 );
+	assert.equal( verdict( [ read( 'color', 'red' ) ], { writes: [ scoped ] } ).conserved, 1 );
+	// the same holds for a settled row
+	const s = { node: 'cr-ref-header-15', slot: '', readSlot: '.link', property: 'color', widths: [ 1440 ], reason: 'already-set' };
+	assert.equal( verdict( [ read( 'color', 'red', { slot: '' } ) ], { settled: [ s ] } ).failures.length, 1 );
+	assert.equal( verdict( [ read( 'color', 'red' ) ], { settled: [ s ] } ).conserved, 1 );
+} );
+
+test( 'MUST FAIL: a write that names no widths and no answers answers no width', () => {
+	assert.equal( verdict( [ read( 'color', 'red' ) ], { writes: [ write( 'color', { widths: [] } ) ] } ).failures.length, 1 );
+	assert.equal( verdict( [ read( 'color', 'red' ) ], { writes: [ write( 'color', { widths: undefined } ) ] } ).failures.length, 1 );
+	assert.equal( verdict( [ read( 'color', 'red' ) ], { writes: [ write( 'color', { widths: [], answers: [ 1440 ] } ) ] } ).conserved, 1 );
+} );
+
+test( 'MUST FAIL: a motion or timing write answers only the longhands it writes', () => {
+	const reads = [ 'animation-name', 'transition-property', 'transition-duration', 'transition-timing-function', 'transition-delay' ].map( ( p ) => read( p, 'x' ) );
+	const dropped = ( w ) => verdict( reads, { writes: [ w ] } ).failures.map( ( f ) => f.property ).sort();
+	assert.deepEqual( dropped( write( 'transition-duration', { how: 'fill-timing' } ) ), [ 'animation-name', 'transition-delay', 'transition-property', 'transition-timing-function' ] );
+	assert.deepEqual( dropped( write( 'transition-delay', { how: 'single' } ) ), [ 'animation-name', 'transition-duration', 'transition-property', 'transition-timing-function' ] );
+	const layer = write( 'motion root', { how: 'motion', attr: 'sgsMotion', after: { v: 1, elements: { root: { hover: { state: { values: { duration: 200, easing: 'ease', scale: 1.1 } } } } } } } );
+	assert.deepEqual( dropped( layer ), [ 'animation-name', 'transition-delay', 'transition-property' ] );
+	assert.deepEqual( dropped( write( 'J-12 scrolledOffset', { how: 'motion', attr: 'scrolledOffset', after: 8 } ) ), reads.map( ( r ) => r.property ).sort() );
+	// negative control: a transition shorthand write answers every transition longhand
+	assert.deepEqual( dropped( write( 'transition' ) ), [ 'animation-name' ] );
+} );
+
+test( 'MUST FAIL: a settled row with no reason conserves nothing and fails --check', () => {
+	const s = { node: 'cr-ref-header-15', block: 'sgs/nav-bar-menu', slot: '.link', property: 'color', widths: [ 1440 ] };
+	const out = verdict( [ read( 'color', 'red' ) ], { settled: [ s ] } );
+	assert.equal( out.failures.length, 1 );
+	assert.deepEqual( out.unreasoned.map( ( u ) => u.property ), [ 'color' ] );
+	assert.equal( verdict( [ read( 'color', 'red' ) ], { settled: [ { ...s, reason: 'equal' } ] } ).conserved, 1 );
+	const p = plant( [ read( 'color', 'red' ) ] );
+	const f = path.join( p.dir, 'fill-report.json' );
+	fs.writeFileSync( f, JSON.stringify( { ...JSON.parse( fs.readFileSync( f, 'utf8' ) ), settled: [ s ] } ) );
+	const c = check( p );
+	assert.equal( c.status, 1, c.stdout );
+	assert.match( c.stdout, /SETTLED WITH NO REASON: sgs\/nav-bar-menu cr-ref-header-15 \.link color/ );
 } );
