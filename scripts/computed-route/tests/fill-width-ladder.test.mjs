@@ -232,3 +232,14 @@ test( 'MUST FAIL: the written element with no font-size read takes the row eleme
 	reresolve( { rec: { name: 'sgs/box' }, node: { attributes: {} }, target: INNER, fallback: ROOT, slot: '.in', prop: 'gap', draft: { 768: '1em' }, ctx: { reads }, resolver } );
 	assert.deepEqual( seen, { 375: 20, 768: 20, 1440: 20 } );
 } );
+
+test( 'MUST FAIL: a state row\'s width-gate writes carry its state, so the census never counts them at rest', () => {
+	const w = world( { slot: '.sgs-box__inner' } );
+	const r = run( w, [
+		rowOf( { property: 'gap', slot: '.sgs-box__inner', value: '{"375":"8px","1440":"24px"}', code: ONE_VALUE_EVERY_WIDTH, reason: 'shape: x' } ),
+		rowOf( { property: 'color', slot: '.sgs-box__inner', state: 'hover', value: '{"375":"red","1440":"blue"}', code: ONE_VALUE_EVERY_WIDTH, reason: 'shape: x' } ),
+	] );
+	const of = ( p ) => r.writes.filter( ( x ) => p === x.covers );
+	assert.ok( of( 'color' ).length && of( 'color' ).every( ( x ) => 'hover' === x.state ), 'the hover row\'s writes are hover writes' );
+	assert.ok( of( 'gap' ).length && of( 'gap' ).every( ( x ) => ! ( 'state' in x ) ), 'negative control: a rest row\'s writes carry no state' );
+} );

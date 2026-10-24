@@ -53,7 +53,7 @@ import { sweepSteps } from './lib/fill-values.mjs';
 import { walkerConfigs } from './lib/fill-config.mjs';
 import { fillReport, unmappedList, readFailureRows, passSettled } from './lib/fill-report.mjs';
 import { calibrationFor } from './solve.mjs';
-import { motionSettled, transitionListOutcomes } from './lib/fill-motion-settle.mjs';
+import { motionSettled, motionRejudged, transitionListOutcomes } from './lib/fill-motion-settle.mjs';
 import { stateMap } from './lib/state-map.mjs';
 import { readMediaMap } from './lib/fill-media.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
@@ -265,6 +265,10 @@ export async function fillSurface( o ) {
 		const moved = motionSettled( { unmapped: result.unmapped, writes: motion.writes, nodes, flat, refOf, mdb: motionDb( db ), db, calFor, reads, rawSnapshot } );
 		result.settled.push( ...passSettled( result.unmapped, moved.unmapped, 'motion', moved.answered ) );
 		result.unmapped = moved.unmapped;
+		// A resting timing the stylesheet shows (settled equal) on an element the written layer times is judged by the layer.
+		const rejudged = motionRejudged( { settled: result.settled, writes: motion.writes, nodes, flat, refOf, mdb: motionDb( db ), db, calFor, rawSnapshot } );
+		result.settled = rejudged.settled;
+		result.unmapped.push( ...rejudged.unmapped );
 		result.handover.push( ...motion.handover );
 		// R2: where a button's painted preset holds the draft's hover transform, the instance motion leaves its transform channels.
 		const lift = dropPresetMotion( { lifted: presets.lifted, flat, writes: result.writes } );

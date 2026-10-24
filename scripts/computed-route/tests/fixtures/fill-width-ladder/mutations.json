@@ -94,5 +94,11 @@
   "find": "const fontPx = Object.keys( own ).length || ! fallback ? own : fontOf( fallback );",
   "replace": "const fontPx = own;",
   "why": "no fallback font size"
+ },
+ {
+  "file": "lib/fill-width-ladder.mjs",
+  "find": "...( state ? { state } : {} ), attr: x.attr",
+  "replace": "attr: x.attr",
+  "why": "a state width-gate write is counted at rest (council C6)"
  }
 ]
