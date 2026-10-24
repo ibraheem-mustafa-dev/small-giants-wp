@@ -441,7 +441,7 @@ final class Sgs_Motion_Renderer {
 		}
 		// `sgsFocusRests`: the block's hover state and hover effects play on pointer hover only, so every element the
 		// renderer marks carries `data-sgs-focus-rests`, which the focus arm of `assets/css/motion.css` excludes.
-		$focus_rests = ! empty( $attrs[ \SGS\Blocks\Sgs_Focus_Rests::ATTR ] );
+		$focus_rests = ! empty( $attrs['sgsFocusRests'] );
 		$doc         = $frame['doc'];
 		if ( array() === $doc ) {
 			if ( $focus_rests && array() !== $root_attrs ) {

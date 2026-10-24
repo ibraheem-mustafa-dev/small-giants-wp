@@ -204,6 +204,22 @@
 					},
 					"_note": "The nav item LINK — every stateful control on this element targets the <a>, never the <li> (Spec 36 section 14 FR-41-1). Three states are declared: base, `hover` (render.php's `$hover_targets` = `:hover, :focus-visible`) and `current` (`[aria-current=\"page\"]`), so a visitor can distinguish WHERE THEY ARE from WHAT THEY ARE POINTING AT. The current-page state is operator-controllable through `itemColourCurrent` / `itemBgCurrent` / `itemFontWeightCurrent` (Spec 36 section 14 FR-41-1); `itemFontWeightCurrent` is the non-colour signal that satisfies WCAG 1.4.1 without relying on colour alone. `current` deliberately maps DIFFERENT attribute names from `hover`: the classifier's `extract-signatures.py::_record` is last-write-wins, so a state map byte-identical to `hover` silently overwrites the hover derivation and tags those attributes with a css_state they never render in. Every state member is EXPLICIT rather than left to the `{prefix}Suffix` convention — `css:font-weight`, `css:text-decoration` and `css:text-transform` each carry a base attribute AND a state sibling, and without an explicit entry per state both derive to the same (property, element, state=NULL) slot and collide on one routing destination. The base `css:font-weight` -> `itemFontWeight` entry is load-bearing for the same reason: a state entry with no base is the STATE_WITHOUT_BASE shape the manifest gate flags. `css:border-radius` -> `itemBorderRadius` is base-only — radius has no state on `SgsBorderControl` (Spec 36 section 14 FR-41-7). M-21 (2026-09-23): `css:opacity` -> itemOpacity/itemOpacityHover and `css:padding-inline-start` -> itemPaddingShiftHover (hover-only) added; itemPaddingShiftHover is ALSO mapped on the `sublink` element below (dropdown/mega submenu link) — the SAME attribute reused across both elements, deliberately, because a menu sets one padding-shift value per instance, never two different ones at once; itemOpacity/itemOpacityHover are NOT reused on `sublink` because a sub-link can need a genuinely DIFFERENT rest/hover opacity pair (e.g. 0.6 to 1) from its item link (e.g. 1 to 0.5) — reusing the same attribute there would apply the wrong number to one of the two elements."
 				},
+				"item-open": {
+					"state": "open",
+					"motion": false,
+					"label": "Item (panel open)",
+					"order": 4.1,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:color": "itemColourOpen",
+						"css:background-color": "itemBgOpen"
+					},
+					"_note": "The Open state of a top-level item whose dropdown or mega panel is open (FR-41-42), modelled as its own part like sgs/nav-drawer-menu's `item-open`: a `states.open` entry on `item` would raise every item row's required state count to four. The marker is `:is(.__submenu-root, .__mega):has(> [data-sgs-mega-trigger][aria-expanded=\"true\"]) > .__link`; the controls sit as an Open state in the Item background and Item text rows."
+				},
 				"indicator": {
 					"motion": false,
 					"label": "Sliding indicator",
@@ -1233,6 +1249,16 @@
 		"itemColourCurrent": {
 			"type": "string",
 			"default": ""
+		},
+		"itemColourOpen": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of a top-level item whose dropdown or mega panel is open (a colour slug or any CSS colour, alpha kept). An item with no panel never takes it."
+		},
+		"itemBgOpen": {
+			"type": "string",
+			"default": "",
+			"description": "Background colour of a top-level item whose dropdown or mega panel is open (a colour slug or any CSS colour, alpha kept), painted on the same ::before layer as itemBg. An item with no panel never takes it."
 		},
 		"itemBgCurrent": {
 			"type": "string",

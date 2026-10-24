@@ -371,6 +371,18 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 		$css .= sgs_text_colour_gradient_fallback_rule( $link_sel, $item_colour_effective );
 	}
 
+	// The Open state: a top-level item whose dropdown or mega panel is open. The item's `{link}` is the trigger itself
+	// (a button, or a link that is also the trigger) or the sibling of a separate chevron trigger, so the marker is the
+	// root that wraps both: `:has( > [data-sgs-mega-trigger][aria-expanded="true"] )` (the marker mega-disclosure.js
+	// binds; the burger binds `aria-expanded` too, which is why it is never keyed bare). An item with no panel has
+	// no such root, so it stays plain. It out-ranks hover by specificity: open holds while the pointer is on the item.
+	$item_open_sel       = $uid_sel . ' :is(.' . $bem_root . '__submenu-root, .' . $bem_root . '__mega):has(> [data-sgs-mega-trigger][aria-expanded="true"]) > .' . $bem_root . '__link';
+	$item_colour_open    = isset( $attributes['itemColourOpen'] ) ? (string) $attributes['itemColourOpen'] : '';
+	$item_colour_open_ok = '' !== sgs_colour_value( $item_colour_open );
+	if ( $item_colour_open_ok ) {
+		$css .= $item_open_sel . '{color:' . sgs_colour_value( $item_colour_open ) . ';}';
+	}
+
 	// ⛔ Current BEFORE Hover, and never guarded — it is not pointer-dependent.
 	// Both states differ from the base by one single-specificity suffix, so the
 	// pair always ties and source order is the only tie-breaker: hover wins when
@@ -501,6 +513,9 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	$item_bg_current_decl = 'highlight' === $t_bg
 		? ''
 		: sgs_background_paint_decl( $item_bg_current_raw, $item_bg_current_gradient );
+	$item_bg_open_decl    = '' !== trim( (string) ( $attributes['itemBgOpen'] ?? '' ) )
+		? sgs_background_paint_decl( (string) $attributes['itemBgOpen'], '' )
+		: '';
 
 	// Under `highlight` the per-item hover FILL is
 	// unconditionally suppressed above (FR-41-14/FR-41-25 — the shared sliding
@@ -521,7 +536,7 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 		$css .= sgs_hover_state_rules( $link_hover_sel, 'font-weight:' . $highlight_hover_weight, ':focus-visible' );
 	}
 
-	if ( '' !== $item_bg_normal_decl || '' !== $item_bg_hover_decl || '' !== $item_bg_current_decl ) {
+	if ( '' !== $item_bg_normal_decl || '' !== $item_bg_hover_decl || '' !== $item_bg_current_decl || '' !== $item_bg_open_decl ) {
 		// Radius only ever rounds a VISIBLE fill (G13 scenario 4) — emitted here,
 		// alongside the background branch it exists for, not unconditionally.
 		if ( null !== $item_radius_shorthand && '' !== $item_radius_shorthand ) {
@@ -548,6 +563,10 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 		if ( '' !== $item_bg_hover_decl ) {
 			// $link_hover_sel (not $link_sel): G-13 itemHoverScope narrows scope.
 			$css .= sgs_hover_state_rules( $link_hover_sel, $item_bg_hover_decl, ':focus-visible', '::before' );
+		}
+		// Open after Hover: an open item keeps its open fill while pointed at.
+		if ( '' !== $item_bg_open_decl ) {
+			$css .= $item_open_sel . '::before{' . $item_bg_open_decl . ';}';
 		}
 	}
 

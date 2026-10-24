@@ -79,7 +79,7 @@ A set of blocks + a CPT that render a WordPress menu as a best-in-class navigati
 | FR-36-17 | 11 | Crawlable, schema-friendly, fast |
 | FR-36-25 | 11 | Structured-data-once |
 | FR-36-28 | 6 | Nav colour-state + control system → **§14** (satisfies FR-36-4's hover/focus half + FR-36-11's colour floor; the ARIA active-trail is NOT satisfied — FR-41-20) |
-| FR-41-1 to FR-41-41 | 14 | Nav menu colour, state and control system: three states, hover treatments, item border, submenu split, Menu Button panel, inspector layout (IDs stable; not renumbered) |
+| FR-41-1 to FR-41-42 | 14 | Nav menu colour, state and control system: three states, hover treatments, item border, submenu split, Menu Button panel, inspector layout (IDs stable; not renumbered) |
 | FR-36-29 | 3 | Drawer row ornament, per-item media, sibling dim and label roll (`sgs/nav-drawer-menu`) |
 
 ## 2. Architecture
@@ -873,7 +873,7 @@ Every band Sweep (item border band, separator band) uses `plugins/sgs-blocks/inc
 **(c)** `plugins/sgs-blocks/includes/helpers-colour-variants.php::sgs_border_states_css`: the third state is FLAT-PATH ONLY. The flat path (no gradient) adds one `{sel}[aria-current="page"]{border-color:Z}` rule before the hover pair; the ring path (`sgs_border_gradient_css()`, a masked `::before` composing two paints) has no Current. The ITEM border never reaches the ring path; the submenu PANEL border may, because it is Normal-only (FR-41-9).
 
 **Three binding emitter rules:**
-1. ⛔ Every hover rule routes through `plugins/sgs-blocks/includes/helpers-hover-state.php` (`sgs_hover_state_rules()` for a base selector, `sgs_hover_guarded_rule()` for a built `:hover` selector), never a bare `{sel}:hover`. `SGS_HOVER_MEDIA` fixes phones and pure-touch tablets, `SGS_HOVER_NOT_TOUCH` fixes hybrids.
+1. ⛔ Every hover rule routes through `plugins/sgs-blocks/includes/helpers-hover-state.php` (`sgs_hover_state_rules()` for a base selector, `sgs_hover_guarded_rule()` for a built `:hover` selector), never a bare `{sel}:hover`. `SGS_HOVER_MEDIA` fixes phones and pure-touch tablets, `SGS_HOVER_NOT_TOUCH` fixes hybrids. While a block's `sgsFocusRests` setting is on (`sgs_focus_rests_active()`, Spec 38A §6.2), `sgs_hover_state_rules()` emits the guarded hover rule only, and the emitters that pair a hover rule with a `:focus-visible` twin by hand skip the twin.
 2. `:focus-visible` stays OUTSIDE both guards.
 3. ⛔ The Current rule is emitted BEFORE the Hover rule and is never guarded.
 
@@ -1115,6 +1115,11 @@ Block-private, reusing the shared `fx-magnet` runtime (Spec 38 FR-38-30) at the 
 #### FR-41-41 — Drawer row extras: ornament, expander glyph, per-item media
 
 **Status: BUILT** (U-7, M-22 and M-15). `sgs/nav-drawer-menu` only. `itemOrnament` per tier (`none` | `index` | `icon`): a decorative two-digit counter (`content: counter() / ""`) or `itemOrnamentIcon` with an optional crossfading `itemOrnamentIconHover`, plus `itemOrnamentSize`, `itemOrnamentColour` (+`Hover`) and `itemOrnamentGap`; the colour row carries a `gradient` exemption (one span holds a counter or an SVG glyph; no single gradient paints both). `itemExpanderIcon` and `itemExpanderRotate` replace the hardcoded chevron and its 180 degree turn. `itemMedia: featured-image` shows each linked page's featured image beside its label (custom links show none; a GIF or WebP is served at `full` so it keeps animating), revealed per tier by `itemMediaReveal` (`none` | `always` | `hover`, growing from width 0 on hover or keyboard focus) and sized by `itemMediaWidth` / `itemMediaHeight` per tier and `itemMediaRadius`. The image is decorative (`alt=""`).
+
+
+#### FR-41-42 — The Open state: a top-level item whose panel is open
+
+**Status: BUILT.** `sgs/nav-bar-menu` only. `itemBgOpen` and `itemColourOpen` (each a palette slug or any CSS colour, alpha kept; empty paints nothing) give a top-level item whose dropdown or mega panel is open a background and text colour, as the `item-open` element (`"state": "open"`, `css:background-color`, `css:color`; its own part so the item rows keep three states, like `sgs/nav-drawer-menu`'s `item-open`) and as an "Open" state beside Normal, Hover and Current in the Item background row and the Item text row of the colour panel. The marker is the root that wraps the trigger and its panel, `{uid} :is(.sgs-nav-bar-menu__submenu-root, .sgs-nav-bar-menu__mega):has(> [data-sgs-mega-trigger][aria-expanded="true"]) > .sgs-nav-bar-menu__link` (`plugins/sgs-blocks/includes/nav-menu-css.php::sgs_nav_shared_item_state_css`), so a button trigger, a link that is also the trigger and a link beside a separate chevron trigger all take it, and an item with no panel (it has no such root) stays plain. The background paints on the link's `::before` layer with the other item fills (FR-41-23); the open rule out-ranks the hover rule by specificity, so an open item keeps its look while pointed at. The drawer menu has no Open state of its own (its rows are the `item-open` part). Proven by `plugins/sgs-blocks/tests/php/run-nav-bar-menu-open-state-standalone.php`.
 
 #### FR-41-32 — Cursor-reactive field: eligible, deliberately NOT offered
 

@@ -120,6 +120,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		itemBgGradient,
 		itemBgHover,
 		itemBgHoverGradient,
+		itemBgOpen,
+		itemColourOpen,
 		itemBgHoverTreatment,
 		itemColourHoverTreatment,
 		itemBorderHoverTreatment,
@@ -266,6 +268,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		contrastRefEl,
 	} );
 
+	// The Open state (a top-level item whose dropdown or mega panel is open) is appended at array level to the
+	// helper's Normal/Hover/Current states: the helpers model pointer and page states only.
+	const withOpenState = ( row, openState ) => ( { ...row, states: [ ...row.states, openState ] } );
+
 	const colourRows = [
 		fillRow( {
 			key: 'nav-bg',
@@ -286,7 +292,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			attributes,
 			setAttributes,
 		} ),
-		textRow( {
+		withOpenState(
+			textRow( {
 			key: 'item-text',
 			label: __( 'Item text', 'sgs-blocks' ),
 			attrs: {
@@ -317,7 +324,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</>
 			),
-		} ),
+			} ),
+			{
+				key: 'open',
+				label: __( 'Open', 'sgs-blocks' ),
+				value: itemColourOpen,
+				onChange: ( val ) => setAttributes( { itemColourOpen: val ?? '' } ),
+				linked: true,
+			}
+		),
 		// ⛔ HAND-WRITTEN LITERAL, DELIBERATELY — FR-41-14 requires the 'current'
 		// entry to be omitted per-STATE while Highlight is active; a conditional
 		// attribute NAME here would desync
@@ -364,6 +379,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							},
 					  ]
 					: [] ),
+				{
+					key: 'open',
+					label: __( 'Open', 'sgs-blocks' ),
+					value: itemBgOpen,
+					onChange: ( val ) => setAttributes( { itemBgOpen: val ?? '' } ),
+					linked: true,
+				},
 			],
 			after: (
 				<ItemBgTreatment
