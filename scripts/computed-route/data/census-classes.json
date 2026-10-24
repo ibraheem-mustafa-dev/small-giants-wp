@@ -4,6 +4,12 @@
 		"owner_note": "owner names the Spec 48 item (.claude/specs/48-CLONING-SYSTEM.md) that owns closing the class."
 	},
 	"unmapped": [
+		{ "class": "reduced-motion", "pattern": "^a reduced-motion rule: the motion model removes motion", "owner": "Spec 38A §12 (the motion model removes motion under prefers-reduced-motion itself; an accepted model difference, no class of FR-48-65 names one, so it is held)", "frClass": "held" },
+		{ "class": "timing-no-home", "pattern": "^timing-no-home", "owner": "FR-48-47 Motion (framework setting gap: no setting holds the resting transition)", "frClass": "F-setting", "candidate": true },
+		{ "class": "timing-conflict", "pattern": "^timing-conflict", "owner": "FR-48-47 Motion (the sgsMotion hover layer holds one transition timing, the draft needs two: framework setting gap)", "frClass": "F-setting", "candidate": true },
+		{ "class": "default-state", "pattern": "^default-state: .*(by itself and the draft does not, and nothing holds it|already holds )", "owner": "FR-48-81 States (a block's own interaction look no setting holds for this element)", "frClass": "F-setting", "candidate": true },
+		{ "class": "used-value", "pattern": "^used-value", "owner": "Spec 48 §3.6 (a used-value reading, lib/gap-classes.mjs::WALKER_REASONS)", "frClass": "W-walker" },
+		{ "class": "script-look", "pattern": "^script-look", "owner": "FR-48-81 States (a script-built look no setting holds)", "frClass": "F-setting", "candidate": true },
 		{ "class": "state-transition", "pattern": "state transition", "owner": "FR-48-81 States", "frClass": "W-route" },
 		{ "class": "layout-hover", "pattern": "hover: Spec 38A §5\\.1 maps a layout-property hover", "owner": "Spec 38A §5.1 (a layout-property hover routed to scale, translate, indent or the underline)", "frClass": "W-route" },
 		{ "class": "unpaired-part", "pattern": "^unpaired-part", "owner": "FR-48-3 Stage-0 calibration", "frClass": "W-walker" },
@@ -24,6 +30,7 @@
 		{ "class": "no-setting", "pattern": "^no-setting|^no setting of the block|^no (font-size|line-height|color|box-shadow|background-image|background-color|justify-content|align-items|flex-direction) setting", "owner": "FR-48-21 Stage 5 gap list (framework setting gap)", "frClass": "F-setting", "candidate": true }
 	],
 	"held": [
+		{ "class": "held-inert", "pattern": "^inert$", "owner": "FR-48-21 Stage 5 gap list", "frClass": "held" },
 		{ "class": "held-covered", "pattern": "^covered$", "owner": "FR-48-21 Stage 5 gap list", "frClass": "held" },
 		{ "class": "held-inherited", "pattern": "^inherited$", "owner": "FR-48-21 Stage 5 gap list", "frClass": "held" },
 		{ "class": "held-default", "pattern": "^default$", "owner": "FR-48-21 Stage 5 gap list", "frClass": "held" }
