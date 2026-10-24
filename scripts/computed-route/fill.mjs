@@ -23,6 +23,7 @@ import { assertDraftPage, draftPageProblem, serveDraft } from './lib/draft.mjs';
 import { skeletonNodes, skeletonProblems, cleanTree, expandSiteInfoRows, originMap } from './lib/fill-skeleton.mjs';
 import { draftHashOf, stampOrigin } from './lib/origin-file.mjs';
 import { readDraft } from './lib/fill-read.mjs';
+import { inputHashes, readSetFile } from './lib/census-reads.mjs';
 import { fillTree } from './lib/fill-resolve.mjs';
 import { fillStates } from './lib/fill-state.mjs';
 import { sampleMotion } from './lib/fill-entrance.mjs';
@@ -293,6 +294,13 @@ export async function fillSurface( o ) {
 		put( 'binding-groups.json', JSON.stringify( bound, null, 1 ) );
 		put( 'handover.json', JSON.stringify( result.handover, null, 1 ) );
 		put( 'breakpoints.json', JSON.stringify( steps, null, 1 ) );
+		// FR-48-8 (R7): the run's read set, bound to the skeleton and draft it read, so `census.mjs <run> --check` can prove
+		// every declared value on a paired part ended written, held or unwritten (lib/census-reads.mjs::readSetFile).
+		if ( o.draftDir ) {
+			const rel = ( file ) => path.relative( repo, path.resolve( file ) );
+			const inputs = inputHashes( { root: repo, skeleton: rel( o.skeleton ), draft: rel( path.join( o.draftDir, o.draftIndex || 'index.html' ) ) } );
+			put( 'reads.json', JSON.stringify( readSetFile( { client: o.client, surface: o.surface, run: path.basename( outDir ), inputs, reads, nodes, refs: flat.map( ( n ) => refOf( n ) ) } ), null, 1 ) );
+		}
 		put( cfg.baseFile, cfg.baseText );
 		put( cfg.fullFile, cfg.fullText );
 		return { ...report.json, outDir, tree };
