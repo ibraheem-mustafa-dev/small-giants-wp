@@ -184,7 +184,9 @@ describe( 'motion editor-canvas emitter parity', () => {
 		const painted = css( 'hover ring on an unshadowed block' );
 		expect( painted ).toContain( '--sgs-mh-to-ring:4px;' );
 		expect( painted ).toContain( '--sgs-mh-to-ring-c:#0A7EA8;' );
-		expect( painted ).toMatch( /box-shadow 250ms/ );
+		// The ring's own owners run on the state's duration; the shadow's paint runs on the site's fast transition.
+		expect( painted ).toMatch( /--sgs-mh-ring 250ms/ );
+		expect( painted ).toContain( 'box-shadow var(--wp--custom--transition--fast' );
 		expect(
 			js.find( ( r ) => r.name === 'hover ring on an unshadowed block' ).plans[ 0 ].attrs[ 'data-sgs-mc' ]
 		).toContain( 'box-shadow' );
