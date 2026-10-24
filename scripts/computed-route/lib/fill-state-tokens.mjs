@@ -117,7 +117,7 @@ export function ringLook( { drafts, reads, id, snap = {}, focus } ) {
 }
 
 // The declared property each settings.custom.focus key is mapped from (lib/snapshot-tokens.mjs::focusTokens).
-const FOCUS_KEY_PROPS = { width: [ 'outline-width' ], ring: [ 'outline-color' ], offset: [ 'outline-offset' ], near: [ 'box-shadow' ], far: [ 'box-shadow' ], bloom: [ 'box-shadow' ], source: FOCUS_PROPS };
+const FOCUS_KEY_PROPS = { width: [ 'outline-width' ], ring: [ 'outline-color' ], offset: [ 'outline-offset' ], style: [ 'outline-style' ], near: [ 'box-shadow' ], far: [ 'box-shadow' ], bloom: [ 'box-shadow' ], ringOnly: [ 'box-shadow' ], source: FOCUS_PROPS };
 
 const ROOT_FIRST = [ 1440, 768, 375 ];
 // The value a token reads from a look's per-width values: the widest read width that has one.
@@ -167,11 +167,30 @@ export function createPatch() {
 	return { patch, entries, conflicts, set };
 }
 
-// The browser's own ring style has no token yet: focus.css's outline-style token (which takes `auto`) and the switch that
-// drops its hairline and glow are pending (Track F, plan decision 1 of 2026-10-24). The ring's width, colour and offset are
-// written now; the style is raised under this reason and nothing is written for it.
-export const AUTO_STYLE_PENDING = "outline-style:auto: the browser's own focus ring style waits on focus.css's pending outline-style token (accepting auto) and its switch that drops the hairline and glow (Track F); the ring's width, colour and offset are written, its style is not";
-const pendingStyle = ( gap ) => ( gap.startsWith( 'outline-style:auto' ) ? AUTO_STYLE_PENDING : gap );
+// The outline styles settings.custom.focus.style paints (focus.css: `outline: <width> var(--wp--custom--focus--style, solid)
+// <ring>`); solid is its default, so it is never written. A gap focusTokens raises for one of these is written instead.
+const RING_STYLES = [ 'auto', 'dotted', 'dashed', 'double', 'groove', 'ridge', 'inset', 'outset' ];
+const styleOf = ( gap ) => /^outline-style:([a-z]+):/.exec( gap )?.[ 1 ];
+
+// The element's resting box-shadow: the widest read width's rendered value, else its declared one, else null.
+export function restShadow( reads, id ) {
+	for ( const w of ROOT_FIRST ) {
+		const v = reads?.widths?.[ w ]?.[ id ]?.styles?.[ 'box-shadow' ] ?? reads?.declared?.[ w ]?.[ id ]?.[ 'box-shadow' ];
+		if ( undefined !== v ) {
+			return v;
+		}
+	}
+	return null;
+}
+
+const shadowText = ( v ) => String( v ?? 'none' ).trim().replace( /\s+/g, ' ' ).toLowerCase();
+
+// Whether a focus look leaves the element's box-shadow as it rests (the draft draws no hairline or glow): no focus
+// box-shadow, one the browser supplied (its ring draws none), or one equal to the resting shadow (`rest`).
+export function ringOnlyLook( focus, browser = [], rest = null ) {
+	const shadow = focus[ 'box-shadow' ];
+	return undefined === shadow || browser.includes( 'box-shadow' ) || shadowText( shadow ) === shadowText( rest );
+}
 
 const gapRow = ( from, gap, state, value ) => ( { node: from.node, block: from.block, slot: from.slot, property: gap.split( ':' )[ 0 ], state, value, reason: gap } );
 
@@ -193,7 +212,8 @@ export function ownedBySetting( cal, slot ) {
 }
 
 // Applies one target's token looks. looks: { focus?, active? (the press look), <link state>? }, each a declared map
-// (each from the state's drafts, one value per property). from: { node, block, slot, index }. target: { tag, href, role,
+// (each from the state's drafts, one value per property), with focusBrowser (ringLook) and focusRest (restShadow) beside
+// focus. from: { node, block, slot, index }. target: { tag, href, role,
 // className }. variant: the press variant or null. Writes into `sink` (createPatch) and returns the unmapped rows.
 export function applyTokenLooks( { looks, sink, from, target, variant, owned } ) {
 	const unmapped = [];
@@ -202,14 +222,22 @@ export function applyTokenLooks( { looks, sink, from, target, variant, owned } )
 		// A key mapped only from properties the browser supplied (ringLook) is a browser value. The browser's ring is
 		// the same on every ground, so its colour also sets the dark-ground ring.
 		const browser = looks.focusBrowser || [];
-		const fromBrowser = ( k ) => FOCUS_KEY_PROPS[ k ].filter( ( p ) => undefined !== looks.focus[ p ] ).every( ( p ) => browser.includes( p ) );
-		const { focus, gaps } = focusTokens( { declared: looks.focus } );
-		for ( const [ k, v ] of Object.entries( focus || {} ) ) {
+		// ringOnly is the browser's only where the browser supplied the shadow: a draft ring with no focus shadow is the draft's.
+		const fromBrowser = ( k ) => ( 'ringOnly' === k ? browser.includes( 'box-shadow' ) : FOCUS_KEY_PROPS[ k ].filter( ( p ) => undefined !== looks.focus[ p ] ).every( ( p ) => browser.includes( p ) ) );
+		// A focus look that leaves the resting shadow as it is draws the ring only (ringOnly 1, its shadow left out of the
+		// glow tokens); a focus shadow of its own keeps the hairline and glow (ringOnly 0), so two targets that differ conflict.
+		const ringOnly = ringOnlyLook( looks.focus, browser, looks.focusRest );
+		const declared = { ...looks.focus };
+		ringOnly && delete declared[ 'box-shadow' ];
+		const { focus, gaps } = focusTokens( { declared } );
+		const style = gaps.map( styleOf ).find( ( g ) => RING_STYLES.includes( g ) );
+		const tokens = focus ? { ...focus, ...( style ? { style } : {} ), ringOnly: ringOnly ? '1' : '0' } : {};
+		for ( const [ k, v ] of Object.entries( tokens ) ) {
 			const ground = fromBrowser( k ) ? { browser: true } : {};
 			sink.set( [ 'settings', 'custom', 'focus', k ], v, { ...from, state: 'focus', ...ground } );
 			'ring' === k && ground.browser && sink.set( [ 'settings', 'custom', 'focus', 'ringOnDark' ], v, { ...from, state: 'focus', ...ground } );
 		}
-		unmapped.push( ...gaps.map( ( g ) => gapRow( from, pendingStyle( g ), 'focus', asJson( looks.focus ) ) ) );
+		unmapped.push( ...gaps.filter( ( g ) => ! RING_STYLES.includes( styleOf( g ) ) ).map( ( g ) => gapRow( from, g, 'focus', asJson( looks.focus ) ) ) );
 	}
 	if ( looks.active ) {
 		const { tokens, gaps } = pressTokens( { declared: looks.active }, variant );

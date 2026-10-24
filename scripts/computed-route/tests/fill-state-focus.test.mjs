@@ -1,12 +1,11 @@
 // Fill's state pass and keyboard focus (Spec 48 FR-48-81, plan decision 1 of 2026-10-24) against the real framework DB: an
-// element that takes the ring and declares no focus outline gets the browser's ring tokens, with its style raised as
-// pending; a hover look written to a setting that also paints focus is named where the draft keeps its resting look on
+// element that takes the ring and declares no focus outline gets the browser's ring tokens, its auto style and ringOnly; a
+// hover look written to a setting that also paints focus sets sgsFocusRests where the draft keeps its resting look on
 // focus; and the state pass compares context-decided keywords (text-align start, min-height auto) in the element's context.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { openDb } from '../lib/db.mjs';
 import { fillStates, holdDefaults, defaultStateLook, focusSharesHover, stateContext } from '../lib/fill-state.mjs';
-import { AUTO_STYLE_PENDING } from '../lib/fill-state-tokens.mjs';
 
 const db = openDb();
 const snapshot = { palette: [], spacing: [], fontSizes: [] };
@@ -31,11 +30,9 @@ test( 'MUST FAIL WITHOUT THE RING WIRING: a link with no focus outline writes th
 	assert.equal( r.patch.settings.custom.focus.offset, '1px', 'a link takes the browser\'s 1px offset' );
 	assert.equal( r.patch.settings.custom.focus.ring, '#101010' );
 	assert.equal( r.patch.settings.custom.focus.ringOnDark, '#101010' );
-	assert.equal( r.patch.settings.custom.focus[ 'outline-style' ], undefined, 'nothing is written for the style' );
-	const style = r.unmapped.filter( ( u ) => 'outline-style' === u.property && 'focus' === u.state );
-	assert.equal( style.length, 1 );
-	assert.equal( style[ 0 ].reason, AUTO_STYLE_PENDING );
-	assert.match( style[ 0 ].reason, /pending outline-style token/ );
+	assert.equal( r.patch.settings.custom.focus.style, 'auto' );
+	assert.equal( r.patch.settings.custom.focus.ringOnly, '1', 'the browser ring draws no hairline or glow' );
+	assert.deepEqual( r.unmapped.filter( ( u ) => 'outline-style' === u.property && 'focus' === u.state ), [], 'the style is written, not raised' );
 } );
 
 test( 'MUST FAIL: a draft that clears the outline at rest and declares no focus look is raised as focus-invisible, with no ring written', () => {
@@ -44,14 +41,12 @@ test( 'MUST FAIL: a draft that clears the outline at rest and declares no focus 
 	assert.ok( r.unmapped.some( ( u ) => /^focus-invisible/.test( u.reason ) ) );
 } );
 
-test( 'MUST FAIL WITHOUT THE FOCUS-SHARES-HOVER ROW: a hover colour written to a setting on a focusable element with no draft focus look is named', () => {
+test( 'MUST FAIL WITHOUT THE FOCUS-SHARES-HOVER WIRING: a hover colour written to a setting on a focusable element with no draft focus look sets sgsFocusRests', () => {
 	const r = run( 'sgs/button', buttonCal, [ look( [ 'hover' ], { color: 'rgb(200, 0, 0)' } ) ], { tag: 'a', href: '/x', styles: { color: 'rgb(1, 2, 3)' } } );
 	assert.ok( r.writes.some( ( w ) => 'colourTextHover' === w.attr ) );
-	const row = r.unmapped.find( ( u ) => /^focus-shares-hover/.test( u.reason ) );
-	assert.ok( row, 'the shared focus look is a named row' );
-	assert.equal( row.state, 'focus' );
-	assert.equal( row.property, 'color' );
-	assert.match( row.reason, /colourTextHover/ );
+	const rests = r.writes.filter( ( w ) => 'sgsFocusRests' === w.attr );
+	assert.deepEqual( rests.map( ( w ) => [ w.after, w.state, w.prop, w.how ] ), [ [ true, 'focus', 'color', 'fill-state-focus-rests' ] ] );
+	assert.ok( ! r.unmapped.some( ( u ) => /^focus-shares-hover/.test( u.reason ) ), 'the row is settled by the switch' );
 } );
 
 test( 'focus-shares-hover is not raised where the draft has a focus look, or on an element that never takes focus', () => {

@@ -24,7 +24,9 @@ test( 'MUST FAIL WITHOUT THE BROWSER RING: a link the draft gives no focus look 
 	assert.equal( focus.offset, '1px', 'a link is offset 1px' );
 	assert.equal( focus.bloom, '0', 'the browser ring has no glow' );
 	assert.ok( sink.entries.every( ( e ) => true === e.browser ), 'every key is a browser value' );
-	assert.ok( unmapped.some( ( u ) => /^outline-style:auto/.test( u.reason ) && /browser's own focus ring/.test( u.reason ) ), 'the auto style focus.css cannot paint is named' );
+	assert.equal( focus.style, 'auto', 'the browser ring style' );
+	assert.equal( focus.ringOnly, '1', 'the browser ring draws no hairline or glow' );
+	assert.deepEqual( unmapped, [] );
 } );
 
 test( 'MUST FAIL WITHOUT THE BROWSER RING: a button keeps the browser ring at no offset; a control or a plain element takes none', () => {
