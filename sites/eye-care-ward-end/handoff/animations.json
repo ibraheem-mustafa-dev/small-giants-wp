@@ -13,11 +13,6 @@
       "dc": "Frame Card",
       "file": "Frame Card.dc.html",
       "sha256": "4c139189317abfd2d49c4851624fd8e1e3043fc002bfaddb474a0a645b8b8db4"
-    },
-    {
-      "dc": "WP Build Gap Map",
-      "file": "WP Build Gap Map.dc.html",
-      "sha256": "c8f7e25565570589d01d1ef3ef921aacf9a767b6d085e11cfe1b2c3d505b3df4"
     }
   ],
   "records": [
@@ -12196,8 +12191,7 @@
     "animate_calls": {
       "by_dc": {
         "Eye Care Birmingham": 0,
-        "Frame Card": 0,
-        "WP Build Gap Map": 0
+        "Frame Card": 0
       },
       "total": 0,
       "record_ids": [],
@@ -12206,8 +12200,7 @@
     "inline_transitions": {
       "by_dc": {
         "Eye Care Birmingham": 93,
-        "Frame Card": 4,
-        "WP Build Gap Map": 0
+        "Frame Card": 4
       },
       "total": 97,
       "record_ids": [
@@ -12314,8 +12307,7 @@
     "pseudo_rules": {
       "by_dc": {
         "Eye Care Birmingham": 87,
-        "Frame Card": 4,
-        "WP Build Gap Map": 0
+        "Frame Card": 4
       },
       "total": 91,
       "record_ids": [
@@ -12416,8 +12408,7 @@
     "css_animations": {
       "by_dc": {
         "Eye Care Birmingham": 90,
-        "Frame Card": 0,
-        "WP Build Gap Map": 0
+        "Frame Card": 0
       },
       "total": 90,
       "record_ids": [
@@ -12517,8 +12508,7 @@
     "js_style_writers": {
       "by_dc": {
         "Eye Care Birmingham": 17,
-        "Frame Card": 0,
-        "WP Build Gap Map": 0
+        "Frame Card": 0
       },
       "total": 17,
       "record_ids": [
