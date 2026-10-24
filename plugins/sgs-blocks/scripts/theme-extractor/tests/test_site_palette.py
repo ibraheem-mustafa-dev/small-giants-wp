@@ -160,10 +160,21 @@ def test_no_overlay_no_primary_dark_change_when_primary_is_not_declared():
     assert _pal(snap)["primary-dark"]["color"] == "#0F4C4C"
 
 
-def test_slug_by_hex_prefers_page_slugs_when_hexes_collide():
-    pal = [{"slug": "primary", "color": "#141414"}, {"slug": "surface", "color": "#FAF8F5"},
-           {"slug": "text", "color": "#141414"}, {"slug": "text-inverse", "color": "#FAF8F5"}]
-    assert palette_refs.slug_by_hex(pal) == {"#141414": "text", "#faf8f5": "surface"}
+def test_must_fail_each_page_role_references_the_slug_whose_job_it_is_when_slugs_share_a_hex():
+    # The redesign client's confirmed palette: the page ground is also footer-bg and the body text also section-text
+    # (and several more roles); footer-bg and section-text come after surface and text in some palettes and before
+    # them in others, so the role, never the palette order, picks the slug.
+    pal = [{"slug": "section-text", "color": "#3a2a22"}, {"slug": "footer-bg", "color": "#fbf3dc"},
+           {"slug": "surface", "color": "#fbf3dc"}, {"slug": "text", "color": "#3a2a22"},
+           {"slug": "primary-text", "color": "#3A2A22"}]
+    assert palette_refs.slug_for_role(pal, "#FBF3DC", palette_refs.PAGE_BACKGROUND_SLUGS) == "surface"
+    assert palette_refs.slug_for_role(pal, "#3a2a22", palette_refs.PAGE_TEXT_SLUGS) == "text"
+    assert palette_refs.slug_for_role(list(reversed(pal)), "#3a2a22", palette_refs.PAGE_TEXT_SLUGS) == "text"
+    alt = [{"slug": "footer-bg", "color": "#ffffff"}, {"slug": "surface-alt", "color": "#ffffff"}]
+    assert palette_refs.slug_for_role(alt, "#ffffff", palette_refs.PAGE_BACKGROUND_SLUGS) == "surface-alt"
+    assert palette_refs.slug_for_role(alt, "#ffffff", palette_refs.PAGE_TEXT_SLUGS) == "footer-bg", "no role slug: the first by palette order"
+    assert palette_refs.slug_for_role(alt, "#000000", palette_refs.PAGE_TEXT_SLUGS) is None
+    assert palette_refs.slug_for_role(alt, None, palette_refs.PAGE_TEXT_SLUGS) is None
 
 
 def test_every_overlaid_base_slug_carries_the_base_themes_hex():
