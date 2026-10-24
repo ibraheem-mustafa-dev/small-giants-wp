@@ -35,34 +35,26 @@ export function compareClient( client ) {
 	const recorded = JSON.parse( fs.readFileSync( path.join( REPO, 'sites', client, 'build', 'intake', 'palette.json' ), 'utf8' ) );
 	const key = JSON.parse( fs.readFileSync( keyFile( client ), 'utf8' ) );
 	const p = proposePalette( { tokens: tokens.tokens, usage: recorded.usage, slugs: VOCAB, problems: tokens.problems } );
-	const hexOf = Object.fromEntries( p.rows.map( ( r ) => [ r.token, r.hex ] ) );
+	// A token merged into another at ΔE ≤ 1 (FR-33-2) is that value: its slugs compare under the kept hex.
+	const kept = Object.fromEntries( p.merges.map( ( m ) => [ m.from, m.to ] ) );
+	const hexOf = Object.fromEntries( p.rows.map( ( r ) => [ r.token, kept[ r.hex ] ?? r.hex ] ) );
 	const want = slugValues( key.roles, hexOf );
 	const got = slugValues( Object.fromEntries( p.rows.map( ( r ) => [ r.token, r.roles ] ) ), hexOf );
 	const slugs = [ ...new Set( [ ...Object.keys( want ), ...Object.keys( got ) ] ) ].sort();
 	return { p, key, want, got, matched: slugs.filter( ( s ) => want[ s ] === got[ s ] ), differ: Object.fromEntries( slugs.filter( ( s ) => want[ s ] !== got[ s ] ).map( ( s ) => [ s, { key: want[ s ] ?? null, proposal: got[ s ] ?? null } ] ) ) };
 }
 
-// Every remaining difference: slug → { class, check } (the review class and what an agent checks).
-const UNUSED = { class: 'unused-token-named', check: 'no element paints this token at rest, so no rendered fact gives it a slug; the agent checks whether it paints in a state the 1440 rest read misses (hover, open, error) before taking the key\'s slug' };
-const ABBREVIATED = { class: 'name-only-abbreviated', check: 'only the token name links this value to the slug and the name is an abbreviation no name rule reads; the agent checks the draft\'s own comment for the token and takes the slug by mark' };
-const ACCENT = { class: 'channel-colour-vs-accent', check: 'the draft paints the WhatsApp green on more link grounds than the taupe, and no rendered fact tells a messaging channel\'s colour from the brand accent; the agent checks which strong ground is the brand accent (tokens/colors.css calls the taupe the only accent)' };
-const DIVIDER = { class: 'divider-strength', check: 'the draft paints #D8D2C8 on more lines (swatch rings, small tags) than the #E6E1DA hairline; the agent checks which line colour is the page divider and whether the stronger line is its own custom slug' };
+// Every remaining difference: slug → { key, proposal, class, check }. Each is a choice of the key itself that no
+// rendered or code fact reproduces: the key takes a value no draft token holds, names a token the draft never uses,
+// or gives a slug a meaning another key contradicts. `check` says what decides it.
 export const REVIEW = {
 	'indus-foods': {
-		'primary-text': { key: '#E3EFF4', proposal: '#FFFFFF', class: 'pair-vs-tint', check: 'white is the most used text on the primary (blue) ground; the key takes --tint-on-blue, the pale tint the draft uses for secondary lines on that ground; the agent compares the two on the blue sections and confirms which reads as the primary text' },
-		'text-inverse': { key: null, proposal: '#FFFFFF', class: 'key-at-framework-default', check: 'no draft token holds the key\'s text-inverse (the framework default stays); usage reads white as the text on the dark footer ground; the agent confirms white or keeps the default' },
-		'text-muted': { key: '#68727C', proposal: null, ...UNUSED },
+		'primary-text': { key: '#E3EFF4', proposal: '#FFFFFF', class: 'key-meaning-conflict', check: 'the key takes the pale tint the draft sets for paragraphs on blue bands; white is the text of the blue buttons and most elements on blue. The Eye Care key takes the primary button\'s text (#FAF8F5) instead, so one meaning of primary-text must be ruled for every client' },
+		'text-inverse': { key: null, proposal: '#FFFFFF', class: 'key-value-not-a-token', check: 'the key keeps the framework default (#F1F5F9), a value no draft token holds; the draft sets white on its dark (footer) ground' },
+		'text-muted': { key: '#68727C', proposal: null, class: 'key-names-an-unused-token', check: '--text-muted is declared in tokens/colors.css but no element paints it and no line of the draft\'s code references its value or name; the draft\'s muted copy is one-off hexes (#5E6873, #6F8193). No fact exists to read' },
 	},
 	'eye-care-ward-end': {
-		accent: { key: '#9C8B78', proposal: '#25D366', ...ACCENT },
-		'accent-text': { key: '#6F6152', proposal: '#0B2B17', class: 'accent-text-meaning', check: 'the key follows Spec 32 §12.2 (the accent hue\'s own text colour on light grounds, --acc-ink); the proposer reads the text on the accent fill, which follows the accent class above; the agent checks which meaning the client\'s build uses' },
-		'accent-light': { key: '#EFEAE2', proposal: null, ...ABBREVIATED },
-		whatsapp: { key: '#25D366', proposal: null, ...ABBREVIATED },
-		border: { key: '#E6E1DA', proposal: '#D8D2C8', ...DIVIDER },
-		'border-light': { key: null, proposal: '#E6E1DA', ...DIVIDER },
-		section: { key: '#FFFFFF', proposal: '#F3F0EB', class: 'section-reuses-raised-ground', check: 'the key gives section the raised (card) ground; usage reads the next most painted ground (the image wells); the agent checks which ground the full-width bands use' },
-		success: { key: '#1B7F43', proposal: null, ...UNUSED },
-		'text-muted': { key: '#5E584F', proposal: '#6F6152', class: 'muted-vs-kicker-ink', check: 'the most used lighter text is #6F6152 (kicker text, the key\'s accent-text); the key takes --text-2 (body copy on paper); the agent checks which grey the running body copy uses' },
+		section: { key: '#FFFFFF', proposal: '#F3F0EB', class: 'key-meaning-conflict', check: 'the key gives section the raised card ground (#FFFFFF, also surface-alt); the Mama\'s key gives section a ground distinct from its raised ground (#F9D5D3 beside #FFFAF0), and the rule that reproduces Mama\'s and Indus (the most painted ground after the page, raised and primary grounds) gives the image wells here. No band, card or control fact separates the three keys' },
 	},
 	'mamas-munches-redesign': {},
 };
@@ -70,14 +62,18 @@ export const REVIEW = {
 // Slugs the proposal takes from a token name alone (row basis `by: 'name'`): matched or not, each is a review class.
 const HOVER = 'a hover or pressed shade the 1440 rest read never paints; the agent checks a hover rule in the draft uses this value';
 export const NAME_ONLY = {
-	'indus-foods': {
-		'primary-dark #075E80': HOVER, 'link-hover #075E80': HOVER,
-		'accent-light #E7D768': 'a light shade of the accent family painted on one element; the agent checks it is the light tint of the accent',
-		'text #4A5563': 'the body colour (#000000) belongs to no token, so the page text is read from the name --grey-body over the most used text count (#2C3E50, the heading colour); the agent checks the running paragraph colour',
-		'whatsapp #25D366': 'a messaging channel colour; no rendered fact names a channel',
-	},
+	'indus-foods': { 'primary-dark #075E80': HOVER, 'link-hover #075E80': HOVER },
 	'eye-care-ward-end': {},
 	'mamas-munches-redesign': { 'link-hover #3A2A22': HOVER },
+};
+
+// The key's own slugs that are not in theme.json's palette: the proposer offers each token as a custom colour, and the
+// slug name is the key's choice. slug → the token it names.
+export const KEY_ONLY = {
+	'indus-foods': { 'custom-brand-blue-light': [ '--brand-blue-light' ], 'custom-ink': [ '--ink', '--selection-fg' ] },
+	'eye-care-ward-end': { 'primary-hover': [ '--ink-hover' ], 'surface-stage': [ '--surface-alt' ], 'border-strong': [ '--border-strong' ], 'text-soft': [ '--text-strong' ],
+		'text-subtle': [ '--text-muted' ], 'text-label': [ '--text-3' ], 'whatsapp-hover': [ '--wa-hover' ], 'whatsapp-soft': [ '--wa-soft' ], 'whatsapp-line': [ '--wa-border' ] },
+	'mamas-munches-redesign': { 'custom-body-copy': [ '--mm-body', '--mm-text-body' ] },
 };
 
 for ( const client of Object.keys( KEYS ) ) {
@@ -99,6 +95,22 @@ for ( const client of Object.keys( KEYS ) ) {
 		const named = p.rows.flatMap( ( r ) => ( r.basis || [] ).filter( ( b ) => 'name' === b.by ).map( ( b ) => `${ b.role } ${ r.hex }` ) );
 		assert.deepEqual( [ ...new Set( named ) ].sort(), Object.keys( NAME_ONLY[ client ] ).sort() );
 		assert.ok( p.rows.filter( ( r ) => 'name' === r.by && ! r.role.startsWith( 'custom-' ) ).every( ( r ) => r.confidence < 0.85 && /the name alone decides this/.test( r.why ) ), 'a name-only row says so, at lower confidence' );
+	} );
+}
+
+for ( const client of Object.keys( KEYS ) ) {
+	test( `FR-48-31: the ${ client } key's slugs outside theme.json are listed, and the proposal offers each of their tokens as a custom colour`, () => {
+		const key = JSON.parse( fs.readFileSync( keyFile( client ), 'utf8' ) );
+		const outside = {};
+		for ( const [ token, slugs ] of Object.entries( key.roles ) ) {
+			slugs.filter( ( s ) => ! SLUGS.has( s ) ).forEach( ( s ) => ( outside[ s ] = [ ...( outside[ s ] || [] ), token ] ) );
+		}
+		assert.deepEqual( outside, KEY_ONLY[ client ] );
+		const { p } = compareClient( client );
+		for ( const token of Object.values( outside ).flat() ) {
+			const row = p.rows.find( ( r ) => r.token === token );
+			assert.ok( ! row.used || row.roles.every( ( s ) => s.startsWith( 'custom-' ) || SLUGS.has( s ) ), `${ client } ${ token }` );
+		}
 	} );
 }
 
