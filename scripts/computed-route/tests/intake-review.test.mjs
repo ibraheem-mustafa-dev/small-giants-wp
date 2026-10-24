@@ -449,3 +449,16 @@ test( 'MUST FAIL: a run never overwrites a confirmed page-map.json; the proposal
 		fs.rmSync( dir, { recursive: true, force: true } );
 	}
 } );
+
+test( 'MUST FAIL a missing feature the skeleton raised is not listed once the record\'s own skeleton settles its element', () => {
+	const stale = ( key ) => ( { rowId: `missing:Nav:${ key }`, draftId: `Nav:${ key }`, construct: 'element <span>', from: 'skeleton', key: `Nav/${ key }#0`, line: '<span>: no SGS block fits it', mainFlow: null } );
+	const sk = ( key, over ) => ( { rowId: `skeleton:header:Nav/${ key }#0`, key: `Nav/${ key }#0`, tag: 'span', words: '', block: null, confidence: 1, reason: 'r', ...over } );
+	const intake = fixture( {
+		missingFeatures: [ stale( 60 ), stale( 61 ), stale( 62 ), stale( 63 ), { ...stale( 64 ), key: undefined } ],
+		skeletons: { header: { rows: [ sk( 60, { action: 'absorbed', into: 'Nav/45#0' } ), sk( 61, { action: 'remove' } ), sk( 62, { block: 'sgs/text' } ), sk( 63, { action: 'unresolved' } ) ] } },
+	} );
+	const listed = reviewRows( intake ).filter( ( r ) => 'missing-feature' === r.rowType ).map( ( r ) => r.rowId );
+	// Absorbed, removed and given a block: settled. Still unresolved, or no skeleton row to judge by: still listed.
+	assert.deepEqual( listed, [ 'missing:Nav:63', 'missing:Nav:64' ] );
+	assert.ok( ! renderReview( intake ).includes( 'missing:Nav:60' ) );
+} );

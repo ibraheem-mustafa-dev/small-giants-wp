@@ -7,7 +7,8 @@
 // is built from the pairing key, never from either side's record IDs (both renumber when a record is inserted), so a
 // re-export that adds one record leaves every other row's ID and content hash, and Bean's mark on it, unchanged.
 
-// Values compared alike: times in ms, lower-case, whitespace removed, `auto` fill as `none`.
+// Values compared alike: times in ms, lower-case, whitespace removed, `auto` fill as `none`, and every number in a
+// value in one spelling (`.01ms` and `0.01ms`, `1.50` and `1.5`), never a digit inside a word or a hex colour.
 export function norm( v ) {
 	if ( null == v || '' === v ) {
 		return null;
@@ -15,7 +16,7 @@ export function norm( v ) {
 	if ( 'number' === typeof v ) {
 		return Math.round( v * 1000 ) / 1000;
 	}
-	const s = String( v ).replace( /\s+/g, '' ).toLowerCase();
+	const s = String( v ).replace( /\s+/g, '' ).toLowerCase().replace( /(?<![\w#.])(-?)(\d*\.?\d+)(?![\d.])/g, ( m, sign, n ) => String( Number( sign + n ) ) );
 	const t = /^(-?\d*\.?\d+)(ms|s)$/.exec( s );
 	if ( t ) {
 		return Number( t[ 1 ] ) * ( 's' === t[ 2 ] ? 1000 : 1 );
@@ -60,8 +61,11 @@ function fields( r ) {
 	return out;
 }
 
-// Pairs two record lists by key; records sharing a key pair in order. Returns { pairs, ours, theirs } (the unpaired).
-function pairUp( ours, theirs, keyOf ) {
+// Pairs two record lists by key. Records sharing a key pair by likeness when `cost` is given (the unpaired record of
+// ours that `cost( ours, theirs )` scores lowest, the earlier one on a tie: two effects at one call site pair with
+// their own counterparts whatever order either side lists them in), else in order. Returns { pairs, ours, theirs }
+// (the unpaired).
+function pairUp( ours, theirs, keyOf, cost = null ) {
 	const left = new Map();
 	ours.forEach( ( r ) => left.set( keyOf( r ), [ ...( left.get( keyOf( r ) ) || [] ), r ] ) );
 	const pairs = [];
@@ -69,7 +73,8 @@ function pairUp( ours, theirs, keyOf ) {
 	for ( const t of theirs ) {
 		const list = left.get( keyOf( t ) );
 		if ( list?.length ) {
-			pairs.push( [ list.shift(), t ] );
+			const at = cost ? list.reduce( ( best, o, i ) => ( cost( o, t ) < cost( list[ best ], t ) ? i : best ), 0 ) : 0;
+			pairs.push( [ list.splice( at, 1 )[ 0 ], t ] );
 		} else {
 			onlyTheirs.push( t );
 		}
@@ -80,16 +85,32 @@ function pairUp( ours, theirs, keyOf ) {
 const draftOf = ( r ) => ( null != r.source?.line && 'template' !== r.source.function ? `${ r.source.file }:${ r.source.line }` : `${ r.element?.dc }:${ tplList( r.element?.template_tpl_id ) || r.element?.selector }` );
 const show = ( v ) => ( null == v ? null : 'object' === typeof v ? JSON.stringify( v ) : String( v ) );
 
-// Diff rows for the animations inventories.
+// The fields of two records that differ: [ [ field, ours, theirs ] ].
+const differing = ( o, t ) => {
+	const a = fields( o );
+	const b = fields( t );
+	return [ ...new Set( [ ...Object.keys( a ), ...Object.keys( b ) ] ) ].filter( ( f ) => ! same( a[ f ], b[ f ] ) ).map( ( f ) => [ f, a[ f ], b[ f ] ] );
+};
+
+// Diff rows for the animations inventories. A record of Claude Design's that names several template elements (one
+// call site animating each) covers every re-derived record at its key whose element it names, so none of them is
+// "only ours"; a difference already listed for a key, with the same two values, is listed once.
 export function diffAnimations( ours, theirs ) {
 	const rows = [];
-	const { pairs, ours: onlyOurs, theirs: onlyTheirs } = pairUp( ours.records || [], theirs.records || [], pairKey );
+	const paired = pairUp( ours.records || [], theirs.records || [], pairKey, ( o, t ) => differing( o, t ).length );
+	const { pairs, theirs: onlyTheirs } = paired;
+	const names = ( t ) => [ t.element?.template_tpl_id ?? [] ].flat().map( String );
+	const onlyOurs = paired.ours.filter( ( o ) => {
+		const t = pairs.map( ( p ) => p[ 1 ] ).find( ( x ) => pairKey( x ) === pairKey( o ) && names( x ).length > 1 && names( x ).includes( String( o.element?.template_tpl_id ) ) );
+		return t ? ( pairs.push( [ o, t ] ), false ) : true;
+	} );
+	const listed = new Set();
 	for ( const [ o, t ] of pairs ) {
-		const a = fields( o );
-		const b = fields( t );
-		for ( const f of [ ...new Set( [ ...Object.keys( a ), ...Object.keys( b ) ] ) ] ) {
-			if ( ! same( a[ f ], b[ f ] ) ) {
-				rows.push( { rowId: `inventory:anim:${ pairKey( o ) }:${ f }`, draftId: draftOf( o ), text: `${ o.id } (theirs ${ t.id }) ${ f }: ours ${ show( a[ f ] ) }, theirs ${ show( b[ f ] ) }`, field: f, ours: show( a[ f ] ), theirs: show( b[ f ] ), why: 'the re-derived record and Claude Design\'s disagree on this field' } );
+		for ( const [ f, av, bv ] of differing( o, t ) ) {
+			const once = JSON.stringify( [ pairKey( o ), f, show( av ), show( bv ) ] );
+			if ( ! listed.has( once ) ) {
+				listed.add( once );
+				rows.push( { rowId: `inventory:anim:${ pairKey( o ) }:${ f }`, draftId: draftOf( o ), text: `${ o.id } (theirs ${ t.id }) ${ f }: ours ${ show( av ) }, theirs ${ show( bv ) }`, field: f, ours: show( av ), theirs: show( bv ), why: 'the re-derived record and Claude Design\'s disagree on this field' } );
 			}
 		}
 	}

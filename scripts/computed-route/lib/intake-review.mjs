@@ -20,6 +20,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { isUnwiredEntry } from './intake-defects-static.mjs';
 import { effectRows } from './motion-behaviours.mjs';
+import { skeletonMissing } from './intake-missing.mjs';
 
 export const ROW_TYPES = [ 'page-map', 'palette-role', 'site-info', 'flag', 'draft-defect', 'not-a-defect', 'missing-feature', 'effect', 'skeleton-block', 'inventory-diff', 'notice' ];
 export const SECTION_TITLES = {
@@ -203,7 +204,15 @@ export function reviewRows( intake ) {
 	( intake.flags || [] ).forEach( ( r ) => add( 'flag', r, r.draftId, `${ r.kind }: ${ r.text ?? r.url ?? '' }`, 'accept-flagged', r.why || '' ) );
 	( intake.draftDefects || [] ).forEach( ( r ) => add( 'draft-defect', r, r.draftId, describe( r ), text( r.proposed ?? r.intent ?? 'build the code\'s intent' ), text( r.why ?? r.reason ) ) );
 	unwiredRows( intake ).forEach( ( r ) => add( 'not-a-defect', r, r.draftId, `${ r.censusId ?? r.draftId } ${ text( r.note ) }`, 'not-a-defect', UNWIRED_NOTE ) );
-	( intake.missingFeatures || [] ).forEach( ( r ) => {
+	// A missing feature the skeleton raised is listed while the record's own skeleton still leaves its element without a
+	// block (lib/intake-missing.mjs::skeletonMissing over that element's rows): a later skeleton re-run that settles the
+	// element (a block, absorbed or removed) leaves the earlier row behind in missingFeatures.
+	const skRows = Object.values( intake.skeletons || {} ).flatMap( ( s ) => s.rows || [] );
+	const settled = ( m ) => {
+		const own = 'skeleton' === m.from && m.key ? skRows.filter( ( r ) => r.key === m.key ) : [];
+		return own.length > 0 && ! skeletonMissing( own ).length;
+	};
+	( intake.missingFeatures || [] ).filter( ( r ) => ! settled( r ) ).forEach( ( r ) => {
 		const block = r.block ?? r.proposedBlock ?? null;
 		// A seen-but-unsupported row (clone coverage, or a head item lib/intake-head.mjs does not clone) is a tracked gap:
 		// Accept all marks it with its Phase 4 wave, or `difference` when Bean excluded the capability (Bean, 2026-10-18);
