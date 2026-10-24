@@ -1,0 +1,4124 @@
+{
+ "schemaVersion": "1",
+ "client": "eye-care-ward-end",
+ "takenOn": "2026-10-24T03:53:43.984Z",
+ "paletteOnly": {
+  "note": "this intake.json holds only the palette block (intake.mjs --palette-only --into-intake); run the full intake for the other stages"
+ },
+ "palette": {
+  "tokens": [
+   {
+    "name": "--ink",
+    "value": "#141414",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 6,
+    "resolved": "#141414",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#141414"
+   },
+   {
+    "name": "--ink-hover",
+    "value": "#2A2A2A",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 7,
+    "resolved": "#2A2A2A",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#2A2A2A"
+   },
+   {
+    "name": "--paper",
+    "value": "#FAF8F5",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 8,
+    "resolved": "#FAF8F5",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#FAF8F5"
+   },
+   {
+    "name": "--white",
+    "value": "#FFFFFF",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 9,
+    "resolved": "#FFFFFF",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#FFFFFF"
+   },
+   {
+    "name": "--surface-alt",
+    "value": "#F3F0EB",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 10,
+    "resolved": "#F3F0EB",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#F3F0EB"
+   },
+   {
+    "name": "--surface-soft",
+    "value": "#F0EBE3",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 11,
+    "resolved": "#F0EBE3",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#F0EBE3"
+   },
+   {
+    "name": "--hairline",
+    "value": "#E6E1DA",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 12,
+    "resolved": "#E6E1DA",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#E6E1DA"
+   },
+   {
+    "name": "--border-strong",
+    "value": "#D8D2C8",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 13,
+    "resolved": "#D8D2C8",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#D8D2C8"
+   },
+   {
+    "name": "--border-warm",
+    "value": "#D5CCBD",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 14,
+    "resolved": "#D5CCBD",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#D5CCBD"
+   },
+   {
+    "name": "--control-off",
+    "value": "#C9C2B8",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 15,
+    "resolved": "#C9C2B8",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#C9C2B8"
+   },
+   {
+    "name": "--text-strong",
+    "value": "#4A453E",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 17,
+    "resolved": "#4A453E",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#4A453E"
+   },
+   {
+    "name": "--text-2",
+    "value": "#5E584F",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 18,
+    "resolved": "#5E584F",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#5E584F"
+   },
+   {
+    "name": "--text-muted",
+    "value": "#6B655E",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 19,
+    "resolved": "#6B655E",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#6B655E"
+   },
+   {
+    "name": "--text-3",
+    "value": "#77716A",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 20,
+    "resolved": "#77716A",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#77716A"
+   },
+   {
+    "name": "--text-4",
+    "value": "#8B8478",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 21,
+    "resolved": "#8B8478",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#8B8478"
+   },
+   {
+    "name": "--text-faint",
+    "value": "#A39C90",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 22,
+    "resolved": "#A39C90",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#A39C90"
+   },
+   {
+    "name": "--acc",
+    "value": "#9C8B78",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 24,
+    "resolved": "#9C8B78",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#9C8B78"
+   },
+   {
+    "name": "--acc-ink",
+    "value": "#6F6152",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 25,
+    "resolved": "#6F6152",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#6F6152"
+   },
+   {
+    "name": "--acc-soft",
+    "value": "#EFEAE2",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 26,
+    "resolved": "#EFEAE2",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#EFEAE2"
+   },
+   {
+    "name": "--wa",
+    "value": "#25D366",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 28,
+    "resolved": "#25D366",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#25D366"
+   },
+   {
+    "name": "--wa-hover",
+    "value": "#1EBE5A",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 29,
+    "resolved": "#1EBE5A",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#1EBE5A"
+   },
+   {
+    "name": "--wa-ink",
+    "value": "#0B2B17",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 30,
+    "resolved": "#0B2B17",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#0B2B17"
+   },
+   {
+    "name": "--wa-ink-deep",
+    "value": "#12301E",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 31,
+    "resolved": "#12301E",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#12301E"
+   },
+   {
+    "name": "--wa-soft",
+    "value": "#E9F9EF",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 32,
+    "resolved": "#E9F9EF",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#E9F9EF"
+   },
+   {
+    "name": "--wa-border",
+    "value": "#B7E5C7",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 33,
+    "resolved": "#B7E5C7",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#B7E5C7"
+   },
+   {
+    "name": "--success",
+    "value": "#1B7F43",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 35,
+    "resolved": "#1B7F43",
+    "chain": [],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#1B7F43"
+   },
+   {
+    "name": "--text-body",
+    "value": "var(--ink)",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 37,
+    "resolved": "#141414",
+    "chain": [
+     "--ink"
+    ],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#141414"
+   },
+   {
+    "name": "--surface-page",
+    "value": "var(--paper)",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 38,
+    "resolved": "#FAF8F5",
+    "chain": [
+     "--paper"
+    ],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#FAF8F5"
+   },
+   {
+    "name": "--surface-card",
+    "value": "var(--white)",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 39,
+    "resolved": "#FFFFFF",
+    "chain": [
+     "--white"
+    ],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#FFFFFF"
+   },
+   {
+    "name": "--border-default",
+    "value": "var(--hairline)",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 40,
+    "resolved": "#E6E1DA",
+    "chain": [
+     "--hairline"
+    ],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#E6E1DA"
+   },
+   {
+    "name": "--button-primary-bg",
+    "value": "var(--ink)",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 41,
+    "resolved": "#141414",
+    "chain": [
+     "--ink"
+    ],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#141414"
+   },
+   {
+    "name": "--button-primary-fg",
+    "value": "var(--paper)",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 42,
+    "resolved": "#FAF8F5",
+    "chain": [
+     "--paper"
+    ],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#FAF8F5"
+   },
+   {
+    "name": "--focus-ring",
+    "value": "var(--acc)",
+    "file": "tokens/colors.css",
+    "selector": ":root",
+    "media": null,
+    "line": 43,
+    "resolved": "#9C8B78",
+    "chain": [
+     "--acc"
+    ],
+    "type": "colour",
+    "fallback": false,
+    "hex": "#9C8B78"
+   },
+   {
+    "name": "--space-1",
+    "value": "1px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 4,
+    "resolved": "1px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-2",
+    "value": "2px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 4,
+    "resolved": "2px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-4",
+    "value": "4px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 4,
+    "resolved": "4px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-5",
+    "value": "5px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 4,
+    "resolved": "5px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-6",
+    "value": "6px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 4,
+    "resolved": "6px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-8",
+    "value": "8px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 4,
+    "resolved": "8px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-9",
+    "value": "9px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 4,
+    "resolved": "9px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-10",
+    "value": "10px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 4,
+    "resolved": "10px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-12",
+    "value": "12px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 5,
+    "resolved": "12px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-14",
+    "value": "14px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 5,
+    "resolved": "14px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-16",
+    "value": "16px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 5,
+    "resolved": "16px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-18",
+    "value": "18px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 5,
+    "resolved": "18px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-20",
+    "value": "20px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 5,
+    "resolved": "20px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-22",
+    "value": "22px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 5,
+    "resolved": "22px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-24",
+    "value": "24px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 5,
+    "resolved": "24px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-28",
+    "value": "28px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 6,
+    "resolved": "28px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-32",
+    "value": "32px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 6,
+    "resolved": "32px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-36",
+    "value": "36px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 6,
+    "resolved": "36px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-40",
+    "value": "40px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 6,
+    "resolved": "40px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-44",
+    "value": "44px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 6,
+    "resolved": "44px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-48",
+    "value": "48px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 6,
+    "resolved": "48px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-56",
+    "value": "56px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 6,
+    "resolved": "56px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-60",
+    "value": "60px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 6,
+    "resolved": "60px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--space-64",
+    "value": "64px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 6,
+    "resolved": "64px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--hairline-grid-gap",
+    "value": "1px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 7,
+    "resolved": "1px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--container-max",
+    "value": "1440px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 9,
+    "resolved": "1440px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--container-checkout",
+    "value": "1200px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 9,
+    "resolved": "1200px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--container-content",
+    "value": "1100px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 9,
+    "resolved": "1100px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--container-narrow",
+    "value": "720px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 9,
+    "resolved": "720px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--gutter",
+    "value": "52px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 10,
+    "resolved": "52px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--gutter-mobile",
+    "value": "20px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 10,
+    "resolved": "20px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--section-pad",
+    "value": "104px 52px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 11,
+    "resolved": "104px 52px",
+    "chain": [],
+    "type": "other",
+    "fallback": false
+   },
+   {
+    "name": "--section-pad-mobile",
+    "value": "56px 20px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 11,
+    "resolved": "56px 20px",
+    "chain": [],
+    "type": "other",
+    "fallback": false
+   },
+   {
+    "name": "--page-pad",
+    "value": "48px 52px 90px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 12,
+    "resolved": "48px 52px 90px",
+    "chain": [],
+    "type": "other",
+    "fallback": false
+   },
+   {
+    "name": "--page-pad-mobile",
+    "value": "28px 20px 60px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 12,
+    "resolved": "28px 20px 60px",
+    "chain": [],
+    "type": "other",
+    "fallback": false
+   },
+   {
+    "name": "--panel-pad",
+    "value": "68px 60px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 13,
+    "resolved": "68px 60px",
+    "chain": [],
+    "type": "other",
+    "fallback": false
+   },
+   {
+    "name": "--panel-pad-mobile",
+    "value": "36px 24px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 13,
+    "resolved": "36px 24px",
+    "chain": [],
+    "type": "other",
+    "fallback": false
+   },
+   {
+    "name": "--grid-gap",
+    "value": "18px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 14,
+    "resolved": "18px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--grid-gap-mobile",
+    "value": "10px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 14,
+    "resolved": "10px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--filter-rail",
+    "value": "270px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 15,
+    "resolved": "270px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--bp-mobile-max",
+    "value": "767px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 16,
+    "resolved": "767px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--bp-desktop",
+    "value": "1024px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 16,
+    "resolved": "1024px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--bp-nav-full",
+    "value": "1060px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 16,
+    "resolved": "1060px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--bp-grid-wide",
+    "value": "1280px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 16,
+    "resolved": "1280px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--hit-min",
+    "value": "44px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 18,
+    "resolved": "44px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--button-h",
+    "value": "52px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 18,
+    "resolved": "52px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--button-h-compact",
+    "value": "48px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 18,
+    "resolved": "48px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--button-h-cta",
+    "value": "56px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 18,
+    "resolved": "56px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--radius-0",
+    "value": "0",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 20,
+    "resolved": "0",
+    "chain": [],
+    "type": "number",
+    "fallback": false
+   },
+   {
+    "name": "--radius-pill",
+    "value": "999px",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 20,
+    "resolved": "999px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--radius-circle",
+    "value": "50%",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 20,
+    "resolved": "50%",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--shadow-card-hover",
+    "value": "0 18px 44px rgba(20,20,20,.09)",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 22,
+    "resolved": "0 18px 44px rgba(20,20,20,.09)",
+    "chain": [],
+    "type": "shadow",
+    "fallback": false
+   },
+   {
+    "name": "--shadow-option-hover",
+    "value": "0 14px 32px rgba(20,20,20,.09)",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 23,
+    "resolved": "0 14px 32px rgba(20,20,20,.09)",
+    "chain": [],
+    "type": "shadow",
+    "fallback": false
+   },
+   {
+    "name": "--shadow-mega",
+    "value": "0 24px 48px rgba(20,20,20,.12)",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 24,
+    "resolved": "0 24px 48px rgba(20,20,20,.12)",
+    "chain": [],
+    "type": "shadow",
+    "fallback": false
+   },
+   {
+    "name": "--shadow-modal",
+    "value": "0 30px 70px rgba(0,0,0,.3)",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 25,
+    "resolved": "0 30px 70px rgba(0,0,0,.3)",
+    "chain": [],
+    "type": "shadow",
+    "fallback": false
+   },
+   {
+    "name": "--shadow-drawer",
+    "value": "-20px 0 60px rgba(0,0,0,.2)",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 26,
+    "resolved": "-20px 0 60px rgba(0,0,0,.2)",
+    "chain": [],
+    "type": "shadow",
+    "fallback": false
+   },
+   {
+    "name": "--shadow-wa-fab",
+    "value": "0 10px 30px rgba(13,110,53,.32)",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 27,
+    "resolved": "0 10px 30px rgba(13,110,53,.32)",
+    "chain": [],
+    "type": "shadow",
+    "fallback": false
+   },
+   {
+    "name": "--ease-out",
+    "value": "cubic-bezier(.2,.7,.2,1)",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 29,
+    "resolved": "cubic-bezier(.2,.7,.2,1)",
+    "chain": [],
+    "type": "easing",
+    "fallback": false
+   },
+   {
+    "name": "--dur-200",
+    "value": ".2s",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 30,
+    "resolved": ".2s",
+    "chain": [],
+    "type": "other",
+    "fallback": false
+   },
+   {
+    "name": "--dur-250",
+    "value": ".25s",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 30,
+    "resolved": ".25s",
+    "chain": [],
+    "type": "other",
+    "fallback": false
+   },
+   {
+    "name": "--dur-300",
+    "value": ".3s",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 30,
+    "resolved": ".3s",
+    "chain": [],
+    "type": "other",
+    "fallback": false
+   },
+   {
+    "name": "--dur-350",
+    "value": ".35s",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 30,
+    "resolved": ".35s",
+    "chain": [],
+    "type": "other",
+    "fallback": false
+   },
+   {
+    "name": "--dur-400",
+    "value": ".4s",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 30,
+    "resolved": ".4s",
+    "chain": [],
+    "type": "other",
+    "fallback": false
+   },
+   {
+    "name": "--dur-500",
+    "value": ".5s",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 30,
+    "resolved": ".5s",
+    "chain": [],
+    "type": "other",
+    "fallback": false
+   },
+   {
+    "name": "--dur-600",
+    "value": ".6s",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 30,
+    "resolved": ".6s",
+    "chain": [],
+    "type": "other",
+    "fallback": false
+   },
+   {
+    "name": "--dur-900",
+    "value": ".9s",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 30,
+    "resolved": ".9s",
+    "chain": [],
+    "type": "other",
+    "fallback": false
+   },
+   {
+    "name": "--lift-button",
+    "value": "translateY(-3px)",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 31,
+    "resolved": "translateY(-3px)",
+    "chain": [],
+    "type": "other",
+    "fallback": false
+   },
+   {
+    "name": "--lift-card",
+    "value": "translateY(-4px)",
+    "file": "tokens/spacing.css",
+    "selector": ":root",
+    "media": null,
+    "line": 31,
+    "resolved": "translateY(-4px)",
+    "chain": [],
+    "type": "other",
+    "fallback": false
+   },
+   {
+    "name": "--font-display",
+    "value": "'Playfair Display',serif",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 4,
+    "resolved": "'Playfair Display',serif",
+    "chain": [],
+    "type": "font-family",
+    "fallback": false
+   },
+   {
+    "name": "--font-body",
+    "value": "'Outfit',system-ui,sans-serif",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 5,
+    "resolved": "'Outfit',system-ui,sans-serif",
+    "chain": [],
+    "type": "font-family",
+    "fallback": false
+   },
+   {
+    "name": "--font-google",
+    "value": "'Roboto',Arial,sans-serif",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 6,
+    "resolved": "'Roboto',Arial,sans-serif",
+    "chain": [],
+    "type": "font-family",
+    "fallback": false
+   },
+   {
+    "name": "--weight-light",
+    "value": "300",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 7,
+    "resolved": "300",
+    "chain": [],
+    "type": "number",
+    "fallback": false
+   },
+   {
+    "name": "--weight-regular",
+    "value": "400",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 7,
+    "resolved": "400",
+    "chain": [],
+    "type": "number",
+    "fallback": false
+   },
+   {
+    "name": "--weight-medium",
+    "value": "500",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 7,
+    "resolved": "500",
+    "chain": [],
+    "type": "number",
+    "fallback": false
+   },
+   {
+    "name": "--weight-semibold",
+    "value": "600",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 7,
+    "resolved": "600",
+    "chain": [],
+    "type": "number",
+    "fallback": false
+   },
+   {
+    "name": "--weight-bold",
+    "value": "700",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 7,
+    "resolved": "700",
+    "chain": [],
+    "type": "number",
+    "fallback": false
+   },
+   {
+    "name": "--size-hero",
+    "value": "clamp(42px,4.4vw,72px)",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 9,
+    "resolved": "clamp(42px,4.4vw,72px)",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-hero-mobile",
+    "value": "40px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 9,
+    "resolved": "40px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-h1",
+    "value": "48px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 10,
+    "resolved": "48px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-h1-mobile",
+    "value": "34px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 10,
+    "resolved": "34px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-h2",
+    "value": "46px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 11,
+    "resolved": "46px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-h2-mobile",
+    "value": "32px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 11,
+    "resolved": "32px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-lens-h2",
+    "value": "38px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 12,
+    "resolved": "38px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-lens-h2-mobile",
+    "value": "28px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 12,
+    "resolved": "28px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-display-34",
+    "value": "34px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 13,
+    "resolved": "34px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-display-30",
+    "value": "30px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 13,
+    "resolved": "30px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-display-28",
+    "value": "28px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 13,
+    "resolved": "28px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-display-24",
+    "value": "24px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 13,
+    "resolved": "24px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-display-22",
+    "value": "22px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 13,
+    "resolved": "22px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-18",
+    "value": "18px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 15,
+    "resolved": "18px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-17",
+    "value": "17px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 15,
+    "resolved": "17px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-16-5",
+    "value": "16.5px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 15,
+    "resolved": "16.5px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-16",
+    "value": "16px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 15,
+    "resolved": "16px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-15-5",
+    "value": "15.5px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 15,
+    "resolved": "15.5px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-15",
+    "value": "15px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 15,
+    "resolved": "15px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-14-5",
+    "value": "14.5px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 16,
+    "resolved": "14.5px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-14",
+    "value": "14px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 16,
+    "resolved": "14px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-13-5",
+    "value": "13.5px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 16,
+    "resolved": "13.5px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-13",
+    "value": "13px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 16,
+    "resolved": "13px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-12-5",
+    "value": "12.5px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 16,
+    "resolved": "12.5px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-12",
+    "value": "12px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 16,
+    "resolved": "12px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-11-5",
+    "value": "11.5px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 17,
+    "resolved": "11.5px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-11",
+    "value": "11px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 17,
+    "resolved": "11px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-10-5",
+    "value": "10.5px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 17,
+    "resolved": "10.5px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--size-9-5",
+    "value": "9.5px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 17,
+    "resolved": "9.5px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--text-base",
+    "value": "16px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 18,
+    "resolved": "16px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--hero-sub",
+    "value": "18px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 18,
+    "resolved": "18px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--hero-sub-mobile",
+    "value": "15.5px",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 18,
+    "resolved": "15.5px",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--lh-tight",
+    "value": "1",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 20,
+    "resolved": "1",
+    "chain": [],
+    "type": "number",
+    "fallback": false
+   },
+   {
+    "name": "--lh-display",
+    "value": "1.02",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 20,
+    "resolved": "1.02",
+    "chain": [],
+    "type": "number",
+    "fallback": false
+   },
+   {
+    "name": "--lh-heading",
+    "value": "1.05",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 20,
+    "resolved": "1.05",
+    "chain": [],
+    "type": "number",
+    "fallback": false
+   },
+   {
+    "name": "--lh-snug",
+    "value": "1.1",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 20,
+    "resolved": "1.1",
+    "chain": [],
+    "type": "number",
+    "fallback": false
+   },
+   {
+    "name": "--lh-card",
+    "value": "1.25",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 20,
+    "resolved": "1.25",
+    "chain": [],
+    "type": "number",
+    "fallback": false
+   },
+   {
+    "name": "--lh-body",
+    "value": "1.5",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 20,
+    "resolved": "1.5",
+    "chain": [],
+    "type": "number",
+    "fallback": false
+   },
+   {
+    "name": "--track-tight",
+    "value": "-.015em",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 22,
+    "resolved": "-.015em",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--track-04",
+    "value": ".04em",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 22,
+    "resolved": ".04em",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--track-06",
+    "value": ".06em",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 22,
+    "resolved": ".06em",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--track-08",
+    "value": ".08em",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 22,
+    "resolved": ".08em",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--track-button",
+    "value": ".1em",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 22,
+    "resolved": ".1em",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--track-12",
+    "value": ".12em",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 23,
+    "resolved": ".12em",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--track-wordmark",
+    "value": ".14em",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 23,
+    "resolved": ".14em",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--track-16",
+    "value": ".16em",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 23,
+    "resolved": ".16em",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--track-18",
+    "value": ".18em",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 23,
+    "resolved": ".18em",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--track-kicker",
+    "value": ".2em",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 23,
+    "resolved": ".2em",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--track-24",
+    "value": ".24em",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 24,
+    "resolved": ".24em",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--track-brand",
+    "value": ".26em",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 24,
+    "resolved": ".26em",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   },
+   {
+    "name": "--track-sub-wordmark",
+    "value": ".32em",
+    "file": "tokens/typography.css",
+    "selector": ":root",
+    "media": null,
+    "line": 24,
+    "resolved": ".32em",
+    "chain": [],
+    "type": "length",
+    "fallback": false
+   }
+  ],
+  "rows": [
+   {
+    "rowId": "palette:--ink",
+    "token": "--ink",
+    "hex": "#141414",
+    "resolved": "#141414",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 314,
+      "draftIds": [
+       "Eye Care Birmingham:193",
+       "Eye Care Birmingham:194",
+       "Eye Care Birmingham:196",
+       "Eye Care Birmingham:199",
+       "Eye Care Birmingham:200"
+      ]
+     },
+     {
+      "property": "background-color",
+      "count": 17,
+      "draftIds": [
+       "Frame Card:9",
+       "Eye Care Birmingham:149",
+       "Eye Care Birmingham:114",
+       "Eye Care Birmingham:140",
+       "Eye Care Birmingham:218"
+      ]
+     },
+     {
+      "property": "border-bottom-color",
+      "count": 4,
+      "draftIds": [
+       "Eye Care Birmingham:135",
+       "Eye Care Birmingham:158",
+       "Eye Care Birmingham:246",
+       "Eye Care Birmingham:46"
+      ]
+     },
+     {
+      "property": "border-top-color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:246",
+       "Eye Care Birmingham:46"
+      ]
+     },
+     {
+      "property": "border-left-color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:246",
+       "Eye Care Birmingham:46"
+      ]
+     },
+     {
+      "property": "border-right-color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:246",
+       "Eye Care Birmingham:46"
+      ]
+     }
+    ],
+    "sharedWith": [
+     "--text-body",
+     "--button-primary-bg"
+    ],
+    "role": "text",
+    "roles": [
+     "text",
+     "heading",
+     "link",
+     "primary",
+     "section-text"
+    ],
+    "confidence": 0.95,
+    "why": "the page text: the body colour on 1 page(s); the name --text-body agrees",
+    "by": "usage",
+    "basis": [
+     {
+      "role": "text",
+      "by": "usage",
+      "why": "the page text: the body colour on 1 page(s); the name --text-body agrees"
+     },
+     {
+      "role": "heading",
+      "by": "usage",
+      "why": "the most used heading colour on light grounds (5 headings)"
+     },
+     {
+      "role": "link",
+      "by": "usage",
+      "why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (29 of 34 links)"
+     },
+     {
+      "role": "primary",
+      "by": "usage",
+      "why": "the most used strong ground (1 buttons)"
+     },
+     {
+      "role": "section-text",
+      "by": "usage",
+      "why": "the most used text colour on the section ground (weight 44)"
+     }
+    ]
+   },
+   {
+    "rowId": "palette:--ink-hover",
+    "token": "--ink-hover",
+    "hex": "#2A2A2A",
+    "resolved": "#2A2A2A",
+    "chain": [],
+    "used": false,
+    "uses": [],
+    "sharedWith": [],
+    "role": null,
+    "roles": [],
+    "confidence": 0,
+    "why": "unused: no element in the draft uses this value",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--paper",
+    "token": "--paper",
+    "hex": "#FAF8F5",
+    "resolved": "#FAF8F5",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 47,
+      "draftIds": [
+       "Frame Card:9",
+       "Eye Care Birmingham:10",
+       "Eye Care Birmingham:11",
+       "Eye Care Birmingham:12",
+       "Eye Care Birmingham:149"
+      ]
+     },
+     {
+      "property": "background-color",
+      "count": 6,
+      "draftIds": [
+       "Eye Care Birmingham:1124",
+       "Eye Care Birmingham:124",
+       "Eye Care Birmingham:220",
+       "Eye Care Birmingham:5",
+       "Eye Care Birmingham:6"
+      ]
+     },
+     {
+      "property": "footer-ground",
+      "count": 1,
+      "draftIds": [
+       "home:#dc-root > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4)"
+      ]
+     }
+    ],
+    "sharedWith": [
+     "--surface-page",
+     "--button-primary-fg"
+    ],
+    "role": "surface",
+    "roles": [
+     "surface",
+     "footer-bg",
+     "primary-text",
+     "text-inverse"
+    ],
+    "confidence": 0.95,
+    "why": "the page ground: the body background on 1 page(s); the name --surface-page agrees",
+    "by": "usage",
+    "basis": [
+     {
+      "role": "surface",
+      "by": "usage",
+      "why": "the page ground: the body background on 1 page(s); the name --surface-page agrees"
+     },
+     {
+      "role": "footer-bg",
+      "by": "usage",
+      "why": "the footer's ground on 1 page(s)"
+     },
+     {
+      "role": "primary-text",
+      "by": "usage",
+      "why": "the most used text colour on the primary ground (weight 44)"
+     },
+     {
+      "role": "text-inverse",
+      "by": "usage",
+      "why": "the most used text colour on the dark ground #141414 (weight 44)"
+     }
+    ]
+   },
+   {
+    "rowId": "palette:--white",
+    "token": "--white",
+    "hex": "#FFFFFF",
+    "resolved": "#FFFFFF",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 29,
+      "draftIds": [
+       "Eye Care Birmingham:193",
+       "Frame Card:0",
+       "Eye Care Birmingham:1131",
+       "Eye Care Birmingham:1133",
+       "Eye Care Birmingham:1135"
+      ]
+     },
+     {
+      "property": "color",
+      "count": 15,
+      "draftIds": [
+       "Eye Care Birmingham:195",
+       "Eye Care Birmingham:188",
+       "Eye Care Birmingham:51"
+      ]
+     }
+    ],
+    "sharedWith": [
+     "--surface-card"
+    ],
+    "role": "surface-alt",
+    "roles": [
+     "surface-alt"
+    ],
+    "confidence": 0.95,
+    "why": "the most used light ground after the page ground (29 elements); the name --surface-card agrees",
+    "by": "usage",
+    "basis": [
+     {
+      "role": "surface-alt",
+      "by": "usage",
+      "why": "the most used light ground after the page ground (29 elements); the name --surface-card agrees"
+     }
+    ]
+   },
+   {
+    "rowId": "palette:--surface-alt",
+    "token": "--surface-alt",
+    "hex": "#F3F0EB",
+    "resolved": "#F3F0EB",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 12,
+      "draftIds": [
+       "Frame Card:1",
+       "Eye Care Birmingham:161"
+      ]
+     }
+    ],
+    "sharedWith": [],
+    "role": "section",
+    "roles": [
+     "section"
+    ],
+    "confidence": 0.85,
+    "why": "the most used ground after the page, raised and primary grounds (12 elements)",
+    "by": "usage",
+    "basis": [
+     {
+      "role": "section",
+      "by": "usage",
+      "why": "the most used ground after the page, raised and primary grounds (12 elements)"
+     }
+    ]
+   },
+   {
+    "rowId": "palette:--surface-soft",
+    "token": "--surface-soft",
+    "hex": "#F0EBE3",
+    "resolved": "#F0EBE3",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "border-right-color",
+      "count": 32,
+      "draftIds": [
+       "Eye Care Birmingham:129"
+      ]
+     },
+     {
+      "property": "background-color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:233",
+       "Eye Care Birmingham:27"
+      ]
+     },
+     {
+      "property": "color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:120",
+       "Eye Care Birmingham:122"
+      ]
+     }
+    ],
+    "sharedWith": [
+     "--acc-soft"
+    ],
+    "role": "custom-surface-soft",
+    "roles": [
+     "custom-surface-soft"
+    ],
+    "confidence": 0.3,
+    "why": "name says surface, but surface-alt is read from usage on --white (#FFFFFF)",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--hairline",
+    "token": "--hairline",
+    "hex": "#E6E1DA",
+    "resolved": "#E6E1DA",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "border-top-color",
+      "count": 21,
+      "draftIds": [
+       "Frame Card:0",
+       "Eye Care Birmingham:161",
+       "Eye Care Birmingham:1124",
+       "Eye Care Birmingham:1131",
+       "Eye Care Birmingham:1133"
+      ]
+     },
+     {
+      "property": "border-bottom-color",
+      "count": 21,
+      "draftIds": [
+       "Frame Card:0",
+       "Eye Care Birmingham:161",
+       "Eye Care Birmingham:1131",
+       "Eye Care Birmingham:1133",
+       "Eye Care Birmingham:1135"
+      ]
+     },
+     {
+      "property": "border-left-color",
+      "count": 18,
+      "draftIds": [
+       "Frame Card:0",
+       "Eye Care Birmingham:161",
+       "Eye Care Birmingham:1131",
+       "Eye Care Birmingham:1133",
+       "Eye Care Birmingham:1135"
+      ]
+     },
+     {
+      "property": "border-right-color",
+      "count": 18,
+      "draftIds": [
+       "Frame Card:0",
+       "Eye Care Birmingham:161",
+       "Eye Care Birmingham:1131",
+       "Eye Care Birmingham:1133",
+       "Eye Care Birmingham:1135"
+      ]
+     },
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:217"
+      ]
+     }
+    ],
+    "sharedWith": [
+     "--border-default"
+    ],
+    "role": "border-light",
+    "roles": [
+     "border-light"
+    ],
+    "confidence": 0.85,
+    "why": "the next divider line colour, lighter than the border (66 lines)",
+    "by": "usage",
+    "basis": [
+     {
+      "role": "border-light",
+      "by": "usage",
+      "why": "the next divider line colour, lighter than the border (66 lines)"
+     }
+    ]
+   },
+   {
+    "rowId": "palette:--border-strong",
+    "token": "--border-strong",
+    "hex": "#D8D2C8",
+    "resolved": "#D8D2C8",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "border-top-color",
+      "count": 28,
+      "draftIds": [
+       "Frame Card:31",
+       "Frame Card:17",
+       "Frame Card:33"
+      ]
+     },
+     {
+      "property": "border-bottom-color",
+      "count": 28,
+      "draftIds": [
+       "Frame Card:31",
+       "Frame Card:17",
+       "Frame Card:33"
+      ]
+     },
+     {
+      "property": "border-left-color",
+      "count": 28,
+      "draftIds": [
+       "Frame Card:31",
+       "Frame Card:17",
+       "Frame Card:33"
+      ]
+     },
+     {
+      "property": "border-right-color",
+      "count": 28,
+      "draftIds": [
+       "Frame Card:31",
+       "Frame Card:17",
+       "Frame Card:33"
+      ]
+     }
+    ],
+    "sharedWith": [],
+    "role": "border",
+    "roles": [
+     "border"
+    ],
+    "confidence": 0.95,
+    "why": "the most used divider line colour (108 lines; a link's underline and a line in the page ground's colour are not dividers); the name --border-strong agrees",
+    "by": "usage",
+    "basis": [
+     {
+      "role": "border",
+      "by": "usage",
+      "why": "the most used divider line colour (108 lines; a link's underline and a line in the page ground's colour are not dividers); the name --border-strong agrees"
+     }
+    ]
+   },
+   {
+    "rowId": "palette:--border-warm",
+    "token": "--border-warm",
+    "hex": "#D5CCBD",
+    "resolved": "#D5CCBD",
+    "chain": [],
+    "used": false,
+    "uses": [],
+    "sharedWith": [],
+    "role": null,
+    "roles": [],
+    "confidence": 0,
+    "why": "unused: no element in the draft uses this value",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--control-off",
+    "token": "--control-off",
+    "hex": "#C9C2B8",
+    "resolved": "#C9C2B8",
+    "chain": [],
+    "used": false,
+    "uses": [],
+    "sharedWith": [],
+    "role": null,
+    "roles": [],
+    "confidence": 0,
+    "why": "unused: no element in the draft uses this value",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--text-strong",
+    "token": "--text-strong",
+    "hex": "#4A453E",
+    "resolved": "#4A453E",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 4,
+      "draftIds": [
+       "Eye Care Birmingham:241",
+       "Eye Care Birmingham:35",
+       "Eye Care Birmingham:36",
+       "Eye Care Birmingham:37"
+      ]
+     }
+    ],
+    "sharedWith": [],
+    "role": "custom-text-strong",
+    "roles": [
+     "custom-text-strong"
+    ],
+    "confidence": 0.3,
+    "why": "name says body text, but text is read from usage on --ink (#141414)",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--text-2",
+    "token": "--text-2",
+    "hex": "#5E584F",
+    "resolved": "#5E584F",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 8,
+      "draftIds": [
+       "Frame Card:17",
+       "Eye Care Birmingham:1129",
+       "Eye Care Birmingham:1153",
+       "Eye Care Birmingham:1154",
+       "Eye Care Birmingham:223"
+      ]
+     }
+    ],
+    "sharedWith": [],
+    "role": "custom-text-2",
+    "roles": [
+     "custom-text-2"
+    ],
+    "confidence": 0.3,
+    "why": "name says body text, but text is read from usage on --ink (#141414)",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--text-muted",
+    "token": "--text-muted",
+    "hex": "#6B655E",
+    "resolved": "#6B655E",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 4,
+      "draftIds": [
+       "Eye Care Birmingham:235",
+       "Eye Care Birmingham:236",
+       "Eye Care Birmingham:237",
+       "Eye Care Birmingham:32"
+      ]
+     }
+    ],
+    "sharedWith": [],
+    "role": "custom-text-muted",
+    "roles": [
+     "custom-text-muted"
+    ],
+    "confidence": 0.3,
+    "why": "name says muted text, but text-muted is read from usage on --acc-ink (#6F6152)",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--text-3",
+    "token": "--text-3",
+    "hex": "#77716A",
+    "resolved": "#77716A",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 25,
+      "draftIds": [
+       "Frame Card:21",
+       "Frame Card:28",
+       "Eye Care Birmingham:1128",
+       "Eye Care Birmingham:1138",
+       "Eye Care Birmingham:1144"
+      ]
+     },
+     {
+      "property": "text-decoration-color",
+      "count": 8,
+      "draftIds": [
+       "Frame Card:28"
+      ]
+     }
+    ],
+    "sharedWith": [],
+    "role": "custom-text-3",
+    "roles": [
+     "custom-text-3"
+    ],
+    "confidence": 0.3,
+    "why": "name says body text, but text is read from usage on --ink (#141414)",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--text-4",
+    "token": "--text-4",
+    "hex": "#8B8478",
+    "resolved": "#8B8478",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 3,
+      "draftIds": [
+       "Eye Care Birmingham:1142",
+       "Eye Care Birmingham:1155",
+       "Eye Care Birmingham:26"
+      ]
+     }
+    ],
+    "sharedWith": [],
+    "role": "custom-text-4",
+    "roles": [
+     "custom-text-4"
+    ],
+    "confidence": 0.3,
+    "why": "name says body text, but text is read from usage on --ink (#141414)",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--text-faint",
+    "token": "--text-faint",
+    "hex": "#A39C90",
+    "resolved": "#A39C90",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 8,
+      "draftIds": [
+       "Frame Card:5",
+       "Frame Card:6"
+      ]
+     }
+    ],
+    "sharedWith": [],
+    "role": "custom-text-faint",
+    "roles": [
+     "custom-text-faint"
+    ],
+    "confidence": 0.3,
+    "why": "name says body text, but text is read from usage on --ink (#141414)",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--acc",
+    "token": "--acc",
+    "hex": "#9C8B78",
+    "resolved": "#9C8B78",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 5,
+      "draftIds": [
+       "Eye Care Birmingham:150",
+       "Eye Care Birmingham:144"
+      ]
+     },
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:51"
+      ]
+     }
+    ],
+    "sharedWith": [
+     "--focus-ring"
+    ],
+    "role": "custom-acc",
+    "roles": [
+     "custom-acc"
+    ],
+    "confidence": 0.3,
+    "why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--acc-ink",
+    "token": "--acc-ink",
+    "hex": "#6F6152",
+    "resolved": "#6F6152",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 17,
+      "draftIds": [
+       "Frame Card:20",
+       "Eye Care Birmingham:133",
+       "Eye Care Birmingham:156",
+       "Eye Care Birmingham:174",
+       "Eye Care Birmingham:221"
+      ]
+     }
+    ],
+    "sharedWith": [],
+    "role": "text-muted",
+    "roles": [
+     "text-muted"
+    ],
+    "confidence": 0.85,
+    "why": "the most used text colour after the text and heading colours, lighter than the text (17 elements)",
+    "by": "usage",
+    "basis": [
+     {
+      "role": "text-muted",
+      "by": "usage",
+      "why": "the most used text colour after the text and heading colours, lighter than the text (17 elements)"
+     }
+    ]
+   },
+   {
+    "rowId": "palette:--acc-soft",
+    "token": "--acc-soft",
+    "hex": "#EFEAE2",
+    "resolved": "#EFEAE2",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "border-right-color",
+      "count": 32,
+      "draftIds": [
+       "Eye Care Birmingham:129"
+      ]
+     },
+     {
+      "property": "background-color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:233",
+       "Eye Care Birmingham:27"
+      ]
+     },
+     {
+      "property": "color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:120",
+       "Eye Care Birmingham:122"
+      ]
+     }
+    ],
+    "sharedWith": [
+     "--surface-soft"
+    ],
+    "role": "custom-acc-soft",
+    "roles": [
+     "custom-acc-soft"
+    ],
+    "confidence": 0.3,
+    "why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--wa",
+    "token": "--wa",
+    "hex": "#25D366",
+    "resolved": "#25D366",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:1135",
+       "Eye Care Birmingham:1136"
+      ]
+     },
+     {
+      "property": "background-color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:1161",
+       "Eye Care Birmingham:244"
+      ]
+     }
+    ],
+    "sharedWith": [],
+    "role": "accent",
+    "roles": [
+     "accent"
+    ],
+    "confidence": 0.85,
+    "why": "the next most used strong ground (2 links)",
+    "by": "usage",
+    "basis": [
+     {
+      "role": "accent",
+      "by": "usage",
+      "why": "the next most used strong ground (2 links)"
+     }
+    ]
+   },
+   {
+    "rowId": "palette:--wa-hover",
+    "token": "--wa-hover",
+    "hex": "#1EBE5A",
+    "resolved": "#1EBE5A",
+    "chain": [],
+    "used": false,
+    "uses": [],
+    "sharedWith": [],
+    "role": null,
+    "roles": [],
+    "confidence": 0,
+    "why": "unused: no element in the draft uses this value",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--wa-ink",
+    "token": "--wa-ink",
+    "hex": "#0B2B17",
+    "resolved": "#0B2B17",
+    "chain": [],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 5,
+      "draftIds": [
+       "Eye Care Birmingham:1161",
+       "Eye Care Birmingham:1162",
+       "Eye Care Birmingham:1163",
+       "Eye Care Birmingham:244",
+       "Eye Care Birmingham:245"
+      ]
+     }
+    ],
+    "sharedWith": [],
+    "role": "accent-text",
+    "roles": [
+     "accent-text"
+    ],
+    "confidence": 0.85,
+    "why": "the most used text colour on the accent ground (weight 7)",
+    "by": "usage",
+    "basis": [
+     {
+      "role": "accent-text",
+      "by": "usage",
+      "why": "the most used text colour on the accent ground (weight 7)"
+     }
+    ]
+   },
+   {
+    "rowId": "palette:--wa-ink-deep",
+    "token": "--wa-ink-deep",
+    "hex": "#12301E",
+    "resolved": "#12301E",
+    "chain": [],
+    "used": false,
+    "uses": [],
+    "sharedWith": [],
+    "role": null,
+    "roles": [],
+    "confidence": 0,
+    "why": "unused: no element in the draft uses this value",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--wa-soft",
+    "token": "--wa-soft",
+    "hex": "#E9F9EF",
+    "resolved": "#E9F9EF",
+    "chain": [],
+    "used": false,
+    "uses": [],
+    "sharedWith": [],
+    "role": null,
+    "roles": [],
+    "confidence": 0,
+    "why": "unused: no element in the draft uses this value",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--wa-border",
+    "token": "--wa-border",
+    "hex": "#B7E5C7",
+    "resolved": "#B7E5C7",
+    "chain": [],
+    "used": false,
+    "uses": [],
+    "sharedWith": [],
+    "role": null,
+    "roles": [],
+    "confidence": 0,
+    "why": "unused: no element in the draft uses this value",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--success",
+    "token": "--success",
+    "hex": "#1B7F43",
+    "resolved": "#1B7F43",
+    "chain": [],
+    "used": false,
+    "uses": [],
+    "sharedWith": [],
+    "role": null,
+    "roles": [],
+    "confidence": 0,
+    "why": "unused: no element in the draft uses this value",
+    "by": "none"
+   },
+   {
+    "rowId": "palette:--text-body",
+    "token": "--text-body",
+    "hex": "#141414",
+    "resolved": "#141414",
+    "chain": [
+     "--ink"
+    ],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 314,
+      "draftIds": [
+       "Eye Care Birmingham:193",
+       "Eye Care Birmingham:194",
+       "Eye Care Birmingham:196",
+       "Eye Care Birmingham:199",
+       "Eye Care Birmingham:200"
+      ]
+     },
+     {
+      "property": "background-color",
+      "count": 17,
+      "draftIds": [
+       "Frame Card:9",
+       "Eye Care Birmingham:149",
+       "Eye Care Birmingham:114",
+       "Eye Care Birmingham:140",
+       "Eye Care Birmingham:218"
+      ]
+     },
+     {
+      "property": "border-bottom-color",
+      "count": 4,
+      "draftIds": [
+       "Eye Care Birmingham:135",
+       "Eye Care Birmingham:158",
+       "Eye Care Birmingham:246",
+       "Eye Care Birmingham:46"
+      ]
+     },
+     {
+      "property": "border-top-color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:246",
+       "Eye Care Birmingham:46"
+      ]
+     },
+     {
+      "property": "border-left-color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:246",
+       "Eye Care Birmingham:46"
+      ]
+     },
+     {
+      "property": "border-right-color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:246",
+       "Eye Care Birmingham:46"
+      ]
+     }
+    ],
+    "sharedWith": [
+     "--ink",
+     "--button-primary-bg"
+    ],
+    "role": "text",
+    "roles": [
+     "text",
+     "heading",
+     "link",
+     "primary",
+     "section-text"
+    ],
+    "confidence": 0.95,
+    "why": "the page text: the body colour on 1 page(s); the name --text-body agrees",
+    "by": "usage",
+    "basis": [
+     {
+      "role": "text",
+      "by": "usage",
+      "why": "the page text: the body colour on 1 page(s); the name --text-body agrees"
+     },
+     {
+      "role": "heading",
+      "by": "usage",
+      "why": "the most used heading colour on light grounds (5 headings)"
+     },
+     {
+      "role": "link",
+      "by": "usage",
+      "why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (29 of 34 links)"
+     },
+     {
+      "role": "primary",
+      "by": "usage",
+      "why": "the most used strong ground (1 buttons)"
+     },
+     {
+      "role": "section-text",
+      "by": "usage",
+      "why": "the most used text colour on the section ground (weight 44)"
+     }
+    ]
+   },
+   {
+    "rowId": "palette:--surface-page",
+    "token": "--surface-page",
+    "hex": "#FAF8F5",
+    "resolved": "#FAF8F5",
+    "chain": [
+     "--paper"
+    ],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 47,
+      "draftIds": [
+       "Frame Card:9",
+       "Eye Care Birmingham:10",
+       "Eye Care Birmingham:11",
+       "Eye Care Birmingham:12",
+       "Eye Care Birmingham:149"
+      ]
+     },
+     {
+      "property": "background-color",
+      "count": 6,
+      "draftIds": [
+       "Eye Care Birmingham:1124",
+       "Eye Care Birmingham:124",
+       "Eye Care Birmingham:220",
+       "Eye Care Birmingham:5",
+       "Eye Care Birmingham:6"
+      ]
+     },
+     {
+      "property": "footer-ground",
+      "count": 1,
+      "draftIds": [
+       "home:#dc-root > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4)"
+      ]
+     }
+    ],
+    "sharedWith": [
+     "--paper",
+     "--button-primary-fg"
+    ],
+    "role": "surface",
+    "roles": [
+     "surface",
+     "footer-bg",
+     "primary-text",
+     "text-inverse"
+    ],
+    "confidence": 0.95,
+    "why": "the page ground: the body background on 1 page(s); the name --surface-page agrees",
+    "by": "usage",
+    "basis": [
+     {
+      "role": "surface",
+      "by": "usage",
+      "why": "the page ground: the body background on 1 page(s); the name --surface-page agrees"
+     },
+     {
+      "role": "footer-bg",
+      "by": "usage",
+      "why": "the footer's ground on 1 page(s)"
+     },
+     {
+      "role": "primary-text",
+      "by": "usage",
+      "why": "the most used text colour on the primary ground (weight 44)"
+     },
+     {
+      "role": "text-inverse",
+      "by": "usage",
+      "why": "the most used text colour on the dark ground #141414 (weight 44)"
+     }
+    ]
+   },
+   {
+    "rowId": "palette:--surface-card",
+    "token": "--surface-card",
+    "hex": "#FFFFFF",
+    "resolved": "#FFFFFF",
+    "chain": [
+     "--white"
+    ],
+    "used": true,
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 29,
+      "draftIds": [
+       "Eye Care Birmingham:193",
+       "Frame Card:0",
+       "Eye Care Birmingham:1131",
+       "Eye Care Birmingham:1133",
+       "Eye Care Birmingham:1135"
+      ]
+     },
+     {
+      "property": "color",
+      "count": 15,
+      "draftIds": [
+       "Eye Care Birmingham:195",
+       "Eye Care Birmingham:188",
+       "Eye Care Birmingham:51"
+      ]
+     }
+    ],
+    "sharedWith": [
+     "--white"
+    ],
+    "role": "surface-alt",
+    "roles": [
+     "surface-alt"
+    ],
+    "confidence": 0.95,
+    "why": "the most used light ground after the page ground (29 elements); the name --surface-card agrees",
+    "by": "usage",
+    "basis": [
+     {
+      "role": "surface-alt",
+      "by": "usage",
+      "why": "the most used light ground after the page ground (29 elements); the name --surface-card agrees"
+     }
+    ]
+   },
+   {
+    "rowId": "palette:--border-default",
+    "token": "--border-default",
+    "hex": "#E6E1DA",
+    "resolved": "#E6E1DA",
+    "chain": [
+     "--hairline"
+    ],
+    "used": true,
+    "uses": [
+     {
+      "property": "border-top-color",
+      "count": 21,
+      "draftIds": [
+       "Frame Card:0",
+       "Eye Care Birmingham:161",
+       "Eye Care Birmingham:1124",
+       "Eye Care Birmingham:1131",
+       "Eye Care Birmingham:1133"
+      ]
+     },
+     {
+      "property": "border-bottom-color",
+      "count": 21,
+      "draftIds": [
+       "Frame Card:0",
+       "Eye Care Birmingham:161",
+       "Eye Care Birmingham:1131",
+       "Eye Care Birmingham:1133",
+       "Eye Care Birmingham:1135"
+      ]
+     },
+     {
+      "property": "border-left-color",
+      "count": 18,
+      "draftIds": [
+       "Frame Card:0",
+       "Eye Care Birmingham:161",
+       "Eye Care Birmingham:1131",
+       "Eye Care Birmingham:1133",
+       "Eye Care Birmingham:1135"
+      ]
+     },
+     {
+      "property": "border-right-color",
+      "count": 18,
+      "draftIds": [
+       "Frame Card:0",
+       "Eye Care Birmingham:161",
+       "Eye Care Birmingham:1131",
+       "Eye Care Birmingham:1133",
+       "Eye Care Birmingham:1135"
+      ]
+     },
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:217"
+      ]
+     }
+    ],
+    "sharedWith": [
+     "--hairline"
+    ],
+    "role": "border-light",
+    "roles": [
+     "border-light"
+    ],
+    "confidence": 0.85,
+    "why": "the next divider line colour, lighter than the border (66 lines)",
+    "by": "usage",
+    "basis": [
+     {
+      "role": "border-light",
+      "by": "usage",
+      "why": "the next divider line colour, lighter than the border (66 lines)"
+     }
+    ]
+   },
+   {
+    "rowId": "palette:--button-primary-bg",
+    "token": "--button-primary-bg",
+    "hex": "#141414",
+    "resolved": "#141414",
+    "chain": [
+     "--ink"
+    ],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 314,
+      "draftIds": [
+       "Eye Care Birmingham:193",
+       "Eye Care Birmingham:194",
+       "Eye Care Birmingham:196",
+       "Eye Care Birmingham:199",
+       "Eye Care Birmingham:200"
+      ]
+     },
+     {
+      "property": "background-color",
+      "count": 17,
+      "draftIds": [
+       "Frame Card:9",
+       "Eye Care Birmingham:149",
+       "Eye Care Birmingham:114",
+       "Eye Care Birmingham:140",
+       "Eye Care Birmingham:218"
+      ]
+     },
+     {
+      "property": "border-bottom-color",
+      "count": 4,
+      "draftIds": [
+       "Eye Care Birmingham:135",
+       "Eye Care Birmingham:158",
+       "Eye Care Birmingham:246",
+       "Eye Care Birmingham:46"
+      ]
+     },
+     {
+      "property": "border-top-color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:246",
+       "Eye Care Birmingham:46"
+      ]
+     },
+     {
+      "property": "border-left-color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:246",
+       "Eye Care Birmingham:46"
+      ]
+     },
+     {
+      "property": "border-right-color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:246",
+       "Eye Care Birmingham:46"
+      ]
+     }
+    ],
+    "sharedWith": [
+     "--ink",
+     "--text-body"
+    ],
+    "role": "text",
+    "roles": [
+     "text",
+     "heading",
+     "link",
+     "primary",
+     "section-text"
+    ],
+    "confidence": 0.95,
+    "why": "the page text: the body colour on 1 page(s); the name --text-body agrees",
+    "by": "usage",
+    "basis": [
+     {
+      "role": "text",
+      "by": "usage",
+      "why": "the page text: the body colour on 1 page(s); the name --text-body agrees"
+     },
+     {
+      "role": "heading",
+      "by": "usage",
+      "why": "the most used heading colour on light grounds (5 headings)"
+     },
+     {
+      "role": "link",
+      "by": "usage",
+      "why": "the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (29 of 34 links)"
+     },
+     {
+      "role": "primary",
+      "by": "usage",
+      "why": "the most used strong ground (1 buttons)"
+     },
+     {
+      "role": "section-text",
+      "by": "usage",
+      "why": "the most used text colour on the section ground (weight 44)"
+     }
+    ]
+   },
+   {
+    "rowId": "palette:--button-primary-fg",
+    "token": "--button-primary-fg",
+    "hex": "#FAF8F5",
+    "resolved": "#FAF8F5",
+    "chain": [
+     "--paper"
+    ],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 47,
+      "draftIds": [
+       "Frame Card:9",
+       "Eye Care Birmingham:10",
+       "Eye Care Birmingham:11",
+       "Eye Care Birmingham:12",
+       "Eye Care Birmingham:149"
+      ]
+     },
+     {
+      "property": "background-color",
+      "count": 6,
+      "draftIds": [
+       "Eye Care Birmingham:1124",
+       "Eye Care Birmingham:124",
+       "Eye Care Birmingham:220",
+       "Eye Care Birmingham:5",
+       "Eye Care Birmingham:6"
+      ]
+     },
+     {
+      "property": "footer-ground",
+      "count": 1,
+      "draftIds": [
+       "home:#dc-root > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4)"
+      ]
+     }
+    ],
+    "sharedWith": [
+     "--paper",
+     "--surface-page"
+    ],
+    "role": "surface",
+    "roles": [
+     "surface",
+     "footer-bg",
+     "primary-text",
+     "text-inverse"
+    ],
+    "confidence": 0.95,
+    "why": "the page ground: the body background on 1 page(s); the name --surface-page agrees",
+    "by": "usage",
+    "basis": [
+     {
+      "role": "surface",
+      "by": "usage",
+      "why": "the page ground: the body background on 1 page(s); the name --surface-page agrees"
+     },
+     {
+      "role": "footer-bg",
+      "by": "usage",
+      "why": "the footer's ground on 1 page(s)"
+     },
+     {
+      "role": "primary-text",
+      "by": "usage",
+      "why": "the most used text colour on the primary ground (weight 44)"
+     },
+     {
+      "role": "text-inverse",
+      "by": "usage",
+      "why": "the most used text colour on the dark ground #141414 (weight 44)"
+     }
+    ]
+   },
+   {
+    "rowId": "palette:--focus-ring",
+    "token": "--focus-ring",
+    "hex": "#9C8B78",
+    "resolved": "#9C8B78",
+    "chain": [
+     "--acc"
+    ],
+    "used": true,
+    "uses": [
+     {
+      "property": "color",
+      "count": 5,
+      "draftIds": [
+       "Eye Care Birmingham:150",
+       "Eye Care Birmingham:144"
+      ]
+     },
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:51"
+      ]
+     }
+    ],
+    "sharedWith": [
+     "--acc"
+    ],
+    "role": "custom-focus-ring",
+    "roles": [
+     "custom-focus-ring"
+    ],
+    "confidence": 0.3,
+    "why": "no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)",
+    "by": "none"
+   }
+  ],
+  "unused": [
+   "--ink-hover",
+   "--border-warm",
+   "--control-off",
+   "--wa-hover",
+   "--wa-ink-deep",
+   "--wa-soft",
+   "--wa-border",
+   "--success"
+  ],
+  "oneOff": [
+   {
+    "hex": "#3A352F",
+    "uses": [
+     {
+      "property": "color",
+      "count": 32,
+      "draftIds": [
+       "Eye Care Birmingham:129"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#202124",
+    "uses": [
+     {
+      "property": "color",
+      "count": 14,
+      "draftIds": [
+       "Eye Care Birmingham:197",
+       "Eye Care Birmingham:183"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#3C4043",
+    "uses": [
+     {
+      "property": "color",
+      "count": 13,
+      "draftIds": [
+       "Eye Care Birmingham:204"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#70757A",
+    "uses": [
+     {
+      "property": "color",
+      "count": 26,
+      "draftIds": [
+       "Eye Care Birmingham:198",
+       "Eye Care Birmingham:203"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#E8EAED",
+    "uses": [
+     {
+      "property": "border-bottom-color",
+      "count": 14,
+      "draftIds": [
+       "Eye Care Birmingham:193",
+       "Eye Care Birmingham:177"
+      ]
+     },
+     {
+      "property": "border-top-color",
+      "count": 13,
+      "draftIds": [
+       "Eye Care Birmingham:193"
+      ]
+     },
+     {
+      "property": "border-left-color",
+      "count": 13,
+      "draftIds": [
+       "Eye Care Birmingham:193"
+      ]
+     },
+     {
+      "property": "border-right-color",
+      "count": 13,
+      "draftIds": [
+       "Eye Care Birmingham:193"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#FBBC04",
+    "uses": [
+     {
+      "property": "color",
+      "count": 14,
+      "draftIds": [
+       "Eye Care Birmingham:202",
+       "Eye Care Birmingham:185"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#000000",
+    "uses": [
+     {
+      "property": "color",
+      "count": 54,
+      "draftIds": [
+       "Frame Card:10",
+       "Frame Card:11",
+       "Frame Card:12",
+       "Frame Card:31",
+       "Eye Care Birmingham:46"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#E0DAD1",
+    "uses": [
+     {
+      "property": "border-top-color",
+      "count": 8,
+      "draftIds": [
+       "Frame Card:10"
+      ]
+     },
+     {
+      "property": "border-bottom-color",
+      "count": 8,
+      "draftIds": [
+       "Frame Card:10"
+      ]
+     },
+     {
+      "property": "border-left-color",
+      "count": 8,
+      "draftIds": [
+       "Frame Card:10"
+      ]
+     },
+     {
+      "property": "border-right-color",
+      "count": 8,
+      "draftIds": [
+       "Frame Card:10"
+      ]
+     }
+    ],
+    "nearest": {
+     "token": "--hairline",
+     "deltaE": 1.818
+    }
+   },
+   {
+    "hex": "#FFFFFFEB",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 8,
+      "draftIds": [
+       "Frame Card:10"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#1B1B1B",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 7,
+      "draftIds": [
+       "Frame Card:31"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#7D5030",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 5,
+      "draftIds": [
+       "Frame Card:31"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#CFC8BE",
+    "uses": [
+     {
+      "property": "color",
+      "count": 4,
+      "draftIds": [
+       "Eye Care Birmingham:152"
+      ]
+     }
+    ],
+    "nearest": {
+     "token": "--control-off",
+     "deltaE": 1.505
+    }
+   },
+   {
+    "hex": "#5D6268",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 3,
+      "draftIds": [
+       "Frame Card:31"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#C6A469",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 3,
+      "draftIds": [
+       "Frame Card:31"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#1A73E8",
+    "uses": [
+     {
+      "property": "color",
+      "count": 8,
+      "draftIds": [
+       "Eye Care Birmingham:189",
+       "Eye Care Birmingham:206",
+       "Eye Care Birmingham:210",
+       "Eye Care Birmingham:211",
+       "Eye Care Birmingham:212"
+      ]
+     },
+     {
+      "property": "background-color",
+      "count": 3,
+      "draftIds": [
+       "Eye Care Birmingham:195",
+       "Eye Care Birmingham:188"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#2B2721",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:161"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#B9BCC0",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 2,
+      "draftIds": [
+       "Frame Card:31"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#E8710A",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:195"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#E8E1D3",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 2,
+      "draftIds": [
+       "Frame Card:31"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#FAF8F580",
+    "uses": [
+     {
+      "property": "color",
+      "count": 2,
+      "draftIds": [
+       "Eye Care Birmingham:166"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#00897B",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:195"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#0B8043",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:195"
+      ]
+     }
+    ],
+    "nearest": {
+     "token": "--success",
+     "deltaE": 0.761
+    }
+   },
+   {
+    "hex": "#34A853",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:195"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#3949AB",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:195"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#4E3526",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Frame Card:31"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#5F6368",
+    "uses": [
+     {
+      "property": "color",
+      "count": 3,
+      "draftIds": [
+       "Eye Care Birmingham:181",
+       "Eye Care Birmingham:186",
+       "Eye Care Birmingham:208"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#7B1FA2",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:195"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#8A5A2B",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Frame Card:31"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#A142F4",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:195"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#C5221F",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:195"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#D0C8BA",
+    "uses": [
+     {
+      "property": "border-top-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:235"
+      ]
+     },
+     {
+      "property": "border-bottom-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:235"
+      ]
+     },
+     {
+      "property": "border-left-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:235"
+      ]
+     },
+     {
+      "property": "border-right-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:235"
+      ]
+     }
+    ],
+    "nearest": {
+     "token": "--border-warm",
+     "deltaE": 1.133
+    }
+   },
+   {
+    "hex": "#D93025",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:195"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#D9DDE0",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Frame Card:31"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#DADCE0",
+    "uses": [
+     {
+      "property": "border-top-color",
+      "count": 4,
+      "draftIds": [
+       "Eye Care Birmingham:176",
+       "Eye Care Birmingham:189",
+       "Eye Care Birmingham:210",
+       "Eye Care Birmingham:213"
+      ]
+     },
+     {
+      "property": "border-bottom-color",
+      "count": 4,
+      "draftIds": [
+       "Eye Care Birmingham:176",
+       "Eye Care Birmingham:189",
+       "Eye Care Birmingham:210",
+       "Eye Care Birmingham:213"
+      ]
+     },
+     {
+      "property": "border-left-color",
+      "count": 4,
+      "draftIds": [
+       "Eye Care Birmingham:176",
+       "Eye Care Birmingham:189",
+       "Eye Care Birmingham:210",
+       "Eye Care Birmingham:213"
+      ]
+     },
+     {
+      "property": "border-right-color",
+      "count": 4,
+      "draftIds": [
+       "Eye Care Birmingham:176",
+       "Eye Care Birmingham:189",
+       "Eye Care Birmingham:210",
+       "Eye Care Birmingham:213"
+      ]
+     },
+     {
+      "property": "color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:184"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#DFD8CC",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:235"
+      ]
+     }
+    ],
+    "nearest": {
+     "token": "--border-strong",
+     "deltaE": 1.652
+    }
+   },
+   {
+    "hex": "#E2DCD3",
+    "uses": [
+     {
+      "property": "color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:146"
+      ]
+     }
+    ],
+    "nearest": {
+     "token": "--hairline",
+     "deltaE": 1.443
+    }
+   },
+   {
+    "hex": "#F09300",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:195"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#FAF8F529",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:147"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#FAF8F5BF",
+    "uses": [
+     {
+      "property": "border-top-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:125"
+      ]
+     },
+     {
+      "property": "border-bottom-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:125"
+      ]
+     },
+     {
+      "property": "border-left-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:125"
+      ]
+     },
+     {
+      "property": "border-right-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:125"
+      ]
+     }
+    ]
+   },
+   {
+    "hex": "#FAF8F5E6",
+    "uses": [
+     {
+      "property": "background-color",
+      "count": 1,
+      "draftIds": [
+       "Eye Care Birmingham:13"
+      ]
+     }
+    ]
+   }
+  ],
+  "merges": [
+   {
+    "kept": "--surface-soft",
+    "merged": "--acc-soft",
+    "from": "#EFEAE2",
+    "to": "#F0EBE3",
+    "deltaE": 0.213
+   }
+  ],
+  "usageFrom": "computed colour properties of 630 rest-mode reading records, one 1440 read per route"
+ },
+ "review": []
+}

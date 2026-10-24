@@ -21,9 +21,10 @@
 //   node scripts/computed-route/intake.mjs --page-map <client>      rebuilds only build/page-map.json offline from the
 //     export, with Bean's saved page-map review marks and the current map's ids carried by row key, and prints every
 //     changed row (lib/intake-pagemap-regen.mjs).
-//   node scripts/computed-route/intake.mjs --palette-only <client> [--record]   writes only build/intake/palette.json
+//   node scripts/computed-route/intake.mjs --palette-only <client> [--record] [--into-intake]   writes build/intake/palette.json
 //     (the palette proposal and its colour usage) from the draft tokens and one 1440 rest reading per route, without
-//     the other stages; --record records the replay file first (lib/intake-palette-run.mjs).
+//     the other stages; --record records the replay file first; --into-intake also replaces intake.json's palette block and
+//     review.md's palette section, keeping a mark only where its slugs equal the new proposal's (lib/intake-palette-run.mjs).
 // Exit 0 pass, 1 a failure (named on stderr), 2 usage. --repo points every path at another repository root (tests).
 import { parseArgs, runIntake, applyIntakeReview, recordProblems, pathsFor, USAGE } from './lib/intake-run.mjs';
 import { runFinalise, runApplyPicks, runRender, runRerunSkeletons } from './lib/intake-run-finalise.mjs';

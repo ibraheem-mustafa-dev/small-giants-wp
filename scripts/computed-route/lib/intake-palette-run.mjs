@@ -2,8 +2,10 @@
 // stages. The secret-free worker (lib/intake-run-worker.mjs through lib/intake-process.mjs::runIsolated) runs only the
 // routing, replay and 'tokens and palette' stages: the draft tokens (lib/tokens.mjs) and one 1440 rest reading per
 // route with its grounds (lib/intake-palette-grounds.mjs). It writes sites/<client>/build/intake/palette.json
-// ({ client, takenOn, manifestHash, palette, usage, gaps }) and never touches intake.json, review.md or the page map.
+// ({ client, takenOn, manifestHash, palette, usage, gaps }); it touches intake.json and review.md only with
+// --into-intake, and never the page map.
 // --record records the replay file first (a client with none); without it a missing replay file is an error.
+// --into-intake also writes the proposal into intake.json and review.md (writeIntoIntake).
 // Returns the exit code.
 import fs from 'fs';
 import os from 'os';
@@ -12,8 +14,20 @@ import { fileURLToPath } from 'url';
 import { recheckManifest } from './intake-sandbox.mjs';
 import { runIsolated } from './intake-process.mjs';
 import { pathsFor } from './intake-run.mjs';
+import { intoIntake } from './intake-palette-into.mjs';
 
 const WORKER = path.join( path.dirname( fileURLToPath( import.meta.url ) ), 'intake-run-worker.mjs' );
+// --into-intake: the proposal written into intake.json and review.md (lib/intake-palette-into.mjs::intoIntake).
+export function writeIntoIntake( at, out, say = () => {} ) {
+	const intake = fs.existsSync( at.intake ) ? JSON.parse( fs.readFileSync( at.intake, 'utf8' ) ) : null;
+	const reviewMd = fs.existsSync( at.review ) ? fs.readFileSync( at.review, 'utf8' ) : null;
+	const r = intoIntake( { intake, reviewMd, palette: out.palette, client: out.client, takenOn: out.takenOn } );
+	fs.writeFileSync( at.intake, `${ JSON.stringify( r.intake, null, 1 ) }\n` );
+	fs.writeFileSync( at.review, r.reviewMd );
+	say( `${ out.client }: ${ r.created ? 'created a palette-only intake.json' : 'replaced the palette block of intake.json' } and ${ reviewMd ? 'regenerated the palette section of review.md' : 'created review.md with the palette section only' }; ${ r.kept.length } mark(s) kept (same slugs), ${ r.dropped.length } dropped (${ r.dropped.map( ( d ) => `${ d.rowId } ${ d.mark }` ).join( ', ' ) || 'none' })` );
+	return r;
+}
+
 export const PALETTE_STAGES = Object.freeze( [ 'routing', 'replay', 'tokens and palette' ] );
 
 export async function runPaletteOnly( o, { log = ( l ) => process.stderr.write( `${ l }\n` ) } = {} ) {
@@ -53,6 +67,9 @@ export async function runPaletteOnly( o, { log = ( l ) => process.stderr.write( 
 		fs.mkdirSync( at.dir, { recursive: true } );
 		fs.writeFileSync( file, `${ JSON.stringify( out, null, '\t' ) }\n` );
 		say( `${ o.client }: wrote ${ path.relative( o.repo, file ) } in ${ ( ( Date.now() - t0 ) / 1000 ).toFixed( 1 ) }s: ${ part.palette.rows.length } rows, ${ part.usage.length } colour uses, ${ r.gaps.length } gaps` );
+		if ( o.intoIntake ) {
+			writeIntoIntake( at, out, say );
+		}
 		return 0;
 	} catch ( e ) {
 		say( `the worker FAILED: ${ e.message }` );
