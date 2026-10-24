@@ -1,0 +1,12 @@
+[
+	{ "file": "lib/fill-shop-targets.mjs", "find": "if ( 1 === elements.length ) {", "replace": "if ( elements.length ) {", "why": "a part whose settings paint several parts takes the first" },
+	{ "file": "lib/fill-shop-targets.mjs", "find": "r.css_element && 'wrapper' !== r.css_element && ! r.css_state );", "replace": "r.css_element && ! r.css_state );", "why": "the block's wrapper counts as a part" },
+	{ "file": "lib/fill-shop-targets.mjs", "find": "list.sort( ( a, b ) => parseInstanceKey( a ).copy - parseInstanceKey( b ).copy );", "replace": "", "why": "the first listed copy is taken, not the lowest" },
+	{ "file": "lib/fill-shop-targets.mjs", "find": "return list.length ? servedKey( list[ 0 ], rootComponent ) : null;", "replace": "return list.length ? list[ 0 ] : null;", "why": "the root host keeps the component's name instead of the served Root" },
+	{ "file": "lib/fill-shop-targets.mjs", "find": "const key = part.locators[ 0 ];", "replace": "const key = part.locators[ part.locators.length - 1 ];", "why": "the last locator is read, not the first" },
+	{ "file": "lib/fill-shop-targets.mjs", "find": "if ( n.targets.some( ( t ) => t.slot === slot ) ) {", "replace": "if ( false ) {", "why": "a slot the skeleton already measures is overwritten" },
+	{ "file": "lib/fill-shop-targets.mjs", "find": "if ( 'setting' !== part.home?.type || ! block || ! ( part.locators || [] ).length ) {", "replace": "if ( ! block || ! ( part.locators || [] ).length ) {", "why": "a part whose home is not a block setting is measured" },
+	{ "file": "lib/fill-shop-targets.mjs", "find": "const homes = nodes.filter( ( n ) => n.name === block );", "replace": "const homes = nodes;", "why": "every node takes the part's target, not only the part's block" },
+	{ "file": "lib/fill-shop-targets.mjs", "find": "n.targets.push( { id: `${ n.index }:${ slot }`, index: n.index, slot, finder, scoped: true, shopPart: part.id } );", "replace": "", "why": "the target is never added" },
+	{ "file": "lib/fill-shop-targets.mjs", "find": "const finder = { tpl: instance };", "replace": "const finder = { tpl: key };", "why": "the template key is the finder, not the instance key" }
+]

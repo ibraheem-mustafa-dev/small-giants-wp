@@ -5,7 +5,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'fs';
 import { resolveFinder } from '../../parity/lib/collect.mjs';
 import { openDevtools, declaredValues } from '../../parity/lib/devtools.mjs';
-import { tokenSource, readableRows, readStates, declaredDiff } from '../lib/fill-state-read.mjs';
+import { tokenSource, readableRows } from '../lib/fill-state-combos.mjs';
+import { readStates, declaredDiff } from '../lib/fill-state-read.mjs';
 
 const VOCAB = JSON.parse( readFileSync( new URL( '../../../plugins/sgs-blocks/scripts/data/states.json', import.meta.url ), 'utf8' ) ).states;
 const RESOLVE = resolveFinder.toString();
