@@ -4,10 +4,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { openDb, attrsFor } from '../lib/db.mjs';
+import { frozenDb } from './fixtures/frozen-db/frozen-db.mjs';
 import { preconditionsFor } from '../lib/calibrate.mjs';
 import { contentRowsFor, planContentInstances, needlesOf, MARKER_TEXT, MARKER_URL, PRESENCE_ROLES, TEXT_ROLES, LINK_ROLES } from '../lib/calibrate-content.mjs';
 
-const db = openDb();
+const db = openDb( frozenDb() );
 
 test( 'MUST FAIL TO REACH THEM THROUGH attrsFor: content rows carry no css_property', () => {
 	// The blocker: every text, presence and link row is dropped before the slot map is planned.

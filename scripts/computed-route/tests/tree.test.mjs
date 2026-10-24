@@ -2,6 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import childProcess from 'node:child_process';
+import { syncBuiltinESMExports } from 'node:module';
 import { addRefs, stripRefs, nodeByRef, setAttr, assertWritable, assertQuiet, refOf, FORBIDDEN_POSTS } from '../lib/tree.mjs';
 
 const tree = () => [ { name: 'sgs/container', attributes: { className: 'keep' }, innerBlocks: [ { name: 'sgs/heading', attributes: { padding: { desktop: { top: '8px' }, mobile: { top: '4px' } } } } ] } ];
@@ -60,9 +62,26 @@ test( 'MUST FAIL: the canary homepage, a motion fixture or an unlisted post is r
 	assert.throws( () => assertWritable( { templatePart: 'header' }, manifests ), /neither/ );
 } );
 
+// The local process list is stubbed (a reseed or deploy another session runs here would fail the run); ssh stays real.
+function withLocalList( list, fn ) {
+	const real = childProcess.execFileSync;
+	childProcess.execFileSync = ( cmd, ...rest ) => ( /ssh(\.exe)?$/i.test( cmd ) ? real( cmd, ...rest ) : list );
+	syncBuiltinESMExports();
+	try {
+		return fn();
+	} finally {
+		childProcess.execFileSync = real;
+		syncBuiltinESMExports();
+	}
+}
+
 test( 'MUST FAIL: a local mirror (sshArgs null) skips the host check; an unreachable host still fails the run', () => {
-	assert.throws( () => assertQuiet( [ '-o', 'ConnectTimeout=2', '-o', 'BatchMode=yes', '-p', '1', 'nobody@127.0.0.1' ] ) );
-	assert.equal( assertQuiet( null ), true );
+	withLocalList( '', () => {
+		assert.throws( () => assertQuiet( [ '-o', 'ConnectTimeout=2', '-o', 'BatchMode=yes', '-p', '1', 'nobody@127.0.0.1' ] ) );
+		assert.equal( assertQuiet( null ), true );
+	} );
+	// Negative control: a reseed in the local list still fails the run.
+	withLocalList( 'python sgs-update-v2.py', () => assert.throws( () => assertQuiet( null ), /R-47-11: a deploy or reseed is running on this machine/ ) );
 } );
 
 // MUST FAIL: the project CLAUDE.md names the canary homepage, posts page and motion-QA fixture pages; a page it names that the list lacks could be written.
