@@ -262,6 +262,16 @@ async function readUnderTrigger( page, instances, n, inst ) {
 				await loc.evaluate( ( el ) => el.focus( { focusVisible: true } ) );
 			} else {
 				await loc.scrollIntoViewIfNeeded();
+				// A forced hover moves the real mouse to the target's centre without a hit test, so a fixed or sticky box
+				// over that point (a sticky header, a site-wide footer banner) takes the hover and the read shows the rest
+				// look. A covered target is scrolled to the middle of the viewport first.
+				await loc.evaluate( ( el ) => {
+					const r = el.getBoundingClientRect();
+					const top = document.elementFromPoint( r.left + ( r.width / 2 ), r.top + ( r.height / 2 ) );
+					if ( ! top || ! ( el === top || el.contains( top ) ) ) {
+						el.scrollIntoView( { block: 'center', inline: 'center', behavior: 'instant' } );
+					}
+				} );
 				await loc.hover( { force: true } );
 			}
 			await page.waitForTimeout( 500 );
