@@ -301,11 +301,87 @@ def apply_link_focus(snap: dict, roles: dict, css: str, trace: list) -> None:
                   "_source": "declared", "reason": ", ".join(v[1] for v in declared.values())})
 
 
+_CSS_RULE_RE = re.compile(r"([^{}]+)\{([^{}]*)\}")
+_FOCUS_SEL_RE = re.compile(r":focus(?:-visible)?$")
+_LINK_SEL_RE = re.compile(r"^a(?:[:.#\[]|$)")
+_OUTLINE_STYLES = frozenset({"solid", "auto", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset"})
+
+
+def _focus_declarations(css: str, tokens: dict) -> dict:
+    """The outline and shadow a draft's own ``:focus`` / ``:focus-visible`` rules declare.
+
+    A bare ``:focus-visible`` rule is the draft's page-wide look and wins over a rule scoped to form controls; a
+    link-only rule (``a:focus``) is the link focus look, not this one. Returns ``{width, style, colour, offset,
+    shadow, source}`` with only the keys the CSS states."""
+    best: tuple | None = None
+    for m in _CSS_RULE_RE.finditer(re.sub(r"/\*.*?\*/", "", css or "", flags=re.S)):
+        sels = [s.strip().lower() for s in m.group(1).split(",")]
+        focus = [s for s in sels if _FOCUS_SEL_RE.search(s) and not _LINK_SEL_RE.match(s)]
+        if not focus:
+            continue
+        found: dict = {}
+        for decl in m.group(2).split(";"):
+            prop, _, value = decl.partition(":")
+            prop = prop.strip().lower()
+            value = resolve_value(value.strip(), {k: v for k, v in tokens.items()})
+            if prop in ("outline", "outline-width", "outline-style", "outline-color"):
+                for part in re.split(r"\s+(?![^(]*\))", value):
+                    if _PX_RE.match(part):
+                        found["width"] = part
+                    elif part in _OUTLINE_STYLES:
+                        found["style"] = part
+                    elif part in ("none", "0"):
+                        found["none"] = True
+                    elif parse_colour(part):
+                        found["colour"] = parse_colour(part).hex
+            elif prop == "outline-offset" and _is_length(value):
+                found["offset"] = value
+            elif prop == "box-shadow" and value.lower() != "none":
+                found["shadow"] = value
+        if "width" not in found:
+            continue
+        rank = 0 if any(s in (":focus-visible", ":focus") for s in focus) else 1
+        if best is None or rank < best[0]:
+            best = (rank, found, f"draft CSS {focus[0]} {{outline}}")
+    if best is None:
+        return {}
+    return {**best[1], "source": best[2]}
+
+
+def apply_focus_effect(snap: dict, roles: dict, tokens: dict, css: str, trace: list) -> None:
+    """``settings.custom.focus`` carries the draft's own focus effect: its ring, and no framework glow.
+
+    A draft that declares an outline on focus and no box-shadow gets width, ring, ringOnDark, offset, style,
+    ``bloom`` 0, ``ringOnly`` 1 and ``source`` draft (the keys Fill's patch writes for a draft-declared ring), so the
+    focused element shows the draft's ring alone. A draft that also declares a focus shadow keeps the framework's
+    glow layers; only the ring keys are written. A draft that declares no outline on focus is left as it is."""
+    found = _focus_declarations(css, tokens)
+    if not found:
+        return
+    token_focus = roles.get("focus") or {}
+    colour = found.get("colour") or (token_focus.get("colour") or (None,))[0]
+    offset = found.get("offset") or "0px"
+    written = {"width": found["width"], "offset": offset, "style": "auto" if found.get("style") == "auto" else "solid"}
+    if colour:
+        ring = _colour_ref(snap, colour, ("text", "primary", "accent"), False)
+        written["ring"] = ring
+        written["ringOnDark"] = ring
+    if "shadow" not in found:
+        written.update({"bloom": "0", "ringOnly": "1", "source": "draft"})
+    snap.setdefault("settings", {}).setdefault("custom", {}).setdefault("focus", {}).update(written)
+    kept = ("the draft also declares a focus box-shadow, so the framework glow layers stay" if "shadow" in found
+            else "the draft declares no focus glow, so the ring stands alone (ringOnly 1, bloom 0)")
+    trace.append({"kind": "declared", "what": "settings.custom.focus", "value": written, "_source": "declared",
+                  "reason": f"{found['source']}; {kept}"})
+
+
 def apply(snap: dict, draft_dir, trace: list, css: str = "") -> dict:
     """Write every declared value of an ``APPLIED_ROLES`` role into ``snap``; one trace row per value."""
     roles = read_roles(draft_dir)
     apply_link_focus(snap, roles, css, trace)
+    tokens = read_token_css(draft_dir)[0]
     if not roles:
+        apply_focus_effect(snap, roles, tokens, css, trace)
         return snap
     tracked = bool((roles.get("heading-tracking") or {}))
     for row in expectations(roles, snap):
@@ -322,6 +398,7 @@ def apply(snap: dict, draft_dir, trace: list, css: str = "") -> dict:
             _set(snap, path, value)
         trace.append({"kind": "declared", "what": path, "value": value, "_source": "declared",
                       "reason": f"{row['source']} (the export's design system wins over the render)"})
+    apply_focus_effect(snap, roles, tokens, css, trace)
     heading = (((snap.get("styles") or {}).get("elements") or {}).get("heading") or {}).get("typography") or {}
     if tracked and "letterSpacing" in heading:
         # A measured heading tracking is one level's px value; the draft states tracking per level instead.
