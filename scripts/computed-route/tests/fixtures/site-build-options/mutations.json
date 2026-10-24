@@ -2,7 +2,7 @@
 	{ "file": "lib/site-build-options.mjs", "find": "if ( ! NAME.test( name ) ) {\n\t\tthrow new Error( `site option \"${ name }\" is not a plain option name` );\n\t}\n\tif ( ! isObject( entry?.value )", "replace": "if ( false ) {\n\t\tthrow new Error( `site option \"${ name }\" is not a plain option name` );\n\t}\n\tif ( ! isObject( entry?.value )", "why": "an option name that is not a plain identifier is promoted" },
 	{ "file": "lib/site-build-options.mjs", "find": "if ( ! isObject( entry?.value ) || ! Object.keys( entry.value ).length ) {", "replace": "if ( false ) {", "why": "a valueless entry is promoted" },
 	{ "file": "lib/site-build-options.mjs", "find": "if ( ! KEY.test( k ) || ( null !== v && ! [ 'string', 'number', 'boolean' ].includes( typeof v ) ) ) {", "replace": "if ( false ) {", "why": "a bad key or nested value is promoted" },
-	{ "file": "lib/site-build-options.mjs", "find": "value: { ...was.value, ...incoming.value } };", "replace": "value: { ...incoming.value } };", "why": "a later Fill run drops the keys an earlier one promoted" },
+	{ "file": "lib/site-build-options.mjs", "find": "value: { ...was.value, ...incoming.value },", "replace": "value: { ...incoming.value },", "why": "a later Fill run drops the keys an earlier one promoted" },
 	{ "file": "lib/site-build-options.mjs", "find": "records: [ ...new Set( [ ...was.records, ...incoming.records ] ) ].sort(),", "replace": "records: incoming.records,", "why": "the records of earlier runs are lost" },
 	{ "file": "lib/site-build-options.mjs", "find": "const changed = ! same( was, next );\n\tif ( changed ) {", "replace": "const changed = true;\n\tif ( changed ) {", "why": "a repeat promotion reports a change" },
 	{ "file": "lib/site-build-options.mjs", "find": "const base = isObject( held ) ? held : {};", "replace": "const base = {};", "why": "the keys the site holds that the draft does not set are overwritten" },
@@ -13,5 +13,11 @@
 	{ "file": "lib/site-build-options.mjs", "find": "plan.actions.push( ...mine.actions );", "replace": "", "why": "the plan never carries the options' actions" },
 	{ "file": "lib/site-build-options.mjs", "find": "plan.options.push( ...mine.options );", "replace": "", "why": "the option table never shows the site options" },
 	{ "file": "lib/site-build-apply.mjs", "find": "wp( [ 'option', 'update', a.name, JSON.stringify( a.value ), '--format=json' ] );", "replace": "", "why": "the writer plans the option and never writes it" },
-	{ "file": "lib/site-build-apply.mjs", "find": "JSON.stringify( a.value ), '--format=json' ] );\n\t\t} else if ( 'permalinks'", "replace": "JSON.stringify( a.value ) ] );\n\t\t} else if ( 'permalinks'", "why": "the array is written as a plain string, not JSON" }
+	{ "file": "lib/site-build-apply.mjs", "find": "JSON.stringify( a.value ), '--format=json' ] );\n\t\t} else if ( 'permalinks'", "replace": "JSON.stringify( a.value ) ] );\n\t\t} else if ( 'permalinks'", "why": "the array is written as a plain string, not JSON" },
+	{ "file": "lib/site-build-options.mjs", "find": "if ( ! sources.length || sources.some(", "replace": "if ( false && sources.some(", "why": "a committed option with no Fill run as its source (a hand-written file) is read" },
+	{ "file": "lib/site-build-options.mjs", "find": "|| sources.some( ( s ) => 'string' !== typeof s || ! fillRun( client ).test( s ) ) ) {", "replace": ") {", "why": "a source that is not this client's Fill run is accepted" },
+	{ "file": "lib/site-build-options.mjs", "find": "[ name, sourced( client, name, entry ) ]", "replace": "[ name, { ...checked( name, entry ), sources: entry.sources } ]", "why": "the reader never checks the source" },
+	{ "file": "lib/site-build-options.mjs", "find": "if ( ! fillRun( client ).test( where ) ) {", "replace": "if ( false ) {", "why": "a site-options.json outside the client's Fill output is promoted" },
+	{ "file": "lib/site-build-options.mjs", "find": "sources: [ ...new Set( [ ...was.sources, where ] ) ].sort(),", "replace": "sources: [ where ],", "why": "an earlier run's source is dropped" },
+	{ "file": "lib/site-build-options.mjs", "find": "/build/qa/fill/[^\\s]+/site-options", "replace": "/build/qa/[^\\s]+/site-options", "why": "any qa file counts as a Fill run" }
 ]
