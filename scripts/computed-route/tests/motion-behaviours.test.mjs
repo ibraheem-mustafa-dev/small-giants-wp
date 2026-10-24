@@ -32,10 +32,16 @@ const reasons = ( out ) => out.unmapped.map( ( u ) => `${ u.value }: ${ u.reason
 // A pointer handler: the draft finds its element by a data hook, writes a translate toward the pointer.
 const MAGNET = rec( 'P-1', { mechanism: 'js-style-write', element: { dc: 'Site', template_tpl_id: null, selector: 'document pointermove → e.target.closest(\'[data-pull]\')' }, trigger: { type: 'pointer-move', detail: 'document pointermove over a [data-pull] element' }, duration_ms: 250, easing: EASE,
 	properties: [ { property: 'translate', from: '0 0', to: null, formula: `((x ${ MINUS } 0.5) ${ TIMES } 10)px ((y ${ MINUS } 0.5) ${ TIMES } 8)px, x,y = pointer position in element (0..1)` } ] } );
-const SHEEN = rec( 'P-2', { trigger: { type: 'pointer-move', detail: 'first move onto a new [data-pull] element' }, element: { dc: 'Site', template_tpl_id: null, selector: 'span appended to the [data-pull] element' }, duration_ms: 750, easing: EASE,
-	properties: [ { property: 'transform', from: 'translateX(-120%) skewX(-18deg)', to: 'translateX(260%) skewX(-18deg)' } ], notes: 'Span: absolute, width 60%, background linear-gradient' } );
-const RIPPLE = rec( 'P-3', { trigger: { type: 'press', detail: 'pointerdown on or inside a [data-pull] element' }, element: { dc: 'Site', template_tpl_id: null, selector: 'span appended to the [data-pull] element on pointerdown' }, duration_ms: 650, easing: EASE,
-	properties: [ { property: 'transform', from: 'scale(0)', to: 'scale(1)' }, { property: 'opacity', from: 1, to: 0 } ], notes: `Span diameter = 2.2 ${ TIMES } max(width, height), background rgba(255,255,255,.35)` } );
+// The sheen and the ripple as the re-derived inventory records them: a Web Animation on a span the script creates and
+// inserts into the host, its call path in its notes, and a JS style-write record holding the span's declarations.
+const CREATED = "an element created in code (document.createElement('span')) and inserted into e.target.closest('[data-pull]')";
+const styleRec = ( id, fn, line, trigger, properties ) => rec( id, { mechanism: 'js-style-write', element: { dc: 'Site', template_tpl_id: null, selector: "document.createElement('span')", selection_rule: 'an element created in code' }, source: { function: fn, line }, trigger: { type: trigger, detail: '' }, properties, duration_ms: 0 } );
+const SHEEN = rec( 'P-2', { trigger: { type: 'pointer-move', detail: 'pointermove listener on document' }, element: { dc: 'Site', template_tpl_id: null, selector: "sp inserted into e.target.closest('[data-pull]')", selection_rule: CREATED }, duration_ms: 750, easing: EASE,
+	properties: [ { property: 'transform', from: 'translateX(-120%) skewX(-18deg)', to: 'translateX(260%) skewX(-18deg)' } ], notes: 'called from shine (line 95): this.fx(m, sp, kf, 750); from bindMotion (line 74): this.shine(m)' } );
+const SHEEN_STYLE = styleRec( 'P-2s', 'shine', 94, 'pointer-move', [ { property: 'position', from: null, to: 'absolute' }, { property: 'width', from: null, to: '60%' }, { property: 'background', from: null, to: 'linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent)' } ] );
+const RIPPLE = rec( 'P-3', { trigger: { type: 'press', detail: 'pointerdown listener on document' }, element: { dc: 'Site', template_tpl_id: null, selector: "sp inserted into e.target.closest('[data-pull]')", selection_rule: CREATED }, duration_ms: 650, easing: EASE,
+	properties: [ { property: 'transform', from: 'scale(0)', to: 'scale(1)' }, { property: 'opacity', from: 1, to: 0 } ], notes: 'called from bindMotion (line 82): this.fx(m, sp, kf, 650)' } );
+const RIPPLE_STYLE = styleRec( 'P-3s', 'bindMotion', 81, 'press', [ { property: 'width', from: null, to: null, formula: "( Math.max(r.width, r.height) * 2.2 ) + 'px'" }, { property: 'border-radius', from: null, to: '50%' }, { property: 'background', from: null, to: 'rgba(255,255,255,.35)' } ] );
 const TILT = rec( 'P-4', { mechanism: 'js-style-write', element: { dc: 'Site', template_tpl_id: null, selector: 'document pointermove → e.target.closest(\'[data-lean]\')' }, trigger: { type: 'pointer-move', detail: 'document pointermove over a [data-lean] element' },
 	properties: [ { property: 'rotate', from: '0 0 1 0deg', to: null, formula: `x,y = pointer position in card (0..1); rotate = '(0.5${ MINUS }y) (x${ MINUS }0.5) 0 ' + hypot(x${ MINUS }0.5, y${ MINUS }0.5)${ TIMES }16 + 'deg' (max ${ '≈' } 11.3deg at a corner)` }, { property: '--gx', from: '50%', to: null, formula: `x ${ TIMES } 100%` }, { property: '--gy', from: '0%', to: null, formula: `y ${ TIMES } 100%` } ] } );
 const TILT_RESET = rec( 'P-5', { trigger: { type: 'pointer-leave', detail: 'pointermove outside the tilted card' }, element: { dc: 'Site', template_tpl_id: null, selector: '[data-lean]' }, duration_ms: 600, easing: 'cubic-bezier(.34,1.56,.64,1)', properties: [ { property: 'rotate', from: 'current inline rotate', to: '0 0 1 0deg' } ] } );
@@ -68,13 +74,29 @@ test( 'MUST FAIL: a pointer handler writing a translate toward the pointer is a 
 } );
 
 test( 'MUST FAIL: the same host also gets the sheen (slanted stripe, skewX recorded) and the ripple (pointerdown) the draft adds to it', () => {
-	const { out, doc } = run( [ node( 0, 'sgs/container', '10' ) ], [ MAGNET, SHEEN, RIPPLE ], hosted( '10', 'data-pull' ) );
+	const { out, doc } = run( [ node( 0, 'sgs/container', '10' ) ], [ MAGNET, SHEEN, RIPPLE, SHEEN_STYLE, RIPPLE_STYLE ], hosted( '10', 'data-pull' ) );
 	assert.deepEqual( reasons( out ), [] );
-	assert.deepEqual( layerOf( doc, 'hover.effects', 'sheen' ).values, { angle: -18, bandWidth: 60, duration: 750, easing: EASE } );
+	assert.deepEqual( layerOf( doc, 'hover.effects', 'sheen' ).values, { angle: -18, bandWidth: 60, colour: '#ffffff', opacity: 0.45, duration: 750, easing: EASE } );
 	const ripple = layerOf( doc, 'effects', 'ripple' );
 	assert.equal( ripple.trigger, 'pointerdown' );
 	assert.deepEqual( ripple.values, { duration: 650, easing: EASE, sizeFactor: 2.2, peakOpacity: 0.35, colour: '#ffffff' } );
 	assert.deepEqual( recogniseBehaviour( SHEEN ).coverage, [ 'css-function:skewx' ] );
+} );
+
+test( 'MUST FAIL: the sheen and ripple values come from the keyframes and the created element\'s declarations, never from free-text notes', () => {
+	const noted = ( r, notes ) => ( { ...r, notes: `${ r.notes }; ${ notes }` } );
+	// Notes that state a width, a diameter and a colour, with no style record of the created element: nothing is read from them.
+	const sheen = recogniseBehaviour( noted( SHEEN, 'Span: absolute, width 40%, background linear-gradient' ), { records: [] } ).effects[ 0 ];
+	assert.deepEqual( sheen.values, { angle: -18, duration: 750, easing: EASE } );
+	const ripple = recogniseBehaviour( noted( RIPPLE, `Span diameter = 3 ${ TIMES } max(width, height), background rgba(255,255,255,.5)` ), { records: [] } ).effects[ 0 ];
+	assert.deepEqual( ripple.values, { duration: 650, easing: EASE } );
+	// A band painted with more than one colour, or a solid fill, gives no band colour or strength: the sheen's own stand.
+	const twoTone = styleRec( 'P-2s', 'shine', 94, 'pointer-move', [ { property: 'width', from: null, to: '50%' }, { property: 'background', from: null, to: 'linear-gradient(90deg,transparent,rgba(255,0,0,.4),rgba(0,0,255,.4),transparent)' } ] );
+	assert.deepEqual( recogniseBehaviour( SHEEN, { records: [ SHEEN, twoTone ] } ).effects[ 0 ].values, { angle: -18, bandWidth: 50, duration: 750, easing: EASE } );
+	const toRight = styleRec( 'P-2s', 'shine', 94, 'pointer-move', [ { property: 'background-image', from: null, to: 'linear-gradient(to right, transparent, #ffd700, transparent)' } ] );
+	assert.deepEqual( recogniseBehaviour( SHEEN, { records: [ SHEEN, toRight ] } ).effects[ 0 ].values, { angle: -18, colour: '#ffd700', opacity: 1, duration: 750, easing: EASE } );
+	const undirected = styleRec( 'P-2s', 'shine', 94, 'pointer-move', [ { property: 'background', from: null, to: 'linear-gradient(transparent, rgba(0, 0, 0, .2), transparent)' } ] );
+	assert.deepEqual( recogniseBehaviour( SHEEN, { records: [ SHEEN, undirected ] } ).effects[ 0 ].values, { angle: -18, colour: '#000000', opacity: 0.2, duration: 750, easing: EASE } );
 } );
 
 test( 'MUST FAIL: a pointer handler writing rotate from the pointer is a tilt (follow-pointer with its angle and spring back) with a glare for the highlight it writes', () => {
@@ -107,6 +129,24 @@ test( 'MUST FAIL: a scroll handler writing a translate by scrollY times a factor
 	assert.deepEqual( nodes[ 0 ].after.elements.root.effects[ 0 ], { id: 'parallax-1', effect: 'parallax', trigger: 'scroll', values: { axis: 'y', basis: 'page', speedRatio: -0.06 } } );
 	assert.deepEqual( nodes[ 1 ].after.elements.root.effects[ 0 ].values, { source: 'page', output: 'bar-x' } );
 	assert.equal( doc, nodes[ 0 ].after );
+} );
+
+test( "MUST FAIL: a fade on a route change of the page's <main> or its component's root is the page transition, whatever its ref is called; the element decides, not the words", () => {
+	const fade = ( tpl, selector, description = `animated element: ${ selector }` ) => rec( 'P-30', { ...FADE, id: 'P-30', element: { dc: 'Site', template_tpl_id: tpl, selector, description } } );
+	const template = { elements: {
+		'Site/8': { tag: 'div', realTag: 'div', parent: null, inHelmet: false },
+		'Site/201': { tag: 'main', realTag: 'main', parent: 'Site/8' },
+		'Site/202': { tag: 'div', realTag: 'div', parent: 'Site/8' },
+	} };
+	const kind = ( r, ctx = { template } ) => recogniseBehaviour( r, ctx )?.kind ?? null;
+	assert.equal( kind( fade( '201', 'ref setContentEl' ) ), 'site', 'a <main> reached by any ref' );
+	assert.equal( kind( fade( '8', 'ref setShellEl' ) ), 'site', 'the root element of the component' );
+	assert.equal( kind( fade( '202', 'ref setPageEl', 'the whole page body' ) ), null, 'a div inside the page is not the page, whatever its words' );
+	assert.equal( kind( fade( null, "document.querySelector('main')" ), {} ), 'site', 'no template element: the selector names main' );
+	assert.equal( kind( fade( null, 'ref setWrapEl', 'Whole page wrapper' ), {} ), null, 'no template element and no element name: a description is not evidence' );
+	// Fill writes the option whichever surface it fills: the page's <main> is no target of the surface's nodes.
+	const { out } = run( [ node( 0, 'sgs/container', '10' ) ], [ fade( '201', 'ref setMainEl' ) ], { template } );
+	assert.deepEqual( out.site.map( ( s ) => [ s.record, s.option, s.settings.page_transition_duration ] ), [ [ 'P-30', 'page-transition', 380 ] ] );
 } );
 
 test( 'MUST FAIL: a label magnet (one axis, an offset from the centre times a factor) on a block that declares the item magnet settings writes the settings; on a block that does not it is a magnet layer', () => {
