@@ -9,7 +9,7 @@
 //   - one variation per colour and size, each with a regular and a sale price;
 //   - an RRP (`_sgs_rrp`, the fixtures' rrpMetaKey) above the price, so the RRP and the saving badge print;
 //   - WooCommerce's own placeholder image (the `woocommerce_placeholder_image` attachment every WooCommerce site holds)
-//     as the product image, and no image on the variations: the card treats a placeholder as no photo
+//     as the product image with the calibration image and the placeholder as its gallery (the buybox's thumbnail strip needs more than one image), and no image on the variations: the card treats a placeholder as no photo
 //     (includes/product-card-no-photo.php::sgs_product_card_has_real_image) and shows its no-photo state (the
 //     noImageLabel settings), while the buybox shows that image as its main image and thumbnail strip;
 //   - two brand terms (the brand taxonomy, `product_brand` unless a site filters it), both on the product, so the card's
@@ -130,7 +130,7 @@ $placeholder = (int) get_option( 'woocommerce_placeholder_image', 0 );
 $p = new WC_Product_Variable( $pid );
 $p->set_name( $P['title'] );
 $p->set_image_id( $placeholder );
-$p->set_gallery_image_ids( array() );
+$p->set_gallery_image_ids( array_values( array_filter( array( $img, $placeholder ) ) ) );
 $p->set_status( 'publish' );
 $p->set_attributes( $wc_attrs );
 $p->set_default_attributes( array_map( function ( $s ) { return $s[0]; }, $axes ) );
