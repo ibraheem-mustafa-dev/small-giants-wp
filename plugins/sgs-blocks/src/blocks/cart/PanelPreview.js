@@ -59,7 +59,7 @@ function SampleItem( { attrs, s } ) {
 					</div>
 				) }
 				{ ( showAddOptions || showSave || removeText ) && (
-					<div className="sgs-cart__item-actions">
+					<div className="sgs-cart__item-actions" style={ attrs.itemActionsFlexWrap ? { flexWrap: attrs.itemActionsFlexWrap } : undefined }>
 						{ showAddOptions && (
 							<span className="sgs-cart__item-add-options sgs-cart__item-action" style={ { ...s.action, ...s.save } }>
 								{ addOptionsLabel }
@@ -159,7 +159,7 @@ export default function PanelPreview( { attributes, displayMode, tier, palette }
 									<span className="sgs-cart__panel-subtotal-value" style={ s.subtotalValue }>{ '£12.00' }</span>
 								</div>
 								{ '' !== taxNote && <p className="sgs-cart__panel-tax-note">{ taxNote }</p> }
-								<div className="sgs-cart__panel-actions">
+								<div className="sgs-cart__panel-actions" style={ attributes.panelActionsFlexWrap ? { flexWrap: attributes.panelActionsFlexWrap } : undefined }>
 									{ false !== attributes.panelShowViewCart && (
 										<span className="sgs-cart__panel-view" style={ s.view }>{ attributes.viewCartLabel }</span>
 									) }

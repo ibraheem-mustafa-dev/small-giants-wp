@@ -222,7 +222,7 @@ export function TypedSwatches( { attributes: attrs, styles } ) {
 	}
 	const hidden = Math.max( 0, items.length - Math.min( items.length, max ) );
 	return (
-		<div className="sgs-product-card__swatches">
+		<div className="sgs-product-card__swatches" style={ attrs.swatchesFlexWrap ? { flexWrap: attrs.swatchesFlexWrap } : undefined }>
 			{ visible.map( ( item, index ) => (
 				<span
 					key={ index }

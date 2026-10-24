@@ -98,6 +98,7 @@
 					"clusters": [
 						"layout"
 					],
+					"layer": "OUTER",
 					"attrMap": {
 						"css:flex-wrap": "itemActionsFlexWrap"
 					},
@@ -111,6 +112,7 @@
 					"clusters": [
 						"layout"
 					],
+					"layer": "OUTER",
 					"attrMap": {
 						"css:flex-wrap": "panelActionsFlexWrap"
 					},

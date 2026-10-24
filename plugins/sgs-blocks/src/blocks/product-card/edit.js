@@ -3651,7 +3651,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 						{ /* Price row */ }
 						{ ( ( priceLarge || '' ) !== '' ||
 							( priceNote || '' ) !== '' ) && (
-							<div className="sgs-product-card__price-row" style={ typedParts.priceRow }>
+							<div className="sgs-product-card__price-row" style={ attributes.priceRowFlexWrap ? { ...typedParts.priceRow, flexWrap: attributes.priceRowFlexWrap } : typedParts.priceRow }>
 								<div className="sgs-product-card__price-group">
 									{ ( priceLarge || '' ) !== '' && (
 										<span
@@ -3687,7 +3687,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 						     equivalent box attrs (block.json declares only
 						     cta2Text/cta2Url/cta2Style/cta2TextAlign), so its
 						     only inline style is the text alignment. */ }
-						<div className="sgs-product-card__cta-row">
+						<div className="sgs-product-card__cta-row" style={ attributes.ctaRowFlexWrap ? { flexWrap: attributes.ctaRowFlexWrap } : undefined }>
 							{ ( ctaText || '' ) !== '' && (
 								<span
 									className={ `sgs-button sgs-button--${ safeCtaStyle } sgs-product-card__cta--primary` }

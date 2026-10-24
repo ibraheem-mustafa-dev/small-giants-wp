@@ -402,7 +402,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 				>
 					{ __( 'Product image', 'sgs-blocks' ) }
 				</div>
-				<div className="product-card__thumbs" aria-hidden="true">
+				<div className="product-card__thumbs" aria-hidden="true" style={ attributes.thumbsFlexWrap ? { flexWrap: attributes.thumbsFlexWrap } : undefined }>
 					{ [ 1, 2, 3, 4 ].map( ( n ) => (
 						<span key={ n } className="product-card__thumb sgs-buybox__gallery-thumb" aria-current={ 1 === n ? 'true' : undefined } style={ { display: 'block', background: 'var(--wp--preset--color--surface-alt, #f0f0f0)' } } />
 					) ) }
@@ -414,7 +414,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 			<div className="sgs-buybox__config-col">
 				{ stockAbove && stockLine }
 				{ stockAbove && attributes.stockLineHairline && <hr className="sgs-buybox__stock-hairline" aria-hidden="true" style={ { borderTop: '1px solid var(--wp--preset--color--border)', margin: '8px 0' } } /> }
-				<div className="buybox__price-row">
+				<div className="buybox__price-row" style={ attributes.priceRowFlexWrap ? { flexWrap: attributes.priceRowFlexWrap } : undefined }>
 					<span className="buybox__price buybox__price--current" style={ typographyPreviewStyle( attributes, 'price', tier ) }>{ SAMPLE.price }</span>
 				</div>
 				<p>
@@ -439,7 +439,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 						</div>
 						<h3 className="sgs-buybox-guided__group-title">{ __( 'Colour', 'sgs-blocks' ) }</h3>
 						<SampleOptionGroup label={ __( 'Colour', 'sgs-blocks' ) } options={ SAMPLE.colours } pillStyle={ attributes.pickerSwatchStyle } showTick={ showTick } labelStyle={ labelStyle } valueStyle={ valueStyle } showSelectedValue={ showSelectedValue } />
-						<div className="sgs-buybox-guided__nav">
+						<div className="sgs-buybox-guided__nav" style={ attributes.navFlexWrap ? { flexWrap: attributes.navFlexWrap } : undefined }>
 							<span className="sgs-buybox-guided__nav-btn sgs-buybox-guided__nav-btn--back">{ attributes.guidedBackLabel || __( 'Back', 'sgs-blocks' ) }</span>
 							<span className="sgs-buybox-guided__nav-btn sgs-buybox-guided__nav-btn--next">{ attributes.guidedNextLabel || __( 'Next', 'sgs-blocks' ) }</span>
 						</div>

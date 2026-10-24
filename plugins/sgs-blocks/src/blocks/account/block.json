@@ -37,6 +37,7 @@
 					"clusters": [
 						"layout"
 					],
+					"layer": "OUTER",
 					"attrMap": {
 						"css:flex-wrap": "orderThumbsFlexWrap"
 					},
@@ -50,6 +51,7 @@
 					"clusters": [
 						"layout"
 					],
+					"layer": "OUTER",
 					"attrMap": {
 						"css:flex-wrap": "orderActionsFlexWrap"
 					},

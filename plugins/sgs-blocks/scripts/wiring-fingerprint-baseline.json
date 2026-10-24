@@ -1,7 +1,7 @@
 {
  "_comment": "Wiring-fingerprint ratchet baseline (check-wiring-fingerprint.py). Each entry is <block>::<attr>::<link>. --check fails only for a blocking gap not listed here; regenerate with --update-baseline after fixing gaps, or add named gaps with --accept. Advisory links (L3-state, L6-token) are never listed.",
  "counts": {
-  "L3": 124,
+  "L3": 128,
   "L5": 12,
   "L2": 1,
   "L3-tier": 1,
@@ -11,10 +11,12 @@
   "sgs/account::showLatestOrder::L5",
   "sgs/buybox::addToCartStyle::L7",
   "sgs/buybox::extrasBeforeCount::L3",
+  "sgs/buybox::meterFlexWrap::L3",
   "sgs/buybox::pickerBandScale::L3",
   "sgs/cart::hideOnCartCheckoutPages::L3",
   "sgs/cart::hideWhenEmpty::L3",
   "sgs/choice-flow::advanceMode::L3",
+  "sgs/choice-flow::flexWrap::L3",
   "sgs/choice-flow::skipAddsToBag::L3",
   "sgs/choice-flow::stickyFooter::L3",
   "sgs/choice-flow::summaryPosition::L3",
@@ -99,6 +101,7 @@
   "sgs/product-card::rrpColour::L3",
   "sgs/product-card::showCta::L3",
   "sgs/product-card::showShadow::L5",
+  "sgs/product-card::thumbsFlexWrap::L3",
   "sgs/product-card::wishlistBorderColour::L3",
   "sgs/product-search::scrimBlur::L3",
   "sgs/product-search::scrimColour::L3",
@@ -146,6 +149,7 @@
   "sgs/trust-bar::shapeDividerTopFlip::L3",
   "sgs/trust-bar::shapeDividerTopInvert::L3",
   "sgs/trust-bar::shapeDividerTopScale::L3",
-  "sgs/whatsapp-cta::showOn::L3-tier"
+  "sgs/whatsapp-cta::showOn::L3-tier",
+  "sgs/wishlist-panel::shareControlsFlexWrap::L3"
  ]
 }

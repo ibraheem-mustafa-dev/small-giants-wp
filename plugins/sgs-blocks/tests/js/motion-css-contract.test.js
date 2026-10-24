@@ -7,7 +7,8 @@
  *     and in its entrance keyframes; every owner appears in that formula;
  *   - no transition names `all`;
  *   - every :hover rule sits inside the pointer guard and only sets an engagement flag, so nothing outside the
- *     hover media query moves an element on hover; the root and group sources read :hover and :focus-within;
+ *     hover media query moves an element on hover; the root and group sources read :hover and :focus-within (the
+ *     focus arms skip an element stamped data-sgs-focus-rests, the block's sgsFocusRests setting);
  *   - the entrance's hidden start applies only under .sgs-motion-ready and before data-sgs-in, inside
  *     no-preference; every entrance keyframe declares its channel with the composite formula;
  *   - the reduced-motion block zeroes hover movement and every delay;
@@ -176,7 +177,7 @@ function contractErrors( css ) {
 	}
 
 	const selectorSet = rules.map( ( r ) => r.selector );
-	for ( const needed of [ '[data-sgs-hover-group]:hover', '[data-sgs-hover-group]:focus-within', '[data-sgs-mroot]:hover', '[data-sgs-mroot]:focus-within', '[data-sgs-mitem]:hover', '[data-sgs-mitem]:focus-within', '[data-sgs-mh="self"]:focus-visible' ] ) {
+	for ( const needed of [ '[data-sgs-hover-group]:hover', '[data-sgs-hover-group]:focus-within:not([data-sgs-focus-rests])', '[data-sgs-mroot]:hover', '[data-sgs-mroot]:focus-within:not([data-sgs-focus-rests])', '[data-sgs-mitem]:hover', '[data-sgs-mitem]:focus-within:not([data-sgs-focus-rests])', '[data-sgs-mh="self"]:focus-visible:not([data-sgs-focus-rests])' ] ) {
 		if ( ! selectorSet.some( ( s ) => s.endsWith( needed ) ) ) {
 			errors.push( `source selector missing: ${ needed }` );
 		}
