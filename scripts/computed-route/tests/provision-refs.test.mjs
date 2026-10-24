@@ -6,6 +6,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { planProvision, refsFromResult, applyPhp, MENU_ITEMS, MENU_ITEM_ROLE_KEY, CURRENT_ITEM_KEY } from '../lib/provision-refs.mjs';
 import { parseArgs, describePlan } from '../provision-calibration-refs.mjs';
+import { PRODUCT_SPEC, PRODUCT_SPEC_KEY, BASKET_VARIATION, productApplyPhp } from '../lib/provision-product.mjs';
 
 const empty = { woocommerce: false, menu: null, items: [], posts: { panel: null, drawer: null }, media: { image: null, logo: null }, product: null };
 // The target's calibration page (calibration-targets.json postId).
@@ -21,6 +22,7 @@ function provisioned() {
 		posts: { panel: 60, drawer: 61 },
 		media: { image: null, logo: { id: 70, url: 'https://site.test/logo.png' } },
 		product: 80,
+		productReady: true,
 	};
 }
 
@@ -126,4 +128,38 @@ test( 'MUST FAIL: the menu holds an item linked to the target\'s own calibration
 	assert.match( php, /if \( ! empty\( \$it\['page'\] \) \) \{\s*\$args \+= \$page_args;/, 'a new current-page item is created as a post_type item' );
 	assert.match( php, /wp_update_nav_menu_item\( \$ids\['menu'\], \$ids\['items'\]\[ \$it\['key'\] \]/, 'an existing item is updated in place' );
 	assert.throws( () => planProvision( empty ), /calibration page/, 'no page: refused, never an item linked to nothing' );
+} );
+
+test( 'MUST FAIL (product-card 62 settings, buybox and filter-search render nothing): a found product below the calibration spec is completed in place; one at the spec plans nothing', () => {
+	const below = { ...provisioned(), productReady: false };
+	const plan = planProvision( below, { refs: { product: 80 }, kept: { product: true }, page: PAGE } );
+	assert.equal( plan.productDue, true );
+	assert.equal( plan.refs.product, 80, 'completed in place: the ref keeps its ID' );
+	assert.ok( plan.actions.some( ( a ) => a.startsWith( 'complete product "CR calibration product" (80)' ) ) );
+	assert.ok( applyPhp( { known: plan.known, product: plan.productDue } ).includes( 'WC_Product_Variable' ) );
+	assert.deepEqual( refsFromResult( plan, { menu: 50, items: {}, posts: {}, product: 80 } ).product, 80 );
+	const ready = planProvision( provisioned(), { refs: { product: 80 }, kept: { product: true }, page: PAGE } );
+	assert.equal( ready.productDue, false );
+	assert.deepEqual( ready.actions, [] );
+	const fresh = planProvision( { ...empty, woocommerce: true }, { page: PAGE } );
+	assert.equal( fresh.productDue, true );
+	assert.equal( fresh.refs.product, 'new' );
+} );
+
+test( 'MUST FAIL (the spec exercises every product setting): variable colour and size axes with swatch hexes and size measures, a non-variation tag attribute, an RRP above a sale price, two brands', () => {
+	const axes = PRODUCT_SPEC.attributes.filter( ( a ) => a.variation );
+	assert.equal( axes.length, 2 );
+	const colour = axes.find( ( a ) => a.terms.every( ( t ) => /^#[0-9a-f]{6}$/i.test( t.meta?._sgs_swatch_color || '' ) ) );
+	assert.ok( colour && colour.terms.length > 4, 'more colours than the fixture swatchMaxVisible (4)' );
+	const size = axes.find( ( a ) => a.terms.every( ( t ) => t.meta?._sgs_size_measure && /^\d+$/.test( t.slug ) ) );
+	assert.ok( size, 'numeric size slugs with a size measure' );
+	assert.ok( PRODUCT_SPEC.attributes.some( ( a ) => ! a.variation && a.terms.length ) );
+	assert.ok( Number( PRODUCT_SPEC.rrp ) > Number( PRODUCT_SPEC.regular ) && Number( PRODUCT_SPEC.sale ) < Number( PRODUCT_SPEC.regular ) );
+	assert.ok( PRODUCT_SPEC.brands.length >= 2 );
+	assert.deepEqual( Object.keys( BASKET_VARIATION ).sort(), axes.map( ( a ) => `pa_${ a.name }` ).sort() );
+	assert.match( PRODUCT_SPEC_KEY, /^[0-9a-f]{12}$/ );
+	const php = productApplyPhp();
+	for ( const needle of [ "get_posts( array( 'post_type' => 'product', 'title' => $P['title']", "update_post_meta( $pid, '_sgs_rrp'", 'set_sale_price', "get_option( 'woocommerce_placeholder_image', 0 )", '$p->set_image_id( $placeholder );', '$v->set_image_id( 0 );', "update_post_meta( $pid, '_sgs_cr_fixture'", "update_term_meta( $bids[0], 'thumbnail_id'" ] ) {
+		assert.ok( php.includes( needle ), needle );
+	}
 } );

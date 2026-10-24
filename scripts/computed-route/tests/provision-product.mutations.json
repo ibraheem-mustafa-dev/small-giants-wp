@@ -1,0 +1,13 @@
+[
+	{"file": "lib/provision-refs.mjs", "find": "\t\tif ( ! state.productReady ) {", "replace": "\t\tif ( false ) {", "why": "a found product below the spec is kept as it is"},
+	{"file": "lib/provision-refs.mjs", "find": "( state.productReady || refs.product !== state.product )", "replace": "( true )", "why": "a kept ref skips completion"},
+	{"file": "lib/provision-refs.mjs", "find": "if ( $a['product'] && class_exists( 'WC_Product_Variable' ) ) {\n${ productApplyPhp() }\n}", "replace": "", "why": "apply never builds the product"},
+	{"file": "lib/provision-product.mjs", "find": "\t\t\t\t{ slug: 'cr-red', name: 'Red', meta: { _sgs_swatch_color: '#9b1f2e' } },\n", "replace": "", "why": "no more colours than the swatch limit"},
+	{"file": "lib/provision-product.mjs", "find": "\tsale: '119',", "replace": "\tsale: '149',", "why": "the sale price is not below the regular"},
+	{"file": "lib/provision-product.mjs", "find": "\t\t{ slug: 'cr-calibration-brand-two', name: 'CR calibration brand two' },\n", "replace": "", "why": "one brand: the brand filter's threshold is not met"},
+	{"file": "lib/provision-product.mjs", "find": "update_post_meta( $pid, '_sgs_rrp', $P['rrp'] );", "replace": "", "why": "no RRP"},
+	{"file": "lib/provision-product.mjs", "find": "\t$v->set_sale_price( $P['sale'] );\n", "replace": "", "why": "no sale price"},
+	{"file": "lib/provision-product.mjs", "find": "\t\t\tterms: [ { slug: 'cr-tagged', name: 'Tagged' } ],", "replace": "\t\t\tterms: [],", "why": "no tag attribute term"},
+	{"file": "lib/provision-product.mjs", "find": "$p->set_image_id( $placeholder );", "replace": "$p->set_image_id( 0 );", "why": "no product image: the buybox shows no main image or thumbnail strip"},
+	{"file": "lib/provision-product.mjs", "find": "\t$v->set_image_id( 0 );\n", "replace": "\t$v->set_image_id( $img );\n", "why": "variations carry a real photo: the card's no-photo state never shows"}
+]

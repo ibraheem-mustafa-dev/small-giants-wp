@@ -1,0 +1,9 @@
+[
+	{ "file": "lib/calibrate-basket.mjs", "find": "\treturn shows( second ) ? second : first;", "replace": "\treturn first;", "why": "the filled pass is never kept" },
+	{ "file": "lib/calibrate-basket.mjs", "find": "\tif ( shows( first ) ) {\n\t\treturn first;\n\t}", "replace": "", "why": "the empty pass loses to the filled one" },
+	{ "file": "lib/calibrate-basket.mjs", "find": "const shows = ( r ) => ! r.hoverMissed.includes( n ) && markerShows( r, n, d );", "replace": "const shows = ( r ) => markerShows( r, n, d );", "why": "a missed hover counts as a reading" },
+	{ "file": "lib/calibrate-basket.mjs", "find": "headers: { 'Content-Type': 'application/json', ...( nonce ? { Nonce: nonce } : {} ) }", "replace": "headers: { 'Content-Type': 'application/json' }", "why": "writes carry no nonce" },
+	{ "file": "lib/calibrate-basket.mjs", "find": "\tif ( res.json?.items?.length ) {", "replace": "\tif ( false ) {", "why": "the basket is never emptied" },
+	{ "file": "lib/calibrate-basket.mjs", "find": "\tif ( body ) {", "replace": "\tif ( false ) {", "why": "the line is never added" },
+	{ "file": "lib/calibrate-basket.mjs", "find": "...( basket.variation ? { variation:", "replace": "...( false ? { variation:", "why": "the variation is dropped" }
+]

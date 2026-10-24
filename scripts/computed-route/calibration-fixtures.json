@@ -299,11 +299,11 @@
       "pickerShowSelectedValue": true,
       "addToCartShowIcon": false,
       "pickerAlwaysShowAxes": [
-        "pa_frame-size"
+        "pa_cr-size"
       ],
-      "pickerBandAxis": "pa_frame-size",
+      "pickerBandAxis": "pa_cr-size",
       "pickerBandScale": "S:52,M:57,L",
-      "pickerLabelLinkAxis": "pa_frame-size",
+      "pickerLabelLinkAxis": "pa_cr-size",
       "pickerLabelLinkText": "Which size am I?",
       "pickerLabelLinkUrl": "#size-guide",
       "gallerySavingBadge": true,
@@ -506,7 +506,14 @@
       {
         "displayMode": "link"
       }
-    ]
+    ],
+    "basket": {
+      "id": "{{product}}",
+      "variation": {
+        "pa_cr-colour": "cr-black",
+        "pa_cr-size": "50"
+      }
+    }
   },
   "sgs/choice-flow": {
     "attributes": {
@@ -1958,8 +1965,8 @@
       "rrpMetaKey": "_sgs_rrp",
       "swatchMaxVisible": 4,
       "showAttributeTag": true,
-      "attributeTagTerm": "polarised",
-      "attributeTagText": "Polarised",
+      "attributeTagTerm": "cr-tagged",
+      "attributeTagText": "Tagged",
       "sourceMode": "wc-product",
       "productId": "{{product}}",
       "ratingValue": 4.6,
@@ -1968,7 +1975,7 @@
         "description"
       ],
       "description": "A short description with a <a href=\"https://example.com/\">link</a>.",
-      "attributeTagTaxonomy": "pa_lens-type"
+      "attributeTagTaxonomy": "pa_cr-feature"
     },
     "variants": [
       {},

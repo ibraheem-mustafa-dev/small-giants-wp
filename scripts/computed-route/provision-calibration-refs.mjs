@@ -5,7 +5,8 @@
 // Reads the site (one `wp eval-file -` over SSH, as user Claude), plans from what it already holds
 // (lib/provision-refs.mjs::planProvision), then finds or creates: the "CR calibration" menu with its items, submenu and
 // mega-panel item; the calibration mega panel and sgs_drawer posts; the image and logo attachments (imported from the
-// given repo files, else an existing image role is kept and the logo reuses it); a product when WooCommerce is active.
+// given repo files, else an existing image role is kept and the logo reuses it); the calibration product when WooCommerce is active
+// (lib/provision-product.mjs: a variable product completed to the fixtures' spec, an existing one in place).
 // Idempotent: everything is found by name or slug before it is created. A mirror is never provisioned: provision its
 // test site, refresh the mirror (scripts/local-wp/refresh-from-remote.sh), and the mirror inherits the refs (mirrorOf).
 // --dry-run reads and prints the plan; it writes nothing on the site or in calibration-targets.json.
@@ -101,7 +102,7 @@ function run( argv ) {
 	} ) );
 	let result;
 	try {
-		result = jsonOut( wp( [ 'eval-file', '-' ], `<?php\n${ applyPhp( { known: plan.known, media, product: 'new' === plan.refs.product } ) }\n` ) );
+		result = jsonOut( wp( [ 'eval-file', '-' ], `<?php\n${ applyPhp( { known: plan.known, media, product: plan.productDue } ) }\n` ) );
 	} catch ( e ) {
 		console.error( `provisioning ${ o.site } failed: ${ String( e.message || e ).split( /\r?\n/ )[ 0 ] }` );
 		return 1;

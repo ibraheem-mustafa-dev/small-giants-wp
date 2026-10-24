@@ -15,7 +15,8 @@
 // cache/<site>/<block>.paint.json, keyed by that md5 and the site snapshot's md5. Each is written only when due. The page
 // is emptied at the end. A fixture names site objects (menu, drawer, media, product) by token, resolved from the target's
 // refs (lib/calibration-refs.mjs); a block whose reference the target does not supply, or whose object the site does not
-// hold, is reported and not built.
+// hold, is reported and not built. A fixture's `basket` (a product line) reads the page a second time holding that line in
+// the WooCommerce basket, and each instance keeps the pass in which its marker shows (lib/calibrate-basket.mjs).
 import fs from 'fs';
 import path from 'path';
 import { spawn, spawnSync } from 'child_process';
@@ -33,6 +34,7 @@ import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, b
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
 import { WIDTHS, READ_KEY, buildTree, slotFor, foldReading, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, instanceCtx, stateTarget, readAll, missedReason } from './lib/calibrate.mjs';
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
+import { setBasket, pickPass } from './lib/calibrate-basket.mjs';
 import { refsFor, refGate, checkRefsExist, fixtureRoles, resolveFixture, wpEvalRunner } from './lib/calibration-refs.mjs';
 
 export { remotePlugin, EDITOR_ONLY, BUNDLE_TEXT, normaliseBundle, TEXT_FILE, lfText, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
@@ -212,7 +214,17 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 		}
 		await closeStrayTabs( shared );
 		const pageUrl = built.json.link || `${ env.url }/?page_id=${ target.postId }`;
-		const reads = await readAll( shared.page, pageUrl, list );
+		// A fixture's basket line (lib/calibrate-basket.mjs): the page is read again holding it, and each instance keeps the
+		// pass in which its marker shows.
+		const passes = [ await readAll( shared.page, pageUrl, list ) ];
+		if ( fixture.basket ) {
+			await setBasket( shared.page, env.url, fixture.basket );
+			try {
+				passes.push( await readAll( shared.page, pageUrl, list ) );
+			} finally {
+				await setBasket( shared.page, env.url, null );
+			}
+		}
 		// A second pass only when this chunk holds a content instance: the content read records node existence, text and
 		// link attributes, which no computed-style read carries.
 		const contentReads = list.some( ( i ) => i.content ) ? await readContentAll( shared.page, pageUrl, list, needles ) : {};
@@ -234,6 +246,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 				return;
 			}
 			const d = inst.baseKey ? chunkBase[ inst.baseKey ] : chunkDefault[ inst.variant ];
+			const reads = pickPass( passes, n, d );
 			kept.push( { ...inst, read: at( n, reads ), readScrolled: at( n, reads.scrolled ), def: at( d, reads ), defScrolled: at( d, reads.scrolled ), hoverMissed: reads.hoverMissed.includes( n ), hoverWhy: reads.hoverWhy?.[ n ], scrollMissed: reads.scrollMissed.includes( n ), ...( inst.content ? { contentRead: at( n, contentReads ), contentDef: at( d, contentReads ) } : {} ) } );
 		} );
 		done++;

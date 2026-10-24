@@ -10,6 +10,11 @@
 // have an element to paint only when it is set. WordPress stores the description in the item's post_content.
 // The drawer is a minimal sgs/nav-drawer post: a stacked nav of two buttons and a
 // two-link icon list.
+
+import { PRODUCT_TITLE, productStatePhp, productApplyPhp } from './provision-product.mjs';
+
+export { PRODUCT_TITLE };
+
 export const MENU_NAME = 'CR calibration';
 export const MENU_ITEMS = [
 	{ key: 'shop', title: 'Shop', url: '/shop/' },
@@ -53,12 +58,11 @@ export const POSTS = {
 };
 // Media roles and the attachment title each is found or imported under.
 export const MEDIA = { image: 'CR calibration image', logo: 'CR calibration logo' };
-export const PRODUCT_TITLE = 'CR calibration product';
 
 const b64 = ( v ) => Buffer.from( JSON.stringify( v ) ).toString( 'base64' );
 
 // Read-only PHP describing what the site holds: { woocommerce, menu, items: [ { id, title, parent, object, objectId } ],
-// posts: { key: id|null }, media: { role: { id, url }|null }, product: id|null }.
+// posts: { key: id|null }, media: { role: { id, url }|null }, product: id|null, productReady: bool (lib/provision-product.mjs) }.
 export function statePhp() {
 	return `$spec = json_decode( base64_decode( '${ b64( { menu: MENU_NAME, posts: Object.fromEntries( Object.entries( POSTS ).map( ( [ k, p ] ) => [ k, [ p.type, p.slug ] ] ) ), media: MEDIA, product: PRODUCT_TITLE } ) }' ), true );
 $s = array( 'woocommerce' => class_exists( 'WooCommerce' ), 'menu' => null, 'items' => array(), 'posts' => array(), 'media' => array(), 'product' => null );
@@ -79,6 +83,7 @@ foreach ( $spec['media'] as $k => $title ) {
 }
 $q = get_posts( array( 'post_type' => 'product', 'title' => $spec['product'], 'post_status' => 'publish', 'numberposts' => 1 ) );
 $s['product'] = $q ? (int) $q[0]->ID : null;
+${ productStatePhp() }
 echo wp_json_encode( $s );`;
 }
 
@@ -143,24 +148,32 @@ export function planProvision( state, { refs = {}, kept = {}, files = {}, page =
 			unsupplied.push( { role, why: `no attachment titled "${ MEDIA[ role ] }" and no --${ role } file given` } );
 		}
 	}
-	if ( refs.product && true === kept.product ) {
+	// The product: a found one below the fixture spec (lib/provision-product.mjs) is completed in place, keeping its ID.
+	let productDue = false;
+	if ( refs.product && true === kept.product && ( state.productReady || refs.product !== state.product ) ) {
 		out.product = refs.product;
 	} else if ( state.product ) {
 		out.product = state.product;
+		if ( ! state.productReady ) {
+			actions.push( `complete product "${ PRODUCT_TITLE }" (${ state.product }) to the calibration spec: variable, colour and size variations on sale, RRP, two brands` );
+			productDue = true;
+		}
 	} else if ( state.woocommerce ) {
-		actions.push( `create product "${ PRODUCT_TITLE }"` );
+		actions.push( `create product "${ PRODUCT_TITLE }" (variable, colour and size variations on sale, RRP, two brands)` );
 		out.product = 'new';
+		productDue = true;
 	} else {
 		unsupplied.push( { role: 'product', why: 'WooCommerce is not active on the site' } );
 	}
-	return { actions, refs: out, unsupplied, known };
+	return { actions, refs: out, unsupplied, known, productDue };
 }
 
 // PHP that finds or creates every object of the plan and prints { menu, items: { key: id }, posts: { key: id },
 // media: { role: { id, url } }, product } (or { error }). It finds before it creates, so a second run creates nothing.
-// media: { role: { name, mime, data (base64) } } for the files to import.
+// media: { role: { name, mime, data (base64) } } for the files to import. product: the plan's productDue (create the
+// product, or complete a found one to the spec).
 export function applyPhp( { known, media = {}, product = false } ) {
-	return `$a = json_decode( base64_decode( '${ b64( { known, items: MENU_ITEMS, posts: POSTS, menuName: MENU_NAME, mediaTitles: MEDIA, media, product, productTitle: PRODUCT_TITLE } ) }' ), true );
+	return `$a = json_decode( base64_decode( '${ b64( { known, items: MENU_ITEMS, posts: POSTS, menuName: MENU_NAME, mediaTitles: MEDIA, media, product } ) }' ), true );
 $ids = $a['known'];
 $fail = function ( $why ) { echo wp_json_encode( array( 'error' => $why ) ); exit; };
 foreach ( $a['posts'] as $k => $p ) {
@@ -226,17 +239,8 @@ foreach ( $a['media'] as $role => $m ) {
 	wp_update_attachment_metadata( $att, wp_generate_attachment_metadata( $att, $bits['file'] ) );
 	$ids['media'][ $role ] = array( 'id' => (int) $att, 'url' => wp_get_attachment_url( $att ) );
 }
-if ( $a['product'] && empty( $ids['product'] ) && class_exists( 'WC_Product_Simple' ) ) {
-	$q = get_posts( array( 'post_type' => 'product', 'title' => $a['productTitle'], 'post_status' => 'publish', 'numberposts' => 1 ) );
-	if ( $q ) {
-		$ids['product'] = (int) $q[0]->ID;
-	} else {
-		$p = new WC_Product_Simple();
-		$p->set_name( $a['productTitle'] );
-		$p->set_regular_price( '10' );
-		$p->set_status( 'publish' );
-		$ids['product'] = (int) $p->save();
-	}
+if ( $a['product'] && class_exists( 'WC_Product_Variable' ) ) {
+${ productApplyPhp() }
 }
 echo wp_json_encode( $ids );`;
 }
