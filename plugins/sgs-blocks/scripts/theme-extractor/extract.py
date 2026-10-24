@@ -56,6 +56,7 @@ import font_weights
 import heading_weight
 import motion_tokens
 import declared_tokens
+import patch_merge as patch_mod
 import verify_against_draft
 from merge import EXTRACTOR_OWNED_CUSTOM, EXTRACTOR_OWNED_STYLES, merge_onto  # noqa: F401
 import palette as palette_mod
@@ -774,6 +775,9 @@ def main(argv=None) -> int:
     ap.add_argument("--intake", default=None,
                     help="path to the client's intake.json — the palette follows Bean's confirmed "
                          "palette-role marks (FR-33-2) instead of the extractor's own proposal")
+    ap.add_argument("--patch", action="append", default=[],
+                    help="a snapshot-shaped JSON patch (Fill's theme-snapshot.patch.json), deep-merged onto the "
+                         "result after the declared-token step; repeatable, later patches win")
     args = ap.parse_args(argv)
 
     repo = _repo_root(args.repo_root)
@@ -853,9 +857,13 @@ def main(argv=None) -> int:
 
     # FR-33-1: the typography, gutter and focus values the export's tokens/*.css declare win over the render and
     # the client's earlier snapshot; applied once the palette is final so a declared colour finds its slug.
-    declared_tokens.apply(snap, draft.parent, trace)
+    declared_tokens.apply(snap, draft.parent, trace, css)
 
     drop_inherited_heading_colour(snap, trace)
+
+    # A Fill patch (--patch) is the last word: it wins over everything derived above, including the declared tokens.
+    for patch_file in args.patch:
+        patch_mod.apply_patch(snap, patch_file, trace)
 
     ok, errors = validate_theme_json(snap)
     if not ok:

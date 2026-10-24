@@ -9,6 +9,10 @@ python plugins/sgs-blocks/scripts/theme-extractor/extract.py --client <slug> --d
   --intake sites/<slug>/build/intake/intake.json --merge-onto sites/<slug>/theme-snapshot.json --out <file>
 ```
 
+Add `--patch <file>` (repeatable) to lay Fill's snapshot-shaped `theme-snapshot.patch.json` over the result (`patch_merge.py`): it runs after the declared-token step, so a patch key wins over everything the run derived for the same path, including `settings.custom.focus` from the token files. Objects merge, scalars and arrays replace, a path the snapshot lacks is created, and the run prints every path the patch set.
+
+`styles.elements.link[':focus-visible']` is written only when the draft declares a bare `a:focus` or `a:focus-visible` rule (in `tokens/*.css` or its CSS); the framework `theme.json` look that the baseline copies in is removed otherwise (`declared_tokens.py::apply_link_focus`).
+
 Measuring needs Playwright: from a worktree without `node_modules`, set `NODE_PATH` to the main checkout's `plugins/sgs-blocks/node_modules`.
 
 ## What wins
