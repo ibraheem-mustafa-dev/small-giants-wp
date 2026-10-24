@@ -52,10 +52,40 @@ export function variantScope( finder, mine, others = [] ) {
 	return 'string' === typeof finder ? `:is(${ finder })${ cond }` : null;
 }
 
-// nodes: lib/fill-skeleton.mjs::skeletonNodes( skeleton ); refs: the ref of each node by index. Returns { pairs: [ { ref,
-// draft } ], left: [ { ref, why } ], unscoped: [ { ref, why } ] } (unscoped: a width variant pair kept as the shared
-// finder because no selector names its elements).
-export function skeletonPairs( nodes, refs ) {
+// Whether the draft element `key` sits inside the draft element `outer` (both inventory keys); null when the chain is
+// unknown. parentOf: inventory key -> parent key.
+function inside( key, outer, parentOf ) {
+	if ( ! parentOf.has( key ) || ! parentOf.has( outer ) ) {
+		return null;
+	}
+	for ( let k = parentOf.get( key ); k; k = parentOf.get( k ) ) {
+		if ( k === outer ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+// The parts a block renders inside itself whose draft elements the draft draws outside the block's own element (a
+// navigation's burger the draft places in another row): the block's pair cannot reach them on the draft, and the draft
+// element's nearest paired ancestor would count it as its own part. Each pairs on its own: the skeleton's draft element
+// for that slot against the slot inside the block. A part inside another such part goes with it. Returns [ { ref, slot,
+// draft } ].
+export function outsideSlotPairs( node, ref, parentOf ) {
+	const base = keyOf( node.draftRef );
+	if ( ! base || ! parentOf?.size ) {
+		return [];
+	}
+	const out = Object.entries( node.draftSlots || {} ).filter( ( [ , f ] ) => keyOf( f ) && false === inside( keyOf( f ), base, parentOf ) );
+	return out.filter( ( [ , f ] ) => ! out.some( ( [ , g ] ) => g !== f && inside( keyOf( f ), keyOf( g ), parentOf ) ) ).map( ( [ slot, f ] ) => ( { ref, slot, draft: f } ) );
+}
+
+// nodes: lib/fill-skeleton.mjs::skeletonNodes( skeleton ); refs: the ref of each node by index; inventory: the surface's
+// skeleton inventory ({ elements: [ { key, parentKey } ] }), which places each slot's draft element (outsideSlotPairs).
+// Returns { pairs: [ { ref, draft, slot? } ], left: [ { ref, why } ], unscoped: [ { ref, why } ] } (unscoped: a width
+// variant pair kept as the shared finder because no selector names its elements).
+export function skeletonPairs( nodes, refs, { inventory = null } = {} ) {
+	const parentOf = new Map( ( inventory?.elements || [] ).map( ( e ) => [ e.key, e.parentKey ?? null ] ) );
 	const pairs = [];
 	const left = [];
 	const unscoped = [];
@@ -68,6 +98,7 @@ export function skeletonPairs( nodes, refs ) {
 		}
 		const variant = n.node.variantKey || null;
 		const others = ( n.node.widthVariants || [] ).map( ( v ) => v.key );
+		pairs.push( ...outsideSlotPairs( n.node, ref, parentOf ) );
 		if ( ! variant && ! others.length ) {
 			pairs.push( { ref, draft: n.node.draftRef } );
 			continue;

@@ -162,3 +162,22 @@ test( 'unsafe CSS is refused, and rows that are not ladder rows are left', () =>
 	assert.equal( isLadderRow( other ), false );
 	assert.equal( isLadderRow( bad ), true );
 } );
+
+test( 'MUST FAIL WITHOUT THE WRITTEN ELEMENT\'S READS: a root row written on the inner (the same box in the block) takes the inner\'s own per-width values, not the root\'s', () => {
+	// The draft draws the row as two elements: the root is display block at 375 (justify-content reads normal there) and flex
+	// with space-between from 768; the inner is a flex container with space-between at every width.
+	const INNER = '.sgs-box__inner';
+	const w = world( { slot: INNER, kids: [ [ 375, 768, 1440 ], [ 375, 768, 1440 ] ] } );
+	for ( const x of [ 375, 768, 1440 ] ) {
+		const root = 375 === x ? 'block' : 'flex';
+		w.reads.widths[ x ][ '0:' ].styles = { display: root, 'justify-content': 375 === x ? 'normal' : 'space-between' };
+		w.reads.widths[ x ][ '0:' ].layoutDisplay = root;
+		w.reads.widths[ x ][ `0:${ INNER }` ].styles = { display: 'flex', 'justify-content': 'space-between' };
+	}
+	const box = { height: '40px', width: '300px' };
+	const cal = { settings: { justifyContent: { slot: INNER } }, elements: { '': { 375: box, 768: box, 1440: box }, [ INNER ]: { 375: box, 768: box, 1440: box } } };
+	const r = run( w, [ rowOf( { property: 'justify-content', value: '{"375":"normal","768":"space-between","1440":"space-between"}', reason: 'no-setting: no justify-content setting on sgs/box paints ""' } ) ], { calFor: () => cal } );
+	assert.deepEqual( r.unmapped, [] );
+	assert.equal( attrs( w ).justifyContent, 'space-between' );
+	assert.equal( attrs( w ).sgsCustomCss, undefined, 'no 375 rule: the written element does the same at every width' );
+} );
