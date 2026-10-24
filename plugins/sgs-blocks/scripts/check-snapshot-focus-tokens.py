@@ -1,4 +1,4 @@
-"""check-snapshot-focus-tokens.py: the gate and fixer for `settings.custom.focus` (focus plan section 2.3, owner decision Q1-B).
+"""check-snapshot-focus-tokens.py: a hand-run check (in no gate tier; contrast warns only) and fixer for `settings.custom.focus` (focus plan section 2.3, owner decision Q1-B).
 
   --survey            per snapshot: keys present, the ring verdict on light and on dark grounds, inner/ink ratio
   --fix               print the diff that writes the full settings.custom.focus object (nothing is written)

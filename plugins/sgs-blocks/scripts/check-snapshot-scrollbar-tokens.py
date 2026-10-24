@@ -1,4 +1,4 @@
-"""check-snapshot-scrollbar-tokens.py: the gate for `settings.custom.scrollbar` (Spec 32 FR-32-26).
+"""check-snapshot-scrollbar-tokens.py: a hand-run check (in no gate tier; contrast warns only) for `settings.custom.scrollbar` (Spec 32 FR-32-26).
 
   --survey            per snapshot: keys present and each thumb's lowest contrast against the grounds of its tone
   --check             exit 1 on a missing key, or a thumb under 2:1 against a ground of its tone
