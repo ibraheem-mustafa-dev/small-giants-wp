@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "const initial = ctx && undefined !== v && ! ctx.own?.includes( prop ) ? initialOf( prop ) : null;",
+		"replace": "const initial = ctx && undefined !== v ? initialOf( prop ) : null;",
+		"why": "a declared value is read back as the initial value"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "...( own.length ? { own } : {} ) };",
+		"replace": "};",
+		"why": "calibratedContext drops the _own: properties"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "k.startsWith( '_own:' ) ).map( ( k ) => k.slice( 5 ) );",
+		"replace": "k.startsWith( '_own:' ) );",
+		"why": "the own list keeps the marker prefix"
+	},
+	{
+		"file": "lib/fill-shop-parts.mjs",
+		"find": "const other = prior.concat( out.writes ).findLast(",
+		"replace": "const other = prior.findLast(",
+		"why": "the conflict check ignores this pass's own writes"
+	},
+	{
+		"file": "lib/fill-shop-parts.mjs",
+		"find": "if ( undefined !== held ) {",
+		"replace": "if ( undefined !== held && prior.concat( out.writes ).some( ( w ) => w.index === rec.index && w.attr === attr ) ) {",
+		"why": "a held value no write names is overwritten silently"
+	},
+	{
+		"file": "lib/fill-shop-parts.mjs",
+		"find": ": 'the skeleton';",
+		"replace": ": 'another writer';",
+		"why": "the row does not name the skeleton"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "&& words.split( ' ' ).length <= PREFIX_WORDS;",
+		"replace": ";",
+		"why": "any run of words is a prefix"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "return short && ! ( name && words.toLowerCase().includes( name ) ) ?",
+		"replace": "return short ?",
+		"why": "a prefix holding the site name is taken"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "u.test( words ) && words.split",
+		"replace": "u.test( words.replace( /[^ ]/g, 'a' ) ) && words.split",
+		"why": "words with punctuation or digits are a prefix"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "const { prefix, leftover } = copyrightPrefixParts( t, facts.siteName );",
+		"replace": "const { prefix, leftover } = copyrightPrefixParts( t );",
+		"why": "the skeleton never passes the site name"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "leftover && handover.push(",
+		"replace": "false && handover.push(",
+		"why": "the leftover words get no handover"
+	}
+]

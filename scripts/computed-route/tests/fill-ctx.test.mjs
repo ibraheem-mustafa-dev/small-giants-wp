@@ -2,13 +2,14 @@
 // read in (lib/calibrate-read.mjs::readInstancesInPage: `_parentDisplay`, `_position`) and the comparison canons each side
 // in its own (lib/fill-prop.mjs::tiersDiffering, ::inOwnContext); Fill reads flex-shrink on the root's flex item, a
 // wrapper holding only it included (lib/fill-read.mjs::flexItemsInPage), and holds a draft item that does not shrink with
-// the block's fixed child sizing (lib/fill-dimensions.mjs::fixedSizing). Built on the real framework DB with planted reads.
+// the block's fixed child sizing (lib/fill-dimensions.mjs::fixedSizing). Built on a frozen slice of the framework DB (tests/fixtures/frozen-db) with planted reads.
 import test, { after } from 'node:test';
 import assert from 'node:assert/strict';
 import { fillTree } from '../lib/fill-resolve.mjs';
 import { skeletonNodes, cleanTree } from '../lib/fill-skeleton.mjs';
 import { addRefs, refOf } from '../lib/tree.mjs';
 import { openDb } from '../lib/db.mjs';
+import { frozenDb } from './fixtures/frozen-db/frozen-db.mjs';
 import { tiersDiffering, inOwnContext, calibratedContext } from '../lib/fill-prop.mjs';
 import { readInstancesInPage } from '../lib/calibrate-read.mjs';
 import { READ_PROPS, PSEUDO_PROPS, TEXT_PSEUDO_PROPS, OWN_INHERITED } from '../lib/calibrate-props.mjs';
@@ -17,7 +18,7 @@ import { resolveFinder } from '../../parity/lib/collect.mjs';
 import { flexItemsInPage, applyFlexItems, jobsFor, PROPS } from '../lib/fill-read.mjs';
 import { dimensionWrites, NATURAL_SIZE } from '../lib/fill-dimensions.mjs';
 
-const db = openDb();
+const db = openDb( frozenDb() );
 const snapshot = { palette: [], spacing: [], fontSizes: [] };
 const FIVE = [ 375, 768, 1024, 1440, 1920 ];
 const THREE = [ 375, 768, 1440 ];

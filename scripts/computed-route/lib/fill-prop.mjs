@@ -221,23 +221,25 @@ export function defaultPaint( cal, slot, width, prop ) {
 }
 
 // The context calibration read an element's default paint in at a width (lib/calibrate-read.mjs::readInstancesInPage:
-// `_parentDisplay`, `_position`, and the read direction), or null where its paint carries none (a paint read before
-// the context was recorded).
+// `_parentDisplay`, `_position`, the read direction, and as `own` the properties its paint marks `_own:` because the
+// block's stylesheet sets them), or null where its paint carries none (a paint read before the context was recorded).
 export function calibratedContext( cal, slot, width ) {
 	const key = Object.keys( cal?.elements || {} ).find( ( k ) => LOOSE( k ) === LOOSE( slot ) );
 	const paint = undefined !== key ? cal.elements[ key ]?.[ String( 1920 === width ? 1440 : width ) ] : undefined;
 	if ( ! paint || undefined === paint._parentDisplay ) {
 		return null;
 	}
-	return { parentDisplay: paint._parentDisplay, ...( paint._position ? { position: paint._position } : {} ), ...( paint.direction ? { direction: paint.direction } : {} ) };
+	const own = Object.keys( paint ).filter( ( k ) => k.startsWith( '_own:' ) ).map( ( k ) => k.slice( 5 ) );
+	return { parentDisplay: paint._parentDisplay, ...( paint._position ? { position: paint._position } : {} ), ...( paint.direction ? { direction: paint.direction } : {} ), ...( own.length ? { own } : {} ) };
 }
 
 // A baseline value in the context it was read in, as the value an unstyled element holds: where it is what the
 // property's initial value computes to there and not that value itself (a `min-height` of 0px read off a flex or grid
 // item, the computed form of `auto` there), it is the initial value, which the comparison then canons in the draft's
-// context. Any other value, or a baseline with no context of its own, is returned as it is.
+// context. A value the block's stylesheet sets (the context's `own` names the property: a declared `min-height: 0`
+// reads 0px off a flex item too) is that value, as is any other value or a baseline with no context of its own.
 export function inOwnContext( prop, v, ctx ) {
-	const initial = ctx && undefined !== v ? initialOf( prop ) : null;
+	const initial = ctx && undefined !== v && ! ctx.own?.includes( prop ) ? initialOf( prop ) : null;
 	if ( ! initial || String( v ).trim() === initial ) {
 		return v;
 	}

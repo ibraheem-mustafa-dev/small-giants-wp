@@ -79,13 +79,13 @@
 	},
 	{
 		"file": "lib/skeleton-write-content.mjs",
-		"find": "return mark ? t.slice( 0, mark.index ).trim() : '';",
-		"replace": "return /^\\s*copyright\\b/i.test( t ) ? 'Copyright' : '';",
+		"find": "const words = mark ? t.slice( 0, mark.index ).trim() : '';",
+		"replace": "const words = /^\\s*copyright\\b/i.test( t ) ? 'Copyright' : '';",
 		"why": "the old rule: Copyright or nothing"
 	},
 	{
 		"file": "lib/skeleton-write-content.mjs",
-		"find": "a.copyrightPrefix = copyrightPrefixOf( t );",
+		"find": "a.copyrightPrefix = prefix;",
 		"replace": "a.copyrightPrefix = /^\\s*copyright\\b/i.test( t ) ? 'Copyright' : '';",
 		"why": "contentAttrs keeps the old rule"
 	},
@@ -109,7 +109,7 @@
 	},
 	{
 		"file": "lib/fill-shop-parts.mjs",
-		"find": "if ( other && undefined !== held ) {",
+		"find": "if ( undefined !== held ) {",
 		"replace": "if ( false ) {",
 		"why": "another writer's value is overwritten"
 	},
