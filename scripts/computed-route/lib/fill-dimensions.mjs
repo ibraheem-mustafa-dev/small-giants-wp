@@ -245,15 +245,17 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 // The child-sizing extension's settings (includes/child-sizing.php): 'fixed' paints `flex: 0 0 auto` and the width.
 const SIZING = 'sgsChildSizing';
 const SIZING_WIDTH = 'sgsChildWidth';
-// The row a non-shrinking item of natural size leaves, for the framework's `auto` child width.
-export const NATURAL_SIZE = `flex-shrink: 0 (natural size) - ${ SIZING_WIDTH } needs the 'auto' value (Track F)`;
+// The child width that holds a non-shrinking item at its natural size: under 'fixed' it paints `flex: 0 0 auto; width: auto;
+// max-width: none` (includes/child-sizing.php::child_sizing_declarations).
+export const NATURAL_SIZE = 'auto';
 
 // 4: a flex item the draft keeps from shrinking (flex-shrink 0, read on the root's flex item, lib/fill-read.mjs::
-// flexItemsInPage) where the block's root would shrink is held at its rendered width by the block's fixed child sizing,
-// at each width the draft does not shrink it, when the draft declares that width as a plain px length (else the row stays
-// as NATURAL_SIZE); a read width where it does shrink, below a fixed one, sizes to its content
-// ('fit'), so the fixed tier is not carried down. Nothing is written where the block's root shrinks at none of those
-// widths. Returns true, { raise }, or null (not this pass's row).
+// flexItemsInPage) where the block's root would shrink is held by the block's fixed child sizing at each width the draft
+// does not shrink it: at its rendered width where the draft declares that width as a plain px length, else at its natural
+// size (NATURAL_SIZE, `auto`: a fluid height with an intrinsic ratio, a clamp(), none declared, which px per tier would pin
+// between the read widths). A read width where it does shrink, below a fixed one, sizes to its content ('fit'), so the fixed
+// tier is not carried down. Nothing is written where the block's root shrinks at none of those widths. Returns true,
+// { raise }, or null (not this pass's row).
 function fixedSizing( { row, nodes, flat, refOf, reads, db, calFor, out } ) {
 	const hit = rowTarget( { nodes, flat, refOf }, row );
 	if ( ! hit ) {
@@ -280,15 +282,10 @@ function fixedSizing( { row, nodes, flat, refOf, reads, db, calFor, out } ) {
 		return null;
 	}
 	// A width the draft declares as a plain px length is the item's size at every viewport between the read widths too, so
-	// it is written; any other size (a fluid height with an intrinsic ratio, a clamp(), none declared) is the item's natural
-	// size, which the fixed sizing can hold only as `auto`, a value sgsChildWidth does not take
-	// (helpers-css-safety.php::sgs_css_single_length_value).
-	const fluid = fixedAt.filter( ( w ) => null === pxOf( reads.declared?.[ w ]?.[ target.id ]?.width ?? '' ) );
-	if ( fluid.length ) {
-		return { raise: NATURAL_SIZE };
-	}
+	// it is written; any other size is the item's natural size.
+	const fluid = ( w ) => null === pxOf( reads.declared?.[ w ]?.[ target.id ]?.width ?? '' );
 	const sizeAt = ( w ) => reads.widths?.[ w ]?.[ target.id ]?.flexItem?.w ?? rectAt( reads, target, w )?.w;
-	const unsized = fixedAt.filter( ( w ) => ! Number.isFinite( sizeAt( w ) ) );
+	const unsized = fixedAt.filter( ( w ) => ! fluid( w ) && ! Number.isFinite( sizeAt( w ) ) );
 	if ( unsized.length ) {
 		return { raise: `the draft's rendered width of the flex item is unknown at ${ unsized.join( ', ' ) }` };
 	}
@@ -302,13 +299,13 @@ function fixedSizing( { row, nodes, flat, refOf, reads, db, calFor, out } ) {
 	for ( const w of [ ...WIDTHS ].reverse() ) {
 		if ( fixedAt.includes( w ) ) {
 			modes[ TIER_OF[ w ] ] = 'fixed';
-			widths[ TIER_OF[ w ] ] = `${ Math.round( sizeAt( w ) * 100 ) / 100 }px`;
+			widths[ TIER_OF[ w ] ] = fluid( w ) ? NATURAL_SIZE : `${ Math.round( sizeAt( w ) * 100 ) / 100 }px`;
 		} else if ( Object.keys( modes ).length && undefined !== given[ w ] ) {
 			modes[ TIER_OF[ w ] ] = 'fit';
 		}
 	}
 	const included = Object.fromEntries( fixedAt.map( ( w ) => [ w, given[ w ] ] ) );
-	commit( out, { rec, node, row, prop: 'flex-shrink', res: { writes: [ { attr: SIZING, value: modes }, { attr: SIZING_WIDTH, value: widths } ], included }, how: 'dimension', note: `the draft keeps the flex item from shrinking (flex-shrink 0 at ${ fixedAt.join( ', ' ) }) where the block's root shrinks (flex-shrink ${ fixedAt.map( ( w ) => paint[ w ] ).join( ' / ' ) }), so the fixed child sizing holds its rendered width ${ Object.values( widths ).join( ' / ' ) }` } );
+	commit( out, { rec, node, row, prop: 'flex-shrink', res: { writes: [ { attr: SIZING, value: modes }, { attr: SIZING_WIDTH, value: widths } ], included }, how: 'dimension', note: `the draft keeps the flex item from shrinking (flex-shrink 0 at ${ fixedAt.join( ', ' ) }) where the block's root shrinks (flex-shrink ${ fixedAt.map( ( w ) => paint[ w ] ).join( ' / ' ) }), so the fixed child sizing holds its ${ fixedAt.some( fluid ) ? 'natural size' : 'rendered width' } ${ Object.values( widths ).join( ' / ' ) }` } );
 	out.notes.push( `${ row.node } ${ rec.name } flex-shrink: fixed child sizing at ${ Object.entries( widths ).map( ( [ t, v ] ) => `${ t } ${ v }` ).join( ', ' ) }` );
 	return true;
 }
