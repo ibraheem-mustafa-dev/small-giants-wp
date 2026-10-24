@@ -25,9 +25,43 @@ export function partHome( db, block, cal, element, except, key = LOOSE ) {
 
 export const exactHome = ( db, block, cal, element ) => partHome( db, block, cal, element, null, String );
 
+// The properties that place an element's children: they belong to the element laying out the children, wherever the
+// draft and the block draw it.
+const CHILD_LAYOUT = [ 'align-items', 'align-content', 'justify-content', 'justify-items', 'flex-direction', 'flex-wrap', 'gap', 'row-gap', 'column-gap' ];
+
+// Whether the draft element read at `readSlot` lays out the children the block draws inside the part at `home`: the part
+// sits inside the read element, the draft has no element of its own for it (no target at `home`), and the node's targets
+// directly under `home` are the read element's laid-out children at every width it is read (as many as its
+// `layoutChildren`, each box inside its box). targets: the node's skeleton targets; readAt( id, width ): a target's read.
+export function laysOutPart( { readSlot, home, targets = [], readAt = () => null } ) {
+	const own = LOOSE( readSlot );
+	if ( ! String( home ).startsWith( `${ own ? `${ own } > ` : '' }` ) || home === own || targets.some( ( t ) => LOOSE( t.slot ?? '' ) === home ) ) {
+		return false;
+	}
+	const kids = targets.filter( ( t ) => {
+		const rest = LOOSE( t.slot ?? '' ).slice( home.length );
+		return LOOSE( t.slot ?? '' ).startsWith( `${ home } > ` ) && ! rest.slice( 3 ).includes( ' > ' );
+	} );
+	const self = targets.find( ( t ) => ( t.slot ?? '' ) === readSlot );
+	if ( ! kids.length || ! self ) {
+		return false;
+	}
+	const inside = ( a, b ) => a.x >= b.x - 1 && a.y >= b.y - 1 && a.x + a.w <= b.x + b.w + 1 && a.y + a.h <= b.y + b.h + 1;
+	const checked = WIDTHS.filter( ( w ) => {
+		const r = readAt( self.id, w );
+		return r && ! r.missing && r.rect && Number.isInteger( r.layoutChildren );
+	} );
+	return checked.length > 0 && checked.every( ( w ) => {
+		const box = readAt( self.id, w );
+		const shown = kids.map( ( t ) => readAt( t.id, w ) ).filter( ( r ) => r && ! r.missing && r.rect && ( r.rect.w > 0 || r.rect.h > 0 ) );
+		return shown.length === box.layoutChildren && shown.every( ( r ) => inside( r.rect, box.rect ) );
+	} );
+}
+
 // Why a write of `attr` read from the element at `readSlot` does not belong to the part the setting paints, or null when
-// it does. prop: the property written; value: the written text (named in the reason).
-export function unpairedPart( { db, block, cal, attr, readSlot, prop, value } ) {
+// it does. prop: the property written; value: the written text (named in the reason); targets and readAt: the node's
+// targets and their reads, for a property that places children (laysOutPart).
+export function unpairedPart( { db, block, cal, attr, readSlot, prop, value, targets = [], readAt = () => null } ) {
 	const row = attrsFor( db, block ).find( ( r ) => r.attr_name === attr );
 	const element = row?.css_element;
 	if ( ! element || 'wrapper' === element ) {
@@ -40,6 +74,10 @@ export function unpairedPart( { db, block, cal, attr, readSlot, prop, value } ) 
 	// An inherited property the setting's own value reached the read element with (calibration's `reaches`, the elements that
 	// carried the marker) is the same value on both.
 	if ( INHERITED.includes( prop ) && ( cal?.settings?.[ attr ]?.reaches || [] ).includes( readSlot ) ) {
+		return null;
+	}
+	// A property placing children, read from the draft element that lays out the children the part holds.
+	if ( CHILD_LAYOUT.includes( prop ) && laysOutPart( { readSlot, home, targets, readAt } ) ) {
 		return null;
 	}
 	// The same box: equal default paint at every width where both elements render. At a width where either element, or an

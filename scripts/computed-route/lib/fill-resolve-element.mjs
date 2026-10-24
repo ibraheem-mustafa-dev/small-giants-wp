@@ -253,7 +253,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: `${ res.gap }: ${ res.detail }${ eq ? `; ${ eq.detail }` : '' }`, ...( res.code ? { code: res.code } : {} ) } );
 		} else if ( 'written' === res.status ) {
 			// A setting of a part is written only from the element paired to that part (lib/fill-part-pairing.mjs).
-			const unpaired = target.paired ? [] : res.writes.map( ( w ) => ( { w, why: unpairedPart( { db: st.db, block: rec.name, cal, attr: w.attr, readSlot: target.slot, prop, value: valueText( draft ) } ) } ) ).filter( ( x ) => x.why );
+			const unpaired = target.paired ? [] : res.writes.map( ( w ) => ( { w, why: unpairedPart( { db: st.db, block: rec.name, cal, attr: w.attr, readSlot: target.slot, prop, value: valueText( draft ), targets: rec.targets, readAt: ( id, x ) => st.reads.widths?.[ x ]?.[ id ] } ) } ) ).filter( ( x ) => x.why );
 			if ( unpaired.length ) {
 				unpaired.forEach( ( x ) => unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: x.why } ) );
 				res.writes = res.writes.filter( ( w ) => ! unpaired.some( ( x ) => x.w === w ) );
