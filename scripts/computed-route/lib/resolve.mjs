@@ -249,7 +249,9 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 		// A string setting beside its unit setting holds the number as text ("37").
 		return { value: [].concat( def?.type || [] ).includes( 'string' ) && ! [].concat( def?.type || [] ).includes( 'number' ) ? String( n ) : n };
 	}
-	return { value: `${ round( px ) }px` };
+	// A setting typed number alone holds the px count ("0"), never "0px": the editor refuses a string in a number setting.
+	const types = [].concat( def?.type || [] );
+	return { value: types.includes( 'number' ) && ! types.includes( 'string' ) ? round( px ) : `${ round( px ) }px` };
 }
 
 // A per-device discovered setting: each tier takes the value whose recorded effect equals the draft at that tier's
