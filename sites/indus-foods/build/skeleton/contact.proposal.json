@@ -1,5 +1,5 @@
 {
-	"generated": "2026-10-25T10:14:39.897Z",
+	"generated": "2026-10-25T19:05:27.590Z",
 	"inventory": "2026-10-25T10:14:39.731Z",
 	"source": "http://127.0.0.1:53375/#/contact",
 	"surface": "page-contact",
@@ -56,6 +56,7 @@
 			"solitaryIcon": 3,
 			"mapEmbed": 1,
 			"siteInfoLink": 1,
+			"formHost": 1,
 			"optionSetForm": 19,
 			"formControl": 11
 		}
@@ -1770,22 +1771,21 @@
 			"tag": "form",
 			"depth": 6,
 			"words": "",
-			"block": "sgs/container",
+			"block": "sgs/form",
 			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
+			"reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
+			"source": "rule formHost",
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "formHost",
 			"candidates": [
 				{
-					"block": "sgs/container",
-					"score": 0.75,
+					"block": "sgs/form",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 6 block children",
-						"no row block fits: a generic wrapper"
+						"rule formHost: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part"
 					]
 				}
 			],
@@ -1795,9 +1795,7 @@
 				"1440": "shots/Root_EnquiryForm_468_0_6_0@1440.png"
 			},
 			"snippet": "<form sc-camel-on-submit=\"{{ submit }}\" sc-camel-no-validate=\"{{ true }}\" data-dc-tpl=\"6\"> <div style=\"display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;\" data-dc-tpl=\"7\"> <span style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"8\">01</span> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,26px);co",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 53,
@@ -2613,6 +2611,11 @@
 			"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition",
 			"attributes": {
 				"label": "Your name"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root>EnquiryForm@468#0/26#0"
+				}
 			}
 		},
 		{
@@ -2704,6 +2707,11 @@
 			"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition",
 			"attributes": {
 				"label": "Business name (optional)"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root>EnquiryForm@468#0/26#1"
+				}
 			}
 		},
 		{
@@ -2795,6 +2803,11 @@
 			"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition",
 			"attributes": {
 				"label": "Email"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root>EnquiryForm@468#0/26#2"
+				}
 			}
 		},
 		{
@@ -2886,6 +2899,11 @@
 			"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition",
 			"attributes": {
 				"label": "Phone (optional)"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root>EnquiryForm@468#0/26#3"
+				}
 			}
 		},
 		{
@@ -2977,6 +2995,11 @@
 			"snippet": "<textarea id=\"enq-msg\" value=\"{{ msg.value }}\" sc-camel-on-change=\"{{ msg.onChange }}\" sc-camel-on-focus=\"{{ msg.onFocus }}\" sc-camel-on-blur=\"{{ msg.onBlur }}\" sc-camel-max-length=\"{{ 800 }}\" rows=\"5\" style=\"padding:30px 18px 14px;border-radius:16px;border:1.5px solid {{ msg.border }};background:{{ msg.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;resize:vertica",
 			"attributes": {
 				"label": "How can we help?"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root>EnquiryForm@468#0/31#0"
+				}
 			}
 		},
 		{

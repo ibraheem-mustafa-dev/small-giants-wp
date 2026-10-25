@@ -355,6 +355,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			return ring ? v( 'decorativeShape', { block: R.decorativeShape?.block || null } ) : v( 'decorationLayer', { action: 'remove' } );
 		},
 		( { e, kidsB } ) => ( ! kidsB.length && specHit( R.typedDivider, m.words( e ) ) ? v( 'typedDivider', { action: 'remove' } ) : null ),
+		// A draft <form> element is the form block; its fields sit inside it.
+		( { e } ) => ( R.formHost && view.realTag( e ) === R.formHost.tag ? v( 'formHost', { block: R.formHost.block } ) : null ),
 		// A form control is the field block for its type; the field's label, required marker and hint are that block's own
 		// settings, and a <label> wrapped around the control goes so the field takes its place.
 		( { e } ) => {

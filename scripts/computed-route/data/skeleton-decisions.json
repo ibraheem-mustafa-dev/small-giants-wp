@@ -429,7 +429,14 @@
 				"image",
 				"button"
 			],
-			"fallback": "sgs/form-field-text"
+			"fallback": "sgs/form-field-text",
+			"inputPart": "field-input",
+			"inputPartHost": "sgs/form"
+		},
+		"formHost": {
+			"tag": "form",
+			"block": "sgs/form",
+			"reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part"
 		},
 		"cardHeading": {
 			"block": "sgs/heading",

@@ -468,6 +468,16 @@ test( 'formControl: each control is the field block for its rendered type, its l
 	assert.notEqual( byWords( off, 'Hint for email' ).action, 'remove' );
 } );
 
+test( 'formHost: a draft <form> element is the form block with its fields inside; MUST FAIL without the rule', () => {
+	const form = E( 'form', {}, [ E( 'input', { attrs: { type: 'text' } } ), E( 'input', { attrs: { type: 'email' }, y: 40 } ) ] );
+	const r = run( section( [ form ] ) );
+	assert.deepEqual( settled( row( r, ( x ) => 'form' === x.tag ) ), { block: 'sgs/form', action: null, rule: 'formHost' } );
+	const host = r.skeleton[ 0 ].innerBlocks[ 0 ];
+	assert.deepEqual( [ host.name, ...host.innerBlocks.map( ( n ) => n.name ) ], [ 'sgs/form', 'sgs/form-field-text', 'sgs/form-field-email' ] );
+	const off = run( section( [ form ] ), { facts: facts( 'formHost' ) } );
+	assert.notEqual( row( off, ( x ) => 'form' === x.tag ).block, 'sgs/form' );
+} );
+
 test( 'cardHeading: a card\'s bold, larger first text (after its number) is a heading; a bold line beside a same-size line is not; MUST FAIL without the rule', () => {
 	const card = ( y ) => E( 'div', { style: 'padding:24px;display:flex;flex-direction:column', y }, [ E( 'span', { words: '01', style: 'font-weight:700;font-size:13px' } ), E( 'div', { words: `Food Service ${ y }`, style: 'font-weight:700;font-size:19px' } ), E( 'div', { words: 'Quality ingredients for venues and caterers.', style: 'font-size:15px' } ) ] );
 	const grid = E( 'div', { display: 'grid', style: 'display:grid;grid-template-columns:repeat(2,1fr)' }, [ card( 0 ), card( 1 ) ] );

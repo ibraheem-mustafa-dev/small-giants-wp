@@ -1977,10 +1977,8 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
+												"name": "sgs/form",
+												"attributes": {},
 												"draftRef": {
 													"tpl": "Root/550#0"
 												},
@@ -2100,7 +2098,12 @@
 																	"textHash": "1505",
 																	"line": 797
 																},
-																"innerBlocks": []
+																"innerBlocks": [],
+																"draftSlots": {
+																	".sgs-form-field__input": {
+																		"tpl": "Root/560#0"
+																	}
+																}
 															},
 															{
 																"name": "sgs/form-field-text",
@@ -2128,7 +2131,12 @@
 																	"textHash": "1505",
 																	"line": 797
 																},
-																"innerBlocks": []
+																"innerBlocks": [],
+																"draftSlots": {
+																	".sgs-form-field__input": {
+																		"tpl": "Root/560#1"
+																	}
+																}
 															},
 															{
 																"name": "sgs/form-field-email",
@@ -2156,7 +2164,12 @@
 																	"textHash": "1505",
 																	"line": 797
 																},
-																"innerBlocks": []
+																"innerBlocks": [],
+																"draftSlots": {
+																	".sgs-form-field__input": {
+																		"tpl": "Root/560#2"
+																	}
+																}
 															},
 															{
 																"name": "sgs/form-field-phone",
@@ -2184,7 +2197,12 @@
 																	"textHash": "1505",
 																	"line": 797
 																},
-																"innerBlocks": []
+																"innerBlocks": [],
+																"draftSlots": {
+																	".sgs-form-field__input": {
+																		"tpl": "Root/560#3"
+																	}
+																}
 															},
 															{
 																"name": "sgs/form-field-select",
@@ -2212,7 +2230,12 @@
 																	"textHash": "1505",
 																	"line": 800
 																},
-																"innerBlocks": []
+																"innerBlocks": [],
+																"draftSlots": {
+																	".sgs-form-field__input": {
+																		"tpl": "Root/562#0"
+																	}
+																}
 															},
 															{
 																"name": "sgs/form-field-select",
@@ -2240,7 +2263,12 @@
 																	"textHash": "1505",
 																	"line": 800
 																},
-																"innerBlocks": []
+																"innerBlocks": [],
+																"draftSlots": {
+																	".sgs-form-field__input": {
+																		"tpl": "Root/562#1"
+																	}
+																}
 															},
 															{
 																"name": "sgs/form-field-textarea",
@@ -2268,7 +2296,12 @@
 																	"textHash": "1505",
 																	"line": 805
 																},
-																"innerBlocks": []
+																"innerBlocks": [],
+																"draftSlots": {
+																	".sgs-form-field__input": {
+																		"tpl": "Root/566#0"
+																	}
+																}
 															}
 														]
 													},

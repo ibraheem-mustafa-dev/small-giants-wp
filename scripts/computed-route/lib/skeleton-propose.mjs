@@ -15,6 +15,8 @@ import { collapsePoint, childSlots } from './skeleton-child-slots.mjs';
 import { partSlots, placePart } from './skeleton-part-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes } from './skeleton-form-steps.mjs';
+import { formHostNodes } from './skeleton-form-host.mjs';
+import { fieldInputSlot } from './skeleton-form-slots.mjs';
 import { makeRecorder } from './skeleton-write-record.mjs';
 import { makeUnits } from './skeleton-write-units.mjs';
 import { makeContent } from './skeleton-write-content.mjs';
@@ -190,6 +192,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			const key = calKeys( block ).filter( ( c ) => new RegExp( `(^|> )svg$` ).test( c ) ).sort( ( x, y ) => x.length - y.length )[ 0 ];
 			key && ( slots[ key ] = finder( k ) );
 		} );
+		// A form field's draft control is the field's input part (lib/skeleton-form-slots.mjs).
+		const inputSlot = 'formControl' === r.rule && r.absorb ? fieldInputSlot( { db, rules: R.formControl, block, calSettings, calKeys } ) : null;
+		inputSlot && ( slots[ inputSlot ] = finder( e ) );
 		if ( Object.keys( slots ).length ) {
 			node.draftSlots = slots;
 			row.slots = slots;
@@ -258,7 +263,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	}
 
 	const rootNode = buildNode( m.root, null );
-	const skeleton = formStepNodes( [].concat( rootNode || [] ), { factRecord, surfaceKind } );
+	const skeleton = formStepNodes( formHostNodes( [].concat( rootNode || [] ), { factRecord } ), { factRecord, surfaceKind } );
 	// Each absorbed part element is its block node's draftSlots entry at the part's calibrated slot, with its children at
 	// the part's sub-part slots, and the block node stands in the part's wrapper beside the wrapper's other content, or
 	// the wrapper the part leaves empty is dropped (lib/skeleton-part-slots.mjs).

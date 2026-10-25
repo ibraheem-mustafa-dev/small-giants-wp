@@ -932,45 +932,22 @@
 																"innerBlocks": []
 															},
 															{
-																"name": "sgs/container",
-																"attributes": {
-																	"tagName": "div",
-																	"layout": "grid"
-																},
-																"draftRef": {
-																	"tpl": "Root>TradeApplication@466#0/26#0"
-																},
-																"draftFingerprint": {
-																	"tag": "div",
-																	"cls": "",
-																	"styleHash": "9dafbd8b",
-																	"parentTags": [
-																		"main",
-																		"section",
-																		"div",
-																		"div",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 38
-																},
+																"name": "sgs/form",
+																"attributes": {},
 																"innerBlocks": [
 																	{
 																		"name": "sgs/container",
 																		"attributes": {
 																			"tagName": "div",
-																			"layout": "stack"
+																			"layout": "grid"
 																		},
 																		"draftRef": {
-																			"tpl": "Root>TradeApplication@466#0/28#0"
+																			"tpl": "Root>TradeApplication@466#0/26#0"
 																		},
 																		"draftFingerprint": {
 																			"tag": "div",
 																			"cls": "",
-																			"styleHash": "2227f0de",
+																			"styleHash": "9dafbd8b",
 																			"parentTags": [
 																				"main",
 																				"section",
@@ -979,26 +956,25 @@
 																				"div",
 																				"div",
 																				"div",
-																				"div",
 																				"div"
 																			],
 																			"textHash": "1505",
-																			"line": 40
+																			"line": 38
 																		},
 																		"innerBlocks": [
 																			{
 																				"name": "sgs/container",
 																				"attributes": {
 																					"tagName": "div",
-																					"layout": "flex"
+																					"layout": "stack"
 																				},
 																				"draftRef": {
-																					"tpl": "Root>TradeApplication@466#0/33#0"
+																					"tpl": "Root>TradeApplication@466#0/28#0"
 																				},
 																				"draftFingerprint": {
-																					"tag": "label",
+																					"tag": "div",
 																					"cls": "",
-																					"styleHash": "454eda67",
+																					"styleHash": "2227f0de",
 																					"parentTags": [
 																						"main",
 																						"section",
@@ -1008,25 +984,25 @@
 																						"div",
 																						"div",
 																						"div",
-																						"div",
 																						"div"
 																					],
-																					"textHash": "adb12ee2",
-																					"line": 45
+																					"textHash": "1505",
+																					"line": 40
 																				},
 																				"innerBlocks": [
 																					{
-																						"name": "sgs/text",
+																						"name": "sgs/container",
 																						"attributes": {
-																							"text": "*"
+																							"tagName": "div",
+																							"layout": "flex"
 																						},
 																						"draftRef": {
-																							"tpl": "Root>TradeApplication@466#0/35#0"
+																							"tpl": "Root>TradeApplication@466#0/33#0"
 																						},
 																						"draftFingerprint": {
-																							"tag": "span",
+																							"tag": "label",
 																							"cls": "",
-																							"styleHash": "8a19ef39",
+																							"styleHash": "454eda67",
 																							"parentTags": [
 																								"main",
 																								"section",
@@ -1037,30 +1013,89 @@
 																								"div",
 																								"div",
 																								"div",
-																								"div",
-																								"label"
+																								"div"
 																							],
-																							"textHash": "2b58f",
+																							"textHash": "adb12ee2",
 																							"line": 45
+																						},
+																						"innerBlocks": [
+																							{
+																								"name": "sgs/text",
+																								"attributes": {
+																									"text": "*"
+																								},
+																								"draftRef": {
+																									"tpl": "Root>TradeApplication@466#0/35#0"
+																								},
+																								"draftFingerprint": {
+																									"tag": "span",
+																									"cls": "",
+																									"styleHash": "8a19ef39",
+																									"parentTags": [
+																										"main",
+																										"section",
+																										"div",
+																										"div",
+																										"div",
+																										"div",
+																										"div",
+																										"div",
+																										"div",
+																										"div",
+																										"label"
+																									],
+																									"textHash": "2b58f",
+																									"line": 45
+																								},
+																								"innerBlocks": []
+																							}
+																						]
+																					},
+																					{
+																						"name": "sgs/option-picker",
+																						"attributes": {},
+																						"draftRef": {
+																							"tpl": "Root>TradeApplication@466#0/47#0"
+																						},
+																						"draftFingerprint": {
+																							"tag": "div",
+																							"cls": "",
+																							"styleHash": "706c044c",
+																							"parentTags": [
+																								"main",
+																								"section",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div"
+																							],
+																							"textHash": "1505",
+																							"line": 59
 																						},
 																						"innerBlocks": []
 																					}
 																				]
 																			},
 																			{
-																				"name": "sgs/option-picker",
-																				"attributes": {},
+																				"name": "sgs/container",
+																				"attributes": {
+																					"tagName": "div",
+																					"layout": "stack"
+																				},
 																				"draftRef": {
-																					"tpl": "Root>TradeApplication@466#0/47#0"
+																					"tpl": "Root>TradeApplication@466#0/28#1"
 																				},
 																				"draftFingerprint": {
 																					"tag": "div",
 																					"cls": "",
-																					"styleHash": "706c044c",
+																					"styleHash": "96a453",
 																					"parentTags": [
 																						"main",
 																						"section",
-																						"div",
 																						"div",
 																						"div",
 																						"div",
@@ -1070,379 +1105,61 @@
 																						"div"
 																					],
 																					"textHash": "1505",
-																					"line": 59
+																					"line": 40
 																				},
-																				"innerBlocks": []
-																			}
-																		]
-																	},
-																	{
-																		"name": "sgs/container",
-																		"attributes": {
-																			"tagName": "div",
-																			"layout": "stack"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>TradeApplication@466#0/28#1"
-																		},
-																		"draftFingerprint": {
-																			"tag": "div",
-																			"cls": "",
-																			"styleHash": "96a453",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "1505",
-																			"line": 40
-																		},
-																		"innerBlocks": [
-																			{
-																				"name": "sgs/form-field-text",
-																				"attributes": {
-																					"label": "Trading name"
-																				},
-																				"draftRef": {
-																					"tpl": "Root>TradeApplication@466#0/39#0"
-																				},
-																				"draftFingerprint": {
-																					"tag": "input",
-																					"cls": "scp1l",
-																					"styleHash": "e55d5567",
-																					"parentTags": [
-																						"main",
-																						"section",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div"
-																					],
-																					"textHash": "1505",
-																					"line": 48
-																				},
-																				"innerBlocks": []
-																			}
-																		]
-																	},
-																	{
-																		"name": "sgs/container",
-																		"attributes": {
-																			"tagName": "div",
-																			"layout": "stack"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>TradeApplication@466#0/28#2"
-																		},
-																		"draftFingerprint": {
-																			"tag": "div",
-																			"cls": "",
-																			"styleHash": "96a453",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "1505",
-																			"line": 40
-																		},
-																		"innerBlocks": [
-																			{
-																				"name": "sgs/form-field-text",
-																				"attributes": {
-																					"label": "Registered business name"
-																				},
-																				"draftRef": {
-																					"tpl": "Root>TradeApplication@466#0/39#1"
-																				},
-																				"draftFingerprint": {
-																					"tag": "input",
-																					"cls": "scp1l",
-																					"styleHash": "e55d5567",
-																					"parentTags": [
-																						"main",
-																						"section",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div"
-																					],
-																					"textHash": "1505",
-																					"line": 48
-																				},
-																				"innerBlocks": []
-																			}
-																		]
-																	},
-																	{
-																		"name": "sgs/container",
-																		"attributes": {
-																			"tagName": "div",
-																			"layout": "stack"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>TradeApplication@466#0/28#3"
-																		},
-																		"draftFingerprint": {
-																			"tag": "div",
-																			"cls": "",
-																			"styleHash": "96a453",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "1505",
-																			"line": 40
-																		},
-																		"innerBlocks": [
-																			{
-																				"name": "sgs/form-field-select",
-																				"attributes": {
-																					"label": "Business structure"
-																				},
-																				"draftRef": {
-																					"tpl": "Root>TradeApplication@466#0/41#0"
-																				},
-																				"draftFingerprint": {
-																					"tag": "select",
-																					"cls": "scp1l",
-																					"styleHash": "da550f47",
-																					"parentTags": [
-																						"main",
-																						"section",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div"
-																					],
-																					"textHash": "1505",
-																					"line": 51
-																				},
-																				"innerBlocks": []
-																			}
-																		]
-																	},
-																	{
-																		"name": "sgs/container",
-																		"attributes": {
-																			"tagName": "div",
-																			"layout": "stack"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>TradeApplication@466#0/28#4"
-																		},
-																		"draftFingerprint": {
-																			"tag": "div",
-																			"cls": "",
-																			"styleHash": "96a453",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "1505",
-																			"line": 40
-																		},
-																		"innerBlocks": [
-																			{
-																				"name": "sgs/form-field-text",
-																				"attributes": {
-																					"label": "VAT number",
-																					"helpText": "Leave blank if you are not VAT registered."
-																				},
-																				"draftRef": {
-																					"tpl": "Root>TradeApplication@466#0/39#2"
-																				},
-																				"draftFingerprint": {
-																					"tag": "input",
-																					"cls": "scp1l",
-																					"styleHash": "e55d5567",
-																					"parentTags": [
-																						"main",
-																						"section",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div"
-																					],
-																					"textHash": "1505",
-																					"line": 48
-																				},
-																				"innerBlocks": []
-																			}
-																		]
-																	},
-																	{
-																		"name": "sgs/container",
-																		"attributes": {
-																			"tagName": "div",
-																			"layout": "stack"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>TradeApplication@466#0/28#5"
-																		},
-																		"draftFingerprint": {
-																			"tag": "div",
-																			"cls": "",
-																			"styleHash": "96a453",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "1505",
-																			"line": 40
-																		},
-																		"innerBlocks": [
-																			{
-																				"name": "sgs/form-field-select",
-																				"attributes": {
-																					"label": "Time trading"
-																				},
-																				"draftRef": {
-																					"tpl": "Root>TradeApplication@466#0/41#1"
-																				},
-																				"draftFingerprint": {
-																					"tag": "select",
-																					"cls": "scp1l",
-																					"styleHash": "da550f47",
-																					"parentTags": [
-																						"main",
-																						"section",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div"
-																					],
-																					"textHash": "1505",
-																					"line": 51
-																				},
-																				"innerBlocks": []
-																			}
-																		]
-																	},
-																	{
-																		"name": "sgs/container",
-																		"attributes": {
-																			"tagName": "div",
-																			"layout": "stack"
-																		},
-																		"draftRef": {
-																			"tpl": "Root>TradeApplication@466#0/28#6"
-																		},
-																		"draftFingerprint": {
-																			"tag": "div",
-																			"cls": "",
-																			"styleHash": "2227f0de",
-																			"parentTags": [
-																				"main",
-																				"section",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "1505",
-																			"line": 40
-																		},
-																		"innerBlocks": [
-																			{
-																				"name": "sgs/text",
-																				"attributes": {
-																					"text": "Food hygiene rating"
-																				},
-																				"draftRef": {
-																					"tpl": "Root>TradeApplication@466#0/33#6"
-																				},
-																				"draftFingerprint": {
-																					"tag": "label",
-																					"cls": "",
-																					"styleHash": "454eda67",
-																					"parentTags": [
-																						"main",
-																						"section",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div",
-																						"div"
-																					],
-																					"textHash": "59097ef1",
-																					"line": 45
-																				},
-																				"innerBlocks": []
+																				"innerBlocks": [
+																					{
+																						"name": "sgs/form-field-text",
+																						"attributes": {
+																							"label": "Trading name"
+																						},
+																						"draftRef": {
+																							"tpl": "Root>TradeApplication@466#0/39#0"
+																						},
+																						"draftFingerprint": {
+																							"tag": "input",
+																							"cls": "scp1l",
+																							"styleHash": "e55d5567",
+																							"parentTags": [
+																								"main",
+																								"section",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div"
+																							],
+																							"textHash": "1505",
+																							"line": 48
+																						},
+																						"innerBlocks": [],
+																						"draftSlots": {
+																							".sgs-form-field__input": {
+																								"tpl": "Root>TradeApplication@466#0/39#0"
+																							}
+																						}
+																					}
+																				]
 																			},
 																			{
-																				"name": "sgs/option-picker",
-																				"attributes": {},
+																				"name": "sgs/container",
+																				"attributes": {
+																					"tagName": "div",
+																					"layout": "stack"
+																				},
 																				"draftRef": {
-																					"tpl": "Root>TradeApplication@466#0/47#1"
+																					"tpl": "Root>TradeApplication@466#0/28#2"
 																				},
 																				"draftFingerprint": {
 																					"tag": "div",
 																					"cls": "",
-																					"styleHash": "706c044c",
+																					"styleHash": "96a453",
 																					"parentTags": [
 																						"main",
 																						"section",
-																						"div",
 																						"div",
 																						"div",
 																						"div",
@@ -1452,22 +1169,58 @@
 																						"div"
 																					],
 																					"textHash": "1505",
-																					"line": 59
+																					"line": 40
 																				},
-																				"innerBlocks": []
+																				"innerBlocks": [
+																					{
+																						"name": "sgs/form-field-text",
+																						"attributes": {
+																							"label": "Registered business name"
+																						},
+																						"draftRef": {
+																							"tpl": "Root>TradeApplication@466#0/39#1"
+																						},
+																						"draftFingerprint": {
+																							"tag": "input",
+																							"cls": "scp1l",
+																							"styleHash": "e55d5567",
+																							"parentTags": [
+																								"main",
+																								"section",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div"
+																							],
+																							"textHash": "1505",
+																							"line": 48
+																						},
+																						"innerBlocks": [],
+																						"draftSlots": {
+																							".sgs-form-field__input": {
+																								"tpl": "Root>TradeApplication@466#0/39#1"
+																							}
+																						}
+																					}
+																				]
 																			},
 																			{
-																				"name": "sgs/text",
+																				"name": "sgs/container",
 																				"attributes": {
-																					"text": "From your local authority (Food Standards Agency scheme)."
+																					"tagName": "div",
+																					"layout": "stack"
 																				},
 																				"draftRef": {
-																					"tpl": "Root>TradeApplication@466#0/64#1"
+																					"tpl": "Root>TradeApplication@466#0/28#3"
 																				},
 																				"draftFingerprint": {
-																					"tag": "span",
+																					"tag": "div",
 																					"cls": "",
-																					"styleHash": "d2c9c594",
+																					"styleHash": "96a453",
 																					"parentTags": [
 																						"main",
 																						"section",
@@ -1477,13 +1230,291 @@
 																						"div",
 																						"div",
 																						"div",
+																						"div"
+																					],
+																					"textHash": "1505",
+																					"line": 40
+																				},
+																				"innerBlocks": [
+																					{
+																						"name": "sgs/form-field-select",
+																						"attributes": {
+																							"label": "Business structure"
+																						},
+																						"draftRef": {
+																							"tpl": "Root>TradeApplication@466#0/41#0"
+																						},
+																						"draftFingerprint": {
+																							"tag": "select",
+																							"cls": "scp1l",
+																							"styleHash": "da550f47",
+																							"parentTags": [
+																								"main",
+																								"section",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div"
+																							],
+																							"textHash": "1505",
+																							"line": 51
+																						},
+																						"innerBlocks": [],
+																						"draftSlots": {
+																							".sgs-form-field__input": {
+																								"tpl": "Root>TradeApplication@466#0/41#0"
+																							}
+																						}
+																					}
+																				]
+																			},
+																			{
+																				"name": "sgs/container",
+																				"attributes": {
+																					"tagName": "div",
+																					"layout": "stack"
+																				},
+																				"draftRef": {
+																					"tpl": "Root>TradeApplication@466#0/28#4"
+																				},
+																				"draftFingerprint": {
+																					"tag": "div",
+																					"cls": "",
+																					"styleHash": "96a453",
+																					"parentTags": [
+																						"main",
+																						"section",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
 																						"div",
 																						"div"
 																					],
-																					"textHash": "1ae2f3f9",
-																					"line": 78
+																					"textHash": "1505",
+																					"line": 40
 																				},
-																				"innerBlocks": []
+																				"innerBlocks": [
+																					{
+																						"name": "sgs/form-field-text",
+																						"attributes": {
+																							"label": "VAT number",
+																							"helpText": "Leave blank if you are not VAT registered."
+																						},
+																						"draftRef": {
+																							"tpl": "Root>TradeApplication@466#0/39#2"
+																						},
+																						"draftFingerprint": {
+																							"tag": "input",
+																							"cls": "scp1l",
+																							"styleHash": "e55d5567",
+																							"parentTags": [
+																								"main",
+																								"section",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div"
+																							],
+																							"textHash": "1505",
+																							"line": 48
+																						},
+																						"innerBlocks": [],
+																						"draftSlots": {
+																							".sgs-form-field__input": {
+																								"tpl": "Root>TradeApplication@466#0/39#2"
+																							}
+																						}
+																					}
+																				]
+																			},
+																			{
+																				"name": "sgs/container",
+																				"attributes": {
+																					"tagName": "div",
+																					"layout": "stack"
+																				},
+																				"draftRef": {
+																					"tpl": "Root>TradeApplication@466#0/28#5"
+																				},
+																				"draftFingerprint": {
+																					"tag": "div",
+																					"cls": "",
+																					"styleHash": "96a453",
+																					"parentTags": [
+																						"main",
+																						"section",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"div"
+																					],
+																					"textHash": "1505",
+																					"line": 40
+																				},
+																				"innerBlocks": [
+																					{
+																						"name": "sgs/form-field-select",
+																						"attributes": {
+																							"label": "Time trading"
+																						},
+																						"draftRef": {
+																							"tpl": "Root>TradeApplication@466#0/41#1"
+																						},
+																						"draftFingerprint": {
+																							"tag": "select",
+																							"cls": "scp1l",
+																							"styleHash": "da550f47",
+																							"parentTags": [
+																								"main",
+																								"section",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div"
+																							],
+																							"textHash": "1505",
+																							"line": 51
+																						},
+																						"innerBlocks": [],
+																						"draftSlots": {
+																							".sgs-form-field__input": {
+																								"tpl": "Root>TradeApplication@466#0/41#1"
+																							}
+																						}
+																					}
+																				]
+																			},
+																			{
+																				"name": "sgs/container",
+																				"attributes": {
+																					"tagName": "div",
+																					"layout": "stack"
+																				},
+																				"draftRef": {
+																					"tpl": "Root>TradeApplication@466#0/28#6"
+																				},
+																				"draftFingerprint": {
+																					"tag": "div",
+																					"cls": "",
+																					"styleHash": "2227f0de",
+																					"parentTags": [
+																						"main",
+																						"section",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"div"
+																					],
+																					"textHash": "1505",
+																					"line": 40
+																				},
+																				"innerBlocks": [
+																					{
+																						"name": "sgs/text",
+																						"attributes": {
+																							"text": "Food hygiene rating"
+																						},
+																						"draftRef": {
+																							"tpl": "Root>TradeApplication@466#0/33#6"
+																						},
+																						"draftFingerprint": {
+																							"tag": "label",
+																							"cls": "",
+																							"styleHash": "454eda67",
+																							"parentTags": [
+																								"main",
+																								"section",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div"
+																							],
+																							"textHash": "59097ef1",
+																							"line": 45
+																						},
+																						"innerBlocks": []
+																					},
+																					{
+																						"name": "sgs/option-picker",
+																						"attributes": {},
+																						"draftRef": {
+																							"tpl": "Root>TradeApplication@466#0/47#1"
+																						},
+																						"draftFingerprint": {
+																							"tag": "div",
+																							"cls": "",
+																							"styleHash": "706c044c",
+																							"parentTags": [
+																								"main",
+																								"section",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div"
+																							],
+																							"textHash": "1505",
+																							"line": 59
+																						},
+																						"innerBlocks": []
+																					},
+																					{
+																						"name": "sgs/text",
+																						"attributes": {
+																							"text": "From your local authority (Food Standards Agency scheme)."
+																						},
+																						"draftRef": {
+																							"tpl": "Root>TradeApplication@466#0/64#1"
+																						},
+																						"draftFingerprint": {
+																							"tag": "span",
+																							"cls": "",
+																							"styleHash": "d2c9c594",
+																							"parentTags": [
+																								"main",
+																								"section",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div",
+																								"div"
+																							],
+																							"textHash": "1ae2f3f9",
+																							"line": 78
+																						},
+																						"innerBlocks": []
+																					}
+																				]
 																			}
 																		]
 																	}
