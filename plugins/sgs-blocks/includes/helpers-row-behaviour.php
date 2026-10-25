@@ -163,24 +163,39 @@ if ( ! function_exists( 'sgs_resolve_row_shrink_hide_target' ) ) {
 
 if ( ! function_exists( 'sgs_row_shrink_settings_css' ) ) {
 	/**
-	 * The row's own shrink settings: an explicit shrunk padding (rowShrinkPadding,
-	 * per device, all four sides) in place of the proportional halving, and the
-	 * shrink's duration and curve (rowShrinkDuration / rowShrinkEasing), which the
-	 * scroll-hide collapse follows too. The timing is also published on the row as
-	 * --sgs-row-shrink-duration and --sgs-row-shrink-easing, which a shrinking child
-	 * (the logo's width, a heading's shrunk size) reads, so the whole row moves as
-	 * one. `rowAnimate` off removes every row transition, children included.
+	 * The row's own scroll-animation settings, printed only for the behaviours the row has.
+	 *
+	 * Shrink ('shrink' in `$moves`): an explicit shrunk padding (rowShrinkPadding, per device,
+	 * all four sides) in place of the proportional halving; the shrink's duration and
+	 * curve (rowShrinkDuration / rowShrinkEasing); and that timing published on the row
+	 * as --sgs-row-shrink-duration and --sgs-row-shrink-easing, which a shrinking child
+	 * (the logo's width, a heading's shrunk size) reads, so the whole row moves as one.
+	 *
+	 * Scroll-away ('scroll-away' in `$moves`, rowHideOnScroll): the same duration and curve time the
+	 * collapse a pinned header runs (`.is-row-collapse-mode`).
+	 *
+	 * `rowAnimate` off removes the transitions of the behaviours the row has, and the
+	 * row's base transition (the slide away and the transparent fill), children included.
+	 * A row with neither behaviour prints nothing.
 	 *
 	 * Shared by sgs/site-header-row and sgs/site-footer-row, like sgs_row_shrink_css().
 	 *
 	 * @param string $root_sel   The row's scoped root selector.
 	 * @param array  $attributes The row's attributes.
-	 * @return string CSS text; '' when nothing is set.
+	 * @param array  $moves      The row's collapsing behaviours: 'shrink' (rowShrink on at a device tier)
+	 *                           and/or 'scroll-away' (rowHideOnScroll on at a device tier).
+	 * @return string CSS text; '' when nothing applies.
 	 */
-	function sgs_row_shrink_settings_css( $root_sel, array $attributes ) {
+	function sgs_row_shrink_settings_css( $root_sel, array $attributes, array $moves ) {
 		$css     = '';
+		$shrinks = in_array( 'shrink', $moves, true );
+		$hides   = in_array( 'scroll-away', $moves, true );
+		if ( ! $shrinks && ! $hides ) {
+			return $css;
+		}
+
 		$padding = $attributes['rowShrinkPadding'] ?? null;
-		if ( is_array( $padding ) && array() !== $padding && function_exists( 'sgs_emit_responsive_css' ) ) {
+		if ( $shrinks && is_array( $padding ) && array() !== $padding && function_exists( 'sgs_emit_responsive_css' ) ) {
 			$css .= sgs_emit_responsive_css(
 				$root_sel . '.is-row-shrunk>.sgs-container__inner',
 				array(
@@ -199,25 +214,45 @@ if ( ! function_exists( 'sgs_row_shrink_settings_css' ) ) {
 		$inner    = $root_sel . '>.sgs-container__inner';
 		if ( false === ( $attributes['rowAnimate'] ?? true ) ) {
 			// Off: the row jumps to its scrolled look, and the logo and headings that read the row's timing jump with it.
-			$css .= $root_sel . '{--sgs-row-shrink-duration:0ms;}';
-			$css .= $root_sel . '.sgs-row-behaviour,' . $root_sel . '.is-row-shrink-active,' . $root_sel . '.is-row-collapse-mode,' . $inner . '{transition:none;}';
+			$off = array( $root_sel . '.sgs-row-behaviour' );
+			if ( $shrinks ) {
+				$css  .= $root_sel . '{--sgs-row-shrink-duration:0ms;}';
+				$off[] = $root_sel . '.is-row-shrink-active';
+			}
+			if ( $hides ) {
+				$off[] = $root_sel . '.is-row-collapse-mode';
+			}
+			if ( $shrinks ) {
+				$off[] = $inner;
+			}
+			$css .= implode( ',', $off ) . '{transition:none;}';
 			return $css;
 		}
 		if ( $duration > 0 || '' !== $easing ) {
-			$ms   = $duration > 0 ? min( 3000, $duration ) : 200;
-			$ease = function_exists( 'sgs_motion_easing_css' )
+			$ms    = $duration > 0 ? min( 3000, $duration ) : 200;
+			$ease  = function_exists( 'sgs_motion_easing_css' )
 				? sgs_motion_easing_css( '' === $easing ? 'ease' : $easing, (string) ( $attributes['rowShrinkEasingCustom'] ?? '' ), 'ease' )
 				: 'ease';
-			$t    = $ms . 'ms ' . $ease;
-			$css .= $root_sel . '{--sgs-row-shrink-duration:' . $ms . 'ms;--sgs-row-shrink-easing:' . $ease . ';}';
-			$css .= $root_sel . '.is-row-shrink-active{transition:background-color ' . $t . ',transform ' . $t . ';}';
-			$css .= $root_sel . '.is-row-shrink-active>.sgs-container__inner{transition:padding-top ' . $t . ',padding-bottom ' . $t
-				. ',padding-left ' . $t . ',padding-right ' . $t . ';}';
-			// The scroll-hide collapse runs on the same timing as the shrink, so the row moves as one.
-			$css .= $root_sel . '.is-row-collapse-mode{transition:background-color ' . $t . ',transform ' . $t . ',block-size ' . $t
-				. ',padding-top ' . $t . ',padding-bottom ' . $t . ';}';
+			$t     = $ms . 'ms ' . $ease;
+			$reset = array();
+			if ( $shrinks ) {
+				$css    .= $root_sel . '{--sgs-row-shrink-duration:' . $ms . 'ms;--sgs-row-shrink-easing:' . $ease . ';}';
+				$css    .= $root_sel . '.is-row-shrink-active{transition:background-color ' . $t . ',transform ' . $t . ';}';
+				$css    .= $root_sel . '.is-row-shrink-active>.sgs-container__inner{transition:padding-top ' . $t . ',padding-bottom ' . $t
+					. ',padding-left ' . $t . ',padding-right ' . $t . ';}';
+				$reset[] = $root_sel . '.is-row-shrink-active';
+			}
+			if ( $hides ) {
+				// The scroll-hide collapse runs on the same timing as the shrink, so the row moves as one.
+				$css    .= $root_sel . '.is-row-collapse-mode{transition:background-color ' . $t . ',transform ' . $t . ',block-size ' . $t
+					. ',padding-top ' . $t . ',padding-bottom ' . $t . ';}';
+				$reset[] = $root_sel . '.is-row-collapse-mode';
+			}
+			if ( $shrinks ) {
+				$reset[] = $root_sel . '.is-row-shrink-active>.sgs-container__inner';
+			}
 			// Each selector repeats the specificity of the timed rule it resets, or that rule wins for a visitor who asked for no motion.
-			$css .= '@media (prefers-reduced-motion: reduce){' . $root_sel . '.is-row-shrink-active,' . $root_sel . '.is-row-collapse-mode,' . $root_sel . '.is-row-shrink-active>.sgs-container__inner{transition:none;}}';
+			$css .= '@media (prefers-reduced-motion: reduce){' . implode( ',', $reset ) . '{transition:none;}}';
 		}
 		return $css;
 	}

@@ -22,9 +22,10 @@ trait BlockHarnessRenderTrait {
 	 * @param array<string, mixed> $attrs   Block attributes.
 	 * @param array<string, mixed> $context Ancestor block context.
 	 * @param array<string, mixed> $global_settings Tree wp_get_global_settings() returns (e.g. a derived dark palette).
+	 * @param string               $content Rendered InnerBlocks HTML the block receives as $content ('' passes none).
 	 * @return array{html: string, css: string} Rendered HTML and the concatenated <style> CSS.
 	 */
-	private function render_block( string $slug, array $attrs, array $context = array(), array $global_settings = array() ): array {
+	private function render_block( string $slug, array $attrs, array $context = array(), array $global_settings = array(), string $content = '' ): array {
 		$harness  = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';
 		$attrs_f  = tempnam( sys_get_temp_dir(), 'sgsat' );
 		$context_f = tempnam( sys_get_temp_dir(), 'sgsct' );
@@ -39,7 +40,8 @@ trait BlockHarnessRenderTrait {
 				. ' --slug ' . escapeshellarg( $slug )
 				. ' --attrs-file ' . escapeshellarg( $attrs_f )
 				. ' --context-file ' . escapeshellarg( $context_f )
-				. ' --global-settings-file ' . escapeshellarg( $settings_f ) . ' 2>&1';
+				. ' --global-settings-file ' . escapeshellarg( $settings_f )
+				. ( '' !== $content ? ' --content ' . escapeshellarg( $content ) : '' ) . ' 2>&1';
 			$out = (string) shell_exec( $cmd );
 		} finally {
 			@unlink( $attrs_f ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- temp file.
