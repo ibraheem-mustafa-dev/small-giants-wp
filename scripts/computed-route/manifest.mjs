@@ -6,7 +6,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { buildManifest, surfaceKey } from './lib/manifest-build.mjs';
+import { buildManifest, POST_TEMPLATE, surfaceKey, templateSource } from './lib/manifest-build.mjs';
 import { openDb } from './lib/db.mjs';
 import { builtTemplate, readPageMap } from './lib/site-build-map.mjs';
 import { stateRows } from './lib/state-vocab.mjs';
@@ -68,7 +68,7 @@ try {
 	const rows = readPageMap( path.join( dir, 'build', 'page-map.json' ) );
 	const only = given[ '--only' ] ? given[ '--only' ].split( ',' ).filter( Boolean ) : null;
 	if ( only ) {
-		const valid = rows.filter( ( r ) => null != r.id || builtTemplate( r ) ).map( surfaceKey );
+		const valid = [ ...rows.filter( ( r ) => null != r.id || builtTemplate( r ) ).map( surfaceKey ), ...( templateSource( rows ) ? [ POST_TEMPLATE ] : [] ) ];
 		const unknown = only.filter( ( k ) => ! valid.includes( k ) );
 		unknown.length && usage( `--only names ${ unknown.join( ', ' ) }, which no page-map row with an id generates; valid keys: ${ valid.join( ', ' ) }` );
 	}
@@ -85,10 +85,10 @@ try {
 		vocab,
 		existing: keep,
 	} );
-	console.log( 'key | post id | canvas | states' );
+	console.log( 'key | target | record | canvas | states' );
 	for ( const [ key, e ] of Object.entries( result.entries ) ) {
 		const states = Object.entries( e.states ).map( ( [ k, v ] ) => `${ k }=${ v ?? 'null' }` ).join( ', ' );
-		console.log( `${ key } | ${ e.target.postId } | ${ e.canvas ? 'yes' : 'no' } | ${ states }` );
+		console.log( `${ key } | ${ e.target.template ? `template ${ e.target.template }` : e.target.postId } | ${ result.matched[ key ] ?? 'none' } | ${ e.canvas ? 'yes' : 'no' } | ${ states }` );
 	}
 	Object.entries( result.added ).forEach( ( [ key, f ] ) => console.log( `added to existing ${ key }: ${ f.join( ', ' ) }` ) );
 	result.unmatched.forEach( ( u ) => console.log( `${ u.reason } ${ u.key }: ${ u.why }` ) );

@@ -6,7 +6,10 @@ import { builtTemplate } from './site-build-map.mjs';
 export const PREFIXES = { sgs_mega_menu: 'mega-', sgs_drawer: 'drawer-', sgs_modal: 'modal-', sgs_form: 'form-', sgs_choice_flow: 'flow-' };
 // Post type -> handoff record kind.
 // A shop row's handoff record is its route's page record.
-export const KINDS = { sgs_header: 'header', sgs_footer: 'footer', sgs_drawer: 'drawer', sgs_mega_menu: 'menu', sgs_modal: 'modal', page: 'page', shop: 'page', product: 'page', product_cat: 'page' };
+export const KINDS = { sgs_header: 'header', sgs_footer: 'footer', sgs_drawer: 'drawer', sgs_mega_menu: 'menu', sgs_modal: 'modal', sgs_form: 'form', page: 'page', shop: 'page', product: 'page', product_cat: 'page', post: 'page' };
+// A draft post's route is its page record's `page_key`, so every post row matches like a page row. The posts share one theme
+// template, the site's own copy of this one (FR-48-56), shaped from the first post row; each post row is content-only.
+export const POST_TEMPLATE = 'single';
 // Post type -> the template parts or form a surface provides.
 const PROVIDES = { sgs_header: () => [ 'core/template-part:header' ], sgs_footer: () => [ 'core/template-part:footer' ], sgs_form: ( row ) => [ `sgs/form:${ row.slug }` ] };
 
@@ -56,6 +59,22 @@ export function draftFor( record, drafts ) {
 	return ( record?.dc && drafts.find( ( d ) => pageKeyOf( d ) === record.dc ) ) || drafts[ 0 ];
 }
 
+// The component name a form record stands for: its `dc` in kebab case without a trailing `-form` (`EnquiryForm` is
+// `enquiry`, `TradeApplication` is `trade-application`).
+const formName = ( dc ) => String( dc ?? '' ).replace( /([a-z0-9])([A-Z])/g, '$1-$2' ).toLowerCase().replace( /[^a-z0-9]+/g, '-' ).replace( /^-+|-+$/g, '' ).replace( /-form$/, '' );
+
+// Whether a form row sits on a form record's page. A row that names its route is matched by the record's `page_key`; any
+// other form row carries only its slug (without the `form-` prefix), which is the page's own key for a form inline in the
+// entry draft (`careers`) and the component's name for a form mounted from its own file (`enquiry` for `EnquiryForm`).
+// A form's title is its heading in the draft, never a key, so it is not read.
+function formOnPage( row, r ) {
+	if ( null != row.route ) {
+		return null != r.page_key && r.page_key === pageKeyOf( String( row.route ).replace( /^\//, '' ) );
+	}
+	const slug = String( row.slug ).replace( /^form-/, '' );
+	return r.page_key === slug || ( null != r.dc && formName( r.dc ) === slug );
+}
+
 // The handoff record of a row: { record } or { reason }.
 export function matchRecord( row, records ) {
 	const kind = KINDS[ row.postType ];
@@ -65,6 +84,8 @@ export function matchRecord( row, records ) {
 	let mine = records.filter( ( r ) => r.kind === kind );
 	if ( 'page' === kind ) {
 		mine = mine.filter( ( r ) => null != row.route && r.page_key === pageKeyOf( row.route ) );
+	} else if ( 'form' === kind ) {
+		mine = mine.filter( ( r ) => formOnPage( row, r ) );
 	} else if ( mine.length > 1 ) {
 		mine = mine.filter( ( r ) => norm( r.name ) === norm( row.title ) );
 	}
@@ -148,7 +169,7 @@ export function statesOf( record, vocab, ctx = null ) {
 // Intake's record of the same kind whose name matches the row (a page by page_key), or null.
 function intakeRecord( row, intake ) {
 	const kind = KINDS[ row.postType ];
-	const found = ( intake?.inventory?.surfaces?.records || [] ).filter( ( r ) => r.kind === kind && ( 'page' === kind ? null != row.route && r.page_key === pageKeyOf( row.route ) : norm( r.name ) === norm( row.title ) ) );
+	const found = ( intake?.inventory?.surfaces?.records || [] ).filter( ( r ) => r.kind === kind && ( 'form' === kind ? formOnPage( row, r ) : 'page' === kind ? null != row.route && r.page_key === pageKeyOf( row.route ) : norm( r.name ) === norm( row.title ) ) );
 	return 1 === found.length ? found[ 0 ] : null;
 }
 
@@ -159,6 +180,9 @@ function intakeSurfaceOf( record, intake ) {
 }
 
 const nameSet = ( record ) => [ ...new Set( ( record.states || [] ).map( ( s ) => s.name ) ) ].sort();
+
+// The post row the single-post template is shaped from: the first post row of the page map, or null with none.
+export const templateSource = ( rows ) => rows.find( ( r ) => 'post' === r.postType ) ?? null;
 
 // Builds the manifest. `target` is the calibration target ({ envFile, envKey }), `entryFiles` the export's entry drafts
 // (`entryFile` for an export with one); each surface takes the draft draftFor names.
@@ -171,19 +195,26 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 	const drafts = entryFiles || [ entryFile ];
 	const entries = {};
 	const owner = new Map();
-	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {}, stale: [], noIntake: [], noFacts: [] };
-	const mapKeys = new Set( rows.flatMap( ( r ) => { try { return [ surfaceKey( r ) ]; } catch { return []; } } ) );
+	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {}, stale: [], noIntake: [], noFacts: [], matched: {} };
+	const source = templateSource( rows );
+	const mapKeys = new Set( [ ...rows.flatMap( ( r ) => { try { return [ surfaceKey( r ) ]; } catch { return []; } } ), ...( source ? [ POST_TEMPLATE ] : [] ) ] );
 	out.stale = Object.keys( existing ).filter( ( k ) => ! mapKeys.has( k ) );
-	for ( const row of rows ) {
-		if ( null == row.id && ! builtTemplate( row ) ) {
+	// The single-post template is a surface of its own beside the post rows: a page-map row giving its key is a clash.
+	const claim = ( key, what ) => {
+		if ( owner.has( key ) ) {
+			throw new Error( `page-map rows ${ owner.get( key ) } and ${ what } both give the key ${ key }` );
+		}
+		owner.set( key, what );
+	};
+	source && claim( POST_TEMPLATE, `the ${ POST_TEMPLATE } template (from ${ source.postType }:${ source.slug })` );
+	for ( const row of [ ...rows, ...( source ? [ { ...source, templateOf: source } ] : [] ) ] ) {
+		const isTemplate = !! row.templateOf;
+		if ( ! isTemplate && null == row.id && ! builtTemplate( row ) ) {
 			out.skipped.push( { row: `${ row.postType }:${ row.slug }`, reason: 'no id' } );
 			continue;
 		}
-		const key = surfaceKey( row );
-		if ( owner.has( key ) ) {
-			throw new Error( `page-map rows ${ owner.get( key ) } and ${ row.postType }:${ row.slug } both give the key ${ key }` );
-		}
-		owner.set( key, `${ row.postType }:${ row.slug }` );
+		const key = isTemplate ? POST_TEMPLATE : surfaceKey( row );
+		isTemplate || claim( key, `${ row.postType }:${ row.slug }` );
 		if ( only && ! only.includes( key ) ) {
 			continue;
 		}
@@ -209,6 +240,7 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 		} else {
 			mine.unresolved.push( { key, reason: 'states-unresolved', why: match.reason || `record ${ match.record.id } has no states` } );
 		}
+		match.record && ( out.matched[ key ] = match.record.id );
 		// The entry's link to its intake skeleton, through the handoff record both carry; none when intake has no skeleton for it.
 		const intakeSurface = intakeSurfaceOf( match.record, intake );
 		null === intakeSurface && ! ( have && Object.hasOwn( have, 'intakeSurface' ) ) && out.noIntake.push( { key, why: match.record ? `no intake skeleton has the id ${ match.record.id }` : 'no handoff record matched' } );
@@ -218,13 +250,16 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 			envFile: target.envFile,
 			envKey: target.envKey,
 			site,
-			target: builtTemplate( row ) ? { template: builtTemplate( row ) } : { postId: row.id },
+			target: isTemplate ? { template: POST_TEMPLATE } : builtTemplate( row ) ? { template: builtTemplate( row ) } : { postId: row.id },
 			...( 'page' === row.postType ? {} : { canvas: true } ),
 			walker: `qa/parity/${ key }.fill-base.mjs`,
 			walkerFull: `qa/parity/${ key }.fill.mjs`,
 			draftDir: `sites/${ client }/handoff`,
 			draftIndex: draftFor( match.record, drafts ),
+			// A form or a post is read on its page's route; the record's `route` is that page.
+			...( ( 'form' === KINDS[ row.postType ] || 'post' === row.postType ) && match.record?.route ? { draftRoute: match.record.route } : {} ),
 			states,
+			...( isTemplate ? { fromPost: surfaceKey( row ) } : 'post' === row.postType ? { contentOnly: true } : {} ),
 			...( PROVIDES[ row.postType ] ? { provides: PROVIDES[ row.postType ]( row ) } : {} ),
 		};
 		if ( ! handSet ) {
