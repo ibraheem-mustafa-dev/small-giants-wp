@@ -161,9 +161,12 @@ export const canon = ( prop, v, ctx = {} ) => paintCanon( prop, v, ctx );
 
 // Whether a property paints nothing on this element at this width: an outline with no style or width, a border side with
 // no width, a text decoration with no line, a transition that lasts 0s, a gap (gapPaintsNothing). Such a value is a
-// computed leftover (currentcolor, a gap's `normal`), not a design value. styles: the element's collected styles; snap:
-// the element's whole reading at this width, where the caller has it (a gap is judged from it).
-export function notPainted( prop, styles, snap = null ) {
+// computed leftover (currentcolor, a gap's `normal`), not a design value. A transition-duration of 0s is a leftover too
+// where the draft declares none (the CSS initial value on an element it gives no transition): it is judged only where
+// the draft's declared values for the element are known (`declared`: { longhand: value }, FR-48-8), never when the
+// declared read failed. styles: the element's collected styles; snap: the element's whole reading at this width, where
+// the caller has it (a gap is judged from it).
+export function notPainted( prop, styles, snap = null, declared = null ) {
 	if ( GAP_PROPS.includes( prop ) ) {
 		return null !== gapPaintsNothing( prop, styles, snap );
 	}
@@ -177,6 +180,9 @@ export function notPainted( prop, styles, snap = null ) {
 	}
 	if ( /^text-decoration-(color|thickness)$/.test( prop ) || 'text-underline-offset' === prop ) {
 		return 'none' === ( styles[ 'text-decoration-line' ] ?? 'none' );
+	}
+	if ( 'transition-duration' === prop ) {
+		return null !== declared && undefined === declared[ 'transition-duration' ] && /^\s*0(\.0+)?m?s(\s*,\s*0(\.0+)?m?s)*\s*$/.test( styles[ prop ] );
 	}
 	return /^transition-(delay|timing-function)$/.test( prop ) && zero( styles[ 'transition-duration' ] );
 }

@@ -454,6 +454,29 @@ function noSetting( input, ctx, detail ) {
 	return { gap: 'no-setting', detail: `${ detail }; ${ 'held' === eq.verdict ? `held (${ eq.reason }): ${ eq.detail }` : eq.detail }`, equivalence: eq, ...( 'held' === eq.verdict ? { code: `held:${ eq.reason }` } : {} ) };
 }
 
+const hasSlotColumn = new WeakMap();
+// The DB slot a setting is tied to (`block_attributes.canonical_slot`: the named part of the block it paints), or null.
+// A database without the column (a test fixture) ties nothing to a part.
+function canonicalSlotOf( db, block, attr ) {
+	if ( ! hasSlotColumn.has( db ) ) {
+		hasSlotColumn.set( db, db.prepare( 'PRAGMA table_info(block_attributes)' ).all().some( ( c ) => 'canonical_slot' === c.name ) );
+	}
+	return hasSlotColumn.get( db ) ? db.prepare( 'SELECT canonical_slot FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr )?.canonical_slot ?? null : null;
+}
+
+// A tie between settings that paint one slot breaks on the DB slot (`canonical_slot`, `css_element`): a setting the DB ties
+// to a named part of the block (a canonical_slot and no css_element: `bgSvgMinHeight`, `background-svg`) sizes that part, so
+// it never competes for the element's own paint with the one setting the DB ties to an element (`minHeight`, css_element
+// `wrapper`). Only a tie of exactly that shape breaks; any other tie stays ambiguous.
+export function ownElementSetting( db, block, tied ) {
+	if ( tied.length < 2 ) {
+		return tied;
+	}
+	const parts = tied.filter( ( r ) => ! r.css_element && null !== canonicalSlotOf( db, block, r.attr_name ) );
+	const rest = tied.filter( ( r ) => ! parts.includes( r ) );
+	return 1 === rest.length && rest[ 0 ].css_element ? rest : tied;
+}
+
 export function resolve( input, ctx ) {
 	const { block, prop, state = null, perWidth, fontPx = {}, current = {} } = input;
 	// anyIndex (a setting of an enclosing block): calibration's fixture repeats the child at other positions, so paths
@@ -511,7 +534,7 @@ export function resolve( input, ctx ) {
 		return resolveDiscovered( { ...input, state }, ctx.calibration ) || noSetting( { ...input, state }, ctx, `${ named } (candidates: ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) })` );
 	}
 	const flat = tied.filter( ( r ) => 'flat_sibling' === r.tier_shape );
-	const others = tied.filter( ( r ) => 'flat_sibling' !== r.tier_shape );
+	const others = ownElementSetting( ctx.db, block, tied.filter( ( r ) => 'flat_sibling' !== r.tier_shape ) );
 	const bases = new Set( flat.map( ( r ) => r.attr_name.replace( /(Tablet|Mobile)$/, '' ) ) );
 	if ( others.length + bases.size > 1 ) {
 		return { gap: 'ambiguous', detail: `${ [ ...others.map( ( r ) => r.attr_name ), ...bases ].join( ', ' ) } all paint ${ prop } on "${ slot }"` };
