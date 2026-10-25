@@ -1,6 +1,6 @@
 // Spec 48 FR-48-39 (inline SVG), lib/fill-icon.mjs: the one writer for a whole <svg> subtree. A registry brand glyph is a
 // brand icon, a Lucide-drawn stroke mark is a Lucide icon, anything else is the client's own mark with the sanitiser's tags
-// and attributes only; a tag the block's sanitiser drops is a named row; a skeleton-made brand icon is not rewritten.
+// and attributes only; a tag the block's sanitiser drops is a named row; the icon source is decided from the draft's icon alone, never from what the node held before.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -67,12 +67,18 @@ test( 'MUST FAIL: gradients, filters and groups the sanitiser keeps survive; scr
 	assert.match( r.unmapped[ 0 ].reason, /not kept by the icon's sanitiser/ );
 } );
 
-test( 'MUST FAIL: a skeleton-made brand icon draws the registry glyph and is not rewritten', () => {
-	const other = run( lucideMarkup( 'activity' ), { attributes: { iconSource: 'brand', brandName: 'whatsapp' } } );
-	assert.deepEqual( other.writes, [] );
-	assert.match( other.notes.join( '\n' ), /not the "whatsapp" brand glyph/ );
-	const same = run( WHATSAPP.replace( '<path', '<path fill="currentColor"' ), { attributes: { iconSource: 'brand', brandName: 'whatsapp' } } );
-	assert.deepEqual( same, { writes: [], unmapped: [], notes: [] } );
+test( 'MUST FAIL: an icon node that starts brand takes the draft\'s inline SVG as its custom source, whatever it held before', () => {
+	const brandNode = { iconSource: 'brand', brandName: 'whatsapp' };
+	const other = run( lucideMarkup( 'activity' ).replace( /stroke-width="2px"/g, 'stroke-width="1.5px"' ), { attributes: brandNode } );
+	assert.equal( val( other, 'iconSource' ), 'custom' );
+	assert.match( val( other, 'iconSvg' ), /<svg/ );
+	const lucide = run( lucideMarkup( 'activity' ), { attributes: brandNode } );
+	assert.equal( val( lucide, 'iconSource' ), 'lucide' );
+	assert.equal( val( lucide, 'iconName' ), 'activity' );
+	const same = run( WHATSAPP.replace( '<path', '<path fill="currentColor"' ), { attributes: brandNode } );
+	assert.deepEqual( same, { writes: [], unmapped: [], notes: [] }, 'a draft that is the node\'s own brand glyph changes nothing' );
+	const first = run( lucideMarkup( 'activity' ).replace( /stroke-width="2px"/g, 'stroke-width="1.5px"' ), { attributes: { iconSource: 'emoji', brandName: 'whatsapp' } } );
+	assert.deepEqual( first.writes, other.writes, 'the decision does not depend on the value an earlier write left in iconSource' );
 } );
 
 test( 'a block without iconSvg, an absent SVG and unreadable markup write nothing, the last with a named row', () => {
